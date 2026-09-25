@@ -1,0 +1,42 @@
+{
+  "name": "yunipals",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "node": "24.18.1"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "pnpm": {
+    "overrides": {
+      "@coinbase/wallet-sdk": "4.3.7",
+      "@rainbow-me/rainbowkit@2.2.11>ua-parser-js": "1.0.41",
+      "cuer@0.0.3>qr": "0.7.0",
+      "decode-uri-component@<0.5.0": "0.5.0",
+      "use-sync-external-store": "1.4.0",
+      "uuid@<11.1.1": "11.1.1",
+      "ws@^8": "8.21.0",
+      "yaml@^2": "2.9.1"
+    },
+    "patchedDependencies": {
+      "@rainbow-me/rainbowkit@2.2.11": "patches/@rainbow-me__rainbowkit@2.2.11.patch",
+      "cuer@0.0.3": "patches/cuer@0.0.3.patch",
+      "query-string@7.1.3": "patches/query-string@7.1.3.patch"
+    }
+  },
+  "scripts": {
+    "dev:fixtures": "pnpm --filter @protopals/yunipals-home-web dev:fixtures",
+    "test:fixtures": "pnpm --filter @protopals/yunipals-home-web test:fixtures",
+    "test:dependencies": "pnpm --filter @protopals/yunipals-home-web test:dependencies",
+    "dev": "pnpm --filter @protopals/yunipals-home-web dev",
+    "dev:web": "pnpm --filter @protopals/yunipals-home-web dev",
+    "dev:api": "pnpm --filter @protopals/yunipals-market-api dev",
+    "typecheck": "pnpm --filter @protopals/yunipals-home-web typecheck && pnpm --filter @protopals/yunipals-market-api typecheck && pnpm --filter @protopals/yunipals-bnb-indexer typecheck",
+    "build": "pnpm --filter @protopals/yunipals-home-web build && pnpm --filter @protopals/yunipals-market-api build",
+    "build:web": "pnpm --filter @protopals/yunipals-home-web build",
+    "build:api": "pnpm --filter @protopals/yunipals-market-api build",
+    "test": "pnpm test:dependencies && pnpm test:web && pnpm test:api",
+    "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:marketplace",
+    "test:api": "pnpm --filter @protopals/yunipals-market-api test"
+  }
+}

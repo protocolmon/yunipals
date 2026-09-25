@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-09-22",
+  "command": "pnpm audit --json",
+  "baseRevision": "8d3cf46159f8e75838057dec83efb654908a8468",
+  "workingTree": true,
+  "lockfileSha256": "9beda6dbc8d7d6cd8f5c8d60d9609df0ac669044dfd00a9c7429dc5437e3881a",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 685,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 685
+  },
+  "uniqueAdvisories": 0,
+  "advisories": []
+}

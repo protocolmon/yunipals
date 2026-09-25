@@ -1,0 +1,12 @@
+diff --git a/dist/index.js b/dist/index.js
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1916,7 +1916,7 @@ function isWindows() {
+   return os.name === "Windows";
+ }
+ function isMacOS() {
+-  return os.name === "macOS";
++  return os.name === "Mac OS" || os.name === "macOS";
+ }
+ function isLinux() {
+   return ["Ubuntu", "Mint", "Fedora", "Debian", "Arch", "Linux"].includes(

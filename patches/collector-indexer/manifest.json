@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "baseline": "Production on-disk source inspected 22 September 2026. Running legacy API predates this source; use isolated collector service for this rollout.",
+  "originals": {
+    "lib/api/server.ts": "8b946b7d544e72e287624a393638f4b81872ee7bf55821d5ec04ff46deb961c4",
+    "lib/api/openapi.ts": "b4b7198c6c55878420c665ea88ac4fa668094d64536e696e6ff5b3f46bcaf979"
+  },
+  "added": [
+    "lib/api/collector-filters.ts",
+    "lib/api/collector-query.ts",
+    "lib/api/collector-routes.ts",
+    "lib/api/visibility-query.ts",
+    "test/collector-query.test.ts",
+    "test/collector-routes.test.ts",
+    "scripts/collector-read-indexes.sql",
+    "scripts/benchmark-collector-api.mjs",
+    "lib/api/collector-server.ts"
+  ],
+  "patchSha256": "055666a9a9176a66120de7db55af52021c2a5ab58ff0cb00ef13ce9ce7853225"
+}

@@ -1,0 +1,194 @@
+{
+  "engine": "PGlite isolated PostgreSQL, sequential warm reads; not a production concurrency benchmark",
+  "tokenRows": 100140,
+  "ownerRows": 10140,
+  "traversedPages": 423,
+  "measurements": {
+    "deepPrevious": {
+      "medianMs": 54.56,
+      "p95Ms": 57.14
+    },
+    "first": {
+      "medianMs": 54.71,
+      "p95Ms": 59.24
+    },
+    "ascending": {
+      "medianMs": 54.82,
+      "p95Ms": 60.6
+    },
+    "traits": {
+      "medianMs": 30.23,
+      "p95Ms": 55.86
+    },
+    "noMatches": {
+      "medianMs": 1.96,
+      "p95Ms": 2.6
+    },
+    "exactId": {
+      "medianMs": 1.73,
+      "p95Ms": 2.32
+    },
+    "broadPrefix": {
+      "medianMs": 175.46,
+      "p95Ms": 193.24
+    },
+    "selectivePrefix": {
+      "medianMs": 8.39,
+      "p95Ms": 11.01
+    },
+    "next": {
+      "medianMs": 54.29,
+      "p95Ms": 65.25
+    }
+  },
+  "limitations": [
+    "PGlite runs sequentially in WebAssembly; these measurements do not establish production concurrency or latency.",
+    "Production large-wallet sorting measured roughly 0.5\u20130.65s, above the initial 300ms target. Every checked core read completed within its one-second SQL budget. Smaller-chain and filtered checks were faster.",
+    "Broad name-prefix search still exceeded the one-second production query budget after indexing; its feature flag remains disabled. Token-ID search is enabled.",
+    "No concurrency load test was run against production. Low-rate smoke checks do not establish sustained capacity."
+  ],
+  "browser": {
+    "tests": [
+      "24-card forward/backward pagination",
+      "one request for combined type/color/chain filters, sort resets pagination",
+      "debounced exact ID search, empty state, browser history",
+      "mobile layout, Escape and focus restoration",
+      "superseded slow responses cannot replace the current filters",
+      "responsive search/grid under 4x CPU throttling",
+      "no 30-second collection polling",
+      "invalid URLs do not silently broaden results",
+      "backward-compatible capability gate"
+    ],
+    "errors": [],
+    "requests": 9,
+    "throttledGridLongTasksMs": []
+  },
+  "checks": {
+    "webTypecheck": "passed",
+    "marketApiTypecheck": "passed",
+    "indexerTypecheck": "passed",
+    "webBuild": "passed",
+    "collectorTests": 6,
+    "marketplaceRegressionTests": 140,
+    "fixtureTests": 4,
+    "dependencyTests": 5,
+    "indexerTests": 86,
+    "patchInstaller": "Applied to an isolated clean snapshot; resulting files match the tested source exactly.",
+    "productionDeployment": "Production backend and frontend are live; name-prefix search remains disabled. See personal-collection-production-rollout.md."
+  },
+  "productionSmoke": {
+    "checkedAt": "2026-09-22T22:41:00.666Z",
+    "sampleSource": "Public monster-count leaderboard; one wallet; sequential one-second pauses",
+    "limitations": "Bounded smoke test, not a production concurrency benchmark",
+    "passed": true,
+    "results": [
+      {
+        "label": "first-cold",
+        "status": 200,
+        "totalMs": 646,
+        "timing": "page;dur=572.2"
+      },
+      {
+        "label": "first-warm",
+        "status": 200,
+        "totalMs": 498,
+        "timing": "page;dur=432.8"
+      },
+      {
+        "label": "next",
+        "status": 200,
+        "totalMs": 591,
+        "timing": "page;dur=525.9"
+      },
+      {
+        "label": "previous",
+        "status": 200,
+        "totalMs": 492,
+        "timing": "page;dur=411.3"
+      },
+      {
+        "label": "cursor-binding",
+        "status": 409,
+        "totalMs": 46,
+        "timing": null
+      },
+      {
+        "label": "ascending",
+        "status": 200,
+        "totalMs": 483,
+        "timing": "page;dur=421.1"
+      },
+      {
+        "label": "combined-traits",
+        "status": 200,
+        "totalMs": 219,
+        "timing": "page;dur=158.4"
+      },
+      {
+        "label": "exact-id",
+        "status": 200,
+        "totalMs": 64,
+        "timing": "page;dur=14.0"
+      },
+      {
+        "label": "no-match",
+        "status": 200,
+        "totalMs": 55,
+        "timing": "page;dur=10.0"
+      },
+      {
+        "label": "hidden",
+        "status": 200,
+        "totalMs": 57,
+        "timing": "page;dur=11.8"
+      },
+      {
+        "label": "chain-ethereum",
+        "status": 200,
+        "totalMs": 86,
+        "timing": "page;dur=24.2"
+      },
+      {
+        "label": "chain-base",
+        "status": 200,
+        "totalMs": 550,
+        "timing": "page;dur=488.2"
+      },
+      {
+        "label": "chain-polygon",
+        "status": 200,
+        "totalMs": 60,
+        "timing": "page;dur=15.1"
+      },
+      {
+        "label": "chain-bnb",
+        "status": 200,
+        "totalMs": 85,
+        "timing": "page;dur=24.9"
+      }
+    ]
+  },
+  "productionBrowser": {
+    "checkedAt": "2026-09-22T22:44:22.440Z",
+    "tests": [
+      "24 cards and token-ID search advertised",
+      "next and previous pages preserve ordering",
+      "rarity sort resets pagination",
+      "combined Type/Color apply uses one page request",
+      "debounced token-ID search returns matching holdings",
+      "mobile filter dialog and layout"
+    ],
+    "requests": 6,
+    "errors": [],
+    "failed": [],
+    "passed": true
+  },
+  "productionHealth": {
+    "checkedAt": "2026-09-22T22:46:06.355734+00:00",
+    "status": "healthy",
+    "failures": [],
+    "configurationErrors": [],
+    "degradedChains": [],
+    "legacyApiRestarted": false
+  }
+}

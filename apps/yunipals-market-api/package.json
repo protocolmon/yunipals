@@ -1,0 +1,46 @@
+{
+  "name": "@protopals/yunipals-market-api",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.mjs",
+    "start:worker": "node dist/worker.mjs",
+    "start:opensea-worker": "node dist/opensea-worker.mjs",
+    "discover:opensea": "node dist/opensea-discovery.mjs",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test.mjs",
+    "test:opensea:fork": "node --import tsx scripts/opensea-fork.mjs",
+    "test:admission:fork": "node --import tsx scripts/admission-fork.mjs",
+    "test:worker:fork": "node --import tsx scripts/worker-fork.mjs",
+    "db:migrate": "tsx src/migrate.ts",
+    "test:activity:fork": "node --import tsx scripts/activity-fork.mjs",
+    "test:trading:fork": "node --import tsx scripts/trading-fork.mjs",
+    "test:bnb:validated-fork": "node --import tsx scripts/bnb-validated-fork.mjs",
+    "test:restore:fork": "node --import tsx scripts/restore-fork.mjs",
+    "start:opensea-read-worker": "node dist/opensea-read-worker.mjs",
+    "start:opensea-signature-worker": "node dist/opensea-signature-worker.mjs",
+    "start:opensea-signature-fleet": "node dist/opensea-signature-fleet.mjs",
+    "start:opensea-stream": "node dist/opensea-stream.mjs"
+  },
+  "dependencies": {
+    "@hono/node-server": "1.19.17",
+    "hono": "4.13.8",
+    "pg": "8.23.0",
+    "@protopals/yunipals-market-core": "workspace:*",
+    "viem": "2.38.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.4",
+    "@types/pg": "8.11.11",
+    "esbuild": "0.25.12",
+    "tsx": "4.23.15",
+    "typescript": "5.7.3"
+  }
+}

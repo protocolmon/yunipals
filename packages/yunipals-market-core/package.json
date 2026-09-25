@@ -1,0 +1,36 @@
+{
+  "name": "@protopals/yunipals-market-core",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./registry": "./src/registry.ts",
+    "./seaport": "./src/seaport.ts",
+    "./seaportWire": "./src/seaportWire.ts",
+    "./orderPolicy": "./src/orderPolicy.ts",
+    "./validation": "./src/validation.ts",
+    "./verifyOrderMaker": "./src/verifyOrderMaker.ts",
+    "./marketOrder": "./src/marketOrder.ts",
+    "./openseaRegistry": "./src/openseaRegistry.ts",
+    "./catalogCurrency": "./src/catalogCurrency.ts",
+    "./collectionTypes": "./src/collectionTypes.ts",
+    "./collectionFilters": "./src/collectionFilters.ts",
+    "./collectorFilters": "./src/collectorFilters.ts",
+    "./catalogFilters": "./src/catalogFilters.ts",
+    "./catalogToken": "./src/catalogToken.ts",
+    "./marketAvailability": "./src/marketAvailability.ts",
+    "./settledSale": "./src/settledSale.ts",
+    "./seaportEvents": "./src/seaportEvents.ts",
+    "./bnbDiscovery": "./src/bnbDiscovery.ts",
+    "./activity": "./src/activity.ts",
+    "./openseaOrder": "./src/openseaOrder.ts",
+    "./openseaOrderPolicy": "./src/openseaOrderPolicy.ts",
+    "./orderPublication": "./src/orderPublication.ts",
+    "./openseaPublication": "./src/openseaPublication.ts",
+    "./openseaFulfillment": "./src/openseaFulfillment.ts"
+  },
+  "peerDependencies": {
+    "viem": ">=2.38.0 <3"
+  }
+}

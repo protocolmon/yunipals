@@ -1,0 +1,26 @@
+{
+  "name": "@protopals/yunipals-bnb-indexer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "db:migrate": "tsx src/migrate.ts",
+    "db:standalone-views": "tsx src/standalone-views.ts",
+    "start": "tsx src/worker.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/integration-test.mjs"
+  },
+  "dependencies": {
+    "pg": "8.23.0",
+    "viem": "2.38.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.4",
+    "@types/pg": "8.11.11",
+    "tsx": "4.23.15",
+    "typescript": "5.7.3"
+  }
+}

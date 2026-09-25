@@ -1,0 +1,52 @@
+{
+  "name": "@protopals/yunipals-home-web",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev:fixtures": "vite --mode fixtures --host 127.0.0.1 --port 5177 --strictPort",
+    "test:collector": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/collector.test.ts",
+    "test:collector:ui": "node scripts/test-collector-ui.mjs",
+    "test:fixtures": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test scripts/fixtures/devServer.test.ts",
+    "test:dependencies": "node --test scripts/dependencies.test.mjs",
+    "preinstall": "npx only-allow pnpm",
+    "dev": "vite --host 0.0.0.0 --port 5177",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test:marketplace": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/marketplace/*.test.ts",
+    "check:marketplace": "node --experimental-strip-types scripts/check-marketplace-contracts.mjs",
+    "test:marketplace:fork": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-fork.mjs",
+    "test:marketplace:ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-ui.mjs",
+    "test:marketplace:catalog": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-catalog-ui.mjs",
+    "test:marketplace:activity": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-activity-ui.mjs",
+    "test:marketplace:safe": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-safe-fork.mjs",
+    "test:marketplace:opensea": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-fork.mjs",
+    "test:marketplace:opensea-ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-ui.mjs"
+  },
+  "dependencies": {
+    "@protopals/yunipals-market-core": "workspace:*",
+    "@rainbow-me/rainbowkit": "2.2.11",
+    "@tanstack/react-query": "^5.103.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.368.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.4",
+    "tailwind-merge": "^2.6.1",
+    "viem": "^2.56.8",
+    "wagmi": "^2.19.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "rollup-plugin-license": "^3.7.1",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3"
+  },
+  "packageManager": "pnpm@9.12.0"
+}

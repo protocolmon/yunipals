@@ -1,0 +1,1362 @@
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/collector-filters.ts yunipals-collector-production/lib/api/collector-filters.ts
+--- a/lib/api/collector-filters.ts
++++ b/lib/api/collector-filters.ts
+@@ -0,0 +1,163 @@
++import {
++  collectionSlugs as indexedChains,
++  type CollectionSlug as IndexedChain,
++} from "../constants.js";
++const isIndexedChain = (value: string) =>
++  indexedChains.some((chain) => chain === value);
++
++export const collectorPageSize = 24;
++export const collectorSorts = [
++  "rarity-capped-desc",
++  "rarity-capped-asc",
++] as const;
++export type CollectorSort = (typeof collectorSorts)[number];
++export type CollectorFilters = {
++  chains: IndexedChain[];
++  types: string[];
++  colors: string[];
++  rarityMin: string;
++  rarityMax: string;
++  search: string;
++  sort: CollectorSort;
++};
++
++export const defaultCollectorFilters: CollectorFilters = {
++  chains: [],
++  types: [],
++  colors: [],
++  rarityMin: "",
++  rarityMax: "",
++  search: "",
++  sort: "rarity-capped-desc",
++};
++
++function normalizeRarityBound(value: string) {
++  const bound = value.trim();
++  if (!bound) return "";
++  if (!/^\d{1,80}(?:\.\d{1,30})?$/.test(bound)) {
++    throw new Error(
++      "Rarity scores must be non-negative numbers with up to 30 decimal places.",
++    );
++  }
++  const [rawInteger, rawFraction = ""] = bound.split(".");
++  const integer = rawInteger.replace(/^0+(?=\d)/, "");
++  const fraction = rawFraction.replace(/0+$/, "");
++  return fraction ? `${integer}.${fraction}` : integer;
++}
++
++function compareDecimalStrings(left: string, right: string) {
++  const [leftInteger, leftFraction = ""] = left.split(".");
++  const [rightInteger, rightFraction = ""] = right.split(".");
++  if (leftInteger.length !== rightInteger.length)
++    return leftInteger.length - rightInteger.length;
++  const integerOrder = leftInteger.localeCompare(rightInteger);
++  if (integerOrder) return integerOrder;
++  const width = Math.max(leftFraction.length, rightFraction.length);
++  return leftFraction
++    .padEnd(width, "0")
++    .localeCompare(rightFraction.padEnd(width, "0"));
++}
++
++export function normalizeCollectorRarityRange(
++  minimum: string,
++  maximum: string,
++) {
++  const rarityMin = normalizeRarityBound(minimum);
++  const rarityMax = normalizeRarityBound(maximum);
++  if (
++    rarityMin &&
++    rarityMax &&
++    compareDecimalStrings(rarityMin, rarityMax) > 0
++  )
++    throw new Error("Minimum rarity cannot be greater than maximum rarity.");
++  return { rarityMin, rarityMax };
++}
++
++function traitValues(params: URLSearchParams, name: string) {
++  const values = [...new Set(params.getAll(name).map((value) => value.trim()))];
++  if (
++    values.length > 20 ||
++    values.some((value) => !value || value.length > 80)
++  ) {
++    throw new Error("Choose up to 20 values for each trait.");
++  }
++  return values.sort();
++}
++
++export function normalizeCollectorSearch(value: string) {
++  const search = value.trim();
++  if (search.length > 80)
++    throw new Error("Search must be 80 characters or fewer.");
++  if (/^#?\d+$/.test(search)) {
++    const tokenId = BigInt(search.replace(/^#/, ""));
++    if (tokenId >= 2n ** 256n) throw new Error("Enter a valid token ID.");
++    return tokenId.toString();
++  }
++  if (search.startsWith("#"))
++    throw new Error("Enter a numeric token ID after #.");
++  if (search.length === 1)
++    throw new Error("Enter at least two letters for a name.");
++  return search.toLowerCase();
++}
++
++export function parseCollectorFilters(
++  params: URLSearchParams,
++): CollectorFilters {
++  const selected = [...new Set(params.getAll("chain"))];
++  if (selected.some((chain) => !isIndexedChain(chain))) {
++    throw new Error("Choose a supported chain.");
++  }
++  const chains = indexedChains.filter((chain) => selected.includes(chain));
++  const sorts = params.getAll("sort");
++  const searches = params.getAll("q");
++  const rarityMins = params.getAll("rarityMin");
++  const rarityMaxes = params.getAll("rarityMax");
++  const sort = sorts[0] ?? defaultCollectorFilters.sort;
++  if (sorts.length > 1 || !collectorSorts.some((option) => option === sort)) {
++    throw new Error("Choose a supported rarity sort.");
++  }
++  if (searches.length > 1) throw new Error("Enter one search term.");
++  if (rarityMins.length > 1 || rarityMaxes.length > 1)
++    throw new Error("Enter one minimum and maximum rarity score.");
++  const rarityRange = normalizeCollectorRarityRange(
++    rarityMins[0] ?? "",
++    rarityMaxes[0] ?? "",
++  );
++  return {
++    chains: chains.length === indexedChains.length ? [] : chains,
++    types: traitValues(params, "t.Type"),
++    colors: traitValues(params, "t.Color"),
++    ...rarityRange,
++    search: normalizeCollectorSearch(searches[0] ?? ""),
++    sort: sort as CollectorSort,
++  };
++}
++
++export function serializeCollectorFilters(filters: CollectorFilters) {
++  const params = new URLSearchParams();
++  filters.chains.forEach((chain) => params.append("chain", chain));
++  filters.types.forEach((value) => params.append("t.Type", value));
++  filters.colors.forEach((value) => params.append("t.Color", value));
++  if (filters.rarityMin) params.set("rarityMin", filters.rarityMin);
++  if (filters.rarityMax) params.set("rarityMax", filters.rarityMax);
++  if (filters.search) params.set("q", filters.search);
++  params.set("sort", filters.sort);
++  return params;
++}
++
++export function collectorFiltersKey(filters: CollectorFilters) {
++  return serializeCollectorFilters(
++    parseCollectorFilters(serializeCollectorFilters(filters)),
++  ).toString();
++}
++
++export function hasCollectorFilters(filters: CollectorFilters) {
++  return Boolean(
++    filters.chains.length ||
++      filters.types.length ||
++      filters.colors.length ||
++      filters.rarityMin ||
++      filters.rarityMax ||
++      filters.search,
++  );
++}
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/collector-query.ts yunipals-collector-production/lib/api/collector-query.ts
+--- a/lib/api/collector-query.ts
++++ b/lib/api/collector-query.ts
+@@ -0,0 +1,266 @@
++import { metadataReadRelation, metadataSearchReadRelation, metadataTraitReadRelation } from "../metadata/read-source.js";
++import { createHash } from "node:crypto";
++import { collectionSlugs, type CollectionSlug } from "../constants.js";
++import type { ResolvedOwner } from "../ens/resolver.js";
++import { bnbSchema, physicalPonderSchema } from "../offchain/sql.js";
++import { activeVisibilityPredicate } from "./visibility-query.js";
++import {
++  collectorFiltersKey,
++  parseCollectorFilters,
++  type CollectorFilters,
++} from "./collector-filters.js";
++
++export class CollectorQueryError extends Error {
++  constructor(
++    public code: "invalid_collector_query" | "invalid_collector_cursor",
++    message: string,
++  ) {
++    super(message);
++  }
++}
++type Boundary = {
++  chain: CollectionSlug;
++  tokenId: string;
++  rarity: string | null;
++};
++type Cursor = Boundary & {
++  v: 1;
++  config: string;
++  direction: "next" | "previous";
++  expires: number;
++};
++export type CollectorRequest = {
++  filters: CollectorFilters;
++  chains: CollectionSlug[];
++  visibility: "visible" | "hidden";
++  limit: number;
++  rawCursor: string | null;
++};
++export function parseCollectorRequest(
++  params: URLSearchParams,
++): CollectorRequest {
++  try {
++    const allowed = new Set([
++      "chain",
++      "t.Type",
++      "t.Color",
++      "rarityMin",
++      "rarityMax",
++      "sort",
++      "q",
++      "visibility",
++      "limit",
++      "cursor",
++    ]);
++    for (const key of params.keys())
++      if (!allowed.has(key)) throw new Error(`Unsupported filter: ${key}`);
++    for (const key of ["visibility", "limit", "cursor"]) {
++      if (params.getAll(key).length > 1)
++        throw new Error(`Use one ${key} value.`);
++    }
++    const filters = parseCollectorFilters(params);
++    const visibility = params.get("visibility") ?? "visible";
++    if (visibility !== "visible" && visibility !== "hidden")
++      throw new Error("Invalid visibility.");
++    const rawLimit = params.get("limit") ?? "24";
++    if (!/^\d+$/.test(rawLimit)) throw new Error("Invalid page size.");
++    const limit = Number(rawLimit);
++    if (limit < 1 || limit > 48)
++      throw new Error("Page size must be between 1 and 48.");
++    return {
++      filters,
++      chains: filters.chains.length ? filters.chains : [...collectionSlugs],
++      visibility,
++      limit,
++      rawCursor: params.get("cursor"),
++    };
++  } catch (error) {
++    throw new CollectorQueryError(
++      "invalid_collector_query",
++      error instanceof Error ? error.message : "Invalid filters.",
++    );
++  }
++}
++
++export type CollectorRow = {
++  chain: CollectionSlug;
++  tokenId: string;
++  rarityPoints: string | null;
++  rarityPointsCapped: string | null;
++};
++
++export function collectorQuery(
++  request: CollectorRequest,
++  owner: ResolvedOwner,
++  now = Date.now(),
++) {
++  const { filters, chains, visibility, limit } = request;
++  const query = collectorFiltersKey(filters);
++  const owners = chains.flatMap((chain) =>
++    owner.addresses[chain]
++      ? [[chain, owner.addresses[chain]!.toLowerCase()]]
++      : [],
++  );
++  const config = createHash("sha256")
++    .update(JSON.stringify([1, owners, visibility, query, limit]))
++    .digest("hex");
++  let cursor: Cursor | undefined;
++  if (request.rawCursor !== null) {
++    try {
++      if (
++        !request.rawCursor ||
++        request.rawCursor.length > 2048 ||
++        !/^[A-Za-z0-9_-]+$/.test(request.rawCursor)
++      )
++        throw new Error();
++      const value = JSON.parse(
++        Buffer.from(request.rawCursor, "base64url").toString(),
++      ) as Cursor;
++      if (
++        value.v !== 1 ||
++        value.config !== config ||
++        !chains.includes(value.chain) ||
++        typeof value.tokenId !== "string" ||
++        !/^\d{1,78}$/.test(value.tokenId) ||
++        BigInt(value.tokenId) >= 2n ** 256n ||
++        (value.rarity !== null &&
++          (typeof value.rarity !== "string" ||
++            !/^\d{1,80}(\.\d{1,30})?$/.test(value.rarity))) ||
++        !["next", "previous"].includes(value.direction) ||
++        !Number.isSafeInteger(value.expires) ||
++        value.expires <= now ||
++        value.expires > now + 15 * 60_000
++      )
++        throw new Error();
++      cursor = value;
++    } catch {
++      throw new CollectorQueryError(
++        "invalid_collector_cursor",
++        "This page has expired or belongs to different filters. Start from the first page.",
++      );
++    }
++  }
++  const previous = cursor?.direction === "previous";
++  const values: unknown[] = [];
++  const bind = (value: unknown) => {
++    values.push(value);
++    return `$${values.length}`;
++  };
++  // Explicit owner predicates in each physical branch also permit FDW pushdown.
++  const branches = owners.map(([chain, address]) => {
++    const relation = chain === "bnb" ? bnbSchema : physicalPonderSchema;
++    const ownerParam = bind(address);
++    const chainParam = bind(chain);
++    const tokenParam = /^\d+$/.test(filters.search)
++      ? ` AND t.token_id=${bind(filters.search)}`
++      : "";
++    return `SELECT t.collection,t.chain_id,t.contract_address,t.token_id,t.owner,t.burned,t.lifecycle,t.mint_block,t.last_transfer_block
++      FROM ${relation}.token t WHERE t.owner=${ownerParam} AND t.collection=${chainParam} AND NOT t.burned${tokenParam}${visibility === "hidden" ? ` AND t.token_id IN (SELECT token_id::text FROM metadata.token_visibility WHERE collection=${chainParam} AND owner=${ownerParam})` : ""}`;
++  });
++  if (!branches.length)
++    throw new CollectorQueryError(
++      "invalid_collector_query",
++      "No resolved owner on the selected chains.",
++    );
++  const rarity = "COALESCE(s.rarity_points_capped,s.rarity_points)";
++  // OFFSET 0 keeps rarity and page enrichment correlated with owned tokens.
++  // Trait/name predicates can use their selective collection indexes. Sorting
++  // is fenced separately so visibility checks run before the bounded page limit.
++  const hidden = activeVisibilityPredicate("t", true);
++  const where: string[] = [];
++  const visibleWhere = visibility === "visible" ? `NOT ${hidden}` : hidden;
++  for (const [trait, selected] of [
++    ["Type", filters.types],
++    ["Color", filters.colors],
++  ] as const) {
++    if (selected.length)
++      where.push(
++        `EXISTS (SELECT 1 FROM ${metadataTraitReadRelation} f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=${bind(trait)} AND f.value=ANY(${bind(selected)}::text[]) AND f.collection=ANY(${bind(chains)}::text[]))`,
++      );
++  }
++  if (filters.search && !/^\d+$/.test(filters.search)) {
++    const prefix = filters.search.replace(/[\\%_]/g, "\\$&") + "%";
++    where.push(
++      `EXISTS (SELECT 1 FROM ${metadataReadRelation} n WHERE n.collection=t.collection AND n.token_id=t.token_id::numeric AND n.lifecycle=t.lifecycle AND lower(n.name) LIKE ${bind(prefix)} ESCAPE E'\\\\' AND n.collection=ANY(${bind(chains)}::text[]))`,
++    );
++  }
++  if (filters.rarityMin)
++    where.push(`${rarity} >= ${bind(filters.rarityMin)}::numeric`);
++  if (filters.rarityMax)
++    where.push(`${rarity} <= ${bind(filters.rarityMax)}::numeric`);
++  const ascending = filters.sort.endsWith("-asc");
++  if (cursor) {
++    const id = bind(cursor.tokenId);
++    const chain = bind(cursor.chain);
++    const tie = `(t.token_id::numeric,t.collection) ${previous ? "<" : ">"} (${id}::numeric,${chain}::text)`;
++    if (cursor.rarity === null) {
++      where.push(
++        previous
++          ? `(${rarity} IS NOT NULL OR (${rarity} IS NULL AND ${tie}))`
++          : `(${rarity} IS NULL AND ${tie})`,
++      );
++    } else {
++      const score = bind(cursor.rarity);
++      const op = ascending !== previous ? ">" : "<";
++      where.push(
++        `(${rarity} ${op} ${score}::numeric OR (${rarity}=${score}::numeric AND ${tie})${previous ? "" : ` OR ${rarity} IS NULL`})`,
++      );
++    }
++  }
++  const rarityDirection = ascending !== previous ? "ASC" : "DESC";
++  const tieDirection = previous ? "DESC" : "ASC";
++  const nulls = previous ? "FIRST" : "LAST";
++  // Every currently hidden result needs a visibility row for one resolved owner.
++  // Counting those small rows (including stale ones) gives a safe overfetch bound,
++  // allowing a top-N sort without walking or sorting the whole wallet's tail.
++  const candidateLimit = bind(limit + 1);
++  const overfetch = visibility === "visible"
++    ? `${candidateLimit} + (SELECT count(*) FROM metadata.token_visibility WHERE owner=ANY(${bind(owners.map(([, address]) => address))}::text[]))`
++    : candidateLimit;
++  const text = `WITH owned AS MATERIALIZED (${branches.join(" UNION ALL ")}), ranked AS (
++    SELECT t.*,s.metadata_available,s.rarity_points,s.rarity_points_capped,${rarity} AS effective_rarity
++    FROM owned t LEFT JOIN LATERAL (SELECT s.metadata_available,s.rarity_points,s.rarity_points_capped FROM ${metadataSearchReadRelation} s WHERE s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle OFFSET 0) s ON true
++    ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
++  ), candidates AS MATERIALIZED (
++    SELECT t.* FROM (SELECT * FROM ranked ORDER BY effective_rarity ${rarityDirection} NULLS ${nulls},token_id::numeric ${tieDirection},collection ${tieDirection} LIMIT ${visibility === "visible" ? overfetch : "ALL"} OFFSET 0) t WHERE ${visibleWhere} LIMIT ${candidateLimit}
++  ) SELECT c.collection AS chain,c.chain_id AS "chainId",c.contract_address AS "contractAddress",c.token_id AS "tokenId",
++    c.owner,c.burned,c.lifecycle,c.mint_block::text AS "mintBlock",c.last_transfer_block::text AS "lastTransferBlock",
++    m.name,m.image,m.attributes,m.token_uri AS "tokenUri",COALESCE(c.metadata_available,false) AS "metadataAvailable",
++    c.rarity_points::text AS "rarityPoints",c.rarity_points_capped::text AS "rarityPointsCapped",${visibility === "hidden"} AS hidden
++    FROM candidates c LEFT JOIN LATERAL (SELECT * FROM ${metadataReadRelation} page_metadata WHERE page_metadata.collection=c.collection AND page_metadata.token_id=c.token_id::numeric AND page_metadata.lifecycle=c.lifecycle OFFSET 0) m ON true
++    ORDER BY c.effective_rarity ${rarityDirection} NULLS ${nulls},c.token_id::numeric ${tieDirection},c.collection ${tieDirection}`;
++  const encode = (row: CollectorRow, direction: Cursor["direction"]) =>
++    Buffer.from(
++      JSON.stringify({
++        v: 1,
++        config,
++        direction,
++        expires: cursor?.expires ?? now + 15 * 60_000,
++        chain: row.chain,
++        tokenId: row.tokenId,
++        rarity: row.rarityPointsCapped ?? row.rarityPoints,
++      } satisfies Cursor),
++    ).toString("base64url");
++  return {
++    text,
++    values,
++    page<T extends CollectorRow>(rows: T[]) {
++      const more = rows.length > limit;
++      const items = rows.slice(0, limit);
++      if (previous) items.reverse();
++      return {
++        version: 1 as const,
++        query,
++        items,
++        nextCursor:
++          items.length && (previous ? Boolean(cursor) : more)
++            ? encode(items[items.length - 1]!, "next")
++            : null,
++        previousCursor:
++          items.length && (previous ? more : Boolean(cursor))
++            ? encode(items[0]!, "previous")
++            : null,
++      };
++    },
++  };
++}
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/collector-routes.ts yunipals-collector-production/lib/api/collector-routes.ts
+--- a/lib/api/collector-routes.ts
++++ b/lib/api/collector-routes.ts
+@@ -0,0 +1,119 @@
++import type { Hono } from "hono";
++import type { Pool } from "pg";
++import type { CollectionSlug } from "../constants.js";
++import type { ResolvedOwner } from "../ens/resolver.js";
++import {
++  collectorQuery,
++  CollectorQueryError,
++  parseCollectorRequest,
++  type CollectorRow,
++} from "./collector-query.js";
++
++export function registerCollectorRoutes(
++  app: Hono,
++  dependencies: {
++    pool: Pick<Pool, "connect">;
++    resolveOwner: (
++      input: string,
++      chains: readonly CollectionSlug[],
++    ) => Promise<ResolvedOwner>;
++    checkReadiness: (chains: readonly CollectionSlug[]) => Promise<{ ready: boolean }>;
++    enabled?: () => boolean;
++    nameSearchEnabled?: () => boolean;
++    rarityRangeEnabled?: () => boolean;
++  },
++) {
++  const enabled =
++    dependencies.enabled ??
++    (() => process.env.API_COLLECTOR_FILTERS_ENABLED === "true");
++  const nameSearchEnabled =
++    dependencies.nameSearchEnabled ??
++    (() => process.env.API_COLLECTOR_NAME_SEARCH_ENABLED === "true");
++  const rarityRangeEnabled =
++    dependencies.rarityRangeEnabled ??
++    (() => process.env.API_COLLECTOR_RARITY_RANGE_ENABLED === "true");
++  app.get("/v1/collector-capabilities", (c) =>
++    c.json({
++      version: enabled() ? 1 : 0,
++      namePrefixSearch: enabled() && nameSearchEnabled(),
++      rarityRange: enabled() && rarityRangeEnabled(),
++    }),
++  );
++  app.get("/v2/owners/:address/tokens", async (c) => {
++    if (!enabled())
++      return c.json({ error: "collector_filters_unavailable" }, 503);
++    try {
++      const request = parseCollectorRequest(new URL(c.req.url).searchParams);
++      if (
++        request.filters.search &&
++        !/^\d+$/.test(request.filters.search) &&
++        !nameSearchEnabled()
++      ) {
++        throw new CollectorQueryError(
++          "invalid_collector_query",
++          "Name search is not available. Search by token ID instead.",
++        );
++      }
++      if (
++        (request.filters.rarityMin || request.filters.rarityMax) &&
++        !rarityRangeEnabled()
++      ) {
++        throw new CollectorQueryError(
++          "invalid_collector_query",
++          "Rarity range filtering is not available.",
++        );
++      }
++      const readiness = await dependencies.checkReadiness(request.chains);
++      if (!readiness.ready) return c.json({ error: "ownership_rebuilding", ownership: readiness }, 503);
++      const owner = await dependencies.resolveOwner(
++        c.req.param("address"),
++        request.chains,
++      );
++      const statement = collectorQuery(request, owner);
++      const started = performance.now();
++      const client = await dependencies.pool.connect();
++      let rows: CollectorRow[];
++      try {
++        await client.query("BEGIN READ ONLY");
++        await client.query("SET LOCAL statement_timeout = '1000ms'");
++        // Large owner estimates can trigger costly JIT compilation for a tiny page.
++        await client.query("SET LOCAL jit = off");
++        await client.query("SET LOCAL work_mem = '16MB'");
++        rows = (
++          await client.query<CollectorRow>(statement.text, statement.values)
++        ).rows;
++        await client.query("COMMIT");
++      } catch (error) {
++        await client.query("ROLLBACK").catch(() => undefined);
++        throw error;
++      } finally {
++        client.release();
++      }
++      c.header(
++        "Server-Timing",
++        `page;dur=${(performance.now() - started).toFixed(1)}`,
++      );
++      c.header("Cache-Control", "no-store");
++      return c.json({
++        owner: request.chains
++          .map((chain) => owner.addresses[chain])
++          .find(Boolean)
++          ?.toLowerCase(),
++        ownerInput: owner.input,
++        ownerName: owner.normalizedName,
++        resolvedAddresses: owner.addresses,
++        chains: request.chains,
++        chain: request.chains.length === 1 ? request.chains[0] : null,
++        visibility: request.visibility,
++        ...statement.page(rows),
++      });
++    } catch (error) {
++      if (error instanceof CollectorQueryError)
++        return c.json(
++          { error: error.code, message: error.message },
++          error.code === "invalid_collector_cursor" ? 409 : 400,
++        );
++      throw error;
++    }
++  });
++}
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/collector-server.ts yunipals-collector-production/lib/api/collector-server.ts
+--- a/lib/api/collector-server.ts
++++ b/lib/api/collector-server.ts
+@@ -0,0 +1,35 @@
++import { serve } from "@hono/node-server";
++import { Hono } from "hono";
++import { cors } from "hono/cors";
++import { apiPool } from "../offchain/db.js";
++import { resolveOwner, InvalidOwnerError, OwnerNameUnresolvedError, EnsUnavailableError } from "../ens/resolver.js";
++import { metadataSourceMode } from "../metadata/publication.js";
++import { chainReadiness } from "../metadata/chain-readiness.js";
++import { registerCollectorRoutes } from "./collector-routes.js";
++
++const app = new Hono();
++app.use("*", cors({ origin: "*", allowMethods: ["GET", "OPTIONS"], exposeHeaders: ["Server-Timing"] }));
++app.onError((error, c) => {
++  if (error instanceof InvalidOwnerError) return c.json({ error: "invalid_owner", message: error.message }, 400);
++  if (error instanceof OwnerNameUnresolvedError) return c.json({ error: "owner_name_unresolved", message: error.message }, 404);
++  if (error instanceof EnsUnavailableError) return c.json({ error: "ens_resolution_unavailable" }, 503);
++  // Do not log owner URLs, cursors, or database connection details.
++  const code = "code" in error ? String(error.code) : error.name;
++  console.error("Collector read unavailable", { code });
++  return c.json({ error: "database_unavailable" }, 503);
++});
++app.get("/ready", async c => { await apiPool.query("SELECT 1"); return c.json({ status: "ready" }); });
++registerCollectorRoutes(app, {
++  pool: apiPool,
++  resolveOwner: async (input, chains) => {
++    const owner = await resolveOwner(input, chains);
++    if (!Object.keys(owner.addresses).length) throw new OwnerNameUnresolvedError(`No address record found for ${input}`);
++    return owner;
++  },
++  checkReadiness: async chains => metadataSourceMode() === "archive" ? chainReadiness(apiPool, chains) : { ready: true }
++});
++const server = serve({ fetch: app.fetch, hostname: "127.0.0.1", port: Number(process.env.COLLECTOR_API_PORT ?? 9012) });
++for (const signal of ["SIGTERM", "SIGINT"] as const) process.once(signal, () => {
++  server.close(() => { void apiPool.end().then(() => process.exit(0)); });
++  setTimeout(() => process.exit(1), 5000).unref();
++});
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/openapi.ts yunipals-collector-production/lib/api/openapi.ts
+--- a/lib/api/openapi.ts
++++ b/lib/api/openapi.ts
+@@ -136,6 +136,26 @@
+     "/v1/collections": {
+       get: { tags: ["Collection"], summary: "List indexed Yunipals collections", responses: { "200": { description: "Chain, contract, and supply details" } } }
+     },
++    "/v1/collector-capabilities": { get: { tags: ["Owners"], summary: "Collector read rollout capabilities", responses: { "200": { description: "version: 1 enables paginated collector filters; namePrefixSearch and rarityRange advertise independently gated support." } } } },
++    "/v2/owners/{address}/tokens": {
++      get: {
++        tags: ["Owners"], summary: "Filter and sort one owner's complete collection using bounded keyset pages",
++        parameters: [
++          { name: "address", in: "path", required: true, schema: { type: "string" } },
++          { name: "chain", in: "query", style: "form", explode: true, schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } } },
++          { name: "t.Type", in: "query", style: "form", explode: true, schema: { type: "array", maxItems: 20, items: { type: "string", maxLength: 80 } } },
++          { name: "t.Color", in: "query", style: "form", explode: true, schema: { type: "array", maxItems: 20, items: { type: "string", maxLength: 80 } } },
++          { name: "rarityMin", in: "query", description: "Inclusive minimum effective rarity score (capped score with raw fallback).", schema: { type: "string", pattern: "^[0-9]+(\\.[0-9]+)?$" } },
++          { name: "rarityMax", in: "query", description: "Inclusive maximum effective rarity score (capped score with raw fallback).", schema: { type: "string", pattern: "^[0-9]+(\\.[0-9]+)?$" } },
++          { name: "q", in: "query", description: "Exact numeric token ID (optional # prefix), or case-insensitive name prefix of at least two characters when enabled.", schema: { type: "string", maxLength: 80 } },
++          { name: "sort", in: "query", schema: { type: "string", enum: ["rarity-capped-desc", "rarity-capped-asc"], default: "rarity-capped-desc" } },
++          { name: "visibility", in: "query", schema: { type: "string", enum: ["visible", "hidden"], default: "visible" } },
++          { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 48, default: 24 } },
++          { name: "cursor", in: "query", description: "Use nextCursor or previousCursor unchanged. Bound to owner, filters, page size and sort; expires after 15 minutes.", schema: { type: "string", maxLength: 2048 } }
++        ],
++        responses: { "200": { description: "version=1, canonical query, owner resolution, visibility, token items, nextCursor and previousCursor; no total count." }, "400": { description: "Invalid or unsupported filters" }, "409": { description: "Restart from page one: cursor invalid, expired or incompatible" }, "503": { description: "Feature disabled or database unavailable" } }
++      }
++    },
+     "/v1/owners/{address}/tokens": {
+       get: {
+         tags: ["Owners"], summary: "List active tokens owned by an address or ENS name",
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/server.ts yunipals-collector-production/lib/api/server.ts
+--- a/lib/api/server.ts
++++ b/lib/api/server.ts
+@@ -24,6 +24,9 @@
+ import { ExactCountCache } from "./exact-count-cache.js";
+ import { chainSelection, chainSelectionJson } from "./chains.js";
+
++import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
++import { registerCollectorRoutes } from "./collector-routes.js";
++
+ export const app = new Hono();
+ const localMetadata = new LocalMetadataReader(pool, readSchemaName);
+ const port = Number(process.env.API_PORT ?? 9011);
+@@ -120,33 +123,6 @@
+   } catch { return undefined; }
+ };
+
+-const activeVisibilityRowPredicate = (tokenAlias = "t", visibilityAlias = "visibility") => `(
+-  ${visibilityAlias}.owner=lower(${tokenAlias}.owner)
+-  AND ${visibilityAlias}.lifecycle=${tokenAlias}.lifecycle
+-  AND EXISTS (
+-    SELECT 1 FROM ${ponderSchema}.transfer_event visibility_anchor
+-    WHERE visibility_anchor.id=${visibilityAlias}.anchor_event_id
+-      AND visibility_anchor.collection=${tokenAlias}.collection
+-      AND visibility_anchor.token_id=${tokenAlias}.token_id
+-      AND visibility_anchor.lifecycle=${tokenAlias}.lifecycle
+-  )
+-  AND NOT EXISTS (
+-    SELECT 1 FROM ${ponderSchema}.transfer_event visibility_change
+-    WHERE visibility_change.collection=${tokenAlias}.collection
+-      AND visibility_change.token_id=${tokenAlias}.token_id
+-      AND visibility_change.lifecycle=${tokenAlias}.lifecycle
+-      AND visibility_change.from<>visibility_change.to
+-      AND (visibility_change.block_number, visibility_change.transaction_index, visibility_change.log_index)
+-        > (${visibilityAlias}.anchor_block, ${visibilityAlias}.anchor_transaction_index, ${visibilityAlias}.anchor_log_index)
+-  )
+-)`;
+-const activeVisibilityPredicate = (tokenAlias = "t") => `EXISTS (
+-  SELECT 1 FROM metadata.token_visibility visibility
+-  WHERE visibility.collection=${tokenAlias}.collection
+-  AND visibility.token_id=${tokenAlias}.token_id::numeric
+-  AND ${activeVisibilityRowPredicate(tokenAlias)}
+-)`;
+-
+ const visibilityMessageSchema = z.object({
+   owner: z.string().regex(/^0x[0-9a-fA-F]{40}$/),
+   tokenId: z.string().regex(/^\d+$/),
+@@ -586,6 +562,10 @@
+   return c.json({ token: tokenResult.rows[0], transfers: transfers.rows, lifecycles: lifecycles.rows });
+ });
+
++registerCollectorRoutes(app, { pool, resolveOwner: requireResolvedOwner,
++  checkReadiness: async (chains) => metadataSourceMode() === "archive" ? chainReadiness(pool, chains) : { ready: true }
++});
++
+ app.get("/v1/owners/:address/tokens", async (c) => {
+   const ownerInput = c.req.param("address");
+   const limit = limitOf(c.req.query("limit"));
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/lib/api/visibility-query.ts yunipals-collector-production/lib/api/visibility-query.ts
+--- a/lib/api/visibility-query.ts
++++ b/lib/api/visibility-query.ts
+@@ -0,0 +1,35 @@
++import { ponderSchema } from "../offchain/sql.js";
++
++export const activeVisibilityRowPredicate = (
++  tokenAlias = "t",
++  visibilityAlias = "visibility",
++) => `(
++  ${visibilityAlias}.owner=lower(${tokenAlias}.owner)
++  AND ${visibilityAlias}.lifecycle=${tokenAlias}.lifecycle
++  AND EXISTS (
++    SELECT 1 FROM ${ponderSchema}.transfer_event visibility_anchor
++    WHERE visibility_anchor.id=${visibilityAlias}.anchor_event_id
++      AND visibility_anchor.collection=${tokenAlias}.collection
++      AND visibility_anchor.token_id=${tokenAlias}.token_id
++      AND visibility_anchor.lifecycle=${tokenAlias}.lifecycle
++  )
++  AND NOT EXISTS (
++    SELECT 1 FROM ${ponderSchema}.transfer_event visibility_change
++    WHERE visibility_change.collection=${tokenAlias}.collection
++      AND visibility_change.token_id=${tokenAlias}.token_id
++      AND visibility_change.lifecycle=${tokenAlias}.lifecycle
++      AND visibility_change.from<>visibility_change.to
++      AND (visibility_change.block_number, visibility_change.transaction_index, visibility_change.log_index)
++        > (${visibilityAlias}.anchor_block, ${visibilityAlias}.anchor_transaction_index, ${visibilityAlias}.anchor_log_index)
++  )
++)`;
++export const activeVisibilityPredicate = (
++  tokenAlias = "t",
++  bounded = false,
++) => `EXISTS (
++  SELECT 1 FROM metadata.token_visibility visibility
++  WHERE visibility.collection=${tokenAlias}.collection
++  AND visibility.token_id=${tokenAlias}.token_id::numeric
++  AND ${activeVisibilityRowPredicate(tokenAlias)}
++  ${bounded ? "OFFSET 0" : ""}
++)`;
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/scripts/benchmark-collector-api.mjs yunipals-collector-production/scripts/benchmark-collector-api.mjs
+--- a/scripts/benchmark-collector-api.mjs
++++ b/scripts/benchmark-collector-api.mjs
+@@ -0,0 +1,148 @@
++import { parseArgs } from "node:util";
++import { writeFile } from "node:fs/promises";
++
++const { values } = parseArgs({
++  options: {
++    url: { type: "string" },
++    owner: { type: "string" },
++    seconds: { type: "string", default: "60" },
++    sessions: { type: "string", default: "1" },
++    load: { type: "boolean", default: false },
++    output: { type: "string", default: "/tmp/collector-api-benchmark.json" },
++  },
++});
++if (!values.url || !values.owner || !/^0x[0-9a-fA-F]{40}$/.test(values.owner))
++  throw new Error(
++    "Pass --url for the indexer and --owner for a large test wallet.",
++  );
++const base = new URL(values.url);
++if (
++  !["http:", "https:"].includes(base.protocol) ||
++  base.username ||
++  base.password ||
++  base.search ||
++  base.hash
++)
++  throw new Error(
++    "Use an HTTP(S) base URL without credentials or query parameters.",
++  );
++const seconds = Number(values.seconds);
++const sessions = Number(values.sessions);
++if (
++  !Number.isInteger(seconds) ||
++  seconds < 1 ||
++  seconds > 600 ||
++  !Number.isInteger(sessions) ||
++  sessions < 1 ||
++  sessions > 20
++)
++  throw new Error("Use 1–600 seconds and 1–20 sessions.");
++if ((sessions > 1 || seconds > 60) && !values.load)
++  throw new Error("Concurrent or extended workloads require explicit --load; do not use this on production by default.");
++const origin = values.url.replace(/\/$/, "");
++const read = async (path) => {
++  const response = await fetch(`${origin}${path}`, {
++    signal: AbortSignal.timeout(3000),
++  });
++  if (!response.ok) throw new Error(`HTTP ${response.status}`);
++  return response.json();
++};
++const capabilities = await read("/v1/collector-capabilities");
++if (capabilities.version !== 1)
++  throw new Error("Enable the collector endpoint first.");
++const path = `/v2/owners/${values.owner}/tokens`;
++const first = await read(`${path}?limit=24`);
++const sample = first.items[0];
++if (!sample) throw new Error("Choose a wallet with holdings.");
++const traits = Object.fromEntries(
++  (sample.attributes ?? []).map((item) => [item.trait_type, item.value]),
++);
++const combined = new URLSearchParams({ limit: "24" });
++for (const key of ["Type", "Color"])
++  if (typeof traits[key] === "string") combined.set(`t.${key}`, traits[key]);
++const cases = [
++  "limit=24",
++  "limit=24&sort=rarity-capped-asc",
++  combined.toString(),
++  new URLSearchParams({ limit: "24", q: sample.tokenId }).toString(),
++];
++const effectiveRarity = sample.rarityPointsCapped ?? sample.rarityPoints;
++if (capabilities.rarityRange && effectiveRarity !== null) {
++  cases.push(
++    new URLSearchParams({ limit: "24", rarityMin: "0" }).toString(),
++    new URLSearchParams({
++      limit: "24",
++      rarityMin: effectiveRarity,
++      rarityMax: effectiveRarity,
++    }).toString(),
++  );
++}
++if (capabilities.namePrefixSearch && sample.name?.trim().length >= 2)
++  cases.push(
++    new URLSearchParams({
++      limit: "24",
++      q: sample.name.trim().slice(0, 2),
++    }).toString(),
++  );
++const timings = [];
++const errors = [];
++const deadline = performance.now() + seconds * 1000;
++const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
++await Promise.all(
++  Array.from({ length: sessions }, async (_, session) => {
++    let tick = session;
++    let cursor = null;
++    while (performance.now() < deadline) {
++      const started = performance.now();
++      try {
++        const params = new URLSearchParams(cases[tick % cases.length]);
++        if (cursor) params.set("cursor", cursor);
++        const page = await read(`${path}?${params}`);
++        if (page.version !== 1 || page.items.length > 24)
++          throw new Error("Invalid bounded page");
++        timings.push(performance.now() - started);
++        // Visit a continuation before changing filters, with cursors kept per session.
++        if (!cursor && page.nextCursor) cursor = page.nextCursor;
++        else {
++          cursor = null;
++          tick++;
++        }
++      } catch (error) {
++        errors.push(error.message);
++        cursor = null;
++        tick++;
++      }
++      await pause(
++        Math.max(
++          0,
++          Math.min(
++            5000 - (performance.now() - started),
++            deadline - performance.now(),
++          ),
++        ),
++      );
++    }
++  }),
++);
++timings.sort((a, b) => a - b);
++const percentile = (p) =>
++  timings[Math.max(0, Math.ceil(timings.length * p) - 1)] ?? null;
++const report = {
++  sessions,
++  seconds,
++  requests: timings.length + errors.length,
++  errors,
++  p95Ms: percentile(0.95),
++  p99Ms: percentile(0.99),
++  workload:
++    "One request per session every five seconds, alternating first/next pages and representative filters",
++  releaseWorkload: sessions === 20 && seconds >= 300,
++};
++report.passed =
++  !errors.length &&
++  report.p95Ms !== null &&
++  report.p95Ms < 300 &&
++  report.p99Ms < 1000;
++await writeFile(values.output, JSON.stringify(report, null, 2));
++console.log(JSON.stringify(report));
++if (!report.passed) process.exitCode = 1;
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/scripts/collector-read-indexes.sql yunipals-collector-production/scripts/collector-read-indexes.sql
+--- a/scripts/collector-read-indexes.sql
++++ b/scripts/collector-read-indexes.sql
+@@ -0,0 +1,7 @@
++-- Run separately from a transaction and before enabling collector filters.
++-- Uses the existing current-lifecycle PKs and owner/trait indexes for the
++-- remaining predicates. Does not alter Ponder-managed table definitions.
++CREATE INDEX CONCURRENTLY IF NOT EXISTS token_metadata_name_prefix_idx
++  ON metadata.token_metadata(collection, lower(name) text_pattern_ops, token_id, lifecycle);
++
++ANALYZE metadata.token_metadata;
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/test/collector-query.test.ts yunipals-collector-production/test/collector-query.test.ts
+--- a/test/collector-query.test.ts
++++ b/test/collector-query.test.ts
+@@ -0,0 +1,349 @@
++import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
++
++vi.hoisted(() => {
++  process.env.DATABASE_SCHEMA = "collector_test";
++  process.env.READ_DATABASE_SCHEMA = "collector_read";
++  process.env.BNB_DATABASE_SCHEMA = "collector_bnb";
++});
++
++import {
++  collectorQuery,
++  parseCollectorRequest,
++  type CollectorRow,
++} from "../lib/api/collector-query.js";
++import { collectionSlugs } from "../lib/constants.js";
++import type { ResolvedOwner } from "../lib/ens/resolver.js";
++
++const address = "0x0000000000000000000000000000000000000001";
++const owner: ResolvedOwner = {
++  input: address,
++  normalizedName: null,
++  addresses: Object.fromEntries(
++    collectionSlugs.map((chain) => [chain, address]),
++  ),
++};
++const request = (params = "") =>
++  parseCollectorRequest(new URLSearchParams(params));
++
++describe("collector query contract", () => {
++  it("rejects unsupported filters and unbounded requests", () => {
++    for (const params of [
++      "limit=0",
++      "limit=49",
++      "limit=2.5",
++      "limit=2&limit=3",
++      "q=x",
++      "q=a&q=b",
++      "q=%23abc",
++      "chain=unknown",
++      "sort=price-asc",
++      "visibility=all",
++      "sale=listed",
++      "rarityMin=-1",
++      "rarityMax=1e3",
++      "rarityMin=20&rarityMax=10",
++      "rarityMin=1&rarityMin=2",
++      `q=${"a".repeat(81)}`,
++      `q=${2n ** 256n}`,
++      Array.from({ length: 21 }, (_, i) => `t.Type=${i}`).join("&"),
++    ])
++      expect(() => request(params)).toThrow();
++    expect(request("q=%230000123").filters.search).toBe("123");
++    expect(request("rarityMin=001.5000&rarityMax=020.00").filters).toMatchObject(
++      { rarityMin: "1.5", rarityMax: "20" },
++    );
++  });
++  it("binds cursors to owners, filters, visibility and page size; expires them", () => {
++    const page = collectorQuery(request("limit=1"), owner, 1000).page([
++      {
++        chain: "base",
++        tokenId: "1",
++        rarityPoints: "1",
++        rarityPointsCapped: null,
++      },
++      {
++        chain: "base",
++        tokenId: "2",
++        rarityPoints: null,
++        rarityPointsCapped: null,
++      },
++    ]);
++    const cursor = encodeURIComponent(page.nextCursor!);
++    expect(() =>
++      collectorQuery(request(`limit=1&cursor=${cursor}`), owner, 1001),
++    ).not.toThrow();
++    for (const change of [
++      "limit=2",
++      "limit=1&t.Color=Blue",
++      "limit=1&visibility=hidden",
++      "limit=1&sort=rarity-capped-asc",
++      "limit=1&rarityMin=10",
++    ])
++      expect(() =>
++        collectorQuery(request(`${change}&cursor=${cursor}`), owner, 1001),
++      ).toThrow();
++    expect(() =>
++      collectorQuery(
++        request(`limit=1&cursor=${cursor}`),
++        {
++          ...owner,
++          addresses: { base: "0x0000000000000000000000000000000000000002" },
++        },
++        1001,
++      ),
++    ).toThrow();
++    expect(() =>
++      collectorQuery(request(`limit=1&cursor=${cursor}`), owner, 901001),
++    ).toThrow();
++  });
++});
++
++type Database = {
++  exec: (sql: string) => Promise<unknown>;
++  query: <T>(sql: string, values?: unknown[]) => Promise<{ rows: T[] }>;
++  close: () => Promise<void>;
++};
++// Run explicitly with the isolated PGlite module path; never connects to a live DB.
++describe.skipIf(!process.env.COLLECTOR_PGLITE_MODULE)(
++  "collector SQL on PostgreSQL",
++  () => {
++    let db: Database;
++    beforeAll(async () => {
++      const module = (await import(process.env.COLLECTOR_PGLITE_MODULE!)) as {
++        PGlite: new () => Database;
++      };
++      db = new module.PGlite();
++      await db.exec(`
++      CREATE SCHEMA collector_test; CREATE SCHEMA collector_bnb; CREATE SCHEMA collector_read; CREATE SCHEMA metadata;
++      CREATE TABLE collector_test.token(collection text,chain_id int,contract_address text,token_id text,owner text,burned boolean,lifecycle int,mint_block bigint,last_transfer_block bigint,PRIMARY KEY(collection,token_id));
++      CREATE INDEX owner_idx ON collector_test.token(collection,owner);
++      CREATE TABLE collector_bnb.token(LIKE collector_test.token INCLUDING ALL);
++      CREATE VIEW collector_read.token AS SELECT * FROM collector_test.token UNION ALL SELECT * FROM collector_bnb.token;
++      CREATE TABLE collector_read.transfer_event(id text PRIMARY KEY,collection text,token_id text,lifecycle int,"from" text,"to" text,block_number bigint,transaction_index int,log_index int);
++      CREATE INDEX transfer_token_idx ON collector_read.transfer_event(collection,token_id,lifecycle);
++      CREATE TABLE metadata.token_visibility(collection text,token_id numeric,owner text,lifecycle int,anchor_event_id text,anchor_block bigint,anchor_transaction_index int,anchor_log_index int,PRIMARY KEY(collection,token_id));
++      CREATE TABLE metadata.token_search(collection text,token_id numeric,lifecycle int,metadata_available boolean,rarity_points numeric,rarity_points_capped numeric,PRIMARY KEY(collection,token_id,lifecycle));
++      CREATE TABLE metadata.token_metadata(collection text,token_id numeric,lifecycle int,name text,image text,attributes jsonb,token_uri text,fetch_status text DEFAULT 'success',document jsonb DEFAULT '{"id":"fixture","name":"fixture","attributes":[]}',PRIMARY KEY(collection,token_id,lifecycle));
++      CREATE TABLE metadata.token_trait(collection text,token_id numeric,lifecycle int,trait_type text,value text,PRIMARY KEY(collection,token_id,lifecycle,trait_type,value));
++      CREATE INDEX trait_filter_idx ON metadata.token_trait(collection,trait_type,value,token_id,lifecycle);
++      INSERT INTO collector_test.token SELECT chain,1,'0xcontract',id::text,'${address}',false,1,1,1 FROM unnest(ARRAY['ethereum','base','polygon']) chain CROSS JOIN generate_series(1,35) id;
++      INSERT INTO collector_bnb.token SELECT 'bnb',56,'0xcontract',id::text,'${address}',false,1,1,1 FROM generate_series(1,35) id;
++      INSERT INTO metadata.token_search SELECT collection,token_id::numeric,1,true,CASE WHEN token_id::int<=32 THEN (token_id::int/3)::numeric END,CASE WHEN token_id::int<=29 THEN (token_id::int/4)::numeric END FROM collector_read.token;
++      INSERT INTO metadata.token_metadata(collection,token_id,lifecycle,name,image,attributes,token_uri) SELECT collection,token_id::numeric,1,CASE WHEN token_id='2' THEN '100% Real' ELSE 'Water '||token_id END,NULL,'[]',NULL FROM collector_read.token;
++      INSERT INTO metadata.token_trait SELECT collection,token_id::numeric,1,'Type',CASE WHEN token_id::int%2=0 THEN 'Water' ELSE 'Fire' END FROM collector_read.token;
++      INSERT INTO metadata.token_trait SELECT collection,token_id::numeric,1,'Color',CASE WHEN token_id::int%3=0 THEN 'Blue' ELSE 'Red' END FROM collector_read.token;
++      INSERT INTO collector_read.transfer_event VALUES('anchor','base','1',1,'0xold','${address}',1,0,0);
++      INSERT INTO metadata.token_visibility VALUES('base',1,'${address}',1,'anchor',1,0,0);
++      ANALYZE;
++    `);
++    }, 30_000);
++    afterAll(async () => {
++      await db?.close();
++    });
++    async function page(params = "") {
++      const statement = collectorQuery(request(params), owner);
++      const result = await db.query<
++        CollectorRow & { hidden: boolean; name: string }
++      >(statement.text, statement.values);
++      return statement.page(result.rows);
++    }
++    const keys = (items: CollectorRow[]) =>
++      items.map((row) => `${row.chain}:${row.tokenId}`);
++    it.each(["rarity-capped-asc", "rarity-capped-desc"])(
++      "traverses all pages both ways with equal scores and nulls: %s",
++      async (sort) => {
++        const pages = [await page(`sort=${sort}`)];
++        while (pages.at(-1)!.nextCursor) {
++          expect(pages.length).toBeLessThan(20);
++          pages.push(
++            await page(`sort=${sort}&cursor=${pages.at(-1)!.nextCursor}`),
++          );
++        }
++        const items = pages.flatMap((page) => page.items);
++        expect(items.length).toBe(139);
++        expect(new Set(keys(items)).size).toBe(139);
++        expect(
++          items
++            .slice(-12)
++            .every(
++              (row) =>
++                row.rarityPoints === null && row.rarityPointsCapped === null,
++            ),
++        ).toBe(true);
++        const values = items
++          .slice(0, -12)
++          .map((row) => Number(row.rarityPointsCapped ?? row.rarityPoints));
++        expect(values).toEqual(
++          [...values].sort((a, b) => (sort.endsWith("asc") ? a - b : b - a)),
++        );
++        let current = pages.at(-1)!;
++        for (let index = pages.length - 2; index >= 0; index--) {
++          expect(current.previousCursor).toBeTruthy();
++          current = await page(`sort=${sort}&cursor=${current.previousCursor}`);
++          expect(keys(current.items)).toEqual(keys(pages[index]!.items));
++        }
++        expect(current.previousCursor).toBeNull();
++      },
++    );
++    it("combines traits across the full wallet and supports exact ID and escaped name-prefix search", async () => {
++      const result = await page("t.Type=Water&t.Color=Blue&chain=bnb");
++      expect(result.items.map((row) => row.tokenId).sort()).toEqual(
++        ["6", "12", "18", "24", "30"].sort(),
++      );
++      expect((await page("q=35")).items).toHaveLength(4);
++      expect((await page("q=100%25")).items).toHaveLength(4);
++      expect((await page("q=Water%2035")).items).toHaveLength(4);
++      expect((await page("q=no%20match")).items).toHaveLength(0);
++    });
++    it("filters the effective rarity score inclusively and excludes missing scores", async () => {
++      const bounded = await page("rarityMin=4&rarityMax=5");
++      expect(bounded.items).toHaveLength(24);
++      expect(
++        bounded.items.every((row) => {
++          const score = Number(row.rarityPointsCapped ?? row.rarityPoints);
++          return score >= 4 && score <= 5;
++        }),
++      ).toBe(true);
++      expect((await page("rarityMin=1000")).items).toHaveLength(0);
++      expect((await page("rarityMax=0")).items).toHaveLength(11);
++    });
++    it("only honors current ownership-anchored visibility", async () => {
++      const hidden = await page("visibility=hidden");
++      expect(keys(hidden.items)).toEqual(["base:1"]);
++      expect(hidden.items[0]!.hidden).toBe(true);
++      await db.exec(
++        "INSERT INTO collector_read.transfer_event VALUES('later','base','1',1,'0xold','0xnew',2,0,0)",
++      );
++      expect((await page("visibility=hidden")).items).toHaveLength(0);
++      await db.exec(
++        "DELETE FROM collector_read.transfer_event WHERE id='later'",
++      );
++    });
++    it("fills pages and traverses both ways when hidden rows exceed the page size", async () => {
++      await db.exec(`
++        INSERT INTO collector_read.transfer_event
++          SELECT 'bulk-'||collection||'-'||token_id,collection,token_id,1,'0xold','${address}',1,0,0
++          FROM collector_read.token WHERE token_id::int<=15 AND NOT(collection='base' AND token_id='1');
++        INSERT INTO metadata.token_visibility
++          SELECT collection,token_id::numeric,'${address}',1,id,1,0,0 FROM collector_read.transfer_event WHERE id LIKE 'bulk-%';
++      `);
++      try {
++        const pages = [await page("sort=rarity-capped-asc")];
++        expect(pages[0]!.items).toHaveLength(24);
++        while(pages.at(-1)!.nextCursor) pages.push(await page(`sort=rarity-capped-asc&cursor=${pages.at(-1)!.nextCursor}`));
++        const items = pages.flatMap(p => p.items);
++        expect(items).toHaveLength(80);
++        expect(new Set(keys(items)).size).toBe(80);
++        expect(items.every(item=>Number(item.tokenId)>15)).toBe(true);
++        let current = pages.at(-1)!;
++        for(let i=pages.length-2;i>=0;i--){
++          current=await page(`sort=rarity-capped-asc&cursor=${current.previousCursor}`);
++          expect(keys(current.items)).toEqual(keys(pages[i]!.items));
++        }
++      } finally {
++        await db.exec("DELETE FROM metadata.token_visibility WHERE anchor_event_id LIKE 'bulk-%'; DELETE FROM collector_read.transfer_event WHERE id LIKE 'bulk-%'");
++      }
++    });
++    it("does not join metadata from an older lifecycle", async () => {
++      await db.exec(
++        "UPDATE collector_bnb.token SET lifecycle=2 WHERE token_id='35'",
++      );
++      expect((await page("chain=bnb&q=35")).items[0]!.name).toBeNull();
++      expect((await page("chain=bnb&q=Water%2035")).items).toHaveLength(0);
++      await db.exec(
++        "UPDATE collector_bnb.token SET lifecycle=1 WHERE token_id='35'",
++      );
++    });
++    it.skipIf(!process.env.COLLECTOR_BENCHMARK)(
++      "measures a 10,000-holding wallet among 100,000 other candidate rows",
++      async () => {
++        await db.exec(`
++      INSERT INTO collector_test.token SELECT chain,1,'0xcontract',id::text,CASE WHEN id%10=0 THEN '${address}' ELSE '0x0000000000000000000000000000000000000002' END,false,1,1,1 FROM unnest(ARRAY['ethereum','base','polygon']) chain CROSS JOIN generate_series(1000,25999) id;
++      INSERT INTO collector_bnb.token SELECT 'bnb',56,'0xcontract',id::text,CASE WHEN id%10=0 THEN '${address}' ELSE '0x0000000000000000000000000000000000000002' END,false,1,1,1 FROM generate_series(1000,25999) id;
++      INSERT INTO metadata.token_search SELECT collection,token_id::numeric,1,true,token_id::int%997,token_id::int%991 FROM collector_read.token WHERE token_id::numeric>=1000;
++      INSERT INTO metadata.token_metadata(collection,token_id,lifecycle,name,image,attributes,token_uri) SELECT collection,token_id::numeric,1,'Water '||token_id,NULL,'[]',NULL FROM collector_read.token WHERE token_id::numeric>=1000;
++      INSERT INTO metadata.token_trait SELECT collection,token_id::numeric,1,'Type',CASE WHEN token_id::int%3=0 THEN 'Water' ELSE 'Fire' END FROM collector_read.token WHERE token_id::numeric>=1000;
++      INSERT INTO metadata.token_trait SELECT collection,token_id::numeric,1,'Color',CASE WHEN token_id::int%7=0 THEN 'Blue' ELSE 'Red' END FROM collector_read.token WHERE token_id::numeric>=1000;
++      CREATE INDEX name_prefix_idx ON metadata.token_metadata(collection,lower(name) text_pattern_ops,token_id,lifecycle);
++      ANALYZE;
++    `);
++        const measurements: Record<string, unknown> = {};
++        const first = await page();
++        let deep = first;
++        let pageCount = 1;
++        const seen = new Set(keys(first.items));
++        while (deep.nextCursor) {
++          deep = await page(`cursor=${deep.nextCursor}`);
++          for (const key of keys(deep.items)) {
++            expect(seen.has(key)).toBe(false);
++            seen.add(key);
++          }
++          pageCount++;
++        }
++        expect(seen.size).toBe(10139);
++        const scenarios = {
++          deepPrevious: `cursor=${deep.previousCursor}`,
++          first: "",
++          ascending: "sort=rarity-capped-asc",
++          traits: "t.Type=Water&t.Color=Blue",
++          rarityWide: "rarityMin=1&rarityMax=990",
++          rarityNarrow: "rarityMin=300&rarityMax=310",
++          noMatches: "t.Color=missing",
++          exactId: "q=25990",
++          broadPrefix: "q=water",
++          selectivePrefix: "q=water%2025990",
++          next: `cursor=${first.nextCursor}`,
++        };
++        for (const [name, params] of Object.entries(scenarios)) {
++          const statement = collectorQuery(request(params), owner);
++          const timings: number[] = [];
++          for (let i = 0; i < 12; i++) {
++            const started = performance.now();
++            await db.query(statement.text, statement.values);
++            timings.push(performance.now() - started);
++          }
++          timings.sort((a, b) => a - b);
++          const plan = await db.query(
++            "EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) " + statement.text,
++            statement.values,
++          );
++          measurements[name] = {
++            medianMs: timings[6],
++            p95Ms: timings[11],
++            plan: plan.rows,
++          };
++        }
++        const { writeFile } = await import("node:fs/promises");
++        const output =
++          process.env.COLLECTOR_BENCHMARK_OUTPUT ??
++          "/tmp/yunipals-collector-sql-benchmark.json";
++        await writeFile(
++          output,
++          JSON.stringify(
++            {
++              engine:
++                "PGlite isolated PostgreSQL, sequential warm reads; not a production concurrency benchmark",
++              tokenRows: 100140,
++              ownerRows: 10140,
++              traversedPages: pageCount,
++              measurements,
++            },
++            null,
++            2,
++          ),
++        );
++        console.log(
++          "Collector benchmark:",
++          Object.fromEntries(
++            Object.entries(measurements).map(([name, value]) => [
++              name,
++              (value as { p95Ms: number }).p95Ms,
++            ]),
++          ),
++          output,
++        );
++      },
++      120_000,
++    );
++  },
++);
+diff -ruN '--exclude=node_modules' '--exclude=.git' '--exclude=*.tsbuildinfo' yunipals-collector-production-before/test/collector-routes.test.ts yunipals-collector-production/test/collector-routes.test.ts
+--- a/test/collector-routes.test.ts
++++ b/test/collector-routes.test.ts
+@@ -0,0 +1,116 @@
++import { Hono } from "hono";
++import type { Pool } from "pg";
++import { describe, expect, it, vi } from "vitest";
++import { registerCollectorRoutes } from "../lib/api/collector-routes.js";
++
++const owner = "0x0000000000000000000000000000000000000001" as const;
++function fixture(
++  enabled = true,
++  nameSearchEnabled = true,
++  fail = false,
++  ready = true,
++  rarityRangeEnabled = true,
++) {
++  const query = vi.fn(async (sql: string) => {
++    if (sql.startsWith("WITH") && fail) throw new Error("timeout");
++    return { rows: [] };
++  });
++  const release = vi.fn();
++  const connect = vi.fn(async () => ({ query, release }));
++  const app = new Hono();
++  app.onError((_error, c) => c.json({ error: "database_unavailable" }, 503));
++  registerCollectorRoutes(app, {
++    pool: { connect } as unknown as Pick<Pool, "connect">,
++    resolveOwner: async () => ({
++      input: owner,
++      normalizedName: null,
++      addresses: { base: owner },
++    }),
++    checkReadiness: async () => ({ ready }),
++    enabled: () => enabled,
++    nameSearchEnabled: () => nameSearchEnabled,
++    rarityRangeEnabled: () => rarityRangeEnabled,
++  });
++  return { app, query, release, connect };
++}
++
++describe("collector API routes", () => {
++  it("blocks collector reads while ownership is rebuilding", async () => {
++    const { app, connect } = fixture(true, true, false, false);
++    const result = await app.request(`/v2/owners/${owner}/tokens`);
++    expect(result.status).toBe(503);
++    expect(await result.json()).toMatchObject({ error: "ownership_rebuilding" });
++    expect(connect).not.toHaveBeenCalled();
++  });
++  it("keeps new reads gated until the operator enables them", async () => {
++    const { app, connect } = fixture(false);
++    expect(
++      await (await app.request("/v1/collector-capabilities")).json(),
++    ).toEqual({ version: 0, namePrefixSearch: false, rarityRange: false });
++    expect((await app.request(`/v2/owners/${owner}/tokens`)).status).toBe(503);
++    expect(connect).not.toHaveBeenCalled();
++  });
++  it("can enable rarity and traits independently of name search", async () => {
++    const { app, connect } = fixture(true, false);
++    expect(
++      await (await app.request("/v1/collector-capabilities")).json(),
++    ).toEqual({ version: 1, namePrefixSearch: false, rarityRange: true });
++    expect(
++      (await app.request(`/v2/owners/${owner}/tokens?q=water`)).status,
++    ).toBe(400);
++    expect(connect).not.toHaveBeenCalled();
++    expect((await app.request(`/v2/owners/${owner}/tokens?q=32`)).status).toBe(
++      200,
++    );
++  });
++  it("gates rarity ranges independently and rejects them before the database", async () => {
++    const { app, connect } = fixture(true, true, false, true, false);
++    expect(
++      await (await app.request("/v1/collector-capabilities")).json(),
++    ).toEqual({ version: 1, namePrefixSearch: true, rarityRange: false });
++    expect(
++      (
++        await app.request(
++          `/v2/owners/${owner}/tokens?rarityMin=10&rarityMax=20`,
++        )
++      ).status,
++    ).toBe(400);
++    expect(connect).not.toHaveBeenCalled();
++  });
++  it("bounds DB work with a read-only transaction and a server-side deadline", async () => {
++    const { app, query, release } = fixture();
++    const result = await app.request(
++      `/v2/owners/${owner}/tokens?chain=base&t.Type=Water`,
++    );
++    expect(result.status).toBe(200);
++    expect(await result.json()).toMatchObject({
++      version: 1,
++      items: [],
++      previousCursor: null,
++      nextCursor: null,
++      resolvedAddresses: { base: owner },
++      visibility: "visible",
++    });
++    expect(query.mock.calls[0]![0]).toBe("BEGIN READ ONLY");
++    expect(query.mock.calls[1]![0]).toContain("statement_timeout = '1000ms'");
++    expect(query.mock.calls.some(([sql]) => sql === "SET LOCAL jit = off")).toBe(true);
++    expect(query.mock.calls.at(-1)![0]).toBe("COMMIT");
++    expect(release).toHaveBeenCalledOnce();
++  });
++  it("rolls back and releases its pool connection after a query failure", async () => {
++    const { app, query, release } = fixture(true, true, true);
++    expect((await app.request(`/v2/owners/${owner}/tokens`)).status).toBe(503);
++    expect(query.mock.calls.at(-1)![0]).toBe("ROLLBACK");
++    expect(release).toHaveBeenCalledOnce();
++  });
++  it("rejects invalid requests before acquiring a database connection", async () => {
++    const { app, connect } = fixture();
++    expect(
++      (await app.request(`/v2/owners/${owner}/tokens?cursor=invalid`)).status,
++    ).toBe(409);
++    expect(
++      (await app.request(`/v2/owners/${owner}/tokens?limit=9999`)).status,
++    ).toBe(400);
++    expect(connect).not.toHaveBeenCalled();
++  });
++});

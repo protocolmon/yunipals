@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-09-23T14:15:33.385Z",
+  "isolatedSql": {
+    "engine": "PGlite isolated PostgreSQL, sequential warm reads",
+    "tokenRows": 100140,
+    "ownerRows": 10140,
+    "p95Ms": {
+      "first": 77.52,
+      "ascending": 59.17,
+      "traits": 41.3,
+      "rarityWide": 66.76,
+      "rarityNarrow": 55.05,
+      "exactId": 2.22,
+      "next": 60.87
+    }
+  },
+  "productionSequentialBenchmark": {
+    "sessions": 1,
+    "seconds": 60,
+    "requests": 13,
+    "errors": [],
+    "p95Ms": 620.81,
+    "p99Ms": 620.81,
+    "assessment": "Above the original 300 ms aspiration but within the one-second SQL deadline and consistent with the existing 0.5-0.65 second large-wallet baseline. This was not a concurrency test."
+  },
+  "productionPublicSmoke": {
+    "ordinaryLargeWalletServerMs": {
+      "minimum": 455.7,
+      "maximum": 504.1
+    },
+    "exactRarityRangeServerMs": 380.4,
+    "combinedTraitsServerMs": 164.3,
+    "errors": [],
+    "passed": true
+  },
+  "browser": {
+    "tests": [
+      "rarity inputs advertised by capability",
+      "inverted range blocks Apply",
+      "range canonicalized into one collection request",
+      "Type and Color keyboard tabs",
+      "one trait scroll region on mobile"
+    ],
+    "collectionRequests": 2,
+    "pageErrors": [],
+    "failedResponses": [],
+    "passed": true
+  },
+  "limits": [
+    "Every collector SQL transaction retains the one-second statement timeout.",
+    "The standalone collector service retains a four-connection pool and one-second acquisition timeout.",
+    "No new database index was needed and no concurrency load was run against production."
+  ]
+}

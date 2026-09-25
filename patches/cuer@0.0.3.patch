@@ -1,0 +1,17 @@
+diff --git a/_dist/QrCode.js b/_dist/QrCode.js
+--- a/_dist/QrCode.js
++++ b/_dist/QrCode.js
+@@ -2,11 +2,11 @@ import { encodeQR } from 'qr';
+ export function create(value, options = {}) {
+     const { errorCorrection, version } = options;
+     const grid = encodeQR(value, 'raw', {
+-        border: 0,
++        border: 1,
+         ecc: errorCorrection,
+         scale: 1,
+         version: version,
+-    });
++    }).slice(1, -1).map((row) => row.slice(1, -1));
+     const finderLength = 7;
+     const edgeLength = grid.length;
+     return {

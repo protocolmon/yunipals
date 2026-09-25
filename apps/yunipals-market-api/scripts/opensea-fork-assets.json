@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-09-06",
+  "source": "Read-only yunipals_read_v4 token/lifecycle inspection; every mint receipt is independently verified on the local fork.",
+  "ethereum": {
+    "tokenId": "2000",
+    "lifecycle": 1,
+    "mintBlock": "12135558",
+    "mintTransaction": "0xcaf12e32a553c2fd92ea6b046aec8a11d016bc44a7c35a824383db582f3e1100",
+    "mintedTo": "0x14798026c6bf1c70835992056c7e128bc3b39143"
+  },
+  "base": {
+    "tokenId": "10001269789",
+    "lifecycle": 1,
+    "mintBlock": "22441938",
+    "mintTransaction": "0x2f9020bb3b660ddd7ab4307ac5a1f8da388ae0001ffb2c322dc1a636f59654c1",
+    "mintedTo": "0x1b8c30e8e38a6a159d7930e50a8949e46fe92086"
+  },
+  "polygon": {
+    "tokenId": "20000000001",
+    "lifecycle": 1,
+    "mintBlock": "22016080",
+    "mintTransaction": "0xcad76ba9e0a6a1aa2789aed8b8c3faf82c734fb46c24c4ef49566f9957148e84",
+    "mintedTo": "0x0fafb722ff53a4eed3d20ad5c8a6c742f594ebfc"
+  }
+}
