@@ -104,7 +104,7 @@ def recovery_archive(destination: Path) -> None:
         "etc/letsencrypt",
         "etc/postgresql",
         "var/lib/yunipals-market-monitor",
-        "var/backups/yunipals-indexer-premerge-20260928TAduj0X/rehearsal/candidate-overrides",
+        "var/backups/yunipals-indexer-premerge-20260928TAduj0X/rehearsal",
     ]
     for name in SERVICE_NAMES:
         for suffix in (".service", ".service.d"):
