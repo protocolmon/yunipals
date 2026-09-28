@@ -98,6 +98,8 @@ def recovery_archive(destination: Path) -> None:
         "etc/yunipals-market-monitor",
         "etc/yunipals-marketplace/production/indexer-rpc.env",
         "etc/nginx",
+        "etc/letsencrypt",
+        "etc/postgresql",
         "var/lib/yunipals-market-monitor",
         "var/backups/yunipals-indexer-premerge-20260928TAduj0X/rehearsal/candidate-overrides",
     ]
