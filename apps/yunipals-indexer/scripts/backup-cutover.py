@@ -116,6 +116,8 @@ def recovery_archive(destination: Path) -> None:
         [
             "tar", "--zstd", "-cf", str(destination),
             "--exclude=*/node_modules", "--exclude=*/.ponder", "--exclude=*/.git",
+            "--exclude=root/indexer-next/.ops-backups", "--exclude=root/indexer-next/backups",
+            "--exclude=opt/yunipals-indexer-ops/rarity-local-v1-20260918",
             "-C", "/", *paths,
         ],
         timeout=600,
