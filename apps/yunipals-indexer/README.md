@@ -6,10 +6,12 @@ Ponder indexes Ethereum, Base, and Polygon. **One BNB worker**, at
 into `bnb_indexer`. It starts at block 7,579,197 and requires 20 confirmations
 by default. No other BNB ownership writer is shipped in this repository.
 
-The metadata worker fetches token documents and the API serves collection,
-collector, visibility, trait, and leaderboard reads. The marketplace API is a
-separate app and reads the BNB tables and `yunipals_read_v4` views. Neither API
-should use the indexer's write credential.
+The metadata worker supports `METADATA_SOURCE_MODE=legacy-http` and `archive`.
+Archive mode serves published snapshots from PostgreSQL and uses the pinned
+Polkamon packages in `vendor/` for rendering and local rarity calculation. The
+API serves collection, collector, visibility, trait, and leaderboard reads. The
+marketplace API is a separate app and reads the BNB tables and
+`yunipals_read_v4` views. Neither API should use the indexer's write credential.
 
 ## Local setup
 
@@ -33,8 +35,10 @@ it refuses to replace existing read views.
 The metadata source migrations and import, backup, restore, status, and
 reconciliation commands are available under the `metadata:*` scripts in
 `package.json`. Source inventory and import require an explicit `--legacy-root`
-path; no server-specific legacy data path is built in. These commands prepare
-the PostgreSQL archive source and do not activate archive serving.
+path; no server-specific legacy data path is built in. An archive release must
+be imported, bound, validated, and activated before starting the API or worker
+with `METADATA_SOURCE_MODE=archive`. Set the mode consistently for the API,
+metadata worker, and leaderboard worker. `legacy-http` remains the default.
 
 Run the processes separately with the same database and compatible RPC settings:
 
@@ -62,23 +66,21 @@ pnpm test:bnb-indexer
 Do not point this fixture at a database where the test role can alter production
 schemas. The unit suite and typecheck do not require a database.
 
-## Metadata and rarity boundary
+## Metadata and rarity
 
 The September 18 source snapshot, September 21 metadata retry fix, collector
 API patch, and September 28 running-checkout comparison are recorded in
-[source provenance](SOURCE_PROVENANCE.md). The running checkout defaults to
-`METADATA_SOURCE_MODE=legacy-http`; its newer archive reader, renderer, publisher,
-main API changes, and local rarity formula depend on private package archives
-that are not included here. This app currently supports only
-`RARITY_READ_SOURCE=metadata`. Raw and capped scores come from supplied metadata.
-`RARITY_READ_SOURCE=local` fails at startup; a locally recalculated rarity score
-must be implemented and compared with existing results before enabling that
-mode. The old parity script must not be used as evidence of local formula
-parity.
+[source provenance](SOURCE_PROVENANCE.md). Active production service configuration
+sets `METADATA_SOURCE_MODE=archive` and `RARITY_READ_SOURCE=local`. Its archive
+reader, renderer, publisher, main API changes, and local rarity formula are
+included here with the pinned package archives. `RARITY_READ_SOURCE=metadata`
+uses scores supplied in metadata; `RARITY_READ_SOURCE=local` reads the locally
+recalculated scores, falling back to supplied scores where a calculation is not
+valid. The renderer and scorer have deterministic fixture tests; compare live
+release and response parity before replacing a production process.
 
-Before replacing a running indexer, reconcile this source with its current
-checkout, resolve the archive runtime dependency, compare schema and API
-responses on a disposable database, replay BNB
+Before replacing a running indexer, compare schema and API responses on a
+disposable database, replay BNB
 from the start block or verify the current cursor and table contents, and check
 all four chain and metadata worker checkpoints. This repository change does not
 switch any production process or database.

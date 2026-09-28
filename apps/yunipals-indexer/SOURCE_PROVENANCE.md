@@ -13,10 +13,15 @@ patch applies cleanly to that checkout. The newer metadata source migrations,
 archive storage, publication schema, chain readiness, and related verification
 scripts were then reconciled into this app. The checkout's metadata archive
 reader, renderer, publisher, main API changes, and local rarity calculator depend
-on private Polkamon package archives. Those parts remain outside this import
-pending an explicit dependency decision. The checkout defaults to
-`METADATA_SOURCE_MODE=legacy-http`; archive mode was a candidate, not the active
-source mode in the checked environment.
+on three pinned Polkamon package archives, now included under `vendor/`. The
+runtime modules and parity fixtures were imported from the checked-out source.
+The checkout's `.env` leaves
+`METADATA_SOURCE_MODE` unset, but active systemd drop-ins load
+`METADATA_SOURCE_MODE=archive` and `RARITY_READ_SOURCE=local`. The running service
+therefore requires those remaining modules and dependencies for parity.
+After applying the collector patch, the app's `lib/` tree matches the checked
+checkout outside `lib/bnb/`. The newer consolidated BNB implementation is the
+intentional exception.
 
 The BNB worker was consolidated from this repository's former
 `packages/bnb-indexer` into `lib/bnb`. Its source schema is shared by the
@@ -25,7 +30,14 @@ checkout's BNB worker predates this consolidated worker, so the newer local
 worker was retained. There is one BNB ownership writer in the repository.
 
 Environment files, credentials, generated Ponder state, database backups,
-host-specific service definitions, and the private package archives were
-excluded. Local rarity calculation is limited to supplied metadata scores; see
-the README for the production cutover gate. This source comparison did not
-change the remote checkout, services, database, or routing.
+host-specific service definitions, and one-off host cutover scripts were
+excluded. The three vendor archive SHA-256 values are:
+
+| Package | SHA-256 |
+| --- | --- |
+| `util-essentials-27.3.3` | `b765a47078cc6a7037bca88d2c1b02e86c620bdbeb0a98e42f582ab3b38c4e12` |
+| `web3-util-core-30.8.3` | `3b4d233afea82af42b58792f0166c3d38c050d78cd7c21bea9b8215419fcb368` |
+| `web3-util-pmons-31.15.1` | `3312decd5e2a1501d4ab757fb1bcaca5a18296697e8be1d988d923fa87bc5e4e` |
+
+This source comparison did not change the remote checkout, services, database,
+or routing.

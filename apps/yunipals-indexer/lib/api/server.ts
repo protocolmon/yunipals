@@ -1,11 +1,18 @@
+import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationFor, metadataTraitReadRelation, leaderboardReadRelation } from "../metadata/read-source.js";
+import { LocalMetadataReader } from "../metadata/resolve.js";
+import { metadataSourceMode } from "../metadata/publication.js";
+import { metadataReadiness, publicationStatus } from "../metadata/status.js";
+import { chainReadiness } from "../metadata/chain-readiness.js";
+import { legacyMetadataRouter } from "./legacy-metadata.js";
 import { serve } from "@hono/node-server";
 import { createHash } from "node:crypto";
+import { pathToFileURL } from "node:url";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import type { Address, Hex } from "viem";
 import { apiPool as pool } from "../offchain/db.js";
-import { bnbSchema, physicalPonderSchema, ponderSchema } from "../offchain/sql.js";
+import { bnbSchema, physicalPonderSchema, ponderSchema, readSchemaName } from "../offchain/sql.js";
 import { docsHtml, openApiDocument } from "./openapi.js";
 import { scoreFormula, scoreVersion } from "../leaderboard/refresh.js";
 import { collectionSlugs, collections, type CollectionSlug } from "../constants.js";
@@ -16,10 +23,12 @@ import {
 } from "./visibility.js";
 import { ExactCountCache } from "./exact-count-cache.js";
 import { chainSelection, chainSelectionJson } from "./chains.js";
+
 import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
 
 export const app = new Hono();
+const localMetadata = new LocalMetadataReader(pool, readSchemaName);
 const port = Number(process.env.API_PORT ?? 9011);
 const exactCountCache = new ExactCountCache(
   Number(process.env.API_EXACT_COUNT_CACHE_TTL_MS ?? 15_000),
@@ -147,7 +156,20 @@ async function currentVisibilityState(client: Queryable, collection: CollectionS
   return result.rows[0];
 }
 
-app.use("*", cors({ origin: "*", allowMethods: ["GET", "PUT", "OPTIONS"], allowHeaders: ["Content-Type"] }));
+app.use("*", cors({ origin: "*", allowMethods: ["GET", "HEAD", "POST", "PUT", "OPTIONS"], allowHeaders: ["Content-Type","If-None-Match"],
+  exposeHeaders:["ETag","X-Metadata-Release","X-Metadata-Ownership"] }));
+app.use('/v1/*',async(c,next)=>{
+  if(metadataSourceMode()==='archive'&&!['/v1/status','/v1/indexing-status'].includes(c.req.path)){
+    const specific=c.req.path.match(/^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//)?.[1] as CollectionSlug|undefined;
+    const selected=specific?[specific]:chainSelection(c.req.url)?.chains??collectionSlugs;
+    const ownership=await chainReadiness(pool,selected);
+    if(!ownership.ready)return c.json({error:'ownership_rebuilding',ownership},503);
+  }
+  await next();
+});
+app.get('/v1/indexing-status',async c=>c.json(metadataSourceMode()==='archive'?await chainReadiness(pool):{ready:true,mode:'legacy-http'}));
+// No candidate release can be selected through an HTTP request.
+if (metadataSourceMode() === "archive") app.route("/legacy-meta", legacyMetadataRouter(localMetadata));
 app.get("/docs", (c) => c.html(docsHtml));
 app.get("/docs/", (c) => c.html(docsHtml));
 app.get("/docs/openapi.json", (c) => c.json(openApiDocument));
@@ -158,6 +180,8 @@ app.get("/health", (c) => c.json({ status: "ok" }));
 app.get("/ready", async (c) => {
   try {
     await pool.query("SELECT 1");
+    const metadata = await metadataReadiness(pool);
+    if (!metadata.ready) return c.json({ status: "not_ready", metadata }, 503);
     return c.json({ status: "ready", databasePool: {
       total: pool.totalCount, idle: pool.idleCount, waiting: pool.waitingCount
     } });
@@ -224,6 +248,7 @@ app.get("/v1/tokens", async (c) => {
   }
   if (burned === "true" || burned === "false") { params.push(burned === "true"); where.push(`t.burned = $${params.length}`); }
   const indexedRarityBrowse = sort.startsWith("rarity") && metadata === "available";
+  if(indexedRarityBrowse)where.push('s.collection = ANY($1::text[])');
   const tokenOnlyBrowse = !sort.startsWith("rarity") && metadata === "all"
     && rarityMin === undefined && rarityMax === undefined && rarityCappedMin === undefined && rarityCappedMax === undefined;
   if (metadata !== "all") {
@@ -236,7 +261,7 @@ app.get("/v1/tokens", async (c) => {
   if (rarityCappedMax !== undefined) { params.push(rarityCappedMax); where.push(`s.rarity_points_capped <= $${params.length}::numeric`); }
   for (const [type, values] of traitGroups) {
     params.push(type, values);
-    where.push(`EXISTS (SELECT 1 FROM metadata.token_trait f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=$${params.length - 1} AND f.value=ANY($${params.length}::text[]))`);
+    where.push(`EXISTS (SELECT 1 FROM ${metadataTraitReadRelation} f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=$${params.length - 1} AND f.value=ANY($${params.length}::text[]))`);
   }
   const baseWhere = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const cursorWhere: string[] = tokenOnlyBrowse ? [...where.slice(1)] : [...where];
@@ -262,9 +287,13 @@ app.get("/v1/tokens", async (c) => {
   const includesBnb = chains.includes("bnb");
   const includesPhysical = chains.some((slug) => slug !== "bnb");
   const tokenRelation = includesBnb && !includesPhysical ? `${bnbSchema}.token` : `${physicalPonderSchema}.token`;
-  const sourceFor = (relation: string) => tokenOnlyBrowse ? `${relation} t` : indexedRarityBrowse
-    ? `metadata.token_search s JOIN ${relation} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
-    : `${relation} t LEFT JOIN metadata.token_search s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
+  const sourceFor = (relation: string, pointRead = false) => {
+    const schema = relation.slice(0, -".token".length);
+    const search = pointRead ? metadataSearchReadRelation : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains);
+    return tokenOnlyBrowse ? `${relation} t` : indexedRarityBrowse
+      ? `${search} s JOIN ${relation} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
+      : `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
+  };
   const candidateSource = sourceFor(tokenRelation);
   const simpleExactCount = tokenOnlyBrowse && !ownerResolution && traitGroups.size === 0;
   const countWithoutVisibility = where.slice(1);
@@ -280,10 +309,27 @@ app.get("/v1/tokens", async (c) => {
   const countSql = simpleExactCount
     ? `SELECT (${baseCountSql} - ${hiddenCountSql})::int AS total`
     : `SELECT COALESCE(sum(total), 0)::int AS total FROM (${filteredCountSql}) filtered_counts`;
+  // A cold exact count validates every publication and chain anchor. Give that
+  // bounded read-only query its own budget; ordinary API reads retain 10 s.
+  const queryExactCount = async () => {
+    if (simpleExactCount) return Number((await pool.query(countSql, countParams)).rows[0].total);
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN READ ONLY");
+      await client.query("SET LOCAL statement_timeout = '30s'");
+      const total = Number((await client.query(countSql, countParams)).rows[0].total);
+      await client.query("COMMIT");
+      return total;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  };
   const countPromise = (async () => {
     const started = performance.now();
-    const cached = await exactCountCache.get(expectedConfig, async () =>
-      Number((await pool.query(countSql, countParams)).rows[0].total));
+    const cached = await exactCountCache.get(expectedConfig, queryExactCount);
     return { ...cached, durationMs: performance.now() - started };
   })();
   params.push(limit + 1);
@@ -299,13 +345,15 @@ app.get("/v1/tokens", async (c) => {
   const branch = (relation: string) => `SELECT ${candidateColumns} FROM ${relation} t
     ${candidateWhere} ORDER BY ${orderBy} LIMIT ${candidateLimit}`;
   const sourceBranch = (relation: string) => {
-    const source = sourceFor(relation);
+    const source = sourceFor(relation, true);
     return `SELECT ${candidateColumns} FROM ${source} ${candidateWhere} ORDER BY ${orderBy} LIMIT ${candidateLimit}`;
   };
   const candidateQuery = selectedRelations.length > 1
     ? `SELECT * FROM ((${selectedRelations.map(sourceBranch).join(") UNION ALL (")})) merged
        ORDER BY ${orderBy.replaceAll("t.", "merged.").replaceAll("s.", "merged.")} LIMIT ${candidateLimit}`
     : sourceBranch(selectedRelations[0]!);
+  // Keep metadata enrichment dependent on the bounded page. Otherwise an
+  // uncertain overfetch estimate can make PostgreSQL scan the entire archive.
   const resultPromise = (async () => {
     const started = performance.now();
     const result = await pool.query(`WITH candidates AS MATERIALIZED (${candidateQuery})
@@ -318,8 +366,10 @@ app.get("/v1/tokens", async (c) => {
       ${tokenOnlyBrowse ? "search.rarity_points" : "c.rarity_points"}::text AS "rarityPoints",
       ${tokenOnlyBrowse ? "search.rarity_points_capped" : "c.rarity_points_capped"}::text AS "rarityPointsCapped"
     FROM candidates c
-    LEFT JOIN metadata.token_metadata m ON m.collection=c.collection AND m.token_id=c.token_id::numeric AND m.lifecycle=c.lifecycle
-    ${tokenOnlyBrowse ? "LEFT JOIN metadata.token_search search ON search.collection=c.collection AND search.token_id=c.token_id::numeric AND search.lifecycle=c.lifecycle" : ""}
+    LEFT JOIN LATERAL (SELECT * FROM ${metadataReadRelation} metadata_page
+      WHERE metadata_page.collection=c.collection AND metadata_page.token_id=c.token_id::numeric AND metadata_page.lifecycle=c.lifecycle OFFSET 0) m ON true
+    ${tokenOnlyBrowse ? `LEFT JOIN LATERAL (SELECT * FROM ${metadataSearchReadRelation} search_page
+      WHERE search_page.collection=c.collection AND search_page.token_id=c.token_id::numeric AND search_page.lifecycle=c.lifecycle OFFSET 0) search ON true` : ""}
     ${tokenOnlyBrowse ? `WHERE NOT ${activeVisibilityPredicate("c")}` : ""}
     ORDER BY ${orderBy.replaceAll("t.", "c.").replaceAll("s.", "c.")}
     ${tokenOnlyBrowse ? `LIMIT $${params.length}` : ""}
@@ -348,8 +398,12 @@ app.get("/v1/traits", async (c) => {
   const { scope } = selection;
   const [facets, status] = await Promise.all([
     pool.query(`SELECT trait_type AS "traitType", kind, min_value::text AS min, max_value::text AS max, values FROM metadata.trait_facet WHERE scope=$1 ORDER BY trait_type`, [scope]),
-    pool.query("SELECT available, missing, updated_at FROM metadata.trait_facet_status WHERE scope=$1", [scope])
+    pool.query(`SELECT available, missing, updated_at, ${metadataSourceMode() === "archive" ? "(SELECT metadata_release_id FROM metadata.derived_snapshot WHERE name='traits') AS metadata_release_id" : "NULL::text AS metadata_release_id"} FROM metadata.trait_facet_status WHERE scope=$1`, [scope])
   ]);
+  if (metadataSourceMode() === "archive") {
+    const release = await localMetadata.release();
+    if (status.rows[0]?.metadata_release_id !== release) return c.json({error:"trait_snapshot_pending"},503);
+  }
   const items = facets.rows.map((row) => row.kind === "numeric"
     ? { traitType: row.traitType, kind: row.kind, min: row.min, max: row.max }
     : { traitType: row.traitType, kind: row.kind, values: row.values });
@@ -357,20 +411,27 @@ app.get("/v1/traits", async (c) => {
 });
 
 async function tokenDetail(collection: CollectionSlug, tokenId: string) {
-  return Promise.all([
+  const results = await Promise.all([
     pool.query(`SELECT t.*, t.collection AS chain, m.name, m.description, m.image, m.animation_url, m.attributes,
       m.document, s.rarity_points::text AS "rarityPoints", s.rarity_points_capped::text AS "rarityPointsCapped",
       m.token_uri, m.uri_provenance, m.uri_verified_at_block, m.audit_status,
       m.fetch_status, m.fetched_at FROM ${ponderSchema}.token t
-      LEFT JOIN metadata.token_metadata m ON m.collection=t.collection AND m.token_id=t.token_id::numeric AND m.lifecycle=t.lifecycle
-      LEFT JOIN metadata.token_search s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
+      LEFT JOIN ${metadataReadRelation} m ON m.collection=t.collection AND m.token_id=t.token_id::numeric AND m.lifecycle=t.lifecycle
+      LEFT JOIN ${metadataSearchReadRelation} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
       WHERE t.collection=$1 AND t.token_id=$2`, [collection, tokenId]),
     pool.query(`SELECT * FROM ${ponderSchema}.transfer_event WHERE collection=$1 AND token_id=$2 ORDER BY block_number, transaction_index, log_index`, [collection, tokenId]),
     pool.query(`SELECT l.*, m.token_uri, m.uri_provenance, m.audit_status, m.name, m.image
-      FROM ${ponderSchema}.token_lifecycle l LEFT JOIN metadata.token_metadata m
+      FROM ${ponderSchema}.token_lifecycle l LEFT JOIN ${metadataReadRelation} m
       ON m.collection=l.collection AND m.token_id=l.token_id::numeric AND m.lifecycle=l.lifecycle
       WHERE l.collection=$1 AND l.token_id=$2 ORDER BY l.lifecycle`, [collection, tokenId])
   ]);
+  if (metadataSourceMode() === "archive" && results[0].rows.length) {
+    const local = await localMetadata.token(collection, tokenId);
+    Object.assign(results[0].rows[0], { document: local?.document ?? null,
+      publication_status: local?.status ?? "unavailable", publication_error: local?.reason ?? null,
+      metadata_release: local?.release ?? null, metadata_ownership_source: "indexed_chain" });
+  }
+  return results;
 }
 
 app.get("/v1/tokens/:chain/:tokenId/visibility/signing-data", async (c) => {
@@ -420,6 +481,11 @@ app.put("/v1/tokens/:chain/:tokenId/visibility", async (c) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    if(metadataSourceMode()==='archive'){
+      await client.query("SELECT pg_advisory_xact_lock_shared(hashtext('metadata:chain-recovery'))");
+      const ownership=await chainReadiness(client,[collection]);
+      if(!ownership.ready){await client.query('ROLLBACK');return c.json({error:'ownership_rebuilding',ownership},503);}
+    }
     await client.query(`INSERT INTO metadata.wallet_visibility_nonce(owner, next_nonce)
       VALUES ($1, 0) ON CONFLICT (owner) DO NOTHING`, [owner]);
     const nonceResult = await client.query(`SELECT next_nonce::text FROM metadata.wallet_visibility_nonce
@@ -497,7 +563,7 @@ app.get("/v1/tokens/:tokenId", async (c) => {
 });
 
 registerCollectorRoutes(app, { pool, resolveOwner: requireResolvedOwner,
-  checkReadiness: async () => ({ ready: true })
+  checkReadiness: async (chains) => metadataSourceMode() === "archive" ? chainReadiness(pool, chains) : { ready: true }
 });
 
 app.get("/v1/owners/:address/tokens", async (c) => {
@@ -531,9 +597,9 @@ app.get("/v1/owners/:address/tokens", async (c) => {
       t.contract_address AS "contractAddress", t.token_id AS "tokenId", t.lifecycle, m.name, m.image, m.attributes,
       s.rarity_points::text AS "rarityPoints", s.rarity_points_capped::text AS "rarityPointsCapped",
       ${activeVisibilityPredicate()} AS hidden
-    FROM ${ponderSchema}.token t LEFT JOIN metadata.token_metadata m
+    FROM ${ponderSchema}.token t LEFT JOIN ${metadataReadRelation} m
     ON m.collection=t.collection AND m.token_id=t.token_id::numeric AND m.lifecycle=t.lifecycle
-    LEFT JOIN metadata.token_search s
+    LEFT JOIN ${metadataSearchReadRelation} s
     ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
     WHERE ${where.join(" AND ")}
     ORDER BY t.token_id::numeric, t.collection LIMIT $${params.length}`, params);
@@ -549,7 +615,7 @@ app.get("/v1/leaderboards", async (c) => {
   const selection = chainSelection(c.req.url);
   if (!selection) return c.json({ error: "Invalid chain", available: collectionSlugs }, 400);
   const { scope } = selection;
-  const snapshot = await pool.query("SELECT max(updated_at) AS updated_at, count(*)::int AS wallets FROM leaderboard.wallet_stats WHERE scope=$1", [scope]);
+  const snapshot = await pool.query(`SELECT max(updated_at) AS updated_at, count(*)::int AS wallets FROM ${leaderboardReadRelation} WHERE scope=$1`, [scope]);
   return c.json({
     items: Object.entries(leaderboardMetrics).map(([slug, value]) => ({ slug, label: value.label })),
     collectorScore: { version: scoreVersion, formula: scoreFormula },
@@ -584,7 +650,7 @@ app.get("/v1/leaderboards/:metric", async (c) => {
       SELECT owner, ${definition.column}::numeric AS score, monster_count, total_rarity,
         unique_types, special_count, glitter_count, collector_score, updated_at,
         dense_rank() OVER (ORDER BY ${definition.column} DESC) AS rank
-      FROM leaderboard.wallet_stats
+      FROM ${leaderboardReadRelation}
       WHERE scope=$${scopeParam} AND ${definition.column} > 0
     )
     SELECT rank::int, ranked.owner, score::text, monster_count AS "monsterCount",
@@ -622,7 +688,7 @@ app.get("/v1/owners/:address/leaderboard", async (c) => {
         dense_rank() OVER (ORDER BY special_count DESC) AS special_count_rank,
         dense_rank() OVER (ORDER BY glitter_count DESC) AS glitter_count_rank,
         dense_rank() OVER (ORDER BY collector_score DESC) AS collector_score_rank
-      FROM leaderboard.wallet_stats WHERE scope=$2
+      FROM ${leaderboardReadRelation} WHERE scope=$2
     )
     SELECT ranks.owner, monster_count AS "monsterCount", total_rarity::text AS "totalRarity",
       unique_types AS "uniqueTypes", special_count AS "specialCount", glitter_count AS "glitterCount",
@@ -659,6 +725,7 @@ app.get("/v1/collections", async (c) => {
 });
 
 app.get("/v1/status", async (c) => {
+  const publication = await publicationStatus(pool);
   const [metadata, indexing, bnbIngestion] = await Promise.all([
     pool.query("SELECT collection, fetch_status, count(*)::int AS count FROM metadata.token_metadata GROUP BY collection, fetch_status"),
     pool.query(`SELECT collection, count(*)::int AS "knownTokens", max(last_transfer_block)::text AS "lastEventBlock"
@@ -669,14 +736,19 @@ app.get("/v1/status", async (c) => {
   ]);
   const indexedByCollection = new Map(indexing.rows.map((row) => [row.collection, row]));
   return c.json({
+    publication,
     collections: collectionSlugs.map((slug) => ({ ...collections[slug],
       ...(indexedByCollection.get(slug) ?? { knownTokens: 0, lastEventBlock: null }),
       metadata: Object.fromEntries(metadata.rows.filter((row) => row.collection === slug).map((row) => [row.fetch_status, row.count])) })),
-    uriMode: { ethereum: "current_base_formula", base: "current_token_uri_call", polygon: "current_token_uri_call", bnb: "current_token_uri_call" },
+    uriMode: metadataSourceMode() === "archive"
+      ? { ethereum: "verified_archive_binding", base: "verified_archive_binding", polygon: "verified_archive_binding", bnb: "verified_archive_binding" }
+      : { ethereum: "current_base_formula", base: "current_token_uri_call", polygon: "current_token_uri_call", bnb: "current_token_uri_call" },
     bnbIngestion: bnbIngestion.rows[0] ?? null,
     verificationTokenId: process.env.URI_VERIFY_TOKEN_ID ?? "1000000000000",
     metadata: Object.fromEntries(metadata.rows.map((r) => [`${r.collection}:${r.fetch_status}`, r.count]))
   });
 });
 
-serve({ fetch: app.fetch, port }, (info) => console.log(`Yunipals API listening on http://127.0.0.1:${info.port}`));
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  serve({ fetch: app.fetch, port }, (info) => console.log(`Yunipals API listening on http://127.0.0.1:${info.port}`));
+}

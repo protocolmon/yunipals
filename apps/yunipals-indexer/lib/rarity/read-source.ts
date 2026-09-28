@@ -1,9 +1,18 @@
+import { rarityFormulaVersion } from "./calculate.js";
+
 export const rarityReadSource = process.env.RARITY_READ_SOURCE ?? "metadata";
-if (rarityReadSource !== "metadata") {
-  throw new Error("Only RARITY_READ_SOURCE=metadata is supported in this repository");
+if (rarityReadSource !== "metadata" && rarityReadSource !== "local") {
+  throw new Error("RARITY_READ_SOURCE must be metadata or local");
 }
 
-export const localRarityJoin = "";
+export const localRarityJoin =
+  rarityReadSource === "local"
+    ? `LEFT JOIN metadata.token_rarity local_rarity
+        ON local_rarity.collection=m.collection
+        AND local_rarity.token_id=m.token_id
+        AND local_rarity.lifecycle=m.lifecycle
+        AND local_rarity.formula_version='${rarityFormulaVersion}'`
+    : "";
 
 const upstreamRaw = `CASE
   WHEN m.document->>'rarity' ~ '^-?[0-9]+(\\.[0-9]+)?$'
@@ -16,6 +25,14 @@ const upstreamCapped = `COALESCE(
   ${upstreamRaw}
 )`;
 
-export const rarityPointsSql = upstreamRaw;
+export const rarityPointsSql =
+  rarityReadSource === "local"
+    ? `COALESCE(CASE WHEN local_rarity.status='valid'
+        THEN local_rarity.rarity_points END, ${upstreamRaw})`
+    : upstreamRaw;
 
-export const rarityPointsCappedSql = upstreamCapped;
+export const rarityPointsCappedSql =
+  rarityReadSource === "local"
+    ? `COALESCE(CASE WHEN local_rarity.status='valid'
+        THEN local_rarity.rarity_points_capped END, ${upstreamCapped})`
+    : upstreamCapped;

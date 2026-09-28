@@ -1,9 +1,11 @@
 import { createHash } from "node:crypto";
+import {
+  AttributeTransformingUtils,
+  isRainbowByAttrs,
+  rarityFor
+} from "./legacy.cjs";
 
-// The public source records scores supplied by the metadata document. The
-// previous local scorer required private package archives; this version keeps
-// its rows distinct until a parity-checked scorer can be published.
-export const rarityFormulaVersion = "metadata-document-v1" as const;
+export const rarityFormulaVersion = "web3-util-pmons-31.15.1-v1";
 
 export type RarityCalculation = {
   formulaVersion: typeof rarityFormulaVersion;
@@ -16,69 +18,92 @@ export type RarityCalculation = {
 
 type MetadataDocument = Record<string, unknown>;
 
-function score(value: unknown): number | null {
-  if (typeof value !== "number" && typeof value !== "string") return null;
-  if (typeof value === "string" && !/^\d+(?:\.\d+)?$/.test(value)) return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+function relevantInput(tokenId: string, document: MetadataDocument) {
+  return {
+    id: document.id ?? tokenId,
+    originScore: document.originScore ?? null,
+    initialProbabilities: document.initialProbabilities ?? null,
+    attributes: document.attributes ?? []
+  };
+}
+
+function fingerprint(value: unknown) {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function result(
+  inputFingerprint: string,
+  status: RarityCalculation["status"],
+  rarityPoints: number | null = null,
+  rarityPointsCapped: number | null = null,
+  errorCode: string | null = null
+): RarityCalculation {
+  return {
+    formulaVersion: rarityFormulaVersion,
+    inputFingerprint,
+    status,
+    rarityPoints,
+    rarityPointsCapped,
+    errorCode
+  };
 }
 
 export function calculateRarity(
   tokenId: string,
   document: MetadataDocument
 ): RarityCalculation {
-  const attributes = Array.isArray(document.attributes)
-    ? document.attributes
-    : [];
-  const type = attributes.find(
-    (attribute) =>
-      typeof attribute === "object" &&
-      attribute !== null &&
-      "trait_type" in attribute &&
-      attribute.trait_type === "Type"
-  );
-  const traitScore = attributes.find(
-    (attribute) =>
-      typeof attribute === "object" &&
-      attribute !== null &&
-      "trait_type" in attribute &&
-      attribute.trait_type === "Rarity Points"
-  );
-  const suppliedScore =
-    document.rarity ??
-    (typeof traitScore === "object" && traitScore !== null && "value" in traitScore
-      ? traitScore.value
-      : null);
-  const inputFingerprint = createHash("sha256")
-    .update(
-      JSON.stringify({
-        tokenId,
-        rarity: suppliedScore,
-        rarityCapped: document.rarityCapped ?? null,
-        type: typeof type === "object" && type !== null && "value" in type
-          ? type.value
-          : null
-      })
-    )
-    .digest("hex");
-  const base = {
-    formulaVersion: rarityFormulaVersion,
-    inputFingerprint,
-    rarityPoints: null,
-    rarityPointsCapped: null
-  };
-  if (!type) return { ...base, status: "missing_input", errorCode: "type_missing" };
-  if (suppliedScore === null || suppliedScore === undefined)
-    return { ...base, status: "unscored", errorCode: null };
-  const raw = score(suppliedScore);
-  const capped = score(document.rarityCapped ?? suppliedScore);
-  if (raw === null || capped === null)
-    return { ...base, status: "invalid", errorCode: "invalid_supplied_score" };
-  return {
-    ...base,
-    status: "valid",
-    rarityPoints: raw,
-    rarityPointsCapped: capped,
-    errorCode: null
-  };
+  const input = relevantInput(tokenId, document);
+  const inputFingerprint = fingerprint(input);
+  if (!Array.isArray(input.attributes)) {
+    return result(inputFingerprint, "invalid", null, null, "attributes_not_array");
+  }
+
+  try {
+    const attributes = AttributeTransformingUtils.toAttributes(
+      input.attributes as Parameters<
+        typeof AttributeTransformingUtils.toAttributes
+      >[0]
+    );
+    if (!attributes.type) {
+      return result(inputFingerprint, "missing_input", null, null, "type_missing");
+    }
+    if (isRainbowByAttrs({ attributes }) && typeof input.originScore !== "number") {
+      return result(
+        inputFingerprint,
+        "missing_input",
+        null,
+        null,
+        "rainbow_origin_score_missing"
+      );
+    }
+    const rarityInput = {
+      id: String(input.id),
+      originScore: input.originScore,
+      initialProbabilities: input.initialProbabilities,
+      attributes
+    } as Parameters<typeof rarityFor>[0];
+    const rarityPoints = rarityFor(rarityInput, {});
+    const rarityPointsCapped = rarityFor(rarityInput);
+    if (rarityPoints === undefined && rarityPointsCapped === undefined) {
+      return result(inputFingerprint, "unscored");
+    }
+    if (
+      typeof rarityPoints !== "number" ||
+      typeof rarityPointsCapped !== "number" ||
+      !Number.isFinite(rarityPoints) ||
+      !Number.isFinite(rarityPointsCapped) ||
+      rarityPoints < 0 ||
+      rarityPointsCapped < 0
+    ) {
+      return result(inputFingerprint, "invalid", null, null, "non_finite_score");
+    }
+    return result(
+      inputFingerprint,
+      "valid",
+      rarityPoints,
+      rarityPointsCapped
+    );
+  } catch {
+    return result(inputFingerprint, "invalid", null, null, "calculation_failed");
+  }
 }

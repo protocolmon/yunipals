@@ -1,3 +1,4 @@
+import { metadataReadRelation } from "../lib/metadata/read-source.js";
 import { pool } from "../lib/offchain/db.js";
 import {
   calculateRarity,
@@ -27,11 +28,11 @@ try {
     }>(
       `SELECT m.collection, m.token_id::text AS "tokenId", m.lifecycle,
         m.content_hash AS "contentHash", m.document
-      FROM metadata.token_metadata m
+      FROM ${metadataReadRelation} m
       LEFT JOIN metadata.token_rarity r ON r.collection=m.collection
         AND r.token_id=m.token_id AND r.lifecycle=m.lifecycle
         AND r.formula_version=$1
-      WHERE m.fetch_status='success' AND m.document IS NOT NULL
+      WHERE m.document IS NOT NULL
         AND (r.token_id IS NULL OR r.metadata_content_hash IS DISTINCT FROM m.content_hash)
         AND (m.collection, m.token_id, m.lifecycle) > ($2, $3::numeric, $4)
       ORDER BY m.collection, m.token_id, m.lifecycle LIMIT $5`,
