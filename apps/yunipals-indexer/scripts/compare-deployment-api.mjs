@@ -61,7 +61,6 @@ const paths = new Set([
   "/v1/collection",
   "/v1/tokens?limit=10",
   "/v1/leaderboards/monster-count?limit=3",
-  "/v1/collector-capabilities",
   "/legacy-meta/meta?id=1"
 ]);
 
@@ -103,6 +102,9 @@ try {
       previousStatus: before.status,
       candidateStatus: after.status
     });
+    if (comparisons.length % 10 === 0) {
+      console.log(`Compared ${comparisons.length}/${paths.size} main API routes`);
+    }
   }
   const report = {
     format: "yunipals-indexer-api-parity-v1",
@@ -110,6 +112,8 @@ try {
     previousRoot,
     candidateRoot,
     database: "yunipals_rehearsal",
+    statementTimeoutMs: process.env.API_DB_STATEMENT_TIMEOUT_MS ?? null,
+    acceptedRoutingDifference: "The candidate main API adds collector capabilities; the public proxy serves this route from the separate collector API.",
     compared: comparisons.length,
     mismatches: comparisons.filter((entry) => !entry.match),
     comparisons
