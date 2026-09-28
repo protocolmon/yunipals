@@ -1,9 +1,57 @@
 # Indexer monorepo restore and cutover plan
 
-Status: proposed; production inspected read-only on 28 September 2026.
-Neither phase below has been executed. The source integration is committed on
-`codex/indexer-monorepo`; the deployment revision will be pinned after the
-rehearsal's prerequisites are complete.
+Status: Phase 1 accepted and the six-service production switch completed on
+28 September 2026. The first-hour and 24-hour observation gates remain open.
+The detailed steps below are the original runbook; this execution record takes
+precedence where measurements differ from estimates.
+
+## Execution record
+
+- The complete production backup restored into an isolated PostgreSQL 16 cluster
+  in about 30 minutes. The restored database was 52.2 GB, with 92 migrations and
+  the existing Ponder build `29871611ab`. The clone was removed after testing;
+  production data and services were not changed during Phase 1.
+- Release `f0bd9a0` reproduced the installed Ponder reorg fix and continued the
+  Ethereum, Base, Polygon, and BNB checkpoints. A second BNB writer was refused
+  by the new advisory lock. The previous Ponder and BNB programs then continued
+  from candidate-written clone checkpoints, proving code rollback on that data.
+- The previous and candidate main APIs matched exactly on 41 of 42 sampled
+  routes. On a cold clone, the previous API timed out on one indexed BNB rarity
+  count while the candidate returned 200; the bounded owner rarity response
+  matched exactly. Collector APIs matched on all 18 routes. Five reader routes
+  matched after candidate writes and four more after the trait table swap.
+- The candidate completed a full trait and leaderboard refresh: 512,342 wallet
+  rows in 15 scopes, with the existing metadata release retained. The full
+  multichain verifier passed with a representative cross-chain owner; its
+  default owner had 7,530 Base tokens and timed out on the cold clone.
+- Rehearsal used a clone-only privileged database role with `--no-owner --no-acl`.
+  Production schema ownership and grants were checked separately. Metadata Base
+  replay on the clone was deferred by the shared RPC budget; the production
+  cursor matched the restored state and had no pending or failed publication jobs.
+- Protected machine-readable evidence is stored under the rehearsal directory
+  beside the premerge backup on the production host. The code switch is scripted
+  in `apps/yunipals-indexer/scripts/cutover-production.sh`, with the inverse in
+  `apps/yunipals-indexer/scripts/rollback-cutover.sh`.
+- A fresh full PostgreSQL dump (6,986,947,356 bytes), globals file, and recovery
+  bundle were encrypted and uploaded to the Storage Box. Each file was downloaded,
+  decrypted, and hash-checked; the off-host report completed at 22:58:34 UTC.
+  The recovery bundle includes the previous checkout, exact old and new runtime
+  paths, dependencies, service definitions, private configuration, certificates,
+  PostgreSQL configuration, and rehearsal evidence. The database dump passed
+  `pg_restore --list`. This is a full snapshot recovery point; no WAL/PITR claim
+  is made. Routine code rollback retains the live database and later writes.
+- The service switch completed at 23:02:54 UTC without a database migration.
+  All six services now run release `f0bd9a0` through the versioned monorepo path;
+  the progress monitor also runs a versioned copy. Ponder kept build `29871611ab`,
+  BNB advanced from block `124609100` to `124609148` during the switch, and the
+  active metadata release remained `metadata-20260921-v1`. Exactly one BNB
+  ownership writer held the database advisory lock after startup.
+- Eleven public checks returned 200 after the switch, including indexer and
+  collector reads, Base traits, BNB leaderboard, three legacy metadata domains,
+  marketplace capabilities, and a real BNB marketplace asset. The static
+  collector capabilities and all three metadata response bodies matched their
+  pre-cutover hashes. The protected production-cutover record contains exact
+  before/after checkpoints and route digests.
 
 ## Outcome
 
@@ -13,7 +61,7 @@ Preserve the existing production database, checkpoints, metadata release, API
 contracts, and public routes. Exactly one BNB ownership worker may write to the
 production BNB schema at a time.
 
-## Verified starting point
+## Verified pre-cutover starting point
 
 | Component | Current production | Proposed release command |
 | --- | --- | --- |
@@ -28,7 +76,7 @@ Commands are package scripts in `@protopals/yunipals-indexer`. Production units
 should use absolute, pinned runtime and entrypoint paths; the table describes
 their corresponding workspace commands.
 
-- Production host: `168.119.172.10`; database: `yunipals_backfill`, PostgreSQL 16.
+- Production database: `yunipals_backfill`, PostgreSQL 16.
 - Node: `/opt/node-v24.18.1/bin/node`; target pnpm: 9.12.0; Ponder: 0.17.5.
 - Ponder schema: `yunipals_indexer_v3`; BNB schema: `bnb_indexer`; combined read
   schema: `yunipals_read_v4`.
@@ -50,11 +98,12 @@ their corresponding workspace commands.
 The existing backup is
 `/var/backups/yunipals-indexer-premerge-20260928TAduj0X`. Its 4.4 GB compressed
 database archive, application, configuration, and PostgreSQL roles were verified
-locally and after encrypted Storage Box upload/download/decryption. Full restore
-has not yet been rehearsed. The database was approximately 56 GB when inspected
-for backup.
+locally and after encrypted Storage Box upload/download/decryption. Its full
+restore was completed in Phase 1. The database was approximately 56 GB when
+inspected for backup.
 
-Production currently has about 100 GiB free disk and 14 GiB available memory.
+Production had about 100 GiB free disk and 14 GiB available memory before the
+rehearsal.
 The development host has no normally available disk space. Capacity must be
 remeasured before execution. Use the Storage Box for encrypted backups; keep
 the rehearsal PostgreSQL data on local storage.
