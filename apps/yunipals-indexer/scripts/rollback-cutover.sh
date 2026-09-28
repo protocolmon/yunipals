@@ -27,6 +27,7 @@ for unit in "${units[@]}"; do
 done
 
 systemctl stop yunipals-market-monitor.timer
+systemctl stop yunipals-market-monitor.service
 systemctl stop yunipals-metadata.service yunipals-leaderboard.service
 systemctl stop yunipals-indexer.service yunipals-bnb.service
 
