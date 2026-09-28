@@ -21,6 +21,7 @@
     "patchedDependencies": {
       "@rainbow-me/rainbowkit@2.2.11": "patches/@rainbow-me__rainbowkit@2.2.11.patch",
       "cuer@0.0.3": "patches/cuer@0.0.3.patch",
+      "ponder@0.17.5": "patches/ponder@0.17.5.patch",
       "query-string@7.1.3": "patches/query-string@7.1.3.patch"
     }
   },

@@ -3,7 +3,8 @@ export function sqlIdentifier(value: string) {
   return `"${value}"`;
 }
 
-export const bnbSchema = sqlIdentifier(process.env.BNB_DATABASE_SCHEMA ?? "bnb_indexer");
+export const bnbSchemaName = process.env.BNB_DATABASE_SCHEMA ?? "bnb_indexer";
+export const bnbSchema = sqlIdentifier(bnbSchemaName);
 
 export const bnbSchemaStatements = [
   `CREATE SCHEMA IF NOT EXISTS ${bnbSchema}`,

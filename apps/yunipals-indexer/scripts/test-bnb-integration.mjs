@@ -101,6 +101,19 @@ async function waitForIndex(schema, worker) {
   throw new Error("Timed out waiting for BNB transfer indexing");
 }
 
+async function waitForWriterLock(schema, worker) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const result = await database.query(
+      "SELECT pid FROM pg_stat_activity WHERE datname=current_database() AND application_name=$1",
+      [`yunipals_bnb_writer:${schema}`]
+    );
+    if (result.rows.length === 1) return result.rows[0].pid;
+    if (worker.child.exitCode !== null) throw new Error(worker.output());
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error("Timed out waiting for the BNB writer lock");
+}
+
 try {
   const rows = [];
   for (const schema of names) {
@@ -122,7 +135,28 @@ try {
   assert.deepEqual(rows[0], rows[1]);
   assert.deepEqual(rows[0], { token_id: "1", owner: holder, lifecycle: 1 });
   assert.equal(methods.get("eth_getLogs"), 2);
-  console.log("Two independent BNB indexers reconstructed the same ownership and cursor");
+  const firstSchema = names[0];
+  const firstWriterPid = await waitForWriterLock(firstSchema, workers[0]);
+  const contender = runScript("worker.js", firstSchema);
+  const rejected = await contender.done;
+  assert.notEqual(rejected.code, 0);
+  assert.match(rejected.output, /BNB ownership writer already active/);
+  assert.equal(workers[0].child.exitCode, null);
+  const afterRejection = await database.query(
+    `SELECT last_error FROM "${firstSchema}".sync_state WHERE singleton`
+  );
+  assert.equal(afterRejection.rows[0].last_error, null);
+
+  const terminated = await database.query("SELECT pg_terminate_backend($1) AS terminated", [firstWriterPid]);
+  assert.equal(terminated.rows[0].terminated, true);
+  const lostLock = await workers[0].done;
+  assert.notEqual(lostLock.code, 0);
+  assert.match(lostLock.output, /BNB writer lock connection lost/);
+  const replacement = runScript("worker.js", firstSchema);
+  workers.push(replacement);
+  await waitForWriterLock(firstSchema, replacement);
+  assert.equal(replacement.child.exitCode, null);
+  console.log("Independent BNB schemas match; duplicate writer rejected; connection loss stops writer; replacement resumes");
 } finally {
   for (const worker of workers) {
     worker.child.kill("SIGTERM");

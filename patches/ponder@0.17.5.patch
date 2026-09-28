@@ -1,0 +1,56 @@
+diff --git a/dist/esm/runtime/multichain.js b/dist/esm/runtime/multichain.js
+--- a/dist/esm/runtime/multichain.js
++++ b/dist/esm/runtime/multichain.js
+@@ -1,3 +1,5 @@
++import { getTableConfig } from "drizzle-orm/pg-core";
++import { setReorgTriggersEnabled } from "../database/yunipals-reorg-triggers.mjs";
+ import { eq, getTableName, isTable, isView, sql } from "drizzle-orm";
+ import { commitBlock, createIndexes, createLiveQueryTriggers, createTriggers, createViews, dropLiveQueryTriggers, dropTriggers, finalizeMultichain, revertMultichain, } from '../database/actions.js';
+ import { getPonderCheckpointTable, getPonderMetaTable, } from '../database/index.js';
+@@ -461,8 +463,7 @@
+                 // Note: `_ponder_checkpoint` is not called here, instead it is called
+                 // in the `block` case.
+                 await database.userQB.transaction(async (tx) => {
+-                    await dropTriggers(tx, { tables }, context);
+-                    await dropLiveQueryTriggers(tx, { namespaceBuild, tables }, context);
++                    await setReorgTriggersEnabled(tx, tables.map(table => ({ schema: getTableConfig(table).schema ?? 'public', name: getTableName(table) })), namespaceBuild.schema, false);
+                     const counts = await revertMultichain(tx, {
+                         checkpoint: event.checkpoint,
+                         tables,
+@@ -474,8 +475,7 @@
+                             row_count: counts[index],
+                         });
+                     }
+-                    await createTriggers(tx, { tables }, context);
+-                    await createLiveQueryTriggers(tx, { namespaceBuild, tables }, context);
++                    await setReorgTriggersEnabled(tx, tables.map(table => ({ schema: getTableConfig(table).schema ?? 'public', name: getTableName(table) })), namespaceBuild.schema, true);
+                 }, undefined, context);
+                 indexingCache.clear();
+                 common.logger.info({
+diff --git a/dist/esm/database/yunipals-reorg-triggers.mjs b/dist/esm/database/yunipals-reorg-triggers.mjs
+new file mode 100644
+--- /dev/null
++++ b/dist/esm/database/yunipals-reorg-triggers.mjs
+@@ -0,0 +1,22 @@
++// Ponder 0.17.5 multichain reorgs only. The caller owns the rollback transaction.
++// ALTER ... DISABLE/ENABLE TRIGGER takes SHARE ROW EXCLUSIVE, which permits
++// catalog ACCESS SHARE locks. DROP/CREATE takes ACCESS EXCLUSIVE and can block
++// the entire marketplace behind a retained pagination snapshot.
++const quote = (name) => `"${name.replaceAll('"', '""')}"`;
++
++export async function setReorgTriggersEnabled(tx, tables, schema, enabled) {
++  const action = enabled ? "ENABLE" : "DISABLE";
++  const targets = [
++    ...tables.flatMap((table) =>
++      ["reorg", "live_query"].map((trigger) => ({ ...table, trigger }))
++    ),
++    { schema, name: "_ponder_checkpoint", trigger: "live_query_notify" }
++  ];
++  for (const target of targets) {
++    await tx.wrap({ label: "toggle_reorg_trigger" }, (db) =>
++      db.execute(
++        `ALTER TABLE ${quote(target.schema)}.${quote(target.name)} ${action} TRIGGER ${quote(target.trigger)}`
++      )
++    );
++  }
++}

@@ -7,11 +7,13 @@ import {
   type Hex
 } from "viem";
 import { bsc } from "viem/chains";
+import type { PoolClient } from "pg";
 import { collectionAbi, collectionAddress, ZERO_ADDRESS } from "./config.js";
 import { pool } from "./db.js";
 import { bnbSchema } from "./schema.js";
 import { safeErrorMessage } from "./safe-error.js";
 import { createShutdownDeadline } from "./shutdown-deadline.mjs";
+import { acquireBnbWriterLock, releaseBnbWriterLock } from "./writer-lock.js";
 
 type RawLog = {
   address: Hex;
@@ -358,10 +360,18 @@ async function reconcileToFinalized() {
 }
 
 const beginShutdown = createShutdownDeadline();
+let writerLock: PoolClient | undefined;
+const onWriterLockLost = () => {
+  console.error("BNB writer lock connection lost; stopping before another range");
+  process.exit(1);
+};
 process.on("SIGTERM", () => { beginShutdown(0); stopping = true; });
 process.on("SIGINT", () => { beginShutdown(0); stopping = true; });
 
 try {
+  writerLock = await acquireBnbWriterLock(pool);
+  writerLock.on("error", onWriterLockLost);
+  writerLock.on("end", onWriterLockLost);
   await reconcileToFinalized();
   let nextPeriodic = Date.now() + reconcileMs;
   while (!stopping) {
@@ -375,10 +385,17 @@ try {
 } catch (error) {
   beginShutdown(1);
   const message = safeErrorMessage(error);
-  await pool.query(`UPDATE ${bnbSchema}.sync_state SET last_error=$1, updated_at=now() WHERE singleton`, [message.slice(0, 2_000)]).catch(() => undefined);
+  if (writerLock) {
+    await pool.query(`UPDATE ${bnbSchema}.sync_state SET last_error=$1, updated_at=now() WHERE singleton`, [message.slice(0, 2_000)]).catch(() => undefined);
+  }
   console.error("BNB worker failed", message);
   process.exitCode = 1;
 } finally {
   beginShutdown(process.exitCode ? 1 : 0);
+  if (writerLock) {
+    writerLock.off("error", onWriterLockLost);
+    writerLock.off("end", onWriterLockLost);
+    await releaseBnbWriterLock(writerLock);
+  }
   await pool.end();
 }
