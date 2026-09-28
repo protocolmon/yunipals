@@ -30,6 +30,12 @@ and combined four-chain read views once Ponder tables exist. For an independent
 BNB-only installation, run `bnb:standalone-views` after `bnb:migrate` instead;
 it refuses to replace existing read views.
 
+The metadata source migrations and import, backup, restore, status, and
+reconciliation commands are available under the `metadata:*` scripts in
+`package.json`. Source inventory and import require an explicit `--legacy-root`
+path; no server-specific legacy data path is built in. These commands prepare
+the PostgreSQL archive source and do not activate archive serving.
+
 Run the processes separately with the same database and compatible RPC settings:
 
 ```sh
@@ -58,11 +64,12 @@ schemas. The unit suite and typecheck do not require a database.
 
 ## Metadata and rarity boundary
 
-This import is based on the available September 18 source snapshot, its
-September 21 metadata retry fix, and the collector API patch. The running
-`/root/indexer-next` checkout was unavailable
-in this workspace. The snapshot's optional local rarity formula depends on
-private package archives, so this app supports only
+The September 18 source snapshot, September 21 metadata retry fix, collector
+API patch, and September 28 running-checkout comparison are recorded in
+[source provenance](SOURCE_PROVENANCE.md). The running checkout defaults to
+`METADATA_SOURCE_MODE=legacy-http`; its newer archive reader, renderer, publisher,
+main API changes, and local rarity formula depend on private package archives
+that are not included here. This app currently supports only
 `RARITY_READ_SOURCE=metadata`. Raw and capped scores come from supplied metadata.
 `RARITY_READ_SOURCE=local` fails at startup; a locally recalculated rarity score
 must be implemented and compared with existing results before enabling that
@@ -70,10 +77,10 @@ mode. The old parity script must not be used as evidence of local formula
 parity.
 
 Before replacing a running indexer, reconcile this source with its current
-checkout, compare schema and API responses on a disposable database, replay BNB
+checkout, resolve the archive runtime dependency, compare schema and API
+responses on a disposable database, replay BNB
 from the start block or verify the current cursor and table contents, and check
 all four chain and metadata worker checkpoints. This repository change does not
 switch any production process or database.
 
-See [source provenance](SOURCE_PROVENANCE.md) and the
-[BNB self-hosting guide](../../docs/self-hosting-bnb.md).
+See the [BNB self-hosting guide](../../docs/self-hosting-bnb.md).

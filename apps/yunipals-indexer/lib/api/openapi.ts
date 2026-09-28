@@ -15,9 +15,38 @@ export const openApiDocument = {
     { name: "Collection" },
     { name: "Visibility" },
     { name: "Operations" },
+    { name: "Legacy metadata" },
     { name: "Leaderboards" }
   ],
   paths: {
+    "/v1/indexing-status": {
+      get:{tags:["Operations"],summary:"Read explicit chain recovery readiness",
+        description:"Reports rebuilding/failed chains and verified recovery checkpoints. During recovery, affected ownership, visibility and derived-data routes return 503; unrelated chains and immutable archive reads remain available.",
+        responses:{"200":{description:"Recovery readiness and per-chain state"}}}
+    },
+    "/legacy-meta/meta": {
+      get: { tags:["Legacy metadata"],summary:"Read archived NFT metadata by legacy ID",
+        description:"Available in archive mode after activation. Current ownership is overlaid only when a single live chain binding exists. Multiple live bindings return a null address and X-Metadata-Ownership: chain_ambiguous; use the chain-qualified token API for each owner. Historical unindexed assets are labeled historical_source. The legacy burned-token response remains HTTP 200 with a message and is not valid published metadata.",
+        parameters:[{name:"id",in:"query",required:true,schema:{type:"string"}}],
+        responses:{"200":{description:"NFT document or legacy message-only response"},"304":{description:"Unchanged response"},"404":{description:"Unknown NFT"},"503":{description:"Archive unavailable, ownership rebuilding, or binding/chain update requires reconciliation"}} }
+    },
+    "/legacy-meta/v1/getMetasById": {
+      post:{tags:["Legacy metadata"],summary:"Read ordered family-qualified legacy metadata",
+        requestBody:{required:true,content:{"application/json":{schema:{type:"object",required:["ids"],properties:{ids:{type:"array",minItems:1,maxItems:100,items:{type:"string"}},genIdType:{type:"string"}}}}}},
+        responses:{"200":{description:"Ordered metadata array, retaining duplicate IDs"},"400":{description:"Invalid request"},"413":{description:"Bulk or body limit exceeded"},"500":{description:"Legacy bulk failure, including a burned NFT"},"503":{description:"Metadata unavailable"}}}
+    },
+    "/legacy-meta/v1/all-meta-by-address": {
+      get:{tags:["Legacy metadata"],summary:"Read one explicitly supplied wallet's indexed collection",
+        description:"Returns wallets, errors, resultCount, metaData and info. Supported ownership chains are Ethereum, Base, Polygon and BNB. Linked-account expansion is retired; expandAddress=true returns 410. Queries are bounded to 1000 tokens; larger wallets should use the paginated native owner API. Unavailable metadata is explicit rather than silently dropping owned tokens.",
+        parameters:[{name:"address",in:"query",required:true,schema:{type:"string"}},{name:"expandAddress",in:"query",schema:{type:"boolean",default:false}},
+          {name:"chains",in:"query",schema:{type:"array",items:{type:"string",enum:["ethereum","base","polygon","bnb"]}},style:"form",explode:true}],
+        responses:{"200":{description:"Wallet collection"},"400":{description:"Unsupported ownership scope/filter"},"410":{description:"Linked-account expansion retired"},"503":{description:"Incomplete collection or result limit exceeded"}}}
+    },
+    "/legacy-meta/v1/island-meta/{type}/{id}": {
+      get:{tags:["Legacy metadata"],summary:"Read preserved static island NFT metadata",
+        parameters:[{name:"type",in:"path",required:true,schema:{type:"string",enum:["grassland"]}},{name:"id",in:"path",required:true,schema:{type:"string",enum:["10000000","20000000"]}}],
+        responses:{"200":{description:"Static NFT document"},"404":{description:"Unknown static document"},"503":{description:"No active archive"}}}
+    },
     "/v1/tokens": {
       get: {
         tags: ["Tokens"], summary: "List and filter tokens",

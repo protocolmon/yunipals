@@ -4,6 +4,7 @@ import { bsc } from "viem/chains";
 import { collectionSlugs, collections, type CollectionSlug } from "../lib/constants.js";
 import { bnbSchema, physicalPonderSchema, ponderSchema } from "../lib/offchain/sql.js";
 import { bnbRpcUrlOf } from "../lib/rpc.js";
+import { metadataReadRelation, leaderboardReadRelation } from "../lib/metadata/read-source.js";
 
 const apiRoot = process.env.VERIFY_API_ROOT ?? "http://127.0.0.1:9011";
 const requireReady = process.env.REQUIRE_PONDER_READY === "true";
@@ -115,11 +116,11 @@ try {
 
   const databaseState = await pool.query(`SELECT
       (SELECT value->>'is_ready' FROM ${physicalPonderSchema}._ponder_meta WHERE key='app') AS "ponderReady",
-      (SELECT count(*)::int FROM metadata.token_metadata WHERE collection='base' AND fetch_status='success') AS "baseMetadata",
-      (SELECT count(*)::int FROM metadata.token_metadata WHERE collection='polygon' AND fetch_status='success') AS "polygonMetadata",
-      (SELECT count(*)::int FROM metadata.token_metadata WHERE collection='bnb' AND fetch_status='success') AS "bnbMetadata",
+      (SELECT count(*)::int FROM ${metadataReadRelation} m WHERE collection='base') AS "baseMetadata",
+      (SELECT count(*)::int FROM ${metadataReadRelation} m WHERE collection='polygon') AS "polygonMetadata",
+      (SELECT count(*)::int FROM ${metadataReadRelation} m WHERE collection='bnb') AS "bnbMetadata",
       (SELECT caught_up_at IS NOT NULL AND last_error IS NULL FROM ${bnbSchema}.sync_state WHERE singleton) AS "bnbReady",
-      (SELECT count(*)::int FROM leaderboard.wallet_stats WHERE scope='all') AS "combinedWallets",
+      (SELECT count(*)::int FROM ${leaderboardReadRelation} stats WHERE scope='all') AS "combinedWallets",
       (SELECT bool_and(updated_at > now() - ($1 * interval '1 minute')) FROM
         (SELECT scope,max(updated_at) AS updated_at FROM leaderboard.wallet_stats GROUP BY scope) snapshots) AS "leaderboardsFresh",
       (SELECT bool_and(updated_at > now() - ($1 * interval '1 minute')) FROM metadata.trait_facet_status) AS "traitsFresh",

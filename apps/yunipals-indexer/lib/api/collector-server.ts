@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { apiPool } from "../offchain/db.js";
 import { resolveOwner, InvalidOwnerError, OwnerNameUnresolvedError, EnsUnavailableError } from "../ens/resolver.js";
+import { metadataSourceMode } from "../metadata/publication.js";
+import { chainReadiness } from "../metadata/chain-readiness.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
 
 const app = new Hono();
@@ -24,7 +26,7 @@ registerCollectorRoutes(app, {
     if (!Object.keys(owner.addresses).length) throw new OwnerNameUnresolvedError(`No address record found for ${input}`);
     return owner;
   },
-  checkReadiness: async () => ({ ready: true })
+  checkReadiness: async chains => metadataSourceMode() === "archive" ? chainReadiness(apiPool, chains) : { ready: true }
 });
 const server = serve({ fetch: app.fetch, hostname: "127.0.0.1", port: Number(process.env.COLLECTOR_API_PORT ?? 9012) });
 for (const signal of ["SIGTERM", "SIGINT"] as const) process.once(signal, () => {

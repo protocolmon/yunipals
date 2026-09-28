@@ -1,3 +1,4 @@
+import { performanceIndexes } from "../lib/offchain/api-indexes.js";
 import { pool, closePool } from "../lib/offchain/db.js";
 import { migrations } from "../lib/offchain/migrations.js";
 import { bnbReadSchemaStatements } from "../lib/bnb/read-schema.js";
@@ -47,32 +48,7 @@ try {
     await client.query(sql);
   }
   await client.query("COMMIT");
-  const performanceIndexes = [
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_collection_rarity_desc_idx
-      ON metadata.token_search(collection, rarity_points DESC NULLS LAST, token_id, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_collection_rarity_asc_idx
-      ON metadata.token_search(collection, rarity_points ASC NULLS LAST, token_id, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_rarity_desc_idx
-      ON metadata.token_search(rarity_points DESC NULLS LAST, token_id, collection, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_rarity_asc_idx
-      ON metadata.token_search(rarity_points ASC NULLS LAST, token_id, collection, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_collection_capped_rarity_desc_idx
-      ON metadata.token_search(collection, rarity_points_capped DESC NULLS LAST, token_id, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_collection_capped_rarity_asc_idx
-      ON metadata.token_search(collection, rarity_points_capped ASC NULLS LAST, token_id, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_capped_rarity_desc_idx
-      ON metadata.token_search(rarity_points_capped DESC NULLS LAST, token_id, collection, lifecycle)
-      WHERE metadata_available`,
-    `CREATE INDEX CONCURRENTLY IF NOT EXISTS token_search_available_capped_rarity_asc_idx
-      ON metadata.token_search(rarity_points_capped ASC NULLS LAST, token_id, collection, lifecycle)
-      WHERE metadata_available`
-  ];
+
   for (const sql of performanceIndexes) await client.query(sql);
   await client.query("ANALYZE metadata.token_search");
   console.log(`Applied ${migrations.length} idempotent migrations`);

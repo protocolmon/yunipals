@@ -1,14 +1,17 @@
+import { metadataScanReadRelation as metadataReadRelation } from "../metadata/read-source.js";
+import { metadataSourceMode } from "../metadata/publication.js";
+import { assertChainReady } from "../metadata/chain-readiness.js";
 import { pool } from "../offchain/db.js";
 import { ponderSchema } from "../offchain/sql.js";
 import { collectionSlugs } from "../constants.js";
 import {
   localRarityJoin,
   rarityPointsCappedSql,
-  rarityPointsSql,
-  rarityReadSource
+  rarityPointsSql
 } from "../rarity/read-source.js";
 
 export const scoreVersion = "collector-score-v1";
+const archiveMode = metadataSourceMode() === "archive";
 export const scoreFormula = "1000*ln(1+totalRarity) + 50*monsterCount + 500*uniqueTypes + 750*specialCount + 250*glitterCount";
 export const collectionScopes = Array.from({ length: (1 << collectionSlugs.length) - 1 }, (_, index) => {
   const chains = collectionSlugs.filter((_, bit) => (index + 1) & (1 << bit));
@@ -20,6 +23,11 @@ export async function refreshTraitIndex() {
   const updatedAt = new Date();
   try {
     await client.query("SELECT pg_advisory_lock(hashtext('yunipals:trait-refresh'))");
+    if(archiveMode)await client.query("SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))");
+    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+    if(archiveMode)await assertChainReady(client,collectionSlugs);
+    const release = metadataSourceMode() === "archive" ? (await client.query("SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE")).rows[0]?.release_id : null;
+    if (metadataSourceMode() === "archive" && !release) throw new Error("archive_unavailable");
     await client.query("DROP TABLE IF EXISTS metadata.token_search_build, metadata.token_trait_build, metadata.token_search_retired, metadata.token_trait_retired");
     await client.query("CREATE TABLE metadata.token_search_build (LIKE metadata.token_search INCLUDING ALL)");
     await client.query("CREATE TABLE metadata.token_trait_build (LIKE metadata.token_trait INCLUDING ALL)");
@@ -27,10 +35,10 @@ export async function refreshTraitIndex() {
       INSERT INTO metadata.token_search_build(collection, token_id, lifecycle, metadata_available,
         rarity_points, rarity_points_capped, updated_at)
       SELECT m.collection, m.token_id, m.lifecycle,
-        (m.fetch_status = 'success' AND m.document IS NOT NULL),
+        (m.document IS NOT NULL),
         ${rarityPointsSql},
         ${rarityPointsCappedSql}, $1
-      FROM metadata.token_metadata m
+      FROM ${metadataReadRelation} m
       ${localRarityJoin}
       LEFT JOIN LATERAL (
         SELECT a->>'value' AS value FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) a
@@ -41,15 +49,19 @@ export async function refreshTraitIndex() {
       INSERT INTO metadata.token_trait_build(collection, token_id, lifecycle, trait_type, value, value_numeric)
       SELECT DISTINCT m.collection, m.token_id, m.lifecycle, a->>'trait_type', a->>'value',
         CASE WHEN a->>'value' ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN (a->>'value')::numeric END
-      FROM metadata.token_metadata m
+      FROM ${metadataReadRelation} m
       CROSS JOIN LATERAL jsonb_array_elements(COALESCE(m.attributes, '[]')) a
-      WHERE m.fetch_status = 'success' AND m.document IS NOT NULL
+      WHERE m.document IS NOT NULL
         AND a ? 'trait_type' AND a ? 'value'
         AND a->>'trait_type' IS NOT NULL AND a->>'value' IS NOT NULL
     `);
     await client.query("ANALYZE metadata.token_search_build");
     await client.query("ANALYZE metadata.token_trait_build");
-    await client.query("BEGIN");
+    if (archiveMode) {
+      await client.query("DROP TABLE IF EXISTS metadata.projection_revision_build,metadata.projection_revision_retired");
+      await client.query("CREATE TABLE metadata.projection_revision_build (LIKE metadata.projection_revision INCLUDING ALL)");
+      await client.query(`INSERT INTO metadata.projection_revision_build SELECT m.collection,m.token_id,m.lifecycle,m.content_hash FROM ${metadataReadRelation} m`);
+    }
     await client.query("DELETE FROM metadata.trait_facet");
     await client.query("DELETE FROM metadata.trait_facet_status");
     for (const scope of collectionScopes) {
@@ -115,6 +127,11 @@ $preserve_read_grants$;
     await client.query("ALTER TABLE metadata.token_search_build RENAME TO token_search");
     await client.query("ALTER TABLE metadata.token_trait RENAME TO token_trait_retired");
     await client.query("ALTER TABLE metadata.token_trait_build RENAME TO token_trait");
+    if (archiveMode) {
+      await client.query("ALTER TABLE metadata.projection_revision RENAME TO projection_revision_retired");
+      await client.query("ALTER TABLE metadata.projection_revision_build RENAME TO projection_revision");
+      await client.query("INSERT INTO metadata.derived_snapshot(name,metadata_release_id) VALUES('traits',$1) ON CONFLICT(name) DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,updated_at=now()",[release]);
+    }
     await client.query("COMMIT");
     // Rebuilt tables can retain zero all-visible pages after an early vacuum.
     // Refresh visibility after publication so covering indexes stay useful.
@@ -134,6 +151,7 @@ $preserve_read_grants$;
         [settings.lockTimeout, settings.statementTimeout]);
     }
     await client.query("DROP TABLE metadata.token_search_retired, metadata.token_trait_retired");
+    if (archiveMode) await client.query("DROP TABLE metadata.projection_revision_retired");
     return { updatedAt };
   } catch (error) {
     await client.query("ROLLBACK");
@@ -141,6 +159,7 @@ $preserve_read_grants$;
   } finally {
     await client.query("DROP TABLE IF EXISTS metadata.token_search_build, metadata.token_trait_build").catch(() => undefined);
     await client.query("SELECT pg_advisory_unlock(hashtext('yunipals:trait-refresh'))").catch(() => undefined);
+    if(archiveMode)await client.query("SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))").catch(()=>undefined);
     client.release();
   }
 }
@@ -149,29 +168,36 @@ export async function refreshLeaderboard() {
   const client = await pool.connect();
   const updatedAt = new Date();
   try {
-    await client.query("BEGIN");
+    if(archiveMode)await client.query("SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))");
+    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+    if(archiveMode)await assertChainReady(client,collectionSlugs);
+    const release = metadataSourceMode() === "archive" ? (await client.query("SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE")).rows[0]?.release_id : null;
+    if (metadataSourceMode() === "archive" && !release) throw new Error("archive_unavailable");
     await client.query("SELECT pg_advisory_xact_lock(hashtext('yunipals:leaderboard-refresh'))");
     await client.query("CREATE TEMP TABLE next_wallet_stats (LIKE leaderboard.wallet_stats INCLUDING ALL) ON COMMIT DROP");
     await client.query(`
       INSERT INTO next_wallet_stats(scope, owner, monster_count, total_rarity, unique_types,
         special_count, glitter_count, collector_score, score_version, updated_at)
       WITH scopes(scope) AS (SELECT unnest($3::text[])),
-      token_traits AS (
+      token_traits AS MATERIALIZED (
         SELECT m.collection, m.token_id, m.lifecycle,
           COALESCE(${rarityPointsCappedSql}, 0) AS rarity,
-          max(a->>'value') FILTER (WHERE a->>'trait_type' = 'Type') AS monster_type,
-          bool_or(a->>'trait_type' = 'Special' AND a->>'value' = 'Yes') AS is_special,
-          bool_or(a->>'trait_type' = 'Glitter' AND a->>'value' <> 'None') AS is_glitter
-        FROM metadata.token_metadata m
+          traits.monster_type, traits.is_special, traits.is_glitter
+        FROM ${metadataReadRelation} m
         ${localRarityJoin}
         LEFT JOIN LATERAL (
           SELECT rarity_attribute->>'value' AS value
           FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) rarity_attribute
           WHERE rarity_attribute->>'trait_type' = 'Rarity Points' LIMIT 1
         ) rp ON true
-        LEFT JOIN LATERAL jsonb_array_elements(COALESCE(m.attributes, '[]')) a ON true
-        GROUP BY m.collection, m.token_id, m.lifecycle, m.document, rp.value
-          ${rarityReadSource === "local" ? ", local_rarity.status, local_rarity.rarity_points_capped" : ""}
+        -- Aggregate each token's attributes once, without sorting its full JSON
+        -- once per attribute. Materialize the compact result before scope joins.
+        LEFT JOIN LATERAL (
+          SELECT max(a->>'value') FILTER (WHERE a->>'trait_type' = 'Type') AS monster_type,
+            bool_or(a->>'trait_type' = 'Special' AND a->>'value' = 'Yes') AS is_special,
+            bool_or(a->>'trait_type' = 'Glitter' AND a->>'value' <> 'None') AS is_glitter
+          FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) a
+        ) traits ON true
       ), aggregates AS (
         SELECT s.scope, lower(t.owner) AS owner, count(*)::int AS monster_count,
           sum(COALESCE(x.rarity, 0)) AS total_rarity,
@@ -192,10 +218,14 @@ export async function refreshLeaderboard() {
       unique_types, special_count, glitter_count, collector_score, score_version, updated_at)
       SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
         collector_score, score_version, updated_at FROM next_wallet_stats`);
+    if (archiveMode) await client.query("INSERT INTO metadata.derived_snapshot(name,metadata_release_id) VALUES('leaderboard',$1) ON CONFLICT(name) DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,updated_at=now()",[release]);
     await client.query("COMMIT");
     return { updatedAt, wallets: Number((await pool.query("SELECT count(*) FROM leaderboard.wallet_stats WHERE scope='all'")).rows[0].count) };
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
-  } finally { client.release(); }
+  } finally {
+    if(archiveMode)await client.query("SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))").catch(()=>undefined);
+    client.release();
+  }
 }
