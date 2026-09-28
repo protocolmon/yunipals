@@ -750,5 +750,6 @@ app.get("/v1/status", async (c) => {
 });
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  serve({ fetch: app.fetch, port }, (info) => console.log(`Yunipals API listening on http://127.0.0.1:${info.port}`));
+  const hostname = process.env.API_HOST ?? "127.0.0.1";
+  serve({ fetch: app.fetch, hostname, port }, (info) => console.log(`Yunipals API listening on http://${hostname}:${info.port}`));
 }
