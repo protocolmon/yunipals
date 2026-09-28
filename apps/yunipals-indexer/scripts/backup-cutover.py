@@ -91,6 +91,9 @@ def recovery_archive(destination: Path) -> None:
     paths = [
         "root/indexer-next",
         f"opt/yunipals/releases/{RELEASE}",
+        "opt/node-v24.18.1",
+        "opt/yunipals/tools/pnpm-9.12.0-pinned",
+        "opt/yunipals/pnpm-store",
         "opt/yunipals-collector/releases/20260923-rarity-range",
         "opt/yunipals-indexer-ops",
         "etc/yunipals-indexer",
@@ -117,7 +120,7 @@ def recovery_archive(destination: Path) -> None:
     run(
         [
             "tar", "--zstd", "-cf", str(destination),
-            "--exclude=*/node_modules", "--exclude=*/.ponder", "--exclude=*/.git",
+            "--exclude=*/.ponder", "--exclude=*/.git",
             "--exclude=root/indexer-next/.ops-backups", "--exclude=root/indexer-next/backups",
             "--exclude=opt/yunipals-indexer-ops/rarity-local-v1-20260918",
             "-C", "/", *paths,
