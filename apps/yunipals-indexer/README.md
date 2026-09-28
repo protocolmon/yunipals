@@ -58,8 +58,9 @@ schemas. The unit suite and typecheck do not require a database.
 
 ## Metadata and rarity boundary
 
-This import is based on the available September 18 source snapshot plus the
-collector API patch. The running `/root/indexer-next` checkout was unavailable
+This import is based on the available September 18 source snapshot, its
+September 21 metadata retry fix, and the collector API patch. The running
+`/root/indexer-next` checkout was unavailable
 in this workspace. The snapshot's optional local rarity formula depends on
 private package archives, so this app supports only
 `RARITY_READ_SOURCE=metadata`. Raw and capped scores come from supplied metadata.
