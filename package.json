@@ -31,12 +31,15 @@
     "dev": "pnpm --filter @protopals/yunipals-home-web dev",
     "dev:web": "pnpm --filter @protopals/yunipals-home-web dev",
     "dev:api": "pnpm --filter @protopals/yunipals-market-api dev",
-    "typecheck": "pnpm --filter @protopals/yunipals-home-web typecheck && pnpm --filter @protopals/yunipals-market-api typecheck && pnpm --filter @protopals/yunipals-bnb-indexer typecheck",
+    "typecheck": "pnpm --filter @protopals/yunipals-home-web typecheck && pnpm --filter @protopals/yunipals-market-api typecheck && pnpm --filter @protopals/yunipals-indexer typecheck",
     "build": "pnpm --filter @protopals/yunipals-home-web build && pnpm --filter @protopals/yunipals-market-api build",
     "build:web": "pnpm --filter @protopals/yunipals-home-web build",
     "build:api": "pnpm --filter @protopals/yunipals-market-api build",
-    "test": "pnpm test:dependencies && pnpm test:web && pnpm test:api",
+    "test": "pnpm test:dependencies && pnpm test:web && pnpm test:api && pnpm test:indexer",
     "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:marketplace",
-    "test:api": "pnpm --filter @protopals/yunipals-market-api test"
+    "test:api": "pnpm --filter @protopals/yunipals-market-api test",
+    "test:indexer": "pnpm --filter @protopals/yunipals-indexer test",
+    "test:bnb-indexer": "pnpm --filter @protopals/yunipals-indexer bnb:test",
+    "dev:indexer": "pnpm --filter @protopals/yunipals-indexer dev"
   }
 }

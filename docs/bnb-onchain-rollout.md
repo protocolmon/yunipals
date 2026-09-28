@@ -12,14 +12,14 @@ use OpenSea.
   migration against disposable local PostgreSQL first; no persistent staging
   deployment is required. Migration 24 clears only the rebuildable discovery
   cache and cursor, then starts discovery in `preview`.
-- Run the [BNB ownership indexer](../packages/bnb-indexer/README.md) against
+- Run the [BNB ownership worker](../apps/yunipals-indexer/README.md) against
   the same BNB chain and expose `bnb_indexer.sync_state`,
   `yunipals_read_v4.token`, and `yunipals_read_v4.transfer_event` to the
   marketplace runtime role. Its source and an independent two-instance
-  ownership fixture are included. It has no dependency on the server's
-  four-chain metadata indexer or its private packages. The existing metadata
-  service may continue to serve collection artwork, rarity and other chains;
-  publishing that service is a separate project, not a BNB order rollout gate.
+  ownership fixture are included. The BNB worker can run independently of the
+  app's other chain and metadata processes and has no private package dependency.
+  The metadata processes may continue to serve collection artwork, rarity and
+  other chains during a BNB order rollout.
 - Set `MARKET_BNB_DISCOVERY_START_BLOCK` to a finalized block before the first
   supported validation transaction. Keep the same value after restarts. The
   worker scans at five-minute intervals with a database advisory lock and

@@ -1,6 +1,6 @@
 # Personal collection indexer patch
 
-The ownership indexer is external to this repository. This patch adds collector capabilities, bounded owner pages, query tests, a standalone collector server, and an optional name-prefix index. Its baseline is the production **on-disk** source inspected on 22 September 2026.
+Historical patch for the production **on-disk** source inspected on 22 September 2026. Its collector capabilities, bounded owner pages, query tests, and standalone collector server are now included in [the indexer app](../../apps/yunipals-indexer/README.md). Use this patch only for the original source baseline; do not apply it to the imported app.
 
 The running legacy API predates that source. Do not restart it merely to install this feature: doing so would activate unrelated pending metadata changes. This rollout uses a separate loopback collector process and routes only the two new endpoints to it. It uses the same database and runtime metadata mode as the existing API.
 

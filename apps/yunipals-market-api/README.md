@@ -64,7 +64,7 @@ app publishes with a maker-wallet Seaport
 `validate` transaction and no private order-submission POST.
 
 Collection ownership and lifecycle in the response can come from the public
-[BNB ownership indexer](../../packages/bnb-indexer/README.md). It does not use
+[BNB ownership worker](../yunipals-indexer/README.md). It does not use
 the server's private metadata packages. A full four-chain site needs additional
 metadata and ownership sources for the other chains.
 

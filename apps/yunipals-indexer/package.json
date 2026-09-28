@@ -1,0 +1,48 @@
+{
+  "name": "@protopals/yunipals-indexer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "ponder dev",
+    "start:indexer": "ponder start --port 9010",
+    "start:api": "tsx lib/api/server.ts",
+    "start:collector": "tsx lib/api/collector-server.ts",
+    "start:metadata": "tsx lib/metadata/worker.ts",
+    "start:leaderboard": "tsx lib/leaderboard/worker.ts",
+    "start:bnb": "tsx lib/bnb/worker.ts",
+    "bnb:migrate": "tsx lib/bnb/migrate.ts",
+    "bnb:standalone-views": "tsx lib/bnb/standalone-views.ts",
+    "bnb:test": "node scripts/test-bnb-integration.mjs",
+    "bnb:status": "tsx scripts/bnb-status.ts",
+    "leaderboard:refresh": "tsx scripts/refresh-leaderboard.ts",
+    "rarity:backfill": "tsx scripts/backfill-rarity.ts",
+    "ens:refresh": "tsx scripts/refresh-ens.ts",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify:multichain": "tsx scripts/verify-multichain.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "1.19.5",
+    "drizzle-orm": "0.41.0",
+    "hono": "4.13.1",
+    "pg": "8.23.0",
+    "ponder": "0.17.5",
+    "tslib": "2.6.0",
+    "tsx": "4.23.15",
+    "viem": "2.55.13",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.2.13",
+    "@types/node": "22.13.4",
+    "@types/pg": "8.11.11",
+    "typescript": "5.7.3",
+    "vitest": "3.2.7"
+  }
+}

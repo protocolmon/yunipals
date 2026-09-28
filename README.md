@@ -10,10 +10,10 @@ collection. Buying and selling are optional features within the web app.
 - [Web app](apps/yunipals-home-web/README.md): browse the collection, inspect
   traits and token histories, view collector profiles and rankings, and manage
   your own NFTs. Optional listing and purchase actions use your wallet.
-- [BNB ownership indexer](packages/bnb-indexer/README.md): rebuilds BNB token
-  ownership, transfers and burn/recreation history from public chain events.
-  This supports collection reads and helps reject orders tied to an outdated
-  version of a token, even when its token ID is the same.
+- [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
+  ownership, metadata, rarity, collector, and leaderboard reads. Its single BNB
+  worker rebuilds ownership, transfers and burn/recreation history from public
+  chain events.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,
   order encoding and validation shared by the web app and API.
 - [Marketplace API and workers](apps/yunipals-market-api/README.md): supports
@@ -28,11 +28,10 @@ Running this app with live buying or selling requires the marketplace API and,
 for BNB ownership checks, the BNB indexer. OpenSea and on-chain events are the
 underlying order sources; the API does not custody NFTs or funds.
 
-The complete four-chain collection view also needs a compatible metadata,
-ownership and rarity indexer API. Its implementation is an external service, not
-in this repository. Provider services, RPC endpoints and a PostgreSQL database
-are configured separately. For an independent BNB orderbook deployment, follow
-the [self-hosting guide](docs/self-hosting-bnb.md).
+The complete four-chain collection view needs the indexer API, RPC endpoints and
+a PostgreSQL database. Its source is included here, with a documented parity
+gate before replacing the running service. For an independent BNB orderbook
+deployment, follow the [self-hosting guide](docs/self-hosting-bnb.md).
 
 ## Development
 
@@ -44,6 +43,7 @@ pnpm dev:web
 pnpm typecheck
 pnpm test:dependencies
 pnpm test:web
+pnpm test:indexer
 pnpm build
 ```
 

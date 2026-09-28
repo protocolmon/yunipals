@@ -71,7 +71,7 @@ const names = [`bnb_test_${process.pid}_a`, `bnb_test_${process.pid}_b`];
 const workers = [];
 
 function runScript(script, schema) {
-  const child = spawn(process.execPath, [fileURLToPath(new URL(`../dist/${script}`, import.meta.url))], {
+  const child = spawn(process.execPath, ["--import", "tsx", fileURLToPath(new URL(`../lib/bnb/${script.replace(/\.js$/, ".ts")}`, import.meta.url))], {
     env: {
       ...process.env,
       BNB_DATABASE_SCHEMA: schema,
