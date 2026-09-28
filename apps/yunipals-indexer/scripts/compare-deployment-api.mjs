@@ -74,7 +74,7 @@ try {
   for (const chain of ["ethereum", "base", "polygon", "bnb"]) {
     paths.add(`/v1/collection?chain=${chain}`);
     paths.add(`/v1/tokens?chain=${chain}&limit=5`);
-    paths.add(`/v1/tokens?chain=${chain}&sort=rarity-desc&limit=5`);
+    paths.add(`/v1/tokens?chain=${chain}&sort=rarity-desc&metadata=available&limit=5`);
     paths.add(`/v1/traits?chain=${chain}`);
     paths.add(`/v1/leaderboards/monster-count?chain=${chain}&limit=3`);
     const sample = await database.query(
@@ -114,6 +114,7 @@ try {
     database: "yunipals_rehearsal",
     statementTimeoutMs: process.env.API_DB_STATEMENT_TIMEOUT_MS ?? null,
     acceptedRoutingDifference: "The candidate main API adds collector capabilities; the public proxy serves this route from the separate collector API.",
+    rarityQueryScope: "The sort comparison uses metadata=available, which follows the production indexed browse path. The unfiltered rarity sort times out on the restored cold database in both versions.",
     compared: comparisons.length,
     mismatches: comparisons.filter((entry) => !entry.match),
     comparisons
