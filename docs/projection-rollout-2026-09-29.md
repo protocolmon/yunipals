@@ -37,11 +37,11 @@ own fixes.
   `market_prod_source_read` has `USAGE` and `SELECT` on its active pointer,
   generation registry, and search table, without write access. All five payload
   tables and their TOAST relations set `vacuum_truncate=false`.
-- The old rename-based leaderboard worker was stopped and disabled. Its
-  installed systemd command now points to the generation-capable release and
-  remains disabled until the first refresh is verified. Scheduled refresh
-  entrypoints were audited; no separate trait-refresh timer or cron job was
-  found.
+- The old rename-based leaderboard worker was stopped while readers and the
+  first generation refresh were verified. Its installed systemd command now
+  points to the generation-capable release, and the recurring worker is enabled.
+  Scheduled refresh entrypoints were audited; no separate trait-refresh timer
+  or cron job was found.
 
 ## Seed and reader verification
 
@@ -75,7 +75,7 @@ instance was stopped. This issue needs a separate query-plan investigation.
 
 The first generation-backed refresh was launched as
 `yunipals-projection-first-refresh-20260929.service`. The scheduled worker
-remains disabled. A supervised
+was disabled during that build. A supervised
 `yunipals-projection-first-probe-v2-20260929.service` checked live API,
 collector, and marketplace routes every 15 seconds. It saw no read errors
 during the private build.
@@ -108,8 +108,8 @@ source file SHA-256 verified.
 The retained marketplace snapshot probe started at 13:54:13 UTC on generation
 1. The optimized one-off refresh started at 13:54:44 UTC in a supervised
 systemd unit with all three production environment files. The scheduled worker
-remains disabled until the optimized full refresh completes and the publication
-checks pass.
+was kept disabled until the optimized full refresh, backup, and publication
+checks completed.
 
 The search, trait, revision, and all-scope facet payloads committed as private
 generation 3. Facet generation completed in under six minutes. The old writer
@@ -155,12 +155,21 @@ restart. The initial observer ran from 15:25 to 16:11 UTC and saw one catalog
 429 and no 503 or 500. Its exit rule counted that rate limit as a fatal read
 error, so an updated observer now reports 429s separately while retaining
 fatal gates for other route errors and low disk. A fresh 24-hour window started
-at 16:11:28 UTC on generation 3. The first scheduled cycle and that window's
-completion are pending.
+at 16:11:28 UTC on generation 3.
 
-Record publication duration, storage after cleanup, and the post-release backup
-result here before marking this rollout complete. The full 24-hour and
-three-cycle acceptance window in the plan is still required.
+The first scheduled cycle started at 16:26 UTC and published generation 4 at
+16:52:30 UTC after the vacuum-first exact validation. The worker logged an
+11.1 ms publication duration. Generation 3 is the protected previous pointer;
+generation 1 was retired and its payload cleanup finished before wallet stats
+began. A marketplace cursor retained for 10.4 seconds across publication
+returned 200 afterward. The recurring probe completed 132 checks of each of
+seven routes with zero read errors and one separately reported catalog 429
+before publication. Free disk after cleanup was 64.6 GB (60.2 GiB). The
+worker then refreshed stats for 62,956 wallets at 17:01:20 UTC and completed
+ENS enrichment at 17:03:07 UTC: 223 attempted, 223 verified, zero failed.
+This completes the first scheduled cycle. The worker remained active with zero
+restarts and the active/previous pointer was 4/3. The 24-hour observation and
+two more complete scheduled cycles remain before final rollout acceptance.
 
 ## Reversal commands
 
