@@ -54,7 +54,7 @@ export async function assertProjectionBuildCapacity(client: PoolClient) {
   }
 }
 
-async function validateGeneration(client: PoolClient, id: string, insertedSearch: number) {
+export async function validateGeneration(client: PoolClient, id: string, insertedSearch: number) {
   const counts = await client.query<{
     search_count: string;
     revision_count: string;
@@ -86,7 +86,7 @@ async function validateGeneration(client: PoolClient, id: string, insertedSearch
   return { ...row, collections: coverage.rows };
 }
 
-async function publishGeneration(client: PoolClient, id: string, release: string | null, predecessor: string | null) {
+export async function publishGeneration(client: PoolClient, id: string, release: string | null, predecessor: string | null) {
   await client.query("BEGIN");
   try {
     await client.query("SET LOCAL lock_timeout='500ms'");
@@ -254,8 +254,10 @@ export async function refreshProjectionGeneration() {
       GROUP BY scope.scope`, [id, scopes, updatedAt]);
     await client.query("COMMIT");
     committed = true;
-    const validation = await validateGeneration(client, id, insertedSearch);
+    // Newly inserted pages become all-visible only after vacuum. The exact
+    // search/revision correspondence check is much faster with that map set.
     await client.query("VACUUM (ANALYZE, TRUNCATE FALSE, PARALLEL 0) metadata_projection.search, metadata_projection.trait, metadata_projection.revision");
+    const validation = await validateGeneration(client, id, insertedSearch);
     await client.query(`UPDATE metadata_projection.generation
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
       [id, JSON.stringify(validation)]);
