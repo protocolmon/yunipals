@@ -1,7 +1,7 @@
 # Indexer monorepo restore and cutover plan
 
-Status: Phase 1 accepted and the six-service production switch completed on
-28 September 2026. The first-hour and 24-hour observation gates remain open.
+Status: Phase 1, the six-service production switch, and first-hour acceptance
+completed on 28–29 September 2026. The 24-hour observation gate remains open.
 The detailed steps below are the original runbook; this execution record takes
 precedence where measurements differ from estimates.
 
@@ -52,6 +52,37 @@ precedence where measurements differ from estimates.
   collector capabilities and all three metadata response bodies matched their
   pre-cutover hashes. The protected production-cutover record contains exact
   before/after checkpoints and route digests.
+- The first-hour report accepted 55 monitor samples, six active pinned services
+  with zero restarts, one BNB writer lock, unchanged Ponder build and metadata
+  release, no failed publication jobs, seven repeated public route checks, no
+  real-traffic 5xx, and more than 25 GB free. BNB progressed through multiple
+  scheduled finalized ranges. Transient Base RPC warnings occurred at the same
+  rate as before the switch; three initial Polygon lag samples cleared during
+  Ponder restart recovery.
+- A separate nightly MongoDB backup overlapped the first live trait rebuild and
+  reduced disk headroom. Its backup service was temporarily frozen; the
+  unfinished leaderboard transaction was stopped and discarded without changing
+  published traits or wallet snapshots. The MongoDB backup then resumed, uploaded
+  its archive, and removed its local temporary dump. The leaderboard worker was
+  restarted on the pinned release at 00:39 UTC with about 91 GB free. The
+  uploaded MongoDB archive was independently listed on the Storage Box at its
+  expected size. The backup service later logged a remote cleanup warning; the
+  upload itself completed and its local temporary files were removed.
+- The restarted worker completed a full live refresh at 01:25:36 UTC (46 minutes
+  26 seconds) and then completed ENS refresh. It published 512,342 wallet rows
+  across 15 scopes and refreshed all 15 trait scopes. The existing metadata
+  release and Ponder build remained unchanged; the BNB cursor continued to
+  advance, exactly one BNB writer lock was held, publication had no pending or
+  failed jobs, and marketplace read grants remained valid. At 01:31 UTC, 13
+  public route checks returned 200, static collector capabilities and all three
+  legacy metadata bodies matched their pre-cutover hashes, all six services were
+  active, and disk had 98 GB free. Nginx recorded no 5xx for indexer, marketplace,
+  or legacy metadata routes since the switch. Protected evidence is in
+  `production-cutover/derived-refresh-acceptance.json` and
+  `production-cutover/derived-refresh-database.txt` beside the fresh backup.
+  The derived-data publication gate is accepted. The MongoDB backup overlap
+  still needs a durable capacity or streaming-backup fix before the next nightly
+  run; the 24-hour observation gate remains open.
 
 ## Outcome
 
