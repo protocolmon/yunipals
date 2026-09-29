@@ -115,6 +115,7 @@ def recovery_archive(destination: Path) -> None:
         paths.append("opt/yunipals-ops")
     if MARKET_RELEASE:
         paths.append(f"opt/yunipals-marketplace/releases/{MARKET_RELEASE}")
+        paths.append("etc/yunipals-marketplace/production")
     for name in SERVICE_NAMES:
         for suffix in (".service", ".service.d"):
             path = f"etc/systemd/system/{name}{suffix}"
