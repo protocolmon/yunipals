@@ -166,7 +166,7 @@ export async function refreshProjectionGeneration() {
     await cleanupGenerations(client);
     await assertProjectionBuildCapacity(client);
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
-    // The full-generation facet hash joins spill heavily at PostgreSQL's 4 MB default.
+    // Large generation inserts and facets spill heavily at PostgreSQL's 4 MB default.
     await client.query("SET LOCAL work_mem = '64MB'");
     if (archiveMode) await assertChainReady(client, collectionSlugs);
     const release = archiveMode
@@ -203,35 +203,55 @@ export async function refreshProjectionGeneration() {
       (generation_id,collection,token_id,lifecycle,metadata_content_hash)
       SELECT $1::bigint,m.collection,m.token_id,m.lifecycle,m.content_hash
       FROM ${metadataScanReadRelation} m`, [id]);
-    for (const scope of scopes) {
-      await client.query(`INSERT INTO metadata_projection.facet
-        (generation_id,scope,trait_type,kind,min_value,max_value,values,updated_at)
-        WITH counts AS (SELECT f.trait_type,f.value,count(*)::int AS count,
+    // This limit is local to the build transaction; the facet sort runs once for all scopes.
+    await client.query("SET LOCAL work_mem = '256MB'");
+    await client.query(`INSERT INTO metadata_projection.facet
+      (generation_id,scope,trait_type,kind,min_value,max_value,values,updated_at)
+      WITH per_collection AS MATERIALIZED (
+        SELECT f.collection,f.trait_type,f.value,count(*)::int AS trait_count,
           min(f.value_numeric) AS min_value,max(f.value_numeric) AS max_value,
           bool_and(f.value_numeric IS NOT NULL) AS numeric_value
-          FROM metadata_projection.trait f JOIN ${ponderSchema}.token t
-            ON t.collection=f.collection AND t.token_id::numeric=f.token_id AND t.lifecycle=f.lifecycle
-          WHERE f.generation_id=$1 AND NOT t.burned
-            AND ($2='all' OR t.collection=ANY(string_to_array($2,'+')))
-          GROUP BY f.trait_type,f.value),
-        type_stats AS (SELECT trait_type,bool_and(numeric_value) AS is_numeric,
-          min(min_value) AS min_value,max(max_value) AS max_value FROM counts GROUP BY trait_type)
-        SELECT $1::bigint,$2,s.trait_type,CASE WHEN s.is_numeric THEN 'numeric' ELSE 'categorical' END,
-          CASE WHEN s.is_numeric THEN s.min_value END,CASE WHEN s.is_numeric THEN s.max_value END,
-          CASE WHEN s.is_numeric THEN NULL ELSE (SELECT jsonb_agg(
-            jsonb_build_object('value',c.value,'count',c.count) ORDER BY c.count DESC,c.value)
-            FROM counts c WHERE c.trait_type=s.trait_type) END,$3 FROM type_stats s`,
-        [id, scope, updatedAt]);
-      await client.query(`INSERT INTO metadata_projection.facet_status
-        (generation_id,scope,singleton,available,missing,updated_at)
-        SELECT $1::bigint,$2,true,count(*) FILTER(WHERE s.metadata_available)::int,
-          count(*) FILTER(WHERE NOT COALESCE(s.metadata_available,false))::int,$3
+        FROM metadata_projection.trait f
+        WHERE f.generation_id=$1 AND EXISTS (
+          SELECT 1 FROM ${ponderSchema}.token t
+          WHERE t.collection=f.collection AND t.token_id::numeric=f.token_id
+            AND t.lifecycle=f.lifecycle AND NOT t.burned
+        )
+        GROUP BY f.collection,f.trait_type,f.value
+      ), scoped_counts AS MATERIALIZED (
+        SELECT scope.scope,c.trait_type,c.value,sum(c.trait_count)::int AS trait_count,
+          min(c.min_value) AS min_value,max(c.max_value) AS max_value,
+          bool_and(c.numeric_value) AS numeric_value
+        FROM unnest($2::text[]) AS scope(scope) CROSS JOIN per_collection c
+        WHERE scope.scope='all' OR c.collection=ANY(string_to_array(scope.scope,'+'))
+        GROUP BY scope.scope,c.trait_type,c.value
+      ), type_stats AS (
+        SELECT scope,trait_type,bool_and(numeric_value) AS is_numeric,
+          min(min_value) AS min_value,max(max_value) AS max_value,
+          jsonb_agg(jsonb_build_object('value',value,'count',trait_count)
+            ORDER BY trait_count DESC,value) AS values
+        FROM scoped_counts GROUP BY scope,trait_type
+      )
+      SELECT $1::bigint,s.scope,s.trait_type,
+        CASE WHEN s.is_numeric THEN 'numeric' ELSE 'categorical' END,
+        CASE WHEN s.is_numeric THEN s.min_value END,
+        CASE WHEN s.is_numeric THEN s.max_value END,
+        CASE WHEN s.is_numeric THEN NULL ELSE s.values END,$3
+      FROM type_stats s`, [id, scopes, updatedAt]);
+    await client.query(`INSERT INTO metadata_projection.facet_status
+      (generation_id,scope,singleton,available,missing,updated_at)
+      WITH per_collection AS MATERIALIZED (
+        SELECT t.collection,count(*) FILTER(WHERE s.metadata_available)::int AS available,
+          count(*) FILTER(WHERE NOT COALESCE(s.metadata_available,false))::int AS missing
         FROM ${ponderSchema}.token t LEFT JOIN metadata_projection.search s
           ON s.generation_id=$1 AND s.collection=t.collection
             AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
-        WHERE NOT t.burned AND ($2='all' OR t.collection=ANY(string_to_array($2,'+')))`,
-        [id, scope, updatedAt]);
-    }
+        WHERE NOT t.burned GROUP BY t.collection
+      )
+      SELECT $1::bigint,scope.scope,true,sum(c.available)::int,sum(c.missing)::int,$3
+      FROM unnest($2::text[]) AS scope(scope) CROSS JOIN per_collection c
+      WHERE scope.scope='all' OR c.collection=ANY(string_to_array(scope.scope,'+'))
+      GROUP BY scope.scope`, [id, scopes, updatedAt]);
     await client.query("COMMIT");
     committed = true;
     const validation = await validateGeneration(client, id, insertedSearch);
