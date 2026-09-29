@@ -29,8 +29,8 @@ own fixes.
 
 - Reader runtime source: `e8e7180`, staged at
   `/opt/yunipals/releases/e8e7180/apps/yunipals-indexer`.
-- Writer runtime source: `0869e9d`, staged at
-  `/opt/yunipals/releases/0869e9d/apps/yunipals-indexer`.
+- Writer runtime source: `5dd51e7`, staged at
+  `/opt/yunipals/releases/5dd51e7/apps/yunipals-indexer`.
 - Marketplace runtime: current production `9b69597` plus the projection reader
   bundle, staged at `/opt/yunipals-marketplace/releases/f7d4774-projection`.
 - Additive `metadata_projection` schema installed on the production indexer.
@@ -109,12 +109,53 @@ The retained marketplace snapshot probe started at 13:54:13 UTC on generation
 1. The optimized one-off refresh started at 13:54:44 UTC in a supervised
 systemd unit with all three production environment files. The scheduled worker
 remains disabled until the optimized full refresh completes and the publication
-probe passes. The 24-hour route observer still needs to run.
+checks pass.
 
-Record the first refresh's generation ID, validation, publication duration,
-probe summary, storage after cleanup, and post-release backup result here before
-marking this rollout complete. The full 24-hour and three-cycle acceptance
-window in the plan is still required.
+The search, trait, revision, and all-scope facet payloads committed as private
+generation 3. Facet generation completed in under six minutes. The old writer
+then spent over 60 minutes in its exact validation statement because the new
+search and revision pages had not yet been vacuumed. A non-truncating vacuum
+completed on those tables and the trait table. Independent exact counts and the
+search-to-revision check completed in 4.3 seconds afterward: 1,072,868 search
+and revision rows, 11,811,997 traits, 305 facets, 15 statuses, and no missing
+revision. The writer's old statement was cancelled, and it marked generation 3
+failed while leaving generation 1 active. Release `5dd51e7` moves vacuum
+before exact validation for later refreshes. Its guarded resume script repeated
+validation and published generation 3 at 15:23:32 UTC with generation 1 as the
+protected previous pointer.
+
+The retained marketplace snapshot was 12.4 seconds old at publication. Its
+next page returned HTTP 200 after the pointer switch. Across 328 checks of
+each of seven live routes, the probe saw zero 503s and zero 500s. It saw two
+marketplace catalog HTTP 429s at 14:31:38 and 14:55:47 UTC, both before
+publication; these caused its strict zero-error exit to fail. The marketplace
+catalog route uses a separate two-concurrent-request work gate keyed by the
+transport peer, so its intermittent 429 is a distinct capacity signal. The 24-hour
+post-publication route and storage observer started at 15:25:27 UTC on
+generation 3. It saw one catalog 429 at 15:39:28 UTC and no 503 or 500 in its
+initial samples. A separate one-off leaderboard refresh completed at 15:34:23
+UTC because the cancelled worker did not reach that stage; it published stats
+for 62,956 wallets. The post-release encrypted recovery backup started at
+15:35:45 UTC using the tested Storage Box environment and pinned writer and
+marketplace releases. It completed at 16:05:10 UTC. The local
+`/var/backups/yunipals-indexer-cutover-20260929T153545Z/offhost-report.json`
+records `complete: true`: all four encrypted artifacts were uploaded,
+downloaded, decrypted, and SHA-256 checked on the Storage Box under
+`yunipals-marketplace/indexer-next-recovery/cutover-20260929T153545Z`.
+Its manifest pins indexer `5dd51e7` and marketplace
+`f7d4774-projection`. The older pre-migration backup's report was checked
+again; only its redundant local database, globals, and runtime payload files
+were removed. Its local report and manifest and its verified off-host copy
+remain. Free disk returned to about 67 GB.
+
+The recurring worker was enabled at 16:07 UTC, pinned to `5dd51e7`. Its live
+process environment was checked for generation projection, archive metadata,
+local rarity, and a 10 GB backup-peak capacity allowance. It reported no
+restart. Its first scheduled cycle and the 24-hour observation are pending.
+
+Record publication duration, storage after cleanup, and the post-release backup
+result here before marking this rollout complete. The full 24-hour and
+three-cycle acceptance window in the plan is still required.
 
 ## Reversal commands
 
@@ -131,14 +172,13 @@ one transaction. Recheck all three readers before resuming the worker.
 ```sh
 systemctl stop yunipals-leaderboard.service
 systemd-run --unit=yunipals-projection-rollback --wait --collect \
-  -p WorkingDirectory=/opt/yunipals/releases/0869e9d/apps/yunipals-indexer \
+  -p WorkingDirectory=/opt/yunipals/releases/5dd51e7/apps/yunipals-indexer \
   -p EnvironmentFile=/etc/yunipals-indexer/indexer.env \
   /opt/node-v24.18.1/bin/node --import tsx \
-  /opt/yunipals/releases/0869e9d/apps/yunipals-indexer/scripts/rollback-projection.ts
+  /opt/yunipals/releases/5dd51e7/apps/yunipals-indexer/scripts/rollback-projection.ts
 ```
 
-If the optimized one-off refresh is still running, stop
-`yunipals-projection-optimized-refresh-20260929.service` before invoking rollback.
+Stop any active one-off or scheduled refresh before invoking rollback.
 Check its journal and the pointer after any ambiguous stop or database response.
 
 During the initial seeded switch only, the staged `*-compat.conf` files under
