@@ -19,7 +19,8 @@ import tempfile
 
 
 BACKUP_ROOT = Path("/var/backups")
-RELEASE = "f0bd9a0"
+RELEASE = os.environ.get("YUNIPALS_BACKUP_RELEASE", "f0bd9a0")
+MARKET_RELEASE = os.environ.get("YUNIPALS_BACKUP_MARKET_RELEASE")
 DATABASE = "yunipals_backfill"
 KNOWN_HOSTS = "/etc/yunipals-marketplace/backup-known-hosts"
 TARGET_PATTERN = re.compile(r"[A-Za-z0-9._-]+@[A-Za-z0-9.-]+")
@@ -88,6 +89,10 @@ def globals_archive(destination: Path) -> None:
 
 
 def recovery_archive(destination: Path) -> None:
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", RELEASE):
+        raise RuntimeError("Invalid indexer backup release")
+    if MARKET_RELEASE and not re.fullmatch(r"[A-Za-z0-9._-]+", MARKET_RELEASE):
+        raise RuntimeError("Invalid marketplace backup release")
     paths = [
         "root/indexer-next",
         f"opt/yunipals/releases/{RELEASE}",
@@ -106,6 +111,10 @@ def recovery_archive(destination: Path) -> None:
         "var/lib/yunipals-market-monitor",
         "var/backups/yunipals-indexer-premerge-20260928TAduj0X/rehearsal",
     ]
+    if Path("/opt/yunipals-ops").exists():
+        paths.append("opt/yunipals-ops")
+    if MARKET_RELEASE:
+        paths.append(f"opt/yunipals-marketplace/releases/{MARKET_RELEASE}")
     for name in SERVICE_NAMES:
         for suffix in (".service", ".service.d"):
             path = f"etc/systemd/system/{name}{suffix}"
@@ -114,6 +123,15 @@ def recovery_archive(destination: Path) -> None:
     timer = Path("/etc/systemd/system/yunipals-market-monitor.timer")
     if timer.exists():
         paths.append(str(timer).lstrip("/"))
+    if MARKET_RELEASE:
+        for suffix in (".service", ".service.d"):
+            path = f"etc/systemd/system/yunipals-market-production-api{suffix}"
+            if (Path("/") / path).exists():
+                paths.append(path)
+        for suffix in (".service", ".service.d", ".timer"):
+            path = f"etc/systemd/system/mongodb-backupmon{suffix}"
+            if (Path("/") / path).exists():
+                paths.append(path)
     for path in paths:
         if not (Path("/") / path).exists():
             raise RuntimeError(f"Missing recovery input: {path}")
@@ -207,6 +225,7 @@ def main() -> None:
         "format": "yunipals-indexer-cutover-backup-v1",
         "database": DATABASE,
         "release": RELEASE,
+        "marketRelease": MARKET_RELEASE,
         "startedAt": started,
         "completedAt": dt.datetime.now(dt.timezone.utc).isoformat(),
         "files": {path.name: {"bytes": path.stat().st_size, "sha256": digest(path)} for path in files},
