@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import datetime as dt
+from http.client import HTTPException
 import json
 import os
 import subprocess
@@ -36,7 +37,7 @@ def status(url: str) -> tuple[int | str, int]:
             code: int | str = response.status
     except HTTPError as error:
         code = error.code
-    except (URLError, TimeoutError) as error:
+    except (URLError, OSError, HTTPException) as error:
         code = type(error).__name__
     return code, round((time.monotonic() - started) * 1000)
 
@@ -96,7 +97,7 @@ def main() -> None:
                     "status": code}), flush=True)
         try:
             generations[pointer()] += 1
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             errors["pointer:unavailable"] += 1
             print(json.dumps({"event": "pointer_error", "at": utc_now()}), flush=True)
         minimum_free = min(minimum_free, free_bytes())
