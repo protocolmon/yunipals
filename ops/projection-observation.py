@@ -64,10 +64,11 @@ def percentile(values: list[int], quantile: float) -> int | None:
     return ordered[min(len(ordered) - 1, max(0, int(len(ordered) * quantile + 0.999999) - 1))]
 
 
-def report(event: str, counts: Counter[str], errors: Counter[str], latencies: dict[str, list[int]],
-           generations: Counter[str], minimum_free: int) -> None:
+def report(event: str, counts: Counter[str], errors: Counter[str], rate_limits: Counter[str],
+           latencies: dict[str, list[int]], generations: Counter[str], minimum_free: int) -> None:
     print(json.dumps({"event": event, "at": utc_now(), "samples": counts,
-        "errors": errors, "generations": generations, "minimumFreeBytes": minimum_free,
+        "errors": errors, "rateLimits": rate_limits, "generations": generations,
+        "minimumFreeBytes": minimum_free,
         "p95LatencyMs": {name: percentile(values, 0.95) for name, values in latencies.items()},
         "maxLatencyMs": {name: max(values) for name, values in latencies.items()}}), flush=True)
 
@@ -78,6 +79,7 @@ def main() -> None:
         raise RuntimeError("Invalid observation duration")
     counts: Counter[str] = Counter()
     errors: Counter[str] = Counter()
+    rate_limits: Counter[str] = Counter()
     generations: Counter[str] = Counter()
     latencies: dict[str, list[int]] = defaultdict(list)
     minimum_free = free_bytes()
@@ -91,7 +93,10 @@ def main() -> None:
             code, elapsed = status(url)
             counts[name] += 1
             latencies[name].append(elapsed)
-            if code != 200:
+            if code == 429:
+                rate_limits[name] += 1
+                print(json.dumps({"event": "rate_limit", "at": utc_now(), "route": name}), flush=True)
+            elif code != 200:
                 errors[f"{name}:{code}"] += 1
                 print(json.dumps({"event": "read_error", "at": utc_now(), "route": name,
                     "status": code}), flush=True)
@@ -102,10 +107,10 @@ def main() -> None:
             print(json.dumps({"event": "pointer_error", "at": utc_now()}), flush=True)
         minimum_free = min(minimum_free, free_bytes())
         if time.monotonic() >= next_checkpoint:
-            report("checkpoint", counts, errors, latencies, generations, minimum_free)
+            report("checkpoint", counts, errors, rate_limits, latencies, generations, minimum_free)
             next_checkpoint += 3600
         time.sleep(max(0, 60 - (time.monotonic() - cycle)))
-    report("summary", counts, errors, latencies, generations, minimum_free)
+    report("summary", counts, errors, rate_limits, latencies, generations, minimum_free)
     if errors or minimum_free < 25_000_000_000:
         raise SystemExit(1)
 

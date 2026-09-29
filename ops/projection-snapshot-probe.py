@@ -54,6 +54,7 @@ def main() -> None:
     if not baseline.isdecimal():
         raise RuntimeError("No active projection generation")
     errors: Counter[str] = Counter()
+    rate_limits: Counter[str] = Counter()
     counts: Counter[str] = Counter()
     maximum_ms: dict[str, int] = {}
     retained: tuple[str, str, float] | None = None
@@ -72,7 +73,10 @@ def main() -> None:
                 status, _, elapsed = get(url)
                 counts[name] += 1
                 maximum_ms[name] = max(maximum_ms.get(name, 0), round(elapsed * 1000))
-                if status != 200:
+                if status == 429:
+                    rate_limits[name] += 1
+                    print(json.dumps({"event": "rate_limit", "at": now(), "route": name}), flush=True)
+                elif status != 200:
                     errors[f"{name}:{status}"] += 1
                     print(json.dumps({"event": "read_error", "at": now(), "route": name, "status": status}), flush=True)
             next_read = time.monotonic() + 15
@@ -84,6 +88,8 @@ def main() -> None:
             current = pointer()
             if current == baseline and status == 200 and isinstance(snapshot, dict) and isinstance(snapshot.get("id"), str) and isinstance(cursor, str):
                 retained = (snapshot["id"], cursor, time.monotonic())
+            elif current == baseline and status == 429:
+                rate_limits["snapshot_capture"] += 1
             elif current == baseline:
                 errors[f"snapshot_capture:{status}"] += 1
             next_snapshot = time.monotonic() + 25
@@ -106,7 +112,7 @@ def main() -> None:
         time.sleep(5)
     summary = {"event": "summary", "at": now(), "baseline": baseline, "published": published,
         "oldSnapshotPageStatus": continuation, "readCounts": counts,
-        "readErrors": errors, "maxLatencyMs": maximum_ms,
+        "readErrors": errors, "rateLimits": rate_limits, "maxLatencyMs": maximum_ms,
         "durationSeconds": round(time.monotonic() - started)}
     print(json.dumps(summary), flush=True)
     if not published or continuation != 200 or errors:

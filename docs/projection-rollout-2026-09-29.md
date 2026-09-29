@@ -151,7 +151,12 @@ remain. Free disk returned to about 67 GB.
 The recurring worker was enabled at 16:07 UTC, pinned to `5dd51e7`. Its live
 process environment was checked for generation projection, archive metadata,
 local rarity, and a 10 GB backup-peak capacity allowance. It reported no
-restart. Its first scheduled cycle and the 24-hour observation are pending.
+restart. The initial observer ran from 15:25 to 16:11 UTC and saw one catalog
+429 and no 503 or 500. Its exit rule counted that rate limit as a fatal read
+error, so an updated observer now reports 429s separately while retaining
+fatal gates for other route errors and low disk. A fresh 24-hour window started
+at 16:11:28 UTC on generation 3. The first scheduled cycle and that window's
+completion are pending.
 
 Record publication duration, storage after cleanup, and the post-release backup
 result here before marking this rollout complete. The full 24-hour and
