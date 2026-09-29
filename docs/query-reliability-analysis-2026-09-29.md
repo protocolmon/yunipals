@@ -1,9 +1,13 @@
 # Remaining query failures: analysis and recommended fixes
 
 Investigated on 29 September 2026 against the deployed indexer reader
-`e8e7180` and marketplace bundle `f7d4774-projection`. Production work was
-limited to bounded GET requests, database inspection, and read-only query
-experiments. The recommendations below have not been deployed.
+`e8e7180` and marketplace bundle `f7d4774-projection`. During that investigation,
+production work was limited to bounded GET requests, database inspection, and
+read-only query experiments. The recommendations below describe the initial
+plan; subsequent deployment results are linked below.
+
+Implementation and deployment results are recorded in
+[the rollout record](query-reliability-rollout-2026-09-29.md).
 
 ## Findings and confidence
 
