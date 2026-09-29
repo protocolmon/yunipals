@@ -13,6 +13,12 @@ import type { BnbFulfillmentService } from "@/bnb/fulfillment";
 import { BnbOrderError, type BnbPolicy } from "@/bnb/orders";
 import { bnbOrderIdentity, type BnbRecoveryService } from "@/bnb/recovery";
 import { createWorkGate } from "@/http/gate";
+import { databaseErrorCode, databaseUnavailable } from "@/db/failure";
+import {
+  createReadDiagnostics,
+  readDiagnostics,
+  readFailureContext
+} from "@/reads/diagnostics";
 import { readAssetIdentity, type OrderReadService } from "@/reads/orders";
 import type { CatalogService } from "@/reads/catalog";
 import type { ActivityReadService } from "@/reads/activity";
@@ -117,10 +123,22 @@ export function createApp(
         chain,
         {
           read: requested.read && !!services.reads,
-          buy: requested.buy && fulfillment && (chain !== "bnb" || !environment.bnbActionsPaused),
-          createListing: requested.createListing && admission && (chain !== "bnb" || !environment.bnbActionsPaused),
-          createOffer: requested.createOffer && admission && (chain !== "bnb" || !environment.bnbActionsPaused),
-          acceptOffer: requested.acceptOffer && fulfillment && (chain !== "bnb" || !environment.bnbActionsPaused),
+          buy:
+            requested.buy &&
+            fulfillment &&
+            (chain !== "bnb" || !environment.bnbActionsPaused),
+          createListing:
+            requested.createListing &&
+            admission &&
+            (chain !== "bnb" || !environment.bnbActionsPaused),
+          createOffer:
+            requested.createOffer &&
+            admission &&
+            (chain !== "bnb" || !environment.bnbActionsPaused),
+          acceptOffer:
+            requested.acceptOffer &&
+            fulfillment &&
+            (chain !== "bnb" || !environment.bnbActionsPaused),
           cancel: requested.cancel && recovery
         }
       ];
@@ -161,6 +179,11 @@ export function createApp(
         : new OpenSeaOrderError("market_unavailable", 503);
   }
   const app = new Hono<AppEnvironment>();
+  app.use("*", async (context, next) => {
+    const diagnostics = createReadDiagnostics(context.req.path);
+    context.header("X-Request-Id", diagnostics.requestId);
+    await readDiagnostics.run(diagnostics, next);
+  });
   const admissionGate = createWorkGate({
     burst: 30,
     perSecond: 0.5,
@@ -620,9 +643,30 @@ export function createApp(
     context.json({ error: { code: "not_found" } }, 404)
   );
   app.onError((error, context) => {
-    if (error instanceof BnbOrderError || error instanceof OpenSeaOrderError)
+    if (error instanceof BnbOrderError || error instanceof OpenSeaOrderError) {
+      if (error.status === 429) context.header("Retry-After", "2");
+      if (error.status >= 500)
+        console.error(
+          JSON.stringify({
+            event: "market_request_failed",
+            ...readFailureContext(),
+            code: error.code,
+            status: error.status
+          })
+        );
       return context.json({ error: { code: error.code } }, error.status);
-    if (context.req.path.startsWith("/v1/market/"))
+    }
+    const unavailable = databaseUnavailable(error);
+    console.error(
+      JSON.stringify({
+        event: "market_request_failed",
+        ...readFailureContext(),
+        databaseCode: databaseErrorCode(error),
+        status: unavailable ? 503 : 500,
+        errorType: error.name
+      })
+    );
+    if (unavailable)
       return context.json({ error: { code: "market_unavailable" } }, 503);
     return context.json({ error: { code: "internal_error" } }, 500);
   });

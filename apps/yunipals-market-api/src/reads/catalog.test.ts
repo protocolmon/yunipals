@@ -46,13 +46,14 @@ function service(
   lifetimeMs?: number,
   reuseMs?: number,
   directIndexer = process.env.MARKET_TEST_DIRECT_CATALOG === "1",
-  projectionMode: "legacy" | "generation" = "legacy"
+  projectionMode: "legacy" | "generation" = "legacy",
+  statementTimeoutMs = 5000
 ) {
   const keepers = new pg.Pool({
     connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
     application_name: "yunipals_catalog_test",
     max: 3,
-    statement_timeout: 5000,
+    statement_timeout: statementTimeoutMs,
     idle_in_transaction_session_timeout: 95000
   });
   keepers.on("error", () => {});
@@ -61,7 +62,7 @@ function service(
         connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
         application_name: "yunipals_catalog_source_test",
         max: 7,
-        statement_timeout: 5000,
+        statement_timeout: statementTimeoutMs,
         idle_in_transaction_session_timeout: 95000
       })
     : undefined;
@@ -1000,6 +1001,93 @@ test("unknown sources retain public catalog metadata but reject financial filter
     );
 });
 
+test("in-flight expiry drains its lease and a real SQL timeout returns v2 503 with a fresh generation afterward", async () => {
+  await token("bnb", 1);
+  for (const failure of ["expiry", "timeout"] as const) {
+    const catalog = service(
+      {},
+      failure === "expiry" ? 300 : undefined,
+      failure === "expiry" ? 150 : undefined,
+      true,
+      "legacy",
+      failure === "timeout" ? 200 : 5000
+    );
+    const app = createApp(
+      readEnvironment({
+        MARKET_DEPLOYMENT: "staging",
+        MARKET_DATABASE_URL: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL")
+      }),
+      async () => {},
+      { catalog }
+    );
+    const blocker = await db.owner.connect();
+    let locked = false;
+    try {
+      await blocker.query("BEGIN");
+      await blocker.query(
+        "LOCK TABLE metadata.token_search IN ACCESS EXCLUSIVE MODE"
+      );
+      locked = true;
+      const pending = app.request(
+        `/v2/market/tokens?${query({ chain: "bnb", limit: "1" })}`
+      );
+      const deadline = Date.now() + 2000;
+      let blocked = false;
+      while (Date.now() < deadline && !blocked) {
+        blocked = (
+          await db.owner.query<{
+            blocked: boolean;
+          }>(`SELECT EXISTS(SELECT 1 FROM pg_stat_activity
+          WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock') AS blocked`)
+        ).rows[0]!.blocked;
+        if (!blocked) await delay(10);
+      }
+      assert.equal(
+        blocked,
+        true,
+        "The read must be waiting inside PostgreSQL, not an injected exception."
+      );
+      if (failure === "expiry") {
+        await delay(350);
+        assert.equal(
+          (
+            await db.owner.query<{
+              blocked: boolean;
+            }>(`SELECT EXISTS(SELECT 1 FROM pg_stat_activity
+          WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock') AS blocked`)
+          ).rows[0]!.blocked,
+          true,
+          "Expiry must retain the active connection until its statement settles."
+        );
+        await blocker.query("ROLLBACK");
+        locked = false;
+      }
+      const response = await pending;
+      assert.equal(response.status, failure === "expiry" ? 409 : 503);
+      assert.equal(
+        (await response.json()).error.code,
+        failure === "expiry"
+          ? "snapshot_refresh_required"
+          : "market_unavailable"
+      );
+      if (locked) {
+        await blocker.query("ROLLBACK");
+        locked = false;
+      }
+      assert.equal(
+        (await catalog.tokensV2(query({ chain: "bnb" }))).total,
+        1,
+        "A new generation must work after the retired transaction fails."
+      );
+    } finally {
+      if (locked) await blocker.query("ROLLBACK");
+      blocker.release();
+      await catalog.close();
+      services.splice(services.indexOf(catalog), 1);
+    }
+  }
+});
+
 test("expired snapshots, service restart and killed keeper sessions demand refresh and release held transactions", async () => {
   await token("bnb", 1);
   await token("bnb", 2);
@@ -1094,18 +1182,33 @@ test("generation catalog snapshots retain search scores across pointer publicati
     ON CONFLICT(id) DO NOTHING`);
   await db.owner.query(`INSERT INTO metadata_projection.active VALUES(true,1)
     ON CONFLICT(singleton) DO UPDATE SET current_id=1`);
-  await db.owner.query(`INSERT INTO metadata_projection.search VALUES
-    (1,'bnb',$1,0,true,7,7),(2,'bnb',$1,0,true,17,17)`, [asset.tokenId]);
+  await db.owner.query(
+    `INSERT INTO metadata_projection.search VALUES
+    (1,'bnb',$1,0,true,7,7),(2,'bnb',$1,0,true,17,17)`,
+    [asset.tokenId]
+  );
   const catalog = service({}, undefined, undefined, true, "generation");
-  const first = await catalog.tokens(query({ chain: "bnb", sort: "rarity-desc" }));
+  const first = await catalog.tokens(
+    query({ chain: "bnb", sort: "rarity-desc" })
+  );
   assert.equal(first.total, 1);
   assert.equal(first.items[0]?.token.rarityPoints, "7");
-  await db.owner.query("UPDATE metadata_projection.active SET current_id=2 WHERE singleton");
-  const retained = await catalog.tokens(query({ chain: "bnb", sort: "rarity-desc", rarityMax: "10" }));
+  await db.owner.query(
+    "UPDATE metadata_projection.active SET current_id=2 WHERE singleton"
+  );
+  const retained = await catalog.tokens(
+    query({ chain: "bnb", sort: "rarity-desc", rarityMax: "10" })
+  );
   assert.equal(retained.snapshot.id, first.snapshot.id);
   assert.equal(retained.total, 1);
   assert.equal(retained.items[0]?.token.rarityPoints, "7");
   const fresh = service({}, undefined, undefined, true, "generation");
-  assert.equal((await fresh.tokens(query({ chain: "bnb", rarityMax: "10" }))).total, 0);
-  await db.owner.query("DELETE FROM metadata_projection.search WHERE token_id=$1", [asset.tokenId]);
+  assert.equal(
+    (await fresh.tokens(query({ chain: "bnb", rarityMax: "10" }))).total,
+    0
+  );
+  await db.owner.query(
+    "DELETE FROM metadata_projection.search WHERE token_id=$1",
+    [asset.tokenId]
+  );
 });

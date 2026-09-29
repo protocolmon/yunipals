@@ -124,6 +124,12 @@ function searchReadRelation(publicationRelation:string,id?:string) {
 }
 export const metadataSearchReadRelation=searchReadRelation(metadataReadRelation);
 export function metadataSearchReadRelationAt(id:string) {return searchReadRelation(metadataReadRelation,id);}
+/** Ranked candidates still require a correlated validated-search proof. */
+export function metadataRawSearchReadRelationAt(id?: string) {
+  return projectionGenerationMode
+    ? `(SELECT * FROM metadata_projection.search WHERE generation_id=${projectionIdSql(id)})`
+    : "metadata.token_search";
+}
 function traitReadRelation(id?:string) {
   const traitTable = projectionGenerationMode ? "metadata_projection.trait" : "metadata.token_trait";
   const revisionTable = projectionGenerationMode ? "metadata_projection.revision" : "metadata.projection_revision";

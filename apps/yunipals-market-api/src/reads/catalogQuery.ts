@@ -191,6 +191,14 @@ function catalogClients(db: PoolClient | PoolClient[]) {
   return Array.isArray(db) ? db : [db];
 }
 
+async function settledQueries<T>(queries: Promise<T>[]): Promise<T[]> {
+  // A sibling still using a source lane must finish before its lease is released.
+  const settled = await Promise.allSettled(queries);
+  const failure = settled.find((result) => result.status === "rejected");
+  if (failure?.status === "rejected") throw failure.reason;
+  return settled.map((result) => (result as PromiseFulfilledResult<T>).value);
+}
+
 export async function fetchCatalogCounts(
   db: PoolClient | PoolClient[],
   query: CatalogQuery,
@@ -201,7 +209,7 @@ export async function fetchCatalogCounts(
   let total = 0n;
   let listed = 0n;
   const clients = catalogClients(db);
-  const results = await Promise.all(
+  const results = await settledQueries(
     tokenSourceQueries(query).map((part, index) =>
       clients[index % clients.length]!.query<{
         total: string;
@@ -459,7 +467,7 @@ export async function fetchCatalogFirstPage(
   const candidates: RawRow[] = [];
   const parts = tokenSourceQueries(query);
   const clients = catalogClients(db);
-  const results = await Promise.all(
+  const results = await settledQueries(
     parts.map((part, index) =>
       clients[index % clients.length]!.query<
         RawRow & { total: string; listed: string }
@@ -601,7 +609,7 @@ export async function fetchCatalogPage(
   const parts = tokenSourceQueries(query);
   const clients = catalogClients(db);
   const candidates: RawRow[] = [];
-  const results = await Promise.all(
+  const results = await settledQueries(
     parts.map(async (part, index) => {
       const partState = { missingSearchEmpty: state.missingSearchEmpty };
       const rows = await fetchCatalogRows(

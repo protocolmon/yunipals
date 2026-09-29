@@ -42,6 +42,19 @@ generation if the current one is bad; it rejects a previous generation from an
 obsolete metadata release. Never run the old trait worker after generation
 readers are enabled.
 
+After the normal schema migrations, run `api:proof-indexes` with a schema-owner
+credential to install concurrent covering indexes for publication, mint,
+lifecycle, revision and count reads. It has a 15-minute deadline per index and
+can wait for older snapshots, including backups and projection builds. It
+validates every index and safely resumes its own interrupted concurrent build.
+Run it again after recreating the physical Ponder schema. API readers retain
+read-only credentials.
+
+`test:rarity:postgres` requires a disposable loopback PostgreSQL database named
+`yunipals_rarity_test`. It recreates its fixture schemas and checks rarity
+pagination against the original validated reader across missing metadata,
+null scores, stale proofs, visibility, ownership, traits and numeric ties.
+
 Generation builds check free space on the PostgreSQL filesystem before writing.
 `PROJECTION_MIN_FREE_BYTES` defaults to 25 GB and
 `PROJECTION_BACKUP_PEAK_BYTES` defaults to 65 GB until the backup peak has been

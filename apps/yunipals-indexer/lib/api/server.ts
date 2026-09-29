@@ -1,4 +1,4 @@
-import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
+import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataRawSearchReadRelationAt, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { metadataReadiness, publicationStatus } from "../metadata/status.js";
@@ -22,6 +22,7 @@ import {
   type VisibilityMessage
 } from "./visibility.js";
 import { ExactCountCache } from "./exact-count-cache.js";
+import { rarityPageQueries } from "./rarity-page-query.js";
 import { chainSelection, chainSelectionJson } from "./chains.js";
 
 import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
@@ -38,7 +39,7 @@ const exactCountCache = new ExactCountCache(
 const isDatabaseUnavailable = (error: unknown) => {
   const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
   const message = error instanceof Error ? error.message : String(error);
-  return ["55P03", "57014", "57P01", "57P02", "57P03", "08000", "08003", "08006"].includes(code)
+  return ["55P03", "57014", "53300", "57P01", "57P02", "57P03", "08000", "08003", "08006"].includes(code)
     || /timeout|connection terminated|connection refused|projection_generation_unavailable/i.test(message);
 };
 
@@ -231,6 +232,12 @@ app.get("/v1/tokens", async (c) => {
   const traitRelation = projectionId ? metadataTraitReadRelationAt(projectionId) : metadataTraitReadRelation;
   const filterConfig = { visibility: "visible", chains, owner: ownerResolution?.addresses ?? null, burned: burned ?? null, traits: [...traitGroups].sort(([a], [b]) => a.localeCompare(b)).map(([type, values]) => [type, [...values].sort()]), rarityMin: rarityMin ?? null, rarityMax: rarityMax ?? null, rarityCappedMin: rarityCappedMin ?? null, rarityCappedMax: rarityCappedMax ?? null, metadata, sort };
   const expectedConfig = configHash(projectionId ? { ...filterConfig, projectionId } : filterConfig);
+  const { sort: _countSort, ...countFilterConfig } = filterConfig;
+  const visibilityRevision = (await pool.query<{ revision: string }>(`SELECT md5(coalesce(jsonb_agg(
+    jsonb_build_array(collection,token_id::text,owner,lifecycle,anchor_event_id,anchor_block::text,
+      anchor_transaction_index,anchor_log_index) ORDER BY collection,token_id)::text,'[]')) AS revision
+    FROM metadata.token_visibility`)).rows[0]!.revision;
+  const countConfig = configHash({ ...countFilterConfig, projectionId, visibilityRevision });
   let cursor: TokenCursor | undefined;
   if (cursorRaw) {
     cursor = decodeTokenCursor(cursorRaw);
@@ -298,7 +305,9 @@ app.get("/v1/tokens", async (c) => {
       : `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
   };
   const candidateSource = sourceFor(tokenRelation);
-  const simpleExactCount = tokenOnlyBrowse && !ownerResolution && traitGroups.size === 0;
+  const countNeedsSearch = metadata !== "all" || rarityMin !== undefined || rarityMax !== undefined
+    || rarityCappedMin !== undefined || rarityCappedMax !== undefined;
+  const simpleExactCount = !countNeedsSearch && !ownerResolution && traitGroups.size === 0;
   const countWithoutVisibility = where.slice(1);
   const countWhere = countWithoutVisibility.length ? `WHERE ${countWithoutVisibility.join(" AND ")}` : "";
   const selectedRelations = [includesPhysical ? `${physicalPonderSchema}.token` : null, includesBnb ? `${bnbSchema}.token` : null].filter((value): value is string => Boolean(value));
@@ -308,7 +317,13 @@ app.get("/v1/tokens", async (c) => {
       AND ${activeVisibilityRowPredicate("t")}
       ${countWithoutVisibility.length ? `AND ${countWithoutVisibility.join(" AND ")}` : ""})`;
   const hiddenCountSql = `(SELECT count(*) FROM metadata.token_visibility visibility WHERE (${selectedRelations.map(hiddenProbe).join(" OR ")}))`;
-  const filteredCountSql = selectedRelations.map((relation) => `SELECT count(*)::bigint AS total FROM ${sourceFor(relation)} ${baseWhere}`).join(" UNION ALL ");
+  const countSourceFor = (relation: string) => {
+    if (!countNeedsSearch) return `${relation} t`;
+    const schema = relation.slice(0, -".token".length);
+    const search = metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
+    return `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
+  };
+  const filteredCountSql = selectedRelations.map((relation) => `SELECT count(*)::bigint AS total FROM ${countSourceFor(relation)} ${baseWhere}`).join(" UNION ALL ");
   const countSql = simpleExactCount
     ? `SELECT (${baseCountSql} - ${hiddenCountSql})::int AS total`
     : `SELECT COALESCE(sum(total), 0)::int AS total FROM (${filteredCountSql}) filtered_counts`;
@@ -320,6 +335,8 @@ app.get("/v1/tokens", async (c) => {
     try {
       await client.query("BEGIN READ ONLY");
       await client.query("SET LOCAL statement_timeout = '30s'");
+      await client.query("SET LOCAL work_mem = '32MB'");
+      await client.query("SET LOCAL jit = off");
       const total = Number((await client.query(countSql, countParams)).rows[0].total);
       await client.query("COMMIT");
       return total;
@@ -332,7 +349,7 @@ app.get("/v1/tokens", async (c) => {
   };
   const countPromise = (async () => {
     const started = performance.now();
-    const cached = await exactCountCache.get(expectedConfig, queryExactCount);
+    const cached = await exactCountCache.get(countConfig, queryExactCount);
     return { ...cached, durationMs: performance.now() - started };
   })();
   params.push(limit + 1);
@@ -355,11 +372,27 @@ app.get("/v1/tokens", async (c) => {
     ? `SELECT * FROM ((${selectedRelations.map(sourceBranch).join(") UNION ALL (")})) merged
        ORDER BY ${orderBy.replaceAll("t.", "merged.").replaceAll("s.", "merged.")} LIMIT ${candidateLimit}`
     : sourceBranch(selectedRelations[0]!);
+  const rarityQueries = sort.startsWith("rarity") ? rarityPageQueries({
+    relations: selectedRelations,
+    rawSearch: metadataRawSearchReadRelationAt(projectionId ?? undefined),
+    validatedSearch: searchRelation,
+    bulkSearch: (relation) => {
+      const schema = relation.slice(0, -".token".length);
+      return metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
+    },
+    columns: candidateColumns, filters: where, cursorFilters: cursorWhere,
+    values: params, sort, cursor,
+    selective: Boolean(ownerResolution) || traitGroups.size > 0,
+    nullsExcluded: sort.startsWith("rarity-capped")
+      ? rarityCappedMin !== undefined || rarityCappedMax !== undefined
+      : rarityMin !== undefined || rarityMax !== undefined,
+    missingExcluded: metadata === "available"
+  }) : null;
   // Keep metadata enrichment dependent on the bounded page. Otherwise an
   // uncertain overfetch estimate can make PostgreSQL scan the entire archive.
   const resultPromise = (async () => {
     const started = performance.now();
-    const result = await pool.query(`WITH candidates AS MATERIALIZED (${candidateQuery})
+    const pageSql = (candidates: string) => `WITH candidates AS MATERIALIZED (${candidates})
     SELECT c.collection AS chain, c.chain_id AS "chainId", c.contract_address AS "contractAddress",
       c.token_id AS "tokenId", c.owner, c.burned, c.lifecycle,
       c.mint_block AS "mintBlock", c.last_transfer_block AS "lastTransferBlock",
@@ -376,10 +409,38 @@ app.get("/v1/tokens", async (c) => {
     ${tokenOnlyBrowse ? `WHERE NOT ${activeVisibilityPredicate("c")}` : ""}
     ORDER BY ${orderBy.replaceAll("t.", "c.").replaceAll("s.", "c.")}
     ${tokenOnlyBrowse ? `LIMIT $${params.length}` : ""}
-    `, params);
+    `;
+    const rows = rarityQueries
+      ? (rarityQueries.nonnull ? (await pool.query(pageSql(rarityQueries.nonnull), params)).rows : [])
+      : (await pool.query(pageSql(candidateQuery), params)).rows;
+    if (rarityQueries?.nulls && rows.length <= limit) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN READ ONLY");
+        await client.query("SET LOCAL work_mem = '32MB'");
+        await client.query("SET LOCAL jit = off");
+        rows.push(...(await client.query(pageSql(rarityQueries.nulls), params)).rows.slice(0, limit + 1 - rows.length));
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    }
+    const result = { rows };
     return { result, durationMs: performance.now() - started };
   })();
-  const [result, countResult] = await Promise.all([resultPromise, countPromise]);
+  // Shared count work has its own deadline. Settle both branches without
+  // cancelling a loader still used by another request.
+  const [pageRead, countRead] = await Promise.allSettled([resultPromise, countPromise]);
+  if (pageRead.status === "rejected" || countRead.status === "rejected") {
+    console.error("API token query failed", { chains, sort, projectionId,
+      pageFailed: pageRead.status === "rejected", countFailed: countRead.status === "rejected" });
+    throw pageRead.status === "rejected" ? pageRead.reason : countRead.status === "rejected" ? countRead.reason : new Error("token_query_failed");
+  }
+  const result = pageRead.value;
+  const countResult = countRead.value;
   const resultMs = result.durationMs;
   const countMs = countResult.durationMs;
   c.header("Server-Timing", `page;dur=${resultMs.toFixed(1)}, count;dur=${countMs.toFixed(1)};desc="${countResult.hit ? "hit" : "miss"}"`);
