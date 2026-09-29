@@ -166,6 +166,8 @@ export async function refreshProjectionGeneration() {
     await cleanupGenerations(client);
     await assertProjectionBuildCapacity(client);
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+    // The full-generation facet hash joins spill heavily at PostgreSQL's 4 MB default.
+    await client.query("SET LOCAL work_mem = '64MB'");
     if (archiveMode) await assertChainReady(client, collectionSlugs);
     const release = archiveMode
       ? (await client.query<{ release_id: string }>(
