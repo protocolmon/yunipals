@@ -130,6 +130,12 @@ export function metadataRawSearchReadRelationAt(id?: string) {
     ? `(SELECT * FROM metadata_projection.search WHERE generation_id=${projectionIdSql(id)})`
     : "metadata.token_search";
 }
+/** Candidate identities still require the validated trait predicate. */
+export function metadataRawTraitReadRelationAt(id?: string) {
+  return projectionGenerationMode
+    ? `(SELECT * FROM metadata_projection.trait WHERE generation_id=${projectionIdSql(id)})`
+    : "metadata.token_trait";
+}
 function traitReadRelation(id?:string) {
   const traitTable = projectionGenerationMode ? "metadata_projection.trait" : "metadata.token_trait";
   const revisionTable = projectionGenerationMode ? "metadata_projection.revision" : "metadata.projection_revision";

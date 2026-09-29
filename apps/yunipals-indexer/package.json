@@ -27,6 +27,7 @@
     "projection:rollback": "tsx scripts/rollback-projection.ts",
     "projection:status": "tsx scripts/projection-status.ts",
     "api:proof-indexes": "tsx scripts/migrate-api-proof-indexes.ts",
+    "api:maintenance": "tsx scripts/migrate-api-maintenance.ts",
     "test:rarity:postgres": "node --import tsx scripts/test-rarity-pagination.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

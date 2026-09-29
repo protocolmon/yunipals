@@ -19,7 +19,8 @@ const {
   metadataRawSearchReadRelationAt,
   metadataSearchReadRelationAt,
   metadataSearchReadRelationFor,
-  metadataTraitReadRelationAt
+  metadataTraitReadRelationAt,
+  metadataRawTraitReadRelationAt
 } = await import("../lib/metadata/read-source.ts");
 const { projectionSchemaStatements } = await import(
   "../lib/metadata/projection-schema.ts"
@@ -146,6 +147,12 @@ try {
         VALUES(2,$1,$2,1,'Color',$3)`,
         [chain, id, i % 2 ? "Blue" : "Red"]
       );
+      if (i === 3)
+        await db.query(
+          `INSERT INTO metadata_projection.trait(generation_id,collection,token_id,lifecycle,trait_type,value)
+          VALUES(2,$1,$2,1,'Color','Red')`,
+          [chain, id]
+        );
       if (i === 11)
         await db.query(
           "UPDATE metadata.token_metadata SET content_hash='changed' WHERE collection=$1 AND token_id=$2",
@@ -194,10 +201,14 @@ try {
           "none",
           "owner",
           "trait",
+          "trait-values",
           "rank-range",
           "other-range"
         ]) {
-          const selective = filter === "owner" || filter === "trait";
+          const isTrait = filter.startsWith("trait");
+          const traitValues =
+            filter === "trait-values" ? "ARRAY['Blue','Red']" : "ARRAY['Blue']";
+          const selective = filter === "owner" || isTrait;
           const relations =
             selected.length === 1
               ? ["rarity_bnb.token"]
@@ -217,10 +228,10 @@ try {
           }
           if (filter === "owner")
             filters.push(`t.owner='${owner}' AND t.token_id::numeric<100`);
-          if (filter === "trait")
+          if (isTrait)
             filters.push(`EXISTS(SELECT 1 FROM ${metadataTraitReadRelationAt("2")} f
       WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle
-        AND f.trait_type='Color' AND f.value='Blue')`);
+        AND f.trait_type='Color' AND f.value=ANY(${traitValues}))`);
           if (filter === "rank-range" || filter === "other-range") {
             const boundedScore =
               filter === "rank-range"
@@ -278,8 +289,18 @@ try {
               sort,
               cursor,
               selective,
+              selectiveTokens: (relation) =>
+                isTrait
+                  ? `(SELECT current.* FROM (SELECT DISTINCT collection,token_id,lifecycle FROM ${metadataRawTraitReadRelationAt("2")}
+                    WHERE trait_type='Color' AND value=ANY(${traitValues}) AND collection=ANY($1::text[])) keys
+                    JOIN LATERAL (SELECT * FROM ${relation} current WHERE current.collection=keys.collection
+                      AND current.token_id=keys.token_id::text AND current.lifecycle=keys.lifecycle OFFSET 0) current ON true)`
+                  : relation,
               nullsExcluded: filter === "rank-range",
-              missingExcluded: metadata === "available"
+              missingExcluded:
+                metadata === "available" ||
+                filter === "rank-range" ||
+                filter === "other-range"
             });
             const rows = statement.nonnull
               ? (await db.query(statement.nonnull, values)).rows

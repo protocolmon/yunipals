@@ -1,5 +1,20 @@
 type Cursor = { tokenId: string; collection: string; rarity: string | null };
 
+export type RarityCandidate = {
+  collection: string;
+  chain_id: number;
+  contract_address: string;
+  token_id: string;
+  owner: string;
+  burned: boolean;
+  lifecycle: number;
+  mint_block: string;
+  last_transfer_block: string;
+  metadata_available: boolean;
+  rarity_points: string | null;
+  rarity_points_capped: string | null;
+};
+
 export type RarityPageQuery = {
   relations: string[];
   rawSearch: string;
@@ -12,6 +27,7 @@ export type RarityPageQuery = {
   sort: string;
   cursor?: Cursor;
   selective: boolean;
+  selectiveTokens?: (relation: string) => string;
   nullsExcluded: boolean;
   missingExcluded?: boolean;
 };
@@ -30,12 +46,23 @@ export function rarityPageQueries(query: RarityPageQuery) {
     JOIN LATERAL (SELECT 1 FROM ${query.validatedSearch} validated
       WHERE validated.collection=s.collection AND validated.token_id=s.token_id
         AND validated.lifecycle=s.lifecycle OFFSET 0) proof ON true`;
-  const pointSource = (relation: string) => `${relation} t
+  const pointSource = (
+    relation: string
+  ) => `${query.selectiveTokens?.(relation) ?? relation} t
     LEFT JOIN LATERAL (SELECT * FROM ${query.validatedSearch} validated
       WHERE validated.collection=t.collection AND validated.token_id=t.token_id::numeric
         AND validated.lifecycle=t.lifecycle OFFSET 0) s ON true`;
   const rankedOrder = `s.${score} ${direction} NULLS LAST, s.token_id ASC, s.collection ASC`;
   const tokenOrder = "t.token_id::numeric ASC, t.collection ASC";
+  // Keep missing metadata compatible with nullable legacy flags while allowing
+  // the flag index to reject a collection with no matching ranked rows.
+  const rawFilters = (filters: string[]) =>
+    filters.map((filter) =>
+      filter.replace(
+        /COALESCE\(s\.metadata_available,\s*false\)\s*=\s*(\$\d+)/g,
+        "(s.metadata_available=$1 OR (s.metadata_available IS NULL AND NOT $1))"
+      )
+    );
   const cursorTypes = query.cursor
     ? `WITH page_cursor AS (SELECT
     ${query.cursor.rarity === null ? "" : `$${query.values.length - 3}::numeric AS rarity,`}
@@ -69,7 +96,7 @@ export function rarityPageQueries(query: RarityPageQuery) {
       ? `s.${score} ${direction} NULLS LAST, ${tokenOrder}`
       : rankedOrder;
     return `SELECT ${query.columns} FROM ${query.selective ? pointSource(relation) : rankedSource(relation)}
-      WHERE ${filters.join(" AND ")} ORDER BY ${order} LIMIT ${limit}`;
+      WHERE ${(query.selective ? filters : rawFilters(filters)).join(" AND ")} ORDER BY ${order} LIMIT ${limit}`;
   });
   const nullFilters = [...query.filters];
   if (query.cursor?.rarity === null) {
@@ -84,12 +111,15 @@ export function rarityPageQueries(query: RarityPageQuery) {
       ORDER BY ${tokenOrder} LIMIT ${limit}`
       ];
     const known = `SELECT ${query.columns} FROM ${rankedSource(relation)}
-      WHERE ${[...nullFilters, "s.collection=ANY($1::text[])", `s.${score} IS NULL`].join(" AND ")}
+      WHERE ${rawFilters([...nullFilters, "s.collection=ANY($1::text[])", `s.${score} IS NULL`]).join(" AND ")}
       ORDER BY s.token_id ASC,s.collection ASC LIMIT ${limit}`;
-    const missing = `SELECT ${query.columns} FROM ${relation} t
-      LEFT JOIN ${query.bulkSearch(relation)} s ON s.collection=t.collection
-        AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
-      WHERE ${[...nullFilters, "s.token_id IS NULL"].join(" AND ")}
+    // A materialization boundary prevents LIMIT from turning this bulk proof
+    // into an ordered scan with one complete proof lookup per current token.
+    const missing = `WITH validated_keys AS MATERIALIZED (SELECT collection,token_id,lifecycle FROM ${query.bulkSearch(relation)})
+      SELECT ${query.columns} FROM ${relation} t CROSS JOIN
+        (SELECT false AS metadata_available,NULL::numeric AS rarity_points,NULL::numeric AS rarity_points_capped) s
+      WHERE ${nullFilters.join(" AND ")} AND NOT EXISTS(SELECT 1 FROM validated_keys valid
+        WHERE valid.collection=t.collection AND valid.token_id=t.token_id::numeric AND valid.lifecycle=t.lifecycle)
       ORDER BY ${tokenOrder} LIMIT ${limit}`;
     return query.missingExcluded ? [known] : [known, missing];
   });

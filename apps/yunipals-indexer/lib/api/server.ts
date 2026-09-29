@@ -1,4 +1,4 @@
-import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataRawSearchReadRelationAt, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
+import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataRawSearchReadRelationAt, metadataRawTraitReadRelationAt, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { metadataReadiness, publicationStatus } from "../metadata/status.js";
@@ -22,7 +22,7 @@ import {
   type VisibilityMessage
 } from "./visibility.js";
 import { ExactCountCache } from "./exact-count-cache.js";
-import { rarityPageQueries } from "./rarity-page-query.js";
+import { rarityPageQueries, type RarityCandidate } from "./rarity-page-query.js";
 import { chainSelection, chainSelectionJson } from "./chains.js";
 
 import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
@@ -269,8 +269,10 @@ app.get("/v1/tokens", async (c) => {
   if (rarityMax !== undefined) { params.push(rarityMax); where.push(`s.rarity_points <= $${params.length}::numeric`); }
   if (rarityCappedMin !== undefined) { params.push(rarityCappedMin); where.push(`s.rarity_points_capped >= $${params.length}::numeric`); }
   if (rarityCappedMax !== undefined) { params.push(rarityCappedMax); where.push(`s.rarity_points_capped <= $${params.length}::numeric`); }
+  let traitCandidateParams: { type: number; values: number } | undefined;
   for (const [type, values] of traitGroups) {
     params.push(type, values);
+    traitCandidateParams ??= { type: params.length - 1, values: params.length };
     where.push(`EXISTS (SELECT 1 FROM ${traitRelation} f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=$${params.length - 1} AND f.value=ANY($${params.length}::text[]))`);
   }
   const baseWhere = where.length ? `WHERE ${where.join(" AND ")}` : "";
@@ -297,12 +299,26 @@ app.get("/v1/tokens", async (c) => {
   const includesBnb = chains.includes("bnb");
   const includesPhysical = chains.some((slug) => slug !== "bnb");
   const tokenRelation = includesBnb && !includesPhysical ? `${bnbSchema}.token` : `${physicalPonderSchema}.token`;
+  const selectiveTokenSource = (relation: string) => {
+    if (!traitCandidateParams) return relation;
+    const rawTraits = metadataRawTraitReadRelationAt(projectionId ?? undefined);
+    // Raw traits only narrow candidates. Every validated trait and publication
+    // predicate remains in WHERE before ordering and LIMIT.
+    return `(SELECT current.* FROM (SELECT DISTINCT collection,token_id,lifecycle
+      FROM ${rawTraits} candidates WHERE candidates.collection=ANY($1::text[])
+        AND candidates.trait_type=$${traitCandidateParams.type}::text
+        AND candidates.value=ANY($${traitCandidateParams.values}::text[])) candidate_keys
+      JOIN LATERAL (SELECT * FROM ${relation} current
+        WHERE current.collection=candidate_keys.collection AND current.token_id=candidate_keys.token_id::text
+          AND current.lifecycle=candidate_keys.lifecycle OFFSET 0) current ON true)`;
+  };
   const sourceFor = (relation: string, pointRead = false) => {
     const schema = relation.slice(0, -".token".length);
     const search = pointRead ? searchRelation : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
-    return tokenOnlyBrowse ? `${relation} t` : indexedRarityBrowse
-      ? `${search} s JOIN ${relation} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
-      : `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
+    const tokens = selectiveTokenSource(relation);
+    return tokenOnlyBrowse ? `${tokens} t` : indexedRarityBrowse
+      ? `${search} s JOIN ${tokens} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
+      : `${tokens} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
   };
   const candidateSource = sourceFor(tokenRelation);
   const countNeedsSearch = metadata !== "all" || rarityMin !== undefined || rarityMax !== undefined
@@ -318,10 +334,15 @@ app.get("/v1/tokens", async (c) => {
       ${countWithoutVisibility.length ? `AND ${countWithoutVisibility.join(" AND ")}` : ""})`;
   const hiddenCountSql = `(SELECT count(*) FROM metadata.token_visibility visibility WHERE (${selectedRelations.map(hiddenProbe).join(" OR ")}))`;
   const countSourceFor = (relation: string) => {
-    if (!countNeedsSearch) return `${relation} t`;
+    const tokens = selectiveTokenSource(relation);
+    if (!countNeedsSearch) return `${tokens} t`;
+    if (ownerResolution || traitGroups.size > 0)
+      return `${tokens} t LEFT JOIN LATERAL (SELECT * FROM ${searchRelation} validated
+        WHERE validated.collection=t.collection AND validated.token_id=t.token_id::numeric
+          AND validated.lifecycle=t.lifecycle OFFSET 0) s ON true`;
     const schema = relation.slice(0, -".token".length);
     const search = metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
-    return `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
+    return `${tokens} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
   };
   const filteredCountSql = selectedRelations.map((relation) => `SELECT count(*)::bigint AS total FROM ${countSourceFor(relation)} ${baseWhere}`).join(" UNION ALL ");
   const countSql = simpleExactCount
@@ -337,6 +358,13 @@ app.get("/v1/tokens", async (c) => {
       await client.query("SET LOCAL statement_timeout = '30s'");
       await client.query("SET LOCAL work_mem = '32MB'");
       await client.query("SET LOCAL jit = off");
+      if (!ownerResolution && traitGroups.size === 0) {
+        await client.query("SET LOCAL work_mem = '64MB'");
+        await client.query("SET LOCAL enable_nestloop = off");
+        await client.query("SET LOCAL random_page_cost = 1.1");
+        await client.query("SET LOCAL join_collapse_limit = 1");
+        await client.query("SET LOCAL from_collapse_limit = 1");
+      }
       const total = Number((await client.query(countSql, countParams)).rows[0].total);
       await client.query("COMMIT");
       return total;
@@ -383,13 +411,16 @@ app.get("/v1/tokens", async (c) => {
     columns: candidateColumns, filters: where, cursorFilters: cursorWhere,
     values: params, sort, cursor,
     selective: Boolean(ownerResolution) || traitGroups.size > 0,
+    selectiveTokens: selectiveTokenSource,
     nullsExcluded: sort.startsWith("rarity-capped")
       ? rarityCappedMin !== undefined || rarityCappedMax !== undefined
       : rarityMin !== undefined || rarityMax !== undefined,
-    missingExcluded: metadata === "available"
+    missingExcluded: metadata === "available" || rarityMin !== undefined || rarityMax !== undefined
+      || rarityCappedMin !== undefined || rarityCappedMax !== undefined
   }) : null;
   // Keep metadata enrichment dependent on the bounded page. Otherwise an
   // uncertain overfetch estimate can make PostgreSQL scan the entire archive.
+  let pagePhase = sort.startsWith("rarity") ? "rank-page" : "token-page";
   const resultPromise = (async () => {
     const started = performance.now();
     const pageSql = (candidates: string) => `WITH candidates AS MATERIALIZED (${candidates})
@@ -414,18 +445,37 @@ app.get("/v1/tokens", async (c) => {
       ? (rarityQueries.nonnull ? (await pool.query(pageSql(rarityQueries.nonnull), params)).rows : [])
       : (await pool.query(pageSql(candidateQuery), params)).rows;
     if (rarityQueries?.nulls && rows.length <= limit) {
+      pagePhase = "null-candidates";
       const client = await pool.connect();
+      let nullCandidates: RarityCandidate[];
       try {
         await client.query("BEGIN READ ONLY");
         await client.query("SET LOCAL work_mem = '32MB'");
         await client.query("SET LOCAL jit = off");
-        rows.push(...(await client.query(pageSql(rarityQueries.nulls), params)).rows.slice(0, limit + 1 - rows.length));
+        if (!ownerResolution && traitGroups.size === 0) {
+          await client.query("SET LOCAL work_mem = '64MB'");
+          await client.query("SET LOCAL enable_nestloop = off");
+          await client.query("SET LOCAL random_page_cost = 1.1");
+          await client.query("SET LOCAL join_collapse_limit = 1");
+          await client.query("SET LOCAL from_collapse_limit = 1");
+        }
+        nullCandidates = (await client.query<RarityCandidate>(rarityQueries.nulls, params)).rows;
         await client.query("COMMIT");
       } catch (error) {
         await client.query("ROLLBACK");
         throw error;
       } finally {
         client.release();
+      }
+      // Bulk-proof planner settings must not reach the correlated document
+      // lookups: they would scan whole proof tables for every page token.
+      if (nullCandidates.length) {
+        pagePhase = "null-page-enrichment";
+        const bounded = `SELECT * FROM jsonb_to_recordset($1::jsonb) AS page(
+          collection text,chain_id integer,contract_address text,token_id text,
+          owner text,burned boolean,lifecycle integer,mint_block numeric,last_transfer_block numeric,
+          metadata_available boolean,rarity_points numeric,rarity_points_capped numeric)`;
+        rows.push(...(await pool.query(pageSql(bounded), [JSON.stringify(nullCandidates)])).rows.slice(0, limit + 1 - rows.length));
       }
     }
     const result = { rows };
@@ -436,6 +486,7 @@ app.get("/v1/tokens", async (c) => {
   const [pageRead, countRead] = await Promise.allSettled([resultPromise, countPromise]);
   if (pageRead.status === "rejected" || countRead.status === "rejected") {
     console.error("API token query failed", { chains, sort, projectionId,
+      pagePhase,
       pageFailed: pageRead.status === "rejected", countFailed: countRead.status === "rejected" });
     throw pageRead.status === "rejected" ? pageRead.reason : countRead.status === "rejected" ? countRead.reason : new Error("token_query_failed");
   }

@@ -50,6 +50,13 @@ validates every index and safely resumes its own interrupted concurrent build.
 Run it again after recreating the physical Ponder schema. API readers retain
 read-only credentials.
 
+Run `api:maintenance` as the schema owner to lower the vacuum/analyze threshold
+to 2% on the lifecycle and metadata proof tables and disable vacuum truncation
+on those tables and their TOAST storage. This keeps index-only proof reads useful
+as rows change. It has a one-second lock deadline and can be safely retried.
+If existing visibility maps are sparse, run a cost-limited
+`VACUUM (ANALYZE, TRUNCATE FALSE)` on those tables before measuring performance.
+
 `test:rarity:postgres` requires a disposable loopback PostgreSQL database named
 `yunipals_rarity_test`. It recreates its fixture schemas and checks rarity
 pagination against the original validated reader across missing metadata,
