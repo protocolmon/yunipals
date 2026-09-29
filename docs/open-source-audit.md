@@ -1,9 +1,11 @@
 # Open-source release audit — updated 2026-09-22
 
 The [29 September publication check](open-source-readiness-2026-09-29.md)
-supersedes the dependency result below for the expanded monorepo. The imported
-indexer currently contributes 57 advisory findings, including 24 high-severity
-findings; the zero result below describes the earlier repository scope.
+supersedes the dependency result below for the expanded monorepo. Its imported
+indexer's 57 advisories were remediated and the final workspace audit again
+reports zero known advisories. The checked versions and compatibility evidence
+are linked from that publication record; this older report describes the earlier
+repository scope.
 
 RainbowKit remains in use. Original Yunipals code is MIT licensed, with separate
 noncommercial artwork terms. The dependency remediation removes the AGPL parser

@@ -1,0 +1,281 @@
+{
+  "checkedAt": "2026-09-29T22:15:32.052398+00:00",
+  "auditedRevision": "eca67f058ff999c103b8b447d80d031bbc2327c6",
+  "baselineEvidence": "indexer-dependency-advisories-2026-09-29.json",
+  "lockfileSha256": "39bf531054a750e6b0a8d67e7328a5b72de0c25df652706061ebd605d268e03e",
+  "command": "pnpm audit --json",
+  "nodeVersion": "24.18.1",
+  "pnpmVersion": "9.12.0",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 873,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 873
+  },
+  "advisories": {},
+  "muted": [],
+  "resolvedAdvisoryCount": 57,
+  "resolutions": [
+    {
+      "module": "@hono/node-server",
+      "resolvedAdvisories": [
+        "GHSA-92pp-h63x-v22m",
+        "GHSA-frvp-7c67-39w9",
+        "GHSA-wc8c-qw6v-h7f6"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "1.19.17"
+      }
+    },
+    {
+      "module": "@solana/web3.js",
+      "resolvedAdvisories": ["GHSA-8m45-2rjm-j347"],
+      "action": {
+        "kind": "remove_unused_vendor_sdk_dependency_path",
+        "scope": "@polkamon/web3-util-core@30.8.3 and @polkamon/web3-util-pmons@31.15.1"
+      }
+    },
+    {
+      "module": "@vitest/mocker",
+      "resolvedAdvisories": ["GHSA-82fw-gwwq-j7x9"],
+      "action": {
+        "kind": "update",
+        "version": "4.1.11"
+      }
+    },
+    {
+      "module": "axios",
+      "resolvedAdvisories": [
+        "GHSA-35jp-ww65-95wh",
+        "GHSA-3g43-6gmg-66jw",
+        "GHSA-3p68-rc4w-qgx5",
+        "GHSA-3w6x-2g7m-8v23",
+        "GHSA-42h9-826w-cgv3",
+        "GHSA-43fc-jf86-j433",
+        "GHSA-445q-vr5w-6q77",
+        "GHSA-4hjh-wcwx-xvwj",
+        "GHSA-5c9x-8gcm-mpgx",
+        "GHSA-62hf-57xw-28j9",
+        "GHSA-6chq-wfr3-2hj9",
+        "GHSA-7q8q-rj6j-mhjq",
+        "GHSA-898c-q2cr-xwhg",
+        "GHSA-8hc4-vh64-cxmj",
+        "GHSA-fvcv-3m26-pcqx",
+        "GHSA-hfxv-24rg-xrqf",
+        "GHSA-j5f8-grm9-p9fc",
+        "GHSA-jr5f-v2jv-69x6",
+        "GHSA-m7pr-hjqh-92cm",
+        "GHSA-mmx7-hfxf-jppx",
+        "GHSA-p92q-9vqr-4j8v",
+        "GHSA-pf86-5x62-jrwf",
+        "GHSA-pmv8-rq9r-6j72",
+        "GHSA-pmwg-cvhr-8vh7",
+        "GHSA-q8qp-cvcw-x6jj",
+        "GHSA-vf2m-468p-8v99",
+        "GHSA-w9j2-pvgh-6h63",
+        "GHSA-wf5p-g6vw-rhxx",
+        "GHSA-xhjh-pmcv-23jw",
+        "GHSA-xx6v-rp6x-q39c"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "1.18.0"
+      }
+    },
+    {
+      "module": "axios-cache-interceptor",
+      "resolvedAdvisories": ["GHSA-x4m5-4cw8-vc44"],
+      "action": {
+        "kind": "update",
+        "version": "1.11.1"
+      }
+    },
+    {
+      "module": "bigint-buffer",
+      "resolvedAdvisories": ["GHSA-3gc7-fjrx-p6mg"],
+      "action": {
+        "kind": "remove_unused_vendor_sdk_dependency_path",
+        "scope": "@polkamon/web3-util-core@30.8.3 and @polkamon/web3-util-pmons@31.15.1"
+      }
+    },
+    {
+      "module": "bn.js",
+      "resolvedAdvisories": ["GHSA-378v-28hj-76wf"],
+      "action": {
+        "kind": "update",
+        "version": "5.2.5"
+      }
+    },
+    {
+      "module": "drizzle-orm",
+      "resolvedAdvisories": ["GHSA-gpj5-g38j-94v9"],
+      "action": {
+        "kind": "update",
+        "version": "0.45.2"
+      }
+    },
+    {
+      "module": "elliptic",
+      "resolvedAdvisories": ["GHSA-848j-6mx2-7j84"],
+      "action": {
+        "kind": "remove_unused_vendor_sdk_dependency_path",
+        "scope": "@polkamon/web3-util-core@30.8.3 and @polkamon/web3-util-pmons@31.15.1"
+      }
+    },
+    {
+      "module": "esbuild",
+      "resolvedAdvisories": ["GHSA-67mh-4wv8-2f99"],
+      "action": {
+        "kind": "remove_vulnerable_version",
+        "removedVersion": "0.21.5",
+        "replacementVia": "vite@6.4.3"
+      }
+    },
+    {
+      "module": "hono",
+      "resolvedAdvisories": [
+        "GHSA-crvj-82cr-hjcx",
+        "GHSA-g6gw-c38x-mqfc",
+        "GHSA-gqvv-2mrq-wpjv"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "4.13.8"
+      }
+    },
+    {
+      "module": "kysely",
+      "resolvedAdvisories": [
+        "GHSA-8cpq-38p9-67gx",
+        "GHSA-pv5w-4p9q-p3v2",
+        "GHSA-wmrf-hv6w-mr66"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "0.28.17"
+      }
+    },
+    {
+      "module": "lodash",
+      "resolvedAdvisories": [
+        "GHSA-f23m-r3pf-42rh",
+        "GHSA-r5fr-rjxr-66jc",
+        "GHSA-xxjr-mmjv-4gpg"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "4.18.1"
+      }
+    },
+    {
+      "module": "stream-json",
+      "resolvedAdvisories": ["GHSA-528h-pc64-c93x"],
+      "action": {
+        "kind": "remove_unused_vendor_sdk_dependency_path",
+        "scope": "@polkamon/web3-util-core@30.8.3 and @polkamon/web3-util-pmons@31.15.1"
+      }
+    },
+    {
+      "module": "vite",
+      "resolvedAdvisories": [
+        "GHSA-4w7w-66w2-5vf9",
+        "GHSA-fx2h-pf6j-xcff",
+        "GHSA-v6wh-96g9-6wx3"
+      ],
+      "action": {
+        "kind": "update",
+        "version": "6.4.3"
+      }
+    },
+    {
+      "module": "vitest",
+      "resolvedAdvisories": ["GHSA-82fw-gwwq-j7x9"],
+      "action": {
+        "kind": "update",
+        "version": "4.1.11"
+      }
+    },
+    {
+      "module": "ws",
+      "resolvedAdvisories": ["GHSA-3h5v-q93c-6h6q", "GHSA-96hv-2xvq-fx4p"],
+      "action": {
+        "kind": "remove_unused_vendor_sdk_dependency_path",
+        "scope": "@polkamon/web3-util-core@30.8.3 and @polkamon/web3-util-pmons@31.15.1"
+      }
+    }
+  ],
+  "vendorArchives": [
+    {
+      "path": "apps/yunipals-indexer/vendor/polkamon-util-essentials-27.3.3.tgz",
+      "sha256": "b765a47078cc6a7037bca88d2c1b02e86c620bdbeb0a98e42f582ab3b38c4e12",
+      "changed": false
+    },
+    {
+      "path": "apps/yunipals-indexer/vendor/polkamon-web3-util-core-30.8.3.tgz",
+      "sha256": "3b4d233afea82af42b58792f0166c3d38c050d78cd7c21bea9b8215419fcb368",
+      "changed": false
+    },
+    {
+      "path": "apps/yunipals-indexer/vendor/polkamon-web3-util-pmons-31.15.1.tgz",
+      "sha256": "3312decd5e2a1501d4ab757fb1bcaca5a18296697e8be1d988d923fa87bc5e4e",
+      "changed": false
+    }
+  ],
+  "checks": {
+    "frozenInstall": "pass",
+    "typechecks": "all_three_apps_pass",
+    "productionBuilds": "web_and_marketplace_pass",
+    "walletDependencyTests": 5,
+    "collectorTests": 6,
+    "frontendMarketplaceTests": 143,
+    "marketplaceApiTests": 382,
+    "indexerTests": {
+      "passed": 93,
+      "skipped": 1
+    },
+    "legacyOfflineParity": {
+      "families": 5,
+      "scored": 4,
+      "networkAndRemovedSdkImportsBlocked": true
+    },
+    "rarityPostgresParityCases": 144,
+    "catalogAndLeasePostgresTests": 22,
+    "ponderCompatibility": [
+      "Vite config/schema/handlers",
+      "Kysely sync migrations",
+      "Drizzle DDL/indexes/writes",
+      "multichain reorg",
+      "retained reader",
+      "triggers reenabled"
+    ],
+    "secretScan": {
+      "tool": "gitleaks 8.30.1",
+      "incomingRange": "origin/main..eca67f0",
+      "commits": 43,
+      "findings": 0,
+      "newScriptsFindings": 0,
+      "unchangedExtractedVendorFindings": 0
+    }
+  },
+  "deployment": {
+    "dependencyCleanupDeployed": false,
+    "queryObservationComplete": false,
+    "observedSeconds": 4285,
+    "queryReadErrors": 0,
+    "rateLimitResponses": 8,
+    "generationTransitions": 1
+  },
+  "limits": [
+    "Audit covers the installed dependency graph; vendor archives still contain unused SDK source entrypoints.",
+    "Compatibility checks use isolated local fixtures, not a full production indexing replay.",
+    "The dependency cleanup has not been deployed."
+  ]
+}
