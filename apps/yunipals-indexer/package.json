@@ -25,6 +25,7 @@
     "projection:migrate": "tsx scripts/migrate-projection.ts",
     "projection:seed": "tsx scripts/seed-projection.ts",
     "projection:rollback": "tsx scripts/rollback-projection.ts",
+    "projection:status": "tsx scripts/projection-status.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

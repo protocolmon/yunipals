@@ -237,6 +237,7 @@ export async function refreshProjectionGeneration() {
     await client.query(`UPDATE metadata_projection.generation
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
       [id, JSON.stringify(validation)]);
+    const publicationStarted = performance.now();
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         await publishGeneration(client, id, release, predecessor);
@@ -251,6 +252,10 @@ export async function refreshProjectionGeneration() {
         await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
       }
     }
+    console.info("Projection generation published", {
+      generationId: id,
+      publicationDurationMs: Math.round((performance.now() - publicationStarted) * 10) / 10
+    });
     try {
       await cleanupGenerations(client);
     } catch (error) {

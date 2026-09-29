@@ -40,6 +40,7 @@ type IndexerLane = { client: PoolClient; active: number };
 type Generation = {
   id: string;
   projectionGenerationId: string | null;
+  projectionMetadataReleaseId: string | null;
   observedAt: Date;
   expiresAt: number;
   createdAt: number;
@@ -259,7 +260,7 @@ export class CatalogService {
       FROM unnest(ARRAY['yunipals_indexer_v3.token','bnb_indexer.token','yunipals_read_v4.token',
         'yunipals_read_v4.transfer_event','metadata.token_metadata','metadata.token_search',
         'metadata.token_visibility','metadata.market_catalog_trait'
-        ${this.projectionGenerationMode ? ",'metadata_projection.active','metadata_projection.search'" : ""}]) name`
+        ${this.projectionGenerationMode ? ",'metadata_projection.active','metadata_projection.generation','metadata_projection.search'" : ""}]) name`
     );
     if (result.rows[0]?.ready !== true)
       throw new BnbOrderError("catalog_indexer_unavailable", 503);
@@ -339,17 +340,23 @@ export class CatalogService {
           );
           await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
         }
-        const projectionGenerationId = this.projectionGenerationMode
-          ? (await (indexers[0] ?? client).query<{ current_id: string | null }>(
-              "SELECT current_id FROM metadata_projection.active WHERE singleton"
-            )).rows[0]?.current_id ?? null
-          : null;
+        const projection = this.projectionGenerationMode
+          ? (await (indexers[0] ?? client).query<{
+              current_id: string;
+              metadata_release_id: string | null;
+            }>(`SELECT a.current_id,g.metadata_release_id
+              FROM metadata_projection.active a JOIN metadata_projection.generation g
+                ON g.id=a.current_id
+              WHERE a.singleton AND g.state='ready' AND g.format_version=1`)).rows[0]
+          : undefined;
+        const projectionGenerationId = projection?.current_id ?? null;
         if (this.projectionGenerationMode && !projectionGenerationId)
           throw new BnbOrderError("catalog_indexer_unavailable", 503);
         const fingerprint = await visibilityFingerprint(indexers[0] ?? client);
         generation = {
           id: randomUUID(),
           projectionGenerationId,
+          projectionMetadataReleaseId: projection?.metadata_release_id ?? null,
           observedAt: row.now,
           client,
           indexers: indexers.map((indexer) => ({ client: indexer, active: 0 })),

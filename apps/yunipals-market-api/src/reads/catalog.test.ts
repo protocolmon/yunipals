@@ -1081,11 +1081,17 @@ test("generation catalog snapshots retain search scores across pointer publicati
   const asset = await token("bnb", 3);
   await db.owner.query(`CREATE SCHEMA IF NOT EXISTS metadata_projection;
     CREATE TABLE IF NOT EXISTS metadata_projection.active(singleton boolean PRIMARY KEY,current_id bigint);
+    CREATE TABLE IF NOT EXISTS metadata_projection.generation(
+      id bigint PRIMARY KEY,format_version integer,source_mode text,metadata_release_id text,state text);
     CREATE TABLE IF NOT EXISTS metadata_projection.search(
       generation_id bigint,collection text,token_id numeric,lifecycle integer,
       metadata_available boolean,rarity_points numeric,rarity_points_capped numeric);
     GRANT USAGE ON SCHEMA metadata_projection TO market_test_runtime;
-    GRANT SELECT ON metadata_projection.active,metadata_projection.search TO market_test_runtime`);
+    GRANT SELECT ON metadata_projection.active,metadata_projection.generation,
+      metadata_projection.search TO market_test_runtime`);
+  await db.owner.query(`INSERT INTO metadata_projection.generation VALUES
+    (1,1,'legacy',NULL,'ready'),(2,1,'legacy',NULL,'ready')
+    ON CONFLICT(id) DO NOTHING`);
   await db.owner.query(`INSERT INTO metadata_projection.active VALUES(true,1)
     ON CONFLICT(singleton) DO UPDATE SET current_id=1`);
   await db.owner.query(`INSERT INTO metadata_projection.search VALUES

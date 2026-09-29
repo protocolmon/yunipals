@@ -26,7 +26,7 @@ export const projectionSchemaStatements = [
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.token_search INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,collection,token_id,lifecycle)
-  ) WITH (vacuum_truncate=false)`,
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`,
   `CREATE INDEX IF NOT EXISTS projection_search_collection_available_idx
     ON metadata_projection.search(generation_id,collection,metadata_available,token_id,lifecycle)`,
   `CREATE INDEX IF NOT EXISTS projection_search_raw_collection_desc_idx
@@ -49,7 +49,7 @@ export const projectionSchemaStatements = [
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.token_trait INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,collection,token_id,lifecycle,trait_type,value)
-  ) WITH (vacuum_truncate=false)`,
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`,
   `CREATE INDEX IF NOT EXISTS projection_trait_filter_idx
     ON metadata_projection.trait(generation_id,collection,trait_type,value,token_id,lifecycle)`,
   `CREATE INDEX IF NOT EXISTS projection_trait_numeric_idx
@@ -59,15 +59,15 @@ export const projectionSchemaStatements = [
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.projection_revision INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,collection,token_id,lifecycle)
-  ) WITH (vacuum_truncate=false)`,
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.facet (
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.trait_facet INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,scope,trait_type)
-  ) WITH (vacuum_truncate=false)`,
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.facet_status (
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.trait_facet_status INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,scope)
-  ) WITH (vacuum_truncate=false)`
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`
 ] as const;
