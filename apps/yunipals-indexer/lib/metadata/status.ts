@@ -2,7 +2,17 @@ import type { Pool } from "pg";
 import { metadataSourceMode } from "./publication.js";
 import { rendererVersion } from "./render/snapshot.js";
 import { chainReadiness } from "./chain-readiness.js";
+import { projectionMode } from "./projection-mode.js";
 export async function metadataReadiness(pool: Pool) {
+  if (projectionMode() === "generation") {
+    const projection = await pool.query<{ ready: boolean }>(`SELECT EXISTS(
+      SELECT 1 FROM metadata_projection.active a JOIN metadata_projection.generation g
+        ON g.id=a.current_id
+      WHERE a.singleton AND g.state='ready' AND g.format_version=1
+        ${metadataSourceMode() === "archive" ? `AND EXISTS(SELECT 1 FROM metadata_source.archive_release r
+          WHERE r.state='active' AND r.release_id=g.metadata_release_id)` : ""}) AS ready`);
+    if (!projection.rows[0]?.ready) return { ready:false,mode:"generation",reason:"projection_generation_unavailable" };
+  }
   if (metadataSourceMode() !== "archive") return { ready:true, mode:"legacy-http" };
   if (!(await pool.query(`SELECT bool_and(to_regclass(name) IS NOT NULL) AS installed FROM unnest(ARRAY[
     'metadata.publication_job','metadata.token_publication','metadata.publication_runtime','metadata.projection_revision',

@@ -39,6 +39,7 @@ type Counts = {
 type IndexerLane = { client: PoolClient; active: number };
 type Generation = {
   id: string;
+  projectionGenerationId: string | null;
   observedAt: Date;
   expiresAt: number;
   createdAt: number;
@@ -66,6 +67,7 @@ type Options = {
   readSources?: typeof readOrderSources;
   lifetimeMs?: number;
   reuseMs?: number;
+  projectionMode?: "legacy" | "generation";
 };
 
 function chainAvailability(
@@ -210,6 +212,7 @@ export class CatalogService {
   private stopped = false;
   private readonly lifetimeMs: number;
   private readonly reuseMs: number;
+  private readonly projectionGenerationMode: boolean;
   constructor(
     private readonly pool: Pool,
     private readonly keepers: Pool,
@@ -217,6 +220,11 @@ export class CatalogService {
   ) {
     this.lifetimeMs = options.lifetimeMs ?? catalogLimits.lifetimeMs;
     this.reuseMs = options.reuseMs ?? catalogLimits.reuseMs;
+    const projectionMode = options.projectionMode ?? process.env.YUNIPALS_PROJECTION_MODE ?? "legacy";
+    if (projectionMode !== "legacy" && projectionMode !== "generation") {
+      throw new Error(`Invalid YUNIPALS_PROJECTION_MODE: ${projectionMode}`);
+    }
+    this.projectionGenerationMode = projectionMode === "generation";
     if (
       this.lifetimeMs < 1 ||
       this.lifetimeMs > catalogLimits.lifetimeMs ||
@@ -250,7 +258,8 @@ export class CatalogService {
         AND NOT has_table_privilege(current_user,to_regclass(name),'INSERT,UPDATE,DELETE,TRUNCATE')) AS ready
       FROM unnest(ARRAY['yunipals_indexer_v3.token','bnb_indexer.token','yunipals_read_v4.token',
         'yunipals_read_v4.transfer_event','metadata.token_metadata','metadata.token_search',
-        'metadata.token_visibility','metadata.market_catalog_trait']) name`
+        'metadata.token_visibility','metadata.market_catalog_trait'
+        ${this.projectionGenerationMode ? ",'metadata_projection.active','metadata_projection.search'" : ""}]) name`
     );
     if (result.rows[0]?.ready !== true)
       throw new BnbOrderError("catalog_indexer_unavailable", 503);
@@ -330,9 +339,17 @@ export class CatalogService {
           );
           await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
         }
+        const projectionGenerationId = this.projectionGenerationMode
+          ? (await (indexers[0] ?? client).query<{ current_id: string | null }>(
+              "SELECT current_id FROM metadata_projection.active WHERE singleton"
+            )).rows[0]?.current_id ?? null
+          : null;
+        if (this.projectionGenerationMode && !projectionGenerationId)
+          throw new BnbOrderError("catalog_indexer_unavailable", 503);
         const fingerprint = await visibilityFingerprint(indexers[0] ?? client);
         generation = {
           id: randomUUID(),
+          projectionGenerationId,
           observedAt: row.now,
           client,
           indexers: indexers.map((indexer) => ({ client: indexer, active: 0 })),
@@ -461,17 +478,18 @@ export class CatalogService {
       throw new BnbOrderError("catalog_source_unavailable", 503);
     const sources =
       readVersion === 2 ? v2Sources(generation.sources) : generation.sources;
-    const effectiveQuery =
+    const effectiveQuery: CatalogQuery =
       readVersion === 2 && query.filters.sale === "unlisted"
         ? {
             ...query,
+            projectionGenerationId: generation.projectionGenerationId ?? undefined,
             chains: query.chains.filter(
               (chain) =>
                 availability[chain]!.evidence === "current" &&
                 availability[chain]!.listings.status === "complete"
             )
           }
-        : query;
+        : { ...query, projectionGenerationId: generation.projectionGenerationId ?? undefined };
     const position = decodeCursor(generation, query, readVersion);
     const stateKey = `v${readVersion}:${query.key}`;
     let state = generation.queries.get(stateKey);

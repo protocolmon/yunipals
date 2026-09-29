@@ -9,6 +9,8 @@ import {
   rarityPointsCappedSql,
   rarityPointsSql
 } from "../rarity/read-source.js";
+import { refreshProjectionGeneration } from "../metadata/projection-refresh.js";
+import { projectionMode } from "../metadata/projection-mode.js";
 
 export const scoreVersion = "collector-score-v1";
 const archiveMode = metadataSourceMode() === "archive";
@@ -19,6 +21,11 @@ export const collectionScopes = Array.from({ length: (1 << collectionSlugs.lengt
 });
 
 export async function refreshTraitIndex() {
+  if (projectionMode() === "generation") return refreshProjectionGeneration();
+  return refreshTraitIndexLegacy();
+}
+
+async function refreshTraitIndexLegacy() {
   const client = await pool.connect();
   const updatedAt = new Date();
   try {

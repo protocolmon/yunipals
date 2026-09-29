@@ -45,7 +45,8 @@ function service(
   overrides: Partial<CatalogSources["statuses"]> = {},
   lifetimeMs?: number,
   reuseMs?: number,
-  directIndexer = process.env.MARKET_TEST_DIRECT_CATALOG === "1"
+  directIndexer = process.env.MARKET_TEST_DIRECT_CATALOG === "1",
+  projectionMode: "legacy" | "generation" = "legacy"
 ) {
   const keepers = new pg.Pool({
     connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
@@ -72,7 +73,8 @@ function service(
       statuses: { ...sources.statuses, ...overrides }
     }),
     lifetimeMs,
-    reuseMs
+    reuseMs,
+    projectionMode
   });
   services.push(result);
   return result;
@@ -1073,4 +1075,31 @@ test("missing metadata does not suppress an indexed NFT, and null rarity is orde
   assert.equal(page.items[1]!.token.metadataAvailable, false);
   assert.equal(page.items[1]!.token.attributes, null);
   assert.equal(page.items[1]!.token.name, null);
+});
+
+test("generation catalog snapshots retain search scores across pointer publication", async () => {
+  const asset = await token("bnb", 3);
+  await db.owner.query(`CREATE SCHEMA IF NOT EXISTS metadata_projection;
+    CREATE TABLE IF NOT EXISTS metadata_projection.active(singleton boolean PRIMARY KEY,current_id bigint);
+    CREATE TABLE IF NOT EXISTS metadata_projection.search(
+      generation_id bigint,collection text,token_id numeric,lifecycle integer,
+      metadata_available boolean,rarity_points numeric,rarity_points_capped numeric);
+    GRANT USAGE ON SCHEMA metadata_projection TO market_test_runtime;
+    GRANT SELECT ON metadata_projection.active,metadata_projection.search TO market_test_runtime`);
+  await db.owner.query(`INSERT INTO metadata_projection.active VALUES(true,1)
+    ON CONFLICT(singleton) DO UPDATE SET current_id=1`);
+  await db.owner.query(`INSERT INTO metadata_projection.search VALUES
+    (1,'bnb',$1,0,true,7,7),(2,'bnb',$1,0,true,17,17)`, [asset.tokenId]);
+  const catalog = service({}, undefined, undefined, true, "generation");
+  const first = await catalog.tokens(query({ chain: "bnb", sort: "rarity-desc" }));
+  assert.equal(first.total, 1);
+  assert.equal(first.items[0]?.token.rarityPoints, "7");
+  await db.owner.query("UPDATE metadata_projection.active SET current_id=2 WHERE singleton");
+  const retained = await catalog.tokens(query({ chain: "bnb", sort: "rarity-desc", rarityMax: "10" }));
+  assert.equal(retained.snapshot.id, first.snapshot.id);
+  assert.equal(retained.total, 1);
+  assert.equal(retained.items[0]?.token.rarityPoints, "7");
+  const fresh = service({}, undefined, undefined, true, "generation");
+  assert.equal((await fresh.tokens(query({ chain: "bnb", rarityMax: "10" }))).total, 0);
+  await db.owner.query("DELETE FROM metadata_projection.search WHERE token_id=$1", [asset.tokenId]);
 });

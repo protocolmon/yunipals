@@ -1,6 +1,32 @@
 import { ponderSchema, physicalPonderSchema, bnbSchema } from "../offchain/sql.js";
 import { metadataSourceMode, publicationAvailableSql } from "./publication.js";
 import { collectionSlugs, type CollectionSlug } from "../constants.js";
+import { projectionMode } from "./projection-mode.js";
+
+export const projectionGenerationMode = projectionMode() === "generation";
+const activeProjectionId = "(SELECT current_id FROM metadata_projection.active WHERE singleton)";
+
+function projectionIdSql(id?: string) {
+  if (id === undefined) return activeProjectionId;
+  if (!/^[1-9][0-9]*$/.test(id)) throw new Error("Invalid projection generation ID");
+  return `${id}::bigint`;
+}
+
+export async function readActiveProjectionId() {
+  if (!projectionGenerationMode) return null;
+  const { apiPool } = await import("../offchain/db.js");
+  const sourceMode = metadataSourceMode();
+  const result = await apiPool.query<{ current_id: string | null }>(
+    `SELECT a.current_id FROM metadata_projection.active a
+      JOIN metadata_projection.generation g ON g.id=a.current_id
+      WHERE a.singleton AND g.state='ready' AND g.format_version=1
+        ${sourceMode === "archive" ? `AND EXISTS(SELECT 1 FROM metadata_source.archive_release r
+          WHERE r.state='active' AND r.release_id=g.metadata_release_id)` : ""}`
+  );
+  const id = result.rows[0]?.current_id;
+  if (!id) throw new Error("projection_generation_unavailable");
+  return id;
+}
 
 /** Numeric lifecycle counters can be reused on reindex; always check the mint anchor.
  * Anchor fields are correlated with the token identity. CASE retains every
@@ -80,22 +106,39 @@ export function metadataReadRelationFor(schema:string,includeBase=schema!==bnbSc
   const predicate=selected.length?`published.collection IN (${selected.map(chain=>`'${chain}'`).join(',')})`:'false';
   return metadataSourceMode()==='archive'?`(${archiveRead(schema,predicate,includeBase&&selected.includes('base'))})`:metadataReadRelation;
 }
-export function metadataSearchReadRelationFor(schema:string,includeBase=schema!==bnbSchema,chains:readonly CollectionSlug[]=collectionSlugs) {
-  return searchReadRelation(metadataReadRelationFor(schema,includeBase,chains));
+export function metadataSearchReadRelationFor(schema:string,includeBase=schema!==bnbSchema,chains:readonly CollectionSlug[]=collectionSlugs,id?:string) {
+  return searchReadRelation(metadataReadRelationFor(schema,includeBase,chains),id);
 }
-function searchReadRelation(publicationRelation:string) {return metadataSourceMode() === "archive"
-  ? `(SELECT search.* FROM metadata.token_search search JOIN ${publicationRelation} publication
+function searchReadRelation(publicationRelation:string,id?:string) {
+  const searchTable = projectionGenerationMode ? "metadata_projection.search" : "metadata.token_search";
+  const revisionTable = projectionGenerationMode ? "metadata_projection.revision" : "metadata.projection_revision";
+  const generationFilter = projectionGenerationMode ? `search.generation_id=${projectionIdSql(id)} AND revision.generation_id=search.generation_id AND` : "";
+  return metadataSourceMode() === "archive"
+  ? `(SELECT search.* FROM ${searchTable} search JOIN ${publicationRelation} publication
       ON publication.collection=search.collection AND publication.token_id=search.token_id AND publication.lifecycle=search.lifecycle
-      JOIN metadata.projection_revision revision ON revision.collection=search.collection AND revision.token_id=search.token_id
+      JOIN ${revisionTable} revision ON revision.collection=search.collection AND revision.token_id=search.token_id
       AND revision.lifecycle=search.lifecycle
-      AND CASE WHEN publication.content_hash=revision.metadata_content_hash THEN true ELSE false END)` : "metadata.token_search";}
+      AND CASE WHEN publication.content_hash=revision.metadata_content_hash THEN true ELSE false END
+      WHERE ${generationFilter} true)`
+  : projectionGenerationMode ? `(SELECT * FROM metadata_projection.search search WHERE search.generation_id=${projectionIdSql(id)})` : "metadata.token_search";
+}
 export const metadataSearchReadRelation=searchReadRelation(metadataReadRelation);
-export const metadataTraitReadRelation = metadataSourceMode() === "archive"
-  ? `(SELECT trait.* FROM metadata.token_trait trait JOIN ${metadataReadRelation} publication
+export function metadataSearchReadRelationAt(id:string) {return searchReadRelation(metadataReadRelation,id);}
+function traitReadRelation(id?:string) {
+  const traitTable = projectionGenerationMode ? "metadata_projection.trait" : "metadata.token_trait";
+  const revisionTable = projectionGenerationMode ? "metadata_projection.revision" : "metadata.projection_revision";
+  const generationFilter = projectionGenerationMode ? `trait.generation_id=${projectionIdSql(id)} AND revision.generation_id=trait.generation_id AND` : "";
+  return metadataSourceMode() === "archive"
+  ? `(SELECT trait.* FROM ${traitTable} trait JOIN ${metadataReadRelation} publication
       ON publication.collection=trait.collection AND publication.token_id=trait.token_id AND publication.lifecycle=trait.lifecycle
-      JOIN metadata.projection_revision revision ON revision.collection=trait.collection AND revision.token_id=trait.token_id
+      JOIN ${revisionTable} revision ON revision.collection=trait.collection AND revision.token_id=trait.token_id
       AND revision.lifecycle=trait.lifecycle
-      AND CASE WHEN publication.content_hash=revision.metadata_content_hash THEN true ELSE false END)` : "metadata.token_trait";
+      AND CASE WHEN publication.content_hash=revision.metadata_content_hash THEN true ELSE false END
+      WHERE ${generationFilter} true)`
+  : projectionGenerationMode ? `(SELECT * FROM metadata_projection.trait trait WHERE trait.generation_id=${projectionIdSql(id)})` : "metadata.token_trait";
+}
+export const metadataTraitReadRelation = traitReadRelation();
+export function metadataTraitReadRelationAt(id:string) {return traitReadRelation(id);}
 export const leaderboardReadRelation = metadataSourceMode() === "archive"
   ? `(SELECT stats.* FROM leaderboard.wallet_stats stats WHERE EXISTS(SELECT 1 FROM metadata.derived_snapshot snapshot
       JOIN metadata_source.archive_release release ON release.release_id=snapshot.metadata_release_id AND release.state='active'

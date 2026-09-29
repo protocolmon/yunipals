@@ -32,6 +32,23 @@ and combined four-chain read views once Ponder tables exist. For an independent
 BNB-only installation, run `bnb:standalone-views` after `bnb:migrate` instead;
 it refuses to replace existing read views.
 
+The trait/search projection supports `YUNIPALS_PROJECTION_MODE=legacy` (the
+default) and `generation`. Install its additive tables with `projection:migrate`
+after the normal migrations, then stop the old trait worker and run
+`projection:seed` against the current published snapshot. Switch both indexer
+APIs and the marketplace catalog to `generation` before restarting the worker
+in that mode. `projection:rollback` atomically selects the protected previous
+generation if the current one is bad; it rejects a previous generation from an
+obsolete metadata release. Never run the old trait worker after generation
+readers are enabled.
+
+Generation builds check free space on the PostgreSQL filesystem before writing.
+`PROJECTION_MIN_FREE_BYTES` defaults to 25 GB and
+`PROJECTION_BACKUP_PEAK_BYTES` defaults to 65 GB until the backup peak has been
+measured and reduced. `PROJECTION_STORAGE_PATH` can identify the database
+filesystem when it is mounted at a different path on the worker host. The
+test-only capacity bypass requires a loopback database named `*_test`.
+
 The metadata source migrations and import, backup, restore, status, and
 reconciliation commands are available under the `metadata:*` scripts in
 `package.json`. Source inventory and import require an explicit `--legacy-root`

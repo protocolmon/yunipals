@@ -118,7 +118,9 @@ export function parseCatalogRequest(params: URLSearchParams) {
     throw new BnbOrderError("invalid_catalog_query", 400);
   }
 }
-export type CatalogQuery = ReturnType<typeof parseCatalogRequest>;
+export type CatalogQuery = ReturnType<typeof parseCatalogRequest> & {
+  projectionGenerationId?: string;
+};
 
 function orderBookSql(
   query: CatalogQuery,
@@ -257,6 +259,12 @@ export function catalogSql(
     params.push(value);
     return `$${params.length}`;
   };
+  const searchTable = query.projectionGenerationId
+    ? "metadata_projection.search"
+    : "metadata.token_search";
+  const generationCondition = query.projectionGenerationId
+    ? `s.generation_id=${bind(query.projectionGenerationId)}::bigint AND `
+    : "";
   const bookCtes =
     books === undefined
       ? orderBooks.ctes
@@ -351,12 +359,12 @@ export function catalogSql(
         s.rarity_points,s.rarity_points_capped,${available.length ? "b.price,b.listings" : "NULL::numeric AS price,NULL::jsonb AS listings"}
       FROM ${
         indexedScore
-          ? `metadata.token_search s
+          ? `${searchTable} s
         JOIN ${tokens} t ON t.collection=s.collection
           AND t.token_id=pg_catalog.textin(pg_catalog.numeric_out(s.token_id)) AND t.lifecycle=s.lifecycle`
           : `${tokens} t`
       }
-      ${indexedScore ? "" : `LEFT JOIN metadata.token_search s ON s.collection=ANY($2::text[]) AND s.collection=t.collection AND s.token_id=${indexedTokenNumberSql} AND s.lifecycle=t.lifecycle`}
+      ${indexedScore ? "" : `LEFT JOIN ${searchTable} s ON ${generationCondition}s.collection=ANY($2::text[]) AND s.collection=t.collection AND s.token_id=${indexedTokenNumberSql} AND s.lifecycle=t.lifecycle`}
       ${traitJoins.join("\n")}
       ${
         available.length
@@ -364,7 +372,7 @@ export function catalogSql(
         AND b.token_id=${indexedTokenNumberSql} AND b.maker=lower(t.owner) AND b.lifecycle=t.lifecycle`
           : ""
       }
-      WHERE ${conditions.join(" AND ")})`;
+      WHERE ${indexedScore ? generationCondition : ""}${conditions.join(" AND ")})`;
   const counted = traitJoins.length
     ? "DISTINCT collection||':'||token_id"
     : "*";

@@ -1,4 +1,4 @@
-import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationFor, metadataTraitReadRelation, leaderboardReadRelation } from "../metadata/read-source.js";
+import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { metadataReadiness, publicationStatus } from "../metadata/status.js";
@@ -39,7 +39,7 @@ const isDatabaseUnavailable = (error: unknown) => {
   const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
   const message = error instanceof Error ? error.message : String(error);
   return ["55P03", "57014", "57P01", "57P02", "57P03", "08000", "08003", "08006"].includes(code)
-    || /timeout|connection terminated|connection refused/i.test(message);
+    || /timeout|connection terminated|connection refused|projection_generation_unavailable/i.test(message);
 };
 
 app.onError((error, c) => {
@@ -226,8 +226,11 @@ app.get("/v1/tokens", async (c) => {
     traitGroups.set(type, values);
   });
   const ownerResolution = ownerInput ? await requireResolvedOwner(ownerInput, chains) : undefined;
+  const projectionId = await readActiveProjectionId();
+  const searchRelation = projectionId ? metadataSearchReadRelationAt(projectionId) : metadataSearchReadRelation;
+  const traitRelation = projectionId ? metadataTraitReadRelationAt(projectionId) : metadataTraitReadRelation;
   const filterConfig = { visibility: "visible", chains, owner: ownerResolution?.addresses ?? null, burned: burned ?? null, traits: [...traitGroups].sort(([a], [b]) => a.localeCompare(b)).map(([type, values]) => [type, [...values].sort()]), rarityMin: rarityMin ?? null, rarityMax: rarityMax ?? null, rarityCappedMin: rarityCappedMin ?? null, rarityCappedMax: rarityCappedMax ?? null, metadata, sort };
-  const expectedConfig = configHash(filterConfig);
+  const expectedConfig = configHash(projectionId ? { ...filterConfig, projectionId } : filterConfig);
   let cursor: TokenCursor | undefined;
   if (cursorRaw) {
     cursor = decodeTokenCursor(cursorRaw);
@@ -261,7 +264,7 @@ app.get("/v1/tokens", async (c) => {
   if (rarityCappedMax !== undefined) { params.push(rarityCappedMax); where.push(`s.rarity_points_capped <= $${params.length}::numeric`); }
   for (const [type, values] of traitGroups) {
     params.push(type, values);
-    where.push(`EXISTS (SELECT 1 FROM ${metadataTraitReadRelation} f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=$${params.length - 1} AND f.value=ANY($${params.length}::text[]))`);
+    where.push(`EXISTS (SELECT 1 FROM ${traitRelation} f WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle AND f.trait_type=$${params.length - 1} AND f.value=ANY($${params.length}::text[]))`);
   }
   const baseWhere = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const cursorWhere: string[] = tokenOnlyBrowse ? [...where.slice(1)] : [...where];
@@ -289,7 +292,7 @@ app.get("/v1/tokens", async (c) => {
   const tokenRelation = includesBnb && !includesPhysical ? `${bnbSchema}.token` : `${physicalPonderSchema}.token`;
   const sourceFor = (relation: string, pointRead = false) => {
     const schema = relation.slice(0, -".token".length);
-    const search = pointRead ? metadataSearchReadRelation : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains);
+    const search = pointRead ? searchRelation : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
     return tokenOnlyBrowse ? `${relation} t` : indexedRarityBrowse
       ? `${search} s JOIN ${relation} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
       : `${relation} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
@@ -368,7 +371,7 @@ app.get("/v1/tokens", async (c) => {
     FROM candidates c
     LEFT JOIN LATERAL (SELECT * FROM ${metadataReadRelation} metadata_page
       WHERE metadata_page.collection=c.collection AND metadata_page.token_id=c.token_id::numeric AND metadata_page.lifecycle=c.lifecycle OFFSET 0) m ON true
-    ${tokenOnlyBrowse ? `LEFT JOIN LATERAL (SELECT * FROM ${metadataSearchReadRelation} search_page
+    ${tokenOnlyBrowse ? `LEFT JOIN LATERAL (SELECT * FROM ${searchRelation} search_page
       WHERE search_page.collection=c.collection AND search_page.token_id=c.token_id::numeric AND search_page.lifecycle=c.lifecycle OFFSET 0) search ON true` : ""}
     ${tokenOnlyBrowse ? `WHERE NOT ${activeVisibilityPredicate("c")}` : ""}
     ORDER BY ${orderBy.replaceAll("t.", "c.").replaceAll("s.", "c.")}
@@ -396,9 +399,14 @@ app.get("/v1/traits", async (c) => {
   const selection = chainSelection(c.req.url);
   if (!selection) return c.json({ error: "Invalid chain", available: collectionSlugs }, 400);
   const { scope } = selection;
+  const projectionId = await readActiveProjectionId();
+  const table = projectionId ? "metadata_projection" : "metadata";
+  const facet = projectionId ? "facet" : "trait_facet";
+  const statusTable = projectionId ? "facet_status" : "trait_facet_status";
+  const generationFilter = projectionId ? ` AND generation_id=${projectionId}::bigint` : "";
   const [facets, status] = await Promise.all([
-    pool.query(`SELECT trait_type AS "traitType", kind, min_value::text AS min, max_value::text AS max, values FROM metadata.trait_facet WHERE scope=$1 ORDER BY trait_type`, [scope]),
-    pool.query(`SELECT available, missing, updated_at, ${metadataSourceMode() === "archive" ? "(SELECT metadata_release_id FROM metadata.derived_snapshot WHERE name='traits') AS metadata_release_id" : "NULL::text AS metadata_release_id"} FROM metadata.trait_facet_status WHERE scope=$1`, [scope])
+    pool.query(`SELECT trait_type AS "traitType", kind, min_value::text AS min, max_value::text AS max, values FROM ${table}.${facet} WHERE scope=$1${generationFilter} ORDER BY trait_type`, [scope]),
+    pool.query(`SELECT available, missing, updated_at, ${metadataSourceMode() === "archive" ? projectionId ? `(SELECT metadata_release_id FROM metadata_projection.generation WHERE id=${projectionId}::bigint) AS metadata_release_id` : "(SELECT metadata_release_id FROM metadata.derived_snapshot WHERE name='traits') AS metadata_release_id" : "NULL::text AS metadata_release_id"} FROM ${table}.${statusTable} WHERE scope=$1${generationFilter}`, [scope])
   ]);
   if (metadataSourceMode() === "archive") {
     const release = await localMetadata.release();
