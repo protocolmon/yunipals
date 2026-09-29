@@ -76,16 +76,17 @@ def main() -> None:
                     errors[f"{name}:{status}"] += 1
                     print(json.dumps({"event": "read_error", "at": now(), "route": name, "status": status}), flush=True)
             next_read = time.monotonic() + 15
-        if published is None and moment >= next_snapshot:
+        current = pointer()
+        if published is None and current == baseline and moment >= next_snapshot:
             status, body, _ = get(ROUTES["market_catalog"])
             snapshot = body.get("snapshot") if isinstance(body, dict) else None
             cursor = body.get("nextCursor") if isinstance(body, dict) else None
-            if status == 200 and isinstance(snapshot, dict) and isinstance(snapshot.get("id"), str) and isinstance(cursor, str):
+            current = pointer()
+            if current == baseline and status == 200 and isinstance(snapshot, dict) and isinstance(snapshot.get("id"), str) and isinstance(cursor, str):
                 retained = (snapshot["id"], cursor, time.monotonic())
-            else:
+            elif current == baseline:
                 errors[f"snapshot_capture:{status}"] += 1
             next_snapshot = time.monotonic() + 25
-        current = pointer()
         if current != baseline and published is None:
             published = current
             after_publish = time.monotonic() + 30
