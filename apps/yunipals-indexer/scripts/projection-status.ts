@@ -20,7 +20,9 @@ try {
       ORDER BY c.relname`),
     pool.query(`SELECT max(extract(epoch FROM clock_timestamp()-xact_start))::numeric(12,1) AS oldest_seconds
       FROM pg_stat_activity WHERE datname=current_database() AND xact_start IS NOT NULL`),
-    pool.query<{ directory: string }>("SELECT current_setting('data_directory') AS directory")
+    process.env.PROJECTION_STORAGE_PATH
+      ? Promise.resolve({ rows: [{ directory: process.env.PROJECTION_STORAGE_PATH }] })
+      : pool.query<{ directory: string }>("SELECT current_setting('data_directory') AS directory")
   ]);
   const disk = await statfs(process.env.PROJECTION_STORAGE_PATH ?? directory.rows[0]!.directory);
   console.log(JSON.stringify({

@@ -37,10 +37,10 @@ export async function assertProjectionBuildCapacity(client: PoolClient) {
       !url.pathname.endsWith("_test")) throw new Error("Capacity bypass requires an isolated local test database");
     return;
   }
-  const dataDirectory = (await client.query<{ directory: string }>(
+  const storagePath = process.env.PROJECTION_STORAGE_PATH ?? (await client.query<{ directory: string }>(
     "SELECT current_setting('data_directory') AS directory"
   )).rows[0]!.directory;
-  const disk = await statfs(process.env.PROJECTION_STORAGE_PATH ?? dataDirectory);
+  const disk = await statfs(storagePath);
   const free = Number(disk.bavail) * Number(disk.bsize);
   const size = await client.query<{ estimated: string }>(`
     SELECT sum(pg_total_relation_size(relation))::text AS estimated
