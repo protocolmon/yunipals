@@ -29,8 +29,10 @@
     "api:proof-indexes": "tsx scripts/migrate-api-proof-indexes.ts",
     "api:maintenance": "tsx scripts/migrate-api-maintenance.ts",
     "test:rarity:postgres": "node --import tsx scripts/test-rarity-pagination.mjs",
+    "test:legacy:offline": "node --import tsx scripts/test-legacy-offline.mjs",
+    "test:ponder:postgres": "node scripts/test-ponder-dependencies.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:legacy:offline",
     "test:watch": "vitest",
     "verify:multichain": "tsx scripts/verify-multichain.ts",
     "metadata:inventory": "tsx scripts/inventory-metadata-source.ts",
@@ -77,9 +79,9 @@
     "metadata:recovery:seal": "tsx scripts/seal-metadata-recovery.ts"
   },
   "dependencies": {
-    "@hono/node-server": "1.19.5",
-    "drizzle-orm": "0.41.0",
-    "hono": "4.13.1",
+    "@hono/node-server": "1.19.17",
+    "drizzle-orm": "0.45.2",
+    "hono": "4.13.8",
     "pg": "8.23.0",
     "ponder": "0.17.5",
     "tslib": "2.6.0",
@@ -95,6 +97,6 @@
     "@types/node": "22.13.4",
     "@types/pg": "8.11.11",
     "typescript": "5.7.3",
-    "vitest": "3.2.7"
+    "vitest": "4.1.11"
   }
 }
