@@ -5,6 +5,7 @@ import { apiPool } from "../offchain/db.js";
 import { resolveOwner, InvalidOwnerError, OwnerNameUnresolvedError, EnsUnavailableError } from "../ens/resolver.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { chainReadiness } from "../metadata/chain-readiness.js";
+import { metadataReadiness } from "../metadata/status.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
 
 const app = new Hono();
@@ -18,7 +19,11 @@ app.onError((error, c) => {
   console.error("Collector read unavailable", { code });
   return c.json({ error: "database_unavailable" }, 503);
 });
-app.get("/ready", async c => { await apiPool.query("SELECT 1"); return c.json({ status: "ready" }); });
+app.get("/ready", async c => {
+  await apiPool.query("SELECT 1");
+  const metadata = await metadataReadiness(apiPool);
+  return c.json({ status: metadata.ready ? "ready" : "not_ready", metadata }, metadata.ready ? 200 : 503);
+});
 registerCollectorRoutes(app, {
   pool: apiPool,
   resolveOwner: async (input, chains) => {
