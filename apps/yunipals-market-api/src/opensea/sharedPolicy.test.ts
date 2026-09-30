@@ -279,7 +279,10 @@ test("browse policy refreshes every five minutes and retains a nonactionable sta
     )
   );
   assert.throws(() =>
-    assertOpenSeaPolicyFresh(reused.policy, BigInt(Math.floor(Date.now() / 1000)))
+    assertOpenSeaPolicyFresh(
+      reused.policy,
+      BigInt(Math.floor(Date.now() / 1000))
+    )
   );
   await db.owner.query(
     "UPDATE yunipals_market.opensea_policy_observation SET observed_at=clock_timestamp()-interval '6 minutes' WHERE scope=$1 AND chain_id=8453",

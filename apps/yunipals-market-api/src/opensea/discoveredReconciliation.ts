@@ -338,6 +338,13 @@ async function observe(
     signature: source.signature ?? undefined
   };
   const policy = await policies.resolve(chain).catch(() => null);
+  // Capture the indexer before paced protocol RPC reads. A newer checkpoint
+  // after those reads can incorrectly appear ahead of the captured chain head.
+  // Defer indexer errors so canonical terminal states remain observable.
+  const indexedSnapshot = await readIndexedOpenSeaAsset(pool, input.asset).then(
+    (indexed) => ({ indexed }),
+    (error: unknown) => ({ error })
+  );
   const state = await readOpenSeaProtocolState(
     client,
     input,
@@ -372,7 +379,8 @@ async function observe(
         throw new OpenSeaOrderError("provider_observation_stale", 503);
       if (!policy)
         throw new OpenSeaOrderError("provider_policy_unavailable", 503);
-      const indexed = await readIndexedOpenSeaAsset(pool, input.asset);
+      if ("error" in indexedSnapshot) throw indexedSnapshot.error;
+      const { indexed } = indexedSnapshot;
       if (
         source.bound_lifecycle !== null &&
         (source.bound_lifecycle !== indexed.lifecycle ||

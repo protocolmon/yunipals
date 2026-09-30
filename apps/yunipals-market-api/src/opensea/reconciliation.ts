@@ -88,6 +88,13 @@ export async function observeOpenSeaOrder(
   // Resolve before the short chain window. A provider failure cannot suppress
   // an independently observed fill, cancellation, counter change or expiry.
   const policy = await policies.resolve(input.asset.chain).catch(() => null);
+  // Capture indexer progress before the chain head; protocol RPC pacing must
+  // not compare a newly indexed block with an older head. Only nonterminal
+  // orders require this snapshot, so retain any read error until that branch.
+  const indexedSnapshot = await readIndexedOpenSeaAsset(pool, input.asset).then(
+    (indexed) => ({ indexed }),
+    (error: unknown) => ({ error })
+  );
   const state = await readOpenSeaProtocolState(
     client,
     input,
@@ -115,7 +122,8 @@ export async function observeOpenSeaOrder(
           )
         );
       checkOpenSeaOrder(input, policy.policy, timestamp(), "catalog");
-      const indexed = await readIndexedOpenSeaAsset(pool, input.asset);
+      if ("error" in indexedSnapshot) throw indexedSnapshot.error;
+      const { indexed } = indexedSnapshot;
       transferHash = indexed.lastTransfer.transactionHash;
       await inspectOpenSeaAdmission(
         client,

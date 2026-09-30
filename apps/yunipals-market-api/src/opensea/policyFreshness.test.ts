@@ -58,3 +58,23 @@ test("shared listing and offer validators keep transaction freshness as their de
     assert.throws(() => check());
   }
 });
+
+test("catalog freshness still requires signed orders to satisfy current required fees", async () => {
+  for (const side of ["listing", "offer"] as const) {
+    const item = await admissionFixture("ethereum", side);
+    item.policy.expiresAt = fixtureTimestamp + 300n;
+    item.policy.fees[0]!.basisPoints++;
+    assert.throws(() =>
+      checkOpenSeaOrder(item.input, item.policy, fixtureTimestamp, "catalog")
+    );
+    assert.throws(() =>
+      checkDiscoveredOpenSeaPolicy(
+        item.intent.summary,
+        item.input.order,
+        item.policy,
+        fixtureTimestamp,
+        "catalog"
+      )
+    );
+  }
+});
