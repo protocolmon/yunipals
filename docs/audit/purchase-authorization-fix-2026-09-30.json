@@ -1,0 +1,104 @@
+{
+  "kind": "yunipals-market-api-purchase-authorization-fix",
+  "status": "deployed",
+  "checkedAt": "2026-09-30T15:03:20.033197+00:00",
+  "commit": "94f49fcc5063c158f26e471fee09774f2684c5f2",
+  "problem": {
+    "code": "owner_trade_not_authorized",
+    "cause": "Existing-order settlement incorrectly applied the expiry limit intended for newly published orders.",
+    "tokenId": "1000275971",
+    "chain": "ethereum",
+    "orderHash": "0xf48275920526da8014a68cbce69c374edf3cdb2c3350495ec8ea413ca071810c",
+    "orderExpiresAt": "2027-03-26T09:43:17Z",
+    "publicAuthorizationValidUntil": "2026-12-14T21:00:00Z"
+  },
+  "change": {
+    "existingOrderSettlement": "Public buys and offer acceptance require authorization to be current when checked; existing order expiry may exceed that window.",
+    "publication": "New listings and offers remain bounded by the authorization expiry.",
+    "canary": "Exact-order authorization and expiry limits are preserved.",
+    "otherLimits": "Current authorization window, chain/action scope and fee ceiling remain enforced."
+  },
+  "validation": {
+    "apiTests": {
+      "passed": 387,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "build": "passed",
+    "candidate": {
+      "checkedAt": "2026-09-30T15:00:40.771353+00:00",
+      "actor": "0xcb8Ca0782F379Eb19DcF796aB081CCf8446244A1",
+      "before": {
+        "status": 503,
+        "errorCode": "owner_trade_not_authorized",
+        "milliseconds": 213
+      },
+      "candidate": {
+        "status": 200,
+        "purpose": "prepare",
+        "simulated": true,
+        "orderHash": "0xf48275920526da8014a68cbce69c374edf3cdb2c3350495ec8ea413ca071810c",
+        "milliseconds": 3088
+      },
+      "capabilitiesPreserved": true
+    },
+    "public": {
+      "prepare": {
+        "status": 200,
+        "simulated": true,
+        "milliseconds": 4008
+      },
+      "capabilities": {
+        "status": 200,
+        "preserved": true
+      },
+      "asset": {
+        "status": 200,
+        "evidence": "current"
+      }
+    },
+    "loopbackReadiness": {
+      "status": 200,
+      "state": "ready"
+    }
+  },
+  "deployment": {
+    "status": "deployed",
+    "checkedAt": "2026-09-30T15:01:24.270487+00:00",
+    "commit": "94f49fcc5063c158f26e471fee09774f2684c5f2",
+    "release": "/opt/yunipals-marketplace/releases/94f49fc-purchase",
+    "state": {
+      "MainPID": "1805003",
+      "NRestarts": "0",
+      "WorkingDirectory": "/opt/yunipals-marketplace/releases/94f49fc-purchase",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "capabilitiesPreserved": true,
+    "workersUnchanged": true,
+    "base": "/opt/yunipals-marketplace/releases/9a2bb8a-capacity",
+    "baseServerSha256": "28d8c6be5f418876591885aec0d2babd7cb31fa2ea0a9ef27817352d1fb5ab6e",
+    "archiveSha256": "ddc1c1f7b5d00f163f7dca7dcc176f401c95e89e0a65511adfc36540968f9387",
+    "files": {
+      "dist/server.mjs": "336a50cdec9d50ca0fa72db99b6d99f39c6e076717dc51e87518ce8d8734a750",
+      "dist/server.mjs.map": "8801124da2fc08adae4d7ffaecc0e29964550b34c1f2b299c5d7bb86bba22bbe",
+      "src/ownerTradeAuthorization.ts": "0b6d42a2fd8525e2233eb19be76b0a5f1476bf5ed15a4e9961095115d829755c",
+      "src/ownerTradeAuthorization.test.ts": "cfd13b559103433927caa3c81487be1c5656ae1952e68429b3963f7065e2673b"
+    },
+    "temporaryVerificationService": "stopped",
+    "temporaryEnvironmentFile": "removed"
+  },
+  "followUp": {
+    "publicCatalog": {
+      "listingState": "unlisted",
+      "sourceStatus": "syncing"
+    },
+    "reconciliationDiagnostic": "Automatic approval review rejected the targeted production database read. Separate user permission requested."
+  },
+  "rollback": {
+    "script": "/etc/yunipals-marketplace/production/releases/94f49fc-purchase/deploy.py",
+    "command": "python3 /etc/yunipals-marketplace/production/releases/94f49fc-purchase/deploy.py rollback",
+    "restoredRelease": "/opt/yunipals-marketplace/releases/9a2bb8a-capacity",
+    "dropIn": "/etc/systemd/system/yunipals-market-production-api.service.d/zzzzzzzzzz-purchase-authorization.conf"
+  }
+}
