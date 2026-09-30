@@ -90,10 +90,68 @@
   },
   "followUp": {
     "publicCatalog": {
-      "listingState": "unlisted",
-      "sourceStatus": "syncing"
+      "listingState": "listed",
+      "sourceStatus": "syncing",
+      "checkedAt": "2026-09-30T16:54:36.297Z"
     },
-    "reconciliationDiagnostic": "Automatic approval review rejected the targeted production database read. Separate user permission requested."
+    "reconciliationDiagnostic": {
+      "status": "inspected",
+      "userAuthorized": true,
+      "readOnly": true,
+      "checkedAt": "2026-09-30T15:40:22.164Z",
+      "workerRelease": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+      "record": {
+        "present": true,
+        "providerStatus": "ACTIVE",
+        "state": "unavailable",
+        "reason": "order_policy_rejected",
+        "observedAt": "2026-09-30T15:34:44.814Z",
+        "failures": 9
+      },
+      "confirmedPolicyBug": {
+        "cause": "The read worker resolves a browse policy with a 300-second lifetime, then applies the transaction guard that rejects policies with more than 120 seconds remaining.",
+        "deployedCodeVerified": true,
+        "cachedPolicyObservedAt": "2026-09-30T15:38:24.792Z",
+        "cachedPolicyAgeMs": 117372,
+        "cachedPolicyErrorCode": null,
+        "remainingSeconds": 182,
+        "rejectedByTransactionExpiryGuard": true,
+        "collectionMatches": true,
+        "collectionDisabled": false,
+        "zoneMatches": true,
+        "currencyMatches": true,
+        "orderStarted": true,
+        "orderUnexpired": true,
+        "grossWei": "278000000000000",
+        "requiredFeeBasisPoints": 100,
+        "requiredFeeWei": "2780000000000",
+        "signedFeeWei": "2780000000000",
+        "remedy": "Use the browse policy freshness rules for catalog reconciliation while preserving the stricter transaction policy guard at checkout.",
+        "fixDeployed": true,
+        "fixCommit": "e5f23f319879a2562719de7027112ccb215fa7ec"
+      },
+      "earlierIndexerFailure": {
+        "reason": "indexer_not_finalized_or_stale",
+        "observedAt": "2026-09-30T15:12:02.644Z",
+        "healthyCheckpointCheckedAt": "2026-09-30T15:21:47.655Z",
+        "headNumber": "26091158",
+        "checkpointNumber": "26091158",
+        "finalizedNumber": "26091081",
+        "lastTransferBlock": "26060752",
+        "heartbeatAgeMs": 4504,
+        "indexerLagMs": 0,
+        "timingRace": "Suspected: reconciliation captures the chain head before its protocol RPC reads, then reads the advancing indexer checkpoint. A newer checkpoint can be rejected as ahead of the older head.",
+        "liveRaceReproduced": false,
+        "liveTimingDiagnostic": "Read-only protocol diagnostics received HTTP 503 from the background RPC route. No production data was changed.",
+        "regressionTestConfirmed": true,
+        "fixDeployed": true
+      },
+      "resolution": {
+        "state": "eligible",
+        "publicListingState": "listed",
+        "audit": "docs/audit/catalog-policy-and-indexer-fix-2026-09-30.json"
+      }
+    }
   },
   "rollback": {
     "script": "/etc/yunipals-marketplace/production/releases/94f49fc-purchase/deploy.py",
