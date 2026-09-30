@@ -1,0 +1,15 @@
+name: Set up workspace
+description: Install the repository's pinned Node.js and pnpm versions and frozen dependencies
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@a15d269cd4658e1107c09f1fabf4cbd7bd1f308a # v4.4.0
+      with:
+        run_install: false
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      with:
+        node-version-file: package.json
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+    - run: pnpm install --frozen-lockfile
+      shell: bash

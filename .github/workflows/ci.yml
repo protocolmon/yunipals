@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CI: "true"
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - run: pnpm typecheck
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - run: pnpm test:dependencies
+      - run: pnpm test:web
+      - run: pnpm test:fixtures
+      - run: pnpm test:indexer
+
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VITE_SELF_HOSTED: "1"
+      VITE_YUNIPALS_INDEXER_URL: https://indexer.example.test
+      VITE_YUNIPALS_MARKETPLACE_URL: https://market.example.test
+      VITE_WALLETCONNECT_PROJECT_ID: ""
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - run: pnpm build
+      - name: Check build outputs
+        run: |
+          test -s apps/yunipals-home-web/dist/index.html
+          test -s apps/yunipals-home-web/dist/THIRD_PARTY_LICENSES.txt
+          test -s apps/yunipals-market-api/dist/server.mjs
+          test -s apps/yunipals-market-api/dist/worker.mjs
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: production-builds
+          path: |
+            apps/yunipals-home-web/dist
+            apps/yunipals-market-api/dist
+          if-no-files-found: error
+          retention-days: 7
+
+  marketplace-postgres:
+    name: Marketplace PostgreSQL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: market_test_owner
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: yunipals_market_test
+        ports:
+          - 55436:5432
+        options: >-
+          --health-cmd "pg_isready -U market_test_owner -d yunipals_market_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MARKET_TEST_DATABASE_URL: postgresql://market_test_owner:local-test-only@127.0.0.1:55436/yunipals_market_test
+      MARKET_TEST_RUNTIME_DATABASE_URL: postgresql://market_test_runtime:local-runtime-test-only@127.0.0.1:55436/yunipals_market_test
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Migrate disposable marketplace database
+        env:
+          MARKET_DEPLOYMENT: staging
+          MARKET_DATABASE_URL: ${{ env.MARKET_TEST_DATABASE_URL }}
+        run: pnpm --filter @protopals/yunipals-market-api db:migrate
+      - name: Create restricted test runtime role
+        run: node .github/scripts/setup-test-databases.mjs marketplace
+      - run: pnpm test:api
+
+  indexer-postgres:
+    name: Indexer PostgreSQL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: indexer_test_owner
+          POSTGRES_PASSWORD: indexer-local-test-only
+          POSTGRES_DB: postgres
+        ports:
+          - 55437:5432
+        options: >-
+          --health-cmd "pg_isready -U indexer_test_owner -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI_POSTGRES_ADMIN_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/postgres
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Create disposable indexer databases
+        run: node .github/scripts/setup-test-databases.mjs indexer
+      - name: BNB worker and single-writer lock
+        env:
+          DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_bnb_test
+        run: pnpm test:bnb-indexer
+      - name: Rarity pagination and guarded cache parity
+        env:
+          DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_rarity_test
+        run: pnpm --filter @protopals/yunipals-indexer test:rarity:postgres
+      - name: Ponder dependency and reorg compatibility
+        env:
+          PONDER_DEPENDENCY_TEST_DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_ponder_dependency_test
+        run: pnpm --filter @protopals/yunipals-indexer test:ponder:postgres
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan history, working tree, and vendor archives
+        run: bash .github/scripts/scan-secrets.sh

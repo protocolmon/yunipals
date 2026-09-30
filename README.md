@@ -51,6 +51,8 @@ Copy the relevant app's `.env.example` to `.env.local` for Vite or export the
 API variables in your shell. Frontend variables are public build-time values;
 never put provider keys or database credentials in a `VITE_` variable.
 The API test suite needs the isolated database described in its README.
+GitHub CI covers typechecks, tests, builds, PostgreSQL integration, and secret
+scanning. See the [CI guide](docs/ci.md) for check names and local reproduction.
 
 For a populated local UI without an indexer, database, provider keys or wallet
 project, run `pnpm dev:fixtures` and open `http://127.0.0.1:5177`.
