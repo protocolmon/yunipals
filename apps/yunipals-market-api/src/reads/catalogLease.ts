@@ -14,7 +14,7 @@ export class CatalogLeaseQueue {
   private closed?: Error;
 
   constructor(
-    private readonly timeoutMs = 1500,
+    private readonly timeoutMs = 4000,
     private readonly maximum = 8,
     private readonly capacity = 1
   ) {}

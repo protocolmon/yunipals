@@ -14,6 +14,9 @@ Object.assign(process.env, {
   METADATA_SOURCE_MODE: "archive",
   YUNIPALS_PROJECTION_MODE: "generation"
 });
+const { cachedExactCountSql } = await import(
+  "../lib/api/cached-exact-count.ts"
+);
 const { rarityPageQueries } = await import("../lib/api/rarity-page-query.ts");
 const {
   metadataRawSearchReadRelationAt,
@@ -40,7 +43,8 @@ const { activeVisibilityPredicate } = await import(
 );
 const db = new pg.Pool({
   connectionString: url.toString(),
-  statement_timeout: 5000
+  statement_timeout: 5000,
+  options: "-c jit=off"
 });
 const owner = "0x1111111111111111111111111111111111111111";
 const zero = "0x0000000000000000000000000000000000000000";
@@ -273,6 +277,23 @@ try {
                 initial
               )
             ).rows;
+            if (cached && !selective) {
+              const fallback = `SELECT count(*)::int AS total FROM rarity_read.token t LEFT JOIN ${validated} s
+                ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
+                WHERE ${filters.join(" AND ")}`;
+              const countSql = cachedExactCountSql({
+                chains: selected,
+                generation: "2",
+                relations,
+                filters: filters.filter((f) => !f.startsWith("NOT ")),
+                fallback
+              });
+              assert.equal(
+                (await db.query(countSql, initial)).rows[0].total,
+                baseline.length,
+                `cached count:${selected}:${sort}:${metadata}:${filter}`
+              );
+            }
             let cursor;
             const actual = [];
             for (let page = 0; page < 30; page++) {
@@ -376,6 +397,25 @@ try {
     const columns =
       "collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped";
     const order = " ORDER BY collection,token_id,lifecycle";
+    for (const available of [true, false]) {
+      const fallback = `SELECT count(*)::int AS total FROM rarity_read.token t LEFT JOIN ${validated} s
+        ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
+        WHERE COALESCE(s.metadata_available,false)=${available} AND NOT ${activeVisibilityPredicate()}`;
+      const count = cachedExactCountSql({
+        chains,
+        generation: "2",
+        relations: ["rarity_physical.token", "rarity_bnb.token"],
+        filters: [
+          "t.collection=ANY($1::text[])",
+          `COALESCE(s.metadata_available,false)=${available}`
+        ],
+        fallback
+      });
+      assert.equal(
+        (await client.query(count, [chains])).rows[0].total,
+        (await client.query(fallback)).rows[0].total
+      );
+    }
     assert.deepEqual(
       (
         await client.query(

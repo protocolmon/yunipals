@@ -22,6 +22,7 @@ import {
   visibilitySignatureTtlSeconds, visibilitySigningDataJson, verifyVisibilitySignature,
   type VisibilityMessage
 } from "./visibility.js";
+import { cachedExactCountSql } from "./cached-exact-count.js";
 import { ExactCountCache } from "./exact-count-cache.js";
 import { rarityPageQueries, type RarityCandidate } from "./rarity-page-query.js";
 import { chainSelection, chainSelectionJson } from "./chains.js";
@@ -316,7 +317,7 @@ app.get("/v1/tokens", async (c) => {
   };
   const sourceFor = (relation: string, pointRead = false) => {
     const schema = relation.slice(0, -".token".length);
-    const search = pointRead ? searchRelation : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
+    const search = pointRead ? searchRelation : cachedProofs ? cachedSearchReadRelationFor(schema, chains, projectionId!) : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
     const tokens = selectiveTokenSource(relation);
     return tokenOnlyBrowse ? `${tokens} t` : indexedRarityBrowse
       ? `${search} s JOIN ${tokens} t ON t.collection=s.collection AND t.token_id::numeric=s.token_id AND t.lifecycle=s.lifecycle`
@@ -347,9 +348,12 @@ app.get("/v1/tokens", async (c) => {
     return `${tokens} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
   };
   const filteredCountSql = selectedRelations.map((relation) => `SELECT count(*)::bigint AS total FROM ${countSourceFor(relation)} ${baseWhere}`).join(" UNION ALL ");
-  const countSql = simpleExactCount
+  const canonicalCountSql = simpleExactCount
     ? `SELECT (${baseCountSql} - ${hiddenCountSql})::int AS total`
     : `SELECT COALESCE(sum(total), 0)::int AS total FROM (${filteredCountSql}) filtered_counts`;
+  const countSql = cachedProofs && countNeedsSearch && !ownerResolution && traitGroups.size === 0 && burned === undefined
+    ? cachedExactCountSql({ chains, generation: projectionId!, relations: selectedRelations, filters: countWithoutVisibility, fallback: canonicalCountSql })
+    : canonicalCountSql;
   // A cold exact count validates every publication and chain anchor. Give that
   // bounded read-only query its own budget; ordinary API reads retain 10 s.
   const queryExactCount = async () => {

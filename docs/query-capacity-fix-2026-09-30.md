@@ -11,7 +11,7 @@ releasing connections. The bounded queue and rate limits remain in place.
 
 Pool limits include three live generations and one draining generation: eight
 marketplace connections and seventeen indexer connections, including readiness.
-The HTTP catalog concurrency limit is four. Rate, concurrency, and queue
+The HTTP catalog concurrency limit is four, with a four-second queue deadline. Rate, concurrency, and queue
 rejections produce structured logs and an `X-Capacity-Reason` response header.
 The observation script records those reasons alongside status counters.
 
@@ -31,8 +31,9 @@ cache invalidation. Base event coverage and publisher errors invalidate Base.
 The read validates the cache revision, generation, source mode, relation OIDs,
 and enabled triggers in the same SQL statement. If any check fails, it uses the
 existing canonical proof query. A proof committed during a cache build therefore
-makes that build unusable, even if the builder commits later. Count caching keeps
-its existing 15-second lifetime; this change does not extend count staleness.
+makes that build unusable, even if the builder commits later. Broad metadata/range counts use guarded membership directly and subtract live
+hidden identities. Counts with owner, burn, or trait filters retain the
+current-token join. Count caching keeps its existing 15-second lifetime; this change does not extend count staleness.
 
 ## Operations
 

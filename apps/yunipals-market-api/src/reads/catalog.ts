@@ -452,7 +452,7 @@ export class CatalogService {
           secret: randomBytes(32),
           queries: new Map(),
           live: true,
-          lease: new CatalogLeaseQueue(1500, 8, 2),
+          lease: new CatalogLeaseQueue(4000, 8, 2),
           released: false
         };
         generation.timer = setTimeout(
