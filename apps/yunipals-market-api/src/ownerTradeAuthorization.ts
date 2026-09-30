@@ -393,11 +393,16 @@ export function assertOwnerTradeAuthorized(
   const schedule = authorization.schedule;
   const order = parseMarketOrder(candidate.order);
   const actor = getAddress(candidate.actor);
+  // Publication leaves an order executable after this request. Filling an
+  // existing order is authorized at settlement time, regardless of its expiry.
+  const publication =
+    candidate.action === "createListing" || candidate.action === "createOffer";
   if (
     now < Date.parse(schedule.validFrom) ||
     now >= Date.parse(schedule.validUntil) ||
-    BigInt(order.endTime) >
-      BigInt(Math.floor(Date.parse(schedule.validUntil) / 1000)) ||
+    ((schedule.mode === "canary" || publication) &&
+      BigInt(order.endTime) >
+        BigInt(Math.floor(Date.parse(schedule.validUntil) / 1000))) ||
     !schedule.chains.includes(order.asset.chain) ||
     !schedule.actions.includes(candidate.action) ||
     !feeWithinLimit(order, schedule.maximumFeesBasisPoints) ||
