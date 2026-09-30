@@ -1030,16 +1030,16 @@ test("source fallback is separately enabled and remains compute-budgeted", async
 
 test("foreground fallback cannot spend the background projection budget", async () => {
   let paidDispatches = 0;
+  // Exercise workload accounting without a rate-limit cooldown between calls.
+  const freeError = {
+    jsonrpc: "2.0",
+    id: 1,
+    error: { code: -32005, message: "archive unavailable" }
+  };
   const free = await listen(
     createServer((_request, output) => {
       output.setHeader("content-type", "application/json");
-      output.end(
-        JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          error: { code: -32005, message: "rate limited" }
-        })
-      );
+      output.end(JSON.stringify(freeError));
     })
   );
   const paid = await listen(
@@ -1105,10 +1105,18 @@ test("foreground fallback cannot spend the background projection budget", async 
         params: []
       })
     });
-  assert.equal((await invoke("foreground")).status, 200);
+  const foreground = await invoke("foreground");
+  assert.equal(foreground.status, 200);
+  assert.deepEqual(await foreground.json(), {
+    jsonrpc: "2.0",
+    id: 1,
+    result: "0x1"
+  });
   assert.deepEqual(foregroundReserved, ["eth_blockNumber"]);
   assert.equal(paidDispatches, 1);
-  assert.equal((await invoke("order_projection")).status, 200);
+  const projection = await invoke("order_projection");
+  assert.equal(projection.status, 200);
+  assert.deepEqual(await projection.json(), freeError);
   assert.deepEqual(projectionReserved, []);
   assert.equal(paidDispatches, 1);
   const metrics = await (await fetch(new URL("/metrics", proxy))).json();

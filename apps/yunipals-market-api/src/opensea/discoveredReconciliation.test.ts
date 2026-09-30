@@ -252,6 +252,24 @@ test("a verified maker signature permits an open listing observation; protected 
   assert.equal((await reconcile(offer)).reason, "invalid_maker_signature");
 });
 
+test("catalog discovery accepts fresh five-minute browse policies for listings and offers", async () => {
+  for (const chain of ["ethereum", "base", "polygon"] as const) {
+    for (const side of ["listing", "offer"] as const) {
+      const item = await discover(await db.setup(chain, side));
+      for (const remaining of [300n, 182n]) {
+        item.policy.expiresAt = fixtureTimestamp + remaining;
+        const row = await reconcile(item);
+        assert.equal(row.state, "authorization-required");
+        assert.equal(row.reason, "maker_signature_required");
+      }
+      item.policy.expiresAt = fixtureTimestamp;
+      assert.equal((await reconcile(item)).reason, "order_policy_rejected");
+      item.policy.expiresAt = fixtureTimestamp + 301n;
+      assert.equal((await reconcile(item)).reason, "order_policy_rejected");
+    }
+  }
+});
+
 test("canonical protocol termination remains observable without provider visibility, policy or indexer availability", async () => {
   for (const status of [
     "filled",
@@ -267,6 +285,10 @@ test("canonical protocol termination remains observable without provider visibil
     await db.owner.query(
       "UPDATE yunipals_read_v4.token SET burned=true WHERE token_id=$1",
       [item.input.asset.tokenId]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_indexer_v3._ponder_checkpoint WHERE chain_id=$1",
+      [item.input.asset.chainId]
     );
     if (status === "filled") {
       item.state.filled = 1n;
@@ -961,4 +983,49 @@ test("a collector commit after the final source read cannot expose stale eligibi
       "DROP TRIGGER test_projection_commit_wait ON yunipals_market.opensea_discovered_state; DROP FUNCTION yunipals_market.test_projection_commit_wait()"
     );
   }
+});
+
+test("an indexer advancing during protocol reads does not invalidate discovered orders", async () => {
+  const item = await discover(await db.setup());
+  const read = item.client.readContract.bind(item.client);
+  let advanced = false;
+  item.client.readContract = async (args) => {
+    if (!advanced) {
+      advanced = true;
+      const checkpoint = `${String(fixtureTimestamp + 12n).padStart(10, "0")}${"1".padStart(16, "0")}${"122".padStart(16, "0")}${"0".repeat(33)}`;
+      await db.owner.query(
+        "UPDATE yunipals_indexer_v3._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=1",
+        [checkpoint]
+      );
+    }
+    return read(args);
+  };
+  const row = await reconcile(item);
+  assert.equal(advanced, true);
+  assert.equal(row.state, "authorization-required", row.reason);
+  assert.equal(row.reason, "maker_signature_required");
+});
+
+test("discovered orders still reject an indexer already ahead of the captured head", async () => {
+  const item = await discover(await db.setup());
+  const checkpoint = `${String(fixtureTimestamp + 12n).padStart(10, "0")}${"1".padStart(16, "0")}${"122".padStart(16, "0")}${"0".repeat(33)}`;
+  await db.owner.query(
+    "UPDATE yunipals_indexer_v3._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=1",
+    [checkpoint]
+  );
+  assert.equal(
+    (await reconcile(item)).reason,
+    "indexer_not_finalized_or_stale"
+  );
+});
+
+test("discovered catalog policy expiry during chain checks prevents eligibility", async () => {
+  const item = await discover(await db.setup());
+  item.policy.expiresAt = fixtureTimestamp + 300n;
+  item.state.afterReceipt = async () => {
+    item.policy.expiresAt = fixtureTimestamp;
+  };
+  const row = await reconcile(item);
+  assert.equal(row.state, "unavailable");
+  assert.equal(row.reason, "order_policy_rejected");
 });

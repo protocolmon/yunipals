@@ -1,0 +1,319 @@
+{
+  "kind": "yunipals-catalog-policy-and-indexer-fix",
+  "status": "deployed",
+  "checkedAt": "2026-09-30T17:02:04.714900+00:00",
+  "commits": {
+    "catalogPolicy": "0af9927",
+    "indexerSnapshot": "e5f23f319879a2562719de7027112ccb215fa7ec"
+  },
+  "affectedOrder": {
+    "chain": "ethereum",
+    "tokenId": "1000275971",
+    "orderHash": "0xf48275920526da8014a68cbce69c374edf3cdb2c3350495ec8ea413ca071810c"
+  },
+  "changes": {
+    "catalogPolicy": "Catalog reconciliation explicitly uses the existing 300-second browse lifetime. Transaction validation remains the default and retains the 120-second upper bound. Cached observations retain their original expiry.",
+    "affectedPaths": [
+      "discovered OpenSea orders",
+      "retained Yunipals publications"
+    ],
+    "indexerSnapshot": "Both catalog paths read the indexer before the chain head; indexer errors are deferred so terminal chain states remain observable. Final asset rereads and canonical/finality checks are preserved."
+  },
+  "tests": {
+    "beforeFix": {
+      "policyFailuresReproduced": 2,
+      "indexerRaceFailuresReproduced": 2
+    },
+    "apiSuite": {
+      "passed": 398,
+      "failed": 0
+    },
+    "deployedBaseFocusedSuite": {
+      "passed": 86,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "build": "passed",
+    "deployedBaseTypecheck": "passed",
+    "deployedBaseBuild": "passed",
+    "isolatedDatabase": "removed"
+  },
+  "deployment": {
+    "base": "03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+    "release": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+    "archiveSha256": "cab363e07297fd7f6d4272f7cbab8ceeb9362c689dbacde95df41b2670bbfa7e",
+    "files": {
+      "dist/opensea-read-worker.mjs": "568aad274a27be5bfcf865978558684e8c2465ee289e9eb7149c79a4f660c231",
+      "dist/opensea-read-worker.mjs.map": "0d68f37ed8800d21f00f5a79d4aec78106b9647e50e49686912276573a225d82",
+      "dist/opensea-worker.mjs": "9b5ab019386784bfb16e7a5e3748e81aed6f3497e0637b2356312224a1512c03",
+      "dist/opensea-worker.mjs.map": "f8d5e3f219088c3e42d8d86582cfd537fecc144f0dd0da34f9b8d3aa09e8a008",
+      "src/opensea/policyFreshness.ts": "35e2d6c4832330a96cad12a4c9dc94ffefd3ad5cb15cbebb2beb6c2c276d2173",
+      "src/opensea/orders.ts": "9ef21125f258baf43407a50b233eff0463f4411d9849e6000e7e39d9f489d794",
+      "src/opensea/sharedPolicy.ts": "a72baf68ceea8b1dbd2942f5d031e8cdb9b776d63454b7a8f8f5b4adf9de9885",
+      "src/opensea/discoveredReconciliation.ts": "267842f61c430e53285bf68451f96a7cecb2f2e258f43a2872d9724b60d9f2a7",
+      "src/opensea/reconciliation.ts": "a515268368602a8d8d570627d57eacb2a31a22be7c6face8f8d83e0f9f0b772f",
+      "src/opensea/policyFreshness.test.ts": "cd5fa223b5ac3973d9957234dea2ff73dffccadb91f377257fa36296330546af",
+      "src/opensea/sharedPolicy.test.ts": "bef419865329f644fb01ceb67de779ef080a35354438bdf01604fc5c53fbaee7",
+      "src/opensea/discoveredReconciliation.test.ts": "7521c663f24ab04eeebbc021b7a881ada8e740027f90f17652275c5d636fdcba",
+      "src/opensea/reconciliation.test.ts": "5bced680d02bf3533a041994a92233f672e355ba5c128509c43bd12ddd6e002f"
+    },
+    "phases": [
+      {
+        "status": "deployed",
+        "phase": "ethereum",
+        "checkedAt": "2026-09-30T16:26:59.164373+00:00",
+        "release": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+        "commit": "e5f23f319879a2562719de7027112ccb215fa7ec",
+        "before": {
+          "yunipals-market-production-read@ethereum.service": {
+            "MainPID": "3244943",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "after": {
+          "yunipals-market-production-read@ethereum.service": {
+            "MainPID": "1834274",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "environmentPreserved": true,
+        "apiUnchanged": true,
+        "rollbackScript": "/etc/yunipals-marketplace/production/releases/e5f23f3-catalog/deploy.py"
+      },
+      {
+        "status": "deployed",
+        "phase": "ethereum-publish",
+        "checkedAt": "2026-09-30T16:36:44.231495+00:00",
+        "release": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+        "commit": "e5f23f319879a2562719de7027112ccb215fa7ec",
+        "before": {
+          "yunipals-market-production-publish@ethereum.service": {
+            "MainPID": "1041804",
+            "NRestarts": "1",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "after": {
+          "yunipals-market-production-publish@ethereum.service": {
+            "MainPID": "1837642",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "environmentPreserved": true,
+        "apiUnchanged": true,
+        "rollbackScript": "/etc/yunipals-marketplace/production/releases/e5f23f3-catalog/deploy.py"
+      },
+      {
+        "status": "deployed",
+        "phase": "remaining",
+        "checkedAt": "2026-09-30T16:54:36.415665+00:00",
+        "release": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+        "commit": "e5f23f319879a2562719de7027112ccb215fa7ec",
+        "before": {
+          "yunipals-market-production-read@base.service": {
+            "MainPID": "3244950",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-read@polygon.service": {
+            "MainPID": "3244953",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-publish@base.service": {
+            "MainPID": "1042002",
+            "NRestarts": "3",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-publish@polygon.service": {
+            "MainPID": "1041783",
+            "NRestarts": "3",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "after": {
+          "yunipals-market-production-read@base.service": {
+            "MainPID": "1843909",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-read@polygon.service": {
+            "MainPID": "1843922",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-prod-read",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-publish@base.service": {
+            "MainPID": "1843934",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          },
+          "yunipals-market-production-publish@polygon.service": {
+            "MainPID": "1843945",
+            "NRestarts": "0",
+            "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+            "User": "yunipals-market-publish",
+            "ActiveState": "active",
+            "SubState": "running"
+          }
+        },
+        "environmentPreserved": true,
+        "apiUnchanged": true,
+        "rollbackScript": "/etc/yunipals-marketplace/production/releases/e5f23f3-catalog/deploy.py"
+      }
+    ],
+    "final": {
+      "checkedAt": "2026-09-30T17:02:04.714900+00:00",
+      "units": {
+        "yunipals-market-production-read@ethereum.service": {
+          "MainPID": "1842928",
+          "NRestarts": "0",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-read@base.service": {
+          "MainPID": "1843909",
+          "NRestarts": "0",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-read@polygon.service": {
+          "MainPID": "1843922",
+          "NRestarts": "0",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-publish@ethereum.service": {
+          "MainPID": "1844644",
+          "NRestarts": "2",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-publish@base.service": {
+          "MainPID": "1843934",
+          "NRestarts": "0",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-publish@polygon.service": {
+          "MainPID": "1844295",
+          "NRestarts": "1",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/e5f23f3-catalog",
+          "ActiveState": "active",
+          "SubState": "running"
+        },
+        "yunipals-market-production-api.service": {
+          "MainPID": "1805003",
+          "NRestarts": "0",
+          "WorkingDirectory": "/opt/yunipals-marketplace/releases/94f49fc-purchase",
+          "ActiveState": "active",
+          "SubState": "running"
+        }
+      },
+      "releaseHashesVerified": true,
+      "apiUnchanged": true,
+      "publicationWorkerRestartsObserved": {
+        "yunipals-market-production-publish@ethereum.service": 2,
+        "yunipals-market-production-publish@polygon.service": 1
+      }
+    },
+    "configurationPreserved": true,
+    "migrationRequired": false,
+    "scope": "Built against the deployed worker base with only five source files patched; API and RPC services were not replaced."
+  },
+  "verification": {
+    "reconciliation": {
+      "state": "eligible",
+      "reason": null,
+      "observedAt": "2026-09-30T16:46:43.087Z",
+      "policyRefreshCheckedAt": "2026-09-30T16:53:46.555Z",
+      "laterPolicyObservedAt": "2026-09-30T16:52:30.473Z",
+      "catalogCheck": "passed",
+      "transactionCheckForBrowsePolicy": "rejected"
+    },
+    "publicAsset": {
+      "checkedAt": "2026-09-30T16:54:36.297Z",
+      "listingState": "listed",
+      "sourceStatus": "syncing",
+      "evidence": "current",
+      "orderStatus": "active",
+      "grossWei": "278000000000000",
+      "feeWei": "2780000000000",
+      "sellerProceedsWei": "275220000000000"
+    },
+    "purchasePreparation": {
+      "status": 200,
+      "purpose": "prepare",
+      "simulated": true,
+      "actor": "0xcb8Ca0782F379Eb19DcF796aB081CCf8446244A1"
+    },
+    "browser": {
+      "checkedAt": "2026-09-30T16:57:27.115Z",
+      "url": "https://www.yunipals.com/collection/ethereum/1000275971",
+      "status": 200,
+      "title": "Uniair #1000275971 on Ethereum \u2014 Yunipals",
+      "tokenVisible": true,
+      "purchaseActionVisible": true,
+      "expectedPriceVisible": true,
+      "pageErrors": []
+    },
+    "walletSignatureRequested": false,
+    "transactionBroadcast": false
+  },
+  "operationalNotes": {
+    "targetedValidation": "Used the existing restricted role, workload budget and normal claim/lease flow. One scoped request to reschedule the unavailable order did not alter eligibility; the order had already recovered through normal worker processing. Paused Ethereum workers were resumed in finally blocks.",
+    "transientChainFailureObserved": true,
+    "publicationWorkerRestarts": {
+      "yunipals-market-production-publish@ethereum.service": 2,
+      "yunipals-market-production-publish@polygon.service": 1
+    },
+    "restartCause": "The worker logs report generic infrastructure/processing failures. Their specific cause was not diagnosed in this change. All workers were active at final verification.",
+    "catalogSourceStatus": "The asset retains sourceStatus syncing while exposing the eligible listing with current evidence; broader source recovery is outside this fix."
+  },
+  "rollback": {
+    "script": "/etc/yunipals-marketplace/production/releases/e5f23f3-catalog/deploy.py",
+    "command": "python3 /etc/yunipals-marketplace/production/releases/e5f23f3-catalog/deploy.py rollback",
+    "restoredRelease": "/opt/yunipals-marketplace/releases/03b9ab35e32d499b2a41d370e50f6eca4de6de41",
+    "overrides": "Only this rollout\u2019s zzzzz-catalog-policy.conf instance overrides are removed."
+  }
+}

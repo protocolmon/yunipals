@@ -5,6 +5,7 @@ import test from "node:test";
 import { getAddress, zeroAddress } from "viem";
 import type { MarketOrder } from "@protopals/yunipals-market-core/marketOrder";
 import {
+  bnbOfferCurrency,
   marketplaceChains,
   seaportDeployment
 } from "@protopals/yunipals-market-core/registry";
@@ -233,6 +234,155 @@ test("public authorization remains bounded by chain, action, fee and time", () =
         actor: owner,
         policyVersion: "current"
       },
+      now
+    )
+  );
+});
+
+test("public settlement can fill an existing order beyond the authorization window", () => {
+  const publicSchedule = {
+    ...schedule("public"),
+    actions: ["buy", "acceptOffer"]
+  };
+  const value = encode(publicSchedule);
+  const authorization = readOwnerTradeAuthorization(
+    value.encoded,
+    value.digest,
+    now
+  );
+  const actor = getAddress("0x0000000000000000000000000000000000009999");
+  const existingOrder = {
+    ...order,
+    endTime: "1806054197"
+  };
+  for (const action of ["buy", "acceptOffer"] as const) {
+    const candidate = {
+      action,
+      order: {
+        ...existingOrder,
+        side: action === "buy" ? ("listing" as const) : ("offer" as const),
+        ...(action === "acceptOffer"
+          ? {
+              currency: bnbOfferCurrency
+            }
+          : {})
+      },
+      actor,
+      policyVersion: "current"
+    };
+    assertOwnerTradeAuthorized(authorization, candidate, now);
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        authorization,
+        candidate,
+        Date.parse(publicSchedule.validFrom) - 1
+      )
+    );
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        {
+          ...authorization,
+          schedule: { ...authorization.schedule, actions: ["createListing"] }
+        },
+        candidate,
+        now
+      )
+    );
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        {
+          ...authorization,
+          schedule: { ...authorization.schedule, chains: ["ethereum"] }
+        },
+        candidate,
+        now
+      )
+    );
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        authorization,
+        candidate,
+        Date.parse(publicSchedule.validUntil)
+      )
+    );
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        authorization,
+        {
+          ...candidate,
+          order: {
+            ...candidate.order,
+            sellerProceeds: "949",
+            fees: [{ ...order.fees[0]!, amount: "51" }]
+          }
+        },
+        now
+      ),
+      /Trade is outside the owner-authorized scope/
+    );
+  }
+});
+
+test("public publication cannot leave a new order executable beyond authorization", () => {
+  const publicSchedule = {
+    ...schedule("public"),
+    actions: ["createListing", "createOffer"]
+  };
+  const value = encode(publicSchedule);
+  const authorization = readOwnerTradeAuthorization(
+    value.encoded,
+    value.digest,
+    now
+  );
+  for (const action of ["createListing", "createOffer"] as const) {
+    assert.throws(() =>
+      assertOwnerTradeAuthorized(
+        authorization,
+        {
+          action,
+          order: {
+            ...order,
+            side:
+              action === "createListing"
+                ? ("listing" as const)
+                : ("offer" as const),
+            endTime: "1806054197",
+            ...(action === "createOffer"
+              ? {
+                  currency: bnbOfferCurrency
+                }
+              : {})
+          },
+          actor: owner,
+          policyVersion: "current"
+        },
+        now
+      )
+    );
+  }
+});
+
+test("canary settlement still requires its exact authorized order and expiry", () => {
+  const canarySchedule = schedule();
+  canarySchedule.actions = ["buy"];
+  canarySchedule.orders[0]!.action = "buy";
+  const value = encode(canarySchedule);
+  const authorization = readOwnerTradeAuthorization(
+    value.encoded,
+    value.digest,
+    now
+  );
+  const candidate = {
+    action: "buy" as const,
+    order,
+    actor: owner,
+    policyVersion: "bnb-owner-approved-v1"
+  };
+  assertOwnerTradeAuthorized(authorization, candidate, now);
+  assert.throws(() =>
+    assertOwnerTradeAuthorized(
+      authorization,
+      { ...candidate, order: { ...order, endTime: "1806054197" } },
       now
     )
   );

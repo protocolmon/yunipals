@@ -8,7 +8,7 @@ import { marketplaceChains } from "@protopals/yunipals-market-core/registry";
 import { claimJob, LostJobLeaseError } from "@/db/jobs";
 import { createOpenSeaTestDatabase } from "@/opensea/fixtures/database";
 import { acknowledgmentFixture } from "@/opensea/fixtures/orders";
-import { fixtureNow } from "@/opensea/fixtures/admission";
+import { fixtureNow, fixtureTimestamp } from "@/opensea/fixtures/admission";
 import { OpenSeaAdmissionService } from "@/opensea/admission";
 import { verifyOpenSeaAcknowledgment } from "@/opensea/orders";
 import {
@@ -192,6 +192,73 @@ test("all three accepted chains require chain checks and recover when NFT approv
   }
 });
 
+test("retained catalog orders accept fresh browse policies and reject expired or oversized lifetimes", async () => {
+  for (const chain of ["ethereum", "base", "polygon"] as const) {
+    for (const side of ["listing", "offer"] as const) {
+      const item = await accepted(chain, side);
+      for (const remaining of [300n, 182n]) {
+        item.policy.expiresAt = fixtureTimestamp + remaining;
+        assert.equal((await reconcile(item)).state, "active");
+      }
+      item.policy.expiresAt = fixtureTimestamp;
+      assert.equal(
+        (await reconcile(item)).state_reason,
+        "order_policy_rejected"
+      );
+      item.policy.expiresAt = fixtureTimestamp + 301n;
+      assert.equal(
+        (await reconcile(item)).state_reason,
+        "order_policy_rejected"
+      );
+    }
+  }
+});
+
+test("an indexer advancing during protocol reads does not invalidate retained orders", async () => {
+  const item = await accepted();
+  const read = item.client.readContract.bind(item.client);
+  let advanced = false;
+  item.client.readContract = async (args) => {
+    if (!advanced) {
+      advanced = true;
+      const checkpoint = `${String(fixtureTimestamp + 12n).padStart(10, "0")}${"1".padStart(16, "0")}${"122".padStart(16, "0")}${"0".repeat(33)}`;
+      await db.owner.query(
+        "UPDATE yunipals_indexer_v3._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=1",
+        [checkpoint]
+      );
+    }
+    return read(args);
+  };
+  const row = await reconcile(item);
+  assert.equal(advanced, true);
+  assert.equal(row.state, "active", row.state_reason);
+  assert.equal(row.state_reason, null);
+});
+
+test("retained orders still reject an indexer already ahead of the captured head", async () => {
+  const item = await accepted();
+  const checkpoint = `${String(fixtureTimestamp + 12n).padStart(10, "0")}${"1".padStart(16, "0")}${"122".padStart(16, "0")}${"0".repeat(33)}`;
+  await db.owner.query(
+    "UPDATE yunipals_indexer_v3._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=1",
+    [checkpoint]
+  );
+  assert.equal(
+    (await reconcile(item)).state_reason,
+    "indexer_not_finalized_or_stale"
+  );
+});
+
+test("retained catalog policy expiry during chain checks prevents eligibility", async () => {
+  const item = await accepted();
+  item.policy.expiresAt = fixtureTimestamp + 300n;
+  item.state.afterReceipt = async () => {
+    item.policy.expiresAt = fixtureTimestamp;
+  };
+  const row = await reconcile(item);
+  assert.equal(row.state, "unavailable");
+  assert.equal(row.state_reason, "order_policy_rejected");
+});
+
 test("retained reconciliation acknowledges only the stream version captured by its job", async () => {
   const item = await accepted("base");
   await db.owner.query(
@@ -284,6 +351,10 @@ test("terminal state survives provider/indexer failure and filled takes preceden
     await db.owner.query(
       "UPDATE yunipals_read_v4.token SET burned=true WHERE collection='ethereum' AND token_id=$1",
       [item.input.asset.tokenId]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_indexer_v3._ponder_checkpoint WHERE chain_id=$1",
+      [item.input.asset.chainId]
     );
     if (status === "filled") {
       item.state.filled = 1n;

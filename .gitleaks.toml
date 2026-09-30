@@ -1,0 +1,14 @@
+title = "Yunipals secret scan"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+description = "Public SHA-256 of the collector OpenAPI baseline"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)patches/collector-indexer/manifest\.json$''']
+regexes = ['''^b4b7198c6c55878420c665ea88ac4fa668094d64536e696e6ff5b3f46bcaf979$''']
