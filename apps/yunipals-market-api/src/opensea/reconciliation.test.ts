@@ -8,7 +8,7 @@ import { marketplaceChains } from "@protopals/yunipals-market-core/registry";
 import { claimJob, LostJobLeaseError } from "@/db/jobs";
 import { createOpenSeaTestDatabase } from "@/opensea/fixtures/database";
 import { acknowledgmentFixture } from "@/opensea/fixtures/orders";
-import { fixtureNow } from "@/opensea/fixtures/admission";
+import { fixtureNow, fixtureTimestamp } from "@/opensea/fixtures/admission";
 import { OpenSeaAdmissionService } from "@/opensea/admission";
 import { verifyOpenSeaAcknowledgment } from "@/opensea/orders";
 import {
@@ -189,6 +189,22 @@ test("all three accepted chains require chain checks and recover when NFT approv
     assert.equal(recovered.state_block_number, "121");
     assert.equal(recovered.signature, item.signature);
     assert.deepEqual(recovered.components, item.draft.order);
+  }
+});
+
+test("retained catalog orders accept fresh browse policies and reject expired or oversized lifetimes", async () => {
+  for (const chain of ["ethereum", "base", "polygon"] as const) {
+    for (const side of ["listing", "offer"] as const) {
+      const item = await accepted(chain, side);
+      for (const remaining of [300n, 182n]) {
+        item.policy.expiresAt = fixtureTimestamp + remaining;
+        assert.equal((await reconcile(item)).state, "active");
+      }
+      item.policy.expiresAt = fixtureTimestamp;
+      assert.equal((await reconcile(item)).state_reason, "order_policy_rejected");
+      item.policy.expiresAt = fixtureTimestamp + 301n;
+      assert.equal((await reconcile(item)).state_reason, "order_policy_rejected");
+    }
   }
 });
 

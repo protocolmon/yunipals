@@ -14,6 +14,7 @@ import {
   OpenSeaPolicyError,
   resolveOpenSeaCollectionPolicy
 } from "@/opensea/policy";
+import { openSeaBrowsePolicyValidForSeconds } from "@/opensea/policyFreshness";
 
 export type PolicyResolutionTiming = {
   chain: OpenSeaChain;
@@ -313,7 +314,7 @@ export class OpenSeaSharedPolicyResolver {
             chain,
             raw,
             action.started,
-            purpose === "browse" ? 300 : 60,
+            purpose === "browse" ? openSeaBrowsePolicyValidForSeconds : 60,
             purpose === "browse" ? browseStaleMs : transactionFreshMs
           );
           const responseVersion = createHash("sha256")
@@ -407,7 +408,13 @@ export class OpenSeaSharedPolicyResolver {
   ): OpenSeaBrowsePolicyObservation {
     const observedAt = row.observed_at!;
     return {
-      policy: this.parse(chain, row.response, observedAt, 300, browseStaleMs),
+      policy: this.parse(
+        chain,
+        row.response,
+        observedAt,
+        openSeaBrowsePolicyValidForSeconds,
+        browseStaleMs
+      ),
       freshness,
       lastSuccessAt: observedAt.toISOString(),
       lastAttemptAt: row.last_attempt_at?.toISOString() ?? null,

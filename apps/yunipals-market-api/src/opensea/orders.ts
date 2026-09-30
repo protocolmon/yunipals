@@ -4,10 +4,7 @@ import {
   parseMarketOrder,
   type MarketOrder
 } from "@protopals/yunipals-market-core/marketOrder";
-import {
-  assertOpenSeaPolicyCurrent,
-  type OpenSeaOrderPolicy
-} from "@protopals/yunipals-market-core/openseaOrderPolicy";
+import type { OpenSeaOrderPolicy } from "@protopals/yunipals-market-core/openseaOrderPolicy";
 import { createOpenSeaPublicationIntent } from "@protopals/yunipals-market-core/openseaPublication";
 import { seaportOrderHash } from "@protopals/yunipals-market-core/seaport";
 import {
@@ -31,6 +28,11 @@ import {
   record,
   string
 } from "@protopals/yunipals-market-core/validation";
+
+import {
+  assertOpenSeaPolicyFresh,
+  type OpenSeaPolicyPurpose
+} from "@/opensea/policyFreshness";
 
 export type OpenSeaPublication = {
   order: SeaportOrderJson;
@@ -176,10 +178,11 @@ export type OpenSeaOrderRequest = ReturnType<typeof parseOpenSeaOrderRequest>;
 export function checkOpenSeaOrder(
   input: OpenSeaOrderRequest,
   policy: OpenSeaOrderPolicy,
-  timestamp: bigint
+  timestamp: bigint,
+  purpose: OpenSeaPolicyPurpose = "transaction"
 ) {
   try {
-    assertOpenSeaPolicyCurrent(policy, timestamp);
+    assertOpenSeaPolicyFresh(policy, timestamp, purpose);
     if (input.policyVersion !== policy.version) throw new Error();
     const firstOffer = input.order.offer[0];
     const firstConsideration = input.order.consideration[0];

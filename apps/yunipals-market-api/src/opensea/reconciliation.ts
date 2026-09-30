@@ -114,7 +114,7 @@ export async function observeOpenSeaOrder(
             Number(state.observed.timestamp)
           )
         );
-      checkOpenSeaOrder(input, policy.policy, timestamp());
+      checkOpenSeaOrder(input, policy.policy, timestamp(), "catalog");
       const indexed = await readIndexedOpenSeaAsset(pool, input.asset);
       transferHash = indexed.lastTransfer.transactionHash;
       await inspectOpenSeaAdmission(
@@ -135,7 +135,7 @@ export async function observeOpenSeaOrder(
         after.heartbeatAt < before.heartbeatAt
       )
         throw new OpenSeaOrderError("asset_still_syncing", 503);
-      checkOpenSeaOrder(input, policy.policy, timestamp());
+      checkOpenSeaOrder(input, policy.policy, timestamp(), "catalog");
       status = "active";
     } catch (error) {
       status = "unavailable";

@@ -20,6 +20,7 @@ import {
 import { OpenSeaPolicyError } from "@/opensea/policy";
 import { PostgresOpenSeaRequestBudget } from "@/opensea/requestBudget";
 import { OpenSeaSharedPolicyResolver } from "@/opensea/sharedPolicy";
+import { assertOpenSeaPolicyFresh } from "@/opensea/policyFreshness";
 
 const db = createBnbTestDatabase();
 const scopes: string[] = [];
@@ -268,6 +269,18 @@ test("browse policy refreshes every five minutes and retains a nonactionable sta
   });
   const current = await service.resolveBrowse("base");
   assert.equal(current.freshness, "current");
+  const reused = await service.resolveCurrentBrowsePolicy("base");
+  assert.equal(reused.wire.expiresAt, current.policy.wire.expiresAt);
+  assert.doesNotThrow(() =>
+    assertOpenSeaPolicyFresh(
+      reused.policy,
+      BigInt(Math.floor(Date.now() / 1000)),
+      "catalog"
+    )
+  );
+  assert.throws(() =>
+    assertOpenSeaPolicyFresh(reused.policy, BigInt(Math.floor(Date.now() / 1000)))
+  );
   await db.owner.query(
     "UPDATE yunipals_market.opensea_policy_observation SET observed_at=clock_timestamp()-interval '6 minutes' WHERE scope=$1 AND chain_id=8453",
     [account]

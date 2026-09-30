@@ -7,10 +7,7 @@ import {
   isOpenSeaChain,
   type OpenSeaChain
 } from "@protopals/yunipals-market-core/openseaRegistry";
-import {
-  assertOpenSeaPolicyCurrent,
-  type OpenSeaOrderPolicy
-} from "@protopals/yunipals-market-core/openseaOrderPolicy";
+import type { OpenSeaOrderPolicy } from "@protopals/yunipals-market-core/openseaOrderPolicy";
 import {
   marketplaceChains,
   seaportDeployment
@@ -38,6 +35,10 @@ import {
 import { readIndexedOpenSeaAsset } from "@/opensea/indexer";
 import { OpenSeaOrderError, parseOpenSeaOrderRequest } from "@/opensea/orders";
 import type { OpenSeaPolicyResolver } from "@/opensea/policy";
+import {
+  assertOpenSeaPolicyFresh,
+  type OpenSeaPolicyPurpose
+} from "@/opensea/policyFreshness";
 import { discoveredStreamWakeSql } from "@/opensea/streamWake";
 
 type Policies = Pick<OpenSeaPolicyResolver, "resolve">;
@@ -123,10 +124,11 @@ export function checkDiscoveredOpenSeaPolicy(
   summary: MarketOrder,
   order: ReturnType<typeof decodeSeaportOrder>,
   policy: OpenSeaOrderPolicy,
-  now: bigint
+  now: bigint,
+  purpose: OpenSeaPolicyPurpose = "transaction"
 ) {
   try {
-    assertOpenSeaPolicyCurrent(policy, now);
+    assertOpenSeaPolicyFresh(policy, now, purpose);
     const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
     if (
       policy.chain !== summary.asset.chain ||
@@ -393,7 +395,13 @@ async function observe(
             Number(state.observed.timestamp)
           )
         );
-      checkDiscoveredOpenSeaPolicy(summary, order, policy.policy, timestamp());
+      checkDiscoveredOpenSeaPolicy(
+        summary,
+        order,
+        policy.policy,
+        timestamp(),
+        "catalog"
+      );
       await inspectOpenSeaAdmission(
         client,
         input,
@@ -421,7 +429,13 @@ async function observe(
         after.heartbeatAt < before.heartbeatAt
       )
         throw new OpenSeaOrderError("asset_still_syncing", 503);
-      checkDiscoveredOpenSeaPolicy(summary, order, policy.policy, timestamp());
+      checkDiscoveredOpenSeaPolicy(
+        summary,
+        order,
+        policy.policy,
+        timestamp(),
+        "catalog"
+      );
       const reason =
         !source.signature && !state.validated
           ? "maker_signature_required"

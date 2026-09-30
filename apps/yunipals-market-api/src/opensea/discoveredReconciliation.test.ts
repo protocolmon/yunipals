@@ -252,6 +252,24 @@ test("a verified maker signature permits an open listing observation; protected 
   assert.equal((await reconcile(offer)).reason, "invalid_maker_signature");
 });
 
+test("catalog discovery accepts fresh five-minute browse policies for listings and offers", async () => {
+  for (const chain of ["ethereum", "base", "polygon"] as const) {
+    for (const side of ["listing", "offer"] as const) {
+      const item = await discover(await db.setup(chain, side));
+      for (const remaining of [300n, 182n]) {
+        item.policy.expiresAt = fixtureTimestamp + remaining;
+        const row = await reconcile(item);
+        assert.equal(row.state, "authorization-required");
+        assert.equal(row.reason, "maker_signature_required");
+      }
+      item.policy.expiresAt = fixtureTimestamp;
+      assert.equal((await reconcile(item)).reason, "order_policy_rejected");
+      item.policy.expiresAt = fixtureTimestamp + 301n;
+      assert.equal((await reconcile(item)).reason, "order_policy_rejected");
+    }
+  }
+});
+
 test("canonical protocol termination remains observable without provider visibility, policy or indexer availability", async () => {
   for (const status of [
     "filled",
