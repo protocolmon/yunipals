@@ -52,7 +52,7 @@ function service(
   const keepers = new pg.Pool({
     connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
     application_name: "yunipals_catalog_test",
-    max: 3,
+    max: 8,
     statement_timeout: statementTimeoutMs,
     idle_in_transaction_session_timeout: 95000
   });
@@ -61,7 +61,7 @@ function service(
     ? new pg.Pool({
         connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
         application_name: "yunipals_catalog_source_test",
-        max: 7,
+        max: 17,
         statement_timeout: statementTimeoutMs,
         idle_in_transaction_session_timeout: 95000
       })
@@ -807,25 +807,78 @@ test("combined direct first pages match separate counts and pages across sorts, 
 test("direct catalog lanes import one source snapshot and serve concurrent filters from it", async () => {
   await token("bnb", 1, { Lane: "BNB" });
   await token("ethereum", 2, { Lane: "Ethereum" });
+  const view = (
+    await db.owner.query<{ definition: string }>(
+      "SELECT pg_get_viewdef('metadata.market_catalog_trait'::regclass,true) AS definition"
+    )
+  ).rows[0]!.definition.trim().replace(/;$/, "");
+  await db.owner.query(
+    "CREATE TABLE metadata.catalog_test_blocker(singleton boolean); INSERT INTO metadata.catalog_test_blocker VALUES(true)"
+  );
+  await db.owner.query(`CREATE OR REPLACE VIEW metadata.market_catalog_trait AS
+    SELECT original.* FROM (${view}) original CROSS JOIN metadata.catalog_test_blocker blocker`);
+  await db.owner.query(
+    "GRANT SELECT ON metadata.catalog_test_blocker TO market_test_runtime"
+  );
   const catalog = service({}, undefined, undefined, true);
-  const opened = await catalog.tokens(query({ chain: "polygon" }));
+  const opened = await catalog.tokens(
+    new URLSearchParams({ chain: "polygon" })
+  );
   const snapshots = await db.owner.query<{ backend_xmin: string }>(
     `SELECT backend_xmin::text FROM pg_stat_activity
     WHERE application_name='yunipals_catalog_source_test' ORDER BY pid`
   );
-  assert.equal(snapshots.rowCount, 2);
+  assert.equal(snapshots.rowCount, 4);
   assert.ok(snapshots.rows.every((row) => row.backend_xmin));
   assert.equal(
     snapshots.rows[0]!.backend_xmin,
-    snapshots.rows[1]!.backend_xmin
+    snapshots.rows[3]!.backend_xmin
   );
 
   await token("bnb", 3, { Lane: "BNB" });
   await token("ethereum", 4, { Lane: "Ethereum" });
-  const [bnb, ethereum] = await Promise.all([
-    catalog.tokens(query({ chain: "bnb", "t.Lane": "BNB" })),
-    catalog.tokens(query({ chain: "ethereum", "t.Lane": "Ethereum" }))
-  ]);
+  const blocker = await db.owner.connect();
+  let pending: Promise<unknown>[] = [];
+  let bnb, ethereum;
+  try {
+    await blocker.query("BEGIN");
+    await blocker.query(
+      "LOCK TABLE metadata.catalog_test_blocker IN ACCESS EXCLUSIVE MODE"
+    );
+    const bnbRead = catalog.tokens(query({ chain: "bnb", "t.Lane": "BNB" }));
+    const ethereumRead = catalog.tokens(
+      query({ chain: "ethereum", "t.Lane": "Ethereum" })
+    );
+    pending = [bnbRead, ethereumRead];
+    let blocked = 0;
+    const deadline = Date.now() + 2000;
+    while (blocked < 2 && Date.now() < deadline) {
+      blocked = (
+        await db.owner.query<{
+          count: number;
+        }>(`SELECT count(*)::int AS count FROM pg_stat_activity
+        WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock'`)
+      ).rows[0]!.count;
+      if (blocked < 2) await delay(10);
+    }
+    assert.equal(
+      blocked,
+      2,
+      "Both independent filters must reach PostgreSQL concurrently."
+    );
+    await blocker.query("ROLLBACK");
+    [bnb, ethereum] = await Promise.all([bnbRead, ethereumRead]);
+  } finally {
+    await blocker.query("ROLLBACK");
+    await Promise.allSettled(pending);
+    blocker.release();
+    await catalog.close();
+    services.splice(services.indexOf(catalog), 1);
+    await db.owner.query(
+      `CREATE OR REPLACE VIEW metadata.market_catalog_trait AS ${view}`
+    );
+    await db.owner.query("DROP TABLE metadata.catalog_test_blocker");
+  }
   assert.equal(bnb.snapshot.id, opened.snapshot.id);
   assert.equal(ethereum.snapshot.id, opened.snapshot.id);
   assert.equal(bnb.total, 1);
@@ -1124,7 +1177,7 @@ test("expired snapshots, service restart and killed keeper sessions demand refre
   const killed = await db.owner.query(
     "SELECT pg_terminate_backend(pid) AS killed FROM pg_stat_activity WHERE application_name='yunipals_catalog_test' AND state='idle in transaction'"
   );
-  assert.equal(killed.rowCount, 1);
+  assert.equal(killed.rowCount, 2);
   assert.equal(killed.rows[0].killed, true);
   await delay(20);
   await assert.rejects(

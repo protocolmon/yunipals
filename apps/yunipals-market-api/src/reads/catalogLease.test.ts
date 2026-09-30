@@ -42,3 +42,17 @@ test("retirement rejects queued and future reads but preserves the active lease 
   release();
   assert.equal(queue.active, false);
 });
+
+test("two independent read slots drain together after retirement", async () => {
+  const queue = new CatalogLeaseQueue(20, 1, 2);
+  const first = await queue.acquire();
+  const second = await queue.acquire();
+  const waiting = assert.rejects(queue.acquire(), /expired/);
+  queue.close(new Error("expired"));
+  await waiting;
+  first();
+  first();
+  assert.equal(queue.active, true);
+  second();
+  assert.equal(queue.active, false);
+});

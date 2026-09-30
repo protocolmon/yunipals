@@ -12,6 +12,7 @@ export type ReadDiagnostics = {
   projectionGeneration?: string | null;
   queueWaitMs?: number;
   executionMs?: number;
+  capacityReason?: string;
 };
 
 export const readDiagnostics = new AsyncLocalStorage<ReadDiagnostics>();

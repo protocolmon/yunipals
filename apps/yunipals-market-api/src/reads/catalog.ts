@@ -8,6 +8,7 @@ import {
 import type { Pool, PoolClient } from "pg";
 import type { MarketChainAvailability } from "@protopals/yunipals-market-core/marketAvailability";
 import type { MarketplaceChain } from "@protopals/yunipals-market-core/registry";
+import { collectionFiltersKey } from "@protopals/yunipals-market-core/collectionFilters";
 
 import { BnbOrderError } from "@/bnb/orders";
 import { readOrderSources } from "@/reads/orders";
@@ -49,6 +50,10 @@ type Generation = {
   createdAt: number;
   client: PoolClient;
   indexers: IndexerLane[];
+  markets: PoolClient[];
+  slots: { client: PoolClient; indexers: IndexerLane[]; active: boolean }[];
+  books: Map<string, Promise<string>>;
+  counts: Map<string, Promise<Counts>>;
   secret: Buffer;
   fingerprint: string;
   sources: CatalogSources;
@@ -244,11 +249,11 @@ export class CatalogService {
     )
       throw new Error("Invalid catalog snapshot lifetime.");
   }
-  private releaseGeneration(generation: Generation) {
-    if (generation.released) return;
+  private releaseGeneration(generation: Generation, force = false) {
+    if (generation.released || (!force && generation.lease.active)) return;
     generation.released = true;
     clearTimeout(generation.releaseTimer);
-    generation.client.release(true);
+    for (const client of generation.markets) client.release(true);
     for (const lane of generation.indexers) lane.client.release(true);
   }
   private invalidate(
@@ -272,7 +277,7 @@ export class CatalogService {
     // The hard guard also covers a transport which stops honoring its deadline.
     if (generation.lease.active) {
       generation.releaseTimer = setTimeout(
-        () => this.releaseGeneration(generation),
+        () => this.releaseGeneration(generation, true),
         12000
       );
       generation.releaseTimer.unref();
@@ -334,12 +339,13 @@ export class CatalogService {
       await this.assertIndexerReady();
       const client = await this.keepers.connect();
       const indexers: PoolClient[] = [];
+      const markets = [client];
       let released = false;
       let generation: Generation | undefined;
       const discard = () => {
         if (released) return;
         released = true;
-        client.release(true);
+        for (const market of markets) market.release(true);
         for (const indexer of indexers) indexer.release(true);
       };
       const onError = () => {
@@ -353,17 +359,36 @@ export class CatalogService {
           "SELECT clock_timestamp() AS now"
         );
         const row = result.rows[0]!;
+        const exportedMarket = await client.query<{ snapshot: string }>(
+          "SELECT pg_export_snapshot() AS snapshot"
+        );
+        const marketSnapshot = exportedMarket.rows[0]?.snapshot;
+        if (!marketSnapshot || !/^[0-9A-Fa-f-]+$/.test(marketSnapshot))
+          throw new BnbOrderError("catalog_indexer_unavailable", 503);
+        const marketFollower = await this.keepers.connect();
+        if (released) {
+          marketFollower.release(true);
+          throw new BnbOrderError("market_unavailable", 503);
+        }
+        markets.push(marketFollower);
+        marketFollower.on("error", onError);
+        await marketFollower.query(
+          "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
+        );
+        await marketFollower.query(
+          `SET TRANSACTION SNAPSHOT '${marketSnapshot}'`
+        );
         const sources = await (this.options.readSources ?? readOrderSources)(
           client,
           row.now
         );
         if (this.options.indexerKeepers) {
           const indexer = await this.options.indexerKeepers.connect();
-          indexers.push(indexer);
           if (released) {
             indexer.release(true);
             throw new BnbOrderError("market_unavailable", 503);
           }
+          indexers.push(indexer);
           indexer.on("error", onError);
           await indexer.query(
             "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
@@ -374,13 +399,19 @@ export class CatalogService {
           const snapshot = exported.rows[0]?.snapshot;
           if (!snapshot || !/^[0-9A-Fa-f-]+$/.test(snapshot))
             throw new BnbOrderError("catalog_indexer_unavailable", 503);
-          const follower = await this.options.indexerKeepers.connect();
-          indexers.push(follower);
-          follower.on("error", onError);
-          await follower.query(
-            "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
-          );
-          await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
+          for (let i = 0; i < 3; i++) {
+            const follower = await this.options.indexerKeepers.connect();
+            if (released) {
+              follower.release(true);
+              throw new BnbOrderError("market_unavailable", 503);
+            }
+            indexers.push(follower);
+            follower.on("error", onError);
+            await follower.query(
+              "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
+            );
+            await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
+          }
         }
         const projection = this.projectionGenerationMode
           ? (
@@ -405,13 +436,23 @@ export class CatalogService {
           client,
           indexers: indexers.map((indexer) => ({ client: indexer, active: 0 })),
           sources,
+          markets,
+          slots: markets.map((market, i) => ({
+            client: market,
+            indexers: indexers
+              .slice(i * 2, i * 2 + 2)
+              .map((client) => ({ client, active: 0 })),
+            active: false
+          })),
+          books: new Map(),
+          counts: new Map(),
           fingerprint,
           createdAt: Date.now(),
           expiresAt: Date.now() + this.lifetimeMs,
           secret: randomBytes(32),
           queries: new Map(),
           live: true,
-          lease: new CatalogLeaseQueue(),
+          lease: new CatalogLeaseQueue(1500, 8, 2),
           released: false
         };
         generation.timer = setTimeout(
@@ -456,9 +497,13 @@ export class CatalogService {
     // import one exported snapshot, so source families can run concurrently
     // without allowing counts or rankings to change between pages. Local books
     // are query parameters; no source writes or per-visitor copies are needed.
-    const lanes = [...generation.indexers]
-      .sort((left, right) => left.active - right.active)
-      .slice(0, indexerCount);
+    const slot = generation.slots.find((candidate) => !candidate.active);
+    if (!slot) {
+      release();
+      throw new BnbOrderError("catalog_busy", 429);
+    }
+    slot.active = true;
+    const lanes = slot.indexers.slice(0, indexerCount);
     let lanesHeld = false;
     try {
       this.assertLive(generation);
@@ -467,7 +512,7 @@ export class CatalogService {
       for (const lane of lanes) lane.active++;
       lanesHeld = true;
       const result = await task(
-        generation.client,
+        slot.client,
         lanes.map((lane) => lane.client)
       );
       this.assertLive(generation);
@@ -483,9 +528,29 @@ export class CatalogService {
     } finally {
       if (lanesHeld) for (const lane of lanes) lane.active--;
       annotateRead({ executionMs: Math.round(performance.now() - started) });
+      slot.active = false;
       release();
       if (!generation.live) this.releaseGeneration(generation);
     }
+  }
+  private books(
+    generation: Generation,
+    db: PoolClient,
+    query: CatalogQuery,
+    sources: CatalogSources
+  ) {
+    const key = JSON.stringify([
+      query.chains,
+      query.currency?.address ?? null,
+      sources.readVersion ?? 1
+    ]);
+    let pending = generation.books.get(key);
+    if (!pending) {
+      pending = fetchCatalogBooks(db, query, generation.observedAt, sources);
+      generation.books.set(key, pending);
+      void pending.catch(() => generation.books.delete(key));
+    }
+    return pending;
   }
   private async currentAssets(generation: Generation, items: CatalogRow[]) {
     if (!items.length) return;
@@ -597,58 +662,65 @@ export class CatalogService {
         !position &&
         !query.filters.sort.startsWith("token-id") &&
         Object.keys(query.filters.traits).length > 0;
-      const read = this.heldRead(
-        held,
-        laneCount,
-        async (db, indexers) => {
-          const books = indexers.length
-            ? await fetchCatalogBooks(
-                db,
-                effectiveQuery,
-                held.observedAt,
-                sources
-              )
-            : undefined;
-          // Filtered rank/price pages already sort the complete candidate set.
-          // Token-ID pages can stop an ordered index scan early; combining those
-          // with the count adds unnecessary search joins for the whole population.
-          let result: { total: bigint; listed: bigint };
-          let page: Awaited<ReturnType<typeof fetchCatalogPage>> | undefined;
-          if (combineFirstPage) {
-            const combined = await fetchCatalogFirstPage(
-              indexers,
-              effectiveQuery,
-              held.observedAt,
-              sources,
-              books!
-            );
-            page = combined.page;
-            result = combined;
-          } else {
-            result = await fetchCatalogCounts(
-              indexers.length ? indexers : db,
-              effectiveQuery,
-              held.observedAt,
-              sources,
-              books
-            );
-          }
-          const total = Number(result.total),
-            listed = Number(result.listed);
-          if (!Number.isSafeInteger(total) || !Number.isSafeInteger(listed))
-            throw new BnbOrderError("catalog_count_capacity", 503);
-          return {
-            counts: {
-              total,
-              listedTotal: complete ? listed : null,
-              verifiedListedTotal: listed
+      const countKey = `v${readVersion}:${collectionFiltersKey({ ...query.filters, sort: "token-id-asc" })}`;
+      const sharedCount = combineFirstPage
+        ? undefined
+        : held.counts.get(countKey);
+      const read = sharedCount
+        ? sharedCount.then((counts) => ({ counts, page: undefined }))
+        : this.heldRead(
+            held,
+            laneCount,
+            async (db, indexers) => {
+              const books = indexers.length
+                ? await this.books(held, db, effectiveQuery, sources)
+                : undefined;
+              // Filtered rank/price pages already sort the complete candidate set.
+              // Token-ID pages can stop an ordered index scan early; combining those
+              // with the count adds unnecessary search joins for the whole population.
+              let result: { total: bigint; listed: bigint };
+              let page:
+                | Awaited<ReturnType<typeof fetchCatalogPage>>
+                | undefined;
+              if (combineFirstPage) {
+                const combined = await fetchCatalogFirstPage(
+                  indexers,
+                  effectiveQuery,
+                  held.observedAt,
+                  sources,
+                  books!
+                );
+                page = combined.page;
+                result = combined;
+              } else {
+                result = await fetchCatalogCounts(
+                  indexers.length ? indexers : db,
+                  effectiveQuery,
+                  held.observedAt,
+                  sources,
+                  books
+                );
+              }
+              const total = Number(result.total),
+                listed = Number(result.listed);
+              if (!Number.isSafeInteger(total) || !Number.isSafeInteger(listed))
+                throw new BnbOrderError("catalog_count_capacity", 503);
+              return {
+                counts: {
+                  total,
+                  listedTotal: complete ? listed : null,
+                  verifiedListedTotal: listed
+                },
+                page
+              };
             },
-            page
-          };
-        },
-        combineFirstPage ? "counts_and_page" : "counts"
-      );
+            combineFirstPage ? "counts_and_page" : "counts"
+          );
       const counts = read.then((result) => result.counts);
+      if (!combineFirstPage && !sharedCount) {
+        held.counts.set(countKey, counts);
+        void counts.catch(() => held.counts.delete(countKey));
+      }
       if (combineFirstPage) {
         const page = read.then((result) => result.page!);
         firstPages.set(query.page.limit, page);
@@ -671,12 +743,7 @@ export class CatalogService {
           sourceLaneCount(generation, effectiveQuery),
           async (db, indexers) => {
             const books = indexers.length
-              ? await fetchCatalogBooks(
-                  db,
-                  effectiveQuery,
-                  generation.observedAt,
-                  sources
-                )
+              ? await this.books(generation, db, effectiveQuery, sources)
               : undefined;
             return fetchCatalogPage(
               indexers.length ? indexers : db,

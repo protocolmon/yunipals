@@ -198,7 +198,7 @@ export function createApp(
   const catalogGate = createWorkGate({
     burst: 20,
     perSecond: 1,
-    concurrent: 2
+    concurrent: 4
   });
   async function bounded<T>(
     context: Context<AppEnvironment>,
@@ -210,7 +210,17 @@ export function createApp(
       context.env?.incoming?.socket.remoteAddress ?? "unknown"
     );
     if (!release) {
+      console.warn(
+        JSON.stringify({
+          event: "market_capacity_rejected",
+          ...readFailureContext(),
+          code: "rate_limited",
+          capacityReason: gate.rejection,
+          status: 429
+        })
+      );
       context.header("Retry-After", "2");
+      context.header("X-Capacity-Reason", gate.rejection ?? "rate");
       return context.json({ error: { code: "rate_limited" } }, 429);
     }
     let deadline: ReturnType<typeof setTimeout>;
@@ -256,7 +266,17 @@ export function createApp(
     tokens = Math.min(240, tokens + (now - lastRefill) * 0.12);
     lastRefill = now;
     if (tokens < 1) {
+      console.warn(
+        JSON.stringify({
+          event: "market_capacity_rejected",
+          ...readFailureContext(),
+          code: "rate_limited",
+          capacityReason: "global_rate",
+          status: 429
+        })
+      );
       context.header("Retry-After", "1");
+      context.header("X-Capacity-Reason", "global_rate");
       return context.json({ error: { code: "rate_limited" } }, 429);
     }
     tokens--;
@@ -644,7 +664,21 @@ export function createApp(
   );
   app.onError((error, context) => {
     if (error instanceof BnbOrderError || error instanceof OpenSeaOrderError) {
-      if (error.status === 429) context.header("Retry-After", "2");
+      if (error.status === 429) {
+        context.header("Retry-After", "2");
+        context.header(
+          "X-Capacity-Reason",
+          readDiagnostics.getStore()?.capacityReason ?? error.code
+        );
+        console.warn(
+          JSON.stringify({
+            event: "market_capacity_rejected",
+            ...readFailureContext(),
+            code: error.code,
+            status: 429
+          })
+        );
+      }
       if (error.status >= 500)
         console.error(
           JSON.stringify({

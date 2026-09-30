@@ -1,4 +1,5 @@
 import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataRawSearchReadRelationAt, metadataRawTraitReadRelationAt, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
+import { cachedSearchReadRelation, cachedSearchReadRelationFor, cachedMissingKeys } from "../metadata/read-cache.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { metadataReadiness, publicationStatus } from "../metadata/status.js";
@@ -228,7 +229,8 @@ app.get("/v1/tokens", async (c) => {
   });
   const ownerResolution = ownerInput ? await requireResolvedOwner(ownerInput, chains) : undefined;
   const projectionId = await readActiveProjectionId();
-  const searchRelation = projectionId ? metadataSearchReadRelationAt(projectionId) : metadataSearchReadRelation;
+  const cachedProofs = process.env.YUNIPALS_READ_CACHE === "1" && projectionId !== null;
+  const searchRelation = cachedProofs ? cachedSearchReadRelation(chains, projectionId!) : projectionId ? metadataSearchReadRelationAt(projectionId) : metadataSearchReadRelation;
   const traitRelation = projectionId ? metadataTraitReadRelationAt(projectionId) : metadataTraitReadRelation;
   const filterConfig = { visibility: "visible", chains, owner: ownerResolution?.addresses ?? null, burned: burned ?? null, traits: [...traitGroups].sort(([a], [b]) => a.localeCompare(b)).map(([type, values]) => [type, [...values].sort()]), rarityMin: rarityMin ?? null, rarityMax: rarityMax ?? null, rarityCappedMin: rarityCappedMin ?? null, rarityCappedMax: rarityCappedMax ?? null, metadata, sort };
   const expectedConfig = configHash(projectionId ? { ...filterConfig, projectionId } : filterConfig);
@@ -341,7 +343,7 @@ app.get("/v1/tokens", async (c) => {
         WHERE validated.collection=t.collection AND validated.token_id=t.token_id::numeric
           AND validated.lifecycle=t.lifecycle OFFSET 0) s ON true`;
     const schema = relation.slice(0, -".token".length);
-    const search = metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
+    const search = cachedProofs ? cachedSearchReadRelationFor(schema, chains, projectionId!) : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
     return `${tokens} t LEFT JOIN ${search} s ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle`;
   };
   const filteredCountSql = selectedRelations.map((relation) => `SELECT count(*)::bigint AS total FROM ${countSourceFor(relation)} ${baseWhere}`).join(" UNION ALL ");
@@ -406,8 +408,9 @@ app.get("/v1/tokens", async (c) => {
     validatedSearch: searchRelation,
     bulkSearch: (relation) => {
       const schema = relation.slice(0, -".token".length);
-      return metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
+      return cachedProofs ? cachedSearchReadRelationFor(schema, chains, projectionId!) : metadataSearchReadRelationFor(schema, schema !== bnbSchema && chains.includes("base"), chains, projectionId ?? undefined);
     },
+    missingKeys: cachedProofs ? (relation) => cachedMissingKeys(relation.slice(0, -".token".length), chains, projectionId!) : undefined,
     columns: candidateColumns, filters: where, cursorFilters: cursorWhere,
     values: params, sort, cursor,
     selective: Boolean(ownerResolution) || traitGroups.size > 0,

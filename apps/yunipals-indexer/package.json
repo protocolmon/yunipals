@@ -28,6 +28,8 @@
     "projection:status": "tsx scripts/projection-status.ts",
     "api:proof-indexes": "tsx scripts/migrate-api-proof-indexes.ts",
     "api:maintenance": "tsx scripts/migrate-api-maintenance.ts",
+    "api:read-cache:migrate": "tsx scripts/migrate-read-cache.ts",
+    "start:read-cache": "tsx lib/metadata/read-cache-worker.ts",
     "test:rarity:postgres": "node --import tsx scripts/test-rarity-pagination.mjs",
     "test:legacy:offline": "node --import tsx scripts/test-legacy-offline.mjs",
     "test:ponder:postgres": "node scripts/test-ponder-dependencies.mjs",

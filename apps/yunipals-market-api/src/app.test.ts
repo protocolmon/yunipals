@@ -145,6 +145,38 @@ test("database failure affects readiness without exposing credentials or enablin
   );
 });
 
+test("catalog contention reports its capacity reason and retry delay", async (t) => {
+  const logs: string[] = [];
+  t.mock.method(console, "warn", (message: string) => logs.push(message));
+  const { annotateRead } = await import("@/reads/diagnostics");
+  const fail = async () => {
+    annotateRead({
+      capacityReason: "catalog_queue_timeout",
+      queueWaitMs: 1500
+    });
+    throw new BnbOrderError("catalog_busy", 429);
+  };
+  const app = createApp(environment, async () => {}, {
+    catalog: { tokens: fail, tokensV2: fail }
+  });
+  const response = await app.request("/v2/market/tokens");
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("Retry-After"), "2");
+  assert.equal(
+    response.headers.get("X-Capacity-Reason"),
+    "catalog_queue_timeout"
+  );
+  const logged = logs.map((line) => JSON.parse(line));
+  assert.ok(
+    logged.some(
+      (entry) =>
+        entry.event === "market_capacity_rejected" &&
+        entry.capacityReason === "catalog_queue_timeout" &&
+        entry.queueWaitMs === 1500
+    )
+  );
+});
+
 test("HTTP guards bound bodies and reject unapproved origins", async () => {
   const app = createApp(environment, async () => {});
   const denied = await app.request("/v1/market/capabilities", {

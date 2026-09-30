@@ -30,6 +30,7 @@ export type RarityPageQuery = {
   selectiveTokens?: (relation: string) => string;
   nullsExcluded: boolean;
   missingExcluded?: boolean;
+  missingKeys?: (relation: string) => { relation: string; fresh: string };
 };
 
 /** Every filter precedes LIMIT; rejected proofs cannot leave gaps in a page. */
@@ -115,13 +116,25 @@ export function rarityPageQueries(query: RarityPageQuery) {
       ORDER BY s.token_id ASC,s.collection ASC LIMIT ${limit}`;
     // A materialization boundary prevents LIMIT from turning this bulk proof
     // into an ordered scan with one complete proof lookup per current token.
+    const cached = query.missingKeys?.(relation);
     const missing = `WITH validated_keys AS MATERIALIZED (SELECT collection,token_id,lifecycle FROM ${query.bulkSearch(relation)})
       SELECT ${query.columns} FROM ${relation} t CROSS JOIN
         (SELECT false AS metadata_available,NULL::numeric AS rarity_points,NULL::numeric AS rarity_points_capped) s
-      WHERE ${nullFilters.join(" AND ")} AND NOT EXISTS(SELECT 1 FROM validated_keys valid
+      WHERE ${cached ? `NOT ${cached.fresh} AND ` : ""}${nullFilters.join(" AND ")} AND NOT EXISTS(SELECT 1 FROM validated_keys valid
         WHERE valid.collection=t.collection AND valid.token_id=t.token_id::numeric AND valid.lifecycle=t.lifecycle)
       ORDER BY ${tokenOrder} LIMIT ${limit}`;
-    return query.missingExcluded ? [known] : [known, missing];
+    const indexedMissing = cached
+      ? `SELECT ${query.columns} FROM ${cached.relation} cache_key
+      JOIN LATERAL (SELECT current.* FROM ${relation} current
+        WHERE current.collection=cache_key.collection AND current.token_id=cache_key.token_id::text
+          AND current.lifecycle=cache_key.lifecycle OFFSET 0) t ON true
+      CROSS JOIN (SELECT false AS metadata_available,NULL::numeric AS rarity_points,NULL::numeric AS rarity_points_capped) s
+      WHERE ${cached.fresh} AND ${nullFilters.join(" AND ")}
+      ORDER BY cache_key.token_id ASC,cache_key.collection ASC LIMIT ${limit}`
+      : undefined;
+    return query.missingExcluded
+      ? [known]
+      : [known, ...(indexedMissing ? [indexedMissing] : []), missing];
   });
   return {
     nonnull: query.cursor?.rarity === null ? null : merge(nonnull, true),

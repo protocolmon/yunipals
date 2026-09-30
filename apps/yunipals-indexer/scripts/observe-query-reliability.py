@@ -23,7 +23,7 @@ assert 1024 <= args.api_port <= 65535 and 1024 <= args.market_port <= 65535
 start = time.monotonic()
 report = {'startedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
           'samples': {}, 'errors': {}, 'expectedRefresh': {}, 'rateLimits': {},
-          'generationTransitions': [], 'minimumFreeBytes': None, 'complete': False}
+          'capacityReasons': {}, 'generationTransitions': [], 'minimumFreeBytes': None, 'complete': False}
 timings = collections.defaultdict(list)
 output = Path(args.output)
 output.parent.mkdir(parents=True, exist_ok=True)
@@ -53,6 +53,7 @@ def save():
 def read(label, port, path, params):
     begun = time.monotonic()
     body = None
+    capacity_reason = None
     try:
         request = urllib.request.Request(f'http://127.0.0.1:{port}{path}?' + urllib.parse.urlencode(params),
                                          headers={'User-Agent': 'yunipals-query-observation/1'})
@@ -61,6 +62,7 @@ def read(label, port, path, params):
             body = json.load(response)
     except urllib.error.HTTPError as error:
         status = error.code
+        capacity_reason = error.headers.get('X-Capacity-Reason')
         try:
             body = json.load(error)
         except ValueError:
@@ -75,12 +77,15 @@ def read(label, port, path, params):
         category = 'expectedRefresh'
     elif status == 429:
         category = 'rateLimits'
+        code = body.get('error', {}).get('code', 'unknown') if body else 'unknown'
+        reason_key = f'{label}:{code}:{capacity_reason or "unreported"}'
+        report['capacityReasons'][reason_key] = report['capacityReasons'].get(reason_key, 0) + 1
     elif status != 200:
         category = 'errors'
     if category:
         key = f'{label}:{status}'
         report[category][key] = report[category].get(key, 0) + 1
-        print(json.dumps({'event': 'query_observation_response', 'route': label, 'status': status, 'ms': elapsed}), flush=True)
+        print(json.dumps({'event': 'query_observation_response', 'route': label, 'status': status, 'ms': elapsed, 'capacityReason': capacity_reason}), flush=True)
     return body if status == 200 else None
 
 
