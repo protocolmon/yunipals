@@ -1,0 +1,225 @@
+{
+  "acceptance": {
+    "main": [
+      {
+        "sort": "rarity-desc",
+        "metadata": "all",
+        "oldMs": 153,
+        "newMs": 173,
+        "oldTiming": "page;dur=54.7, count;dur=0.3;desc=\"hit\"",
+        "newTiming": "page;dur=103.1, count;dur=90.0;desc=\"miss\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      },
+      {
+        "sort": "rarity-desc",
+        "metadata": "available",
+        "oldMs": 5473,
+        "newMs": 299,
+        "oldTiming": "page;dur=64.2, count;dur=5460.2;desc=\"miss\"",
+        "newTiming": "page;dur=79.8, count;dur=281.4;desc=\"miss\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      },
+      {
+        "sort": "rarity-desc",
+        "metadata": "missing",
+        "oldMs": 5904,
+        "newMs": 203,
+        "oldTiming": "page;dur=5894.7, count;dur=5182.6;desc=\"miss\"",
+        "newTiming": "page;dur=192.9, count;dur=16.2;desc=\"miss\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      },
+      {
+        "sort": "rarity-capped-desc",
+        "metadata": "all",
+        "oldMs": 81,
+        "newMs": 43,
+        "oldTiming": "page;dur=32.1, count;dur=72.8;desc=\"miss\"",
+        "newTiming": "page;dur=29.2, count;dur=0.6;desc=\"hit\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      },
+      {
+        "sort": "rarity-capped-desc",
+        "metadata": "available",
+        "oldMs": 41,
+        "newMs": 43,
+        "oldTiming": "page;dur=32.1, count;dur=0.2;desc=\"hit\"",
+        "newTiming": "page;dur=31.1, count;dur=0.5;desc=\"hit\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      },
+      {
+        "sort": "rarity-capped-desc",
+        "metadata": "missing",
+        "oldMs": 6111,
+        "newMs": 228,
+        "oldTiming": "page;dur=6098.6, count;dur=0.4;desc=\"hit\"",
+        "newTiming": "page;dur=215.3, count;dur=0.2;desc=\"hit\"",
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true
+      }
+    ],
+    "market": [
+      {
+        "query": {
+          "chain": "bnb",
+          "sort": "rarity-desc",
+          "limit": "24"
+        },
+        "oldMs": 2230,
+        "newMs": 2457,
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true,
+        "continuationMs": 144
+      },
+      {
+        "query": {
+          "chain": "bnb",
+          "sort": "rarity-capped-desc",
+          "limit": "24"
+        },
+        "oldMs": 1959,
+        "newMs": 126,
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true,
+        "continuationMs": 105
+      },
+      {
+        "query": {
+          "sort": "rarity-desc",
+          "limit": "24"
+        },
+        "oldMs": 2051,
+        "newMs": 1811,
+        "oldStatus": 200,
+        "newStatus": 200,
+        "parity": true,
+        "continuationMs": 153
+      }
+    ],
+    "concurrency": [
+      {
+        "query": {
+          "chain": "bnb",
+          "sort": "rarity-desc",
+          "metadata": "available",
+          "limit": "24"
+        },
+        "status": 200,
+        "ms": 2883
+      },
+      {
+        "query": {
+          "chain": "bnb",
+          "sort": "rarity-desc",
+          "metadata": "missing",
+          "limit": "24"
+        },
+        "status": 200,
+        "ms": 3230
+      },
+      {
+        "query": {
+          "chain": "ethereum",
+          "sort": "rarity-desc",
+          "metadata": "all",
+          "limit": "24"
+        },
+        "status": 200,
+        "ms": 1643
+      },
+      {
+        "query": {
+          "chain": "polygon",
+          "sort": "rarity-desc",
+          "metadata": "all",
+          "limit": "24"
+        },
+        "status": 200,
+        "ms": 2827
+      }
+    ]
+  },
+  "cutover": {
+    "complete": true,
+    "completedAt": "2026-09-30T11:40:00Z",
+    "apiRelease": "9a2bb8a-read-api",
+    "marketRelease": "9a2bb8a-capacity",
+    "capabilitiesIdentical": true,
+    "proxyRestored": true
+  },
+  "public-verification": [
+    {
+      "route": "/yunipals-indexer/ready",
+      "metadata": null,
+      "status": 200,
+      "ms": 286,
+      "serverTiming": null,
+      "allowedOrigin": "*"
+    },
+    {
+      "route": "/yunipals-marketplace/health/ready",
+      "metadata": null,
+      "status": 200,
+      "ms": 139,
+      "serverTiming": null,
+      "allowedOrigin": "https://yunipals.com"
+    },
+    {
+      "route": "/yunipals-indexer/v1/tokens",
+      "metadata": "available",
+      "status": 200,
+      "ms": 194,
+      "serverTiming": "page;dur=41.8, count;dur=0.2;desc=\"hit\"",
+      "allowedOrigin": "*"
+    },
+    {
+      "route": "/yunipals-indexer/v1/tokens",
+      "metadata": "missing",
+      "status": 200,
+      "ms": 280,
+      "serverTiming": "page;dur=181.4, count;dur=0.3;desc=\"hit\"",
+      "allowedOrigin": "*"
+    },
+    {
+      "route": "/yunipals-marketplace/v2/market/tokens",
+      "metadata": null,
+      "status": 200,
+      "ms": 219,
+      "serverTiming": null,
+      "allowedOrigin": "https://yunipals.com"
+    }
+  ],
+  "tests": {
+    "indexerUnitPassed": 93,
+    "indexerUnitSkipped": 1,
+    "legacyOfflineFamilies": 5,
+    "legacyOfflineScored": 4,
+    "marketplaceFullPassed": 384,
+    "marketplaceFocusedFinalPassed": 39,
+    "rarityPaginationCases": 288,
+    "cacheInvalidationCases": 25,
+    "broadCountParityCases": 72,
+    "secretScanCommits": 2,
+    "secretScanLeaks": 0
+  },
+  "initialObservation": {
+    "startedAt": "2026-09-30T11:43:31Z",
+    "elapsedSeconds": 252,
+    "errors": {},
+    "rateLimits": {},
+    "generationTransitions": [],
+    "note": "Initial samples only; the 24-hour acceptance window is still running."
+  }
+}

@@ -29,7 +29,7 @@ import {
 export class BnbOrderError extends Error {
   constructor(
     public readonly code: string,
-    public readonly status: 400 | 404 | 409 | 503 = 409
+    public readonly status: 400 | 404 | 409 | 429 | 503 = 409
   ) {
     super(code);
   }

@@ -3,9 +3,9 @@
 Status: historical implementation plan, written 24 September 2026. On-chain
 publication and execution are live in production; this is no longer a list of
 pending release gates. See [rollout status](bnb-onchain-rollout.md) for the
-current result. The BNB ownership indexer is public in this repository.
-Publishing the existing four-chain metadata indexer is a separate project and
-is not required for the BNB order source.
+current result. The BNB worker and four-chain metadata indexer source are now
+included in this repository. Running the metadata processes is not required
+for the BNB order source.
 
 ## Target and constraints
 

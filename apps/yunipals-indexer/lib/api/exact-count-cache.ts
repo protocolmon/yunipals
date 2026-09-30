@@ -1,0 +1,39 @@
+type Entry = { value: number; expiresAt: number };
+
+export class ExactCountCache {
+  private readonly values = new Map<string, Entry>();
+  private readonly pending = new Map<string, Promise<number>>();
+
+  constructor(
+    private readonly ttlMs = 15_000,
+    private readonly maxEntries = 1_000,
+    private readonly maxPending = 4
+  ) {}
+
+  async get(key: string, load: () => Promise<number>) {
+    const now = Date.now();
+    const cached = this.values.get(key);
+    if (cached && cached.expiresAt > now) {
+      this.values.delete(key);
+      this.values.set(key, cached);
+      return { value: cached.value, hit: true };
+    }
+    if (cached) this.values.delete(key);
+    const existing = this.pending.get(key);
+    if (existing) return { value: await existing, hit: true };
+    if (this.pending.size >= this.maxPending)
+      throw Object.assign(new Error("exact_count_capacity"), { code: "53300" });
+
+    const promise = load();
+    this.pending.set(key, promise);
+    try {
+      const value = await promise;
+      this.values.set(key, { value, expiresAt: Date.now() + this.ttlMs });
+      while (this.values.size > this.maxEntries)
+        this.values.delete(this.values.keys().next().value!);
+      return { value, hit: false };
+    } finally {
+      this.pending.delete(key);
+    }
+  }
+}

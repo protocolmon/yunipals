@@ -1,0 +1,1738 @@
+{
+  "checkedAt": "2026-09-29",
+  "auditedRevision": "851e8606a153dc4e2bdf49fc6978f690707a273b",
+  "baselineRevision": "a147a8532c4decb76e35d2e87ad37bbda5ee3528",
+  "lockfileSha256": "bfd70c01256edf673b91ca750f9370f593ac115d809d29c2bc5d1bbe9545f79c",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 2,
+      "moderate": 31,
+      "high": 24,
+      "critical": 0
+    },
+    "dependencies": 979,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 979
+  },
+  "advisories": {
+    "1097077": {
+      "id": 1097077,
+      "github_advisory_id": "GHSA-8m45-2rjm-j347",
+      "module_name": "@solana/web3.js",
+      "severity": "high",
+      "cves": [
+        "CVE-2024-30253"
+      ],
+      "title": "Handling untrusted input can result in a crash, leading to loss of availability / denial of service",
+      "url": "https://github.com/advisories/GHSA-8m45-2rjm-j347",
+      "vulnerable_versions": ">=1.77 <1.77.4",
+      "patched_versions": ">=1.77.4",
+      "findings": [
+        {
+          "version": "1.77.3",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @solana/web3.js@1.77.3"
+          ]
+        }
+      ]
+    },
+    "1097680": {
+      "id": 1097680,
+      "github_advisory_id": "GHSA-wf5p-g6vw-rhxx",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2023-45857"
+      ],
+      "title": "Axios Cross-Site Request Forgery Vulnerability",
+      "url": "https://github.com/advisories/GHSA-wf5p-g6vw-rhxx",
+      "vulnerable_versions": ">=1.0.0 <1.6.0",
+      "patched_versions": ">=1.6.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1098583": {
+      "id": 1098583,
+      "github_advisory_id": "GHSA-8hc4-vh64-cxmj",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2024-39338"
+      ],
+      "title": "Server-Side Request Forgery in axios",
+      "url": "https://github.com/advisories/GHSA-8hc4-vh64-cxmj",
+      "vulnerable_versions": ">=1.3.2 <=1.7.3",
+      "patched_versions": ">=1.7.4",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1102341": {
+      "id": 1102341,
+      "github_advisory_id": "GHSA-67mh-4wv8-2f99",
+      "module_name": "esbuild",
+      "severity": "moderate",
+      "cves": [],
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "vulnerable_versions": "<=0.24.2",
+      "patched_versions": ">=0.25.0",
+      "findings": [
+        {
+          "version": "0.21.5",
+          "paths": [
+            "apps/yunipals-indexer > ponder@0.17.5 > vite@5.4.21 > esbuild@0.21.5",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-node@1.0.2 > vite@5.4.21 > esbuild@0.21.5",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-tsconfig-paths@4.3.1 > vite@5.4.21 > esbuild@0.21.5"
+          ]
+        }
+      ]
+    },
+    "1103747": {
+      "id": 1103747,
+      "github_advisory_id": "GHSA-3gc7-fjrx-p6mg",
+      "module_name": "bigint-buffer",
+      "severity": "high",
+      "cves": [
+        "CVE-2025-3194"
+      ],
+      "title": "bigint-buffer Vulnerable to Buffer Overflow via toBigIntLE() Function",
+      "url": "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg",
+      "vulnerable_versions": "<=1.1.5",
+      "patched_versions": "<0.0.0",
+      "findings": [
+        {
+          "version": "1.1.5",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3 > bigint-buffer@1.1.5",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3 > bigint-buffer@1.1.5",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @solana/web3.js@1.77.3 > bigint-buffer@1.1.5"
+          ]
+        }
+      ]
+    },
+    "1111035": {
+      "id": 1111035,
+      "github_advisory_id": "GHSA-jr5f-v2jv-69x6",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2025-27152"
+      ],
+      "title": "axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL",
+      "url": "https://github.com/advisories/GHSA-jr5f-v2jv-69x6",
+      "vulnerable_versions": ">=1.0.0 <1.8.2",
+      "patched_versions": ">=1.8.2",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1111798": {
+      "id": 1111798,
+      "github_advisory_id": "GHSA-x4m5-4cw8-vc44",
+      "module_name": "axios-cache-interceptor",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2025-69202"
+      ],
+      "title": "axios-cache-interceptor Vulnerable to Cache Poisoning via Ignored HTTP Vary Header",
+      "url": "https://github.com/advisories/GHSA-x4m5-4cw8-vc44",
+      "vulnerable_versions": "<1.11.1",
+      "patched_versions": ">=1.11.1",
+      "findings": [
+        {
+          "version": "1.2.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0"
+          ]
+        }
+      ]
+    },
+    "1112030": {
+      "id": 1112030,
+      "github_advisory_id": "GHSA-848j-6mx2-7j84",
+      "module_name": "elliptic",
+      "severity": "low",
+      "cves": [
+        "CVE-2025-14505"
+      ],
+      "title": "Elliptic Uses a Cryptographic Primitive with a Risky Implementation",
+      "url": "https://github.com/advisories/GHSA-848j-6mx2-7j84",
+      "vulnerable_versions": "<=6.6.1",
+      "patched_versions": "<0.0.0",
+      "findings": [
+        {
+          "version": "6.6.1",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abi@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/contracts@5.7.0 > @ethersproject/abi@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/contracts@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/wallet@5.7.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abi@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/contracts@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/hdnode@5.8.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/json-wallets@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/wallet@5.7.0 > @ethersproject/wordlists@5.8.0 > @ethersproject/hash@5.8.0 > @ethersproject/abstract-signer@5.8.0 > @ethersproject/abstract-provider@5.8.0 > @ethersproject/transactions@5.8.0 > @ethersproject/signing-key@5.8.0 > elliptic@6.6.1"
+          ]
+        }
+      ]
+    },
+    "1112195": {
+      "id": 1112195,
+      "github_advisory_id": "GHSA-4hjh-wcwx-xvwj",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2025-58754"
+      ],
+      "title": "Axios is vulnerable to DoS attack through lack of data size check",
+      "url": "https://github.com/advisories/GHSA-4hjh-wcwx-xvwj",
+      "vulnerable_versions": ">=1.0.0 <1.12.0",
+      "patched_versions": ">=1.12.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1113441": {
+      "id": 1113441,
+      "github_advisory_id": "GHSA-378v-28hj-76wf",
+      "module_name": "bn.js",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-2739"
+      ],
+      "title": "bn.js affected by an infinite loop",
+      "url": "https://github.com/advisories/GHSA-378v-28hj-76wf",
+      "vulnerable_versions": ">=5.0.0 <5.2.3",
+      "patched_versions": ">=5.2.3",
+      "findings": [
+        {
+          "version": "5.2.1",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > bn.js@5.2.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > bn.js@5.2.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > bn.js@5.2.1"
+          ]
+        }
+      ]
+    },
+    "1114170": {
+      "id": 1114170,
+      "github_advisory_id": "GHSA-wc8c-qw6v-h7f6",
+      "module_name": "@hono/node-server",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-29087"
+      ],
+      "title": "@hono/node-server has authorization bypass for protected static paths via encoded slashes in Serve Static Middleware",
+      "url": "https://github.com/advisories/GHSA-wc8c-qw6v-h7f6",
+      "vulnerable_versions": "<1.19.10",
+      "patched_versions": ">=1.19.10",
+      "findings": [
+        {
+          "version": "1.19.5",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5"
+          ]
+        }
+      ]
+    },
+    "1115131": {
+      "id": 1115131,
+      "github_advisory_id": "GHSA-wmrf-hv6w-mr66",
+      "module_name": "kysely",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-32763"
+      ],
+      "title": "SQL Injection via unsanitized JSON path keys when ignoring/silencing compilation errors or using `Kysely<any>`.",
+      "url": "https://github.com/advisories/GHSA-wmrf-hv6w-mr66",
+      "vulnerable_versions": ">=0.26.0 <=0.28.11",
+      "patched_versions": ">=0.28.12",
+      "findings": [
+        {
+          "version": "0.26.3",
+          "paths": [
+            "apps/yunipals-indexer > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > kysely@0.26.3"
+          ]
+        }
+      ]
+    },
+    "1115531": {
+      "id": 1115531,
+      "github_advisory_id": "GHSA-8cpq-38p9-67gx",
+      "module_name": "kysely",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-33468"
+      ],
+      "title": "Kysely has a MySQL SQL Injection via Insufficient Backslash Escaping in `sql.lit(string)` usage or similar methods that append string literal values into the compiled SQL strings",
+      "url": "https://github.com/advisories/GHSA-8cpq-38p9-67gx",
+      "vulnerable_versions": "<=0.28.13",
+      "patched_versions": ">=0.28.14",
+      "findings": [
+        {
+          "version": "0.26.3",
+          "paths": [
+            "apps/yunipals-indexer > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > kysely@0.26.3"
+          ]
+        }
+      ]
+    },
+    "1115806": {
+      "id": 1115806,
+      "github_advisory_id": "GHSA-r5fr-rjxr-66jc",
+      "module_name": "lodash",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-4800"
+      ],
+      "title": "lodash vulnerable to Code Injection via `_.template` imports key names",
+      "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+      "vulnerable_versions": ">=4.0.0 <=4.17.23",
+      "patched_versions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.21",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > lodash@4.17.21"
+          ]
+        }
+      ]
+    },
+    "1115810": {
+      "id": 1115810,
+      "github_advisory_id": "GHSA-f23m-r3pf-42rh",
+      "module_name": "lodash",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-2950"
+      ],
+      "title": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+      "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+      "vulnerable_versions": "<=4.17.23",
+      "patched_versions": ">=4.18.0",
+      "findings": [
+        {
+          "version": "4.17.21",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > lodash@4.17.21"
+          ]
+        }
+      ]
+    },
+    "1116229": {
+      "id": 1116229,
+      "github_advisory_id": "GHSA-4w7w-66w2-5vf9",
+      "module_name": "vite",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-39365"
+      ],
+      "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+      "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+      "vulnerable_versions": "<=6.4.1",
+      "patched_versions": ">=6.4.2",
+      "findings": [
+        {
+          "version": "5.4.21",
+          "paths": [
+            "apps/yunipals-indexer > ponder@0.17.5 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-node@1.0.2 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-tsconfig-paths@4.3.1 > vite@5.4.21"
+          ]
+        }
+      ]
+    },
+    "1116251": {
+      "id": 1116251,
+      "github_advisory_id": "GHSA-gpj5-g38j-94v9",
+      "module_name": "drizzle-orm",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-39356"
+      ],
+      "title": "Drizzle ORM has SQL injection via improperly escaped SQL identifiers",
+      "url": "https://github.com/advisories/GHSA-gpj5-g38j-94v9",
+      "vulnerable_versions": "<0.45.2",
+      "patched_versions": ">=0.45.2",
+      "findings": [
+        {
+          "version": "0.41.0",
+          "paths": [
+            "apps/yunipals-indexer > drizzle-orm@0.41.0",
+            "apps/yunipals-indexer > ponder@0.17.5 > drizzle-orm@0.41.0"
+          ]
+        }
+      ]
+    },
+    "1116281": {
+      "id": 1116281,
+      "github_advisory_id": "GHSA-92pp-h63x-v22m",
+      "module_name": "@hono/node-server",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-39406"
+      ],
+      "title": "@hono/node-server: Middleware bypass via repeated slashes in serveStatic",
+      "url": "https://github.com/advisories/GHSA-92pp-h63x-v22m",
+      "vulnerable_versions": "<1.19.13",
+      "patched_versions": ">=1.19.13",
+      "findings": [
+        {
+          "version": "1.19.5",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5"
+          ]
+        }
+      ]
+    },
+    "1116673": {
+      "id": 1116673,
+      "github_advisory_id": "GHSA-3p68-rc4w-qgx5",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2025-62718"
+      ],
+      "title": "Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF",
+      "url": "https://github.com/advisories/GHSA-3p68-rc4w-qgx5",
+      "vulnerable_versions": ">=1.0.0 <1.15.0",
+      "patched_versions": ">=1.15.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117574": {
+      "id": 1117574,
+      "github_advisory_id": "GHSA-w9j2-pvgh-6h63",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42041"
+      ],
+      "title": "Axios: Authentication Bypass via Prototype Pollution Gadget in `validateStatus` Merge Strategy",
+      "url": "https://github.com/advisories/GHSA-w9j2-pvgh-6h63",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117576": {
+      "id": 1117576,
+      "github_advisory_id": "GHSA-pmwg-cvhr-8vh7",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-42043"
+      ],
+      "title": "Axios: Incomplete Fix for CVE-2025-62718 \u2014 NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0",
+      "url": "https://github.com/advisories/GHSA-pmwg-cvhr-8vh7",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117577": {
+      "id": 1117577,
+      "github_advisory_id": "GHSA-3w6x-2g7m-8v23",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42044"
+      ],
+      "title": "Axios: Invisible JSON Response Tampering via Prototype Pollution Gadget in `parseReviver`",
+      "url": "https://github.com/advisories/GHSA-3w6x-2g7m-8v23",
+      "vulnerable_versions": ">=1.0.0 <1.15.2",
+      "patched_versions": ">=1.15.2",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117580": {
+      "id": 1117580,
+      "github_advisory_id": "GHSA-xhjh-pmcv-23jw",
+      "module_name": "axios",
+      "severity": "low",
+      "cves": [
+        "CVE-2026-42040"
+      ],
+      "title": "Axios: Null Byte Injection via Reverse-Encoding in AxiosURLSearchParams",
+      "url": "https://github.com/advisories/GHSA-xhjh-pmcv-23jw",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117581": {
+      "id": 1117581,
+      "github_advisory_id": "GHSA-445q-vr5w-6q77",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42037"
+      ],
+      "title": "Axios: CRLF Injection in multipart/form-data body via unsanitized blob.type in formDataToStream",
+      "url": "https://github.com/advisories/GHSA-445q-vr5w-6q77",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117583": {
+      "id": 1117583,
+      "github_advisory_id": "GHSA-m7pr-hjqh-92cm",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42038"
+      ],
+      "title": "Axios: no_proxy bypass via IP alias allows SSRF",
+      "url": "https://github.com/advisories/GHSA-m7pr-hjqh-92cm",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117587": {
+      "id": 1117587,
+      "github_advisory_id": "GHSA-5c9x-8gcm-mpgx",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42034"
+      ],
+      "title": "Axios' HTTP adapter-streamed uploads bypass maxBodyLength when maxRedirects: 0",
+      "url": "https://github.com/advisories/GHSA-5c9x-8gcm-mpgx",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117589": {
+      "id": 1117589,
+      "github_advisory_id": "GHSA-vf2m-468p-8v99",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42036"
+      ],
+      "title": "Axios: HTTP adapter streamed responses bypass maxContentLength",
+      "url": "https://github.com/advisories/GHSA-vf2m-468p-8v99",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117591": {
+      "id": 1117591,
+      "github_advisory_id": "GHSA-pf86-5x62-jrwf",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-42033"
+      ],
+      "title": "Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking",
+      "url": "https://github.com/advisories/GHSA-pf86-5x62-jrwf",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117593": {
+      "id": 1117593,
+      "github_advisory_id": "GHSA-6chq-wfr3-2hj9",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-42035"
+      ],
+      "title": "Axios: Header Injection via Prototype Pollution",
+      "url": "https://github.com/advisories/GHSA-6chq-wfr3-2hj9",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117595": {
+      "id": 1117595,
+      "github_advisory_id": "GHSA-xx6v-rp6x-q39c",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42042"
+      ],
+      "title": "Axios: XSRF Token Cross-Origin Leakage via Prototype Pollution Gadget in `withXSRFToken` Boolean Coercion",
+      "url": "https://github.com/advisories/GHSA-xx6v-rp6x-q39c",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1117858": {
+      "id": 1117858,
+      "github_advisory_id": "GHSA-43fc-jf86-j433",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-25639"
+      ],
+      "title": "Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig",
+      "url": "https://github.com/advisories/GHSA-43fc-jf86-j433",
+      "vulnerable_versions": ">=1.0.0 <=1.13.4",
+      "patched_versions": ">=1.13.5",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1118607": {
+      "id": 1118607,
+      "github_advisory_id": "GHSA-q8qp-cvcw-x6jj",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-42264"
+      ],
+      "title": "Axios has prototype pollution read-side gadgets in HTTP adapter that allow credential injection and request hijacking",
+      "url": "https://github.com/advisories/GHSA-q8qp-cvcw-x6jj",
+      "vulnerable_versions": ">=1.0.0 <1.15.2",
+      "patched_versions": ">=1.15.2",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1118729": {
+      "id": 1118729,
+      "github_advisory_id": "GHSA-3h5v-q93c-6h6q",
+      "module_name": "ws",
+      "severity": "high",
+      "cves": [
+        "CVE-2024-37890"
+      ],
+      "title": "ws affected by a DoS when handling a request with many HTTP headers",
+      "url": "https://github.com/advisories/GHSA-3h5v-q93c-6h6q",
+      "vulnerable_versions": ">=7.0.0 <7.5.10",
+      "patched_versions": ">=7.5.10",
+      "findings": [
+        {
+          "version": "7.4.6",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > ws@7.4.6",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > ws@7.4.6",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > ws@7.4.6"
+          ]
+        }
+      ]
+    },
+    "1119404": {
+      "id": 1119404,
+      "github_advisory_id": "GHSA-fvcv-3m26-pcqx",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-40175"
+      ],
+      "title": "Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain",
+      "url": "https://github.com/advisories/GHSA-fvcv-3m26-pcqx",
+      "vulnerable_versions": ">=1.0.0 <1.15.0",
+      "patched_versions": ">=1.15.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120125": {
+      "id": 1120125,
+      "github_advisory_id": "GHSA-62hf-57xw-28j9",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-42039"
+      ],
+      "title": "Axios: unbounded recursion in toFormData causes DoS via deeply nested request data",
+      "url": "https://github.com/advisories/GHSA-62hf-57xw-28j9",
+      "vulnerable_versions": ">=1.0.0 <1.15.1",
+      "patched_versions": ">=1.15.1",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120248": {
+      "id": 1120248,
+      "github_advisory_id": "GHSA-pv5w-4p9q-p3v2",
+      "module_name": "kysely",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44635"
+      ],
+      "title": "Kysely: JSON-path traversal injection via unsanitized path-leg metacharacters in `JSONPathBuilder.key()` / `.at()`",
+      "url": "https://github.com/advisories/GHSA-pv5w-4p9q-p3v2",
+      "vulnerable_versions": ">=0.26.0 <0.28.17",
+      "patched_versions": ">=0.28.17",
+      "findings": [
+        {
+          "version": "0.26.3",
+          "paths": [
+            "apps/yunipals-indexer > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > drizzle-orm@0.41.0 > kysely@0.26.3",
+            "apps/yunipals-indexer > ponder@0.17.5 > kysely@0.26.3"
+          ]
+        }
+      ]
+    },
+    "1120370": {
+      "id": 1120370,
+      "github_advisory_id": "GHSA-xxjr-mmjv-4gpg",
+      "module_name": "lodash",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2025-13465"
+      ],
+      "title": "Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions",
+      "url": "https://github.com/advisories/GHSA-xxjr-mmjv-4gpg",
+      "vulnerable_versions": ">=4.0.0 <=4.17.22",
+      "patched_versions": ">=4.17.23",
+      "findings": [
+        {
+          "version": "4.17.21",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > lodash@4.17.21",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > lodash@4.17.21"
+          ]
+        }
+      ]
+    },
+    "1120547": {
+      "id": 1120547,
+      "github_advisory_id": "GHSA-hfxv-24rg-xrqf",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44496"
+      ],
+      "title": "Axios: Regular Expression Denial of Service (ReDoS) via Cookie Name Injection",
+      "url": "https://github.com/advisories/GHSA-hfxv-24rg-xrqf",
+      "vulnerable_versions": ">=1.0.0 <1.16.0",
+      "patched_versions": ">=1.16.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120645": {
+      "id": 1120645,
+      "github_advisory_id": "GHSA-p92q-9vqr-4j8v",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44487"
+      ],
+      "title": "Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter",
+      "url": "https://github.com/advisories/GHSA-p92q-9vqr-4j8v",
+      "vulnerable_versions": ">=1.0.0 <1.16.0",
+      "patched_versions": ">=1.16.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120647": {
+      "id": 1120647,
+      "github_advisory_id": "GHSA-j5f8-grm9-p9fc",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44486"
+      ],
+      "title": "Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection",
+      "url": "https://github.com/advisories/GHSA-j5f8-grm9-p9fc",
+      "vulnerable_versions": ">=1.0.0 <1.16.0",
+      "patched_versions": ">=1.16.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120649": {
+      "id": 1120649,
+      "github_advisory_id": "GHSA-3g43-6gmg-66jw",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44495"
+      ],
+      "title": "axios Vulnerable to Credential Theft and Response Hijacking via Prototype Pollution Gadget in Config Merge",
+      "url": "https://github.com/advisories/GHSA-3g43-6gmg-66jw",
+      "vulnerable_versions": ">=1.0.0 <1.15.2",
+      "patched_versions": ">=1.15.2",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120650": {
+      "id": 1120650,
+      "github_advisory_id": "GHSA-35jp-ww65-95wh",
+      "module_name": "axios",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-44494"
+      ],
+      "title": "axios Vulnerable to Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy`",
+      "url": "https://github.com/advisories/GHSA-35jp-ww65-95wh",
+      "vulnerable_versions": ">=1.0.0 <1.16.0",
+      "patched_versions": ">=1.16.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120652": {
+      "id": 1120652,
+      "github_advisory_id": "GHSA-898c-q2cr-xwhg",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-44490"
+      ],
+      "title": "axios has DoS & Header Injection via Prototype Pollution Read-Side Gadgets in axios merge functions",
+      "url": "https://github.com/advisories/GHSA-898c-q2cr-xwhg",
+      "vulnerable_versions": ">=1.0.0 <1.16.0",
+      "patched_versions": ">=1.16.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1120784": {
+      "id": 1120784,
+      "github_advisory_id": "GHSA-v6wh-96g9-6wx3",
+      "module_name": "vite",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-53632"
+      ],
+      "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+      "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+      "vulnerable_versions": "<=6.4.2",
+      "patched_versions": ">=6.4.3",
+      "findings": [
+        {
+          "version": "5.4.21",
+          "paths": [
+            "apps/yunipals-indexer > ponder@0.17.5 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-node@1.0.2 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-tsconfig-paths@4.3.1 > vite@5.4.21"
+          ]
+        }
+      ]
+    },
+    "1123260": {
+      "id": 1123260,
+      "github_advisory_id": "GHSA-96hv-2xvq-fx4p",
+      "module_name": "ws",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-48779"
+      ],
+      "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+      "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p",
+      "vulnerable_versions": ">=7.0.0 <7.5.11",
+      "patched_versions": ">=7.5.11",
+      "findings": [
+        {
+          "version": "7.4.6",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > ws@7.4.6",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @ethersproject/providers@5.7.2 > ws@7.4.6",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @ethersproject/providers@5.7.2 > ws@7.4.6"
+          ]
+        }
+      ]
+    },
+    "1123525": {
+      "id": 1123525,
+      "github_advisory_id": "GHSA-fx2h-pf6j-xcff",
+      "module_name": "vite",
+      "severity": "high",
+      "cves": [
+        "CVE-2026-53571"
+      ],
+      "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+      "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+      "vulnerable_versions": "<=6.4.2",
+      "patched_versions": ">=6.4.3",
+      "findings": [
+        {
+          "version": "5.4.21",
+          "paths": [
+            "apps/yunipals-indexer > ponder@0.17.5 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-node@1.0.2 > vite@5.4.21",
+            "apps/yunipals-indexer > ponder@0.17.5 > vite-tsconfig-paths@4.3.1 > vite@5.4.21"
+          ]
+        }
+      ]
+    },
+    "1139322": {
+      "id": 1139322,
+      "github_advisory_id": "GHSA-frvp-7c67-39w9",
+      "module_name": "@hono/node-server",
+      "severity": "moderate",
+      "cves": [],
+      "title": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)",
+      "url": "https://github.com/advisories/GHSA-frvp-7c67-39w9",
+      "vulnerable_versions": "<1.19.15",
+      "patched_versions": ">=1.19.15",
+      "findings": [
+        {
+          "version": "1.19.5",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5"
+          ]
+        }
+      ]
+    },
+    "1147949": {
+      "id": 1147949,
+      "github_advisory_id": "GHSA-mmx7-hfxf-jppx",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-67316"
+      ],
+      "title": "Axios: Prototype pollution gadgets can alter axios request construction",
+      "url": "https://github.com/advisories/GHSA-mmx7-hfxf-jppx",
+      "vulnerable_versions": ">=1.0.0 <1.18.0",
+      "patched_versions": ">=1.18.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1147950": {
+      "id": 1147950,
+      "github_advisory_id": "GHSA-pmv8-rq9r-6j72",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-67312"
+      ],
+      "title": "Axios: Deep formToJSON Key Recursion Can Cause Denial of Service",
+      "url": "https://github.com/advisories/GHSA-pmv8-rq9r-6j72",
+      "vulnerable_versions": ">=1.0.0 <1.18.0",
+      "patched_versions": ">=1.18.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1153180": {
+      "id": 1153180,
+      "github_advisory_id": "GHSA-7q8q-rj6j-mhjq",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-67319"
+      ],
+      "title": "Axios: Nested axios option objects can consume polluted prototype values",
+      "url": "https://github.com/advisories/GHSA-7q8q-rj6j-mhjq",
+      "vulnerable_versions": ">=1.0.0 <1.18.0",
+      "patched_versions": ">=1.18.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1153185": {
+      "id": 1153185,
+      "github_advisory_id": "GHSA-42h9-826w-cgv3",
+      "module_name": "axios",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-67313"
+      ],
+      "title": "Axios: Excessive recursion in formDataToJSON can cause denial of service",
+      "url": "https://github.com/advisories/GHSA-42h9-826w-cgv3",
+      "vulnerable_versions": ">=1.0.0 <1.18.0",
+      "patched_versions": ">=1.18.0",
+      "findings": [
+        {
+          "version": "1.4.0",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @polkamon/util-essentials@27.3.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > axios-cache-interceptor@1.2.0 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios@1.4.0",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > axios-cache-interceptor@1.2.0 > axios@1.4.0"
+          ]
+        }
+      ]
+    },
+    "1164823": {
+      "id": 1164823,
+      "github_advisory_id": "GHSA-528h-pc64-c93x",
+      "module_name": "stream-json",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-71429"
+      ],
+      "title": "stream-json: pick/ignore/filter/replace filters are O(depth\u00b2) on nested input \u2014 small crafted JSON blocks the event loop for seconds\u2192minutes (DoS)",
+      "url": "https://github.com/advisories/GHSA-528h-pc64-c93x",
+      "vulnerable_versions": "<=3.4.0",
+      "patched_versions": ">=3.5.0",
+      "findings": [
+        {
+          "version": "1.9.1",
+          "paths": [
+            "apps/yunipals-indexer > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3 > jayson@4.3.0 > stream-json@1.9.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @polkamon/web3-util-core@30.8.3 > @solana/web3.js@1.77.3 > jayson@4.3.0 > stream-json@1.9.1",
+            "apps/yunipals-indexer > @polkamon/web3-util-pmons@31.15.1 > @solana/web3.js@1.77.3 > jayson@4.3.0 > stream-json@1.9.1"
+          ]
+        }
+      ]
+    },
+    "1193683": {
+      "id": 1193683,
+      "github_advisory_id": "GHSA-82fw-gwwq-j7x9",
+      "module_name": "vitest",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-84373"
+      ],
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "vulnerable_versions": ">=2.1.0 <4.1.11",
+      "patched_versions": ">=4.1.11",
+      "findings": [
+        {
+          "version": "3.2.7",
+          "paths": [
+            "apps/yunipals-indexer > vitest@3.2.7"
+          ]
+        }
+      ]
+    },
+    "1193684": {
+      "id": 1193684,
+      "github_advisory_id": "GHSA-82fw-gwwq-j7x9",
+      "module_name": "@vitest/mocker",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-84373"
+      ],
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "vulnerable_versions": ">=2.1.0 <4.1.11",
+      "patched_versions": ">=4.1.11",
+      "findings": [
+        {
+          "version": "3.2.7",
+          "paths": [
+            "apps/yunipals-indexer > vitest@3.2.7 > @vitest/mocker@3.2.7"
+          ]
+        }
+      ]
+    },
+    "1193729": {
+      "id": 1193729,
+      "github_advisory_id": "GHSA-gqvv-2mrq-wpjv",
+      "module_name": "hono",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-84365"
+      ],
+      "title": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory",
+      "url": "https://github.com/advisories/GHSA-gqvv-2mrq-wpjv",
+      "vulnerable_versions": "<4.13.5",
+      "patched_versions": ">=4.13.5",
+      "findings": [
+        {
+          "version": "4.13.1",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > hono@4.13.1"
+          ]
+        }
+      ]
+    },
+    "1193730": {
+      "id": 1193730,
+      "github_advisory_id": "GHSA-g6gw-c38x-mqfc",
+      "module_name": "hono",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-84364"
+      ],
+      "title": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion",
+      "url": "https://github.com/advisories/GHSA-g6gw-c38x-mqfc",
+      "vulnerable_versions": "<4.13.5",
+      "patched_versions": ">=4.13.5",
+      "findings": [
+        {
+          "version": "4.13.1",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > hono@4.13.1"
+          ]
+        }
+      ]
+    },
+    "1193731": {
+      "id": 1193731,
+      "github_advisory_id": "GHSA-crvj-82cr-hjcx",
+      "module_name": "hono",
+      "severity": "moderate",
+      "cves": [
+        "CVE-2026-84363"
+      ],
+      "title": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials",
+      "url": "https://github.com/advisories/GHSA-crvj-82cr-hjcx",
+      "vulnerable_versions": "<4.13.5",
+      "patched_versions": ">=4.13.5",
+      "findings": [
+        {
+          "version": "4.13.1",
+          "paths": [
+            "apps/yunipals-indexer > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > @hono/node-server@1.19.5 > hono@4.13.1",
+            "apps/yunipals-indexer > ponder@0.17.5 > hono@4.13.1"
+          ]
+        }
+      ]
+    }
+  }
+}

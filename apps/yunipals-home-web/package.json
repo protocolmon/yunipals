@@ -34,7 +34,8 @@
     "react-router-dom": "^7.18.4",
     "tailwind-merge": "^2.6.1",
     "viem": "^2.56.8",
-    "wagmi": "^2.19.5"
+    "wagmi": "^2.19.5",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",

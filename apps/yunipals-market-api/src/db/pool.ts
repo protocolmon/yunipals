@@ -17,7 +17,7 @@ export function createCatalogKeeperPool(environment: Environment) {
   return new pg.Pool({
     connectionString: environment.databaseUrl,
     application_name: `yunipals_catalog_${environment.deployment}`,
-    max: 3,
+    max: 8,
     connectionTimeoutMillis: 1500,
     statement_timeout: environment.statementTimeoutMs,
     lock_timeout: 1500,
@@ -30,8 +30,8 @@ export function createCatalogIndexerPool(environment: Environment) {
   return new pg.Pool({
     connectionString: environment.indexerDatabaseUrl,
     application_name: `yunipals_catalog_indexer_${environment.deployment}`,
-    // Two imported-snapshot lanes for each held generation plus readiness.
-    max: 7,
+    // Two independent read slots, each with two source lanes, per generation.
+    max: 17,
     connectionTimeoutMillis: 1500,
     statement_timeout: environment.statementTimeoutMs,
     lock_timeout: 1500,

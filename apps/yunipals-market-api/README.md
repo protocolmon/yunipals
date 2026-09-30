@@ -18,6 +18,15 @@ the migration owner. Optional `MARKET_INDEXER_DATABASE_URL` uses a separate
 SELECT-only account for direct indexer reads. Never reuse indexer write credentials.
 Provider and RPC credentials belong in your private deployment configuration.
 
+For generation-backed indexer search, set `YUNIPALS_PROJECTION_MODE=generation`
+on the marketplace API only after the indexer has installed and seeded its
+`metadata_projection` schema. Grant the direct source role with
+`scripts/grant-projection-read.sql`. If catalog reads use postgres_fdw instead
+of `MARKET_INDEXER_DATABASE_URL`, install
+`scripts/migrate-projection-fdw.sql` on the marketplace database and grant the
+runtime role there. The catalog holds one generation ID for each retained source
+snapshot.
+
 ```sh
 pnpm typecheck
 pnpm build
@@ -64,7 +73,7 @@ app publishes with a maker-wallet Seaport
 `validate` transaction and no private order-submission POST.
 
 Collection ownership and lifecycle in the response can come from the public
-[BNB ownership indexer](../../packages/bnb-indexer/README.md). It does not use
+[BNB ownership worker](../yunipals-indexer/README.md). It does not use
 the server's private metadata packages. A full four-chain site needs additional
 metadata and ownership sources for the other chains.
 

@@ -1,0 +1,208 @@
+{
+  "envelope": {
+    "_id": "63616c807fc9eb21081fc524",
+    "id": "GEN1_1000008000000",
+    "burned": false,
+    "chain": {
+      "id": "137",
+      "type": "EVM"
+    },
+    "chainOrigin": {
+      "id": "137",
+      "type": "EVM"
+    },
+    "createdAt": "2022-11-01T18:59:11.975Z",
+    "genId": {
+      "id": "1000008000000",
+      "type": "GEN1"
+    },
+    "minted": false,
+    "nft": {
+      "id": "1000008000000",
+      "type": "ghostUnidonkey",
+      "chainOrigin": {
+        "id": "137",
+        "type": "EVM"
+      },
+      "birthday": "2022-11-01T16:22:32.000Z",
+      "hash": "0x655c7a67646ed0370a990a1081d34512344caf8e37e3583a0aba16d5252e140b",
+      "attributes": {
+        "type": {
+          "value": "Ghost Unidonkey"
+        },
+        "horn": {
+          "value": "Silver Edge"
+        },
+        "color": {
+          "value": "Ghost"
+        },
+        "background": {
+          "value": "Spirit Bay"
+        },
+        "glitter": {
+          "value": "None"
+        },
+        "birthday": {
+          "value": 1667319752,
+          "type": "date"
+        },
+        "booster": {
+          "value": 11002000000000,
+          "type": "number"
+        },
+        "rarityPoints": {
+          "value": 25.917
+        },
+        "originChain": {
+          "value": "Polygon"
+        }
+      },
+      "name": "Ghost Unidonkey",
+      "description": "The Ghost Unidonkey's spirit lives on with much of the same tendencies as its living counterpart. However, while difficult to approach, the gentleness of their species cements their position as the friendliest of all Ghost Yunipals.",
+      "initialProbabilities": {
+        "horn": 0.2,
+        "color": 1,
+        "background": 1,
+        "glitter": 0.99,
+        "type": 0.19
+      },
+      "boosterId": 11002000000000,
+      "code": "T01C94H10B10G00",
+      "imageIpfsUrl": "ipfs://QmTeaxEZhL4UzJbsVsdYwSUcHpnTGsCL2Ru9jQ2ehExfAZ",
+      "videoIpfsUrl": "ipfs://QmQE1X2mHtFGGZ8S5zd9zZG9UjHujW9UYTok7EZdLM16wW",
+      "videoIpfsUrlCompressed": "ipfs://Qmc3LfBAfCLTNf61YofBUt6ftG4U3ERVyBnViUfU5FiZ6y",
+      "imageAnimatedIpfsUrl": "ipfs://QmcAYad65sqeyRKH6UyfMZ8NzD4ab87Kf6kD43qHi1z48z",
+      "imageUrl": "https://drive.polychainmonsters.com/ipfs/QmTeaxEZhL4UzJbsVsdYwSUcHpnTGsCL2Ru9jQ2ehExfAZ",
+      "videoUrl": "https://drive.polychainmonsters.com/ipfs/QmQE1X2mHtFGGZ8S5zd9zZG9UjHujW9UYTok7EZdLM16wW",
+      "videoUrlCompressed": "https://drive.polychainmonsters.com/ipfs/Qmc3LfBAfCLTNf61YofBUt6ftG4U3ERVyBnViUfU5FiZ6y",
+      "imageAnimatedUrl": "https://drive.polychainmonsters.com/ipfs/QmcAYad65sqeyRKH6UyfMZ8NzD4ab87Kf6kD43qHi1z48z",
+      "initialRarity": 25.917,
+      "initialRarityCapped": 25.917,
+      "nonce": 0,
+      "blockNumber": 35072944,
+      "randomNumber": "0x0ce20d77860b1d0560a81d7b9310ffb98415ce692c291bc9c9840c08fcd81190",
+      "randomNumbersRead": "2022-11-01T16:22:29.738Z",
+      "gameData": {
+        "version": "v3",
+        "score": 4,
+        "pFactor": 1.60206,
+        "health": 124,
+        "water": 116,
+        "fire": 108,
+        "earth": 156,
+        "wind": 156,
+        "sum": 660
+      }
+    },
+    "origin": {
+      "id": "63614795e8b0c90034fd69f5",
+      "type": "GEN1_GHOST_BOOSTER"
+    },
+    "ownerAddress": "0x0000000000000000000000000000000000000001",
+    "ownerSince": "2022-11-01T15:47:53.000Z",
+    "rarity": 25.917,
+    "rarityCapped": 25.917,
+    "softMintHash": "0x01c3991aeb815fb232d442ef5f815a854c74f0bdf379bb98a0eb0c11b92213ce",
+    "updatedAt": "2023-02-06T11:12:00.901Z",
+    "updatedBy": "Gen1GhostBoosterOpeningProcessor",
+    "ownerAddressSnapshot": "0x0000000000000000000000000000000000000001"
+  },
+  "parents": [],
+  "expected": {
+    "address": "0x0000000000000000000000000000000000000001",
+    "animation_url": "https://drive.polychainmonsters.com/ipfs/QmQE1X2mHtFGGZ8S5zd9zZG9UjHujW9UYTok7EZdLM16wW",
+    "attributes": [
+      {
+        "trait_type": "Type",
+        "value": "Ghost Unidonkey"
+      },
+      {
+        "trait_type": "Horn",
+        "value": "Silver Edge"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Ghost"
+      },
+      {
+        "trait_type": "Background",
+        "value": "Spirit Bay"
+      },
+      {
+        "trait_type": "Glitter",
+        "value": "None"
+      },
+      {
+        "display_type": "date",
+        "trait_type": "Birthday",
+        "value": 1667319752
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Booster",
+        "value": 11002000000000
+      },
+      {
+        "trait_type": "Rarity Points",
+        "value": 25.917
+      },
+      {
+        "trait_type": "Origin Chain",
+        "value": "Polygon"
+      },
+      {
+        "trait_type": "Opening Network",
+        "value": "Polygon"
+      },
+      {
+        "trait_type": "Last metadata update",
+        "value": 1790032170,
+        "display_type": "date"
+      }
+    ],
+    "background_color": "FFFFFF",
+    "description": "The Ghost Unidonkey's spirit lives on with much of the same tendencies as its living counterpart. However, while difficult to approach, the gentleness of their species cements their position as the friendliest of all Ghost Yunipals.",
+    "external_url": "https://polkamon.com/polkamon/T01C94H10B10G00",
+    "id": "1000008000000",
+    "type": "ghostUnidonkey",
+    "origin": "GEN1_GHOST_BOOSTER",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmTeaxEZhL4UzJbsVsdYwSUcHpnTGsCL2Ru9jQ2ehExfAZ",
+    "code": "T01C94H10B10G00",
+    "initialProbabilities": {
+      "horn": 0.2,
+      "color": 1,
+      "background": 1,
+      "glitter": 0.99,
+      "type": 0.19
+    },
+    "name": "Ghost Unidonkey",
+    "txHash": "0x655c7a67646ed0370a990a1081d34512344caf8e37e3583a0aba16d5252e140b",
+    "minted": false,
+    "chain": "polygon",
+    "chainGroup": "POLYGON",
+    "originChain": "polygon",
+    "originChainGroup": "POLYGON",
+    "nftContract": "polychainmonsters",
+    "opening_network": "Polygon",
+    "rarity": 25.917,
+    "rarityCapped": 25.917,
+    "ownerSince": "2022-11-01T15:47:53.000Z",
+    "boosterId": 11002000000000,
+    "gameData": {
+      "version": "v3",
+      "score": 4,
+      "pFactor": 1.60206,
+      "health": 124,
+      "water": 116,
+      "fire": 108,
+      "earth": 156,
+      "wind": 156,
+      "sum": 660
+    }
+  },
+  "metadataUpdatedAt": 1790032170,
+  "comparison": {
+    "match": true,
+    "httpStatus": 200
+  }
+}

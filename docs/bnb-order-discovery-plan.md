@@ -118,7 +118,7 @@ OpenSea-supported chains retain their upstream order source, API integration and
 
 Expose launch block, policy, polling and provider settings through existing
 environment conventions. Do not hardcode Yunipals hostnames or keys. The
-[public BNB ownership indexer](../packages/bnb-indexer/README.md) supplies the
+[BNB ownership worker](../apps/yunipals-indexer/README.md) supplies the
 transfer and lifecycle data needed for a BNB orderbook rebuild; independent
 operators do not need the server's private indexer checkout or database.
 

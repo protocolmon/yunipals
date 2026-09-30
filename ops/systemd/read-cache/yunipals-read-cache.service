@@ -1,0 +1,23 @@
+[Unit]
+Description=Yunipals validated metadata read cache
+After=postgresql.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=postgres
+EnvironmentFile=/etc/yunipals-indexer/read-cache.env
+WorkingDirectory=/opt/yunipals-read-cache/releases/current
+ExecStart=/opt/node-v24.18.1/bin/node --import tsx lib/metadata/read-cache-worker.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=85
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

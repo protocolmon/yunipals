@@ -1,5 +1,6 @@
 import {
   createHmac,
+  createHash,
   randomBytes,
   randomUUID,
   timingSafeEqual
@@ -7,11 +8,14 @@ import {
 import type { Pool, PoolClient } from "pg";
 import type { MarketChainAvailability } from "@protopals/yunipals-market-core/marketAvailability";
 import type { MarketplaceChain } from "@protopals/yunipals-market-core/registry";
+import { collectionFiltersKey } from "@protopals/yunipals-market-core/collectionFilters";
 
 import { BnbOrderError } from "@/bnb/orders";
 import { readOrderSources } from "@/reads/orders";
 import { indexedTokenHiddenSql } from "@/reads/visibility";
 import { snapshotLimits } from "@/reads/snapshots";
+import { CatalogLeaseQueue } from "@/reads/catalogLease";
+import { annotateRead } from "@/reads/diagnostics";
 import {
   fetchCatalogCounts,
   fetchCatalogBooks,
@@ -39,11 +43,17 @@ type Counts = {
 type IndexerLane = { client: PoolClient; active: number };
 type Generation = {
   id: string;
+  projectionGenerationId: string | null;
+  projectionMetadataReleaseId: string | null;
   observedAt: Date;
   expiresAt: number;
   createdAt: number;
   client: PoolClient;
   indexers: IndexerLane[];
+  markets: PoolClient[];
+  slots: { client: PoolClient; indexers: IndexerLane[]; active: boolean }[];
+  books: Map<string, Promise<string>>;
+  counts: Map<string, Promise<Counts>>;
   secret: Buffer;
   fingerprint: string;
   sources: CatalogSources;
@@ -59,13 +69,18 @@ type Generation = {
     }
   >;
   live: boolean;
+  lease: CatalogLeaseQueue;
+  released: boolean;
+  retirementReason?: "expired" | "failed" | "changed" | "shutdown";
   timer?: ReturnType<typeof setTimeout>;
+  releaseTimer?: ReturnType<typeof setTimeout>;
 };
 type Options = {
   indexerKeepers?: Pool;
   readSources?: typeof readOrderSources;
   lifetimeMs?: number;
   reuseMs?: number;
+  projectionMode?: "legacy" | "generation";
 };
 
 function chainAvailability(
@@ -210,6 +225,7 @@ export class CatalogService {
   private stopped = false;
   private readonly lifetimeMs: number;
   private readonly reuseMs: number;
+  private readonly projectionGenerationMode: boolean;
   constructor(
     private readonly pool: Pool,
     private readonly keepers: Pool,
@@ -217,6 +233,14 @@ export class CatalogService {
   ) {
     this.lifetimeMs = options.lifetimeMs ?? catalogLimits.lifetimeMs;
     this.reuseMs = options.reuseMs ?? catalogLimits.reuseMs;
+    const projectionMode =
+      options.projectionMode ??
+      process.env.YUNIPALS_PROJECTION_MODE ??
+      "legacy";
+    if (projectionMode !== "legacy" && projectionMode !== "generation") {
+      throw new Error(`Invalid YUNIPALS_PROJECTION_MODE: ${projectionMode}`);
+    }
+    this.projectionGenerationMode = projectionMode === "generation";
     if (
       this.lifetimeMs < 1 ||
       this.lifetimeMs > catalogLimits.lifetimeMs ||
@@ -225,20 +249,45 @@ export class CatalogService {
     )
       throw new Error("Invalid catalog snapshot lifetime.");
   }
-  private invalidate(generation: Generation) {
+  private releaseGeneration(generation: Generation, force = false) {
+    if (generation.released || (!force && generation.lease.active)) return;
+    generation.released = true;
+    clearTimeout(generation.releaseTimer);
+    for (const client of generation.markets) client.release(true);
+    for (const lane of generation.indexers) lane.client.release(true);
+  }
+  private invalidate(
+    generation: Generation,
+    reason: Generation["retirementReason"] = "changed"
+  ) {
     if (!generation.live) return;
     generation.live = false;
+    generation.retirementReason = reason;
     clearTimeout(generation.timer);
     this.generations.delete(generation.id);
-    // Destroying this dedicated read-only connection rolls its transaction back.
-    generation.client.release(true);
-    for (const lane of generation.indexers) lane.client.release(true);
+    generation.lease.close(
+      new BnbOrderError(
+        reason === "failed" || reason === "shutdown"
+          ? "catalog_indexer_unavailable"
+          : "snapshot_refresh_required",
+        reason === "failed" || reason === "shutdown" ? 503 : 409
+      )
+    );
+    // Let in-flight bounded reads settle before destroying their connections.
+    // The hard guard also covers a transport which stops honoring its deadline.
+    if (generation.lease.active) {
+      generation.releaseTimer = setTimeout(
+        () => this.releaseGeneration(generation, true),
+        12000
+      );
+      generation.releaseTimer.unref();
+    } else this.releaseGeneration(generation);
   }
   async close() {
     this.stopped = true;
     if (this.opening) await this.opening.catch(() => {});
     for (const generation of this.generations.values())
-      this.invalidate(generation);
+      this.invalidate(generation, "shutdown");
     await this.keepers.end();
     await this.options.indexerKeepers?.end();
   }
@@ -250,13 +299,20 @@ export class CatalogService {
         AND NOT has_table_privilege(current_user,to_regclass(name),'INSERT,UPDATE,DELETE,TRUNCATE')) AS ready
       FROM unnest(ARRAY['yunipals_indexer_v3.token','bnb_indexer.token','yunipals_read_v4.token',
         'yunipals_read_v4.transfer_event','metadata.token_metadata','metadata.token_search',
-        'metadata.token_visibility','metadata.market_catalog_trait']) name`
+        'metadata.token_visibility','metadata.market_catalog_trait'
+        ${this.projectionGenerationMode ? ",'metadata_projection.active','metadata_projection.generation','metadata_projection.search'" : ""}]) name`
     );
     if (result.rows[0]?.ready !== true)
       throw new BnbOrderError("catalog_indexer_unavailable", 503);
   }
   private assertLive(generation: Generation) {
-    if (this.stopped || !generation.live || Date.now() >= generation.expiresAt)
+    if (
+      this.stopped ||
+      generation.retirementReason === "failed" ||
+      generation.retirementReason === "shutdown"
+    )
+      throw new BnbOrderError("catalog_indexer_unavailable", 503);
+    if (!generation.live || Date.now() >= generation.expiresAt)
       throw new BnbOrderError("snapshot_refresh_required", 409);
   }
   private async acquire(id?: string): Promise<Generation> {
@@ -269,7 +325,8 @@ export class CatalogService {
       return generation;
     }
     for (const generation of this.generations.values())
-      if (Date.now() >= generation.expiresAt) this.invalidate(generation);
+      if (Date.now() >= generation.expiresAt)
+        this.invalidate(generation, "expired");
     const current = [...this.generations.values()].at(-1);
     if (current && Date.now() - current.createdAt < this.reuseMs)
       return current;
@@ -282,16 +339,17 @@ export class CatalogService {
       await this.assertIndexerReady();
       const client = await this.keepers.connect();
       const indexers: PoolClient[] = [];
+      const markets = [client];
       let released = false;
       let generation: Generation | undefined;
       const discard = () => {
         if (released) return;
         released = true;
-        client.release(true);
+        for (const market of markets) market.release(true);
         for (const indexer of indexers) indexer.release(true);
       };
       const onError = () => {
-        if (generation) this.invalidate(generation);
+        if (generation) this.invalidate(generation, "failed");
         else discard();
       };
       client.on("error", onError);
@@ -301,17 +359,36 @@ export class CatalogService {
           "SELECT clock_timestamp() AS now"
         );
         const row = result.rows[0]!;
+        const exportedMarket = await client.query<{ snapshot: string }>(
+          "SELECT pg_export_snapshot() AS snapshot"
+        );
+        const marketSnapshot = exportedMarket.rows[0]?.snapshot;
+        if (!marketSnapshot || !/^[0-9A-Fa-f-]+$/.test(marketSnapshot))
+          throw new BnbOrderError("catalog_indexer_unavailable", 503);
+        const marketFollower = await this.keepers.connect();
+        if (released) {
+          marketFollower.release(true);
+          throw new BnbOrderError("market_unavailable", 503);
+        }
+        markets.push(marketFollower);
+        marketFollower.on("error", onError);
+        await marketFollower.query(
+          "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
+        );
+        await marketFollower.query(
+          `SET TRANSACTION SNAPSHOT '${marketSnapshot}'`
+        );
         const sources = await (this.options.readSources ?? readOrderSources)(
           client,
           row.now
         );
         if (this.options.indexerKeepers) {
           const indexer = await this.options.indexerKeepers.connect();
-          indexers.push(indexer);
           if (released) {
             indexer.release(true);
             throw new BnbOrderError("market_unavailable", 503);
           }
+          indexers.push(indexer);
           indexer.on("error", onError);
           await indexer.query(
             "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
@@ -322,30 +399,64 @@ export class CatalogService {
           const snapshot = exported.rows[0]?.snapshot;
           if (!snapshot || !/^[0-9A-Fa-f-]+$/.test(snapshot))
             throw new BnbOrderError("catalog_indexer_unavailable", 503);
-          const follower = await this.options.indexerKeepers.connect();
-          indexers.push(follower);
-          follower.on("error", onError);
-          await follower.query(
-            "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
-          );
-          await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
+          for (let i = 0; i < 3; i++) {
+            const follower = await this.options.indexerKeepers.connect();
+            if (released) {
+              follower.release(true);
+              throw new BnbOrderError("market_unavailable", 503);
+            }
+            indexers.push(follower);
+            follower.on("error", onError);
+            await follower.query(
+              "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
+            );
+            await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
+          }
         }
+        const projection = this.projectionGenerationMode
+          ? (
+              await (indexers[0] ?? client).query<{
+                current_id: string;
+                metadata_release_id: string | null;
+              }>(`SELECT a.current_id,g.metadata_release_id
+              FROM metadata_projection.active a JOIN metadata_projection.generation g
+                ON g.id=a.current_id
+              WHERE a.singleton AND g.state='ready' AND g.format_version=1`)
+            ).rows[0]
+          : undefined;
+        const projectionGenerationId = projection?.current_id ?? null;
+        if (this.projectionGenerationMode && !projectionGenerationId)
+          throw new BnbOrderError("catalog_indexer_unavailable", 503);
         const fingerprint = await visibilityFingerprint(indexers[0] ?? client);
         generation = {
           id: randomUUID(),
+          projectionGenerationId,
+          projectionMetadataReleaseId: projection?.metadata_release_id ?? null,
           observedAt: row.now,
           client,
           indexers: indexers.map((indexer) => ({ client: indexer, active: 0 })),
           sources,
+          markets,
+          slots: markets.map((market, i) => ({
+            client: market,
+            indexers: indexers
+              .slice(i * 2, i * 2 + 2)
+              .map((client) => ({ client, active: 0 })),
+            active: false
+          })),
+          books: new Map(),
+          counts: new Map(),
           fingerprint,
           createdAt: Date.now(),
           expiresAt: Date.now() + this.lifetimeMs,
           secret: randomBytes(32),
           queries: new Map(),
-          live: true
+          live: true,
+          lease: new CatalogLeaseQueue(4000, 8, 2),
+          released: false
         };
         generation.timer = setTimeout(
-          () => this.invalidate(generation!),
+          () => this.invalidate(generation!, "expired"),
           this.lifetimeMs
         );
         generation.timer.unref();
@@ -365,33 +476,81 @@ export class CatalogService {
   private async heldRead<T>(
     generation: Generation,
     indexerCount: number,
-    task: (db: PoolClient, indexers: PoolClient[]) => Promise<T>
+    task: (db: PoolClient, indexers: PoolClient[]) => Promise<T>,
+    phase: string
   ) {
     this.assertLive(generation);
+    const queuedAt = performance.now();
+    annotateRead({
+      phase: "queue",
+      snapshotAgeMs: Date.now() - generation.createdAt
+    });
+    const release = await generation.lease.acquire();
+    const started = performance.now();
+    annotateRead({
+      phase,
+      queueWaitMs: Math.round(started - queuedAt),
+      snapshotAgeMs: Date.now() - generation.createdAt,
+      projectionGeneration: generation.projectionGenerationId
+    });
     // postgres_fdw stays on the single local connection. Direct indexer lanes
     // import one exported snapshot, so source families can run concurrently
     // without allowing counts or rankings to change between pages. Local books
     // are query parameters; no source writes or per-visitor copies are needed.
-    const lanes = [...generation.indexers]
-      .sort((left, right) => left.active - right.active)
-      .slice(0, indexerCount);
-    if (lanes.length !== indexerCount)
-      throw new BnbOrderError("catalog_snapshot_capacity", 503);
-    for (const lane of lanes) lane.active++;
+    const slot = generation.slots.find((candidate) => !candidate.active);
+    if (!slot) {
+      release();
+      throw new BnbOrderError("catalog_busy", 429);
+    }
+    slot.active = true;
+    const lanes = slot.indexers.slice(0, indexerCount);
+    let lanesHeld = false;
     try {
+      this.assertLive(generation);
+      if (lanes.length !== indexerCount)
+        throw new BnbOrderError("catalog_snapshot_capacity", 503);
+      for (const lane of lanes) lane.active++;
+      lanesHeld = true;
       const result = await task(
-        generation.client,
+        slot.client,
         lanes.map((lane) => lane.client)
       );
       this.assertLive(generation);
       return result;
     } catch (error) {
       // A statement error aborts the held transaction. Retire all its cursors.
-      this.invalidate(generation);
+      const expired =
+        generation.retirementReason === "expired" ||
+        Date.now() >= generation.expiresAt;
+      this.invalidate(generation, expired ? "expired" : "failed");
+      if (expired) throw new BnbOrderError("snapshot_refresh_required", 409);
       throw error;
     } finally {
-      for (const lane of lanes) lane.active--;
+      if (lanesHeld) for (const lane of lanes) lane.active--;
+      annotateRead({ executionMs: Math.round(performance.now() - started) });
+      slot.active = false;
+      release();
+      if (!generation.live) this.releaseGeneration(generation);
     }
+  }
+  private books(
+    generation: Generation,
+    db: PoolClient,
+    query: CatalogQuery,
+    sources: CatalogSources
+  ) {
+    const key = JSON.stringify([
+      query.chains,
+      query.currency?.address ?? null,
+      sources.readVersion ?? 1
+    ]);
+    let pending = generation.books.get(key);
+    if (!pending) {
+      pending = fetchCatalogBooks(db, query, generation.observedAt, sources);
+      generation.books.set(key, pending);
+      void pending.catch(() => generation.books.delete(key));
+    }
+    return pending;
   }
   private async currentAssets(generation: Generation, items: CatalogRow[]) {
     if (!items.length) return;
@@ -432,6 +591,14 @@ export class CatalogService {
 
   private async tokensByVersion(params: URLSearchParams, readVersion: 1 | 2) {
     const query = parseCatalogRequest(params);
+    annotateRead({
+      phase: "acquire",
+      filterHash: createHash("sha256")
+        .update(query.key)
+        .digest("hex")
+        .slice(0, 16),
+      sort: query.filters.sort
+    });
     let generation = await this.acquire(query.page.snapshot);
     if ((await visibilityFingerprint(this.pool)) !== generation.fingerprint) {
       for (const old of this.generations.values()) this.invalidate(old);
@@ -461,17 +628,23 @@ export class CatalogService {
       throw new BnbOrderError("catalog_source_unavailable", 503);
     const sources =
       readVersion === 2 ? v2Sources(generation.sources) : generation.sources;
-    const effectiveQuery =
+    const effectiveQuery: CatalogQuery =
       readVersion === 2 && query.filters.sale === "unlisted"
         ? {
             ...query,
+            projectionGenerationId:
+              generation.projectionGenerationId ?? undefined,
             chains: query.chains.filter(
               (chain) =>
                 availability[chain]!.evidence === "current" &&
                 availability[chain]!.listings.status === "complete"
             )
           }
-        : query;
+        : {
+            ...query,
+            projectionGenerationId:
+              generation.projectionGenerationId ?? undefined
+          };
     const position = decodeCursor(generation, query, readVersion);
     const stateKey = `v${readVersion}:${query.key}`;
     let state = generation.queries.get(stateKey);
@@ -489,53 +662,65 @@ export class CatalogService {
         !position &&
         !query.filters.sort.startsWith("token-id") &&
         Object.keys(query.filters.traits).length > 0;
-      const read = this.heldRead(held, laneCount, async (db, indexers) => {
-        const books = indexers.length
-          ? await fetchCatalogBooks(
-              db,
-              effectiveQuery,
-              held.observedAt,
-              sources
-            )
-          : undefined;
-        // Filtered rank/price pages already sort the complete candidate set.
-        // Token-ID pages can stop an ordered index scan early; combining those
-        // with the count adds unnecessary search joins for the whole population.
-        let result: { total: bigint; listed: bigint };
-        let page: Awaited<ReturnType<typeof fetchCatalogPage>> | undefined;
-        if (combineFirstPage) {
-          const combined = await fetchCatalogFirstPage(
-            indexers,
-            effectiveQuery,
-            held.observedAt,
-            sources,
-            books!
+      const countKey = `v${readVersion}:${collectionFiltersKey({ ...query.filters, sort: "token-id-asc" })}`;
+      const sharedCount = combineFirstPage
+        ? undefined
+        : held.counts.get(countKey);
+      const read = sharedCount
+        ? sharedCount.then((counts) => ({ counts, page: undefined }))
+        : this.heldRead(
+            held,
+            laneCount,
+            async (db, indexers) => {
+              const books = indexers.length
+                ? await this.books(held, db, effectiveQuery, sources)
+                : undefined;
+              // Filtered rank/price pages already sort the complete candidate set.
+              // Token-ID pages can stop an ordered index scan early; combining those
+              // with the count adds unnecessary search joins for the whole population.
+              let result: { total: bigint; listed: bigint };
+              let page:
+                | Awaited<ReturnType<typeof fetchCatalogPage>>
+                | undefined;
+              if (combineFirstPage) {
+                const combined = await fetchCatalogFirstPage(
+                  indexers,
+                  effectiveQuery,
+                  held.observedAt,
+                  sources,
+                  books!
+                );
+                page = combined.page;
+                result = combined;
+              } else {
+                result = await fetchCatalogCounts(
+                  indexers.length ? indexers : db,
+                  effectiveQuery,
+                  held.observedAt,
+                  sources,
+                  books
+                );
+              }
+              const total = Number(result.total),
+                listed = Number(result.listed);
+              if (!Number.isSafeInteger(total) || !Number.isSafeInteger(listed))
+                throw new BnbOrderError("catalog_count_capacity", 503);
+              return {
+                counts: {
+                  total,
+                  listedTotal: complete ? listed : null,
+                  verifiedListedTotal: listed
+                },
+                page
+              };
+            },
+            combineFirstPage ? "counts_and_page" : "counts"
           );
-          page = combined.page;
-          result = combined;
-        } else {
-          result = await fetchCatalogCounts(
-            indexers.length ? indexers : db,
-            effectiveQuery,
-            held.observedAt,
-            sources,
-            books
-          );
-        }
-        const total = Number(result.total),
-          listed = Number(result.listed);
-        if (!Number.isSafeInteger(total) || !Number.isSafeInteger(listed))
-          throw new BnbOrderError("catalog_count_capacity", 503);
-        return {
-          counts: {
-            total,
-            listedTotal: complete ? listed : null,
-            verifiedListedTotal: listed
-          },
-          page
-        };
-      });
       const counts = read.then((result) => result.counts);
+      if (!combineFirstPage && !sharedCount) {
+        held.counts.set(countKey, counts);
+        void counts.catch(() => held.counts.delete(countKey));
+      }
       if (combineFirstPage) {
         const page = read.then((result) => result.page!);
         firstPages.set(query.page.limit, page);
@@ -558,12 +743,7 @@ export class CatalogService {
           sourceLaneCount(generation, effectiveQuery),
           async (db, indexers) => {
             const books = indexers.length
-              ? await fetchCatalogBooks(
-                  db,
-                  effectiveQuery,
-                  generation.observedAt,
-                  sources
-                )
+              ? await this.books(generation, db, effectiveQuery, sources)
               : undefined;
             return fetchCatalogPage(
               indexers.length ? indexers : db,
@@ -575,7 +755,8 @@ export class CatalogService {
               totals.total,
               books
             );
-          }
+          },
+          position ? "continuation" : "first_page"
         );
         if (!position) {
           state.firstPages.set(query.page.limit, pending);

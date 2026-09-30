@@ -6,6 +6,7 @@ import { seaportDeployment } from "@protopals/yunipals-market-core/registry";
 import { createApp } from "@/app";
 import { bnbValidationPolicy } from "@/bnb/validation";
 import { readEnvironment } from "@/environment";
+import { BnbOrderError } from "@/bnb/orders";
 import { ownerTradeAuthorizationStatements } from "@/ownerTradeAuthorization";
 
 function canonical(value: unknown): string {
@@ -62,6 +63,53 @@ const environment = readEnvironment({
   MARKET_ALLOWED_ORIGINS: "http://127.0.0.1:5177"
 });
 
+test("v1 and v2 classify database failures, preserve expiry, and log programming failures safely", async (t) => {
+  const logs: string[] = [];
+  t.mock.method(console, "error", (message: string) => {
+    logs.push(message);
+  });
+  for (const failure of [
+    {
+      error: Object.assign(new Error("private database details"), {
+        code: "57014"
+      }),
+      status: 503
+    },
+    {
+      error: Object.assign(new Error("private lock details"), {
+        code: "55P03"
+      }),
+      status: 503
+    },
+    {
+      error: Object.assign(new Error("private connection details"), {
+        code: "ECONNRESET"
+      }),
+      status: 503
+    },
+    { error: new BnbOrderError("snapshot_refresh_required", 409), status: 409 },
+    { error: new TypeError("private programming details"), status: 500 }
+  ]) {
+    const fail = async () => {
+      throw failure.error;
+    };
+    const app = createApp(environment, async () => {}, {
+      catalog: { tokens: fail, tokensV2: fail }
+    });
+    for (const version of ["v1", "v2"]) {
+      const response = await app.request(`/${version}/market/tokens`);
+      assert.equal(response.status, failure.status);
+      assert.match(response.headers.get("X-Request-Id")!, /^[0-9a-f-]{36}$/);
+      assert.ok(!(await response.text()).includes("private"));
+    }
+  }
+  assert.ok(logs.length >= 8);
+  assert.ok(logs.every((message) => !message.includes("private")));
+  assert.ok(
+    logs.some((message) => JSON.parse(message).databaseCode === "57014")
+  );
+});
+
 test("database failure affects readiness without exposing credentials or enabling actions", async () => {
   const app = createApp(environment, async () => {
     throw new Error("postgres://secret:credential@private/db");
@@ -94,6 +142,38 @@ test("database failure affects readiness without exposing credentials or enablin
     (await app.request("/v1/market/orders", { method: "POST", body: "{}" }))
       .status,
     503
+  );
+});
+
+test("catalog contention reports its capacity reason and retry delay", async (t) => {
+  const logs: string[] = [];
+  t.mock.method(console, "warn", (message: string) => logs.push(message));
+  const { annotateRead } = await import("@/reads/diagnostics");
+  const fail = async () => {
+    annotateRead({
+      capacityReason: "catalog_queue_timeout",
+      queueWaitMs: 1500
+    });
+    throw new BnbOrderError("catalog_busy", 429);
+  };
+  const app = createApp(environment, async () => {}, {
+    catalog: { tokens: fail, tokensV2: fail }
+  });
+  const response = await app.request("/v2/market/tokens");
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("Retry-After"), "2");
+  assert.equal(
+    response.headers.get("X-Capacity-Reason"),
+    "catalog_queue_timeout"
+  );
+  const logged = logs.map((line) => JSON.parse(line));
+  assert.ok(
+    logged.some(
+      (entry) =>
+        entry.event === "market_capacity_rejected" &&
+        entry.capacityReason === "catalog_queue_timeout" &&
+        entry.queueWaitMs === 1500
+    )
   );
 });
 
@@ -322,10 +402,14 @@ test("HTTP admission rejects malformed JSON and sanitizes upstream failures", as
         policy: bnbValidationPolicy,
         admission: {
           async prepare() {
-            throw new Error("secret RPC credential");
+            throw Object.assign(new Error("secret RPC credential"), {
+              code: "ECONNRESET"
+            });
           },
           async submit() {
-            throw new Error("secret database credential");
+            throw Object.assign(new Error("secret database credential"), {
+              code: "08006"
+            });
           }
         }
       }
@@ -388,7 +472,9 @@ test("saturated admission cannot consume recovery work slots or bypass limits wi
       },
       recovery: {
         async accepted() {
-          throw new Error("fixture database unavailable");
+          throw Object.assign(new Error("fixture database unavailable"), {
+            code: "08006"
+          });
         },
         async cancellation() {
           throw new Error("unused");
@@ -488,7 +574,9 @@ test("BNB action pause preserves read and cancellation without reopening signed 
     reads: { wallet: unused, asset: unused },
     recovery: { accepted: unused, cancellation: unused }
   });
-  const capabilities = await (await app.request("/v1/market/capabilities")).json();
+  const capabilities = await (
+    await app.request("/v1/market/capabilities")
+  ).json();
   assert.deepEqual(capabilities.chains.bnb, {
     read: true,
     buy: false,

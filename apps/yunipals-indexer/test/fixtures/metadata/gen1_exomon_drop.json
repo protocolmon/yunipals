@@ -1,0 +1,209 @@
+{
+  "envelope": {
+    "_id": "633074876b2b4685af7eb3ca",
+    "id": "GEN1_9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+    "burned": false,
+    "chain": {
+      "id": "mainnet-beta",
+      "type": "SOLANA"
+    },
+    "chainOrigin": {
+      "id": "mainnet-beta",
+      "type": "SOLANA"
+    },
+    "cid": null,
+    "cidIsOnChain": false,
+    "createdAt": "2022-09-25T15:32:23.713Z",
+    "delegateeAddress": "6mi8Exs3Sdp4xk4YSoT1odC8EgP2UPBVQRFYbXe1sVFG",
+    "delegationType": "ON_ADVENTURE",
+    "genId": {
+      "id": "9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+      "type": "GEN1"
+    },
+    "imageUrl": "https://assets.polkamon.com/images/Unimons_T110C04H05B110G04.jpg",
+    "minted": true,
+    "nft": {
+      "type": "exocursed",
+      "attributes": {
+        "type": {
+          "value": "Exocursed"
+        },
+        "background": {
+          "value": "Nocturnal Genesis Factory"
+        },
+        "color": {
+          "value": "Cyber Purple"
+        },
+        "glitter": {
+          "value": "Matrix Shield"
+        },
+        "horn": {
+          "value": "Shadow Helix"
+        },
+        "celestial": {
+          "value": "Celestial"
+        },
+        "rank": {
+          "value": "321"
+        },
+        "rarityPoints": {
+          "value": 46720
+        },
+        "birthday": {
+          "value": 1656432000,
+          "type": "date"
+        },
+        "originChain": {
+          "value": "Solana Mainnet"
+        }
+      },
+      "birthday": "2022-06-28T16:00:00.000Z",
+      "chainOrigin": {
+        "id": "mainnet-beta",
+        "type": "SOLANA"
+      },
+      "code": "T110C04H05B110G04",
+      "description": "Gentle and refined, the Exocursed's demure attitude allows them to seamlessly integrate within broader society, operating as helpful partners for hotels, restaurants, and other customer-focused professions. While mostly reserved for businesses, a few have made their way into rich domiciles as a sort of status symbol.",
+      "hash": "",
+      "id": "9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+      "imageIpfsUrl": "ipfs://QmPaCgt8DLEs8UZiwLxasAJKJEZFaB1PTp8iVi65sgH3S6",
+      "imageUrl": "https://drive.polychainmonsters.com/ipfs/QmPaCgt8DLEs8UZiwLxasAJKJEZFaB1PTp8iVi65sgH3S6",
+      "name": "Exocursed #5569",
+      "videoIpfsUrl": "ipfs://QmWU4hTwn5G357WRDtNTRzJt9rcrk6NrKH31optbEAAzVF",
+      "videoIpfsUrlCompressed": "ipfs://QmVbkfFyDYhtKd7fgBScrfLBLUoGDQcmhGuC4KrSaws11n",
+      "videoUrl": "https://drive.polychainmonsters.com/ipfs/QmWU4hTwn5G357WRDtNTRzJt9rcrk6NrKH31optbEAAzVF",
+      "videoUrlCompressed": "https://drive.polychainmonsters.com/ipfs/QmVbkfFyDYhtKd7fgBScrfLBLUoGDQcmhGuC4KrSaws11n",
+      "initialRarity": 46720,
+      "initialRarityCapped": 46720,
+      "pfpUrl": "https://drive.polychainmonsters.com/ipfs/QmXYPk9zxwm6Vth12c5f2CaTYyHGE1T9Vv8GeGesP1Z6pT",
+      "pfpIpfsUrl": "ipfs://QmXYPk9zxwm6Vth12c5f2CaTYyHGE1T9Vv8GeGesP1Z6pT",
+      "adventureStatus": "READY_FOR_ADVENTURE",
+      "axpCount": 460,
+      "adventureTitle": "Lost Gifts and Monster Help: A Christmas Tale",
+      "adventureId": "63975017046bfc630798b990",
+      "gameData": {
+        "version": "v4",
+        "score": 16.875,
+        "pFactor": 2.2272,
+        "health": 133,
+        "water": 145,
+        "fire": 178,
+        "earth": 145,
+        "wind": 122,
+        "sum": 723
+      }
+    },
+    "origin": {
+      "id": "9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+      "type": "GEN1_EXOMON_DROP"
+    },
+    "ownerAddress": "3CS6AQHUKFDutjsEPvCdWQAXziCTnFuQm3DvnZszKSxv",
+    "ownerSince": "2022-11-25T20:56:17.234Z",
+    "rarity": 46720,
+    "rarityCapped": 46720,
+    "updatedAt": "2024-10-19T20:01:56.150Z",
+    "updatedBy": "ExomonSyncOwnerProcessor",
+    "videoUrl": "https://assets.polkamon.com/videos/Unimons_T110C04H05B110G04.mp4",
+    "videoUrlCompressed": "https://assets.polkamon.com/videos/Unimons_T110C04H05B110G04.comp.mp4",
+    "delegateeSince": "2022-09-17T16:22:40.000Z",
+    "ownerAddressSnapshot": "3CS6AQHUKFDutjsEPvCdWQAXziCTnFuQm3DvnZszKSxv",
+    "delegateeAddressSnapshot": "6mi8Exs3Sdp4xk4YSoT1odC8EgP2UPBVQRFYbXe1sVFG"
+  },
+  "parents": [],
+  "expected": {
+    "address": "6mi8Exs3Sdp4xk4YSoT1odC8EgP2UPBVQRFYbXe1sVFG",
+    "animation_url": "https://drive.polychainmonsters.com/ipfs/QmWU4hTwn5G357WRDtNTRzJt9rcrk6NrKH31optbEAAzVF",
+    "attributes": [
+      {
+        "trait_type": "Type",
+        "value": "Exocursed"
+      },
+      {
+        "trait_type": "Background",
+        "value": "Nocturnal Genesis Factory"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Cyber Purple"
+      },
+      {
+        "trait_type": "Glitter",
+        "value": "Matrix Shield"
+      },
+      {
+        "trait_type": "Horn",
+        "value": "Shadow Helix"
+      },
+      {
+        "trait_type": "Celestial",
+        "value": "Celestial"
+      },
+      {
+        "trait_type": "Rank",
+        "value": "321"
+      },
+      {
+        "trait_type": "Rarity Points",
+        "value": 46720
+      },
+      {
+        "display_type": "date",
+        "trait_type": "Birthday",
+        "value": 1656432000
+      },
+      {
+        "trait_type": "Origin Chain",
+        "value": "Solana Mainnet"
+      },
+      {
+        "trait_type": "Opening Network",
+        "value": "Solana"
+      },
+      {
+        "trait_type": "Last metadata update",
+        "value": 1790032171,
+        "display_type": "date"
+      }
+    ],
+    "background_color": "FFFFFF",
+    "description": "Gentle and refined, the Exocursed's demure attitude allows them to seamlessly integrate within broader society, operating as helpful partners for hotels, restaurants, and other customer-focused professions. While mostly reserved for businesses, a few have made their way into rich domiciles as a sort of status symbol.",
+    "external_url": "https://polkamon.com/polkamon/T110C04H05B110G04",
+    "id": "9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+    "type": "exocursed",
+    "origin": "GEN1_EXOMON_DROP",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmPaCgt8DLEs8UZiwLxasAJKJEZFaB1PTp8iVi65sgH3S6",
+    "code": "T110C04H05B110G04",
+    "name": "Exocursed #5569",
+    "txHash": "",
+    "minted": true,
+    "chain": "solana",
+    "chainGroup": "SOLANA",
+    "originChain": "solana",
+    "originChainGroup": "SOLANA",
+    "nftContract": "solana:exomon",
+    "opening_network": "Solana",
+    "rarity": 46720,
+    "rarityCapped": 46720,
+    "pfpUrl": "https://drive.polychainmonsters.com/ipfs/QmXYPk9zxwm6Vth12c5f2CaTYyHGE1T9Vv8GeGesP1Z6pT",
+    "ownerSince": "2022-11-25T20:56:17.234Z",
+    "adventureStatus": "READY_FOR_ADVENTURE",
+    "axpCount": 460,
+    "adventureTitle": "Lost Gifts and Monster Help: A Christmas Tale",
+    "gameData": {
+      "version": "v4",
+      "score": 16.875,
+      "pFactor": 2.2272,
+      "health": 133,
+      "water": 145,
+      "fire": 178,
+      "earth": 145,
+      "wind": 122,
+      "sum": 723
+    }
+  },
+  "metadataUpdatedAt": 1790032171,
+  "comparison": {
+    "match": true,
+    "httpStatus": 200
+  }
+}

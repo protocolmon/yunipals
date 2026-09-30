@@ -22,8 +22,8 @@ pnpm build
 Both values are public; credentials belong in the backend only.
 Set `VITE_SELF_HOSTED=1` for an independent deployment. Its build requires
 both service URLs to point away from Yunipals domains; the full website also
-needs a compatible metadata indexer API, as explained in the
-[BNB self-hosting guide](../../docs/self-hosting-bnb.md).
+needs the [collection indexer API](../yunipals-indexer/README.md), as explained
+in the [BNB self-hosting guide](../../docs/self-hosting-bnb.md).
 `VITE_WALLETCONNECT_PROJECT_ID` is your public project ID from the
 [Reown dashboard](https://dashboard.reown.com/). Add it to this app's `.env.local`
 and restart Vite. With no project ID, local development supports injected
@@ -54,8 +54,9 @@ ID search when the indexer advertises support. Name-prefix search is enabled
 separately. Pages render 24 cards and retain at most five token-page responses;
 filtering never downloads the whole wallet.
 
-Apply and validate the [external indexer patch](../../patches/collector-indexer/README.md)
-before enabling its feature switches. The existing owner API remains available
+The collector routes are included in the [indexer app](../yunipals-indexer/README.md).
+Validate them against your own database before enabling their feature switches.
+The existing owner API remains available
 when the controls are disabled. See the [performance evidence](../../docs/personal-collection-performance.json)
 for the local benchmark's scope and production validation.
 

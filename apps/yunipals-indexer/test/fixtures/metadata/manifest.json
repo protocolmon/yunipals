@@ -1,0 +1,40 @@
+{
+  "capturedAt": "2026-09-21T23:09:31.121Z",
+  "samples": [
+    {
+      "origin": "GEN1_BOOSTER",
+      "id": "1000000002",
+      "status": "matched"
+    },
+    {
+      "origin": "GEN1_GHOST_BOOSTER",
+      "id": "1000008000000",
+      "status": "matched"
+    },
+    {
+      "origin": "GEN1_RAINBOW_FUSION",
+      "id": "1000004001042",
+      "status": "matched"
+    },
+    {
+      "origin": "GEN1_EXOMON_DROP",
+      "id": "9oDGqXsG2n3P4Bs6KsA1a6QCvjELi3bU2XMEwEiqcAus",
+      "status": "matched"
+    },
+    {
+      "origin": "GEN1_ORIGIN",
+      "status": "legacy_alias_collision",
+      "id": "0"
+    },
+    {
+      "origin": "GEN1_UKRAINIAN_UNIDONKEY",
+      "id": "20",
+      "status": "matched"
+    }
+  ],
+  "comparisonRules": [
+    "Ignore volatile Last metadata update trait",
+    "Compare trait arrays as sets of complete trait objects; preserve other array order"
+  ],
+  "sanitization": "EVM addresses replaced consistently with a fixture address"
+}

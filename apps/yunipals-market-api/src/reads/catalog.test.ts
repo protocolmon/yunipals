@@ -45,13 +45,15 @@ function service(
   overrides: Partial<CatalogSources["statuses"]> = {},
   lifetimeMs?: number,
   reuseMs?: number,
-  directIndexer = process.env.MARKET_TEST_DIRECT_CATALOG === "1"
+  directIndexer = process.env.MARKET_TEST_DIRECT_CATALOG === "1",
+  projectionMode: "legacy" | "generation" = "legacy",
+  statementTimeoutMs = 5000
 ) {
   const keepers = new pg.Pool({
     connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
     application_name: "yunipals_catalog_test",
-    max: 3,
-    statement_timeout: 5000,
+    max: 8,
+    statement_timeout: statementTimeoutMs,
     idle_in_transaction_session_timeout: 95000
   });
   keepers.on("error", () => {});
@@ -59,8 +61,8 @@ function service(
     ? new pg.Pool({
         connectionString: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL"),
         application_name: "yunipals_catalog_source_test",
-        max: 7,
-        statement_timeout: 5000,
+        max: 17,
+        statement_timeout: statementTimeoutMs,
         idle_in_transaction_session_timeout: 95000
       })
     : undefined;
@@ -72,7 +74,8 @@ function service(
       statuses: { ...sources.statuses, ...overrides }
     }),
     lifetimeMs,
-    reuseMs
+    reuseMs,
+    projectionMode
   });
   services.push(result);
   return result;
@@ -804,25 +807,78 @@ test("combined direct first pages match separate counts and pages across sorts, 
 test("direct catalog lanes import one source snapshot and serve concurrent filters from it", async () => {
   await token("bnb", 1, { Lane: "BNB" });
   await token("ethereum", 2, { Lane: "Ethereum" });
+  const view = (
+    await db.owner.query<{ definition: string }>(
+      "SELECT pg_get_viewdef('metadata.market_catalog_trait'::regclass,true) AS definition"
+    )
+  ).rows[0]!.definition.trim().replace(/;$/, "");
+  await db.owner.query(
+    "CREATE TABLE metadata.catalog_test_blocker(singleton boolean); INSERT INTO metadata.catalog_test_blocker VALUES(true)"
+  );
+  await db.owner.query(`CREATE OR REPLACE VIEW metadata.market_catalog_trait AS
+    SELECT original.* FROM (${view}) original CROSS JOIN metadata.catalog_test_blocker blocker`);
+  await db.owner.query(
+    "GRANT SELECT ON metadata.catalog_test_blocker TO market_test_runtime"
+  );
   const catalog = service({}, undefined, undefined, true);
-  const opened = await catalog.tokens(query({ chain: "polygon" }));
+  const opened = await catalog.tokens(
+    new URLSearchParams({ chain: "polygon" })
+  );
   const snapshots = await db.owner.query<{ backend_xmin: string }>(
     `SELECT backend_xmin::text FROM pg_stat_activity
     WHERE application_name='yunipals_catalog_source_test' ORDER BY pid`
   );
-  assert.equal(snapshots.rowCount, 2);
+  assert.equal(snapshots.rowCount, 4);
   assert.ok(snapshots.rows.every((row) => row.backend_xmin));
   assert.equal(
     snapshots.rows[0]!.backend_xmin,
-    snapshots.rows[1]!.backend_xmin
+    snapshots.rows[3]!.backend_xmin
   );
 
   await token("bnb", 3, { Lane: "BNB" });
   await token("ethereum", 4, { Lane: "Ethereum" });
-  const [bnb, ethereum] = await Promise.all([
-    catalog.tokens(query({ chain: "bnb", "t.Lane": "BNB" })),
-    catalog.tokens(query({ chain: "ethereum", "t.Lane": "Ethereum" }))
-  ]);
+  const blocker = await db.owner.connect();
+  let pending: Promise<unknown>[] = [];
+  let bnb, ethereum;
+  try {
+    await blocker.query("BEGIN");
+    await blocker.query(
+      "LOCK TABLE metadata.catalog_test_blocker IN ACCESS EXCLUSIVE MODE"
+    );
+    const bnbRead = catalog.tokens(query({ chain: "bnb", "t.Lane": "BNB" }));
+    const ethereumRead = catalog.tokens(
+      query({ chain: "ethereum", "t.Lane": "Ethereum" })
+    );
+    pending = [bnbRead, ethereumRead];
+    let blocked = 0;
+    const deadline = Date.now() + 2000;
+    while (blocked < 2 && Date.now() < deadline) {
+      blocked = (
+        await db.owner.query<{
+          count: number;
+        }>(`SELECT count(*)::int AS count FROM pg_stat_activity
+        WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock'`)
+      ).rows[0]!.count;
+      if (blocked < 2) await delay(10);
+    }
+    assert.equal(
+      blocked,
+      2,
+      "Both independent filters must reach PostgreSQL concurrently."
+    );
+    await blocker.query("ROLLBACK");
+    [bnb, ethereum] = await Promise.all([bnbRead, ethereumRead]);
+  } finally {
+    await blocker.query("ROLLBACK");
+    await Promise.allSettled(pending);
+    blocker.release();
+    await catalog.close();
+    services.splice(services.indexOf(catalog), 1);
+    await db.owner.query(
+      `CREATE OR REPLACE VIEW metadata.market_catalog_trait AS ${view}`
+    );
+    await db.owner.query("DROP TABLE metadata.catalog_test_blocker");
+  }
   assert.equal(bnb.snapshot.id, opened.snapshot.id);
   assert.equal(ethereum.snapshot.id, opened.snapshot.id);
   assert.equal(bnb.total, 1);
@@ -998,6 +1054,93 @@ test("unknown sources retain public catalog metadata but reject financial filter
     );
 });
 
+test("in-flight expiry drains its lease and a real SQL timeout returns v2 503 with a fresh generation afterward", async () => {
+  await token("bnb", 1);
+  for (const failure of ["expiry", "timeout"] as const) {
+    const catalog = service(
+      {},
+      failure === "expiry" ? 300 : undefined,
+      failure === "expiry" ? 150 : undefined,
+      true,
+      "legacy",
+      failure === "timeout" ? 200 : 5000
+    );
+    const app = createApp(
+      readEnvironment({
+        MARKET_DEPLOYMENT: "staging",
+        MARKET_DATABASE_URL: testUrl("MARKET_TEST_RUNTIME_DATABASE_URL")
+      }),
+      async () => {},
+      { catalog }
+    );
+    const blocker = await db.owner.connect();
+    let locked = false;
+    try {
+      await blocker.query("BEGIN");
+      await blocker.query(
+        "LOCK TABLE metadata.token_search IN ACCESS EXCLUSIVE MODE"
+      );
+      locked = true;
+      const pending = app.request(
+        `/v2/market/tokens?${query({ chain: "bnb", limit: "1" })}`
+      );
+      const deadline = Date.now() + 2000;
+      let blocked = false;
+      while (Date.now() < deadline && !blocked) {
+        blocked = (
+          await db.owner.query<{
+            blocked: boolean;
+          }>(`SELECT EXISTS(SELECT 1 FROM pg_stat_activity
+          WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock') AS blocked`)
+        ).rows[0]!.blocked;
+        if (!blocked) await delay(10);
+      }
+      assert.equal(
+        blocked,
+        true,
+        "The read must be waiting inside PostgreSQL, not an injected exception."
+      );
+      if (failure === "expiry") {
+        await delay(350);
+        assert.equal(
+          (
+            await db.owner.query<{
+              blocked: boolean;
+            }>(`SELECT EXISTS(SELECT 1 FROM pg_stat_activity
+          WHERE application_name='yunipals_catalog_source_test' AND wait_event_type='Lock') AS blocked`)
+          ).rows[0]!.blocked,
+          true,
+          "Expiry must retain the active connection until its statement settles."
+        );
+        await blocker.query("ROLLBACK");
+        locked = false;
+      }
+      const response = await pending;
+      assert.equal(response.status, failure === "expiry" ? 409 : 503);
+      assert.equal(
+        (await response.json()).error.code,
+        failure === "expiry"
+          ? "snapshot_refresh_required"
+          : "market_unavailable"
+      );
+      if (locked) {
+        await blocker.query("ROLLBACK");
+        locked = false;
+      }
+      assert.equal(
+        (await catalog.tokensV2(query({ chain: "bnb" }))).total,
+        1,
+        "A new generation must work after the retired transaction fails."
+      );
+    } finally {
+      if (locked) await blocker.query("ROLLBACK");
+      blocker.release();
+      await catalog.close();
+      services.splice(services.indexOf(catalog), 1);
+    }
+  }
+});
+
 test("expired snapshots, service restart and killed keeper sessions demand refresh and release held transactions", async () => {
   await token("bnb", 1);
   await token("bnb", 2);
@@ -1034,7 +1177,7 @@ test("expired snapshots, service restart and killed keeper sessions demand refre
   const killed = await db.owner.query(
     "SELECT pg_terminate_backend(pid) AS killed FROM pg_stat_activity WHERE application_name='yunipals_catalog_test' AND state='idle in transaction'"
   );
-  assert.equal(killed.rowCount, 1);
+  assert.equal(killed.rowCount, 2);
   assert.equal(killed.rows[0].killed, true);
   await delay(20);
   await assert.rejects(
@@ -1073,4 +1216,52 @@ test("missing metadata does not suppress an indexed NFT, and null rarity is orde
   assert.equal(page.items[1]!.token.metadataAvailable, false);
   assert.equal(page.items[1]!.token.attributes, null);
   assert.equal(page.items[1]!.token.name, null);
+});
+
+test("generation catalog snapshots retain search scores across pointer publication", async () => {
+  const asset = await token("bnb", 3);
+  await db.owner.query(`CREATE SCHEMA IF NOT EXISTS metadata_projection;
+    CREATE TABLE IF NOT EXISTS metadata_projection.active(singleton boolean PRIMARY KEY,current_id bigint);
+    CREATE TABLE IF NOT EXISTS metadata_projection.generation(
+      id bigint PRIMARY KEY,format_version integer,source_mode text,metadata_release_id text,state text);
+    CREATE TABLE IF NOT EXISTS metadata_projection.search(
+      generation_id bigint,collection text,token_id numeric,lifecycle integer,
+      metadata_available boolean,rarity_points numeric,rarity_points_capped numeric);
+    GRANT USAGE ON SCHEMA metadata_projection TO market_test_runtime;
+    GRANT SELECT ON metadata_projection.active,metadata_projection.generation,
+      metadata_projection.search TO market_test_runtime`);
+  await db.owner.query(`INSERT INTO metadata_projection.generation VALUES
+    (1,1,'legacy',NULL,'ready'),(2,1,'legacy',NULL,'ready')
+    ON CONFLICT(id) DO NOTHING`);
+  await db.owner.query(`INSERT INTO metadata_projection.active VALUES(true,1)
+    ON CONFLICT(singleton) DO UPDATE SET current_id=1`);
+  await db.owner.query(
+    `INSERT INTO metadata_projection.search VALUES
+    (1,'bnb',$1,0,true,7,7),(2,'bnb',$1,0,true,17,17)`,
+    [asset.tokenId]
+  );
+  const catalog = service({}, undefined, undefined, true, "generation");
+  const first = await catalog.tokens(
+    query({ chain: "bnb", sort: "rarity-desc" })
+  );
+  assert.equal(first.total, 1);
+  assert.equal(first.items[0]?.token.rarityPoints, "7");
+  await db.owner.query(
+    "UPDATE metadata_projection.active SET current_id=2 WHERE singleton"
+  );
+  const retained = await catalog.tokens(
+    query({ chain: "bnb", sort: "rarity-desc", rarityMax: "10" })
+  );
+  assert.equal(retained.snapshot.id, first.snapshot.id);
+  assert.equal(retained.total, 1);
+  assert.equal(retained.items[0]?.token.rarityPoints, "7");
+  const fresh = service({}, undefined, undefined, true, "generation");
+  assert.equal(
+    (await fresh.tokens(query({ chain: "bnb", rarityMax: "10" }))).total,
+    0
+  );
+  await db.owner.query(
+    "DELETE FROM metadata_projection.search WHERE token_id=$1",
+    [asset.tokenId]
+  );
 });

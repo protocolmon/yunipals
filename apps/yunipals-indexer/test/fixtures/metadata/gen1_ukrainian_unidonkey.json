@@ -1,0 +1,185 @@
+{
+  "envelope": {
+    "_id": "63455bd755fa724a341305d0",
+    "id": "GEN1_20",
+    "bridged": false,
+    "burned": false,
+    "chain": {
+      "id": "56",
+      "type": "EVM"
+    },
+    "chainOrigin": {
+      "id": "56",
+      "type": "EVM"
+    },
+    "cid": null,
+    "cidIsOnChain": false,
+    "createdAt": "2022-10-11T12:04:39.675Z",
+    "delegateeAddress": null,
+    "delegateeSince": null,
+    "delegationType": null,
+    "genId": {
+      "id": "20",
+      "type": "GEN1"
+    },
+    "imageUrl": "https://assets.polkamon.com/images/Unimons_T01C00H01B54G00.jpg",
+    "minted": true,
+    "nft": {
+      "id": "20",
+      "type": "ukrainianUnidonkey",
+      "chainOrigin": {
+        "id": "56",
+        "type": "EVM"
+      },
+      "hash": "",
+      "attributes": {
+        "type": {
+          "value": "Ukrainian Unidonkey"
+        },
+        "background": {
+          "value": "Kyiv"
+        },
+        "color": {
+          "value": "Yellow & Blue"
+        },
+        "glitter": {
+          "value": "None"
+        },
+        "horn": {
+          "value": "Golden Horn"
+        },
+        "special": {
+          "value": "Yes"
+        },
+        "originChain": {
+          "value": "BNB Chain"
+        }
+      },
+      "name": "Ukrainian Unidonkey",
+      "description": "Hailing from the beautiful city of Kyiv, the Ukrainian Unidonkey has devoted its life to ensuring harmony and liberty for all. Adorned in the blue and yellow colors of its motherland, it acts as a shining symbol for all who support peace and unity in the world.",
+      "initialProbabilities": {
+        "horn": 1,
+        "color": 1,
+        "background": 1,
+        "glitter": 1,
+        "type": 1
+      },
+      "code": "T01C00H01B54G00",
+      "imageIpfsUrl": "ipfs://QmaubHZNvC5gLFDwyA6e7RVtPeFxf3n3J4ejadTkyD7jzG",
+      "videoIpfsUrl": "ipfs://QmT58LndCGrAgTFfwotwQHKChYAf3aD3ARYCCLa1GcWhMf",
+      "videoIpfsUrlCompressed": "ipfs://QmdowZm2SVhpG2wkeKnCPoadm3q9SQu2UpktbeczHysdbv",
+      "imageUrl": "https://drive.polychainmonsters.com/ipfs/QmaubHZNvC5gLFDwyA6e7RVtPeFxf3n3J4ejadTkyD7jzG",
+      "videoUrl": "https://drive.polychainmonsters.com/ipfs/QmT58LndCGrAgTFfwotwQHKChYAf3aD3ARYCCLa1GcWhMf",
+      "videoUrlCompressed": "https://drive.polychainmonsters.com/ipfs/QmdowZm2SVhpG2wkeKnCPoadm3q9SQu2UpktbeczHysdbv",
+      "gameData": {
+        "version": "v4",
+        "score": 6,
+        "pFactor": 1.7782,
+        "health": 127,
+        "water": 144,
+        "fire": 100,
+        "earth": 153,
+        "wind": 153,
+        "sum": 678
+      }
+    },
+    "origin": {
+      "id": "20",
+      "type": "GEN1_UKRAINIAN_UNIDONKEY"
+    },
+    "ownerAddress": "0x0000000000000000000000000000000000000001",
+    "ownerSince": "2022-08-08T01:36:13.000Z",
+    "updatedAt": "2023-04-06T10:03:42.042Z",
+    "updatedBy": "Gen1NFTTransferProcessor",
+    "videoUrl": "https://assets.polkamon.com/videos/Unimons_T01C00H01B54G00.mp4",
+    "videoUrlCompressed": "https://assets.polkamon.com/videos/Unimons_T01C00H01B54G00.comp.mp4",
+    "ownerAddressSnapshot": "0x0000000000000000000000000000000000000001",
+    "delegateeAddressSnapshot": null
+  },
+  "parents": [],
+  "expected": {
+    "address": "0x0000000000000000000000000000000000000001",
+    "animation_url": "https://drive.polychainmonsters.com/ipfs/QmT58LndCGrAgTFfwotwQHKChYAf3aD3ARYCCLa1GcWhMf",
+    "attributes": [
+      {
+        "trait_type": "Type",
+        "value": "Ukrainian Unidonkey"
+      },
+      {
+        "trait_type": "Background",
+        "value": "Kyiv"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Yellow & Blue"
+      },
+      {
+        "trait_type": "Glitter",
+        "value": "None"
+      },
+      {
+        "trait_type": "Horn",
+        "value": "Golden Horn"
+      },
+      {
+        "trait_type": "Special",
+        "value": "Yes"
+      },
+      {
+        "trait_type": "Origin Chain",
+        "value": "BNB Chain"
+      },
+      {
+        "trait_type": "Opening Network",
+        "value": "Binance Smart Chain"
+      },
+      {
+        "trait_type": "Last metadata update",
+        "value": 1790032171,
+        "display_type": "date"
+      }
+    ],
+    "background_color": "FFFFFF",
+    "description": "Hailing from the beautiful city of Kyiv, the Ukrainian Unidonkey has devoted its life to ensuring harmony and liberty for all. Adorned in the blue and yellow colors of its motherland, it acts as a shining symbol for all who support peace and unity in the world.",
+    "external_url": "https://polkamon.com/polkamon/T01C00H01B54G00",
+    "id": "20",
+    "type": "ukrainianUnidonkey",
+    "origin": "GEN1_UKRAINIAN_UNIDONKEY",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmaubHZNvC5gLFDwyA6e7RVtPeFxf3n3J4ejadTkyD7jzG",
+    "code": "T01C00H01B54G00",
+    "initialProbabilities": {
+      "horn": 1,
+      "color": 1,
+      "background": 1,
+      "glitter": 1,
+      "type": 1
+    },
+    "name": "Ukrainian Unidonkey",
+    "txHash": "",
+    "minted": true,
+    "bridged": false,
+    "chain": "bsc",
+    "chainGroup": "BSC",
+    "originChain": "bsc",
+    "originChainGroup": "BSC",
+    "nftContract": "polychainmonsters",
+    "opening_network": "Binance Smart Chain",
+    "ownerSince": "2022-08-08T01:36:13.000Z",
+    "gameData": {
+      "version": "v4",
+      "score": 6,
+      "pFactor": 1.7782,
+      "health": 127,
+      "water": 144,
+      "fire": 100,
+      "earth": 153,
+      "wind": 153,
+      "sum": 678
+    }
+  },
+  "metadataUpdatedAt": 1790032171,
+  "comparison": {
+    "match": true,
+    "httpStatus": 200
+  }
+}
