@@ -75,7 +75,7 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 4);
+  assert.equal(tables.length, 5);
   const database = createDatabase({ common, namespace, preBuild, schemaBuild });
   await database.migrateSync();
   await database.migrate({
@@ -184,7 +184,7 @@ try {
       SELECT oid FROM pg_class WHERE relnamespace = 'dependency_check'::regnamespace
     ) AND NOT tgisinternal
   `);
-  assert.equal(triggers.rowCount, 9);
+  assert.equal(triggers.rowCount, 11);
   assert.ok(triggers.rows.every((row) => row.tgenabled === "O"));
   await writeBlock(1, "ethereum", 3);
   const journal = await client.query(

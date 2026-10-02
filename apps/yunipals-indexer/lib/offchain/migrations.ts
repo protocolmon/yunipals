@@ -1,5 +1,6 @@
 import { archiveMigrations } from "../metadata/source/schema.js";
 import { publicationMigrations } from "../metadata/publication-schema.js";
+import { islandsMigrations } from "../islands/schema.js";
 
 export const migrations = [
   `CREATE SCHEMA IF NOT EXISTS metadata`,
@@ -183,5 +184,6 @@ export const migrations = [
   `CREATE INDEX IF NOT EXISTS token_rarity_content_idx
     ON metadata.token_rarity(formula_version, metadata_content_hash)`,
   ...archiveMigrations,
-  ...publicationMigrations
+  ...publicationMigrations,
+  ...islandsMigrations
 ] as const;

@@ -1,8 +1,11 @@
 import { createConfig } from "ponder";
-import { collectionAbi } from "./lib/abi.js";
-import { collections } from "./lib/constants.js";
+import { collectionAbi, islandsAbi } from "./lib/abi.js";
+import { collections, islandCollection } from "./lib/constants.js";
 import { baseRpcUrlOf, polygonRpcUrlOf } from "./lib/rpc.js";
 
+if (process.env.PONDER_ISLANDS_ONLY === "true") {
+  throw new Error("PONDER_ISLANDS_ONLY requires --config ponder.islands.config.ts");
+}
 const ethereumRpcUrl = process.env.PONDER_RPC_URL_1;
 const baseRpcUrl = baseRpcUrlOf();
 const polygonRpcUrl = polygonRpcUrlOf();
@@ -28,6 +31,12 @@ export default createConfig({
     }
   },
   contracts: {
+    YunipalsIslands: {
+      chain: "mainnet",
+      abi: islandsAbi,
+      address: islandCollection.address,
+      startBlock: islandCollection.deploymentBlock
+    },
     YunipalsEthereum: {
       chain: "mainnet",
       abi: collectionAbi,

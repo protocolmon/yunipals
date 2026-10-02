@@ -1,12 +1,12 @@
 import { ponder } from "ponder:registry";
 import schema from "ponder:schema";
-import { collections, ZERO_ADDRESS, type CollectionSlug } from "../lib/constants.js";
+import { indexedCollections, islandCollection, type CollectionId, type CollectionSlug } from "../lib/constants.js";
+import { transferEventId as eventId, transferState } from "../lib/ownership/transfer.js";
 
-const eventId = (collection: CollectionSlug, transactionHash: string, logIndex: number) =>
-  `${collection}:${transactionHash}:${logIndex}`;
+type MonsterContract = "YunipalsEthereum" | "YunipalsBase" | "YunipalsPolygon";
 
-function registerCollection(contract: "YunipalsEthereum" | "YunipalsBase" | "YunipalsPolygon", collection: CollectionSlug) {
-  const definition = collections[collection];
+function registerTransfers(contract: MonsterContract | "YunipalsIslands", collection: CollectionId) {
+  const definition = indexedCollections[collection];
 
   ponder.on(`${contract}:Transfer`, async ({ event, context }) => {
     const transactionHash = event.transaction.hash;
@@ -15,11 +15,8 @@ function registerCollection(contract: "YunipalsEthereum" | "YunipalsBase" | "Yun
     const from = event.args.from.toLowerCase() as `0x${string}`;
     const to = event.args.to.toLowerCase() as `0x${string}`;
     const existing = await context.db.find(schema.token, { collection, tokenId });
-    const isMint = from === ZERO_ADDRESS;
-    const isBurn = to === ZERO_ADDRESS;
-    const lifecycle = isMint ? (existing?.lifecycle ?? 0) + 1 : existing?.lifecycle;
-
-    if (!lifecycle) throw new Error(`Transfer before mint for ${collection} token ${tokenId}`);
+    const state = transferState(existing, from, to, event.block);
+    const { isMint, isBurn, lifecycle } = state;
 
     if (isMint) {
       await context.db.insert(schema.tokenLifecycle).values({
@@ -39,11 +36,11 @@ function registerCollection(contract: "YunipalsEthereum" | "YunipalsBase" | "Yun
     const values = {
       chainId: definition.chainId,
       contractAddress: definition.address,
-      owner: to,
-      burned: isBurn,
+      owner: state.owner,
+      burned: state.burned,
       lifecycle,
-      mintBlock: isMint ? event.block.number : existing!.mintBlock,
-      mintTimestamp: isMint ? event.block.timestamp : existing!.mintTimestamp,
+      mintBlock: state.mintBlock,
+      mintTimestamp: state.mintTimestamp,
       lastTransferBlock: event.block.number,
       lastTransferTimestamp: event.block.timestamp,
       lastTransactionHash: transactionHash
@@ -58,6 +55,11 @@ function registerCollection(contract: "YunipalsEthereum" | "YunipalsBase" | "Yun
     });
   });
 
+}
+
+function registerCollection(contract: MonsterContract, collection: CollectionSlug) {
+  registerTransfers(contract, collection);
+  const definition = indexedCollections[collection];
   for (const [name, granted] of [["RoleGranted", true], ["RoleRevoked", false]] as const) {
     ponder.on(`${contract}:${name}`, async ({ event, context }) => {
       const transactionHash = event.transaction.hash;
@@ -72,6 +74,23 @@ function registerCollection(contract: "YunipalsEthereum" | "YunipalsBase" | "Yun
   }
 }
 
-registerCollection("YunipalsEthereum", "ethereum");
-registerCollection("YunipalsBase", "base");
-registerCollection("YunipalsPolygon", "polygon");
+if (process.env.PONDER_ISLANDS_ONLY !== "true") {
+  registerCollection("YunipalsEthereum", "ethereum");
+  registerCollection("YunipalsBase", "base");
+  registerCollection("YunipalsPolygon", "polygon");
+}
+registerTransfers("YunipalsIslands", islandCollection.slug);
+
+ponder.on("YunipalsIslands:OwnershipTransferred", async ({ event, context }) => {
+  await context.db.insert(schema.contractOwnerEvent).values({
+    id: eventId(islandCollection.slug, event.transaction.hash, event.log.logIndex),
+    collection: islandCollection.slug,
+    chainId: islandCollection.chainId,
+    contractAddress: islandCollection.address,
+    previousOwner: event.args.previousOwner.toLowerCase() as `0x${string}`,
+    newOwner: event.args.newOwner.toLowerCase() as `0x${string}`,
+    blockNumber: event.block.number,
+    transactionHash: event.transaction.hash,
+    logIndex: event.log.logIndex
+  });
+});

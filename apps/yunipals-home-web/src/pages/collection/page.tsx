@@ -89,6 +89,10 @@ import {
   type TokenAttribute
 } from "@/lib/yunipalsIndexer";
 
+import { CollectionTabs } from "./CollectionTabs";
+import { IslandDetail } from "./islands/IslandDetail";
+import { IslandsExplorer } from "./islands/IslandsExplorer";
+
 function attributeValue(attribute: TokenAttribute) {
   if (
     attribute.display_type === "date" &&
@@ -1099,7 +1103,26 @@ export function CollectionPage() {
   const { chain, tokenId } = useParams();
   const { search, hash } = useLocation();
 
-  if (!tokenId) return <CollectionExplorer />;
+  const islandsSelected =
+    chain === "ethereum-islands" ||
+    (!tokenId && new URLSearchParams(search).get("collection") === "islands");
+
+  if (islandsSelected) {
+    return (
+      <>
+        <CollectionTabs selected="islands" />
+        {tokenId ? <IslandDetail tokenId={tokenId} /> : <IslandsExplorer />}
+      </>
+    );
+  }
+  if (!tokenId) {
+    return (
+      <>
+        <CollectionTabs selected="yunipals" />
+        <CollectionExplorer />
+      </>
+    );
+  }
   if (!chain) {
     return (
       <Navigate

@@ -1,3 +1,5 @@
+import { islandsOpenApiPaths } from "./islands-openapi.js";
+
 export const openApiDocument = {
   openapi: "3.1.0",
   info: {
@@ -19,6 +21,7 @@ export const openApiDocument = {
     { name: "Leaderboards" }
   ],
   paths: {
+    ...islandsOpenApiPaths,
     "/v1/indexing-status": {
       get:{tags:["Operations"],summary:"Read explicit chain recovery readiness",
         description:"Reports rebuilding/failed chains and verified recovery checkpoints. During recovery, affected ownership, visibility and derived-data routes return 503; unrelated chains and immutable archive reads remain available.",

@@ -11,7 +11,8 @@ collection. Buying and selling are optional features within the web app.
   traits and token histories, view collector profiles and rankings, and manage
   your own NFTs. Optional listing and purchase actions use your wallet.
 - [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
-  ownership, metadata, rarity, collector, and leaderboard reads. Its single BNB
+  ownership, metadata, rarity, collector, and leaderboard reads, plus
+  [Ethereum Islands ownership and metadata](docs/islands-indexing.md). Its single BNB
   worker rebuilds ownership, transfers and burn/recreation history from public
   chain events.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,

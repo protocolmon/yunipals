@@ -13,7 +13,7 @@ import { cors } from "hono/cors";
 import { z } from "zod";
 import type { Address, Hex } from "viem";
 import { apiPool as pool } from "../offchain/db.js";
-import { bnbSchema, physicalPonderSchema, ponderSchema, readSchemaName } from "../offchain/sql.js";
+import { bnbSchema, physicalPonderSchema, physicalPonderSchemaName, ponderSchema, readSchemaName } from "../offchain/sql.js";
 import { docsHtml, openApiDocument } from "./openapi.js";
 import { scoreFormula, scoreVersion } from "../leaderboard/refresh.js";
 import { collectionSlugs, collections, type CollectionSlug } from "../constants.js";
@@ -29,6 +29,7 @@ import { chainSelection, chainSelectionJson } from "./chains.js";
 
 import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
+import { registerIslandsRoutes } from "./islands-routes.js";
 
 export const app = new Hono();
 const localMetadata = new LocalMetadataReader(pool, readSchemaName);
@@ -179,6 +180,7 @@ app.get("/docs/openapi.json", (c) => c.json(openApiDocument));
 app.get("/openapi.json", (c) => c.json(openApiDocument));
 
 app.get("/health", (c) => c.json({ status: "ok" }));
+registerIslandsRoutes(app, { pool, schemaName: physicalPonderSchemaName });
 
 app.get("/ready", async (c) => {
   try {

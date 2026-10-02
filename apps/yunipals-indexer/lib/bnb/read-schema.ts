@@ -10,6 +10,7 @@ export const bnbReadSchemaStatements = [
     SELECT collection, chain_id, contract_address, token_id, owner, burned, lifecycle,
       mint_block, mint_timestamp, last_transfer_block, last_transfer_timestamp, last_transaction_hash
     FROM ${physicalPonderSchema}.token
+    WHERE collection IN ('ethereum','base','polygon')
     UNION ALL
     SELECT collection, chain_id, contract_address, token_id, owner, burned, lifecycle,
       mint_block, mint_timestamp, last_transfer_block, last_transfer_timestamp, last_transaction_hash
@@ -18,6 +19,7 @@ export const bnbReadSchemaStatements = [
     SELECT collection, token_id, lifecycle, minted_to, mint_block, mint_timestamp,
       mint_transaction_hash, burned_at_block, burned_at_timestamp, burn_transaction_hash
     FROM ${physicalPonderSchema}.token_lifecycle
+    WHERE collection IN ('ethereum','base','polygon')
     UNION ALL
     SELECT collection, token_id, lifecycle, minted_to, mint_block, mint_timestamp,
       mint_transaction_hash, burned_at_block, burned_at_timestamp, burn_transaction_hash
@@ -26,6 +28,7 @@ export const bnbReadSchemaStatements = [
     SELECT id, collection, chain_id, contract_address, token_id, lifecycle, "from", "to",
       block_number, block_timestamp, transaction_hash, transaction_index, log_index
     FROM ${physicalPonderSchema}.transfer_event
+    WHERE collection IN ('ethereum','base','polygon')
     UNION ALL
     SELECT id, collection, chain_id, contract_address, token_id, lifecycle, "from", "to",
       block_number, block_timestamp, transaction_hash, transaction_index, log_index
@@ -34,6 +37,7 @@ export const bnbReadSchemaStatements = [
     SELECT id, collection, chain_id, contract_address, role, account, sender, granted,
       block_number, transaction_hash, log_index
     FROM ${physicalPonderSchema}.admin_role_event
+    WHERE collection IN ('ethereum','base','polygon')
     UNION ALL
     SELECT id, collection, chain_id, contract_address, role, account, sender, granted,
       block_number, transaction_hash, log_index
