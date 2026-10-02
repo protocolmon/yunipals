@@ -6,7 +6,7 @@ import { metadataRetry } from "./retry.js";
 import { createPublicClient, http, parseAbi } from "viem";
 import { base, bsc, polygon } from "viem/chains";
 import { collectionAbi } from "../abi.js";
-import { collections, type CollectionSlug } from "../constants.js";
+import { collections, collectionSlugs, type CollectionSlug } from "../constants.js";
 import { baseRpcUrlOf, bnbRpcUrlOf, polygonRpcUrlOf } from "../rpc.js";
 import { metadataFetchUrl } from "../uri/fetch-url.js";
 import { safeErrorMessage } from "../safe-error.js";
@@ -41,7 +41,7 @@ async function enqueueLifecycles() {
       JOIN ${ponderSchema}.token t ON t.collection=l.collection AND t.token_id=l.token_id
       LEFT JOIN metadata.token_metadata m ON m.collection=l.collection
         AND m.token_id=l.token_id::numeric AND m.lifecycle=l.lifecycle
-      WHERE m.token_id IS NULL LIMIT 10000
+      WHERE m.token_id IS NULL AND l.collection=ANY($1::text[]) LIMIT 10000
     )
     INSERT INTO metadata.token_metadata(collection, token_id, lifecycle, token_uri, uri_provenance, audit_status)
     SELECT collection, token_id::numeric, lifecycle,
@@ -50,7 +50,7 @@ async function enqueueLifecycles() {
       CASE WHEN collection='ethereum' THEN 'current_base_formula' ELSE 'pending_token_uri_call' END,
       CASE WHEN collection='ethereum' THEN 'sample_verified' ELSE 'onchain_resolved' END
     FROM candidates ON CONFLICT DO NOTHING
-  `);
+  `, [collectionSlugs]);
   const inserted = result.rowCount ?? 0;
   if (inserted < 10000) nextEnqueueAt = Date.now() + enqueueIdleMs;
   return inserted;

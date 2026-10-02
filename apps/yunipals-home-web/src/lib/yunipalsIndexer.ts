@@ -318,6 +318,8 @@ function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
   return requestJson<T>(path, { signal });
 }
 
+export { getJson as fetchIndexerJson };
+
 function queryString(
   values: Record<string, string | number | boolean | undefined>
 ) {

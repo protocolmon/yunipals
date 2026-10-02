@@ -21,7 +21,9 @@
     "test:marketplace:activity": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-activity-ui.mjs",
     "test:marketplace:safe": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-safe-fork.mjs",
     "test:marketplace:opensea": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-fork.mjs",
-    "test:marketplace:opensea-ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-ui.mjs"
+    "test:marketplace:opensea-ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-ui.mjs",
+    "test:islands": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/islandsIndexer.test.ts",
+    "test:islands:ui": "node scripts/test-islands-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

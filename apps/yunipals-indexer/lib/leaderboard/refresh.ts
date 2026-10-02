@@ -100,8 +100,9 @@ async function refreshTraitIndexLegacy() {
           count(*) FILTER (WHERE NOT COALESCE(s.metadata_available,false))::int, $2
         FROM ${ponderSchema}.token t LEFT JOIN metadata.token_search_build s
           ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
-        WHERE NOT t.burned AND ($1 = 'all' OR t.collection = ANY(string_to_array($1, '+')))
-      `, [scope, updatedAt]);
+        WHERE NOT t.burned AND t.collection=ANY($3::text[])
+          AND ($1 = 'all' OR t.collection = ANY(string_to_array($1, '+')))
+      `, [scope, updatedAt, collectionSlugs]);
     }
     await client.query(`
 -- Execute in the metadata rebuild transaction before its table-name swap.
@@ -214,12 +215,12 @@ export async function refreshLeaderboard() {
         FROM scopes s JOIN ${ponderSchema}.token t ON s.scope='all' OR t.collection = ANY(string_to_array(s.scope, '+'))
         LEFT JOIN token_traits x ON x.collection=t.collection
           AND x.token_id=t.token_id::numeric AND x.lifecycle=t.lifecycle
-        WHERE NOT t.burned GROUP BY s.scope, lower(t.owner)
+        WHERE NOT t.burned AND t.collection=ANY($4::text[]) GROUP BY s.scope, lower(t.owner)
       )
       SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
         round((1000*ln(1+total_rarity) + 50*monster_count + 500*unique_types + 750*special_count + 250*glitter_count)::numeric, 4),
         $1, $2 FROM aggregates
-    `, [scoreVersion, updatedAt, collectionScopes]);
+    `, [scoreVersion, updatedAt, collectionScopes, collectionSlugs]);
     await client.query("DELETE FROM leaderboard.wallet_stats");
     await client.query(`INSERT INTO leaderboard.wallet_stats(scope, owner, monster_count, total_rarity,
       unique_types, special_count, glitter_count, collector_score, score_version, updated_at)

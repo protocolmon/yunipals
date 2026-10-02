@@ -72,7 +72,7 @@
     "build:web": "pnpm --filter @protopals/yunipals-home-web build",
     "build:api": "pnpm --filter @protopals/yunipals-market-api build",
     "test": "pnpm test:dependencies && pnpm test:web && pnpm test:api && pnpm test:indexer",
-    "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:marketplace",
+    "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:islands && pnpm --filter @protopals/yunipals-home-web test:marketplace",
     "test:api": "pnpm --filter @protopals/yunipals-market-api test",
     "test:indexer": "pnpm --filter @protopals/yunipals-indexer test",
     "test:bnb-indexer": "pnpm --filter @protopals/yunipals-indexer bnb:test",

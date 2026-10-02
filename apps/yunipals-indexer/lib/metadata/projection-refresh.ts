@@ -246,7 +246,7 @@ export async function refreshProjectionGeneration() {
         FROM ${ponderSchema}.token t LEFT JOIN metadata_projection.search s
           ON s.generation_id=$1 AND s.collection=t.collection
             AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
-        WHERE NOT t.burned GROUP BY t.collection
+        WHERE NOT t.burned AND t.collection IN ('ethereum','base','polygon','bnb') GROUP BY t.collection
       )
       SELECT $1::bigint,scope.scope,true,sum(c.available)::int,sum(c.missing)::int,$3
       FROM unnest($2::text[]) AS scope(scope) CROSS JOIN per_collection c

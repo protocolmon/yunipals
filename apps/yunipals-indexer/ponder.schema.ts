@@ -62,3 +62,15 @@ export const adminRoleEvent = onchainTable("admin_role_event", (t) => ({
   transactionHash: t.hex("transaction_hash").notNull(),
   logIndex: t.integer("log_index").notNull()
 }), (table) => ({ accountIdx: index().on(table.account), roleIdx: index().on(table.role) }));
+
+export const contractOwnerEvent = onchainTable("contract_owner_event", (t) => ({
+  id: t.text().primaryKey(),
+  collection: t.text().notNull(),
+  chainId: t.integer("chain_id").notNull(),
+  contractAddress: t.hex("contract_address").notNull(),
+  previousOwner: t.hex("previous_owner").notNull(),
+  newOwner: t.hex("new_owner").notNull(),
+  blockNumber: t.bigint("block_number").notNull(),
+  transactionHash: t.hex("transaction_hash").notNull(),
+  logIndex: t.integer("log_index").notNull()
+}), (table) => ({ collectionIdx: index().on(table.collection, table.blockNumber, table.logIndex) }));

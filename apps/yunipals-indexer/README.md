@@ -1,6 +1,10 @@
 # Yunipals indexer
 
 This workspace app contains the four-chain collection indexer and its HTTP API.
+It also indexes the Ethereum Islands collection as `ethereum-islands`, with
+separate metadata publication and collection-scoped v2 reads. See the
+[Islands rollout guide](../../docs/islands-indexing.md) for candidate replay,
+full ownership verification, worker setup, read grants and activation.
 Ponder indexes Ethereum, Base, and Polygon. **One BNB worker**, at
 `lib/bnb/worker.ts`, indexes BNB ownership, lifecycle, transfer, and role events
 into `bnb_indexer`. It starts at block 7,579,197 and requires 20 confirmations
