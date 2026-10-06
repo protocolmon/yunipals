@@ -53,7 +53,8 @@ try {
     for (const name of [
       "yunipals_bnb_test",
       "yunipals_rarity_test",
-      "yunipals_ponder_dependency_test"
+      "yunipals_ponder_dependency_test",
+      "exomon_test_ci"
     ]) {
       const result = await client.query(
         "SELECT 1 FROM pg_database WHERE datname=$1",

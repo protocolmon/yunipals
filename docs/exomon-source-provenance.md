@@ -7,7 +7,9 @@ snapshot `/opt/yunipals/releases/f0bd9a0`. The indexer app's `lib`, `scripts`,
 `/opt/yunipals/releases/9a2bb8a-read-api`, which contains later projection,
 read-cache, and query-capacity fixes. The baseline is local commit `4ddd582`.
 
-The resulting feature branch is a complete reviewable source tree, but it has
-no configured Git remote. Do not treat the local commit hash as an upstream
-monorepo commit. Reconcile this branch with the authoritative repository when
-it becomes available, preserving the deployed API fixes and the Exomon port.
+The resulting development branch had no configured Git remote. Its local
+commit hashes are not upstream monorepo commits. The public release branch was
+created from `protocolmon/yunipals` main at `b592658`, then the Exomon commits
+were ported onto that history. The public branch already contained the deployed
+API projection, read-cache, and query-capacity fixes, as well as the newer
+Islands feature and CI. Those upstream changes were preserved during the port.

@@ -11,10 +11,10 @@ same branch or pull request.
 | Check name             | Coverage                                                                                                                                           |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Typecheck              | All three applications through `pnpm typecheck`                                                                                                    |
-| Unit tests             | Wallet dependency regressions, frontend collector/marketplace tests, synthetic fixtures, indexer unit tests, offline legacy metadata/rarity parity |
-| Build                  | Self-hosted web build and marketplace API/worker bundles; verifies expected outputs and uploads them for seven days                                |
+| Unit tests             | Wallet dependency regressions, frontend collector/marketplace/Islands/Exomon tests, synthetic fixtures, indexer unit tests, offline legacy metadata/rarity parity |
+| Build                  | Self-hosted web build with Exomon enabled and marketplace API/worker bundles; verifies expected outputs and uploads them for seven days                                |
 | Marketplace PostgreSQL | Complete marketplace suite with schema migrations and a separate restricted runtime role, including catalog snapshot and connection lease checks   |
-| Indexer PostgreSQL     | Single BNB writer fixture, rarity/cache pagination and invalidation parity, real Ponder dependency/reorg compatibility                             |
+| Indexer PostgreSQL     | Single BNB writer fixture, rarity/cache pagination and invalidation parity, real Ponder dependency/reorg compatibility, Exomon snapshot/API parity |
 | Secret scan            | Reachable commit history, source tree, and each extracted vendor archive                                                                           |
 
 The indexer runs directly from TypeScript. Its typecheck and real Ponder build
@@ -23,12 +23,14 @@ compatibility test are its build checks; it has no standalone `build` script.
 Each PostgreSQL job gets a separate PostgreSQL 16 service container with only
 local fixture credentials. The runner connects through `127.0.0.1`; this also
 satisfies the existing tests' loopback/database-name guards. Indexer suites use
-three separate databases so schema resets cannot affect the other suites.
+four separate databases so schema resets cannot affect the other suites.
 Market tests use `market_test_owner` for migrations and `market_test_runtime`
 for API reads/writes. CI does not need deployment secrets, production databases,
 live wallets, OpenSea keys, or live chain RPC credentials.
 
-Tests that explicitly use Anvil/provider forks are outside these required checks.
+The Exomon PostgreSQL suite uses synthetic observations, not Helius or live
+Solana RPC. Tests that explicitly use Anvil/provider forks are outside these
+required checks.
 The BNB worker check serves its own fake RPC. The optional collector benchmark
 remains skipped unless its fixture is supplied.
 
@@ -79,6 +81,7 @@ pnpm test:web
 pnpm test:fixtures
 pnpm test:indexer
 VITE_SELF_HOSTED=1 \
+  VITE_EXOMON_ENABLED=true \
   VITE_YUNIPALS_INDEXER_URL=https://indexer.example.test \
   VITE_YUNIPALS_MARKETPLACE_URL=https://market.example.test \
   pnpm build
@@ -91,7 +94,7 @@ runtime role using `MARKET_TEST_DATABASE_URL`.
 
 For the indexer job, supply `CI_POSTGRES_ADMIN_URL` for a disposable loopback
 PostgreSQL server's `postgres` database as `indexer_test_owner` and run
-`node .github/scripts/setup-test-databases.mjs indexer`. Then use the three
+`node .github/scripts/setup-test-databases.mjs indexer`. Then use the four
 database URLs and suite commands from `.github/workflows/ci.yml`.
 
 Run `bash .github/scripts/scan-secrets.sh` on a clean source checkout without

@@ -48,8 +48,9 @@ The preceding notes describe the earlier monorepo snapshot. The Exomon feature
 was developed in the local reconstructed worktree `/root/yunipals-exomon` on
 `feature/exomon-solana`, starting from deployed monorepo release `f0bd9a0` and
 overlaying the later deployed API implementation `9a2bb8a-read-api`. The core
-feature is local commit `320687b`; the authoritative upstream Git checkout was
-unavailable. See `/root/yunipals-exomon/docs/exomon-source-provenance.md` for
-reconciliation details. The runtime artifact is
+feature is local commit `320687b`. It was then ported onto the public
+`protocolmon/yunipals` main history; see
+[Exomon source provenance](../../docs/exomon-source-provenance.md) for details.
+The runtime artifact is
 `/opt/yunipals/releases/exomon-20261005-v1`. Its inherited
 `capacity-release.json` describes the API base, not the Exomon feature.

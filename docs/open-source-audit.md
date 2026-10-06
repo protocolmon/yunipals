@@ -112,3 +112,36 @@ history. It is now configurable via `VITE_WALLETCONNECT_PROJECT_ID`; production
 Vercel builds require it. Control allowed client origins in Reown. Original-code
 and asset licensing, sample fixtures, and Vercel configuration were completed in
 `8d3cf46` before this dependency remediation.
+
+## Exomon addition — 6 October 2026
+
+The September audit above did not include the collection indexer. The Exomon
+release adds a Solana worker, API routes, frontend pages and fixtures to the
+public `protocolmon/yunipals` repository. Its implementation was reconstructed
+from deployed artifacts, then ported onto the current upstream main. The three
+vendored Polkamon archives were already present in the public repository and
+are byte-for-byte unchanged by the Exomon branch.
+
+Each vendored archive declares `UNLICENSED` in both `package.json` and
+`LICENSE.md`: `@polkamon/util-essentials` 27.3.3,
+`@polkamon/web3-util-core` 30.8.3 and `@polkamon/web3-util-pmons` 31.15.1.
+The [source provenance](../apps/yunipals-indexer/SOURCE_PROVENANCE.md) records
+their checksums and role in metadata rendering. No redistribution permission
+for these archives is recorded in this audit. Their existing public presence
+does not establish redistribution permission; the repository owner should
+confirm permission or replace them. The earlier owner confirmation for Yunipals
+artwork does not cover these packages.
+
+A local candidate scan on 6 October covered all seven commits in this
+reconstructed branch and the staged text tree. It found example and test
+PostgreSQL URLs, including the CI fixture, but no private-key headers,
+recognized GitHub token patterns or filled provider-key assignments. It did
+not inspect binary archives as text or any upstream refs, and is not a full
+secret audit of the eventual public repository.
+
+The existing CI secret scan covers reachable history, source, and extracted
+vendor archives on the public release branch. Confirm the published tree
+contains only example environment files and portable service templates;
+production databases, archive data, backups and server credentials remain
+outside Git. The September counts and advisory result are not current evidence
+for the Exomon branch; use the release branch's CI results for acceptance.

@@ -2,8 +2,19 @@ import assert from "node:assert/strict";
 import { Hono } from "hono";
 
 const url = process.env.EXOMON_TEST_DATABASE_URL;
-if (!url || !new URL(url).pathname.startsWith("/exomon_test_")) {
-  throw new Error("EXOMON_TEST_DATABASE_URL must name an exomon_test_ database");
+let parsed = null;
+try {
+  parsed = url ? new URL(url) : null;
+} catch {
+  // Report the required fixture shape without echoing the supplied URL.
+}
+if (
+  !parsed ||
+  !["postgres:", "postgresql:"].includes(parsed.protocol) ||
+  !/^\/exomon_test_[a-z0-9_]+$/.test(parsed.pathname) ||
+  !["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname)
+) {
+  throw new Error("EXOMON_TEST_DATABASE_URL must point to a loopback exomon_test_ database");
 }
 process.env.DATABASE_URL = url;
 process.env.SOLANA_API_ENABLED = "true";
