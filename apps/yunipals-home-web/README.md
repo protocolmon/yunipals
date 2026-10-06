@@ -1,9 +1,10 @@
 # Yunipals web app
 
-Vite, React and TypeScript collection explorer for Yunipals across four chains.
-Browse traits, rarity, ownership and transfer history, collector profiles and
-rankings. Wallet-based collection management and optional listing/purchase
-flows are integrated into the app.
+Vite, React and TypeScript collection explorer for Yunipals across four EVM
+chains and Exomon on Solana. Browse traits, rarity, ownership, collector
+profiles and rankings. Wallet-based collection management and optional
+listing/purchase flows apply to the EVM collections only. Exomon views are
+read-only and show observed ownership changes, not a complete transfer history.
 
 ## Local development
 
@@ -13,11 +14,17 @@ to `.env.local` in this directory and configure your local services.
 ```sh
 pnpm dev
 pnpm typecheck
+pnpm test:solana
 pnpm test:marketplace
 pnpm build
 ```
 
 `VITE_YUNIPALS_INDEXER_URL` supplies collection/ownership data.
+The Exomon views use only this indexer API. The Helius key stays on the indexer
+server and must never be placed in a `VITE_` variable. Set
+`VITE_EXOMON_ENABLED=true` to show the Exomon routes and navigation in a
+frontend rollout; they stay hidden without it, except in fixture mode. The API must have its Solana
+routes enabled and a fresh published scan before these views can serve data.
 `VITE_YUNIPALS_MARKETPLACE_URL` enables optional listing and purchase features.
 Both values are public; credentials belong in the backend only.
 Set `VITE_SELF_HOSTED=1` for an independent deployment. Its build requires
@@ -44,7 +51,8 @@ in place of the public project ID. See
 From the repository root, run `pnpm dev:fixtures`. Open `http://127.0.0.1:5177`.
 No `.env.local`, database or provider credentials are needed. This mode overrides
 service URLs and the wallet project ID, serves local synthetic reads and disables
-wallet connections and trading. It is development-only: builds in `fixtures`
+wallet connections and trading. It includes synthetic Exomon tokens and Solana
+collector rankings. It is development-only: builds in `fixtures`
 mode fail. See [the fixture guide](scripts/fixtures/README.md).
 
 ## Personal collection filters
@@ -59,6 +67,19 @@ Validate them against your own database before enabling their feature switches.
 The existing owner API remains available
 when the controls are disabled. See the [performance evidence](../../docs/personal-collection-performance.json)
 for the local benchmark's scope and production validation.
+
+## Exomon on Solana
+
+`/exomon` lists active Exomon with Type, Color and other categorical filters,
+capped-rarity range and sorting. `/collection/solana/:mint` shows token details,
+`/collector/solana/:address` shows current holdings, and
+`/leaderboard?chain=solana` shows the Solana rankings. Mint and wallet addresses
+are base58 public keys and preserve case. Collection and owner pages request 24
+items at a time, retaining at most five page responses in memory. An expired
+cursor resets paging to the first page after the next published scan.
+
+Run `pnpm test:solana` for URL, client and fixture checks. In fixture mode,
+visit `/exomon`; no Solana RPC or Helius credential is used by the browser.
 
 Run `pnpm test:collector` for client/filter/cache tests. In fixture mode, visit
 `/collector/0x000000000000000000000000000000000000000c` for a synthetic 128-item

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { Footer } from "@/components/Footer";
@@ -17,6 +17,27 @@ import { TermsPage } from "@/pages/legal/TermsPage";
 import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
+
+const ExomonCollectionPage = lazy(() =>
+  import("@/pages/exomon/ExomonCollectionPage").then((module) => ({
+    default: module.ExomonCollectionPage
+  }))
+);
+const ExomonCollectorPage = lazy(() =>
+  import("@/pages/exomon/ExomonCollectorPage").then((module) => ({
+    default: module.ExomonCollectorPage
+  }))
+);
+const ExomonDetailPage = lazy(() =>
+  import("@/pages/exomon/ExomonDetailPage").then((module) => ({
+    default: module.ExomonDetailPage
+  }))
+);
+const ExomonLeaderboardPage = lazy(() =>
+  import("@/pages/exomon/ExomonLeaderboardPage").then((module) => ({
+    default: module.ExomonLeaderboardPage
+  }))
+);
 
 function ScrollManager() {
   const { hash, pathname } = useLocation();
@@ -45,8 +66,26 @@ function CollectionRedirect() {
   return <Navigate to={`/${search}${hash}`} replace />;
 }
 
+function LeaderboardRoute() {
+  const { search } = useLocation();
+  return environment.exomonEnabled &&
+    new URLSearchParams(search).get("chain") === "solana" ? (
+    <ExomonLeaderboardPage />
+  ) : (
+    <LeaderboardPage />
+  );
+}
+
 function AppContent() {
   const { openInformation } = useTradingConsent();
+  const { pathname, search } = useLocation();
+  const exomonView =
+    environment.exomonEnabled &&
+    (pathname === "/exomon" ||
+      pathname.startsWith("/collection/solana/") ||
+      pathname.startsWith("/collector/solana/") ||
+      (pathname === "/leaderboard" &&
+        new URLSearchParams(search).get("chain") === "solana"));
   return (
     <div className="min-h-screen bg-white">
       <ScrollManager />
@@ -60,25 +99,48 @@ function AppContent() {
           connections and trading are disabled.
         </p>
       )}
-      <Routes>
-        <Route path="/" element={<CollectionPage />} />
-        <Route path="/collection" element={<CollectionRedirect />} />
-        <Route
-          path="/collection/:chain/:tokenId"
-          element={<CollectionPage />}
-        />
-        <Route path="/collection/:tokenId" element={<CollectionPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/collector/:address" element={<CollectorPage />} />
-        <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
-        <Route path="/orders/activity" element={<ActivityPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Footer onTradingInformation={openInformation} />
-      <PendingMarketTransactions />
+      <Suspense
+        fallback={
+          <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12 text-sm font-semibold text-muted">
+            Loading Exomon…
+          </main>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<CollectionPage />} />
+          {environment.exomonEnabled && (
+            <Route path="/exomon" element={<ExomonCollectionPage />} />
+          )}
+          <Route path="/collection" element={<CollectionRedirect />} />
+          {environment.exomonEnabled && (
+            <Route
+              path="/collection/solana/:tokenId"
+              element={<ExomonDetailPage />}
+            />
+          )}
+          <Route
+            path="/collection/:chain/:tokenId"
+            element={<CollectionPage />}
+          />
+          <Route path="/collection/:tokenId" element={<CollectionPage />} />
+          <Route path="/leaderboard" element={<LeaderboardRoute />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/collector/:address" element={<CollectorPage />} />
+          {environment.exomonEnabled && (
+            <Route
+              path="/collector/solana/:address"
+              element={<ExomonCollectorPage />}
+            />
+          )}
+          <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
+          <Route path="/orders/activity" element={<ActivityPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+      <Footer onTradingInformation={openInformation} exomonView={exomonView} />
+      {!exomonView && <PendingMarketTransactions />}
     </div>
   );
 }

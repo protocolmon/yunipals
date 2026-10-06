@@ -6,6 +6,7 @@
   "scripts": {
     "dev:fixtures": "vite --mode fixtures --host 127.0.0.1 --port 5177 --strictPort",
     "test:collector": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/collector.test.ts",
+    "test:solana": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/solanaIndexer.test.ts",
     "test:collector:ui": "node scripts/test-collector-ui.mjs",
     "test:fixtures": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test scripts/fixtures/devServer.test.ts",
     "test:dependencies": "node --test scripts/dependencies.test.mjs",

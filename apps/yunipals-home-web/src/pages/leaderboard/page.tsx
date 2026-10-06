@@ -23,6 +23,7 @@ import {
   shortAddress
 } from "@/lib/format";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { environment } from "@/environment";
 import {
   fetchLeaderboard,
   fetchLeaderboardDefinitions,
@@ -232,6 +233,20 @@ export function LeaderboardPage() {
               Refresh
             </button>
           </div>
+
+          {environment.exomonEnabled && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="rounded-full border border-ethereum bg-lavender/40 px-4 py-2 text-sm font-bold text-ink">
+                Yunipals · EVM
+              </span>
+              <Link
+                to="/leaderboard?chain=solana"
+                className="rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink hover:bg-sky/20"
+              >
+                Exomon · Solana
+              </Link>
+            </div>
+          )}
 
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border border-ethereum/10 bg-white/80 p-4 shadow-sm">
