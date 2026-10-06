@@ -24,12 +24,13 @@ export const openApiDocument = {
     ...islandsOpenApiPaths,
     "/v1/indexing-status": {
       get:{tags:["Operations"],summary:"Read explicit chain recovery readiness",
-        description:"Reports rebuilding/failed chains and verified recovery checkpoints. During recovery, affected ownership, visibility and derived-data routes return 503; unrelated chains and immutable archive reads remain available.",
+        description:"Use chain=solana for the Exomon snapshot, unknown-owner count, and metered RPC credit usage. Without that filter, reports EVM rebuilding/failed chains and verified recovery checkpoints.",
+        parameters:[{name:"chain",in:"query",schema:{type:"string",enum:["solana"]},description:"Optional Solana snapshot status selector."}],
         responses:{"200":{description:"Recovery readiness and per-chain state"}}}
     },
     "/legacy-meta/meta": {
       get: { tags:["Legacy metadata"],summary:"Read archived NFT metadata by legacy ID",
-        description:"Available in archive mode after activation. Current ownership is overlaid only when a single live chain binding exists. Multiple live bindings return a null address and X-Metadata-Ownership: chain_ambiguous; use the chain-qualified token API for each owner. Historical unindexed assets are labeled historical_source. The legacy burned-token response remains HTTP 200 with a message and is not valid published metadata.",
+        description:"Available in archive mode after activation. Current ownership is overlaid only when one live EVM or Solana binding exists. Multiple live bindings return a null address and X-Metadata-Ownership: chain_ambiguous; use the chain-qualified token API for each owner. Unknown Solana ownership returns 503. Historical unindexed assets are labeled historical_source. The legacy burned-token response remains HTTP 200 with a message and is not valid published metadata.",
         parameters:[{name:"id",in:"query",required:true,schema:{type:"string"}}],
         responses:{"200":{description:"NFT document or legacy message-only response"},"304":{description:"Unchanged response"},"404":{description:"Unknown NFT"},"503":{description:"Archive unavailable, ownership rebuilding, or binding/chain update requires reconciliation"}} }
     },
@@ -137,7 +138,7 @@ export const openApiDocument = {
       }
     },
     "/v1/collections": {
-      get: { tags: ["Collection"], summary: "List indexed Yunipals collections", responses: { "200": { description: "Chain, contract, and supply details" } } }
+      get: { tags: ["Collection"], summary: "List indexed Yunipals and Exomon collections", responses: { "200": { description: "Chain, contract or network, and supply details" } } }
     },
     "/v1/collector-capabilities": { get: { tags: ["Owners"], summary: "Collector read rollout capabilities", responses: { "200": { description: "version: 1 enables paginated collector filters; namePrefixSearch and rarityRange advertise independently gated support." } } } },
     "/v2/owners/{address}/tokens": {
