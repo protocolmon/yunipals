@@ -27,7 +27,7 @@ describe("multi-chain configuration", () => {
     const paths = openApiDocument.paths as Record<string, any>;
     const tokenParameters = paths["/v1/tokens"].get.parameters;
     expect(tokenParameters.find((parameter: any) => parameter.name === "chain")?.schema.items.enum)
-      .toEqual(["ethereum", "base", "polygon", "bnb"]);
+      .toEqual(["ethereum", "base", "polygon", "bnb", "solana"]);
     expect(tokenParameters.find((parameter: any) => parameter.name === "chain")).toMatchObject({ style: "form", explode: true });
     expect(tokenParameters.find((parameter: any) => parameter.name === "cursor")?.schema.pattern)
       .toBeUndefined();

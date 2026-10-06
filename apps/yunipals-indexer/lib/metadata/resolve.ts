@@ -85,7 +85,19 @@ export class LocalMetadataReader {
           AND token_id=b.token_id AND chain_id::text=b.chain_id AND lower(contract_address)=b.contract_address OFFSET 0) t ON true
       WHERE b.release_id=$1 AND b.asset_key=$2 ORDER BY t.burned,t.collection,t.token_id LIMIT 10`, [release, source.assetKey])).rows;
     const live = bindings.filter(row => !row.burned);
-    if (live.length > 1) {
+    const solana = process.env.SOLANA_LEGACY_METADATA_ENABLED === "true"
+      ? (await this.pool.query(`SELECT a.mint,t.owner,t.burnt,t.observed_at,
+          r.completed_at AS published_at
+          FROM solana_indexer.manifest_asset a
+          LEFT JOIN solana_indexer.token t ON t.mint=a.mint
+          LEFT JOIN solana_indexer.sync_state s ON s.singleton
+          LEFT JOIN solana_indexer.scan_run r ON r.id=s.published_run_id AND r.state='published'
+          WHERE a.release_id=$1 AND a.asset_key=$2`,[release,source.assetKey])).rows[0]
+      : undefined;
+    if (solana && (!solana.published_at || Date.now()-new Date(solana.published_at).getTime()>86_400_000))
+      throw new MetadataUnavailable("solana_ownership_unavailable","retry");
+    const liveSolana = solana && solana.owner && !solana.burnt;
+    if (live.length > 1 || (live.length && liveSolana)) {
       // Legacy URLs are not chain-qualified: both current owners can be correct.
       // Preserve the NFT document, but make no arbitrary address claim.
       for (const binding of live) {
@@ -100,6 +112,13 @@ export class LocalMetadataReader {
       const result = await this.token(live[0].collection, live[0].token_id, variant);
       if (!result?.metadata) throw new MetadataUnavailable(result?.reason ?? "binding_unavailable", "reconciliation_required");
       return { document: result.document!, contentHash: contentHash(result.document), ownership: "indexed_chain", release };
+    }
+    if (solana) {
+      if (!solana.owner && !solana.burnt) throw new MetadataUnavailable("solana_ownership_unavailable","retry");
+      if (solana.burnt) throw new MetadataUnavailable("burned");
+      const snapshot=await this.asset(release,source.assetKey,variant);
+      const document={...snapshot.document,address:solana.owner,ownerSince:null,minted:true};
+      return {document,contentHash:contentHash(document),ownership:"solana_das",release};
     }
     if (bindings.length || source.burned) throw new MetadataUnavailable("burned");
     // Unindexed chains/off-chain assets retain their historical shape and explicit provenance.

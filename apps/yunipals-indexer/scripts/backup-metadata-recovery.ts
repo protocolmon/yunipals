@@ -18,7 +18,10 @@ try{
   const durable=['token_metadata','metadata_revision','token_publication','publication_job','publication_cursor','publication_runtime','chain_event_cursor','token_visibility','wallet_visibility_nonce','ens_identity'].map(name=>`metadata.${name}`);
   const chainTables=[physical,bnb].flatMap(schema=>['token','token_lifecycle','transfer_event','admin_role_event'].map(name=>`${schema}.${name}`));
   chainTables.push(`${bnb}.sync_state`,`${physical}._ponder_checkpoint`,`${physical}._ponder_meta`);
-  const groups={archive:archiveTables,durable,chain_reference:chainTables};
+  const solanaTables=(await client.query(`SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='solana_indexer' AND c.relkind='r' ORDER BY c.relname`)).rows.map(row=>`solana_indexer.${row.relname}`);
+  const groups={archive:archiveTables,durable,chain_reference:chainTables,
+    ...(solanaTables.length?{solana:solanaTables}:{})};
   const tableManifest:Record<string,unknown>={},files:Record<string,unknown>={};
   for(const [group,tables] of Object.entries(groups)){
     console.log(JSON.stringify({phase:'dump',group,tables:tables.length}));
@@ -44,7 +47,7 @@ try{
   await processRun('tar',['-czf',join(output,'node-runtime.tar.gz'),'-C','/opt','node-v24.18.1']);
   for(const name of ['application.tar.gz','dependencies.tar.gz','node-runtime.tar.gz'])files[name]={sha256:await fileHash(join(output,name)),bytes:(await stat(join(output,name))).size};
   const report={format:'metadata-recovery-bundle-v1',createdAt:new Date().toISOString(),release,archiveState:archive[0].state,
-    sourceSchemas:{physical,bnb},files,tables:tableManifest,scope:'Complete archive, bindings, Base evidence/revisions, HTTP history, URI/quarantine evidence, visibility/nonces, complete retained chain-event journals and comparison-only chain projections; code, pinned installed dependencies and Node runtime; no credentials',
+    sourceSchemas:{physical,bnb,...(solanaTables.length?{solana:'solana_indexer'}:{})},files,tables:tableManifest,scope:'Complete archive, bindings, Base evidence/revisions, HTTP history, URI/quarantine evidence, visibility/nonces, complete retained chain-event journals and comparison-only chain projections, plus Solana ownership, scan and credit ledger when installed; code, pinned installed dependencies and Node runtime; no credentials',
     restoreVerified:false,offHostCopyVerified:false};
   await writeReport(join(output,'manifest.json'),report);await writeReport(String(args.report),{...report,output});
   console.log(JSON.stringify({complete:true,output,files:Object.keys(files).length,tables:Object.keys(tableManifest).length}));

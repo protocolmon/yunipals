@@ -5,7 +5,7 @@ export const openApiDocument = {
   info: {
     title: "Yunipals Multi-chain Indexer API",
     version: "1.0.0",
-    description: "Ownership, transfer history, lifecycle, metadata, and signed NFT visibility API for the Yunipals OG collections on Ethereum, Base, Polygon, and BNB. Endpoints include all chains by default and accept an optional chain filter. Token IDs and block numbers are strings because they can exceed JavaScript's safe integer range."
+    description: "Ownership and metadata API for Yunipals on Ethereum, Base, Polygon, BNB and Exomon on Solana. Unfiltered requests cover EVM chains. Solana requires chain=solana alone, after SOLANA_API_ENABLED is activated. Solana ownership is periodically observed; complete transfer history and signed visibility are not available."
   },
   servers: [
     { url: "https://api.yunipals.com/yunipals-indexer", description: "Production" },
@@ -57,7 +57,7 @@ export const openApiDocument = {
         parameters: [
           { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
           { name: "cursor", in: "query", description: "Opaque pagination cursor. Pass nextCursor unchanged.", schema: { type: "string" } },
-          { name: "chain", in: "query", description: "Repeat to select multiple chains. Duplicates and order are ignored; omit to include all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true },
+          { name: "chain", in: "query", description: "Repeat for EVM chains; use chain=solana alone for Exomon. Omit for all EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true },
           { name: "owner", in: "query", description: "Wallet address or ENS name. Names resolve independently for each selected chain.", schema: { type: "string" } },
           { name: "burned", in: "query", schema: { type: "boolean" } },
           { name: "traitType", in: "query", description: "Repeat alongside traitValue", schema: { type: "array", items: { type: "string" } }, style: "form", explode: true, example: ["Type", "Type", "Glitter"] },
@@ -76,7 +76,7 @@ export const openApiDocument = {
       get: {
         tags: ["Tokens"], summary: "Discover active collection trait facets",
         description: "Discovers trait categories dynamically. Categorical traits include collection-wide active-token counts; fully numeric traits include min/max ranges. Burned NFTs are excluded.",
-        parameters: [{ name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true }],
+        parameters: [{ name: "chain", in: "query", description: "Use chain=solana alone for Exomon; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true }],
         responses: { "200": { description: "Trait facets, metadata coverage, and snapshot time", content: { "application/json": { schema: { $ref: "#/components/schemas/TraitFacets" } } } } }
       }
     },
@@ -94,8 +94,8 @@ export const openApiDocument = {
       get: {
         tags: ["Tokens"], summary: "Get one token from a specific chain",
         parameters: [
-          { name: "chain", in: "path", required: true, schema: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } },
-          { name: "tokenId", in: "path", required: true, schema: { type: "string", pattern: "^[0-9]+$" } }
+          { name: "chain", in: "path", required: true, schema: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } },
+          { name: "tokenId", in: "path", required: true, schema: { type: "string", description: "Decimal on EVM; base58 mint on Solana" } }
         ],
         responses: { "200": { description: "Token detail, transfers, and lifecycles" }, "404": { description: "Token not found" } }
       }
@@ -165,14 +165,14 @@ export const openApiDocument = {
         parameters: [
           { name: "address", in: "path", required: true, description: "Wallet address or ENS name", schema: { type: "string" } },
           { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
-          { name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true },
+          { name: "chain", in: "query", description: "Use chain=solana alone with a Solana wallet; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true },
           { name: "visibility", in: "query", description: "Show normal collection items, hidden items, or both. This is public curation data.", schema: { type: "string", enum: ["visible", "hidden", "all"], default: "visible" } },
           { name: "cursor", in: "query", description: "Opaque cursor bound to the chain and visibility filters.", schema: { type: "string" } }
         ],
         responses: { "200": { description: "Owner token page" } }
       }
     },
-    "/v1/leaderboards": { get: { tags: ["Leaderboards"], summary: "List leaderboard definitions and snapshot status", parameters: [{ name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true }], responses: { "200": { description: "Available rankings and collector-score formula" } } } },
+    "/v1/leaderboards": { get: { tags: ["Leaderboards"], summary: "List leaderboard definitions and snapshot status", parameters: [{ name: "chain", in: "query", description: "Use chain=solana alone for Exomon; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true }], responses: { "200": { description: "Available rankings and collector-score formula" } } } },
     "/v1/leaderboards/{metric}": {
       get: {
         tags: ["Leaderboards"], summary: "Get a wallet leaderboard",
@@ -180,7 +180,7 @@ export const openApiDocument = {
         parameters: [
           { name: "metric", in: "path", required: true, schema: { type: "string", enum: ["total-rarity", "monster-count", "unique-types", "special-count", "glitter-count", "collector-score"] } },
           { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
-          { name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true },
+          { name: "chain", in: "query", description: "Use chain=solana alone for Exomon; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true },
           { name: "cursor", in: "query", schema: { type: "string" } }
         ],
         responses: { "200": { description: "Ranked wallet page", content: { "application/json": { schema: { $ref: "#/components/schemas/LeaderboardPage" } } } }, "400": { description: "Invalid cursor" }, "404": { description: "Unknown leaderboard" } }
@@ -189,11 +189,11 @@ export const openApiDocument = {
     "/v1/owners/{address}/leaderboard": {
       get: {
         tags: ["Leaderboards", "Owners"], summary: "Get one wallet's metrics and ranks",
-        parameters: [{ name: "address", in: "path", required: true, description: "Wallet address or ENS name", schema: { type: "string" } }, { name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true }],
+        parameters: [{ name: "address", in: "path", required: true, description: "Wallet address or ENS name", schema: { type: "string" } }, { name: "chain", in: "query", description: "Use chain=solana alone for a Solana wallet; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true }],
         responses: { "200": { description: "Wallet metrics and ranks" }, "404": { description: "Wallet owns no active Yunipals" } }
       }
     },
-    "/v1/collection": { get: { tags: ["Collection"], summary: "Get collection supply counts", parameters: [{ name: "chain", in: "query", description: "Repeat to select multiple chains; omit for all.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] } }, style: "form", explode: true }], responses: { "200": { description: "Collection totals" } } } },
+    "/v1/collection": { get: { tags: ["Collection"], summary: "Get collection supply counts", parameters: [{ name: "chain", in: "query", description: "Use chain=solana alone for Exomon; omit for EVM chains.", schema: { type: "array", items: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] } }, style: "form", explode: true }], responses: { "200": { description: "Collection totals" } } } },
     "/v1/status": { get: { tags: ["Operations"], summary: "Get metadata ingestion status", responses: { "200": { description: "Worker status" } } } },
     "/health": { get: { tags: ["Operations"], summary: "Process liveness", responses: { "200": { description: "Process is running" } } } },
     "/ready": { get: { tags: ["Operations"], summary: "Database readiness", responses: { "200": { description: "API and database are ready" }, "503": { description: "Database unavailable" } } } }
@@ -201,7 +201,7 @@ export const openApiDocument = {
   components: {
     schemas: {
       Attribute: { type: "object", required: ["trait_type", "value"], properties: { trait_type: { type: "string" }, value: {}, display_type: { type: "string" } }, additionalProperties: true },
-      TokenSummary: { type: "object", properties: { chain: { type: "string", enum: ["ethereum", "base", "polygon", "bnb"] }, chainId: { type: "integer" }, contractAddress: { type: "string" }, tokenId: { type: "string" }, owner: { type: "string" }, burned: { type: "boolean" }, lifecycle: { type: "integer" }, mintBlock: { type: "string" }, lastTransferBlock: { type: "string" }, name: { type: ["string", "null"] }, image: { type: ["string", "null"], format: "uri" }, attributes: { type: ["array", "null"], items: { $ref: "#/components/schemas/Attribute" } }, tokenUri: { type: ["string", "null"], format: "uri" }, rarityPoints: { type: ["string", "null"], description: "Uncapped upstream rarity score." }, rarityPointsCapped: { type: ["string", "null"], description: "Capped rarity used by leaderboard scoring; falls back to raw rarity when the upstream document has no cap." } } },
+      TokenSummary: { type: "object", properties: { chain: { type: "string", enum: ["ethereum", "base", "polygon", "bnb", "solana"] }, chainId: { type: ["integer", "null"] }, contractAddress: { type: ["string", "null"] }, tokenId: { type: "string" }, legacyAlias: { type: "string" }, ownershipObservedAt: { type: "string", format: "date-time" }, owner: { type: ["string", "null"] }, burned: { type: "boolean" }, lifecycle: { type: "integer" }, mintBlock: { type: "string" }, lastTransferBlock: { type: "string" }, name: { type: ["string", "null"] }, image: { type: ["string", "null"], format: "uri" }, attributes: { type: ["array", "null"], items: { $ref: "#/components/schemas/Attribute" } }, tokenUri: { type: ["string", "null"], format: "uri" }, rarityPoints: { type: ["string", "null"], description: "Uncapped upstream rarity score." }, rarityPointsCapped: { type: ["string", "null"], description: "Capped rarity used by leaderboard scoring; falls back to raw rarity when the upstream document has no cap." } } },
       TokenPage: { type: "object", required: ["items", "nextCursor", "total"], properties: { items: { type: "array", items: { $ref: "#/components/schemas/TokenSummary" } }, nextCursor: { type: ["string", "null"], description: "Opaque pagination cursor. Pass unchanged as cursor to retrieve the next page." }, total: { type: "integer" } } },
       TraitFacets: {
         type: "object",

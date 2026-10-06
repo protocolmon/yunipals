@@ -26,6 +26,7 @@ import { cachedExactCountSql } from "./cached-exact-count.js";
 import { ExactCountCache } from "./exact-count-cache.js";
 import { rarityPageQueries, type RarityCandidate } from "./rarity-page-query.js";
 import { chainSelection, chainSelectionJson } from "./chains.js";
+import { mountSolanaApi, solanaApiEnabled, solanaStatus } from "../solana/api.js";
 
 import { activeVisibilityPredicate, activeVisibilityRowPredicate } from "./visibility-query.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
@@ -163,6 +164,8 @@ async function currentVisibilityState(client: Queryable, collection: CollectionS
 app.use("*", cors({ origin: "*", allowMethods: ["GET", "HEAD", "POST", "PUT", "OPTIONS"], allowHeaders: ["Content-Type","If-None-Match"],
   exposeHeaders:["ETag","X-Metadata-Release","X-Metadata-Ownership"] }));
 app.use('/v1/*',async(c,next)=>{
+  if (solanaApiEnabled() && (new URL(c.req.url).searchParams.getAll('chain').includes('solana')
+    || c.req.path.startsWith('/v1/tokens/solana/'))) return next();
   if(metadataSourceMode()==='archive'&&!['/v1/status','/v1/indexing-status'].includes(c.req.path)){
     const specific=c.req.path.match(/^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//)?.[1] as CollectionSlug|undefined;
     const selected=specific?[specific]:chainSelection(c.req.url)?.chains??collectionSlugs;
@@ -171,6 +174,7 @@ app.use('/v1/*',async(c,next)=>{
   }
   await next();
 });
+mountSolanaApi(app,pool);
 app.get('/v1/indexing-status',async c=>c.json(metadataSourceMode()==='archive'?await chainReadiness(pool):{ready:true,mode:'legacy-http'}));
 // No candidate release can be selected through an HTTP request.
 if (metadataSourceMode() === "archive") app.route("/legacy-meta", legacyMetadataRouter(localMetadata));
@@ -850,7 +854,15 @@ app.get("/v1/collections", async (c) => {
   const counts = await pool.query(`SELECT collection AS chain, count(*)::int AS "knownTokens",
     count(*) FILTER (WHERE NOT burned)::int AS "activeSupply" FROM ${ponderSchema}.token GROUP BY collection`);
   const byChain = new Map(counts.rows.map((row) => [row.chain, row]));
-  return c.json({ items: collectionSlugs.map((slug) => ({ ...collections[slug], ...(byChain.get(slug) ?? { knownTokens: 0, activeSupply: 0 }) })) });
+  const items: Record<string,unknown>[] = collectionSlugs.map((slug) => ({ ...collections[slug], ...(byChain.get(slug) ?? { knownTokens: 0, activeSupply: 0 }) }));
+  if (solanaApiEnabled()) {
+    const status = await solanaStatus(pool);
+    items.push({slug:"solana",collection:"exomon",network:"mainnet-beta",chainId:null,
+      knownTokens:status.manifestCount??0,activeSupply:status.activeSupply??0,
+      indexedTokens:status.indexedTokens??0,missingCount:status.missingCount??0,
+      ownershipObservedAt:status.publishedAt,ownershipStatus:status.freshness});
+  }
+  return c.json({ items });
 });
 
 app.get("/v1/status", async (c) => {
@@ -874,7 +886,8 @@ app.get("/v1/status", async (c) => {
       : { ethereum: "current_base_formula", base: "current_token_uri_call", polygon: "current_token_uri_call", bnb: "current_token_uri_call" },
     bnbIngestion: bnbIngestion.rows[0] ?? null,
     verificationTokenId: process.env.URI_VERIFY_TOKEN_ID ?? "1000000000000",
-    metadata: Object.fromEntries(metadata.rows.map((r) => [`${r.collection}:${r.fetch_status}`, r.count]))
+    metadata: Object.fromEntries(metadata.rows.map((r) => [`${r.collection}:${r.fetch_status}`, r.count])),
+    ...(solanaApiEnabled() ? {solana:await solanaStatus(pool)} : {})
   });
 });
 
