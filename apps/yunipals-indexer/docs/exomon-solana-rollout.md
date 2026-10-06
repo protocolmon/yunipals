@@ -49,6 +49,12 @@ The existing EVM indexer, BNB indexer, metadata worker, and collector keep
 their pinned artifacts. The API uses a later pinned artifact preserving the
 live projection, read-cache, and query-capacity fixes.
 
+`yunipals-solana-health.timer` runs a read-only database check every five
+minutes. It fails on a stale snapshot, a manifest/count mismatch, a new
+unknown-owner exception, a worker error, or exceeded configured credit caps.
+It makes no Helius calls. Review its journal alongside `yunipals-solana.service`
+and `solana:status` when investigating a failure.
+
 Rollback the API by removing its Exomon systemd drop-in and restarting only
 `yunipals-api.service`. Stop and disable `yunipals-solana.service` to stop DAS
 usage. Leave `solana_indexer` tables intact for audit and a later resume;

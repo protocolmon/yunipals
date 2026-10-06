@@ -26,6 +26,7 @@
     "solana:sync": "tsx scripts/sync-solana.ts",
     "solana:publish": "tsx scripts/publish-solana-scan.ts",
     "solana:status": "tsx scripts/solana-status.ts",
+    "solana:health": "tsx scripts/check-solana-health.ts",
     "test:solana:postgres": "node --import tsx scripts/test-solana-postgres.mjs",
     "bnb:migrate": "tsx lib/bnb/migrate.ts",
     "bnb:standalone-views": "tsx lib/bnb/standalone-views.ts",
