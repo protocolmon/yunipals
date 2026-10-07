@@ -13,8 +13,16 @@ const positiveNumber = (value: string | undefined, fallback: number) => {
 // API queries must not wait indefinitely behind a database lock or a saturated
 // pool. Keep these settings off the worker pool: refresh jobs are intentionally
 // much longer-running than interactive requests.
+// The proof joins can have high estimated costs even for a 24-token page. JIT
+// compilation then takes seconds for a query that executes in milliseconds.
+// Set this at connection startup so page and count reads on every API client
+// avoid that cost. Preserve other URL/PGOPTIONS settings, including read-only.
+const apiDatabaseUrl = new URL(databaseUrl);
+const apiStartupOptions = apiDatabaseUrl.searchParams.get("options") ?? process.env.PGOPTIONS ?? "";
+apiDatabaseUrl.searchParams.set("options", `${apiStartupOptions} -c jit=off`.trim());
+
 export const apiPool = new pg.Pool({
-  connectionString: databaseUrl,
+  connectionString: apiDatabaseUrl.toString(),
   application_name: "yunipals_api",
   max: positiveNumber(process.env.API_DB_POOL_MAX, 12),
   connectionTimeoutMillis: positiveNumber(process.env.API_DB_ACQUIRE_TIMEOUT_MS, 1_000),

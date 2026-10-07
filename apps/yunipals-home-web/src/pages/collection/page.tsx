@@ -784,7 +784,7 @@ function CollectionExplorer() {
                   ? "Listings temporarily unavailable"
                   : totalMatches !== undefined
                     ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "Yunipals"}`
-                    : "Counting Yunipals…"}
+                    : "Loading collection…"}
                 {catalogPage &&
                   !incompleteEmptyResults &&
                   filters.sale === "listed" &&
