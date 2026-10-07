@@ -12,21 +12,25 @@ import { FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { CatalogFilters } from "@/components/marketplace/CatalogFilters";
-import { chainDetails } from "@/data/chains";
+import { collectionChainDetails as chainDetails } from "@/data/chains";
+import {
+  collectionChains,
+  includesSolana,
+  toEvmCollectionFilters,
+  type CollectionChain
+} from "@/lib/collectionBrowserFilters";
+import type { CollectionFacets } from "@/lib/collectionBrowser";
 import { formatDecimal, formatInteger } from "@/lib/format";
 import {
   clearCollectionFilters,
   cloneCollectionFilters,
   countCollectionFilters,
   type CollectionFilters
-} from "@/lib/collectionFilters";
+} from "@/lib/collectionBrowserFilters";
 import {
-  indexedChains,
   type CategoricalTraitFacet,
-  type IndexedChain,
   type NumericTraitFacet,
-  type TokenMetadataFilter,
-  type TraitFacets
+  type TokenMetadataFilter
 } from "@/lib/yunipalsIndexer";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +51,7 @@ const TRAIT_PRIORITY = [
 
 type FilterPanelProps = {
   filters: CollectionFilters;
-  facets?: TraitFacets;
+  facets?: CollectionFacets;
   facetsLoading?: boolean;
   facetsError?: boolean;
   onChange: (filters: CollectionFilters) => void;
@@ -59,29 +63,34 @@ type FilterPanelProps = {
 };
 
 const CHAIN_OPTIONS: Array<{
-  value: IndexedChain | "all";
+  value: CollectionChain | "all";
   label: string;
 }> = [
   { value: "all", label: "All" },
   { value: "ethereum", label: chainDetails.ethereum.label },
   { value: "base", label: chainDetails.base.label },
   { value: "polygon", label: chainDetails.polygon.label },
-  { value: "bnb", label: chainDetails.bnb.label }
+  { value: "bnb", label: chainDetails.bnb.label },
+  ...(collectionChains.includes("solana")
+    ? [{ value: "solana" as const, label: chainDetails.solana.label }]
+    : [])
 ];
 
-const selectedChainClasses: Record<IndexedChain | "all", string> = {
+const selectedChainClasses: Record<CollectionChain | "all", string> = {
   all: "border-ink bg-ink text-white",
   ethereum: "border-ethereum bg-ethereum text-white",
   base: "border-basechain bg-basechain text-white",
   polygon: "border-polygon bg-polygon text-white",
-  bnb: "border-bnbchain bg-bnbchain text-white"
+  bnb: "border-bnbchain bg-bnbchain text-white",
+  solana: "border-grape bg-grape text-white"
 };
 
-const chainIconClasses: Record<IndexedChain, string> = {
+const chainIconClasses: Record<CollectionChain, string> = {
   ethereum: "text-ethereum",
   base: "text-basechain",
   polygon: "text-polygon",
-  bnb: "text-bnbchain"
+  bnb: "text-bnbchain",
+  solana: "text-grape"
 };
 
 export function ChainFilter({
@@ -89,7 +98,7 @@ export function ChainFilter({
   onChange,
   className
 }: Pick<FilterPanelProps, "filters" | "onChange" | "className">) {
-  function selectChain(chain: IndexedChain | "all") {
+  function selectChain(chain: CollectionChain | "all") {
     if (chain === "all") {
       onChange({ ...filters, chains: [] });
       return;
@@ -100,13 +109,14 @@ export function ChainFilter({
         ? [chain]
         : filters.chains.includes(chain)
           ? filters.chains.filter((selectedChain) => selectedChain !== chain)
-          : indexedChains.filter(
+          : collectionChains.filter(
               (indexedChain) =>
                 filters.chains.includes(indexedChain) || indexedChain === chain
             );
     onChange({
       ...filters,
-      chains: nextSelection.length === indexedChains.length ? [] : nextSelection
+      chains:
+        nextSelection.length === collectionChains.length ? [] : nextSelection
     });
   }
 
@@ -353,7 +363,7 @@ function MetadataFilter({
   onChange
 }: {
   filters: CollectionFilters;
-  facets?: TraitFacets;
+  facets?: CollectionFacets;
   onChange: (filters: CollectionFilters) => void;
 }) {
   const [open, setOpen] = useState(filters.metadata !== "all");
@@ -636,7 +646,7 @@ export function CollectionFilterPanel({
 
       {marketEnabled && (
         <CatalogFilters
-          filters={filters}
+          filters={toEvmCollectionFilters(filters)}
           onChange={onChange}
           priceMode={priceMode}
         />
@@ -647,7 +657,12 @@ export function CollectionFilterPanel({
         max={rarityFacet?.max}
         onChange={onChange}
       />
-      <MetadataFilter filters={filters} facets={facets} onChange={onChange} />
+      {/* Solana metadata totals include burned assets; omit misleading counts. */}
+      <MetadataFilter
+        filters={filters}
+        facets={includesSolana(filters) ? undefined : facets}
+        onChange={onChange}
+      />
 
       {facetsLoading && (
         <div className="space-y-2 p-4" aria-label="Loading trait filters">

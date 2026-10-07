@@ -3,6 +3,8 @@ import { FormEvent, useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { WalletCollectionButton } from "@/components/WalletCollectionButton";
+import { environment } from "@/environment";
+import { isSolanaAddress } from "@/lib/solanaIndexer";
 import { cn } from "@/lib/utils";
 import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
@@ -25,14 +27,21 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
     event.preventDefault();
     const value = address.trim();
 
-    if (!isOwnerInput(value)) {
+    if (
+      !isOwnerInput(value) &&
+      !(environment.exomonEnabled && isSolanaAddress(value))
+    ) {
       setError(true);
       return;
     }
 
     setError(false);
     onNavigate?.();
-    navigate(`/collector/${encodeURIComponent(value)}`);
+    navigate(
+      isSolanaAddress(value)
+        ? `/collector/solana/${encodeURIComponent(value)}`
+        : `/collector/${encodeURIComponent(value)}`
+    );
   }
 
   return (
@@ -54,7 +63,11 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
             setAddress(event.target.value);
             setError(false);
           }}
-          placeholder="Address or ENS name"
+          placeholder={
+            environment.exomonEnabled
+              ? "EVM or Solana address, or ENS"
+              : "Address or ENS name"
+          }
           autoComplete="off"
           autoCapitalize="none"
           autoCorrect="off"
@@ -74,7 +87,9 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
           className="mt-1 px-3 text-xs font-semibold text-red-600"
           role="alert"
         >
-          Enter a valid wallet address or ENS name.
+          {environment.exomonEnabled
+            ? "Enter a valid EVM or Solana wallet address, or ENS name."
+            : "Enter a valid wallet address or ENS name."}
         </p>
       )}
     </form>
@@ -82,14 +97,27 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
 }
 
 export function Nav() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  const isExomonView =
+    environment.exomonEnabled &&
+    (pathname === "/exomon" ||
+      (pathname === "/" &&
+        new URLSearchParams(search).getAll("chain").join(",") === "solana") ||
+      pathname.startsWith("/collection/solana/") ||
+      pathname.startsWith("/collector/solana/") ||
+      (pathname === "/leaderboard" &&
+        new URLSearchParams(search).get("chain") === "solana"));
   const isActive = (to: string) =>
     to === "/"
-      ? pathname === "/" || pathname.startsWith("/collection/")
-      : pathname === to || pathname.startsWith(`${to}/`);
+      ? pathname === "/" ||
+        pathname.startsWith("/collection/") ||
+        pathname === "/exomon"
+      : to === "/leaderboard"
+        ? pathname === "/leaderboard"
+        : pathname === to || pathname.startsWith(`${to}/`);
 
   const navClass = (active: boolean) =>
     cn(
@@ -162,7 +190,7 @@ export function Nav() {
           >
             <Search aria-hidden="true" size={16} />
           </button>
-          <WalletCollectionButton />
+          {!isExomonView && <WalletCollectionButton />}
           <button
             type="button"
             className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink transition hover:bg-line/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-2 lg:hidden"

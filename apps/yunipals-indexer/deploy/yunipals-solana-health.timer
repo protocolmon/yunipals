@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Yunipals Exomon Solana snapshot every five minutes
+
+[Timer]
+OnActiveSec=5min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=yunipals-solana-health.service
+
+[Install]
+WantedBy=timers.target

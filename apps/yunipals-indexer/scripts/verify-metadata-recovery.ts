@@ -32,7 +32,8 @@ try{
   const immutable=[];
   for(const table of ['metadata.token_visibility','metadata.wallet_visibility_nonce','metadata.ens_identity',
     'metadata_source.asset_binding','metadata_source.lifecycle_binding','metadata_source.lookup_alias',
-    'metadata_source.asset_origin','metadata_source.chain_metadata_event','metadata_source.chain_metadata_scan']){
+    'metadata_source.asset_origin','metadata_source.chain_metadata_event','metadata_source.chain_metadata_scan',
+    ...Object.keys(manifest.tables).filter(table=>table.startsWith('solana_indexer.'))]){
     const expected=manifest.tables[table],actual=await tableFingerprint(env.DATABASE_URL,table,expected.keys);
     assert.equal(actual.rows,expected.rows,`${table} count`);assert.equal(actual.sha256,expected.sha256,`${table} values`);immutable.push({table,...actual});
   }

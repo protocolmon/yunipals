@@ -8,6 +8,9 @@ export const environment = {
     import.meta.env?.VITE_WALLETCONNECT_PROJECT_ID?.trim() || "",
   fixtures: import.meta.env?.MODE === "fixtures",
   production: import.meta.env?.PROD === true,
+  exomonEnabled:
+    import.meta.env?.MODE === "fixtures" ||
+    import.meta.env?.VITE_EXOMON_ENABLED === "true",
   yunipalsIndexerUrl: (
     import.meta.env?.VITE_YUNIPALS_INDEXER_URL || DEFAULT_INDEXER_URL
   ).replace(/\/$/, "")

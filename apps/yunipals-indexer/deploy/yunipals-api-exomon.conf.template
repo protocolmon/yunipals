@@ -1,0 +1,6 @@
+[Service]
+WorkingDirectory=@INDEXER_DIR@
+ExecStart=
+ExecStart=/opt/node-v24.18.1/bin/node --import tsx @INDEXER_DIR@/lib/api/server.ts
+Environment=SOLANA_API_ENABLED=true
+Environment=SOLANA_LEGACY_METADATA_ENABLED=true

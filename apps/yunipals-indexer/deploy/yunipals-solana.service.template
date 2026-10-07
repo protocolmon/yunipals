@@ -1,0 +1,18 @@
+[Unit]
+Description=Yunipals Exomon Solana snapshot indexer
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@INDEXER_DIR@
+EnvironmentFile=/etc/yunipals-indexer/indexer.env
+EnvironmentFile=/etc/yunipals-indexer/solana.env
+ExecStart=/opt/node-v24.18.1/bin/node --import tsx @INDEXER_DIR@/lib/solana/worker.ts
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=30
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

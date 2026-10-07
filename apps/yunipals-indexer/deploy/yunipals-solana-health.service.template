@@ -1,0 +1,10 @@
+[Unit]
+Description=Yunipals Exomon Solana snapshot health check
+
+[Service]
+Type=oneshot
+WorkingDirectory=@INDEXER_DIR@
+EnvironmentFile=/etc/yunipals-indexer/indexer.env
+EnvironmentFile=/etc/yunipals-indexer/solana.env
+ExecStart=/opt/node-v24.18.1/bin/node --import tsx @INDEXER_DIR@/scripts/check-solana-health.ts
+NoNewPrivileges=true

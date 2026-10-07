@@ -1,6 +1,7 @@
 # Yunipals indexer
 
-This workspace app contains the four-chain collection indexer and its HTTP API.
+This workspace app contains the EVM collection indexer, the Exomon Solana
+snapshot worker, and their HTTP API.
 It also indexes the Ethereum Islands collection as `ethereum-islands`, with
 separate metadata publication and collection-scoped v2 reads. See the
 [Islands rollout guide](../../docs/islands-indexing.md) for candidate replay,
@@ -16,6 +17,9 @@ Polkamon packages in `vendor/` for rendering and local rarity calculation. The
 API serves collection, collector, visibility, trait, and leaderboard reads. The
 marketplace API is a separate app and reads the BNB tables and
 `yunipals_read_v4` views. Neither API should use the indexer's write credential.
+The Solana worker uses Helius DAS only for current ownership, burn and
+delegation observations of the archived Exomon mint set. It publishes bounded
+snapshots to PostgreSQL; API reads and browser traffic make no Helius requests.
 
 ## Local setup
 
@@ -106,6 +110,38 @@ pnpm test:bnb-indexer
 
 Do not point this fixture at a database where the test role can alter production
 schemas. The unit suite and typecheck do not require a database.
+
+## Exomon on Solana
+
+The fixture website works without Solana setup. For live indexing, import,
+bind, validate and activate a `metadata_source` archive containing the Exomon
+mint mappings. The archive and production database are not included with the
+source. Supply `HELIUS_API_KEY` only to the Solana worker's private environment.
+Keep `SOLANA_SYNC_ENABLED`, `SOLANA_API_ENABLED` and
+`SOLANA_LEGACY_METADATA_ENABLED` as separate controls. The API needs no Helius
+credential. Audit the manifest without RPC before any provider call:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer solana:manifest:audit
+```
+
+Apply `solana:migrate` with the intended schema owner, run an initial controlled
+`solana:sync`, and inspect `solana:status` before enabling the Solana API. The
+worker defaults to a 15-minute scan using ten DAS batches for a 10,000-mint
+manifest. It reserves credits before provider calls and enforces per-scan,
+UTC-day and rolling-31-day caps. `solana:preflight` itself uses provider credits;
+it is not a frontend smoke test. Unknown current ownership is reported as
+unavailable, never inferred as a burn or assigned to a historical owner. See
+the [operator runbook](docs/exomon-solana-rollout.md) for health, exception and
+rollback details.
+
+The PostgreSQL integration check writes only to a disposable loopback database
+whose name starts with `exomon_test_`. It seeds synthetic mints and observations,
+publishes snapshots and exercises Solana API queries without using Helius:
+
+```sh
+EXOMON_TEST_DATABASE_URL=postgresql://localhost/exomon_test_local pnpm test:solana:postgres
+```
 
 ## Metadata and rarity
 

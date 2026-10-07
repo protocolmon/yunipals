@@ -5,9 +5,11 @@ import { ChainLogo } from "@/components/ui/ChainLogo";
 import { environment } from "@/environment";
 
 export function Footer({
-  onTradingInformation
+  onTradingInformation,
+  exomonView = false
 }: {
   onTradingInformation: () => void;
+  exomonView?: boolean;
 }) {
   return (
     <footer className="border-t border-line bg-white">
@@ -30,13 +32,15 @@ export function Footer({
         </div>
         <div className="flex flex-col gap-4 sm:items-end">
           <div className="flex flex-wrap gap-x-4 gap-y-2 sm:justify-end">
-            <button
-              type="button"
-              onClick={onTradingInformation}
-              className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
-            >
-              Buying and selling information
-            </button>
+            {!exomonView && (
+              <button
+                type="button"
+                onClick={onTradingInformation}
+                className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+              >
+                Buying and selling information
+              </button>
+            )}
             <Link
               to="/terms"
               className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
@@ -58,25 +62,46 @@ export function Footer({
               </a>
             )}
           </div>
-          <a
-            href="https://opensea.io/collection/yunipals-islands"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 self-start rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4 sm:self-end"
-          >
-            Islands · Grassland Archipelago on OpenSea
-            <ArrowUpRight aria-hidden="true" className="shrink-0" size={16} />
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
-            <span className="inline-flex items-center gap-2" aria-hidden="true">
-              <ChainLogo chainId="ethereum" className="h-4 w-4 text-ethereum" />
-              <ChainLogo chainId="base" className="h-4 w-4 text-basechain" />
-              <ChainLogo chainId="polygon" className="h-4 w-4 text-polygon" />
-              <ChainLogo chainId="bnb" className="h-4 w-4 text-bnbchain" />
-            </span>
-            <span>Ethereum, Base, Polygon &amp; BNB Chain</span>
-          </div>
+          {!exomonView && (
+            <a
+              href="https://opensea.io/collection/yunipals-islands"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 self-start rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4 sm:self-end"
+            >
+              Islands · Grassland Archipelago on OpenSea
+              <ArrowUpRight aria-hidden="true" className="shrink-0" size={16} />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          )}
+          {exomonView ? (
+            <p className="text-xs font-semibold text-muted">
+              Exomon · Solana Mainnet
+            </p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
+              <span
+                className="inline-flex items-center gap-2"
+                aria-hidden="true"
+              >
+                <ChainLogo
+                  chainId="ethereum"
+                  className="h-4 w-4 text-ethereum"
+                />
+                <ChainLogo chainId="base" className="h-4 w-4 text-basechain" />
+                <ChainLogo chainId="polygon" className="h-4 w-4 text-polygon" />
+                <ChainLogo chainId="bnb" className="h-4 w-4 text-bnbchain" />
+                {environment.exomonEnabled && (
+                  <ChainLogo chainId="solana" className="h-4 w-4 text-grape" />
+                )}
+              </span>
+              <span>
+                {environment.exomonEnabled
+                  ? "Ethereum, Base, Polygon, BNB Chain & Solana"
+                  : "Ethereum, Base, Polygon & BNB Chain"}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </footer>

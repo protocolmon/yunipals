@@ -18,10 +18,11 @@ try{
   for(const [name,value] of Object.entries(manifest.files) as [string,any][]){assert.equal((await stat(join(directory,name))).size,value.bytes);assert.equal(await fileHash(join(directory,name)),value.sha256);}
   let progress:any={format:'metadata-recovery-restore-v1',database,release:manifest.release,startedAt:new Date().toISOString(),bundleManifestSha256:await fileHash(join(directory,'manifest.json')),groups:{},tables:{},complete:false};
   if(args.resume){progress=JSON.parse(await readFile(String(args.report),'utf8'));assert.equal(progress.database,database);assert.equal(progress.bundleManifestSha256,await fileHash(join(directory,'manifest.json')));}
-  else assert.equal((await pool.query(`SELECT 1 FROM pg_namespace WHERE nspname IN ('metadata','metadata_source',$1,$2)`,[manifest.sourceSchemas.physical,manifest.sourceSchemas.bnb])).rowCount,0,'Target database is not empty');
+  else assert.equal((await pool.query(`SELECT 1 FROM pg_namespace WHERE nspname IN ('metadata','metadata_source',$1,$2,'solana_indexer')`,[manifest.sourceSchemas.physical,manifest.sourceSchemas.bnb])).rowCount,0,'Target database is not empty');
   await writeReport(String(args.report),progress);
   await pool.query('SET statement_timeout=0');
-  for(const [group,schemas] of Object.entries({archive:['metadata_source'],durable:['metadata'],chain_reference:[manifest.sourceSchemas.physical,manifest.sourceSchemas.bnb]})){
+  for(const [group,schemas] of Object.entries({archive:['metadata_source'],durable:['metadata'],chain_reference:[manifest.sourceSchemas.physical,manifest.sourceSchemas.bnb],
+    ...(manifest.sourceSchemas.solana?{solana:[manifest.sourceSchemas.solana]}:{})})){
     if(progress.groups[group])continue;
     for(const schema of schemas)await pool.query(`CREATE SCHEMA IF NOT EXISTS ${sqlIdentifier(schema)}`);
     const file=join(directory,`${group}.dump`),toc=(await promisify(execFile)('pg_restore',['--list',file])).stdout;

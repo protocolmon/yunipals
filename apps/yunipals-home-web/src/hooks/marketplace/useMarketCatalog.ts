@@ -28,7 +28,7 @@ const client = (() => {
   }
 })();
 
-export function useMarketCatalog(filters: CollectionFilters) {
+export function useMarketCatalog(filters: CollectionFilters, enabled = true) {
   const queries = useQueryClient();
   const changes = useConfirmedSettlements();
   const recovered = useRef(new Set<string>());
@@ -46,7 +46,7 @@ export function useMarketCatalog(filters: CollectionFilters) {
   ] as const;
   const query = useInfiniteQuery({
     queryKey,
-    enabled: Boolean(client) && !validationError,
+    enabled: enabled && Boolean(client) && !validationError,
     initialPageParam: undefined as CatalogContinuation | undefined,
     queryFn: ({ pageParam, signal }) =>
       client!.catalog(filters, pageParam, signal),

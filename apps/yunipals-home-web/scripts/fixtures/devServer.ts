@@ -15,6 +15,7 @@ import {
   collectorFixturePage,
   largeCollectorFixture
 } from "./collector";
+import { solanaFixtureResponse } from "./solana";
 
 const updatedAt = "2026-01-01T00:00:00.000Z";
 export const fixtureOwners = [
@@ -95,6 +96,8 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
     body: { error: "fixture_unavailable", message }
   });
   if (method !== "GET") return error(405, "Fixtures are read-only.");
+  const solana = solanaFixtureResponse(url);
+  if (solana) return solana;
   if (url.pathname === "/__fixtures/indexer/v1/collector-capabilities")
     return ok({ version: 1, namePrefixSearch: true, rarityRange: true });
   if (/^\/__fixtures\/indexer\/v2\/owners\/[^/]+\/tokens$/.test(url.pathname))

@@ -41,3 +41,16 @@ excluded. The three vendor archive SHA-256 values are:
 
 This source comparison did not change the remote checkout, services, database,
 or routing.
+
+## Exomon Solana release, 5 October 2026
+
+The preceding notes describe the earlier monorepo snapshot. The Exomon feature
+was developed in the local reconstructed worktree `/root/yunipals-exomon` on
+`feature/exomon-solana`, starting from deployed monorepo release `f0bd9a0` and
+overlaying the later deployed API implementation `9a2bb8a-read-api`. The core
+feature is local commit `320687b`. It was then ported onto the public
+`protocolmon/yunipals` main history; see
+[Exomon source provenance](../../docs/exomon-source-provenance.md) for details.
+The runtime artifact is
+`/opt/yunipals/releases/exomon-20261005-v1`. Its inherited
+`capacity-release.json` describes the API base, not the Exomon feature.

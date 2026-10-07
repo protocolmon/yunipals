@@ -4,15 +4,12 @@ import { Link } from "react-router-dom";
 
 import { TokenArtwork } from "@/components/TokenArtwork";
 import { ChainBadge } from "@/components/ui/ChainBadge";
-import { formatDecimal } from "@/lib/format";
-import {
-  getDisplayedRarity,
-  getTokenAttribute,
-  type YunipalToken
-} from "@/lib/yunipalsIndexer";
+import { formatDecimal, shortAddress } from "@/lib/format";
+import type { CollectionToken } from "@/lib/collectionBrowser";
+import { getDisplayedRarity, getTokenAttribute } from "@/lib/yunipalsIndexer";
 
 type TokenCardProps = {
-  token: YunipalToken;
+  token: CollectionToken;
   eager?: boolean;
   action?: ReactNode;
   market?: ReactNode;
@@ -51,8 +48,13 @@ export function TokenCard({ token, eager, action, market }: TokenCardProps) {
               <p className="truncate text-sm font-extrabold text-ink">
                 {token.name || "Unknown Yunipal"}
               </p>
-              <p className="mt-1 text-xs font-semibold text-muted">
-                #{token.tokenId}
+              <p
+                className="mt-1 text-xs font-semibold text-muted"
+                title={token.tokenId}
+              >
+                {token.chain === "solana"
+                  ? `Mint ${shortAddress(token.tokenId)}`
+                  : `#${token.tokenId}`}
               </p>
             </div>
             {rarity !== null && (

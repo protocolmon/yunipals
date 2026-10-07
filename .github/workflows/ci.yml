@@ -52,6 +52,7 @@ jobs:
     timeout-minutes: 15
     env:
       VITE_SELF_HOSTED: "1"
+      VITE_EXOMON_ENABLED: "true"
       VITE_YUNIPALS_INDEXER_URL: https://indexer.example.test
       VITE_YUNIPALS_MARKETPLACE_URL: https://market.example.test
       VITE_WALLETCONNECT_PROJECT_ID: ""
@@ -131,6 +132,7 @@ jobs:
           --health-retries 10
     env:
       CI_POSTGRES_ADMIN_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/postgres
+      EXOMON_TEST_DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/exomon_test_ci
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -150,6 +152,8 @@ jobs:
         env:
           PONDER_DEPENDENCY_TEST_DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_ponder_dependency_test
         run: pnpm --filter @protopals/yunipals-indexer test:ponder:postgres
+      - name: Exomon snapshots and API
+        run: pnpm test:solana:postgres
 
   secret-scan:
     name: Secret scan

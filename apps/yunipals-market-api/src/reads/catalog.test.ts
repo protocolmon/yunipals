@@ -591,19 +591,19 @@ test("foreign indexer rankings and new filter counts keep the same remote snapsh
   const server = `catalog_fdw_${suffix}`;
   const backing = `catalog_search_${suffix}`;
   const login = new URL(testUrl("MARKET_TEST_DATABASE_URL"));
+  const serverPort = (await db.owner.query("SHOW port")).rows[0].port as string;
   const literal = (value: string) => `'${value.replaceAll("'", "''")}'`;
   const catalog = service();
   let installed = false;
   try {
-    // The isolated fixture PostgreSQL server connects to itself. This exercises
-    // a real postgres_fdw transaction, independently of the caller's snapshot.
-    // The disposable container trusts loopback; production mappings still
-    // require password authentication.
+    // postgres_fdw connects from inside PostgreSQL, where a Docker-published
+    // client port is unavailable. Use the server's own loopback port.
     await db.owner.query(`BEGIN;
       CREATE EXTENSION IF NOT EXISTS postgres_fdw;
       ALTER TABLE metadata.token_search RENAME TO ${backing};
       CREATE SERVER ${server} FOREIGN DATA WRAPPER postgres_fdw
-        OPTIONS(host '127.0.0.1',port '5432',dbname 'yunipals_market_test',updatable 'false');
+        OPTIONS(host '127.0.0.1',port ${literal(serverPort)},
+          dbname ${literal(login.pathname.slice(1))},updatable 'false');
       CREATE USER MAPPING FOR market_test_runtime SERVER ${server}
         OPTIONS(user ${literal(decodeURIComponent(login.username))},password ${literal(decodeURIComponent(login.password))},password_required 'false');
       GRANT USAGE ON FOREIGN SERVER ${server} TO market_test_runtime;

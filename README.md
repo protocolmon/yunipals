@@ -1,20 +1,22 @@
 # Yunipals
 
-A collection explorer and collector toolkit for Yunipals NFTs on
-Ethereum, Base, Polygon and BNB Chain. Browse tokens and traits, follow ownership
-and transfer history, compare rarity and collector rankings, and manage your own
-collection. Buying and selling are optional features within the web app.
+A collection explorer and collector toolkit for Yunipals NFTs on Ethereum,
+Base, Polygon and BNB Chain, plus read-only Exomon browsing on Solana. Browse
+tokens, traits, ownership and collector rankings. The EVM collections also show
+transfer history and support optional wallet-based collection management,
+buying and selling. Exomon shows observed ownership changes, not a complete
+transfer history.
 
 ## Projects
 
-- [Web app](apps/yunipals-home-web/README.md): browse the collection, inspect
-  traits and token histories, view collector profiles and rankings, and manage
-  your own NFTs. Optional listing and purchase actions use your wallet.
-- [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
-  ownership, metadata, rarity, collector, and leaderboard reads, plus
-  [Ethereum Islands ownership and metadata](docs/islands-indexing.md). Its single BNB
-  worker rebuilds ownership, transfers and burn/recreation history from public
-  chain events.
+- [Web app](apps/yunipals-home-web/README.md): browse EVM collections and
+  Exomon, inspect traits, view collector profiles and rankings, and manage EVM
+  NFTs. Optional EVM listing and purchase actions use your wallet.
+- [Collection indexer](apps/yunipals-indexer/README.md): serves EVM and Solana
+  ownership, metadata, rarity, collector, and leaderboard reads, including
+  [Ethereum Islands](docs/islands-indexing.md). Its BNB worker rebuilds ownership
+  and lifecycle history from public chain events; its Solana worker publishes
+  current Exomon snapshots from bounded Helius DAS batches.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,
   order encoding and validation shared by the web app and API.
 - [Marketplace API and workers](apps/yunipals-market-api/README.md): supports
@@ -29,10 +31,12 @@ Running this app with live buying or selling requires the marketplace API and,
 for BNB ownership checks, the BNB indexer. OpenSea and on-chain events are the
 underlying order sources; the API does not custody NFTs or funds.
 
-The complete four-chain collection view needs the indexer API, RPC endpoints and
-a PostgreSQL database. Its source is included here, with a documented parity
-gate before replacing the running service. For an independent BNB orderbook
-deployment, follow the [self-hosting guide](docs/self-hosting-bnb.md).
+The complete EVM collection view needs the indexer API, RPC endpoints and a
+PostgreSQL database. Live Exomon reads additionally need an active imported
+metadata release, an Exomon mint manifest and a published Solana snapshot. The
+Solana worker alone uses the Helius key; browser reads do not call Helius. For
+an independent BNB orderbook deployment, follow the
+[self-hosting guide](docs/self-hosting-bnb.md).
 
 ## Development
 
@@ -51,22 +55,25 @@ pnpm build
 Copy the relevant app's `.env.example` to `.env.local` for Vite or export the
 API variables in your shell. Frontend variables are public build-time values;
 never put provider keys or database credentials in a `VITE_` variable.
-The API test suite needs the isolated database described in its README.
+`test:web` includes the Solana and Islands tests. The complete `pnpm test`
+also runs fixture, marketplace API and Solana PostgreSQL integration tests;
+these need disposable databases described in the relevant app READMEs.
 GitHub CI covers typechecks, tests, builds, PostgreSQL integration, and secret
 scanning. See the [CI guide](docs/ci.md) for check names and local reproduction.
 
 For a populated local UI without an indexer, database, provider keys or wallet
 project, run `pnpm dev:fixtures` and open `http://127.0.0.1:5177`.
-It provides 48 synthetic tokens, filters, pagination, token details, collector
-profiles and rankings. Wallet connections and trading are disabled. See the
-[fixture guide](apps/yunipals-home-web/scripts/fixtures/README.md).
+It provides synthetic EVM and Exomon tokens, filters, pagination, token details,
+collector profiles and rankings. Wallet connections and trading are disabled.
+See the [fixture guide](apps/yunipals-home-web/scripts/fixtures/README.md).
 
 ## Deployment
 
 The web project root is `apps/yunipals-home-web`, with build command `vite build`
-and output directory `dist`. Use `main` as the production branch. SPA routes are
-configured in `vercel.json`. Set `VITE_YUNIPALS_MARKETPLACE_URL` in the deployment
-provider before building; production Vercel builds fail if it is missing.
+and output directory `dist`. Use the project's configured production branch.
+SPA routes are configured in `vercel.json`. Set `VITE_YUNIPALS_MARKETPLACE_URL`
+in the deployment provider before building; production Vercel builds fail if it
+is missing.
 Configure `VITE_YUNIPALS_INDEXER_URL` for your own metadata indexer. Set
 `VITE_SELF_HOSTED=1` to make a build reject missing URLs or Yunipals service
 domains; see the [self-hosting guide](docs/self-hosting-bnb.md).
@@ -75,6 +82,16 @@ ID in Vercel **Project → Settings → Environment Variables**, select Producti
 (and Preview if needed), then redeploy. Production builds require it. Local
 development without an ID offers browser wallets only. See the web app README
 for the local `.env.local` setup and domain allowlist guidance.
+
+Set `VITE_EXOMON_ENABLED=true` to include Exomon routes and navigation in a
+frontend deployment. Set `VITE_YUNIPALS_INDEXER_URL` to the public indexer API
+that serves fresh Solana snapshots. This flag is embedded at build time, so
+changing it requires a new deployment. Keep `HELIUS_API_KEY` only in the
+indexer worker's private environment. See the
+[Exomon indexer runbook](apps/yunipals-indexer/docs/exomon-solana-rollout.md)
+for the worker schedule, credit caps and health checks.
+Follow the [frontend and source release guide](docs/exomon-frontend-release.md)
+when reviewing and deploying this branch.
 
 Build the API with `pnpm build:api`; run its bundled entry points with installed
 production dependencies. Apply database migrations separately using a schema-owner
