@@ -2015,11 +2015,103 @@ test("order projection traffic serializes and retries a brief provider limit", a
   assert.ok(responses.every((item) => item.status === 200));
   assert.equal(maximumActive, 1);
   assert.equal(dispatches[0]! + dispatches[1]!, 6);
+  assert.deepEqual(
+    await Promise.all(responses.map((item) => item.json())),
+    Array.from({ length: 4 }, (_, id) => ({ jsonrpc: "2.0", id, result: "0x2710" }))
+  );
   const metrics = await (await fetch(new URL("/metrics", proxy))).json();
   assert.equal(metrics.traffic.queuedOrderRouteBatches, 3);
   assert.equal(metrics.traffic.orderRouteTimeouts, 0);
   assert.equal(metrics.traffic.freeRateLimitRetries, 1);
-  assert.ok(metrics.traffic.freeRateLimitWaitMs >= 1);
+});
+
+test("order projection retries wait out an early cooldown timer", async (context) => {
+  let now = Date.now();
+  context.mock.method(Date, "now", () => now);
+  const realSetTimeout = globalThis.setTimeout;
+  const waits: number[] = [];
+  let coolingDown = false;
+  context.mock.method(
+    globalThis,
+    "setTimeout",
+    (...[callback, delay, ...args]: Parameters<typeof setTimeout>) => {
+      if (coolingDown && (delay === 20 || delay === 1)) {
+        waits.push(delay);
+        return realSetTimeout(() => {
+          // Reproduce a timer firing one millisecond before the wall-clock deadline.
+          now += waits.length === 1 ? delay - 1 : delay;
+          callback(...args);
+        }, 0);
+      }
+      return realSetTimeout(callback, delay, ...args);
+    }
+  );
+  let dispatches = 0;
+  const budget = {
+    async authorizeFreeDispatch() {},
+    async reserve() {
+      assert.fail("must not fall back to paid RPC");
+    },
+    snapshot: () => ({
+      model: "test",
+      workload: "order_projection",
+      priority: "background" as const,
+      grantedCu: 0,
+      usedCu: 0,
+      remainingCu: 0,
+      denied: 0
+    })
+  };
+  const proxy = await listen(
+    createRpcBudgetProxy({
+      upstream: new URL("https://paid.invalid"),
+      freeUpstreams: [
+        new URL("https://first.invalid"),
+        new URL("https://second.invalid")
+      ],
+      freeRateLimitCooldownMs: 20,
+      freeMinimumIntervalMs: 0,
+      budget,
+      workloadBudgets: { order_projection: budget },
+      fetch: async () => {
+        dispatches++;
+        coolingDown = dispatches === 2;
+        return Response.json(
+          dispatches <= 2
+            ? {
+                jsonrpc: "2.0",
+                id: 1,
+                error: { code: -32005, message: "rate limited" }
+              }
+            : { jsonrpc: "2.0", id: 1, result: "0x2710" }
+        );
+      }
+    })
+  );
+  const response = await fetch(proxy, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-yunipals-rpc-workload": "order_projection"
+    },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_blockNumber",
+      params: []
+    })
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    jsonrpc: "2.0",
+    id: 1,
+    result: "0x2710"
+  });
+  assert.equal(dispatches, 3);
+  assert.deepEqual(waits, [20, 1]);
+  const metrics = await (await fetch(new URL("/metrics", proxy))).json();
+  assert.equal(metrics.traffic.freeRateLimitRetries, 1);
+  assert.equal(metrics.traffic.freeRateLimitWaitMs, 21);
 });
 
 test("a failed free endpoint immediately uses its failover and remains cooled down", async () => {
