@@ -46,7 +46,19 @@ import { CatalogCardMarket } from "@/components/marketplace/CatalogCardMarket";
 import { TokenMarketPanel } from "@/components/marketplace/TokenMarketPanel";
 import { ChainBadge } from "@/components/ui/ChainBadge";
 import { ChainLogo } from "@/components/ui/ChainLogo";
-import { chainDetails } from "@/data/chains";
+import {
+  chainDetails as evmChainDetails,
+  collectionChainDetails as chainDetails
+} from "@/data/chains";
+import { environment } from "@/environment";
+import { isSolanaAddress } from "@/lib/solanaIndexer";
+import {
+  collectionBrowserCacheVersion,
+  collectionTokenKey,
+  fetchCollectionFacets,
+  fetchCollectionPage,
+  type CollectionContinuation
+} from "@/lib/collectionBrowser";
 import { useMarketCatalog } from "@/hooks/marketplace/useMarketCatalog";
 import { useMarketplace } from "@/hooks/marketplace/useMarketplace";
 import {
@@ -59,7 +71,6 @@ import {
   clearMarketFilters,
   cloneCollectionFilters,
   collectionFiltersKey,
-  collectionFiltersToTokenQuery,
   countCollectionFilters,
   hasMarketFilters,
   isPriceSort,
@@ -67,9 +78,12 @@ import {
   priceCurrencyForFilters,
   serializeCollectionFilters,
   updateCollectionChains,
+  includesSolana,
+  toEvmCollectionFilters,
+  type CollectionChain,
   type CollectionSort,
   type CollectionFilters
-} from "@/lib/collectionFilters";
+} from "@/lib/collectionBrowserFilters";
 import type { MarketOrder } from "@/lib/marketplace/marketApi";
 import { catalogCurrencies } from "@/lib/marketplace/catalogCurrency";
 import { MarketActivity } from "@/components/marketplace/MarketActivity";
@@ -77,12 +91,10 @@ import { marketplaceAssetKey } from "@/lib/marketplace/registry";
 import { formatDecimal, formatInteger, shortAddress } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
-  fetchTraitFacets,
   fetchToken,
-  fetchTokens,
   getDisplayedRarity,
   hasRarityCap,
-  indexedCollectionCacheVersion,
+  IndexerError,
   isIndexedChain,
   isOwnerInput,
   type IndexedChain,
@@ -114,7 +126,7 @@ function TokenDetail({
 }) {
   const navigate = useNavigate();
   const validTokenId = /^\d+$/.test(tokenId);
-  const chainConfig = chainDetails[chain];
+  const chainConfig = evmChainDetails[chain];
   const chainLabel = chainConfig.label;
   const explorerUrl = chainConfig.explorerUrl;
   const detailQuery = useQuery({
@@ -381,18 +393,29 @@ type CollectionPresentation = {
 };
 
 const COLLECTION_PRESENTATION: Record<
-  IndexedChain | "all",
+  CollectionChain | "all",
   CollectionPresentation
 > = {
   all: {
-    eyebrow: "Ethereum + Base + Polygon + BNB Chain",
+    eyebrow: `Ethereum + Base + Polygon + BNB Chain${environment.exomonEnabled ? " + Solana" : ""}`,
     title: "Yunipals across chains.",
-    description:
-      "Explore active Yunipals across Ethereum, Base, Polygon, and BNB Chain, combine traits to discover rare sets, or search a token and collector. Burned NFTs are excluded.",
+    description: `Explore active Yunipals${environment.exomonEnabled ? " and Exomon" : ""} across chains, combine traits to discover rare sets, or search a token and collector. Burned NFTs are excluded.`,
     pageTitle: DEFAULT_TITLE,
     pageDescription: DEFAULT_DESCRIPTION,
     backgroundClassName:
       "bg-gradient-to-br from-lavender/45 via-white to-sky/45",
+    accentClassName: "text-grape"
+  },
+  solana: {
+    eyebrow: "Solana · Exomon",
+    title: "Exomon on Solana.",
+    description:
+      "Explore active Exomon, compare rarity and traits, and find their current collectors. Ownership reflects the latest completed index scan.",
+    pageTitle: "Exomon on Solana — Yunipals",
+    pageDescription:
+      "Browse active Exomon on Solana alongside the Yunipals collection.",
+    backgroundClassName:
+      "bg-gradient-to-br from-sky/45 via-white to-lavender/45",
     accentClassName: "text-grape"
   },
   ethereum: {
@@ -451,7 +474,7 @@ function CollectionExplorer() {
   );
   const filtersKey = collectionFiltersKey(filters);
   const currencyLabel =
-    filters.chains.length === 1
+    filters.chains.length === 1 && isIndexedChain(filters.chains[0])
       ? catalogCurrencies(filters.chains[0]).find(
           (currency) => currency.key === filters.currency
         )?.symbol
@@ -482,12 +505,17 @@ function CollectionExplorer() {
   const { address } = useAccount();
   const queries = useQueryClient();
   const { capabilities } = useMarketplace(null);
-  const catalog = useMarketCatalog(filters);
+  const withSolana = includesSolana(filters);
+  const catalog = useMarketCatalog(
+    toEvmCollectionFilters(filters),
+    !withSolana
+  );
   const marketFiltered = hasMarketFilters(filters);
   const useLegacy =
-    !marketFiltered &&
-    !catalog.validationError &&
-    (!catalog.configured || (catalog.query.isError && !catalog.query.data));
+    withSolana ||
+    (!marketFiltered &&
+      !catalog.validationError &&
+      (!catalog.configured || (catalog.query.isError && !catalog.query.data)));
   const [selectedTrade, setSelectedTrade] = useState<{
     order: MarketOrder;
     name: string;
@@ -516,33 +544,28 @@ function CollectionExplorer() {
   const facetsQuery = useQuery({
     queryKey: [
       "collection",
-      indexedCollectionCacheVersion,
+      collectionBrowserCacheVersion,
       "trait-facets",
       filters.chains
     ],
-    queryFn: ({ signal }) => fetchTraitFacets(filters.chains, signal),
+    queryFn: ({ signal }) => fetchCollectionFacets(filters.chains, signal),
     staleTime: 60_000
   });
   const legacyTokensQuery = useInfiniteQuery({
-    enabled: useLegacy,
+    enabled: useLegacy && !marketFiltered,
     queryKey: [
       "collection",
-      indexedCollectionCacheVersion,
+      collectionBrowserCacheVersion,
       "tokens",
       filtersKey
     ],
     queryFn: ({ pageParam, signal }) =>
-      fetchTokens(
-        {
-          limit: 24,
-          burned: false,
-          cursor: pageParam || undefined,
-          ...collectionFiltersToTokenQuery(filters)
-        },
-        signal
-      ),
-    initialPageParam: "",
-    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined
+      fetchCollectionPage(filters, pageParam, signal),
+    initialPageParam: undefined as CollectionContinuation | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    staleTime: 60_000,
+    retry: (count, error) =>
+      !(error instanceof IndexerError && error.status < 500) && count < 1
   });
 
   const catalogItems = useMemo(
@@ -565,7 +588,7 @@ function CollectionExplorer() {
       ? (legacyTokensQuery.data?.pages.flatMap((page) => page.items) ?? [])
       : catalogItems.map((item) => item.token);
     return rows.filter((token) => {
-      const identity = marketplaceAssetKey(token);
+      const identity = collectionTokenKey(token);
       if (seen.has(identity)) return false;
       seen.add(identity);
       return true;
@@ -580,6 +603,9 @@ function CollectionExplorer() {
     catalogPage.listingCompleteness !== "complete" &&
     tokens.length === 0;
   const catalogError =
+    (withSolana && marketFiltered
+      ? "Select an EVM chain to use sale and price filters. Exomon browsing is read-only."
+      : null) ||
     catalog.validationError ||
     (marketFiltered && !catalog.configured
       ? "Sale and price filters are not available yet. Clear those filters to browse the collection."
@@ -587,14 +613,34 @@ function CollectionExplorer() {
   function refreshCatalog() {
     setSelectedTrade(null);
     void queries.resetQueries({ queryKey: catalog.queryKey, exact: true });
-    if (useLegacy) void legacyTokensQuery.refetch();
+    if (useLegacy)
+      void queries.resetQueries({
+        queryKey: [
+          "collection",
+          collectionBrowserCacheVersion,
+          "tokens",
+          filtersKey
+        ],
+        exact: true
+      });
     void capabilities.refetch();
   }
 
   function submitLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = lookup.trim();
+    if (environment.exomonEnabled && isSolanaAddress(value)) {
+      setLookupError("");
+      navigate(`/collection/solana/${value}`);
+      return;
+    }
     if (/^\d+$/.test(value)) {
+      if (selectedChain === "solana") {
+        setLookupError(
+          "Enter the Solana mint address. Use Find collector to search a wallet."
+        );
+        return;
+      }
       if (!selectedChain) {
         setLookupError(
           "Choose exactly one chain before looking up a token ID."
@@ -610,7 +656,11 @@ function CollectionExplorer() {
       navigate(`/collector/${encodeURIComponent(value)}`);
       return;
     }
-    setLookupError("Enter a numeric token ID, wallet address, or ENS name.");
+    setLookupError(
+      environment.exomonEnabled
+        ? "Enter a token ID, Solana mint address, EVM wallet, or ENS name."
+        : "Enter a numeric token ID, wallet address, or ENS name."
+    );
   }
 
   function removeTrait(traitType: string, traitValue: string) {
@@ -648,13 +698,23 @@ function CollectionExplorer() {
               <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/70 sm:text-lg">
                 {presentation.description}
               </p>
+              {selectedChain === "solana" && (
+                <Link
+                  to="/leaderboard?chain=solana"
+                  className="mt-4 inline-flex rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-grape focus-visible:ring-2 focus-visible:ring-grape"
+                >
+                  Exomon collector leaderboard →
+                </Link>
+              )}
             </div>
             <form onSubmit={submitLookup}>
               <label
                 htmlFor="collection-lookup"
                 className="text-xs font-bold uppercase tracking-wide text-muted"
               >
-                Token ID, wallet, or ENS name
+                {environment.exomonEnabled
+                  ? "Token ID, Solana mint, wallet, or ENS name"
+                  : "Token ID, wallet, or ENS name"}
               </label>
               <div className="mt-2 flex rounded-full border border-ethereum/20 bg-white p-1.5 shadow-card">
                 <Search
@@ -669,7 +729,11 @@ function CollectionExplorer() {
                     setLookup(event.target.value);
                     setLookupError("");
                   }}
-                  placeholder="2000, 0x…, or name.eth"
+                  placeholder={
+                    environment.exomonEnabled
+                      ? "Token ID, mint address, or name.eth"
+                      : "2000, 0x…, or name.eth"
+                  }
                   autoComplete="off"
                   autoCapitalize="none"
                   autoCorrect="off"
@@ -706,9 +770,11 @@ function CollectionExplorer() {
                 tabIndex={-1}
                 className="display mt-2 text-3xl text-ink sm:text-4xl"
               >
-                {activeFilterCount > 0
-                  ? "Filtered Yunipals"
-                  : "All active Yunipals"}
+                {selectedChain === "solana"
+                  ? "Exomon collection"
+                  : activeFilterCount > 0
+                    ? "Filtered collection"
+                    : "All active Yunipals"}
               </h2>
               <p
                 className="mt-2 text-sm font-medium text-muted"
@@ -717,7 +783,7 @@ function CollectionExplorer() {
                 {incompleteEmptyResults
                   ? "Listings temporarily unavailable"
                   : totalMatches !== undefined
-                    ? `${formatInteger(totalMatches)} Yunipals`
+                    ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "Yunipals"}`
                     : "Counting Yunipals…"}
                 {catalogPage &&
                   !incompleteEmptyResults &&
@@ -769,10 +835,13 @@ function CollectionExplorer() {
                     value={option.value}
                     disabled={
                       isPriceSort(option.value) &&
-                      (!catalog.configured || !selectedChain)
+                      (!catalog.configured || !selectedChain || withSolana)
                     }
                   >
-                    {option.label}
+                    {environment.exomonEnabled &&
+                    option.value.startsWith("token-id-")
+                      ? `Token ID / mint: ${option.value.endsWith("desc") ? "descending" : "ascending"}`
+                      : option.label}
                   </option>
                 ))}
               </select>
@@ -885,7 +954,9 @@ function CollectionExplorer() {
           <div className="mt-7 grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain rounded-card shadow-card lg:block">
               <CollectionFilterPanel
-                marketEnabled={catalog.configured || marketFiltered}
+                marketEnabled={
+                  !withSolana && (catalog.configured || marketFiltered)
+                }
                 filters={filters}
                 facets={facetsQuery.data}
                 facetsLoading={facetsQuery.isLoading}
@@ -897,6 +968,7 @@ function CollectionExplorer() {
 
             <div className="min-w-0">
               {catalog.configured &&
+                !withSolana &&
                 !incompleteEmptyResults &&
                 (useLegacy ||
                   !catalogPage ||
@@ -981,11 +1053,13 @@ function CollectionExplorer() {
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
                   {tokens.map((token, index) => (
                     <TokenCard
-                      key={marketplaceAssetKey(token)}
+                      key={collectionTokenKey(token)}
                       token={token}
                       eager={index < 6}
                       market={
-                        catalog.configured && (
+                        catalog.configured &&
+                        !withSolana &&
+                        token.chain !== "solana" && (
                           <CatalogCardMarket
                             market={
                               useLegacy
@@ -1063,7 +1137,9 @@ function CollectionExplorer() {
                     )}
                     {tokensQuery.isFetchingNextPage
                       ? "Loading…"
-                      : "Load more Yunipals"}
+                      : selectedChain === "solana"
+                        ? "Load more Exomon"
+                        : "Load more Yunipals"}
                   </button>
                 </div>
               )}
@@ -1082,7 +1158,7 @@ function CollectionExplorer() {
         />
       )}
       <MobileFilterDrawer
-        marketEnabled={catalog.configured || marketFiltered}
+        marketEnabled={!withSolana && (catalog.configured || marketFiltered)}
         open={mobileFiltersOpen}
         filters={filters}
         facets={facetsQuery.data}

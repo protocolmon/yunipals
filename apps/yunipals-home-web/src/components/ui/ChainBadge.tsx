@@ -1,9 +1,9 @@
 import { ChainLogo } from "@/components/ui/ChainLogo";
-import { type ChainId, chainDetails } from "@/data/chains";
+import { type DisplayChainId, collectionChainDetails } from "@/data/chains";
 import { cn } from "@/lib/utils";
 
 type ChainBadgeProps = {
-  chainId: ChainId;
+  chainId: DisplayChainId;
   variant?: "overlay" | "soft";
   className?: string;
 };
@@ -18,7 +18,7 @@ export function ChainBadge({
   variant = "overlay",
   className
 }: ChainBadgeProps) {
-  const chain = chainDetails[chainId];
+  const chain = collectionChainDetails[chainId];
 
   return (
     <span

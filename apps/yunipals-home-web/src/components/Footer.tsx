@@ -91,8 +91,15 @@ export function Footer({
                 <ChainLogo chainId="base" className="h-4 w-4 text-basechain" />
                 <ChainLogo chainId="polygon" className="h-4 w-4 text-polygon" />
                 <ChainLogo chainId="bnb" className="h-4 w-4 text-bnbchain" />
+                {environment.exomonEnabled && (
+                  <ChainLogo chainId="solana" className="h-4 w-4 text-grape" />
+                )}
               </span>
-              <span>Ethereum, Base, Polygon &amp; BNB Chain</span>
+              <span>
+                {environment.exomonEnabled
+                  ? "Ethereum, Base, Polygon, BNB Chain & Solana"
+                  : "Ethereum, Base, Polygon & BNB Chain"}
+              </span>
             </div>
           )}
         </div>

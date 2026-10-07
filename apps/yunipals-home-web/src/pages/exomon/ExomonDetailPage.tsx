@@ -40,7 +40,7 @@ export function ExomonDetailPage() {
     return (
       <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12">
         <QueryError message="This Solana mint address is invalid." />
-        <Link to="/exomon" className="mt-5 inline-block font-bold text-badge">
+        <Link to="/?chain=solana" className="mt-5 inline-block font-bold text-badge">
           Back to Exomon
         </Link>
       </main>
@@ -64,7 +64,7 @@ export function ExomonDetailPage() {
     return (
       <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12">
         <QueryError message={message} onRetry={() => void detail.refetch()} />
-        <Link to="/exomon" className="mt-5 inline-block font-bold text-badge">
+        <Link to="/?chain=solana" className="mt-5 inline-block font-bold text-badge">
           Back to Exomon
         </Link>
       </main>
@@ -82,7 +82,7 @@ export function ExomonDetailPage() {
     <main className="min-h-[65vh] bg-gradient-to-b from-sky/20 to-white px-4 py-10 sm:py-14">
       <div className="mx-auto max-w-6xl">
         <Link
-          to="/exomon"
+          to="/?chain=solana"
           className="text-sm font-bold text-badge hover:underline"
         >
           ← Exomon collection

@@ -10,7 +10,6 @@ import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
 const navigation = [
   { label: "Collection", to: "/" },
-  ...(environment.exomonEnabled ? [{ label: "Exomon", to: "/exomon" }] : []),
   { label: "Leaderboard", to: "/leaderboard" }
 ];
 
@@ -105,6 +104,8 @@ export function Nav() {
   const isExomonView =
     environment.exomonEnabled &&
     (pathname === "/exomon" ||
+      (pathname === "/" &&
+        new URLSearchParams(search).getAll("chain").join(",") === "solana") ||
       pathname.startsWith("/collection/solana/") ||
       pathname.startsWith("/collector/solana/") ||
       (pathname === "/leaderboard" &&
@@ -112,12 +113,11 @@ export function Nav() {
   const isActive = (to: string) =>
     to === "/"
       ? pathname === "/" ||
-        (pathname.startsWith("/collection/") && !isExomonView)
-      : to === "/exomon"
-        ? isExomonView
-        : to === "/leaderboard"
-          ? pathname === "/leaderboard" && !isExomonView
-          : pathname === to || pathname.startsWith(`${to}/`);
+        pathname.startsWith("/collection/") ||
+        pathname === "/exomon"
+      : to === "/leaderboard"
+        ? pathname === "/leaderboard"
+        : pathname === to || pathname.startsWith(`${to}/`);
 
   const navClass = (active: boolean) =>
     cn(

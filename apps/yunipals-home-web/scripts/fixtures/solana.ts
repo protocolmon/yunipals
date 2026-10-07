@@ -79,6 +79,8 @@ export function solanaFixtureResponse(url: URL): FixtureResponse | null {
   if (path === `${prefix}/v1/traits`) {
     return ok({
       chain: "solana",
+      metadata: { available: fixtureSolanaTokens.length, missing: 0 },
+      updatedAt: stamp,
       items: ["Type", "Color"].map((traitType) => ({
         traitType,
         kind: "categorical",
@@ -150,6 +152,7 @@ export function solanaFixtureResponse(url: URL): FixtureResponse | null {
     ? decodeURIComponent(ownerMatch[1]!)
     : params.get("owner");
   const rows = fixtureSolanaTokens
+    .filter(() => params.get("metadata") !== "missing")
     .filter((token) => !owner || token.owner === owner)
     .filter((token) => {
       const groups = new Map<string, string[]>();
@@ -174,13 +177,18 @@ export function solanaFixtureResponse(url: URL): FixtureResponse | null {
             Number(params.get("rarityCappedMin"))) &&
         (!params.get("rarityCappedMax") ||
           Number(token.rarityPointsCapped) <=
-            Number(params.get("rarityCappedMax")))
+            Number(params.get("rarityCappedMax"))) &&
+        (!params.get("rarityMin") ||
+          Number(token.rarityPoints) >= Number(params.get("rarityMin"))) &&
+        (!params.get("rarityMax") ||
+          Number(token.rarityPoints) <= Number(params.get("rarityMax")))
       );
     });
   const sort = params.get("sort") ?? "token-id-asc";
   rows.sort((a, b) =>
     sort.startsWith("token-id")
-      ? (sort.endsWith("desc") ? -1 : 1) * a.tokenId.localeCompare(b.tokenId)
+      ? (sort.endsWith("desc") ? -1 : 1) *
+        (a.tokenId < b.tokenId ? -1 : a.tokenId > b.tokenId ? 1 : 0)
       : (sort.endsWith("desc") ? -1 : 1) *
         (Number(a.rarityPointsCapped) - Number(b.rarityPointsCapped))
   );

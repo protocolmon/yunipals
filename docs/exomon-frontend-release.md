@@ -62,7 +62,15 @@ Do not set `VITE_SELF_HOSTED=1` for the Yunipals deployment. Never expose
 with a fresh published scan. Test the Preview URL against the public HTTPS API;
 loopback API tests alone do not verify deployed routing or origins.
 
-Check `/exomon`, a real `/collection/solana/:mint`, the linked
+The main collection includes Exomon in All and supports `/?chain=solana` and
+mixed chain selections. `/exomon` redirects to the Solana filter, preserving
+legacy trait and capped-rarity links. Browsing merges bounded pages from the EVM
+and Solana indexer APIs; it never fetches the full collections or calls RPC.
+Sale and price filters require an EVM-only selection. Solana detail, collector
+and leaderboard routes remain read-only.
+
+Check `/`, `/?chain=solana`, mixed EVM/Solana selections, a real
+`/collection/solana/:mint`, the linked
 `/collector/solana/:address` and `/leaderboard?chain=solana` on desktop and
 mobile. Exercise filters, pagination, direct navigation and refresh. Use fixture
 mode for burned, unavailable-owner and expired-cursor states. Confirm no

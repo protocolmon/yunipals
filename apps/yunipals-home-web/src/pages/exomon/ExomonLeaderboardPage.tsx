@@ -117,7 +117,7 @@ export function ExomonLeaderboardPage() {
     <main className="min-h-[65vh] bg-gradient-to-b from-sky/20 to-white px-4 py-10 sm:py-14">
       <div className="mx-auto max-w-5xl">
         <Link
-          to="/exomon"
+          to="/?chain=solana"
           className="text-sm font-bold text-badge hover:underline"
         >
           ← Exomon collection

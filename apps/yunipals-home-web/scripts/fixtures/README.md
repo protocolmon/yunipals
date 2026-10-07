@@ -16,7 +16,7 @@ The sample has 48 fictional EVM tokens across four chains and 36 active Exomon,
 one burned Exomon and one with unavailable ownership. It covers fictional
 collectors, traits, rarity, missing metadata, pagination, token details and
 rankings. Try `/?chain=base&t.Type=Water`, `/collection/base/1`, `/leaderboard`,
-`/collector/0x0000000000000000000000000000000000000001` or `/exomon`.
+`/collector/0x0000000000000000000000000000000000000001` or `/?chain=solana`.
 Sample token IDs and owners are not claims about real on-chain assets.
 
 All sample tokens are unlisted. Sale/price filters therefore have no matching

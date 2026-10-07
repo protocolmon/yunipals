@@ -4,6 +4,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
 import { environment } from "@/environment";
+import { exomonCollectionRedirect } from "@/lib/collectionBrowserFilters";
 import { PendingMarketTransactions } from "@/components/marketplace/PendingMarketTransactions";
 import {
   TradingConsentProvider,
@@ -18,11 +19,6 @@ import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
 
-const ExomonCollectionPage = lazy(() =>
-  import("@/pages/exomon/ExomonCollectionPage").then((module) => ({
-    default: module.ExomonCollectionPage
-  }))
-);
 const ExomonCollectorPage = lazy(() =>
   import("@/pages/exomon/ExomonCollectorPage").then((module) => ({
     default: module.ExomonCollectorPage
@@ -66,6 +62,11 @@ function CollectionRedirect() {
   return <Navigate to={`/${search}${hash}`} replace />;
 }
 
+function ExomonCollectionRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${exomonCollectionRedirect(search)}${hash}`} replace />;
+}
+
 function LeaderboardRoute() {
   const { search } = useLocation();
   return environment.exomonEnabled &&
@@ -82,6 +83,8 @@ function AppContent() {
   const exomonView =
     environment.exomonEnabled &&
     (pathname === "/exomon" ||
+      (pathname === "/" &&
+        new URLSearchParams(search).getAll("chain").join(",") === "solana") ||
       pathname.startsWith("/collection/solana/") ||
       pathname.startsWith("/collector/solana/") ||
       (pathname === "/leaderboard" &&
@@ -109,7 +112,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           {environment.exomonEnabled && (
-            <Route path="/exomon" element={<ExomonCollectionPage />} />
+            <Route path="/exomon" element={<ExomonCollectionRedirect />} />
           )}
           <Route path="/collection" element={<CollectionRedirect />} />
           {environment.exomonEnabled && (
