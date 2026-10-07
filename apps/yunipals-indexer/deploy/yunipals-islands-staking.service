@@ -1,0 +1,20 @@
+[Unit]
+Description=Yunipals verified legacy Island staking
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Match the existing isolated Islands release, physical schema and writer credential.
+WorkingDirectory=/opt/yunipals-islands/current
+EnvironmentFile=/etc/yunipals-islands-staking.env
+Environment=PATH=/opt/node-v24.18.1/bin:/usr/bin:/bin
+ExecStart=/opt/node-v24.18.1/bin/node --import tsx lib/islands/staking-worker.ts
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -23,8 +23,10 @@
     "test:marketplace:safe": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-safe-fork.mjs",
     "test:marketplace:opensea": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-fork.mjs",
     "test:marketplace:opensea-ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-marketplace-opensea-ui.mjs",
-    "test:islands": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/islandsIndexer.test.ts",
-    "test:islands:ui": "node scripts/test-islands-ui.mjs"
+    "test:islands": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/islandsIndexer.test.ts src/lib/islandUnstake.test.ts",
+    "test:islands:ui": "node scripts/test-islands-ui.mjs",
+    "test:islands:staking-fork": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-island-staking-fork.mjs",
+    "test:islands:staking-ui": "node scripts/test-island-staking-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

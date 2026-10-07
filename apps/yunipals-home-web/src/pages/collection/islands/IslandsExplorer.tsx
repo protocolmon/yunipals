@@ -3,6 +3,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { environment } from "@/environment";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { ChainBadge } from "@/components/ui/ChainBadge";
@@ -70,6 +71,7 @@ export function IslandsExplorer() {
     const search = new URLSearchParams({ collection: "islands" });
     if (next.edition) search.set("edition", next.edition);
     if (next.owner) search.set("owner", next.owner);
+    if (next.owner && next.holding) search.set("holding", next.holding);
     if (next.sort !== "token-id-asc") search.set("sort", next.sort);
     setParams(search);
   }
@@ -269,6 +271,49 @@ export function IslandsExplorer() {
               </button>
             </div>
           )}
+          {filters.owner && environment.islandStakingEnabled && (
+            <div
+              role="group"
+              aria-label="Island holdings"
+              className="mt-4 flex flex-wrap gap-2"
+            >
+              {(
+                [
+                  ["all", "All holdings"],
+                  ["wallet", "In wallet"],
+                  ["staked", "Staked"]
+                ] as const
+              ).map(([holding, label]) => (
+                <button
+                  key={holding}
+                  type="button"
+                  aria-pressed={(filters.holding ?? "all") === holding}
+                  className={cn(
+                    filterButton,
+                    (filters.holding ?? "all") === holding
+                      ? "bg-ink text-white"
+                      : "bg-line/40 text-ink"
+                  )}
+                  onClick={() => updateFilters({ holding })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {tokens.data?.pages[0]?.complete === false && (
+            <p role="status" className="mt-5 text-sm text-muted">
+              Staking verification is updating. Some staked islands may be
+              missing temporarily.{" "}
+              <button
+                type="button"
+                className="font-bold underline"
+                onClick={() => void tokens.refetch()}
+              >
+                Retry
+              </button>
+            </p>
+          )}
 
           <div className="mt-7">
             {filterError ? (
@@ -291,7 +336,9 @@ export function IslandsExplorer() {
             ) : !items.length ? (
               <div className="rounded-card border border-line bg-surface px-6 py-12 text-center">
                 <p className="text-lg font-extrabold text-ink">
-                  No islands found
+                  {tokens.data?.pages[0]?.complete === false
+                    ? "Waiting for staking verification"
+                    : "No islands found"}
                 </p>
                 <p className="mt-2 text-sm font-medium text-muted">
                   Try another wallet or island edition.

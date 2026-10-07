@@ -16,6 +16,7 @@ import {
   normalizeIslandTokenId
 } from "@/lib/islandsIndexer";
 import { IndexerError } from "@/lib/yunipalsIndexer";
+import { IslandUnstake } from "./IslandUnstake";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -35,7 +36,8 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
     enabled: id !== null,
     retry: (count, error) =>
       !(error instanceof IndexerError && error.status === 404) && count < 2,
-    staleTime: 30_000
+    staleTime: 30_000,
+    refetchInterval: 15_000
   });
   const transfers = useInfiniteQuery({
     queryKey: [islandsCollectionId, "transfers", id],
@@ -47,6 +49,7 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
     staleTime: 30_000
   });
   const token = detail.data?.token;
+  const collector = token?.staking?.staker ?? token?.owner;
   const name =
     token?.metadata?.name || `${token?.edition || "Yunipals"} Island`;
   usePageMetadata(
@@ -116,6 +119,11 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                       Burned
                     </span>
                   )}
+                  {token.staking?.status === "staked" && (
+                    <span className="rounded-full bg-lavender/40 px-3 py-1.5 text-xs font-bold text-ink">
+                      Staked
+                    </span>
+                  )}
                 </div>
                 <h1 className="display mt-3 text-4xl text-ink sm:text-6xl">
                   {name}
@@ -136,18 +144,20 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                 )}
                 <div className="mt-7 rounded-card border border-line bg-white p-5 shadow-card">
                   <p className="text-xs font-bold uppercase tracking-wide text-muted">
-                    Current collector
+                    {token.staking?.status === "unverified"
+                      ? "Custody address"
+                      : "Current collector"}
                   </p>
                   {token.owner && !token.burned ? (
                     <Link
-                      to={islandOwnerHref(token.owner)}
+                      to={islandOwnerHref(collector!)}
                       className="mt-2 flex items-center justify-between gap-4 rounded-xl bg-line/30 px-4 py-3 font-bold text-ink transition hover:bg-mint/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
                     >
                       <span className="truncate sm:hidden">
-                        {shortAddress(token.owner)}
+                        {shortAddress(collector!)}
                       </span>
                       <span className="hidden truncate sm:block">
-                        {token.owner}
+                        {collector}
                       </span>
                       <ArrowRight
                         aria-hidden="true"
@@ -161,6 +171,19 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                     </p>
                   )}
                 </div>
+                {token.staking?.status === "staked" && (
+                  <p className="mt-3 text-sm text-muted">
+                    Held in the legacy staking contract. The collector shown
+                    above is the verified staking wallet.
+                  </p>
+                )}
+                {token.staking?.status === "unverified" && (
+                  <p role="status" className="mt-3 text-sm text-muted">
+                    This island is held in the staking contract. Its staking
+                    wallet has not been verified yet.
+                  </p>
+                )}
+                <IslandUnstake key={token.tokenId} token={token} />
                 <dl className="mt-5 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-line bg-white p-4">
                     <dt className="text-xs font-bold text-muted">Minted</dt>

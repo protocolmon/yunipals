@@ -1,4 +1,5 @@
 import { isAddress } from "viem";
+import { environment } from "@/environment";
 
 import {
   fetchIndexerJson,
@@ -14,6 +15,7 @@ const apiPath = `/v2/collections/${islandsCollectionId}`;
 
 export type IslandEdition = "Genesis" | "Personal";
 export type IslandsFilters = {
+  holding?: "all" | "wallet" | "staked";
   edition?: IslandEdition;
   owner?: EvmAddress;
   sort: "token-id-asc" | "token-id-desc";
@@ -42,6 +44,12 @@ export type IslandToken = {
     attributes: TokenAttribute[];
   } | null;
   metadataStatus: "published" | "retry" | "pending";
+  staking?: {
+    status: "staked" | "unverified" | "none";
+    staker: EvmAddress | null;
+    contractAddress: EvmAddress;
+    checkedBlock: string | null;
+  } | null;
 };
 
 export type IslandsStats = {
@@ -64,9 +72,17 @@ export type IslandTransfer = {
   lifecycle: number;
 };
 
-type IslandPage<T> = {
+export type IslandPage<T> = {
   items: T[];
   nextCursor: string | null;
+  total?: number;
+  complete?: boolean;
+  stakingStatus?: {
+    enabled: boolean;
+    ready: boolean;
+    checkedBlock: string | null;
+    reason: string | null;
+  };
 };
 
 export type IslandDetail = {
@@ -98,6 +114,9 @@ export function parseIslandsFilters(params: URLSearchParams): IslandsFilters {
   const edition = params.get("edition");
   const owner = params.get("owner")?.trim();
   const sort = params.get("sort") || "token-id-asc";
+  const holding = params.get("holding") || "all";
+  if (!["all", "wallet", "staked"].includes(holding))
+    throw new Error("Choose a valid island holding filter.");
   if (edition && edition !== "Genesis" && edition !== "Personal") {
     throw new Error("Choose either Genesis or Personal islands.");
   }
@@ -110,7 +129,8 @@ export function parseIslandsFilters(params: URLSearchParams): IslandsFilters {
   return {
     edition: edition ? (edition as IslandEdition) : undefined,
     owner: owner ? (owner.toLowerCase() as EvmAddress) : undefined,
-    sort
+    sort,
+    holding: holding as IslandsFilters["holding"]
   };
 }
 
@@ -125,7 +145,11 @@ export function islandDetailHref(tokenId: string) {
 export function islandsTokensPath(filters: IslandsFilters, cursor?: string) {
   const params = new URLSearchParams({ limit: "24", sort: filters.sort });
   if (filters.edition) params.set("edition", filters.edition);
-  if (filters.owner) params.set("owner", filters.owner);
+  if (filters.owner) {
+    params.set("owner", filters.owner);
+    if (environment.islandStakingEnabled)
+      params.set("holding", filters.holding ?? "all");
+  }
   if (cursor) params.set("cursor", cursor);
   return `${apiPath}/tokens?${params}`;
 }

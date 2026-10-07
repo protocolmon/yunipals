@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { PGlite } from "@electric-sql/pglite";
 import { Hono } from "hono";
 import type { Pool } from "pg";
@@ -21,6 +22,11 @@ import {
 } from "../lib/islands/verify.js";
 import { transferEventId } from "../lib/ownership/transfer.js";
 import { bnbReadSchemaStatements } from "../lib/bnb/read-schema.js";
+import {
+  islandStakingAddress,
+  syncIslandStaking,
+  type StakingChainReader
+} from "../lib/islands/staking.js";
 
 const db = new PGlite();
 const query = (sql: string, params?: unknown[]) => db.query(sql, params);
@@ -81,12 +87,13 @@ async function mint(
     ]
   );
 }
-function app(enabled = true, ready?: boolean) {
+function app(enabled = true, ready?: boolean, staking = false) {
   const result = new Hono();
   registerIslandsRoutes(result, {
     pool,
     schemaName: "public",
     enabled: () => enabled,
+    stakingEnabled: () => staking,
     ...(ready === undefined ? {} : { checkReadiness: async () => ({ ready }) })
   });
   return result;
@@ -102,19 +109,12 @@ function chain(ids = [1n], owners = [owner]): IslandChainReader {
 }
 
 beforeAll(async () => {
-  await db.exec(`CREATE SCHEMA metadata; CREATE SCHEMA metadata_source;
-    CREATE TABLE metadata.chain_readiness(collection text PRIMARY KEY CHECK(collection IN ('ethereum','base','polygon','bnb')),
-      state text NOT NULL,checkpoint_block numeric(78,0),reason text,updated_at timestamptz DEFAULT now(),verified_at timestamptz);
-    CREATE TABLE metadata_source.source_blob(content_hash text PRIMARY KEY,payload jsonb NOT NULL,created_at timestamptz DEFAULT now());
-    CREATE TABLE public.token(collection text,chain_id int,contract_address text,token_id text,owner text,burned boolean,lifecycle int,
-      mint_block bigint,mint_timestamp bigint,last_transfer_block bigint,last_transfer_timestamp bigint,last_transaction_hash text,
-      PRIMARY KEY(collection,token_id));
-    CREATE TABLE public.token_lifecycle(collection text,token_id text,lifecycle int,minted_to text,mint_block bigint,mint_timestamp bigint,
-      mint_transaction_hash text,burned_at_block bigint,burned_at_timestamp bigint,burn_transaction_hash text,PRIMARY KEY(collection,token_id,lifecycle));
-    CREATE TABLE public.transfer_event(id text PRIMARY KEY,collection text,chain_id int,contract_address text,token_id text,lifecycle int,
-      "from" text,"to" text,block_number bigint,block_timestamp bigint,transaction_hash text,transaction_index int,log_index int);
-    CREATE TABLE public._ponder_checkpoint(chain_id bigint,latest_checkpoint text);
-    CREATE TABLE public._ponder_meta(key text PRIMARY KEY,value jsonb);`);
+  await db.exec(
+    readFileSync(
+      new URL("./fixtures/islands-schema.sql", import.meta.url),
+      "utf8"
+    )
+  );
   for (const migration of islandsMigrations) await db.exec(migration);
   await db.exec(
     "CREATE SCHEMA bnb_indexer; CREATE SCHEMA yunipals_read_v4; CREATE TABLE bnb_indexer.token(LIKE public.token)"
@@ -128,7 +128,8 @@ beforeAll(async () => {
 }, 30_000);
 beforeEach(async () => {
   await db.exec(`TRUNCATE public.token,public.token_lifecycle,public.transfer_event,metadata.island_publication,
-    metadata_source.island_revision,metadata_source.source_blob,metadata.chain_readiness,metadata.island_verification,public._ponder_checkpoint,public._ponder_meta CASCADE`);
+    metadata_source.island_revision,metadata_source.source_blob,metadata.chain_readiness,metadata.island_verification,public._ponder_checkpoint,public._ponder_meta,
+    metadata.island_staking_scan,metadata.island_staking_position CASCADE`);
   await query("INSERT INTO public._ponder_checkpoint VALUES(1,$1)", [
     checkpoint
   ]);
@@ -502,5 +503,264 @@ describe("Islands finalized ownership verification", () => {
     await expect(
       verifyIslandsOwnership(pool, "public", chain(), true)
     ).rejects.toThrow("mint_state_inconsistent");
+  });
+});
+
+async function deposit(tokenId: string, from = owner, sequence = 1) {
+  const tx = `0x${String(sequence + 20).repeat(32)}`;
+  const eventId = transferEventId(
+    "ethereum-islands",
+    tx as `0x${string}`,
+    Number(tokenId)
+  );
+  await query(
+    `UPDATE public.token SET owner=$2,last_transfer_block=$3,last_transaction_hash=$4 WHERE collection='ethereum-islands' AND token_id=$1`,
+    [
+      tokenId,
+      islandStakingAddress,
+      (block - 100n + BigInt(sequence)).toString(),
+      tx
+    ]
+  );
+  await query(
+    `INSERT INTO public.transfer_event VALUES($1,'ethereum-islands',1,$2,$3,1,$4,$5,$6,2,$7,0,$8)`,
+    [
+      eventId,
+      islandCollection.address,
+      tokenId,
+      from,
+      islandStakingAddress,
+      (block - 100n + BigInt(sequence)).toString(),
+      tx,
+      Number(tokenId)
+    ]
+  );
+  return eventId;
+}
+function stakingChain(
+  ids: string[],
+  stakes: Record<string, string[]> = { [owner]: ids }
+): StakingChainReader {
+  return {
+    finalizedBlock: async () => ({ number: block, hash }),
+    blockHash: async () => hash,
+    islandContract: async () => islandCollection.address,
+    custodyBalance: async () => BigInt(ids.length),
+    owners: async (batch) => batch.map(() => islandStakingAddress),
+    stakedIslands: async (wallet) => (stakes[wallet] ?? []).map(BigInt)
+  };
+}
+
+describe("Verified legacy Island staking", () => {
+  it("combines wallet and verified stakes before pagination without rewriting custody", async () => {
+    await mint("1");
+    await mint("2");
+    await mint("10");
+    await deposit("1");
+    await deposit("10");
+    expect(
+      await syncIslandStaking(pool, "public", stakingChain(["1", "10"]))
+    ).toMatchObject({ custody: 2, verified: 2 });
+    const api = app(true, true, true);
+    const first = await (
+      await api.request(`${root}/owners/${owner}/tokens?holding=all&limit=2`)
+    ).json();
+    expect(first).toMatchObject({
+      total: 3,
+      complete: true,
+      stakingStatus: { ready: true }
+    });
+    expect(first.items.map((x: { tokenId: string }) => x.tokenId)).toEqual([
+      "1",
+      "2"
+    ]);
+    expect(first.items[0]).toMatchObject({
+      owner: islandStakingAddress,
+      staking: { status: "staked", staker: owner }
+    });
+    const last = await (
+      await api.request(
+        `${root}/owners/${owner}/tokens?holding=all&limit=2&cursor=${first.nextCursor}`
+      )
+    ).json();
+    expect(last.items.map((x: { tokenId: string }) => x.tokenId)).toEqual([
+      "10"
+    ]);
+    expect(last.nextCursor).toBeNull();
+    expect(
+      (
+        await api.request(
+          `${root}/owners/${owner}/tokens?holding=wallet&cursor=${first.nextCursor}`
+        )
+      ).status
+    ).toBe(409);
+    const legacy = await (
+      await api.request(`${root}/tokens?owner=${owner}`)
+    ).json();
+    expect(legacy.items.map((x: { tokenId: string }) => x.tokenId)).toEqual([
+      "2"
+    ]);
+    const staked = await (
+      await api.request(`${root}/tokens?owner=${owner}&holding=staked`)
+    ).json();
+    expect(staked.total).toBe(2);
+    const detail = await (await api.request(`${root}/tokens/1`)).json();
+    expect(detail.token.staking.staker).toBe(owner);
+  });
+
+  it("does not attribute a direct custody transfer without staking membership", async () => {
+    await mint("1");
+    await deposit("1");
+    expect(
+      await syncIslandStaking(pool, "public", stakingChain(["1"], {}))
+    ).toMatchObject({ verified: 0, unverified: 1 });
+    const api = app(true, true, true);
+    expect(
+      (
+        await (
+          await api.request(`${root}/tokens?owner=${owner}&holding=all`)
+        ).json()
+      ).items
+    ).toEqual([]);
+    expect(
+      (await (await api.request(`${root}/tokens/1`)).json()).token.staking
+        .status
+    ).toBe("unverified");
+  });
+
+  it("invalidates attribution on restaking, replay, burn, or expired verification", async () => {
+    await mint("1");
+    await deposit("1");
+    await syncIslandStaking(pool, "public", stakingChain(["1"]));
+    const api = app(true, true, true);
+    await deposit("1", recipient, 2);
+    let page = await (
+      await api.request(`${root}/tokens?owner=${owner}&holding=all`)
+    ).json();
+    expect(page.items).toEqual([]);
+    expect(page.complete).toBe(false);
+    await syncIslandStaking(
+      pool,
+      "public",
+      stakingChain(["1"], { [recipient]: ["1"] })
+    );
+    expect(
+      (
+        await (
+          await api.request(`${root}/tokens?owner=${recipient}&holding=all`)
+        ).json()
+      ).total
+    ).toBe(1);
+    await query(
+      "UPDATE metadata.island_staking_scan SET verified_at=now()-interval '16 minutes'"
+    );
+    page = await (
+      await api.request(`${root}/tokens?owner=${recipient}&holding=all`)
+    ).json();
+    expect(page.items).toEqual([]);
+    expect(page.complete).toBe(false);
+    await syncIslandStaking(
+      pool,
+      "public",
+      stakingChain(["1"], { [recipient]: ["1"] })
+    );
+    await query(
+      `UPDATE public._ponder_meta SET value='{"is_ready":"1","build_id":"new-build"}' WHERE key='app'`
+    );
+    expect(
+      (
+        await (
+          await api.request(`${root}/tokens?owner=${recipient}&holding=all`)
+        ).json()
+      ).complete
+    ).toBe(false);
+    await query("UPDATE public.token SET burned=true");
+    expect(
+      (
+        await (
+          await api.request(`${root}/tokens?owner=${recipient}&holding=all`)
+        ).json()
+      ).items
+    ).toEqual([]);
+  });
+
+  it("keeps withdrawn islands visible once custody returns to the wallet", async () => {
+    await mint("1");
+    await deposit("1");
+    await syncIslandStaking(pool, "public", stakingChain(["1"]));
+    await query("UPDATE public.token SET owner=$1", [owner]);
+    const page = await (
+      await app(true, true, true).request(
+        `${root}/tokens?owner=${owner}&holding=all`
+      )
+    ).json();
+    expect(page.items).toHaveLength(1);
+    expect(page.items[0]).toMatchObject({
+      owner,
+      staking: { status: "none", staker: null }
+    });
+  });
+
+  it("rejects incomplete RPC, custody mismatches and finalized history changes atomically", async () => {
+    await mint("1");
+    await deposit("1");
+    const reader = stakingChain(["1"]);
+    await expect(
+      syncIslandStaking(pool, "public", {
+        ...reader,
+        stakedIslands: async () => {
+          throw new Error("rpc unavailable");
+        }
+      })
+    ).rejects.toThrow("rpc unavailable");
+    await expect(
+      syncIslandStaking(pool, "public", {
+        ...reader,
+        custodyBalance: async () => 2n
+      })
+    ).rejects.toThrow("count_mismatch");
+    await expect(
+      syncIslandStaking(pool, "public", {
+        ...reader,
+        owners: async () => [owner]
+      })
+    ).rejects.toThrow("custody_mismatch");
+    await expect(
+      syncIslandStaking(pool, "public", {
+        ...reader,
+        blockHash: async () => `0x${"ab".repeat(32)}`
+      })
+    ).rejects.toThrow("block_changed");
+    expect(
+      (await query("SELECT * FROM metadata.island_staking_scan")).rows
+    ).toEqual([]);
+    const api = app(true, true, true);
+    expect(
+      (
+        await (
+          await api.request(`${root}/tokens?owner=${owner}&holding=all`)
+        ).json()
+      ).complete
+    ).toBe(false);
+  });
+
+  it("reports disabled verification explicitly and validates holding scopes", async () => {
+    await mint("1");
+    const api = app(true, true);
+    const page = await (
+      await api.request(`${root}/tokens?owner=${owner}&holding=all`)
+    ).json();
+    expect(page).toMatchObject({
+      total: 1,
+      complete: false,
+      stakingStatus: { enabled: false }
+    });
+    for (const search of [
+      "holding=staked",
+      `owner=${owner}&holding=bad`,
+      `owner=${owner}&holding=all&holding=wallet`
+    ]) {
+      expect((await api.request(`${root}/tokens?${search}`)).status).toBe(400);
+    }
   });
 });

@@ -20,6 +20,8 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { environment } from "@/environment";
+import { CollectorIslands } from "./components/CollectorIslands";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { TokenCard } from "@/components/TokenCard";
@@ -114,6 +116,43 @@ function collectorErrorMessage(error: unknown) {
 }
 
 export function CollectorPage() {
+  const { address = "" } = useParams();
+  const [params] = useSearchParams();
+  const islands =
+    environment.islandStakingEnabled && params.get("collection") === "islands";
+  return (
+    <>
+      {environment.islandStakingEnabled && (
+        <nav
+          aria-label="Collector collections"
+          className="mx-auto flex max-w-6xl gap-3 px-4 pt-6"
+        >
+          <Link
+            to={`/collector/${encodeURIComponent(address)}`}
+            aria-current={!islands ? "page" : undefined}
+            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
+          >
+            Yunipals
+          </Link>
+          <Link
+            to={`/collector/${encodeURIComponent(address)}?collection=islands`}
+            aria-current={islands ? "page" : undefined}
+            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
+          >
+            Islands
+          </Link>
+        </nav>
+      )}
+      {islands ? (
+        <CollectorIslands ownerInput={address.trim()} />
+      ) : (
+        <YunipalsCollectorPage />
+      )}
+    </>
+  );
+}
+
+function YunipalsCollectorPage() {
   const { address = "" } = useParams();
   const { address: connectedAddress, isConnected } = useAccount();
   const ownerInput = address.trim();
@@ -578,9 +617,7 @@ export function CollectorPage() {
               nameSearch={
                 collection.capabilities.data?.namePrefixSearch === true
               }
-              rarityRange={
-                collection.capabilities.data?.rarityRange === true
-              }
+              rarityRange={collection.capabilities.data?.rarityRange === true}
               onChange={setFilters}
               onRetryFacets={() => void facetsQuery.refetch()}
             />

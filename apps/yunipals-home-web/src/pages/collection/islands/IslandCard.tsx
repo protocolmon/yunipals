@@ -39,6 +39,16 @@ export function IslandCard({
           <span className="mt-3 inline-flex rounded-full bg-mint/35 px-2.5 py-1 text-[11px] font-bold text-ink">
             {token.edition}
           </span>
+          {token.staking?.status === "staked" && (
+            <span className="ml-2 mt-3 inline-flex rounded-full bg-lavender/40 px-2.5 py-1 text-[11px] font-bold text-ink">
+              Staked
+            </span>
+          )}
+          {token.staking?.status === "unverified" && (
+            <span className="mt-2 block text-xs text-muted">
+              Staking verification pending
+            </span>
+          )}
         </div>
       </Link>
     </article>

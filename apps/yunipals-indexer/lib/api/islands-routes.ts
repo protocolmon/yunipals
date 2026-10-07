@@ -11,12 +11,18 @@ import {
   islandTokenRelation
 } from "../islands/queries.js";
 import { sqlIdentifier } from "../offchain/sql.js";
+import {
+  stakingColumns,
+  stakingReadiness,
+  stakingRelation
+} from "../islands/staking.js";
 
 export type IslandsRouteDependencies = {
   pool: Pick<Pool, "query">;
   schemaName: string;
   enabled?: () => boolean;
   checkReadiness?: () => Promise<{ ready: boolean }>;
+  stakingEnabled?: () => boolean;
 };
 
 type Cursor = { v: 1; scope: string; tokenId: string };
@@ -61,6 +67,13 @@ export function registerIslandsRoutes(
   const checkReadiness =
     dependencies.checkReadiness ?? (() => islandsReadiness(pool, schemaName));
   const root = `/v2/collections/${islandCollection.slug}`;
+  const stakingEnabled =
+    dependencies.stakingEnabled ??
+    (() => process.env.API_ISLAND_STAKING_ENABLED === "true");
+  const relation = () =>
+    `${islandTokenRelation(schemaName)} ${stakingEnabled() ? stakingRelation(schemaName) : ""}`;
+  const columns = () =>
+    `${islandTokenColumns},${stakingEnabled() ? stakingColumns : "NULL::jsonb AS staking"}`;
   const router = new Hono();
 
   router.onError((_error, c) =>
@@ -91,6 +104,9 @@ export function registerIslandsRoutes(
     await next();
   });
   router.get("/", (c) => c.json(descriptor));
+  router.get("/staking-status", async (c) =>
+    c.json(await stakingReadiness(pool, schemaName, stakingEnabled()))
+  );
 
   async function listTokens(url: URL, pathOwner?: string) {
     const allowed = new Set([
@@ -99,7 +115,8 @@ export function registerIslandsRoutes(
       "sort",
       "owner",
       "burned",
-      "edition"
+      "edition",
+      "holding"
     ]);
     for (const key of url.searchParams.keys()) {
       if (!allowed.has(key) || url.searchParams.getAll(key).length !== 1)
@@ -120,6 +137,12 @@ export function registerIslandsRoutes(
       return { error: "invalid_edition", status: 400 as const };
     const queryOwner = url.searchParams.get("owner");
     const owner = (pathOwner ?? queryOwner)?.toLowerCase();
+    const holding = url.searchParams.get("holding") ?? "wallet";
+    if (
+      !["wallet", "all", "staked"].includes(holding) ||
+      (!owner && url.searchParams.has("holding"))
+    )
+      return { error: "invalid_holding", status: 400 as const };
     if (
       (pathOwner !== undefined || queryOwner !== null) &&
       (!owner || !isAddress(owner) || /^0x0{40}$/.test(owner))
@@ -136,7 +159,8 @@ export function registerIslandsRoutes(
           sort,
           burned,
           edition,
-          owner: owner ?? null
+          owner: owner ?? null,
+          holding
         })
       )
       .digest("hex");
@@ -152,13 +176,21 @@ export function registerIslandsRoutes(
     }
     if (owner) {
       params.push(owner);
-      conditions.push(`t.owner=$${params.length} AND NOT t.burned`);
+      const walletMatch = `t.owner=$${params.length}`;
+      const stakeMatch = stakingEnabled()
+        ? `sp.staker=$${params.length}`
+        : "false";
+      conditions.push(
+        `(${holding === "wallet" ? walletMatch : holding === "staked" ? stakeMatch : `${walletMatch} OR ${stakeMatch}`}) AND NOT t.burned`
+      );
     }
     if (edition)
       conditions.push(
         `t.token_id::numeric${edition === "Genesis" ? "<=" : ">"}${islandCollection.genesisLimit}`
       );
     const ascending = sort === "token-id-asc";
+    const countParams = [...params];
+    const countConditions = [...conditions];
     if (cursor) {
       params.push(cursor.tokenId);
       conditions.push(
@@ -169,14 +201,28 @@ export function registerIslandsRoutes(
     const result = await pool.query<
       Record<string, unknown> & { tokenId: string }
     >(
-      `SELECT ${islandTokenColumns} FROM ${islandTokenRelation(schemaName)}
+      `SELECT ${columns()} FROM ${relation()}
         WHERE ${conditions.join(" AND ")} ORDER BY t.token_id::numeric ${ascending ? "ASC" : "DESC"} LIMIT $${params.length}`,
       params
     );
     const items = result.rows.slice(0, limit);
+    const stakingStatus = await stakingReadiness(
+      pool,
+      schemaName,
+      stakingEnabled()
+    );
+    const total = (
+      await pool.query<{ total: number }>(
+        `SELECT count(*)::int AS total FROM ${relation()} WHERE ${countConditions.join(" AND ")}`,
+        countParams
+      )
+    ).rows[0]!.total;
     return {
       body: {
         ...descriptor,
+        total,
+        stakingStatus,
+        complete: holding === "wallet" || stakingStatus.ready,
         items,
         limit,
         nextCursor:
@@ -207,7 +253,7 @@ export function registerIslandsRoutes(
     if (!canonicalTokenId(tokenId))
       return c.json({ error: "invalid_token_id" }, 400);
     const result = await pool.query(
-      `SELECT ${islandTokenColumns} FROM ${islandTokenRelation(schemaName)}
+      `SELECT ${columns()} FROM ${relation()}
       WHERE ${islandIdentityPredicate} AND t.token_id=$1`,
       [tokenId]
     );
@@ -220,7 +266,11 @@ export function registerIslandsRoutes(
       WHERE collection=$1 AND token_id=$2 ORDER BY lifecycle LIMIT 100`,
       [islandCollection.slug, tokenId]
     );
-    return c.json({ token: result.rows[0], lifecycles: lifecycles.rows });
+    return c.json({
+      token: result.rows[0],
+      lifecycles: lifecycles.rows,
+      stakingStatus: await stakingReadiness(pool, schemaName, stakingEnabled())
+    });
   });
   router.get("/tokens/:tokenId/transfers", async (c) => {
     const tokenId = c.req.param("tokenId");
