@@ -15,6 +15,7 @@ import { CatalogFilters } from "@/components/marketplace/CatalogFilters";
 import { collectionChainDetails as chainDetails } from "@/data/chains";
 import {
   collectionChains,
+  includesSolana,
   toEvmCollectionFilters,
   type CollectionChain
 } from "@/lib/collectionBrowserFilters";
@@ -656,7 +657,12 @@ export function CollectionFilterPanel({
         max={rarityFacet?.max}
         onChange={onChange}
       />
-      <MetadataFilter filters={filters} facets={facets} onChange={onChange} />
+      {/* Solana metadata totals include burned assets; omit misleading counts. */}
+      <MetadataFilter
+        filters={filters}
+        facets={includesSolana(filters) ? undefined : facets}
+        onChange={onChange}
+      />
 
       {facetsLoading && (
         <div className="space-y-2 p-4" aria-label="Loading trait filters">
