@@ -8,6 +8,8 @@ export const environment = {
     import.meta.env?.VITE_WALLETCONNECT_PROJECT_ID?.trim() || "",
   fixtures: import.meta.env?.MODE === "fixtures",
   production: import.meta.env?.PROD === true,
+  islandStakingEnabled: import.meta.env?.VITE_ISLAND_STAKING_ENABLED === "true",
+  islandUnstakeEnabled: import.meta.env?.VITE_ISLAND_UNSTAKE_ENABLED === "true",
   exomonEnabled:
     import.meta.env?.MODE === "fixtures" ||
     import.meta.env?.VITE_EXOMON_ENABLED === "true",

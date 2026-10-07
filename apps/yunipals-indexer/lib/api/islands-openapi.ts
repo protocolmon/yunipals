@@ -1,4 +1,15 @@
 const collectionRoot = "/v2/collections/ethereum-islands";
+const holdingParameter = {
+  name: "holding",
+  in: "query",
+  schema: {
+    type: "string",
+    enum: ["wallet", "all", "staked"],
+    default: "wallet"
+  },
+  description:
+    "Requires an owner. all includes verified legacy stakes; owner remains the on-chain custody address. total is scoped to these filters. complete=false means staking verification is unavailable or catching up; items then contain only currently verified matches. stakingStatus describes verification readiness."
+};
 const limitParameter = {
   name: "limit",
   in: "query",
@@ -30,6 +41,13 @@ const gatedResponses = {
 };
 
 export const islandsOpenApiPaths = {
+  [`${collectionRoot}/staking-status`]: {
+    get: {
+      tags: ["Operations"],
+      summary: "Read legacy Island staking verification freshness",
+      responses: gatedResponses
+    }
+  },
   [collectionRoot]: {
     get: {
       tags: ["Collection"],
@@ -64,6 +82,7 @@ export const islandsOpenApiPaths = {
       summary: "List Ethereum Islands",
       parameters: [
         limitParameter,
+        holdingParameter,
         cursorParameter,
         {
           name: "sort",
@@ -110,6 +129,7 @@ export const islandsOpenApiPaths = {
           schema: { type: "string", pattern: "^0x[0-9a-fA-F]{40}$" }
         },
         limitParameter,
+        holdingParameter,
         cursorParameter,
         {
           name: "sort",

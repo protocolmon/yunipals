@@ -827,14 +827,20 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
   };
   const waitForRateLimitRecovery = async (pool: FreeEndpointState[]) => {
     const now = Date.now();
-    const delay = Math.max(
+    let delay = Math.max(
       0,
       Math.min(...pool.map((item) => item.retryAt)) - now
     );
     if (delay > freeRateLimitCooldownMs + 50) return false;
-    if (delay) {
+    while (delay > 0) {
       traffic.freeRateLimitWaitMs += delay;
       await new Promise((resolve) => setTimeout(resolve, delay));
+      // Timers can wake before the wall-clock deadline. Do not spend the last
+      // retry sweep while every endpoint is still cooling down.
+      delay = Math.max(
+        0,
+        Math.min(...pool.map((item) => item.retryAt)) - Date.now()
+      );
     }
     return true;
   };
