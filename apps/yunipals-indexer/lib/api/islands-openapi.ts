@@ -8,7 +8,7 @@ const holdingParameter = {
     default: "wallet"
   },
   description:
-    "Requires an owner. all includes verified legacy stakes; owner remains the on-chain custody address. total is scoped to these filters. complete=false means staking verification is unavailable or catching up; items then contain only currently verified matches. stakingStatus describes verification readiness."
+    "staked returns verified legacy stakes, optionally filtered by owner (the staking wallet). all includes wallet holdings and verified stakes for an owner, or the full collection without an owner. Explicit wallet requires an owner. Omitting holding keeps direct-ownership semantics. owner in returned tokens remains the on-chain custody address. total is scoped to these filters. complete=false means required staking verification is unavailable or catching up; items then contain only currently verified matches. stakingStatus describes verification readiness."
 };
 const limitParameter = {
   name: "limit",

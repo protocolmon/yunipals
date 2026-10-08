@@ -11,6 +11,7 @@ import {
   parseIslandsFilters
 } from "@/lib/islandsIndexer";
 import { IndexerError } from "@/lib/yunipalsIndexer";
+import { environment } from "@/environment";
 
 const owner = "0x6baad25b4807860e9fc3a0d2b6d1da4c895cfca8";
 
@@ -104,5 +105,38 @@ test("island requests use the shared API errors and pass cancellation to fetch",
     );
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test("staked browsing sends holding without a wallet and preserves combined filters", () => {
+  const enabled = environment.islandStakingEnabled;
+  try {
+    environment.islandStakingEnabled = true;
+    const filters = parseIslandsFilters(
+      new URLSearchParams(
+        "collection=islands&holding=staked&edition=Genesis&sort=token-id-desc"
+      )
+    );
+    const path = new URL(
+      islandsTokensPath(filters, "next-page"),
+      "https://example.com"
+    );
+    assert.equal(path.searchParams.get("holding"), "staked");
+    assert.equal(path.searchParams.has("owner"), false);
+    assert.equal(path.searchParams.get("edition"), "Genesis");
+    assert.equal(path.searchParams.get("sort"), "token-id-desc");
+    assert.equal(path.searchParams.get("cursor"), "next-page");
+    const walletPath = new URL(
+      islandsTokensPath({ ...filters, owner }),
+      "https://example.com"
+    );
+    assert.equal(walletPath.searchParams.get("holding"), "staked");
+    assert.equal(walletPath.searchParams.get("owner"), owner);
+
+    environment.islandStakingEnabled = false;
+    const disabled = new URL(islandsTokensPath(filters), "https://example.com");
+    assert.equal(disabled.searchParams.has("holding"), false);
+  } finally {
+    environment.islandStakingEnabled = enabled;
   }
 });

@@ -1,6 +1,6 @@
 # Legacy Island collections and withdrawal
 
-The Islands collector tab at `/collector/:wallet?collection=islands` includes wallet NFTs and verified stakes. The existing Islands explorer uses the same `holding=all|wallet|staked` API filter. The API still returns the staking contract as `owner`; `staking.staker` identifies the verified collector. Existing clients that omit `holding` keep direct-ownership semantics. Islands remain outside monster scores and rarity rankings.
+The Islands collector tab at `/collector/:wallet?collection=islands` includes wallet NFTs and verified stakes. The Islands explorer offers **All holdings** and **Staked** without requiring a wallet; `/?collection=islands&holding=staked` links directly to verified stakes across the collection. Selecting a wallet also offers **In wallet**. Holding filters combine with edition, numeric sorting and pagination, and clearing a wallet preserves **Staked**. The API uses `holding=all|wallet|staked`; explicit `wallet` requires an owner, while `staked` can span all verified staking wallets. The API still returns the staking contract as `owner`; `staking.staker` identifies the verified collector. Existing clients that omit `holding` keep direct-ownership semantics. Islands remain outside monster scores and rarity rankings.
 
 The supported Ethereum contracts are the Island NFT at `0xa22e2f53ca787414dc0643c399f92234949e2305` and legacy staking at `0x6baad25b4807860e9fc3a0d2b6d1da4c895cfca8`. No new staking, reward dashboard, bulk withdrawal or replacement contract is introduced.
 
