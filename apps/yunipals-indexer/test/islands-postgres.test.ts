@@ -552,6 +552,115 @@ function stakingChain(
 }
 
 describe("Verified legacy Island staking", () => {
+  it("filters stakes across wallets before counting, sorting and paginating", async () => {
+    for (const id of ["1", "2", "10", "11", "1001"]) await mint(id);
+    await deposit("1");
+    await deposit("10", recipient);
+    await deposit("11"); // Custody without verified staking membership.
+    await deposit("1001");
+    await syncIslandStaking(
+      pool,
+      "public",
+      stakingChain(["1", "10", "11", "1001"], {
+        [owner]: ["1", "1001"],
+        [recipient]: ["10"]
+      })
+    );
+    const api = app(true, true, true);
+    const search = "holding=staked&edition=Genesis&sort=token-id-desc&limit=1";
+    const first = await (await api.request(`${root}/tokens?${search}`)).json();
+    expect(first).toMatchObject({
+      total: 2,
+      complete: true,
+      items: [
+        {
+          tokenId: "10",
+          owner: islandStakingAddress,
+          staking: { status: "staked", staker: recipient }
+        }
+      ]
+    });
+    expect(first.nextCursor).toEqual(expect.any(String));
+    const last = await (
+      await api.request(`${root}/tokens?${search}&cursor=${first.nextCursor}`)
+    ).json();
+    expect(last).toMatchObject({
+      total: 2,
+      items: [{ tokenId: "1" }],
+      nextCursor: null
+    });
+    for (const changed of [
+      "holding=all",
+      `${search}&owner=${owner}`,
+      "holding=staked&edition=Personal"
+    ])
+      expect(
+        (
+          await api.request(
+            `${root}/tokens?${changed}&cursor=${first.nextCursor}`
+          )
+        ).status
+      ).toBe(409);
+    const allStakes = await (
+      await api.request(`${root}/tokens?holding=staked`)
+    ).json();
+    expect(allStakes.total).toBe(3);
+    expect(allStakes.items.map((x: { tokenId: string }) => x.tokenId)).toEqual([
+      "1",
+      "10",
+      "1001"
+    ]);
+    const personal = await (
+      await api.request(`${root}/tokens?holding=staked&edition=Personal`)
+    ).json();
+    expect(personal).toMatchObject({ total: 1, items: [{ tokenId: "1001" }] });
+    const walletStakes = await (
+      await api.request(`${root}/tokens?holding=staked&owner=${recipient}`)
+    ).json();
+    expect(walletStakes).toMatchObject({
+      total: 1,
+      items: [{ tokenId: "10" }]
+    });
+    const all = await (await api.request(`${root}/tokens?holding=all`)).json();
+    expect(all.total).toBe(5);
+
+    await query("UPDATE public.token SET owner=$1 WHERE token_id='10'", [
+      recipient
+    ]);
+    const withdrawn = await (
+      await api.request(`${root}/tokens?holding=staked`)
+    ).json();
+    expect(withdrawn.items.map((x: { tokenId: string }) => x.tokenId)).toEqual([
+      "1",
+      "1001"
+    ]);
+  });
+
+  it("keeps global stakes incomplete when verification is stale or disabled", async () => {
+    await mint("1");
+    await deposit("1");
+    await syncIslandStaking(pool, "public", stakingChain(["1"]));
+    await query(
+      "UPDATE metadata.island_staking_scan SET verified_at=now()-interval '16 minutes'"
+    );
+    for (const enabled of [true, false]) {
+      const api = app(true, true, enabled);
+      const staked = await (
+        await api.request(`${root}/tokens?holding=staked`)
+      ).json();
+      expect(staked).toMatchObject({
+        total: 0,
+        items: [],
+        complete: false,
+        stakingStatus: { ready: false }
+      });
+      const all = await (
+        await api.request(`${root}/tokens?holding=all`)
+      ).json();
+      expect(all).toMatchObject({ total: 1, complete: true });
+    }
+  });
+
   it("combines wallet and verified stakes before pagination without rewriting custody", async () => {
     await mint("1");
     await mint("2");
@@ -756,7 +865,8 @@ describe("Verified legacy Island staking", () => {
       stakingStatus: { enabled: false }
     });
     for (const search of [
-      "holding=staked",
+      "holding=wallet",
+      "holding=bad",
       `owner=${owner}&holding=bad`,
       `owner=${owner}&holding=all&holding=wallet`
     ]) {

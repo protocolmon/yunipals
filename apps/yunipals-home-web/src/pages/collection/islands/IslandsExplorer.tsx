@@ -71,7 +71,8 @@ export function IslandsExplorer() {
     const search = new URLSearchParams({ collection: "islands" });
     if (next.edition) search.set("edition", next.edition);
     if (next.owner) search.set("owner", next.owner);
-    if (next.owner && next.holding) search.set("holding", next.holding);
+    if (next.holding && (next.owner || next.holding === "staked"))
+      search.set("holding", next.holding);
     if (next.sort !== "token-id-asc") search.set("sort", next.sort);
     setParams(search);
   }
@@ -190,9 +191,12 @@ export function IslandsExplorer() {
               <h2 className="display mt-2 text-3xl text-ink sm:text-4xl">
                 {filters.owner
                   ? "Wallet islands"
-                  : filters.edition
-                    ? `${filters.edition} islands`
-                    : "All islands"}
+                  : filters.holding === "staked" &&
+                      environment.islandStakingEnabled
+                    ? "Staked islands"
+                    : filters.edition
+                      ? `${filters.edition} islands`
+                      : "All islands"}
               </h2>
               <p
                 className="mt-2 text-sm font-medium text-muted"
@@ -271,7 +275,7 @@ export function IslandsExplorer() {
               </button>
             </div>
           )}
-          {filters.owner && environment.islandStakingEnabled && (
+          {environment.islandStakingEnabled && (
             <div
               role="group"
               aria-label="Island holdings"
@@ -283,22 +287,24 @@ export function IslandsExplorer() {
                   ["wallet", "In wallet"],
                   ["staked", "Staked"]
                 ] as const
-              ).map(([holding, label]) => (
-                <button
-                  key={holding}
-                  type="button"
-                  aria-pressed={(filters.holding ?? "all") === holding}
-                  className={cn(
-                    filterButton,
-                    (filters.holding ?? "all") === holding
-                      ? "bg-ink text-white"
-                      : "bg-line/40 text-ink"
-                  )}
-                  onClick={() => updateFilters({ holding })}
-                >
-                  {label}
-                </button>
-              ))}
+              )
+                .filter(([holding]) => holding !== "wallet" || filters.owner)
+                .map(([holding, label]) => (
+                  <button
+                    key={holding}
+                    type="button"
+                    aria-pressed={(filters.holding ?? "all") === holding}
+                    className={cn(
+                      filterButton,
+                      (filters.holding ?? "all") === holding
+                        ? "bg-ink text-white"
+                        : "bg-line/40 text-ink"
+                    )}
+                    onClick={() => updateFilters({ holding })}
+                  >
+                    {label}
+                  </button>
+                ))}
             </div>
           )}
           {tokens.data?.pages[0]?.complete === false && (
@@ -341,7 +347,7 @@ export function IslandsExplorer() {
                     : "No islands found"}
                 </p>
                 <p className="mt-2 text-sm font-medium text-muted">
-                  Try another wallet or island edition.
+                  Try another wallet, island edition, or holding filter.
                 </p>
               </div>
             ) : (

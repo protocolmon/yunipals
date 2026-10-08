@@ -140,7 +140,7 @@ export function registerIslandsRoutes(
     const holding = url.searchParams.get("holding") ?? "wallet";
     if (
       !["wallet", "all", "staked"].includes(holding) ||
-      (!owner && url.searchParams.has("holding"))
+      (!owner && holding === "wallet" && url.searchParams.has("holding"))
     )
       return { error: "invalid_holding", status: 400 as const };
     if (
@@ -183,6 +183,9 @@ export function registerIslandsRoutes(
       conditions.push(
         `(${holding === "wallet" ? walletMatch : holding === "staked" ? stakeMatch : `${walletMatch} OR ${stakeMatch}`}) AND NOT t.burned`
       );
+    } else if (holding === "staked") {
+      conditions.push(stakingEnabled() ? "sp.staker IS NOT NULL" : "false");
+      conditions.push("NOT t.burned");
     }
     if (edition)
       conditions.push(
@@ -222,7 +225,10 @@ export function registerIslandsRoutes(
         ...descriptor,
         total,
         stakingStatus,
-        complete: holding === "wallet" || stakingStatus.ready,
+        complete:
+          holding === "wallet" ||
+          (!owner && holding === "all") ||
+          stakingStatus.ready,
         items,
         limit,
         nextCursor:

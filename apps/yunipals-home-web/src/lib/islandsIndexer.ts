@@ -145,11 +145,12 @@ export function islandDetailHref(tokenId: string) {
 export function islandsTokensPath(filters: IslandsFilters, cursor?: string) {
   const params = new URLSearchParams({ limit: "24", sort: filters.sort });
   if (filters.edition) params.set("edition", filters.edition);
-  if (filters.owner) {
-    params.set("owner", filters.owner);
-    if (environment.islandStakingEnabled)
-      params.set("holding", filters.holding ?? "all");
-  }
+  if (filters.owner) params.set("owner", filters.owner);
+  if (
+    environment.islandStakingEnabled &&
+    (filters.owner || filters.holding === "staked")
+  )
+    params.set("holding", filters.holding ?? "all");
   if (cursor) params.set("cursor", cursor);
   return `${apiPath}/tokens?${params}`;
 }
