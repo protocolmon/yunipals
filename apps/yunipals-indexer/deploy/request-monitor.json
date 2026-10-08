@@ -1,0 +1,34 @@
+{
+  "slow_seconds": 5,
+  "timeout_seconds": 12,
+  "failure_checks": 3,
+  "recovery_checks": 2,
+  "maximum_check_gap_seconds": 180,
+  "email_enabled": false,
+  "routes": [
+    {
+      "id": "evm-collection",
+      "name": "Main collection, rarity sort",
+      "kind": "evm",
+      "url": "https://api.yunipals.com/yunipals-indexer/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc"
+    },
+    {
+      "id": "solana-collection",
+      "name": "Solana collection, rarity sort",
+      "kind": "solana",
+      "url": "https://api.yunipals.com/yunipals-indexer/v1/tokens?chain=solana&limit=24&burned=false&metadata=all&sort=rarity-capped-desc"
+    },
+    {
+      "id": "islands-collection",
+      "name": "Islands collection",
+      "kind": "islands",
+      "url": "https://api.yunipals.com/yunipals-indexer/v2/collections/ethereum-islands/tokens?limit=24"
+    },
+    {
+      "id": "islands-staking",
+      "name": "Staked Islands verification",
+      "kind": "staking",
+      "url": "https://api.yunipals.com/yunipals-indexer/v2/collections/ethereum-islands/staking-status"
+    }
+  ]
+}

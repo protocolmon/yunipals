@@ -45,6 +45,8 @@ jobs:
       - run: pnpm test:web
       - run: pnpm test:fixtures
       - run: pnpm test:indexer
+      - name: Request monitor tests
+        run: python3 -m unittest discover -s apps/yunipals-indexer/scripts -p 'test_request_monitor.py' -v
 
   build:
     name: Build
