@@ -1,0 +1,22 @@
+[Unit]
+Description=Yunipals public request latency and availability monitoring
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+DynamicUser=true
+StateDirectory=yunipals-request-monitor
+StateDirectoryMode=0700
+WorkingDirectory=@INDEXER_DIR@
+EnvironmentFile=-/etc/yunipals-indexer/request-monitor.env
+LoadCredential=monitor-config:/etc/yunipals-indexer/request-monitor.json
+ExecStart=/usr/bin/python3 @INDEXER_DIR@/scripts/request_monitor.py --config ${CREDENTIALS_DIRECTORY}/monitor-config --state-dir /var/lib/yunipals-request-monitor
+TimeoutStartSec=240
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=256M
+CPUQuota=25%

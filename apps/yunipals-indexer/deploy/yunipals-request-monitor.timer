@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Yunipals public request latency every minute
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+AccuracySec=5
+Unit=yunipals-request-monitor.service
+
+[Install]
+WantedBy=timers.target
