@@ -66,6 +66,8 @@ import {
   DEFAULT_TITLE,
   usePageMetadata
 } from "@/hooks/usePageMetadata";
+import { useCollectibleAnalytics } from "@/hooks/useCollectibleAnalytics";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 import {
   clearCollectionFilters,
   clearMarketFilters,
@@ -134,6 +136,12 @@ function TokenDetail({
     queryKey: ["collection", "token", chain, tokenId],
     queryFn: ({ signal }) => fetchToken(chain, tokenId, signal)
   });
+  useCollectibleAnalytics(
+    Boolean(detailQuery.data),
+    `${chain}:${tokenId}`,
+    "yunipals",
+    chain
+  );
 
   usePageMetadata(
     detailQuery.data?.token.name
@@ -525,6 +533,10 @@ function CollectionExplorer() {
 
   const setFilters = useCallback(
     (nextFilters: CollectionFilters) => {
+      trackAnalyticsEvent("Collection Filter Applied", {
+        collection: "yunipals",
+        filter: nextFilters.sort !== filters.sort ? "sort" : "filters"
+      });
       setSelectedTrade(null);
       setSearchParams(
         serializeCollectionFilters(
@@ -631,31 +643,61 @@ function CollectionExplorer() {
     const value = lookup.trim();
     if (environment.exomonEnabled && isSolanaAddress(value)) {
       setLookupError("");
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "exomon",
+        search_type: "token",
+        outcome: "valid"
+      });
       navigate(`/collection/solana/${value}`);
       return;
     }
     if (/^\d+$/.test(value)) {
       if (selectedChain === "solana") {
+        trackAnalyticsEvent("Collection Search Submitted", {
+          collection: "exomon",
+          search_type: "invalid",
+          outcome: "invalid"
+        });
         setLookupError(
           "Enter the Solana mint address. Use Find collector to search a wallet."
         );
         return;
       }
       if (!selectedChain) {
+        trackAnalyticsEvent("Collection Search Submitted", {
+          collection: "yunipals",
+          search_type: "token",
+          outcome: "chain-required"
+        });
         setLookupError(
           "Choose exactly one chain before looking up a token ID."
         );
         return;
       }
       setLookupError("");
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "token",
+        outcome: "valid"
+      });
       navigate(`/collection/${selectedChain}/${value}`);
       return;
     }
     if (isOwnerInput(value)) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "collector",
+        outcome: "valid"
+      });
       setLookupError("");
       navigate(`/collector/${encodeURIComponent(value)}`);
       return;
     }
+    trackAnalyticsEvent("Collection Search Submitted", {
+      collection: selectedChain === "solana" ? "exomon" : "yunipals",
+      search_type: "invalid",
+      outcome: "invalid"
+    });
     setLookupError(
       environment.exomonEnabled
         ? "Enter a token ID, Solana mint address, EVM wallet, or ENS name."

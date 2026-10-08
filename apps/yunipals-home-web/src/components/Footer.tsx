@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { environment } from "@/environment";
+import { useAnalyticsConsent } from "@/providers/AnalyticsConsentProvider";
 
 export function Footer({
   onTradingInformation,
@@ -11,6 +12,7 @@ export function Footer({
   onTradingInformation: () => void;
   exomonView?: boolean;
 }) {
+  const { openSettings } = useAnalyticsConsent();
   return (
     <footer className="border-t border-line bg-white">
       <div className="mx-auto flex max-w-6xl flex-col justify-between gap-5 px-4 py-10 sm:flex-row sm:items-end">
@@ -53,6 +55,13 @@ export function Footer({
             >
               Privacy Notice
             </Link>
+            <button
+              type="button"
+              onClick={openSettings}
+              className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+            >
+              Analytics settings
+            </button>
             {environment.production && (
               <a
                 href="/THIRD_PARTY_LICENSES.txt"

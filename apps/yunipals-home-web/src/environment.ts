@@ -1,6 +1,9 @@
+import { analyticsConfigFromEnv } from "@/lib/analytics/config";
+
 const DEFAULT_INDEXER_URL = "https://api.yunipals.com/yunipals-indexer";
 
 export const environment = {
+  analytics: analyticsConfigFromEnv(import.meta.env ?? {}),
   // Enable only against a deployed API implementing the marketplace contract.
   yunipalsMarketplaceUrl:
     import.meta.env?.VITE_YUNIPALS_MARKETPLACE_URL?.replace(/\/$/, "") || null,

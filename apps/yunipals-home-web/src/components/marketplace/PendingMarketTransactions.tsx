@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useConfig } from "wagmi";
+import { analyticsOperations } from "@/lib/analytics/operations";
 import { getPublicClient } from "wagmi/actions";
 
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
@@ -72,18 +73,34 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
     refetchInterval: (query) => (query.state.data ? false : 10_000)
   });
   const indexed = useQuery({
-    queryKey: ["marketplace-publication-index", record.expectation.chainId, record.expectation.kind === "validate" ? record.expectation.orderHash : record.hash],
-    enabled: record.expectation.kind === "validate" && query.data?.status === "confirmed" && Boolean(marketClient),
-    queryFn: () => marketClient!.publishedOwnOrder(
-      record.expectation.kind === "validate" ? record.expectation.orderHash : record.hash,
-      undefined,
-      "bnb"
-    ),
+    queryKey: [
+      "marketplace-publication-index",
+      record.expectation.chainId,
+      record.expectation.kind === "validate"
+        ? record.expectation.orderHash
+        : record.hash
+    ],
+    enabled:
+      record.expectation.kind === "validate" &&
+      query.data?.status === "confirmed" &&
+      Boolean(marketClient),
+    queryFn: () =>
+      marketClient!.publishedOwnOrder(
+        record.expectation.kind === "validate"
+          ? record.expectation.orderHash
+          : record.hash,
+        undefined,
+        "bnb"
+      ),
     retry: 1,
-    refetchInterval: (query) => query.state.data ? false : 30_000
+    refetchInterval: (query) => (query.state.data ? false : 30_000)
   });
   useEffect(() => {
     if (query.data?.status === "confirmed") {
+      analyticsOperations.confirmed(
+        record.expectation.chainId,
+        query.data.receipt.transactionHash
+      );
       confirmSettlement(
         queryClient,
         marketClient,

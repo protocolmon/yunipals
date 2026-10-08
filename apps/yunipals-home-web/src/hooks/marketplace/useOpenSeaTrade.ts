@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { getAddress, type Hash } from "viem";
 import { useConfig } from "wagmi";
 import { getAccount, getPublicClient, switchChain } from "wagmi/actions";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
+import {
+  analyticsInterruptionReason,
+  analyticsTradeProperties
+} from "@/lib/analytics/operations";
 
 import { confirmSettlement } from "@/lib/marketplace/settlementReconciliation";
 import type { BnbTradeState } from "@/hooks/marketplace/useBnbTrade";
@@ -72,6 +77,19 @@ export function useOpenSeaTrade() {
     const reviewedStep = prerequisite ? state.prerequisite : undefined;
     const started = performance.now();
     setState({ stage: "checking" });
+    const analyticsProperties = analyticsTradeProperties(
+      order.asset.chainId,
+      order.side
+    );
+    let analyticsStage:
+      | "checking"
+      | "preparing"
+      | "switching"
+      | "simulating"
+      | "wallet"
+      | "pending" = "checking";
+    if (!prerequisite)
+      trackAnalyticsEvent("Trade Started", analyticsProperties);
     try {
       if (!marketClient || !isOpenSeaChain(order.asset.chain))
         throw new Error("OpenSea trading is not enabled for this order.");
@@ -81,6 +99,7 @@ export function useOpenSeaTrade() {
       // Network confirmation can take human time; do it before creating a quote.
       if (getAccount(config).chainId !== order.asset.chainId) {
         setState({ stage: "switching" });
+        analyticsStage = "switching";
         await switchChain(config, { chainId: order.asset.chainId });
         operation.signal.throwIfAborted();
         if (getAccount(config).address?.toLowerCase() !== account.toLowerCase())
@@ -141,6 +160,7 @@ export function useOpenSeaTrade() {
       };
       await checkAsset();
       setState({ stage: "preparing" });
+      analyticsStage = "preparing";
       const preparationStarted = performance.now();
       const quote = await api.openSeaPrepare(order, account, operation.signal);
       performance.measure("yunipals.trade.api_prepare", {
@@ -201,6 +221,7 @@ export function useOpenSeaTrade() {
               );
           },
           onStage: (stage) => {
+            if (stage !== "confirmed") analyticsStage = stage;
             if (stage === "wallet")
               performance.measure("yunipals.trade.time_to_wallet", {
                 start: started
@@ -233,6 +254,12 @@ export function useOpenSeaTrade() {
         )
       );
     } catch (error) {
+      if (!prerequisite)
+        trackAnalyticsEvent("Trade Interrupted", {
+          ...analyticsProperties,
+          stage: analyticsStage,
+          reason: analyticsInterruptionReason(error)
+        });
       setState(
         error instanceof SubmittedTransactionError
           ? {

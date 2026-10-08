@@ -1,9 +1,9 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { getAddress, isAddress } from "viem";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
 import { OrderCreationDialog } from "@/components/marketplace/OrderCreationDialog";
 import { OrderCancellationDialog } from "@/components/marketplace/OrderCancellationDialog";
@@ -32,7 +32,7 @@ export function TokenMarketPanel({ token }: { token: YunipalToken }) {
     }
   }, [token.chain, token.chainId, token.contractAddress, token.tokenId]);
   const { address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("token-market");
   const { requestTradingConsent } = useTradingConsent();
   const { configured, capabilities, market } = useMarketplace(
     asset,

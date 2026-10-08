@@ -11,6 +11,7 @@ import { useConfig } from "wagmi";
 import { getAccount, getPublicClient, signTypedData } from "wagmi/actions";
 
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
+import { analyticsOperations } from "@/lib/analytics/operations";
 import { inspectOrderCreation } from "@/lib/marketplace/creationState";
 import {
   assertWalletContext,
@@ -338,9 +339,10 @@ export function useOrderCreation(input: {
         }
       }
       const next = (await inspect(value, signal)).prerequisite;
-      const discovery = value.asset.chain === "bnb"
-        ? await api.bnbDiscoveryStatus(signal)
-        : null;
+      const discovery =
+        value.asset.chain === "bnb"
+          ? await api.bnbDiscoveryStatus(signal)
+          : null;
       signal.throwIfAborted();
       if (
         getAddress(
@@ -455,18 +457,25 @@ export function useOrderCreation(input: {
         );
         return;
       }
-      const bnbDiscovery = intent.asset.chain === "bnb"
-        ? await api.bnbDiscoveryStatus(signal)
-        : null;
+      const bnbDiscovery =
+        intent.asset.chain === "bnb"
+          ? await api.bnbDiscoveryStatus(signal)
+          : null;
       if (bnbOnchain && bnbDiscovery?.mode !== "live")
-        throw new Error("BNB publication mode changed. Close and review the order again.");
+        throw new Error(
+          "BNB publication mode changed. Close and review the order again."
+        );
       if (bnbDiscovery?.mode === "live") {
         if (bnbDiscovery.coverage !== "complete")
-          throw new Error("BNB on-chain order publication is still syncing. Try again after discovery catches up.");
+          throw new Error(
+            "BNB on-chain order publication is still syncing. Try again after discovery catches up."
+          );
         const current = await inspect(intent, signal);
         if (current.prerequisite) {
           setPrerequisite(current.prerequisite);
-          throw new Error("An approval or balance changed. Complete the updated step before publishing.");
+          throw new Error(
+            "An approval or balance changed. Complete the updated step before publishing."
+          );
         }
         const validation = buildBnbValidation(
           intent.order,
@@ -484,7 +493,9 @@ export function useOrderCreation(input: {
           revalidate: async () => {
             const refreshed = await inspect(intent, signal);
             if (refreshed.prerequisite)
-              throw new Error("Order requirements changed. Review the action again.");
+              throw new Error(
+                "Order requirements changed. Review the action again."
+              );
             const status = await api.bnbDiscoveryStatus(signal);
             if (status.mode !== "live" || status.coverage !== "complete")
               throw new Error("BNB discovery is temporarily unavailable.");
@@ -501,11 +512,20 @@ export function useOrderCreation(input: {
         saveRecoverableOrder(intent, "accepted");
         let indexed: MarketOrder | null = null;
         try {
-          indexed = await api.publishedOwnOrder(intent.orderHash, signal, "bnb");
+          indexed = await api.publishedOwnOrder(
+            intent.orderHash,
+            signal,
+            "bnb"
+          );
         } catch {
           // The receipt is authoritative; indexer availability can lag it.
         }
         setPublished(indexed ?? intent.summary);
+        analyticsOperations.published(
+          intent.asset.chainId,
+          intent.orderHash,
+          input.side
+        );
         setStage("published");
         setMessage(
           indexed
@@ -574,6 +594,11 @@ export function useOrderCreation(input: {
         ? await retryPublication(signed.current, dependencies)
         : await publishOrder(intent, dependencies);
       setPublished(result);
+      analyticsOperations.published(
+        intent.asset.chainId,
+        intent.orderHash,
+        input.side
+      );
       setStage("published");
       signed.current = undefined;
       // Refresh read views after success without holding the wallet lock on

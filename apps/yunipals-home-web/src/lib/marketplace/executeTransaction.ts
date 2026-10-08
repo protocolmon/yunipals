@@ -11,6 +11,7 @@ import {
   type MarketTransactionIntent,
   type TransactionCall
 } from "@/lib/marketplace/transactionIntent";
+import { analyticsOperations } from "@/lib/analytics/operations";
 
 export type MarketExecutionStage =
   | "switching"
@@ -103,13 +104,16 @@ export async function executeMarketTransaction(
   // switches wallets. An observation failure must never invite duplicate sends.
   try {
     options.onSubmitted(hash);
+    analyticsOperations.submitted(intent, hash);
     options.onStage("pending");
     const receipt = await wallet.wait(hash, intent.chainId, (replacement) => {
+      analyticsOperations.submitted(intent, replacement, currentHash);
       currentHash = replacement;
       options.onSubmitted(replacement);
     });
     currentHash = receipt.transactionHash;
     assertMarketReceipt(intent, receipt);
+    analyticsOperations.confirmed(intent.chainId, receipt.transactionHash);
     options.onStage("confirmed");
     return receipt;
   } catch (error) {

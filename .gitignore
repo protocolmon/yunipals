@@ -18,3 +18,4 @@ coverage/
 # Python monitor test artifacts
 __pycache__/
 *.pyc
+.vercel

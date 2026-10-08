@@ -1,9 +1,9 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useId } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { MarketActivity } from "@/components/marketplace/MarketActivity";
 import { chainDetails } from "@/data/chains";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
@@ -100,7 +100,7 @@ function WalletActivity({ wallet }: { wallet: Address }) {
 
 export function ActivityPage() {
   const { address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("activity");
   usePageMetadata(
     "My activity | Yunipals",
     "Review confirmed Yunipals sales and NFTs received through those sales."

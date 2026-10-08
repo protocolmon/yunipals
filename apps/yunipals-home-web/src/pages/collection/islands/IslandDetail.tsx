@@ -6,6 +6,7 @@ import { QueryError } from "@/components/QueryState";
 import { TokenArtwork } from "@/components/TokenArtwork";
 import { ChainBadge } from "@/components/ui/ChainBadge";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { useCollectibleAnalytics } from "@/hooks/useCollectibleAnalytics";
 import { formatInteger, shortAddress } from "@/lib/format";
 import {
   fetchIsland,
@@ -49,6 +50,7 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
     staleTime: 30_000
   });
   const token = detail.data?.token;
+  useCollectibleAnalytics(Boolean(token), tokenId, "islands", "ethereum");
   const collector = token?.staking?.staker ?? token?.owner;
   const name =
     token?.metadata?.name || `${token?.edition || "Yunipals"} Island`;

@@ -1,4 +1,4 @@
-import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccountModal } from "@rainbow-me/rainbowkit";
 import {
   ChevronDown,
   ClipboardList,
@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { environment } from "@/environment";
 import { shortAddress } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ export function WalletCollectionButton() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { address, isConnected, status } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("navigation");
   const { openAccountModal } = useAccountModal();
   const connectionRequested = useRef(false);
   const menuContainer = useRef<HTMLDivElement>(null);

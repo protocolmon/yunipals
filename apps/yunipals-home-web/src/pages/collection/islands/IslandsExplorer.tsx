@@ -8,6 +8,7 @@ import { environment } from "@/environment";
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { ChainBadge } from "@/components/ui/ChainBadge";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 import { formatInteger, shortAddress } from "@/lib/format";
 import {
   fetchIslands,
@@ -67,6 +68,17 @@ export function IslandsExplorer() {
   const items = tokens.data?.pages.flatMap((page) => page.items) || [];
 
   function updateFilters(changes: Partial<IslandsFilters>) {
+    trackAnalyticsEvent("Collection Filter Applied", {
+      collection: "islands",
+      filter:
+        changes.sort !== undefined
+          ? "sort"
+          : changes.owner !== undefined
+            ? "owner"
+            : changes.edition !== undefined
+              ? "edition"
+              : "filters"
+    });
     const next = { ...filters, ...changes };
     const search = new URLSearchParams({ collection: "islands" });
     if (next.edition) search.set("edition", next.edition);
@@ -86,14 +98,29 @@ export function IslandsExplorer() {
     }
     const tokenId = normalizeIslandTokenId(input);
     if (tokenId !== null) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "islands",
+        search_type: "token",
+        outcome: "valid"
+      });
       navigate(islandDetailHref(tokenId));
       return;
     }
     if (isIslandOwner(input)) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "islands",
+        search_type: "collector",
+        outcome: "valid"
+      });
       updateFilters({ owner: input.toLowerCase() as `0x${string}` });
       setLookupError("");
       return;
     }
+    trackAnalyticsEvent("Collection Search Submitted", {
+      collection: "islands",
+      search_type: "invalid",
+      outcome: "invalid"
+    });
     setLookupError("Enter an island token ID or an Ethereum wallet address.");
   }
 

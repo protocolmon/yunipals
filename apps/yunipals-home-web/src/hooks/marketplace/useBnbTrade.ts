@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import { getAddress, type Hash } from "viem";
 import { useConfig } from "wagmi";
 import { getAccount, getPublicClient } from "wagmi/actions";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
+import {
+  analyticsInterruptionReason,
+  analyticsTradeProperties
+} from "@/lib/analytics/operations";
 
 import { confirmSettlement } from "@/lib/marketplace/settlementReconciliation";
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
@@ -64,6 +69,11 @@ export function useBnbTrade() {
     controller.current = operation;
     running.current = true;
     setState({ stage: "preparing" });
+    const analyticsProperties = analyticsTradeProperties(56, order.side);
+    let analyticsStage:
+      | "preparing"
+      | Exclude<MarketExecutionStage, "confirmed"> = "preparing";
+    if (!approval) trackAnalyticsEvent("Trade Started", analyticsProperties);
     try {
       if (!marketClient) throw new Error("Marketplace trading is not enabled.");
       const api = marketClient;
@@ -168,7 +178,10 @@ export function useBnbTrade() {
       const receipt = await executeMarketTransaction(intent, wallet, {
         signal: operation.signal,
         revalidate: checkAsset,
-        onStage: (stage) => setState((current) => ({ ...current, stage })),
+        onStage: (stage) => {
+          if (stage !== "confirmed") analyticsStage = stage;
+          setState((current) => ({ ...current, stage }));
+        },
         onSubmitted: (hash) => {
           savePendingTransaction(
             pendingTransaction(hash, intent),
@@ -200,6 +213,12 @@ export function useBnbTrade() {
         )
       );
     } catch (error) {
+      if (!approval)
+        trackAnalyticsEvent("Trade Interrupted", {
+          ...analyticsProperties,
+          stage: analyticsStage,
+          reason: analyticsInterruptionReason(error)
+        });
       setState(
         error instanceof SubmittedTransactionError
           ? {

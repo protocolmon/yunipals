@@ -23,6 +23,8 @@ import { useAccount } from "wagmi";
 import { environment } from "@/environment";
 import { CollectorIslands } from "./components/CollectorIslands";
 
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
+
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { TokenCard } from "@/components/TokenCard";
 import { ChainLogo } from "@/components/ui/ChainLogo";
@@ -171,6 +173,10 @@ function YunipalsCollectorPage() {
   const { filters } = filterState;
   const setFilters = useCallback(
     (next: CollectorFilters) => {
+      trackAnalyticsEvent("Collection Filter Applied", {
+        collection: "yunipals",
+        filter: "filters"
+      });
       setSearchParams(serializeCollectorFilters(next));
     },
     [setSearchParams]

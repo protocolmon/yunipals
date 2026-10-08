@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { WalletCollectionButton } from "@/components/WalletCollectionButton";
 import { environment } from "@/environment";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 import { isSolanaAddress } from "@/lib/solanaIndexer";
 import { cn } from "@/lib/utils";
 import { isOwnerInput } from "@/lib/yunipalsIndexer";
@@ -31,11 +32,21 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
       !isOwnerInput(value) &&
       !(environment.exomonEnabled && isSolanaAddress(value))
     ) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "invalid",
+        outcome: "invalid"
+      });
       setError(true);
       return;
     }
 
     setError(false);
+    trackAnalyticsEvent("Collection Search Submitted", {
+      collection: isSolanaAddress(value) ? "exomon" : "yunipals",
+      search_type: "collector",
+      outcome: "valid"
+    });
     onNavigate?.();
     navigate(
       isSolanaAddress(value)

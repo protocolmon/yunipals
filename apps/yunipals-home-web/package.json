@@ -26,7 +26,9 @@
     "test:islands": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/islandsIndexer.test.ts src/lib/islandUnstake.test.ts",
     "test:islands:ui": "node scripts/test-islands-ui.mjs",
     "test:islands:staking-fork": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-island-staking-fork.mjs",
-    "test:islands:staking-ui": "node scripts/test-island-staking-ui.mjs"
+    "test:islands:staking-ui": "node scripts/test-island-staking-ui.mjs",
+    "test:analytics": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/analytics/client.test.ts",
+    "test:analytics:ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-analytics-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",
@@ -34,6 +36,7 @@
     "@tanstack/react-query": "^5.103.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.368.0",
+    "mixpanel-browser": "2.84.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.4",

@@ -1,8 +1,8 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAddress } from "viem";
 import { useAccount, useConfig } from "wagmi";
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { getAccount } from "wagmi/actions";
 
 import { chainDetails } from "@/data/chains";
@@ -135,7 +135,7 @@ function SavedOrder({ record }: { record: RecoverableOrder }) {
 export function OrderRecoveryPage() {
   const { address } = useAccount();
   const config = useConfig();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("order-recovery");
   const input = useRef<HTMLInputElement>(null);
   const operation = useRef(0);
   const [importing, setImporting] = useState(false);

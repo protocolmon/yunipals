@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { QueryError } from "@/components/QueryState";
 import { TokenArtwork } from "@/components/TokenArtwork";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { useCollectibleAnalytics } from "@/hooks/useCollectibleAnalytics";
 import { formatDecimal, formatUpdatedAt, shortAddress } from "@/lib/format";
 import {
   fetchExomonToken,
@@ -30,6 +31,12 @@ export function ExomonDetailPage() {
     staleTime: 60_000,
     retry: retrySolanaQuery
   });
+  useCollectibleAnalytics(
+    Boolean(detail.data?.token),
+    tokenId,
+    "exomon",
+    "solana"
+  );
   usePageMetadata(
     detail.data?.token.name
       ? `${detail.data.token.name} — Exomon on Solana`
@@ -40,7 +47,10 @@ export function ExomonDetailPage() {
     return (
       <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12">
         <QueryError message="This Solana mint address is invalid." />
-        <Link to="/?chain=solana" className="mt-5 inline-block font-bold text-badge">
+        <Link
+          to="/?chain=solana"
+          className="mt-5 inline-block font-bold text-badge"
+        >
           Back to Exomon
         </Link>
       </main>
@@ -64,7 +74,10 @@ export function ExomonDetailPage() {
     return (
       <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12">
         <QueryError message={message} onRetry={() => void detail.refetch()} />
-        <Link to="/?chain=solana" className="mt-5 inline-block font-bold text-badge">
+        <Link
+          to="/?chain=solana"
+          className="mt-5 inline-block font-bold text-badge"
+        >
           Back to Exomon
         </Link>
       </main>

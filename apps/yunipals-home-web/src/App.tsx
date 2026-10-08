@@ -18,6 +18,7 @@ import { TermsPage } from "@/pages/legal/TermsPage";
 import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
+import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
 
 const ExomonCollectorPage = lazy(() =>
   import("@/pages/exomon/ExomonCollectorPage").then((module) => ({
@@ -150,8 +151,10 @@ function AppContent() {
 
 export function App() {
   return (
-    <TradingConsentProvider>
-      <AppContent />
-    </TradingConsentProvider>
+    <AnalyticsConsentProvider>
+      <TradingConsentProvider>
+        <AppContent />
+      </TradingConsentProvider>
+    </AnalyticsConsentProvider>
   );
 }
