@@ -1,0 +1,204 @@
+{
+  "status": "ready",
+  "freeRouting": true,
+  "freeLogRouting": true,
+  "dedicatedFreeOrderRouting": true,
+  "paidFallbackOnFreeFailure": false,
+  "foregroundPaidFallbackOnFreeFailure": true,
+  "orderPaidFallbackOnFreeFailure": true,
+  "sourcePaidFallbackOnFreeFailure": false,
+  "salePaidFallbackOnFreeFailure": true,
+  "freeRequestTimeoutMs": 3000,
+  "freeOrderRequestTimeoutMs": 3000,
+  "freeFailureCooldownMs": 30000,
+  "freeRateLimitCooldownMs": 2000,
+  "freeSourceMinimumIntervalMs": 400,
+  "freeOrderMinimumIntervalMs": 500,
+  "freeMinimumIntervalMs": 1000,
+  "sourcePacingQueueWaitMs": 2000,
+  "maximumConcurrentUpstreamRequests": 8,
+  "maximumConcurrentOrderFreeRoutes": 4,
+  "activeUpstreamRequests": 0,
+  "activeOrderFreeRoutes": 0,
+  "maximumObservedUpstreamRequests": 8,
+  "queuedPriorityRequests": 0,
+  "queuedOrderRouteRequests": 0,
+  "maximumQueuedPriorityRequests": 0,
+  "preferredFreeEndpoints": {
+    "source": 0,
+    "logs": 1,
+    "orderProjection": 0,
+    "saleReplay": 0
+  },
+  "freeEndpoints": {
+    "primary": [
+      {
+        "index": 0,
+        "coolingDown": true,
+        "failures": 3239,
+        "consecutiveFailures": 0,
+        "successes": 171766
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 5,
+        "consecutiveFailures": 0,
+        "successes": 240477
+      }
+    ],
+    "logs": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 22460,
+        "consecutiveFailures": 0,
+        "successes": 44
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 3454,
+        "consecutiveFailures": 0,
+        "successes": 4195
+      }
+    ],
+    "orderProjection": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 36,
+        "consecutiveFailures": 0,
+        "successes": 13809
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 19,
+        "consecutiveFailures": 0,
+        "successes": 929
+      }
+    ],
+    "saleReplay": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 0
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 0
+      }
+    ]
+  },
+  "observedHead": "52567692",
+  "traffic": {
+    "freeBatches": 431220,
+    "freeCalls": 440032,
+    "paidBatches": 5109,
+    "paidCalls": 5120,
+    "fallbackBatches": 26,
+    "freeFailures": 29213,
+    "freeOnlyFailures": 103430,
+    "freeCircuitOpenBatches": 78456,
+    "overloadedBatches": 15968,
+    "queuedPriorityBatches": 0,
+    "priorityQueueTimeouts": 0,
+    "queuedOrderRouteBatches": 23,
+    "orderRouteTimeouts": 0,
+    "freeRateLimitRetries": 2,
+    "freeRateLimitWaitMs": 0,
+    "freePacingWaitMs": 311099389,
+    "sourcePacingTimeouts": 15967,
+    "methods": {
+      "free": {
+        "eth_chainId": 9521,
+        "eth_getBlockByNumber": 119302,
+        "eth_getCode": 1197,
+        "eth_getStorageAt": 8237,
+        "eth_call": 297198,
+        "eth_getLogs": 4409,
+        "eth_getTransactionReceipt": 168
+      },
+      "paid": {
+        "eth_getBlockByNumber": 9,
+        "eth_chainId": 12,
+        "eth_getCode": 12,
+        "eth_getLogs": 5083,
+        "eth_getTransactionReceipt": 1,
+        "eth_call": 2,
+        "eth_getStorageAt": 1
+      }
+    },
+    "workloads": {
+      "source": {
+        "freeCalls": 416482,
+        "paidCalls": 5083
+      },
+      "order_projection": {
+        "freeCalls": 23510,
+        "paidCalls": 5
+      },
+      "sale": {
+        "freeCalls": 0,
+        "paidCalls": 0
+      },
+      "foreground": {
+        "freeCalls": 40,
+        "paidCalls": 32
+      }
+    }
+  },
+  "budget": {
+    "model": "alchemy-2026-09-08",
+    "workload": "source",
+    "priority": "background",
+    "grantedCu": 305000,
+    "usedCu": 305000,
+    "remainingCu": 0,
+    "denied": 7419
+  },
+  "workloadBudgets": {
+    "source": {
+      "model": "alchemy-2026-09-08",
+      "workload": "source",
+      "priority": "background",
+      "grantedCu": 305000,
+      "usedCu": 305000,
+      "remainingCu": 0,
+      "denied": 7419
+    },
+    "order_projection": {
+      "model": "alchemy-2026-09-08",
+      "workload": "order_projection",
+      "priority": "background",
+      "grantedCu": 1000,
+      "usedCu": 152,
+      "remainingCu": 848,
+      "denied": 0
+    },
+    "sale": {
+      "model": "alchemy-2026-09-08",
+      "workload": "sale",
+      "priority": "background",
+      "grantedCu": 0,
+      "usedCu": 0,
+      "remainingCu": 0,
+      "denied": 0
+    },
+    "foreground": {
+      "model": "alchemy-2026-09-08",
+      "workload": "foreground",
+      "priority": "foreground",
+      "grantedCu": 1000,
+      "usedCu": 412,
+      "remainingCu": 588,
+      "denied": 0
+    }
+  }
+}

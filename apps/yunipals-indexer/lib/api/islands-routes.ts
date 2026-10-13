@@ -2,14 +2,15 @@ import { createHash } from "node:crypto";
 import { Hono } from "hono";
 import type { Pool } from "pg";
 import { isAddress } from "viem";
-import { islandCollection } from "../constants.js";
+import {
+  ethereumIslandCollection,
+  type IslandCollection
+} from "../islands/collections.js";
+import { baseIslandsReadiness } from "../islands/base-sync.js";
+import { islandReadModel } from "../islands/read-model.js";
 import { canonicalTokenId } from "../islands/metadata.js";
 import { islandsReadiness } from "../islands/readiness.js";
-import {
-  islandIdentityPredicate,
-  islandTokenColumns,
-  islandTokenRelation
-} from "../islands/queries.js";
+import { islandIdentity } from "../islands/queries.js";
 import { sqlIdentifier } from "../offchain/sql.js";
 import {
   stakingColumns,
@@ -20,6 +21,8 @@ import {
 export type IslandsRouteDependencies = {
   pool: Pick<Pool, "query">;
   schemaName: string;
+  collection?: IslandCollection;
+  airdropEnabled?: () => boolean;
   enabled?: () => boolean;
   checkReadiness?: () => Promise<{ ready: boolean }>;
   stakingEnabled?: () => boolean;
@@ -46,34 +49,55 @@ function decodeCursor(raw: string): Cursor | undefined {
   }
 }
 
-const descriptor = {
-  collectionId: islandCollection.slug,
-  chain: islandCollection.chain,
-  chainId: islandCollection.chainId,
-  contractAddress: islandCollection.address,
-  name: islandCollection.name,
-  openseaSlug: islandCollection.openseaSlug,
-  deploymentBlock: String(islandCollection.deploymentBlock)
-};
-
 export function registerIslandsRoutes(
   app: Hono,
   dependencies: IslandsRouteDependencies
 ) {
   const { pool, schemaName } = dependencies;
+  const collection = dependencies.collection ?? ethereumIslandCollection;
+  const descriptor = {
+    collectionId: collection.slug,
+    chain: collection.chain,
+    chainId: collection.chainId,
+    contractAddress: collection.address,
+    name: collection.name,
+    deploymentBlock: String(collection.deploymentBlock),
+    origin: collection.origin
+  };
   const schema = sqlIdentifier(schemaName);
   const enabled =
     dependencies.enabled ?? (() => process.env.API_ISLANDS_ENABLED === "true");
   const checkReadiness =
-    dependencies.checkReadiness ?? (() => islandsReadiness(pool, schemaName));
-  const root = `/v2/collections/${islandCollection.slug}`;
+    dependencies.checkReadiness ??
+    (() =>
+      collection.slug === "base-islands"
+        ? baseIslandsReadiness(pool)
+        : islandsReadiness(pool, schemaName));
+  const root = `/v2/collections/${collection.slug}`;
   const stakingEnabled =
     dependencies.stakingEnabled ??
-    (() => process.env.API_ISLAND_STAKING_ENABLED === "true");
-  const relation = () =>
-    `${islandTokenRelation(schemaName)} ${stakingEnabled() ? stakingRelation(schemaName) : ""}`;
-  const columns = () =>
-    `${islandTokenColumns},${stakingEnabled() ? stakingColumns : "NULL::jsonb AS staking"}`;
+    (() =>
+      collection.slug === "ethereum-islands" &&
+      process.env.API_ISLAND_STAKING_ENABLED === "true");
+  const model = () =>
+    islandReadModel(
+      schemaName,
+      collection,
+      stakingEnabled(),
+      dependencies.airdropEnabled?.() ??
+        process.env.API_BASE_ISLANDS_ENABLED === "true"
+    );
+  const relation = () => model().relation;
+  const columns = () => model().columns;
+  const stakingStatus = () =>
+    collection.slug === "base-islands"
+      ? Promise.resolve({
+          enabled: false,
+          ready: true,
+          checkedBlock: null,
+          reason: null
+        })
+      : stakingReadiness(pool, schemaName, stakingEnabled());
   const router = new Hono();
 
   router.onError((_error, c) =>
@@ -91,7 +115,7 @@ export function registerIslandsRoutes(
       return c.json(
         {
           error: "islands_reads_disabled",
-          collectionId: islandCollection.slug
+          collectionId: collection.slug
         },
         503
       );
@@ -104,9 +128,7 @@ export function registerIslandsRoutes(
     await next();
   });
   router.get("/", (c) => c.json(descriptor));
-  router.get("/staking-status", async (c) =>
-    c.json(await stakingReadiness(pool, schemaName, stakingEnabled()))
-  );
+  router.get("/staking-status", async (c) => c.json(await stakingStatus()));
 
   async function listTokens(url: URL, pathOwner?: string) {
     const allowed = new Set([
@@ -155,7 +177,7 @@ export function registerIslandsRoutes(
     const scope = createHash("sha256")
       .update(
         JSON.stringify({
-          collectionId: islandCollection.slug,
+          collectionId: collection.slug,
           sort,
           burned,
           edition,
@@ -169,7 +191,7 @@ export function registerIslandsRoutes(
     if (rawCursor !== null && (!cursor || cursor.scope !== scope))
       return { error: "invalid_cursor", status: 409 as const };
     const params: unknown[] = [];
-    const conditions = [islandIdentityPredicate];
+    const conditions = [islandIdentity(collection)];
     if (burned !== "all") {
       params.push(burned === "true");
       conditions.push(`t.burned=$${params.length}`);
@@ -189,7 +211,7 @@ export function registerIslandsRoutes(
     }
     if (edition)
       conditions.push(
-        `t.token_id::numeric${edition === "Genesis" ? "<=" : ">"}${islandCollection.genesisLimit}`
+        `t.token_id::numeric${edition === "Genesis" ? "<=" : ">"}${collection.genesisLimit}`
       );
     const ascending = sort === "token-id-asc";
     const countParams = [...params];
@@ -209,11 +231,7 @@ export function registerIslandsRoutes(
       params
     );
     const items = result.rows.slice(0, limit);
-    const stakingStatus = await stakingReadiness(
-      pool,
-      schemaName,
-      stakingEnabled()
-    );
+    const staking = await stakingStatus();
     const total = (
       await pool.query<{ total: number }>(
         `SELECT count(*)::int AS total FROM ${relation()} WHERE ${countConditions.join(" AND ")}`,
@@ -224,11 +242,11 @@ export function registerIslandsRoutes(
       body: {
         ...descriptor,
         total,
-        stakingStatus,
+        stakingStatus: staking,
         complete:
           holding === "wallet" ||
           (!owner && holding === "all") ||
-          stakingStatus.ready,
+          staking.ready,
         items,
         limit,
         nextCursor:
@@ -260,7 +278,7 @@ export function registerIslandsRoutes(
       return c.json({ error: "invalid_token_id" }, 400);
     const result = await pool.query(
       `SELECT ${columns()} FROM ${relation()}
-      WHERE ${islandIdentityPredicate} AND t.token_id=$1`,
+      WHERE ${islandIdentity(collection)} AND t.token_id=$1`,
       [tokenId]
     );
     if (!result.rows.length) return c.json({ error: "token_not_found" }, 404);
@@ -270,12 +288,13 @@ export function registerIslandsRoutes(
       burned_at_block::text AS "burnedAtBlock",burned_at_timestamp::text AS "burnedAtTimestamp",
       burn_transaction_hash AS "burnTransactionHash" FROM ${schema}.token_lifecycle
       WHERE collection=$1 AND token_id=$2 ORDER BY lifecycle LIMIT 100`,
-      [islandCollection.slug, tokenId]
+      [collection.slug, tokenId]
     );
     return c.json({
       token: result.rows[0],
+      indexingStatus: await checkReadiness(),
       lifecycles: lifecycles.rows,
-      stakingStatus: await stakingReadiness(pool, schemaName, stakingEnabled())
+      stakingStatus: await stakingStatus()
     });
   });
   router.get("/tokens/:tokenId/transfers", async (c) => {
@@ -296,7 +315,7 @@ export function registerIslandsRoutes(
     if (!/^[1-9]\d*$/.test(rawLimit) || Number(rawLimit) > 100)
       return c.json({ error: "invalid_limit" }, 400);
     const limit = Number(rawLimit);
-    const params: unknown[] = [islandCollection.slug, tokenId];
+    const params: unknown[] = [collection.slug, tokenId];
     let after = "";
     const rawCursor = url.searchParams.get("cursor");
     if (rawCursor !== null) {
@@ -313,7 +332,7 @@ export function registerIslandsRoutes(
           logIndex: number;
         };
         if (
-          value.collectionId !== islandCollection.slug ||
+          value.collectionId !== collection.slug ||
           value.tokenId !== tokenId ||
           !canonicalTokenId(value.blockNumber) ||
           !Number.isInteger(value.transactionIndex) ||
@@ -353,7 +372,7 @@ export function registerIslandsRoutes(
       nextCursor:
         result.rows.length > limit && last
           ? encodeCursor({
-              collectionId: islandCollection.slug,
+              collectionId: collection.slug,
               tokenId,
               blockNumber: last.blockNumber,
               transactionIndex: last.transactionIndex,
@@ -367,10 +386,10 @@ export function registerIslandsRoutes(
       count(*) FILTER(WHERE NOT t.burned)::int AS "activeSupply",
       count(*) FILTER(WHERE t.burned)::int AS "burnedTokens",
       count(DISTINCT t.owner) FILTER(WHERE NOT t.burned)::int AS holders,
-      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric<=${islandCollection.genesisLimit})::int AS genesis,
-      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric>${islandCollection.genesisLimit})::int AS personal,
+      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric<=${collection.genesisLimit})::int AS genesis,
+      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric>${collection.genesisLimit})::int AS personal,
       count(*) FILTER(WHERE NOT t.burned AND p.status='published' AND r.revision_hash IS NOT NULL)::int AS "metadataAvailable"
-      FROM ${islandTokenRelation(schemaName)} WHERE ${islandIdentityPredicate}`);
+      FROM ${relation()} WHERE ${islandIdentity(collection)}`);
     return c.json({ ...descriptor, ...result.rows[0] });
   });
   app.route(root, router);

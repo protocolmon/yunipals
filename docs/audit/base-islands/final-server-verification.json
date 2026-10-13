@@ -1,0 +1,45 @@
+{
+  "checkedAtUTC": "2026-10-13T21:49:08Z",
+  "collections": {
+    "ethereum-islands": {
+      "ready": true,
+      "indexedBlock": "26186364",
+      "verifiedBlock": "26104342",
+      "indexing": true,
+      "buildId": "e24e04995c",
+      "ownership": {
+        "ready": true,
+        "blocked": [],
+        "collections": [
+          {
+            "collection": "ethereum-islands",
+            "state": "ready",
+            "checkpoint_block": "26104342",
+            "reason": null,
+            "updated_at": "2026-10-02T11:44:11.394Z",
+            "verified_at": "2026-10-02T11:44:11.394Z"
+          }
+        ]
+      }
+    },
+    "base-islands": {
+      "ready": true,
+      "indexedBlock": "52569350",
+      "verifiedBlock": "52568220",
+      "finalizedBlock": "52568802",
+      "updatedAt": "2026-10-13T21:48:52.461Z",
+      "completedAt": "2026-10-13T21:47:49.865Z",
+      "reason": "base_islands_rpc_or_metadata_unavailable",
+      "airdropFinalized": false,
+      "contractOwner": "0x486e4cf6c783b76125b5fb52cf11b6b83fcaf880",
+      "buildId": "base-islands-logs-v1"
+    }
+  },
+  "gatewaySinceFreeRouteUpdate": {
+    "paidCalls": 0,
+    "freeCalls": 1502,
+    "sourcePaidFallback": false
+  },
+  "candidateStopped": true,
+  "timers": "existing daily Islands backup and one-minute health timers retained"
+}

@@ -1,0 +1,194 @@
+{
+  "status": "ready",
+  "freeRouting": true,
+  "freeLogRouting": true,
+  "dedicatedFreeOrderRouting": true,
+  "paidFallbackOnFreeFailure": false,
+  "foregroundPaidFallbackOnFreeFailure": true,
+  "orderPaidFallbackOnFreeFailure": true,
+  "sourcePaidFallbackOnFreeFailure": false,
+  "salePaidFallbackOnFreeFailure": true,
+  "freeRequestTimeoutMs": 3000,
+  "freeOrderRequestTimeoutMs": 3000,
+  "freeFailureCooldownMs": 30000,
+  "freeRateLimitCooldownMs": 2000,
+  "freeSourceMinimumIntervalMs": 400,
+  "freeOrderMinimumIntervalMs": 500,
+  "freeMinimumIntervalMs": 1000,
+  "sourcePacingQueueWaitMs": 2000,
+  "maximumConcurrentUpstreamRequests": 8,
+  "maximumConcurrentOrderFreeRoutes": 4,
+  "activeUpstreamRequests": 0,
+  "activeOrderFreeRoutes": 0,
+  "maximumObservedUpstreamRequests": 2,
+  "queuedPriorityRequests": 0,
+  "queuedOrderRouteRequests": 0,
+  "maximumQueuedPriorityRequests": 0,
+  "preferredFreeEndpoints": {
+    "source": 0,
+    "logs": 1,
+    "orderProjection": 0,
+    "saleReplay": 0
+  },
+  "freeEndpoints": {
+    "primary": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 1,
+        "consecutiveFailures": 0,
+        "successes": 10
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 31
+      }
+    ],
+    "logs": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 4,
+        "consecutiveFailures": 0,
+        "successes": 0
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 1,
+        "consecutiveFailures": 0,
+        "successes": 0
+      }
+    ],
+    "orderProjection": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 18
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 0
+      }
+    ],
+    "saleReplay": [
+      {
+        "index": 0,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 0
+      },
+      {
+        "index": 1,
+        "coolingDown": false,
+        "failures": 0,
+        "consecutiveFailures": 0,
+        "successes": 0
+      }
+    ]
+  },
+  "observedHead": "52568973",
+  "traffic": {
+    "freeBatches": 59,
+    "freeCalls": 67,
+    "paidBatches": 0,
+    "paidCalls": 0,
+    "fallbackBatches": 0,
+    "freeFailures": 6,
+    "freeOnlyFailures": 18,
+    "freeCircuitOpenBatches": 14,
+    "overloadedBatches": 2,
+    "queuedPriorityBatches": 0,
+    "priorityQueueTimeouts": 0,
+    "queuedOrderRouteBatches": 0,
+    "orderRouteTimeouts": 0,
+    "freeRateLimitRetries": 0,
+    "freeRateLimitWaitMs": 0,
+    "freePacingWaitMs": 36648,
+    "sourcePacingTimeouts": 2,
+    "methods": {
+      "free": {
+        "eth_chainId": 12,
+        "eth_getBlockByNumber": 21,
+        "eth_getCode": 8,
+        "eth_getStorageAt": 1,
+        "eth_call": 25
+      },
+      "paid": {}
+    },
+    "workloads": {
+      "source": {
+        "freeCalls": 41,
+        "paidCalls": 0
+      },
+      "order_projection": {
+        "freeCalls": 26,
+        "paidCalls": 0
+      },
+      "sale": {
+        "freeCalls": 0,
+        "paidCalls": 0
+      },
+      "foreground": {
+        "freeCalls": 0,
+        "paidCalls": 0
+      }
+    }
+  },
+  "budget": {
+    "model": "alchemy-2026-09-08",
+    "workload": "source",
+    "priority": "background",
+    "grantedCu": 0,
+    "usedCu": 0,
+    "remainingCu": 0,
+    "denied": 8
+  },
+  "workloadBudgets": {
+    "source": {
+      "model": "alchemy-2026-09-08",
+      "workload": "source",
+      "priority": "background",
+      "grantedCu": 0,
+      "usedCu": 0,
+      "remainingCu": 0,
+      "denied": 8
+    },
+    "order_projection": {
+      "model": "alchemy-2026-09-08",
+      "workload": "order_projection",
+      "priority": "background",
+      "grantedCu": 0,
+      "usedCu": 0,
+      "remainingCu": 0,
+      "denied": 0
+    },
+    "sale": {
+      "model": "alchemy-2026-09-08",
+      "workload": "sale",
+      "priority": "background",
+      "grantedCu": 0,
+      "usedCu": 0,
+      "remainingCu": 0,
+      "denied": 0
+    },
+    "foreground": {
+      "model": "alchemy-2026-09-08",
+      "workload": "foreground",
+      "priority": "foreground",
+      "grantedCu": 0,
+      "usedCu": 0,
+      "remainingCu": 0,
+      "denied": 0
+    }
+  }
+}

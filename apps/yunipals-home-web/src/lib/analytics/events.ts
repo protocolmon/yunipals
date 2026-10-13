@@ -198,7 +198,8 @@ export function analyticsPage(
   if (parts[0] === "collector" && parts.length === 2)
     return { page: "collector", route: "/collector/:address" };
   if (parts[0] === "collection" && (parts.length === 2 || parts.length === 3)) {
-    const islands = parts[1] === "ethereum-islands";
+    const islands =
+      parts[1] === "ethereum-islands" || parts[1] === "base-islands";
     return {
       page: "collectible",
       route:
@@ -211,7 +212,9 @@ export function analyticsPage(
           ? "exomon"
           : "yunipals",
       chain: islands
-        ? "ethereum"
+        ? parts[1] === "base-islands"
+          ? "base"
+          : "ethereum"
         : analyticsChainSchema.safeParse(parts[1]).success
           ? (parts[1] as AnalyticsChain)
           : undefined

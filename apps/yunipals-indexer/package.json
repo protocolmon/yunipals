@@ -95,7 +95,9 @@
     "metadata:recovery:verify": "tsx scripts/verify-metadata-recovery.ts",
     "metadata:recovery:seal": "tsx scripts/seal-metadata-recovery.ts",
     "start:islands-staking": "tsx lib/islands/staking-worker.ts",
-    "islands:staking:sync": "tsx lib/islands/staking-worker.ts --once"
+    "islands:staking:sync": "tsx lib/islands/staking-worker.ts --once",
+    "start:base-islands": "tsx lib/islands/base-worker.ts",
+    "base-islands:migrate": "tsx scripts/migrate-base-islands.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",

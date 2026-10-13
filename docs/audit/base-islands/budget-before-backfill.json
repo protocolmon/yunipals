@@ -1,0 +1,62 @@
+[
+  {
+    "scope": "yunipals-opensea",
+    "enabled": true,
+    "daily_cu": 1000000,
+    "foreground_reserve_cu": 200000,
+    "today_granted_cu": 200000,
+    "today_background_cu": 200000,
+    "workload": "foreground",
+    "priority": "foreground",
+    "allocation_cu": 150000,
+    "today_workload_cu": 0
+  },
+  {
+    "scope": "yunipals-opensea",
+    "enabled": true,
+    "daily_cu": 1000000,
+    "foreground_reserve_cu": 200000,
+    "today_granted_cu": 200000,
+    "today_background_cu": 200000,
+    "workload": "incident",
+    "priority": "foreground",
+    "allocation_cu": 50000,
+    "today_workload_cu": 0
+  },
+  {
+    "scope": "yunipals-opensea",
+    "enabled": true,
+    "daily_cu": 1000000,
+    "foreground_reserve_cu": 200000,
+    "today_granted_cu": 200000,
+    "today_background_cu": 200000,
+    "workload": "order_projection",
+    "priority": "background",
+    "allocation_cu": 400000,
+    "today_workload_cu": 0
+  },
+  {
+    "scope": "yunipals-opensea",
+    "enabled": true,
+    "daily_cu": 1000000,
+    "foreground_reserve_cu": 200000,
+    "today_granted_cu": 200000,
+    "today_background_cu": 200000,
+    "workload": "sale",
+    "priority": "background",
+    "allocation_cu": 200000,
+    "today_workload_cu": 0
+  },
+  {
+    "scope": "yunipals-opensea",
+    "enabled": true,
+    "daily_cu": 1000000,
+    "foreground_reserve_cu": 200000,
+    "today_granted_cu": 200000,
+    "today_background_cu": 200000,
+    "workload": "source",
+    "priority": "background",
+    "allocation_cu": 200000,
+    "today_workload_cu": 200000
+  }
+]

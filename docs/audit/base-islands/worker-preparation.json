@@ -1,0 +1,10 @@
+{
+  "preparedAtUTC": "2026-10-13T21:24:39Z",
+  "release": "/opt/yunipals-islands/releases/base-islands-20261013-9f30c43d3441",
+  "schema": "yunipals_base_islands_v1",
+  "provenanceRows": 898,
+  "readOnlyRoleGranted": true,
+  "workerStarted": false,
+  "preChangeBackup": "/var/backups/yunipals-islands-indexer/2026-10-13T21-19-24-845Z",
+  "updatedAtUTC": "2026-10-13T21:38:51Z"
+}

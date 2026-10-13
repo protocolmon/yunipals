@@ -1,0 +1,10 @@
+{
+  "deployedAtUTC": "2026-10-13T21:41:14Z",
+  "release": "/opt/yunipals-islands/releases/base-islands-20261013-9f30c43d3441",
+  "apiOverride": "/etc/systemd/system/yunipals-islands-api.service.d/zzzz-base-islands.conf",
+  "nginxSnippet": "/etc/nginx/snippets/yunipals-islands-indexer-location.conf",
+  "rollbackAPI": "remove only zzzz-base-islands.conf, restore nginx-before.conf, daemon-reload/restart API/reload nginx",
+  "ethereumIndexerRestarted": false,
+  "ethereumMetadataRestarted": false,
+  "stakingRestarted": false
+}

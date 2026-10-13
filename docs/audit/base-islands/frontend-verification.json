@@ -1,0 +1,16 @@
+{
+  "productionUrl": "https://www.yunipals.com/?collection=islands",
+  "deploymentUrl": "https://yunipals-fhe6yd8rm-devving.vercel.app",
+  "deploymentId": "dpl_HKTbGcrmyDQxLiG9QCj78k2o4Md2",
+  "productionBrowserPassed": true,
+  "stagedBrowserPassed": true,
+  "checks": [
+    "pagination",
+    "origin filters",
+    "counterpart links",
+    "same-ID separation",
+    "mobile width"
+  ],
+  "pageErrors": [],
+  "rollbackDeploymentId": "dpl_GFityqV1pukeQN7dpGCN6HGEnR4n"
+}

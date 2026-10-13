@@ -1,0 +1,47 @@
+{
+  "verifiedAtUTC": "2026-10-13T21:41:06Z",
+  "api": "http://127.0.0.1:9015",
+  "activeNFTs": 1796,
+  "originals": 898,
+  "airdropped": 898,
+  "paginationPages": 18,
+  "distinctIdentities": 1796,
+  "metadataAndCounterpartsVerified": true,
+  "readiness": {
+    "collections": {
+      "ethereum-islands": {
+        "ready": true,
+        "indexedBlock": "26186323",
+        "verifiedBlock": "26104342",
+        "indexing": true,
+        "buildId": "e24e04995c",
+        "ownership": {
+          "ready": true,
+          "blocked": [],
+          "collections": [
+            {
+              "collection": "ethereum-islands",
+              "state": "ready",
+              "checkpoint_block": "26104342",
+              "reason": null,
+              "updated_at": "2026-10-02T11:44:11.394Z",
+              "verified_at": "2026-10-02T11:44:11.394Z"
+            }
+          ]
+        }
+      },
+      "base-islands": {
+        "ready": true,
+        "indexedBlock": "52569054",
+        "verifiedBlock": "52568220",
+        "finalizedBlock": "52568607",
+        "updatedAt": "2026-10-13T21:39:07.073Z",
+        "completedAt": "2026-10-13T21:39:07.073Z",
+        "reason": "base_islands_rpc_range_limit",
+        "airdropFinalized": false,
+        "contractOwner": "0x486e4cf6c783b76125b5fb52cf11b6b83fcaf880",
+        "buildId": "base-islands-logs-v1"
+      }
+    }
+  }
+}

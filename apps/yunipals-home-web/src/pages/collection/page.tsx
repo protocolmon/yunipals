@@ -1223,13 +1223,23 @@ export function CollectionPage() {
 
   const islandsSelected =
     chain === "ethereum-islands" ||
+    chain === "base-islands" ||
     (!tokenId && new URLSearchParams(search).get("collection") === "islands");
 
   if (islandsSelected) {
     return (
       <>
         <CollectionTabs selected="islands" />
-        {tokenId ? <IslandDetail tokenId={tokenId} /> : <IslandsExplorer />}
+        {tokenId ? (
+          <IslandDetail
+            tokenId={tokenId}
+            collectionId={
+              chain === "base-islands" ? "base-islands" : "ethereum-islands"
+            }
+          />
+        ) : (
+          <IslandsExplorer />
+        )}
       </>
     );
   }

@@ -1,0 +1,26 @@
+{
+  "qualifiedAtUTC": "2026-10-13T21:25:05.124Z",
+  "contract": "0x1058f1a6fedcaec94e488d6ec3c639e541faf066",
+  "block": "52568046",
+  "blockHash": "0x3b6da8e5913880bc73d38694a2cb829f7a680623f86d4b2948c386b9ae0f658a",
+  "historicalRange": {
+    "from": "49650128",
+    "to": "49750127"
+  },
+  "logCount": 899,
+  "runtimeAndProvenanceVerified": true,
+  "rpc": {
+    "startedAtUTC": "2026-10-13T21:25:03.370Z",
+    "methods": {
+      "eth_getBlockByNumber": 1,
+      "eth_chainId": 1,
+      "eth_getCode": 1,
+      "eth_call": 1,
+      "eth_getLogs": 1
+    },
+    "responses": {
+      "200": 5
+    }
+  },
+  "transactionsBroadcast": 0
+}

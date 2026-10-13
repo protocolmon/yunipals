@@ -1,0 +1,18 @@
+{
+  "restoredAtUTC": "2026-10-13T21:44:43Z",
+  "backupDirectory": "/var/backups/yunipals-islands-indexer/2026-10-13T21-42-23-479Z",
+  "archiveSha256": "b30143d60f363784cf82c941ec5f283afbdda391e44ea17cfe54fd82e7e9e33b",
+  "restorePassed": true,
+  "temporaryDatabase": "yunipals_islands_restore_20261013",
+  "counts": {
+    "originals": 898,
+    "airdropped": 898,
+    "provenance": 898,
+    "publications": 1796,
+    "revisions": 1796,
+    "sourceBlobs": 2,
+    "missingSources": 0,
+    "baseVerified": true
+  },
+  "temporaryDatabaseRemoved": true
+}

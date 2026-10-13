@@ -1,0 +1,9 @@
+{
+  "configuredAtUTC": "2026-10-13T21:35:27Z",
+  "publicFreeLogEndpoint": "https://base.drpc.org",
+  "chainIdVerified": 8453,
+  "recentTenBlockLogReadVerified": true,
+  "paidFallbackForSource": false,
+  "globalBudgetChanged": false,
+  "rollback": "remove only zz-base-islands-free-logs.conf and base-islands-free-logs.env, daemon-reload/restart the Base RPC gateway"
+}

@@ -1,5 +1,9 @@
 import type { Pool } from "pg";
-import { islandCollection, ZERO_ADDRESS } from "../constants.js";
+import { ZERO_ADDRESS } from "../constants.js";
+import {
+  ethereumIslandCollection,
+  type IslandCollection
+} from "./collections.js";
 import { sqlIdentifier } from "../offchain/sql.js";
 import { canonicalJson } from "../metadata/source/canonical.js";
 import { metadataRetry } from "../metadata/retry.js";
@@ -10,7 +14,10 @@ import {
   type IslandObservation
 } from "./metadata.js";
 
-export function islandMintQuery(schemaName: string) {
+export function islandMintQuery(
+  schemaName: string,
+  collection: IslandCollection = ethereumIslandCollection
+) {
   const schema = sqlIdentifier(schemaName);
   return `SELECT t.token_id FROM ${schema}.token t
     JOIN ${schema}.token_lifecycle l ON l.collection=t.collection
@@ -22,7 +29,7 @@ export function islandMintQuery(schemaName: string) {
       AND e.chain_id=t.chain_id AND e.contract_address=t.contract_address AND e."to"=l.minted_to
     WHERE t.collection=$1 AND t.token_id=$2 AND t.lifecycle=$3
       AND l.mint_transaction_hash=$4 AND e.log_index=$5
-      AND t.chain_id=${islandCollection.chainId} AND t.contract_address='${islandCollection.address}'
+      AND t.chain_id=${collection.chainId} AND t.contract_address='${collection.address}'
       AND NOT t.burned AND t.mint_block<=$6::numeric
     FOR SHARE OF t,l,e`;
 }
@@ -33,22 +40,26 @@ export async function publishIslandMetadata(
   job: IslandJob,
   observation: IslandObservation,
   raw: unknown,
-  auditSeconds = 3_600
+  auditSeconds = 3_600,
+  collection: IslandCollection = ethereumIslandCollection
 ) {
   if (!Number.isInteger(auditSeconds) || auditSeconds < 60)
     throw new Error("invalid_island_audit_interval");
-  const revision = islandRevision(job, observation, raw);
+  const revision = islandRevision(job, observation, raw, collection);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const canonical = await client.query(islandMintQuery(schemaName), [
-      islandCollection.slug,
-      job.tokenId,
-      job.lifecycle,
-      job.mintTransactionHash,
-      job.mintLogIndex,
-      observation.blockNumber.toString()
-    ]);
+    const canonical = await client.query(
+      islandMintQuery(schemaName, collection),
+      [
+        collection.slug,
+        job.tokenId,
+        job.lifecycle,
+        job.mintTransactionHash,
+        job.mintLogIndex,
+        observation.blockNumber.toString()
+      ]
+    );
     if (canonical.rows.length !== 1) {
       await client.query("ROLLBACK");
       return "obsolete";
@@ -67,7 +78,7 @@ export async function publishIslandMetadata(
       ON CONFLICT DO NOTHING`,
       [
         revision.revisionHash,
-        islandCollection.slug,
+        collection.slug,
         job.tokenId,
         job.lifecycle,
         job.mintTransactionHash,
@@ -98,7 +109,7 @@ export async function publishIslandMetadata(
         OR metadata.island_publication.mint_transaction_hash<>EXCLUDED.mint_transaction_hash
         OR metadata.island_publication.mint_log_index<>EXCLUDED.mint_log_index`,
       [
-        islandCollection.slug,
+        collection.slug,
         job.tokenId,
         job.lifecycle,
         job.mintTransactionHash,
@@ -123,20 +134,24 @@ export async function retryIslandMetadata(
   schemaName: string,
   job: IslandJob,
   block: bigint,
-  error: unknown
+  error: unknown,
+  collection: IslandCollection = ethereumIslandCollection
 ) {
   const retry = metadataRetry(error, job.attempts + 1, null);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const canonical = await client.query(islandMintQuery(schemaName), [
-      islandCollection.slug,
-      job.tokenId,
-      job.lifecycle,
-      job.mintTransactionHash,
-      job.mintLogIndex,
-      block.toString()
-    ]);
+    const canonical = await client.query(
+      islandMintQuery(schemaName, collection),
+      [
+        collection.slug,
+        job.tokenId,
+        job.lifecycle,
+        job.mintTransactionHash,
+        job.mintLogIndex,
+        block.toString()
+      ]
+    );
     if (canonical.rows.length !== 1) {
       await client.query("ROLLBACK");
       return "obsolete";
@@ -155,7 +170,7 @@ export async function retryIslandMetadata(
       mint_transaction_hash=EXCLUDED.mint_transaction_hash,mint_log_index=EXCLUDED.mint_log_index,
       last_error=EXCLUDED.last_error,next_attempt_at=EXCLUDED.next_attempt_at,updated_at=now()`,
       [
-        islandCollection.slug,
+        collection.slug,
         job.tokenId,
         job.lifecycle,
         job.mintTransactionHash,
@@ -178,7 +193,8 @@ export async function dueIslandJobs(
   pool: Pick<Pool, "query">,
   schemaName: string,
   block: bigint,
-  limit = 100
+  limit = 100,
+  collection: IslandCollection = ethereumIslandCollection
 ) {
   if (!Number.isInteger(limit) || limit < 1 || limit > 1_000)
     throw new Error("invalid_island_batch_size");
@@ -197,11 +213,12 @@ export async function dueIslandJobs(
       AND e.chain_id=t.chain_id AND e.contract_address=t.contract_address AND e."to"=l.minted_to
     LEFT JOIN metadata.island_publication p ON p.collection=t.collection
       AND p.token_id=t.token_id::numeric AND p.lifecycle=t.lifecycle
-    WHERE t.collection=$1 AND NOT t.burned AND t.mint_block<=$3::numeric
+    WHERE t.collection=$1 AND t.chain_id=${collection.chainId} AND t.contract_address='${collection.address}'
+      AND NOT t.burned AND t.mint_block<=$3::numeric
       AND (p.token_id IS NULL OR p.next_attempt_at<=now()
         OR p.mint_transaction_hash<>l.mint_transaction_hash OR p.mint_log_index<>e.log_index)
     ORDER BY COALESCE(p.next_attempt_at,'epoch'::timestamptz),t.token_id::numeric LIMIT $4`,
-    [islandCollection.slug, ZERO_ADDRESS, block.toString(), limit]
+    [collection.slug, ZERO_ADDRESS, block.toString(), limit]
   );
   return rows.rows;
 }

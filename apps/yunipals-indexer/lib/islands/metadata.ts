@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { islandCollection } from "../constants.js";
 import {
+  ethereumIslandCollection,
+  fixedIslandUri,
+  type IslandCollection
+} from "./collections.js";
+import {
   immutableMetadata,
   validateMetadata
 } from "../metadata/publication.js";
@@ -9,7 +14,8 @@ import { contentHash } from "../metadata/source/canonical.js";
 export const islandsRendererVersion = "islands-json-v1";
 export const islandMetadataHosts = new Set([
   "meta.polychainmonsters.com",
-  "meta.yunipals.com"
+  "meta.yunipals.com",
+  "islands-meta.yunipals.com"
 ]);
 
 const rawDocumentSchema = z
@@ -84,20 +90,26 @@ export type IslandObservation = {
   uri: string;
   blockNumber: bigint;
   blockHash: string;
-  metadataStorage: string;
+  metadataStorage: string | null;
   genesisLimit: bigint;
 };
 
 export function islandRevision(
   job: IslandJob,
   observation: IslandObservation,
-  raw: unknown
+  raw: unknown,
+  collection: IslandCollection = ethereumIslandCollection
 ) {
   const uri = islandMetadataUri(observation.uri);
   if (
-    observation.blockNumber < BigInt(islandCollection.deploymentBlock) ||
+    observation.blockNumber < BigInt(collection.deploymentBlock) ||
     !/^0x[0-9a-f]{64}$/.test(observation.blockHash) ||
-    !/^0x[0-9a-f]{40}$/.test(observation.metadataStorage) ||
+    (collection.metadataMode === "storage"
+      ? !observation.metadataStorage ||
+        !/^0x[0-9a-f]{40}$/.test(observation.metadataStorage)
+      : observation.metadataStorage !== null ||
+        uri !== fixedIslandUri(job.tokenId) ||
+        observation.genesisLimit !== 1000n) ||
     !Number.isSafeInteger(job.lifecycle) ||
     job.lifecycle < 1 ||
     !Number.isSafeInteger(job.mintLogIndex) ||
@@ -110,9 +122,9 @@ export function islandRevision(
   const documentHash = contentHash(document);
   const edition = islandEdition(job.tokenId, observation.genesisLimit);
   const revisionHash = contentHash({
-    collection: islandCollection.slug,
-    chainId: islandCollection.chainId,
-    contractAddress: islandCollection.address,
+    collection: collection.slug,
+    chainId: collection.chainId,
+    contractAddress: collection.address,
     tokenId: job.tokenId,
     lifecycle: job.lifecycle,
     mintTransactionHash: job.mintTransactionHash,

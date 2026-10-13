@@ -1,4 +1,8 @@
-import { islandCollection, ZERO_ADDRESS } from "../constants.js";
+import { ZERO_ADDRESS } from "../constants.js";
+import {
+  ethereumIslandCollection,
+  type IslandCollection
+} from "./collections.js";
 import { sqlIdentifier } from "../offchain/sql.js";
 
 export function islandTokenRelation(schemaName: string) {
@@ -21,14 +25,17 @@ export function islandTokenRelation(schemaName: string) {
       AND r.mint_transaction_hash=mint.transaction_hash AND r.mint_log_index=mint.log_index`;
 }
 
-export const islandTokenColumns = `t.collection AS "collectionId",'ethereum' AS chain,
+export function islandColumns(
+  collection: IslandCollection = ethereumIslandCollection
+) {
+  return `t.collection AS "collectionId",'${collection.chain}' AS chain,
   t.chain_id AS "chainId",t.contract_address AS "contractAddress",t.token_id AS "tokenId",
   CASE WHEN t.burned THEN NULL ELSE t.owner END AS owner,t.burned,t.lifecycle,
   t.mint_block::text AS "mintBlock",t.mint_timestamp::text AS "mintTimestamp",
   t.last_transfer_block::text AS "lastTransferBlock",
   t.last_transfer_timestamp::text AS "lastTransferTimestamp",
   t.last_transaction_hash AS "lastTransactionHash",
-  CASE WHEN t.token_id::numeric<=${islandCollection.genesisLimit} THEN 'Genesis' ELSE 'Personal' END AS edition,
+  CASE WHEN t.token_id::numeric<=${collection.genesisLimit} THEN 'Genesis' ELSE 'Personal' END AS edition,
   CASE WHEN p.status='published' THEN r.document END AS metadata,
   CASE WHEN p.status='retry' THEN 'retry' WHEN r.revision_hash IS NOT NULL THEN p.status ELSE 'pending' END AS "metadataStatus",
   NULL::numeric AS "rarityPoints",NULL::numeric AS "rarityPointsCapped",
@@ -37,6 +44,14 @@ export const islandTokenColumns = `t.collection AS "collectionId",'ethereum' AS 
       'contentHash',r.document_hash,'revisionHash',r.revision_hash,'rendererVersion',r.renderer_version,
       'uriBlock',r.uri_block::text,'uriBlockHash',r.uri_block_hash,'metadataStorage',r.metadata_storage,
       'checkedAt',p.uri_checked_at,'checkedBlock',p.uri_checked_block::text) END AS "metadataProvenance"`;
+}
 
-export const islandIdentityPredicate = `t.collection='${islandCollection.slug}'
-  AND t.chain_id=${islandCollection.chainId} AND t.contract_address='${islandCollection.address}'`;
+export function islandIdentity(
+  collection: IslandCollection = ethereumIslandCollection
+) {
+  return `t.collection='${collection.slug}'
+  AND t.chain_id=${collection.chainId} AND t.contract_address='${collection.address}'`;
+}
+
+export const islandTokenColumns = islandColumns();
+export const islandIdentityPredicate = islandIdentity();
