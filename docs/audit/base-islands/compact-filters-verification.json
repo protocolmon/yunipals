@@ -1,0 +1,15 @@
+{
+  "url": "https://www.yunipals.com",
+  "desktopRows": 1,
+  "mobileOverflow": false,
+  "filtersAndReload": true,
+  "stakingResetOnBase": true,
+  "pageErrors": [],
+  "verifiedAtUTC": "2026-10-13T22:03:03.808988+00:00",
+  "deploymentId": "dpl_EVefZQJ2ihhHc3J6vPCpCruiFjcs",
+  "deploymentUrl": "https://yunipals-n6zt8i53m-devving.vercel.app",
+  "rollbackDeploymentId": "dpl_HKTbGcrmyDQxLiG9QCj78k2o4Md2",
+  "stagedBrowserPassed": true,
+  "typecheckPassed": true,
+  "productionBuildPassed": true
+}

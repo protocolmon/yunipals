@@ -25,8 +25,8 @@ import { cn } from "@/lib/utils";
 
 import { IslandCard } from "./IslandCard";
 
-const filterButton =
-  "rounded-full px-4 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2";
+const filterSelect =
+  "w-full rounded-full border border-line bg-white px-3 py-2.5 text-xs font-bold text-ink transition hover:border-ethereum/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2 sm:w-auto sm:px-4 sm:text-sm";
 
 export function IslandsExplorer() {
   const [params, setParams] = useSearchParams();
@@ -254,21 +254,6 @@ export function IslandsExplorer() {
                   : `${formatInteger(items.length)} islands loaded`}
               </p>
             </div>
-            <label className="flex items-center gap-3 text-sm font-bold text-muted">
-              Sort by
-              <select
-                value={filters.sort}
-                onChange={(event) =>
-                  updateFilters({
-                    sort: event.target.value as IslandsFilters["sort"]
-                  })
-                }
-                className="rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                <option value="token-id-asc">Token ID: low to high</option>
-                <option value="token-id-desc">Token ID: high to low</option>
-              </select>
-            </label>
           </div>
 
           <div className="mt-6 rounded-card border border-line bg-mint/15 p-4 text-sm leading-relaxed text-ink/70">
@@ -279,54 +264,71 @@ export function IslandsExplorer() {
             transfer the other.
           </div>
           <div
-            className="mt-6 flex flex-wrap gap-2"
+            className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3"
             role="group"
-            aria-label="Island origins"
+            aria-label="Island filters"
           >
-            {(
-              [
-                ["all", "All islands"],
-                ["original", "Original · Ethereum"],
-                ["airdrop", "Airdropped · Base"]
-              ] as const
-            ).map(([origin, label]) => (
-              <button
-                key={origin}
-                type="button"
-                aria-pressed={(filters.origin ?? "all") === origin}
-                onClick={() => updateFilters({ origin })}
-                className={cn(
-                  filterButton,
-                  (filters.origin ?? "all") === origin
-                    ? "bg-ink text-white"
-                    : "bg-line/40 text-ink hover:bg-mint/40"
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div
-            className="mt-6 flex flex-wrap items-center gap-2"
-            role="group"
-            aria-label="Island editions"
-          >
-            {([undefined, "Genesis", "Personal"] as const).map((edition) => (
-              <button
-                key={edition || "all"}
-                type="button"
-                aria-pressed={filters.edition === edition}
-                onClick={() => updateFilters({ edition })}
-                className={cn(
-                  filterButton,
-                  filters.edition === edition
-                    ? "bg-ink text-white"
-                    : "bg-line/40 text-ink hover:bg-mint/40"
-                )}
-              >
-                {edition || "All editions"}
-              </button>
-            ))}
+            <select
+              aria-label="Island origin"
+              value={filters.origin ?? "all"}
+              onChange={(event) =>
+                updateFilters({
+                  origin: event.target.value as IslandsFilters["origin"]
+                })
+              }
+              className={filterSelect}
+            >
+              <option value="all">All islands</option>
+              <option value="original">Original · Ethereum</option>
+              <option value="airdrop">Airdropped · Base</option>
+            </select>
+            <select
+              aria-label="Island edition"
+              value={filters.edition ?? "all"}
+              onChange={(event) =>
+                updateFilters({
+                  edition:
+                    event.target.value === "all"
+                      ? undefined
+                      : (event.target.value as IslandsFilters["edition"])
+                })
+              }
+              className={filterSelect}
+            >
+              <option value="all">All editions</option>
+              <option value="Genesis">Genesis</option>
+              <option value="Personal">Personal</option>
+            </select>
+            {environment.islandStakingEnabled &&
+              filters.origin !== "airdrop" && (
+                <select
+                  aria-label="Island holdings"
+                  value={filters.holding ?? "all"}
+                  onChange={(event) =>
+                    updateFilters({
+                      holding: event.target.value as IslandsFilters["holding"]
+                    })
+                  }
+                  className={filterSelect}
+                >
+                  <option value="all">All holdings</option>
+                  {filters.owner && <option value="wallet">In wallet</option>}
+                  <option value="staked">Staked</option>
+                </select>
+              )}
+            <select
+              aria-label="Sort by"
+              value={filters.sort}
+              onChange={(event) =>
+                updateFilters({
+                  sort: event.target.value as IslandsFilters["sort"]
+                })
+              }
+              className={cn(filterSelect, "sm:ml-auto")}
+            >
+              <option value="token-id-asc">Token ID: low to high</option>
+              <option value="token-id-desc">Token ID: high to low</option>
+            </select>
             {address && (
               <button
                 type="button"
@@ -335,10 +337,7 @@ export function IslandsExplorer() {
                     owner: address.toLowerCase() as `0x${string}`
                   })
                 }
-                className={cn(
-                  filterButton,
-                  "border border-line bg-white text-ink hover:bg-mint/40"
-                )}
+                className="col-span-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:bg-mint/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
               >
                 My islands
               </button>
@@ -355,38 +354,6 @@ export function IslandsExplorer() {
               >
                 <X aria-hidden="true" size={14} /> Clear wallet
               </button>
-            </div>
-          )}
-          {environment.islandStakingEnabled && filters.origin !== "airdrop" && (
-            <div
-              role="group"
-              aria-label="Island holdings"
-              className="mt-4 flex flex-wrap gap-2"
-            >
-              {(
-                [
-                  ["all", "All holdings"],
-                  ["wallet", "In wallet"],
-                  ["staked", "Staked"]
-                ] as const
-              )
-                .filter(([holding]) => holding !== "wallet" || filters.owner)
-                .map(([holding, label]) => (
-                  <button
-                    key={holding}
-                    type="button"
-                    aria-pressed={(filters.holding ?? "all") === holding}
-                    className={cn(
-                      filterButton,
-                      (filters.holding ?? "all") === holding
-                        ? "bg-ink text-white"
-                        : "bg-line/40 text-ink"
-                    )}
-                    onClick={() => updateFilters({ holding })}
-                  >
-                    {label}
-                  </button>
-                ))}
             </div>
           )}
           {filters.tokenId && (

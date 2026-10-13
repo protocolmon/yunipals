@@ -23,7 +23,7 @@ try {
  const load=page.getByRole('button',{name:'Load more'});
  if(await load.count()) {await load.click();await page.waitForFunction(n=>document.querySelectorAll('a[aria-label^="View "]').length>n,first);}
  assert.equal(new Set(await cards().evaluateAll(items=>items.map(x=>x.getAttribute('href')))).size,await cards().count());
- await page.getByRole('button',{name:'Airdropped · Base',exact:true}).click();
+ await page.getByRole('combobox',{name:'Island origin',exact:true}).selectOption('airdrop');
  await page.waitForURL(/origin=airdrop/);
  await page.locator('a[href="/collection/base-islands/1"]').waitFor();
  assert.equal(await page.locator('a[href^="/collection/ethereum-islands/"]').count(),0);
