@@ -1,0 +1,33 @@
+{
+  "url": "https://www.yunipals.com",
+  "desktopRows": 1,
+  "arrowInsets": [
+    17,
+    17,
+    17,
+    17
+  ],
+  "customMenuRadius": 16,
+  "filtersAndReload": true,
+  "mobileLabelsFit": true,
+  "mobileMenuFits": true,
+  "pageErrors": [],
+  "verifiedAtUTC": "2026-10-13T23:13:02.893771+00:00",
+  "deploymentId": "dpl_A9U2mojSckekGUoTuwrtaHaGR23J",
+  "deploymentUrl": "https://yunipals-ddb469s73-devving.vercel.app",
+  "rollbackDeploymentId": "dpl_EVefZQJ2ihhHc3J6vPCpCruiFjcs",
+  "controlsMigrated": 13,
+  "innerArrowPaddingPx": 16,
+  "sharedComponentRegression": {
+    "keyboardAndFocus": true,
+    "formValue": true,
+    "disabledChoices": true,
+    "nativeDialogPortal": true,
+    "escapeKeepsDialogOpen": true,
+    "mobileFits": true
+  },
+  "sourceGuardInCI": true,
+  "stagedBrowserPassed": true,
+  "typecheckPassed": true,
+  "productionBuildPassed": true
+}

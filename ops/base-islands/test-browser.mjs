@@ -1,5 +1,6 @@
-import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { chooseSelect } from "../../apps/yunipals-home-web/scripts/ui/select.mjs";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base=process.env.ISLANDS_BROWSER_URL || 'http://127.0.0.1:5186';
 const browser=await chromium.launch({...(process.env.CHROMIUM_EXECUTABLE ? {executablePath:process.env.CHROMIUM_EXECUTABLE} : {}),headless:true,args:['--no-sandbox']});
@@ -23,7 +24,11 @@ try {
  const load=page.getByRole('button',{name:'Load more'});
  if(await load.count()) {await load.click();await page.waitForFunction(n=>document.querySelectorAll('a[aria-label^="View "]').length>n,first);}
  assert.equal(new Set(await cards().evaluateAll(items=>items.map(x=>x.getAttribute('href')))).size,await cards().count());
- await page.getByRole('combobox',{name:'Island origin',exact:true}).selectOption('airdrop');
+ await chooseSelect(
+   page,
+   page.getByRole("combobox", { name: "Island origin", exact: true }),
+   "airdrop"
+ );
  await page.waitForURL(/origin=airdrop/);
  await page.locator('a[href="/collection/base-islands/1"]').waitFor();
  assert.equal(await page.locator('a[href^="/collection/ethereum-islands/"]').count(),0);

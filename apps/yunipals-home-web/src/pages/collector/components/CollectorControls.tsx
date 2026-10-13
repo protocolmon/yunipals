@@ -8,6 +8,7 @@ import {
   type KeyboardEvent
 } from "react";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import { chainDetails } from "@/data/chains";
 import {
   defaultCollectorFilters,
@@ -164,8 +165,7 @@ export function CollectorControls({
       ? [
           {
             label: `Rarity: ${filters.rarityMin || "0"}–${filters.rarityMax || "any"} RP`,
-            clear: () =>
-              onChange({ ...filters, rarityMin: "", rarityMax: "" })
+            clear: () => onChange({ ...filters, rarityMin: "", rarityMax: "" })
           }
         ]
       : []),
@@ -238,17 +238,21 @@ export function CollectorControls({
         <label className="sr-only" htmlFor={`${id}-sort`}>
           Sort collection
         </label>
-        <select
+        <Select
           id={`${id}-sort`}
           value={filters.sort}
-          onChange={(event) =>
-            onChange({ ...filters, sort: event.target.value as CollectorSort })
+          onValueChange={(value) =>
+            onChange({ ...filters, sort: value as CollectorSort })
           }
           className={cn(controlClass, "max-w-full")}
         >
-          <option value="rarity-capped-desc">Rarity: highest first</option>
-          <option value="rarity-capped-asc">Rarity: lowest first</option>
-        </select>
+          <SelectItem value="rarity-capped-desc">
+            Rarity: highest first
+          </SelectItem>
+          <SelectItem value="rarity-capped-asc">
+            Rarity: lowest first
+          </SelectItem>
+        </Select>
         <button
           type="button"
           onClick={() => {
@@ -366,9 +370,7 @@ export function CollectorControls({
 
               {rarityRange && (
                 <fieldset>
-                  <legend className="mb-2 font-extrabold">
-                    Rarity score
-                  </legend>
+                  <legend className="mb-2 font-extrabold">Rarity score</legend>
                   <div className="grid grid-cols-2 gap-3">
                     <label className="text-xs font-bold text-muted">
                       Minimum RP

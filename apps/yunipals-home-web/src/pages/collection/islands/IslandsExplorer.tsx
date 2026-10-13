@@ -3,6 +3,7 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { Select, SelectItem } from "@/components/ui/select";
 import { environment } from "@/environment";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
@@ -26,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { IslandCard } from "./IslandCard";
 
 const filterSelect =
-  "w-full rounded-full border border-line bg-white px-3 py-2.5 text-xs font-bold text-ink transition hover:border-ethereum/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2 sm:w-auto sm:px-4 sm:text-sm";
+  "w-full gap-2 sm:gap-3 rounded-full border border-line bg-white px-3 py-2.5 text-xs font-bold text-ink transition hover:border-ethereum/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2 sm:w-auto sm:px-4 sm:text-sm";
 
 export function IslandsExplorer() {
   const [params, setParams] = useSearchParams();
@@ -268,67 +269,73 @@ export function IslandsExplorer() {
             role="group"
             aria-label="Island filters"
           >
-            <select
+            <Select
               aria-label="Island origin"
               value={filters.origin ?? "all"}
-              onChange={(event) =>
+              onValueChange={(value) =>
                 updateFilters({
-                  origin: event.target.value as IslandsFilters["origin"]
+                  origin: value as IslandsFilters["origin"]
                 })
               }
               className={filterSelect}
             >
-              <option value="all">All islands</option>
-              <option value="original">Original · Ethereum</option>
-              <option value="airdrop">Airdropped · Base</option>
-            </select>
-            <select
+              <SelectItem value="all">All islands</SelectItem>
+              <SelectItem value="original">Original · Ethereum</SelectItem>
+              <SelectItem value="airdrop">Airdropped · Base</SelectItem>
+            </Select>
+            <Select
               aria-label="Island edition"
               value={filters.edition ?? "all"}
-              onChange={(event) =>
+              onValueChange={(value) =>
                 updateFilters({
                   edition:
-                    event.target.value === "all"
+                    value === "all"
                       ? undefined
-                      : (event.target.value as IslandsFilters["edition"])
+                      : (value as IslandsFilters["edition"])
                 })
               }
               className={filterSelect}
             >
-              <option value="all">All editions</option>
-              <option value="Genesis">Genesis</option>
-              <option value="Personal">Personal</option>
-            </select>
+              <SelectItem value="all">All editions</SelectItem>
+              <SelectItem value="Genesis">Genesis</SelectItem>
+              <SelectItem value="Personal">Personal</SelectItem>
+            </Select>
             {environment.islandStakingEnabled &&
               filters.origin !== "airdrop" && (
-                <select
+                <Select
                   aria-label="Island holdings"
                   value={filters.holding ?? "all"}
-                  onChange={(event) =>
+                  onValueChange={(value) =>
                     updateFilters({
-                      holding: event.target.value as IslandsFilters["holding"]
+                      holding: value as IslandsFilters["holding"]
                     })
                   }
                   className={filterSelect}
                 >
-                  <option value="all">All holdings</option>
-                  {filters.owner && <option value="wallet">In wallet</option>}
-                  <option value="staked">Staked</option>
-                </select>
+                  <SelectItem value="all">All holdings</SelectItem>
+                  {filters.owner && (
+                    <SelectItem value="wallet">In wallet</SelectItem>
+                  )}
+                  <SelectItem value="staked">Staked</SelectItem>
+                </Select>
               )}
-            <select
+            <Select
               aria-label="Sort by"
               value={filters.sort}
-              onChange={(event) =>
+              onValueChange={(value) =>
                 updateFilters({
-                  sort: event.target.value as IslandsFilters["sort"]
+                  sort: value as IslandsFilters["sort"]
                 })
               }
               className={cn(filterSelect, "sm:ml-auto")}
             >
-              <option value="token-id-asc">Token ID: low to high</option>
-              <option value="token-id-desc">Token ID: high to low</option>
-            </select>
+              <SelectItem value="token-id-asc">
+                ID: low to high
+              </SelectItem>
+              <SelectItem value="token-id-desc">
+                ID: high to low
+              </SelectItem>
+            </Select>
             {address && (
               <button
                 type="button"

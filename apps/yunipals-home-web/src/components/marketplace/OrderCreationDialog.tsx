@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress, zeroAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
 import { useOrderCreation } from "@/hooks/marketplace/useOrderCreation";
@@ -247,21 +248,21 @@ export function OrderCreationDialog({
                 >
                   Payment currency
                 </label>
-                <select
+                <Select
                   id={`${priceId}-currency`}
                   value={paymentToken}
                   disabled={busy}
-                  onChange={(event) =>
-                    setSelectedCurrency(event.target.value as Address)
+                  onValueChange={(value) =>
+                    setSelectedCurrency(value as Address)
                   }
                   className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:ring-2 focus-visible:ring-ink"
                 >
                   {policy.data.listingCurrencies.map((token) => (
-                    <option key={token} value={token}>
+                    <SelectItem key={token} value={token}>
                       {openSeaCurrency(policy.data!.chain, token).symbol}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
+                </Select>
               </div>
             )}
           <div>
@@ -285,22 +286,20 @@ export function OrderCreationDialog({
             <label htmlFor={expiryId} className="text-sm font-bold">
               Expires after
             </label>
-            <select
+            <Select
               id={expiryId}
               value={selectedDuration ?? ""}
-              onChange={(event) => setDuration(event.target.value)}
-              disabled={busy}
+              placeholder="Loading durations…"
+              onValueChange={(value) => setDuration(value)}
+              disabled={busy || !durationOptions.length}
               className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
             >
-              {!durationOptions.length && (
-                <option value="">Loading durations…</option>
-              )}
               {durationOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value}>
                   {option.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+            </Select>
           </div>
           {inputError && (
             <p className="text-sm text-red-700" role="alert">

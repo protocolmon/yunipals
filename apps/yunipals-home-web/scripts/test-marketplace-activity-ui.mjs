@@ -6,6 +6,7 @@ import { getAddress } from "viem";
 
 import { activityScopeKey } from "../src/lib/marketplace/activity.ts";
 import { marketplaceChains } from "../src/lib/marketplace/registry.ts";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -433,9 +434,11 @@ try {
     "Stable pagination excludes newly arrived sales until refresh starts a complete new snapshot"
   );
 
-  await page
-    .getByRole("combobox", { name: "Network", exact: true })
-    .selectOption("bnb");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Network", exact: true }),
+    "bnb"
+  );
   await count(25);
   await page
     .getByRole("button", { name: "Received from sales", exact: true })

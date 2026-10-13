@@ -217,3 +217,21 @@ it does not enable analytics in the application's fixture mode.
 Rollback: set `VITE_MIXPANEL_ENABLED=false`, rebuild and redeploy. Already-open
 tabs retain their loaded build until refreshed. Updating the public SDK package
 requires rerunning both payload and consent checks before deployment.
+
+## Shared dropdowns
+
+Use `Select` and `SelectItem` from `@/components/ui/select` for single-choice
+controls. The shared component owns the arrow inset, rounded popup, selected
+indicator, keyboard navigation and focus management. It also places menus inside
+native dialogs so marketplace controls stay above the browser's modal layer.
+Use `onValueChange(value)` for selection changes and an `aria-label` or an
+associated `<label htmlFor>` for the accessible name. Set `placeholder` for an
+empty value; item values must be nonempty.
+
+`pnpm test:select` runs in the existing CI web test suite and rejects raw native
+`<select>` controls in application components. To verify arrow spacing, mobile
+layout, keyboard/focus, form values and dialog layering in Chromium, run:
+
+```sh
+pnpm test:select:ui --playwright /path/to/playwright/index.mjs --chromium /path/to/chromium
+```

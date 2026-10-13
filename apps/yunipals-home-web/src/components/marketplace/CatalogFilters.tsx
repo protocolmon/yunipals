@@ -1,5 +1,6 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import {
   clearMarketFilters,
   priceCurrencyForFilters,
@@ -70,11 +71,11 @@ export function CatalogFilters({
       <label htmlFor={`${id}-sale`} className="sr-only">
         Sale availability
       </label>
-      <select
+      <Select
         id={`${id}-sale`}
         value={filters.sale}
-        onChange={(event) => {
-          const sale = event.target.value as CollectionFilters["sale"];
+        onValueChange={(value) => {
+          const sale = value as CollectionFilters["sale"];
           onChange(
             sale === "listed"
               ? { ...filters, sale }
@@ -83,40 +84,40 @@ export function CatalogFilters({
         }}
         className="w-full rounded-xl border border-line bg-white px-3 py-2 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ethereum"
       >
-        <option value="all">All NFTs</option>
-        <option value="listed">For sale</option>
-        <option value="unlisted">Not listed</option>
-      </select>
+        <SelectItem value="all">All NFTs</SelectItem>
+        <SelectItem value="listed">For sale</SelectItem>
+        <SelectItem value="unlisted">Not listed</SelectItem>
+      </Select>
       <label htmlFor={`${id}-currency`} className="block text-xs font-bold">
         Listing currency
       </label>
-      <select
+      <Select
         id={`${id}-currency`}
         disabled={!single}
         value={filters.currency}
-        onChange={(event) => {
+        onValueChange={(value) => {
           onChange(
             updateCollectionCurrency(
               filters,
-              event.target.value as CollectionFilters["currency"]
+              value as CollectionFilters["currency"]
             )
           );
         }}
         className="w-full rounded-xl border border-line bg-white px-3 py-2 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ethereum disabled:opacity-50"
       >
-        <option value="all">Any currency</option>
+        <SelectItem value="all">Any currency</SelectItem>
         {currencies.map((currency) => (
-          <option key={currency.key} value={currency.key}>
+          <SelectItem key={currency.key} value={currency.key}>
             {currency.symbol}
-          </option>
+          </SelectItem>
         ))}
         {filters.currency !== "all" &&
           !currencies.some((currency) => currency.key === filters.currency) && (
-            <option value={filters.currency} disabled>
+            <SelectItem value={filters.currency} disabled>
               Unsupported currency
-            </option>
+            </SelectItem>
           )}
-      </select>
+      </Select>
       {!single && (
         <p className="text-xs leading-relaxed text-muted">
           Choose exactly one chain to compare prices.

@@ -32,6 +32,7 @@ import {
 
 import { useAccount } from "wagmi";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import {
   ChainFilter,
   CollectionFilterPanel,
@@ -853,11 +854,11 @@ function CollectionExplorer() {
               <label htmlFor="collection-sort" className="sr-only">
                 Sort collection
               </label>
-              <select
+              <Select
                 id="collection-sort"
                 value={filters.sort}
-                onChange={(event) => {
-                  const sort = event.target.value as CollectionSort;
+                onValueChange={(value) => {
+                  const sort = value as CollectionSort;
                   setFilters({
                     ...filters,
                     sort,
@@ -872,7 +873,7 @@ function CollectionExplorer() {
                 className="rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
               >
                 {SORT_OPTIONS.map((option) => (
-                  <option
+                  <SelectItem
                     key={option.value}
                     value={option.value}
                     disabled={
@@ -884,9 +885,9 @@ function CollectionExplorer() {
                     option.value.startsWith("token-id-")
                       ? `Token ID / mint: ${option.value.endsWith("desc") ? "descending" : "ascending"}`
                       : option.label}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 
