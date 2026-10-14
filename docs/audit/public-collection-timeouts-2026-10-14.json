@@ -1,0 +1,525 @@
+{
+  "checkedAt": "2026-10-14T18:20:31.078239+00:00",
+  "productionRelease": "/opt/yunipals/releases/exomon-jit-20261007-035c391",
+  "projectionGeneration": "46",
+  "productionChanged": true,
+  "benchmarks": {
+    "originalNatural": {
+      "outcome": "ok",
+      "planningMs": 100.88,
+      "executionMs": 29.778,
+      "rows": 25
+    },
+    "candidate": {
+      "outcome": "ok",
+      "planningMs": 24.74,
+      "executionMs": 30.771,
+      "rows": 25
+    },
+    "originalForcedStale": {
+      "outcome": "statement_timeout",
+      "deadlineMs": 4000
+    }
+  },
+  "parity": [
+    {
+      "score": "rarity_points_capped",
+      "direction": "DESC",
+      "outcome": "ok",
+      "results": [
+        {
+          "label": "original",
+          "rows": 25,
+          "rowHash": "ab661cf119a09f8d3d1faa0198fd2a85"
+        },
+        {
+          "label": "candidate",
+          "rows": 25,
+          "rowHash": "ab661cf119a09f8d3d1faa0198fd2a85"
+        }
+      ],
+      "identical": true
+    },
+    {
+      "score": "rarity_points",
+      "direction": "DESC",
+      "outcome": "ok",
+      "results": [
+        {
+          "label": "original",
+          "rows": 25,
+          "rowHash": "8f918163623b15b407d94fb3c27ad29f"
+        },
+        {
+          "label": "candidate",
+          "rows": 25,
+          "rowHash": "8f918163623b15b407d94fb3c27ad29f"
+        }
+      ],
+      "identical": true
+    },
+    {
+      "score": "rarity_points_capped",
+      "direction": "ASC",
+      "outcome": "ok",
+      "results": [
+        {
+          "label": "original",
+          "rows": 25,
+          "rowHash": "da94912aff00049ab4a4452b48ad5147"
+        },
+        {
+          "label": "candidate",
+          "rows": 25,
+          "rowHash": "da94912aff00049ab4a4452b48ad5147"
+        }
+      ],
+      "identical": true
+    },
+    {
+      "score": "rarity_points",
+      "direction": "ASC",
+      "outcome": "ok",
+      "results": [
+        {
+          "label": "original",
+          "rows": 25,
+          "rowHash": "da94912aff00049ab4a4452b48ad5147"
+        },
+        {
+          "label": "candidate",
+          "rows": 25,
+          "rowHash": "da94912aff00049ab4a4452b48ad5147"
+        }
+      ],
+      "identical": true
+    }
+  ],
+  "last24Hours": {
+    "evm-collection": {
+      "checks": 1264,
+      "reasons": {
+        "healthy": 890,
+        "timeout": 373,
+        "http_error": 1
+      },
+      "p50Seconds": 1.729,
+      "p95Seconds": 12.109,
+      "emails": {
+        "alert": 10,
+        "recovery": 10
+      }
+    },
+    "solana-collection": {
+      "checks": 1264,
+      "reasons": {
+        "healthy": 1264
+      },
+      "p50Seconds": 0.575,
+      "p95Seconds": 0.712,
+      "emails": {}
+    },
+    "islands-collection": {
+      "checks": 1264,
+      "reasons": {
+        "healthy": 1263,
+        "http_error": 1
+      },
+      "p50Seconds": 0.586,
+      "p95Seconds": 0.738,
+      "emails": {}
+    },
+    "islands-staking": {
+      "checks": 1264,
+      "reasons": {
+        "healthy": 1223,
+        "http_error": 1,
+        "invalid_or_unready_response": 40
+      },
+      "p50Seconds": 0.486,
+      "p95Seconds": 0.622,
+      "emails": {
+        "alert": 7,
+        "recovery": 7
+      }
+    }
+  },
+  "patch": {
+    "path": "patches/collection-rarity-point-reads/production.patch",
+    "target": "lib/api/server.ts",
+    "beforeSha256": "92b561e48d8a3660fbe7738aea79da538325352bbcc4174945de2d8e96da091b",
+    "afterSha256": "c9894fc66999a04afc7b60cc5df3c9ee787db78f8901c98a9c5f2e81c9600cb5",
+    "rollback": "Restore the original API release and restart only yunipals-api.service."
+  },
+  "localValidation": {
+    "typecheck": "passed",
+    "unitTests": {
+      "passed": 112,
+      "skipped": 1
+    },
+    "postgres": {
+      "paginationCases": 288,
+      "invalidationCases": 25,
+      "rankedPageProofChangeCases": 48,
+      "passed": true
+    },
+    "committedSourceBase": "4e0d753",
+    "committedSourceTypecheck": "passed",
+    "committedSourceUnitTests": {
+      "passed": 126,
+      "skipped": 1
+    }
+  },
+  "deployment": {
+    "preparedAt": "2026-10-14T18:56:06.378561+00:00",
+    "oldRelease": "/opt/yunipals/releases/exomon-jit-20261007-035c391",
+    "newRelease": "/opt/yunipals/releases/rarity-point-reads-20261014-c9894fc6",
+    "beforeSha256": "92b561e48d8a3660fbe7738aea79da538325352bbcc4174945de2d8e96da091b",
+    "afterSha256": "c9894fc66999a04afc7b60cc5df3c9ee787db78f8901c98a9c5f2e81c9600cb5",
+    "candidateChecks": [
+      {
+        "path": "/ready",
+        "status": 200,
+        "seconds": 0.074,
+        "serverTiming": null
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc",
+        "status": 200,
+        "seconds": 0.854,
+        "serverTiming": "page;dur=161.4, count;dur=832.0;desc=\"miss\"",
+        "items": 24,
+        "total": 1006885
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc",
+        "status": 200,
+        "seconds": 0.104,
+        "serverTiming": "page;dur=85.6, count;dur=1.2;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885,
+        "continuation": true
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-asc",
+        "status": 200,
+        "seconds": 0.205,
+        "serverTiming": "page;dur=193.1, count;dur=0.8;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-asc",
+        "status": 200,
+        "seconds": 0.101,
+        "serverTiming": "page;dur=90.7, count;dur=0.5;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885,
+        "continuation": true
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-desc",
+        "status": 200,
+        "seconds": 0.071,
+        "serverTiming": "page;dur=60.3, count;dur=0.9;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-desc",
+        "status": 200,
+        "seconds": 0.06,
+        "serverTiming": "page;dur=48.2, count;dur=0.8;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885,
+        "continuation": true
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-asc",
+        "status": 200,
+        "seconds": 0.117,
+        "serverTiming": "page;dur=104.6, count;dur=0.5;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-asc",
+        "status": 200,
+        "seconds": 0.089,
+        "serverTiming": "page;dur=78.7, count;dur=0.4;desc=\"hit\"",
+        "items": 24,
+        "total": 1006885,
+        "continuation": true
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc&chain=solana",
+        "status": 200,
+        "seconds": 0.079,
+        "serverTiming": null,
+        "items": 24,
+        "total": 9177
+      }
+    ],
+    "publicChecks": [
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc",
+        "status": 200,
+        "seconds": 1.118,
+        "serverTiming": "page;dur=89.5, count;dur=996.1;desc=\"miss\"",
+        "items": 24,
+        "total": 1006885
+      },
+      {
+        "path": "/v1/tokens?limit=24&burned=false&metadata=all&sort=rarity-capped-desc&chain=solana",
+        "status": 200,
+        "seconds": 0.225,
+        "serverTiming": null,
+        "items": 24,
+        "total": 9177
+      },
+      {
+        "path": "/v2/collections/ethereum-islands/tokens?limit=24",
+        "status": 200,
+        "seconds": 0.233,
+        "serverTiming": null,
+        "items": 24,
+        "total": 898
+      }
+    ],
+    "productionChanged": true,
+    "deployedAt": "2026-10-14T18:56:19.532360+00:00",
+    "serviceActive": "active",
+    "automaticRestarts": 0,
+    "rollback": {
+      "removeDropIn": "/etc/systemd/system/yunipals-api.service.d/zzzzzzz-rarity-point-reads.conf",
+      "restartService": "yunipals-api.service",
+      "retainedRelease": "/opt/yunipals/releases/exomon-jit-20261007-035c391"
+    }
+  },
+  "externalPublicCheck": {
+    "status": 200,
+    "seconds": 0.217603
+  },
+  "observation": {
+    "startedAt": "2026-10-14T18:57:02.316234+00:00",
+    "completedAt": "2026-10-14T18:59:47.526844+00:00",
+    "samples": [
+      {
+        "checkedAt": "2026-10-14T18:57:02.316234+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.384,
+        "serverTiming": "page;dur=103.0, count;dur=1170.9;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:57:18.911744+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.138,
+        "serverTiming": "page;dur=96.2, count;dur=982.3;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:57:35.229820+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.319,
+        "serverTiming": "page;dur=106.9, count;dur=1192.9;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:57:51.754982+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.2,
+        "serverTiming": "page;dur=81.4, count;dur=1023.3;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:58:08.163404+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.09,
+        "serverTiming": "page;dur=84.9, count;dur=922.4;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:58:24.442960+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.065,
+        "serverTiming": "page;dur=92.1, count;dur=937.8;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:58:40.692992+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.194,
+        "serverTiming": "page;dur=96.6, count;dur=993.3;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:58:57.095685+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.132,
+        "serverTiming": "page;dur=98.2, count;dur=942.0;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:59:13.440662+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.165,
+        "serverTiming": "page;dur=105.1, count;dur=1006.6;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:59:29.808561+00:00",
+        "baseCacheRevisionMatches": true,
+        "status": 200,
+        "seconds": 1.126,
+        "serverTiming": "page;dur=107.2, count;dur=1006.5;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      },
+      {
+        "checkedAt": "2026-10-14T18:59:46.154397+00:00",
+        "baseCacheRevisionMatches": false,
+        "status": 200,
+        "seconds": 1.263,
+        "serverTiming": "page;dur=96.0, count;dur=1088.9;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      }
+    ],
+    "scheduledMonitorChecks": [
+      {
+        "checkedAt": "2026-10-14T18:57:12.832680+00:00",
+        "samples": {
+          "evm-collection": {
+            "ok": true,
+            "seconds": 0.466,
+            "status": 200,
+            "reason": null
+          },
+          "solana-collection": {
+            "ok": true,
+            "seconds": 0.402,
+            "status": 200,
+            "reason": null
+          },
+          "islands-collection": {
+            "ok": true,
+            "seconds": 0.433,
+            "status": 200,
+            "reason": null
+          },
+          "islands-staking": {
+            "ok": true,
+            "seconds": 0.413,
+            "status": 200,
+            "reason": null
+          }
+        },
+        "pendingEvents": [],
+        "emailDelivery": "idle"
+      },
+      {
+        "checkedAt": "2026-10-14T18:58:16.041456+00:00",
+        "samples": {
+          "evm-collection": {
+            "ok": true,
+            "seconds": 0.535,
+            "status": 200,
+            "reason": null
+          },
+          "solana-collection": {
+            "ok": true,
+            "seconds": 0.557,
+            "status": 200,
+            "reason": null
+          },
+          "islands-collection": {
+            "ok": true,
+            "seconds": 0.494,
+            "status": 200,
+            "reason": null
+          },
+          "islands-staking": {
+            "ok": true,
+            "seconds": 0.48,
+            "status": 200,
+            "reason": null
+          }
+        },
+        "pendingEvents": [],
+        "emailDelivery": "idle"
+      },
+      {
+        "checkedAt": "2026-10-14T18:59:22.753099+00:00",
+        "samples": {
+          "evm-collection": {
+            "ok": true,
+            "seconds": 0.689,
+            "status": 200,
+            "reason": null
+          },
+          "solana-collection": {
+            "ok": true,
+            "seconds": 0.504,
+            "status": 200,
+            "reason": null
+          },
+          "islands-collection": {
+            "ok": true,
+            "seconds": 0.637,
+            "status": 200,
+            "reason": null
+          },
+          "islands-staking": {
+            "ok": true,
+            "seconds": 0.454,
+            "status": 200,
+            "reason": null
+          }
+        },
+        "pendingEvents": [],
+        "emailDelivery": "idle"
+      }
+    ],
+    "summary": {
+      "samples": 11,
+      "healthy": 11,
+      "checksWithInvalidBaseCache": 1,
+      "monitorChecks": 3,
+      "latest": {
+        "checkedAt": "2026-10-14T18:59:46.154397+00:00",
+        "baseCacheRevisionMatches": false,
+        "status": 200,
+        "seconds": 1.263,
+        "serverTiming": "page;dur=96.0, count;dur=1088.9;desc=\"miss\"",
+        "items": 24,
+        "healthy": true
+      }
+    },
+    "apiErrors": {
+      "tokenQueryFailures": 0,
+      "databaseUnavailable": 0
+    },
+    "automaticRestarts": 0,
+    "serviceActive": "active"
+  },
+  "deploymentVerifiedAt": "2026-10-14T18:59:47.526844+00:00"
+}
