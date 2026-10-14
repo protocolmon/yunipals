@@ -13,6 +13,7 @@ export const islandsContractAddress =
 export const islandsCollectionHref = "/?collection=islands";
 export type IslandCollectionId = "ethereum-islands" | "base-islands-v2";
 export type IslandOrigin = "all" | "original" | "airdrop";
+export const defaultIslandOrigin: IslandOrigin = "airdrop";
 const apiPath = "/v2/islands";
 export function islandOriginLabel(token: Pick<IslandToken, "collectionId">) {
   return token.collectionId === "base-islands-v2"
@@ -163,7 +164,7 @@ export function isIslandOwner(value: string): value is EvmAddress {
 
 export function parseIslandsFilters(params: URLSearchParams): IslandsFilters {
   const edition = params.get("edition");
-  const origin = params.get("origin") || "all";
+  const origin = params.get("origin") || defaultIslandOrigin;
   if (!["all", "original", "airdrop"].includes(origin))
     throw new Error("Choose Original, Airdropped, or All islands.");
   const tokenId = params.get("tokenId");
@@ -211,7 +212,7 @@ export function islandsTokensPath(filters: IslandsFilters, cursor?: string) {
   const params = new URLSearchParams({
     limit: "24",
     sort: filters.sort,
-    origin: filters.origin ?? "all"
+    origin: filters.origin ?? defaultIslandOrigin
   });
   if (filters.tokenId) params.set("tokenId", filters.tokenId);
   if (filters.edition) params.set("edition", filters.edition);
@@ -227,7 +228,7 @@ export function islandsTokensPath(filters: IslandsFilters, cursor?: string) {
 
 export function fetchIslandsStats(
   signal?: AbortSignal,
-  origin: IslandOrigin = "all"
+  origin: IslandOrigin = defaultIslandOrigin
 ) {
   return fetchIndexerJson<IslandsStats>(
     `${apiPath}/stats?origin=${origin}`,

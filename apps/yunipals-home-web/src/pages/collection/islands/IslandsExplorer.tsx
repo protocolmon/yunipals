@@ -12,6 +12,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
 import { formatInteger, shortAddress } from "@/lib/format";
 import {
+  defaultIslandOrigin,
   fetchIslands,
   fetchIslandsStats,
   islandDetailHref,
@@ -53,8 +54,9 @@ export function IslandsExplorer() {
     "Explore original Ethereum islands and airdropped Base islands. Browse artwork, wallet holdings, and transfer histories."
   );
   const stats = useQuery({
-    queryKey: ["islands", "stats", filters.origin ?? "all"],
-    queryFn: ({ signal }) => fetchIslandsStats(signal, filters.origin ?? "all"),
+    queryKey: ["islands", "stats", filters.origin ?? defaultIslandOrigin],
+    queryFn: ({ signal }) =>
+      fetchIslandsStats(signal, filters.origin ?? defaultIslandOrigin),
     staleTime: 60_000
   });
   const tokens = useInfiniteQuery({
@@ -83,7 +85,7 @@ export function IslandsExplorer() {
     const next = { ...filters, ...changes };
     if (next.origin === "airdrop") next.holding = "all";
     const search = new URLSearchParams({ collection: "islands" });
-    if (next.origin && next.origin !== "all") search.set("origin", next.origin);
+    if (next.origin) search.set("origin", next.origin);
     if (next.tokenId) search.set("tokenId", next.tokenId);
     if (next.edition) search.set("edition", next.edition);
     if (next.owner) search.set("owner", next.owner);
@@ -278,7 +280,7 @@ export function IslandsExplorer() {
           >
             <Select
               aria-label="Island origin"
-              value={filters.origin ?? "all"}
+              value={filters.origin ?? defaultIslandOrigin}
               onValueChange={(value) =>
                 updateFilters({
                   origin: value as IslandsFilters["origin"]
