@@ -1,0 +1,19 @@
+{
+  "verifiedAtUTC": "2026-10-14T08:46:00.046556+00:00",
+  "project": "yunipals-web",
+  "team": "devving",
+  "deploymentId": "dpl_Ggwis76vUgExBmcC6zQovUoQwEAp",
+  "deploymentUrl": "https://yunipals-5k8rpr9ns-devving.vercel.app",
+  "publicUrl": "https://www.yunipals.com/?collection=islands&origin=airdrop",
+  "productionBrowserChecks": {
+    "pagination": true,
+    "originFilters": true,
+    "counterpartLinks": true,
+    "legacyDetailRedirect": true,
+    "revealedTraits": true,
+    "artworkDecoded": true,
+    "mobileOverflow": false,
+    "pageErrors": []
+  },
+  "rollbackDeployment": "https://yunipals-ddb469s73-devving.vercel.app"
+}

@@ -1,0 +1,7 @@
+{
+  "deployedAtUTC": "2026-10-14T08:38:43Z",
+  "release": "/opt/yunipals-islands/releases/base-islands-v2-20261014-318a865c2513",
+  "activeBaseContract": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  "rollback": "Restore api-override-before.conf and nginx-before.conf, restart API and reload nginx; old Base schema retained",
+  "ethereumWorkersChanged": false
+}

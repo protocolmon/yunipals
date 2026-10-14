@@ -1,6 +1,6 @@
 import { islandCollection } from "../constants.js";
 
-export const baseIslandCollection = {
+export const legacyBaseIslandCollection = {
   slug: "base-islands",
   chain: "base",
   chainId: 8453,
@@ -13,6 +13,29 @@ export const baseIslandCollection = {
   schemaName: "yunipals_base_islands_v1"
 } as const;
 
+export const baseIslandCollection = {
+  ...legacyBaseIslandCollection,
+  slug: "base-islands-v2",
+  address: "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  deploymentBlock: 52_587_956,
+  metadataMode: "token",
+  schemaName: "yunipals_base_islands_v2"
+} as const;
+export const baseIslandMetadataUri =
+  "https://islands-meta.yunipals.com/v2/base-islands/";
+export const replacementSnapshotSha256 =
+  "7a0af719a7f13ea8b94df6f64c1c1573657b412ddd5b39fa5651ddf973b9d2d7";
+export const replacementSnapshotBlock = 52_587_044n;
+export const replacementSnapshotBlockHash =
+  "0x805301a21f019844c3d9fd37441d40a863f85c7b812c21491bc4f96a996fe97b";
+export const replacementDistributionRoot =
+  "0xd2aebf9b6ba24e175372e11a7d418d18ca5c357075ce9d225f64a5ea1836a011";
+export const revealAssignmentsSha256 =
+  "cfdc7ea0a31f1779e1ef5e2a6e00a1f262b411226022b318f797697dfbb3fc2e";
+export function baseIslandUri(tokenId: string) {
+  return baseIslandMetadataUri + tokenId;
+}
+
 export const ethereumIslandCollection = {
   ...islandCollection,
   origin: "original",
@@ -21,13 +44,13 @@ export const ethereumIslandCollection = {
 
 export const islandCollections = {
   "ethereum-islands": ethereumIslandCollection,
-  "base-islands": baseIslandCollection
+  "base-islands-v2": baseIslandCollection
 } as const;
 export type IslandCollectionId = keyof typeof islandCollections;
 export type IslandCollection = (typeof islandCollections)[IslandCollectionId];
 
 export const baseIslandRuntimeSha256 =
-  "8d2c974b8266116fdd1391dd6ede92f1130a9922adc60d81bfc3302233d644f4";
+  "c96de4530c373eede3c088ccb4f25b06efe7145ae8ffe69237f63f48bf935aad";
 export const airdropSnapshotSha256 =
   "1c22d608123555d9bdf63d99cf8c77e481d00c195c017e20da55d9f03a02448e";
 export const airdropDistributionSha256 =

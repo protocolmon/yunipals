@@ -7,6 +7,7 @@ import {
   type Hex
 } from "viem";
 import { base } from "viem/chains";
+import { setTimeout as delay } from "node:timers/promises";
 import { baseIslandCollection as collection } from "./collections.js";
 
 export const baseIslandsAbi = parseAbi([
@@ -18,8 +19,13 @@ export const baseIslandsAbi = parseAbi([
   "function SOURCE_CONTRACT() view returns (address)",
   "function SNAPSHOT_JSON_SHA256() view returns (bytes32)",
   "function DISTRIBUTION_CSV_SHA256() view returns (bytes32)",
-  "function GENESIS_TOKEN_URI() view returns (string)",
-  "function PERSONAL_TOKEN_URI() view returns (string)"
+  "function REPLACES_CONTRACT() view returns (address)",
+  "function BASE_METADATA_URI() view returns (string)",
+  "function DISTRIBUTION_ROOT() view returns (bytes32)",
+  "function REPLACEMENT_SNAPSHOT_BLOCK() view returns (uint256)",
+  "function REPLACEMENT_SNAPSHOT_HASH() view returns (bytes32)",
+  "function REPLACEMENT_SNAPSHOT_SHA256() view returns (bytes32)",
+  "function REVEAL_ASSIGNMENTS_SHA256() view returns (bytes32)"
 ]);
 export const baseIslandTopics = [
   toEventSelector("Transfer(address,address,uint256)"),
@@ -83,6 +89,24 @@ export function baseReadClient(url: string, metrics?: BaseRpcMetrics) {
   });
 }
 export type BaseReadClient = ReturnType<typeof baseReadClient>;
+
+/** Brief free-provider failures may retry; an exhausted CU budget must defer. */
+export async function retryBaseRead<T>(read: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await read();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (
+        attempt >= 2 ||
+        /budget|compute.units/i.test(message) ||
+        !/429|502|503|timeout|timed.out|request.limit|pacing/i.test(message)
+      )
+        throw error;
+      await delay(2000 * (attempt + 1));
+    }
+  }
+}
 
 export function isRangeLimitError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
@@ -150,7 +174,7 @@ export function decodeBaseLog(log: RawBaseLog) {
   return {
     eventName: event.eventName,
     args,
-    id: `base-islands:${log.transactionHash}:${Number(BigInt(log.logIndex))}`,
+    id: `base-islands-v2:${log.transactionHash}:${Number(BigInt(log.logIndex))}`,
     blockNumber: BigInt(log.blockNumber),
     blockHash: log.blockHash.toLowerCase(),
     transactionHash: log.transactionHash.toLowerCase(),

@@ -41,15 +41,15 @@ test("island IDs stay separate from monster routes and preserve uint256 precisio
 
 test("Base routes, origin labels, and search filters keep same-number NFTs separate", () => {
   assert.equal(
-    islandDetailHref("42", "base-islands"),
-    "/collection/base-islands/42"
+    islandDetailHref("42", "base-islands-v2"),
+    "/collection/base-islands-v2/42"
   );
   assert.equal(
-    islandOwnerHref(owner, "base-islands"),
+    islandOwnerHref(owner, "base-islands-v2"),
     `/?collection=islands&owner=${owner}&origin=airdrop`
   );
   assert.equal(
-    islandOriginLabel({ collectionId: "base-islands" }),
+    islandOriginLabel({ collectionId: "base-islands-v2" }),
     "Airdropped · Base"
   );
   assert.equal(

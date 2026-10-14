@@ -1,0 +1,14 @@
+artifacts/
+cache/
+coverage/
+dist/
+node_modules/
+typechain-types/
+
+.env
+.env.*
+!.env.example
+
+*.log
+.DS_Store
+private-transactions/

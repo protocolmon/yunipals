@@ -10,13 +10,13 @@ export const baseIslandsMigrations = [
   ].flatMap((table) => [
     `ALTER TABLE ${table} DROP CONSTRAINT IF EXISTS ${table.split(".")[1]}_collection_check`,
     `ALTER TABLE ${table} ADD CONSTRAINT ${table.split(".")[1]}_collection_check
-      CHECK(collection IN ('ethereum-islands','base-islands'))`
+      CHECK(collection IN ('ethereum-islands','base-islands','base-islands-v2'))`
   ]),
   `ALTER TABLE metadata_source.island_revision ALTER COLUMN metadata_storage DROP NOT NULL`,
   `ALTER TABLE metadata_source.island_revision DROP CONSTRAINT IF EXISTS island_revision_storage_mode_check`,
   `ALTER TABLE metadata_source.island_revision ADD CONSTRAINT island_revision_storage_mode_check
     CHECK((collection='ethereum-islands' AND metadata_storage IS NOT NULL) OR
-      (collection='base-islands' AND metadata_storage IS NULL))`,
+      (collection IN ('base-islands','base-islands-v2') AND metadata_storage IS NULL))`,
   `CREATE TABLE IF NOT EXISTS ${schema}.sync_state (
     singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),
     next_block bigint NOT NULL,
@@ -33,7 +33,7 @@ export const baseIslandsMigrations = [
   `INSERT INTO ${schema}.sync_state(singleton,next_block) VALUES(true,${baseIslandCollection.deploymentBlock})
     ON CONFLICT DO NOTHING`,
   `CREATE TABLE IF NOT EXISTS ${schema}.token (
-    collection text NOT NULL CHECK(collection='base-islands'), token_id text NOT NULL,
+    collection text NOT NULL CHECK(collection='base-islands-v2'), token_id text NOT NULL,
     chain_id integer NOT NULL CHECK(chain_id=8453),
     contract_address text NOT NULL CHECK(contract_address='${baseIslandCollection.address}'),
     owner text NOT NULL, burned boolean NOT NULL, lifecycle integer NOT NULL,
@@ -70,5 +70,11 @@ export const baseIslandsMigrations = [
     source_owner text NOT NULL, recipient text NOT NULL,
     snapshot_block bigint NOT NULL, snapshot_block_hash text NOT NULL,
     snapshot_sha256 text NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS metadata.island_replacement_origin (
+    token_id text PRIMARY KEY, recipient text NOT NULL,
+    source_contract text NOT NULL,
+    snapshot_block bigint NOT NULL, snapshot_block_hash text NOT NULL,
+    snapshot_sha256 text NOT NULL, distribution_root text NOT NULL
   )`
 ] as const;

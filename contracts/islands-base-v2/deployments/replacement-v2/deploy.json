@@ -1,0 +1,10 @@
+{
+  "label": "deploy",
+  "hash": "0x659c85e45ecfd97615fa955e81af6b7b6ef8dda9009584c0fc0b7cff2160a285",
+  "blockNumber": 52587956,
+  "blockHash": "0xd3c34a0aa635b1cfc5e6d0812ee52ecbff765bfeaf30a8d6aab46dd03fd97a31",
+  "gasUsed": "1697824",
+  "gasPrice": "6000000",
+  "contractAddress": "0x79b68a12a2952a9A8d0Cc4D0b3Fb00252C41d168",
+  "nonce": 309
+}

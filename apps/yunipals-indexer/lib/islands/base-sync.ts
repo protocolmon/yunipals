@@ -3,7 +3,7 @@ import { transferState, type TokenState } from "../ownership/transfer.js";
 import { baseIslandCollection as collection } from "./collections.js";
 
 const schema = collection.schemaName;
-export const baseWorkerVersion = "base-islands-logs-v1";
+export const baseWorkerVersion = "base-islands-logs-v2";
 export type BaseTransfer = {
   id: string;
   tokenId: string;
@@ -103,7 +103,7 @@ export async function applyBaseTransfers(
       await client.query(
         `INSERT INTO ${schema}.token_lifecycle
       (collection,token_id,lifecycle,minted_to,mint_block,mint_timestamp,mint_transaction_hash)
-      VALUES('base-islands',$1,$2,$3,$4,$5,$6)`,
+      VALUES('base-islands-v2',$1,$2,$3,$4,$5,$6)`,
         [
           event.tokenId,
           state.lifecycle,
@@ -130,7 +130,7 @@ export async function applyBaseTransfers(
       `INSERT INTO ${schema}.token
       (collection,token_id,chain_id,contract_address,owner,burned,lifecycle,mint_block,mint_timestamp,
        last_transfer_block,last_transfer_timestamp,last_transaction_hash)
-      VALUES('base-islands',$1,8453,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      VALUES('base-islands-v2',$1,8453,$2,$3,$4,$5,$6,$7,$8,$9,$10)
       ON CONFLICT(collection,token_id) DO UPDATE SET owner=EXCLUDED.owner,burned=EXCLUDED.burned,
       lifecycle=EXCLUDED.lifecycle,mint_block=EXCLUDED.mint_block,mint_timestamp=EXCLUDED.mint_timestamp,
       last_transfer_block=EXCLUDED.last_transfer_block,last_transfer_timestamp=EXCLUDED.last_transfer_timestamp,
@@ -152,7 +152,7 @@ export async function applyBaseTransfers(
       `INSERT INTO ${schema}.transfer_event
       (id,collection,chain_id,contract_address,token_id,lifecycle,"from","to",block_number,block_hash,
        block_timestamp,transaction_hash,transaction_index,log_index)
-      VALUES($1,'base-islands',8453,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      VALUES($1,'base-islands-v2',8453,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
       [
         event.id,
         collection.address,

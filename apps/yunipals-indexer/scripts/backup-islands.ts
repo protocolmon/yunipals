@@ -32,7 +32,7 @@ try {
       ORDER BY b.content_hash`
   );
   const readiness = await client.query(
-    "SELECT * FROM metadata.chain_readiness WHERE collection IN ('ethereum-islands','base-islands')"
+    "SELECT * FROM metadata.chain_readiness WHERE collection IN ('ethereum-islands','base-islands','base-islands-v2')"
   );
   await writeFile(
     join(directory, "sources.json"),
@@ -62,11 +62,13 @@ try {
         "--table=metadata.island_publication",
         "--table=metadata.island_verification",
         "--table=metadata.island_airdrop_origin",
+        "--table=metadata.island_replacement_origin",
         "--table=metadata.island_staking_scan",
         "--table=metadata.island_staking_position"
       ]
     ],
-    ["base-islands.dump", ["--schema=yunipals_base_islands_v1"]]
+    ["base-islands.dump", ["--schema=yunipals_base_islands_v1"]],
+    ["base-islands-v2.dump", ["--schema=yunipals_base_islands_v2"]]
   ] as const) {
     const dump = join(directory, name);
     await writeFile(dump, "", { mode: 0o600 });
@@ -103,6 +105,7 @@ try {
     "islands.dump",
     "foundation.dump",
     "base-islands.dump",
+    "base-islands-v2.dump",
     "publication.dump",
     "sources.json",
     "readiness.json"

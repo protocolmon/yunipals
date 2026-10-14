@@ -1222,9 +1222,18 @@ export function CollectionPage() {
   const { chain, tokenId } = useParams();
   const { search, hash } = useLocation();
 
+  if (chain === "base-islands" && tokenId) {
+    return (
+      <Navigate
+        to={`/collection/base-islands-v2/${tokenId}${search}${hash}`}
+        replace
+      />
+    );
+  }
+
   const islandsSelected =
     chain === "ethereum-islands" ||
-    chain === "base-islands" ||
+    chain === "base-islands-v2" ||
     (!tokenId && new URLSearchParams(search).get("collection") === "islands");
 
   if (islandsSelected) {
@@ -1235,7 +1244,9 @@ export function CollectionPage() {
           <IslandDetail
             tokenId={tokenId}
             collectionId={
-              chain === "base-islands" ? "base-islands" : "ethereum-islands"
+              chain === "base-islands-v2"
+                ? "base-islands-v2"
+                : "ethereum-islands"
             }
           />
         ) : (

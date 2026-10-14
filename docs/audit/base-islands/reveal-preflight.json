@@ -1,0 +1,33 @@
+{
+  "verifiedAtUTC": "2026-10-14T03:48:40.690550+00:00",
+  "baseContract": "0x1058f1a6fedcaec94e488d6ec3c639e541faf066",
+  "chainId": 8453,
+  "baseTokenCohortMatched": 898,
+  "publishedMetadataHashesVerified": 898,
+  "publishedTraitsMatched": 898,
+  "distinctProfileHashesVerified": 10,
+  "profileHashEncoding": "canonical JSON: sorted keys, compact separators, UTF-8",
+  "snapshotSha256": "1c22d608123555d9bdf63d99cf8c77e481d00c195c017e20da55d9f03a02448e",
+  "assignmentSha256": "cfdc7ea0a31f1779e1ef5e2a6e00a1f262b411226022b318f797697dfbb3fc2e",
+  "commitmentSha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+  "existingPublishedIdentity": {
+    "chainId": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305"
+  },
+  "baseContractSupportsMetadataUpdates": false,
+  "baseContractSupportsUpgrades": false,
+  "liveContractVerification": {
+    "verifiedAtUTC": "2026-10-14T03:44:48.704046+00:00",
+    "finalizedBlock": "52579557",
+    "finalizedBlockHash": "0xde38bb7875e4a02a7580a7329fbac19283b8b3254bd4353e1d18925f4716eff5",
+    "runtimeSha256": "8d2c974b8266116fdd1391dd6ede92f1130a9922adc60d81bfc3302233d644f4",
+    "sampleTokenURIs": {
+      "1": "https://meta.polychainmonsters.com/v1/island-meta/grassland/10000000",
+      "1001": "https://meta.polychainmonsters.com/v1/island-meta/grassland/20000000"
+    },
+    "rpcCalls": 4
+  },
+  "activationState": "awaiting_scope_choice",
+  "transactionsSent": 0,
+  "liveServicesChanged": false
+}

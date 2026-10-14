@@ -70,7 +70,7 @@ export function registerIslandsRoutes(
   const checkReadiness =
     dependencies.checkReadiness ??
     (() =>
-      collection.slug === "base-islands"
+      collection.slug === "base-islands-v2"
         ? baseIslandsReadiness(pool)
         : islandsReadiness(pool, schemaName));
   const root = `/v2/collections/${collection.slug}`;
@@ -90,7 +90,7 @@ export function registerIslandsRoutes(
   const relation = () => model().relation;
   const columns = () => model().columns;
   const stakingStatus = () =>
-    collection.slug === "base-islands"
+    collection.slug === "base-islands-v2"
       ? Promise.resolve({
           enabled: false,
           ready: true,

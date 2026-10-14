@@ -1,0 +1,33 @@
+{
+  "verifiedAtUTC": "2026-10-14T08:25:45.601Z",
+  "contract": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  "blockNumber": 52588159,
+  "blockHash": "0x557775c4c84d6194a77ecf9d4b156b4134a22ee7b7a5cf9c94507d09cc9c49d7",
+  "ownersVerified": 898,
+  "distinctMetadataUrisVerified": 898,
+  "snapshotSha256": "7a0af719a7f13ea8b94df6f64c1c1573657b412ddd5b39fa5651ddf973b9d2d7",
+  "postMintTransfers": [
+    {
+      "tokenId": "294",
+      "from": "0x971560fe12837755b6ecb2c8c21effe8442325f3",
+      "to": "0x8cd8005bf70f09153b50198d4d3546f8b451bd18",
+      "transactionHash": "0xd4ad624eb295b871d57a090c3cafa0ffba35dea3392c67b07dcc4549fad1a3ee",
+      "blockNumber": 52588139
+    },
+    {
+      "tokenId": "320",
+      "from": "0x886778f378325dee31de1e4ba6adca02a2d0ce90",
+      "to": "0x8cd8005bf70f09153b50198d4d3546f8b451bd18",
+      "transactionHash": "0xd62729cbf0ce0ac5509704feeff4bd67bb3ca4241101518d97a074caf12deafe",
+      "blockNumber": 52588139
+    },
+    {
+      "tokenId": "365",
+      "from": "0x971560fe12837755b6ecb2c8c21effe8442325f3",
+      "to": "0x8cd8005bf70f09153b50198d4d3546f8b451bd18",
+      "transactionHash": "0x3375009193dd3c5cd186119f3fbad0e8a8390058c3e7093e696ffbe4ae70217b",
+      "blockNumber": 52588142
+    }
+  ],
+  "passed": true
+}

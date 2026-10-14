@@ -113,7 +113,9 @@ export function IslandsExplorer() {
         navigate(
           islandDetailHref(
             tokenId,
-            filters.origin === "airdrop" ? "base-islands" : "ethereum-islands"
+            filters.origin === "airdrop"
+              ? "base-islands-v2"
+              : "ethereum-islands"
           )
         );
       return;
@@ -263,6 +265,11 @@ export function IslandsExplorer() {
             staked islands. Each original and its Base copy are separate NFTs
             and can belong to different wallets. Transferring one does not
             transfer the other.
+            <p className="mt-2">
+              The revealed Base collection replaces the first Base airdrop.
+              Replacement islands went to Base owners at snapshot block
+              52,587,044. The old Base collection is retired from this browser.
+            </p>
           </div>
           <div
             className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3"
@@ -329,12 +336,8 @@ export function IslandsExplorer() {
               }
               className={cn(filterSelect, "sm:ml-auto")}
             >
-              <SelectItem value="token-id-asc">
-                ID: low to high
-              </SelectItem>
-              <SelectItem value="token-id-desc">
-                ID: high to low
-              </SelectItem>
+              <SelectItem value="token-id-asc">ID: low to high</SelectItem>
+              <SelectItem value="token-id-desc">ID: high to low</SelectItem>
             </Select>
             {address && (
               <button
@@ -379,7 +382,9 @@ export function IslandsExplorer() {
             <p role="status" className="mt-5 text-sm text-muted">
               {tokens
                 .data!.pages[0]!.unavailableCollections!.map((id) =>
-                  id === "base-islands" ? "Base airdrops" : "Ethereum originals"
+                  id === "base-islands-v2"
+                    ? "Base airdrops"
+                    : "Ethereum originals"
                 )
                 .join(" and ")}{" "}
               are updating. Showing the available collection.{" "}

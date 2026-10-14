@@ -51,7 +51,7 @@ export function registerCombinedIslandsRoutes(
         ? read(dependencies.baseReady ?? (() => baseIslandsReadiness(pool)))
         : Promise.resolve({ ready: false, reason: "disabled" })
     ]);
-    return { "ethereum-islands": ethereum, "base-islands": base };
+    return { "ethereum-islands": ethereum, "base-islands-v2": base };
   };
   router.get("/indexing-status", async (c) =>
     c.json({ collections: await readiness() })
@@ -63,10 +63,10 @@ export function registerCombinedIslandsRoutes(
       origin === "original"
         ? ["ethereum-islands"]
         : origin === "airdrop"
-          ? ["base-islands"]
+          ? ["base-islands-v2"]
           : holding === "staked"
             ? ["ethereum-islands"]
-            : ["ethereum-islands", "base-islands"];
+            : ["ethereum-islands", "base-islands-v2"];
     const available = ids.filter((id) => states[id].ready);
     const unavailable = ids.filter((id) => !states[id].ready);
     const union = available

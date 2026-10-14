@@ -2,7 +2,9 @@ import { z } from "zod";
 import { islandCollection } from "../constants.js";
 import {
   ethereumIslandCollection,
-  fixedIslandUri,
+  baseIslandUri,
+  replacementSnapshotSha256,
+  replacementDistributionRoot,
   type IslandCollection
 } from "./collections.js";
 import {
@@ -55,7 +57,11 @@ export function islandMetadataUri(uri: string) {
     url.password ||
     url.hash ||
     url.search ||
-    !/^\/v1\/island-meta\/grassland\/(0|[1-9]\d*)$/.test(url.pathname)
+    !(
+      /^\/v1\/island-meta\/grassland\/(0|[1-9]\d*)$/.test(url.pathname) ||
+      (url.hostname === "islands-meta.yunipals.com" &&
+        /^\/v2\/base-islands\/[1-9]\d*$/.test(url.pathname))
+    )
   ) {
     throw new Error("unsupported_island_metadata_uri");
   }
@@ -108,7 +114,7 @@ export function islandRevision(
       ? !observation.metadataStorage ||
         !/^0x[0-9a-f]{40}$/.test(observation.metadataStorage)
       : observation.metadataStorage !== null ||
-        uri !== fixedIslandUri(job.tokenId) ||
+        uri !== baseIslandUri(job.tokenId) ||
         observation.genesisLimit !== 1000n) ||
     !Number.isSafeInteger(job.lifecycle) ||
     job.lifecycle < 1 ||
@@ -118,6 +124,22 @@ export function islandRevision(
   )
     throw new Error("invalid_island_evidence");
   const document = normalizeIslandMetadata(raw, job.tokenId);
+  if (collection.metadataMode === "token") {
+    const identity = z
+      .object({
+        properties: z.object({
+          chain_id: z.literal(8453),
+          contract: z.literal(collection.address),
+          token_id: z.literal(job.tokenId),
+          replacement_snapshot: z.object({
+            sha256: z.literal(replacementSnapshotSha256),
+            distribution_root: z.literal(replacementDistributionRoot)
+          })
+        })
+      })
+      .safeParse(raw);
+    if (!identity.success) throw new Error("island_metadata_identity_mismatch");
+  }
   const sourceHash = contentHash(raw);
   const documentHash = contentHash(document);
   const edition = islandEdition(job.tokenId, observation.genesisLimit);

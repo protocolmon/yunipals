@@ -1,13 +1,20 @@
 import { pool } from "../lib/offchain/db.js";
 import { baseIslandsMigrations } from "../lib/islands/base-schema.js";
 import { loadAirdropSnapshot } from "../lib/islands/airdrop.js";
+import { loadReplacementSnapshot } from "../lib/islands/replacement.js";
 import {
   airdropSnapshotBlock,
   airdropSnapshotBlockHash,
-  airdropSnapshotSha256
+  airdropSnapshotSha256,
+  legacyBaseIslandCollection,
+  replacementSnapshotBlock,
+  replacementSnapshotBlockHash,
+  replacementSnapshotSha256,
+  replacementDistributionRoot
 } from "../lib/islands/collections.js";
 
 const tokens = await loadAirdropSnapshot();
+const replacement = await loadReplacementSnapshot();
 const client = await pool.connect();
 try {
   await client.query("BEGIN");
@@ -43,8 +50,44 @@ try {
   );
   if (result.rows[0].count !== 898)
     throw new Error("airdrop_provenance_incomplete");
+  await client.query(
+    `INSERT INTO metadata.island_replacement_origin
+    (token_id,recipient,source_contract,snapshot_block,snapshot_block_hash,snapshot_sha256,distribution_root)
+    SELECT token_id,recipient,$2,$3,$4,$5,$6 FROM jsonb_to_recordset($1::jsonb) AS x(token_id text,recipient text)
+    ON CONFLICT DO NOTHING`,
+    [
+      JSON.stringify(
+        replacement.map((t) => ({ token_id: t.tokenId, recipient: t.owner }))
+      ),
+      legacyBaseIslandCollection.address,
+      String(replacementSnapshotBlock),
+      replacementSnapshotBlockHash,
+      replacementSnapshotSha256,
+      replacementDistributionRoot
+    ]
+  );
+  const replacementCheck = await client.query(
+    `SELECT count(*)::int AS count
+    FROM metadata.island_replacement_origin o JOIN jsonb_to_recordset($1::jsonb) AS x(token_id text,recipient text)
+    ON o.token_id=x.token_id AND o.recipient=x.recipient WHERE o.source_contract=$2 AND o.snapshot_block=$3
+    AND o.snapshot_block_hash=$4 AND o.snapshot_sha256=$5 AND o.distribution_root=$6`,
+    [
+      JSON.stringify(
+        replacement.map((t) => ({ token_id: t.tokenId, recipient: t.owner }))
+      ),
+      legacyBaseIslandCollection.address,
+      String(replacementSnapshotBlock),
+      replacementSnapshotBlockHash,
+      replacementSnapshotSha256,
+      replacementDistributionRoot
+    ]
+  );
+  if (replacementCheck.rows[0].count !== 898)
+    throw new Error("replacement_provenance_incomplete");
   await client.query("COMMIT");
-  console.log("Base Islands schema and 898 airdrop provenance records ready");
+  console.log(
+    "Base Islands v2 schema, original and replacement provenance verified for 898 tokens"
+  );
 } catch (error) {
   await client.query("ROLLBACK");
   throw error;

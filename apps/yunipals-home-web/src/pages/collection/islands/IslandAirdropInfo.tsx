@@ -29,7 +29,7 @@ export function IslandAirdropInfo({ token }: { token: IslandToken }) {
         )}
         className="mt-4 inline-flex rounded-full border border-line px-4 py-2 text-sm font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"
       >
-        {token.collectionId === "base-islands"
+        {token.collectionId === "base-islands-v2"
           ? "View Ethereum original"
           : "View Base airdrop"}{" "}
         #{token.tokenId}
@@ -52,7 +52,7 @@ export function IslandAirdropInfo({ token }: { token: IslandToken }) {
           <dt>Original airdrop recipient</dt>
           <dd className="mt-1 font-bold text-ink">
             <Link
-              to={islandOwnerHref(token.airdrop.recipient, "base-islands")}
+              to={islandOwnerHref(token.airdrop.recipient, "base-islands-v2")}
               className="underline focus-visible:ring-2 focus-visible:ring-ethereum"
             >
               {shortAddress(token.airdrop.recipient)}
@@ -60,13 +60,51 @@ export function IslandAirdropInfo({ token }: { token: IslandToken }) {
           </dd>
         </div>
       </dl>
+      {token.replacement && (
+        <div className="mt-4 rounded-2xl bg-mint/15 p-4 text-sm leading-relaxed text-muted">
+          <p className="font-bold text-ink">Revealed Base replacement</p>
+          <p className="mt-1">
+            The first Base collection was replaced. This island was airdropped
+            to its Base owner at snapshot block{" "}
+            <a
+              href={`https://basescan.org/block/${token.replacement.snapshotBlock}`}
+              target="_blank"
+              rel="noreferrer"
+              className="underline focus-visible:ring-2 focus-visible:ring-ethereum"
+            >
+              {formatInteger(token.replacement.snapshotBlock)}
+            </a>
+            . Its token ID and published reveal assignment were preserved.
+          </p>
+          <p className="mt-2">
+            Replacement recipient: {shortAddress(token.replacement.recipient)}
+          </p>
+          <a
+            href={`https://basescan.org/tx/${token.replacement.mintTransactionHash}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 inline-flex items-center gap-2 font-bold underline focus-visible:ring-2 focus-visible:ring-ethereum"
+          >
+            View replacement airdrop{" "}
+            <ExternalLink aria-hidden="true" size={12} />
+          </a>
+          <a
+            href={`https://basescan.org/token/${token.replacement.sourceContract}?a=${token.tokenId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 block text-xs underline focus-visible:ring-2 focus-visible:ring-ethereum"
+          >
+            View superseded Base NFT
+          </a>
+        </div>
+      )}
       <a
         href={`https://basescan.org/tx/${token.airdrop.mintTransactionHash}`}
         target="_blank"
         rel="noreferrer"
         className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-muted underline focus-visible:ring-2 focus-visible:ring-ethereum"
       >
-        View airdrop transaction <ExternalLink aria-hidden="true" size={12} />
+        View first Base airdrop <ExternalLink aria-hidden="true" size={12} />
       </a>
     </section>
   );

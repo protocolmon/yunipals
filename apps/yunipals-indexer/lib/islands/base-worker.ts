@@ -28,7 +28,7 @@ import {
 } from "./base-verify.js";
 import {
   baseIslandCollection as collection,
-  fixedIslandUri,
+  baseIslandUri,
   airdropDistributionSha256,
   airdropSnapshotBlock,
   airdropSnapshotBlockHash
@@ -52,9 +52,7 @@ const rpcMetrics: BaseRpcMetrics = {
 };
 const client = baseReadClient(rpc, rpcMetrics);
 const interval = setting("BASE_ISLANDS_POLL_MS", 60_000, 30_000, 3_600_000);
-const maxRange = BigInt(
-  setting("BASE_ISLANDS_LOG_BLOCK_RANGE", 100_000, 1, 100_000)
-);
+const maxRange = BigInt(setting("BASE_ISLANDS_LOG_BLOCK_RANGE", 10, 1, 10));
 const schema = collection.schemaName;
 const lock = await pool.connect();
 let stopping = false;
@@ -104,7 +102,7 @@ async function publishMetadata(finalized: BaseBlock) {
   for (let offset = 0; offset < jobs.length && !stopping; offset += 2) {
     await Promise.all(
       jobs.slice(offset, offset + 2).map(async (job) => {
-        const uri = fixedIslandUri(job.tokenId);
+        const uri = baseIslandUri(job.tokenId);
         try {
           let document = documents.get(uri);
           if (!document) {
@@ -126,7 +124,7 @@ async function publishMetadata(finalized: BaseBlock) {
               genesisLimit: 1000n
             },
             (await document).document,
-            3600,
+            86400,
             collection
           );
         } catch (error) {
@@ -188,21 +186,11 @@ async function scan() {
   }
   while (!stopping && BigInt(cursor.nextBlock) <= safe.number) {
     const from = BigInt(cursor.nextBlock);
-    // The gateway's free recent-log provider accepts at most ten blocks.
-    // Bootstrap keeps large historical ranges; normal polling uses small free reads.
-    const range = cursor.verifiedBlock ? 10n : maxRange;
+    // Recent collection: keep every log request within the free provider's limit.
     const to =
-      from + range - 1n < safe.number ? from + range - 1n : safe.number;
+      from + maxRange - 1n < safe.number ? from + maxRange - 1n : safe.number;
     const end = await block(to, to === safe.number ? safe.hash : undefined);
-    // Keep the one-time bootstrap tail on the budgeted historical route. The
-    // overlap is filtered before applying events; every cursor block is still read.
-    const requestFrom =
-      !cursor.verifiedBlock && to - from < 32768n
-        ? from - 65536n > BigInt(collection.deploymentBlock)
-          ? from - 65536n
-          : BigInt(collection.deploymentBlock)
-        : from;
-    const raw = await getBaseLogs(client, requestFrom, to);
+    const raw = await getBaseLogs(client, from, to);
     const logs = raw
       .map(decodeBaseLog)
       .filter((log) => log.blockNumber >= from)
@@ -272,7 +260,7 @@ async function scan() {
   }
   await publishMetadata(finalCheck);
   await pool.query(
-    `UPDATE ${schema}.sync_state SET ready=verified_block IS NOT NULL AND NOT EXISTS(
+    `UPDATE ${schema}.sync_state SET ready=verified_block IS NOT NULL AND airdrop_finalized AND NOT EXISTS(
     SELECT 1 FROM ${schema}.token t LEFT JOIN metadata.island_publication p ON p.collection=t.collection
       AND p.token_id=t.token_id::numeric AND p.lifecycle=t.lifecycle
     WHERE NOT t.burned AND t.mint_block<=$1 AND (p.status IS DISTINCT FROM 'published')),
@@ -283,7 +271,7 @@ async function scan() {
 
 try {
   const acquired = await lock.query<{ acquired: boolean }>(
-    "SELECT pg_try_advisory_lock(hashtext('yunipals:base-islands-writer')) AS acquired"
+    "SELECT pg_try_advisory_lock(hashtext('yunipals:base-islands-v2-writer')) AS acquired"
   );
   if (!acquired.rows[0]?.acquired)
     throw new Error("base_islands_writer_already_running");
@@ -332,7 +320,7 @@ try {
 } finally {
   await lock
     .query(
-      "SELECT pg_advisory_unlock(hashtext('yunipals:base-islands-writer'))"
+      "SELECT pg_advisory_unlock(hashtext('yunipals:base-islands-v2-writer'))"
     )
     .catch(() => undefined);
   lock.release();

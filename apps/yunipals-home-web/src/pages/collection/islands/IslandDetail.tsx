@@ -39,7 +39,7 @@ export function IslandDetail({
   tokenId: string;
   collectionId?: IslandCollectionId;
 }) {
-  const chain = collectionId === "base-islands" ? "base" : "ethereum";
+  const chain = collectionId === "base-islands-v2" ? "base" : "ethereum";
   const explorer =
     chain === "base" ? "https://basescan.org" : "https://etherscan.io";
   const id = normalizeIslandTokenId(tokenId);
@@ -115,14 +115,36 @@ export function IslandDetail({
         ) : (
           <>
             <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:items-start">
-              <div className="overflow-hidden rounded-card border-8 border-white bg-white shadow-cardHover">
-                <div className="aspect-square">
-                  <TokenArtwork
-                    src={token.metadata?.image || null}
-                    alt={`${name} #${token.tokenId}`}
-                    eager
-                  />
+              <div>
+                <div className="overflow-hidden rounded-card border-8 border-white bg-white shadow-cardHover">
+                  <div className="aspect-square">
+                    <TokenArtwork
+                      src={token.metadata?.image || null}
+                      alt={`${name} #${token.tokenId}`}
+                      eager
+                    />
+                  </div>
                 </div>
+                {token.metadata?.attributes?.length ? (
+                  <section className="mt-6" aria-label="Island traits">
+                    <h2 className="display text-xl text-ink">Island traits</h2>
+                    <dl className="mt-3 grid grid-cols-2 gap-3">
+                      {token.metadata.attributes.map((attribute) => (
+                        <div
+                          key={attribute.trait_type}
+                          className="rounded-2xl border border-line bg-white p-4"
+                        >
+                          <dt className="text-xs font-bold text-muted">
+                            {attribute.trait_type}
+                          </dt>
+                          <dd className="mt-1 break-words text-sm font-extrabold text-ink">
+                            {String(attribute.value)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </section>
+                ) : null}
               </div>
               <div className="py-2">
                 <div className="flex flex-wrap items-center gap-2">

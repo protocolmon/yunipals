@@ -1,0 +1,10 @@
+{
+  "label": "finalize",
+  "hash": "0x339f049d320f0a7eceee8230174379d4e4b513d96a4bf1c222c138787eaffa30",
+  "blockNumber": 52588667,
+  "blockHash": "0xb85b081f8f870dc980fd7a26312748237919c733de94cb88f27ec501207946f3",
+  "gasUsed": "32506",
+  "gasPrice": "6000000",
+  "contractAddress": null,
+  "nonce": 333
+}

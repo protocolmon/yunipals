@@ -15,6 +15,21 @@ app.onError((_error, c) =>
   c.json({ error: "islands_database_unavailable" }, 503)
 );
 app.get("/health", (c) => c.json({ status: "ok" }));
+app.get("/v2/collections/base-islands/*", (c) =>
+  c.json(
+    {
+      error: "collection_superseded",
+      collectionId: "base-islands",
+      successor: {
+        collectionId: baseIslandCollection.slug,
+        contractAddress: baseIslandCollection.address
+      },
+      message:
+        "The first Base airdrop has been replaced. Use the revealed Base Islands collection."
+    },
+    410
+  )
+);
 app.get("/ready", async (c) => {
   const readiness = await islandsReadiness(apiPool, physicalPonderSchemaName);
   const ready = process.env.API_ISLANDS_ENABLED === "true" && readiness.ready;
@@ -28,14 +43,14 @@ app.get("/v2/collections/ethereum-islands/openapi.json", (c) =>
     paths: islandsOpenApiPaths
   })
 );
-app.get("/v2/collections/base-islands/openapi.json", (c) =>
+app.get("/v2/collections/base-islands-v2/openapi.json", (c) =>
   c.json({
     openapi: "3.0.3",
     info: { title: "Yunipals Base Islands", version: "1.0.0" },
     servers: [{ url: "/yunipals-indexer" }],
     paths: JSON.parse(
       JSON.stringify(islandsOpenApiPaths)
-        .replaceAll("ethereum-islands", "base-islands")
+        .replaceAll("ethereum-islands", "base-islands-v2")
         .replaceAll("Ethereum", "Base")
         .replaceAll("chain is ethereum", "chain is base")
     )

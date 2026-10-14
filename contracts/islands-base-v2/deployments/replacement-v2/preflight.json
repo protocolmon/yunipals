@@ -1,0 +1,22 @@
+{
+  "chainId": 8453,
+  "signer": "0x486e4cf6c783b76125b5fb52cf11b6b83fcaf880",
+  "nonce": 309,
+  "contract": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  "constructorArguments": [
+    "0x486E4CF6c783B76125b5Fb52Cf11B6B83FCAF880",
+    "0xd2aebf9b6ba24e175372e11a7d418d18ca5c357075ce9d225f64a5ea1836a011",
+    "52587044",
+    "0x805301a21f019844c3d9fd37441d40a863f85c7b812c21491bc4f96a996fe97b",
+    "0x7a0af719a7f13ea8b94df6f64c1c1573657b412ddd5b39fa5651ddf973b9d2d7"
+  ],
+  "bytecodeSha256": "3feff2ff36d25d52a1dfe5fbbd84799877fab1c7e770081a4aa66a823a9dc294",
+  "snapshotSha256": "7a0af719a7f13ea8b94df6f64c1c1573657b412ddd5b39fa5651ddf973b9d2d7",
+  "distributionRoot": "0xd2aebf9b6ba24e175372e11a7d418d18ca5c357075ce9d225f64a5ea1836a011",
+  "maxFeePerGas": "11000000",
+  "maxPriorityFeePerGas": "1000000",
+  "estimatedTotalGas": "145321555",
+  "upperGasCostWei": "1598537105000000",
+  "l1FeeReserveWei": "100000000000000",
+  "totalFeeLimitWei": "2000000000000000"
+}

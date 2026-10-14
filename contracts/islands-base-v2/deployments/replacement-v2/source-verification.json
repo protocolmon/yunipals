@@ -1,0 +1,9 @@
+{
+  "contract": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  "explorer": "https://basescan.org/address/0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168#code",
+  "verified": true,
+  "compiler": "0.8.28",
+  "optimizerRuns": 200,
+  "evmVersion": "cancun",
+  "recordedAtUTC": "2026-10-14T08:46:49.107582+00:00"
+}

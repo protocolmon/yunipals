@@ -3,6 +3,7 @@ import { islandColumns, islandTokenRelation } from "./queries.js";
 import { stakingColumns, stakingRelation } from "./staking.js";
 import {
   baseIslandCollection,
+  legacyBaseIslandCollection,
   ethereumIslandCollection,
   type IslandCollection
 } from "./collections.js";
@@ -16,19 +17,30 @@ export function islandReadModel(
   const staked = staking && collection.slug === "ethereum-islands";
   let relation = `${islandTokenRelation(schemaName)} ${staked ? stakingRelation(schemaName) : ""}`;
   const counterpart =
-    collection.slug === "base-islands"
+    collection.slug === "base-islands-v2"
       ? ethereumIslandCollection
       : baseIslandCollection;
   if (airdrop)
     relation += ` LEFT JOIN metadata.island_airdrop_origin origin ON origin.token_id=t.token_id
-    LEFT JOIN ${sqlIdentifier(baseIslandCollection.schemaName)}.transfer_event base_mint
+    LEFT JOIN ${sqlIdentifier(legacyBaseIslandCollection.schemaName)}.transfer_event base_mint
       ON base_mint.token_id=origin.token_id AND base_mint."to"=origin.recipient
-      AND base_mint."from"='0x0000000000000000000000000000000000000000'`;
+      AND base_mint."from"='0x0000000000000000000000000000000000000000'
+    LEFT JOIN metadata.island_replacement_origin replacement ON replacement.token_id=t.token_id
+    LEFT JOIN ${sqlIdentifier(baseIslandCollection.schemaName)}.transfer_event replacement_mint
+      ON replacement_mint.token_id=replacement.token_id AND replacement_mint."to"=replacement.recipient
+      AND replacement_mint."from"='0x0000000000000000000000000000000000000000'`;
   const counterpartSql = airdrop
-    ? `CASE WHEN base_mint.id IS NOT NULL THEN jsonb_build_object(
+    ? `CASE WHEN base_mint.id IS NOT NULL AND replacement_mint.id IS NOT NULL THEN jsonb_build_object(
     'collectionId','${counterpart.slug}','chain','${counterpart.chain}','chainId',${counterpart.chainId},
     'contractAddress','${counterpart.address}','tokenId',t.token_id,
     'href','/collection/${counterpart.slug}/'||t.token_id) END`
+    : "NULL::jsonb";
+  const replacement = airdrop
+    ? `CASE WHEN replacement_mint.id IS NOT NULL THEN jsonb_build_object(
+    'sourceContract',replacement.source_contract,'snapshotBlock',replacement.snapshot_block::text,
+    'snapshotBlockHash',replacement.snapshot_block_hash,'snapshotSha256',replacement.snapshot_sha256,
+    'recipient',replacement.recipient,'distributionRoot',replacement.distribution_root,
+    'mintTransactionHash',replacement_mint.transaction_hash,'mintBlock',replacement_mint.block_number::text) END`
     : "NULL::jsonb";
   const provenance = airdrop
     ? `CASE WHEN base_mint.id IS NOT NULL THEN jsonb_build_object(
@@ -41,6 +53,6 @@ export function islandReadModel(
     relation,
     columns: `${islandColumns(collection)},
     ${staked ? stakingColumns : "NULL::jsonb AS staking"},'${collection.origin}' AS origin,
-    ${counterpartSql} AS counterpart,${provenance} AS airdrop`
+    ${counterpartSql} AS counterpart,${provenance} AS airdrop,${replacement} AS replacement`
   };
 }

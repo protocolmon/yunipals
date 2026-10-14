@@ -11,18 +11,18 @@ export const islandsCollectionId = "ethereum-islands";
 export const islandsContractAddress =
   "0xa22e2f53ca787414dc0643c399f92234949e2305";
 export const islandsCollectionHref = "/?collection=islands";
-export type IslandCollectionId = "ethereum-islands" | "base-islands";
+export type IslandCollectionId = "ethereum-islands" | "base-islands-v2";
 export type IslandOrigin = "all" | "original" | "airdrop";
 const apiPath = "/v2/islands";
 export function islandOriginLabel(token: Pick<IslandToken, "collectionId">) {
-  return token.collectionId === "base-islands"
+  return token.collectionId === "base-islands-v2"
     ? "Airdropped · Base"
     : "Original · Ethereum";
 }
 export function islandExplorerOrigin(
   collectionId: IslandCollectionId
 ): IslandOrigin {
-  return collectionId === "base-islands" ? "airdrop" : "original";
+  return collectionId === "base-islands-v2" ? "airdrop" : "original";
 }
 
 export type IslandEdition = "Genesis" | "Personal";
@@ -54,6 +54,16 @@ export type IslandToken = {
     snapshotSha256: string;
     sourceOwner: EvmAddress;
     recipient: EvmAddress;
+    mintTransactionHash: string;
+    mintBlock: string;
+  } | null;
+  replacement?: {
+    sourceContract: EvmAddress;
+    snapshotBlock: string;
+    snapshotBlockHash: string;
+    snapshotSha256: string;
+    recipient: EvmAddress;
+    distributionRoot: string;
     mintTransactionHash: string;
     mintBlock: string;
   } | null;

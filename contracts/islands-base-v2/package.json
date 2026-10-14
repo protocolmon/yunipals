@@ -1,0 +1,31 @@
+{
+  "name": "yunipals-islands-base-replacement",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Verified replacement airdrop with individual revealed island metadata",
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "typecheck": "tsc --noEmit",
+    "prepare:plan": "node --import tsx scripts/prepare-plan.ts",
+    "preflight": "node --import tsx scripts/production.ts preflight",
+    "deploy": "node --import tsx scripts/production.ts deploy",
+    "mint": "node --import tsx scripts/production.ts mint",
+    "reconcile": "node --import tsx scripts/production.ts reconcile",
+    "finalize": "node --import tsx scripts/production.ts finalize",
+    "check": "npm run compile && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.4.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "5.0.0",
+    "@types/node": "24.1.0",
+    "dotenv": "17.2.0",
+    "hardhat": "2.29.0",
+    "ts-node": "10.9.2",
+    "tsx": "4.20.3",
+    "typescript": "5.9.2"
+  }
+}

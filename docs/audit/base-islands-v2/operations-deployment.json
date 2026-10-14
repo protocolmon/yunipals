@@ -1,0 +1,7 @@
+{
+  "installedAtUTC": "2026-10-14T08:42:28Z",
+  "backupScriptSha256": "7f3dfd93ad3527005ed700b91a38da243a2d504c66da847106f2ab838a4d2099",
+  "baseV2HealthCoverage": true,
+  "dailyBackupIncludesLegacyAndReplacement": true,
+  "storageBoxPostBackupUpdated": true
+}

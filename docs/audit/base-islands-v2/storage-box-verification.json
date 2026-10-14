@@ -1,0 +1,11 @@
+{
+  "verifiedAtUTC": "2026-10-14T08:47:46Z",
+  "backupDirectory": "/var/backups/yunipals-islands-indexer/2026-10-14T08-47-35-352Z",
+  "storageBoxVerified": true,
+  "downloadedArchiveVerified": true,
+  "archiveSha256": "6bc072b1f12079d3c0b2cf5cfb7a67e7d8c36c14e635831841014cad24fbbcb6",
+  "archiveBytes": 3695614,
+  "remoteDirectory": "yunipals-islands/base-replacement-v2/6bc072b1f12079d3c0b2cf5cfb7a67e7d8c36c14e635831841014cad24fbbcb6",
+  "files": 978,
+  "credentialsIncluded": false
+}
