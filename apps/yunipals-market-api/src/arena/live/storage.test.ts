@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   chmod,
+  chown,
   mkdtemp,
   mkdir,
   rm,
@@ -210,8 +211,23 @@ test("root-only deployment recovery records stay private and outside the battle 
       Buffer.alloc(2 * 1024 * 1024),
       { mode: 0o600 }
     );
-    const usage = await arenaMediaStorageBudget(root, 1024 * 1024, 65536);
-    assert.equal(usage.mediaStoredBytes, 0);
+    if (process.getuid?.() === 0) {
+      const usage = await arenaMediaStorageBudget(root, 1024 * 1024, 65536);
+      assert.equal(usage.mediaStoredBytes, 0);
+      // Also exercise rejection of a worker-owned archive when running as root.
+      await chown(root + "/_deployment", 65534, 65534);
+      await assert.rejects(
+        arenaMediaStorageBudget(root),
+        /private and root-owned/
+      );
+      await chown(root + "/_deployment", 0, 0);
+    } else {
+      // Ordinary developers and CI cannot create a trusted root-owned archive.
+      await assert.rejects(
+        arenaMediaStorageBudget(root),
+        /private and root-owned/
+      );
+    }
     await chmod(root + "/_deployment", 0o755);
     await assert.rejects(
       arenaMediaStorageBudget(root),
