@@ -91,6 +91,17 @@ node --import tsx --test --test-concurrency=1 src/arena/live/live.test.ts src/ar
 Never point tests at a production database. Contract setup and tests are described
 in [the Foundry README](../../contracts/arena/README.md).
 
+The API CI job provisions a separate `yunipals_arena_test` database for these
+checks, alongside the marketplace database and its restricted runtime role.
+`pnpm test:api` discovers all `*.test.ts` files, including the Arena database tests.
+
+The standalone local-chain lifecycle check is deliberately named
+`anvil.integration.ts` and runs explicitly with
+`pnpm --filter @protopals/yunipals-market-api test:arena:anvil`. It additionally
+requires a fresh Anvil chain (chain ID 8453, port 55442), compiled Foundry test
+contracts, FFmpeg, and the checksum-verified island artwork cache. It is separate
+from the PostgreSQL CI job and uses mocked AI providers, without paid generation.
+
 ## Public island assets
 
 The exact 898 assignments, 898 metadata records and ten combat profiles are

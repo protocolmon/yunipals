@@ -100,6 +100,7 @@ jobs:
     env:
       MARKET_TEST_DATABASE_URL: postgresql://market_test_owner:local-test-only@127.0.0.1:55436/yunipals_market_test
       MARKET_TEST_RUNTIME_DATABASE_URL: postgresql://market_test_runtime:local-runtime-test-only@127.0.0.1:55436/yunipals_market_test
+      ARENA_TEST_DATABASE_URL: postgresql://market_test_owner:local-test-only@127.0.0.1:55436/yunipals_arena_test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -110,7 +111,7 @@ jobs:
           MARKET_DEPLOYMENT: staging
           MARKET_DATABASE_URL: ${{ env.MARKET_TEST_DATABASE_URL }}
         run: pnpm --filter @protopals/yunipals-market-api db:migrate
-      - name: Create restricted test runtime role
+      - name: Create restricted marketplace role and disposable Arena database
         run: node .github/scripts/setup-test-databases.mjs marketplace
       - run: pnpm test:api
 

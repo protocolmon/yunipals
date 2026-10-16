@@ -49,6 +49,13 @@ try {
       grants.replaceAll(':"market_runtime_role"', '"market_test_runtime"')
     );
     console.log("Restricted marketplace test role is ready");
+    const arena = await client.query(
+      "SELECT 1 FROM pg_database WHERE datname=$1",
+      ["yunipals_arena_test"]
+    );
+    if (!arena.rowCount)
+      await client.query('CREATE DATABASE "yunipals_arena_test"');
+    console.log("Disposable Arena database is ready");
   } else {
     for (const name of [
       "yunipals_bnb_test",
