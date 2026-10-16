@@ -11,6 +11,8 @@ export const environment = {
     import.meta.env?.VITE_WALLETCONNECT_PROJECT_ID?.trim() || "",
   fixtures: import.meta.env?.MODE === "fixtures",
   production: import.meta.env?.PROD === true,
+  arenaLab: import.meta.env?.DEV === true,
+  arenaApiUrl: import.meta.env?.VITE_ARENA_API_URL?.replace(/\/$/, "") || null,
   islandStakingEnabled: import.meta.env?.VITE_ISLAND_STAKING_ENABLED === "true",
   islandUnstakeEnabled: import.meta.env?.VITE_ISLAND_UNSTAKE_ENABLED === "true",
   exomonEnabled:

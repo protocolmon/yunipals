@@ -28,7 +28,10 @@
     "./openseaOrderPolicy": "./src/openseaOrderPolicy.ts",
     "./orderPublication": "./src/orderPublication.ts",
     "./openseaPublication": "./src/openseaPublication.ts",
-    "./openseaFulfillment": "./src/openseaFulfillment.ts"
+    "./openseaFulfillment": "./src/openseaFulfillment.ts",
+    "./arena": "./src/arena.ts",
+    "./arenaAbi": "./src/arenaAbi.ts",
+    "./arenaViews": "./src/arenaViews.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

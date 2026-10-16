@@ -1,0 +1,32 @@
+{
+  "version": "yunipals-arena/launch-economics/v1",
+  "status": "user-approved; not deployed",
+  "approvedOn": "2026-10-14",
+  "chainId": 8453,
+  "paymentToken": {
+    "symbol": "USDC",
+    "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "decimals": 6
+  },
+  "participants": 4,
+  "entryFeeRaw": "2000000",
+  "winnerBps": 7500,
+  "islandBps": 500,
+  "operationsBps": 2000,
+  "fullTournamentRaw": {
+    "pot": "8000000",
+    "winner": "6000000",
+    "islandOwner": "400000",
+    "operations": "1600000"
+  },
+  "operationsPolicy": "The operations share covers generation and operating costs; it is not all profit. No paid quality replacements at launch.",
+  "feeChangePolicy": "Contract economics are immutable per deployment; a different entry fee requires new configuration and explicit approval. At the approved 2 USDC entry, the 20 percent remainder is exactly 1.60 USDC per full tournament.",
+  "treasuryPolicy": {
+    "initialAdmin": "deployer",
+    "initialTreasury": "deployer",
+    "adminTransfer": "Ownable2Step transferOwnership then acceptOwnership",
+    "treasuryUpdate": "Owner-only setTreasury; newly opened lobbies only",
+    "existingTournamentRecipientsPreserved": true,
+    "existingClaimBalancesPreserved": true
+  }
+}

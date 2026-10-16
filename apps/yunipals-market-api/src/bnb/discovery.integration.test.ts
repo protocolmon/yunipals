@@ -76,7 +76,7 @@ test("rebuilds the public order feed and serves repeated reads without RPC", asy
   const block = (number: bigint) => ({
     number,
     hash: number === 102n ? finalHash : blockHash(number),
-    timestamp: number === 0n ? now - 1000n : now - 100n + number - 100n
+    timestamp: number === 107n ? now : number === 0n ? now - 1000n : now - 100n + number - 100n
   });
   const log = {
     address: seaportDeployment.address,
@@ -125,7 +125,7 @@ test("rebuilds the public order feed and serves repeated reads without RPC", asy
     },
     getBlock: async ({ blockTag, blockNumber }: { blockTag?: string; blockNumber?: bigint }) => {
       stateCalls++;
-      return block(blockTag === "finalized" ? 102n : blockNumber!);
+      return block(blockTag === "latest" ? 107n : blockNumber!);
     },
     getCode: async () => {
       stateCalls++;

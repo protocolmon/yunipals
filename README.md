@@ -146,3 +146,9 @@ Production web builds include `THIRD_PARTY_LICENSES.txt`, linked from the footer
 Keep it with the generated JavaScript when redistributing a build. Dependency
 pins and their small compatibility patches are explained in
 [patches/README.md](patches/README.md).
+
+## Arena
+
+The four-player Base battle tournament is implemented in this monorepo. See
+[the Arena source guide](docs/arena/README.md) for rules, architecture, local tests,
+public deployment data and checksum-verified island artwork setup.

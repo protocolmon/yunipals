@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../lib/confirmations.js";
 import { open, unlink, type FileHandle } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { createPublicClient, http } from "viem";
@@ -33,9 +34,9 @@ try {
     physicalPonderSchemaName,
     {
       finalizedBlock: async () => {
-        const block = await client.getBlock({ blockTag: "finalized" });
+        const block = await readConfirmedBlock(client, 1);
         if (block.number === null || !block.hash)
-          throw new Error("finalized_block_unavailable");
+          throw new Error("confirmed_block_unavailable");
         return { number: block.number, hash: block.hash };
       },
       blockHash: async (block) =>

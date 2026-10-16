@@ -121,10 +121,7 @@ export function readSaleReplayEnvironment(
     mode,
     rpcUrl: rpcUrl!,
     rpcUrls: rpcUrls!,
-    finality:
-      input.MARKET_DEPLOYMENT === "production"
-        ? ("finalized" as const)
-        : ("confirmations" as const),
+    finality: "confirmations" as const,
     policy,
     maxSeconds: continuous
       ? undefined
@@ -268,10 +265,7 @@ export function readOpenSeaReadEnvironment(
     confirmations: BigInt(
       positiveInteger(input.MARKET_OPENSEA_READ_CONFIRMATIONS, 1, 10000)
     ),
-    finality:
-      input.MARKET_DEPLOYMENT === "production"
-        ? ("finalized" as const)
-        : ("confirmations" as const),
+    finality: "confirmations" as const,
     concurrency: positiveInteger(input.MARKET_OPENSEA_READ_CONCURRENCY, 1, 8),
     maxSeconds:
       input.MARKET_OPENSEA_READ_MAX_SECONDS === undefined

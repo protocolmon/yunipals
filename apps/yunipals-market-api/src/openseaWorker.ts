@@ -142,7 +142,7 @@ async function main() {
     };
     const options = {
       confirmations: 1n,
-      finality: "finalized" as const,
+      finality: "confirmations" as const,
       indexerMaxAgeMs: 60000,
       authorize: (input: OpenSeaOrderRequest, summary: MarketOrder) => {
         if (!environment.ownerTradeAuthorization) throw new Error();

@@ -19,6 +19,24 @@ import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const LiveArenaPage = lazy(() =>
+  import("@/pages/arena/live/LiveArenaPage").then((module) => ({
+    default: module.LiveArenaPage
+  }))
+);
+const ArenaDashboard = lazy(() =>
+  import("@/pages/arena/live/ArenaDashboard").then((module) => ({
+    default: module.ArenaDashboard
+  }))
+);
+const ArenaRulesPage = lazy(() =>
+  import("@/pages/arena/live/ArenaRulesPage").then((module) => ({
+    default: module.ArenaRulesPage
+  }))
+);
+const ArenaPage = lazy(() =>
+  import("@/pages/arena/page").then((module) => ({ default: module.ArenaPage }))
+);
 
 const ExomonCollectorPage = lazy(() =>
   import("@/pages/exomon/ExomonCollectorPage").then((module) => ({
@@ -105,13 +123,27 @@ function AppContent() {
       )}
       <Suspense
         fallback={
-          <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12 text-sm font-semibold text-muted">
-            Loading Exomon…
+          <main
+            role="status"
+            className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12 text-sm font-semibold text-muted"
+          >
+            Loading page…
           </main>
         }
       >
         <Routes>
           <Route path="/" element={<CollectionPage />} />
+          <Route path="/arena" element={<LiveArenaPage />} />
+          <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />
+          <Route
+            path="/arena/hosting"
+            element={<ArenaDashboard role="host" />}
+          />
+          <Route path="/arena/rules" element={<ArenaRulesPage />} />
+          <Route path="/arena/:id" element={<LiveArenaPage />} />
+          {environment.arenaLab && (
+            <Route path="/arena-lab" element={<ArenaPage />} />
+          )}
           {environment.exomonEnabled && (
             <Route path="/exomon" element={<ExomonCollectionRedirect />} />
           )}

@@ -1,0 +1,31 @@
+{
+  "version": "arena-combat-lab-v2",
+  "strategyMaxLength": 2400,
+  "combat": {
+    "initialHealth": 60,
+    "initialEnergy": 100,
+    "combatDeadlineSeconds": 5,
+    "videoSeconds": 24,
+    "videoSecondsPerFight": 8,
+    "defeatedHoldSeconds": 2,
+    "resetBetweenMatches": true,
+    "heavy": {"damage": 30, "cost": 25, "windup": 0.5, "recovery": 0.6},
+    "light": {"damage": 15, "cost": 10, "windup": 0.3, "recovery": 0.35},
+    "defenses": {"none": 0, "dodge": 6, "shield": 12, "guard": 0},
+    "shieldSeconds": 0.5,
+    "minimumReactionSeconds": 0.15,
+    "maxMovementMetresPerSecond": 4,
+    "maxAttackRangeMetres": 6,
+    "projectileMetresPerSecond": 12,
+    "breakableCoverHealth": 30,
+    "startingSeparationMetres": 5,
+    "flightHeightMetres": [0.8, 2],
+    "timeoutPolicy": "At 5 seconds, higher remaining health wins. Equal health uses ascending SHA256 of canonical JSON [yunipals-arena/tie/v2, tournamentId, draw.word, fighterId]. Priority is available before strategies; only used on an exact health tie. A decision loser visibly yields and lies down; never depict a fictitious knockout.",
+    "strategyPolicy": "Fully custom natural-language intent. Heavy/light are internal damage envelopes, not selectable abilities or a species whitelist. An attack's size and name do not bypass damage, energy, timing or anatomy. Ground fighters remain grounded; winged fighters fly.",
+    "terrainPolicy": "Use the published island profile and actual available objects. Breakable cover has 30 HP, cannot be reused after destruction, and absorbs the intercepted attack without automatic fighter damage. Other features may change an approach or exposure only with visible causal evidence; they never grant free damage, regeneration, new powers or an independent resident attack. This lab uses qualitative geometry, not a calibrated collision engine.",
+    "actionPolicy": "An actor cannot attack or actively defend during its own attack windup/recovery. Physical guard halves damage; shield or successful dodge prevents damage. All attempted attacks pay energy at start including an interrupted windup. A hit alone does not interrupt an attack unless it causes knockout; reject unaccounted cancellations. Independent attacks may overlap. Stop new actions at knockout; previously released simultaneous attacks resolve at the same timestamp. A double KO uses the published tie priority.",
+    "bracketPolicy": "Slots 1 vs 2, 3 vs 4, then their winners. Reset both fighters and the island before each bout.",
+    "disclosurePolicy": "Each strategy locks on submission. All four reveal atomically. Same text applies in semifinal and final; conditional opponent plans are allowed.",
+    "status": "Versioned local pilot rules; no production balance claim. Island randomness is a lab sample, not live VRF."
+  }
+}

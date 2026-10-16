@@ -1,0 +1,72 @@
+{
+  "id": "arena-islands-v1:AR01",
+  "version": "arena-islands-v1",
+  "geometry": "A lavender cream-stone disc stands within rounded low ruins. Exactly two broad crystal slabs occupy opposing rear-left and front-right quarters at mirrored inward angles, leaving the horizontal combat axis and centre open. Each slab has one large readable reflective face and a solid stone base. Two small gold lamps illuminate the floor; crystal facets reflect the scene without filling the court with beams.",
+  "secondarySurfaces": [
+    "Firm Turf border"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "flankingGaps",
+    "markedReflectionAngles",
+    "openCentre",
+    "opposingStarts",
+    "twoMirrorFaces"
+  ],
+  "signatureFeature": {
+    "id": "mirror-crystals",
+    "value": "Mirror Crystals",
+    "rarityPool": [
+      "Rare"
+    ],
+    "residentRole": "Trickster",
+    "physicalObjects": "Two large faceted crystal slabs face inward at fixed opposing angles. Their broad reflective faces and solid bases remain in the same positions throughout a bout.",
+    "activation": "A declared reflectable energy projectile strikes a crystal face. The resident displays the fixed reflection directions before the bout.",
+    "consequence": "A compatible projectile changes direction once along the visible reflected path. Fighters can bank a shot around cover or bait an opponent into exposing itself to its own reflected attack.",
+    "counterplay": [
+      "Leave the reflected line or attack from another angle.",
+      "Use a supported non-reflectable attack.",
+      "Close the distance while the opponent lines up its reflected shot."
+    ],
+    "limits": [
+      "Reflection preserves the declared attack cost and cannot multiply projectiles.",
+      "A shot reflects at most once; water masses, vines and body strikes do not become laser beams.",
+      "Crystal angles stay fixed; the resident cannot aim them at a chosen fighter."
+    ],
+    "visualEvidence": [
+      "Eligible attack leaves a visible source.",
+      "It touches the actual crystal face.",
+      "It changes direction at that contact point and follows a continuous path.",
+      "The defender blocks, dodges or takes a visible hit."
+    ],
+    "requirements": {
+      "biomes": [
+        "Ancient Grounds",
+        "Highland"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Crystal Slabs"
+      ],
+      "geometry": [
+        "twoMirrorFaces",
+        "markedReflectionAngles",
+        "openCentre"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Trickster",
+    "palette": "Amethyst",
+    "finish": "subtle satin",
+    "featureBinding": "mirror-crystals",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-right verge beside the base of a low viewing stone, away from both crystal reflection lines."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

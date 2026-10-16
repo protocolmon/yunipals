@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly Yunipals Arena backup
+
+[Timer]
+OnCalendar=*-*-* *:17:00 UTC
+RandomizedDelaySec=2m
+Persistent=true
+Unit=yunipals-arena-backup.service
+
+[Install]
+WantedBy=timers.target

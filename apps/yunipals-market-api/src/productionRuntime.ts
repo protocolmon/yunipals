@@ -121,7 +121,7 @@ export async function createProductionRuntime(
       );
       const options = {
         confirmations: 1n,
-        finality: "finalized" as const,
+        finality: "confirmations" as const,
         indexerMaxAgeMs: 60000,
         // Public RPC pacing can span the interactive default. Fulfillment still
         // rechecks the exact canonical block and expires provider data at 30s.
@@ -196,7 +196,7 @@ export async function createProductionRuntime(
       );
       const options = {
         confirmations: 1n,
-        finality: "finalized" as const,
+        finality: "confirmations" as const,
         // The source indexer polls every five minutes to keep provider spend
         // bounded. Fulfillment checks the verified checkpoint and current chain.
         indexerMaxAgeMs: 360000

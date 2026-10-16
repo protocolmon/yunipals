@@ -30,8 +30,9 @@ export function WalletCollectionButton() {
     if (!connectionRequested.current || !isConnected || !address) return;
 
     connectionRequested.current = false;
+    if (pathname === "/arena" || pathname.startsWith("/arena/")) return;
     navigate(`/collector/${address.toLowerCase()}`);
-  }, [address, isConnected, navigate]);
+  }, [address, isConnected, navigate, pathname]);
 
   useEffect(() => setMenuOpen(false), [address, isConnected, pathname]);
 

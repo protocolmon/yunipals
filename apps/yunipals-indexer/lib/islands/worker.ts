@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../confirmations.js";
 import { setTimeout as delay } from "node:timers/promises";
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
@@ -67,9 +68,9 @@ try {
   if (!acquired) throw new Error("Another Islands metadata worker is running");
   while (!stopping) {
     try {
-      const block = await client.getBlock({ blockTag: "finalized" });
+      const block = await readConfirmedBlock(client, 1);
       if (block.number === null || !block.hash)
-        throw new Error("finalized_block_unavailable");
+        throw new Error("confirmed_block_unavailable");
       const [genesisLimit, metadataStorage] = await Promise.all([
         client.readContract({
           address: islandCollection.address,

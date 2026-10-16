@@ -1,0 +1,59 @@
+{
+  "name": "Windward Bastion #1062",
+  "description": "Windward Bastion is a uncommon Yunipals arena island. Time a low dive or a grounded counter around the visibly signalled crosswind. Its Sky Blue resident tends the shared wind gate feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Personal"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Uncommon"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Highland"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Split Terrace"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Firm Turf"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Scattered Boulders"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Wind Gate"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Guide"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Sky Blue"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Golden Hour"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "1062",
+    "arena_profile_sha256": "c783fa865a378970d1ee7d7d946e26224f9e29c8f7e3f17fe7892cc087818ccf",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/c783fa865a378970d1ee7d7d946e26224f9e29c8f7e3f17fe7892cc087818ccf.json",
+    "image_sha256": "2f74728587db71ade612f4cbd6e0ed811c216cc003d2eb92efba9498147651d8"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/1062.png"
+}

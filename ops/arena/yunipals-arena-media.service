@@ -1,0 +1,30 @@
+[Unit]
+Description=Yunipals Arena settled battle films
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=yunipals-arena
+Group=yunipals-arena
+WorkingDirectory=/srv/yunipals-arena/current/apps/yunipals-market-api
+EnvironmentFile=/etc/yunipals-arena/runtime.env
+EnvironmentFile=/etc/yunipals-arena/database.env
+EnvironmentFile=/etc/yunipals-arena/runware.env
+LoadCredential=strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key
+ExecStart=/usr/bin/env ARENA_ENCRYPTION_KEY_FILE=%d/strategy-encryption.key ARENA_ADMISSION_KEY_FILE= ARENA_ENTRIES_ENABLED=false /srv/yunipals-arena/runtime/node-v24.18.1 dist/arena-media.mjs
+ReadWritePaths=/var/lib/yunipals-arena/media
+Restart=on-failure
+RestartSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=1536M
+CPUQuota=200%
+TasksMax=256
+LimitFSIZE=134217728
+
+[Install]
+WantedBy=multi-user.target

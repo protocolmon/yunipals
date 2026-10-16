@@ -23,7 +23,8 @@ const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
 await mkdir(directory, { recursive: true, mode: 0o700 });
 try {
   assert.equal(await rpc.getChainId(), 8453);
-  const block = await rpc.getBlock({ blockTag: "finalized" });
+  const latest = await rpc.getBlock({ blockTag: "latest" });
+  const block = await rpc.getBlock({ blockNumber: latest.number - 3n });
   assert(block.number !== null && block.hash);
   const code = await rpc.getCode({
     address: contract,

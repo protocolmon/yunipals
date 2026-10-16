@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../lib/confirmations.js";
 import { baseReadClient,getBaseLogs,type BaseRpcMetrics } from "../lib/islands/base-rpc.js";
 import { verifyBaseContract } from "../lib/islands/base-verify.js";
 import { baseIslandCollection } from "../lib/islands/collections.js";
@@ -6,8 +7,8 @@ const url=process.env.BASE_ISLANDS_RPC_URL;
 if (!url) throw new Error("BASE_ISLANDS_RPC_URL is required");
 const metrics:BaseRpcMetrics={startedAtUTC:new Date().toISOString(),methods:{},responses:{}};
 const client=baseReadClient(url,metrics);
-const block=await client.getBlock({blockTag:"finalized",includeTransactions:false});
-if (block.number===null||!block.hash) throw new Error("finalized_block_unavailable");
+const block=await readConfirmedBlock(client, 8453);
+if (block.number===null||!block.hash) throw new Error("confirmed_block_unavailable");
 await verifyBaseContract(client,{number:block.number,hash:block.hash});
 const from=BigInt(baseIslandCollection.deploymentBlock);
 const logs=await getBaseLogs(client,from,from+99_999n);

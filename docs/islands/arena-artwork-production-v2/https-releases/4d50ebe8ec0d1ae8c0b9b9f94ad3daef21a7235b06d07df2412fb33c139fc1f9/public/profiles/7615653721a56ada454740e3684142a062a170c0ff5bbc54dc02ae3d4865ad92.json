@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AL01",
+  "version": "arena-islands-v1",
+  "geometry": "A broad slate-violet stone fighting platform has two shallow terraces joined by wide ramps. Exactly two thick brushed-gold grounding rods stand on low isolated plinths behind and in front of the central combat axis. Broad visible metal channels connect both rods to a monumental rear storm spire. Dry insulated stone passages remain clear around each plinth. The tall spire rises behind the arena and never obscures the floor.",
+  "secondarySurfaces": [
+    "Dry insulated stone passages",
+    "Firm Turf outer verge"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "openCentre",
+    "opposingStarts",
+    "stormSpire",
+    "twoGroundingRods",
+    "visibleGroundConnections",
+    "walkableRamps"
+  ],
+  "signatureFeature": {
+    "id": "storm-spire",
+    "value": "Storm Spire",
+    "rarityPool": [
+      "Legendary"
+    ],
+    "residentRole": "Energizer",
+    "physicalObjects": "A rear storm spire connects visibly to two metal grounding rods on stone plinths. Insulated dry passages and an open centre separate the rods.",
+    "activation": "An eligible electrical attack enters a rod's declared interception area and travels into the grounded metal. The resident sets the rods before the bout and their configuration stays fixed.",
+    "consequence": "A fighter can bait an electrical attack into a rod, then counter while the attacker recovers. The electrical path visibly ends in the grounded circuit; physical hits and water masses interact with the rod as ordinary solid cover.",
+    "counterplay": [
+      "Change angle to avoid the rod's interception area.",
+      "Use a supported non-electrical attack.",
+      "Close the distance and force the defender away from its grounding cover."
+    ],
+    "limits": [
+      "The feature creates no free electrical attack for either fighter.",
+      "The spire never chooses a winner or strikes a passive fighter with a surprise lightning bolt.",
+      "Grounding applies only to the disclosed eligible electrical attacks and geometry."
+    ],
+    "visualEvidence": [
+      "An electrical attack leaves its legal source.",
+      "Its path visibly connects to a rod.",
+      "Energy travels down the metal connection into the plinth and dissipates.",
+      "A real counterattack lands while the first attacker recovers."
+    ],
+    "requirements": {
+      "biomes": [
+        "Highland",
+        "Ancient Grounds"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Grounding Rods"
+      ],
+      "geometry": [
+        "stormSpire",
+        "twoGroundingRods",
+        "visibleGroundConnections",
+        "openCentre"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Energizer",
+    "palette": "Satin Gold",
+    "finish": "satin metallic",
+    "featureBinding": "storm-spire",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-left verge at the spire's protected base, with a visible gap from the rod connections."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

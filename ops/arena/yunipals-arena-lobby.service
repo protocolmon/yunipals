@@ -1,0 +1,27 @@
+[Unit]
+Description=Yunipals Arena funded lobby creation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=yunipals-arena
+Group=yunipals-arena
+WorkingDirectory=/srv/yunipals-arena/current/apps/yunipals-market-api
+EnvironmentFile=/etc/yunipals-arena/runtime.env
+EnvironmentFile=/etc/yunipals-arena/database.env
+LoadCredential=strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key
+LoadCredential=operator.key:/etc/yunipals-arena/operator.key
+ExecStart=/usr/bin/env ARENA_ENCRYPTION_KEY_FILE=%d/strategy-encryption.key ARENA_LOBBY_KEY_FILE=%d/operator.key ARENA_ADMISSION_KEY_FILE= ARENA_ENTRIES_ENABLED=false /srv/yunipals-arena/runtime/node-v24.18.1 dist/arena-lobby.mjs
+Restart=on-failure
+RestartSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+MemoryMax=512M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

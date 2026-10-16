@@ -19,3 +19,49 @@ coverage/
 __pycache__/
 *.pyc
 .vercel
+
+# Arena private state and generated Foundry build output
+.arena-lab/
+contracts/arena/out/
+contracts/arena/cache/
+contracts/arena/broadcast/
+.runware-api.key
+
+# Local credentials, databases and recovery records (examples remain public).
+*.env
+*.env.*
+!*.env.example
+*.dump
+*.backup
+*.sql.gz
+*.sql.zst
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+/private/
+/backups/
+/keystores/
+.arena-private/
+
+# Internal Arena evidence is retained locally, outside the public source set.
+/docs/arena/*
+!/docs/arena/README.md
+!/docs/arena/SOURCE-PUBLICATION.md
+!/docs/arena/public-deployment.json
+!/docs/arena/mainnet-rules-manifest-v1.json
+!/docs/arena/rules-v2/
+!/docs/arena/identity-registry-v1/
+
+# Publish only the stable runtime data from the original art/research archives.
+/docs/islands/*
+!/docs/islands/arena-artwork-production-v2/
+!/docs/islands/arena-reveal-results-v1/
+!/docs/islands/arena-freeform-tournament-v7/
+!/docs/islands/race-film-v4/
+/docs/islands/arena-artwork-production-v2/**/public/images/
+/apps/yunipals-home-web/public/images/arena-*
+/apps/yunipals-home-web/public/videos

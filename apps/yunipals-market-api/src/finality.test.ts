@@ -50,7 +50,7 @@ function client(chainId: number, now: number) {
   };
 }
 
-test("production head observations require an explicit finalized block and fence finality regression", async () => {
+test("legacy finalized observations require an explicit finalized block and fence finality regression", async () => {
   const now = 1_800_000_000_000;
   const ethereum = client(1, now);
   const openSea = await readOpenSeaHead(

@@ -12,3 +12,8 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/)patches/collector-indexer/manifest\.json$''']
 regexes = ['''^b4b7198c6c55878420c665ea88ac4fa668094d64536e696e6ff5b3f46bcaf979$''']
+
+[[rules.allowlists]]
+description = "Public Base USDC contract address; never an API credential"
+regexTarget = "secret"
+regexes = ['''(?i)^0x833589fcd6edb6e08f4c7c32d4f71b54bda02913$''']

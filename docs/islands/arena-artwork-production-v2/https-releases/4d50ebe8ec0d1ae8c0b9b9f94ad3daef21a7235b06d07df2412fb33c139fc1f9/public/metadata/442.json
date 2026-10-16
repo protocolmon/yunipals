@@ -1,0 +1,59 @@
+{
+  "name": "Brambleguard Glade #442",
+  "description": "Brambleguard Glade is a common Yunipals arena island. Use a root wall to absorb a heavy attack, then strike through the opening it leaves. Its Mint resident tends the shared root barrier feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Genesis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Grove"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Open Ring"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Exposed Soil"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Root Walls"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Root Barrier"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Guardian"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Mint"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Daylight"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "442",
+    "arena_profile_sha256": "b12b8d30e0da46f0a358aa79a72d8d89a7c648211a1bd61e8b2e82959278107f",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/b12b8d30e0da46f0a358aa79a72d8d89a7c648211a1bd61e8b2e82959278107f.json",
+    "image_sha256": "bfed5e30c184d2d3e761ac637dd0647940b9d53f548ce028092641a2da14971d"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/442.png"
+}

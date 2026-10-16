@@ -11,7 +11,8 @@ import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
 const navigation = [
   { label: "Collection", to: "/" },
-  { label: "Leaderboard", to: "/leaderboard" }
+  { label: "Leaderboard", to: "/leaderboard" },
+  { label: "Arena", to: "/arena" }
 ];
 
 type CollectorSearchProps = {

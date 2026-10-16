@@ -1,0 +1,25 @@
+{
+  "version": "yunipals-arena/launch-timing/v1",
+  "status": "approved launch timing; automatic missing-strategy transition implemented",
+  "joinWindow": {
+    "approved": true,
+    "seconds": 604800,
+    "startsAt": "first successful paid entry",
+    "emptyLobbyDeadline": null,
+    "advanceWhen": "four paid seats and finalized island are ready before expiry"
+  },
+  "strategyWindow": {
+    "approved": true,
+    "seconds": 86400,
+    "startsAt": "four paid seats and finalized island are ready",
+    "advanceWhen": "all four signed strategies ready, or missing seats assigned deterministic automatic attacks after the deadline",
+    "transitionRecoverySeconds": 86400,
+    "failurePolicy": "full refunds if input is not frozen by strategyDeadline + 24 hours"
+  },
+  "resolutionWindow": {
+    "approved": true,
+    "seconds": 86400,
+    "startsAt": "onchain input freeze"
+  },
+  "note": "Windows are maximum waits. Ready tournaments advance immediately; no mandatory seven-day or twenty-four-hour delay."
+}

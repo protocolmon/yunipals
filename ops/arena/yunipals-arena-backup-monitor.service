@@ -1,0 +1,16 @@
+[Unit]
+Description=Check Yunipals Arena backup freshness and restore health
+
+[Service]
+Type=oneshot
+User=root
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /srv/yunipals-arena/operations/backup_monitor.py
+TimeoutStartSec=30s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/yunipals-arena/backups
+MemoryMax=64M

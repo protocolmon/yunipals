@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AL02",
+  "version": "arena-islands-v1",
+  "geometry": "A broad dark earth court is enclosed by a low curved grassy bank. Two monumental root panels meet across the rear half, their bases firmly emerging from two exposed soil beds. Their open and closed arc positions are indicated by broad bare-earth grooves. A wide open centre and two permanent side gaps connect the starts. Rounded ancient trees rise behind the panels, framing a moonlit opening above the arena.",
+  "secondarySurfaces": [
+    "Firm Turf border",
+    "Two small stone starting pads"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "flankingGaps",
+    "gateWarning",
+    "openCentre",
+    "opposingStarts",
+    "permanentSideGaps",
+    "soilBeds",
+    "twoGatePanels"
+  ],
+  "signatureFeature": {
+    "id": "rootbound-gate",
+    "value": "Rootbound Gate",
+    "rarityPool": [
+      "Legendary"
+    ],
+    "residentRole": "Guardian",
+    "physicalObjects": "Two broad living root panels meet beside a circular stone clearing. Their roots enter exposed soil beds; two side gaps always connect the opposing starting areas.",
+    "activation": "The resident operates a visible lever before each scheduled opening or closing phase. The phase and warning are shared match inputs.",
+    "consequence": "The moving gate changes a projectile sightline and the direct ground approach. A fighter can time a shielded advance or strike through an opening as an opponent commits. Plant-capable fighters may influence exposed gate roots within their supported reach and cost.",
+    "counterplay": [
+      "Use the permanent side gap.",
+      "Bait an attack just before a panel closes.",
+      "Strike or disengage during the declared open phase rather than waiting behind a closing panel."
+    ],
+    "limits": [
+      "The gate stops at its marked end positions and never crushes a fighter.",
+      "No roots emerge through unbroken stone; movement remains attached to the visible soil beds.",
+      "The gate protects and exposes both fighters under the same phase rules."
+    ],
+    "visualEvidence": [
+      "Lever and gate buds give a visible warning.",
+      "The rooted panel moves continuously from its soil bed.",
+      "An attack hits the panel, passes through the opening or is avoided through a side gap.",
+      "A fighter's follow-up hit supplies the combat outcome."
+    ],
+    "requirements": {
+      "biomes": [
+        "Grove"
+      ],
+      "ground": [
+        "Exposed Soil"
+      ],
+      "cover": [
+        "Root Walls"
+      ],
+      "geometry": [
+        "twoGatePanels",
+        "soilBeds",
+        "permanentSideGaps",
+        "gateWarning"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Guardian",
+    "palette": "Satin Gold",
+    "finish": "satin metallic",
+    "featureBinding": "rootbound-gate",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-left raised verge beside a chunky lever and the gate's warning buds, outside the panel sweep."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

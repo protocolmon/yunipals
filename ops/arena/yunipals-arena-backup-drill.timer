@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly Yunipals Arena restore test
+
+[Timer]
+OnCalendar=Sun *-*-* 04:37:00 UTC
+RandomizedDelaySec=2m
+Persistent=true
+Unit=yunipals-arena-backup-drill.service
+
+[Install]
+WantedBy=timers.target

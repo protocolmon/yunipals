@@ -21,6 +21,7 @@ import {
 import { IndexerError } from "@/lib/yunipalsIndexer";
 import { IslandUnstake } from "./IslandUnstake";
 import { IslandAirdropInfo } from "./IslandAirdropInfo";
+import { IslandHostingHistory } from "@/pages/arena/live/IslandHostingHistory";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -274,6 +275,12 @@ export function IslandDetail({
                 </div>
               </div>
             </div>
+
+            <IslandHostingHistory
+              chainId={token.chainId}
+              collection={token.contractAddress}
+              tokenId={token.tokenId}
+            />
 
             <section className="mt-12" aria-labelledby="island-history">
               <h2

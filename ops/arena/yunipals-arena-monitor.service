@@ -1,0 +1,20 @@
+[Unit]
+Description=Check Arena indexed state, jobs, funding and deadlines
+
+[Service]
+Type=oneshot
+User=yunipals-arena
+Group=yunipals-arena
+WorkingDirectory=/srv/yunipals-arena/current/apps/yunipals-market-api
+EnvironmentFile=/etc/yunipals-arena/runtime.env
+EnvironmentFile=/etc/yunipals-arena/database.env
+ExecStart=/srv/yunipals-arena/runtime/node-v24.18.1 dist/arena-monitor.mjs
+TimeoutStartSec=45s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/yunipals-arena/health
+UMask=0077
+MemoryMax=128M
+TasksMax=32

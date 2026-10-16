@@ -27,7 +27,13 @@
     "start:opensea-read-worker": "node dist/opensea-read-worker.mjs",
     "start:opensea-signature-worker": "node dist/opensea-signature-worker.mjs",
     "start:opensea-signature-fleet": "node dist/opensea-signature-fleet.mjs",
-    "start:opensea-stream": "node dist/opensea-stream.mjs"
+    "start:opensea-stream": "node dist/opensea-stream.mjs",
+    "dev:arena": "tsx src/arena/labServer.ts",
+    "test:arena": "node --import tsx src/arena/arena.test.ts",
+    "test:arena:live": "node --import tsx src/arena/live/live.test.ts",
+    "test:arena:recovery": "node --import tsx --test src/arena/live/recovery.test.ts",
+    "test:arena:anvil": "node --import tsx src/arena/live/anvil.test.ts",
+    "test:arena:input": "node --import tsx src/arena/live/input.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",

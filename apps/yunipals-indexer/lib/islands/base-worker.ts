@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../confirmations.js";
 import { setTimeout as delay } from "node:timers/promises";
 import { pool } from "../offchain/db.js";
 import { safeErrorMessage } from "../safe-error.js";
@@ -144,14 +145,11 @@ async function publishMetadata(finalized: BaseBlock) {
 }
 
 async function scan() {
-  const safe = await client.getBlock({
-    blockTag: "safe",
-    includeTransactions: false
-  });
-  const finalized = await client.getBlock({
-    blockTag: "finalized",
-    includeTransactions: false
-  });
+  const safe = await readConfirmedBlock(client, 8453);
+  // Keep a separate 128-block replay anchor for reorg recovery. This buffer
+  // never delays the live ownership scan or metadata publication.
+  const anchorNumber = safe.number > 128n ? safe.number - 128n : 0n;
+  const finalized = await client.getBlock({ blockNumber: anchorNumber });
   if (
     safe.number === null ||
     !safe.hash ||
@@ -240,7 +238,7 @@ async function scan() {
     cursor = await readBaseCursor(pool);
   }
   if (stopping) return;
-  // Establish a canonical anchor before serving the new collection or advancing its finality proof.
+  // Establish a canonical anchor before serving the new collection or advancing its replay anchor.
   const finalCheck = await block(finalized.number);
   if (finalCheck.hash !== finalized.hash)
     throw new Error("base_islands_finalized_block_changed");
@@ -255,17 +253,17 @@ async function scan() {
   if (!cursor.verifiedBlock || auditDue.rows[0]?.due) {
     console.log(
       "Base Islands ownership verified",
-      await verifyBaseOwnership(pool, client, finalCheck)
+      await verifyBaseOwnership(pool, client, endSafe)
     );
   }
-  await publishMetadata(finalCheck);
+  await publishMetadata(safe);
   await pool.query(
     `UPDATE ${schema}.sync_state SET ready=verified_block IS NOT NULL AND airdrop_finalized AND NOT EXISTS(
     SELECT 1 FROM ${schema}.token t LEFT JOIN metadata.island_publication p ON p.collection=t.collection
       AND p.token_id=t.token_id::numeric AND p.lifecycle=t.lifecycle
     WHERE NOT t.burned AND t.mint_block<=$1 AND (p.status IS DISTINCT FROM 'published')),
     completed_at=now(),updated_at=now(),last_error=NULL WHERE singleton`,
-    [String(finalized.number)]
+    [String(safe.number)]
   );
 }
 
@@ -275,10 +273,7 @@ try {
   );
   if (!acquired.rows[0]?.acquired)
     throw new Error("base_islands_writer_already_running");
-  const head = await client.getBlock({
-    blockTag: "finalized",
-    includeTransactions: false
-  });
+  const head = await readConfirmedBlock(client, 8453);
   if (head.number === null || !head.hash)
     throw new Error("base_islands_finalized_head_unavailable");
   await verifyBaseContract(client, { number: head.number, hash: head.hash });

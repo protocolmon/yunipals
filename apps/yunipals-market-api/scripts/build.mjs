@@ -5,6 +5,18 @@ await mkdir("dist", { recursive: true });
 const { dependencies } = JSON.parse(await readFile("package.json", "utf8"));
 await build({
   entryPoints: {
+    "arena-inspect": "src/arena/live/inspect.ts",
+    "arena-recovery": "src/arena/live/recoveryCli.ts",
+    "arena-monitor": "src/arena/live/healthWorker.ts",
+    "arena-server": "src/arena/live/server.ts",
+    "arena-projector": "src/arena/live/projectorWorker.ts",
+    "arena-referee": "src/arena/live/refereeWorker.ts",
+    "arena-settlement": "src/arena/live/settlementWorker.ts",
+    "arena-control": "src/arena/live/controlWorker.ts",
+    "arena-capacity": "src/arena/live/capacityWorker.ts",
+    "arena-lobby": "src/arena/live/lobbyWorker.ts",
+    "arena-media": "src/arena/live/mediaWorker.ts",
+    "arena-migrate": "src/arena/live/migrate.ts",
     server: "src/server.ts",
     migrate: "src/migrate.ts",
     "migration-history": "src/migrationHistory.ts",

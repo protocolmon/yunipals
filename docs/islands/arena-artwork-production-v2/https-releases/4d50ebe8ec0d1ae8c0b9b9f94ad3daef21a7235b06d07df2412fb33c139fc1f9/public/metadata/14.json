@@ -1,0 +1,59 @@
+{
+  "name": "Voidheart Crucible #14",
+  "description": "Voidheart Crucible is a mythic Yunipals arena island. Punch a hovering boulder into the defender's guard, force a dodge and land a real follow-up. Its Midnight Opal resident tends the shared gravity halo feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Genesis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Mythic"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Ancient Grounds"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Open Ring"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Dry Stone"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Hovering Boulders"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Gravity Halo"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Energizer"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Midnight Opal"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Eclipse"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "14",
+    "arena_profile_sha256": "8a988c7e8415f63921741d835523982f7ed9e66680e585e3efeaf559a7c954ba",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/8a988c7e8415f63921741d835523982f7ed9e66680e585e3efeaf559a7c954ba.json",
+    "image_sha256": "70099184d82f17f3821eb83522b48050d324fe29fe6884f2f20f4c390e6a5f76"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/14.png"
+}

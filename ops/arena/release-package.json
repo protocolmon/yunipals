@@ -1,0 +1,12 @@
+{
+  "name": "yunipals-arena-release",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hono/node-server": "1.19.17",
+    "hono": "4.13.8",
+    "pg": "8.23.0",
+    "viem": "2.38.0"
+  }
+}

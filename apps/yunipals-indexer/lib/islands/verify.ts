@@ -189,7 +189,7 @@ export async function verifyIslandsOwnership(
     block: {
       number: block.number.toString(),
       hash: block.hash,
-      finality: "finalized"
+      finality: "confirmations"
     },
     activeSupply: expected.size,
     ownersMatched: expected.size,

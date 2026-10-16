@@ -26,7 +26,7 @@ test("live read configuration requires an explicit chain, HTTPS RPC and confirma
     config.MARKET_OPENSEA_READ_RPC,
     "https://backup.example.test/private-token"
   ]);
-  assert.equal(production.finality, "finalized");
+  assert.equal(production.finality, "confirmations");
   const delegatedProduction = readOpenSeaReadEnvironment({
     ...config,
     MARKET_DEPLOYMENT: "production",
@@ -35,7 +35,7 @@ test("live read configuration requires an explicit chain, HTTPS RPC and confirma
   assert.deepEqual(delegatedProduction.rpcUrls, [
     rpcBudgetProxyUrl("base", "production")
   ]);
-  assert.equal(delegatedProduction.finality, "finalized");
+  assert.equal(delegatedProduction.finality, "confirmations");
   assert.deepEqual(
     readOpenSeaReadEnvironment({
       ...config,

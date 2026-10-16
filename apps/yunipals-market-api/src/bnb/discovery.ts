@@ -27,6 +27,7 @@ import type { BnbPolicy } from "@/bnb/orders";
 import { bindDiscoveredBnbLifecycles } from "@/bnb/discoveryLifecycle";
 import { seaportCodeHash } from "@/bnb/protocol";
 import { transaction } from "@/db/pool";
+import { readConfirmedBlock } from "@/confirmations";
 
 const publicationEvent = seaportEventAbi.find(
   (item) => item.type === "event" && item.name === "OrderValidated"
@@ -232,7 +233,7 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
     locked = acquired.rows[0]?.locked === true;
     if (!locked) return { locked: false, scanned: 0, observed: 0 };
 
-    const finalized = await stateClient.getBlock({ blockTag: "finalized" });
+    const finalized = await readConfirmedBlock(stateClient, 56);
     const now = BigInt(Date.now());
     if (
       (await stateClient.getChainId()) !== 56 ||
@@ -240,7 +241,7 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
       finalized.timestamp * 1000n > now + 30_000n ||
       now - finalized.timestamp * 1000n > 360_000n
     )
-      throw new Error("BNB discovery finality is unavailable.");
+      throw new Error("BNB discovery confirmed head is unavailable.");
     const code = await stateClient.getCode({
       address: seaportDeployment.address,
       blockNumber: finalized.number

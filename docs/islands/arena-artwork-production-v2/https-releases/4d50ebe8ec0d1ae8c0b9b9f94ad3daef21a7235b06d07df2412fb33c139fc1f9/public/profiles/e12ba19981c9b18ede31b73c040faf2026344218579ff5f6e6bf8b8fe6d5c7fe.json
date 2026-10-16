@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AM01",
+  "version": "arena-islands-v1",
+  "geometry": "A broad dark-violet stone disc sits below a monumental rear black orb in restrained polished gold rings. Exactly two thick opaque crescent panels attach to visible gold mechanical arms and hover just clear of the floor over marked outer arcs at the rear-left and front-right. Both panels are outside the wide open centre and the horizontal starting axis. Their solid thickness and supports are easy to see. Gold inset arc grooves indicate the same limited sweep area throughout the match.",
+  "secondarySurfaces": [
+    "Firm Turf verge around the stone disc"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "markedOuterArcs",
+    "openCentre",
+    "opposingStarts",
+    "orrery",
+    "twoSolidPanels",
+    "visibleArms"
+  ],
+  "signatureFeature": {
+    "id": "eclipse-orrery",
+    "value": "Eclipse Orrery",
+    "rarityPool": [
+      "Mythic"
+    ],
+    "residentRole": "Guide",
+    "physicalObjects": "A monumental rear orrery carries two solid crescent shield panels on visible golden arms. The panels sweep two marked outer arcs beside an open central stone disc.",
+    "activation": "The match records the common start angle, direction and sweep schedule. The resident exposes a mechanical phase indicator before each panel enters the combat edge.",
+    "consequence": "A solid panel physically intercepts an attack crossing its arc, then moves away to reveal the fighter behind it. Fighters can time an advance behind the panel, bait a blocked attack or flank through the permanently open centre.",
+    "counterplay": [
+      "Move into the open centre or approach around the panel's edge.",
+      "Wait for its disclosed opening and pressure the exposed fighter.",
+      "Use a supported close attack once both fighters are on the same side of the panel."
+    ],
+    "limits": [
+      "Protection comes from physical contact with a visible solid panel, never from an invisible shadow verdict.",
+      "Panels cannot crush, eject or automatically defeat fighters; they have safe clearance above the floor and fixed outer arcs.",
+      "The centre and flying approach remain connected; panels do not enclose a fighter."
+    ],
+    "visualEvidence": [
+      "Mechanical pointer shows the panel's approach.",
+      "The same panel moves continuously along its visible arm.",
+      "A projectile or strike visibly meets its face or clears its edge.",
+      "A fighter attacks through the resulting opening and causes the actual defeat."
+    ],
+    "requirements": {
+      "biomes": [
+        "Ancient Grounds",
+        "Highland"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Orbital Panels"
+      ],
+      "geometry": [
+        "orrery",
+        "twoSolidPanels",
+        "visibleArms",
+        "markedOuterArcs",
+        "openCentre"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Guide",
+    "palette": "Midnight Opal",
+    "finish": "dark pearlescent",
+    "featureBinding": "eclipse-orrery",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-right raised verge beside a large mechanical phase pointer, outside the shield arcs."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

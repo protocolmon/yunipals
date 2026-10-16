@@ -1,0 +1,202 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "resolved",
+        "needs-rule-clarification"
+      ]
+    },
+    "matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "SF1",
+              "SF2",
+              "FINAL"
+            ]
+          },
+          "fighterIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "openingState": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "actorId": {
+                  "type": "string"
+                },
+                "targetId": {
+                  "type": "string"
+                },
+                "strategyQuote": {
+                  "type": "string"
+                },
+                "attackClass": {
+                  "type": "string",
+                  "enum": [
+                    "heavy",
+                    "light"
+                  ]
+                },
+                "attackName": {
+                  "type": "string"
+                },
+                "start": {
+                  "type": "number"
+                },
+                "release": {
+                  "type": "number"
+                },
+                "contact": {
+                  "type": "number"
+                },
+                "recoveryUntil": {
+                  "type": "number"
+                },
+                "defense": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "dodge",
+                    "shield",
+                    "guard"
+                  ]
+                },
+                "defenderQuote": {
+                  "type": "string"
+                },
+                "defenseStart": {
+                  "type": "number"
+                },
+                "defenseEnd": {
+                  "type": "number"
+                },
+                "outcome": {
+                  "type": "string",
+                  "enum": [
+                    "hit",
+                    "guarded",
+                    "dodged",
+                    "shielded",
+                    "cover_hit",
+                    "interrupted"
+                  ]
+                },
+                "coverId": {
+                  "type": "string"
+                },
+                "coverDamage": {
+                  "type": "number"
+                },
+                "visibleAction": {
+                  "type": "string"
+                },
+                "why": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "actorId",
+                "targetId",
+                "strategyQuote",
+                "attackClass",
+                "attackName",
+                "start",
+                "release",
+                "contact",
+                "recoveryUntil",
+                "defense",
+                "defenderQuote",
+                "defenseStart",
+                "defenseEnd",
+                "outcome",
+                "coverId",
+                "coverDamage",
+                "visibleAction",
+                "why"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "continuityAtThree": {
+            "type": "string"
+          },
+          "winnerId": {
+            "type": "string"
+          },
+          "loserId": {
+            "type": "string"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "knockout",
+              "double-knockout",
+              "decision"
+            ]
+          },
+          "verdictSeconds": {
+            "type": "number"
+          },
+          "settledSeconds": {
+            "type": "number"
+          },
+          "victoryPose": {
+            "type": "string"
+          },
+          "whyWinner": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fighterIds",
+          "openingState",
+          "events",
+          "continuityAtThree",
+          "winnerId",
+          "loserId",
+          "verdict",
+          "verdictSeconds",
+          "settledSeconds",
+          "victoryPose",
+          "whyWinner"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "championId": {
+      "type": "string"
+    },
+    "unresolvedQuestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "status",
+    "matches",
+    "championId",
+    "unresolvedQuestions"
+  ],
+  "additionalProperties": false
+}

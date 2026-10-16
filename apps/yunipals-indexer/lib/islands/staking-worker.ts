@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../confirmations.js";
 import { setTimeout as delay } from "node:timers/promises";
 import { createPublicClient, erc721Abi, http } from "viem";
 import { mainnet } from "viem/chains";
@@ -22,7 +23,7 @@ const client = createPublicClient({
 });
 const reader: StakingChainReader = {
   finalizedBlock: async () => {
-    const block = await client.getBlock({ blockTag: "finalized" });
+    const block = await readConfirmedBlock(client, 1);
     if (BigInt(Math.floor(Date.now() / 1_000)) - block.timestamp > 1_800n)
       throw new Error("staking_rpc_is_stale");
     return { number: block.number, hash: block.hash };

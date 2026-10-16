@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "../confirmations.js";
 import { createPublicClient, http } from "viem";
 import type { Pool } from "pg";
 import { base } from "viem/chains";
@@ -28,19 +29,19 @@ export async function replayBaseMetadata(pool: Pool, env: NodeJS.ProcessEnv, opt
     if (!acquired) { lock.release(); return { busy: true }; }
     const maximumRange = range;
     try {
-        const final = await retry(() => client.getBlock({ blockTag: "finalized" }));
+        const final = await retry(() => readConfirmedBlock(client, 8453));
         if (!final.number || !final.hash)
-            throw new Error("Finalized Base block unavailable");
+            throw new Error("Confirmed Base block unavailable");
         await pool.query(`INSERT INTO metadata_source.chain_metadata_scan(name,chain_id,contract_address,deployment_block,next_block,target_block,target_hash)
    VALUES($1,8453,$2,$3,$3,$4,$5) ON CONFLICT DO NOTHING`, [name, collections.base.address, collections.base.deploymentBlock, final.number.toString(), final.hash]);
         let scan = (await pool.query("SELECT * FROM metadata_source.chain_metadata_scan WHERE name=$1", [name])).rows[0];
         if (options.advance && BigInt(scan.next_block) > BigInt(scan.target_block)) {
-            // A lagging RPC backend can report an older finalized tag. Keep
+            // A lagging RPC backend can report an older confirmed head. Keep
             // serving the stored checkpoint if its block hash still matches;
             // never move the target backward or skip the hash checks below.
             if (final.number >= BigInt(scan.target_block)) {
                 if ((await client.getBlock({ blockNumber: BigInt(scan.target_block) })).hash !== scan.target_hash)
-                    throw new Error("Previously finalized Base checkpoint changed");
+                    throw new Error("Previously confirmed Base checkpoint changed");
                 await pool.query("UPDATE metadata_source.chain_metadata_scan SET target_block=$2,target_hash=$3 WHERE name=$1", [name, final.number.toString(), final.hash]);
                 scan = (await pool.query("SELECT * FROM metadata_source.chain_metadata_scan WHERE name=$1", [name])).rows[0];
             }
@@ -87,7 +88,7 @@ export async function replayBaseMetadata(pool: Pool, env: NodeJS.ProcessEnv, opt
                 console.log(JSON.stringify({ from: from.toString(), target: scan.target_block, range, observedThisInvocation: observed }));
         }
         if (from > BigInt(scan.target_block) && (await client.getBlock({ blockNumber: BigInt(scan.target_block) })).hash !== scan.target_hash)
-            throw new Error("Finalized Base target changed during scan");
+            throw new Error("Confirmed Base target changed during scan");
         const report = { observedAt: new Date().toISOString(), complete: from > BigInt(scan.target_block), checkpoint: (await pool.query("SELECT * FROM metadata_source.chain_metadata_scan WHERE name=$1", [name])).rows[0],
             counts: options.includeCounts ? (await pool.query("SELECT event_name,count(*)::text FROM metadata_source.chain_metadata_event WHERE chain_id=8453 AND contract_address=$1 GROUP BY event_name", [collections.base.address])).rows : undefined };
         return report;
