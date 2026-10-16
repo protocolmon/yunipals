@@ -315,9 +315,7 @@ try {
               const statement = rarityPageQueries({
                 relations,
                 rawSearch: metadataRawSearchReadRelationAt("2"),
-                validatedSearch: cached
-                  ? cachedSearchReadRelation(selected, "2")
-                  : validated,
+                validatedSearch: validated,
                 missingKeys: cached
                   ? (relation) =>
                       cachedMissingKeys(
@@ -393,7 +391,51 @@ try {
           }
   // Every proof dependency must invalidate in the writer's transaction. The
   // independent canonical relation verifies that stale sets really fall back.
+  let invalidatedRankCases = 0;
   const verifyProofs = async (client) => {
+    // A page must still validate each token against current proofs while cache
+    // guards are invalid, including the Base event and publication checks.
+    for (const sort of ["rarity-desc", "rarity-capped-desc"]) {
+      const score = sort.startsWith("rarity-capped")
+        ? "rarity_points_capped"
+        : "rarity_points";
+      const columns =
+        "t.collection,t.token_id,s.rarity_points,s.rarity_points_capped";
+      const filters = [
+        "t.collection=ANY($1::text[])",
+        "t.burned=false",
+        `NOT ${activeVisibilityPredicate()}`
+      ];
+      const values = [chains, 6];
+      const statement = rarityPageQueries({
+        relations: ["rarity_physical.token", "rarity_bnb.token"],
+        rawSearch: metadataRawSearchReadRelationAt("2"),
+        validatedSearch: validated,
+        bulkSearch: () => validated,
+        columns,
+        filters,
+        cursorFilters: filters,
+        values,
+        sort,
+        selective: false,
+        nullsExcluded: true
+      });
+      assert.deepEqual(
+        (await client.query(statement.nonnull, values)).rows,
+        (
+          await client.query(
+            `SELECT ${columns} FROM rarity_read.token t JOIN ${validated} s
+              ON s.collection=t.collection AND s.token_id=t.token_id::numeric
+                AND s.lifecycle=t.lifecycle
+              WHERE ${filters.join(" AND ")} AND s.${score} IS NOT NULL
+              ORDER BY s.${score} DESC,t.token_id::numeric,t.collection LIMIT $2`,
+            values
+          )
+        ).rows,
+        `ranked page after proof change: ${sort}`
+      );
+      invalidatedRankCases++;
+    }
     const columns =
       "collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped";
     const order = " ORDER BY collection,token_id,lifecycle";
@@ -607,6 +649,7 @@ try {
       event: "rarity_pagination_parity",
       cases,
       invalidationCases: mutations.length + 3,
+      invalidatedRankCases,
       checks: [
         "null ranks",
         "missing search",

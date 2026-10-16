@@ -1,5 +1,5 @@
 import { metadataReadRelation, metadataSearchReadRelation, metadataSearchReadRelationAt, metadataSearchReadRelationFor, metadataRawSearchReadRelationAt, metadataRawTraitReadRelationAt, metadataTraitReadRelation, metadataTraitReadRelationAt, leaderboardReadRelation, readActiveProjectionId } from "../metadata/read-source.js";
-import { cachedSearchReadRelation, cachedSearchReadRelationFor, cachedMissingKeys } from "../metadata/read-cache.js";
+import { cachedSearchReadRelationFor, cachedMissingKeys } from "../metadata/read-cache.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
 import { metadataReadiness, publicationStatus } from "../metadata/status.js";
@@ -237,7 +237,10 @@ app.get("/v1/tokens", async (c) => {
   const ownerResolution = ownerInput ? await requireResolvedOwner(ownerInput, chains) : undefined;
   const projectionId = await readActiveProjectionId();
   const cachedProofs = process.env.YUNIPALS_READ_CACHE === "1" && projectionId !== null;
-  const searchRelation = cachedProofs ? cachedSearchReadRelation(chains, projectionId!) : projectionId ? metadataSearchReadRelationAt(projectionId) : metadataSearchReadRelation;
+  // Point lookups need token-correlated proofs even while the bulk cache is
+  // invalid. Its fallback can otherwise scan Base event history per candidate.
+  // Keep cached relations for bulk counts and missing-metadata candidates below.
+  const searchRelation = projectionId ? metadataSearchReadRelationAt(projectionId) : metadataSearchReadRelation;
   const traitRelation = projectionId ? metadataTraitReadRelationAt(projectionId) : metadataTraitReadRelation;
   const filterConfig = { visibility: "visible", chains, owner: ownerResolution?.addresses ?? null, burned: burned ?? null, traits: [...traitGroups].sort(([a], [b]) => a.localeCompare(b)).map(([type, values]) => [type, [...values].sort()]), rarityMin: rarityMin ?? null, rarityMax: rarityMax ?? null, rarityCappedMin: rarityCappedMin ?? null, rarityCappedMax: rarityCappedMax ?? null, metadata, sort };
   const expectedConfig = configHash(projectionId ? { ...filterConfig, projectionId } : filterConfig);
