@@ -17,7 +17,9 @@ changed by this publication.
 - Downloaded public island #1122 and verified its committed SHA-256; a second run
   verified the cache without downloading.
 - Publication set contains no absolute symlinks. A Gitleaks scan uses the normal
-  default rules plus an exact exception for the public Base USDC address.
+  default rules plus narrow exceptions for the public Base USDC address, verified
+  historical source checksums and a literal systemd option. No credential category
+  is disabled.
 
 The first database test attempt hit local workstation disk exhaustion. The
 successful run used a new isolated PostgreSQL container backed by memory; that

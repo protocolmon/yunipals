@@ -17,3 +17,27 @@ regexes = ['''^b4b7198c6c55878420c665ea88ac4fa668094d64536e696e6ff5b3f46bcaf979$
 description = "Public Base USDC contract address; never an API credential"
 regexTarget = "secret"
 regexes = ['''(?i)^0x833589fcd6edb6e08f4c7c32d4f71b54bda02913$''']
+
+[[rules.allowlists]]
+description = "Verified public source SHA-256 values in island release manifests"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)docs/audit/base-islands(?:-v2)?/source-manifest\.json$''']
+regexes = [
+    "^05e6a7b50acc15c6db3a0e116f93e53ab4ce23a6cd0d4cb6717870de06b4fece$",
+    "^33be4e245107f6cf991b350df84211965f3d98aff8b809c7c0acbdd501fc37a3$",
+    "^3af6e7a5b0ce15de7460e0d35ca3aae2b9e80e5f674bee5e7002c397a787766b$",
+    "^6ec33399d901b15268e3e8cdbe33301f45ac4c3f191b72771dc3668980c9fd23$",
+    "^8a606b3cdd03462ecf328b0e4a486946310d242f7fb9e4fa62e5960e9c50e3f9$",
+    "^bfb6594fae6b24a251ecc3acaa43cd80f43663b06970a81938039ae0677bb1d2$",
+    "^cd9b11b1c69e2a6eedd87c4d4b7e15c9f3d9c688b9a7cef4702fc69119aafe84$",
+    "^d9a86e15ffda3ef7767237c55779ba67381e9d982d2b97274de78a29a91322d0$",
+    "^e765dc32673aa9727c5224f317619b1203dde8b776cfd7c5b6a0b53c830b3347$",
+]
+
+[[rules.allowlists]]
+description = "Systemd NoNewPrivileges option adjacent to the environment-file path"
+condition = "AND"
+regexTarget = "match"
+paths = ['''(^|/)ops/base-islands(?:-v2)?/stage-api\.py$''']
+regexes = ['''islands-api\.env','--property=NoNewPrivileges=true''']
