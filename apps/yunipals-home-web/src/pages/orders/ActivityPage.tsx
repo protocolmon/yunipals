@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { MarketActivity } from "@/components/marketplace/MarketActivity";
 import { chainDetails } from "@/data/chains";
@@ -73,21 +74,21 @@ function WalletActivity({ wallet }: { wallet: Address }) {
         </nav>
         <div className="flex flex-col gap-1 text-sm font-bold">
           <label htmlFor={id}>Network</label>
-          <select
+          <Select
             id={id}
             value={chain}
-            onChange={(event) => filter("chain", event.target.value)}
+            onValueChange={(value) => filter("chain", value)}
             className="rounded-full border border-line bg-white px-4 py-2 focus-visible:ring-2 focus-visible:ring-ink"
           >
-            <option value="all">All networks</option>
+            <SelectItem value="all">All networks</SelectItem>
             {(Object.keys(marketplaceChains) as MarketplaceChain[]).map(
               (name) => (
-                <option key={name} value={name}>
+                <SelectItem key={name} value={name}>
                   {chainDetails[name].label}
-                </option>
+                </SelectItem>
               )
             )}
-          </select>
+          </Select>
         </div>
       </div>
       <MarketActivity

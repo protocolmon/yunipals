@@ -40,6 +40,7 @@ import {
   seaportReadAbi,
   seaportSigningData
 } from "../src/lib/marketplace/seaport.ts";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -1026,9 +1027,11 @@ try {
   await page
     .getByRole("button", { name: "List for sale", exact: true })
     .click();
-  await page
-    .getByLabel("Expires after", { exact: true })
-    .selectOption("2592000");
+  await chooseSelect(
+    page,
+    page.getByLabel("Expires after", { exact: true }),
+    "2592000"
+  );
   await page.getByLabel("Buyer pays (ETH)", { exact: true }).fill("0.2");
   await page
     .getByRole("button", { name: "Review listing", exact: true })

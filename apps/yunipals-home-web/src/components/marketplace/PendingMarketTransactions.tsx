@@ -6,15 +6,6 @@ import { analyticsOperations } from "@/lib/analytics/operations";
 import { getPublicClient } from "wagmi/actions";
 
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
-import { environment } from "@/environment";
-import {
-  pendingBnbIndexLabel,
-  requiresBnbActionIndex
-} from "@/lib/marketplace/indexedBnbAction";
-import {
-  bnbActionProgressRefetchInterval,
-  createBnbActionProgressClient
-} from "@/lib/marketplace/bnbActionProcessing";
 import { confirmSettlement } from "@/lib/marketplace/settlementReconciliation";
 import { forgetSettlement } from "@/lib/marketplace/confirmedSettlements";
 import { chainDetails } from "@/data/chains";
@@ -31,16 +22,6 @@ import {
 import { assertMarketReceipt } from "@/lib/marketplace/transactionIntent";
 
 const collapsedKey = "yunipals.marketplace.receipts.collapsed";
-const actionIndexClient = (() => {
-  try {
-    return createBnbActionProgressClient(
-      environment.yunipalsIndexerUrl,
-      environment.yunipalsMarketplaceUrl
-    );
-  } catch {
-    return null;
-  }
-})();
 function defaultPanelOpen() {
   try {
     if (window.sessionStorage.getItem(collapsedKey) === "true") return false;
@@ -93,29 +74,26 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
   });
   const indexed = useQuery({
     queryKey: [
-      "marketplace-action-progress",
+      "marketplace-publication-index",
       record.expectation.chainId,
-      record.hash,
-      record.expectation.kind,
-      record.expectation.kind === "validate" ||
-      record.expectation.kind === "cancel"
+      record.expectation.kind === "validate"
         ? record.expectation.orderHash
-        : null,
-      query.data?.receipt.blockNumber.toString(),
-      query.data?.receipt.blockHash
+        : record.hash
     ],
     enabled:
-      requiresBnbActionIndex(record) &&
+      record.expectation.kind === "validate" &&
       query.data?.status === "confirmed" &&
-      Boolean(actionIndexClient),
-    queryFn: ({ signal }) => {
-      if (!actionIndexClient || query.data?.status !== "confirmed")
-        throw new Error("A confirmed transaction is required.");
-      return actionIndexClient.evidence(record, query.data.receipt, signal);
-    },
+      Boolean(marketClient),
+    queryFn: () =>
+      marketClient!.publishedOwnOrder(
+        record.expectation.kind === "validate"
+          ? record.expectation.orderHash
+          : record.hash,
+        undefined,
+        "bnb"
+      ),
     retry: 1,
-    refetchInterval: (query) =>
-      bnbActionProgressRefetchInterval(query.state.data, query.state.error)
+    refetchInterval: (query) => (query.state.data ? false : 30_000)
   });
   useEffect(() => {
     if (query.data?.status === "confirmed") {
@@ -155,12 +133,10 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
   };
   const status =
     query.data?.status === "confirmed"
-      ? requiresBnbActionIndex(record)
-        ? pendingBnbIndexLabel(
-            indexed.data?.source,
-            indexed.error,
-            Boolean(actionIndexClient)
-          )
+      ? record.expectation.kind === "validate"
+        ? indexed.data
+          ? "Indexed"
+          : "Confirmed · indexing"
         : "Confirmed"
       : query.data?.status === "reverted"
         ? "Reverted"
@@ -174,19 +150,6 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
       <p className="font-bold text-ink">
         {labels[record.expectation.kind]} · {status}
       </p>
-      {query.data?.status === "confirmed" &&
-      requiresBnbActionIndex(record) &&
-      indexed.data?.source.state === "indexed" ? (
-        <p className="mt-1 text-xs text-muted">
-          {indexed.error
-            ? "Marketplace verification temporarily unavailable."
-            : indexed.data.marketplace === "verified"
-              ? "Marketplace update verified."
-              : indexed.data.marketplace === "unavailable"
-                ? "Marketplace verification temporarily unavailable."
-                : "Marketplace update not yet verified."}
-        </p>
-      ) : null}
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <a
           href={`${chainDetails[chain].explorerUrl}/tx/${record.hash}`}
@@ -209,22 +172,6 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
           <button
             type="button"
             onClick={() => void query.refetch()}
-            className="rounded-full px-2 py-1 text-xs font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
-          >
-            Check again
-          </button>
-        ) : null}
-        {query.data?.status === "confirmed" &&
-        requiresBnbActionIndex(record) &&
-        (indexed.isError ||
-          indexed.data?.source.state === "inclusion_changed" ||
-          indexed.data?.marketplace === "unavailable") ? (
-          <button
-            type="button"
-            onClick={() => {
-              void query.refetch();
-              void indexed.refetch();
-            }}
             className="rounded-full px-2 py-1 text-xs font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
           >
             Check again

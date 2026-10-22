@@ -95,6 +95,26 @@ function harness(loadOverride?: () => Promise<AnalyticsAdapterFactory>) {
 }
 const samplePage = { page: "privacy", route: "/privacy" } as const;
 
+test("Exomon routes use collection labels and never expose Solana wallet or mint addresses", () => {
+  const address = "11111111111111111111111111111111";
+  const collector = analyticsPage(
+    `/collector/solana/${address}`,
+    "?utm_source=private"
+  );
+  assert.deepEqual(collector, {
+    page: "collector",
+    route: "/collector/solana/:address",
+    collection: "exomon",
+    chain: "solana"
+  });
+  const detail = analyticsPage(`/collection/solana/${address}`, "");
+  assert.equal(detail?.collection, "exomon");
+  assert.equal(detail?.chain, "solana");
+  assert.equal(JSON.stringify(detail).includes(address), false);
+  assert.equal(analyticsPage("/", "?chain=solana")?.collection, "exomon");
+  assert.equal(analyticsPage("/leaderboard", "?chain=solana")?.chain, "solana");
+});
+
 test("incomplete configuration, fixtures, and invalid regions cannot activate analytics", () => {
   assert.equal(config.enabled, true);
   assert.equal(config.apiHost, "https://api-eu.mixpanel.com");

@@ -1,7 +1,7 @@
-import type { ChainId } from "@/data/chains";
+import type { DisplayChainId } from "@/data/chains";
 
 type ChainLogoProps = {
-  chainId: ChainId;
+  chainId: DisplayChainId;
   className?: string;
 };
 
@@ -84,6 +84,16 @@ function BnbLogo({ className }: Pick<ChainLogoProps, "className">) {
 }
 
 export function ChainLogo({ chainId, className }: ChainLogoProps) {
+  if (chainId === "solana") {
+    return (
+      <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M5 3h18l-4 4H1l4-4Zm-4 7h18l4 4H5l-4-4Zm4 7h18l-4 4H1l4-4Z"
+        />
+      </svg>
+    );
+  }
   if (chainId === "base") {
     return <BaseLogo className={className} />;
   }

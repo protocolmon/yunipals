@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 
-import { environment } from "@/environment";
 import { islandsCollectionHref } from "@/lib/islandsIndexer";
 import { cn } from "@/lib/utils";
 
@@ -17,9 +16,7 @@ export function CollectionTabs({
       <div className="mx-auto flex max-w-6xl items-center gap-2">
         {[
           { id: "yunipals", label: "Yunipals", href: "/" },
-          ...(!environment.collectionOnly
-            ? [{ id: "islands", label: "Islands", href: islandsCollectionHref }]
-            : [])
+          { id: "islands", label: "Islands", href: islandsCollectionHref }
         ].map((collection) => (
           <Link
             key={collection.id}

@@ -3,28 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.race-progress {
-  appearance: none;
-  overflow: hidden;
-  border: 0;
-  border-radius: 9999px;
-  background: theme("colors.line");
-}
-
-.race-progress::-webkit-progress-bar {
-  background: theme("colors.line");
-}
-
-.race-progress::-webkit-progress-value {
-  border-radius: 9999px;
-  background: theme("colors.grape");
-}
-
-.race-progress::-moz-progress-bar {
-  border-radius: 9999px;
-  background: theme("colors.grape");
-}
-
 :root {
   color-scheme: light;
   font-synthesis: none;
@@ -80,4 +58,24 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* The committed 720p film has a 46px baked title strip. Crop only that strip
+   in the web player; the original downloaded bytes and onchain hash stay intact. */
+.arena-film-picture {
+  aspect-ratio: 1280 / 674;
+}
+
+.arena-film-source {
+  aspect-ratio: 16 / 9;
+  margin-top: -3.59375%;
+}
+
+/* Replace the baked winner strip in the final two seconds of each 8s bout. */
+.arena-film-verdict {
+  left: 1.5625%;
+  top: 89.61424%;
+  width: 96.875%;
+  height: 7.12166%;
+  font-size: clamp(8px, 1.25vw, 14px);
 }

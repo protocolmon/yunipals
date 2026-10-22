@@ -30,8 +30,9 @@ export function WalletCollectionButton() {
     if (!connectionRequested.current || !isConnected || !address) return;
 
     connectionRequested.current = false;
+    if (pathname === "/arena" || pathname.startsWith("/arena/")) return;
     navigate(`/collector/${address.toLowerCase()}`);
-  }, [address, isConnected, navigate]);
+  }, [address, isConnected, navigate, pathname]);
 
   useEffect(() => setMenuOpen(false), [address, isConnected, pathname]);
 
@@ -152,17 +153,15 @@ export function WalletCollectionButton() {
             <WalletCards aria-hidden="true" size={17} />
             My collection
           </Link>
-          {environment.yunipalsMarketplaceUrl && (
-            <Link
-              to="/orders"
-              role="menuitem"
-              aria-current={pathname.startsWith("/orders") ? "page" : undefined}
-              className={accountLinkClass(pathname.startsWith("/orders"))}
-            >
-              <ClipboardList aria-hidden="true" size={17} />
-              My orders
-            </Link>
-          )}
+          <Link
+            to="/orders"
+            role="menuitem"
+            aria-current={pathname.startsWith("/orders") ? "page" : undefined}
+            className={accountLinkClass(pathname.startsWith("/orders"))}
+          >
+            <ClipboardList aria-hidden="true" size={17} />
+            My orders
+          </Link>
           <div className="my-1 border-t border-line" />
           <button
             type="button"

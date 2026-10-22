@@ -12,10 +12,11 @@ There is no need for `.env.local`, PostgreSQL, the private indexer, provider API
 keys or a WalletConnect project. Fixture mode overrides those browser settings.
 The fixture handlers never forward unknown requests to live services.
 
-The sample has 48 fictional tokens across four chains, two fictional collectors,
-Type traits, rarity, missing metadata, pagination, token details and six ranking
-views. Try `/?chain=base&t.Type=Water`, `/collection/base/1`, `/leaderboard` or
-`/collector/0x0000000000000000000000000000000000000001`.
+The sample has 48 fictional EVM tokens across four chains and 36 active Exomon,
+one burned Exomon and one with unavailable ownership. It covers fictional
+collectors, traits, rarity, missing metadata, pagination, token details and
+rankings. Try `/?chain=base&t.Type=Water`, `/collection/base/1`, `/leaderboard`,
+`/collector/0x0000000000000000000000000000000000000001` or `/?chain=solana`.
 Sample token IDs and owners are not claims about real on-chain assets.
 
 All sample tokens are unlisted. Sale/price filters therefore have no matching
@@ -31,6 +32,8 @@ with your own service configuration.
 
 Run `pnpm test:fixtures` for catalog-contract, filter, pagination and read-only
 checks. Existing fork fixtures below have separate requirements.
+Exomon fixture requests stay local, including the burned and unavailable-owner
+detail responses. The browser never receives a Helius key or calls Solana RPC.
 
 # Activity UI fixtures
 

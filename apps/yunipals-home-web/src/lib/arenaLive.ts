@@ -9,10 +9,10 @@ export type ArenaConfig = {
   entryFee: string;
   strategyMaxLength: number;
   entriesEnabled: boolean;
+  entryMode?: "closed" | "pilot" | "public";
   confirmationPolicy: string;
 };
 export type ArenaAdmission = {
-  incarnation?: Hex;
   entry: {
     player: Address;
     nftChainId: number;
@@ -22,6 +22,16 @@ export type ArenaAdmission = {
   expiry: string;
   signature: Hex;
 };
+export class ArenaRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+    this.name = "ArenaRequestError";
+  }
+}
+
 export async function arenaRequest<T>(
   path: string,
   body?: unknown,
@@ -37,12 +47,19 @@ export async function arenaRequest<T>(
       body === undefined ? undefined : { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body)
   });
-  const value = await response.json();
-  if (!response.ok)
+  const value = await response.json().catch(() => {
     throw new Error(
-      typeof value.error === "string"
+      response.status === 429
+        ? "Too many Arena requests. Please wait a moment and check again."
+        : "Arena response unavailable. Please try again."
+    );
+  });
+  if (!response.ok)
+    throw new ArenaRequestError(
+      value && typeof value.error === "string"
         ? value.error
-        : "Arena is temporarily unavailable."
+        : "Arena is temporarily unavailable.",
+      response.status
     );
   return value as T;
 }

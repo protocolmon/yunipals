@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -126,9 +127,11 @@ try {
   assert.ok(
     (await hrefs()).every((href) => BigInt(href.split("/").at(-1)) > 1000n)
   );
-  await page
-    .getByRole("combobox", { name: "Sort by" })
-    .selectOption("token-id-desc");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Sort by" }),
+    "token-id-desc"
+  );
   const descending = await apiJson(
     "/tokens?edition=Personal&sort=token-id-desc&limit=1"
   );

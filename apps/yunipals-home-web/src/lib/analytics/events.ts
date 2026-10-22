@@ -4,9 +4,10 @@ export const analyticsChainSchema = z.enum([
   "ethereum",
   "base",
   "polygon",
-  "bnb"
+  "bnb",
+  "solana"
 ]);
-const collection = z.enum(["yunipals", "islands"]);
+const collection = z.enum(["yunipals", "islands", "exomon"]);
 const page = z.enum([
   "collection",
   "collectible",
@@ -40,6 +41,7 @@ export const analyticsEventSchemas = {
       "/collection/:chain/:tokenId",
       "/collection/:tokenId",
       "/collector/:address",
+      "/collector/solana/:address",
       "/leaderboard",
       "/orders",
       "/orders/recovery",
@@ -174,33 +176,60 @@ export function analyticsPage(
   search: string
 ): AnalyticsProperties<"Page Viewed"> | null {
   const parts = pathname.split("/").filter(Boolean);
+  const params = new URLSearchParams(search);
   if (!parts.length)
     return {
       page: "collection",
       route: "/",
       collection:
-        new URLSearchParams(search).get("collection") === "islands"
+        params.get("collection") === "islands"
           ? "islands"
-          : "yunipals"
+          : params.getAll("chain").join(",") === "solana"
+            ? "exomon"
+            : "yunipals"
+    };
+  if (parts[0] === "collector" && parts[1] === "solana" && parts.length === 3)
+    return {
+      page: "collector",
+      route: "/collector/solana/:address",
+      collection: "exomon",
+      chain: "solana"
     };
   if (parts[0] === "collector" && parts.length === 2)
     return { page: "collector", route: "/collector/:address" };
   if (parts[0] === "collection" && (parts.length === 2 || parts.length === 3)) {
-    const islands = parts[1] === "ethereum-islands";
+    const islands =
+      parts[1] === "ethereum-islands" || parts[1] === "base-islands";
     return {
       page: "collectible",
       route:
         parts.length === 3
           ? "/collection/:chain/:tokenId"
           : "/collection/:tokenId",
-      collection: islands ? "islands" : "yunipals",
+      collection: islands
+        ? "islands"
+        : parts[1] === "solana"
+          ? "exomon"
+          : "yunipals",
       chain: islands
-        ? "ethereum"
+        ? parts[1] === "base-islands"
+          ? "base"
+          : "ethereum"
         : analyticsChainSchema.safeParse(parts[1]).success
           ? (parts[1] as AnalyticsChain)
           : undefined
     };
   }
+  if (
+    pathname.replace(/\/$/, "") === "/leaderboard" &&
+    params.get("chain") === "solana"
+  )
+    return {
+      page: "leaderboard",
+      route: "/leaderboard",
+      collection: "exomon",
+      chain: "solana"
+    };
   const pages: Record<string, AnalyticsProperties<"Page Viewed">> = {
     "/leaderboard": { page: "leaderboard", route: "/leaderboard" },
     "/orders": { page: "orders", route: "/orders" },

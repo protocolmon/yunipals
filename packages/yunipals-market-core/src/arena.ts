@@ -182,12 +182,11 @@ export type ArenaTransactionAction =
   | {
       kind: "entry";
       tournamentId: string;
-      incarnation?: Hex;
       nftChainId: number;
       collection: Address;
       tokenId: string;
     }
-  | { kind: "approval"; tournamentId: string; incarnation?: Hex }
+  | { kind: "approval"; tournamentId: string }
   | { kind: "claim" };
 export type ArenaTransactionStatus = {
   hash: Hex;
@@ -198,12 +197,8 @@ export type ArenaTransactionStatus = {
     | "indexing"
     | "indexed"
     | "failed"
-    | "delayed"
-    | "reorged";
+    | "delayed";
   indexedThroughBlock: string | null;
-  finalized?: boolean;
-  receiptBlockHash?: Hex | null;
-  trackingExpiresAt?: string;
   result: {
     event: "Entered" | "Claimed" | "Approval";
     blockNumber: string;
@@ -234,7 +229,12 @@ export type ArenaTournament = {
 };
 
 export type ArenaPublicTournament = ArenaTournament & {
-  incarnation?: Hex;
+  serverTime?: number;
+  projection?: {
+    throughBlock: string | null;
+    ready: boolean;
+    checkedAt: string | null;
+  };
   submittedSeats: number[];
   strategies: Array<{
     seat: number;
@@ -246,13 +246,12 @@ export type ArenaPublicTournament = ArenaTournament & {
   }> | null;
 };
 
+export const ARENA_NFT_COLLECTIONS: Readonly<Record<number, Address>> = {
+  1: "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  56: "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  137: "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  8453: "0x98433df878e8c898cb907345c3a7756e5f72240f"
+};
 export function supportedArenaNft(chainId: number, collection: string) {
-  const expected =
-    chainId === 8453
-      ? "0x98433df878e8c898cb907345c3a7756e5f72240f"
-      : "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d";
-  return (
-    [1, 56, 137, 8453].includes(chainId) &&
-    collection.toLowerCase() === expected
-  );
+  return ARENA_NFT_COLLECTIONS[chainId] === collection.toLowerCase();
 }

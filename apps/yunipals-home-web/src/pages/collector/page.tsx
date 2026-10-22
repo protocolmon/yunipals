@@ -21,6 +21,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { environment } from "@/environment";
+import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
+import { CollectorIslands } from "./components/CollectorIslands";
+
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
@@ -57,7 +60,6 @@ import {
 
 import { CollectorControls } from "@/pages/collector/components/CollectorControls";
 import { useCollectorTokens } from "@/pages/collector/hooks/useCollectorTokens";
-import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
 import {
   defaultCollectorFilters,
   hasCollectorFilters,
@@ -117,6 +119,43 @@ function collectorErrorMessage(error: unknown) {
 }
 
 export function CollectorPage() {
+  const { address = "" } = useParams();
+  const [params] = useSearchParams();
+  const islands =
+    environment.islandStakingEnabled && params.get("collection") === "islands";
+  return (
+    <>
+      {environment.islandStakingEnabled && (
+        <nav
+          aria-label="Collector collections"
+          className="mx-auto flex max-w-6xl gap-3 px-4 pt-6"
+        >
+          <Link
+            to={`/collector/${encodeURIComponent(address)}`}
+            aria-current={!islands ? "page" : undefined}
+            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
+          >
+            Yunipals
+          </Link>
+          <Link
+            to={`/collector/${encodeURIComponent(address)}?collection=islands`}
+            aria-current={islands ? "page" : undefined}
+            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
+          >
+            Islands
+          </Link>
+        </nav>
+      )}
+      {islands ? (
+        <CollectorIslands ownerInput={address.trim()} />
+      ) : (
+        <YunipalsCollectorPage />
+      )}
+    </>
+  );
+}
+
+function YunipalsCollectorPage() {
   const { address = "" } = useParams();
   const { address: connectedAddress, isConnected } = useAccount();
   const ownerInput = address.trim();
@@ -310,13 +349,10 @@ export function CollectorPage() {
       <main className="mx-auto min-h-[65vh] max-w-4xl px-4 py-14">
         <QueryError message="Enter a valid wallet address or ENS name." />
         <Link
-          to={environment.collectionOnly ? "/" : "/leaderboard"}
+          to="/leaderboard"
           className="mt-5 inline-flex items-center gap-2 font-bold text-ethereum"
         >
-          <ArrowLeft aria-hidden="true" size={15} />
-          {environment.collectionOnly
-            ? "Back to collection"
-            : "Back to leaderboard"}
+          <ArrowLeft aria-hidden="true" size={15} /> Back to leaderboard
         </Link>
       </main>
     );
@@ -329,7 +365,7 @@ export function CollectorPage() {
       <section className="bg-gradient-to-b from-lavender/35 to-white px-4 py-12 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-center gap-2">
-            {isOwnCollection && environment.yunipalsMarketplaceUrl && (
+            {isOwnCollection && (
               <Link
                 to="/orders"
                 className="inline-flex items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
@@ -337,14 +373,12 @@ export function CollectorPage() {
                 Manage my orders
               </Link>
             )}
-            {!environment.collectionOnly && (
-              <Link
-                to="/leaderboard"
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
-              </Link>
-            )}
+            <Link
+              to="/leaderboard"
+              className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+            >
+              <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
+            </Link>
             {connectedAddressNormalized && !isOwnCollection && (
               <Link
                 to={`/collector/${connectedAddressNormalized}`}

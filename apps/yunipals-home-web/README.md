@@ -1,9 +1,10 @@
 # Yunipals web app
 
-Vite, React and TypeScript collection explorer for Yunipals across four chains.
-Browse traits, rarity, ownership and transfer history, collector profiles and
-rankings. Wallet-based collection management and optional listing/purchase
-flows are integrated into the app.
+Vite, React and TypeScript collection explorer for Yunipals across four EVM
+chains and Exomon on Solana. Browse traits, rarity, ownership, collector
+profiles and rankings. Wallet-based collection management and optional
+listing/purchase flows apply to the EVM collections only. Exomon views are
+read-only and show observed ownership changes, not a complete transfer history.
 
 ## Local development
 
@@ -13,11 +14,17 @@ to `.env.local` in this directory and configure your local services.
 ```sh
 pnpm dev
 pnpm typecheck
+pnpm test:solana
 pnpm test:marketplace
 pnpm build
 ```
 
 `VITE_YUNIPALS_INDEXER_URL` supplies collection/ownership data.
+The Exomon views use only this indexer API. The Helius key stays on the indexer
+server and must never be placed in a `VITE_` variable. Set
+`VITE_EXOMON_ENABLED=true` to show the Exomon routes and navigation in a
+frontend rollout; they stay hidden without it, except in fixture mode. The API must have its Solana
+routes enabled and a fresh published scan before these views can serve data.
 `VITE_YUNIPALS_MARKETPLACE_URL` enables optional listing and purchase features.
 Both values are public; credentials belong in the backend only.
 Set `VITE_SELF_HOSTED=1` for an independent deployment. Its build requires
@@ -44,7 +51,8 @@ in place of the public project ID. See
 From the repository root, run `pnpm dev:fixtures`. Open `http://127.0.0.1:5177`.
 No `.env.local`, database or provider credentials are needed. This mode overrides
 service URLs and the wallet project ID, serves local synthetic reads and disables
-wallet connections and trading. It is development-only: builds in `fixtures`
+wallet connections and trading. It includes synthetic Exomon tokens and Solana
+collector rankings. It is development-only: builds in `fixtures`
 mode fail. See [the fixture guide](scripts/fixtures/README.md).
 
 ## Personal collection filters
@@ -59,6 +67,19 @@ Validate them against your own database before enabling their feature switches.
 The existing owner API remains available
 when the controls are disabled. See the [performance evidence](../../docs/personal-collection-performance.json)
 for the local benchmark's scope and production validation.
+
+## Exomon on Solana
+
+`/exomon` lists active Exomon with Type, Color and other categorical filters,
+capped-rarity range and sorting. `/collection/solana/:mint` shows token details,
+`/collector/solana/:address` shows current holdings, and
+`/leaderboard?chain=solana` shows the Solana rankings. Mint and wallet addresses
+are base58 public keys and preserve case. Collection and owner pages request 24
+items at a time, retaining at most five page responses in memory. An expired
+cursor resets paging to the first page after the next published scan.
+
+Run `pnpm test:solana` for URL, client and fixture checks. In fixture mode,
+visit `/exomon`; no Solana RPC or Helius credential is used by the browser.
 
 Run `pnpm test:collector` for client/filter/cache tests. In fixture mode, visit
 `/collector/0x000000000000000000000000000000000000000c` for a synthetic 128-item
@@ -79,13 +100,14 @@ transaction. Read their configuration requirements before running them.
 
 ## Hosting
 
-Use this directory as the Vercel project root. `vercel.json` runs
-`pnpm build:www --mode vercel-cloud`, packaging the single canonical collection
-and booster app at `https://www.yunipals.com`. It emits the Build Output API tree
-under `.vercel/output`, with SPA routing and a curated asset allowlist.
+Use this directory as the Vercel project root. The checked-in `vercel.json` runs
+`pnpm build:www --mode vercel-cloud`, producing the complete existing app with
+booster packs added. The build preserves production service URLs and the
+Arena, leaderboard, Islands/staking and Exomon feature settings. It packages
+only the approved static assets in `.vercel/output` with SPA routes.
+The temporary collection-only smoke preset is not the canonical application.
+Generic self-hosted builds remain `pnpm build` (`vite build` into `dist`).
 See [the canonical build guide](../../docs/boosters/mainnet-launch/canonical-www-build-2026-10-22.txt).
-For generic self-hosting, `pnpm build` still runs `vite build` into `dist`;
-configure the public service URLs using `.env.example`.
 
 ## Optional Mixpanel analytics
 
@@ -107,9 +129,7 @@ Set these public build-time variables in the frontend deployment environment:
 | `VITE_ANALYTICS_RETENTION_DAYS`  | Alternative for policies stated in days; leave blank when years are set          |
 | `VITE_PRIVACY_EMAIL`             | Monitored contact for analytics access/deletion requests                         |
 
-The provided Yunipals project uses EU ingestion. Its token is configured locally
-in the ignored `.env.local`; configure the production project environment
-separately. Keep previews/local development disabled or use a separate test
+The provided Yunipals project uses EU ingestion. Configure its public token in the production project environment. Keep previews/local development disabled or use a separate test
 project. Fixture mode always disables analytics. Rebuild after changing values.
 Incomplete configuration disables collection. Independent deployments must use
 their own Mixpanel projects and privacy contacts.
@@ -117,9 +137,7 @@ their own Mixpanel projects and privacy contacts.
 The newly created Yunipals project uses Mixpanel's standard two-year event
 retention policy, as documented in its
 [Data Retention Policy](https://docs.mixpanel.com/docs/privacy/gdpr-compliance#data-retention-policy).
-The privacy contact is `privacy@yunipals.com`. Production settings are prepared
-locally in the ignored `.env.production.local`; set these same values for
-Production in the hosting project before redeploying:
+The privacy contact is `privacy@yunipals.com`. Set these values for Production in the hosting project before deploying:
 
 ```dotenv
 VITE_MIXPANEL_ENABLED=true
@@ -150,7 +168,7 @@ marketing attribution. Unique visitors represent consenting browsers.
 | Event                                                   | Meaning                                                                                       |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `Page Viewed`                                           | Normalized logical page; redirects, hash changes and filter changes do not create extra views |
-| `Collectible Viewed`                                    | A Yunipal or Island detail successfully loads                                                 |
+| `Collectible Viewed`                                    | A Yunipal, Island or Exomon detail successfully loads                                         |
 | `Collection Filter Applied`                             | Visitor applies filters/sorting; selected owner/trait input is excluded                       |
 | `Collection Search Submitted`                           | Search category and validity, without search text                                             |
 | `Wallet Connect Started` / `Wallet Connected`           | Explicit wallet connection entry point and success, excluding passive reconnections           |
@@ -204,3 +222,21 @@ it does not enable analytics in the application's fixture mode.
 Rollback: set `VITE_MIXPANEL_ENABLED=false`, rebuild and redeploy. Already-open
 tabs retain their loaded build until refreshed. Updating the public SDK package
 requires rerunning both payload and consent checks before deployment.
+
+## Shared dropdowns
+
+Use `Select` and `SelectItem` from `@/components/ui/select` for single-choice
+controls. The shared component owns the arrow inset, rounded popup, selected
+indicator, keyboard navigation and focus management. It also places menus inside
+native dialogs so marketplace controls stay above the browser's modal layer.
+Use `onValueChange(value)` for selection changes and an `aria-label` or an
+associated `<label htmlFor>` for the accessible name. Set `placeholder` for an
+empty value; item values must be nonempty.
+
+`pnpm test:select` runs in the existing CI web test suite and rejects raw native
+`<select>` controls in application components. To verify arrow spacing, mobile
+layout, keyboard/focus, form values and dialog layering in Chromium, run:
+
+```sh
+pnpm test:select:ui --playwright /path/to/playwright/index.mjs --chromium /path/to/chromium
+```

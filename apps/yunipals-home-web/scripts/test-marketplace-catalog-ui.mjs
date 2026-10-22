@@ -18,6 +18,7 @@ import {
   tradingTermsStorageKey,
   tradingTermsVersion
 } from "../src/lib/marketplace/tradingInformation.ts";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -631,9 +632,11 @@ try {
   );
   assert.equal((await ids())[0], "/collection/bnb/1");
   assert.ok(!(await ids()).includes("/collection/bnb/30"));
-  await page
-    .getByRole("combobox", { name: "Sort collection" })
-    .selectOption("price-asc");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Sort collection" }),
+    "price-asc"
+  );
   await page.waitForFunction(
     () =>
       document
@@ -736,13 +739,12 @@ try {
   assert.equal(changed.searchParams.has("priceMax"), false);
   assert.equal(changed.searchParams.has("currency"), false);
   assert.equal(changed.searchParams.has("sort"), false);
+  await page.getByRole("combobox", { name: "Sort collection" }).click();
   assert.equal(
-    await page
-      .getByRole("combobox", { name: "Sort collection" })
-      .locator('option[value="price-asc"]')
-      .isDisabled(),
-    true
+    await page.locator('[role="option"][data-select-value="price-asc"]').getAttribute("aria-disabled"),
+    "true"
   );
+  await page.keyboard.press("Escape");
   pass(
     "Changing selected chains clears numeric amounts and prevents cross-chain price sorting"
   );
@@ -821,10 +823,11 @@ try {
     24
   );
   assert.equal(await cards.getByText("Not listed", { exact: true }).count(), 0);
-  await page
-    .locator("aside")
-    .getByRole("combobox", { name: "Sale availability" })
-    .selectOption("unlisted");
+  await chooseSelect(
+    page,
+    page.locator("aside").getByRole("combobox", { name: "Sale availability" }),
+    "unlisted"
+  );
   await page
     .getByText(
       "Sale and price results are unavailable. Your filters are still applied."
@@ -903,9 +906,11 @@ try {
   await page.goto(`${app.origin}/collection?chain=polygon&sort=token-id-asc`);
   await count(24);
   assert.equal((await ids())[0], "/collection/polygon/1");
-  await page
-    .getByRole("combobox", { name: "Sort collection" })
-    .selectOption("price-asc");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Sort collection" }),
+    "price-asc"
+  );
   await page.waitForFunction(
     () =>
       document
@@ -948,7 +953,7 @@ try {
   assert.equal(
     await sidebar
       .getByRole("combobox", { name: "Listing currency" })
-      .inputValue(),
+      .getAttribute("data-select-value"),
     "weth"
   );
   assert.equal(
@@ -964,9 +969,11 @@ try {
   await sidebar
     .getByRole("textbox", { name: "Maximum listing price" })
     .fill("999");
-  await sidebar
-    .getByRole("combobox", { name: "Listing currency" })
-    .selectOption("native");
+  await chooseSelect(
+    page,
+    sidebar.getByRole("combobox", { name: "Listing currency" }),
+    "native"
+  );
   await count(15);
   assert.equal(new URL(page.url()).searchParams.has("priceMax"), false);
   assert.equal(new URL(page.url()).searchParams.has("priceMin"), false);
@@ -979,18 +986,22 @@ try {
   );
   assert.equal((await ids())[0], "/collection/polygon/2");
   await cards.first().getByText("2 POL", { exact: true }).waitFor();
-  await sidebar
-    .getByRole("combobox", { name: "Listing currency" })
-    .selectOption("weth");
+  await chooseSelect(
+    page,
+    sidebar.getByRole("combobox", { name: "Listing currency" }),
+    "weth"
+  );
   await page.waitForFunction(
     () =>
       document
         .querySelector('main article a[aria-label^="View Catalog"]')
         ?.getAttribute("href") === "/collection/polygon/30"
   );
-  await page
-    .getByRole("combobox", { name: "Sort collection" })
-    .selectOption("price-desc");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Sort collection" }),
+    "price-desc"
+  );
   await page.waitForFunction(
     () =>
       document

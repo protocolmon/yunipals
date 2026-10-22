@@ -1,23 +1,24 @@
 import { analyticsConfigFromEnv } from "@/lib/analytics/config";
 
 const DEFAULT_INDEXER_URL = "https://api.yunipals.com/yunipals-indexer";
-const collectionOnly = import.meta.env?.VITE_COLLECTION_ONLY === "true";
 
 export const environment = {
-  collectionOnly,
+  collectionOnly: import.meta.env?.VITE_COLLECTION_ONLY === "true",
   analytics: analyticsConfigFromEnv(import.meta.env ?? {}),
   // Enable only against a deployed API implementing the marketplace contract.
-  yunipalsMarketplaceUrl: !collectionOnly
-    ? import.meta.env?.VITE_YUNIPALS_MARKETPLACE_URL?.replace(/\/$/, "") || null
-    : null,
+  yunipalsMarketplaceUrl:
+    import.meta.env?.VITE_YUNIPALS_MARKETPLACE_URL?.replace(/\/$/, "") || null,
   walletConnectProjectId:
     import.meta.env?.VITE_WALLETCONNECT_PROJECT_ID?.trim() || "",
   fixtures: import.meta.env?.MODE === "fixtures",
   production: import.meta.env?.PROD === true,
-  arenaLab: !collectionOnly && import.meta.env?.DEV === true,
-  arenaApiUrl: !collectionOnly
-    ? import.meta.env?.VITE_ARENA_API_URL?.replace(/\/$/, "") || null
-    : null,
+  arenaLab: import.meta.env?.DEV === true,
+  arenaApiUrl: import.meta.env?.VITE_ARENA_API_URL?.replace(/\/$/, "") || null,
+  islandStakingEnabled: import.meta.env?.VITE_ISLAND_STAKING_ENABLED === "true",
+  islandUnstakeEnabled: import.meta.env?.VITE_ISLAND_UNSTAKE_ENABLED === "true",
+  exomonEnabled:
+    import.meta.env?.MODE === "fixtures" ||
+    import.meta.env?.VITE_EXOMON_ENABLED === "true",
   boostersEnabled: import.meta.env?.VITE_BOOSTERS_ENABLED === "true",
   boosterRegistry: import.meta.env?.VITE_BOOSTER_REGISTRY?.trim() || "",
   boosterEngine: import.meta.env?.VITE_BOOSTER_ENGINE?.trim() || "",

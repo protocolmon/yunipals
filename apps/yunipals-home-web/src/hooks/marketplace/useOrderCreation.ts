@@ -9,9 +9,9 @@ import {
 } from "viem";
 import { useConfig } from "wagmi";
 import { getAccount, getPublicClient, signTypedData } from "wagmi/actions";
-import { analyticsOperations } from "@/lib/analytics/operations";
 
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
+import { analyticsOperations } from "@/lib/analytics/operations";
 import { inspectOrderCreation } from "@/lib/marketplace/creationState";
 import {
   assertWalletContext,

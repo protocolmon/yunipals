@@ -34,12 +34,17 @@ export function usePageMetadata(
   title: string,
   description = DEFAULT_DESCRIPTION
 ) {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
+  const canonicalPath =
+    pathname === "/leaderboard" &&
+    new URLSearchParams(search).get("chain") === "solana"
+      ? "/leaderboard?chain=solana"
+      : pathname;
   useEffect(() => {
-    setMetadata(title, description, pathname);
+    setMetadata(title, description, canonicalPath);
 
     return () => {
       setMetadata(DEFAULT_TITLE, DEFAULT_DESCRIPTION, "/");
     };
-  }, [description, pathname, title]);
+  }, [canonicalPath, description, title]);
 }

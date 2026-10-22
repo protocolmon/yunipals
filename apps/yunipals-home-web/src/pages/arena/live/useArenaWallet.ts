@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { erc20Abi, toHex, type Hex } from "viem";
+import { BaseError, erc20Abi, toHex, type Hex } from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -19,20 +19,44 @@ import {
 } from "@protopals/yunipals-market-core/arena";
 import {
   arenaRequest,
+  ArenaRequestError,
   type ArenaAdmission,
   type ArenaConfig
 } from "@/lib/arenaLive";
 import type { YunipalToken } from "@/lib/yunipalsIndexer";
 import {
+  readArenaStrategy,
+  saveArenaStrategy,
+  clearArenaStrategy,
+  clearArenaStrategyWallet,
+  type ArenaStrategyReceipt
+} from "@/lib/arenaStrategies";
+import {
   newArenaTransaction,
   readArenaTransaction,
   saveArenaTransaction,
   transactionPending,
-  transactionNeedsAudit,
+  transactionFighter,
+  arenaFighterKey,
+  type ArenaEntryTarget,
   type PendingArenaTransaction
 } from "@/lib/arenaTransactions";
 
+export type ArenaApprovalEntries = 1 | 4 | 10;
+
 class IndexingPending extends Error {}
+
+const strategyStepLabels: Record<string, string> = {
+  "Preparing your strategy": "Preparing…",
+  "Confirm wallet ownership in your wallet · no gas fee": "Verify in wallet…",
+  "Verifying your wallet": "Verifying…",
+  "Switch to Base to sign your strategy": "Switch to Base…",
+  "Checking your strategy receipt": "Checking receipt…",
+  "Sign your strategy in your wallet": "Sign in wallet…",
+  "Saving your strategy": "Saving strategy…",
+  "Updating your strategy": "Updating strategy…",
+  "Loading your locked strategy": "Loading your receipt…"
+};
 
 export function useArenaWallet(
   config: ArenaConfig | undefined,
@@ -47,12 +71,26 @@ export function useArenaWallet(
   const [busy, setBusy] = useState<string | null>(null),
     [error, setError] = useState<string | null>(null),
     [transaction, setTransaction] = useState<Hex | null>(null);
+  const [activeEntry, setActiveEntry] = useState<{
+    scope: string | null;
+    fighter: ArenaEntryTarget;
+    label: string;
+  } | null>(null);
+  const [strategyTarget, setStrategyTarget] = useState<{
+    scope: string | null;
+    tournamentId: string;
+    seat: number;
+  } | null>(null);
   const guard = useRef(false);
   const scope =
     address && config
       ? `${config.contract.toLowerCase()}/${address.toLowerCase()}`
       : null;
   const currentScope = useRef(scope);
+  const privateScope = useRef<{
+    contract: `0x${string}`;
+    wallet: `0x${string}`;
+  } | null>(null);
   currentScope.current = scope;
   const tracker = useRef<AbortController | null>(null);
   const [operation, setOperation] = useState<PendingArenaTransaction | null>(
@@ -64,16 +102,61 @@ export function useArenaWallet(
     operation.contract.toLowerCase() === config?.contract.toLowerCase()
       ? operation
       : null;
+  const pendingFighter = transactionPending(visibleOperation)
+    ? transactionFighter(visibleOperation)
+    : null;
+  const entryProgress =
+    pendingFighter && visibleOperation
+      ? {
+          key: arenaFighterKey(pendingFighter),
+          label:
+            visibleOperation.state === "delayed"
+              ? "Transaction pending…"
+              : visibleOperation.state === "indexing"
+                ? "Updating entry…"
+                : visibleOperation.action.kind === "approval"
+                  ? "Confirming approval…"
+                  : "Confirming entry…"
+        }
+      : activeEntry?.scope === scope && busy
+        ? {
+            key: arenaFighterKey(activeEntry.fighter),
+            label: activeEntry.label
+          }
+        : null;
+  const strategyFeedback =
+    strategyTarget?.scope === scope
+      ? {
+          tournamentId: strategyTarget.tournamentId,
+          seat: strategyTarget.seat,
+          progress: busy ? (strategyStepLabels[busy] ?? "Working…") : null,
+          error
+        }
+      : null;
   const resumeRef = useRef<(value: PendingArenaTransaction) => Promise<void>>(
     async () => {}
   );
   useEffect(() => {
+    const prior = privateScope.current;
+    if (
+      prior &&
+      (!address ||
+        address.toLowerCase() !== prior.wallet.toLowerCase() ||
+        (config &&
+          config.contract.toLowerCase() !== prior.contract.toLowerCase()))
+    )
+      clearArenaStrategyWallet(prior.contract, prior.wallet);
+    privateScope.current =
+      address && config
+        ? { contract: config.contract, wallet: address }
+        : prior;
     tracker.current?.abort();
     guard.current = false;
     setBusy(null);
+    setActiveEntry(null);
+    setStrategyTarget(null);
     setError(null);
     setTransaction(null);
-    pending.current = null;
     const value =
       address && config ? readArenaTransaction(address, config.contract) : null;
     setOperation(value);
@@ -82,111 +165,55 @@ export function useArenaWallet(
       tracker.current?.abort();
     };
   }, [scope]);
-  useEffect(() => {
-    if (!transactionNeedsAudit(visibleOperation)) return;
-    const value = visibleOperation!;
-    const controller = new AbortController();
-    const expectedScope = `${value.contract.toLowerCase()}/${value.wallet.toLowerCase()}`;
-    const valid = () =>
-      !controller.signal.aborted && currentScope.current === expectedScope;
-    const audit = async () => {
-      while (valid()) {
-        await new Promise<void>((resolve) => {
-          const stop = () => {
-            clearTimeout(timer);
-            resolve();
-          };
-          const timer = setTimeout(() => {
-            controller.signal.removeEventListener("abort", stop);
-            resolve();
-          }, 5000);
-          controller.signal.addEventListener("abort", stop, { once: true });
-        });
-        if (!valid()) return;
-        try {
-          const status = await arenaRequest<ArenaTransactionStatus>(
-            `/transactions/${value.hash}`,
-            undefined,
-            controller.signal
-          );
-          if (!valid()) return;
-          const next = { ...value, ...status };
-          if (transactionPending(next)) {
-            remember(next);
-            // Hand off before the state change cleans up this audit effect.
-            // The recovery loop owns its own controller and scope checks.
-            void refresh().catch(() => {});
-            void resumeRef.current(next);
-            return;
-          }
-          if (status.state !== value.state) await refresh();
-          if (!valid()) return;
-          remember(next);
-          if (status.finalized !== false) return;
-        } catch {
-          if (valid())
-            remember({
-              ...value,
-              state: "delayed",
-              result: null,
-              indexedThroughBlock: null
-            });
-          return;
-        }
-      }
-    };
-    void audit();
-    return () => controller.abort();
-  }, [
-    scope,
-    visibleOperation?.hash,
-    visibleOperation?.state,
-    visibleOperation?.finalized
-  ]);
-  // Keep the exact signed payload for an uncertain HTTP retry; never generate a new salt on retry.
-  const pending = useRef<{
-    key: string;
-    body: {
-      seat: number;
-      text: string;
-      salt: Hex;
-      signature: Hex;
-      incarnation?: Hex;
-    };
-  } | null>(null);
-  async function execute(label: string, task: () => Promise<void>) {
+  async function execute<T>(
+    label: string,
+    task: () => Promise<T>
+  ): Promise<T | undefined> {
     if (guard.current) return;
     guard.current = true;
     setBusy(label);
+    setStrategyTarget(null);
     setError(null);
     const startedScope = scope;
     try {
-      await task();
+      const result = await task();
+      assertCurrent();
       await refresh();
+      assertCurrent();
+      return result;
     } catch (e) {
       if (
         currentScope.current === startedScope &&
         !(e instanceof IndexingPending)
       )
-        setError(e instanceof Error ? e.message : "Wallet action failed.");
+        setError(
+          e instanceof BaseError
+            ? e.shortMessage
+            : e instanceof Error
+              ? e.message
+              : "Wallet action failed."
+        );
     } finally {
       if (currentScope.current === startedScope) {
         guard.current = false;
         setBusy(null);
+        setActiveEntry(null);
       }
     }
   }
-  async function signedIn() {
+  async function ensureSession(label: string) {
     if (!address || !config) throw new Error("Connect your wallet first.");
     assertCurrent();
-    if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
     let existing: string | undefined;
     try {
       existing = (await arenaRequest<{ wallet: string }>("/me")).wallet;
-    } catch {
-      /* Expired sessions require a new challenge. */
+    } catch (error) {
+      if (!(error instanceof ArenaRequestError) || error.status !== 401)
+        throw error;
     }
+    assertCurrent();
     if (existing?.toLowerCase() === address.toLowerCase()) return;
+    setBusy("Confirm wallet ownership in your wallet · no gas fee");
     const challenge = await arenaRequest<{ id: string; message: string }>(
       "/auth/challenge",
       { wallet: address }
@@ -197,7 +224,10 @@ export function useArenaWallet(
       account: address
     });
     assertCurrent();
+    setBusy("Verifying your wallet");
     await arenaRequest("/auth/verify", { id: challenge.id, signature });
+    assertCurrent();
+    setBusy(label);
   }
   function assertCurrent() {
     if (currentScope.current !== scope) throw new IndexingPending();
@@ -243,10 +273,13 @@ export function useArenaWallet(
           );
         }
         remember(latest);
-        if (latest.state === "delayed" || Date.now() - started > 90_000) {
+        if (latest.state === "delayed") {
           remember({ ...latest, state: "delayed" });
           throw new IndexingPending();
         }
+        // Indexing can take longer than the initial UI wait. Keep reading
+        // the DB status until completion; these requests never trigger RPC reads.
+        const interval = Date.now() - started < 90_000 ? 5000 : 15_000;
         await new Promise<void>((resolve, reject) => {
           const stop = () => {
             clearTimeout(timer);
@@ -255,7 +288,7 @@ export function useArenaWallet(
           const timer = setTimeout(() => {
             controller.signal.removeEventListener("abort", stop);
             resolve();
-          }, 5000);
+          }, interval);
           controller.signal.addEventListener("abort", stop, { once: true });
         });
         latest = {
@@ -273,7 +306,7 @@ export function useArenaWallet(
         remember({ ...latest, state: "delayed" });
       if (e instanceof IndexingPending) throw e;
       throw new Error(
-        "Your transaction is retained. Sign in and check its status to finish updating the page."
+        "Your transaction is retained. Check its status to finish updating the page."
       );
     }
   }
@@ -287,10 +320,17 @@ export function useArenaWallet(
     }
   };
 
-  async function confirmed(hash: Hex, action: ArenaTransactionAction) {
+  async function confirmed(
+    hash: Hex,
+    action: ArenaTransactionAction,
+    fighter?: ArenaEntryTarget
+  ) {
     if (!address || !config) throw new Error("Connect your wallet first.");
     if (currentScope.current === scope) setTransaction(hash);
-    let value = newArenaTransaction(address, config.contract, hash, action);
+    let value = {
+      ...newArenaTransaction(address, config.contract, hash, action),
+      fighter
+    };
     remember(value);
     if (!client) throw new Error("Base wallet connection is unavailable.");
     let cancelled = false;
@@ -305,9 +345,13 @@ export function useArenaWallet(
         remember(value);
       }
     });
-    if (cancelled) {
+    if (receipt.status !== "success" || cancelled) {
       remember({ ...value, state: "failed" });
-      throw new Error("Transaction cancelled.");
+      throw new Error(
+        cancelled
+          ? "Transaction cancelled."
+          : "Transaction reverted. This action did not complete."
+      );
     }
     value = { ...value, hash: receipt.transactionHash, state: "indexing" };
     remember(value);
@@ -322,39 +366,112 @@ export function useArenaWallet(
     transaction,
     operation: visibleOperation,
     pendingTransaction: transactionPending(visibleOperation),
+    entryProgress,
+    strategyFeedback,
     checkStatus: () =>
       execute("Checking transaction status", async () => {
         if (!visibleOperation || !transactionPending(visibleOperation)) return;
-        await signedIn();
+        await ensureSession("Checking transaction status");
         await indexed(visibleOperation);
       }),
-    join: (id: string, nft: YunipalToken, incarnation?: Hex) =>
+    join: (
+      id: string,
+      nft: YunipalToken,
+      approvalEntries: ArenaApprovalEntries = 1
+    ) =>
       execute("Preparing your entry", async () => {
+        const fighter: ArenaEntryTarget = {
+          tournamentId: id,
+          nftChainId: nft.chainId,
+          collection: nft.contractAddress,
+          tokenId: nft.tokenId
+        };
+        const progress = (label: string) => {
+          assertCurrent();
+          setActiveEntry({ scope, fighter, label });
+        };
+        progress("Preparing…");
         if (!config?.entriesEnabled || !client || !address)
           throw new Error("Paid entry is not open yet.");
         if (transactionPending(visibleOperation))
           throw new Error(
             "Check your pending transaction before entering again."
           );
-        await signedIn();
-        const admission = (expected = incarnation) =>
+        if (![1, 4, 10].includes(approvalEntries))
+          throw new Error("Choose an approval limit for 1, 4 or 10 entries.");
+        await ensureSession("Preparing your entry");
+        if (chainId !== 8453) {
+          progress("Switch to Base…");
+          await switchChainAsync({ chainId: 8453 });
+        }
+        progress("Checking fighter…");
+        assertCurrent();
+        const [allowance, balance, gasBalance] = await Promise.all([
+          client.readContract({
+            address: config.paymentToken,
+            abi: erc20Abi,
+            functionName: "allowance",
+            args: [address, config.contract]
+          }),
+          client.readContract({
+            address: config.paymentToken,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [address]
+          }),
+          client.getBalance({ address })
+        ]);
+        assertCurrent();
+        if (balance < BigInt(config.entryFee))
+          throw new Error(
+            "You need at least 2 USDC on Base to enter this fighter."
+          );
+        if (gasBalance === 0n)
+          throw new Error(
+            "Add a little ETH on Base to cover the approval and entry transaction fees."
+          );
+        const admission = () =>
           arenaRequest<ArenaAdmission>(`/tournaments/${id}/admission`, {
             nftChainId: nft.chainId,
             collection: nft.contractAddress,
-            tokenId: nft.tokenId,
-            incarnation: expected
+            tokenId: nft.tokenId
           });
         // Verify ownership and the artwork snapshot before asking for approval gas.
-        let permit = await admission();
-        const allowance = await client.readContract({
-          address: config.paymentToken,
-          abi: erc20Abi,
-          functionName: "allowance",
-          args: [address, config.contract]
-        });
+        const prepare = async () => {
+          const result = await arenaRequest<
+            ArenaAdmission | { identityState: "preparing"; key: string }
+          >(`/tournaments/${id}/admission`, {
+            nftChainId: nft.chainId,
+            collection: nft.contractAddress,
+            tokenId: nft.tokenId
+          });
+          if (!("identityState" in result)) return result;
+          setBusy("Checking Yunipal artwork before payment");
+          progress("Checking artwork…");
+          const started = Date.now();
+          while (Date.now() - started < 90_000) {
+            assertCurrent();
+            const status = await arenaRequest<{ state: string }>(
+              `/identities/${result.key}`
+            );
+            if (status.state === "ready") return admission();
+            if (status.state === "attention")
+              throw new Error(
+                "This artwork needs an anatomy review. No payment was requested."
+              );
+            await new Promise((resolve) => setTimeout(resolve, 2500));
+          }
+          throw new Error(
+            "Your artwork check is saved and still processing. Try joining again shortly; no payment was requested."
+          );
+        };
+        let permit = await prepare();
         assertCurrent();
         if (allowance < BigInt(config.entryFee)) {
-          setBusy("Approve USDC in your wallet");
+          progress("Approve in wallet…");
+          setBusy(
+            `Approve USDC for up to ${approvalEntries} ${approvalEntries === 1 ? "entry" : "entries"} in your wallet`
+          );
           await confirmed(
             await writeContractAsync({
               chainId: 8453,
@@ -362,18 +479,19 @@ export function useArenaWallet(
               address: config.paymentToken,
               abi: erc20Abi,
               functionName: "approve",
-              args: [config.contract, BigInt(config.entryFee)]
+              args: [
+                config.contract,
+                BigInt(config.entryFee) * BigInt(approvalEntries)
+              ]
             }),
-            {
-              kind: "approval",
-              tournamentId: id,
-              incarnation: permit.incarnation
-            }
+            { kind: "approval", tournamentId: id },
+            fighter
           );
         }
-        // Check the same opening again after any approval wallet interaction.
-        permit = await admission(permit.incarnation);
+        if (Number(permit.expiry) * 1000 < Date.now() + 60000)
+          permit = await admission();
         assertCurrent();
+        progress("Confirm in wallet…");
         setBusy("Confirm entry in your wallet");
         await confirmed(
           await writeContractAsync({
@@ -396,20 +514,44 @@ export function useArenaWallet(
           {
             kind: "entry",
             tournamentId: id,
-            incarnation: permit.incarnation,
             nftChainId: nft.chainId,
             collection: nft.contractAddress,
             tokenId: nft.tokenId
-          }
+          },
+          fighter
         );
       }),
-    submit: (id: string, seat: number, text: string, incarnation?: Hex) =>
-      execute("Signing your strategy", async () => {
+    submit: (id: string, seat: number, text: string) =>
+      execute("Preparing your strategy", async () => {
         if (!config || !address) throw new Error("Connect your wallet first.");
-        await signedIn();
+        setStrategyTarget({ scope, tournamentId: id, seat });
+        await ensureSession("Preparing your strategy");
+        if (chainId !== 8453) {
+          setBusy("Switch to Base to sign your strategy");
+          await switchChainAsync({ chainId: 8453 });
+        }
+        assertCurrent();
         const normalized = canonicalStrategy(text);
-        const key = `${config.contract}/${address}/${id}/${incarnation ?? "legacy"}/${seat}/${normalized}`;
-        if (pending.current?.key !== key) {
+        setBusy("Checking your strategy receipt");
+        const prior = await arenaRequest<ArenaStrategyReceipt>(
+          `/tournaments/${id}/strategies/${seat}/receipt`
+        );
+        assertCurrent();
+        if (prior.locked) {
+          clearArenaStrategy(config.contract, address, id, seat);
+          if (prior.text !== normalized)
+            throw new Error(
+              "Your earlier strategy is already locked. It cannot be replaced."
+            );
+          return;
+        }
+        const saved = readArenaStrategy(config.contract, address, id, seat);
+        let body = saved.signed;
+        if (body && body.text !== normalized)
+          throw new Error(
+            "A signed strategy is waiting for confirmation. Retry that saved strategy before making changes."
+          );
+        if (!body) {
           const salt = toHex(crypto.getRandomValues(new Uint8Array(32)));
           const commitment = strategyCommitment(
             config.contract,
@@ -418,6 +560,7 @@ export function useArenaWallet(
             normalized,
             salt
           );
+          setBusy("Sign your strategy in your wallet");
           const signature = await signTypedDataAsync({
             account: address,
             domain: arenaDomain(config.contract),
@@ -426,17 +569,34 @@ export function useArenaWallet(
             message: { tournamentId: BigInt(id), seat, commitment }
           });
           assertCurrent();
-          pending.current = {
-            key,
-            body: { seat, text: normalized, salt, signature, incarnation }
-          };
+          body = { seat, text: normalized, salt, signature };
+          saveArenaStrategy(config.contract, address, id, seat, {
+            text: normalized,
+            signed: body
+          });
         }
         assertCurrent();
-        await arenaRequest(
+        setBusy("Saving your strategy");
+        const receipt = await arenaRequest<ArenaStrategyReceipt>(
           `/tournaments/${id}/strategies`,
-          pending.current.body
+          body
         );
-        pending.current = null;
+        if (
+          !receipt.locked ||
+          receipt.commitment !==
+            strategyCommitment(
+              config.contract,
+              BigInt(id),
+              seat,
+              body.text,
+              body.salt
+            )
+        )
+          throw new Error(
+            "Strategy confirmation is incomplete. Retry the same saved strategy."
+          );
+        clearArenaStrategy(config.contract, address, id, seat);
+        setBusy("Updating your strategy");
       }),
     claim: () =>
       execute("Claiming your USDC", async () => {
@@ -445,7 +605,7 @@ export function useArenaWallet(
           throw new Error(
             "Check your pending transaction before claiming again."
           );
-        await signedIn();
+        await ensureSession("Claiming your USDC");
         if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
         await confirmed(
           await writeContractAsync({
@@ -459,6 +619,14 @@ export function useArenaWallet(
           { kind: "claim" }
         );
       }),
-    signIn: () => execute("Signing in", signedIn)
+    readStrategy: (id: string, seat: number) =>
+      execute("Loading your locked strategy", async () => {
+        setStrategyTarget({ scope, tournamentId: id, seat });
+        await ensureSession("Loading your locked strategy");
+        assertCurrent();
+        return arenaRequest<ArenaStrategyReceipt>(
+          `/tournaments/${id}/strategies/${seat}/receipt`
+        );
+      })
   };
 }

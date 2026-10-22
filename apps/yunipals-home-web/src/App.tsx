@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
 import { environment } from "@/environment";
+import { exomonCollectionRedirect } from "@/lib/collectionBrowserFilters";
 import { PendingMarketTransactions } from "@/components/marketplace/PendingMarketTransactions";
 import {
   TradingConsentProvider,
@@ -17,12 +18,43 @@ import { TermsPage } from "@/pages/legal/TermsPage";
 import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
-import { RacingPage } from "@/pages/racing/page";
-import { ArenaPage } from "@/pages/arena/page";
-import { LiveArenaPage } from "@/pages/arena/live/LiveArenaPage";
 import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
 import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const LiveArenaPage = lazy(() =>
+  import("@/pages/arena/live/LiveArenaPage").then((module) => ({
+    default: module.LiveArenaPage
+  }))
+);
+const ArenaDashboard = lazy(() =>
+  import("@/pages/arena/live/ArenaDashboard").then((module) => ({
+    default: module.ArenaDashboard
+  }))
+);
+const ArenaRulesPage = lazy(() =>
+  import("@/pages/arena/live/ArenaRulesPage").then((module) => ({
+    default: module.ArenaRulesPage
+  }))
+);
+const ArenaPage = lazy(() =>
+  import("@/pages/arena/page").then((module) => ({ default: module.ArenaPage }))
+);
+
+const ExomonCollectorPage = lazy(() =>
+  import("@/pages/exomon/ExomonCollectorPage").then((module) => ({
+    default: module.ExomonCollectorPage
+  }))
+);
+const ExomonDetailPage = lazy(() =>
+  import("@/pages/exomon/ExomonDetailPage").then((module) => ({
+    default: module.ExomonDetailPage
+  }))
+);
+const ExomonLeaderboardPage = lazy(() =>
+  import("@/pages/exomon/ExomonLeaderboardPage").then((module) => ({
+    default: module.ExomonLeaderboardPage
+  }))
+);
 
 function ScrollManager() {
   const { hash, pathname } = useLocation();
@@ -51,8 +83,33 @@ function CollectionRedirect() {
   return <Navigate to={`/${search}${hash}`} replace />;
 }
 
+function ExomonCollectionRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`${exomonCollectionRedirect(search)}${hash}`} replace />;
+}
+
+function LeaderboardRoute() {
+  const { search } = useLocation();
+  return environment.exomonEnabled &&
+    new URLSearchParams(search).get("chain") === "solana" ? (
+    <ExomonLeaderboardPage />
+  ) : (
+    <LeaderboardPage />
+  );
+}
+
 function AppContent() {
   const { openInformation } = useTradingConsent();
+  const { pathname, search } = useLocation();
+  const exomonView =
+    environment.exomonEnabled &&
+    (pathname === "/exomon" ||
+      (pathname === "/" &&
+        new URLSearchParams(search).getAll("chain").join(",") === "solana") ||
+      pathname.startsWith("/collection/solana/") ||
+      pathname.startsWith("/collector/solana/") ||
+      (pathname === "/leaderboard" &&
+        new URLSearchParams(search).get("chain") === "solana"));
   return (
     <div className="min-h-screen bg-white">
       <ScrollManager />
@@ -66,54 +123,75 @@ function AppContent() {
           connections and trading are disabled.
         </p>
       )}
-      <Routes>
-        <Route path="/" element={<CollectionPage />} />
-        <Route path="/collection" element={<CollectionRedirect />} />
-        <Route
-          path="/collection/:chain/:tokenId"
-          element={<CollectionPage />}
-        />
-        <Route path="/collection/:tokenId" element={<CollectionPage />} />
-        {!environment.collectionOnly && (
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-        )}
-        <Route path="/boosters" element={<BoosterPage />} />
-        <Route
-          path="/boosters/setup"
-          element={<BoosterSetupPage key="smoke" />}
-        />
-        <Route
-          path="/boosters/setup/standard"
-          element={<BoosterSetupPage key="standard" kind="standard" />}
-        />
-        <Route
-          path="/monsters/:collection/:tokenId"
-          element={<BoosterMonsterPage />}
-        />
-        {!environment.collectionOnly && (
-          <>
-            <Route path="/race-lab" element={<RacingPage />} />
-            <Route path="/arena" element={<LiveArenaPage />} />
-            <Route path="/arena/:id" element={<LiveArenaPage />} />
-          </>
-        )}
-        {environment.arenaLab && (
-          <Route path="/arena-lab" element={<ArenaPage />} />
-        )}
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/collector/:address" element={<CollectorPage />} />
-        {!environment.collectionOnly && (
-          <>
-            <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
-            <Route path="/orders/activity" element={<ActivityPage />} />
-            <Route path="/orders" element={<OrdersPage />} />
-          </>
-        )}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Footer onTradingInformation={openInformation} />
-      {environment.yunipalsMarketplaceUrl && <PendingMarketTransactions />}
+      <Suspense
+        fallback={
+          <main
+            role="status"
+            className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12 text-sm font-semibold text-muted"
+          >
+            Loading page…
+          </main>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<CollectionPage />} />
+          <Route path="/boosters" element={<BoosterPage />} />
+          <Route
+            path="/boosters/setup"
+            element={<BoosterSetupPage key="smoke" />}
+          />
+          <Route
+            path="/boosters/setup/standard"
+            element={<BoosterSetupPage key="standard" kind="standard" />}
+          />
+          <Route
+            path="/monsters/:collection/:tokenId"
+            element={<BoosterMonsterPage />}
+          />
+          <Route path="/arena" element={<LiveArenaPage />} />
+          <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />
+          <Route
+            path="/arena/hosting"
+            element={<ArenaDashboard role="host" />}
+          />
+          <Route path="/arena/rules" element={<ArenaRulesPage />} />
+          <Route path="/arena/:id" element={<LiveArenaPage />} />
+          {environment.arenaLab && (
+            <Route path="/arena-lab" element={<ArenaPage />} />
+          )}
+          {environment.exomonEnabled && (
+            <Route path="/exomon" element={<ExomonCollectionRedirect />} />
+          )}
+          <Route path="/collection" element={<CollectionRedirect />} />
+          {environment.exomonEnabled && (
+            <Route
+              path="/collection/solana/:tokenId"
+              element={<ExomonDetailPage />}
+            />
+          )}
+          <Route
+            path="/collection/:chain/:tokenId"
+            element={<CollectionPage />}
+          />
+          <Route path="/collection/:tokenId" element={<CollectionPage />} />
+          <Route path="/leaderboard" element={<LeaderboardRoute />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/collector/:address" element={<CollectorPage />} />
+          {environment.exomonEnabled && (
+            <Route
+              path="/collector/solana/:address"
+              element={<ExomonCollectorPage />}
+            />
+          )}
+          <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
+          <Route path="/orders/activity" element={<ActivityPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+      <Footer onTradingInformation={openInformation} exomonView={exomonView} />
+      {!exomonView && <PendingMarketTransactions />}
     </div>
   );
 }

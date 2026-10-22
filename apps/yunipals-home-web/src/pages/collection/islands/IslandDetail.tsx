@@ -14,9 +14,14 @@ import {
   islandOwnerHref,
   islandsCollectionHref,
   islandsCollectionId,
+  islandOriginLabel,
+  type IslandCollectionId,
   normalizeIslandTokenId
 } from "@/lib/islandsIndexer";
 import { IndexerError } from "@/lib/yunipalsIndexer";
+import { IslandUnstake } from "./IslandUnstake";
+import { IslandAirdropInfo } from "./IslandAirdropInfo";
+import { IslandHostingHistory } from "@/pages/arena/live/IslandHostingHistory";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 
@@ -28,20 +33,30 @@ function transferDate(timestamp: string) {
   });
 }
 
-export function IslandDetail({ tokenId }: { tokenId: string }) {
+export function IslandDetail({
+  tokenId,
+  collectionId = islandsCollectionId
+}: {
+  tokenId: string;
+  collectionId?: IslandCollectionId;
+}) {
+  const chain = collectionId === "base-islands-v2" ? "base" : "ethereum";
+  const explorer =
+    chain === "base" ? "https://basescan.org" : "https://etherscan.io";
   const id = normalizeIslandTokenId(tokenId);
   const detail = useQuery({
-    queryKey: [islandsCollectionId, "token", id],
-    queryFn: ({ signal }) => fetchIsland(id!, signal),
+    queryKey: [collectionId, "token", id],
+    queryFn: ({ signal }) => fetchIsland(id!, signal, collectionId),
     enabled: id !== null,
     retry: (count, error) =>
       !(error instanceof IndexerError && error.status === 404) && count < 2,
-    staleTime: 30_000
+    staleTime: 30_000,
+    refetchInterval: 15_000
   });
   const transfers = useInfiniteQuery({
-    queryKey: [islandsCollectionId, "transfers", id],
+    queryKey: [collectionId, "transfers", id],
     queryFn: ({ pageParam, signal }) =>
-      fetchIslandTransfers(id!, pageParam, signal),
+      fetchIslandTransfers(id!, pageParam, signal, collectionId),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (page) => page.nextCursor || undefined,
     enabled: id !== null,
@@ -50,15 +65,16 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
   const token = detail.data?.token;
   useCollectibleAnalytics(
     Boolean(token),
-    `island:${id}`,
+    `${collectionId}:${tokenId}`,
     "islands",
-    "ethereum"
+    chain
   );
+  const collector = token?.staking?.staker ?? token?.owner;
   const name =
     token?.metadata?.name || `${token?.edition || "Yunipals"} Island`;
   usePageMetadata(
     `${name} #${id || tokenId} — Yunipals`,
-    "Explore this Ethereum island, its artwork, current owner, and transfer history."
+    `Explore this ${chain === "base" ? "airdropped Base" : "original Ethereum"} island, its artwork, current owner, and transfer history.`
   );
 
   return (
@@ -100,18 +116,43 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
         ) : (
           <>
             <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:items-start">
-              <div className="overflow-hidden rounded-card border-8 border-white bg-white shadow-cardHover">
-                <div className="aspect-square">
-                  <TokenArtwork
-                    src={token.metadata?.image || null}
-                    alt={`${name} #${token.tokenId}`}
-                    eager
-                  />
+              <div>
+                <div className="overflow-hidden rounded-card border-8 border-white bg-white shadow-cardHover">
+                  <div className="aspect-square">
+                    <TokenArtwork
+                      src={token.metadata?.image || null}
+                      alt={`${name} #${token.tokenId}`}
+                      eager
+                    />
+                  </div>
                 </div>
+                {token.metadata?.attributes?.length ? (
+                  <section className="mt-6" aria-label="Island traits">
+                    <h2 className="display text-xl text-ink">Island traits</h2>
+                    <dl className="mt-3 grid grid-cols-2 gap-3">
+                      {token.metadata.attributes.map((attribute) => (
+                        <div
+                          key={attribute.trait_type}
+                          className="rounded-2xl border border-line bg-white p-4"
+                        >
+                          <dt className="text-xs font-bold text-muted">
+                            {attribute.trait_type}
+                          </dt>
+                          <dd className="mt-1 break-words text-sm font-extrabold text-ink">
+                            {String(attribute.value)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </section>
+                ) : null}
               </div>
               <div className="py-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <ChainBadge chainId="ethereum" variant="soft" />
+                  <ChainBadge chainId={token.chain} variant="soft" />
+                  <span className="rounded-full bg-lavender/35 px-3 py-1.5 text-xs font-bold text-ink">
+                    {islandOriginLabel(token)}
+                  </span>
                   <span className="rounded-full bg-mint/40 px-3 py-1.5 text-xs font-bold text-ink">
                     {token.edition}
                   </span>
@@ -121,6 +162,11 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                   {token.burned && (
                     <span className="rounded-full bg-line px-3 py-1.5 text-xs font-bold text-muted">
                       Burned
+                    </span>
+                  )}
+                  {token.staking?.status === "staked" && (
+                    <span className="rounded-full bg-lavender/40 px-3 py-1.5 text-xs font-bold text-ink">
+                      Staked
                     </span>
                   )}
                 </div>
@@ -143,18 +189,20 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                 )}
                 <div className="mt-7 rounded-card border border-line bg-white p-5 shadow-card">
                   <p className="text-xs font-bold uppercase tracking-wide text-muted">
-                    Current collector
+                    {token.staking?.status === "unverified"
+                      ? "Custody address"
+                      : "Current collector"}
                   </p>
                   {token.owner && !token.burned ? (
                     <Link
-                      to={islandOwnerHref(token.owner)}
+                      to={islandOwnerHref(collector!, collectionId)}
                       className="mt-2 flex items-center justify-between gap-4 rounded-xl bg-line/30 px-4 py-3 font-bold text-ink transition hover:bg-mint/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
                     >
                       <span className="truncate sm:hidden">
-                        {shortAddress(token.owner)}
+                        {shortAddress(collector!)}
                       </span>
                       <span className="hidden truncate sm:block">
-                        {token.owner}
+                        {collector}
                       </span>
                       <ArrowRight
                         aria-hidden="true"
@@ -168,6 +216,29 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                     </p>
                   )}
                 </div>
+                {token.staking?.status === "staked" && (
+                  <p className="mt-3 text-sm text-muted">
+                    Held in the legacy staking contract. The collector shown
+                    above is the verified staking wallet.
+                  </p>
+                )}
+                {token.staking?.status === "unverified" && (
+                  <p role="status" className="mt-3 text-sm text-muted">
+                    This island is held in the staking contract. Its staking
+                    wallet has not been verified yet.
+                  </p>
+                )}
+                {token.chain === "ethereum" && (
+                  <IslandUnstake key={token.tokenId} token={token} />
+                )}
+                <IslandAirdropInfo token={token} />
+                {detail.data?.indexingStatus?.indexedBlock && (
+                  <p className="mt-4 text-xs text-muted">
+                    Ownership indexed through{" "}
+                    {chain === "base" ? "Base" : "Ethereum"} block{" "}
+                    {formatInteger(detail.data.indexingStatus.indexedBlock)}.
+                  </p>
+                )}
                 <dl className="mt-5 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-line bg-white p-4">
                     <dt className="text-xs font-bold text-muted">Minted</dt>
@@ -184,7 +255,7 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                 </dl>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <a
-                    href={`https://opensea.io/assets/ethereum/${token.contractAddress}/${token.tokenId}`}
+                    href={`https://opensea.io/assets/${token.chain}/${token.contractAddress}/${token.tokenId}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
@@ -193,17 +264,23 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                     <ExternalLink aria-hidden="true" size={14} />
                   </a>
                   <a
-                    href={`https://etherscan.io/token/${token.contractAddress}?a=${token.tokenId}`}
+                    href={`${explorer}/token/${token.contractAddress}?a=${token.tokenId}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
                   >
-                    View on Etherscan{" "}
+                    View on {chain === "base" ? "BaseScan" : "Etherscan"}{" "}
                     <ExternalLink aria-hidden="true" size={14} />
                   </a>
                 </div>
               </div>
             </div>
+
+            <IslandHostingHistory
+              chainId={token.chainId}
+              collection={token.contractAddress}
+              tokenId={token.tokenId}
+            />
 
             <section className="mt-12" aria-labelledby="island-history">
               <h2
@@ -248,7 +325,10 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                               <span>Mint</span>
                             ) : (
                               <Link
-                                to={islandOwnerHref(transfer.from)}
+                                to={islandOwnerHref(
+                                  transfer.from,
+                                  collectionId
+                                )}
                                 className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
                               >
                                 {shortAddress(transfer.from)}
@@ -259,7 +339,7 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                               <span>Burn</span>
                             ) : (
                               <Link
-                                to={islandOwnerHref(transfer.to)}
+                                to={islandOwnerHref(transfer.to, collectionId)}
                                 className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
                               >
                                 {shortAddress(transfer.to)}
@@ -268,7 +348,7 @@ export function IslandDetail({ tokenId }: { tokenId: string }) {
                           </p>
                         </div>
                         <a
-                          href={`https://etherscan.io/tx/${transfer.transactionHash}`}
+                          href={`${explorer}/tx/${transfer.transactionHash}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-2 rounded text-xs font-bold text-muted hover:text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"

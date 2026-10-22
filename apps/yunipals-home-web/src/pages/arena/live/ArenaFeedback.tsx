@@ -86,6 +86,22 @@ export function ArenaTransactionFeedback({
         ) : null}
         {transactionLabel(operation)}
       </p>
+      {operation.action.kind === "approval" && operation.state !== "failed" ? (
+        <p className="mt-3 text-sm text-muted">
+          Approval sets your spending limit; it does not enter a fighter or
+          charge the entry fee. Entry needs a separate wallet transaction.
+          {operation.state === "indexed" && !busy
+            ? " Choose your fighter below and click Enter · 2 USDC to continue. Your approval will be reused."
+            : null}
+        </p>
+      ) : null}
+      {pending && !delayed ? (
+        <p className="mt-3 text-sm text-muted">
+          We check a few Base blocks and wait for the indexed result. This page
+          updates automatically. You can leave and return; your transaction is
+          saved.
+        </p>
+      ) : null}
       <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
         <a
           className="rounded font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"

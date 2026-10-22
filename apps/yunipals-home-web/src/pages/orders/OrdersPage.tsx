@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { OrderCreationDialog } from "@/components/marketplace/OrderCreationDialog";
 import { TradeReviewDialog } from "@/components/marketplace/TradeReviewDialog";
@@ -139,21 +140,21 @@ function OrdersForWallet({ wallet }: { wallet: Address }) {
         </nav>
         <div className="flex flex-col gap-1 text-sm font-bold">
           <label htmlFor={networkId}>Network</label>
-          <select
+          <Select
             id={networkId}
             value={chain}
-            onChange={(event) => filters({ chain: event.target.value })}
+            onValueChange={(value) => filters({ chain: value })}
             className="rounded-full border border-line bg-white px-4 py-2 focus-visible:ring-2 focus-visible:ring-ink"
           >
-            <option value="all">All networks</option>
+            <SelectItem value="all">All networks</SelectItem>
             {(Object.keys(marketplaceChains) as MarketplaceChain[]).map(
               (name) => (
-                <option key={name} value={name}>
+                <SelectItem key={name} value={name}>
                   {chainDetails[name].label}
-                </option>
+                </SelectItem>
               )
             )}
-          </select>
+          </Select>
         </div>
       </div>
       <h2

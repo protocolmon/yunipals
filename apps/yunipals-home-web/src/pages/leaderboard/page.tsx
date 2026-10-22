@@ -15,6 +15,7 @@ import {
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
+import { Select, SelectItem } from "@/components/ui/select";
 import { QueryError } from "@/components/QueryState";
 import {
   formatDecimal,
@@ -23,6 +24,7 @@ import {
   shortAddress
 } from "@/lib/format";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
+import { environment } from "@/environment";
 import {
   fetchLeaderboard,
   fetchLeaderboardDefinitions,
@@ -233,6 +235,20 @@ export function LeaderboardPage() {
             </button>
           </div>
 
+          {environment.exomonEnabled && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              <span className="rounded-full border border-ethereum bg-lavender/40 px-4 py-2 text-sm font-bold text-ink">
+                Yunipals · EVM
+              </span>
+              <Link
+                to="/leaderboard?chain=solana"
+                className="rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink hover:bg-sky/20"
+              >
+                Exomon · Solana
+              </Link>
+            </div>
+          )}
+
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div className="rounded-2xl border border-ethereum/10 bg-white/80 p-4 shadow-sm">
               <Users aria-hidden="true" className="text-ethereum" size={17} />
@@ -272,20 +288,18 @@ export function LeaderboardPage() {
             <label htmlFor="leaderboard-metric" className="sr-only">
               Leaderboard metric
             </label>
-            <select
+            <Select
               id="leaderboard-metric"
               value={metric}
-              onChange={(event) =>
-                setSearchParams({ metric: event.target.value })
-              }
+              onValueChange={(value) => setSearchParams({ metric: value })}
               className="w-full rounded-full border border-line bg-white px-4 py-3 text-sm font-bold text-ink outline-none focus-visible:ring-2 focus-visible:ring-ethereum sm:hidden"
             >
               {definitions.map((definition) => (
-                <option key={definition.slug} value={definition.slug}>
+                <SelectItem key={definition.slug} value={definition.slug}>
                   {definition.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+            </Select>
             <div
               className="hidden flex-wrap gap-2 sm:flex"
               role="group"

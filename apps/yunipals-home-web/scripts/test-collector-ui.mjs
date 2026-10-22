@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -83,9 +84,11 @@ try {
   assert.deepEqual(await hrefs(), initial);
   report.tests.push("24-card forward/backward pagination");
 
-  await page
-    .getByRole("combobox", { name: "Sort collection" })
-    .selectOption("rarity-capped-asc");
+  await chooseSelect(
+    page,
+    page.getByRole("combobox", { name: "Sort collection" }),
+    "rarity-capped-asc"
+  );
   await page.waitForURL(/sort=rarity-capped-asc/);
   await page.waitForFunction(
     (initial) =>

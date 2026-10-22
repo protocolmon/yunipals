@@ -44,6 +44,7 @@ import {
   SignedOrderPublicationError
 } from "../src/lib/marketplace/publishOrder.ts";
 import { verifyBnbOrderMaker } from "../src/lib/marketplace/verifyOrderMaker.ts";
+import { chooseSelect } from "./ui/select.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -1000,17 +1001,13 @@ try {
   await page
     .getByRole("button", { name: "Review listing", exact: true })
     .waitFor();
-  await page
-    .getByLabel("Expires after", { exact: true })
-    .locator('option[value="86400"]')
-    .waitFor({ state: "attached" });
+  await page.getByLabel("Expires after", { exact: true }).click();
+  await page.locator('[role="option"][data-select-value="86400"]').waitFor();
   assert.deepEqual(
-    await page
-      .getByLabel("Expires after", { exact: true })
-      .locator("option")
-      .evaluateAll((options) => options.map((option) => option.value)),
+    await page.getByRole("option").evaluateAll((options) => options.map((option) => option.dataset.selectValue)),
     ["3600", "86400"]
   );
+  await page.keyboard.press("Escape");
   await page
     .getByRole("button", { name: "Close order review", exact: true })
     .click();
@@ -1019,9 +1016,11 @@ try {
   await page
     .getByRole("button", { name: "List for sale", exact: true })
     .click();
-  await page
-    .getByLabel("Expires after", { exact: true })
-    .selectOption("2592000");
+  await chooseSelect(
+    page,
+    page.getByLabel("Expires after", { exact: true }),
+    "2592000"
+  );
   pass(
     "Expiry choices follow the BNB policy and allow a 30-day listing after the cap increases"
   );
@@ -1751,9 +1750,9 @@ try {
   pass(
     "wallet history pages survive a next-page outage and keep one snapshot despite newly added orders"
   );
-  await page.getByLabel("Network", { exact: true }).selectOption("all");
+  await chooseSelect(page, page.getByLabel("Network", { exact: true }), "all");
   await page.getByText(/Some orders may be missing or out of date:/).waitFor();
-  await page.getByLabel("Network", { exact: true }).selectOption("bnb");
+  await chooseSelect(page, page.getByLabel("Network", { exact: true }), "bnb");
   await rows.nth(24).waitFor();
   const cancellingHash = await rows
     .first()

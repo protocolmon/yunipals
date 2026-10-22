@@ -6,9 +6,11 @@ override. Cloud mode writes the curated Build Output API tree to the app root's
 .vercel/output, including the same asset cache rules, missing-asset 404 rules and
 SPA fallback as the reviewed local prebuilt artifact.
 
-The canonical build always sets the collection/booster launch flags, deployed
-Base addresses, production indexer origin and both reviewed setup bundle hashes.
-It excludes marketplace and Arena from this release. These public launch values
+The canonical build preserves all existing collection, leaderboard, Arena,
+Islands/staking and Exomon routes and production feature/service settings. It
+adds the deployed Base booster addresses and both reviewed setup bundle hashes.
+It always invokes the full-app build mode; the temporary collection-only smoke
+preset must never be used for the canonical site. These public launch values
 do not depend on someone manually recreating Vercel environment variables. The
 existing public Reown project configuration remains subject to the normal Vite
 production check; no credential is added to the source.

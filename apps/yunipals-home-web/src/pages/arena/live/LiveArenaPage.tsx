@@ -1,33 +1,49 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   useInfiniteQuery,
   useQuery,
   useQueryClient
 } from "@tanstack/react-query";
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { formatUnits, type Hex } from "viem";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+import { formatUnits, type Address } from "viem";
+import { LoaderCircle } from "lucide-react";
 import { useAccount } from "wagmi";
 import type {
   ArenaPublicTournament,
   ArenaSeat
 } from "@protopals/yunipals-market-core/arena";
 import { environment } from "@/environment";
+import { Select, SelectItem } from "@/components/ui/select";
+import type {
+  ArenaHistoryPage,
+  ArenaWalletSummary
+} from "@protopals/yunipals-market-core/arenaViews";
 import {
   arenaRequest,
   fetchArenaTournament,
   type ArenaConfig
 } from "@/lib/arenaLive";
 import { cn } from "@/lib/utils";
+import { arenaFighterKey } from "@/lib/arenaTransactions";
+import {
+  readArenaStrategy,
+  saveArenaStrategy,
+  clearArenaStrategy,
+  type ArenaStrategyReceipt
+} from "@/lib/arenaStrategies";
 import { fetchOwnerTokens, type IndexedChain } from "@/lib/yunipalsIndexer";
 import { ArenaFilm } from "./ArenaFilm";
+import { ArenaJoinBanner } from "./ArenaJoinBanner";
 import {
   ArenaCardsLoading,
   ArenaLoading,
   ArenaTransactionFeedback
 } from "./ArenaFeedback";
-import { useArenaWallet } from "./useArenaWallet";
+import { useArenaWallet, type ArenaApprovalEntries } from "./useArenaWallet";
 import { useArenaClock } from "./useArenaClock";
+import { ArenaNavigation } from "./ArenaNavigation";
+import { ArenaDeadline, ArenaEvidence } from "./ArenaEvidence";
+import { ArenaTournamentCard } from "./ArenaHistory";
 
 const action =
   "rounded-full bg-ink px-6 py-3 font-semibold text-white transition hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-40";
@@ -124,30 +140,150 @@ function FighterSeat({
 function StrategyEditor({
   tournament,
   seat,
+  fighter,
   busy,
-  submit
+  progress,
+  submissionError,
+  contract,
+  submit,
+  readReceipt
 }: {
   tournament: ArenaPublicTournament;
   seat: ArenaSeat;
+  fighter?: Context["roster"][number];
   busy: boolean;
-  submit: (
+  progress?: string | null;
+  submissionError?: string | null;
+  contract: Address | undefined;
+  submit: (id: string, seat: number, text: string) => Promise<void>;
+  readReceipt: (
     id: string,
-    seat: number,
-    text: string,
-    incarnation?: Hex
-  ) => Promise<void>;
+    seat: number
+  ) => Promise<ArenaStrategyReceipt | undefined>;
 }) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(() =>
+    contract
+      ? readArenaStrategy(contract, seat.player, tournament.id, seat.seat).text
+      : ""
+  );
+  const [draftError, setDraftError] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<ArenaStrategyReceipt | null>(null);
+  const [receiptLoading, setReceiptLoading] = useState(false);
+  const saved = contract
+    ? readArenaStrategy(contract, seat.player, tournament.id, seat.seat)
+    : null;
   const locked = tournament.submittedSeats.includes(seat.seat);
-  const now = useArenaClock();
+  const now = useArenaClock(tournament.serverTime);
   const closed = now >= tournament.deadline;
+  useEffect(() => {
+    if ((locked || closed) && contract)
+      clearArenaStrategy(contract, seat.player, tournament.id, seat.seat);
+  }, [locked, closed, contract, seat.player, seat.seat, tournament.id]);
   return (
-    <section className="rounded-card border border-line p-5">
-      <h3 className="font-bold">Your strategy · Yunipal #{seat.tokenId}</h3>
+    <section
+      className={cn(
+        "rounded-card border border-line p-5",
+        progress && "border-grape bg-lavender/10"
+      )}
+      aria-busy={Boolean(progress) || receiptLoading}
+      data-arena-strategy-seat={seat.seat}
+    >
+      <div className="mb-4 flex items-center gap-4">
+        {fighter?.image ? (
+          <Link
+            to={`/collection/${chains[seat.nftChainId]}/${seat.tokenId}`}
+            aria-label={`View ${fighter.name}`}
+            className="shrink-0 rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+          >
+            <img
+              src={fighter.image}
+              alt={fighter.name}
+              loading="lazy"
+              className="h-24 w-24 rounded-2xl border border-line object-cover sm:h-28 sm:w-28"
+            />
+          </Link>
+        ) : (
+          <div
+            aria-hidden="true"
+            className="h-24 w-24 shrink-0 animate-pulse rounded-2xl bg-lavender/30 sm:h-28 sm:w-28"
+          />
+        )}
+        <div className="min-w-0">
+          <h3 className="break-words font-bold">
+            Your strategy · {fighter?.name ?? `Yunipal #${seat.tokenId}`}
+          </h3>
+          <p className="mt-1 text-sm text-muted">
+            Fighter {seat.seat + 1} · Semifinal {seat.seat < 2 ? "1" : "2"}
+            {fighter
+              ? ` · ${fighter.locomotion === "flight" ? "Flies" : "Ground movement"}`
+              : " · Loading fighter…"}
+          </p>
+        </div>
+      </div>
       {locked ? (
-        <p className="mt-3 text-muted">
-          Locked. All four strategies will appear together after confirmation.
-        </p>
+        <div>
+          <p className="mt-3 text-muted">
+            Locked. All four strategies will appear together after confirmation.
+          </p>
+          <button
+            className="mt-3 inline-flex items-center gap-2 font-semibold underline"
+            aria-busy={receiptLoading || Boolean(progress)}
+            aria-label={
+              progress ?? (receiptLoading ? "Loading your receipt…" : undefined)
+            }
+            disabled={receiptLoading || busy}
+            onClick={() => {
+              setReceiptLoading(true);
+              setDraftError(null);
+              void readReceipt(tournament.id, seat.seat)
+                .then((value) => {
+                  if (value) setReceipt(value);
+                })
+                .catch((error: unknown) =>
+                  setDraftError(
+                    error instanceof Error
+                      ? error.message
+                      : "Could not load your strategy receipt."
+                  )
+                )
+                .finally(() => setReceiptLoading(false));
+            }}
+          >
+            {receiptLoading || progress ? (
+              <>
+                <LoaderCircle
+                  size={16}
+                  aria-hidden="true"
+                  className="motion-safe:animate-spin"
+                />
+                <span role="status" aria-live="polite">
+                  {progress ?? "Loading your receipt…"}
+                </span>
+              </>
+            ) : (
+              "View your locked strategy"
+            )}
+          </button>
+          {draftError ? (
+            <p role="alert" className="mt-2 text-sm">
+              {draftError}
+            </p>
+          ) : null}
+          {receipt?.locked ? (
+            <div className="mt-3 rounded-2xl bg-panel-base p-4">
+              <p className="whitespace-pre-wrap break-words">{receipt.text}</p>
+              <p className="mt-3 break-all font-mono text-xs text-muted">
+                Commitment: {receipt.commitment}
+              </p>
+              {receipt.receivedAt ? (
+                <p className="mt-2 text-xs text-muted">
+                  Server receipt:{" "}
+                  {new Date(receipt.receivedAt).toLocaleString()}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       ) : closed ? (
         <p role="status" className="mt-3 text-muted">
           The strategy deadline has passed. An automatic legal attack will be
@@ -164,40 +300,87 @@ function StrategyEditor({
           <textarea
             id={`strategy-${seat.seat}`}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setText(value);
+              try {
+                if (contract)
+                  saveArenaStrategy(
+                    contract,
+                    seat.player,
+                    tournament.id,
+                    seat.seat,
+                    { text: value, signed: saved?.signed }
+                  );
+                setDraftError(null);
+              } catch {
+                setDraftError(
+                  "Your browser could not save this draft for refresh recovery."
+                );
+              }
+            }}
             maxLength={2400}
             rows={6}
-            disabled={busy}
+            disabled={busy || !!saved?.signed}
             className="w-full rounded-card border border-line p-4 focus-visible:outline-grape"
           />
+          <p role="status" className="mt-2 text-sm text-muted">
+            {draftError ??
+              (saved?.signed
+                ? "Signed strategy saved. Retry to check its receipt or send the same signed body."
+                : "Draft saved in this browser tab until submission or sign-out.")}
+          </p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <span className="text-sm text-muted">
               {text.length}/2400 · Submission is final
             </span>
             <button
-              className={action}
+              className={cn(
+                action,
+                "inline-flex items-center justify-center gap-2",
+                progress && "bg-grape disabled:opacity-100"
+              )}
+              aria-busy={Boolean(progress)}
+              aria-label={progress ?? undefined}
               disabled={busy || !text.trim()}
-              onClick={() =>
-                void submit(
-                  tournament.id,
-                  seat.seat,
-                  text,
-                  tournament.incarnation
-                )
-              }
+              onClick={() => void submit(tournament.id, seat.seat, text)}
             >
-              Sign & lock strategy
+              {progress ? (
+                <>
+                  <LoaderCircle
+                    size={18}
+                    aria-hidden="true"
+                    className="shrink-0 motion-safe:animate-spin"
+                  />
+                  <span role="status" aria-live="polite">
+                    {progress}
+                  </span>
+                </>
+              ) : saved?.signed ? (
+                "Check & retry saved strategy"
+              ) : (
+                "Sign & lock strategy"
+              )}
             </button>
           </div>
         </>
       )}
+      {submissionError ? (
+        <p role="alert" className="mt-3 break-words text-sm text-ink">
+          {submissionError}
+        </p>
+      ) : null}
     </section>
   );
 }
 
 export function LiveArenaPage() {
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const { address } = useAccount();
+  const [approvalEntries, setApprovalEntries] =
+    useState<ArenaApprovalEntries>(1);
+  useEffect(() => setApprovalEntries(1), [address]);
   const queryClient = useQueryClient();
   const [revealedId, setRevealedId] = useState<string | null>(null);
   const configured = !!environment.arenaApiUrl;
@@ -208,26 +391,28 @@ export function LiveArenaPage() {
     enabled: configured,
     staleTime: 60_000
   });
-  const list = useQuery({
+  const list = useInfiniteQuery({
     queryKey: ["arena-live", "list"],
-    queryFn: ({ signal }) =>
-      arenaRequest<{ items: ArenaPublicTournament[] }>(
-        "/tournaments",
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam, signal }) =>
+      arenaRequest<ArenaHistoryPage>(
+        `/tournaments${pageParam ? `?cursor=${encodeURIComponent(pageParam)}` : ""}`,
         undefined,
         signal
       ),
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled: configured,
     refetchInterval: 15000
   });
+  const tournaments = list.data?.pages.flatMap((p) => p.items) ?? [];
+  const selectedId = id;
   const detail = useQuery({
-    queryKey: ["arena-live", "tournament", id],
-    queryFn: ({ signal }) => fetchArenaTournament(id!, signal),
-    enabled: configured && !!id,
+    queryKey: ["arena-live", "tournament", selectedId],
+    queryFn: ({ signal }) => fetchArenaTournament(selectedId!, signal),
+    enabled: configured && !!selectedId,
     refetchInterval: 10000
   });
-  const tournament = id
-    ? detail.data
-    : (list.data?.items.find((t) => t.phase === "open") ?? list.data?.items[0]);
+  const tournament = detail.data;
   const showResults = revealedId === tournament?.id;
   const context = useQuery({
     queryKey: [
@@ -249,16 +434,15 @@ export function LiveArenaPage() {
     staleTime: 60000,
     refetchInterval: 15000
   });
-  const session = useQuery({
-    queryKey: ["arena-live", "session", address],
+  const summary = useQuery({
+    queryKey: ["arena-live", "summary", address],
     queryFn: ({ signal }) =>
-      arenaRequest<{ wallet: string; claimable: string }>(
-        "/me",
+      arenaRequest<ArenaWalletSummary>(
+        `/wallets/${address}/summary`,
         undefined,
         signal
       ),
     enabled: configured && !!address,
-    retry: false,
     refetchInterval: 30000
   });
   const wallet = useArenaWallet(config.data, () =>
@@ -276,10 +460,22 @@ export function LiveArenaPage() {
     tournament?.seats.filter(
       (s) => s.player.toLowerCase() === address?.toLowerCase()
     ) ?? [];
+  useEffect(() => {
+    if (
+      location.hash !== "#join" ||
+      tournament?.phase !== "open" ||
+      context.isPending
+    )
+      return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById("join")?.scrollIntoView({ block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [location.hash, tournament?.id, tournament?.phase, context.isPending]);
   const error = config.error ?? detail.error ?? list.error;
   const claimable =
-    session.data?.wallet.toLowerCase() === address?.toLowerCase()
-      ? (session.data?.claimable ?? null)
+    summary.data?.wallet.toLowerCase() === address?.toLowerCase()
+      ? (summary.data?.available ?? null)
       : null;
   return (
     <main className="mx-auto max-w-6xl px-5 pb-20 pt-12 text-ink">
@@ -296,8 +492,9 @@ export function LiveArenaPage() {
             semifinals and a final decide the champion.
           </p>
         </div>
-        <ConnectButton />
       </header>
+      <ArenaNavigation />
+      <ArenaJoinBanner tournaments={tournaments} />
       <section
         aria-label="Entry and payouts"
         className="my-8 grid grid-cols-2 gap-4 rounded-card bg-panel-base p-6 md:grid-cols-4"
@@ -319,29 +516,82 @@ export function LiveArenaPage() {
           Mainnet tournaments are being prepared. Paid entry is not open yet.
         </p>
       )}
+      {config.data?.entryMode === "pilot" ? (
+        <p role="status" className="my-5 rounded-card bg-lavender/20 p-5">
+          Controlled launch pilot · only the selected test wallets can enter
+          while the full mainnet flow is verified.
+        </p>
+      ) : config.data && !config.data.entriesEnabled ? (
+        <p role="status" className="my-5 rounded-card bg-lavender/20 p-5">
+          Paid entry is currently closed. Existing tournaments, videos and
+          claims remain available.
+        </p>
+      ) : null}
       {error && (
         <p role="alert" className="rounded-card border border-line p-5">
           {error.message}
         </p>
       )}
       {configured &&
-        !error &&
-        !tournament &&
-        (list.isPending ? (
-          <ArenaCardsLoading label="Loading tournaments" />
-        ) : (
-          <p role="status" className="rounded-card bg-lavender/20 p-6">
-            The next lobby is being prepared.
-          </p>
-        ))}
-      {wallet.error && (
-        <p
-          role="alert"
-          className="my-4 break-words rounded-card border border-line p-5"
-        >
-          {wallet.error}
+      !error &&
+      (list.isPending || (!!selectedId && detail.isPending)) ? (
+        <ArenaCardsLoading
+          label={selectedId ? "Loading tournament" : "Loading tournaments"}
+        />
+      ) : null}
+      {configured &&
+      !error &&
+      !id &&
+      list.isSuccess &&
+      tournaments.length === 0 ? (
+        <p role="status" className="rounded-card bg-lavender/20 p-6">
+          The next lobby is being prepared.
         </p>
-      )}
+      ) : null}
+      {!id ? (
+        <section
+          className="my-8 grid gap-4 sm:grid-cols-3"
+          aria-label="How Arena works"
+        >
+          {[
+            [
+              "01",
+              "Bring your Yunipal",
+              "Pick one of your NFTs and enter an open tournament for 2 USDC. Your NFT stays yours."
+            ],
+            [
+              "02",
+              "Outsmart your opponents",
+              "Once four fighters join, study the drawn island and submit your own private strategy."
+            ],
+            [
+              "03",
+              "Watch. Win. Claim.",
+              "Two semifinals and a final decide one champion. Watch the battles and claim the 6 USDC prize."
+            ]
+          ].map(([step, title, description]) => (
+            <article key={step} className="rounded-card border border-line p-5">
+              <span className="text-xs font-bold text-grape">{step}</span>
+              <h2 className="mt-2 text-lg font-bold">{title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                {description}
+              </p>
+            </article>
+          ))}
+        </section>
+      ) : null}
+      {wallet.error &&
+        !(
+          tournament?.phase === "strategies" &&
+          wallet.strategyFeedback?.tournamentId === tournament.id
+        ) && (
+          <p
+            role="alert"
+            className="my-4 break-words rounded-card border border-line p-5"
+          >
+            {wallet.error}
+          </p>
+        )}
       {wallet.busy && (
         <div className="my-4">
           <ArenaLoading label={`${wallet.busy}…`} />
@@ -354,40 +604,51 @@ export function LiveArenaPage() {
           onCheck={() => void wallet.checkStatus()}
         />
       ) : null}
-      {address && configured && (
-        <section className="my-6 flex flex-wrap items-center gap-4">
-          <button
-            className={action}
-            disabled={!!wallet.busy}
-            onClick={() => void wallet.signIn()}
-          >
-            Sign in to Arena
-          </button>
-          {session.isPending ? (
-            <ArenaLoading label="Loading available USDC…" />
-          ) : claimable === null ? (
-            <span className="text-sm text-muted">
-              Sign in to view your available USDC.
-            </span>
-          ) : (
-            <span>Claimable: {formatUnits(BigInt(claimable), 6)} USDC</span>
-          )}
-          <button
-            className={action}
-            disabled={
-              !!wallet.busy ||
-              wallet.pendingTransaction ||
-              claimable === null ||
-              claimable === "0"
-            }
-            onClick={() => void wallet.claim()}
-          >
-            Claim USDC
-          </button>
-        </section>
-      )}
-      {tournament && (
+      {address &&
+        configured &&
+        (claimable !== "0" || wallet.operation?.action.kind === "claim") && (
+          <section className="my-6 flex flex-wrap items-center gap-4">
+            {summary.isPending ? (
+              <ArenaLoading label="Loading available USDC…" />
+            ) : claimable === null ? (
+              <span role="alert" className="text-sm text-muted">
+                Your reward balance could not be loaded.{" "}
+                <button
+                  className="font-semibold underline"
+                  onClick={() => void summary.refetch()}
+                >
+                  Try again
+                </button>
+              </span>
+            ) : (
+              <span>Claimable: {formatUnits(BigInt(claimable), 6)} USDC</span>
+            )}
+            <button
+              className={action}
+              disabled={
+                !!wallet.busy ||
+                wallet.pendingTransaction ||
+                claimable === null ||
+                claimable === "0"
+              }
+              onClick={() => void wallet.claim()}
+            >
+              Claim USDC
+            </button>
+          </section>
+        )}
+      {id && tournament && (
         <>
+          {tournament.projection?.ready === false ? (
+            <p
+              role="status"
+              className="my-5 rounded-card border border-line p-5"
+            >
+              Tournament synchronization is catching up. The last indexed state
+              is shown; entry and strategy submission will resume when it is
+              current.
+            </p>
+          ) : null}
           <section className="my-8">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
@@ -396,16 +657,40 @@ export function LiveArenaPage() {
                 </h2>
                 <p className="mt-1 text-muted">{phases[tournament.phase]}</p>
               </div>
-              <p className="text-sm text-muted">
-                {tournament.deadline === 0
-                  ? "7-day joining window starts with the first entry"
-                  : ["open", "strategies", "resolving"].includes(
-                        tournament.phase
-                      )
-                    ? `Deadline: ${new Date(tournament.deadline * 1000).toLocaleString()}`
-                    : "Completed"}
-              </p>
+              <ArenaDeadline tournament={tournament} />
             </div>
+            {tournament.winners && (
+              <section className="my-8 rounded-card bg-lavender/20 p-6">
+                <h2 className="text-2xl font-bold">The result is confirmed</h2>
+                <p className="my-3 text-muted">
+                  Results are public onchain. Reveal the result here whenever
+                  you’re ready.
+                </p>
+                <button
+                  className={action}
+                  onClick={() =>
+                    setRevealedId(showResults ? null : tournament.id)
+                  }
+                >
+                  {showResults ? "Hide result" : "Show result"}
+                </button>
+                {showResults && (
+                  <p className="mt-5 text-xl font-bold">
+                    Champion: Yunipal #
+                    {tournament.seats[tournament.winners[2]]?.tokenId}
+                  </p>
+                )}
+              </section>
+            )}
+            {tournament.phase === "settled" && (
+              <ArenaFilm
+                key={`film/${tournament.id}`}
+                id={tournament.id}
+                showResults={showResults}
+                fighters={context.data?.roster ?? []}
+              />
+            )}
+
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {[0, 1, 2, 3].map((seat) => (
                 <FighterSeat
@@ -498,13 +783,56 @@ export function LiveArenaPage() {
               </p>
             )}
           </section>
+          {tournament.phase === "open" && !address ? (
+            <section
+              id="join"
+              className="my-8 scroll-mt-28 rounded-card border border-lavender bg-lavender/10 p-6"
+            >
+              <h2 className="text-2xl font-bold">Choose your fighter</h2>
+              <p className="mt-3 text-muted">
+                Connect your wallet using the button in the header to see your
+                Yunipals. Pick a fighter and enter for 2 USDC; your NFT stays in
+                your wallet.
+              </p>
+            </section>
+          ) : null}
           {tournament.phase === "open" && address && (
-            <section className="my-8">
+            <section id="join" className="my-8 scroll-mt-28">
               <h2 className="text-2xl font-bold">Choose your fighter</h2>
               <p className="my-3 text-muted">
                 Your NFT stays in your wallet. Each different NFT can occupy one
                 active seat.
               </p>
+              <div className="my-5 rounded-card border border-line bg-panel-base p-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <label
+                    htmlFor="arena-approval-limit"
+                    className="font-semibold"
+                  >
+                    USDC approval limit
+                  </label>
+                  <Select
+                    id="arena-approval-limit"
+                    aria-describedby="arena-approval-help"
+                    value={String(approvalEntries)}
+                    disabled={!!wallet.busy || wallet.pendingTransaction}
+                    onValueChange={(value) =>
+                      setApprovalEntries(
+                        value === "10" ? 10 : value === "4" ? 4 : 1
+                      )
+                    }
+                  >
+                    <SelectItem value="1">2 USDC · 1 entry</SelectItem>
+                    <SelectItem value="4">8 USDC · 4 entries</SelectItem>
+                    <SelectItem value="10">20 USDC · 10 entries</SelectItem>
+                  </Select>
+                </div>
+                <p id="arena-approval-help" className="mt-3 text-sm text-muted">
+                  A higher limit saves repeat approvals. Each entry still
+                  charges only 2 USDC. This limit applies when a new approval is
+                  needed; an existing allowance is reused.
+                </p>
+              </div>
               {inventory.isPending && (
                 <ArenaCardsLoading label="Loading your Yunipals…" />
               )}
@@ -522,47 +850,88 @@ export function LiveArenaPage() {
                 {inventory.data?.pages
                   .flatMap((p) => p.items)
                   .filter((nft) => !nft.burned)
-                  .map((nft) => (
-                    <article
-                      key={`${nft.chainId}/${nft.tokenId}`}
-                      className="rounded-card border border-line p-4"
-                    >
-                      {nft.image && (
-                        <img
-                          className="aspect-square w-full rounded-card object-cover"
-                          src={nft.image}
-                          alt={nft.name ?? `Yunipal #${nft.tokenId}`}
-                          loading="lazy"
-                        />
-                      )}
-                      <h3 className="my-3 font-bold">
-                        {nft.name ?? `Yunipal #${nft.tokenId}`}
-                      </h3>
-                      <button
-                        className={cn(action, "w-full px-3 text-sm")}
-                        disabled={
-                          !!wallet.busy ||
-                          wallet.pendingTransaction ||
-                          !config.data?.entriesEnabled ||
-                          tournament.seats.length >= 4 ||
-                          tournament.seats.some(
-                            (s) =>
-                              s.nftChainId === nft.chainId &&
-                              s.tokenId === nft.tokenId
-                          )
-                        }
-                        onClick={() =>
-                          void wallet.join(
-                            tournament.id,
-                            nft,
-                            tournament.incarnation
-                          )
-                        }
+                  .map((nft) => {
+                    const key = arenaFighterKey({
+                      tournamentId: tournament.id,
+                      nftChainId: nft.chainId,
+                      collection: nft.contractAddress,
+                      tokenId: nft.tokenId
+                    });
+                    const progress =
+                      wallet.entryProgress?.key === key
+                        ? wallet.entryProgress
+                        : null;
+                    const entered = tournament.seats.some(
+                      (s) =>
+                        s.nftChainId === nft.chainId &&
+                        s.collection.toLowerCase() ===
+                          nft.contractAddress.toLowerCase() &&
+                        s.tokenId === nft.tokenId
+                    );
+                    return (
+                      <article
+                        key={`${nft.chainId}/${nft.contractAddress}/${nft.tokenId}`}
+                        data-arena-fighter={key}
+                        aria-busy={!!progress}
+                        className={cn(
+                          "rounded-card border p-4",
+                          progress ? "border-grape bg-grape/5" : "border-line"
+                        )}
                       >
-                        Enter · 2 USDC
-                      </button>
-                    </article>
-                  ))}
+                        {nft.image && (
+                          <img
+                            className="aspect-square w-full rounded-card object-cover"
+                            src={nft.image}
+                            alt={nft.name ?? `Yunipal #${nft.tokenId}`}
+                            loading="lazy"
+                          />
+                        )}
+                        <h3 className="my-3 font-bold">
+                          {nft.name ?? `Yunipal #${nft.tokenId}`}
+                        </h3>
+                        <button
+                          className={cn(
+                            action,
+                            "inline-flex min-h-12 w-full items-center justify-center gap-2 px-3 text-sm",
+                            progress && "bg-grape disabled:opacity-100"
+                          )}
+                          aria-busy={!!progress}
+                          disabled={
+                            !!wallet.busy ||
+                            wallet.pendingTransaction ||
+                            !config.data?.entriesEnabled ||
+                            tournament.seats.length >= 4 ||
+                            tournament.projection?.ready === false ||
+                            entered
+                          }
+                          onClick={() =>
+                            void wallet.join(
+                              tournament.id,
+                              nft,
+                              approvalEntries
+                            )
+                          }
+                        >
+                          {progress ? (
+                            <>
+                              <LoaderCircle
+                                size={16}
+                                aria-hidden="true"
+                                className="shrink-0 motion-safe:animate-spin"
+                              />
+                              <span role="status" aria-live="polite">
+                                {progress.label}
+                              </span>
+                            </>
+                          ) : entered ? (
+                            "Entered"
+                          ) : (
+                            "Enter · 2 USDC"
+                          )}
+                        </button>
+                      </article>
+                    );
+                  })}
               </div>
               {inventory.hasNextPage && (
                 <button
@@ -623,44 +992,31 @@ export function LiveArenaPage() {
                 <StrategyEditor
                   key={`${address}/${tournament.id}/${seat.seat}`}
                   tournament={tournament}
+                  contract={config.data?.contract}
                   seat={seat}
-                  busy={!!wallet.busy || !context.data?.ready}
+                  fighter={context.data?.roster[seat.seat]}
+                  progress={
+                    wallet.strategyFeedback?.tournamentId === tournament.id &&
+                    wallet.strategyFeedback.seat === seat.seat
+                      ? wallet.strategyFeedback.progress
+                      : null
+                  }
+                  submissionError={
+                    wallet.strategyFeedback?.tournamentId === tournament.id &&
+                    wallet.strategyFeedback.seat === seat.seat
+                      ? wallet.strategyFeedback.error
+                      : null
+                  }
+                  busy={
+                    !!wallet.busy ||
+                    !context.data?.ready ||
+                    tournament.projection?.ready === false
+                  }
                   submit={wallet.submit}
+                  readReceipt={wallet.readStrategy}
                 />
               ))}
             </section>
-          )}
-          {tournament.winners && (
-            <section className="my-8 rounded-card bg-lavender/20 p-6">
-              <h2 className="text-2xl font-bold">The result is confirmed</h2>
-              <p className="my-3 text-muted">
-                Results are public onchain. Reveal the result here whenever
-                you’re ready.
-              </p>
-              <button
-                className={action}
-                onClick={() =>
-                  setRevealedId(showResults ? null : tournament.id)
-                }
-              >
-                {showResults ? "Hide result" : "Show result"}
-              </button>
-              {showResults && (
-                <p className="mt-5 text-xl font-bold">
-                  Champion: Yunipal #
-                  {tournament.seats[tournament.winners[2]]?.tokenId}
-                </p>
-              )}
-            </section>
-          )}
-          {tournament.phase === "settled" && (
-            <ArenaFilm
-              key={`${tournament.id}/${tournament.incarnation ?? "legacy"}`}
-              id={tournament.id}
-              incarnation={tournament.incarnation}
-              showResults={showResults}
-              fighters={context.data?.roster ?? []}
-            />
           )}
           {tournament.strategies && (
             <details className="my-6 rounded-card border border-line p-6">
@@ -677,24 +1033,45 @@ export function LiveArenaPage() {
               ))}
             </details>
           )}
+          <ArenaEvidence
+            key={`evidence/${tournament.id}`}
+            tournament={tournament}
+          />
         </>
       )}
-      {list.data && list.data.items.length > 0 && (
-        <section className="mt-12">
-          <h2 className="mb-4 text-2xl font-bold">Recent tournaments</h2>
-          <div className="flex flex-wrap gap-3">
-            {list.data.items.map((t) => (
-              <Link
-                key={t.id}
-                className="rounded-full border border-line px-5 py-3 font-semibold hover:bg-lavender/20"
-                to={`/arena/${t.id}`}
+      {list.data &&
+        (tournaments.some((t) => (id ? t.id !== id : t.phase !== "open")) ||
+          list.hasNextPage) && (
+          <section className="mt-12">
+            <h2 className="mb-4 text-2xl font-bold">
+              {id ? "More battles" : "Latest battles"}
+            </h2>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {tournaments
+                .filter((t) => (id ? t.id !== id : t.phase !== "open"))
+                .map((t) => (
+                  <ArenaTournamentCard
+                    key={t.id}
+                    tournament={t}
+                    wallet={address}
+                  />
+                ))}
+            </div>
+            {list.hasNextPage ? (
+              <button
+                className={cn(action, "mt-5")}
+                disabled={list.isFetchingNextPage}
+                onClick={() => void list.fetchNextPage()}
               >
-                #{t.id} · {phases[t.phase]}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+                {list.isFetchingNextPage ? (
+                  <ArenaLoading label="Loading more tournaments…" />
+                ) : (
+                  "Load more tournaments"
+                )}
+              </button>
+            ) : null}
+          </section>
+        )}
     </main>
   );
 }

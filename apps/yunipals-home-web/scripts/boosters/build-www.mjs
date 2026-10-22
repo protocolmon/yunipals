@@ -32,6 +32,7 @@ const child = spawnSync(
     "--import",
     "./scripts/register-typescript.mjs",
     "scripts/boosters/build-collection-live.mjs",
+    "--full-app",
     "--setup-sha",
     setupSha,
     "--standard-setup-sha",

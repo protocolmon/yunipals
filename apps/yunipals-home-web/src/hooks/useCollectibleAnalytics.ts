@@ -7,7 +7,7 @@ import type { AnalyticsChain } from "@/lib/analytics/events";
 export function useCollectibleAnalytics(
   loaded: boolean,
   localKey: string,
-  collection: "yunipals" | "islands",
+  collection: "yunipals" | "islands" | "exomon",
   chain: AnalyticsChain
 ) {
   const { choice, revision } = useAnalyticsConsent();

@@ -25,7 +25,6 @@ const chainConfig = {
       "https://eth.drpc.org"
     ]),
     [base.id]: rpcTransport([
-      ...(environment.baseRpcUrl ? [environment.baseRpcUrl] : []),
       "https://base-rpc.publicnode.com",
       "https://base.drpc.org"
     ]),

@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 import {
   fetchIsland,
+  islandOriginLabel,
   fetchIslands,
   islandDetailHref,
   islandOwnerHref,
@@ -11,6 +12,7 @@ import {
   parseIslandsFilters
 } from "@/lib/islandsIndexer";
 import { IndexerError } from "@/lib/yunipalsIndexer";
+import { environment } from "@/environment";
 
 const owner = "0x6baad25b4807860e9fc3a0d2b6d1da4c895cfca8";
 
@@ -37,6 +39,37 @@ test("island IDs stay separate from monster routes and preserve uint256 precisio
   }
 });
 
+test("Base routes, origin labels, and search filters keep same-number NFTs separate", () => {
+  assert.equal(
+    islandDetailHref("42", "base-islands-v2"),
+    "/collection/base-islands-v2/42"
+  );
+  assert.equal(
+    islandOwnerHref(owner, "base-islands-v2"),
+    `/?collection=islands&owner=${owner}&origin=airdrop`
+  );
+  assert.equal(
+    islandOriginLabel({ collectionId: "base-islands-v2" }),
+    "Airdropped · Base"
+  );
+  assert.equal(
+    islandOriginLabel({ collectionId: "ethereum-islands" }),
+    "Original · Ethereum"
+  );
+  const path = new URL(
+    islandsTokensPath(
+      parseIslandsFilters(new URLSearchParams("origin=airdrop&tokenId=42"))
+    ),
+    "https://example.com"
+  );
+  assert.equal(path.searchParams.get("origin"), "airdrop");
+  assert.equal(path.searchParams.get("tokenId"), "42");
+  assert.throws(() =>
+    parseIslandsFilters(new URLSearchParams("origin=unknown"))
+  );
+  assert.throws(() => parseIslandsFilters(new URLSearchParams("tokenId=0042")));
+});
+
 test("edition, owner and sort filters round-trip with the cursor in the Islands API scope", () => {
   const filters = parseIslandsFilters(
     new URLSearchParams(
@@ -47,7 +80,7 @@ test("edition, owner and sort filters round-trip with the cursor in the Islands 
     islandsTokensPath(filters, "opaque+/cursor="),
     "https://example.com"
   );
-  assert.equal(path.pathname, "/v2/collections/ethereum-islands/tokens");
+  assert.equal(path.pathname, "/v2/islands/tokens");
   assert.equal(path.searchParams.get("owner"), owner);
   assert.equal(path.searchParams.get("edition"), "Personal");
   assert.equal(path.searchParams.get("sort"), "token-id-desc");
@@ -69,10 +102,7 @@ test("island requests use the shared API errors and pass cancellation to fetch",
   try {
     globalThis.fetch = async (input, init) => {
       const url = new URL(String(input));
-      assert.equal(
-        url.pathname,
-        "/yunipals-indexer/v2/collections/ethereum-islands/tokens"
-      );
+      assert.equal(url.pathname, "/yunipals-indexer/v2/islands/tokens");
       assert.equal(init?.signal, controller.signal);
       return new Response(JSON.stringify({ items: [], nextCursor: null }));
     };
@@ -104,5 +134,38 @@ test("island requests use the shared API errors and pass cancellation to fetch",
     );
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test("staked browsing sends holding without a wallet and preserves combined filters", () => {
+  const enabled = environment.islandStakingEnabled;
+  try {
+    environment.islandStakingEnabled = true;
+    const filters = parseIslandsFilters(
+      new URLSearchParams(
+        "collection=islands&holding=staked&edition=Genesis&sort=token-id-desc"
+      )
+    );
+    const path = new URL(
+      islandsTokensPath(filters, "next-page"),
+      "https://example.com"
+    );
+    assert.equal(path.searchParams.get("holding"), "staked");
+    assert.equal(path.searchParams.has("owner"), false);
+    assert.equal(path.searchParams.get("edition"), "Genesis");
+    assert.equal(path.searchParams.get("sort"), "token-id-desc");
+    assert.equal(path.searchParams.get("cursor"), "next-page");
+    const walletPath = new URL(
+      islandsTokensPath({ ...filters, owner }),
+      "https://example.com"
+    );
+    assert.equal(walletPath.searchParams.get("holding"), "staked");
+    assert.equal(walletPath.searchParams.get("owner"), owner);
+
+    environment.islandStakingEnabled = false;
+    const disabled = new URL(islandsTokensPath(filters), "https://example.com");
+    assert.equal(disabled.searchParams.has("holding"), false);
+  } finally {
+    environment.islandStakingEnabled = enabled;
   }
 });

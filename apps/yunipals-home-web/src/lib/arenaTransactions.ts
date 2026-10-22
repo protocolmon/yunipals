@@ -4,9 +4,21 @@ import type {
   ArenaTransactionStatus
 } from "@protopals/yunipals-market-core/arena";
 
+export type ArenaEntryTarget = {
+  tournamentId: string;
+  nftChainId: number;
+  collection: Address;
+  tokenId: string;
+};
+
+export function arenaFighterKey(fighter: ArenaEntryTarget) {
+  return `${fighter.tournamentId}/${fighter.nftChainId}/${fighter.collection.toLowerCase()}/${fighter.tokenId}`;
+}
+
 export type PendingArenaTransaction = ArenaTransactionStatus & {
   wallet: Address;
   contract: Address;
+  fighter?: ArenaEntryTarget;
 };
 const storageKey = (wallet: Address, contract: Address) =>
   `yunipals/arena/transaction/v1/8453/${contract.toLowerCase()}/${wallet.toLowerCase()}`;
@@ -31,8 +43,7 @@ export function readArenaTransaction(
         "indexing",
         "indexed",
         "failed",
-        "delayed",
-        "reorged"
+        "delayed"
       ].includes(value.state)
     )
       return null;
@@ -70,34 +81,45 @@ export function newArenaTransaction(
   };
 }
 
+export function transactionFighter(value: PendingArenaTransaction | null) {
+  if (value?.action.kind === "entry") return value.action;
+  const fighter = value?.fighter;
+  if (
+    value?.action.kind !== "approval" ||
+    !fighter ||
+    fighter.tournamentId !== value.action.tournamentId ||
+    !Number.isSafeInteger(fighter.nftChainId) ||
+    !/^0x[0-9a-f]{40}$/i.test(fighter.collection) ||
+    !/^[0-9]+$/.test(fighter.tokenId)
+  )
+    return null;
+  return fighter;
+}
+
 export function transactionPending(value: PendingArenaTransaction | null) {
   return !!value && !["indexed", "failed"].includes(value.state);
 }
 
-export function transactionNeedsAudit(value: PendingArenaTransaction | null) {
-  return (
-    !!value &&
-    value.finalized !== true &&
-    ["indexed", "failed"].includes(value.state)
-  );
-}
-
 export function transactionLabel(value: PendingArenaTransaction) {
-  if (value.state === "reorged")
-    return "The chain changed. Your transaction is retained while we check its new result.";
+  const action =
+    value.action.kind === "approval"
+      ? "USDC approval"
+      : value.action.kind === "entry"
+        ? "Entry"
+        : "USDC claim";
   if (value.state === "failed")
     return "The transaction did not complete this action.";
   if (value.state === "delayed")
     return "Your transaction is retained. Its data update is taking longer than expected.";
   if (value.state === "confirming")
-    return "Transaction received. Waiting for chain confirmation…";
+    return `${action} included on Base. Checking confirmations and indexed result…`;
   if (value.state === "indexing")
-    return "Transaction confirmed. Updating tournament data…";
+    return `${action} confirmed. Updating indexed data…`;
   if (value.state === "indexed")
     return value.action.kind === "entry"
       ? "Entry confirmed and added to the tournament."
       : value.action.kind === "approval"
-        ? "USDC approval is ready. You can continue entering."
+        ? "USDC approval is ready. Complete your fighter’s entry next."
         : "USDC claimed. Your balance and withdrawal history are updated.";
-  return "Transaction submitted. Checking its result…";
+  return `${action} submitted. Checking its result…`;
 }

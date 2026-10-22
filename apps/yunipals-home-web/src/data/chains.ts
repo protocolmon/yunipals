@@ -56,3 +56,13 @@ export const chainDetails = {
     badgeClassName: "text-bnbchain ring-bnbchain/25"
   }
 } satisfies Record<ChainId, ChainDetails>;
+
+export type DisplayChainId = ChainId | "solana";
+
+export const collectionChainDetails = {
+  ...chainDetails,
+  solana: {
+    label: "Solana",
+    badgeClassName: "text-grape ring-grape/20"
+  }
+};

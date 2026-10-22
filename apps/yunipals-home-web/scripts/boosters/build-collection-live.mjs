@@ -16,6 +16,7 @@ import { validateBoosterSetup } from "../../src/lib/boosterSetup.ts";
 
 const { values } = parseArgs({
   options: {
+    "full-app": { type: "boolean", default: false },
     "setup-sha": { type: "string" },
     "standard-setup-sha": { type: "string" },
     output: {
@@ -69,7 +70,7 @@ if (values["standard-setup-sha"] !== undefined) {
   validateBoosterSetup(JSON.parse(standard), addresses, "standard");
 }
 Object.assign(process.env, {
-  VITE_COLLECTION_ONLY: "true",
+  VITE_COLLECTION_ONLY: values["full-app"] ? "false" : "true",
   VITE_BOOSTERS_ENABLED: "true",
   VITE_BOOSTER_REGISTRY: addresses.registry,
   VITE_BOOSTER_ENGINE: addresses.engine,
@@ -77,13 +78,17 @@ Object.assign(process.env, {
   VITE_BOOSTER_SETUP_SHA256: values["setup-sha"],
   VITE_BOOSTER_STANDARD_SETUP_SHA256: values["standard-setup-sha"] ?? "",
   VITE_YUNIPALS_INDEXER_URL: "https://api.yunipals.com/yunipals-indexer",
-  VITE_YUNIPALS_MARKETPLACE_URL: "",
-  VITE_ARENA_API_URL: "",
   VITE_SELF_HOSTED: "",
   // The license plugin emits directly into this fresh curated release.
   // This is build configuration, never a browser-exposed VITE_* value.
   YUNIPALS_LICENSE_OUTPUT: join(output, "THIRD_PARTY_LICENSES.txt")
 });
+// Preserve the main app's existing public service and feature configuration.
+// Only the temporary smoke-test preset disables unrelated sections.
+if (!values["full-app"]) {
+  process.env.VITE_YUNIPALS_MARKETPLACE_URL = "";
+  process.env.VITE_ARENA_API_URL = "";
+}
 await build({
   root: app,
   configFile: join(app, "vite.config.ts"),
@@ -100,6 +105,25 @@ const assets = [
   "sitemap.xml",
   "images/yunipals-logo.webp",
   "images/yunipals-social-card.jpg",
+  ...(values["full-app"]
+    ? [
+        "arena/rules-v1.json",
+        "images/bitcoin-unidragon-square.webp",
+        "images/element/yunipals-bnb-featured-600x400.jpg",
+        "images/opensea/logomark-blue.svg",
+        "images/opensea/yunipals-og-ethereum-banner-desktop.jpg",
+        "images/opensea/yunipals-og-ethereum-banner-mobile-wide.jpg",
+        "images/opensea/yunipals-og-ethereum-banner-mobile.jpg",
+        "images/yunipals-base-banner.webp",
+        "images/yunipals-bnb-banner-v2.webp",
+        "images/yunipals-bnb-banner.webp",
+        "images/yunipals-ethereum-banner.webp",
+        "images/yunipals-islands-banner.webp",
+        "images/yunipals-islands-square.webp",
+        "images/yunipals-polygon-banner.webp",
+        "images/yunipals-polygon-square.webp"
+      ]
+    : []),
   "boosters/mainnet-smoke-setup.json"
 ];
 if (values["standard-setup-sha"])
@@ -134,9 +158,11 @@ const entries = await files(output);
 const manifest = {
   format: "yunipals-collection-booster-frontend-v1",
   builtAt: new Date().toISOString(),
-  collectionOnly: true,
-  marketplaceEnabled: false,
-  arenaEnabled: false,
+  collectionOnly: !values["full-app"],
+  marketplaceEnabled: Boolean(
+    values["full-app"] && process.env.VITE_YUNIPALS_MARKETPLACE_URL
+  ),
+  arenaEnabled: values["full-app"],
   apiOrigin: process.env.VITE_YUNIPALS_INDEXER_URL,
   addresses,
   setupPackageSha256: values["setup-sha"],
@@ -157,8 +183,8 @@ console.log(
     manifestSha256: sha(manifestBytes),
     setupPackageSha256: values["setup-sha"],
     standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
-    collectionOnly: true,
-    marketplaceEnabled: false,
-    arenaEnabled: false
+    collectionOnly: manifest.collectionOnly,
+    marketplaceEnabled: manifest.marketplaceEnabled,
+    arenaEnabled: manifest.arenaEnabled
   })
 );
