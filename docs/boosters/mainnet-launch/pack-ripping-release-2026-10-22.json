@@ -1,0 +1,47 @@
+{
+  "format": "yunipals-pack-ripping-release-v1",
+  "observedAt": "2026-10-22T21:16:33.529530+00:00",
+  "canonicalOrigin": "https://www.yunipals.com",
+  "packPage": "https://www.yunipals.com/boosters",
+  "sourceApplication": "apps/yunipals-home-web",
+  "deployment": "dpl_AC8DHHiBQYXJ7NZmDcTdtNugPrX8",
+  "deploymentUrl": "https://yunipals-7u24yofe6-devving.vercel.app",
+  "releaseManifestSha256": "c235ccfd63fe0e322b4a4c414834ee926ac78c67089106f2018baf82980ad649",
+  "artwork": {
+    "path": "apps/yunipals-home-web/public/images/boosters/yunipals-pack-v1.png",
+    "sha256": "8c9c5a5ade9837920c2039195e89b26e2b6565f3ef2cd387f2480dd9919cf455",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "provider": "Codex built-in image generation",
+    "promptRecord": "docs/boosters/artwork-prototype/yunipals-pack-v1.md"
+  },
+  "changes": [
+    "Generated lavender foil pack image from official logo and approved Yunidragon artwork",
+    "Adapted Protobits rip seal, swipe/flick, card-up/wrapper-down extraction and reveal interaction",
+    "Wallet-free labelled demo; genuine reveal is gated on successful confirmed open and onchain Revealed state",
+    "Kept existing purchase approvals and wallet writes unchanged",
+    "Removed purchase section from Collection while retaining owned monsters",
+    "Replaced duplicate Battles placeholder with Grading and ScanSearch inspection icon"
+  ],
+  "checks": {
+    "typecheck": "PASSED",
+    "boosterUnitTests": 5,
+    "componentUiChecks": 6,
+    "componentUiEvidenceSha256": "cdebf6a75431f73ee80f69b6e9d30c5fab38e198b12d30f2ca43fd1bffd3c7f1",
+    "stagedOriginalReadOnlyChecks": 8,
+    "stagedOriginalEvidenceSha256": "c2484f324db39674b1ede3fabab688c90f3fc56e2c4ad639ae5c3632ed1cb758",
+    "liveCanonicalReadOnlyChecks": 5,
+    "liveCanonicalEvidenceSha256": "1ebe79d9896aaeaa4be333117473e9e4910d45291e48776f732966d123ff6488",
+    "liveErrors": 0,
+    "liveBadAssets": 0,
+    "mainnetBroadcasts": 0,
+    "publicSourceSecretScan": "PASSED"
+  },
+  "limitations": [
+    "Arena retains its existing prepared mode; production Arena API remains unconfigured",
+    "Genuine next-day claim test remains scheduled after the first rolling24-hour period",
+    "Broader unified-indexer migration remains active and incomplete"
+  ]
+}

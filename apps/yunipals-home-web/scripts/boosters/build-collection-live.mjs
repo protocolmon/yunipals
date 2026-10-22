@@ -105,6 +105,7 @@ const assets = [
   "sitemap.xml",
   "images/yunipals-logo.webp",
   "images/yunipals-social-card.jpg",
+  "images/boosters/yunipals-pack-v1.png",
   ...(values["full-app"]
     ? [
         "arena/rules-v1.json",

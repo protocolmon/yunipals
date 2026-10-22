@@ -227,7 +227,7 @@ try {
           href
         );
       }
-      assert(await nav.getByTitle("Battles are coming soon").isVisible());
+      assert(await nav.getByTitle("Grading is coming soon").isVisible());
       const tabs = page.getByRole("navigation", {
         name: "Collections",
         exact: true
@@ -552,7 +552,7 @@ try {
     });
     for (const name of ["Collection", "Leaderboard", "Arena", "Packs"])
       await nav.getByRole("link", { name, exact: true }).waitFor();
-    await nav.getByText("Battles · Coming soon", { exact: true }).waitFor();
+    await nav.getByText("Grading · Coming soon", { exact: true }).waitFor();
     await nav.getByRole("link", { name: "Leaderboard", exact: true }).click();
     await page.waitForURL(origin + "/leaderboard");
     assert.equal(
@@ -568,7 +568,7 @@ try {
       .click();
     await page.waitForURL(origin + "/boosters");
     await page.locator("#booster-packs article").first().waitFor();
-    await page.getByRole("heading", { name: "Pack #2", exact: true }).waitFor();
+    await page.getByText("Pack #2", { exact: true }).waitFor();
     assert(
       await page.getByText("1 PROTO", { exact: false }).first().isVisible()
     );

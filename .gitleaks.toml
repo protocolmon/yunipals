@@ -20,6 +20,7 @@ regexTarget = "secret"
 paths = [
   '''(^|/)apps/yunipals-home-web/public/boosters/mainnet-(smoke|standard)-setup\.json$''',
   '''(^|/)apps/yunipals-home-web/src/lib/boosterSetup\.test\.ts$''',
+  '''(^|/)apps/yunipals-home-web/scripts/test-booster-opening-ui\.mjs$''',
   '''(^|/)apps/yunipals-indexer/scripts/test-boosters-ponder\.mjs$''',
   '''(^|/)contracts/boosters/config/base-standard-v1\.draft\.json$''',
   '''(^|/)docs/boosters/mainnet-smoke/pack\.draft\.json$'''

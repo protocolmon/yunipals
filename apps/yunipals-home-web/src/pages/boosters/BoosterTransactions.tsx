@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
 import { parseEventLogs } from "viem";
 import { Link } from "react-router-dom";
@@ -10,9 +11,14 @@ import {
   readBoosterTransactionReceipt
 } from "@/lib/boosters";
 import { BoosterActionButton } from "./BoosterActionButton";
+import { BoosterPackOpening } from "./BoosterPackOpening";
 
 export function BoosterTransactions() {
   const { address } = useAccount();
+  const [opening, setOpening] = useState<{
+    hash: string;
+    wallet: string;
+  } | null>(null);
   const client = usePublicClient({ chainId: 8453 });
   const deployment = boosterAddresses();
   const refund = useQuery({
@@ -64,6 +70,7 @@ export function BoosterTransactions() {
               ...row,
               requestId: request.args.requestId.toString(),
               originalId: state.originalId.toString(),
+              opening: state.opening,
               status: [
                 "Unknown",
                 "Awaiting randomness",
@@ -78,6 +85,18 @@ export function BoosterTransactions() {
   });
   if (!address || (!query.data?.length && !refund.data && !query.error))
     return null;
+  const revealed =
+    opening?.wallet === address
+      ? query.data?.find(
+          (row) =>
+            row.hash === opening.hash &&
+            row.kind === "open" &&
+            row.status === "Revealed" &&
+            "opening" in row &&
+            row.opening === true &&
+            "originalId" in row
+        )
+      : undefined;
   return (
     <div
       className="mt-7 rounded-card border border-line bg-white p-5"
@@ -112,12 +131,26 @@ export function BoosterTransactions() {
               {row.kind === "approval"
                 ? "Approval"
                 : row.kind === "claim"
-                ? "Daily claim"
-                : row.kind === "open"
-                ? "Pack opening"
-                : "Transaction"}
+                  ? "Daily claim"
+                  : row.kind === "open"
+                    ? "Pack opening"
+                    : "Transaction"}
             </a>
             <span>{row.status}</span>
+            {row.kind === "open" &&
+              row.status === "Revealed" &&
+              "opening" in row &&
+              row.opening === true && (
+                <button
+                  type="button"
+                  className="rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape"
+                  onClick={() =>
+                    setOpening({ hash: row.hash, wallet: address })
+                  }
+                >
+                  Reveal Yunipal
+                </button>
+              )}
             {"originalId" in row && row.status === "Revealed" && (
               <Link
                 className="font-bold underline"
@@ -138,6 +171,16 @@ export function BoosterTransactions() {
           </li>
         ))}
       </ul>
+      {revealed &&
+        "originalId" in revealed &&
+        typeof revealed.originalId === "string" &&
+        deployment && (
+          <BoosterPackOpening
+            collection={deployment.monsters}
+            tokenId={revealed.originalId}
+            onClose={() => setOpening(null)}
+          />
+        )}
     </div>
   );
 }

@@ -200,13 +200,12 @@ try {
   const decline = page.getByRole("button", { name: "Decline", exact: true });
   if (await decline.isVisible()) await decline.click();
   const order = await page.evaluate(() =>
-    ["#top", "#booster-packs", "#collection"].map(
+    ["#top", "#collection"].map(
       (selector) => document.querySelector(selector).getBoundingClientRect().top
     )
   );
-  assert(order[0] < order[1] && order[1] < order[2]);
-  await page.getByRole("heading", { name: "Pack #2", exact: true }).waitFor();
-  assert(await page.getByText("1 PROTO", { exact: false }).first().isVisible());
+  assert(order[0] < order[1]);
+  assert.equal(await page.locator("#booster-packs").count(), 0);
   await page.locator("#collection article").first().scrollIntoViewIfNeeded();
   await page.waitForFunction(() =>
     [...document.querySelectorAll("#collection article img")].some(
@@ -214,13 +213,58 @@ try {
     )
   );
   report.checks.push(
-    "Deployed homepage: hero, active public pack #2, and real OG collection/art in order"
+    "Collection homepage keeps the real OG collection/art and pack navigation, without the purchase section"
   );
   await page
     .getByRole("link", { name: "Open booster packs", exact: true })
     .click();
   await page.waitForURL(origin + "/boosters");
-  await page.getByRole("heading", { name: "Pack #2", exact: true }).waitFor();
+  await page.getByText("Pack #2", { exact: true }).waitFor();
+  const packImage = page.locator("#booster-packs article > div > img").first();
+  await packImage.evaluate((img) => img.decode());
+  assert.deepEqual(
+    await packImage.evaluate((img) => [img.naturalWidth, img.naturalHeight]),
+    [1024, 1536]
+  );
+  await page
+    .getByRole("button", { name: "Try the opening", exact: true })
+    .click();
+  const opening = page.getByRole("dialog", {
+    name: "Yunipals pack opening",
+    exact: true
+  });
+  await opening
+    .getByText("Demo preview — no NFT is minted.", { exact: true })
+    .waitFor();
+  await opening.getByRole("button", { name: "Rip open", exact: true }).click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".yunipals-opening-dialog")?.dataset.stage ===
+      "extracting"
+  );
+  await opening
+    .getByRole("button", { name: "Pull out card", exact: true })
+    .click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".yunipals-opening-dialog")?.dataset.stage ===
+      "revealing"
+  );
+  await opening
+    .getByRole("button", { name: "Reveal Yunipal", exact: true })
+    .click();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".yunipals-opening-dialog")?.dataset.stage ===
+      "results"
+  );
+  await opening.locator(".tilt-card > img").evaluate((img) => img.decode());
+  await page.screenshot({ path: values.output + ".opening.png" });
+  await opening.getByRole("button", { name: "Done", exact: true }).click();
+  assert.equal(await opening.count(), 0);
+  report.checks.push(
+    "Generated pack artwork decodes; wallet-free demo rips, extracts and reveals a real published sample card"
+  );
   await page
     .locator("#booster-packs article")
     .getByRole("button", { name: "Connect wallet", exact: true })
@@ -237,7 +281,7 @@ try {
   await page
     .locator("#booster-packs article")
     .filter({
-      has: page.getByRole("heading", { name: "Pack #2", exact: true })
+      has: page.getByText("Pack #2", { exact: true })
     })
     .getByRole("button", { name: "Open pack", exact: true })
     .waitFor();
@@ -295,7 +339,7 @@ try {
     .getByRole("link", { name: "Open booster packs", exact: true })
     .click();
   await page.waitForURL(origin + "/boosters");
-  await page.getByRole("heading", { name: "Pack #2", exact: true }).waitFor();
+  await page.getByText("Pack #2", { exact: true }).waitFor();
   report.checks.push(
     "390px homepage and internal pack navigation fit without horizontal overflow"
   );

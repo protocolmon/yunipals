@@ -105,7 +105,6 @@ import {
   type TokenAttribute
 } from "@/lib/yunipalsIndexer";
 
-import { BoosterPackSection } from "@/pages/boosters/BoosterPackSection";
 import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
 
 import { CollectionTabs } from "./CollectionTabs";
@@ -825,11 +824,8 @@ function CollectionExplorer() {
         </div>
       </section>
 
-      {environment.boostersEnabled && (
-        <>
-          <BoosterPackSection />
-          {address && <BoosterCollection owner={address} />}
-        </>
+      {environment.boostersEnabled && address && (
+        <BoosterCollection owner={address} />
       )}
 
       <section id="collection" className="scroll-mt-24 px-4 py-12 sm:py-16">

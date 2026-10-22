@@ -1,6 +1,6 @@
 {
   "format": "yunipals-canonical-navigation-restoration-v1",
-  "observedAt": "2026-10-22T21:00:48.752196+00:00",
+  "observedAt": "2026-10-22T21:02:58.976182+00:00",
   "cause": "Canonical deployment incorrectly used the temporary collection-only launch preset",
   "sourceBaseline": "2d5cfd4a75d659fe65c442fcb54b759675aff638",
   "sourceApplication": "apps/yunipals-home-web",
@@ -23,9 +23,11 @@
     "independentMainSourceAndAssetReview": "PASSED",
     "stagedOriginalReadOnlyChecks": 8,
     "stagedBoosterReadOnlyChecks": "PASSED",
-    "liveBoosterReadOnlyChecks": "PENDING",
-    "liveOriginalReadOnlyChecks": "PENDING",
-    "mainnetBroadcasts": 0
+    "liveBoosterReadOnlyChecks": "PASSED",
+    "liveOriginalReadOnlyChecks": "PASSED",
+    "mainnetBroadcasts": 0,
+    "liveBoosterReadOnlyChecksEvidenceSha256": "b0142c24bb7376f9cb213357c7e2848e0a2d85e9b49a791482bf2b762a5c94b9",
+    "liveOriginalReadOnlyChecksEvidenceSha256": "5c8f51b9b2610822a20a1fff8899024885311257b03cf91facea308c104f6c5e"
   },
   "limitations": [
     "Original production Arena game API remains unconfigured; no real tournament flow claimed",
