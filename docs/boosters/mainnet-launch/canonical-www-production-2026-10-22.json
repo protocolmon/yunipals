@@ -37,6 +37,15 @@
     ],
     "otherHostsAndOriginalBytesPreserved": true
   },
-  "sourcePublication": "Pending reviewed source commit; not claimed published",
+  "sourcePublication": {
+    "status": "PUBLISHED",
+    "repository": "https://github.com/protocolmon/yunipals",
+    "branch": "codex/indexer-monorepo",
+    "sourceCommit": "e8145098221ca70fb33ce844916a31a878fee65a",
+    "sourceUrl": "https://github.com/protocolmon/yunipals/tree/e8145098221ca70fb33ce844916a31a878fee65a",
+    "mainBranchMerged": false,
+    "secretScan": "Pinned Gitleaks v8.30.1 passed on reviewed source/pixel closure",
+    "requiredReferenceAssetsIncluded": true
+  },
   "migration": "Historical replay continues; no source/consumer/database switch in this release"
 }
