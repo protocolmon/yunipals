@@ -1,4 +1,3 @@
-import { readFileSync, statSync } from "node:fs";
 import {
   createPublicClient,
   http,
@@ -11,17 +10,14 @@ import { privateKeyToAccount } from "viem/accounts";
 import { base, bsc, mainnet, polygon } from "viem/chains";
 import { rpcBudgetProxyUrl } from "@/rpcBudgetProxyRegistry";
 import { arenaTransport } from "./transport";
+import { readPrivateFile } from "./privateFile";
+
+export { readPrivateFile } from "./privateFile";
 
 function required(env: NodeJS.ProcessEnv, key: string) {
   const value = env[key]?.trim();
   if (!value) throw new Error(`Missing ${key}.`);
   return value;
-}
-export function readPrivateFile(path: string) {
-  const stat = statSync(path);
-  if (!stat.isFile() || (stat.mode & 0o077) !== 0)
-    throw new Error("Arena secret files must have owner-only permissions.");
-  return readFileSync(path, "utf8").trim();
 }
 export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   const contract = required(env, "ARENA_CONTRACT");

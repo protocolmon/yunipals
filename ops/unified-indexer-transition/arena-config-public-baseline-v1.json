@@ -1,0 +1,269 @@
+{
+  "format": "yunipals-arena-config-public-baseline-v1",
+  "sourceWiringSha256": "a8565aa24dbfbdd1c27cf2edc120f622e51e8a436cfa769393ae2d3129ea226b",
+  "sourceWiringObservedAt": "2026-10-20T21:21:39.955465+00:00",
+  "resolvedRelease": "/srv/yunipals-arena/releases/20261016-6ef08318/release",
+  "services": [
+    {
+      "unit": "yunipals-arena-api.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-server.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-api.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key",
+        "admission.key:/etc/yunipals-arena/admission.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-capacity.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-capacity.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-capacity.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-control.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-control.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-control.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key",
+        "referee.key:/etc/yunipals-arena/referee.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED",
+        "ARENA_REFEREE_KEY_FILE"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-lobby.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-lobby.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-lobby.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key",
+        "operator.key:/etc/yunipals-arena/operator.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED",
+        "ARENA_LOBBY_KEY_FILE"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-media.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-media.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-media.service",
+      "DropInPaths": "/etc/systemd/system/yunipals-arena-media.service.d/storage-allocation.conf",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-projector.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-projector.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-projector.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-referee.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/arena.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-referee.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-referee.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED"
+      ]
+    },
+    {
+      "unit": "yunipals-arena-settlement.service",
+      "environmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env"
+      ],
+      "execStartPublicTokens": [
+        "/usr/bin/env",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "<REDACTED_ARGUMENT>",
+        "/srv/yunipals-arena/runtime/node-v24.18.1",
+        "dist/arena-settlement.mjs"
+      ],
+      "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+      "User": "yunipals-arena",
+      "Group": "yunipals-arena",
+      "LoadCredential": "[unprintable]",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/yunipals-arena-settlement.service",
+      "DropInPaths": "",
+      "credentialFileReferences": [
+        "strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key",
+        "referee.key:/etc/yunipals-arena/referee.key"
+      ],
+      "inlineSettingNames": [
+        "ARENA_ADMISSION_KEY_FILE",
+        "ARENA_ENCRYPTION_KEY_FILE",
+        "ARENA_ENTRIES_ENABLED",
+        "ARENA_REFEREE_KEY_FILE"
+      ]
+    }
+  ],
+  "privateValueBaselineIncluded": false,
+  "databaseRolePrivilegesIncluded": false
+}

@@ -1,0 +1,26 @@
+[Unit]
+Description=Yunipals official v4 trait and leaderboard one-shot refresh
+After=postgresql.service
+
+[Service]
+Type=exec
+User=root
+Group=root
+WorkingDirectory=/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer
+ExecStartPre=/usr/bin/env -i PATH=/opt/node-v24.18.1/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF-8 TZ=UTC /opt/node-v24.18.1/bin/node --env-file=/opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-inline.env --env-file=/etc/yunipals-indexer/indexer.env --env-file=/etc/yunipals-marketplace/production/indexer-rpc.env --env-file=/etc/yunipals-metadata-cutover.env --env-file=/opt/yunipals-ops/query-capacity.env --env-file=/var/backups/yunipals-metadata-readview-v4-candidates-v1-20261022/yunipals-leaderboard.selectors.env --env-file=/opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-capacity.env --import tsx /opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-readiness.mjs
+ExecStart=/usr/bin/env -i PATH=/opt/node-v24.18.1/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF-8 TZ=UTC /usr/bin/python3 -I -B /opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-capacity-watch.py
+Restart=no
+RuntimeMaxSec=1500
+TimeoutStartSec=30
+TimeoutStopSec=20
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RuntimeDirectory=yunipals-generation-v4-refresh-20261022
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes

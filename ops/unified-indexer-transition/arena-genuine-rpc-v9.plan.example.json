@@ -1,0 +1,9 @@
+{
+  "format": "yunipals-arena-genuine-rpc-v9",
+  "runId": "20261021-genuine-i",
+  "parent": "/mnt/HC_Volume_107222036/arena-genuine-rpc",
+  "anvil": "/opt/yunipals-unified/operations/arena-genuine-rpc-20261021/bin/anvil",
+  "ffmpegSha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41",
+  "ffprobeSha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f",
+  "contractsManifestSha256": "a7409fb4b583a29322a81787f3fc48927eeb62103c9714aa34edbbc095d2b6c6"
+}

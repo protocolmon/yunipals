@@ -1,0 +1,4 @@
+[Service]
+# Match the accepted source recovery policy; retain the other resource limits.
+Environment=NODE_OPTIONS=--max-old-space-size=4096
+MemoryMax=6442450944

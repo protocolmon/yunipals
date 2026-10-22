@@ -26,3 +26,54 @@ paths = [
   '''(^|/)docs/boosters/mainnet-smoke/pack\.draft\.json$'''
 ]
 regexes = ['''(?i)^0xe5a54a517cde8ed48a336b173044b1138aa2c1a3$''']
+
+# Exact public migration identifiers and owner hash bindings (19 findings).
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v5\\.py$"]
+regexes = [
+  "^c62778869948e0a94a190a1edd839d9c982ea3fd4b82cc69c82776f0499fb58e$",
+  "^f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\.py$"]
+regexes = [
+  "^0c055ac01166d9b4218f498f795d16e2f895d17b60c8b96dd82890415306d400$",
+  "^d0e269b0f3d43cc0cea2bcf53cc3b390357576e8901988942d17ffeb11f5cc4a$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/consumer\\-retained\\-read\\-dependencies\\-v1\\.json$"]
+regexes = [
+  "^d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SQL schema identifiers"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/metadata\\-readview\\-v4\\-grants\\.review\\.sql$"]
+regexes = [
+  "^yunipals_ownership_35cdcb32_v3$",
+  "^yunipals_ownership_35cdcb32_v4$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SQL schema identifiers"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/ownership\\-common\\-grants\\.review\\.sql$"]
+regexes = [
+  "^unified_shadow_20261020_7e7375b0$",
+  "^yunipals_ownership_35cdcb32_v3$",
+]

@@ -1,0 +1,72 @@
+TEMPORARY BOOSTER SOURCE TO COMBINED SOURCE: READ-ONLY PARITY
+
+This is an acceptance input to the final one-indexer handover. It neither changes
+the feature API/queue schema nor stops a service. Keep the temporary source and
+its exact owned nine-table read admission until reader handover and the required
+new indexed event have passed.
+
+Operator: ops/unified-indexer-transition/booster-source-parity.py
+Run on the existing production host against the existing yunipals_backfill DB.
+The script runs only SELECTs in READ ONLY / REPEATABLE READ transactions and
+exports counts, SHA256 digests, native progress/build data and header evidence.
+It does not export monster ownership rows, event arguments or receipt bodies.
+It makes no provider requests, changes no grants and controls no services.
+
+Cheap preflight, with no feature-table scan:
+  python3 -I -B booster-source-parity.py
+
+It reads both _ponder_meta/_ponder_checkpoint records, using the pinned native
+75-digit checkpoint decoder. A partial checkpoint proves only the preceding
+whole block. Both exact builds must be normal, locked, ready and fresh before
+the full comparison is attempted. While combined replay is intentionally stopped,
+the expected result is incomplete/stale combined state, never a parity pass.
+
+After combined replay is complete and healthy, obtain a fresh canonical Base
+header through the existing approved free-first RPC observer. Save this exact
+normalized public shape (values below are descriptions, not a usable witness):
+  {"chainId":8453,"number":<integer>,"hash":"0x<64 lowercase hex digits>",
+   "timestamp":<integer unix seconds>,"observedAt":"<UTC ISO timestamp>"}
+
+Choose a block covered completely by BOTH sources and retained in the combined
+native chain_block table. The observation and header must be no more than180
+seconds old. A last-booster-event hash cannot replace this quiet-block header.
+Then run:
+  python3 -I -B booster-source-parity.py --header /absolute/public-header.json
+
+The authoritative comparison takes both sources' headers and every relation in
+ONE database snapshot. It requires:
+ - complete native coverage through the chosen common boundary;
+ - combined chain_block number/hash/time equal to the external canonical header;
+ - no booster events after that boundary in EITHER source;
+ - only the deployed registry/engine/monster addresses in the feature journal;
+ - identical native columns, counts, sorted SHA256 digests and EXCEPT ALL results
+   for type/catalog rules, originals/rights, requests, monsters, refunds, engine
+   pause state, last feature checkpoint, and the complete booster event journal.
+
+Framework heights may differ during a quiet interval. Empty feature-event tails
+prove that their current feature states still describe the common boundary.
+If a newer event exists, retry at a later qualified boundary. Do not filter a
+latest-state row by its last update height or invent a historical state reducer.
+Event argument objects are normalized as JSON; all block/transaction hashes,
+traits, rights, owners and amounts remain exact. No fields are ignored.
+
+Statement timeout45s, lock timeout1s and subprocess timeout55s bound the full
+read. Preflight is limited to5s. A timeout is not a pass. Retain its actual report
+alongside the protected source/runtime/admission receipts. This comparison alone
+does not prove ownership of an administrative action or authorize a role change.
+
+Local verification:
+  python3 -B ops/unified-indexer-transition/booster-source-parity.test.py
+  python3 -B ops/unified-indexer-transition/booster-source-parity.postgres-test.py
+
+Six unit controls pass. The real PostgreSQL test copies native Ponder DDL into a
+new uniquely named disposable DB, then verifies correct parity and refusal of
+changed rights, transfers, pending state, refunds, burns, event hashes, native
+header hashes, relation shapes and identical-but-post-boundary events. It drops
+only its own scratch DB in finally. These tests make no production/provider calls.
+
+After a successful real production report, the separate coordinated handover must
+switch BOTH feature API and artwork queue to the combined schema, verify fresh
+public reads and a genuine newly indexed event, and then stop/disable the old
+booster service and every restart path. Preserve its schema/admission for the
+documented rollback window. None of those actions is performed by this checker.

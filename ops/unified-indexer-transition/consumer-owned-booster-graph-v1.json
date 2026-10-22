@@ -1,0 +1,244 @@
+{
+  "format": "yunipals-owned-booster-source-graph-v1",
+  "schema": "yunipals_boosters_launch_v1",
+  "schemaOid": "74518314",
+  "ownerOid": "73004621",
+  "buildId": "6d581272ce",
+  "tables": [
+    {
+      "name": "_ponder_checkpoint",
+      "oid": "74518322",
+      "owner": "73004621"
+    },
+    {
+      "name": "_ponder_meta",
+      "oid": "74518315",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__admin_role_event",
+      "oid": "74518382",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__arena_credit",
+      "oid": "74518637",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__arena_seat",
+      "oid": "74518622",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__arena_tournament",
+      "oid": "74518607",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_checkpoint",
+      "oid": "74518517",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_engine_state",
+      "oid": "74518487",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_event",
+      "oid": "74518502",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_monster",
+      "oid": "74518457",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_original",
+      "oid": "74518427",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_refund",
+      "oid": "74518472",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_request",
+      "oid": "74518442",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__booster_type",
+      "oid": "74518412",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__canonical_event",
+      "oid": "74518577",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__chain_block",
+      "oid": "74518547",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__chain_checkpoint",
+      "oid": "74518532",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__contract_owner_event",
+      "oid": "74518397",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__indexer_source",
+      "oid": "74518562",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__token",
+      "oid": "74518337",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__token_lifecycle",
+      "oid": "74518352",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__transaction_candidate",
+      "oid": "74518592",
+      "owner": "73004621"
+    },
+    {
+      "name": "_reorg__transfer_event",
+      "oid": "74518367",
+      "owner": "73004621"
+    },
+    {
+      "name": "admin_role_event",
+      "oid": "74518375",
+      "owner": "73004621"
+    },
+    {
+      "name": "arena_credit",
+      "oid": "74518630",
+      "owner": "73004621"
+    },
+    {
+      "name": "arena_seat",
+      "oid": "74518615",
+      "owner": "73004621"
+    },
+    {
+      "name": "arena_tournament",
+      "oid": "74518600",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_checkpoint",
+      "oid": "74518510",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_engine_state",
+      "oid": "74518480",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_event",
+      "oid": "74518495",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_monster",
+      "oid": "74518450",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_original",
+      "oid": "74518420",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_refund",
+      "oid": "74518465",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_request",
+      "oid": "74518435",
+      "owner": "73004621"
+    },
+    {
+      "name": "booster_type",
+      "oid": "74518405",
+      "owner": "73004621"
+    },
+    {
+      "name": "canonical_event",
+      "oid": "74518570",
+      "owner": "73004621"
+    },
+    {
+      "name": "chain_block",
+      "oid": "74518540",
+      "owner": "73004621"
+    },
+    {
+      "name": "chain_checkpoint",
+      "oid": "74518525",
+      "owner": "73004621"
+    },
+    {
+      "name": "contract_owner_event",
+      "oid": "74518390",
+      "owner": "73004621"
+    },
+    {
+      "name": "indexer_source",
+      "oid": "74518555",
+      "owner": "73004621"
+    },
+    {
+      "name": "token",
+      "oid": "74518330",
+      "owner": "73004621"
+    },
+    {
+      "name": "token_lifecycle",
+      "oid": "74518345",
+      "owner": "73004621"
+    },
+    {
+      "name": "transaction_candidate",
+      "oid": "74518585",
+      "owner": "73004621"
+    },
+    {
+      "name": "transfer_event",
+      "oid": "74518360",
+      "owner": "73004621"
+    }
+  ],
+  "sourceReceipt": "/var/backups/yunipals-booster-launch-20261022/runtime-infinity-fix/runtime.json",
+  "sourceReceiptSha256": "2b99d122926ab9e6813a11e685f420efa50b213ec97a10df5fd0eecef2bc513f",
+  "sourceUnit": "yunipals-booster-launch.service",
+  "sourceDefinitionSha256": "3d0dc54eabbeb806363305926c45b6a18cdae0eea84a4faa0f059f2eb3c8fcb0",
+  "v4Relations": [
+    "yunipals_ownership_35cdcb32_v4._unified_read_release",
+    "yunipals_ownership_35cdcb32_v4.admin_role_event",
+    "yunipals_ownership_35cdcb32_v4.base_metadata_event",
+    "yunipals_ownership_35cdcb32_v4.base_metadata_scan",
+    "yunipals_ownership_35cdcb32_v4.contract_owner_event",
+    "yunipals_ownership_35cdcb32_v4.source_status",
+    "yunipals_ownership_35cdcb32_v4.token",
+    "yunipals_ownership_35cdcb32_v4.token_lifecycle",
+    "yunipals_ownership_35cdcb32_v4.transfer_event"
+  ]
+}

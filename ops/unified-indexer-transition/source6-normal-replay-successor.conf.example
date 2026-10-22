@@ -1,0 +1,18 @@
+# DRAFT ONLY. No source start, public cutover or financial-policy change is authorized by this file.
+[Unit]
+StartLimitIntervalSec=300
+StartLimitBurst=5
+After=network-online.target postgresql.service yunipals-market-production-rpc@ethereum.service yunipals-market-production-rpc@base.service yunipals-market-production-rpc@polygon.service yunipals-market-production-rpc@bnb.service
+Wants=network-online.target postgresql.service yunipals-market-production-rpc@ethereum.service yunipals-market-production-rpc@base.service yunipals-market-production-rpc@polygon.service yunipals-market-production-rpc@bnb.service
+
+[Service]
+ExecStart=
+ExecStart=/usr/bin/env -i /opt/node-v24.18.1/bin/node --max-old-space-size=4096 --env-file=/var/lib/yunipals-unified-shadow/20261020-008028af-a/launch.env --env-file=/opt/yunipals-unified/operations/free-replay-20261020/source6-free-runtime-v2.env /var/lib/yunipals-unified-shadow/20261020-008028af-a/apps/yunipals-indexer/node_modules/ponder/dist/esm/bin/ponder.js start --schema unified_shadow_20261020_7e7375b0 --hostname 127.0.0.1 --port 9024
+RuntimeMaxSec=infinity
+Restart=on-failure
+RestartSec=15
+MemoryMax=6442450944
+MemorySwapMax=0
+LimitCORE=0
+BindReadOnlyPaths=
+BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/source6-base-priority/rpc-preflight.ts:/var/lib/yunipals-unified-shadow/20261020-008028af-a/apps/yunipals-indexer/lib/unified/rpc-preflight.ts /opt/yunipals-unified/operations/free-replay-20261020/source6-selective-historical-v3:/var/lib/yunipals-unified-shadow/20261020-008028af-a/node_modules/.pnpm/ponder@0.17.5_patch_hash=srrmuiqb5i2rcvch3r4b6lqznm_@opentelemetry+api@1.9.1_@types+node@22.1_tdbbixbrmtn4q2y4g3krukmyfy/node_modules/ponder/dist/esm/sync-historical
