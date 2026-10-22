@@ -38,7 +38,7 @@ fields while preserving read-only, ownership, descriptor and mount-line checks.
 A later build operator can be published separately once its source and
 qualification are final.
 
-Private environment values, database/ownership exports and actual runtime
+Private environment values, database/ownership exports and unredacted private runtime
 receipts are excluded. Production operations continue to require their existing
 protected configuration, receipts and retained generated artifacts. Public
 templates and structural policies are included. Bulk media and unrelated
@@ -56,3 +56,17 @@ historical baseline archive is preserved by
 [frozen-baseline-addendum.json](frozen-baseline-addendum.json). The V1 terminal
 fixture failure and fresh V2 preparation/launch remain separate public records;
 these additions do not claim a completed V2 runtime build or deployment.
+
+The correction and frozen baseline were published in commit
+[`b270265`](https://github.com/protocolmon/yunipals/commit/b270265db73076885dcbf10a85a095b40e1b7f08).
+All archived source hashes were verified independently, and both the finite
+current-source review and extracted archive passed secret scans before publication.
+
+Later public records separately document the
+[completed credential build](../arena-credential-build-success-v2-2026-10-22.json),
+[unselected installation](../arena-credential-installed-v2-2026-10-22.json), and
+[schema maintenance with runtime recovery](../arena-owner-maintenance-runtime-recovery-2026-10-22.json).
+The schema migration passed; the application candidate failed the production
+rules-hash guard and its eight owned overrides were removed. Original workers
+and their configuration were restored without reverting the schema or private
+records. Native Arena adoption requires the complete production feature rebase.

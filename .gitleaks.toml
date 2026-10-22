@@ -77,3 +77,32 @@ regexes = [
   "^unified_shadow_20261020_7e7375b0$",
   "^yunipals_ownership_35cdcb32_v3$",
 ]
+
+[[rules.allowlists]]
+description = "Exact public completed Arena build and review digests"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-owner-migration-v11\.py$''']
+regexes = [
+  "^203073f7f2e7018b3030501dc7374825b0cd1978260cb7f780ec59171a7f036e$",
+  "^4782a418113b72a5fb4d7428d6a3c99c480b0d394a1a10d3883106e914988dfa$"
+]
+
+[[rules.allowlists]]
+description = "Exact public Arena build and reviewed-function AST digests in tests"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-owner-migration-v11-test\.py$''']
+regexes = [
+  "^203073f7f2e7018b3030501dc7374825b0cd1978260cb7f780ec59171a7f036e$",
+  "^4782a418113b72a5fb4d7428d6a3c99c480b0d394a1a10d3883106e914988dfa$",
+  "^7a22688e7638589d6d35fa358539cd747fa95b95bbff7d932d432ae2728efd51$",
+  "^e6a3b33e53365ad4f4f2cb2a890d1baf8b6eb36269c1c362212e31733765e230$"
+]
+
+[[rules.allowlists]]
+description = "Exact public generated Arena API unit digest in completed build evidence"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)docs/unified-indexer/arena-credential-build-success-v2-2026-10-22\.json$''']
+regexes = ["^e8338ee2c84933d745ab306f0f5bf7d76d1fe0901e531b32b4eae87d2b1782b1$"]
