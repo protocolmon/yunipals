@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AM02",
+  "version": "arena-islands-v1",
+  "geometry": "A broad dark indigo stone disc has three large rounded basalt boulders hovering only a small gap above three separate circular sockets: one in the rear centre, one front-left and one front-right. Their surfaces have distinct broad shapes, their undersides are visible and each casts a strong contact shadow onto its socket. A monumental upright dark halo stands behind the court with restrained cyan and violet edge reflections. Wide open gaps connect both starts through the centre and around all rocks. No debris or fighter is floating freely.",
+  "secondarySurfaces": [
+    "Dry Stone socket rims"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "gravityHalo",
+    "openCentre",
+    "opposingStarts",
+    "shortCollisionPaths",
+    "threeBoulders",
+    "threeSockets"
+  ],
+  "signatureFeature": {
+    "id": "gravity-halo",
+    "value": "Gravity Halo",
+    "rarityPool": [
+      "Mythic"
+    ],
+    "residentRole": "Energizer",
+    "physicalObjects": "A rear dark halo holds three large basalt boulders low above distinct stone sockets. Their undersides, sockets and contact shadows make the small hovering gap unmistakable.",
+    "activation": "The resident starts the halo at the shared opening signal. A supported heavy physical or pressure attack can dislodge a boulder along its actual contact direction.",
+    "consequence": "The hovering boulders provide movable solid cover. A heavy hit pushes one along a short, declared collision path; it can break a guard or force a dodge. Once it leaves its support zone it lands and stays where it fell.",
+    "counterplay": [
+      "Keep clear of the visible push line.",
+      "Flank or fly around the boulder before the attack commits.",
+      "Bait the heavy push, dodge its path and counter the attacker."
+    ],
+    "limits": [
+      "The halo affects only its three assigned boulders; fighter speed and gravity stay normal.",
+      "Displacement requires a supported attack with enough force and its normal cost; no free remote boulder control.",
+      "Every collision needs continuous travel and contact. Fallen boulders never reset or vanish mid-bout."
+    ],
+    "visualEvidence": [
+      "A legal attack contacts one of the hovering boulders.",
+      "That same boulder follows the impact direction.",
+      "The defender dodges, blocks or takes a visible collision with recoil.",
+      "The rock lands, persists and a legal finishing strike or recorded collision causes defeat."
+    ],
+    "requirements": {
+      "biomes": [
+        "Ancient Grounds",
+        "Highland"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Hovering Boulders"
+      ],
+      "geometry": [
+        "gravityHalo",
+        "threeBoulders",
+        "threeSockets",
+        "shortCollisionPaths",
+        "openCentre"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Energizer",
+    "palette": "Midnight Opal",
+    "finish": "dark pearlescent",
+    "featureBinding": "gravity-halo",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-right raised verge beside the halo's base control, outside all short rock collision paths."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

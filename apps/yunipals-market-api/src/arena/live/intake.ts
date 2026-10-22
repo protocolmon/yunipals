@@ -85,7 +85,10 @@ export class ArenaIntake {
     private readonly verify: ArenaSignatureVerifier,
     readonly nativeSource?: Pick<NativeArenaSource, "read"> &
       Partial<
-        Pick<NativeArenaSource, "credit" | "list" | "work" | "transaction">
+        Pick<
+          NativeArenaSource,
+          "credit" | "list" | "work" | "transaction" | "browse"
+        >
       >,
     readonly sourceSelection?: ArenaSourceBinding
   ) {
@@ -438,6 +441,43 @@ export class ArenaIntake {
       );
       return { seat: input.seat, commitment, locked: true };
     });
+  }
+
+  async ownStrategy(id: string, wallet: Address, seat: number) {
+    await this.ready();
+    const context = await this.tournamentContext(id);
+    if (
+      context.state.seats[seat]?.player.toLowerCase() !== wallet.toLowerCase()
+    )
+      throw new ArenaRequestError(403, "This seat belongs to another wallet.");
+    const row = (
+      await this.pool.query<Submission & { created_at: Date }>(
+        `SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2
+        AND seat=$3 AND wallet=$4 AND incarnation=$5`,
+        [this.deployment, id, seat, wallet.toLowerCase(), context.incarnation]
+      )
+    ).rows[0];
+    if (!row) return { seat, locked: false as const };
+    const value = this.cipher.open<{ text: string; salt: Hex }>(
+      `${context.cipherContext}/seat/${seat}`,
+      row.ciphertext
+    );
+    const current = await this.tournamentContext(id);
+    if (
+      current.incarnation !== context.incarnation ||
+      current.state.seats[seat]?.player.toLowerCase() !== wallet.toLowerCase()
+    )
+      throw new ArenaRequestError(
+        409,
+        "The tournament opening changed. Refresh before trying again."
+      );
+    return {
+      seat,
+      locked: true as const,
+      commitment: row.commitment,
+      text: value.text,
+      receivedAt: row.created_at.toISOString()
+    };
   }
 
   // Only a confirmed InputFrozen matching this bundle allows the public view to open it.

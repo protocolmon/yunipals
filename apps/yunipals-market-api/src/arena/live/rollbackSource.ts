@@ -2,7 +2,11 @@ import type { Pool, PoolClient } from "pg";
 import type { PublicClient } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { manifestDigest } from "@protopals/yunipals-indexer-server/identity";
-import type { ArenaEventEvidence } from "@protopals/yunipals-indexer-server/arena";
+import type {
+  ArenaBrowseRequest,
+  ArenaBrowseWalletTotals,
+  ArenaEventEvidence
+} from "@protopals/yunipals-indexer-server/arena";
 import {
   nativeTournamentState,
   type NativeArenaObservation,
@@ -58,7 +62,10 @@ export function arenaRollbackSourceId(
  */
 export class ArenaRollbackSource
   implements
-    Pick<NativeArenaSource, "read" | "list" | "work" | "credit" | "transaction">
+    Pick<
+      NativeArenaSource,
+      "read" | "list" | "work" | "credit" | "transaction" | "browse"
+    >
 {
   readonly deployment: string;
   constructor(
@@ -318,6 +325,201 @@ export class ArenaRollbackSource
       };
     });
   }
+  /** Browsing rollback uses only the isolated, verified public endpoint. Never
+   * read the operational deployment's retired tournament or credit projection. */
+  async browse(
+    request: ArenaBrowseRequest
+  ): ReturnType<NativeArenaSource["browse"]> {
+    const limit = request.limit ?? 25;
+    if (
+      !["tournaments", "wallet", "island", "timeline", "rewards"].includes(
+        request.kind
+      ) ||
+      !Number.isSafeInteger(limit) ||
+      limit < 1 ||
+      limit > 100 ||
+      (request.wallet !== undefined &&
+        !/^0x[0-9a-f]{40}$/.test(request.wallet)) ||
+      [request.before, request.islandId, request.tournamentId].some(
+        (v) => v != null && (!decimal(v) || BigInt(v) >= 2n ** 256n)
+      ) ||
+      (request.role !== undefined &&
+        !["any", "entrant", "host"].includes(request.role)) ||
+      (request.status !== undefined &&
+        !["all", "active", "completed", "refunded"].includes(request.status)) ||
+      (["wallet", "rewards"].includes(request.kind) && !request.wallet) ||
+      (request.kind === "island" && !request.islandId) ||
+      (request.kind === "timeline" && !request.tournamentId) ||
+      (request.role && request.role !== "any" && !request.wallet) ||
+      (request.cursorAnchor &&
+        (!decimal(request.cursorAnchor.number) ||
+          !hash(request.cursorAnchor.hash)))
+    )
+      throw new Error("Invalid rollback public browse request.");
+    return this.snapshot(async (db, frame) => {
+      const cursorAnchor = request.cursorAnchor ?? {
+        number: frame.cursor,
+        hash: frame.cursor_hash
+      };
+      if (
+        BigInt(cursorAnchor.number) > BigInt(frame.cursor) ||
+        (
+          await this.client.getBlock({
+            blockNumber: BigInt(cursorAnchor.number)
+          })
+        ).hash !== cursorAnchor.hash
+      )
+        throw new Error("Rollback history cursor anchor changed or expired.");
+      const result: Awaited<ReturnType<NativeArenaSource["browse"]>> = {
+        ...this.coverage(frame),
+        cursorAnchor,
+        rows: [],
+        events: [],
+        totals: null,
+        island: null,
+        amount: "0",
+        withdrawals: "0"
+      };
+      if (request.kind === "tournaments" || request.kind === "island") {
+        const selected = (
+          await db.query<{ id: string }>(
+            `SELECT id::text FROM yunipals_arena.tournament t WHERE deployment=$1
+          AND ($2::numeric IS NULL OR id<$2)
+          AND ($3::text IS NULL OR ($4 IN ('any','entrant') AND EXISTS(SELECT 1 FROM jsonb_array_elements(state->'seats') s WHERE s->>'player'=$3))
+            OR ($4 IN ('any','host') AND state->>'islandBeneficiary'=$3))
+          AND ($5='all' OR ($5='active' AND state->>'phase' IN ('open','strategies','resolving'))
+            OR ($5='completed' AND state->>'phase'='settled') OR ($5='refunded' AND state->>'phase'='expired'))
+          AND ($6::text IS NULL OR state->>'islandId'=$6) ORDER BY id DESC LIMIT $7`,
+            [
+              this.deployment,
+              request.before ?? null,
+              request.wallet ?? null,
+              request.role ?? "any",
+              request.status ?? "all",
+              request.islandId ?? null,
+              limit
+            ]
+          )
+        ).rows;
+        for (const { id } of selected) {
+          const t = await this.tournament(db, frame, id);
+          if (!t) throw new Error("Rollback tournament changed in snapshot.");
+          result.rows.push({
+            id,
+            state: t.state,
+            incarnation: t.incarnation,
+            inputFrozen: t.inputFrozen
+          });
+        }
+      }
+      if (request.kind === "island") {
+        result.island = (
+          await db.query<{ hosted: string; released: string; pending: string }>(
+            `SELECT count(*)::text AS hosted,
+          (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*400000)::text AS released,
+          (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*400000)::text AS pending
+          FROM yunipals_arena.tournament WHERE deployment=$1 AND state->>'islandId'=$2`,
+            [this.deployment, request.islandId]
+          )
+        ).rows[0]!;
+      }
+      if (request.kind === "wallet") {
+        result.totals = (
+          await db.query<ArenaBrowseWalletTotals>(
+            `WITH participants AS (
+          SELECT state,(SELECT count(*) FROM jsonb_array_elements(state->'seats') s WHERE s->>'player'=$2) AS own,
+            state->>'islandBeneficiary'=$2 AS host,state->>'treasury'=$2 AS treasury,
+            state->'seats'->((state->'winners'->>2)::int)->>'player'=$2 AS winner
+          FROM yunipals_arena.tournament WHERE deployment=$1)
+          SELECT count(*) FILTER(WHERE own>0)::text AS entered_tournaments,coalesce(sum(own),0)::text AS entered_seats,
+            count(*) FILTER(WHERE host)::text AS hosted_tournaments,count(*) FILTER(WHERE state->>'phase'='settled' AND winner)::text AS championships,
+            (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND winner)*6000000)::text AS winnings,
+            (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND host)*400000)::text AS hosting,
+            (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND treasury)*1600000)::text AS operations,
+            coalesce(sum(own*2000000) FILTER(WHERE state->>'phase'='expired'),0)::text AS refunds,
+            coalesce(sum((CASE WHEN winner THEN 6000000 ELSE 0 END)+(CASE WHEN host THEN 400000 ELSE 0 END)+(CASE WHEN treasury THEN 1600000 ELSE 0 END))
+              FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL),0)::text AS pending FROM participants`,
+            [this.deployment, request.wallet]
+          )
+        ).rows[0]!;
+        result.amount =
+          (
+            await db.query<{ amount: string }>(
+              "SELECT amount::text FROM yunipals_arena.credit WHERE deployment=$1 AND wallet=$2",
+              [this.deployment, request.wallet]
+            )
+          ).rows[0]?.amount ?? "0";
+        result.withdrawals = (
+          await db.query<{ amount: string }>(
+            `SELECT coalesce(sum((args->>'amount')::numeric),0)::text AS amount FROM yunipals_arena.chain_event
+          WHERE deployment=$1 AND event_name='Claimed' AND lower(args->>'player')=$2 AND block_number<=$3`,
+            [this.deployment, request.wallet, frame.cursor]
+          )
+        ).rows[0]!.amount;
+      }
+      if (request.kind === "rewards" || request.kind === "timeline") {
+        if (
+          request.kind === "timeline" &&
+          !(await this.tournament(db, frame, request.tournamentId!))
+        )
+          throw new Error("Rollback tournament not found.");
+        const events = (
+          await db.query<Event & { state: unknown | null }>(
+            `SELECT e.block_number::text,e.block_hash,e.transaction_hash,e.log_index,e.event_name,e.args,t.state
+          FROM yunipals_arena.chain_event e LEFT JOIN yunipals_arena.tournament t ON t.deployment=e.deployment AND t.id::text=e.args->>'id'
+          WHERE e.deployment=$1 AND e.block_number<=$2 AND ($3::numeric IS NULL OR e.block_number::numeric*4294967296+e.log_index+1<$3)
+          AND (${request.kind === "timeline" ? "e.args->>'id'=$4" : "e.event_name IN ('PayoutsReleased','TournamentExpired','Claimed') AND ((e.event_name='Claimed' AND lower(e.args->>'player')=$4) OR (e.event_name<>'Claimed' AND (t.state->>'islandBeneficiary'=$4 OR t.state->>'treasury'=$4 OR EXISTS(SELECT 1 FROM jsonb_array_elements(t.state->'seats') s WHERE s->>'player'=$4))))"})
+          ORDER BY e.block_number ${request.kind === "timeline" ? "ASC" : "DESC"},e.log_index ${request.kind === "timeline" ? "ASC" : "DESC"} LIMIT $5`,
+            [
+              this.deployment,
+              frame.cursor,
+              request.before ?? null,
+              request.kind === "timeline"
+                ? request.tournamentId
+                : request.wallet,
+              limit
+            ]
+          )
+        ).rows;
+        for (const e of events) {
+          this.evidence(e, frame);
+          if (e.event_name !== "Claimed") {
+            const t = await this.tournament(db, frame, String(e.args.id));
+            if (
+              !t ||
+              BigInt(e.block_number) < BigInt(t.opened.blockNumber) ||
+              (e.block_number === t.opened.blockNumber &&
+                e.log_index < t.opened.logIndex)
+            )
+              throw new Error(
+                "Rollback history event predates its current opening."
+              );
+          }
+          result.events.push({
+            n: String(
+              BigInt(e.block_number) * 4294967296n + BigInt(e.log_index) + 1n
+            ),
+            event_name: e.event_name,
+            args: e.args,
+            transaction_hash: e.transaction_hash,
+            block_number: e.block_number,
+            log_index: e.log_index,
+            state: e.state
+          });
+        }
+      }
+      if (
+        (
+          await this.client.getBlock({
+            blockNumber: BigInt(cursorAnchor.number)
+          })
+        ).hash !== cursorAnchor.hash
+      )
+        throw new Error("Rollback history cursor changed during read.");
+      return result;
+    });
+  }
+
   async transaction(
     transactionHash: string,
     options: Parameters<NativeArenaSource["transaction"]>[1] = {}

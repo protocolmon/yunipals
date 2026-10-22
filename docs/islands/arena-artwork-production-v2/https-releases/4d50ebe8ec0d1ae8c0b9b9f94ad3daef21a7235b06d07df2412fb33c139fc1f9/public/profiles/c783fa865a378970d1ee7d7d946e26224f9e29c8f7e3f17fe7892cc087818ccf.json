@@ -1,0 +1,77 @@
+{
+  "id": "arena-islands-v1:AU02",
+  "version": "arena-islands-v1",
+  "geometry": "Two broad turf terraces occupy the front and rear halves of the island, joined by two wide cream-earth ramps on the left and right. Exactly two low rounded boulders sit near the sheltered centre, one toward each starting side. A chunky open wind arch occupies the rear-right verge. Its visible corridor follows the outer right edge, with two short pennants showing direction and a clear calm centre.",
+  "secondarySurfaces": [
+    "Compacted earth ramps"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "opposingStarts",
+    "shelteredCentre",
+    "twoBoulders",
+    "walkableRamps",
+    "windArch",
+    "windCorridor"
+  ],
+  "signatureFeature": {
+    "id": "wind-gate",
+    "value": "Wind Gate",
+    "rarityPool": [
+      "Uncommon"
+    ],
+    "residentRole": "Guide",
+    "physicalObjects": "A rounded wind arch stands behind two broad, connected terraces. A narrow marked wind corridor crosses one edge of the arena; the centre remains sheltered.",
+    "activation": "The shared match rules declare the gust schedule and direction. The resident lowers a visible pennant before each gust; grass and pennants move in the same direction.",
+    "consequence": "An exposed airborne fighter or eligible light projectile drifts sideways in the corridor. A fighter can time a dive, push an opponent into the corridor or attack from its sheltered edge.",
+    "counterplay": [
+      "Stay in the sheltered centre during the warning.",
+      "Land or brace before entering the corridor.",
+      "Use a supported attack whose travel is unaffected by the declared gust rule."
+    ],
+    "limits": [
+      "Gusts affect a declared area and eligible objects; they never randomly reverse.",
+      "The arch creates no speed change outside its corridor.",
+      "The resident provides the same warning to both fighters and never targets either one."
+    ],
+    "visualEvidence": [
+      "Pennant and grass signal the approaching gust.",
+      "Wind crosses the same visible corridor.",
+      "A wing or eligible projectile visibly drifts, or the defender braces.",
+      "A fighter's attack exploits or fails to exploit that displacement."
+    ],
+    "requirements": {
+      "biomes": [
+        "Highland",
+        "Coastline"
+      ],
+      "ground": [
+        "Firm Turf",
+        "Dry Stone",
+        "Loose Sand"
+      ],
+      "cover": [
+        "Open",
+        "Scattered Boulders"
+      ],
+      "geometry": [
+        "windArch",
+        "windCorridor",
+        "shelteredCentre",
+        "walkableRamps"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Guide",
+    "palette": "Sky Blue",
+    "finish": "soft matte",
+    "featureBinding": "wind-gate",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-left verge beside a short pennant pole, with a clear view of the arch and centre."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

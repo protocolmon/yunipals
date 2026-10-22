@@ -28,6 +28,11 @@ process.once("SIGINT", () => {
 });
 while (!stopped) {
   try {
+    await runtime.identityAnalysis.step(
+      key,
+      Number(process.env.ARENA_IDENTITY_ALLOWANCE_MICROUSD ?? "0"),
+      Date.parse(process.env.ARENA_IDENTITY_ALLOWANCE_UNTIL ?? "")
+    );
     // One unfinished tournament per worker tick. Claims and media run separately.
     // Deadlines and finalized projection readiness are rechecked at submission.
     const row = (

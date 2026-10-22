@@ -120,6 +120,17 @@ export async function migrateArena(pool: Pool) {
         WHERE state IN ('submitted','confirming','indexing');
       CREATE INDEX IF NOT EXISTS arena_client_transaction_wallet
         ON yunipals_arena.client_transaction(deployment,wallet,created_at);
+      CREATE TABLE IF NOT EXISTS yunipals_arena.identity_job (
+        deployment text NOT NULL REFERENCES yunipals_arena.deployment(id),
+        key text NOT NULL, wallet text NOT NULL, metadata jsonb NOT NULL,
+        request_id text NOT NULL UNIQUE, state text NOT NULL DEFAULT 'queued',
+        artwork bytea, profile jsonb, profile_hash text, provider_id text, usage jsonb,
+        reserved_microusd bigint NOT NULL DEFAULT 0 CHECK(reserved_microusd>=0),
+        created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+        PRIMARY KEY(deployment,key)
+      );
+      CREATE INDEX IF NOT EXISTS arena_identity_queue ON yunipals_arena.identity_job(deployment,state,created_at);
+      ALTER TABLE yunipals_arena.identity_job ADD COLUMN IF NOT EXISTS profile_hash text;
     `);
     await migrateArenaIdentities(db);
     await migrateArenaDisclosure(db);

@@ -70,3 +70,25 @@ The schema migration passed; the application candidate failed the production
 rules-hash guard and its eight owned overrides were removed. Original workers
 and their configuration were restored without reverting the schema or private
 records. Native Arena adoption requires the complete production feature rebase.
+
+The complete production feature rebase is now recorded separately in
+[the source inventory](../arena-live-compat-source-inventory-2026-10-22.json) and
+[local validation](../arena-live-compat-local-validation-2026-10-22.json).
+It retains the native source and external-effect guards while restoring the
+actual production catalog, artwork admission, funding, history and recovery
+behavior. The candidate computes the deployed rules hash; 213 regression tests,
+21 independent acceptance tests and five native PostgreSQL read-model groups
+passed. Its 36 bundles and source maps were built and checked against current
+source bytes. These are local qualification results, not production adoption.
+
+The original [source overlay](arena-live-compat-overlay.tar.gz) and
+[validation archive](arena-live-compat-validation.tar.gz) preserve the exact
+reviewed inputs and public local evidence. The
+[build overlay](arena-live-compat-build-overlay.tar.gz) adds the eight acceptance
+files without changing the business source; its
+[manifest](../arena-live-compat-build-overlay-manifest-2026-10-22.json) pins each
+file. Public island images remain a separate retained asset set:
+[all 898 local image hashes match their metadata](../arena-modern-retained-assets-local-check-2026-10-22.json).
+Offline relocation, actual production asset/credential qualification and the
+runtime replacement remain separate gates. The completed operational schema
+migration must not be rerun.

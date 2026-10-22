@@ -19,6 +19,30 @@ import {
 import { mediaFolder, mediaIncarnation } from "./mediaPaths";
 export { mediaFolder } from "./mediaPaths";
 
+/** Publication changes retained bytes and provider balances. Invalidate admission
+ * capacity atomically; a concurrent stale measurement must not reopen intake. */
+export async function markArenaMediaReady(
+  pool: Pool,
+  deployment: string,
+  id: string,
+  filmSha256: string
+) {
+  await transaction(pool, async (db) => {
+    await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+      `arena/capacity/${deployment}`
+    ]);
+    const updated = await db.query(
+      "UPDATE yunipals_arena.media_job SET state='ready',detail=NULL,film_sha256=$3,updated_at=clock_timestamp() WHERE deployment=$1 AND tournament_id=$2 AND incarnation='legacy' AND state<>'ready'",
+      [deployment, id, filmSha256]
+    );
+    if (updated.rowCount)
+      await db.query(
+        "DELETE FROM yunipals_arena.capacity WHERE deployment=$1",
+        [deployment]
+      );
+  });
+}
+
 const hashBytes = (b: Uint8Array) =>
   createHash("sha256").update(b).digest("hex");
 
@@ -233,7 +257,18 @@ export class ArenaMedia {
           "docs/arena/identity-registry-v1/references",
           f.imageSha256 + ".img"
         );
-        const bytes = await readFile(source);
+        const reviewed =
+          input.roster.find((r) => r.id === f.id)?.identityVersion ===
+          "reviewed-artwork-v1";
+        const bytes = reviewed
+          ? await readFile(source)
+          : (
+              await this.pool.query<{ artwork: Buffer }>(
+                `SELECT artwork FROM yunipals_arena.identity_job WHERE deployment=$1 AND state='ready' AND profile->>'imageSha256'=$2 LIMIT 1`,
+                [deployment, f.imageSha256]
+              )
+            ).rows[0]?.artwork;
+        if (!bytes) throw new Error("Verified fighter artwork is missing.");
         if (hashBytes(bytes) !== f.imageSha256)
           throw new Error("Fighter artwork changed.");
         const file = `references/${f.imageSha256}.img`;
@@ -434,10 +469,7 @@ export class ArenaMedia {
           );
         });
       } else
-        await this.pool.query(
-          "UPDATE yunipals_arena.media_job SET state='ready',detail=NULL,film_sha256=$3,updated_at=now() WHERE deployment=$1 AND tournament_id=$2 AND incarnation='legacy'",
-          [deployment, id, receipt.sha256]
-        );
+        await markArenaMediaReady(this.pool, deployment, id, receipt.sha256);
       return { state: "ready" };
     } finally {
       try {

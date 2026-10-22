@@ -6,13 +6,26 @@ import { runwareCreditMicrousd } from "./capacity";
 import { boundedBody } from "./mediaApi";
 import { arenaRuntime } from "./runtime";
 import { arenaNativeConfiguration } from "./nativeSource";
+import { arenaOpenaiFundingMode } from "./funding";
+import {
+  arenaMediaStorageBudget,
+  ARENA_MEDIA_QUOTA_BYTES,
+  ARENA_MEDIA_RESERVED_BYTES
+} from "./storage";
 
 const key = process.env.RUNWARE_API_KEY,
   storage = process.env.ARENA_MEDIA_ROOT;
-const allowance = Number(
-  process.env.ARENA_OPENAI_CREDIT_BUDGET_MICROUSD ?? "0"
-);
-const expiresAt = Date.parse(process.env.ARENA_OPENAI_BUDGET_EXPIRES_AT ?? "");
+const fundingMode = arenaOpenaiFundingMode();
+// Zeroed pilot fields mean "not used" in ongoing mode, not a provider balance.
+// Per-battle reservations and usage remain recorded.
+const allowance =
+  fundingMode === "ongoing"
+    ? 0
+    : Number(process.env.ARENA_OPENAI_CREDIT_BUDGET_MICROUSD ?? "0");
+const expiresAt =
+  fundingMode === "ongoing"
+    ? 0
+    : Date.parse(process.env.ARENA_OPENAI_BUDGET_EXPIRES_AT ?? "");
 if (
   !key ||
   !storage ||
@@ -21,7 +34,7 @@ if (
   !Number.isSafeInteger(expiresAt)
 )
   throw new Error(
-    "Capacity worker requires Runware access, storage and an explicit expiring referee allowance."
+    "Capacity worker requires Runware access, storage and valid OpenAI funding configuration."
   );
 const runtime = await arenaRuntime({
     native: arenaNativeConfiguration().mode === "unified"
@@ -36,8 +49,21 @@ process.once("SIGINT", () => {
 });
 try {
   while (!stopped) {
+    let measuredSince: string | undefined;
     try {
+      measuredSince = (
+        await runtime.pool.query<{ measured_at: string }>(
+          "SELECT clock_timestamp()::text AS measured_at"
+        )
+      ).rows[0]!.measured_at;
       await runtime.service.ready();
+      const mediaStorage = await arenaMediaStorageBudget(
+        storage,
+        Number(process.env.ARENA_MEDIA_QUOTA_BYTES ?? ARENA_MEDIA_QUOTA_BYTES),
+        Number(
+          process.env.ARENA_MEDIA_RESERVED_BYTES ?? ARENA_MEDIA_RESERVED_BYTES
+        )
+      );
       const taskUUID = randomUUID();
       // Account response also contains team/key metadata: never persist or log it.
       // Official API: https://runware.ai/docs/models-api/account-management
@@ -93,17 +119,22 @@ try {
         base.getBalance({ address: operator, blockNumber: block.number }),
         statfs(storage)
       ]);
-      await runtime.capacity.save({
-        runwareMicrousd,
-        openaiBudgetMicrousd: allowance,
-        openaiBudgetExpiresAt: expiresAt,
-        vrfAvailableWei: available.toString(),
-        vrfQuoteWei: quote.toString(),
-        vrfMaxWei: maximum.toString(),
-        refereeGasWei: refereeGas.toString(),
-        operatorGasWei: operatorGas.toString(),
-        diskFreeBytes: disk.bavail * disk.bsize
-      });
+      await runtime.capacity.save(
+        {
+          runwareMicrousd,
+          openaiFundingMode: fundingMode,
+          openaiBudgetMicrousd: allowance,
+          openaiBudgetExpiresAt: expiresAt,
+          vrfAvailableWei: available.toString(),
+          vrfQuoteWei: quote.toString(),
+          vrfMaxWei: maximum.toString(),
+          refereeGasWei: refereeGas.toString(),
+          operatorGasWei: operatorGas.toString(),
+          diskFreeBytes: disk.bavail * disk.bsize,
+          ...mediaStorage
+        },
+        measuredSince
+      );
       console.log("Arena operating-capacity snapshot refreshed.");
     } catch {
       // Invalidate immediately; do not continue signing admissions on a failed check.
@@ -116,9 +147,20 @@ try {
       );
     }
     // Five-minute health checks; short waits allow prompt graceful shutdown.
-    for (let seconds = 0; seconds < 300 && !stopped; seconds += 5)
+    for (let seconds = 0; seconds < 300 && !stopped; seconds += 5) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
+      if (stopped) break;
+      try {
+        const published = await runtime.pool.query(
+          "SELECT 1 FROM yunipals_arena.media_job WHERE deployment=$1 AND state='ready' AND updated_at>$2 LIMIT 1",
+          [runtime.config.deployment.id, measuredSince]
+        );
+        if (published.rowCount) break;
+      } catch {
+        // Keep the regular backoff on a database outage; never add RPC retries.
+      }
+    }
   }
 } finally {
-  await runtime.close();
+  await runtime.pool.end();
 }

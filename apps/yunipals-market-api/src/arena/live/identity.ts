@@ -20,6 +20,7 @@ export type IdentityProfile = Pick<
   color: string;
   horn: string;
   imageSha256: string;
+  source?: "artwork-analysis-v1";
 };
 export type FighterSnapshot = Fighter & {
   chainId: number;
@@ -29,7 +30,7 @@ export type FighterSnapshot = Fighter & {
   imageSha256: string;
   metadataSha256: string;
   identityProfileSha256: string;
-  identityVersion: "reviewed-artwork-v1";
+  identityVersion: "reviewed-artwork-v1" | "artwork-analysis-v1";
 };
 
 /** Indexer metadata is data, never prompt instructions. Only reviewed image-bound
@@ -39,40 +40,7 @@ export function compileIdentity(
   payload: unknown,
   profiles: IdentityProfile[]
 ): FighterSnapshot {
-  if (
-    !supportedArenaNft(nft.nftChainId, nft.collection) ||
-    !/^[1-9][0-9]{0,77}$/.test(nft.tokenId) ||
-    BigInt(nft.tokenId) >= 2n ** 256n
-  )
-    throw new ArenaRequestError(400, "Choose a supported Yunipal NFT.");
-  const token = (payload as { token?: Record<string, unknown> } | null)?.token;
-  if (
-    !token ||
-    token.chain_id !== nft.nftChainId ||
-    token.chain !== chains[nft.nftChainId] ||
-    token.token_id !== nft.tokenId ||
-    typeof token.contract_address !== "string" ||
-    token.contract_address.toLowerCase() !== nft.collection.toLowerCase() ||
-    !Array.isArray(token.attributes)
-  )
-    throw new ArenaRequestError(
-      503,
-      "NFT metadata is incomplete or belongs to a different token."
-    );
-  const trait = (name: string) => {
-    const entries = (
-      token.attributes as Array<{ trait_type?: unknown; value?: unknown }>
-    ).filter((a) => a?.trait_type === name);
-    if (entries.length !== 1 || typeof entries[0]?.value !== "string")
-      throw new ArenaRequestError(
-        503,
-        "NFT identity traits are missing or ambiguous."
-      );
-    return entries[0].value;
-  };
-  const species = trait("Type"),
-    color = trait("Color"),
-    horn = trait("Horn");
+  const { token, species, color, horn } = identityMetadata(nft, payload);
   const profile = profiles.find(
     (p) =>
       p.image === token.image &&
@@ -112,8 +80,61 @@ export function compileIdentity(
     locomotion: profile.locomotion,
     metadataSha256: sha256(canonicalJson(metadata)),
     identityProfileSha256: sha256(canonicalJson(profile)),
-    identityVersion: "reviewed-artwork-v1"
+    identityVersion: profile.source ?? "reviewed-artwork-v1"
   };
+}
+
+export function identityMetadata(nft: AdmissionRequest, payload: unknown) {
+  if (
+    !supportedArenaNft(nft.nftChainId, nft.collection) ||
+    !/^[1-9][0-9]{0,77}$/.test(nft.tokenId) ||
+    BigInt(nft.tokenId) >= 2n ** 256n
+  )
+    throw new ArenaRequestError(400, "Choose a supported Yunipal NFT.");
+  const token = (payload as { token?: Record<string, unknown> } | null)?.token;
+  if (
+    !token ||
+    token.chain_id !== nft.nftChainId ||
+    token.chain !== chains[nft.nftChainId] ||
+    token.token_id !== nft.tokenId ||
+    typeof token.contract_address !== "string" ||
+    token.contract_address.toLowerCase() !== nft.collection.toLowerCase() ||
+    !Array.isArray(token.attributes)
+  )
+    throw new ArenaRequestError(
+      503,
+      "NFT metadata is incomplete or belongs to a different token."
+    );
+  const trait = (name: string) => {
+    const entries = (
+      token.attributes as Array<{ trait_type?: unknown; value?: unknown }>
+    ).filter((a) => a?.trait_type === name);
+    if (entries.length !== 1 || typeof entries[0]?.value !== "string")
+      throw new ArenaRequestError(
+        503,
+        "NFT identity traits are missing or ambiguous."
+      );
+    if (
+      entries[0].value.length > 100 ||
+      /[\u0000-\u001f]/.test(entries[0].value)
+    )
+      throw new ArenaRequestError(503, "NFT identity traits are invalid.");
+    return entries[0].value;
+  };
+  const species = trait("Type"),
+    color = trait("Color"),
+    horn = trait("Horn");
+  if (
+    typeof token.image !== "string" ||
+    !/^https:\/\/drive\.polychainmonsters\.com\/ipfs\/[A-Za-z0-9]+$/.test(
+      token.image
+    )
+  )
+    throw new ArenaRequestError(
+      503,
+      "NFT artwork must use the official image gateway."
+    );
+  return { token, species, color, horn, image: token.image };
 }
 
 export function loadIdentityProfiles(root: string) {
@@ -146,7 +167,19 @@ export function loadIdentityProfiles(root: string) {
   return data.profiles;
 }
 
-export function indexerMetadata(fetcher: typeof fetch = fetch) {
+export function indexerMetadata(
+  fetcher: typeof fetch = fetch,
+  baseUrl = "https://api.yunipals.com/yunipals-indexer"
+) {
+  if (
+    ![
+      "https://api.yunipals.com/yunipals-indexer",
+      "http://127.0.0.1:9011"
+    ].includes(baseUrl)
+  )
+    throw new Error(
+      "Arena metadata requires the configured official indexer endpoint."
+    );
   return async (nft: AdmissionRequest): Promise<unknown> => {
     if (
       !supportedArenaNft(nft.nftChainId, nft.collection) ||
@@ -154,7 +187,7 @@ export function indexerMetadata(fetcher: typeof fetch = fetch) {
     )
       throw new Error("Unsupported NFT.");
     const response = await fetcher(
-      `https://api.yunipals.com/yunipals-indexer/v1/tokens/${chains[nft.nftChainId]}/${nft.tokenId}`,
+      `${baseUrl}/v1/tokens/${chains[nft.nftChainId]}/${nft.tokenId}`,
       {
         headers: {
           Origin: "https://www.yunipals.com",
@@ -195,7 +228,12 @@ export class ArenaIdentities {
     private readonly deployment: string,
     private readonly profiles: IdentityProfile[],
     private readonly load: (nft: AdmissionRequest) => Promise<unknown>,
-    private readonly context?: (id: string) => Promise<{ incarnation: string }>
+    private readonly context?: (id: string) => Promise<{ incarnation: string }>,
+    private readonly resolve?: (
+      nft: AdmissionRequest,
+      payload: unknown,
+      wallet?: string
+    ) => Promise<IdentityProfile>
   ) {}
 
   private async selected(id: string, expectedIncarnation?: string) {
@@ -246,7 +284,8 @@ export class ArenaIdentities {
   async ensure(
     id: string,
     nft: AdmissionRequest,
-    expectedIncarnation?: string
+    expectedIncarnation?: string,
+    wallet?: string
   ) {
     const incarnation = await this.selected(id, expectedIncarnation);
     const prior = await this.readAt(id, nft, incarnation);
@@ -254,7 +293,7 @@ export class ArenaIdentities {
     const key = `${id}/${incarnation}/${nft.nftChainId}/${nft.collection.toLowerCase()}/${nft.tokenId}`;
     const pending = this.pending.get(key);
     if (pending) return pending;
-    const work = this.create(id, nft, incarnation);
+    const work = this.create(id, nft, incarnation, wallet);
     this.pending.set(key, work);
     try {
       return await work;
@@ -263,8 +302,26 @@ export class ArenaIdentities {
     }
   }
 
-  private async create(id: string, nft: AdmissionRequest, incarnation: string) {
-    const snapshot = compileIdentity(nft, await this.load(nft), this.profiles);
+  private async create(
+    id: string,
+    nft: AdmissionRequest,
+    incarnation: string,
+    wallet?: string
+  ) {
+    const payload = await this.load(nft);
+    const metadata = identityMetadata(nft, payload);
+    const known = this.profiles.some(
+      (p) =>
+        p.image === metadata.image &&
+        p.species === metadata.species &&
+        p.color === metadata.color &&
+        p.horn === metadata.horn
+    );
+    const profiles =
+      known || !this.resolve
+        ? this.profiles
+        : [await this.resolve(nft, payload, wallet)];
+    const snapshot = compileIdentity(nft, payload, profiles);
     if (((await this.context?.(id))?.incarnation ?? "legacy") !== incarnation)
       throw new ArenaRequestError(
         409,

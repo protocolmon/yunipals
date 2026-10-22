@@ -1,7 +1,11 @@
 import type { Pool } from "pg";
+import { transaction } from "@/db/pool";
 import { ArenaIntake, ArenaRequestError } from "./intake";
+import type { ArenaOpenaiFundingMode } from "./funding";
+import { ARENA_MEDIA_TOURNAMENT_RESERVED_BYTES } from "./storage";
 
 export type CapacitySnapshot = {
+  openaiFundingMode?: ArenaOpenaiFundingMode;
   runwareMicrousd: number;
   openaiBudgetMicrousd: number;
   openaiBudgetExpiresAt: number;
@@ -11,6 +15,9 @@ export type CapacitySnapshot = {
   refereeGasWei: string;
   operatorGasWei: string;
   diskFreeBytes: number;
+  mediaStoredBytes?: number;
+  mediaQuotaBytes?: number;
+  mediaReserveBytes?: number;
 };
 const integer = (value: unknown): value is number =>
   Number.isSafeInteger(value) && Number(value) >= 0;
@@ -18,6 +25,7 @@ const wei = (value: unknown) =>
   typeof value === "string" &&
   /^(0|[1-9][0-9]*)$/.test(value) &&
   BigInt(value) < 2n ** 256n;
+
 type CapacityTournament = {
   id: string;
   phase: string;
@@ -58,7 +66,21 @@ export function runwareCreditMicrousd(payload: unknown, taskUUID: string) {
   return Math.floor(usd * 1000000);
 }
 export function validateCapacity(value: CapacitySnapshot) {
+  const mediaFields = [
+    value.mediaStoredBytes,
+    value.mediaQuotaBytes,
+    value.mediaReserveBytes
+  ];
+  const mediaValid =
+    mediaFields.every((v) => v === undefined) ||
+    (mediaFields.every(integer) &&
+      value.mediaReserveBytes! > 0 &&
+      value.mediaStoredBytes! + value.mediaReserveBytes! <=
+        value.mediaQuotaBytes!);
   if (
+    !mediaValid ||
+    (value.openaiFundingMode !== undefined &&
+      !["capped", "ongoing"].includes(value.openaiFundingMode)) ||
     !integer(value.runwareMicrousd) ||
     !integer(value.openaiBudgetMicrousd) ||
     !integer(value.openaiBudgetExpiresAt) ||
@@ -76,8 +98,9 @@ export function validateCapacity(value: CapacitySnapshot) {
 }
 
 /** Reads cached health only. UI/admission never polls providers or scans the chain.
- * OpenAI's allowance is an explicitly prefunded cumulative operator ceiling,
- * NOT an inferred account balance. Expired allowances close new admission. */
+ * Capped mode uses the pilot's explicit cumulative allowance and expiry. Ongoing
+ * mode uses provider billing with the existing per-battle request limits; neither
+ * mode treats the OpenAI allowance as a measured account balance. */
 export class ArenaCapacity {
   constructor(
     private readonly pool: Pool,
@@ -87,12 +110,29 @@ export class ArenaCapacity {
   get indexerMode() {
     return this.service?.indexerMode ?? "legacy";
   }
-  async save(value: CapacitySnapshot) {
+  async save(value: CapacitySnapshot, observedAfter?: string) {
     validateCapacity(value);
-    await this.pool.query(
-      "INSERT INTO yunipals_arena.capacity(deployment,snapshot,checked_at) VALUES($1,$2,now()) ON CONFLICT(deployment) DO UPDATE SET snapshot=excluded.snapshot,checked_at=excluded.checked_at",
-      [this.deployment, value]
-    );
+    await transaction(this.pool, async (db) => {
+      await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+        `arena/capacity/${this.deployment}`
+      ]);
+      if (
+        observedAfter &&
+        (
+          await db.query(
+            "SELECT 1 FROM yunipals_arena.media_job WHERE deployment=$1 AND state='ready' AND updated_at>$2 LIMIT 1",
+            [this.deployment, observedAfter]
+          )
+        ).rowCount
+      )
+        throw new Error(
+          "Media finished during capacity measurement; refresh storage and funds."
+        );
+      await db.query(
+        "INSERT INTO yunipals_arena.capacity(deployment,snapshot,checked_at) VALUES($1,$2,now()) ON CONFLICT(deployment) DO UPDATE SET snapshot=excluded.snapshot,checked_at=excluded.checked_at",
+        [this.deployment, value]
+      );
+    });
   }
   async check(newLobby: boolean) {
     const health = (
@@ -109,7 +149,8 @@ export class ArenaCapacity {
         "New entries are temporarily paused while operating capacity is checked."
       );
     const h = validateCapacity(health.snapshot);
-    if (h.openaiBudgetExpiresAt <= Date.now())
+    const ongoing = h.openaiFundingMode === "ongoing";
+    if (!ongoing && h.openaiBudgetExpiresAt <= Date.now())
       return unavailable(
         "New entries are paused until the referee allowance is renewed."
       );
@@ -145,19 +186,39 @@ export class ArenaCapacity {
     );
     if (
       newLobby &&
-      (active.length >= 2 ||
+      ((!ongoing && active.length >= 2) ||
         rows.some((r) => r.phase === "open" && r.seats < 4))
     )
       return unavailable(
         "The current tournament must progress before another lobby opens."
       );
+    if (ongoing) {
+      // Reserve storage for every accepted film instead of imposing a fixed
+      // pilot tournament count. Retained assets continue to consume the quota.
+      const reserve = Math.max(
+        h.mediaReserveBytes ?? 0,
+        (active.length + Number(newLobby)) *
+          ARENA_MEDIA_TOURNAMENT_RESERVED_BYTES
+      );
+      if (
+        h.mediaStoredBytes === undefined ||
+        h.mediaQuotaBytes === undefined ||
+        h.mediaStoredBytes + reserve > h.mediaQuotaBytes ||
+        h.diskFreeBytes < reserve + 2_000_000_000
+      )
+        return unavailable(
+          "New entries are paused while queued battle storage is replenished."
+        );
+    }
     const usage = (
       await this.pool.query<{
         referee_cost: string;
+        identity_cost: string;
         media_unfinished: string;
         media_reserved: string;
       }>(
         `SELECT coalesce(sum(coalesce(actual_microusd,reserved_microusd)) FILTER(WHERE kind='referee'),0)::text AS referee_cost,
+       (SELECT coalesce(sum(reserved_microusd),0)::text FROM yunipals_arena.identity_job WHERE deployment=$1) AS identity_cost,
        coalesce(sum(reserved_microusd) FILTER(WHERE kind='media' AND state NOT IN ('completed','failed')),0)::text AS media_unfinished,
        coalesce(sum(reserved_microusd) FILTER(WHERE kind='media'),0)::text AS media_reserved
        FROM yunipals_arena.provider_task WHERE deployment=$1`,
@@ -167,8 +228,11 @@ export class ArenaCapacity {
     const futureReferees =
       rows.filter((r) => r.active && !r.referee).length + Number(newLobby);
     if (
-      BigInt(usage.referee_cost) + BigInt(futureReferees) * 700000n >
-      BigInt(h.openaiBudgetMicrousd)
+      !ongoing &&
+      BigInt(usage.referee_cost) +
+        BigInt(usage.identity_cost) +
+        BigInt(futureReferees) * 700000n >
+        BigInt(h.openaiBudgetMicrousd)
     )
       return unavailable(
         "New entries are paused while referee funds are replenished."

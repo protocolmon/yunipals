@@ -3,7 +3,11 @@ import { join } from "node:path";
 import { type Hex } from "viem";
 import { loadArenaCatalog } from "../catalog";
 import { canonicalJson, poolEntries, sha256 } from "../draw";
-import { ARENA_FALLBACK_ATTACKS } from "@protopals/yunipals-market-core/arena";
+import {
+  ARENA_FALLBACK_ATTACKS,
+  ARENA_NFT_COLLECTIONS
+} from "@protopals/yunipals-market-core/arena";
+import { IDENTITY_POLICY_HASH, IDENTITY_MODEL } from "./identityAnalysis";
 
 export const ARENA_POOL_HASH =
   "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c" as const;
@@ -54,7 +58,25 @@ export function loadLiveArenaCatalog(root: string) {
       readFileSync(join(root, "scripts/arena/referee.py"), "utf8")
     ),
     identityPolicy:
-      "reviewed-artwork-v1: exact content-addressed artwork and species/color/horn match; no inferred powers or rarity bonuses",
+      "reviewed-artwork-v1 or artwork-analysis-v1: exact content-addressed artwork and species/color/horn match; visible functional wings required for flight; ambiguous anatomy blocked before payment; no inferred powers or rarity bonuses",
+    artworkAnalysis: {
+      model: IDENTITY_MODEL,
+      policySha256: IDENTITY_POLICY_HASH,
+      candidatePolicy: "one cached analysis; no automatic paid replacement"
+    },
+    supportedNftCollections: ARENA_NFT_COLLECTIONS,
+    reviewedIdentityRegistrySha256: sha256(
+      canonicalJson(
+        JSON.parse(
+          readFileSync(
+            join(root, "docs/arena/identity-registry-v1/profiles.json"),
+            "utf8"
+          )
+        )
+      )
+    ),
+    tiePriority:
+      "sha256-canonical-json-domain-yunipals-arena/tie/v2-tournament-VRFword-fighterId-ascending",
     inputCompilerVersion: "arena-mainnet-input-v1",
     drawAlgorithm: "keccak256-abi-rejection-weighted-v1",
     referee: {

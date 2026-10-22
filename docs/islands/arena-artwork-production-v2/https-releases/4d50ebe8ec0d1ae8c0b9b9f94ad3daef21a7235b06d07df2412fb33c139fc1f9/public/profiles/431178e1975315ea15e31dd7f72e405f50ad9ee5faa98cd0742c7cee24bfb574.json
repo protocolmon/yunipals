@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AR02",
+  "version": "arena-islands-v1",
+  "geometry": "A wide shallow turquoise basin fills the low centre. Two broad dry cream-stone shelves face each other at the left and right, connected through wide shallow steps at the front and rear. Exactly two rounded low shore boulders stand at the back corners. A circular moon-shaped tidal dial with a large plain level marker sits behind the pool. The water is transparent enough to show the basin floor and steps.",
+  "secondarySurfaces": [
+    "Dry Stone shelves",
+    "Loose Sand outside the active basin"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "dryShelves",
+    "opposingStarts",
+    "shallowBasin",
+    "tidalDial",
+    "twoBoulders",
+    "walkableSteps"
+  ],
+  "signatureFeature": {
+    "id": "tidal-dial",
+    "value": "Tidal Dial",
+    "rarityPool": [
+      "Rare"
+    ],
+    "residentRole": "Caretaker",
+    "physicalObjects": "A circular tidal dial feeds a sunken shallow basin. Two wide dry shelves and broad steps let ground fighters move between both halves of the arena.",
+    "activation": "The resident turns the dial at the shared opening signal. A publicly declared rising and falling water cycle is visible on its large level marker.",
+    "consequence": "The lowest part of the basin becomes wet while raised shelves stay dry. A fighter can force a grounded opponent down a step, use existing water with a supported ability or intercept a jump back to dry ground.",
+    "counterplay": [
+      "Keep a route to the dry shelf.",
+      "Fly or jump across the wet section at a safe moment.",
+      "Pressure the attacker before it can line up a push into the basin."
+    ],
+    "limits": [
+      "Water stays shallow and never causes drowning.",
+      "Steps stay connected at every water level; the feature cannot strand a ground fighter.",
+      "Water does not cancel all fire, electric or plant attacks; interactions follow the capability and rules record."
+    ],
+    "visualEvidence": [
+      "Dial marker signals the changing level.",
+      "Water visibly enters the low basin through its inlets.",
+      "A combat hit or evasion changes a fighter's position relative to the shelf.",
+      "Any concluding attack shows actual contact and a defeated hold."
+    ],
+    "requirements": {
+      "biomes": [
+        "Coastline",
+        "Wetland"
+      ],
+      "ground": [
+        "Shallow Water"
+      ],
+      "cover": [
+        "Scattered Boulders"
+      ],
+      "geometry": [
+        "shallowBasin",
+        "tidalDial",
+        "dryShelves",
+        "walkableSteps"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Caretaker",
+    "palette": "Amethyst",
+    "finish": "subtle satin",
+    "featureBinding": "tidal-dial",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Dry rear verge beside the tidal dial handle, above every permitted water level."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

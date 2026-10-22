@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "@/confirmations";
 import type { Pool, PoolClient } from "pg";
 import {
   isAddress,
@@ -238,7 +239,7 @@ export class ArenaClientTransactions {
       )
     ).rows;
     if (!rows.length) return;
-    const finalized = await client.getBlock({ blockTag: "finalized" });
+    const finalized = await readConfirmedBlock(client, 8453);
     for (const row of rows) {
       // Persist backoff before network I/O, including failed/ambiguous reads.
       await this.service.pool.query(

@@ -120,6 +120,29 @@ async function fixture() {
       amount: "123",
       last: null
     }),
+    browse: async () => {
+      const observed = observe();
+      return {
+        releaseId: observed.releaseId,
+        sourceId: observed.sourceId,
+        indexedThroughBlock: observed.indexedThroughBlock,
+        observedThroughBlock: observed.observedThroughBlock,
+        cursorAnchor: { number: "9", hash: hash("9") },
+        rows: [
+          {
+            id: "1",
+            state: observed.tournament.state,
+            incarnation: observed.tournament.incarnation,
+            inputFrozen: observed.tournament.inputFrozen
+          }
+        ],
+        events: [],
+        totals: null,
+        island: null,
+        amount: "0",
+        withdrawals: "0"
+      };
+    },
     list: async () => ({
       releaseId: hash("e"),
       sourceId: `arena:${deployment}`,

@@ -1,0 +1,59 @@
+{
+  "name": "Brookstone Ring #294",
+  "description": "Brookstone Ring is a common Yunipals arena island. Bait a water strike, cross the dry strip and punish the recovery. Its Mint resident tends the shared water channels feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Genesis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Meadow"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Open Ring"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Dry Stone"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Open"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Water Channels"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Caretaker"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Mint"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Daylight"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "294",
+    "arena_profile_sha256": "0374c8ef70d6a01993e6875795c6085bf83a2a8d4fbc7a66f7263f9c85e03508",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/0374c8ef70d6a01993e6875795c6085bf83a2a8d4fbc7a66f7263f9c85e03508.json",
+    "image_sha256": "e09bc555e6f1c1c8912e3b456bbd8aea7bd5f3c1c3f30f88a9dff94357c0bfa9"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/294.png"
+}

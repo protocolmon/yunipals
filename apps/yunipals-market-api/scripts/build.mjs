@@ -5,6 +5,8 @@ await mkdir("dist", { recursive: true });
 const { dependencies } = JSON.parse(await readFile("package.json", "utf8"));
 await build({
   entryPoints: {
+    "arena-monitor": "src/arena/live/healthWorker.ts",
+    "arena-recovery": "src/arena/live/recoveryCli.ts",
     "arena-inspect": "src/arena/live/inspect.ts",
     "arena-native-inspect": "src/arena/live/nativeInspect.ts",
     "arena-native-disclosure": "src/arena/live/nativeDisclosureWorker.ts",

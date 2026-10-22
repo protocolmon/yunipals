@@ -10,6 +10,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { base, bsc, mainnet, polygon } from "viem/chains";
 import { rpcBudgetProxyUrl } from "@/rpcBudgetProxyRegistry";
 import { arenaTransport } from "./transport";
+import { arenaOpenaiFundingMode } from "./funding";
 import { readPrivateFile } from "./privateFile";
 
 export { readPrivateFile } from "./privateFile";
@@ -41,6 +42,26 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   const rulesHash = required(env, "ARENA_RULES_HASH") as Hex;
   if (!/^0x[0-9a-f]{64}$/i.test(rulesHash))
     throw new Error("Invalid arena rules hash.");
+  const launchMode = env.ARENA_LAUNCH_MODE ?? "pilot";
+  if (!["pilot", "public"].includes(launchMode))
+    throw new Error("Invalid Arena launch mode.");
+  const pilotWallets = (env.ARENA_PILOT_WALLETS ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  if (
+    pilotWallets.some(
+      (value) => !isAddress(value) || /^0x0{40}$/i.test(value)
+    ) ||
+    pilotWallets.length > 20
+  )
+    throw new Error("Invalid pilot wallets.");
+  if (
+    env.ARENA_ENTRIES_ENABLED === "true" &&
+    launchMode === "pilot" &&
+    !pilotWallets.length
+  )
+    throw new Error("Controlled paid entry requires explicit pilot wallets.");
   return {
     deployment: {
       id: `8453:${contract.toLowerCase()}`,
@@ -53,6 +74,12 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
     port,
     rulesHash,
     entriesEnabled: env.ARENA_ENTRIES_ENABLED === "true",
+    launchMode: launchMode as "pilot" | "public",
+    openaiFundingMode: arenaOpenaiFundingMode(env),
+    pilotWallets,
+    indexerUrl:
+      env.ARENA_INDEXER_INTERNAL_URL?.trim() ||
+      "https://api.yunipals.com/yunipals-indexer",
     admissionKeyFile: env.ARENA_ADMISSION_KEY_FILE
   };
 }

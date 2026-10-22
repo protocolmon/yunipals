@@ -56,7 +56,7 @@ test("identity binds exact artwork, collection and traits without importing meta
   different.token.image = "https://example.com/unreviewed-dragon.png";
   assert.throws(
     () => compileIdentity(nft, different, profiles),
-    /anatomy checked/
+    /official image gateway/
   );
   const duplicate = payload();
   duplicate.token.attributes.push({ trait_type: "Type", value: "Unifairy" });

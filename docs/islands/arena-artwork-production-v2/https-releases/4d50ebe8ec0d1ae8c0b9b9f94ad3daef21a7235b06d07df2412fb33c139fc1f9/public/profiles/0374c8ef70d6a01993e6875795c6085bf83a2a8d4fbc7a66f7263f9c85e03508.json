@@ -1,0 +1,75 @@
+{
+  "id": "arena-islands-v1:AC01",
+  "version": "arena-islands-v1",
+  "geometry": "A broad cream-stone disc fills the grassy island top. Two shallow parallel blue channels run left to right behind and in front of the open central fighting strip. Broad raised dry crossings at the left and right connect both halves. A small round spring reservoir and chunky sluice wheel sit at the rear edge. The lower outer turf verge is outside the active court.",
+  "secondarySurfaces": [
+    "Firm Turf verge",
+    "Shallow Water channels"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "dryCrossings",
+    "openCentre",
+    "opposingStarts",
+    "reservoir",
+    "waterChannels"
+  ],
+  "signatureFeature": {
+    "id": "water-channels",
+    "value": "Water Channels",
+    "rarityPool": [
+      "Common"
+    ],
+    "residentRole": "Caretaker",
+    "physicalObjects": "A small spring reservoir feeds two shallow channels cut into an otherwise dry stone court. Raised dry strips connect both starting areas.",
+    "activation": "At the shared opening signal the resident opens the reservoir sluice. Water remains inside the channels unless a supported attack forces it onto adjacent stone.",
+    "consequence": "A water-capable fighter can drive existing water across a dry strip. Wet stone changes footing during a planted turn or a shove; a visible slip creates a possible follow-up strike.",
+    "counterplay": [
+      "Cross on the raised dry strips.",
+      "Jump or fly over a flooded strip.",
+      "Bait the water attack, evade it and strike during the attacker's recovery."
+    ],
+    "limits": [
+      "The channels grant no new water ability.",
+      "Water persists after impact and dries only through a stated cause or the next bout reset.",
+      "Wet footing cannot knock out an untouched opponent by itself; a decisive combat consequence must be recorded."
+    ],
+    "visualEvidence": [
+      "Sluice or eligible attack visibly moves water.",
+      "Water reaches the exact strip under pressure and splashes on contact.",
+      "The defender braces, crosses, slips or evades at that location.",
+      "Any follow-up hit shows contact, recoil and recovery or defeat."
+    ],
+    "requirements": {
+      "biomes": [
+        "Meadow",
+        "Coastline",
+        "Ancient Grounds"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Open",
+        "Scattered Boulders"
+      ],
+      "geometry": [
+        "waterChannels",
+        "reservoir",
+        "dryCrossings"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Caretaker",
+    "palette": "Mint",
+    "finish": "soft matte",
+    "featureBinding": "water-channels",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-left grass verge beside the sluice wheel, clear of both starting areas and water crossings."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

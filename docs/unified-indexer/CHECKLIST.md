@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Last checked: **22 October 2026, 22:45 UTC**.
+Last checked: **22 October 2026, 23:13 UTC**. BNB's latest recorded checkpoint below is from 23:07 UTC.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
@@ -22,7 +22,7 @@ Last checked: **22 October 2026, 22:45 UTC**.
 
 **Running:** normal historical replay. **Prepared in parallel:** reviewed handover code and recovery paths, now staged on production. The metadata/cache/reader changes below wait for real native readiness; their live switches have not started.
 
-- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **48,648,544** at 22:44 UTC (about **33.8%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
+- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **50,794,890** at 23:07 UTC (about **35.5%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
 - [x] **Clear the reader permission-history mismatch.** The corrected verifier passed against production at 19:27 UTC, recognizing the already admitted reads and preserving the older metadata permissions. No new permissions or service changes were needed.
 - [x] **Provide cache-build disk capacity.** Completed at 19:33 UTC: copied and verified the seven-file September 30 cold backup, then replaced its two large originals with verified volume links. Reclaimed 7.61 GB; root now has approximately 46.88 GB available. All old paths still resolve; the current October 20 recovery set was untouched.
 - [ ] **Adopt native metadata provenance and publication.** Waiting for replay and the first current native block witnesses. Actual readiness probes reject the historical source with `indexer_not_ready`; this is expected catch-up gating. The legacy metadata worker continues producing the active data.
@@ -38,7 +38,15 @@ Last checked: **22 October 2026, 22:45 UTC**.
 - [ ] Move EVM ingestion and the Solana adapter under the single managed service; verify scheduled Solana publication and restart behavior. All final public handover artifacts are staged with exact dependency and successful rollback-receipt checks. The v2 supervisor also retires the four old boot links before shared startup;65behavioral and10stager controls passed. The final service has not been started.
 - [x] Apply Arena operational schema maintenance. All 12 official migration markers, preserved payloads and original functions/triggers passed the production postcheck; the local backup remains retained. The schema change is committed.
 - [x] Verify Arena runtime-only recovery. The candidate exposed a production rules-manifest mismatch after startup. Only its eight owned overrides were removed; the original workers are restored with the same keys/configuration. All eight remained active, and health/config/rules endpoints returned HTTP 200 with the original production rules hash. No schema or private-data restore was performed.
-- [ ] Reconcile the Arena candidate with the actual production feature baseline. The completed credential fix/build is valid, but its older application baseline omits live artwork-analysis, public/pilot, funding and history behavior. A separate worktree is merging those features with the native source/canonical/effect guards; deployment waits for full protocol and API parity.
+- [ ] Finish and deploy the Arena compatibility update. The original production workers continue serving; the replacement has not been deployed.
+  - [x] Restore the actual production catalog, rules hash and existing API/artwork/funding behavior in the isolated candidate.
+  - [x] Implement native public history, wallet summaries, rewards and island/timeline views, without falling back to legacy public projection tables.
+  - [x] Pass all 21 independent offline protocol/API acceptance checks.
+  - [x] Pass the real PostgreSQL native read-model checks, including canonical-source checks and exclusion of stale private enrichment.
+  - [x] Finish the remaining integration fixture and run the final combined typecheck, regression tests and 36-bundle build after the code is frozen. All 213 regression tests passed; all 236 bundled source contents match the final source.
+  - [x] Verify the existing 898 local island PNGs against their metadata hashes. Production asset attachment and rendering remain separate checks.
+  - [ ] Publish the reviewed replacement source and prepare its deployment package, including verification of the existing 898 island artwork assets.
+  - [ ] Qualify and deploy the replacement runtime against the already-migrated schema; verify sustained startup and public API compatibility before native adoption.
 - [ ] Adopt the compatible Arena workers onto native Ponder state, then verify accounting and recovery. The operational schema prerequisite is complete; native adoption is not. Do not rerun the completed owner migration.
 - [x] Publish the latest build corrections and exact historical source baseline. Commit `b270265` is pushed to the public branch; all 1,746 archived source hashes were verified and the extracted contents and current source corrections passed secret scans.
 - [ ] Compare public APIs, collection filters, metadata, rarity, search and Solana responses against their retained baselines.

@@ -15,6 +15,14 @@ import {
   transactionAction
 } from "./clientTransactions";
 
+import { ArenaReadModels } from "./readModels";
+import type {
+  ArenaListStatus,
+  ArenaHistoryRole
+} from "@protopals/yunipals-market-core/arenaViews";
+import { ARENA_ISLANDS } from "./catalog";
+import { PreparingIdentity } from "./identityAnalysis";
+
 const cookie = "__Host-yunipals-arena";
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
@@ -40,6 +48,8 @@ export function createArenaApp(
   service: ArenaIntake,
   options: {
     entriesEnabled: boolean;
+    launchMode?: "pilot" | "public";
+    rules?: { rulesHash: Hex; manifest: unknown };
     admit?: (
       id: string,
       wallet: Address,
@@ -47,6 +57,7 @@ export function createArenaApp(
     ) => Promise<unknown>;
     context?: (id: string) => Promise<unknown>;
     strategyReady?: (id: string) => Promise<boolean>;
+    identityStatus?: (key: string) => Promise<unknown>;
     media?: {
       status: (id: string) => Promise<unknown>;
       artifact: (
@@ -60,6 +71,7 @@ export function createArenaApp(
 ) {
   const app = new Hono();
   const transactions = new ArenaClientTransactions(service);
+  const reads = new ArenaReadModels(service);
   app.use(
     "*",
     bodyLimit({
@@ -96,6 +108,8 @@ export function createArenaApp(
     await next();
   });
   app.onError((error, c) => {
+    if (error instanceof PreparingIdentity)
+      return c.json({ identityState: "preparing", key: error.key }, 202);
     if (error instanceof ArenaRequestError)
       return c.json({ error: error.message }, error.status);
     if (error instanceof SyntaxError)
@@ -121,13 +135,24 @@ export function createArenaApp(
       entryFee: ARENA_ENTRY_FEE.toString(),
       strategyMaxLength: ARENA_STRATEGY_LIMIT,
       entriesEnabled: options.entriesEnabled,
+      entryMode: options.entriesEnabled
+        ? (options.launchMode ?? "pilot")
+        : "closed",
       indexerMode: service.indexerMode,
       sourceKind: service.sourceSelection?.kind ?? service.indexerMode,
       sourceEpoch: service.sourceSelection?.epoch ?? null,
       confirmationPolicy:
-        service.indexerMode === "unified" ? "latest" : "finalized"
+        service.indexerMode === "unified" ? "latest" : "base-depth-3-v1"
     })
   );
+  app.get("/rules", (c) => {
+    if (!options.rules)
+      throw new ArenaRequestError(
+        503,
+        "The published rules are still being prepared."
+      );
+    return c.json(options.rules);
+  });
   app.post("/auth/challenge", async (c) => {
     const body = object(await c.req.json());
     if (typeof body.wallet !== "string" || !isAddress(body.wallet))
@@ -187,14 +212,78 @@ export function createArenaApp(
     const wallet = c.req.query("wallet");
     if (wallet && !isAddress(wallet))
       throw new ArenaRequestError(400, "Invalid wallet address.");
-    const ids = await service.listIds(wallet);
-    return c.json({
-      items: await Promise.all(ids.map((id) => service.publicView(id)))
-    });
+    return c.json(
+      await reads.tournaments(
+        {
+          wallet: wallet as Address | undefined,
+          role: c.req.query("role") as ArenaHistoryRole | undefined,
+          status: c.req.query("status") as ArenaListStatus | undefined
+        },
+        {
+          cursor: c.req.query("cursor"),
+          limit: c.req.query("limit") ? Number(c.req.query("limit")) : undefined
+        }
+      )
+    );
+  });
+  // These views contain only the selected canonical on-chain records. Browsing them needs
+  // an address, not a session; private strategies and writes stay authenticated.
+  app.get("/wallets/:wallet/summary", async (c) => {
+    const wallet = c.req.param("wallet");
+    if (!isAddress(wallet))
+      throw new ArenaRequestError(400, "Invalid wallet address.");
+    return c.json(await reads.wallet(wallet.toLowerCase() as Address));
+  });
+  app.get("/wallets/:wallet/rewards", async (c) => {
+    const wallet = c.req.param("wallet");
+    if (!isAddress(wallet))
+      throw new ArenaRequestError(400, "Invalid wallet address.");
+    return c.json(
+      await reads.rewards(wallet.toLowerCase() as Address, {
+        cursor: c.req.query("cursor"),
+        limit: c.req.query("limit") ? Number(c.req.query("limit")) : undefined
+      })
+    );
+  });
+  app.get("/me/summary", async (c) =>
+    c.json(await reads.wallet(await service.wallet(getCookie(c, cookie))))
+  );
+  app.get("/me/rewards", async (c) =>
+    c.json(
+      await reads.rewards(await service.wallet(getCookie(c, cookie)), {
+        cursor: c.req.query("cursor"),
+        limit: c.req.query("limit") ? Number(c.req.query("limit")) : undefined
+      })
+    )
+  );
+  app.get("/tournaments/:id/timeline", async (c) =>
+    c.json({ items: await reads.timeline(id(c.req.param("id"))) })
+  );
+  app.get("/islands/:chainId/:collection/:tokenId/arena", async (c) => {
+    if (
+      c.req.param("chainId") !== "8453" ||
+      c.req.param("collection").toLowerCase() !== ARENA_ISLANDS
+    )
+      throw new ArenaRequestError(
+        400,
+        "Hosting history uses the revealed Base island collection."
+      );
+    return c.json(
+      await reads.island(id(c.req.param("tokenId")), {
+        cursor: c.req.query("cursor"),
+        limit: c.req.query("limit") ? Number(c.req.query("limit")) : undefined
+      })
+    );
   });
   app.get("/tournaments/:id", async (c) =>
     c.json(await service.publicView(id(c.req.param("id"))))
   );
+  app.get("/identities/:key", async (c) => {
+    await service.wallet(getCookie(c, cookie));
+    if (!options.identityStatus)
+      throw new ArenaRequestError(503, "Artwork preparation is unavailable.");
+    return c.json(await options.identityStatus(c.req.param("key")));
+  });
   app.get("/tournaments/:id/context", async (c) => {
     if (!options.context)
       throw new ArenaRequestError(503, "Arena details are still loading.");
@@ -233,8 +322,18 @@ export function createArenaApp(
         candidate: unknown;
         outcome_hash: string;
         input_hash: string;
+        validation: unknown;
+        referee_request: {
+          model?: string;
+          instructions?: string;
+          input?: string;
+          reasoning?: { effort?: string };
+          max_output_tokens?: number;
+        } | null;
       }>(
-        `SELECT a.candidate,a.outcome_hash,a.input_hash FROM yunipals_arena.adjudication a
+        `SELECT a.candidate,a.outcome_hash,a.input_hash,a.validation,p.request AS referee_request FROM yunipals_arena.adjudication a
+       LEFT JOIN yunipals_arena.provider_task p ON p.deployment=a.deployment AND p.tournament_id=a.tournament_id
+         AND p.incarnation=a.incarnation AND p.kind='referee' AND p.asset='candidate-1' AND p.state='completed'
        WHERE a.deployment=$1 AND a.tournament_id=$2 AND a.incarnation=$3 AND $4='settled'
          AND a.state='valid' AND a.outcome_hash=$5 AND a.input_hash=$6`,
         [
@@ -253,7 +352,17 @@ export function createArenaApp(
       incarnation: context.incarnation,
       outcome: row.candidate,
       outcomeHash: row.outcome_hash,
-      inputHash: row.input_hash
+      inputHash: row.input_hash,
+      validation: row.validation,
+      referee: row.referee_request
+        ? {
+            model: row.referee_request.model,
+            instructions: row.referee_request.instructions,
+            input: row.referee_request.input,
+            reasoningEffort: row.referee_request.reasoning?.effort,
+            maxOutputTokens: row.referee_request.max_output_tokens
+          }
+        : null
     });
   });
   app.post("/tournaments/:id/admission", async (c) => {
@@ -308,6 +417,15 @@ export function createArenaApp(
           ? { incarnation: body.incarnation }
           : {})
       })
+    );
+  });
+  app.get("/tournaments/:id/strategies/:seat/receipt", async (c) => {
+    const wallet = await service.wallet(getCookie(c, cookie));
+    const seat = c.req.param("seat");
+    if (!/^[0-3]$/.test(seat))
+      throw new ArenaRequestError(400, "Invalid tournament seat.");
+    return c.json(
+      await service.ownStrategy(id(c.req.param("id")), wallet, Number(seat))
     );
   });
   return app;

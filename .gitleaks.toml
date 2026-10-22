@@ -106,3 +106,10 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/)docs/unified-indexer/arena-credential-build-success-v2-2026-10-22\.json$''']
 regexes = ["^e8338ee2c84933d745ab306f0f5bf7d76d1fe0901e531b32b4eae87d2b1782b1$"]
+
+[[rules.allowlists]]
+description = "Exact public Base USDC contract in the Arena deployment manifest"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/|!)docs/arena/public-deployment\.json$''']
+regexes = ['''^0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913$''']

@@ -1,0 +1,59 @@
+{
+  "name": "Prismwake Court #1140",
+  "description": "Prismwake Court is a rare Yunipals arena island. Bank a legal energy attack off a visible crystal face or bait the opponent into the reflection line. Its Amethyst resident tends the shared mirror crystals feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Personal"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Ancient Grounds"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Pillared Court"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Dry Stone"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Crystal Slabs"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Mirror Crystals"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Trickster"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Amethyst"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Twilight"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "1140",
+    "arena_profile_sha256": "a0c8073db425a0d5ffe68246f88c73d11254df7669cc91929cbad90297e3ca4b",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/a0c8073db425a0d5ffe68246f88c73d11254df7669cc91929cbad90297e3ca4b.json",
+    "image_sha256": "6a02f8e3d244c87d783a4d997571f12fe0b42ab82255db18befe6cde395b7b1d"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/1140.png"
+}

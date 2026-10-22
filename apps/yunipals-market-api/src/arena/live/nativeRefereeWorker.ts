@@ -53,6 +53,11 @@ async function run() {
     const worker = new NativeArenaReferee(runtime.service, api, adjudicator);
     while (!stopped) {
       try {
+        await runtime.identityAnalysis.step(
+          key,
+          Number(process.env.ARENA_IDENTITY_ALLOWANCE_MICROUSD ?? "0"),
+          Date.parse(process.env.ARENA_IDENTITY_ALLOWANCE_UNTIL ?? "")
+        );
         const result = await worker.tick();
         if (result.tournamentId || result.retrieved)
           console.log(

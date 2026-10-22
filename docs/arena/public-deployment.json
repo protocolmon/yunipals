@@ -1,0 +1,14 @@
+{
+  "chainId": 8453,
+  "contract": "0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+  "deploymentBlock": 52648146,
+  "paymentToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+  "poolHash": "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c",
+  "islandsContract": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+  "entryMicrousd": 2000000,
+  "winnerMicrousd": 6000000,
+  "hostMicrousd": 400000,
+  "operationsMicrousd": 1600000,
+  "website": "https://www.yunipals.com/arena"
+}

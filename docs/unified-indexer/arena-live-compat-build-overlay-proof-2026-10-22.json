@@ -1,0 +1,73 @@
+{
+  "format": "arena-live-compat-build-overlay-closure-v1",
+  "originalArchive": {
+    "path": "/tmp/yunipals-arena-live-compat-overlay-20261022.tar.gz",
+    "sha256": "2f7c71aa0ba895f85c3d310b97d1a5036343c00243b488977a027955cd295733"
+  },
+  "originalManifest": {
+    "path": "/tmp/yunipals-arena-live-compat-20261022/docs/unified-indexer/arena-live-compat-overlay-manifest-2026-10-22.json",
+    "sha256": "b38ef061d48ee824b317b995a75084d5e1d667e1f06a21c6e37a225634cedaaf"
+  },
+  "buildArchive": {
+    "path": "/tmp/yunipals-arena-live-compat-build-overlay-20261022.tar.gz",
+    "sha256": "4975231a4a19ebbb32490a255e1e9f532f3593cb422b5fed1371922829d2505b",
+    "bytes": 2768488
+  },
+  "buildManifest": {
+    "path": "/tmp/yunipals-arena-live-compat-20261022/docs/unified-indexer/arena-live-compat-build-overlay-manifest-2026-10-22.json",
+    "sha256": "a7ec13c29a7af5f37390fffabd27ce7c1b9aa8f8bb1b254f8fafe32123b13393"
+  },
+  "preservedBusinessFiles": 1285,
+  "addedAcceptanceFiles": [
+    {
+      "path": "ops/arena-live-compat-acceptance/README.md",
+      "sha256": "1ad4c32f50abc925011cc39198e606e172444bee2bfd203f09fb06eebc14fbc2",
+      "bytes": 1683,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/artwork-funding.test.ts",
+      "sha256": "a794d2aa6caba01247230b5c12690c0a937b414077057b4e4b9651f1deebe502",
+      "bytes": 11098,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/catalog-config.test.ts",
+      "sha256": "02a976577e09ed37b78916157c6e9b8c051100fb18da16244ca7205c85ba80ae",
+      "bytes": 4490,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/fixtures.ts",
+      "sha256": "356d3ac0c89eb47f929b1ae02311e2bfcc72a8f8d4357fabd80ed1921316a076",
+      "bytes": 1646,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/native-guards.test.ts",
+      "sha256": "a488499aa98dd6803853885aee4910e5047b3dcb44ab565f8bfe75bfc4c78bd2",
+      "bytes": 10163,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/native-history.test.ts",
+      "sha256": "7a6a05977d9b1ed31fdb75aa3e73508284cb74e3af6d028631723a2a3ad3f434",
+      "bytes": 8180,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/public-api.test.ts",
+      "sha256": "d0cb8aefddf4307148c357a2bc8c53692dd83a4ac12caa062c700a40a23f4690",
+      "bytes": 12494,
+      "mode": 420
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/run.ts",
+      "sha256": "1c6d3872168b942588c9c5a5d10017133c3f9fb60ae640a9f3fef101c9346dee",
+      "bytes": 316,
+      "mode": 420
+    }
+  ],
+  "totalRows": 1293,
+  "businessSourceChanges": 0
+}

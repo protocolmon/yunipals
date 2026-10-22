@@ -1,0 +1,71 @@
+{
+  "id": "arena-islands-v1:AU01",
+  "version": "arena-islands-v1",
+  "geometry": "A smooth warm cream-stone court has an open central disc and exactly four thick, waist-high broken columns arranged in a wide rectangle, two at the rear and two at the front. Unequal broad fracture seams make each column distinct. Wide gaps connect the centre to both starting pads and outer flanks. A low ruined arch stands behind the court on a separate verge.",
+  "secondarySurfaces": [
+    "Firm Turf outer verge"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "flankingGaps",
+    "fourPillars",
+    "openCentre",
+    "opposingStarts"
+  ],
+  "signatureFeature": {
+    "id": "fracture-pillars",
+    "value": "Fracture Pillars",
+    "rarityPool": [
+      "Uncommon"
+    ],
+    "residentRole": "Guardian",
+    "physicalObjects": "Four low, cracked stone pillars stand in opposing pairs around an open court. Their broken tops and seams make their destructibility clear.",
+    "activation": "Pillars begin intact each bout. Actual supported impacts accumulate visible damage until a pillar breaks.",
+    "consequence": "A fighter can block a shot with a pillar, destroy an opponent's shelter or drive an opponent into it. Broken cover remains rubble and opens a sightline.",
+    "counterplay": [
+      "Move before the pillar absorbs the next heavy strike.",
+      "Shoot or strike from a different angle.",
+      "Bait a committed cover-breaking attack, dodge and counter during its recovery."
+    ],
+    "limits": [
+      "Cover has a finite durability specified by the locked match rules.",
+      "Rubble lands near the broken pillar; it cannot teleport behind a defender.",
+      "Destruction grants no automatic hit on a fighter outside the debris path."
+    ],
+    "visualEvidence": [
+      "Attack travels into the actual pillar.",
+      "Stone fractures and falls from the contact point.",
+      "The new opening or nearby debris changes the defender's movement.",
+      "The decisive follow-up connects visibly."
+    ],
+    "requirements": {
+      "biomes": [
+        "Ancient Grounds",
+        "Highland"
+      ],
+      "ground": [
+        "Dry Stone"
+      ],
+      "cover": [
+        "Breakable Pillars"
+      ],
+      "geometry": [
+        "fourPillars",
+        "openCentre",
+        "flankingGaps"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Guardian",
+    "palette": "Sky Blue",
+    "finish": "soft matte",
+    "featureBinding": "fracture-pillars",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear verge beside the ruined arch and a loose stone block, clear of all four cover pillars."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

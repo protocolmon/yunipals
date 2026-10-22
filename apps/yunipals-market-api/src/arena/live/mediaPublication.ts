@@ -260,7 +260,13 @@ export async function commitMediaPublication(
   evidence: unknown
 ) {
   await service.ready(db);
+  await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+    `arena/capacity/${service.deployment}`
+  ]);
   await recordMediaPublication(db, publication, evidence);
+  await db.query("DELETE FROM yunipals_arena.capacity WHERE deployment=$1", [
+    service.deployment
+  ]);
 }
 
 /** Caller must authorize current publication or explicit fenced adoption in

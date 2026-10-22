@@ -22,7 +22,7 @@ try {
       );
       if (result.status === "halted") {
         console.error(
-          "Arena projection halted: finalized history requires review."
+          "Arena projection halted: confirmed history requires review."
         );
         break;
       }

@@ -1,0 +1,73 @@
+{
+  "id": "arena-islands-v1:AC02",
+  "version": "arena-islands-v1",
+  "geometry": "A large oval earth clearing sits within a low rounded grass rim. Exactly two chunky fallen root walls occupy the rear-left and front-right quarters, leaving a wide centre and both outer flanking gaps open. Each wall is rooted in an exposed dark soil bed. Three broad rounded trees stand behind the arena on the rear verge; their canopies never cover the fighting floor.",
+  "secondarySurfaces": [
+    "Firm Turf rim"
+  ],
+  "physicalElements": [
+    "connectedFloor",
+    "flankingGaps",
+    "openCentre",
+    "opposingStarts",
+    "rootWalls",
+    "soilBeds"
+  ],
+  "signatureFeature": {
+    "id": "root-barrier",
+    "value": "Root Barrier",
+    "rarityPool": [
+      "Common"
+    ],
+    "residentRole": "Guardian",
+    "physicalObjects": "Two thick fallen root walls rise from exposed soil beside the open centre. Their bases visibly enter soil; their crowns stay below the flying combat space.",
+    "activation": "The resident keeps the root walls in their public starting state. Fighters affect a wall through a supported physical or plant attack.",
+    "consequence": "A wall can intercept a projectile or charge. A strong supported blow cracks and breaks it; a plant-capable fighter may bend an intact root within the same visible soil bed.",
+    "counterplay": [
+      "Flank the root wall through the open centre.",
+      "Break it with a supported attack and pressure the newly exposed fighter.",
+      "Evade a manipulated root and attack the caster while it commits."
+    ],
+    "limits": [
+      "The resident never repairs cover during a bout.",
+      "Root manipulation requires an appropriate fighter capability and an exposed soil connection.",
+      "A wall cannot instantly regrow, clip through unbroken stone or immobilize a fighter indefinitely."
+    ],
+    "visualEvidence": [
+      "An attack meets the visible root wall or a root moves from its soil bed.",
+      "Bark cracks, soil shifts or the defender visibly changes direction.",
+      "The attacker exploits the actual opening with a legal strike."
+    ],
+    "requirements": {
+      "biomes": [
+        "Grove",
+        "Meadow"
+      ],
+      "ground": [
+        "Exposed Soil",
+        "Firm Turf",
+        "Spring Moss"
+      ],
+      "cover": [
+        "Root Walls"
+      ],
+      "geometry": [
+        "soilBeds",
+        "rootWalls",
+        "flankingGaps"
+      ]
+    },
+    "residentAddsIndependentEffect": false
+  },
+  "resident": {
+    "count": 1,
+    "role": "Guardian",
+    "palette": "Mint",
+    "finish": "soft matte",
+    "featureBinding": "root-barrier",
+    "addsIndependentEffect": false,
+    "hornEmissions": false,
+    "perch": "Rear-right turf verge beside a low root stump, facing inward toward the clearing."
+  },
+  "reset": "Restore cover, water, feature phase and every displaced object to the same declared starting state before each bout."
+}

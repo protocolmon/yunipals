@@ -1,0 +1,59 @@
+{
+  "name": "Moonclock Basin #415",
+  "description": "Moonclock Basin is a rare Yunipals arena island. Turn a shelf-edge exchange into a real knockback and counter while the opponent regains dry ground. Its Amethyst resident tends the shared tidal dial feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Genesis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Coastline"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Sunken Basin"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Shallow Water"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Scattered Boulders"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Tidal Dial"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Caretaker"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Amethyst"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Moonlit"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "415",
+    "arena_profile_sha256": "431178e1975315ea15e31dd7f72e405f50ad9ee5faa98cd0742c7cee24bfb574",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/431178e1975315ea15e31dd7f72e405f50ad9ee5faa98cd0742c7cee24bfb574.json",
+    "image_sha256": "3ab157187177a9ca69dad60238d42da6de2f54ce8ea9777ea0d9671d4b66692b"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/415.png"
+}

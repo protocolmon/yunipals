@@ -25,7 +25,11 @@ export function createAdmission(
   service: ArenaIntake,
   signer: LocalAccount,
   clients: ReadonlyMap<number, PublicClient>,
-  ensureIdentity: (id: string, nft: AdmissionRequest) => Promise<unknown>
+  ensureIdentity: (
+    id: string,
+    nft: AdmissionRequest,
+    wallet: Address
+  ) => Promise<unknown>
 ) {
   return async (id: string, wallet: Address, nft: AdmissionRequest) =>
     withArenaSourceLease(service, async () => {
@@ -85,7 +89,7 @@ export function createAdmission(
           "This wallet does not own that NFT at the confirmed ownership snapshot."
         );
       // Identity must be usable before an entry permit can authorize a payment.
-      await ensureIdentity(id, nft);
+      await ensureIdentity(id, nft, wallet);
       const current = await base.getBlock({ blockTag: "latest" });
       if (Math.abs(Number(current.timestamp) * 1000 - Date.now()) > 120_000)
         throw new ArenaRequestError(

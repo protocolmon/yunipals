@@ -1,0 +1,59 @@
+{
+  "name": "Thunderhorn Bastion #446",
+  "description": "Thunderhorn Bastion is a legendary Yunipals arena island. Bait electricity into grounded cover and answer with a heavy physical hit. Its Satin Gold resident tends the shared storm spire feature. Both opponents use the same arena conditions.",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Genesis"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    },
+    {
+      "trait_type": "Biome",
+      "value": "Highland"
+    },
+    {
+      "trait_type": "Arena Layout",
+      "value": "Split Terrace"
+    },
+    {
+      "trait_type": "Ground",
+      "value": "Dry Stone"
+    },
+    {
+      "trait_type": "Cover",
+      "value": "Grounding Rods"
+    },
+    {
+      "trait_type": "Signature Feature",
+      "value": "Storm Spire"
+    },
+    {
+      "trait_type": "Resident Role",
+      "value": "Energizer"
+    },
+    {
+      "trait_type": "Resident Palette",
+      "value": "Satin Gold"
+    },
+    {
+      "trait_type": "Atmosphere",
+      "value": "Stormbound"
+    }
+  ],
+  "properties": {
+    "schema_version": 1,
+    "chain_id": 1,
+    "contract": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+    "token_id": "446",
+    "arena_profile_sha256": "7615653721a56ada454740e3684142a062a170c0ff5bbc54dc02ae3d4865ad92",
+    "reveal_commitment_sha256": "d65a6414bc8c927bf047f0430862f5bb2e451deb9a84e15151100af4f1cdbdd4",
+    "trait_results": "ipfs://bafybeifrtiw522twmcqujd5w2qbhfuetim45fzjvaenwagf5m4elgjvgd4",
+    "image_status": "reviewed",
+    "arena_profile": "https://assets.yunipals.com/islands/v2/profiles/7615653721a56ada454740e3684142a062a170c0ff5bbc54dc02ae3d4865ad92.json",
+    "image_sha256": "fd1c96a2752f1307573443673f5b5239ca26417fed7fb23e7ce2e0ec1848cb69"
+  },
+  "image": "https://assets.yunipals.com/islands/v2/images/446.png"
+}

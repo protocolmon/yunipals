@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "@/confirmations";
 import {
   encodeFunctionData,
   decodeFunctionData,
@@ -369,7 +370,7 @@ export class ArenaControl {
       const receipt = await this.client.getTransactionReceipt({
         hash: intent.tx_hash
       });
-      const finalized = await this.client.getBlock({ blockTag: "finalized" });
+      const finalized = await readConfirmedBlock(this.client, 8453);
       let state = "mined";
       if (receipt.blockNumber <= finalized.number) {
         if (

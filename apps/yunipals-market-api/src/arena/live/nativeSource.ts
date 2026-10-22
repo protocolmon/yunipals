@@ -4,7 +4,9 @@ import {
   readArenaTournament,
   readArenaCredit,
   readArenaTournamentIds,
-  readArenaTransaction
+  readArenaTransaction,
+  readArenaBrowse,
+  type ArenaBrowseRequest
 } from "@protopals/yunipals-indexer-server/arena";
 import { manifestDigest } from "@protopals/yunipals-indexer-server/identity";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
@@ -192,6 +194,13 @@ export class NativeArenaSource {
       await createIndexerReader(this.pool, { releaseId: this.releaseId }),
       this.definition,
       { workOnly: true, limit: 100 }
+    );
+  }
+  async browse(request: ArenaBrowseRequest) {
+    return readArenaBrowse(
+      await createIndexerReader(this.pool, { releaseId: this.releaseId }),
+      this.definition,
+      request
     );
   }
   async transaction(

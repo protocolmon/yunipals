@@ -38,7 +38,8 @@
     "./arenaAbi": "./src/arenaAbi.ts",
     "./boosters": "./src/boosters.ts",
     "./boosterAbi": "./src/boosterAbi.ts",
-    "./boosterCatalog": "./src/boosterCatalog.ts"
+    "./boosterCatalog": "./src/boosterCatalog.ts",
+    "./arenaViews": "./src/arenaViews.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

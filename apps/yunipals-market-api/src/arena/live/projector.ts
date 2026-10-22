@@ -1,6 +1,7 @@
 import type { Pool } from "pg";
 import { decodeEventLog, type Address, type PublicClient } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
+import { readConfirmedBlock } from "@/confirmations";
 import { projectEvent } from "./projection";
 
 export type ArenaDeployment = {
@@ -9,9 +10,9 @@ export type ArenaDeployment = {
   startBlock: bigint;
 };
 
-// Only finalized Base blocks enter the DB. A finalized-history mismatch stops intake
+// Only confirmed Base blocks enter the DB. A confirmed-history mismatch stops intake
 // and spending; it must not silently erase already disclosed prompts or settled work.
-export async function projectFinalizedArena(
+export async function projectConfirmedArena(
   pool: Pool,
   rpc: PublicClient,
   deployment: ArenaDeployment
@@ -60,13 +61,13 @@ export async function projectFinalizedArena(
       });
       if (checkpoint.hash !== saved.cursor_hash) {
         await db.query(
-          "UPDATE yunipals_arena.deployment SET halted=true,halt_reason='finalized_history_changed' WHERE id=$1",
+          "UPDATE yunipals_arena.deployment SET halted=true,halt_reason='confirmed_history_changed' WHERE id=$1",
           [deployment.id]
         );
         return { status: "halted" };
       }
     }
-    const head = await rpc.getBlock({ blockTag: "finalized" });
+    const head = await readConfirmedBlock(rpc, 8453);
     const from =
       saved.cursor === null ? deployment.startBlock : BigInt(saved.cursor) + 1n;
     if (from > head.number) {
@@ -94,7 +95,7 @@ export async function projectFinalizedArena(
           log.logIndex === null ||
           log.transactionHash === null
         )
-          throw new Error("Incomplete finalized log.");
+          throw new Error("Incomplete confirmed log.");
         const decoded = decodeEventLog({
           abi: arenaAbi,
           data: log.data,
@@ -128,3 +129,6 @@ export async function projectFinalizedArena(
     db.release();
   }
 }
+
+/** Retained entrypoint name; the legacy operational policy is Base depth 3. */
+export const projectFinalizedArena = projectConfirmedArena;

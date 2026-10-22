@@ -354,7 +354,11 @@ test("receipt and cursor alone cannot complete entry: exact indexed effect is re
     [8453n, collection, 1n]
   );
   const client = {
-    getBlock: async () => ({ number: 10n, hash: hash("a") }),
+    getBlock: async (options: { blockNumber?: bigint }) => ({
+      number: options.blockNumber ?? 13n,
+      hash: hash("a"),
+      timestamp: BigInt(Math.floor(Date.now() / 1000))
+    }),
     getTransactionReceipt: async () => ({
       transactionHash: txhash,
       blockNumber: 10n,
@@ -442,7 +446,8 @@ test("USDC approval is indexed from targeted canonical evidence and never mistak
   let canonical = false;
   const client = {
     getBlock: async (options: { blockNumber?: bigint }) => ({
-      number: 10n,
+      number: options.blockNumber ?? 13n,
+      timestamp: BigInt(Math.floor(Date.now() / 1000)),
       hash: options.blockNumber && !canonical ? hash("f") : hash("a")
     }),
     getTransactionReceipt: async () => ({
@@ -694,13 +699,14 @@ test("HTTP rejects cross-origin writes and never sends private submissions or se
   assert.ok(!(await publicResponse.text()).includes(input.text));
 });
 
-test("projector bounds log reads, resumes checkpoints and halts on changed finalized history", async () => {
+test("projector bounds log reads, resumes checkpoints and halts on changed confirmed history", async () => {
   const { deployment } = await fixture();
   let changed = false,
     logCalls = 0;
   const rpc = {
-    getBlock: async () => ({
-      number: 300n,
+    getBlock: async (args: { blockNumber?: bigint }) => ({
+      number: args.blockNumber ?? 303n,
+      timestamp: BigInt(Math.floor(Date.now() / 1000)),
       hash: changed ? hash("b") : hash("a")
     }),
     getLogs: async (args: { fromBlock: bigint; toBlock: bigint }) => {
@@ -889,8 +895,8 @@ test("real combat validation locks one API candidate and maps fighter IDs to pai
     const serialized: Hex[] = [];
     const chain = {
       getChainId: async () => 8453,
-      getBlock: async () => ({
-        number: 10n,
+      getBlock: async (options: { blockNumber?: bigint }) => ({
+        number: options.blockNumber ?? 13n,
         hash: hash("a"),
         timestamp: BigInt(Math.floor(Date.now() / 1000))
       }),

@@ -4,7 +4,7 @@ import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { ARENA_USDC } from "@protopals/yunipals-market-core/arena";
 import { arenaConfig, arenaRpcClients, arenaSigner } from "./config";
 import { StrategyCipher } from "./crypto";
-import { ArenaIntake } from "./intake";
+import { ArenaIntake, ArenaRequestError } from "./intake";
 import { createAdmission } from "./admission";
 import {
   ArenaIdentities,
@@ -17,6 +17,7 @@ import {
   loadLiveArenaCatalog
 } from "./catalog";
 import { ArenaInputCompiler } from "./input";
+import { ArenaIdentityAnalysis } from "./identityAnalysis";
 import { transaction } from "@/db/pool";
 import { arenaNativeConfiguration } from "./nativeSource";
 import { arenaTransactionMigration } from "./transactionSchema";
@@ -186,21 +187,29 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
           "Native Arena execution schema does not match this runtime."
         );
     }
+    const capacity = new ArenaCapacity(pool, config.deployment.id, service);
+    const identityAnalysis = new ArenaIdentityAnalysis(
+      pool,
+      config.deployment.id,
+      config.openaiFundingMode,
+      service,
+      () => capacity.check(false)
+    );
     const identities = new ArenaIdentities(
       pool,
       config.deployment.id,
       loadIdentityProfiles(root),
-      indexerMetadata(),
+      indexerMetadata(fetch, config.indexerUrl),
       nativeSource
         ? (id) =>
             transaction(pool, (db) => service.tournamentContext(id, db, true))
-        : undefined
+        : undefined,
+      (nft, payload, wallet) => identityAnalysis.resolve(nft, payload, wallet)
     );
     const compiler = new ArenaInputCompiler(service, catalog, identities);
-    const capacity = new ArenaCapacity(pool, config.deployment.id, service);
     const admit = signer
-      ? createAdmission(service, signer, clients, (id, nft) =>
-          identities.ensure(id, nft)
+      ? createAdmission(service, signer, clients, (id, nft, wallet) =>
+          identities.ensure(id, nft, nft.incarnation, wallet)
         )
       : undefined;
     return {
@@ -213,10 +222,19 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
       pool,
       service,
       identities,
+      identityAnalysis,
       compiler,
       catalog,
       admit: admit
         ? async (...args: Parameters<typeof admit>) => {
+            if (
+              config.launchMode === "pilot" &&
+              !config.pilotWallets.includes(args[1].toLowerCase())
+            )
+              throw new ArenaRequestError(
+                403,
+                "Paid entry is limited to the controlled pilot wallets while launch checks are completed."
+              );
             await capacity.check(false);
             return admit(...args);
           }

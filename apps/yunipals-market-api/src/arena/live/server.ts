@@ -21,6 +21,12 @@ if (native) {
 }
 const app = createArenaApp(runtime.service, {
   entriesEnabled: runtime.config.entriesEnabled,
+  launchMode: runtime.config.launchMode,
+  rules: {
+    rulesHash: runtime.catalog.rulesHash,
+    manifest: runtime.catalog.manifest
+  },
+  identityStatus: (key) => runtime.identityAnalysis.status(key),
   admit: runtime.admit,
   context: (id) => runtime.compiler.context(id),
   strategyReady: async (id) => (await runtime.compiler.context(id)).ready,

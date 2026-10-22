@@ -1,0 +1,62 @@
+[
+  {
+    "id": "bastion",
+    "name": "Bastion",
+    "tokenId": "1000000242",
+    "chain": "ethereum",
+    "sourcePage": "https://www.yunipals.com/collection/ethereum/1000000242",
+    "species": "Uniturtle",
+    "color": "Red",
+    "horn": "Silver Curved",
+    "identity": "Red/coral Uniturtle with long neck, silver curved horn, green-rimmed goggles, small red dorsal shell and broad swimming flippers. No hoof legs or wings. Moves on the floor with flipper pushes and low belly slides; can rear to spit water. Do not invent aerial flight.",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmPgLKX9LUL9T8kQDugUS9bcUzgn8tjxRe6xTrCCR9JauK",
+    "localImage": "references/bastion.png",
+    "imageSha256": "b54e93886c98b5c1eaf6a0e7f66bd077e621acbdd6a5028dcd78ea25221d92ac",
+    "locomotion": "ground"
+  },
+  {
+    "id": "cedar",
+    "name": "Cedar",
+    "tokenId": "1000000259",
+    "chain": "ethereum",
+    "sourcePage": "https://www.yunipals.com/collection/ethereum/1000000259",
+    "species": "Unibranch",
+    "color": "Purple",
+    "horn": "Candy Cane",
+    "identity": "Purple Unibranch, cream chest/muzzle, magenta mane and tail, yellow vine markings and headband, curled ivory horn, four hoof legs; no wings. Ground movement.",
+    "image": "https://drive.polychainmonsters.com/ipfs/Qmc8bYgYntCv8C4Syijz2CCS2yVRYcYbY6yxNUAt9UwP2p",
+    "localImage": "references/cedar.png",
+    "imageSha256": "51dbacaf45e811b8dad37c70e8ed95cc5ad4871cbfef086631ee7f5e87bfe737",
+    "locomotion": "ground"
+  },
+  {
+    "id": "zephyr",
+    "name": "Zephyr",
+    "tokenId": "1000000131",
+    "chain": "ethereum",
+    "sourcePage": "https://www.yunipals.com/collection/ethereum/1000000131",
+    "species": "Unifairy",
+    "color": "Yellow",
+    "horn": "Silver Curved",
+    "identity": "Golden-yellow Unifairy with orange swept mane, teal star chest marking, silver curved horn and two large peach-and-teal butterfly wings. Flies with tucked feet; no running.",
+    "image": "https://drive.polychainmonsters.com/ipfs/Qmbedvb9LRCPbZRmP29vjoxPk4p7QHHrD6k2ofNBHE2HqM",
+    "localImage": "references/zephyr.png",
+    "imageSha256": "44ad25444d04e1e12649b7ac8dd2d0271da0c0a559125fe5497e1e28225078f4",
+    "locomotion": "flight"
+  },
+  {
+    "id": "elrond",
+    "name": "Elrond",
+    "tokenId": "1000283396",
+    "chain": "ethereum",
+    "sourcePage": "https://www.yunipals.com/collection/ethereum/1000283396",
+    "species": "Elrond Unidragon",
+    "color": "Midnight Blue",
+    "horn": "Candy Cane",
+    "identity": "Midnight-blue Elrond Unidragon with cyan segmented belly, white curled forehead horn, black side head spikes, long tail, four short clawed limbs and folded membrane wings which unfold for flight. Keep dragon anatomy, not a pony.",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmcPi8LznFz556ZKAuy5mKtSg1ZYyeL8yJZvFGusxwRBPe",
+    "localImage": "references/elrond.png",
+    "imageSha256": "79503d9875153a1a38bc94fdf3b74fd0713d2f776d5e2e44ba59a1b3bb8c0752",
+    "locomotion": "flight"
+  }
+]
