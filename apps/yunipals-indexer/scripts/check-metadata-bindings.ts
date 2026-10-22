@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { collections, ZERO_ADDRESS } from '../lib/constants.js';
 import { archiveMigrations } from '../lib/metadata/source/schema.js';
+import { unifiedMetadataMigrations } from '../lib/metadata/unified-schema.js';
 import { ensureCandidate, beginSource, commitSourceBatch } from '../lib/metadata/source/archive.js';
 import { sourceIdentity } from '../lib/metadata/source/identity.js';
 import { contentHash } from '../lib/metadata/source/canonical.js';
@@ -14,7 +15,7 @@ async function main() {
     const { pool } = await postgresFrom(String(args['env-file']));
     try {
         assert.match((await pool.query('SELECT current_database() AS name')).rows[0].name, /^metadata_archive_test_[a-z0-9_]+$/);
-        for (const sql of archiveMigrations)
+        for (const sql of [...archiveMigrations,...unifiedMetadataMigrations])
             await pool.query(sql);
         const release = `bindings-${randomUUID()}`, hash = (c: string) => `0x${c.repeat(64)}`, owner = `0x${'a'.repeat(40)}`, nextOwner = `0x${'b'.repeat(40)}`;
         await ensureCandidate(pool, release, {});

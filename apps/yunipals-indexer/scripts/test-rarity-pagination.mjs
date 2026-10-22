@@ -70,7 +70,7 @@ try {
     CREATE TABLE metadata.token_publication(collection text,token_id numeric,lifecycle integer,source_kind text,
       release_id text,asset_key text,renderer_version text,input_hash text,publication_content_hash text,
       publication_status text,publication_error text,published_at timestamptz,mint_transaction_hash text,
-      mint_log_index integer,chain_event_key text,PRIMARY KEY(collection,token_id,lifecycle));
+      mint_log_index integer,chain_event_key text,chain_event_block_hash text,PRIMARY KEY(collection,token_id,lifecycle));
     CREATE TABLE metadata.token_search(collection text,token_id numeric,lifecycle integer,metadata_available boolean,
       rarity_points numeric,rarity_points_capped numeric,PRIMARY KEY(collection,token_id,lifecycle));
     CREATE TABLE metadata.projection_revision(collection text,token_id numeric,lifecycle integer,metadata_content_hash text,
@@ -84,10 +84,11 @@ try {
     INSERT INTO metadata.publication_runtime VALUES(true,NULL);
     CREATE TABLE metadata_source.archive_release(release_id text PRIMARY KEY,state text);
     INSERT INTO metadata_source.archive_release VALUES('fixture','active'),('old','superseded');
-    CREATE TABLE metadata_source.chain_metadata_scan(name text,chain_id integer,contract_address text,next_block bigint);
-    INSERT INTO metadata_source.chain_metadata_scan VALUES('base_metadata_v1',8453,'contract',1000);
+    CREATE TABLE metadata_source.chain_metadata_scan(name text,chain_id integer,contract_address text,next_block bigint,
+      target_block bigint DEFAULT 1000,target_hash text DEFAULT 'head',last_scanned_hash text,updated_at timestamptz DEFAULT now());
+    INSERT INTO metadata_source.chain_metadata_scan(name,chain_id,contract_address,next_block) VALUES('base_metadata_v1',8453,'contract',1000);
     CREATE TABLE metadata_source.chain_metadata_event(token_id text,chain_id integer,contract_address text,
-      block_number bigint,transaction_hash text,transaction_index integer,log_index integer);`);
+      block_number bigint,transaction_hash text,transaction_index integer,log_index integer,block_hash text DEFAULT 'fixture-block');`);
   for (const sql of projectionSchemaStatements) await db.query(sql);
   await db.query(`INSERT INTO metadata_projection.generation(source_mode,metadata_release_id,state)
     VALUES('archive','fixture','ready'),('archive','fixture','ready');
@@ -199,6 +200,9 @@ try {
       }
     }
   }
+  // Stored future events are ineligible until the exclusive cursor passes them.
+  await db.query(`INSERT INTO metadata_source.chain_metadata_event
+    VALUES('1',8453,'contract',1005,'future-base-1',0,0)`);
   const installer = await db.connect();
   try {
     await installer.query("BEGIN");
@@ -226,6 +230,7 @@ try {
             "owner",
             "trait",
             "trait-values",
+            "trait-ranked",
             "rank-range",
             "other-range"
           ]) {
@@ -234,7 +239,7 @@ try {
               filter === "trait-values"
                 ? "ARRAY['Blue','Red']"
                 : "ARRAY['Blue']";
-            const selective = filter === "owner" || isTrait;
+            const selective = filter === "owner" || (isTrait && filter !== "trait-ranked");
             const relations =
               selected.length === 1
                 ? ["rarity_bnb.token"]
@@ -257,7 +262,7 @@ try {
             if (isTrait)
               filters.push(`EXISTS(SELECT 1 FROM ${metadataTraitReadRelationAt("2")} f
       WHERE f.collection=t.collection AND f.token_id=t.token_id::numeric AND f.lifecycle=t.lifecycle
-        AND f.trait_type='Color' AND f.value=ANY(${traitValues}))`);
+        AND f.trait_type='Color' AND f.value=ANY(${traitValues}) OFFSET 0)`);
             if (filter === "rank-range" || filter === "other-range") {
               const boundedScore =
                 filter === "rank-range"
@@ -277,7 +282,7 @@ try {
                 initial
               )
             ).rows;
-            if (cached && !selective) {
+            if (cached && !selective && !isTrait) {
               const fallback = `SELECT count(*)::int AS total FROM rarity_read.token t LEFT JOIN ${validated} s
                 ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
                 WHERE ${filters.join(" AND ")}`;
@@ -315,9 +320,7 @@ try {
               const statement = rarityPageQueries({
                 relations,
                 rawSearch: metadataRawSearchReadRelationAt("2"),
-                validatedSearch: cached
-                  ? cachedSearchReadRelation(selected, "2")
-                  : validated,
+                validatedSearch: validated,
                 missingKeys: cached
                   ? (relation) =>
                       cachedMissingKeys(
@@ -393,7 +396,51 @@ try {
           }
   // Every proof dependency must invalidate in the writer's transaction. The
   // independent canonical relation verifies that stale sets really fall back.
+  let invalidatedRankCases = 0;
   const verifyProofs = async (client) => {
+    // A page must still validate each token against current proofs while cache
+    // guards are invalid, including the Base event and publication checks.
+    for (const sort of ["rarity-desc", "rarity-capped-desc"]) {
+      const score = sort.startsWith("rarity-capped")
+        ? "rarity_points_capped"
+        : "rarity_points";
+      const columns =
+        "t.collection,t.token_id,s.rarity_points,s.rarity_points_capped";
+      const filters = [
+        "t.collection=ANY($1::text[])",
+        "t.burned=false",
+        `NOT ${activeVisibilityPredicate()}`
+      ];
+      const values = [chains, 6];
+      const statement = rarityPageQueries({
+        relations: ["rarity_physical.token", "rarity_bnb.token"],
+        rawSearch: metadataRawSearchReadRelationAt("2"),
+        validatedSearch: validated,
+        bulkSearch: () => validated,
+        columns,
+        filters,
+        cursorFilters: filters,
+        values,
+        sort,
+        selective: false,
+        nullsExcluded: true
+      });
+      assert.deepEqual(
+        (await client.query(statement.nonnull, values)).rows,
+        (
+          await client.query(
+            `SELECT ${columns} FROM rarity_read.token t JOIN ${validated} s
+              ON s.collection=t.collection AND s.token_id=t.token_id::numeric
+                AND s.lifecycle=t.lifecycle
+              WHERE ${filters.join(" AND ")} AND s.${score} IS NOT NULL
+              ORDER BY s.${score} DESC,t.token_id::numeric,t.collection LIMIT $2`,
+            values
+          )
+        ).rows,
+        `ranked page after proof change: ${sort}`
+      );
+      invalidatedRankCases++;
+    }
     const columns =
       "collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped";
     const order = " ORDER BY collection,token_id,lifecycle";
@@ -493,6 +540,11 @@ try {
       "UPDATE metadata_source.archive_release SET state='superseded' WHERE release_id='fixture'"
     ],
     ["base", "UPDATE metadata_source.chain_metadata_scan SET next_block=1"],
+    ["base", "UPDATE metadata_source.chain_metadata_scan SET next_block=20"],
+    ["base", "UPDATE metadata_source.chain_metadata_scan SET next_block=1006"],
+    ["base", "UPDATE metadata_source.chain_metadata_scan SET chain_id=999"],
+    ["base", "UPDATE metadata_source.chain_metadata_scan SET contract_address='different'"],
+    ["base", "UPDATE metadata_source.chain_metadata_scan SET name='different'"],
     [
       "base",
       "DELETE FROM metadata_source.chain_metadata_event WHERE token_id='1'"
@@ -506,6 +558,27 @@ try {
   ];
   const writer = await db.connect();
   try {
+    for (const mutation of [
+      "UPDATE metadata_source.chain_metadata_scan SET target_block=2000,target_hash='new-head',updated_at=now()",
+      "UPDATE metadata_source.chain_metadata_scan SET last_scanned_hash='new-checkpoint'",
+      "UPDATE metadata_source.chain_metadata_scan SET next_block=1001",
+      "UPDATE metadata_source.chain_metadata_scan SET next_block=1005",
+      "UPDATE metadata_source.chain_metadata_scan SET next_block=999",
+      "UPDATE metadata_source.chain_metadata_scan SET next_block=21"
+    ]) {
+      await writer.query("BEGIN");
+      try {
+        await writer.query(mutation);
+        assert.equal(
+          (await writer.query(`SELECT ${readCacheFreshSql("2", ["base"])} AS fresh`)).rows[0].fresh,
+          true,
+          mutation
+        );
+        await verifyProofs(writer);
+      } finally {
+        await writer.query("ROLLBACK");
+      }
+    }
     for (const [chain, mutation] of mutations) {
       await writer.query("BEGIN");
       try {
@@ -607,6 +680,7 @@ try {
       event: "rarity_pagination_parity",
       cases,
       invalidationCases: mutations.length + 3,
+      invalidatedRankCases,
       checks: [
         "null ranks",
         "missing search",

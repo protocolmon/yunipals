@@ -1,0 +1,61 @@
+{
+  "tokenId": "1000002683",
+  "chain": "ethereum",
+  "chainId": 1,
+  "contractAddress": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  "image": "https://drive.polychainmonsters.com/ipfs/QmfQ9qM1vcC5n8NuA6tXrX1AZJxfuzioFnzbtdhBq1pSgQ",
+  "tokenUri": "https://meta.polkamon.com/meta?id=1000002683",
+  "attributes": [
+    {
+      "value": "Dragon Claw",
+      "trait_type": "Horn"
+    },
+    {
+      "value": "Unisheep",
+      "trait_type": "Type"
+    },
+    {
+      "value": "Yellow",
+      "trait_type": "Color"
+    },
+    {
+      "value": 895,
+      "trait_type": "Booster",
+      "display_type": "number"
+    },
+    {
+      "value": "None",
+      "trait_type": "Glitter"
+    },
+    {
+      "value": 1617223494,
+      "trait_type": "Birthday",
+      "display_type": "date"
+    },
+    {
+      "value": "Grassland",
+      "trait_type": "Background"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Origin Chain"
+    },
+    {
+      "value": "Yes",
+      "trait_type": "First Edition"
+    },
+    {
+      "value": 30.0925,
+      "trait_type": "Rarity Points"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Opening Network"
+    },
+    {
+      "value": 1790031697,
+      "trait_type": "Last metadata update",
+      "display_type": "date"
+    }
+  ]
+}

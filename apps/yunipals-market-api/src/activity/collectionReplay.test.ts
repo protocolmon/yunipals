@@ -28,6 +28,7 @@ import {
   type OpenSeaChain
 } from "@protopals/yunipals-market-core/openseaRegistry";
 import { CollectionSaleReplay } from "@/activity/collectionReplay";
+import { selectLegacyMarketplaceConsumer } from "@/indexer/consumerRollback";
 import { RpcResponseLimitError } from "@/opensea/readRpc";
 import { ActivityReadService } from "@/reads/activity";
 import {
@@ -1390,4 +1391,174 @@ test("a policy change during RPC fences the old observation without granting run
   assert.equal((await sales()).length, 0);
   assert.equal((await checkpoint()).state, "unavailable");
   assert.equal(await f.replay().tick(), "advanced");
+});
+
+test("reviewed Base rollback preserves native receipt labels and requalifies only fresh canonical legacy replay", async () => {
+  const f = await fixture("base");
+  const consumer = "collection-sales:base";
+  const hash = `0x${"78".repeat(32)}`;
+  const config = {
+    kind: "collection-sales",
+    chain: "base",
+    startBlock: "122",
+    confirmations: 20,
+    policy: "test-base-depth-20",
+    finality: "confirmations"
+  } as const;
+  try {
+    assert.equal(await f.replay().tick(), "advanced");
+    // Seed the immutable original evidence as a native/latest observation. The
+    // rollback must keep these bytes/label rather than rewriting old evidence.
+    await db.owner.query(
+      "UPDATE yunipals_market.sale_receipt SET confirmation_policy='test-base-latest-complete' WHERE chain_id=8453"
+    );
+    await db.owner.query(
+      "UPDATE yunipals_market.sale_replay_config SET confirmations=0,policy='test-base-latest-complete' WHERE chain_id=8453"
+    );
+    await db.owner.query(
+      `INSERT INTO yunipals_market.shared_indexer_consumer
+      (consumer,chain_id,release_id,source_id,confirmation_policy,configuration_hash)
+      VALUES($1,8453,$2,'ownership:base','{"kind":"latest"}',$2)`,
+      [consumer, hash]
+    );
+    await db.owner.query(
+      "UPDATE yunipals_market.checkpoint SET reader_mode='unified' WHERE chain_id=8453 AND name='seaport-sales'"
+    );
+    const original = (
+      await db.owner.query(
+        "SELECT to_jsonb(r) AS value FROM yunipals_market.sale_receipt r WHERE chain_id=8453"
+      )
+    ).rows;
+    const initial = await selectLegacyMarketplaceConsumer(db.owner, config);
+    assert.equal(initial.applied, false);
+    assert.equal((await checkpoint("base")).reader_mode, "unified");
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.runtime, config, initial.reviewHash),
+      /migration owner/
+    );
+    await db.owner.query(
+      "UPDATE yunipals_market.checkpoint SET generation=generation+1 WHERE chain_id=8453 AND name='seaport-sales'"
+    );
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.owner, config, initial.reviewHash),
+      /changed/
+    );
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.owner, {
+        ...config,
+        confirmations: 0
+      }),
+      /positive depth/
+    );
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.owner, {
+        ...config,
+        policy: "test-base-latest-complete"
+      }),
+      /distinct truthful policy/
+    );
+    const review = await selectLegacyMarketplaceConsumer(db.owner, config);
+    assert.equal(
+      (
+        await selectLegacyMarketplaceConsumer(
+          db.owner,
+          config,
+          review.reviewHash
+        )
+      ).applied,
+      true
+    );
+    const reset = await checkpoint("base");
+    assert.equal(reset.reader_mode, "legacy");
+    assert.equal(reset.block_number, null);
+    assert.equal(reset.coverage_start, null);
+    assert.equal(reset.state, "unavailable");
+    assert.ok((await sales()).every((row) => !row.canonical));
+    assert.deepEqual(
+      (
+        await db.owner.query(
+          "SELECT to_jsonb(r) AS value FROM yunipals_market.sale_receipt r WHERE chain_id=8453"
+        )
+      ).rows,
+      original
+    );
+    assert.equal(
+      (
+        await db.owner.query(
+          "SELECT count(*) FROM yunipals_market.legacy_sale_receipt_qualification WHERE chain_id=8453"
+        )
+      ).rows[0].count,
+      "0"
+    );
+    await assert.rejects(
+      db.runtime.query(
+        "UPDATE yunipals_market.marketplace_legacy_selection SET policy='forged' WHERE consumer=$1",
+        [consumer]
+      ),
+      /permission denied/
+    );
+    await assert.rejects(
+      db.owner.query(
+        "DELETE FROM yunipals_market.marketplace_source_review WHERE review_hash=$1",
+        [review.reviewHash]
+      ),
+      /immutable/
+    );
+    assert.equal(await f.replay().tick(), "advanced");
+    assert.equal(
+      (
+        await db.owner.query(
+          "SELECT count(*) FROM yunipals_market.legacy_sale_receipt_qualification WHERE chain_id=8453"
+        )
+      ).rows[0].count,
+      "1"
+    );
+    assert.deepEqual(
+      (
+        await db.owner.query(
+          "SELECT to_jsonb(r) AS value FROM yunipals_market.sale_receipt r WHERE chain_id=8453"
+        )
+      ).rows,
+      original
+    );
+    const page = parseActivityPage(
+      await new ActivityReadService(db.runtime).wallet(
+        seller.address,
+        new URLSearchParams({ chain: "base", view: "sales" })
+      ),
+      { kind: "wallet", chain: "base", wallet: seller.address, view: "sales" }
+    );
+    assert.equal(page.total, 1);
+    await db.owner.query(
+      "UPDATE yunipals_market.legacy_sale_receipt_qualification SET proof_hash=$1 WHERE chain_id=8453",
+      [`0x${"00".repeat(32)}`]
+    );
+    await db.owner.query(
+      "UPDATE yunipals_market.snapshot SET invalidated_at=clock_timestamp() WHERE kind='activity'"
+    );
+    await assert.rejects(
+      new ActivityReadService(db.runtime).wallet(
+        seller.address,
+        new URLSearchParams({ chain: "base", view: "sales" })
+      ),
+      /sale_proof_unavailable/
+    );
+  } finally {
+    await db.owner.query(
+      "DELETE FROM yunipals_market.legacy_sale_receipt_qualification WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.marketplace_legacy_selection WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.sale_receipt_qualification WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.shared_indexer_consumer WHERE consumer=$1",
+      [consumer]
+    );
+  }
 });

@@ -34,6 +34,7 @@ export async function replayBaseMetadata(pool: Pool, env: NodeJS.ProcessEnv, opt
         await pool.query(`INSERT INTO metadata_source.chain_metadata_scan(name,chain_id,contract_address,deployment_block,next_block,target_block,target_hash)
    VALUES($1,8453,$2,$3,$3,$4,$5) ON CONFLICT DO NOTHING`, [name, collections.base.address, collections.base.deploymentBlock, final.number.toString(), final.hash]);
         let scan = (await pool.query("SELECT * FROM metadata_source.chain_metadata_scan WHERE name=$1", [name])).rows[0];
+        if (scan.ingestion_mode !== "rpc") throw new Error("Base metadata is assigned to the unified consumer");
         if (options.advance && BigInt(scan.next_block) > BigInt(scan.target_block)) {
             // A lagging RPC backend can report an older finalized tag. Keep
             // serving the stored checkpoint if its block hash still matches;

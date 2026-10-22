@@ -69,5 +69,7 @@ export const projectionSchemaStatements = [
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     LIKE metadata.trait_facet_status INCLUDING DEFAULTS INCLUDING STORAGE,
     PRIMARY KEY(generation_id,scope)
-  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`
+  ) WITH (vacuum_truncate=false, toast.vacuum_truncate=false)`,
+  `ALTER TABLE metadata_projection.generation ADD COLUMN IF NOT EXISTS ownership_release_id text,
+    ADD COLUMN IF NOT EXISTS ownership_read_identity text`
 ] as const;

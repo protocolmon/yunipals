@@ -1,0 +1,164 @@
+// Build only the collection rollout's public assets; prototype media stays out.
+import { createHash } from "node:crypto";
+import {
+  mkdir,
+  copyFile,
+  readFile,
+  readdir,
+  stat,
+  writeFile
+} from "node:fs/promises";
+import { resolve, relative, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
+import { build } from "vite";
+import { validateBoosterSetup } from "../../src/lib/boosterSetup.ts";
+
+const { values } = parseArgs({
+  options: {
+    "setup-sha": { type: "string" },
+    "standard-setup-sha": { type: "string" },
+    output: {
+      type: "string",
+      default: "/tmp/yunipals-collection-booster-live-20261022"
+    }
+  }
+});
+if (!/^[0-9a-f]{64}$/.test(values["setup-sha"] ?? ""))
+  throw Error("Pass the reviewed --setup-sha checksum.");
+const app = fileURLToPath(new URL("../../", import.meta.url));
+process.chdir(app);
+const root = fileURLToPath(new URL("../../../../", import.meta.url));
+const output = resolve(values.output);
+if (!output.startsWith("/tmp/yunipals-collection-booster-live-"))
+  throw Error("Use a task-specific fresh /tmp output directory.");
+try {
+  await stat(output);
+  throw Error(
+    "Output directory already exists; preserve it and use a fresh name."
+  );
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const setupFile = join(app, "public/boosters/mainnet-smoke-setup.json");
+const setup = await readFile(setupFile);
+if (sha(setup) !== values["setup-sha"])
+  throw Error("The owner setup bundle differs from the reviewed checksum.");
+const deployment = JSON.parse(
+  await readFile(
+    join(root, "docs/boosters/mainnet-smoke/deployment.confirmed.json")
+  )
+);
+const addresses = {
+  registry: deployment.contracts.registry.proxy,
+  engine: deployment.contracts.engine.proxy,
+  monsters: deployment.contracts.monsters.proxy
+};
+validateBoosterSetup(JSON.parse(setup), addresses);
+if (values["standard-setup-sha"] !== undefined) {
+  if (!/^[0-9a-f]{64}$/.test(values["standard-setup-sha"]))
+    throw Error("Pass a reviewed --standard-setup-sha checksum.");
+  const standard = await readFile(
+    join(app, "public/boosters/mainnet-standard-setup.json")
+  );
+  if (sha(standard) !== values["standard-setup-sha"])
+    throw Error(
+      "The standard setup bundle differs from the reviewed checksum."
+    );
+  validateBoosterSetup(JSON.parse(standard), addresses, "standard");
+}
+Object.assign(process.env, {
+  VITE_COLLECTION_ONLY: "true",
+  VITE_BOOSTERS_ENABLED: "true",
+  VITE_BOOSTER_REGISTRY: addresses.registry,
+  VITE_BOOSTER_ENGINE: addresses.engine,
+  VITE_BOOSTER_MONSTERS: addresses.monsters,
+  VITE_BOOSTER_SETUP_SHA256: values["setup-sha"],
+  VITE_BOOSTER_STANDARD_SETUP_SHA256: values["standard-setup-sha"] ?? "",
+  VITE_YUNIPALS_INDEXER_URL: "https://api.yunipals.com/yunipals-indexer",
+  VITE_YUNIPALS_MARKETPLACE_URL: "",
+  VITE_ARENA_API_URL: "",
+  VITE_SELF_HOSTED: "",
+  // The license plugin emits directly into this fresh curated release.
+  // This is build configuration, never a browser-exposed VITE_* value.
+  YUNIPALS_LICENSE_OUTPUT: join(output, "THIRD_PARTY_LICENSES.txt")
+});
+await build({
+  root: app,
+  configFile: join(app, "vite.config.ts"),
+  publicDir: false,
+  build: { outDir: output, emptyOutDir: false },
+  logLevel: "warn"
+});
+const assets = [
+  "favicon.ico",
+  "favicon-32x32.png",
+  "icon-192.png",
+  "apple-touch-icon.png",
+  "robots.txt",
+  "sitemap.xml",
+  "images/yunipals-logo.webp",
+  "images/yunipals-social-card.jpg",
+  "boosters/mainnet-smoke-setup.json"
+];
+if (values["standard-setup-sha"])
+  assets.push("boosters/mainnet-standard-setup.json");
+for (const name of assets) {
+  await mkdir(join(output, name, ".."), { recursive: true });
+  await copyFile(join(app, "public", name), join(output, name));
+}
+const licenseNotice = await readFile(
+  join(output, "THIRD_PARTY_LICENSES.txt"),
+  "utf8"
+);
+if (!licenseNotice.trim())
+  throw Error("The fresh third-party license notice is empty.");
+async function files(directory) {
+  const result = [];
+  for (const item of await readdir(directory, { withFileTypes: true })) {
+    const path = join(directory, item.name);
+    if (item.isDirectory()) result.push(...(await files(path)));
+    else if (item.isFile()) {
+      const bytes = await readFile(path);
+      result.push({
+        path: relative(output, path),
+        bytes: bytes.byteLength,
+        sha256: sha(bytes)
+      });
+    } else throw Error("Unexpected nonregular release asset.");
+  }
+  return result.sort((a, b) => a.path.localeCompare(b.path));
+}
+const entries = await files(output);
+const manifest = {
+  format: "yunipals-collection-booster-frontend-v1",
+  builtAt: new Date().toISOString(),
+  collectionOnly: true,
+  marketplaceEnabled: false,
+  arenaEnabled: false,
+  apiOrigin: process.env.VITE_YUNIPALS_INDEXER_URL,
+  addresses,
+  setupPackageSha256: values["setup-sha"],
+  standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
+  publicAssets: assets,
+  files: entries
+};
+const manifestBytes = JSON.stringify(manifest, null, 2) + "\n";
+await writeFile(join(output, "RELEASE-MANIFEST.json"), manifestBytes, {
+  flag: "wx"
+});
+console.log(
+  JSON.stringify({
+    format: manifest.format,
+    output,
+    files: entries.length,
+    bytes: entries.reduce((n, file) => n + file.bytes, 0),
+    manifestSha256: sha(manifestBytes),
+    setupPackageSha256: values["setup-sha"],
+    standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
+    collectionOnly: true,
+    marketplaceEnabled: false,
+    arenaEnabled: false
+  })
+);

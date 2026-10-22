@@ -1,10 +1,10 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { OrderCreationDialog } from "@/components/marketplace/OrderCreationDialog";
 import { TradeReviewDialog } from "@/components/marketplace/TradeReviewDialog";
 import { OrderCancellationDialog } from "@/components/marketplace/OrderCancellationDialog";
@@ -443,7 +443,7 @@ function OrdersForWallet({ wallet }: { wallet: Address }) {
 
 export function OrdersPage() {
   const { address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("orders");
   usePageMetadata(
     "My orders | Yunipals",
     "Manage Yunipals listings, offers and past orders across networks."

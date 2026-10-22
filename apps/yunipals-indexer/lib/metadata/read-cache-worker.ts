@@ -2,6 +2,9 @@ import { setTimeout as delay } from "node:timers/promises";
 import { pool, apiPool } from "../offchain/db.js";
 import { collectionSlugs } from "../constants.js";
 import { buildReadCache, readCacheFreshSql } from "./read-cache.js";
+import { assertOwnershipSourceSelection } from "../ownership/readiness.js";
+
+await assertOwnershipSourceSelection(pool);
 
 let stopped = false;
 for (const signal of ["SIGINT", "SIGTERM"] as const)

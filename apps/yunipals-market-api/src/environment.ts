@@ -14,6 +14,8 @@ import {
   isRpcBudgetProxyUrl
 } from "@/rpcBudgetProxyRegistry";
 
+import { readMarketplaceOwnershipEnvironment } from "@/indexer/ownership";
+
 export type Environment = ReturnType<typeof readEnvironment>;
 
 function liveRpcUrls(
@@ -817,6 +819,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv = process.env) {
     deployment: deployment as "staging" | "production",
     databaseUrl,
     indexerDatabaseUrl,
+    ownershipIndexer: readMarketplaceOwnershipEnvironment(input),
     host,
     port: positiveInteger(input.MARKET_PORT, 9012, 65535),
     poolMax: positiveInteger(input.MARKET_DB_POOL_MAX, 8, 32),

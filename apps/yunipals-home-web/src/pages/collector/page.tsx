@@ -20,6 +20,8 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { environment } from "@/environment";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { TokenCard } from "@/components/TokenCard";
@@ -55,6 +57,7 @@ import {
 
 import { CollectorControls } from "@/pages/collector/components/CollectorControls";
 import { useCollectorTokens } from "@/pages/collector/hooks/useCollectorTokens";
+import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
 import {
   defaultCollectorFilters,
   hasCollectorFilters,
@@ -132,6 +135,10 @@ export function CollectorPage() {
   const { filters } = filterState;
   const setFilters = useCallback(
     (next: CollectorFilters) => {
+      trackAnalyticsEvent("Collection Filter Applied", {
+        collection: "yunipals",
+        filter: "filters"
+      });
       setSearchParams(serializeCollectorFilters(next));
     },
     [setSearchParams]
@@ -303,10 +310,13 @@ export function CollectorPage() {
       <main className="mx-auto min-h-[65vh] max-w-4xl px-4 py-14">
         <QueryError message="Enter a valid wallet address or ENS name." />
         <Link
-          to="/leaderboard"
+          to={environment.collectionOnly ? "/" : "/leaderboard"}
           className="mt-5 inline-flex items-center gap-2 font-bold text-ethereum"
         >
-          <ArrowLeft aria-hidden="true" size={15} /> Back to leaderboard
+          <ArrowLeft aria-hidden="true" size={15} />
+          {environment.collectionOnly
+            ? "Back to collection"
+            : "Back to leaderboard"}
         </Link>
       </main>
     );
@@ -319,7 +329,7 @@ export function CollectorPage() {
       <section className="bg-gradient-to-b from-lavender/35 to-white px-4 py-12 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-wrap items-center gap-2">
-            {isOwnCollection && (
+            {isOwnCollection && environment.yunipalsMarketplaceUrl && (
               <Link
                 to="/orders"
                 className="inline-flex items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
@@ -327,12 +337,14 @@ export function CollectorPage() {
                 Manage my orders
               </Link>
             )}
-            <Link
-              to="/leaderboard"
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-            >
-              <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
-            </Link>
+            {!environment.collectionOnly && (
+              <Link
+                to="/leaderboard"
+                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+              >
+                <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
+              </Link>
+            )}
             {connectedAddressNormalized && !isOwnCollection && (
               <Link
                 to={`/collector/${connectedAddressNormalized}`}
@@ -502,6 +514,7 @@ export function CollectorPage() {
         </div>
       </section>
 
+      <BoosterCollection owner={resolvedAddresses?.base ?? canonicalOwner} />
       <section className="px-4 pb-16 pt-6 sm:pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -578,9 +591,7 @@ export function CollectorPage() {
               nameSearch={
                 collection.capabilities.data?.namePrefixSearch === true
               }
-              rarityRange={
-                collection.capabilities.data?.rarityRange === true
-              }
+              rarityRange={collection.capabilities.data?.rarityRange === true}
               onChange={setFilters}
               onRetryFacets={() => void facetsQuery.refetch()}
             />

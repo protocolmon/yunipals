@@ -3,12 +3,20 @@ import { FormEvent, useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { WalletCollectionButton } from "@/components/WalletCollectionButton";
+import { environment } from "@/environment";
 import { cn } from "@/lib/utils";
 import { isOwnerInput } from "@/lib/yunipalsIndexer";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
 const navigation = [
   { label: "Collection", to: "/" },
-  { label: "Leaderboard", to: "/leaderboard" }
+  ...(environment.boostersEnabled ? [{ label: "Packs", to: "/boosters" }] : []),
+  ...(!environment.collectionOnly
+    ? [
+        { label: "Leaderboard", to: "/leaderboard" },
+        { label: "Race lab", to: "/race-lab" }
+      ]
+    : [])
 ];
 
 type CollectorSearchProps = {
@@ -26,11 +34,21 @@ function CollectorSearch({ onNavigate }: CollectorSearchProps) {
     const value = address.trim();
 
     if (!isOwnerInput(value)) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "invalid",
+        outcome: "invalid"
+      });
       setError(true);
       return;
     }
 
     setError(false);
+    trackAnalyticsEvent("Collection Search Submitted", {
+      collection: "yunipals",
+      search_type: "collector",
+      outcome: "valid"
+    });
     onNavigate?.();
     navigate(`/collector/${encodeURIComponent(value)}`);
   }
@@ -132,13 +150,15 @@ export function Nav() {
               {item.label}
             </Link>
           ))}
-          <span
-            title="Battles are coming soon"
-            className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-line whitespace-nowrap bg-line/25 px-3 py-2 text-sm font-semibold text-muted"
-          >
-            <Swords aria-hidden="true" size={14} />
-            Battles
-          </span>
+          {!environment.collectionOnly && (
+            <span
+              title="Battles are coming soon"
+              className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-line whitespace-nowrap bg-line/25 px-3 py-2 text-sm font-semibold text-muted"
+            >
+              <Swords aria-hidden="true" size={14} />
+              Battles
+            </span>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -214,9 +234,11 @@ export function Nav() {
                 {item.label}
               </Link>
             ))}
-            <div className="rounded-2xl bg-line/30 px-4 py-3 font-semibold text-muted">
-              Battles · Coming soon
-            </div>
+            {!environment.collectionOnly && (
+              <div className="rounded-2xl bg-line/30 px-4 py-3 font-semibold text-muted">
+                Battles · Coming soon
+              </div>
+            )}
             <div className="mt-2 border-t border-line pt-4">
               <CollectorSearch onNavigate={() => setMobileMenuOpen(false)} />
             </div>

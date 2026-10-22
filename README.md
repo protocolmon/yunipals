@@ -5,15 +5,26 @@ Ethereum, Base, Polygon and BNB Chain. Browse tokens and traits, follow ownershi
 and transfer history, compare rarity and collector rankings, and manage your own
 collection. Buying and selling are optional features within the web app.
 
+The canonical application is **https://www.yunipals.com**. Collection browsing,
+collector profiles and booster packs share `apps/yunipals-home-web`; old
+`app.yunipals.com` links redirect to the corresponding main-site route. This
+repository contains the frontend, booster contracts, indexing/API code, artwork
+generator and deployment scripts.
+
 ## Projects
 
 - [Web app](apps/yunipals-home-web/README.md): browse the collection, inspect
   traits and token histories, view collector profiles and rankings, and manage
   your own NFTs. Optional listing and purchase actions use your wallet.
 - [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
-  ownership, metadata, rarity, collector, and leaderboard reads. Its single BNB
+  ownership, metadata, rarity, collector, and leaderboard reads, plus
+  [Ethereum Islands ownership and metadata](docs/islands-indexing.md). Its single BNB
   worker rebuilds ownership, transfers and burn/recreation history from public
   chain events.
+- [Booster contracts](contracts/boosters/README.md): upgradeable Base pack rules,
+  shared monster NFTs, duplicate-free draws and VRF recovery.
+- [Artwork generator](docs/boosters/artwork-runtime/README.md): reference-based
+  card recipes, review and content-addressed publication, with a durable queue.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,
   order encoding and validation shared by the web app and API.
 - [Marketplace API and workers](apps/yunipals-market-api/README.md): supports
@@ -62,10 +73,11 @@ profiles and rankings. Wallet connections and trading are disabled. See the
 
 ## Deployment
 
-The web project root is `apps/yunipals-home-web`, with build command `vite build`
-and output directory `dist`. Use `main` as the production branch. SPA routes are
-configured in `vercel.json`. Set `VITE_YUNIPALS_MARKETPLACE_URL` in the deployment
-provider before building; production Vercel builds fail if it is missing.
+The web project root is `apps/yunipals-home-web`. The checked-in Vercel config
+runs `pnpm build:www --mode vercel-cloud` to produce the curated collection and
+booster app with SPA routing. See the [canonical build guide](docs/boosters/mainnet-launch/canonical-www-build-2026-10-22.txt).
+Generic self-hosted builds remain `pnpm build`, with output in `dist`;
+marketplace-enabled production builds require `VITE_YUNIPALS_MARKETPLACE_URL`.
 Configure `VITE_YUNIPALS_INDEXER_URL` for your own metadata indexer. Set
 `VITE_SELF_HOSTED=1` to make a build reject missing URLs or Yunipals service
 domains; see the [self-hosting guide](docs/self-hosting-bnb.md).
@@ -128,3 +140,10 @@ Production web builds include `THIRD_PARTY_LICENSES.txt`, linked from the footer
 Keep it with the generated JavaScript when redistributing a build. Dependency
 pins and their small compatibility patches are explained in
 [patches/README.md](patches/README.md).
+
+Booster packs: see [implementation and rollout](docs/boosters-implementation.md)
+and [contracts](contracts/boosters/README.md). The current Base pack uses 264
+variants, costs 1 PROTO plus VRF/gas, and earns one mint credit every 24 hours
+after reveal. The [live release evidence](docs/boosters/mainnet-launch/canonical-www-production-2026-10-22.json)
+distinguishes accepted mainnet behavior from remaining elapsed-time and
+unattended-artwork work.

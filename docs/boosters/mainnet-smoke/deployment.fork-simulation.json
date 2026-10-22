@@ -1,0 +1,52 @@
+{
+  "status": "passed-local-mainnet-fork-only",
+  "mainnetBroadcast": false,
+  "simulatedBalanceOverride": true,
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "checks": [
+    "exact six unsigned creation payloads succeeded",
+    "all receipt addresses match nonce predictions",
+    "all three proxies grant DEFAULT_ADMIN_ROLE to the supplied wallet",
+    "engine uses the real Base Chainlink wrapper",
+    "no pack configured or activated"
+  ],
+  "gasUsedTotal": "9758755",
+  "receipts": [
+    {
+      "label": "PackRegistry implementation",
+      "predictedAddress": "0x7b332Ba80CFA8aF55b0852B0175B57f2B9A69ea5",
+      "gasUsed": "2891090",
+      "localTransactionHash": "0x6b2b8209f48c512bf90f4202b11c8a5cebdfb5f2c38c1fdbec2f3cc14d6c37db"
+    },
+    {
+      "label": "PackRegistry initialized proxy",
+      "predictedAddress": "0xeaeE2da120a398f21729D50672AC5d1Dd71d7274",
+      "gasUsed": "231506",
+      "localTransactionHash": "0x00e7e0e359ae464bca3fd4f68f72998b6e951ba587437f72d114eb2e10cb6df2"
+    },
+    {
+      "label": "YunipalMonsters implementation",
+      "predictedAddress": "0xDe0f58649B6D272E4b7AFAeE1231F2c83c1599b9",
+      "gasUsed": "2569669",
+      "localTransactionHash": "0x52ff0513aae3f60fd133059af86a7d0b78a1d575f6dd3c40328becc2d202ae3a"
+    },
+    {
+      "label": "YunipalMonsters initialized proxy",
+      "predictedAddress": "0x105319be2182018c31FB10B1bE198c3cf238a146",
+      "gasUsed": "324334",
+      "localTransactionHash": "0xfc22276d256d96530a0abb3555904ec417d8fcdf7d541923deb06885478bdd84"
+    },
+    {
+      "label": "BoosterPacks implementation",
+      "predictedAddress": "0x92e2351A83b6c445c94D0b887259D2b940c82a5a",
+      "gasUsed": "3403900",
+      "localTransactionHash": "0xa20d1adf0ebad3071c352225adc73f23eab2440d58480d0b92819c43a2a838b5"
+    },
+    {
+      "label": "BoosterPacks initialized proxy",
+      "predictedAddress": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+      "gasUsed": "338256",
+      "localTransactionHash": "0xf4bd37db898689a88934f8143b2d14d1051a6a13c155b2db25f87f5e223c2791"
+    }
+  ]
+}

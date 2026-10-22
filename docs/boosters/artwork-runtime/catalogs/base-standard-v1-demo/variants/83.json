@@ -1,0 +1,40 @@
+{
+  "name": "Yunidragon",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "http://127.0.0.1:9019/v1/boosters/art-assets/0156cc2a608cf55c63cbb6b71d3910e295c353bd6d8f712992e0ec6269fcb476.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunidragon"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 83,
+    "artworkSha256": "0156cc2a608cf55c63cbb6b71d3910e295c353bd6d8f712992e0ec6269fcb476",
+    "catalogCommitment": "0x6f1631255da979f15916ed85a8f3809ac5350a253466f535b9baf77923cf773f",
+    "holo": {
+      "foreground": "http://127.0.0.1:9019/v1/boosters/art-assets/d560865b69ebc1ace5c5b537f7415c5fe08c70a4511aae8416bc8d8a13638efa.svg",
+      "background": "http://127.0.0.1:9019/v1/boosters/art-assets/ea1632283370848ebf028c3a4d60535942083ab70b402b67963a57aa248ffe64.svg",
+      "stars": "http://127.0.0.1:9019/v1/boosters/art-assets/42df3f9689c2bbb127251435bb46f133f5581f8b1ae8dcf7082b839a7fd6453d.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01",
+    "stage": "clarity",
+    "recipeVersion": "og-booster-card-v2-brand-study"
+  }
+}

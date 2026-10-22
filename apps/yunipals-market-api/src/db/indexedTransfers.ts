@@ -1,4 +1,5 @@
 import type { PoolClient } from "pg";
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 
 export const indexedTransferBatchSize = 100;
 
@@ -20,6 +21,8 @@ export async function readIndexedTransfers(
   if (unique.length === 0) return new Map<string, IndexedTransfer>();
   if (unique.length > indexedTransferBatchSize)
     throw new Error("Indexed transfer batch is too large.");
+  const shared = marketplaceOwnershipIndexer();
+  if (shared) return shared.transfers(collection, unique);
   const result = await db.query<{
     token_id: string;
     lifecycle: number;

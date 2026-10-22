@@ -1,10 +1,25 @@
 # Yunipals indexer
 
 This workspace app contains the four-chain collection indexer and its HTTP API.
-Ponder indexes Ethereum, Base, and Polygon. **One BNB worker**, at
-`lib/bnb/worker.ts`, indexes BNB ownership, lifecycle, transfer, and role events
-into `bnb_indexer`. It starts at block 7,579,197 and requires 20 confirmations
-by default. No other BNB ownership writer is shipped in this repository.
+It also indexes the Ethereum Islands collection as `ethereum-islands`, with
+separate metadata publication and collection-scoped v2 reads. See the
+[Islands rollout guide](../../docs/islands-indexing.md) for candidate replay,
+full ownership verification, worker setup, read grants and activation.
+The combined Ponder configuration now indexes Ethereum, Base, Polygon, and BNB,
+with native Arena state and shared Base metadata/marketplace event evidence.
+This is the candidate for the [unified indexer migration](../../docs/unified-indexer-implementation-plan.md).
+See [implementation progress](../../docs/unified-indexer/progress.md) for the
+remaining reader/worker migrations and production acceptance gates.
+The [candidate support runbook](../../ops/unified-indexer/README.md) covers
+release registration, shared observations/receipts, the retained finalized
+Base metadata consumer, and opt-in latest native metadata views. Worker startup never adopts a candidate
+release or changes production readers implicitly.
+
+Production still uses its pinned release and separate `lib/bnb/worker.ts` writer
+against `bnb_indexer`. That worker starts at block 7,579,197 and requires 20
+confirmations by default. Replay the new Ponder configuration into a fresh
+candidate schema; select the new readers and retire old scanners only after
+fixed-boundary parity and rollback rehearsal pass.
 
 The metadata worker supports `METADATA_SOURCE_MODE=legacy-http` and `archive`.
 Archive mode serves published snapshots from PostgreSQL and uses the pinned
@@ -18,6 +33,11 @@ marketplace API is a separate app and reads the BNB tables and
 Use Node.js 24.18.1, pnpm 9.12.0, and PostgreSQL 16. Copy `.env.example` into a
 private environment file and supply your own database and RPC URLs. Load it in
 your shell before running commands; pnpm does not load `.env` automatically.
+The combined Ponder configuration requires all four chain RPCs. Optional Arena
+and BNB Seaport sources use only public deployment configuration; Ponder does
+not need application signing/encryption keys. The `unified:sources` package
+script prints the validated manifest and configuration hash without
+RPC/database access or credential values.
 
 ```sh
 pnpm install --frozen-lockfile

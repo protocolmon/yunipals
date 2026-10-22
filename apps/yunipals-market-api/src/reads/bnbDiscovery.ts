@@ -1,8 +1,14 @@
 import type { Pool } from "pg";
 import { getAddress } from "viem";
 
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
+import { readBnbDiscoveryBinding } from "@/indexer/bnbDiscoveryRead";
 import { BnbOrderError } from "@/bnb/orders";
-import { indexedTokenHiddenSql } from "@/reads/visibility";
+import {
+  marketplaceOwnershipSqlContext,
+  marketplaceOwnershipSqlRelations
+} from "@/indexer/ownershipSql";
+import { indexedTokenHiddenSqlFor } from "@/reads/visibility";
 
 const table = "yunipals_market.bnb_discovered_order";
 
@@ -10,6 +16,7 @@ export class BnbDiscoveryReadService {
   constructor(private readonly pool: Pool) {}
 
   async status() {
+    const source = await readBnbDiscoveryBinding(this.pool);
     const cursor = await this.pool.query<{
       launch_block: string;
       next_block: string;
@@ -33,6 +40,7 @@ export class BnbDiscoveryReadService {
     );
     const progress = cursor.rows[0];
     const complete =
+      (!source.native || source.ready) &&
       !!progress &&
       progress.target_block !== null &&
       BigInt(progress.next_block) > BigInt(progress.target_block) &&
@@ -78,6 +86,7 @@ export class BnbDiscoveryReadService {
           !/^0x[0-9a-fA-F]{64}$/.test(cursorParts[2] ?? "")))
     )
       throw new BnbOrderError("invalid_discovery_query", 400);
+    await marketplaceOwnershipSqlContext(this.pool, ["bnb"]);
     const normalizedMaker = maker ? getAddress(maker).toLowerCase() : null;
     const [status, orders] = await Promise.all([
       this.status(),
@@ -136,8 +145,8 @@ export class BnbDiscoveryReadService {
           hidden: boolean;
         }>(
           `SELECT t.contract_address,t.token_id,t.lifecycle,t.owner,t.burned,
-           ${indexedTokenHiddenSql} AS hidden
-           FROM yunipals_read_v4.token t
+           ${indexedTokenHiddenSqlFor("t", marketplaceOwnershipSqlRelations().transferRelation)} AS hidden
+           FROM ${marketplaceOwnershipSqlRelations().tokenRelation} t
            WHERE t.collection='bnb' AND t.chain_id=56
              AND t.token_id=ANY($1::text[])`,
           [[...new Set(pageRows.map((row) => row.token_id))]]
@@ -175,6 +184,8 @@ export class BnbDiscoveryReadService {
           publishedCounter: row.published_counter,
           boundLifecycle: row.bound_lifecycle,
           protocolStatus:
+            (status.coverage === "complete" ||
+              !marketplaceOwnershipIndexer()) &&
             row.state_observed_at &&
             Date.now() - row.state_observed_at.getTime() <= 720_000
               ? row.state

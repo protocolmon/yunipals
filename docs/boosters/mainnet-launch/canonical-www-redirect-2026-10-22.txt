@@ -1,0 +1,56 @@
+Canonical Yunipals app redirect — prepared, not staged or applied
+
+First verify the canonical https://www.yunipals.com application. The parent
+operator controls deployment and production timing. This helper never changes
+the www deployment, API routing, certificates or retained static release files.
+
+Public operator: ops/booster-launch/canonical-www-redirect.py
+SHA256: c98c11543a4b0703fefff0a1bcc3032f77020e90a70f47660d46b0ebfb384bff
+
+The bounded production read-only observation matched:
+before SHA256: 59665a6f2fef773f08e162f257c052f02591855a1ec3c1703a619092d1cc9460
+candidate SHA256: 0a5a7cc39120837a1cf465a2cebdb581a2b7c37ac2ada9c7023abb8f9d1403dc
+
+Exact delta: insert this first directive immediately after the opening brace of
+the two server blocks whose sole server_name is app.yunipals.com:
+
+    return 308 https://www.yunipals.com$request_uri;
+
+The insertions are before the existing HTTPS directives and HTTP certbot if.
+Every original byte remains, including certificates, routes and other hosts.
+$request_uri preserves the path and original encoded query. The helper refuses
+mixed host names, additional app blocks, unexpected ports or an existing redirect.
+
+After reviewing/staging the exact public operator, its default command is a
+read-only review and real shadow nginx test. It returns only hashes and the two
+fixed public insertions; it does not print the private nginx configuration:
+
+python3 /path/to/canonical-www-redirect.py
+
+Only after the canonical www site is verified, apply the exact reviewed pair:
+
+python3 /path/to/canonical-www-redirect.py apply \
+  --expected-before-sha 59665a6f2fef773f08e162f257c052f02591855a1ec3c1703a619092d1cc9460 \
+  --candidate-sha 0a5a7cc39120837a1cf465a2cebdb581a2b7c37ac2ada9c7023abb8f9d1403dc
+
+Apply holds the existing static-publication lock, saves private fsynced original,
+candidate and operator-bound plan under /var/backups/yunipals-canonical-www-redirect,
+then atomically replaces the exact before file, preserves its owner/mode, tests
+nginx and reloads it. A failure restores only its own candidate, validates the
+restored config, and reloads it if a reload was attempted. Foreign bytes are
+never overwritten. Diagnostics are hashes rather than private config output.
+
+To reverse an applied or acknowledged-uncertain owned operation, use the exact
+operation path returned by apply and the same operator and checksums:
+
+python3 /path/to/canonical-www-redirect.py inverse \
+  --operation /var/backups/yunipals-canonical-www-redirect/OPERATION \
+  --expected-before-sha 59665a6f2fef773f08e162f257c052f02591855a1ec3c1703a619092d1cc9460 \
+  --candidate-sha 0a5a7cc39120837a1cf465a2cebdb581a2b7c37ac2ada9c7023abb8f9d1403dc
+
+The inverse requires the protected operator-bound original/candidate plan and
+the exact current candidate bytes and metadata. It cannot reverse foreign edits.
+No server files were staged or changed during preparation. The 14 local tests
+passed, including the actual shadow-nginx helper, real HTTP and HTTPS loopback
+308 responses with encoded/repeated query parameters, certbot-if precedence,
+CAS refusal, private backups, explicit inverse and test/reload failure recovery.

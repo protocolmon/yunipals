@@ -1,4 +1,3 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import {
@@ -12,6 +11,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress, zeroAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
 import { useOrderCreation } from "@/hooks/marketplace/useOrderCreation";
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
@@ -53,7 +53,7 @@ export function OrderCreationDialog({
   const priceId = useId();
   const expiryId = useId();
   const { address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("order-creation");
   const creation = useOrderCreation({ asset, lifecycle, side, replacing });
   const viaOpenSea = isOpenSeaChain(asset.chain);
   const policy = useQuery({
@@ -381,7 +381,8 @@ export function OrderCreationDialog({
             <p className="mt-5 text-sm leading-relaxed text-muted">
               This order applies to this token ID even if its artwork changes or
               it is burned and recreated. Hiding or transferring the NFT does
-              not cancel the order. {creation.bnbOnchain
+              not cancel the order.{" "}
+              {creation.bnbOnchain
                 ? "Publishing on BNB Chain requires a network transaction; your wallet shows its gas fee before you confirm."
                 : "Your wallet shows network gas for each transaction."}
             </p>
@@ -461,7 +462,7 @@ export function OrderCreationDialog({
               ? `${side === "listing" ? "Listing" : "Offer"} published.`
               : creation.bnbOnchain
                 ? "Publication confirmed on chain; the order is waiting for indexing."
-              : `Order saved. Current status: ${creation.published.status}.`}
+                : `Order saved. Current status: ${creation.published.status}.`}
           </p>
         )}
       </div>

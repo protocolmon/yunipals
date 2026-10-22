@@ -8,6 +8,7 @@ import {
 } from "@protopals/yunipals-market-core/validation";
 
 import { OpenSeaOrderError, type OpenSeaOrderRequest } from "@/opensea/orders";
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { indexedTokenHiddenSql } from "@/reads/visibility";
 
 export type IndexedOpenSeaAsset = {
@@ -34,6 +35,41 @@ export async function readIndexedOpenSeaAsset(
   pool: Pick<Pool, "query">,
   asset: OpenSeaOrderRequest["asset"]
 ): Promise<IndexedOpenSeaAsset> {
+  const shared = marketplaceOwnershipIndexer();
+  if (shared) {
+    try {
+      const result = await shared.token(pool, asset);
+      if (!result) throw new OpenSeaOrderError("asset_not_indexed", 503);
+      const { token, hidden, checkpoint } = result;
+      return {
+        owner: getAddress(token.owner),
+        lifecycle: token.lifecycle,
+        hidden,
+        burned: token.burned,
+        checkpoint: {
+          number: checkpoint.number,
+          timestamp: checkpoint.timestamp,
+          heartbeatAt: checkpoint.heartbeatAt
+        },
+        mint: {
+          blockNumber: BigInt(token.mint_block),
+          transactionHash: token.mint_transaction_hash as Hex,
+          recipient: getAddress(token.minted_to)
+        },
+        lastTransfer: {
+          blockNumber: BigInt(token.last_transfer_block),
+          transactionHash: token.last_transaction_hash as Hex,
+          transactionIndex: token.event_transaction_index,
+          logIndex: token.event_log_index,
+          from: getAddress(token.event_from),
+          to: getAddress(token.event_to)
+        }
+      };
+    } catch (error) {
+      if (error instanceof OpenSeaOrderError) throw error;
+      throw new OpenSeaOrderError("indexer_unavailable", 503);
+    }
+  }
   const result = await pool.query<{
     owner: string;
     lifecycle: number;

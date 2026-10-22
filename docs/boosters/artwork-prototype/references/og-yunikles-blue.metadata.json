@@ -1,0 +1,64 @@
+{
+  "chain": "ethereum",
+  "chainId": 1,
+  "contractAddress": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  "tokenId": "1000000227",
+  "image": "https://drive.polychainmonsters.com/ipfs/QmekSWKnappNaPYojmAuvJEJzZ8n3LnpDVJa6A7prkPhQp",
+  "attributes": [
+    {
+      "value": "Silver Curved",
+      "trait_type": "Horn"
+    },
+    {
+      "value": "Unikles",
+      "trait_type": "Type"
+    },
+    {
+      "value": "Blue",
+      "trait_type": "Color"
+    },
+    {
+      "value": 76,
+      "trait_type": "Booster",
+      "display_type": "number"
+    },
+    {
+      "value": "None",
+      "trait_type": "Glitter"
+    },
+    {
+      "value": 1617211267,
+      "trait_type": "Birthday",
+      "display_type": "date"
+    },
+    {
+      "value": "Grassland",
+      "trait_type": "Background"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Origin Chain"
+    },
+    {
+      "value": "Yes",
+      "trait_type": "First Edition"
+    },
+    {
+      "value": 13.5416,
+      "trait_type": "Rarity Points"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Opening Network"
+    },
+    {
+      "value": 1790031695,
+      "trait_type": "Last metadata update",
+      "display_type": "date"
+    }
+  ],
+  "tokenUri": "https://meta.polkamon.com/meta?id=1000000227",
+  "uriProvenance": "current_token_uri_call",
+  "uriAuditStatus": "onchain_resolved",
+  "lookupUrl": "https://api.yunipals.com/yunipals-indexer/v1/tokens?limit=1&traitType=Type&traitValue=Unikles&traitType=Color&traitValue=Blue&traitType=Glitter&traitValue=None"
+}

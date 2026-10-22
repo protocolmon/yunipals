@@ -1,7 +1,16 @@
 import { setTimeout as delay } from "node:timers/promises";
 
 import { BnbSaleReplay } from "@/activity/bnbReplay";
+import {
+  SharedBnbSaleReplay,
+  sharedBnbSaleRuntimeConfiguration
+} from "@/activity/sharedBnbReplay";
 import { runBnbDiscoveryPass } from "@/bnb/discovery";
+import { runSharedBnbDiscoveryPass } from "@/bnb/sharedDiscovery";
+import {
+  openSharedConsumer,
+  readSharedConsumerEnvironment
+} from "@/indexer/consumerEnvironment";
 import {
   writeBnbWorkerHeartbeat,
   writeBnbWorkerUnavailable
@@ -25,8 +34,25 @@ import { createOpenSeaRequestBudget } from "@/opensea/requestBudget";
 import { rpcComputeBudgetError } from "@/opensea/rpcComputeBudget";
 import { buildProductionBnbPolicy } from "@/productionRuntime";
 
+import {
+  configureMarketplaceOwnershipIndexer,
+  closeMarketplaceOwnershipIndexer
+} from "@/indexer/ownership";
+
 async function main() {
   const environment = readEnvironment();
+  const discoverySource = readSharedConsumerEnvironment(
+    process.env,
+    "MARKET_BNB_DISCOVERY_INDEXER"
+  );
+  const saleSource = readSharedConsumerEnvironment(
+    process.env,
+    "MARKET_BNB_SALE_INDEXER"
+  );
+  if (discoverySource.mode === "unified" && !environment.bnbDiscoveryStartBlock)
+    throw new Error(
+      "Shared BNB discovery requires its explicit launch boundary."
+    );
   const production = environment.productionTrading?.bnb;
   if (!environment.bnbValidationRpc && !production)
     throw new Error(
@@ -34,6 +60,8 @@ async function main() {
     );
   const pool = createPool(environment);
   const coordinator = production ? createOpenSeaRequestBudget() : undefined;
+  let sharedDiscovery: Awaited<ReturnType<typeof openSharedConsumer>>;
+  let sharedSales: Awaited<ReturnType<typeof openSharedConsumer>>;
   pool.on("error", () =>
     console.error("Marketplace worker database connection failed.")
   );
@@ -57,7 +85,10 @@ async function main() {
   process.once("SIGTERM", stop);
   process.once("SIGINT", stop);
   try {
+    configureMarketplaceOwnershipIndexer(environment.ownershipIndexer);
     await assertReady(pool, environment.deployment);
+    sharedDiscovery = await openSharedConsumer(discoverySource);
+    sharedSales = await openSharedConsumer(saleSource);
     const client = production
       ? (
           await createLivePublicClient(
@@ -77,7 +108,7 @@ async function main() {
         ).client
       : client;
     const discoveryLogClient =
-      environment.bnbDiscoveryStartBlock && production
+      environment.bnbDiscoveryStartBlock && production && !sharedDiscovery
         ? (
             await createLivePublicClient(
               "bnb",
@@ -106,19 +137,32 @@ async function main() {
       if (!environment.bnbDiscoveryStartBlock) return;
       while (!stopping) {
         try {
-          const result = await runBnbDiscoveryPass({
-            pool,
-            logClient: discoveryLogClient,
-            stateClient: client,
-            policy,
-            launchBlock: environment.bnbDiscoveryStartBlock,
-            maxRange: 100_000n,
-            maxChunks: 4
-          });
-          console.info(JSON.stringify({ event: "bnb_discovery_pass", ...result }));
+          const result = sharedDiscovery
+            ? await runSharedBnbDiscoveryPass({
+                pool,
+                reader: sharedDiscovery.reader,
+                stateClient: client,
+                policy,
+                launchBlock: environment.bnbDiscoveryStartBlock,
+                maxPages: 4
+              })
+            : await runBnbDiscoveryPass({
+                pool,
+                logClient: discoveryLogClient,
+                stateClient: client,
+                policy,
+                launchBlock: environment.bnbDiscoveryStartBlock,
+                maxRange: 100_000n,
+                maxChunks: 4
+              });
+          console.info(
+            JSON.stringify({ event: "bnb_discovery_pass", ...result })
+          );
         } catch (error) {
           if (!rpcComputeBudgetError(error))
-            console.error("BNB discovery pass failed; retrying from its stored cursor.");
+            console.error(
+              "BNB discovery pass failed; retrying from its stored cursor."
+            );
         }
         await pause(300_000);
       }
@@ -177,17 +221,31 @@ async function main() {
       }
     };
     const sales = async () => {
-      const replay = new BnbSaleReplay(pool, saleClient, Date.now, {
-        finality,
-        confirmationPolicy: production
-          ? "bnb-finalized-tag-v1"
-          : "bnb-local-validation-depth-20-v1"
-      });
+      const sharedSaleConfig = sharedBnbSaleRuntimeConfiguration(
+        environment.deployment
+      );
+      const replay = sharedSales
+        ? new SharedBnbSaleReplay(
+            pool,
+            sharedSales.reader,
+            saleClient,
+            sharedSaleConfig
+          )
+        : new BnbSaleReplay(pool, saleClient, Date.now, {
+            finality,
+            confirmationPolicy: production
+              ? "bnb-finalized-tag-v1"
+              : "bnb-local-validation-depth-20-v1"
+          });
       while (!stopping) {
         try {
           const result = await replay.tick();
           await pause(
-            result === "advanced" || result === "rewound" ? 250 : 180000
+            result === "advanced" || result === "rewound"
+              ? 250
+              : sharedSales
+                ? 5000
+                : 180000
           );
         } catch (error) {
           const budget = rpcComputeBudgetError(error);
@@ -217,6 +275,9 @@ async function main() {
   } finally {
     stop();
     await writeBnbWorkerUnavailable(pool).catch(() => {});
+    await closeMarketplaceOwnershipIndexer();
+    await sharedDiscovery?.pool.end();
+    await sharedSales?.pool.end();
     await pool.end();
     await coordinator?.close();
     if (deadline) clearTimeout(deadline);

@@ -18,3 +18,15 @@ coverage/
 # Python monitor test artifacts
 __pycache__/
 *.pyc
+
+# Private local tournament state and encryption key
+.arena-lab/
+
+# Locks are local to the assisted artwork controller.
+docs/boosters/artwork-prototype/.generation.lock
+
+# Runtime queue and process locks; approved content-addressed artwork is retained.
+docs/boosters/artwork-runtime/jobs/
+docs/boosters/artwork-runtime/.generation.lock
+.vercel
+.env*.local

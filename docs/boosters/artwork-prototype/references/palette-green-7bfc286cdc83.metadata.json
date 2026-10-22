@@ -1,0 +1,99 @@
+{
+  "metadataUrl": "https://meta.polkamon.com/meta?id=1000000214",
+  "metadata": {
+    "address": "0x00dEC1f7a34E3aFebf2931C1E58d03dD10cD0DE5",
+    "animation_url": "https://drive.polychainmonsters.com/ipfs/QmRN2hvUBXvSUWz86zrwaQQxmHKC8QfcVfGXWHSANUWkKW",
+    "attributes": [
+      {
+        "trait_type": "Horn",
+        "value": "Silver Curved"
+      },
+      {
+        "trait_type": "Type",
+        "value": "Uniturtle"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Green"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Booster",
+        "value": 72
+      },
+      {
+        "trait_type": "Glitter",
+        "value": "None"
+      },
+      {
+        "display_type": "date",
+        "trait_type": "Birthday",
+        "value": 1617210833
+      },
+      {
+        "trait_type": "Background",
+        "value": "Grassland"
+      },
+      {
+        "trait_type": "Origin Chain",
+        "value": "Ethereum"
+      },
+      {
+        "trait_type": "First Edition",
+        "value": "Yes"
+      },
+      {
+        "trait_type": "Rarity Points",
+        "value": 9.8128
+      },
+      {
+        "trait_type": "Opening Network",
+        "value": "Ethereum"
+      },
+      {
+        "trait_type": "Last metadata update",
+        "value": 1790033789,
+        "display_type": "date"
+      }
+    ],
+    "background_color": "FFFFFF",
+    "description": "Recognized from afar by its special movements, the Uniturtle glides across terrain with ease. They also have maximum eyesight for their surroundings with their snug-fitting goggles.",
+    "external_url": "https://polkamon.com/polkamon/T04C02H10B01G00",
+    "id": "1000000214",
+    "type": "uniturtle",
+    "origin": "GEN1_BOOSTER",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmSQxGf3feNR6uvyaU21estDBDKiwicFGaFiUxcxA8eteA",
+    "code": "T04C02H10B01G00",
+    "initialProbabilities": {
+      "horn": 0.2,
+      "type": 0.06,
+      "color": 0.345,
+      "glitter": 0.96,
+      "background": 1
+    },
+    "name": "Uniturtle",
+    "txHash": "0x1d96f919bdbef0672ad7f4e1380b8537bd418c442501fc74ff679543a5ec7c16",
+    "minted": false,
+    "chain": "eth",
+    "chainGroup": "ETHEREUM",
+    "originChain": "eth",
+    "originChainGroup": "ETHEREUM",
+    "nftContract": "polychainmonsters",
+    "opening_network": "Ethereum",
+    "rarity": 9.8128,
+    "rarityCapped": 9.8128,
+    "ownerSince": "2021-03-31T17:10:33.000Z",
+    "boosterId": 72,
+    "gameData": {
+      "sum": 688,
+      "fire": 100,
+      "wind": 119,
+      "earth": 194,
+      "score": 7.5,
+      "water": 138,
+      "health": 138,
+      "pFactor": 1.875061,
+      "version": "v3"
+    }
+  }
+}

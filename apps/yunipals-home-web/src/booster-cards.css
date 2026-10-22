@@ -1,0 +1,348 @@
+/* Approved lavender/crisp-body viewer; scoped for the collection application. */
+.booster-card-viewer .tilt-viewer {
+  --viewer-height: clamp(290px, 50vh, 600px);
+  --viewer-padding: 28px;
+  height: var(--viewer-height);
+  max-height: none;
+  aspect-ratio: auto;
+  padding: var(--viewer-padding);
+  display: grid;
+  place-items: center;
+  perspective: 1200px;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  outline-offset: 3px;
+}
+.booster-card-viewer .tilt-viewer:focus-visible {
+  outline: 3px solid #7e22ce;
+}
+.booster-card-viewer .tilt-viewer.is-tracking {
+  cursor: grabbing;
+}
+.booster-card-viewer .tilt-card {
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --spot-x: 50%;
+  --spot-y: 50%;
+  --star-sweep: 50%;
+  --mx: 50%;
+  --my: 50%;
+  --shift: 0deg;
+  --gx: 0%;
+  --gy: 0%;
+  --light-x: 50%;
+  --light-y: 50%;
+  --foil-x: 50%;
+  --foil-y: 50%;
+  --tilt-energy: 0;
+  --holo-strength: 1;
+  --foil-angle: 115deg;
+  --sweep-x: 0%;
+  --sweep-y: 0%;
+  position: relative;
+  width: min(
+    100%,
+    calc((var(--viewer-height) - var(--viewer-padding) * 2) * 0.666667)
+  );
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  aspect-ratio: 2/3;
+  isolation: isolate;
+  transform: rotateY(var(--rotate-y)) rotateX(var(--rotate-x));
+  transform-origin: center;
+  transition: transform 0.25s ease-out;
+  filter: drop-shadow(0 12px 12px #27154b30);
+}
+.booster-card-viewer .is-tracking .tilt-card {
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+.booster-card-viewer .tilt-card img {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  backface-visibility: hidden;
+}
+.booster-card-viewer .tilt-foil,
+.booster-card-viewer .tilt-sweep,
+.booster-card-viewer .tilt-sparkles,
+.booster-card-viewer .tilt-glare,
+.booster-card-viewer .tilt-hotspot,
+.booster-card-viewer .tilt-diagonal,
+.booster-card-viewer .tilt-art-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  mask-image: var(--art-mask);
+  -webkit-mask-image: var(--art-mask);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+.booster-card-viewer .tilt-foil {
+  background: repeating-linear-gradient(
+    calc(115deg + var(--shift)),
+    rgba(255, 0, 128, 0) 0%,
+    rgba(255, 0, 128, 0.35) 5%,
+    rgba(255, 200, 0, 0.35) 10%,
+    rgba(0, 255, 180, 0.35) 15%,
+    rgba(0, 180, 255, 0.35) 20%,
+    rgba(180, 0, 255, 0.35) 25%,
+    rgba(255, 0, 128, 0) 30%
+  );
+  background-size: 200% 200%;
+  background-position: var(--mx) var(--my);
+  mix-blend-mode: color-dodge;
+}
+.booster-card-viewer .tilt-sweep {
+  background: linear-gradient(
+    calc(135deg + var(--shift)),
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  background-size: 200% 200%;
+  background-position: calc(50% + var(--gx)) calc(50% + var(--gy));
+  mix-blend-mode: overlay;
+}
+.booster-card-viewer .tilt-glare {
+  background: radial-gradient(
+    circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.15) 12%,
+    rgba(255, 255, 255, 0) 35%
+  );
+  mix-blend-mode: overlay;
+}
+.booster-card-viewer .is-holo.has-reflection[data-live-holo="true"] .tilt-foil {
+  opacity: calc(var(--holo-strength) * 0.45);
+}
+.booster-card-viewer .is-holo.has-reflection[data-live-holo="true"] .tilt-sweep,
+.booster-card-viewer
+  .is-holo.has-reflection[data-live-holo="true"]
+  .tilt-glare {
+  opacity: var(--holo-strength);
+}
+.booster-card-viewer .has-reflection:not(.is-holo) .tilt-glare {
+  opacity: 0.3;
+}
+.booster-card-viewer .tilt-hotspot {
+  isolation: isolate;
+  mix-blend-mode: hard-light;
+}
+.booster-card-viewer
+  .is-holo.has-hotspot.has-reflection[data-live-holo="true"]
+  .tilt-hotspot {
+  opacity: calc(var(--holo-strength) * 0.85);
+}
+.booster-card-viewer .hotspot-spectrum,
+.booster-card-viewer .hotspot-grain,
+.booster-card-viewer .hotspot-glint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.booster-card-viewer .hotspot-spectrum,
+.booster-card-viewer .hotspot-grain {
+  mask-image: radial-gradient(
+    ellipse 27% 21% at var(--spot-x) var(--spot-y),
+    #000 0%,
+    #000b 28%,
+    #0004 58%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 27% 21% at var(--spot-x) var(--spot-y),
+    #000 0%,
+    #000b 28%,
+    #0004 58%,
+    transparent 100%
+  );
+}
+.booster-card-viewer .hotspot-spectrum {
+  background: repeating-linear-gradient(
+    calc(105deg + var(--shift)),
+    #f171c8bf 0%,
+    #f7d97bbf 3%,
+    #6aeac7bf 6%,
+    #65a8f5bf 9%,
+    #ac78eabf 12%,
+    #f171c8bf 15%
+  );
+  background-size: 160% 160%;
+  background-position: var(--mx) var(--my);
+  mix-blend-mode: color-dodge;
+  opacity: 0.9;
+}
+.booster-card-viewer .hotspot-grain {
+  background:
+    radial-gradient(circle, #fffe 0 0.45px, transparent 0.9px) 0 0/3px 5px,
+    radial-gradient(circle, #b9fffde6 0 0.5px, transparent 1px) 1px 3px/7px 9px,
+    repeating-linear-gradient(38deg, #fff5 0 0.4px, transparent 0.8px 3px);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+.booster-card-viewer .hotspot-glint {
+  background: radial-gradient(
+    ellipse 20% 15% at var(--spot-x) var(--spot-y),
+    #ffffffad 0%,
+    #ffffff61 12%,
+    #e4eaff24 38%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+.booster-card-viewer .tilt-diagonal {
+  background: linear-gradient(
+    125deg,
+    transparent 32%,
+    #bdeefe45 43%,
+    #e9defd70 48%,
+    #fffbd685 51%,
+    #d3e4fc45 56%,
+    transparent 67%
+  );
+  background-size: 240% 220%;
+  background-position: calc(100% - var(--foil-x)) var(--sweep-y);
+  mix-blend-mode: soft-light;
+}
+.booster-card-viewer
+  .is-holo.has-reflection[data-live-holo="true"][data-foil-style="prism"]
+  .tilt-diagonal {
+  opacity: calc(var(--holo-strength) * 0.16);
+}
+.booster-card-viewer .tilt-art-stars {
+  mask-image: var(--star-mask);
+  -webkit-mask-image: var(--star-mask);
+  mix-blend-mode: screen;
+}
+.booster-card-viewer
+  .is-holo.has-reflection[data-live-holo="true"]
+  .tilt-art-stars {
+  opacity: calc(var(--holo-strength) * 0.9);
+}
+.booster-card-viewer .tilt-art-stars .art-star-light {
+  filter: brightness(2.3) saturate(0.8) blur(0.35px);
+  mask-image: radial-gradient(
+      ellipse 28% 24% at var(--spot-x) var(--spot-y),
+      #000 0%,
+      #000a 35%,
+      transparent 100%
+    ),
+    linear-gradient(
+      125deg,
+      transparent calc(var(--star-sweep) - 18%),
+      #000b var(--star-sweep),
+      transparent calc(var(--star-sweep) + 18%)
+    );
+  -webkit-mask-image: radial-gradient(
+      ellipse 28% 24% at var(--spot-x) var(--spot-y),
+      #000 0%,
+      #000a 35%,
+      transparent 100%
+    ),
+    linear-gradient(
+      125deg,
+      transparent calc(var(--star-sweep) - 18%),
+      #000b var(--star-sweep),
+      transparent calc(var(--star-sweep) + 18%)
+    );
+  mask-composite: add;
+  -webkit-mask-composite: source-over;
+}
+.booster-card-viewer .has-monster-depth .tilt-foil,
+.booster-card-viewer .has-monster-depth .tilt-sweep,
+.booster-card-viewer .has-monster-depth .tilt-diagonal,
+.booster-card-viewer .has-monster-depth .tilt-sparkles,
+.booster-card-viewer .has-monster-depth .tilt-glare,
+.booster-card-viewer .has-monster-depth .tilt-hotspot {
+  -webkit-mask-image: var(--art-mask), var(--background-mask);
+  mask-image: var(--art-mask), var(--background-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.booster-card-viewer .has-monster-depth .tilt-art-stars {
+  -webkit-mask-image: var(--star-mask), var(--background-mask);
+  mask-image: var(--star-mask), var(--background-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.booster-card-viewer .monster-depth {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  mask-image: var(--background-mask);
+  -webkit-mask-image: var(--background-mask);
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+.booster-card-viewer .monster-relief {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(
+    var(--relief-x, 0px) var(--relief-y, 2.5px) 2px #2016444d
+  );
+}
+.booster-card-viewer .monster-depth .monster-print {
+  mask-image: var(--monster-mask);
+  -webkit-mask-image: var(--monster-mask);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+}
+.booster-card-viewer
+  .is-holo.has-reflection[data-live-holo="true"]
+  .has-monster-depth
+  .monster-depth {
+  opacity: var(--holo-strength);
+}
+.booster-card-viewer.is-static .tilt-viewer {
+  height: auto;
+  aspect-ratio: 2/3;
+  padding: 0;
+  touch-action: pan-y;
+  cursor: inherit;
+}
+.booster-card-viewer.is-static .tilt-card {
+  width: 100%;
+  filter: none;
+  transform: none;
+}
+.booster-card-viewer .tilt-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+@media (prefers-reduced-motion: reduce) {
+  .booster-card-viewer .tilt-viewer {
+    touch-action: auto;
+    cursor: default;
+  }
+  .booster-card-viewer .tilt-card {
+    transform: none !important;
+    transition: none;
+  }
+  .booster-card-viewer .tilt-foil,
+  .booster-card-viewer .tilt-sweep,
+  .booster-card-viewer .tilt-glare,
+  .booster-card-viewer .tilt-diagonal,
+  .booster-card-viewer .tilt-hotspot,
+  .booster-card-viewer .tilt-art-stars,
+  .booster-card-viewer .monster-depth {
+    display: none;
+  }
+}

@@ -14,6 +14,11 @@ import { createOpenSeaValidation } from "@/opensea/validation";
 import { runOpenSeaSubmissionWorker } from "@/opensea/worker";
 import { assertOwnerTradeAuthorized } from "@/ownerTradeAuthorization";
 
+import {
+  configureMarketplaceOwnershipIndexer,
+  closeMarketplaceOwnershipIndexer
+} from "@/indexer/ownership";
+
 async function main() {
   const environment = readEnvironment();
   const validationConfig = environment.openseaValidation;
@@ -47,6 +52,7 @@ async function main() {
   process.once("SIGTERM", stop);
   process.once("SIGINT", stop);
   try {
+    configureMarketplaceOwnershipIndexer(environment.ownershipIndexer);
     await assertReady(pool, environment.deployment);
     if (validationConfig) {
       const validation = await createOpenSeaValidation(environment);
@@ -194,6 +200,7 @@ async function main() {
         false
       ).catch(() => {});
     await closeBudget?.().catch(() => {});
+    await closeMarketplaceOwnershipIndexer();
     await pool.end();
     if (deadline) clearTimeout(deadline);
     process.removeListener("SIGTERM", stop);

@@ -27,6 +27,11 @@ import {
 import { createProductionRuntime } from "@/productionRuntime";
 import { CapabilityHealthService } from "@/capabilityHealth";
 
+import {
+  configureMarketplaceOwnershipIndexer,
+  closeMarketplaceOwnershipIndexer
+} from "@/indexer/ownership";
+
 async function main() {
   const environment = readEnvironment();
   const pool = createPool(environment);
@@ -50,6 +55,7 @@ async function main() {
     ReturnType<typeof createProductionRuntime>
   > | null = null;
   try {
+    configureMarketplaceOwnershipIndexer(environment.ownershipIndexer);
     await ready();
     if (environment.productionTrading) {
       productionRuntime = await createProductionRuntime(environment, pool);
@@ -96,7 +102,8 @@ async function main() {
   } catch (error) {
     await Promise.allSettled([
       productionRuntime?.close() ?? Promise.resolve(),
-      catalog.close()
+      catalog.close(),
+      closeMarketplaceOwnershipIndexer()
     ]);
     await pool.end();
     throw error;
@@ -143,6 +150,7 @@ async function main() {
     server.close(() => {
       void Promise.allSettled([
         catalog.close(),
+        closeMarketplaceOwnershipIndexer(),
         productionRuntime?.close() ?? Promise.resolve()
       ])
         .then(() => pool.end())

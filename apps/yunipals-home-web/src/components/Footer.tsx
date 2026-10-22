@@ -1,14 +1,15 @@
-import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { environment } from "@/environment";
+import { useAnalyticsConsent } from "@/providers/AnalyticsConsentProvider";
 
 export function Footer({
   onTradingInformation
 }: {
   onTradingInformation: () => void;
 }) {
+  const { openSettings } = useAnalyticsConsent();
   return (
     <footer className="border-t border-line bg-white">
       <div className="mx-auto flex max-w-6xl flex-col justify-between gap-5 px-4 py-10 sm:flex-row sm:items-end">
@@ -32,11 +33,20 @@ export function Footer({
           <div className="flex flex-wrap gap-x-4 gap-y-2 sm:justify-end">
             <button
               type="button"
-              onClick={onTradingInformation}
+              onClick={openSettings}
               className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
             >
-              Buying and selling information
+              Analytics settings
             </button>
+            {environment.yunipalsMarketplaceUrl && (
+              <button
+                type="button"
+                onClick={onTradingInformation}
+                className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+              >
+                Buying and selling information
+              </button>
+            )}
             <Link
               to="/terms"
               className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
@@ -58,16 +68,6 @@ export function Footer({
               </a>
             )}
           </div>
-          <a
-            href="https://opensea.io/collection/yunipals-islands"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 self-start rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4 sm:self-end"
-          >
-            Islands · Grassland Archipelago on OpenSea
-            <ArrowUpRight aria-hidden="true" className="shrink-0" size={16} />
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
             <span className="inline-flex items-center gap-2" aria-hidden="true">
               <ChainLogo chainId="ethereum" className="h-4 w-4 text-ethereum" />

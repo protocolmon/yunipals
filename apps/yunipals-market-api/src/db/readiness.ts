@@ -20,6 +20,11 @@ export async function assertReady(
       OR has_table_privilege(current_user,'yunipals_market.schema_migration','INSERT,UPDATE,DELETE,TRUNCATE')
       OR has_table_privilege(current_user,'yunipals_market.deployment','INSERT,UPDATE,DELETE,TRUNCATE')
       OR has_table_privilege(current_user,'yunipals_market.sale_replay_config','INSERT,UPDATE,DELETE,TRUNCATE')
+      OR has_table_privilege(current_user,'yunipals_market.shared_indexer_consumer','INSERT,DELETE,TRUNCATE')
+      OR has_column_privilege(current_user,'yunipals_market.shared_indexer_consumer','release_id','UPDATE')
+      OR has_column_privilege(current_user,'yunipals_market.shared_indexer_consumer','configuration_hash','UPDATE')
+      OR has_table_privilege(current_user,'yunipals_market.marketplace_legacy_selection','INSERT,UPDATE,DELETE,TRUNCATE')
+      OR has_table_privilege(current_user,'yunipals_market.marketplace_source_review','INSERT,UPDATE,DELETE,TRUNCATE')
       OR EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
         WHERE n.nspname NOT LIKE 'pg_%' AND n.nspname NOT IN ('information_schema','yunipals_market')
           AND c.relkind IN ('r','p','v','m','f')

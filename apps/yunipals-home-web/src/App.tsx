@@ -17,6 +17,12 @@ import { TermsPage } from "@/pages/legal/TermsPage";
 import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
+import { RacingPage } from "@/pages/racing/page";
+import { ArenaPage } from "@/pages/arena/page";
+import { LiveArenaPage } from "@/pages/arena/live/LiveArenaPage";
+import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
+import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
+import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
 
 function ScrollManager() {
   const { hash, pathname } = useLocation();
@@ -68,25 +74,56 @@ function AppContent() {
           element={<CollectionPage />}
         />
         <Route path="/collection/:tokenId" element={<CollectionPage />} />
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        {!environment.collectionOnly && (
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+        )}
+        <Route path="/boosters" element={<BoosterPage />} />
+        <Route
+          path="/boosters/setup"
+          element={<BoosterSetupPage key="smoke" />}
+        />
+        <Route
+          path="/boosters/setup/standard"
+          element={<BoosterSetupPage key="standard" kind="standard" />}
+        />
+        <Route
+          path="/monsters/:collection/:tokenId"
+          element={<BoosterMonsterPage />}
+        />
+        {!environment.collectionOnly && (
+          <>
+            <Route path="/race-lab" element={<RacingPage />} />
+            <Route path="/arena" element={<LiveArenaPage />} />
+            <Route path="/arena/:id" element={<LiveArenaPage />} />
+          </>
+        )}
+        {environment.arenaLab && (
+          <Route path="/arena-lab" element={<ArenaPage />} />
+        )}
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/collector/:address" element={<CollectorPage />} />
-        <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
-        <Route path="/orders/activity" element={<ActivityPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
+        {!environment.collectionOnly && (
+          <>
+            <Route path="/orders/recovery" element={<OrderRecoveryPage />} />
+            <Route path="/orders/activity" element={<ActivityPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+          </>
+        )}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Footer onTradingInformation={openInformation} />
-      <PendingMarketTransactions />
+      {environment.yunipalsMarketplaceUrl && <PendingMarketTransactions />}
     </div>
   );
 }
 
 export function App() {
   return (
-    <TradingConsentProvider>
-      <AppContent />
-    </TradingConsentProvider>
+    <AnalyticsConsentProvider>
+      <TradingConsentProvider>
+        <AppContent />
+      </TradingConsentProvider>
+    </AnalyticsConsentProvider>
   );
 }

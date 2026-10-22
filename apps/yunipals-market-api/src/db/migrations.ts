@@ -843,5 +843,243 @@ CREATE INDEX bnb_discovered_unbound
 DELETE FROM yunipals_market.bnb_discovered_order;
 DELETE FROM yunipals_market.bnb_discovery_cursor;
 `
+  },
+  {
+    version: 25,
+    name: "shared_indexer_marketplace_consumers",
+    sql: `
+-- Source selection is an explicit owner operation. Installing this migration
+-- keeps every existing worker in legacy mode.
+ALTER TABLE yunipals_market.checkpoint ADD COLUMN reader_mode text NOT NULL DEFAULT 'legacy'
+  CHECK(reader_mode IN ('legacy','unified'));
+ALTER TABLE yunipals_market.bnb_discovery_cursor ADD COLUMN reader_mode text NOT NULL DEFAULT 'legacy'
+  CHECK(reader_mode IN ('legacy','unified'));
+
+CREATE TABLE yunipals_market.shared_indexer_consumer (
+  consumer text PRIMARY KEY CHECK(length(consumer) BETWEEN 1 AND 128),
+  chain_id integer NOT NULL CHECK(chain_id IN (1,56,137,8453)),
+  release_id yunipals_market.hash NOT NULL,
+  source_id text NOT NULL CHECK(length(source_id) BETWEEN 1 AND 128),
+  confirmation_policy jsonb NOT NULL CHECK(jsonb_typeof(confirmation_policy)='object'),
+  configuration_hash yunipals_market.hash NOT NULL,
+  cursor jsonb CHECK(cursor IS NULL OR (jsonb_typeof(cursor)='object' AND octet_length(cursor::text)<=16384)),
+  generation bigint NOT NULL DEFAULT 0 CHECK(generation>=0),
+  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  updated_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+CREATE FUNCTION yunipals_market.fence_shared_market_consumer() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+BEGIN
+  IF (NEW.consumer,NEW.chain_id,NEW.release_id,NEW.source_id,NEW.confirmation_policy,
+      NEW.configuration_hash,NEW.created_at) IS DISTINCT FROM
+     (OLD.consumer,OLD.chain_id,OLD.release_id,OLD.source_id,OLD.confirmation_policy,
+      OLD.configuration_hash,OLD.created_at) THEN
+    RAISE EXCEPTION 'Shared marketplace consumer identity is immutable; register a reviewed replacement';
+  END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER shared_market_consumer_identity BEFORE UPDATE ON yunipals_market.shared_indexer_consumer
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_shared_market_consumer();
+
+CREATE FUNCTION yunipals_market.fence_market_reader_mode() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE owner_oid oid;
+BEGIN
+  IF NEW.reader_mode IS DISTINCT FROM OLD.reader_mode THEN
+    SELECT relowner INTO owner_oid FROM pg_catalog.pg_class WHERE oid=TG_RELID;
+    IF NOT pg_catalog.pg_has_role(current_user,owner_oid,'USAGE') THEN
+      RAISE EXCEPTION 'Marketplace source selection requires the table owner';
+    END IF;
+    IF TG_TABLE_NAME='checkpoint' THEN
+      NEW.generation:=OLD.generation+1;
+      NEW.canonical_generation:=OLD.canonical_generation+1;
+      NEW.state:='unavailable';
+      NEW.last_error_code:='marketplace_reader_changed';
+      NEW.checked_at:=clock_timestamp();
+      UPDATE yunipals_market.snapshot SET invalidated_at=clock_timestamp()
+        WHERE kind='activity' AND invalidated_at IS NULL;
+    END IF;
+  END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER checkpoint_reader_mode BEFORE UPDATE ON yunipals_market.checkpoint
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_mode();
+CREATE TRIGGER discovery_reader_mode BEFORE UPDATE ON yunipals_market.bnb_discovery_cursor
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_mode();
+
+-- Base can consume the latest completely indexed block. Other depth policies
+-- retain their existing positive confirmation requirement.
+ALTER TABLE yunipals_market.sale_replay_config DROP CONSTRAINT sale_replay_config_confirmations_check;
+ALTER TABLE yunipals_market.sale_replay_config ADD CONSTRAINT sale_replay_config_confirmations_check
+  CHECK(confirmations BETWEEN 0 AND 100000 AND (confirmations>0 OR chain_id=8453));
+
+-- A new policy must re-prove the same receipt through the selected canonical
+-- source. Never overwrite the policy label of an existing historical proof.
+CREATE TABLE yunipals_market.sale_receipt_qualification (
+  chain_id integer NOT NULL,
+  block_hash yunipals_market.hash NOT NULL,
+  transaction_hash yunipals_market.hash NOT NULL,
+  policy text NOT NULL CHECK(length(policy) BETWEEN 1 AND 128),
+  consumer text NOT NULL REFERENCES yunipals_market.shared_indexer_consumer,
+  release_id yunipals_market.hash NOT NULL,
+  source_id text NOT NULL,
+  event_id text NOT NULL,
+  proof_hash yunipals_market.hash NOT NULL,
+  source_payload_hash yunipals_market.hash NOT NULL,
+  qualified_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  PRIMARY KEY(chain_id,block_hash,transaction_hash,policy),
+  FOREIGN KEY(chain_id,block_hash,transaction_hash) REFERENCES yunipals_market.sale_receipt
+);
+`
+  },
+  {
+    version: 26,
+    name: "market_reader_insert_selection_fence",
+    sql: `
+-- Runtime roles may initialize legacy checkpoints, but cannot bypass the owner
+-- selection fence by deleting and reinserting a unified cursor.
+CREATE FUNCTION yunipals_market.fence_market_reader_insert() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE owner_oid oid;
+BEGIN
+  IF NEW.reader_mode='unified' THEN
+    SELECT relowner INTO owner_oid FROM pg_catalog.pg_class WHERE oid=TG_RELID;
+    IF NOT pg_catalog.pg_has_role(current_user,owner_oid,'USAGE') THEN
+      RAISE EXCEPTION 'Marketplace source selection requires the table owner';
+    END IF;
+  END IF;
+  RETURN NEW;
+END $$;
+CREATE TRIGGER checkpoint_reader_insert BEFORE INSERT ON yunipals_market.checkpoint
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_insert();
+CREATE TRIGGER discovery_reader_insert BEFORE INSERT ON yunipals_market.bnb_discovery_cursor
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_insert();
+`
+  },
+  {
+    version: 27,
+    name: "market_reader_delete_identity_fence",
+    sql: `
+CREATE FUNCTION yunipals_market.fence_market_reader_identity() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+DECLARE owner_oid oid;
+DECLARE needs_owner boolean;
+BEGIN
+  IF TG_OP='DELETE' THEN
+    needs_owner:=OLD.reader_mode='unified';
+  ELSIF TG_TABLE_NAME='checkpoint' THEN
+    needs_owner:=(NEW.source,NEW.chain_id,NEW.name) IS DISTINCT FROM (OLD.source,OLD.chain_id,OLD.name);
+  ELSE
+    needs_owner:=NEW.singleton IS DISTINCT FROM OLD.singleton;
+  END IF;
+  IF needs_owner THEN
+    SELECT relowner INTO owner_oid FROM pg_catalog.pg_class WHERE oid=TG_RELID;
+    IF NOT pg_catalog.pg_has_role(current_user,owner_oid,'USAGE') THEN
+      RAISE EXCEPTION 'Marketplace cursor deletion or identity change requires the table owner';
+    END IF;
+  END IF;
+  RETURN CASE WHEN TG_OP='DELETE' THEN OLD ELSE NEW END;
+END $$;
+CREATE TRIGGER checkpoint_reader_identity BEFORE UPDATE OR DELETE ON yunipals_market.checkpoint
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_identity();
+CREATE TRIGGER discovery_reader_identity BEFORE UPDATE OR DELETE ON yunipals_market.bnb_discovery_cursor
+  FOR EACH ROW EXECUTE FUNCTION yunipals_market.fence_market_reader_identity();
+`
+  },
+  {
+    version: 28,
+    name: "reviewed_unified_rpc_profiles_and_bounded_replay",
+    sql: `
+CREATE TABLE yunipals_market.unified_rpc_profile (
+  profile_id yunipals_market.hash PRIMARY KEY,
+  scope text NOT NULL REFERENCES yunipals_market.rpc_compute_budget,
+  manifest_hash yunipals_market.hash NOT NULL,
+  policy jsonb NOT NULL,
+  enabled boolean NOT NULL DEFAULT false,
+  expires_at timestamptz NOT NULL,
+  reviewed_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+CREATE TABLE yunipals_market.unified_rpc_replay_permit (
+  permit_id yunipals_market.hash PRIMARY KEY,
+  profile_id yunipals_market.hash NOT NULL REFERENCES yunipals_market.unified_rpc_profile,
+  chain_id integer NOT NULL CHECK(chain_id IN (1,56,137,8453)),
+  from_block bigint NOT NULL CHECK(from_block>=0),
+  through_block bigint NOT NULL CHECK(through_block>=from_block),
+  maximum_cu bigint NOT NULL CHECK(maximum_cu BETWEEN 1 AND 1000000000),
+  spent_cu bigint NOT NULL DEFAULT 0 CHECK(spent_cu BETWEEN 0 AND maximum_cu),
+  enabled boolean NOT NULL DEFAULT false,
+  expires_at timestamptz NOT NULL,
+  reviewed_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+REVOKE ALL ON yunipals_market.unified_rpc_profile,yunipals_market.unified_rpc_replay_permit FROM PUBLIC;
+CREATE FUNCTION yunipals_market.reserve_unified_rpc_replay(
+  permit yunipals_market.hash, profile yunipals_market.hash, chain integer,
+  first_block bigint, last_block bigint, units integer
+) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
+BEGIN
+  IF units<1 OR units>100000 OR first_block<0 OR last_block<first_block THEN
+    RAISE EXCEPTION 'Invalid unified RPC reservation';
+  END IF;
+  PERFORM 1 FROM yunipals_market.unified_rpc_profile
+    WHERE profile_id=profile AND enabled AND expires_at>clock_timestamp() FOR SHARE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Unified RPC profile unavailable'; END IF;
+  UPDATE yunipals_market.unified_rpc_replay_permit
+    SET spent_cu=spent_cu+units
+    WHERE permit_id=permit AND profile_id=profile AND chain_id=chain
+      AND enabled AND expires_at>clock_timestamp()
+      AND first_block>=from_block AND last_block<=through_block
+      AND spent_cu+units<=maximum_cu;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Unified RPC replay permit unavailable or exhausted'; END IF;
+END $$;
+REVOKE ALL ON FUNCTION yunipals_market.reserve_unified_rpc_replay(yunipals_market.hash,yunipals_market.hash,integer,bigint,bigint,integer) FROM PUBLIC;
+`
+  },
+  {
+    version: 29,
+    name: "reviewed_marketplace_legacy_rollback_and_receipt_requalification",
+    sql: `
+-- A compatible legacy scanner can be selected without rewriting the immutable
+-- original receipt's policy label. Every selected epoch must re-prove receipts.
+CREATE TABLE yunipals_market.marketplace_source_review (
+  review_hash yunipals_market.hash PRIMARY KEY,
+  consumer text NOT NULL,
+  target_mode text NOT NULL CHECK(target_mode IN ('legacy','unified')),
+  previous_state jsonb NOT NULL,
+  target_configuration jsonb NOT NULL,
+  applied_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+CREATE FUNCTION yunipals_market.retain_marketplace_source_review() RETURNS trigger
+LANGUAGE plpgsql SET search_path=pg_catalog AS $$
+BEGIN RAISE EXCEPTION 'Marketplace source review history is immutable'; END $$;
+CREATE TRIGGER marketplace_source_review_history BEFORE UPDATE OR DELETE
+  ON yunipals_market.marketplace_source_review FOR EACH ROW
+  EXECUTE FUNCTION yunipals_market.retain_marketplace_source_review();
+CREATE TABLE yunipals_market.marketplace_legacy_selection (
+  consumer text PRIMARY KEY,
+  epoch yunipals_market.hash NOT NULL UNIQUE REFERENCES yunipals_market.marketplace_source_review(review_hash),
+  chain_id integer NOT NULL CHECK(chain_id IN (1,56,137,8453)),
+  policy text NOT NULL CHECK(length(policy) BETWEEN 1 AND 128),
+  configuration_hash yunipals_market.hash NOT NULL,
+  configuration jsonb NOT NULL,
+  selected_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  UNIQUE(consumer,epoch,chain_id,policy)
+);
+CREATE TABLE yunipals_market.legacy_sale_receipt_qualification (
+  consumer text NOT NULL,
+  epoch yunipals_market.hash NOT NULL,
+  chain_id integer NOT NULL,
+  block_hash yunipals_market.hash NOT NULL,
+  transaction_hash yunipals_market.hash NOT NULL,
+  policy text NOT NULL,
+  proof_hash yunipals_market.hash NOT NULL,
+  qualified_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  PRIMARY KEY(epoch,chain_id,block_hash,transaction_hash),
+  FOREIGN KEY(consumer,epoch,chain_id,policy)
+    REFERENCES yunipals_market.marketplace_legacy_selection(consumer,epoch,chain_id,policy),
+  FOREIGN KEY(chain_id,block_hash,transaction_hash) REFERENCES yunipals_market.sale_receipt
+);
+REVOKE ALL ON yunipals_market.marketplace_source_review,
+  yunipals_market.marketplace_legacy_selection,yunipals_market.legacy_sale_receipt_qualification FROM PUBLIC;
+`
   }
 ] as const;

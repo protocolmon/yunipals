@@ -1,4 +1,7 @@
 import { onchainTable, primaryKey, index } from "ponder";
+export * from "./lib/boosters/schema.js";
+export * from "./lib/unified/schema.js";
+export * from "./lib/arena/schema.js";
 
 export const token = onchainTable("token", (t) => ({
   collection: t.text().notNull(),
@@ -17,6 +20,7 @@ export const token = onchainTable("token", (t) => ({
   pk: primaryKey({ columns: [table.collection, table.tokenId] }),
   ownerIdx: index().on(table.owner),
   collectionOwnerIdx: index().on(table.collection, table.owner),
+  collectionTransferIdx: index().on(table.collection, table.lastTransferBlock),
   burnedIdx: index().on(table.burned)
 }));
 
@@ -47,7 +51,13 @@ export const transferEvent = onchainTable("transfer_event", (t) => ({
   transactionHash: t.hex("transaction_hash").notNull(),
   transactionIndex: t.integer("transaction_index").notNull(),
   logIndex: t.integer("log_index").notNull()
-}), (table) => ({ tokenIdx: index().on(table.collection, table.tokenId), ownerFromIdx: index().on(table.from), ownerToIdx: index().on(table.to) }));
+}), (table) => ({
+  tokenIdx: index().on(table.collection, table.tokenId),
+  tokenOrderIdx: index().on(table.collection, table.tokenId, table.blockNumber, table.transactionIndex, table.logIndex),
+  blockOrderIdx: index().on(table.collection, table.blockNumber),
+  ownerFromIdx: index().on(table.from),
+  ownerToIdx: index().on(table.to)
+}));
 
 export const adminRoleEvent = onchainTable("admin_role_event", (t) => ({
   id: t.text().primaryKey(),
@@ -62,3 +72,15 @@ export const adminRoleEvent = onchainTable("admin_role_event", (t) => ({
   transactionHash: t.hex("transaction_hash").notNull(),
   logIndex: t.integer("log_index").notNull()
 }), (table) => ({ accountIdx: index().on(table.account), roleIdx: index().on(table.role) }));
+
+export const contractOwnerEvent = onchainTable("contract_owner_event", (t) => ({
+  id: t.text().primaryKey(),
+  collection: t.text().notNull(),
+  chainId: t.integer("chain_id").notNull(),
+  contractAddress: t.hex("contract_address").notNull(),
+  previousOwner: t.hex("previous_owner").notNull(),
+  newOwner: t.hex("new_owner").notNull(),
+  blockNumber: t.bigint("block_number").notNull(),
+  transactionHash: t.hex("transaction_hash").notNull(),
+  logIndex: t.integer("log_index").notNull()
+}), (table) => ({ collectionIdx: index().on(table.collection, table.blockNumber, table.logIndex) }));

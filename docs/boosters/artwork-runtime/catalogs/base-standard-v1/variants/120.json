@@ -1,0 +1,36 @@
+{
+  "name": "Yunikles",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "http://127.0.0.1:9019/v1/boosters/art-assets/b434709fa8d44883ca5def099b9f3a15cbc4108729e7a7c8cd6f314a8827219c.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunikles"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Yellow"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 120,
+    "artworkSha256": "b434709fa8d44883ca5def099b9f3a15cbc4108729e7a7c8cd6f314a8827219c",
+    "catalogCommitment": "0x2fcd24856ed5cb64f4c234d8a483448c279b910a7b30d1cf6ef33bddb531999c",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunikles-yellow-spiral-glitter-no-f482634f2a-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v3-lavender-crisp"
+  }
+}

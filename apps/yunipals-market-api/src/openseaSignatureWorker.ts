@@ -18,6 +18,11 @@ import {
   runOpenSeaSignatureWorker
 } from "@/opensea/signatureWorker";
 
+import {
+  configureMarketplaceOwnershipIndexer,
+  closeMarketplaceOwnershipIndexer
+} from "@/indexer/ownership";
+
 async function main() {
   const environment = readEnvironment();
   const config = readOpenSeaSignatureEnvironment();
@@ -55,6 +60,7 @@ async function main() {
           computeBudget
         );
   try {
+    configureMarketplaceOwnershipIndexer(environment.ownershipIndexer);
     await assertOpenSeaSignatureWorkerReady(pool, environment.deployment);
     let client;
     if (environment.deployment === "production") {
@@ -137,6 +143,7 @@ async function main() {
       })
     );
     if (limit) clearTimeout(limit);
+    await closeMarketplaceOwnershipIndexer();
     await pool.end();
     await coordinator.close();
     if (deadline) clearTimeout(deadline);

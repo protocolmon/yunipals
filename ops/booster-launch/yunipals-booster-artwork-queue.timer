@@ -1,0 +1,11 @@
+[Unit]
+Description=Observe new Yunipal variants for artwork every five seconds
+
+[Timer]
+OnBootSec=15s
+OnUnitInactiveSec=5s
+AccuracySec=1s
+Unit=yunipals-booster-artwork-queue.service
+
+[Install]
+WantedBy=timers.target

@@ -23,11 +23,12 @@ import {
 } from "@protopals/yunipals-market-core/marketOrder";
 
 import { BnbOrderError } from "@/bnb/orders";
-import { marketOrderRowsSql } from "@/reads/orderRows";
+import { marketplaceOwnershipSqlRelations } from "@/indexer/ownershipSql";
+import { marketOrderRowsStatementSql } from "@/reads/orderRows";
 import { observedOrderStateSql, type readOrderSources } from "@/reads/orders";
 import { parsePageRequest } from "@/reads/snapshots";
 import {
-  indexedTokenHiddenSql,
+  indexedTokenHiddenSqlFor,
   indexedTokenNumberSql
 } from "@/reads/visibility";
 
@@ -146,7 +147,7 @@ function orderBookSql(
       SELECT DISTINCT ON (o.chain_id,o.contract_address,o.token_id,o.maker,o.lifecycle,o.currency)
         o.chain_id,o.contract_address,o.token_id,o.maker,o.lifecycle,o.currency,o.gross_amount,
         o.summary||jsonb_build_object('status','active') AS summary
-      FROM ${marketOrderRowsSql} o JOIN allowed_currency a ON a.chain_id=o.chain_id AND a.currency=o.currency
+      FROM ${marketOrderRowsStatementSql()} o JOIN allowed_currency a ON a.chain_id=o.chain_id AND a.currency=o.currency
       WHERE o.chain_id=ANY($3::integer[]) AND o.browse_candidate AND o.side='listing'
         AND o.protocol_address='${seaportDeployment.address.toLowerCase()}'
         AND (${observedOrderStateSql})='active'
@@ -248,11 +249,15 @@ export function catalogSql(
   // The source UNION view prevents PostgreSQL from using the token/rank
   // indexes efficiently. Each family is queried directly; callers merge their
   // bounded pages and sum their complete filtered counts on the held snapshot.
-  const tokens = query.chains.every((chain) => chain === "bnb")
-    ? "bnb_indexer.token"
-    : query.chains.every((chain) => chain !== "bnb")
-      ? "yunipals_indexer_v3.token"
-      : "yunipals_read_v4.token";
+  const ownership = marketplaceOwnershipSqlRelations();
+  const tokens =
+    ownership.mode === "unified"
+      ? ownership.tokenRelation
+      : query.chains.every((chain) => chain === "bnb")
+        ? "bnb_indexer.token"
+        : query.chains.every((chain) => chain !== "bnb")
+          ? "yunipals_indexer_v3.token"
+          : "yunipals_read_v4.token";
   const score = isPriceSort(query.filters.sort)
     ? "price"
     : query.filters.sort.startsWith("rarity-capped")
@@ -358,9 +363,9 @@ export function catalogSql(
   const base = `WITH ${bookCtes},
     hidden AS MATERIALIZED (
       SELECT t.collection,t.token_id FROM metadata.token_visibility visibility
-      JOIN LATERAL (SELECT current.* FROM yunipals_read_v4.token current
+      JOIN LATERAL (SELECT current.* FROM ${ownership.tokenRelation} current
         WHERE current.collection=visibility.collection AND current.token_id=pg_catalog.textin(pg_catalog.numeric_out(visibility.token_id)) LIMIT 1) t ON true
-      WHERE ${indexedTokenHiddenSql}),
+      WHERE ${indexedTokenHiddenSqlFor("t", ownership.transferRelation)}),
     candidates AS ${phase === "null-missing" || combineFirstPage ? "MATERIALIZED" : ""} (
       SELECT t.collection,t.chain_id,t.contract_address,t.token_id,${indexedScore ? "s.token_id" : indexedTokenNumberSql} AS id_number,t.owner,t.lifecycle,
         t.mint_block,t.last_transfer_block,s.metadata_available,

@@ -1,11 +1,5 @@
 {
   "framework": null,
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "buildCommand": "pnpm build:www --mode vercel-cloud",
+  "outputDirectory": null
 }

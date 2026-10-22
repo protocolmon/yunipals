@@ -25,6 +25,7 @@ import {
   seaportFulfillmentOrder
 } from "@protopals/yunipals-market-core/seaport";
 import { verifySeaportOrderMaker } from "@protopals/yunipals-market-core/verifyOrderMaker";
+import { seaportRuntimeHashes } from "@protopals/yunipals-market-core/seaportRuntime";
 
 import { OpenSeaOrderError, type OpenSeaOrderRequest } from "@/opensea/orders";
 import type { OpenSeaReadEvidenceCache } from "@/opensea/readEvidenceCache";
@@ -41,10 +42,9 @@ const conduitAbi = parseAbi([
 // Actual per-chain runtime hashes captured in the 5 September fork evidence.
 // Seaport has chain-specific constructor immutables; the BNB hash is different.
 const seaportCodeHashes = {
-  ethereum:
-    "0x74499ac0cce14428e4b41541d5e44f28f5a6882a1051d0118867c2a93cd5aec0",
-  base: "0x2d5cb8553e21a19550413299c05a6493cc606fb0000b5042328a5ba06bfdaf35",
-  polygon: "0x24fd52b9fba5545dabf736449aa4f2beed9562a4a641d2f6c85ca05eeed35d52"
+  ethereum: seaportRuntimeHashes[1],
+  base: seaportRuntimeHashes[8453],
+  polygon: seaportRuntimeHashes[137]
 } as const;
 
 export function assertOpenSeaRuntimeCode(

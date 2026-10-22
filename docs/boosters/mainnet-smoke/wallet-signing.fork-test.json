@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "mainnetBroadcast": false,
+  "localForkOnly": true,
+  "simulatedBalanceOverride": true,
+  "checks": [
+    "page load makes no wallet or transaction request",
+    "wrong wallet cannot deploy",
+    "wallet network switches to Base before signing",
+    "wallet rejection preserves the unsigned next deployment",
+    "reload resumes from verified onchain code after two deployments",
+    "six exact payloads create expected code and verified admin/config/pause/upgrade roles and dependencies",
+    "receipt download, mobile layout and no browser exceptions"
+  ],
+  "receipts": [
+    {
+      "transactionHash": "0xd8178f0e6902c945002a12b1da7944db18b5c10b541a81e4ea8aa111f1bd6630",
+      "gasUsed": "2891090",
+      "contractAddress": "0x7b332ba80cfa8af55b0852b0175b57f2b9a69ea5"
+    },
+    {
+      "transactionHash": "0x635a5e5b27a53e7632cc2a3e84b3e18a772649f3cb2d61c0de073984aa9fb605",
+      "gasUsed": "231506",
+      "contractAddress": "0xeaee2da120a398f21729d50672ac5d1dd71d7274"
+    },
+    {
+      "transactionHash": "0x7d41e9e68e55775d7acc376a26181cedab844b8e359eac3611c6859c4c4c7c5a",
+      "gasUsed": "2569669",
+      "contractAddress": "0xde0f58649b6d272e4b7afaee1231f2c83c1599b9"
+    },
+    {
+      "transactionHash": "0x4778b60129a2d90e94a5eabf2cfa0c87f4688b9fd3af03c81d3a368369062cfd",
+      "gasUsed": "324334",
+      "contractAddress": "0x105319be2182018c31fb10b1be198c3cf238a146"
+    },
+    {
+      "transactionHash": "0x7d02777776399ef39707d94042d4a4bb48415c9bb996095ed21f5dd1c21add51",
+      "gasUsed": "3403900",
+      "contractAddress": "0x92e2351a83b6c445c94d0b887259d2b940c82a5a"
+    },
+    {
+      "transactionHash": "0x43264decc5bf7abeeb81869d94a6113ea00ce4ea27a309017b14cb97b4cc9778",
+      "gasUsed": "338256",
+      "contractAddress": "0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609"
+    }
+  ],
+  "consoleErrors": []
+}

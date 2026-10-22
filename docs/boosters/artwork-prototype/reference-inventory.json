@@ -1,0 +1,337 @@
+{
+  "expected": 66,
+  "available": 66,
+  "missing": [],
+  "references": [
+    {
+      "key": "Yuniair:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-d0b11ed041cb.png"
+    },
+    {
+      "key": "Yuniair:Green",
+      "status": "existing",
+      "image": "references/palette-green-55bd433599ab.png"
+    },
+    {
+      "key": "Yuniair:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-327ded98f46f.png"
+    },
+    {
+      "key": "Yuniair:Red",
+      "status": "existing",
+      "image": "references/palette-red-d2785321c72f.png"
+    },
+    {
+      "key": "Yuniair:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-49ee500f01ba.png"
+    },
+    {
+      "key": "Yuniair:Black",
+      "status": "existing",
+      "image": "references/palette-black-beb2f31dc8ed.png"
+    },
+    {
+      "key": "Yunidonkey:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-8a200daec30e.png"
+    },
+    {
+      "key": "Yunidonkey:Green",
+      "status": "existing",
+      "image": "references/palette-green-26cac5473dc3.png"
+    },
+    {
+      "key": "Yunidonkey:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-564bb49b1e2d.png"
+    },
+    {
+      "key": "Yunidonkey:Red",
+      "status": "existing",
+      "image": "references/palette-red-5cafae120f93.png"
+    },
+    {
+      "key": "Yunidonkey:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-8e1ea49949b6.png"
+    },
+    {
+      "key": "Yunidonkey:Black",
+      "status": "existing",
+      "image": "references/palette-black-76f34963a8d7.png"
+    },
+    {
+      "key": "Yunibranch:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-7b1dd446bc68.png"
+    },
+    {
+      "key": "Yunibranch:Green",
+      "status": "existing",
+      "image": "references/palette-green-6257e388638c.png"
+    },
+    {
+      "key": "Yunibranch:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-bbee167e3a18.png"
+    },
+    {
+      "key": "Yunibranch:Red",
+      "status": "existing",
+      "image": "references/palette-red-6f9e269a852e.png"
+    },
+    {
+      "key": "Yunibranch:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-7f389b207128.png"
+    },
+    {
+      "key": "Yunibranch:Black",
+      "status": "existing",
+      "image": "references/palette-black-c35a1fe5bcd8.png"
+    },
+    {
+      "key": "Yunidragon:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-0d8be9f47426.png"
+    },
+    {
+      "key": "Yunidragon:Green",
+      "status": "existing",
+      "image": "references/palette-green-13a6407e0111.png"
+    },
+    {
+      "key": "Yunidragon:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-6531519092e5.png"
+    },
+    {
+      "key": "Yunidragon:Red",
+      "status": "existing",
+      "image": "references/palette-red-79a882a0d466.png"
+    },
+    {
+      "key": "Yunidragon:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-c2cea9975dbe.png"
+    },
+    {
+      "key": "Yunidragon:Black",
+      "status": "existing",
+      "image": "references/palette-black-71ba9a50b659.png"
+    },
+    {
+      "key": "Yunicursed:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-e50f401929b9.png"
+    },
+    {
+      "key": "Yunicursed:Green",
+      "status": "existing",
+      "image": "references/palette-green-d5a3cbab8560.png"
+    },
+    {
+      "key": "Yunicursed:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-a32d580d9286.png"
+    },
+    {
+      "key": "Yunicursed:Red",
+      "status": "existing",
+      "image": "references/palette-red-f0aecfd0b6dc.png"
+    },
+    {
+      "key": "Yunicursed:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-f0d77b14cdaf.png"
+    },
+    {
+      "key": "Yunicursed:Black",
+      "status": "existing",
+      "image": "references/palette-black-11c6d87a8535.png"
+    },
+    {
+      "key": "Yunikles:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-eb7b0393ab0e.png"
+    },
+    {
+      "key": "Yunikles:Green",
+      "status": "existing",
+      "image": "references/palette-green-7b641f55a076.png"
+    },
+    {
+      "key": "Yunikles:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-fef2b9af553b.png"
+    },
+    {
+      "key": "Yunikles:Red",
+      "status": "existing",
+      "image": "references/palette-red-d45b4e995164.png"
+    },
+    {
+      "key": "Yunikles:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-39dec5f2a1a8.png"
+    },
+    {
+      "key": "Yunikles:Black",
+      "status": "existing",
+      "image": "references/palette-black-2a60f48747b7.png"
+    },
+    {
+      "key": "Yuniturtle:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-52446a55422d.png"
+    },
+    {
+      "key": "Yuniturtle:Green",
+      "status": "existing",
+      "image": "references/palette-green-7bfc286cdc83.png"
+    },
+    {
+      "key": "Yuniturtle:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-c7ea7a2e88f0.png"
+    },
+    {
+      "key": "Yuniturtle:Red",
+      "status": "existing",
+      "image": "references/palette-red-611204756952.png"
+    },
+    {
+      "key": "Yuniturtle:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-92951ed85cd9.png"
+    },
+    {
+      "key": "Yuniturtle:Black",
+      "status": "existing",
+      "image": "references/palette-black-1fcfda9f6459.png"
+    },
+    {
+      "key": "Yuniaqua:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-5d4846b8526b.png"
+    },
+    {
+      "key": "Yuniaqua:Green",
+      "status": "existing",
+      "image": "references/palette-green-9efe1d31a36d.png"
+    },
+    {
+      "key": "Yuniaqua:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-55af046442b0.png"
+    },
+    {
+      "key": "Yuniaqua:Red",
+      "status": "existing",
+      "image": "references/palette-red-6132cba67c40.png"
+    },
+    {
+      "key": "Yuniaqua:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-145be1c887be.png"
+    },
+    {
+      "key": "Yuniaqua:Black",
+      "status": "existing",
+      "image": "references/palette-black-63a1758c6541.png"
+    },
+    {
+      "key": "Yunichick:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-064ac27a8cbb.png"
+    },
+    {
+      "key": "Yunichick:Green",
+      "status": "existing",
+      "image": "references/palette-green-9a3a4be1f3be.png"
+    },
+    {
+      "key": "Yunichick:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-b8c66be81f96.png"
+    },
+    {
+      "key": "Yunichick:Red",
+      "status": "existing",
+      "image": "references/palette-red-ae011a552311.png"
+    },
+    {
+      "key": "Yunichick:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-1292284f4bf3.png"
+    },
+    {
+      "key": "Yunichick:Black",
+      "status": "existing",
+      "image": "references/palette-black-5ed01c8edf03.png"
+    },
+    {
+      "key": "Yunisheep:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-25891474742c.png"
+    },
+    {
+      "key": "Yunisheep:Green",
+      "status": "existing",
+      "image": "references/palette-green-9bd291e2122b.png"
+    },
+    {
+      "key": "Yunisheep:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-c2b007a49ccc.png"
+    },
+    {
+      "key": "Yunisheep:Red",
+      "status": "existing",
+      "image": "references/palette-red-9946d47fb51a.png"
+    },
+    {
+      "key": "Yunisheep:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-9150a53ccb5c.png"
+    },
+    {
+      "key": "Yunisheep:Black",
+      "status": "existing",
+      "image": "references/palette-black-6b851668fe1f.png"
+    },
+    {
+      "key": "Yunifairy:Yellow",
+      "status": "existing",
+      "image": "references/palette-yellow-1fcf3fa4ef63.png"
+    },
+    {
+      "key": "Yunifairy:Green",
+      "status": "existing",
+      "image": "references/palette-green-48abf3f92a63.png"
+    },
+    {
+      "key": "Yunifairy:Blue",
+      "status": "existing",
+      "image": "references/palette-blue-27b15bfe8be3.png"
+    },
+    {
+      "key": "Yunifairy:Red",
+      "status": "existing",
+      "image": "references/palette-red-abb2d8b1e15e.png"
+    },
+    {
+      "key": "Yunifairy:Purple",
+      "status": "existing",
+      "image": "references/palette-purple-faca5aae348b.png"
+    },
+    {
+      "key": "Yunifairy:Black",
+      "status": "existing",
+      "image": "references/palette-black-922b63b2c1d7.png"
+    }
+  ]
+}

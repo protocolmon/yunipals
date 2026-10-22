@@ -13,4 +13,6 @@ GRANT SELECT,INSERT,UPDATE ON yunipals_market.opensea_policy_observation TO :"ma
 GRANT SELECT ON yunipals_market.rpc_compute_budget,yunipals_market.rpc_compute_allocation TO :"market_budget_role";
 GRANT SELECT,INSERT,UPDATE,DELETE ON yunipals_market.rpc_compute_window,
   yunipals_market.rpc_compute_workload_window TO :"market_budget_role";
+GRANT SELECT ON yunipals_market.unified_rpc_profile,yunipals_market.unified_rpc_replay_permit TO :"market_budget_role";
+GRANT EXECUTE ON FUNCTION yunipals_market.reserve_unified_rpc_replay(yunipals_market.hash,yunipals_market.hash,integer,bigint,bigint,integer) TO :"market_budget_role";
 COMMIT;

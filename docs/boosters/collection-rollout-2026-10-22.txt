@@ -1,0 +1,110 @@
+COLLECTION + BOOSTER FRONTEND RELEASE — 22 OCTOBER 2026
+
+Scope
+Restore collection browsing, connected-wallet booster collection, pack opening,
+daily claims and the approved lavender card viewer. Marketplace, orders,
+leaderboard, racing, Arena and Islands navigation are deferred for this release.
+OG collection reads retain the existing API; booster reads use the feature-only
+routes under the same https://api.yunipals.com/yunipals-indexer/v1 prefix.
+
+Verified static release
+Directory: /tmp/yunipals-collection-booster-live-20261022-v3
+Archive: /tmp/yunipals-collection-booster-live-20261022-v3.tar.gz
+Archive SHA256: 17c80312242040ef7d1fb64ac92039f17eac36178456f90b48158910a7a5b412
+RELEASE-MANIFEST.json SHA256:
+09661871dfaa6c9d0663ac7426b4499320e19a0ec6ffacbe91d2e7d89581f027
+176 files, 6,847,910 bytes before the release manifest. Heavy prototype media is
+excluded; Vite-imported assets and the explicit collection public assets remain.
+
+Build
+Run from apps/yunipals-home-web with Node 24:
+node --experimental-strip-types --import ./scripts/register-typescript.mjs \
+  scripts/boosters/build-collection-live.mjs \
+  --setup-sha bc1ab30332108dc40db4b3f86b8ac6c1a0efff456555f40af486389afb305d6e \
+  --output /tmp/yunipals-collection-booster-live-<fresh-name>
+The builder validates the frozen bundle, confirmed deployment, full rules and
+calldata, then pins the exact bundle SHA in the compiled application.
+
+Owner setup
+Route: /boosters/setup
+Wallet: 0xB3883Cd96d72B08b8226452305A28D65974a3727, Base chain 8453.
+Bundle: public/boosters/mainnet-smoke-setup.json, SHA pinned above.
+Two separately reviewed wallet calls: configure draft, then activate that exact
+draft. Both calls have zero ETH value and transfer no PROTO. The UI verifies the
+public art commitment, deployment, CONFIG_ROLE, full rules/catalog, gas/balance,
+actual confirmed calldata and the allocated type ID. Confirmed ID survives a
+refresh; manual restoration is also checked against the complete frozen draft.
+
+The test type is capped at one opening, priced at 1 PROTO, all 264 variants,
+one mint per rolling 24 hours, no speed boost. Types whose manifest URI contains
+/base-mainnet-smoke-v1/ are hidden from wallets other than the approved owner.
+THIS IS UI FILTERING ONLY. It does not reserve the pack onchain or prevent a
+different account from calling the contract directly.
+
+Verification completed
+- TypeScript noEmit passed.
+- 5 booster utility tests and 4 owner setup tests passed.
+- Full local-chain UI story passed: exact approval, burn and VRF request,
+  pending-state refresh, reveal, daily accrual, batch claim, pending rights
+  following transfer, burn forfeiture, approved art/holo, mobile and keyboard.
+  Marketplace requests: zero. Local fixture uses mock VRF, not live Chainlink.
+  Report: /tmp/yunipals-boosters-browser-report.json
+- Actual production static v3 served on localhost, with Base RPC/wallet writes
+  intercepted to a disposable fork at block 52945979. Configure -> reload ->
+  activate passed; exact cap/price/interval/catalog verified on the fork.
+  Real public artwork manifest was checked over HTTPS. Real logo and Inter/
+  Archivo Black font assets loaded. No runtime errors, request failures or
+  missing asset responses. No mainnet broadcasts occurred.
+  Report: /tmp/yunipals-owner-setup-static-fork-report.json
+  Screenshot: /tmp/yunipals-owner-setup-final-static.png
+- Read-only simulation of the exact configure calldata against real Base passed;
+  observed estimate was 602399 gas. No transaction was broadcast.
+
+Production publication responsibilities
+Collection restoration is independent from booster source startup. Require
+healthy legacy collection reads and actual registry typeCount=0; the expected
+JSON booster_index_unavailable/503 may remain visible as a catching-up state.
+This supersedes the earlier full booster API-health publication gate.
+Stage the immutable release, then switch the existing app Nginx root with a SPA
+fallback (try_files $uri /index.html). Do not include $uri/: the artifact's real
+boosters/ asset directory otherwise redirects the /boosters SPA route to a
+directory listing and a 403. Do not cache index.html or the setup bundle
+across the change. The app's /collection path redirects to the collection root.
+After publication, verify actual public collection/API/art reads and wallet UI.
+Before owner activation/opening instructions, require healthy booster types and
+owner endpoints. The owner must still sign the real setup calls, open the
+capped pack, and observe actual Chainlink fulfillment before public pack sales.
+The fork proof does not replace that live VRF test.
+
+The durable art catalog currently has 8 approved variants. Unpublished variants
+remain explicit preparation states; this release does not claim all 264 images
+are already generated.
+
+Narrow static publication helper
+ops/unified-indexer-transition/publish-collection-static-v1.py
+Stage verifies the fixed archive and every file, creates a new readonly release
+under /var/www/yunipals/releases/<manifest SHA>, and never touches nginx.
+Review emits the exact app-only diff and validates a temporary nginx main config
+against the actual includes/certificates, without installing or reloading it.
+Apply requires both the reviewed before/candidate hashes, backs up the shared
+site, rechecks its bytes immediately before atomic replacement, validates nginx,
+then reloads. Failure restores only its own candidate bytes and refuses to
+overwrite an intervening unrelated edit. The caller performs publication.
+9 focused archive/filesystem/failure-injection checks passed locally.
+
+Actual public acceptance
+The root operator published the release at 15:44:23 UTC and corrected the real
+boosters/ directory collision at 15:47:21 UTC. Final shared nginx checksum:
+42147cbd11d0ba701e24c1671f9c41dbf4d46ce26f51f8cf728325a5859423e6
+Real public Chromium proof passed for /collection, /boosters, /boosters/ and
+/boosters/setup, all HTTP200 with Cloudflare DYNAMIC and Cache-Control no-store.
+24 OG cards and real images rendered; the 390px mobile viewport had no horizontal
+overflow and visible artwork was fully decoded. Read-only wallet connection
+reached the approved collector and its actual v2 token endpoint returned200.
+Public owner setup checked the frozen bundle, actual artwork/role and actual
+Base fee review; the confirmation button was not clicked. No signatures or
+transactions were requested. At acceptance, booster data remained the expected
+booster_index_unavailable/503; catching-up UI stayed local to the pack section.
+Receipt: docs/boosters/public-collection-acceptance-2026-10-22.json
+Repeatable browser check:
+apps/yunipals-home-web/scripts/boosters/test-public-collection-readonly.mjs

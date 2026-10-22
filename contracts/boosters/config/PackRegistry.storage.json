@@ -1,0 +1,333 @@
+[
+  {
+    "label": "typeCount",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "_packs",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PackRegistry.Pack)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PackRegistry.Pack",
+        "numberOfBytes": "320",
+        "members": [
+          {
+            "label": "rules",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PackRegistry.Rules",
+              "numberOfBytes": "224",
+              "members": [
+                {
+                  "label": "engine",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "address",
+                    "numberOfBytes": "20"
+                  }
+                },
+                {
+                  "label": "paymentToken",
+                  "slot": "1",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "address",
+                    "numberOfBytes": "20"
+                  }
+                },
+                {
+                  "label": "price",
+                  "slot": "2",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint128",
+                    "numberOfBytes": "16"
+                  }
+                },
+                {
+                  "label": "intervalSeconds",
+                  "slot": "2",
+                  "offset": 16,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint64",
+                    "numberOfBytes": "8"
+                  }
+                },
+                {
+                  "label": "mintsPerInterval",
+                  "slot": "2",
+                  "offset": 24,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "maxBatch",
+                  "slot": "2",
+                  "offset": 28,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "baseGas",
+                  "slot": "3",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "perMintGas",
+                  "slot": "3",
+                  "offset": 4,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "confirmations",
+                  "slot": "3",
+                  "offset": 8,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint16",
+                    "numberOfBytes": "2"
+                  }
+                },
+                {
+                  "label": "supplyCap",
+                  "slot": "3",
+                  "offset": 10,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint64",
+                    "numberOfBytes": "8"
+                  }
+                },
+                {
+                  "label": "artworkHash",
+                  "slot": "4",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "bytes32",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "manifestURI",
+                  "slot": "5",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "metadataBaseURI",
+                  "slot": "6",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "catalogHash",
+            "slot": "7",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "ruleHash",
+            "slot": "8",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "totalVariants",
+            "slot": "9",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "openings",
+            "slot": "9",
+            "offset": 4,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "active",
+            "slot": "9",
+            "offset": 12,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "salesPaused",
+            "slot": "9",
+            "offset": 13,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_catalogs",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PackRegistry.Catalog)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PackRegistry.Catalog",
+        "numberOfBytes": "160",
+        "members": [
+          {
+            "label": "types",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint32[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint32",
+                "numberOfBytes": "4"
+              }
+            }
+          },
+          {
+            "label": "colors",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint32[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint32",
+                "numberOfBytes": "4"
+              }
+            }
+          },
+          {
+            "label": "horns",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint32[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint32",
+                "numberOfBytes": "4"
+              }
+            }
+          },
+          {
+            "label": "glitters",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint32[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint32",
+                "numberOfBytes": "4"
+              }
+            }
+          },
+          {
+            "label": "allowed",
+            "slot": "4",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint32[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint32",
+                "numberOfBytes": "4"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+]

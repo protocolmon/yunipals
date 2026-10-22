@@ -1,0 +1,64 @@
+{
+  "chain": "ethereum",
+  "chainId": 1,
+  "contractAddress": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+  "tokenId": "1000000063",
+  "image": "https://drive.polychainmonsters.com/ipfs/QmPmxTuj5Rq5d3eUqwLKubNuG7c4XJrV22anH7nsWRAWUL",
+  "attributes": [
+    {
+      "value": "Normal",
+      "trait_type": "Horn"
+    },
+    {
+      "value": "Unidragon",
+      "trait_type": "Type"
+    },
+    {
+      "value": "Purple",
+      "trait_type": "Color"
+    },
+    {
+      "value": 21,
+      "trait_type": "Booster",
+      "display_type": "number"
+    },
+    {
+      "value": "None",
+      "trait_type": "Glitter"
+    },
+    {
+      "value": 1617210538,
+      "trait_type": "Birthday",
+      "display_type": "date"
+    },
+    {
+      "value": "Grassland",
+      "trait_type": "Background"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Origin Chain"
+    },
+    {
+      "value": "Yes",
+      "trait_type": "First Edition"
+    },
+    {
+      "value": 203.125,
+      "trait_type": "Rarity Points"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Opening Network"
+    },
+    {
+      "value": 1790031699,
+      "trait_type": "Last metadata update",
+      "display_type": "date"
+    }
+  ],
+  "tokenUri": "https://meta.polkamon.com/meta?id=1000000063",
+  "uriProvenance": "current_token_uri_call",
+  "uriAuditStatus": "onchain_resolved",
+  "lookupUrl": "https://api.yunipals.com/yunipals-indexer/v1/tokens?limit=1&traitType=Type&traitValue=Unidragon&traitType=Color&traitValue=Purple&traitType=Glitter&traitValue=None"
+}

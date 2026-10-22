@@ -1,4 +1,6 @@
 import type { Pool } from "pg";
+import { isDeepStrictEqual } from "node:util";
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { getAddress, zeroAddress, type Hex, type PublicClient } from "viem";
 import {
   marketplaceChains,
@@ -31,6 +33,75 @@ export async function bindDiscoveredBnbLifecycles(
 ) {
   if (!Number.isInteger(limit) || limit < 1 || limit > 100)
     throw new Error("Invalid BNB lifecycle batch size.");
+  const shared = marketplaceOwnershipIndexer();
+  if (shared) {
+    const checkpoint = await shared.status("bnb");
+    const anchor = await stateClient.getBlock({
+      blockNumber: checkpoint.number
+    });
+    if (anchor.hash?.toLowerCase() !== checkpoint.hash)
+      throw new Error("BNB shared ownership anchor changed.");
+    const due = await pool.query<UnboundOrder>(
+      `SELECT order_hash,token_id::text,publication_block::text,publication_transaction_index,publication_log_index,published_components
+       FROM yunipals_market.bnb_discovered_order WHERE bound_lifecycle IS NULL AND published_components IS NOT NULL
+         AND publication_transaction_index IS NOT NULL AND publication_block<=$1::numeric AND publication_block<=$2::numeric
+         AND end_time>extract(epoch FROM clock_timestamp()) ORDER BY publication_block,publication_log_index LIMIT $3`,
+      [finalizedBlock.toString(), checkpoint.number.toString(), limit]
+    );
+    let bound = 0;
+    for (const row of due.rows) {
+      const position = {
+        blockNumber: row.publication_block,
+        transactionIndex: row.publication_transaction_index,
+        logIndex: row.publication_log_index
+      };
+      const history = await shared.lifecycleBefore(
+        "bnb",
+        row.token_id,
+        position
+      );
+      if (!history.transfer || getAddress(history.transfer.to) === zeroAddress)
+        continue;
+      const input = parseBnbOrderRequest({
+        asset: {
+          chain: "bnb",
+          chainId: 56,
+          contractAddress: marketplaceChains.bnb.contractAddress,
+          tokenId: row.token_id
+        },
+        lifecycle: history.transfer.lifecycle,
+        order: row.published_components
+      });
+      if (input.hash.toLowerCase() !== row.order_hash.toLowerCase())
+        throw new Error("Published BNB components changed after verification.");
+      const summary = bnbOrderSummary(
+        input,
+        checkBnbOrder(input, policy),
+        "unavailable"
+      );
+      const fresh = await shared.lifecycleBefore("bnb", row.token_id, position);
+      if (!isDeepStrictEqual(fresh.transfer, history.transfer))
+        throw new Error("BNB shared lifecycle changed before binding.");
+      const block = await stateClient.getBlock({
+        blockNumber: fresh.checkpoint.number
+      });
+      if (block.hash?.toLowerCase() !== fresh.checkpoint.hash)
+        throw new Error("BNB shared ownership anchor changed before binding.");
+      const saved = await pool.query(
+        `UPDATE yunipals_market.bnb_discovered_order SET bound_lifecycle=$3,summary=$4::jsonb,bound_at=clock_timestamp(),bound_indexer_block=$5,bound_indexer_hash=$6 WHERE protocol_address=$1 AND order_hash=$2 AND bound_lifecycle IS NULL`,
+        [
+          seaportDeployment.address.toLowerCase(),
+          row.order_hash.toLowerCase(),
+          fresh.transfer!.lifecycle,
+          JSON.stringify(summary),
+          fresh.checkpoint.number.toString(),
+          fresh.checkpoint.hash
+        ]
+      );
+      if (saved.rowCount === 1) bound++;
+    }
+    return { bound, pending: due.rows.length === limit };
+  }
   const checkpoint = await pool.query<{
     last_scanned_block: string | null;
     last_scanned_hash: Hex | null;

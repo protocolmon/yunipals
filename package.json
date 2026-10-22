@@ -72,10 +72,15 @@
     "build:web": "pnpm --filter @protopals/yunipals-home-web build",
     "build:api": "pnpm --filter @protopals/yunipals-market-api build",
     "test": "pnpm test:dependencies && pnpm test:web && pnpm test:api && pnpm test:indexer",
-    "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:marketplace",
+    "test:web": "pnpm --filter @protopals/yunipals-home-web test:collector && pnpm --filter @protopals/yunipals-home-web test:islands && pnpm --filter @protopals/yunipals-home-web test:marketplace && pnpm --filter @protopals/yunipals-home-web test:analytics",
     "test:api": "pnpm --filter @protopals/yunipals-market-api test",
     "test:indexer": "pnpm --filter @protopals/yunipals-indexer test",
     "test:bnb-indexer": "pnpm --filter @protopals/yunipals-indexer bnb:test",
-    "dev:indexer": "pnpm --filter @protopals/yunipals-indexer dev"
+    "dev:indexer": "pnpm --filter @protopals/yunipals-indexer dev",
+    "test:boosters": "pnpm test:boosters:contracts && pnpm --filter @protopals/yunipals-indexer test:boosters && pnpm --filter @protopals/yunipals-home-web test:boosters",
+    "test:boosters:contracts": "forge test --root contracts/boosters && python3 scripts/boosters/check-storage.py",
+    "art:boosters": "python3 scripts/boosters/art_lab.py",
+    "art:boosters:serve": "python3 scripts/boosters/art_lab_server.py",
+    "test:boosters:art": "python3 -m unittest discover -s scripts/boosters -p test_art_lab.py -v"
   }
 }

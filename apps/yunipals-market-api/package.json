@@ -8,6 +8,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "dev:arena": "tsx src/arena/labServer.ts",
+    "test:arena": "node --import tsx src/arena/arena.test.ts",
     "dev": "tsx src/server.ts",
     "start": "node dist/server.mjs",
     "start:worker": "node dist/worker.mjs",
@@ -27,13 +29,28 @@
     "start:opensea-read-worker": "node dist/opensea-read-worker.mjs",
     "start:opensea-signature-worker": "node dist/opensea-signature-worker.mjs",
     "start:opensea-signature-fleet": "node dist/opensea-signature-fleet.mjs",
-    "start:opensea-stream": "node dist/opensea-stream.mjs"
+    "start:opensea-stream": "node dist/opensea-stream.mjs",
+    "test:arena:live": "node --import tsx src/arena/live/live.test.ts",
+    "test:arena:anvil": "node --import tsx src/arena/live/anvil.test.ts",
+    "test:arena:input": "node --import tsx src/arena/live/input.test.ts",
+    "inspect:arena:native": "tsx src/arena/live/nativeInspect.ts",
+    "start:arena:native-disclosure": "node dist/arena-native-disclosure.mjs",
+    "start:arena:native-referee": "node dist/arena-native-referee.mjs",
+    "start:arena:native-media": "node dist/arena-native-media.mjs",
+    "adopt:arena:media": "node dist/arena-media-adoption.mjs",
+    "switch:arena:source": "node dist/arena-source-switch.mjs",
+    "select:marketplace:consumer": "node dist/marketplace-consumer.mjs",
+    "rollback:marketplace:consumer": "node dist/marketplace-rollback.mjs",
+    "start:arena:native-client": "node dist/arena-native-client.mjs",
+    "start:arena:native-execution": "node dist/arena-native-execution.mjs",
+    "test:arena:native-anvil": "node --import tsx scripts/native-arena-anvil.mjs"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",
     "hono": "4.13.8",
     "pg": "8.23.0",
     "@protopals/yunipals-market-core": "workspace:*",
+    "@protopals/yunipals-indexer-server": "workspace:*",
     "viem": "2.38.0"
   },
   "devDependencies": {

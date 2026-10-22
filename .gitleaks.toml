@@ -12,3 +12,16 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/)patches/collector-indexer/manifest\.json$''']
 regexes = ['''^b4b7198c6c55878420c665ea88ac4fa668094d64536e696e6ff5b3f46bcaf979$''']
+
+[[rules.allowlists]]
+description = "Public Base PROTO contract address in pack configuration and fixtures"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  '''(^|/)apps/yunipals-home-web/public/boosters/mainnet-(smoke|standard)-setup\.json$''',
+  '''(^|/)apps/yunipals-home-web/src/lib/boosterSetup\.test\.ts$''',
+  '''(^|/)apps/yunipals-indexer/scripts/test-boosters-ponder\.mjs$''',
+  '''(^|/)contracts/boosters/config/base-standard-v1\.draft\.json$''',
+  '''(^|/)docs/boosters/mainnet-smoke/pack\.draft\.json$'''
+]
+regexes = ['''(?i)^0xe5a54a517cde8ed48a336b173044b1138aa2c1a3$''']

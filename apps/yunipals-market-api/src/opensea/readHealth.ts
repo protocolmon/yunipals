@@ -5,6 +5,7 @@ import {
   marketplaceChains,
   seaportDeployment
 } from "@protopals/yunipals-market-core/registry";
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { transaction } from "@/db/pool";
 import {
   assertOpenSeaObservationCurrent,
@@ -91,31 +92,40 @@ export async function observeOpenSeaReadHealth(
       policy.policy.chain !== chain
     )
       throw new Error();
-    const indexed = (
-      await pool.query<{
-        checkpoint: string;
-        version: string;
-        ready: string;
-        heartbeat: string;
-      }>(
-        `SELECT c.latest_checkpoint AS checkpoint,m.value->>'version' AS version,
+    const shared = marketplaceOwnershipIndexer();
+    const sharedCheckpoint = shared ? await shared.status(chain) : undefined;
+    const indexed = sharedCheckpoint
+      ? undefined
+      : (
+          await pool.query<{
+            checkpoint: string;
+            version: string;
+            ready: string;
+            heartbeat: string;
+          }>(
+            `SELECT c.latest_checkpoint AS checkpoint,m.value->>'version' AS version,
       m.value->>'is_ready' AS ready,m.value->>'heartbeat_at' AS heartbeat
       FROM yunipals_indexer_v3._ponder_checkpoint c CROSS JOIN yunipals_indexer_v3._ponder_meta m
       WHERE c.chain_id=$1 AND m.key='app'`,
-        [chainId]
-      )
-    ).rows[0];
+            [chainId]
+          )
+        ).rows[0];
     if (
-      !indexed ||
-      indexed.version !== "6" ||
-      indexed.ready !== "1" ||
-      !/^[0-9]{75}$/.test(indexed.checkpoint) ||
-      BigInt(indexed.checkpoint.slice(10, 26)) !== BigInt(chainId) ||
-      !Number.isSafeInteger(Number(indexed.heartbeat))
+      !sharedCheckpoint &&
+      (!indexed ||
+        indexed.version !== "6" ||
+        indexed.ready !== "1" ||
+        !/^[0-9]{75}$/.test(indexed.checkpoint) ||
+        BigInt(indexed.checkpoint.slice(10, 26)) !== BigInt(chainId) ||
+        !Number.isSafeInteger(Number(indexed.heartbeat)))
     )
       throw new Error();
-    const number = BigInt(indexed.checkpoint.slice(26, 42));
-    const timestamp = BigInt(indexed.checkpoint.slice(0, 10));
+    const number =
+      sharedCheckpoint?.number ?? BigInt(indexed!.checkpoint.slice(26, 42));
+    const timestamp =
+      sharedCheckpoint?.timestamp ?? BigInt(indexed!.checkpoint.slice(0, 10));
+    const heartbeat =
+      sharedCheckpoint?.heartbeatAt ?? Number(indexed!.heartbeat);
     // Capture the indexer boundary before reading the chain. Reading it after
     // paced RPC calls can compare a newly indexed block with an older head and
     // reject healthy progress. Canonical hash and freshness checks still apply.
@@ -124,8 +134,8 @@ export async function observeOpenSeaReadHealth(
       number > head.number ||
       timestamp > head.timestamp ||
       (head.timestamp - timestamp) * 1000n > 60000n ||
-      Number(indexed.heartbeat) > now() + 30000 ||
-      now() - Number(indexed.heartbeat) > 60000 ||
+      heartbeat > now() + 30000 ||
+      now() - heartbeat > 60000 ||
       policy.policy.expiresAt <= BigInt(Math.floor(now() / 1000))
     )
       throw new Error();
@@ -137,7 +147,22 @@ export async function observeOpenSeaReadHealth(
       })
     ]);
     assertOpenSeaRuntimeCode(chain, code);
-    if (!block.hash || block.timestamp !== timestamp) throw new Error();
+    if (
+      !block.hash ||
+      block.timestamp !== timestamp ||
+      (sharedCheckpoint && block.hash.toLowerCase() !== sharedCheckpoint.hash)
+    )
+      throw new Error();
+    if (sharedCheckpoint) {
+      const fresh = await shared!.status(chain);
+      if (
+        fresh.releaseId !== sharedCheckpoint.releaseId ||
+        fresh.number < sharedCheckpoint.number ||
+        (fresh.number === sharedCheckpoint.number &&
+          fresh.hash !== sharedCheckpoint.hash)
+      )
+        throw new Error();
+    }
     const previous = (
       await pool.query<{
         block_number: string | null;

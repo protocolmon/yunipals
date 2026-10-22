@@ -1,11 +1,11 @@
 import { keccak256, type Hex, type PublicClient } from "viem";
 import { seaportDeployment } from "@protopals/yunipals-market-core/registry";
 import { seaportReadAbi } from "@protopals/yunipals-market-core/seaport";
+import { seaportRuntimeHashes } from "@protopals/yunipals-market-core/seaportRuntime";
 
 import { BnbOrderError, type BnbOrderRequest } from "@/bnb/orders";
 
-export const seaportCodeHash =
-  "0x16bd146d392a011a996f447b813623d4857ba2d7621af38194a009cbc03ab5f4";
+export const seaportCodeHash = seaportRuntimeHashes[56];
 export const bnbObservationMaxAgeMs = 30000;
 export type BnbObservation = {
   number: bigint;

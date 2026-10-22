@@ -1,0 +1,420 @@
+import { createHash } from "node:crypto";
+import { Hono } from "hono";
+import type { Pool } from "pg";
+import { isAddress } from "viem";
+import {
+  ethereumIslandCollection,
+  type IslandCollection
+} from "../islands/collections.js";
+import { baseIslandsReadiness } from "../islands/base-readiness.js";
+import { islandReadModel } from "../islands/read-model.js";
+import { canonicalTokenId } from "../islands/metadata.js";
+import { islandsReadiness } from "../islands/readiness.js";
+import { islandIdentity } from "../islands/queries.js";
+import {
+  sqlIdentifier,
+  ownershipReadConfig,
+  unifiedOwnershipReads
+} from "../offchain/sql.js";
+import {
+  assertOwnershipAvailable,
+  unifiedOwnershipStatus
+} from "../ownership/readiness.js";
+import { stakingReadiness } from "../islands/staking-read.js";
+
+export type IslandsRouteDependencies = {
+  pool: Pick<Pool, "query">;
+  schemaName: string;
+  collection?: IslandCollection;
+  airdropEnabled?: () => boolean;
+  enabled?: () => boolean;
+  checkReadiness?: () => Promise<{ ready: boolean }>;
+  stakingEnabled?: () => boolean;
+};
+
+type Cursor = { v: 1; scope: string; tokenId: string };
+const encodeCursor = (value: unknown) =>
+  Buffer.from(JSON.stringify(value)).toString("base64url");
+function decodeCursor(raw: string): Cursor | undefined {
+  if (raw.length > 1_024 || !/^[A-Za-z0-9_-]+$/.test(raw)) return;
+  try {
+    const value = JSON.parse(
+      Buffer.from(raw, "base64url").toString()
+    ) as Partial<Cursor>;
+    if (
+      value.v === 1 &&
+      typeof value.scope === "string" &&
+      typeof value.tokenId === "string" &&
+      canonicalTokenId(value.tokenId)
+    )
+      return value as Cursor;
+  } catch {
+    /* Invalid cursors are reported before querying the database. */
+  }
+}
+
+export function registerIslandsRoutes(
+  app: Hono,
+  dependencies: IslandsRouteDependencies
+) {
+  const { pool, schemaName } = dependencies;
+  const collection = dependencies.collection ?? ethereumIslandCollection;
+  const descriptor = {
+    collectionId: collection.slug,
+    chain: collection.chain,
+    chainId: collection.chainId,
+    contractAddress: collection.address,
+    name: collection.name,
+    deploymentBlock: String(collection.deploymentBlock),
+    origin: collection.origin
+  };
+  const schema = sqlIdentifier(schemaName);
+  if (unifiedOwnershipReads && schemaName !== ownershipReadConfig.readSchema)
+    throw new Error(
+      "Unified Islands routes require the selected logical schema."
+    );
+  const enabled =
+    dependencies.enabled ?? (() => process.env.API_ISLANDS_ENABLED === "true");
+  const checkReadiness =
+    dependencies.checkReadiness ??
+    (() =>
+      collection.slug === "base-islands-v2"
+        ? baseIslandsReadiness(pool)
+        : islandsReadiness(pool, schemaName));
+  const root = `/v2/collections/${collection.slug}`;
+  const stakingEnabled =
+    dependencies.stakingEnabled ??
+    (() =>
+      collection.slug === "ethereum-islands" &&
+      process.env.API_ISLAND_STAKING_ENABLED === "true");
+  const model = async () => {
+    let airdrop =
+      dependencies.airdropEnabled?.() ??
+      process.env.API_BASE_ISLANDS_ENABLED === "true";
+    if (airdrop && unifiedOwnershipReads) {
+      const source = await unifiedOwnershipStatus(pool, ["base-islands-v2"]);
+      airdrop = source?.ready === true;
+    }
+    return islandReadModel(schemaName, collection, stakingEnabled(), airdrop);
+  };
+  const stakingStatus = () =>
+    collection.slug === "base-islands-v2"
+      ? Promise.resolve({
+          enabled: false,
+          ready: true,
+          checkedBlock: null,
+          reason: null
+        })
+      : stakingReadiness(pool, schemaName, stakingEnabled());
+  const router = new Hono();
+
+  router.onError((_error, c) =>
+    c.json({ error: "islands_database_unavailable" }, 503)
+  );
+  router.get("/indexing-status", async (c) =>
+    c.json({
+      ...descriptor,
+      enabled: enabled(),
+      ...(enabled() ? await checkReadiness() : { ready: false })
+    })
+  );
+  router.use("*", async (c, next) => {
+    if (unifiedOwnershipReads)
+      c.header("X-Indexer-Release", ownershipReadConfig.releaseId!);
+    if (!enabled())
+      return c.json(
+        {
+          error: "islands_reads_disabled",
+          collectionId: collection.slug
+        },
+        503
+      );
+    if (unifiedOwnershipReads)
+      await assertOwnershipAvailable(pool, [collection.slug]);
+    const readiness = await checkReadiness();
+    if (!readiness.ready)
+      return c.json(
+        { error: "ownership_rebuilding", ...descriptor, readiness },
+        503
+      );
+    await next();
+  });
+  router.get("/", (c) => c.json(descriptor));
+  router.get("/staking-status", async (c) => c.json(await stakingStatus()));
+
+  async function listTokens(url: URL, pathOwner?: string) {
+    const allowed = new Set([
+      "limit",
+      "cursor",
+      "sort",
+      "owner",
+      "burned",
+      "edition",
+      "holding"
+    ]);
+    for (const key of url.searchParams.keys()) {
+      if (!allowed.has(key) || url.searchParams.getAll(key).length !== 1)
+        return { error: "invalid_query", status: 400 as const };
+    }
+    const rawLimit = url.searchParams.get("limit") ?? "50";
+    if (!/^[1-9]\d*$/.test(rawLimit) || Number(rawLimit) > 100)
+      return { error: "invalid_limit", status: 400 as const };
+    const limit = Number(rawLimit);
+    const sort = url.searchParams.get("sort") ?? "token-id-asc";
+    if (!["token-id-asc", "token-id-desc"].includes(sort))
+      return { error: "invalid_sort", status: 400 as const };
+    const burned = url.searchParams.get("burned") ?? "false";
+    if (!["false", "true", "all"].includes(burned))
+      return { error: "invalid_burned", status: 400 as const };
+    const edition = url.searchParams.get("edition");
+    if (edition !== null && !["Genesis", "Personal"].includes(edition))
+      return { error: "invalid_edition", status: 400 as const };
+    const queryOwner = url.searchParams.get("owner");
+    const owner = (pathOwner ?? queryOwner)?.toLowerCase();
+    const holding = url.searchParams.get("holding") ?? "wallet";
+    if (
+      !["wallet", "all", "staked"].includes(holding) ||
+      (!owner && holding === "wallet" && url.searchParams.has("holding"))
+    )
+      return { error: "invalid_holding", status: 400 as const };
+    if (
+      (pathOwner !== undefined || queryOwner !== null) &&
+      (!owner || !isAddress(owner) || /^0x0{40}$/.test(owner))
+    )
+      return { error: "invalid_owner", status: 400 as const };
+    if (pathOwner && queryOwner && queryOwner.toLowerCase() !== owner)
+      return { error: "owner_scope_mismatch", status: 400 as const };
+    if (pathOwner && burned !== "false")
+      return { error: "owner_requires_active_tokens", status: 400 as const };
+    const scope = createHash("sha256")
+      .update(
+        JSON.stringify({
+          collectionId: collection.slug,
+          ...(ownershipReadConfig.releaseId
+            ? { ownershipRelease: ownershipReadConfig.releaseId }
+            : {}),
+          sort,
+          burned,
+          edition,
+          owner: owner ?? null,
+          holding
+        })
+      )
+      .digest("hex");
+    const rawCursor = url.searchParams.get("cursor");
+    const cursor = rawCursor ? decodeCursor(rawCursor) : undefined;
+    if (rawCursor !== null && (!cursor || cursor.scope !== scope))
+      return { error: "invalid_cursor", status: 409 as const };
+    const params: unknown[] = [];
+    const conditions = [islandIdentity(collection)];
+    if (burned !== "all") {
+      params.push(burned === "true");
+      conditions.push(`t.burned=$${params.length}`);
+    }
+    if (owner) {
+      params.push(owner);
+      const walletMatch = `t.owner=$${params.length}`;
+      const stakeMatch = stakingEnabled()
+        ? `sp.staker=$${params.length}`
+        : "false";
+      conditions.push(
+        `(${holding === "wallet" ? walletMatch : holding === "staked" ? stakeMatch : `${walletMatch} OR ${stakeMatch}`}) AND NOT t.burned`
+      );
+    } else if (holding === "staked") {
+      conditions.push(stakingEnabled() ? "sp.staker IS NOT NULL" : "false");
+      conditions.push("NOT t.burned");
+    }
+    if (edition)
+      conditions.push(
+        `t.token_id::numeric${edition === "Genesis" ? "<=" : ">"}${collection.genesisLimit}`
+      );
+    const ascending = sort === "token-id-asc";
+    const countParams = [...params];
+    const countConditions = [...conditions];
+    if (cursor) {
+      params.push(cursor.tokenId);
+      conditions.push(
+        `t.token_id::numeric${ascending ? ">" : "<"}$${params.length}::numeric`
+      );
+    }
+    params.push(limit + 1);
+    const selectedModel = await model();
+    const result = await pool.query<
+      Record<string, unknown> & { tokenId: string }
+    >(
+      `SELECT ${selectedModel.columns} FROM ${selectedModel.relation}
+        WHERE ${conditions.join(" AND ")} ORDER BY t.token_id::numeric ${ascending ? "ASC" : "DESC"} LIMIT $${params.length}`,
+      params
+    );
+    const items = result.rows.slice(0, limit);
+    const staking = await stakingStatus();
+    const total = (
+      await pool.query<{ total: number }>(
+        `SELECT count(*)::int AS total FROM ${selectedModel.relation} WHERE ${countConditions.join(" AND ")}`,
+        countParams
+      )
+    ).rows[0]!.total;
+    return {
+      body: {
+        ...descriptor,
+        total,
+        stakingStatus: staking,
+        complete:
+          holding === "wallet" ||
+          (!owner && holding === "all") ||
+          staking.ready,
+        items,
+        limit,
+        nextCursor:
+          result.rows.length > limit && items.length
+            ? encodeCursor({ v: 1, scope, tokenId: items.at(-1)!.tokenId })
+            : null
+      }
+    };
+  }
+
+  router.get("/tokens", async (c) => {
+    const result = await listTokens(new URL(c.req.url));
+    return "error" in result
+      ? c.json({ error: result.error }, result.status)
+      : c.json(result.body);
+  });
+  router.get("/owners/:address/tokens", async (c) => {
+    const address = c.req.param("address");
+    if (!isAddress(address.toLowerCase()))
+      return c.json({ error: "invalid_owner" }, 400);
+    const result = await listTokens(new URL(c.req.url), address);
+    return "error" in result
+      ? c.json({ error: result.error }, result.status)
+      : c.json(result.body);
+  });
+  router.get("/tokens/:tokenId", async (c) => {
+    const tokenId = c.req.param("tokenId");
+    if (!canonicalTokenId(tokenId))
+      return c.json({ error: "invalid_token_id" }, 400);
+    const selectedModel = await model();
+    const result = await pool.query(
+      `SELECT ${selectedModel.columns} FROM ${selectedModel.relation}
+      WHERE ${islandIdentity(collection)} AND t.token_id=$1`,
+      [tokenId]
+    );
+    if (!result.rows.length) return c.json({ error: "token_not_found" }, 404);
+    const lifecycles = await pool.query(
+      `SELECT lifecycle,minted_to AS "mintedTo",mint_block::text AS "mintBlock",
+      mint_timestamp::text AS "mintTimestamp",mint_transaction_hash AS "mintTransactionHash",
+      burned_at_block::text AS "burnedAtBlock",burned_at_timestamp::text AS "burnedAtTimestamp",
+      burn_transaction_hash AS "burnTransactionHash" FROM ${schema}.token_lifecycle
+      WHERE collection=$1 AND token_id=$2 ORDER BY lifecycle LIMIT 100`,
+      [collection.slug, tokenId]
+    );
+    return c.json({
+      token: result.rows[0],
+      indexingStatus: await checkReadiness(),
+      lifecycles: lifecycles.rows,
+      stakingStatus: await stakingStatus()
+    });
+  });
+  router.get("/tokens/:tokenId/transfers", async (c) => {
+    const tokenId = c.req.param("tokenId");
+    if (!canonicalTokenId(tokenId))
+      return c.json({ error: "invalid_token_id" }, 400);
+    const url = new URL(c.req.url);
+    if (
+      [...url.searchParams.keys()].some(
+        (key) =>
+          !["limit", "cursor"].includes(key) ||
+          url.searchParams.getAll(key).length !== 1
+      )
+    ) {
+      return c.json({ error: "invalid_query" }, 400);
+    }
+    const rawLimit = url.searchParams.get("limit") ?? "50";
+    if (!/^[1-9]\d*$/.test(rawLimit) || Number(rawLimit) > 100)
+      return c.json({ error: "invalid_limit" }, 400);
+    const limit = Number(rawLimit);
+    const params: unknown[] = [collection.slug, tokenId];
+    let after = "";
+    const rawCursor = url.searchParams.get("cursor");
+    if (rawCursor !== null) {
+      try {
+        if (rawCursor.length > 1_024 || !/^[A-Za-z0-9_-]+$/.test(rawCursor))
+          throw new Error();
+        const value = JSON.parse(
+          Buffer.from(rawCursor, "base64url").toString()
+        ) as {
+          collectionId: string;
+          ownershipRelease?: string;
+          tokenId: string;
+          blockNumber: string;
+          transactionIndex: number;
+          logIndex: number;
+        };
+        if (
+          value.collectionId !== collection.slug ||
+          (value.ownershipRelease ?? null) !== ownershipReadConfig.releaseId ||
+          value.tokenId !== tokenId ||
+          !canonicalTokenId(value.blockNumber) ||
+          !Number.isInteger(value.transactionIndex) ||
+          value.transactionIndex < 0 ||
+          value.transactionIndex > 2_147_483_647 ||
+          !Number.isInteger(value.logIndex) ||
+          value.logIndex < 0 ||
+          value.logIndex > 2_147_483_647
+        )
+          throw new Error();
+        params.push(value.blockNumber, value.transactionIndex, value.logIndex);
+        after =
+          "AND (block_number,transaction_index,log_index)>($3::numeric,$4::integer,$5::integer)";
+      } catch {
+        return c.json({ error: "invalid_cursor" }, 409);
+      }
+    }
+    params.push(limit + 1);
+    const result = await pool.query<{
+      blockNumber: string;
+      transactionIndex: number;
+      logIndex: number;
+    }>(
+      `SELECT id,collection AS "collectionId",chain_id AS "chainId",contract_address AS "contractAddress",
+        token_id AS "tokenId",lifecycle,"from","to",block_number::text AS "blockNumber",
+        block_timestamp::text AS "blockTimestamp",transaction_hash AS "transactionHash",
+        transaction_index AS "transactionIndex",log_index AS "logIndex"
+        FROM ${schema}.transfer_event WHERE collection=$1 AND token_id=$2
+        AND chain_id=${collection.chainId} AND contract_address='${collection.address}' ${after}
+        ORDER BY block_number,transaction_index,log_index LIMIT $${params.length}`,
+      params
+    );
+    const items = result.rows.slice(0, limit);
+    const last = items.at(-1);
+    return c.json({
+      ...descriptor,
+      items,
+      nextCursor:
+        result.rows.length > limit && last
+          ? encodeCursor({
+              collectionId: collection.slug,
+              ...(ownershipReadConfig.releaseId
+                ? { ownershipRelease: ownershipReadConfig.releaseId }
+                : {}),
+              tokenId,
+              blockNumber: last.blockNumber,
+              transactionIndex: last.transactionIndex,
+              logIndex: last.logIndex
+            })
+          : null
+    });
+  });
+  router.get("/stats", async (c) => {
+    const selectedModel = await model();
+    const result = await pool.query(`SELECT count(*)::int AS "knownTokens",
+      count(*) FILTER(WHERE NOT t.burned)::int AS "activeSupply",
+      count(*) FILTER(WHERE t.burned)::int AS "burnedTokens",
+      count(DISTINCT t.owner) FILTER(WHERE NOT t.burned)::int AS holders,
+      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric<=${collection.genesisLimit})::int AS genesis,
+      count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric>${collection.genesisLimit})::int AS personal,
+      count(*) FILTER(WHERE NOT t.burned AND p.status='published' AND r.revision_hash IS NOT NULL)::int AS "metadataAvailable"
+      FROM ${selectedModel.relation} WHERE ${islandIdentity(collection)}`);
+    return c.json({ ...descriptor, ...result.rows[0] });
+  });
+  app.route(root, router);
+}

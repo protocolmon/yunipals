@@ -15,7 +15,18 @@ import {
   isRpcBudgetProxyMain,
   readRpcBudgetProxyEnvironment
 } from "@/rpcBudgetProxy";
-import { RpcComputeBudgetError } from "@/opensea/rpcComputeBudget";
+import {
+  RpcComputeBudgetError,
+  type RpcComputeBudget
+} from "@/opensea/rpcComputeBudget";
+import type { UnifiedRpcPolicyGate } from "@/unifiedRpcPolicy";
+import {
+  unifiedRpcPaidRange,
+  unifiedRpcPermitHeader,
+  unifiedRpcProfileHeader,
+  unifiedRpcProfileId,
+  type UnifiedRpcProfile
+} from "../../../packages/yunipals-indexer-server/src/rpc-policy";
 
 const servers: Array<ReturnType<typeof createServer>> = [];
 afterEach(async () => {
@@ -255,7 +266,9 @@ test("production configuration binds loopback and requires an HTTPS upstream", (
       foregroundPaidFallbackOnFreeFailure: false,
       orderPaidFallbackOnFreeFailure: false,
       sourcePaidFallbackOnFreeFailure: false,
-      salePaidFallbackOnFreeFailure: false
+      salePaidFallbackOnFreeFailure: false,
+      unifiedSourcePaidPrimary: false,
+      unifiedSourcePaidLogs: false
     }
   );
   assert.deepEqual(
@@ -300,7 +313,9 @@ test("production configuration binds loopback and requires an HTTPS upstream", (
       foregroundPaidFallbackOnFreeFailure: false,
       orderPaidFallbackOnFreeFailure: false,
       sourcePaidFallbackOnFreeFailure: false,
-      salePaidFallbackOnFreeFailure: false
+      salePaidFallbackOnFreeFailure: false,
+      unifiedSourcePaidPrimary: false,
+      unifiedSourcePaidLogs: false
     }
   );
   assert.throws(() =>
@@ -2428,4 +2443,750 @@ test("the executable main check follows an immutable-release symlink", async () 
   } finally {
     await rm(directory, { recursive: true });
   }
+});
+
+async function historicalUnifiedProxyFixture(
+  options: {
+    freeFails?: boolean;
+    paidFallback?: boolean;
+    evidencePaidFallback?: boolean;
+    profileReady?: boolean;
+    paidLogs?: boolean;
+    maximumConcurrentUpstreamRequests?: number;
+    freeRequestTimeoutMs?: number;
+    budgetDenied?: boolean;
+    beforeReply?: (route: "free" | "paid", ids: number[]) => Promise<void>;
+  } = {}
+) {
+  const address = `0x${"ab".repeat(20)}`;
+  const permit = `0x${"cd".repeat(32)}`;
+  const profile: UnifiedRpcProfile = {
+    version: 1,
+    model: "alchemy-2026-09-08",
+    scope: "historical-source-fixture",
+    coordinatorId: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    manifest: {
+      version: 1,
+      ponderVersion: "0.17.5",
+      ordering: "multichain",
+      coverage: "ponder-live-blocks-v1",
+      sources: [
+        {
+          id: "ownership:base",
+          feature: "ownership",
+          chainId: 8453,
+          contractName: "YunipalsBase",
+          address,
+          startBlock: "100",
+          endBlock: null,
+          enabled: true,
+          abiHash: `0x${"ef".repeat(32)}`,
+          events: ["Transfer"],
+          receiptRequirement: "full",
+          policies: [{ kind: "latest" }]
+        }
+      ]
+    },
+    limits: { batchCalls: 10, logRange: 500, addresses: 50, topicValues: 32 }
+  };
+  const counts = {
+    freeDispatches: 0,
+    paidDispatches: 0,
+    freeAuthorizations: 0,
+    permitAttempts: 0,
+    permitApprovals: 0,
+    chargedMethods: [] as string[],
+    dispatchOrder: [] as Array<{ route: "free" | "paid"; ids: number[] }>
+  };
+  const reply = async (
+    request: IncomingMessage,
+    output: ServerResponse,
+    route: "free" | "paid"
+  ) => {
+    const chunks: Buffer[] = [];
+    for await (const chunk of request) chunks.push(Buffer.from(chunk));
+    const body = JSON.parse(Buffer.concat(chunks).toString()) as
+      | { id: number; method: string }
+      | { id: number; method: string }[];
+    const result = (call: { id: number; method: string }) => ({
+      jsonrpc: "2.0",
+      id: call.id,
+      result: call.method === "eth_getCode" ? "0x6000" : []
+    });
+    const ids = (Array.isArray(body) ? body : [body]).map((call) => call.id);
+    counts.dispatchOrder.push({ route, ids });
+    await options.beforeReply?.(route, ids);
+    output.setHeader("content-type", "application/json");
+    output.end(
+      JSON.stringify(Array.isArray(body) ? body.map(result) : result(body))
+    );
+  };
+  const free = await listen(
+    createServer(async (request, output) => {
+      counts.freeDispatches++;
+      if (options.freeFails) {
+        output.writeHead(503);
+        output.end("unavailable");
+      } else await reply(request, output, "free");
+    })
+  );
+  const paid = await listen(
+    createServer(async (request, output) => {
+      counts.paidDispatches++;
+      await reply(request, output, "paid");
+    })
+  );
+  const budget: RpcComputeBudget = {
+    async authorizeFreeDispatch() {
+      counts.freeAuthorizations++;
+    },
+    async reserve(method) {
+      counts.chargedMethods.push(method);
+      if (options.budgetDenied) throw new RpcComputeBudgetError(1000);
+    },
+    snapshot: () => ({
+      model: "test",
+      workload: "source",
+      priority: "background",
+      grantedCu: 0,
+      usedCu: 0,
+      remainingCu: 0,
+      denied: 0
+    })
+  };
+  const gate: UnifiedRpcPolicyGate = {
+    profile,
+    chainId: 8453,
+    async ready() {
+      if (options.profileReady === false)
+        throw new Error("Profile unavailable.");
+    },
+    async inspect() {
+      return {};
+    },
+    async reservePaid(selectedPermit, calls) {
+      counts.permitAttempts++;
+      if (selectedPermit !== permit) throw new Error("Permit unavailable.");
+      const ranges = calls.map(unifiedRpcPaidRange);
+      if (
+        ranges.some(
+          (range) =>
+            BigInt(range.fromBlock) < 100n || BigInt(range.toBlock) > 300n
+        )
+      )
+        throw new Error("Outside bounded permit.");
+      counts.permitApprovals++;
+    }
+  };
+  const proxy = await listen(
+    createRpcBudgetProxy({
+      upstream: paid,
+      freeUpstream: free,
+      freeMinimumIntervalMs: 0,
+      freeRequestTimeoutMs: options.freeRequestTimeoutMs,
+      maximumConcurrentUpstreamRequests:
+        options.maximumConcurrentUpstreamRequests,
+      unifiedSourcePaidLogs: options.paidLogs,
+      sourcePaidFallbackOnFreeFailure: options.paidFallback ?? false,
+      orderPaidFallbackOnFreeFailure: options.evidencePaidFallback ?? false,
+      budget,
+      workloadBudgets: {
+        unified_source: budget,
+        unified_evidence: budget,
+        foreground: budget
+      },
+      unifiedPolicy: gate
+    })
+  );
+  const logs = {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "eth_getLogs",
+    params: [{ address, fromBlock: "0x64", toBlock: "0xc8" }]
+  };
+  const request = (
+    body: unknown = logs,
+    headers: Record<string, string> = {},
+    path = "/unified",
+    signal?: AbortSignal
+  ) =>
+    fetch(new URL(path, proxy), {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(path === "/unified"
+          ? {
+              "x-yunipals-rpc-workload": "unified_source",
+              [unifiedRpcProfileHeader]: unifiedRpcProfileId(profile)
+            }
+          : {}),
+        ...headers
+      },
+      body: JSON.stringify(body),
+      signal
+    });
+  const metrics = async () => (await fetch(new URL("/metrics", proxy))).json();
+  return { counts, logs, address, permit, request, metrics };
+}
+
+function heldSourceReply() {
+  let release!: () => void;
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  return { blocked, release };
+}
+
+const sourceBlockRequest = (id: number) => ({
+  jsonrpc: "2.0",
+  id,
+  method: "eth_getBlockByNumber",
+  params: ["0x64", true]
+});
+
+async function waitForSourceQueue(
+  fixture: Awaited<ReturnType<typeof historicalUnifiedProxyFixture>>,
+  expected: number
+) {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const metrics = await fixture.metrics();
+    if (metrics.queuedSourceRequests === expected) return metrics;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  assert.equal((await fixture.metrics()).queuedSourceRequests, expected);
+  throw new Error("Source queue did not reach the expected bounded state.");
+}
+
+test("mixed source queue drains bursts within eight upstream slots and preserves foreground priority", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    maximumConcurrentUpstreamRequests: 8,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0]! < 8) await held.blocked;
+    }
+  });
+  const active = Array.from({ length: 8 }, (_, id) =>
+    fixture.request(sourceBlockRequest(id))
+  );
+  for (let attempt = 0; fixture.counts.freeDispatches < 8; attempt++) {
+    assert.ok(attempt < 100, "The initial eight requests must acquire slots.");
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const waiting = Array.from({ length: 8 }, (_, id) =>
+    fixture.request(sourceBlockRequest(id + 8))
+  );
+  await waitForSourceQueue(fixture, 8);
+  const foreground = fixture.request(
+    sourceBlockRequest(99),
+    { "x-yunipals-rpc-workload": "foreground" },
+    "/"
+  );
+  for (let attempt = 0; ; attempt++) {
+    const metrics = await fixture.metrics();
+    if (metrics.queuedPriorityRequests === 1) break;
+    assert.ok(attempt < 100, "Foreground work must enter its existing queue.");
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  assert.equal(fixture.counts.freeDispatches, 8);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  held.release();
+  for (const result of await Promise.all([...active, ...waiting, foreground])) {
+    assert.equal(result.status, 200);
+    await result.arrayBuffer();
+  }
+  assert.deepEqual(fixture.counts.dispatchOrder[8], {
+    route: "free",
+    ids: [99]
+  });
+  const metrics = await waitForSourceQueue(fixture, 0);
+  assert.equal(metrics.maximumObservedUpstreamRequests, 8);
+  assert.equal(metrics.maximumQueuedSourceRequests, 8);
+  assert.equal(metrics.queuedSourceBytes, 0);
+  assert.equal(metrics.traffic.overloadedBatches, 0);
+  assert.equal(metrics.traffic.queuedSourceBatches, 8);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("mixed source queue defers paid admission and removes cancelled paid work without spending", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0] === 0) await held.blocked;
+    }
+  });
+  const first = fixture.request(sourceBlockRequest(0));
+  for (let attempt = 0; fixture.counts.freeDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const headers = { [unifiedRpcPermitHeader]: fixture.permit };
+  const paid = fixture.request({ ...fixture.logs, id: 1 }, headers);
+  const abort = new AbortController();
+  const cancelled = fixture
+    .request({ ...fixture.logs, id: 2 }, headers, "/unified", abort.signal)
+    .catch((error: unknown) => error);
+  await waitForSourceQueue(fixture, 2);
+  const invalid = await fixture.request(fixture.logs, {
+    [unifiedRpcProfileHeader]: `0x${"00".repeat(32)}`
+  });
+  assert.equal(invalid.status, 403);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+  abort.abort();
+  await cancelled;
+  const pending = await waitForSourceQueue(fixture, 1);
+  assert.equal(pending.traffic.sourceQueueCancellations, 1);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  held.release();
+  assert.equal((await first).status, 200);
+  assert.equal((await paid).status, 200);
+  assert.equal(fixture.counts.permitAttempts, 1);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getLogs"]);
+  assert.deepEqual(fixture.counts.dispatchOrder, [
+    { route: "free", ids: [0] },
+    { route: "paid", ids: [1] }
+  ]);
+  const metrics = await waitForSourceQueue(fixture, 0);
+  assert.equal(metrics.maximumObservedUpstreamRequests, 1);
+  assert.equal(metrics.queuedSourceBytes, 0);
+});
+
+test("mixed source queue bounds length and expires waiting work before any paid admission", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0] === 0) await held.blocked;
+    }
+  });
+  const first = fixture.request(sourceBlockRequest(0));
+  for (let attempt = 0; fixture.counts.freeDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const headers = { [unifiedRpcPermitHeader]: fixture.permit };
+  const waiting = Array.from({ length: 64 }, (_, id) =>
+    fixture.request({ ...fixture.logs, id: id + 1 }, headers)
+  );
+  const full = await waitForSourceQueue(fixture, 64);
+  assert.equal(full.sourceQueueLimit, 64);
+  assert.equal(full.sourceQueueByteLimit, 8 * 1024 * 1024);
+  assert.equal(full.sourceQueueWaitMs, 2000);
+  assert.equal((await fixture.request(fixture.logs, headers)).status, 429);
+  for (const result of await Promise.all(waiting)) {
+    assert.equal(result.status, 429);
+    assert.deepEqual(await result.json(), { error: "rpc_proxy_rate_limited" });
+  }
+  const empty = await waitForSourceQueue(fixture, 0);
+  assert.equal(empty.traffic.sourceQueueTimeouts, 64);
+  assert.equal(empty.queuedSourceBytes, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  held.release();
+  assert.equal((await first).status, 200);
+  assert.deepEqual(fixture.counts.dispatchOrder, [{ route: "free", ids: [0] }]);
+});
+
+test("mixed source queue enforces its body byte bound independently of request count", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0] === 0) await held.blocked;
+    }
+  });
+  const first = fixture.request(sourceBlockRequest(0));
+  for (let attempt = 0; fixture.counts.freeDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const aborts = Array.from({ length: 4 }, () => new AbortController());
+  const large = { ...fixture.logs, padding: "x".repeat(2_000_000) };
+  const headers = { [unifiedRpcPermitHeader]: fixture.permit };
+  const pending = aborts.map((abort, id) =>
+    fixture
+      .request({ ...large, id: id + 1 }, headers, "/unified", abort.signal)
+      .catch((error: unknown) => error)
+  );
+  const queued = await waitForSourceQueue(fixture, 4);
+  assert.ok(queued.queuedSourceBytes > 8_000_000);
+  assert.ok(queued.queuedSourceBytes <= queued.sourceQueueByteLimit);
+  assert.equal((await fixture.request(large, headers)).status, 429);
+  assert.equal((await fixture.metrics()).queuedSourceRequests, 4);
+  for (const abort of aborts) abort.abort();
+  await Promise.all(pending);
+  const metrics = await waitForSourceQueue(fixture, 0);
+  assert.equal(metrics.queuedSourceBytes, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  held.release();
+  assert.equal((await first).status, 200);
+});
+
+test("mixed source queue releases an acquired slot when paid budget admission fails", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    budgetDenied: true,
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0] === 0) await held.blocked;
+    }
+  });
+  const first = fixture.request(sourceBlockRequest(0));
+  for (let attempt = 0; fixture.counts.freeDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const denied = fixture.request(fixture.logs, {
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  await waitForSourceQueue(fixture, 1);
+  const next = fixture.request(sourceBlockRequest(2));
+  await waitForSourceQueue(fixture, 2);
+  held.release();
+  assert.equal((await first).status, 200);
+  assert.equal((await denied).status, 429);
+  assert.equal((await next).status, 200);
+  assert.equal(fixture.counts.permitAttempts, 1);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getLogs"]);
+  assert.equal((await waitForSourceQueue(fixture, 0)).activeUpstreamRequests, 0);
+});
+
+test("normal unified source retains immediate overload behavior without mixed paid-logs mode", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async () => held.blocked
+  });
+  const first = fixture.request(sourceBlockRequest(0));
+  for (let attempt = 0; fixture.counts.freeDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const busy = await fixture.request(sourceBlockRequest(1));
+  assert.equal(busy.status, 429);
+  const metrics = await fixture.metrics();
+  assert.equal(metrics.queuedSourceRequests, 0);
+  assert.equal(metrics.traffic.queuedSourceBatches, 0);
+  assert.equal(metrics.maximumObservedUpstreamRequests, 1);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  held.release();
+  assert.equal((await first).status, 200);
+});
+
+test("reviewed historical source logs use the free pool without paid admission", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const result = await fixture.request([
+    fixture.logs,
+    { ...fixture.logs, id: 2 }
+  ]);
+  assert.equal(result.status, 200);
+  assert.equal((await result.json()).length, 2);
+  assert.equal(fixture.counts.freeDispatches, 1);
+  assert.equal(fixture.counts.freeAuthorizations, 1);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("reviewed historical source logs do not change legacy or evidence routing", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const legacy = await fixture.request(fixture.logs, {}, "/");
+  assert.equal(legacy.status, 200);
+  const evidence = await fixture.request(fixture.logs, {
+    "x-yunipals-rpc-workload": "unified_evidence",
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(evidence.status, 200);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.paidDispatches, 2);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, [
+    "eth_getLogs",
+    "eth_getLogs"
+  ]);
+});
+
+test("reviewed historical source logs reject invalid profiles, ranges and wildcard filters before dispatch", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const wrongProfile = await fixture.request(fixture.logs, {
+    [unifiedRpcProfileHeader]: `0x${"00".repeat(32)}`
+  });
+  assert.equal(wrongProfile.status, 403);
+  const range = await fixture.request({
+    ...fixture.logs,
+    params: [{ address: fixture.address, fromBlock: "0x64", toBlock: "0x2bc" }]
+  });
+  assert.equal(range.status, 200);
+  assert.equal((await range.json()).error.code, -32005);
+  for (const filter of [
+    { fromBlock: "0x64", toBlock: "0xc8" },
+    { address: "*", fromBlock: "0x64", toBlock: "0xc8" },
+    { address: `0x${"11".repeat(20)}`, fromBlock: "0x64", toBlock: "0xc8" },
+    { address: fixture.address, fromBlock: "0x32", toBlock: "0xc8" },
+    { address: fixture.address, fromBlock: "latest", toBlock: "latest" }
+  ]) {
+    const result = await fixture.request({ ...fixture.logs, params: [filter] });
+    assert.equal(result.status, 400);
+  }
+  const arbitrary = await fixture.request({
+    jsonrpc: "2.0",
+    id: 1,
+    method: "eth_getBlockReceipts",
+    params: ["0x64"]
+  });
+  assert.equal(arbitrary.status, 400);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.freeAuthorizations, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("reviewed historical source logs require the approved policy before free routing", async () => {
+  const fixture = await historicalUnifiedProxyFixture({ profileReady: false });
+  assert.equal((await fixture.request()).status, 502);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.freeAuthorizations, 0);
+});
+
+test("reviewed historical source logs keep free-failure fallback disabled by default", async () => {
+  const fixture = await historicalUnifiedProxyFixture({ freeFails: true });
+  const result = await fixture.request(fixture.logs, {
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(result.status, 503);
+  assert.equal(fixture.counts.freeDispatches, 1);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("reviewed historical source logs still require a matching bounded permit after free failure", async () => {
+  const fixture = await historicalUnifiedProxyFixture({
+    freeFails: true,
+    paidFallback: true
+  });
+  assert.equal((await fixture.request()).status, 403);
+  assert.equal(
+    (
+      await fixture.request(fixture.logs, {
+        [unifiedRpcPermitHeader]: `0x${"12".repeat(32)}`
+      })
+    ).status,
+    403
+  );
+  const outside = {
+    ...fixture.logs,
+    params: [{ address: fixture.address, fromBlock: "0x190", toBlock: "0x1a4" }]
+  };
+  assert.equal(
+    (
+      await fixture.request(outside, {
+        [unifiedRpcPermitHeader]: fixture.permit
+      })
+    ).status,
+    403
+  );
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+  assert.equal(
+    (
+      await fixture.request(fixture.logs, {
+        [unifiedRpcPermitHeader]: fixture.permit
+      })
+    ).status,
+    200
+  );
+  assert.equal(fixture.counts.permitAttempts, 4);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getLogs"]);
+});
+
+test("reviewed historical source logs cannot make a paid-only companion call free", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const result = await fixture.request(
+    [
+      fixture.logs,
+      {
+        jsonrpc: "2.0",
+        id: 2,
+        method: "eth_getCode",
+        params: [fixture.address, "0x64"]
+      }
+    ],
+    { [unifiedRpcPermitHeader]: fixture.permit }
+  );
+  assert.equal(result.status, 200);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.freeAuthorizations, 0);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, [
+    "eth_getLogs",
+    "eth_getCode"
+  ]);
+});
+
+const evidenceHeaders = { "x-yunipals-rpc-workload": "unified_evidence" };
+const historicalCode = (address: string) => ({
+  jsonrpc: "2.0",
+  id: 1,
+  method: "eth_getCode",
+  params: [address, "0x64"]
+});
+
+test("historical evidence bytecode uses the existing free pool without a paid permit", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const seaport = historicalCode(
+    "0x0000000000000068f116a894984e2db1123eb395"
+  );
+  assert.equal(isFreeRpcCall(seaport, 100000n), false);
+  const response = await fixture.request(seaport, evidenceHeaders);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).result, "0x6000");
+  const collection = await fixture.request(
+    historicalCode(fixture.address),
+    evidenceHeaders
+  );
+  assert.equal(collection.status, 200);
+  assert.equal(fixture.counts.freeDispatches, 2);
+  assert.equal(fixture.counts.freeAuthorizations, 2);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("historical evidence bytecode still enforces profile, address and deployment policy before dispatch", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const code = historicalCode(fixture.address);
+  const wrongProfile = await fixture.request(code, {
+    ...evidenceHeaders,
+    [unifiedRpcProfileHeader]: `0x${"00".repeat(32)}`
+  });
+  assert.equal(wrongProfile.status, 403);
+  for (const params of [
+    [`0x${"11".repeat(20)}`, "0x64"],
+    [fixture.address, "0x63"],
+    [fixture.address, "latest"],
+    [fixture.address, "0x064"]
+  ]) {
+    assert.equal(
+      (await fixture.request({ ...code, params }, evidenceHeaders)).status,
+      400
+    );
+  }
+  for (const method of ["eth_getBalance", "eth_getStorageAt", "eth_call"]) {
+    assert.equal(
+      (await fixture.request({ ...code, method }, evidenceHeaders)).status,
+      400
+    );
+  }
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.freeAuthorizations, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  const unavailable = await historicalUnifiedProxyFixture({
+    profileReady: false
+  });
+  assert.equal(
+    (
+      await unavailable.request(
+        historicalCode(unavailable.address),
+        evidenceHeaders
+      )
+    ).status,
+    502
+  );
+  assert.equal(unavailable.counts.freeDispatches, 0);
+});
+
+test("historical evidence bytecode does not change source, legacy or mixed log routing", async () => {
+  const fixture = await historicalUnifiedProxyFixture();
+  const code = historicalCode(fixture.address);
+  assert.equal((await fixture.request(code)).status, 403);
+  assert.equal((await fixture.request(code, {}, "/")).status, 200);
+  const mixed = await fixture.request([code, { ...fixture.logs, id: 2 }], {
+    ...evidenceHeaders,
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(mixed.status, 200);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.paidDispatches, 2);
+  assert.deepEqual(fixture.counts.chargedMethods, [
+    "eth_getCode",
+    "eth_getCode",
+    "eth_getLogs"
+  ]);
+});
+
+test("historical evidence bytecode free failure cannot use a permit unless fallback is separately enabled", async () => {
+  const fixture = await historicalUnifiedProxyFixture({ freeFails: true });
+  const response = await fixture.request(historicalCode(fixture.address), {
+    ...evidenceHeaders,
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(response.status, 503);
+  assert.equal(fixture.counts.freeDispatches, 1);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+});
+
+test("historical evidence bytecode paid fallback retains exact permit and monetary admission", async () => {
+  const fixture = await historicalUnifiedProxyFixture({
+    freeFails: true,
+    evidencePaidFallback: true
+  });
+  assert.equal(
+    (await fixture.request(historicalCode(fixture.address), evidenceHeaders))
+      .status,
+    403
+  );
+  const response = await fixture.request(historicalCode(fixture.address), {
+    ...evidenceHeaders,
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(response.status, 200);
+  assert.equal(fixture.counts.permitAttempts, 2);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getCode"]);
+  const denied = await historicalUnifiedProxyFixture({
+    freeFails: true,
+    evidencePaidFallback: true,
+    budgetDenied: true
+  });
+  assert.equal(
+    (
+      await denied.request(historicalCode(denied.address), {
+        ...evidenceHeaders,
+        [unifiedRpcPermitHeader]: denied.permit
+      })
+    ).status,
+    429
+  );
+  assert.equal(denied.counts.paidDispatches, 0);
 });

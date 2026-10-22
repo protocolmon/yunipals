@@ -10,6 +10,7 @@ import {
   Filter,
   Loader2,
   Search,
+  Sparkles,
   Users,
   X
 } from "lucide-react";
@@ -31,6 +32,9 @@ import {
 } from "react-router-dom";
 
 import { useAccount } from "wagmi";
+import { environment } from "@/environment";
+import { useCollectibleAnalytics } from "@/hooks/useCollectibleAnalytics";
+import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
 import {
   ChainFilter,
@@ -89,6 +93,12 @@ import {
   type TokenAttribute
 } from "@/lib/yunipalsIndexer";
 
+import { CollectionTabs } from "./CollectionTabs";
+import { BoosterPackSection } from "@/pages/boosters/BoosterPackSection";
+import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
+import { IslandDetail } from "./islands/IslandDetail";
+import { IslandsExplorer } from "./islands/IslandsExplorer";
+
 function attributeValue(attribute: TokenAttribute) {
   if (
     attribute.display_type === "date" &&
@@ -118,6 +128,12 @@ function TokenDetail({
     queryKey: ["collection", "token", chain, tokenId],
     queryFn: ({ signal }) => fetchToken(chain, tokenId, signal)
   });
+  useCollectibleAnalytics(
+    Boolean(detailQuery.data),
+    `${chain}:${tokenId}`,
+    "yunipals",
+    chain
+  );
 
   usePageMetadata(
     detailQuery.data?.token.name
@@ -493,6 +509,10 @@ function CollectionExplorer() {
 
   const setFilters = useCallback(
     (nextFilters: CollectionFilters) => {
+      trackAnalyticsEvent("Collection Filter Applied", {
+        collection: "yunipals",
+        filter: nextFilters.sort !== filters.sort ? "sort" : "filters"
+      });
       setSelectedTrade(null);
       setSearchParams(
         serializeCollectionFilters(
@@ -592,20 +612,40 @@ function CollectionExplorer() {
     const value = lookup.trim();
     if (/^\d+$/.test(value)) {
       if (!selectedChain) {
+        trackAnalyticsEvent("Collection Search Submitted", {
+          collection: "yunipals",
+          search_type: "token",
+          outcome: "chain-required"
+        });
         setLookupError(
           "Choose exactly one chain before looking up a token ID."
         );
         return;
       }
       setLookupError("");
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "token",
+        outcome: "valid"
+      });
       navigate(`/collection/${selectedChain}/${value}`);
       return;
     }
     if (isOwnerInput(value)) {
+      trackAnalyticsEvent("Collection Search Submitted", {
+        collection: "yunipals",
+        search_type: "collector",
+        outcome: "valid"
+      });
       setLookupError("");
       navigate(`/collector/${encodeURIComponent(value)}`);
       return;
     }
+    trackAnalyticsEvent("Collection Search Submitted", {
+      collection: "yunipals",
+      search_type: "invalid",
+      outcome: "invalid"
+    });
     setLookupError("Enter a numeric token ID, wallet address, or ENS name.");
   }
 
@@ -644,6 +684,26 @@ function CollectionExplorer() {
               <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/70 sm:text-lg">
                 {presentation.description}
               </p>
+              {environment.boostersEnabled && (
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <Link
+                    to="/boosters"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-grape px-6 py-3 text-sm font-bold text-white shadow-cta transition hover:bg-grape/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
+                  >
+                    <Sparkles aria-hidden="true" size={17} />
+                    Open booster packs
+                  </Link>
+                  <Link
+                    to={{
+                      search: searchParams.toString(),
+                      hash: "#collection"
+                    }}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-grape/20 bg-white px-6 py-3 text-sm font-bold text-grape transition hover:bg-lavender/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
+                  >
+                    Browse OG collection
+                  </Link>
+                </div>
+              )}
             </div>
             <form onSubmit={submitLookup}>
               <label
@@ -689,6 +749,13 @@ function CollectionExplorer() {
           </div>
         </div>
       </section>
+
+      {environment.boostersEnabled && (
+        <>
+          <BoosterPackSection />
+          {address && <BoosterCollection owner={address} />}
+        </>
+      )}
 
       <section id="collection" className="scroll-mt-24 px-4 py-12 sm:py-16">
         <div className="mx-auto max-w-6xl">
@@ -1099,7 +1166,28 @@ export function CollectionPage() {
   const { chain, tokenId } = useParams();
   const { search, hash } = useLocation();
 
-  if (!tokenId) return <CollectionExplorer />;
+  const islandsSelected =
+    !environment.collectionOnly &&
+    (chain === "ethereum-islands" ||
+      (!tokenId &&
+        new URLSearchParams(search).get("collection") === "islands"));
+
+  if (islandsSelected) {
+    return (
+      <>
+        <CollectionTabs selected="islands" />
+        {tokenId ? <IslandDetail tokenId={tokenId} /> : <IslandsExplorer />}
+      </>
+    );
+  }
+  if (!tokenId) {
+    return (
+      <>
+        <CollectionTabs selected="yunipals" />
+        <CollectionExplorer />
+      </>
+    );
+  }
   if (!chain) {
     return (
       <Navigate

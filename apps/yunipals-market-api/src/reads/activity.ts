@@ -1,4 +1,5 @@
 import type { Pool, PoolClient } from "pg";
+import type { IndexerReader } from "@protopals/yunipals-indexer-server/readers";
 import {
   activityScopeKey,
   activityViews,
@@ -21,7 +22,9 @@ import {
 } from "@protopals/yunipals-market-core/validation";
 
 import { BnbOrderError } from "@/bnb/orders";
-import { indexedTokenHiddenSql } from "@/reads/visibility";
+import { indexedTokenHiddenSqlFor } from "@/reads/visibility";
+import { marketplaceOwnershipSqlContext } from "@/indexer/ownershipSql";
+import { readSaleActivityBinding } from "@/indexer/saleActivityRead";
 import {
   parsePageRequest,
   readSnapshotPage,
@@ -37,15 +40,18 @@ type ActivitySources = {
   epochs: Partial<Record<MarketplaceChain, string>>;
   checkpoints: Partial<Record<MarketplaceChain, Record<string, unknown>>>;
 };
-const visibilitySql = `CASE WHEN t.collection IS NULL OR t.owner IS NULL OR t.owner!~'^0x[0-9a-fA-F]{40}$'
+const visibilitySql = (
+  transferRelation: string
+) => `CASE WHEN t.collection IS NULL OR t.owner IS NULL OR t.owner!~'^0x[0-9a-fA-F]{40}$'
   OR t.lifecycle IS NULL OR t.lifecycle<0 OR t.burned IS NULL THEN 'unknown'
-  WHEN ${indexedTokenHiddenSql} THEN 'hidden'
+  WHEN ${indexedTokenHiddenSqlFor("t", transferRelation)} THEN 'hidden'
   WHEN t.burned OR lower(t.owner)='0x0000000000000000000000000000000000000000' THEN 'burned'
   ELSE 'public' END`;
 export async function readActivitySources(
   db: Db,
   selected: MarketplaceChain[],
-  observedAt: Date
+  observedAt: Date,
+  sourceReader?: IndexerReader
 ): Promise<ActivitySources> {
   const chains: ActivityPage["chains"] = {};
   const epochs: ActivitySources["epochs"] = {};
@@ -98,7 +104,8 @@ export async function readActivitySources(
     if (
       row.established &&
       row.block_number !== null &&
-      row.block_hash !== null
+      row.block_hash !== null &&
+      (await readSaleActivityBinding(db, chain, sourceReader))
     ) {
       chains[chain] = {
         status: row.excluded_events > 0 ? "unavailable" : row.state,
@@ -136,7 +143,10 @@ function selectedChains(scope: ActivityScope): MarketplaceChain[] {
 }
 
 export class ActivityReadService {
-  constructor(private readonly pool: Pool) {}
+  constructor(
+    private readonly pool: Pool,
+    private readonly options: { sourceReader?: IndexerReader } = {}
+  ) {}
 
   async wallet(value: string, params: URLSearchParams) {
     const page = queryParameters(params, true);
@@ -170,8 +180,9 @@ export class ActivityReadService {
   }
 
   private async assetVisibility(db: Db, asset: MarketAssetId) {
+    const ownership = await marketplaceOwnershipSqlContext(db, [asset.chain]);
     const rows = await db.query<{ visibility: Visibility }>(
-      `SELECT ${visibilitySql} AS visibility FROM yunipals_read_v4.token t WHERE t.collection=$1
+      `SELECT ${visibilitySql(ownership.transferRelation)} AS visibility FROM ${ownership.tokenRelation} t WHERE t.collection=$1
         AND t.chain_id=$2 AND t.contract_address=$3 AND t.token_id=$4`,
       [
         asset.chain,
@@ -199,9 +210,10 @@ export class ActivityReadService {
     const result = new Map<string, Visibility>();
     for (const [chain, ids] of groups) {
       const config = marketplaceChains[chain];
+      const ownership = await marketplaceOwnershipSqlContext(db, [chain]);
       const rows = await db.query<{ token_id: string; visibility: Visibility }>(
-        `SELECT t.token_id,${visibilitySql} AS visibility
-          FROM yunipals_read_v4.token t WHERE t.collection=$1 AND t.chain_id=$2
+        `SELECT t.token_id,${visibilitySql(ownership.transferRelation)} AS visibility
+          FROM ${ownership.tokenRelation} t WHERE t.collection=$1 AND t.chain_id=$2
             AND t.contract_address=$3 AND t.token_id=ANY($4::text[])`,
         [chain, config.chainId, config.contractAddress.toLowerCase(), [...ids]]
       );
@@ -227,7 +239,12 @@ export class ActivityReadService {
         async (db, observedAt) => {
           if (scope.kind === "asset")
             await this.assetVisibility(db, scope.asset);
-          const sources = await readActivitySources(db, selected, observedAt);
+          const sources = await readActivitySources(
+            db,
+            selected,
+            observedAt,
+            this.options.sourceReader
+          );
           const bounds = selected.flatMap((chain) => {
             const through = sources.chains[chain]?.confirmedThrough;
             return through
@@ -259,9 +276,27 @@ export class ActivityReadService {
           }>(
             `SELECT s.observation,s.chain_id,s.contract_address,s.token_id::text,s.order_hash,s.seller,s.nft_recipient,
             s.block_number::text,s.block_hash,s.log_index,s.transaction_hash,s.block_timestamp,s.protocol_address,
-            (r.transaction_hash IS NOT NULL AND r.confirmation_policy=CASE WHEN s.chain_id=56
-              THEN CASE WHEN d.environment='production' THEN 'bnb-finalized-tag-v1'
-                ELSE 'bnb-local-validation-depth-20-v1' END ELSE p.policy END
+            (r.transaction_hash IS NOT NULL AND (CASE WHEN sc.reader_mode='legacy' THEN
+              CASE WHEN ls.epoch IS NULL THEN r.confirmation_policy=CASE WHEN s.chain_id=56
+                THEN CASE WHEN d.environment='production' THEN 'bnb-finalized-tag-v1'
+                  ELSE 'bnb-local-validation-depth-20-v1' END ELSE p.policy END
+              ELSE EXISTS(SELECT 1 FROM yunipals_market.legacy_sale_receipt_qualification lq
+                WHERE lq.consumer=ls.consumer AND lq.epoch=ls.epoch AND lq.chain_id=s.chain_id
+                  AND lq.block_hash=s.block_hash AND lq.transaction_hash=s.transaction_hash
+                  AND lq.policy=ls.policy AND ls.policy=CASE WHEN s.chain_id=56
+                    THEN CASE WHEN d.environment='production' THEN 'bnb-finalized-tag-v1'
+                      ELSE 'bnb-local-validation-depth-20-v1' END ELSE p.policy END
+                  AND lq.proof_hash='0x'||encode(sha256(convert_to(jsonb_build_object('receipt',r.receipt,'block',r.block)::text,'UTF8')),'hex')) END
+              ELSE EXISTS(SELECT 1 FROM yunipals_market.sale_receipt_qualification q
+                JOIN yunipals_market.shared_indexer_consumer i ON i.consumer=q.consumer
+                  AND i.release_id=q.release_id AND i.source_id=q.source_id AND i.chain_id=q.chain_id
+                JOIN yunipals_market.checkpoint cq ON cq.source='chain' AND cq.chain_id=q.chain_id
+                  AND cq.name=CASE WHEN s.chain_id=56 THEN 'bnb-sales' ELSE 'seaport-sales' END AND cq.reader_mode='unified'
+                WHERE q.chain_id=s.chain_id AND q.block_hash=s.block_hash AND q.transaction_hash=s.transaction_hash
+                  AND q.policy=CASE WHEN s.chain_id=56 THEN CASE WHEN d.environment='production'
+                    THEN 'bnb-finalized-tag-v1' ELSE 'bnb-local-validation-depth-20-v1' END ELSE p.policy END
+                  AND q.consumer=CASE WHEN s.chain_id=56 THEN 'bnb-sales' ELSE 'collection-sales:'||c.slug END
+                  AND q.proof_hash='0x'||encode(sha256(convert_to(jsonb_build_object('receipt',r.receipt,'block',r.block)::text,'UTF8')),'hex')) END)
               AND r.receipt->>'status'='success' AND lower(r.receipt->>'transactionHash')=s.transaction_hash
               AND lower(r.receipt->>'blockHash')=s.block_hash AND r.receipt->>'blockNumber'=s.block_number::text
               AND lower(r.block->>'hash')=s.block_hash AND r.block->>'number'=s.block_number::text
@@ -271,7 +306,12 @@ export class ActivityReadService {
           JOIN jsonb_to_recordset($1::jsonb) AS bound("chainId" integer,number numeric,hash text,"from" numeric)
             ON bound."chainId"=s.chain_id AND s.block_number BETWEEN bound."from" AND bound.number
           JOIN yunipals_market.collection c ON c.chain_id=s.chain_id AND c.contract_address=s.contract_address
+          JOIN yunipals_market.checkpoint sc ON sc.source='chain' AND sc.chain_id=s.chain_id
+            AND sc.name=CASE WHEN s.chain_id=56 THEN 'bnb-sales' ELSE 'seaport-sales' END
           LEFT JOIN yunipals_market.sale_replay_config p ON p.chain_id=s.chain_id
+          LEFT JOIN yunipals_market.marketplace_legacy_selection ls
+            ON ls.consumer=CASE WHEN s.chain_id=56 THEN 'bnb-sales' ELSE 'collection-sales:'||c.slug END
+              AND ls.chain_id=s.chain_id
           LEFT JOIN yunipals_market.sale_receipt r ON r.chain_id=s.chain_id AND r.block_hash=s.block_hash AND r.transaction_hash=s.transaction_hash
           LEFT JOIN yunipals_market.orders o ON o.chain_id=s.chain_id AND o.protocol_address=s.protocol_address AND o.order_hash=s.order_hash
           WHERE s.canonical AND CASE WHEN $2='asset' THEN s.chain_id=$3 AND s.contract_address=$4 AND s.token_id=$5::numeric
@@ -372,7 +412,12 @@ export class ActivityReadService {
     const now = (
       await db.query<{ now: Date }>("SELECT clock_timestamp() AS now")
     ).rows[0]!.now;
-    const current = await readActivitySources(db, selected, now);
+    const current = await readActivitySources(
+      db,
+      selected,
+      now,
+      this.options.sourceReader
+    );
     const prior = row.header.chains as ActivityPage["chains"];
     const provenance = row.header.provenance as {
       epochs: ActivitySources["epochs"];

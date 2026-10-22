@@ -6,9 +6,12 @@ import license from "rollup-plugin-license";
 import { defineConfig, loadEnv } from "vite";
 
 import { fixturePlugin } from "./scripts/fixtures/devServer";
+import { llmRacePlugin } from "./scripts/racing/devServer";
 
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), "VITE_");
+  // These values stay in the dev-server closure and are never VITE_* defines.
+  const raceEnv = loadEnv(mode, process.cwd(), ["OPENAI_API_KEY", "RACING_"]);
   if (mode === "fixtures" && command === "build") {
     throw new Error("Fixture mode is for local development only.");
   }
@@ -50,6 +53,7 @@ export default defineConfig(({ command, mode }) => {
   if (
     command === "build" &&
     process.env.VERCEL_ENV === "production" &&
+    env.VITE_COLLECTION_ONLY !== "true" &&
     !env.VITE_YUNIPALS_MARKETPLACE_URL?.trim()
   ) {
     throw new Error(
@@ -61,6 +65,10 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
+      llmRacePlugin({
+        apiKey: process.env.OPENAI_API_KEY || raceEnv.OPENAI_API_KEY || "",
+        model: process.env.RACING_LLM_MODEL || raceEnv.RACING_LLM_MODEL || ""
+      }),
       ...(mode === "fixtures" ? [fixturePlugin()] : []),
       {
         ...license({
@@ -72,7 +80,9 @@ export default defineConfig(({ command, mode }) => {
             includePrivate: true,
             multipleVersions: true,
             output: {
-              file: "dist/THIRD_PARTY_LICENSES.txt",
+              file:
+                process.env.YUNIPALS_LICENSE_OUTPUT ||
+                "dist/THIRD_PARTY_LICENSES.txt",
               template: (dependencies) =>
                 [
                   readFileSync(
@@ -113,7 +123,28 @@ export default defineConfig(({ command, mode }) => {
     },
     server: {
       host: "localhost",
-      port: 5177
+      port: 5177,
+      fs: {
+        deny: [
+          ".env",
+          ".env.*",
+          "*.{crt,pem}",
+          "**/.git/**",
+          "**/*.key",
+          "**/.arena-lab/**",
+          "**/*.sqlite",
+          "**/*.sqlite-*"
+        ]
+      },
+      proxy:
+        process.env.ARENA_LAB === "1"
+          ? {
+              "/api/arena": {
+                target: "http://127.0.0.1:53901",
+                changeOrigin: false
+              }
+            }
+          : undefined
     }
   };
 });

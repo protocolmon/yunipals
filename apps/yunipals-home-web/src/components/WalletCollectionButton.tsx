@@ -1,4 +1,4 @@
-import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccountModal } from "@rainbow-me/rainbowkit";
 import {
   ChevronDown,
   ClipboardList,
@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { environment } from "@/environment";
 import { shortAddress } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ export function WalletCollectionButton() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { address, isConnected, status } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("navigation");
   const { openAccountModal } = useAccountModal();
   const connectionRequested = useRef(false);
   const menuContainer = useRef<HTMLDivElement>(null);
@@ -151,15 +152,17 @@ export function WalletCollectionButton() {
             <WalletCards aria-hidden="true" size={17} />
             My collection
           </Link>
-          <Link
-            to="/orders"
-            role="menuitem"
-            aria-current={pathname.startsWith("/orders") ? "page" : undefined}
-            className={accountLinkClass(pathname.startsWith("/orders"))}
-          >
-            <ClipboardList aria-hidden="true" size={17} />
-            My orders
-          </Link>
+          {environment.yunipalsMarketplaceUrl && (
+            <Link
+              to="/orders"
+              role="menuitem"
+              aria-current={pathname.startsWith("/orders") ? "page" : undefined}
+              className={accountLinkClass(pathname.startsWith("/orders"))}
+            >
+              <ClipboardList aria-hidden="true" size={17} />
+              My orders
+            </Link>
+          )}
           <div className="my-1 border-t border-line" />
           <button
             type="button"

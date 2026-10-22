@@ -18,6 +18,11 @@ import {
   runOpenSeaReadWorker
 } from "@/opensea/readWorker";
 
+import {
+  configureMarketplaceOwnershipIndexer,
+  closeMarketplaceOwnershipIndexer
+} from "@/indexer/ownership";
+
 async function main() {
   const environment = readEnvironment();
   const config = readOpenSeaReadEnvironment();
@@ -71,6 +76,7 @@ async function main() {
         );
   let evidence: OpenSeaReadEvidenceCache | undefined;
   try {
+    configureMarketplaceOwnershipIndexer(environment.ownershipIndexer);
     await assertOpenSeaReadWorkerReady(pool, environment.deployment);
     let client;
     if (environment.deployment === "production") {
@@ -152,6 +158,7 @@ async function main() {
       })
     );
     if (limit) clearTimeout(limit);
+    await closeMarketplaceOwnershipIndexer();
     await pool.end();
     await coordinator.close();
     if (deadline) clearTimeout(deadline);

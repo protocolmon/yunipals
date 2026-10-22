@@ -1,4 +1,3 @@
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { ExternalLink, Loader2, X } from "lucide-react";
 import {
   useId,
@@ -10,6 +9,7 @@ import {
 import { getAddress } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
 import { useBnbTrade } from "@/hooks/marketplace/useBnbTrade";
 import { useOpenSeaTrade } from "@/hooks/marketplace/useOpenSeaTrade";
@@ -41,7 +41,7 @@ export function TradeReviewDialog({
   const [showExactAmounts, setShowExactAmounts] = useState(false);
   const amount = showExactAmounts ? formatMarketAmount : formatMarketCardAmount;
   const { address } = useAccount();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal } = useAnalyticsConnectModal("trade-review");
   const bnbTrade = useBnbTrade();
   const openSeaTrade = useOpenSeaTrade();
   const viaOpenSea = order.source === "opensea";

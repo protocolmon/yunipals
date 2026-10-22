@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "slug": "base-standard-v1",
+  "types": [
+    { "id": 1, "name": "Yuniair" },
+    { "id": 2, "name": "Yunidonkey" },
+    { "id": 3, "name": "Yunibranch" },
+    { "id": 4, "name": "Yunidragon" },
+    { "id": 5, "name": "Yunicursed" },
+    { "id": 6, "name": "Yunikles" },
+    { "id": 7, "name": "Yuniturtle" },
+    { "id": 8, "name": "Yuniaqua" },
+    { "id": 9, "name": "Yunichick" },
+    { "id": 10, "name": "Yunisheep" },
+    { "id": 11, "name": "Yunifairy" }
+  ],
+  "colors": [
+    { "id": 1, "name": "Yellow" },
+    { "id": 2, "name": "Green" },
+    { "id": 3, "name": "Blue" },
+    { "id": 4, "name": "Red" },
+    { "id": 5, "name": "Purple" },
+    { "id": 6, "name": "Black" }
+  ],
+  "horns": [
+    { "id": 1, "name": "Spiral" },
+    { "id": 2, "name": "Diamond" }
+  ],
+  "glitters": [
+    { "id": 0, "name": "No" },
+    { "id": 1, "name": "Yes" }
+  ]
+}

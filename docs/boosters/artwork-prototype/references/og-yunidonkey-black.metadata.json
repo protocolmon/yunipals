@@ -1,0 +1,64 @@
+{
+  "chain": "base",
+  "chainId": 8453,
+  "contractAddress": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+  "tokenId": "1000004330",
+  "image": "https://drive.polychainmonsters.com/ipfs/QmRQZXc8su73r12n8nqQGL2NkegX7QnQP5KmjrWjYz71Ve",
+  "attributes": [
+    {
+      "value": "Diamond",
+      "trait_type": "Horn"
+    },
+    {
+      "value": "Unidonkey",
+      "trait_type": "Type"
+    },
+    {
+      "value": "Black",
+      "trait_type": "Color"
+    },
+    {
+      "value": 1444,
+      "trait_type": "Booster",
+      "display_type": "number"
+    },
+    {
+      "value": "None",
+      "trait_type": "Glitter"
+    },
+    {
+      "value": 1617224719,
+      "trait_type": "Birthday",
+      "display_type": "date"
+    },
+    {
+      "value": "Grassland",
+      "trait_type": "Background"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Origin Chain"
+    },
+    {
+      "value": "Yes",
+      "trait_type": "First Edition"
+    },
+    {
+      "value": 1781.7982,
+      "trait_type": "Rarity Points"
+    },
+    {
+      "value": "Ethereum",
+      "trait_type": "Opening Network"
+    },
+    {
+      "value": 1790031692,
+      "trait_type": "Last metadata update",
+      "display_type": "date"
+    }
+  ],
+  "tokenUri": "https://meta.yunipals.com/meta?id=1000004330",
+  "uriProvenance": "current_token_uri_call",
+  "uriAuditStatus": "onchain_resolved",
+  "lookupUrl": "https://api.yunipals.com/yunipals-indexer/v1/tokens?limit=1&traitType=Type&traitValue=Unidonkey&traitType=Color&traitValue=Black&traitType=Glitter&traitValue=None"
+}
