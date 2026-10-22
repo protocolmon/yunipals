@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Last checked: **22 October 2026, 21:33 UTC** (Arena compatibility preflight; replay point below remains timestamped separately).
+Last checked: **22 October 2026, 22:07 UTC**.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
@@ -8,7 +8,7 @@ Last checked: **22 October 2026, 21:33 UTC** (Arena compatibility preflight; rep
 
 - [x] Restore the public collection and verify desktop/mobile viewing.
 - [x] Consolidate packs into the complete existing main-domain app, preserve original menus/features, verify real API/wallet/artwork/holo/mobile flows, and redirect the old app hostname. The initial collection-only regression was corrected; live8/8 original-feature checks passed.
-- [x] Publish frontend, contracts, indexer, artwork generator, required references and deployment source in the existing [public repository branch](https://github.com/protocolmon/yunipals/tree/codex/indexer-monorepo). Source commit `e814509`; main-branch reconciliation remains separate.
+- [x] Publish frontend, contracts, indexer, artwork generator, required references and deployment source in the existing [public repository branch](https://github.com/protocolmon/yunipals/tree/codex/indexer-monorepo). Latest migration source commit `f1c1fc0` includes the current operators, retained historical source and qualified Arena credential fix; main-branch reconciliation remains separate.
 - [x] Deploy, audit and BaseScan-verify the booster contracts.
 - [x] Activate the unlimited public pack: 1 PROTO, 264 variants, one mint credit per 24 hours, no speed boost.
 - [x] Verify a genuine mainnet purchase: full PROTO burn, successful Chainlink VRF callback, original NFT and remaining collection rights.
@@ -22,7 +22,7 @@ Last checked: **22 October 2026, 21:33 UTC** (Arena compatibility preflight; rep
 
 **Running:** normal historical replay. **Prepared in parallel:** reviewed handover code and recovery paths, now staged on production. The metadata/cache/reader changes below wait for real native readiness; their live switches have not started.
 
-- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **42,167,540** at 21:18 UTC (about **28.4%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
+- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **46,223,872** at 22:07 UTC (about **31.8%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
 - [x] **Clear the reader permission-history mismatch.** The corrected verifier passed against production at 19:27 UTC, recognizing the already admitted reads and preserving the older metadata permissions. No new permissions or service changes were needed.
 - [x] **Provide cache-build disk capacity.** Completed at 19:33 UTC: copied and verified the seven-file September 30 cold backup, then replaced its two large originals with verified volume links. Reclaimed 7.61 GB; root now has approximately 46.88 GB available. All old paths still resolve; the current October 20 recovery set was untouched.
 - [ ] **Adopt native metadata provenance and publication.** Waiting for replay and the first current native block witnesses. Actual readiness probes reject the historical source with `indexer_not_ready`; this is expected catch-up gating. The legacy metadata worker continues producing the active data.
@@ -36,7 +36,8 @@ Last checked: **22 October 2026, 21:33 UTC** (Arena compatibility preflight; rep
 - [ ] Compare temporary and shared booster data at a common canonical boundary; switch the booster API and artwork queue. The corrected handover passed independent review and its production seven-read rollback rehearsal at 19:42 UTC. Actual committed-read acknowledgement, four reader admissions and the live switch remain pending.
 - [ ] Observe a genuine newer booster event on the shared source, then retire the temporary booster scanner.
 - [ ] Move EVM ingestion and the Solana adapter under the single managed service; verify scheduled Solana publication and restart behavior. All final public handover artifacts are staged with exact dependency and successful rollback-receipt checks. The v2 supervisor also retires the four old boot links before shared startup;65behavioral and10stager controls passed. The final service has not been started.
-- [ ] Adopt the production Arena workers with the existing approved configuration; verify accounting and recovery. Actual owner preflight found and corrected the retained OS GID, then exposed a replacement-runtime incompatibility with systemd read-only credentials. The application reader fix and exact consumer rebuild are now in progress; no workers or database have been changed.
+- [ ] Adopt the production Arena workers with the existing approved configuration; verify accounting and recovery. Actual owner preflight found and corrected the retained OS GID, then exposed a replacement-runtime incompatibility with systemd read-only credentials. The reader fix now passes 79 controls and all eight actual service namespaces. The first isolated rebuild passed both full typechecks, then caught a synthetic-file permission issue under umask077. The corrected replacement build is now running in its new bounded workspace; its production review passed and the installer passes 10 controls. The first attempt is retained and stopped. No live workers or database have been changed.
+- [ ] Publish the latest build corrections and exact historical source baseline. The baseline archive is preserved locally, all 1,746 source hashes verified and extracted contents scanned; this additional publication is still pending.
 - [ ] Compare public APIs, collection filters, metadata, rarity, search and Solana responses against their retained baselines.
 - [ ] Rehearse the coordinated source/worker rollback on the actual replacement deployment.
 - [ ] Observe at least 24 hours, including a supervised restart, backup and idle cycle.

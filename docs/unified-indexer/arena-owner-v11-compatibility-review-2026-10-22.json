@@ -1,0 +1,84 @@
+{
+  "format": "yunipals-arena-owner-v11-compatibility-review-v1",
+  "recordedAt": "2026-10-22T22:14:56.661197+00:00",
+  "reviewedFile": "ops/unified-indexer-transition/arena-owner-migration-v10.py",
+  "reviewedSha256": "916990726b874f9a9b31719a61e14ac465470326d96cd54dba7b2911018f1f76",
+  "scope": "Independent local review only; frozen v10 and all shared v11 paths unchanged. No production calls.",
+  "candidateSource": {
+    "sourceDigest": "110c622afa37745cd78877e0a5b9e124f20965934e816f060e071d974d2e0158",
+    "manifestSha256": "4a615755939d813251e585676f287c5696a76d6e8627c35fcbae1546e2716359",
+    "configSha256": "fdb0f1f29cacbc6a58b78a40c0d96cd38ff82b2b0caec8d49c12a99ca8c1e14e",
+    "privateFileSha256": "0e89988993ceda801201803f454ea6d1dd12b90d669368d509e476b568465750",
+    "testSha256": "2b2aa80c0732db2814d8484b968b96159d22379aa67c0ceba90902191ae59b54"
+  },
+  "mustWaitForActualInstalledOutputs": [
+    "completed proof SHA256",
+    "runtime inventory SHA256",
+    "runtime archive SHA256",
+    "actual completed two-suite step result or protected accepted installer receipt SHA256"
+  ],
+  "minimalChanges": [
+    {
+      "area": "constant/plan identity",
+      "needed": "Use immutable v11 FORMAT/BASE and installed110c release/runtime artifact paths, exact4a615 manifest, actual completed proof/runtime/inventory pins. Retain frozen v10.",
+      "v10Lines": [
+        11,
+        14,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "area": "compatible_secret_reader",
+      "needed": "Read and hash BOTH config.ts and privateFile.ts against unique manifest rows (size/hash); record both public source hashes in each probe proof. Refuse missing, duplicate or modified source before namespace entry.",
+      "v10Lines": [
+        232,
+        238,
+        242,
+        253
+      ]
+    },
+    {
+      "area": "clean namespace child environment",
+      "needed": "Add exactly CREDENTIALS_DIRECTORY=/run/credentials/<current fixed unit> after env -i, retaining existing UID971/GID965, group clear, capability/NNP flags and TSX_DISABLE_CACHE. New official helper requires this exact environment binding to recognize loaded0440 credentials.",
+      "v10Lines": [
+        249,
+        256
+      ]
+    },
+    {
+      "area": "two actual credential suites",
+      "needed": "Require v2 proof format, targetedCredentialReaderSuites==2 and exactthree-source map. Bind actual completed v2 attempt-result to accepted proof/source/review with exactly both named zero-exit reader steps; or bind the actual protected installer receipt under frozen0bc34 installer guard that already proves these steps. Ordinary build count alone is insufficient.",
+      "v10Lines": [
+        289,
+        295
+      ]
+    }
+  ],
+  "maintenanceBehaviorUnchanged": {
+    "officialCli": "Keep retained9ee arena-migrate.mjs/SHA; source imports only pg+schema and compatibility delta changes no schema.",
+    "drain": "Only8exact legacy Arena units; pidfd/start/definition checks and RefUnit prevent foreign adoption/GC ambiguity.",
+    "backupAndPostcheck": "Retain local private dump, original ciphertext/signed bytes/provider IDs snapshot equality, exact owner/table OIDs, official function/trigger graph and zero source_selection/history.",
+    "resume": "Render new110c immutable bundle root while explicitly retaining legacy mode and original key/provider/environment mappings.",
+    "liveNormalReplay": "Keep exact c8c06/e077 normal free-only runtime validator and prior paid terminal proof. Do not stop/reset/rebuild source008 or wait for native source readiness; owner DB maintenance is separate from indexer checkpoint progress.",
+    "unknownAcknowledgement": "Preserve one-attempt/manual reconciliation behavior; do not introduce automatic migration rerun or broad inverse in this compatibility change."
+  },
+  "focusedRegressionGuidance": [
+    "Clean probe contains one exact unit-specific CREDENTIALS_DIRECTORY; no DB/provider/old ambient environment forwarded.",
+    "All8legacy unit credential name combinations remain supported; wrong unit/directory/key still fails.",
+    "Missing/duplicate/mismatched privateFile source row refuses before any namespace entry or secret read, just as config source mismatch does.",
+    "Actual imported corrected config exports reader unchanged and valid ordinary owner-only files still work;0440 loaded namespace proof is root-owned actual acceptance.",
+    "Missing, duplicated, nonzero-exit or mismatched-proof reader steps refuse; only actual2named suite ACKs qualify.",
+    "AST compare drain/apply/official_owner_migration/productive_is_quiet/normal_source_for_arena/dropin/resumed_configuration against frozen v10; allow only required identity/compatibility/suite proof changes."
+  ],
+  "actualLocalVerification": {
+    "frozenV10TestsPassed": 6,
+    "productionCalls": 0,
+    "productionMutations": 0,
+    "v11FilesWritten": 0
+  },
+  "conclusion": "No new maintenance algorithm change identified; compatibility and actual artifact/evidence bindings are the necessary narrow successor delta."
+}

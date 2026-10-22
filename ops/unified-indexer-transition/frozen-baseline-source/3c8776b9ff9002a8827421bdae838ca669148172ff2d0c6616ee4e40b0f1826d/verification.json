@@ -1,0 +1,887 @@
+{
+  "format": "yunipals-frozen-public-baseline-verification-v1",
+  "sourceDigest": "3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d",
+  "archive": {
+    "path": "source.tar.gz",
+    "bytes": 2202375,
+    "sha256": "af09ea5b6f557f582e5203dbca38eed6641280bc5b5f49ee180a76b528a7aa2f"
+  },
+  "releaseManifest": {
+    "path": "RELEASE-MANIFEST.json",
+    "sha256": "1cdf261d411007868ad1f026a58cae381b02c5f92c6a9a45da30e9867e9f7df8"
+  },
+  "sha256sums": {
+    "path": "SHA256SUMS",
+    "sha256": "ae0ad2f42cc63814c54a030e94e75cba9db5996ef23c9ea39807afaf4567d216"
+  },
+  "strictArchiveVerification": {
+    "passed": true,
+    "totalMembers": 1824,
+    "sourceFiles": 1746,
+    "sourceBytes": 10278498,
+    "regularFiles": 1748,
+    "directories": 76,
+    "symlinks": 0,
+    "hardlinks": 0,
+    "specialMembers": 0,
+    "duplicatePaths": 0,
+    "traversalPaths": 0,
+    "unlistedSourceFiles": 0,
+    "missingSourceFiles": 0,
+    "allSourceHashesAndLengthsMatchManifest": true,
+    "manifestInventoryEncodedAs": "UTF-8 json.dumps(files, indent=2, ensure_ascii=False) plus final newline",
+    "manifestInventoryHashMatchesSourceDigest": true,
+    "sha256sumsExactlyMatchesOrderedManifestInventory": true,
+    "onlyNonInventoryFiles": [
+      "RELEASE-MANIFEST.json",
+      "SHA256SUMS"
+    ]
+  },
+  "publicHistoryCoverage": {
+    "format": "yunipals-frozen-baseline-public-git-coverage-v1",
+    "sourceDigest": "3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d",
+    "referenceScope": "local refs/remotes/origin reachable Git objects; no fetch or Git mutation",
+    "originRefs": [
+      "refs/remotes/origin/HEAD 2d5cfd4a75d659fe65c442fcb54b759675aff638",
+      "refs/remotes/origin/codex/indexer-monorepo f1c1fc0f06c953f40d9767dff75dbaef51f73c80",
+      "refs/remotes/origin/main 2d5cfd4a75d659fe65c442fcb54b759675aff638"
+    ],
+    "totalFiles": 1746,
+    "matchingPublicHistoryFiles": 1612,
+    "missingExactBytesFromPublicHistory": 134,
+    "missingByTopLevel": {
+      "apps": 22,
+      "docs": 7,
+      "EXTERNAL-RUNTIME-ASSETS.json": 1,
+      "ops": 100,
+      "packages": 4
+    },
+    "missing": [
+      {
+        "path": "apps/yunipals-indexer/lib/api/booster-routes.ts",
+        "sha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981",
+        "gitBlob": "0cd9e39ee1587116b39a533d89358df49fdede3c",
+        "bytes": 8824
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/api/server.ts",
+        "sha256": "3851d609821e03d0f3b87b1d6ac6be6d034cf7d5b5a559112a33e4f7bdb43e04",
+        "gitBlob": "58b1105c3ed2b7fddb1ae1b88e0b0461c0225d86",
+        "bytes": 70655
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/metadata/native-base.ts",
+        "sha256": "e31698338a76fd0fffbb6bc2c638ab35963a96d8c586e82ff634e6645795b9ad",
+        "gitBlob": "fc174dab94c1c807a1d2aa5f51c442e333b283c6",
+        "bytes": 15207
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/unified/base-metadata-views.ts",
+        "sha256": "5e54722ce2a3fbd4aedf9dfd92d7b76dadf5d8357c62c55400cee7eaf9950654",
+        "gitBlob": "b6cd288d204fad6b969b4972ff196a017c89ac65",
+        "bytes": 6224
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/unified/ownership-views.ts",
+        "sha256": "ccec9a3f32829361535a74d4449a2b3fb843d2c123537a5606e535295e880836",
+        "gitBlob": "a514408502fca90a0a270935301cd2b4833e49a3",
+        "bytes": 15338
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/unified/receipt-worker.ts",
+        "sha256": "30c67afcd74cc8a036c8ed0248e3e9f302f44d264f3256fbfe2caefedbed7e65",
+        "gitBlob": "9dcae426bcb031d56bd5e9d6113c626126c1a4fe",
+        "bytes": 12624
+      },
+      {
+        "path": "apps/yunipals-indexer/lib/unified/rpc-preflight.ts",
+        "sha256": "a78c5062f9eec266cf2e7ee6c78b22c4ac3812ce8777e35fa3f76c2fbd1105ba",
+        "gitBlob": "3f91ccfe2cd7244f7a67a596ddfb030904869c8f",
+        "bytes": 7130
+      },
+      {
+        "path": "apps/yunipals-indexer/package.json",
+        "sha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b",
+        "gitBlob": "450b71c3dd639c3b0d354b7440e31c06746235ae",
+        "bytes": 8221
+      },
+      {
+        "path": "apps/yunipals-indexer/scripts/dev-boosters-local.mjs",
+        "sha256": "ffa9cdfdca4662d345a9fe6f902732bf3c22ca7fe0d0d4cdb867daaa3004abe9",
+        "gitBlob": "93bf5f3a3cb80b3010f4a7b8b482d1f9ff7006e8",
+        "bytes": 11281
+      },
+      {
+        "path": "apps/yunipals-indexer/scripts/test-native-base-metadata.mjs",
+        "sha256": "7e649ade0a0f39e5c07a3a05ab65494742c4f0ed080e9234438d55a193f83311",
+        "gitBlob": "77c4617af3ef3016ff4e521deca4b8941e925a20",
+        "bytes": 22543
+      },
+      {
+        "path": "apps/yunipals-indexer/scripts/test-unified-ponder.mjs",
+        "sha256": "17944df0b38025866d216bcfea1994852a49a509cc11959e7f637f5cd87dc8ef",
+        "gitBlob": "f0074f9c1b5986212983aa3ce31b9f78ed6cd353",
+        "bytes": 17265
+      },
+      {
+        "path": "apps/yunipals-indexer/scripts/test-unified-service.mjs",
+        "sha256": "fad46fc5ab5c2982118744c5406d8f1523ca8ab140e5c7c5fda1a4afe9910550",
+        "gitBlob": "a84a0871ae02f5d3698b89f46bed3108e609a552",
+        "bytes": 4513
+      },
+      {
+        "path": "apps/yunipals-indexer/scripts/test-unified-support.mjs",
+        "sha256": "615a301478216afb6d8eca04dc584effeaf61b32ef48c6ce5bb26e7a8bcc1406",
+        "gitBlob": "e76707b6c85e30d2eb1ef1ff5095aa8a7d713675",
+        "bytes": 19741
+      },
+      {
+        "path": "apps/yunipals-indexer/test/unified-receipts.test.ts",
+        "sha256": "6aba954ab0a65911dc7380171a098a429582faf3b9351ebc8f9cbf56413e9998",
+        "gitBlob": "d1666ff37cfcbca1f68858033f7afe5081972f51",
+        "bytes": 4876
+      },
+      {
+        "path": "apps/yunipals-market-api/src/indexer/bnbDiscoveryRead.ts",
+        "sha256": "9a8a5ba03d4684f09f8c947bf5b7e1408f228d1d48a161030d41f774c012c579",
+        "gitBlob": "9956a7a61435273752f469500cf45e7779750913",
+        "bytes": 4592
+      },
+      {
+        "path": "apps/yunipals-market-api/src/indexer/consumerEnvironment.ts",
+        "sha256": "1385457b2eaeb94d3032a43061ebd161b16ea1faf5e5febf6c055e5b4ce81b3a",
+        "gitBlob": "c22a34d6d82ddac1db484777c5c90729aaa2daa8",
+        "bytes": 1971
+      },
+      {
+        "path": "apps/yunipals-market-api/src/indexer/ownership.test.ts",
+        "sha256": "5ac08dd27fdad4e5e7b37f368d15c2c0b88ca755833116a16651b4304e9d510e",
+        "gitBlob": "eda4ebdf2f40aa51a274ec4d84c4ee5b571d4d74",
+        "bytes": 38133
+      },
+      {
+        "path": "apps/yunipals-market-api/src/indexer/ownership.ts",
+        "sha256": "3ef46d17ef2e38f156dd0cadc5971d75a260715e46525ae4870170753a15261f",
+        "gitBlob": "ea510f93160fa0aad535e7f7d9bafc3a3d930411",
+        "bytes": 15859
+      },
+      {
+        "path": "apps/yunipals-market-api/src/indexer/ownershipSql.ts",
+        "sha256": "88dcfceb1599264bedaeeaabe6135110a6ca0dfdf6c66e037dbdbecdedd47c69",
+        "gitBlob": "3d9dc7dfef4b45d27472c38e7bacb8ffec887e6d",
+        "bytes": 12928
+      },
+      {
+        "path": "apps/yunipals-market-api/src/rpcBudgetProxy.test.ts",
+        "sha256": "730302d7744c8ead9f132b8db4373240e0b506e73dd9e0908dc82e756541b8f4",
+        "gitBlob": "7d460a83e07d7450abd696d555ca9db5445f1c3c",
+        "bytes": 81631
+      },
+      {
+        "path": "apps/yunipals-market-api/src/rpcBudgetProxy.ts",
+        "sha256": "a8c92e800dd89029465d84513dc1bc19b237f292255e0736622f2483c2bb777a",
+        "gitBlob": "5b689f51d84a2479da954af0fe05881d1673a757",
+        "bytes": 51114
+      },
+      {
+        "path": "apps/yunipals-market-api/src/rpcBudgetProxy.unifiedLogs.test.ts",
+        "sha256": "bb251a74159a47082b272a6f51814e5d476b868fc2d4c921555298c4071fce01",
+        "gitBlob": "82ab2a8e079a7621734344c9bcedd8abe388e995",
+        "bytes": 12399
+      },
+      {
+        "path": "docs/unified-indexer/budgeted-rpc-sync-2026-10-20.json",
+        "sha256": "f039dd809433188c99d9d7280ce022413ed445e71a4e5f7befe951b85b6607c8",
+        "gitBlob": "434b570de814fc55411b094415589961e7f6417c",
+        "bytes": 16215
+      },
+      {
+        "path": "docs/unified-indexer/ownership-parity.md",
+        "sha256": "9f6c1257aa135ebc2b13fe5cc0c03b3c7acef9a43d97775156f11e9052eaf766",
+        "gitBlob": "ce459ff001232c796ee7d164e11ce149e4ac2df0",
+        "bytes": 4059
+      },
+      {
+        "path": "docs/unified-indexer/production-bnb-sale-history-witness-2026-10-20.json",
+        "sha256": "1b217eee73a3ef1f200985171be70f85b8f3eacada980aceb60d77fd3e1114b4",
+        "gitBlob": "066a26a6a247c19dca682256b1814d95491d4755",
+        "bytes": 2214
+      },
+      {
+        "path": "docs/unified-indexer/production-receipt-floor-cardinality-2026-10-20.json",
+        "sha256": "7ffc1f880e96558df7ca42de458926eaf6f486959d2544f151cf151f7f9442f4",
+        "gitBlob": "48df9f00a7e10683ec287bcabdc2ceb53d55e973",
+        "bytes": 1579
+      },
+      {
+        "path": "docs/unified-indexer/production-rpc-profile-2026-10-20.draft.json",
+        "sha256": "eb32453ec40d043929ba66bc131fc70aad8bf9239a7bdb7258f72067f1bfa1db",
+        "gitBlob": "df6ecdf22e64863c1be7f40b6a47b284c015fbdc",
+        "bytes": 10285
+      },
+      {
+        "path": "docs/unified-indexer/receipt-history-floor-2026-10-20.json",
+        "sha256": "7fd5c324a06c63f66769ee8ba80f3139d9b2d35b44416eabf00b9aa759629d31",
+        "gitBlob": "dc66c8b6268a8e9d439d66925dc7052e07794441",
+        "bytes": 4910
+      },
+      {
+        "path": "docs/unified-indexer/release-role-grants-2026-10-20.json",
+        "sha256": "5abcca5ae056947a0cbcf1a810ce9b51675066549edd25f9c9c318f0221bcaed",
+        "gitBlob": "6e29d60dd0ad7be66cdfeea23960a2b148dae192",
+        "bytes": 1634
+      },
+      {
+        "path": "EXTERNAL-RUNTIME-ASSETS.json",
+        "sha256": "7b5066f038bfaa7d0c977cb40fdeb29299ca49dae51e6fdeb8729bf1fd6426f2",
+        "gitBlob": "ea4cdc7efd584c8027d5f207c8ae330f7e3c070a",
+        "bytes": 382899
+      },
+      {
+        "path": "ops/unified-indexer/arena-consumer.env.example",
+        "sha256": "abd3e10888424c4de05948f618df898afacc93db8a29b8d8fd8c79fb32c1b842",
+        "gitBlob": "b136b80cead3006a43e34d8929045d8c319744c7",
+        "bytes": 813
+      },
+      {
+        "path": "ops/unified-indexer/arena-native-read.env.example",
+        "sha256": "91609e96c0829522b3073fac383fe50a2c61c24001b38788e4227c08eb1f9f95",
+        "gitBlob": "e546ab7a8781def905bd96eb2b2b340c0d99f46f",
+        "bytes": 328
+      },
+      {
+        "path": "ops/unified-indexer/bounded-shadow-continuation-test.py",
+        "sha256": "3b36ebd10115746f006db7ec4dc35e7a34426864053cd754a608b7a3375b38ef",
+        "gitBlob": "fdcd974976f461e15f1e2c0cafef202c592f920e",
+        "bytes": 31622
+      },
+      {
+        "path": "ops/unified-indexer/bounded-shadow-continuation.py",
+        "sha256": "3b97a328befe9bb702cd8d40bf2c5f97993895ecff588a62f98cda1f5dd3ae2f",
+        "gitBlob": "94d5d70cb19a107acd29eb1bdeae92f0e27705fd",
+        "bytes": 35890
+      },
+      {
+        "path": "ops/unified-indexer/bounded-shadow-test.py",
+        "sha256": "0d416918fd48141118c399d8603170622e7d2f129c986007c644547e273a3fbf",
+        "gitBlob": "40a015fe16dcbd700c8338d0142a183743426ddf",
+        "bytes": 13570
+      },
+      {
+        "path": "ops/unified-indexer/bounded-shadow.py",
+        "sha256": "2df5367c59017d1b00e16644975a450e5aedb747c99d5d1eee9055a72fb7335f",
+        "gitBlob": "5f0c73adbd72edde6aefd3371dfa4c15d0275b21",
+        "bytes": 35801
+      },
+      {
+        "path": "ops/unified-indexer/grant-arena-native-source.sql.example",
+        "sha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+        "gitBlob": "3bc8dce153452e7abff0a151e4464e6fb4718988",
+        "bytes": 889
+      },
+      {
+        "path": "ops/unified-indexer/grant-marketplace-legacy-reads.sql.example",
+        "sha256": "28c8b31de19051284ce7762d6402477815133d95181dd11b19da6a8d57ac2060",
+        "gitBlob": "c87fc3e1a361146002b53b6717cc98b76a56624b",
+        "bytes": 563
+      },
+      {
+        "path": "ops/unified-indexer/grant-marketplace-local-reads.sql",
+        "sha256": "22080bc4f9c2a33887f404eadee01cee093721543819014acd9da97a0a47d79e",
+        "gitBlob": "79ba8bd9104301ed5b3ce61eaa852a6259eac05d",
+        "bytes": 638
+      },
+      {
+        "path": "ops/unified-indexer/grant-unified-support.sql.example",
+        "sha256": "6b7c28c68e42338b14defcd2e198e9fe117d2026fb598d675cbf2a009243e046",
+        "gitBlob": "a6c665f7efd15551acc58d2a68b9cd648cdef11c",
+        "bytes": 1016
+      },
+      {
+        "path": "ops/unified-indexer/install-shadow-source.py",
+        "sha256": "24c347846257ef7116f5732e2d77737fd58b3cf0b7facbfc40d045507ced2ad3",
+        "gitBlob": "e8d05e4a77ea2921f1d8c3e46104a22fe42d1610",
+        "bytes": 3140
+      },
+      {
+        "path": "ops/unified-indexer/inventory.py",
+        "sha256": "f55a89eeb8ec75af783d9c6afe6c13edf2dd4f70485726411bc7bbe1a19d9ac9",
+        "gitBlob": "81cd9ccd175b476eb4d257944fc2ab5a82b11d6e",
+        "bytes": 10228
+      },
+      {
+        "path": "ops/unified-indexer/marketplace-native.env.example",
+        "sha256": "83a21829f75e10b75d8bdadad866e573205bfd1dfc647584fb178c4b2101ea0b",
+        "gitBlob": "67eb25426fd71159b61b831e7918125273be7467",
+        "bytes": 1342
+      },
+      {
+        "path": "ops/unified-indexer/ownership-consumer.env.example",
+        "sha256": "dd718bb4957ff8fd17e412a916507c46a1fe1af9aba63b16bf7c501cf88844d9",
+        "gitBlob": "5b8280481f2f0f1a55dacf763ac6943d8703f587",
+        "bytes": 958
+      },
+      {
+        "path": "ops/unified-indexer/ownership-parity.test.mjs",
+        "sha256": "b338476203b31ffd42087f8d52318f5e9a0731bb87087faa20955359c1976660",
+        "gitBlob": "bc173e5e0b97a560deb1c7adb8e483c4cfef15f4",
+        "bytes": 10381
+      },
+      {
+        "path": "ops/unified-indexer/ponder-rpc.env.example",
+        "sha256": "ccdbe8463a91e1d2ec102e9c31257fa8feb8dbdea2994a400133193df25cd9e6",
+        "gitBlob": "74664e60d9899f125eb7828d257143e1efbc7263",
+        "bytes": 1179
+      },
+      {
+        "path": "ops/unified-indexer/prepare-release.build.sh",
+        "sha256": "71c0a855c4dbfe962207ef95ef5b387f081d67f9d0e826a758ee2394001f55ed",
+        "gitBlob": "ccb48551861fa83fdbd02eaf72df97773a38d13d",
+        "bytes": 1221
+      },
+      {
+        "path": "ops/unified-indexer/prepare-release.test.mjs",
+        "sha256": "53a365dfbb98c9f8e183f555c4506b0b09c99c920fdc917729e020e2aa63819e",
+        "gitBlob": "0523d95200635dc3998297d887f442271a9fb509",
+        "bytes": 3311
+      },
+      {
+        "path": "ops/unified-indexer/prepare-shadow-source-owner.py",
+        "sha256": "6336246b8e270ae3b4a2fee6e01db5feef0b11a3e614db494a1cf1b951f9351b",
+        "gitBlob": "cafc7de8a0acfcc31b25c3f8aefd057b593765b9",
+        "bytes": 7417
+      },
+      {
+        "path": "ops/unified-indexer/prepare-shadow-support-postgres-test.py",
+        "sha256": "60afa240e7b4061b678c1cdc2e176c4e460c145784beeccac2d08cdd4677fc1b",
+        "gitBlob": "033b2ca228fc088b4f472b2e4cad6e13189820d3",
+        "bytes": 4847
+      },
+      {
+        "path": "ops/unified-indexer/prepare-shadow-support-test.py",
+        "sha256": "b02e248d92511afa8cefd7d889e3c3ee216b62153d53d7d9bc4f280deee431ee",
+        "gitBlob": "a817afcbfadb4aa8bc495a72977f218ad613b84b",
+        "bytes": 4962
+      },
+      {
+        "path": "ops/unified-indexer/prepare-shadow-support.md",
+        "sha256": "f0698c7100ae252829a60844150e0a4e51e75c9a0585571a2a56aa8306f3b79c",
+        "gitBlob": "d28415c04c18c1a0dffa7d8647c486a7797f3910",
+        "bytes": 5406
+      },
+      {
+        "path": "ops/unified-indexer/prepare-shadow-support.py",
+        "sha256": "08598217e42d8058b1839ae5162ede44b648f3b9c523c15f1c4eb8f7691bb9c7",
+        "gitBlob": "7c5d9c6e8ee9ea760c5a15dd0bf51fe8915e2b2a",
+        "bytes": 16832
+      },
+      {
+        "path": "ops/unified-indexer/production-archived-wal-fetch-test.py",
+        "sha256": "70603145758f9b6139c8927593a7ef368d434154258df5fd54de6d6447114336",
+        "gitBlob": "0d0f40d40a54987088068f8b90e6be1f71bf512b",
+        "bytes": 2814
+      },
+      {
+        "path": "ops/unified-indexer/production-archived-wal-fetch.py",
+        "sha256": "98fcb45b3365c7ce83d192080e4fbcaafc05598cc3fc3d05da7eab6b2cda7ec2",
+        "gitBlob": "bee8bf077c478f76d9879c23de162cf52ca3b461",
+        "bytes": 5107
+      },
+      {
+        "path": "ops/unified-indexer/production-backup-recovery-inventory.py",
+        "sha256": "e89d8a7045683886e12e2434c4c0641003f24b0dcfbe81dc9d7e1ebfd3438155",
+        "gitBlob": "9c3f1b9b96547066ecd2526adb7244113e0c355d",
+        "bytes": 10328
+      },
+      {
+        "path": "ops/unified-indexer/production-backup-recovery-preflight-test.py",
+        "sha256": "0e66adfdc107bb2946042ae67b66eba197258a46936bdb21b7660e9583635608",
+        "gitBlob": "bb73bd5b746549b153cd669c805b89f717277093",
+        "bytes": 2348
+      },
+      {
+        "path": "ops/unified-indexer/production-backup-recovery-preflight.py",
+        "sha256": "b1f7ef45a831e29df918937152e2409c9c1853ceb083eb5ed970487bf497207f",
+        "gitBlob": "6ebb562616f6a0e0f8b6759de053cbd0995b8366",
+        "bytes": 5252
+      },
+      {
+        "path": "ops/unified-indexer/production-bnb-sale-history-witness-test.py",
+        "sha256": "12c81dbc5332dd37fb4fb517fe63af4e7ac25ff6adf05dd42d72ea639d87e2c6",
+        "gitBlob": "8ff3f7a070aa75dd4df2f18c86fd3532769b040c",
+        "bytes": 1304
+      },
+      {
+        "path": "ops/unified-indexer/production-bnb-sale-history-witness.py",
+        "sha256": "e8456ce147314b67318c2862553a68d72834587239f0e5fa0655eef86bcad6aa",
+        "gitBlob": "c254ff4d02acc4eb73f4ca518ad4278bbf896fb1",
+        "bytes": 6926
+      },
+      {
+        "path": "ops/unified-indexer/production-capacity-inventory.py",
+        "sha256": "f98e06b26a2d247cea426cdaa2703a3f64decd99f3e820afddae7bc465bd7305",
+        "gitBlob": "fb819b50c36abae0d97afa332ceccdde08a83197",
+        "bytes": 6031
+      },
+      {
+        "path": "ops/unified-indexer/production-log-range-witness.py",
+        "sha256": "f44d7c39179eb3f4a2b729cc0fe7331c7e50878d335e5d2744492691c40775de",
+        "gitBlob": "12cc86333feb055b3e91b827cdb60da40ff11698",
+        "bytes": 3475
+      },
+      {
+        "path": "ops/unified-indexer/production-main-bounded-backup-test.py",
+        "sha256": "29ad4cf08ca6f0ff925110c8dac9bee5715fd9c1210a143c417456be30b95fce",
+        "gitBlob": "b00a62227df3db2f46c3ecfeac01197c53afe656",
+        "bytes": 3644
+      },
+      {
+        "path": "ops/unified-indexer/production-main-bounded-backup.py",
+        "sha256": "f2af175d76394495e439785eedb218b5f009f3cdc6b24cfcfac3ce7c25b4b959",
+        "gitBlob": "4a57d7768d959b156cc3e532f75eb42cb83238ca",
+        "bytes": 27418
+      },
+      {
+        "path": "ops/unified-indexer/production-main-local-decode-test.py",
+        "sha256": "ee0ef99e4ba1c6edff3b635e4724364f0c385fa891c7c4da0d7de2166d816200",
+        "gitBlob": "b9d6acaee31afba46ad5617afbdf15df8350e0aa",
+        "bytes": 1823
+      },
+      {
+        "path": "ops/unified-indexer/production-main-local-decode.py",
+        "sha256": "0a0efbd8d4bda4c899a5e239c2191886b72c29050165b68d6b571b5175d23396",
+        "gitBlob": "7254af8e153ded0484b57126b9c3d5917ac83698",
+        "bytes": 16494
+      },
+      {
+        "path": "ops/unified-indexer/production-main-recovery-heap-inventory.py",
+        "sha256": "2316fe121d5f0952beadac7a589388838edc23d933e6d46dcc42aded2991ef8e",
+        "gitBlob": "45250d5fdc97ac314fe79522d5eeb3f7ce07d30f",
+        "bytes": 3683
+      },
+      {
+        "path": "ops/unified-indexer/production-market-budget-rehearsal.py",
+        "sha256": "481de780414ca87684567aeb66ae03bdaf71599bb3ed40034c09c3a5eb16b7f6",
+        "gitBlob": "75b8208360e0edb75191efd3acd1e002db968755",
+        "bytes": 8590
+      },
+      {
+        "path": "ops/unified-indexer/production-market-migration-rehearsal-test.py",
+        "sha256": "a4435f7a7257d6a758efe17af1c66eff7354bde495abb13cd66559a02ac78dae",
+        "gitBlob": "2a351191c14547e0a33ab45c873fbe41ee265cad",
+        "bytes": 1542
+      },
+      {
+        "path": "ops/unified-indexer/production-market-migration-rehearsal.py",
+        "sha256": "7fe76a77bf1f8ac2fe79df2c9e55db490ecb0f954311c31afa783a8152ab7f16",
+        "gitBlob": "b4894142dd78f4b063cad1c0015559d39167a19e",
+        "bytes": 20066
+      },
+      {
+        "path": "ops/unified-indexer/production-market-pitr-rehearsal-test.py",
+        "sha256": "4ae661efbc9c32f62ec3aff5477ce01b6f160c7a56ebc26aee3d3d75f81d201a",
+        "gitBlob": "296fbc40eb63d67a016c9d016dc01af64f00e9a9",
+        "bytes": 1540
+      },
+      {
+        "path": "ops/unified-indexer/production-market-pitr-rehearsal.py",
+        "sha256": "110be1980296b2178c0e19a497453579b270fbca41c1d91cbe4537169b7be501",
+        "gitBlob": "0c8a9b25625ea9b77cde15742deb4079a0c44d5e",
+        "bytes": 18387
+      },
+      {
+        "path": "ops/unified-indexer/production-offhost-recovery-inspect.py",
+        "sha256": "4da6309e79b62b4ed7e4b60de8a1f97baffb8c5ff5ac2066f1e184e4f4f8eb18",
+        "gitBlob": "38136ae1dbfadcfdab7c5ed3fc86fb45ea259c95",
+        "bytes": 2512
+      },
+      {
+        "path": "ops/unified-indexer/production-receipt-floor-cardinality.py",
+        "sha256": "c09df8f0a13a96440588d50fe56b09babc3970c5d25c70361b0662c931df4f8d",
+        "gitBlob": "a225fe0ca375e6fbfa8d4781ab502164a3ba4e66",
+        "bytes": 2850
+      },
+      {
+        "path": "ops/unified-indexer/production-shadow-compatibility.py",
+        "sha256": "68c1944331f287df326286f5e422664011f990dcb1ea54ffc8e44f8fe051ce6e",
+        "gitBlob": "f835be0df4dbf2e26801920b7f9dfe82555d1004",
+        "bytes": 9347
+      },
+      {
+        "path": "ops/unified-indexer/production-small-restore-rehearsal-test.py",
+        "sha256": "fcbfb977187119fc20a3b0930093b6b87da226a686bf36c2b1da9f12f25083e7",
+        "gitBlob": "5e3b7ab78f3a4f3e8f65464cbb5782b71cf9e659",
+        "bytes": 2768
+      },
+      {
+        "path": "ops/unified-indexer/production-small-restore-rehearsal.py",
+        "sha256": "6329f5e7f8cfac1651dd9b13ef1742a0a3bb2d973b37654e7cccce1fab00415b",
+        "gitBlob": "9da0509ec1a1b9f51fe252e7de04edac8f637b19",
+        "bytes": 25313
+      },
+      {
+        "path": "ops/unified-indexer/production-source.env.draft",
+        "sha256": "0c3b933cbfb5d016dffae2bc5ed985d7eab062b240bc4b9449a8d889232f5f12",
+        "gitBlob": "a06a5e6785f507423812541d4e520e2c57fdaa8d",
+        "bytes": 922
+      },
+      {
+        "path": "ops/unified-indexer/production-spare-volume-inventory.py",
+        "sha256": "0dbb51c0f6a8c0586e626bd7a55d45deb03a80f02984c030892fff8961f0f963",
+        "gitBlob": "e3963680e48c7959e431a4f573870c4cb7862de2",
+        "bytes": 1685
+      },
+      {
+        "path": "ops/unified-indexer/README.md",
+        "sha256": "aff2fc5381dc0169ac6c5a0940d536c46904c4e4fd6c2e0c39a8d1220af4fbd3",
+        "gitBlob": "b465e8bede2b36e5cfa3d8e7f091b259ef16e674",
+        "bytes": 61809
+      },
+      {
+        "path": "ops/unified-indexer/receipt-history.md",
+        "sha256": "d734b474fca782350d02e79392a8d57a557f3506191748bd2877ad5c556963fe",
+        "gitBlob": "1ef30662f2b82e8a5685237682a003cce85fc509",
+        "bytes": 3103
+      },
+      {
+        "path": "ops/unified-indexer/release-package.configuration.json",
+        "sha256": "71316c0b1d56cba5a91f41d01f84771a4bb31cfe9b6f3b751cc9144fcc222f93",
+        "gitBlob": "e7a54a3afbb016317c501692ad335d230cd43308",
+        "bytes": 2463
+      },
+      {
+        "path": "ops/unified-indexer/release-package.md",
+        "sha256": "7fd20b9453595ebef50a02498ab006c128d09f9bd465644623ab48f69ef1b117",
+        "gitBlob": "fa895954b6d4424ccf500dd4965c041ba8004cdc",
+        "bytes": 8531
+      },
+      {
+        "path": "ops/unified-indexer/release-service-manifest.json.example",
+        "sha256": "e3a93906cb310c7c18feea7c192489139d738a46fc4ca5f198193cb19804e29e",
+        "gitBlob": "506de2502d9e43521aa1867b1b9dc438e808d095",
+        "bytes": 126540
+      },
+      {
+        "path": "ops/unified-indexer/release-services.md",
+        "sha256": "32f879068b677a6de85a75a096d924aa194f31cd75ac386edded5ffde9537c4d",
+        "gitBlob": "41fb67431e55310fc9e14d038d8c35b8c5137792",
+        "bytes": 19535
+      },
+      {
+        "path": "ops/unified-indexer/rpc-consumer.env.example",
+        "sha256": "fed4afe6d2ec0152890cad5bbd4ecb60b131fc0a85fe6bb81590e1269a40ec19",
+        "gitBlob": "dac9027ffbed37eb140ab521603d62caf40fe590",
+        "bytes": 665
+      },
+      {
+        "path": "ops/unified-indexer/run-indexer.sh",
+        "sha256": "0ae4bf5084d85d0df7b66c6058f0cb2647de85bdf2cb8178a411cedce6581c89",
+        "gitBlob": "c77d2b9beabfada91abb05cc116071c2b759390c",
+        "bytes": 2144
+      },
+      {
+        "path": "ops/unified-indexer/runtime-supplement-rehearsal.py",
+        "sha256": "0de0a3990dcb0c16e64bba7e6361687b01dfe64a53d74eaa83eedb3679570555",
+        "gitBlob": "7a97428a5e60d68fea69d1857aef85622fce3f12",
+        "bytes": 6049
+      },
+      {
+        "path": "ops/unified-indexer/runtime-supplement-test.py",
+        "sha256": "65f08df9f1a5044f2da2aa129e71a109b66ba829a9f889c1f1aecf2fd700c06b",
+        "gitBlob": "b08f1519499609a02424735d05a162e5a2c3c323",
+        "bytes": 7944
+      },
+      {
+        "path": "ops/unified-indexer/runtime-supplement.py",
+        "sha256": "49c1aef0a5aa38c3142e2132a1e88339889ebfcca917ea6f8dcb4e41f39793c4",
+        "gitBlob": "944fa5846f4066f6e1a63c79f34778c73cedb13f",
+        "bytes": 20029
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-api.service.conf.example",
+        "sha256": "80cc427abe4bea202aea00f83cc1300fb891c61d1c2ce21068bdaf1acc20d96d",
+        "gitBlob": "007718648a7ec5e4d1078ac90cd0ce44c127c7be",
+        "bytes": 515
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-capacity.service.conf.example",
+        "sha256": "1934edf659f19bdc855b83ba979e02a9994ffddf90b3c291271b32af5113c167",
+        "gitBlob": "08fee916db37c05d69f420b82d3ae16ecf37b6dc",
+        "bytes": 525
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-client.service.conf.example",
+        "sha256": "ba4f3cb8d3827fdbe3498f8eec3d46ed0b59fbfe6ce5e977176d43880f59d20a",
+        "gitBlob": "be1f4f98a13e31cd658d74e7e2e19cc259729881",
+        "bytes": 528
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-disclosure.service.conf.example",
+        "sha256": "a81c1593daa160c93f2d345bb601829fa787e3f7ed53a8aa288891196e43570b",
+        "gitBlob": "c7c944f6292ee9dafbc5a6a26df53a26e9c7f546",
+        "bytes": 536
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-execution@.service.conf.example",
+        "sha256": "06147c5ef38d0953a13f53d2544d72f10ecb4f866d6fe7d201cfffc5cb06ec0f",
+        "gitBlob": "b1429cacccced18470581e4d0f7f34a7e7cd208a",
+        "bytes": 603
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-media.service.conf.example",
+        "sha256": "1e76ffe411e2259d856c4f932948f5b1af88fcab5f277423b0fbadb8dbba02f5",
+        "gitBlob": "42e297301b4c4c8da3b7f98538a921a863f35cec",
+        "bytes": 526
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-arena-native-referee.service.conf.example",
+        "sha256": "cfa8117e17711d87ada4a8e485e2e3c46d58ed8622edd97f15131a1414f59c01",
+        "gitBlob": "614ffdc9fa09f3a0d8e1a4697f66a187b79153c7",
+        "bytes": 530
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-collector-api.service.conf.example",
+        "sha256": "2caf6e8fe8774402ce8cd02443717e4c79104aef7ef644e43c405d9b6306b6e1",
+        "gitBlob": "3e51c0782e85a8d62ec45ee33bfa76ec7a9f5824",
+        "bytes": 535
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-exomon-preview-api.service.conf.example",
+        "sha256": "b280f72387174047492cded2e79900020d51b81784373477a005cc8973eb8134",
+        "gitBlob": "13a8924dc95c49ccfe4ce6bde1d56359151cddab",
+        "bytes": 530
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-indexer.service.conf.example",
+        "sha256": "852604c5fb8982a46af203731e63d0b83bbf3b38b18fc9be69840528baf120a2",
+        "gitBlob": "edca347e39522ec6fb6c964f1e01e28e3d1f1605",
+        "bytes": 835
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-islands-api.service.conf.example",
+        "sha256": "885958c455f888adf9b080316db8011d3acbaaaa7ff2b72aa1b7d2abc0cf0b39",
+        "gitBlob": "1ab04b80e4a3051bca4d3450a20581555fdb4013",
+        "bytes": 531
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-islands-metadata.service.conf.example",
+        "sha256": "c77b48b8e3a40dc96c757d3144fb21281be74202d5953c9b9717c8dcea1a1a4d",
+        "gitBlob": "43e1d2c83392b23c80901f66cb62b9423501c9f4",
+        "bytes": 532
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-leaderboard.service.conf.example",
+        "sha256": "764bb72ece1685a3996ca44def6e68931876b03ed5eb27cd2eb2021af34b9905",
+        "gitBlob": "686b68da8a3d167ad72d24e831354e621c468704",
+        "bytes": 531
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-api.service.conf.example",
+        "sha256": "21bcda5814c4664b810fd3b9d0acb626102116e486d9c30bf17dc5662b6f0172",
+        "gitBlob": "085abc86a56ebca983ed6640d0b81f0efe0cef9e",
+        "bytes": 524
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-bnb.service.conf.example",
+        "sha256": "a00c733b6354aa8a3173f32ae8ebae2b52a1baa8ac544633b624e5997a32aa49",
+        "gitBlob": "b8eb5da890e65b019aba5e3e48993a6d659dea52",
+        "bytes": 524
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-read@base.service.conf.example",
+        "sha256": "fcf049992e56c181849811597986e434bc0cc4c2557b1b3887dcdef7a278f18d",
+        "gitBlob": "302497583b471d54a7301e0283e2d4d47e5ea8fb",
+        "bytes": 543
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-read@ethereum.service.conf.example",
+        "sha256": "7ed33b79938e3be52be66e34b427b9caebf0043770ff39307767317e9e864d13",
+        "gitBlob": "c3857d7b0f4637496d3220003d3bcce4023f7df1",
+        "bytes": 547
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-read@polygon.service.conf.example",
+        "sha256": "e4b52db5bf88996a003670489d1b27d66ff2e24da2c0bcc7ecd35eba106a8d42",
+        "gitBlob": "33d581fafd41e75d757bb5e56e30e2f1f425816b",
+        "bytes": 546
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-rpc@base.service.conf.example",
+        "sha256": "de52da356804f0b4672c7246cbf343b8efb1ac83f8908366308b5018cd3bab97",
+        "gitBlob": "a619b766e8f9e28b97ab1da97490db0804d12ef9",
+        "bytes": 539
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-rpc@bnb.service.conf.example",
+        "sha256": "a9cfb258b57d40e31a68ed8f34d7a9360b9a9c76f21b83e08450385ce82d478d",
+        "gitBlob": "09ab60ff09da37b304db4a202a6cbdfb57d6184b",
+        "bytes": 538
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-rpc@ethereum.service.conf.example",
+        "sha256": "e5acf1c57a88120d246262d5a55405862e3f49b399ba18ffd421dc72adb76774",
+        "gitBlob": "24ac4a63c41b54a1bbe8749b9522b6bb5695d863",
+        "bytes": 543
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-rpc@polygon.service.conf.example",
+        "sha256": "710d84275a1e25a52ef614be822b5714783b26abcff5b340db79e7d5a76a17c5",
+        "gitBlob": "647a06d9f0bb63b2c6501456de88b7dc0ee2d7d6",
+        "bytes": 542
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-signature.service.conf.example",
+        "sha256": "1a3db34910c906776f910cd5f58923078895b7def4c8dea696bd5e8e10b8b025",
+        "gitBlob": "950c3874844829109f42600352003265ef6ae81e",
+        "bytes": 547
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-market-production-stream.service.conf.example",
+        "sha256": "ad0d66b8a6d2fb5580e4f345a906b7d610086eb0221cf7ebbbd9946e0f1af6fe",
+        "gitBlob": "36ded81de97cbb192511da08c1ab0aaabd30430f",
+        "bytes": 535
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-metadata.service.conf.example",
+        "sha256": "99c8402ef9704cda075064f580763d93681383b76ae199592f058ab71dee16da",
+        "gitBlob": "6299f28052b88bc298cfef786ab1bc97a47c03e3",
+        "bytes": 525
+      },
+      {
+        "path": "ops/unified-indexer/service-overrides/yunipals-read-cache.service.conf.example",
+        "sha256": "57245abf648206c709491a65e5d556648b50397db7a5b5272d9fbeaee3959361",
+        "gitBlob": "0976451173276b555f57e0d8eb765d5df0954e31",
+        "bytes": 538
+      },
+      {
+        "path": "ops/unified-indexer/service.env.example",
+        "sha256": "2c6db641ea93dfc52763af7c832236fc4da8ffdf19bcf087ea4dc9e1aee70231",
+        "gitBlob": "814df50e78b4dc3f0f45c369c2e29df415d9664c",
+        "bytes": 315
+      },
+      {
+        "path": "ops/unified-indexer/shadow-proxy-upgrade.py",
+        "sha256": "76d4f66fa6eb7d51f545afe175474a048c0b66d107bcdd495aeeddc620b6675b",
+        "gitBlob": "31df16e05cf1fd39fd6cf98f415e91f6bf97f580",
+        "bytes": 9634
+      },
+      {
+        "path": "ops/unified-indexer/support.env.example",
+        "sha256": "5475668f672855b539fe6c93034c132946550b4ed4cc34fda8b1eb8a3066a39d",
+        "gitBlob": "ee17f3f1cbccf9dd239e905f27ae5dcfaab55709",
+        "bytes": 754
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-api.service.example",
+        "sha256": "6d70401d95a0b43cbc46ec888c0e3cf6e4633ec3f5a2e62fff8c3750d7af2d8b",
+        "gitBlob": "8a7996ee218a25fcf171c62240f0cb9b8c72453f",
+        "bytes": 1081
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-capacity.service.example",
+        "sha256": "ff44b9855c08cbbccc53dd08914d3d28b113071520bc10705b872f0f00a83796",
+        "gitBlob": "628ae523d44c52a3aece34b99d1a97d0b001c8f3",
+        "bytes": 1000
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-client.service.example",
+        "sha256": "7a575ea1ad3e063922233b6802d609251727a88239f84205db1bc617cb669b09",
+        "gitBlob": "38e6621f17fa70055d6e804141027bf313dbb4cb",
+        "bytes": 940
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-disclosure.service.example",
+        "sha256": "1249997cb1b2a38b78515fcf7abcdd4585b44d11e8345152ab02ffb7107e0475",
+        "gitBlob": "e98ec0d8ae5fe73712dd5b9539484c6b596c5834",
+        "bytes": 941
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-execution@.service.example",
+        "sha256": "4304b4f77bc75b847fb9b002bf744d9b29af462e3f4c829c2a4ff56e3435b352",
+        "gitBlob": "dc5a92353795edd1e93f5acfb8d294d2d7fc8320",
+        "bytes": 1176
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-media.service.example",
+        "sha256": "b0c056d7b2a8f89b719a0d9a121e4de9a1b28d3c907d73cf96b8fe155c38a95b",
+        "gitBlob": "f7b60396e0b3a6def335f271568fb25e06dbe437",
+        "bytes": 1185
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-arena-native-referee.service.example",
+        "sha256": "41d5a18fbd3b9dd3eb71bfdb705dd71f36482d0615f34f9da699bbe500f04219",
+        "gitBlob": "ed3745c91cb52645bc4fb62a6a2564144eb86c1f",
+        "bytes": 998
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-indexer.service.example",
+        "sha256": "f15b7739a8637557e4629730d6355aeaf4ca5bb41857a7a50a90df35ecdd0106",
+        "gitBlob": "1fd1b4217efa7180066924be1f21574c463ec885",
+        "bytes": 919
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-sale-native@.service.example",
+        "sha256": "7ad73a767811529eb512289253f148bcf3588899c77832286c8db1d2a8e7819b",
+        "gitBlob": "ddce6bd35ff2b41c5e75bf9c553d2f66a909ed19",
+        "bytes": 542
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-sale-unified@.service.example",
+        "sha256": "46a9b5d28bcdbee1c8fb13362f06bb25a62678cf70a3a69fc5c59cccfbef42fe",
+        "gitBlob": "750dfccb0fbb080093d27df02c82d263902b8a00",
+        "bytes": 686
+      },
+      {
+        "path": "ops/unified-indexer/yunipals-unified-support.service.example",
+        "sha256": "6b85efab8d3e4514216785d21adb753d383f6d436c4ba3445a7ea3e058f08259",
+        "gitBlob": "4c401665351f801a609b79979b68ca8958a6b192",
+        "bytes": 778
+      },
+      {
+        "path": "packages/yunipals-indexer-server/package.json",
+        "sha256": "394a3de60f514dc4129eaf1e5c9a3661b7448f69ff502b90a80625804de4b0f3",
+        "gitBlob": "ad380cb4afe7ec28c0a39023084e6dfa6121f081",
+        "bytes": 585
+      },
+      {
+        "path": "packages/yunipals-indexer-server/src/paging.ts",
+        "sha256": "432fcb0631a8aba38dd8cee40dbae1eae721c0c8a60e6456a8d14d79f60a127e",
+        "gitBlob": "533f51e5633d8a410c98aabc3ed7b1bd795f5f5d",
+        "bytes": 12958
+      },
+      {
+        "path": "packages/yunipals-indexer-server/src/rpc-policy.ts",
+        "sha256": "f1a9061e07b83b310281add38597df5a47692be18eb64288feb12cf3ddf3fd75",
+        "gitBlob": "ed0d745cd3e8f30d57d36c8b1cd898beddc1ca00",
+        "bytes": 11131
+      },
+      {
+        "path": "packages/yunipals-market-core/package.json",
+        "sha256": "4c2f5379516317d1824b33d9d4370640104a471ecb8aec7e5d75fd67865f78b5",
+        "gitBlob": "f3b886dc9282940b6f3a52556a64a087cb9e5a97",
+        "bytes": 1757
+      }
+    ]
+  },
+  "secretScan": {
+    "tool": "gitleaks 8.30.1",
+    "scope": "all 1748 safely extracted regular archive members",
+    "configurationSha256": "5d61db04730d62ae91beda2855e3cc2ea61fa8cbe52465b75601802e992f302d",
+    "findings": 0,
+    "redactedReportSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "archiveBytesNotRewritten": true
+  },
+  "provenance": {
+    "kind": "authorized retained public source archive",
+    "retainedPath": "/mnt/HC_Volume_107222036/arena-consumer-package-20261021-d/source.tar.gz",
+    "archiveSha256": "af09ea5b6f557f582e5203dbca38eed6641280bc5b5f49ee180a76b528a7aa2f"
+  },
+  "scope": {
+    "privateConfigurationIncluded": false,
+    "databaseOrOwnershipExportIncluded": false,
+    "externalRuntimeAssetsListedButNotEmbedded": true,
+    "runtimeOrOperatorChanged": false,
+    "gitMutation": false
+  },
+  "publicationStatus": "prepared_not_committed"
+}

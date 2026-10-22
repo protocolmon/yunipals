@@ -12,6 +12,7 @@ function temporaryFile(t: TestContext, mode: number) {
   const directory = fs.mkdtempSync(join(tmpdir(), "arena-private-file-"));
   const file = join(directory, "key");
   fs.writeFileSync(file, syntheticSecret, { mode });
+  fs.chmodSync(file, mode);
   t.after(() => {
     fs.chmodSync(directory, 0o700);
     fs.rmSync(directory, { recursive: true, force: true });

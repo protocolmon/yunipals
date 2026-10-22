@@ -1,7 +1,8 @@
 # Unified migration source publication
 
-Status: prepared for owner review. This preparation has not committed or published
-Git changes. The fixed source closure contains 437 files (6,736,490 bytes):
+Status: published in public commit
+[`f1c1fc0`](https://github.com/protocolmon/yunipals/commit/f1c1fc0f06c953f40d9767dff75dbaef51f73c80).
+Root verified the finite source hashes and secret scan before committing and pushing. The fixed source closure contains 437 files (6,736,490 bytes):
 257 new source files, three modified tracked files, and their existing tracked
 dependencies. The three publication metadata files are listed separately so the
 manifest does not need to hash itself.
@@ -46,3 +47,12 @@ experimental operator iterations remain outside this finite source closure.
 Only explicitly authorized public archives, source files and manifests were read
 from production to recover the four historical blobs. No private configuration or
 database data was read or transferred. This preparation made no production changes.
+
+The 437-file manifest above remains the immutable published historical snapshot.
+The later explicit synthetic-fixture mode correction and actual 79-control
+umask077 qualification are recorded separately in
+[current-correction-addendum.json](current-correction-addendum.json). The exact
+historical baseline archive is preserved by
+[frozen-baseline-addendum.json](frozen-baseline-addendum.json). The V1 terminal
+fixture failure and fresh V2 preparation/launch remain separate public records;
+these additions do not claim a completed V2 runtime build or deployment.

@@ -1,0 +1,86 @@
+{
+  "format": "yunipals-public-source-current-correction-addendum-v1",
+  "historicalSourceSnapshot": {
+    "commit": "f1c1fc0f06c953f40d9767dff75dbaef51f73c80",
+    "manifest": "docs/unified-indexer/source-publication-2026-10-22/manifest.json",
+    "manifestSha256": "a837407561ce0269c3bd0e78f65d32c777d43618a0ca4295179ba27d8ccecbd3",
+    "manifestUnchanged": true,
+    "sourcePathSetUnchanged": true,
+    "files": 437
+  },
+  "correction": {
+    "path": "apps/yunipals-market-api/src/arena/live/privateFile.test.ts",
+    "priorSha256": "e4be62c1cea651f4f93f4069bec24a65bdc8e54a828222fb9a978a8f494825cf",
+    "currentSha256": "2b2aa80c0732db2814d8484b968b96159d22379aa67c0ceba90902191ae59b54",
+    "priorBytes": 14020,
+    "currentBytes": 14048,
+    "change": "Explicit fs.chmodSync(file, mode) immediately after synthetic fixture creation restores the requested test mode under umask077.",
+    "runtimeHelperChanged": false,
+    "runtimeConfigurationChanged": false,
+    "executableOperatorPinsChanged": false
+  },
+  "actualRootUmask077Qualification": {
+    "node": "24.18.1",
+    "umask": "077",
+    "passed": 79,
+    "failed": 0,
+    "sourceSha256": "2b2aa80c0732db2814d8484b968b96159d22379aa67c0ceba90902191ae59b54",
+    "evidence": "docs/unified-indexer/source-publication-2026-10-22/arena-private-file-umask077-20261022.txt",
+    "evidenceSha256": "24ee2605888cf3efe87ee22fc6b0491526d7a3ba9ef0e4f94890dd98978a1b84",
+    "contents": "Synthetic-file test names and results only; no production credentials or individual credential hashes."
+  },
+  "independentCurrentFixtureQualifications": [
+    {
+      "node": "24.18.1",
+      "umask": "077",
+      "command": "node --import <installed tsx loader> apps/yunipals-market-api/src/arena/live/privateFile.test.ts",
+      "exitCode": 0,
+      "passed": 79,
+      "failed": 0,
+      "stderrBytes": 0,
+      "log": "/tmp/yunipals-publication-private-file-node24-direct-umask077-20261022.log",
+      "logSha256": "f410c700caae84ce2d7f7393fad33f3ffba7a3387a434a517bc9fba7d8e50b4c"
+    },
+    {
+      "node": "24.18.1",
+      "umask": "022",
+      "command": "node --import <installed tsx loader> apps/yunipals-market-api/src/arena/live/privateFile.test.ts",
+      "exitCode": 0,
+      "passed": 79,
+      "failed": 0,
+      "stderrBytes": 0,
+      "log": "/tmp/yunipals-publication-private-file-node24-direct-umask022-20261022.log",
+      "logSha256": "cec6a55c71d60fec0c1a197015ec48e2008c7fef171d78c06e0be222232647ba"
+    }
+  ],
+  "operatorQualifications": {
+    "v1Builder": {
+      "passed": 14,
+      "context": "Isolated local historical source copy with exact published prior fixture; no application build."
+    },
+    "v1Installer": {
+      "passed": 10,
+      "context": "Same exact historical source copy; current fixture intentionally differs from V1 pins."
+    },
+    "v2Builder": {
+      "passed": 16,
+      "context": "Current source; local synthetic controls only."
+    },
+    "v2Installer": {
+      "passed": 10,
+      "context": "Current source; local synthetic controls only."
+    }
+  },
+  "preservedFailedV1": "docs/unified-indexer/arena-credential-build-attempt-v1-2026-10-22.json",
+  "v2Preparation": "docs/unified-indexer/arena-credential-offline-v2-preparation-2026-10-22.json",
+  "v2Launch": "docs/unified-indexer/arena-credential-build-v2-launch-2026-10-22.json",
+  "runtimeStatus": "Existing workers remain unchanged; the fresh offline V2 build launch is separately recorded. No completed V2 build or deployment is claimed by this correction addendum.",
+  "baselinePreservation": "docs/unified-indexer/source-publication-2026-10-22/frozen-baseline-addendum.json",
+  "scope": {
+    "gitMutation": false,
+    "remoteCalls": 0,
+    "productionActions": 0,
+    "privateConfigurationReads": 0,
+    "gitleaksExceptionsChanged": false
+  }
+}
