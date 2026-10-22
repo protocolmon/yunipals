@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Last checked: **22 October 2026, 23:53 UTC**. BNB's latest recorded checkpoint below is from 23:52 UTC.
+Last checked: **22 October 2026, 23:59 UTC**. BNB's latest recorded checkpoint below is from 23:59 UTC.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
@@ -22,7 +22,7 @@ Last checked: **22 October 2026, 23:53 UTC**. BNB's latest recorded checkpoint b
 
 **Running:** normal historical replay. **Prepared in parallel:** reviewed handover code and recovery paths, now staged on production. The metadata/cache/reader changes below wait for real native readiness; their live switches have not started.
 
-- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **54,357,254** at 23:52 UTC (about **38.5%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
+- [ ] **Complete historical replay.** Running on the normal free-only source. Latest verified BNB checkpoint: **55,213,352** at 23:59 UTC (about **39.2%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. Complete history and current canonical coverage across all four EVM chains remain unproven.
 - [x] **Clear the reader permission-history mismatch.** The corrected verifier passed against production at 19:27 UTC, recognizing the already admitted reads and preserving the older metadata permissions. No new permissions or service changes were needed.
 - [x] **Provide cache-build disk capacity.** Completed at 19:33 UTC: copied and verified the seven-file September 30 cold backup, then replaced its two large originals with verified volume links. Reclaimed 7.61 GB; root now has approximately 46.88 GB available. All old paths still resolve; the current October 20 recovery set was untouched.
 - [ ] **Adopt native metadata provenance and publication.** Waiting for replay and the first current native block witnesses. Actual readiness probes reject the historical source with `indexer_not_ready`; this is expected catch-up gating. The legacy metadata worker continues producing the active data.
@@ -49,10 +49,10 @@ Last checked: **22 October 2026, 23:53 UTC**. BNB's latest recorded checkpoint b
   - [x] Verify all 903 retained production public assets: 898 island PNGs, four fighter references and the soundtrack match the published hashes. This does not claim a new runtime attachment or film rendering.
   - [x] Pass the current-code genuine contract/Ponder/private-worker lifecycle, selected-source recovery and same-process reorg checks. Real local film assembly, settlement and claims passed; providers, NFT ownership and VRF responses remain explicit fixtures. All owned processes and fixture namespaces were cleaned up.
   - [x] Pass 13 actual PostgreSQL groups under eight dedicated nonowner worker roles. The finite grant omissions were identified and tested; this is local proof, not production role admission.
-  - [ ] Build and verify the offline deployment package using the retained dependency set and a separate relocated rebuild. Actual production-host build is running under its isolated bounded unit; the first typechecks, 79 credential controls, 21 protocol controls, ordinary build and runtime capture/verification have passed. Relocated checks and byte equality remain pending.
+  - [x] Build and verify the offline deployment package using the retained dependency set and a separate relocated rebuild. The actual production-host build completed successfully. Both sets of 79 credential controls and 21 protocol checks passed; the independently rebuilt runtime archives match. The package has not been installed or activated.
   - [ ] Qualify the installed candidate's constructor in the actual retained credential contexts. The new read-only operator passes 22 offline controls; no production constructor probe has run yet.
-  - [ ] Admit and qualify the dedicated production source and operational roles. Read-only inventory confirms all nine roles and their private overlay files are absent. Existing operational schema markers remain valid; no migration rerun is needed.
-  - [ ] Deploy the native replacement during the reviewed source adoption, then verify sustained startup and public API compatibility. Existing workers serve until that cutover.
+  - [ ] Admit and qualify the dedicated production source and operational roles. The concrete package and independent review cover 227 operational grant edges and 13 source reads; seven static controls pass. No production rehearsal or grants have been applied. All nine roles and their private overlay files remain absent. Existing operational schema markers remain valid; no migration rerun is needed.
+  - [ ] Implement the direct native cutover against the already committed schema, deploy the replacement, then verify sustained startup and public API compatibility. The new cutover must bind the actual installed package, role/authentication receipts and current canonical source. Existing workers serve until that cutover.
 - [ ] Adopt the compatible Arena workers onto native Ponder state, then verify accounting and recovery. The operational schema prerequisite is complete; native adoption is not. Do not rerun the completed owner migration.
 - [x] Publish the latest build corrections and exact historical source baseline. Commit `b270265` is pushed to the public branch; all 1,746 archived source hashes were verified and the extracted contents and current source corrections passed secret scans.
 - [ ] Compare public APIs, collection filters, metadata, rarity, search and Solana responses against their retained baselines.
@@ -68,4 +68,4 @@ Last checked: **22 October 2026, 23:53 UTC**. BNB's latest recorded checkpoint b
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next concrete deliverable:** a verified current consumer artifact and native Arena admission package. Shared collection reader switches remain queued behind replay. No further pack configuration or activation signature is needed now.
+**Next concrete deliverable:** install and qualify the verified consumer package, rehearse the reviewed dormant-role admission, and finish the direct native cutover implementation. Shared collection reader switches remain queued behind replay. No further pack configuration or activation signature is needed now.
