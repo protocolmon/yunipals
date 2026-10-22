@@ -113,3 +113,10 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/|!)docs/arena/public-deployment\.json$''']
 regexes = ['''^0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913$''']
+
+[[rules.allowlists]]
+description = "Exact public source digest of the retained credential package helper"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-modern-package-v1\.py$''']
+regexes = ['''^b5022fdd7a3b1b29d57681f872f7c014f70a21e165440d6ea37d221b6e8e0ff3$''']

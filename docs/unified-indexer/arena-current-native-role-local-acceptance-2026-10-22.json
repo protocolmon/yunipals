@@ -1,0 +1,118 @@
+{
+  "format": "arena-current-native-role-local-acceptance-v1",
+  "candidateManifestSha256": "a7ec13c29a7af5f37390fffabd27ce7c1b9aa8f8bb1b254f8fafe32123b13393",
+  "historicalProposalSha256": "b5e69cbae17bc07cf109e458c62344647b8d9bb6ad0049caa6352483a70cfb57",
+  "historicalCapabilitiesSha256": "9bd85a36a402571bf71b7ab81de360a8a6a6b2ffef5bc77431046e433a1e0527",
+  "testHarnessSha256": "2ffa013573887428e3194ae4d5ecb46144e91d05c99caf6c203b519b473a3a21",
+  "remainingFixtureRoles": 0,
+  "fixtureSchemaRemoved": true,
+  "completedCases": [
+    "Eight dedicated nonowner LOGIN sessions retain no owner membership, DDL, selectors or legacy public projection rights",
+    "Protected invoker-trigger functions need no direct worker EXECUTE or trigger-attachment authority",
+    "Current artwork queue proves historical API and worker graphs need finite modern identity_job additions",
+    "Intake and private history work under API role; executor freezes and disclosure uses immutable current identity dependencies",
+    "Referee reservations, trigger evidence and saved-provider recovery use only the dedicated provider role",
+    "Nonowner referee adjudication reuses its completed provider result and inserts only the current validated input",
+    "Signed intents preserve the same bytes, global nonce and receipt history across restart and orphaned opening",
+    "Current capacity sampler uses bounded media-observation reads and cannot inspect private prompts",
+    "Lobby executor persists an origin-free opening and binds its same signed action to the indexed opening",
+    "Client tracker preserves receipt history and same-hash recovery with separate API and tracker credentials",
+    "Media role recovers its known provider UUID without new requests during source outage",
+    "Media publication fires native binding triggers and atomically invalidates only its deployment capacity cache",
+    "A real owner source-selector change makes the old API actor refuse before any new private write"
+  ],
+  "findings": [
+    {
+      "kind": "historical-grant-gap",
+      "object": "api.identity_job",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "referee_provider.identity_job",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "capacity_sampler.media_job_observation",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "capacity_sampler.capacity_upsert",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "capacity_sampler.capacity_conflict_key",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "execution_lobby.identity_job_capacity",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "media_provider.capacity_invalidation",
+      "sqlstate": "42501"
+    },
+    {
+      "kind": "historical-grant-gap",
+      "object": "media_provider.cached_identity_artwork",
+      "sqlstate": "42501"
+    }
+  ],
+  "currentGrantDelta": [
+    {
+      "worker": "api",
+      "sql": "GRANT SELECT,INSERT ON TABLE yunipals_arena.identity_job TO LOCAL_ROLE",
+      "reason": "Modern queue resolve/status before payment"
+    },
+    {
+      "worker": "referee_provider",
+      "sql": "GRANT SELECT,UPDATE(state,updated_at,artwork,reserved_microusd,profile,provider_id,usage,profile_hash) ON TABLE yunipals_arena.identity_job TO LOCAL_ROLE",
+      "reason": "Modern cached one-result artwork worker; no delete/insert"
+    },
+    {
+      "worker": "capacity_sampler",
+      "sql": "GRANT SELECT(deployment,state,updated_at) ON TABLE yunipals_arena.media_job TO LOCAL_ROLE",
+      "reason": "Current sampler publication-race guard only"
+    },
+    {
+      "worker": "capacity_sampler",
+      "sql": "GRANT SELECT(snapshot,checked_at) ON TABLE yunipals_arena.capacity TO LOCAL_ROLE",
+      "reason": "PostgreSQL ON CONFLICT reads excluded snapshot/check time"
+    },
+    {
+      "worker": "capacity_sampler",
+      "sql": "GRANT SELECT(deployment) ON TABLE yunipals_arena.capacity TO LOCAL_ROLE",
+      "reason": "PostgreSQL conflict-key and own cache-delete predicate read"
+    },
+    {
+      "worker": "execution_lobby",
+      "sql": "GRANT SELECT ON TABLE yunipals_arena.identity_job TO LOCAL_ROLE",
+      "reason": "Modern capacity identity reservations"
+    },
+    {
+      "worker": "media_provider",
+      "sql": "GRANT DELETE ON TABLE yunipals_arena.capacity TO LOCAL_ROLE",
+      "reason": "Current publication invalidates stale capacity atomically"
+    },
+    {
+      "worker": "media_provider",
+      "sql": "GRANT SELECT ON TABLE yunipals_arena.identity_job TO LOCAL_ROLE",
+      "reason": "Current analyzed fighter artwork reference query"
+    }
+  ],
+  "unexpectedRealHttpRequests": 0,
+  "postgresVersion": "16.15 (Debian 16.15-1.pgdg13+2)",
+  "rolesCreated": 8,
+  "rolesDropped": 8,
+  "providerEffects": "Only in-process synthetic fetch/broadcast fixtures; no actual provider or chain requests.",
+  "limits": [
+    "OperationalroleDMLonly, not productionACLattestation or genuinePonderRPCbridge.",
+    "Syntheticpublicnativeobservations are retained existingfixtures; no canonical sourceDBwrites used to fabricate liveproof.",
+    "No frozenbusiness source, productionservices, Gitstate, globaldefaults or persistentroleschanged."
+  ]
+}

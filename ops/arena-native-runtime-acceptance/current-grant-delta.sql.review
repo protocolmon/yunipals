@@ -1,0 +1,28 @@
+-- REVIEW ONLY: finite current additions to the immutable historical proposal.
+-- These undeployed placeholder names are NOT production targets.
+-- Local PG16.15 nonowner-role evidence: arena-current-native-role-local-acceptance-v1.
+-- No LOGIN, ownership, memberships, migrations, selector writes, public source
+-- writes, durable-history DELETE or direct trigger-function EXECUTE is added.
+
+GRANT SELECT, INSERT ON TABLE yunipals_arena.identity_job
+  TO "REVIEW_ONLY_arena_api";
+GRANT SELECT, UPDATE (state, updated_at, artwork, reserved_microusd, profile,
+  provider_id, usage, profile_hash) ON TABLE yunipals_arena.identity_job
+  TO "REVIEW_ONLY_arena_referee_provider";
+GRANT SELECT ON TABLE yunipals_arena.identity_job
+  TO "REVIEW_ONLY_arena_lobby_executor";
+GRANT SELECT ON TABLE yunipals_arena.identity_job
+  TO "REVIEW_ONLY_arena_media_provider";
+
+-- PostgreSQL checks both the ON CONFLICT key and excluded values. The three
+-- column reads below were individually measured; the sampler gains no prompt,
+-- identity, provider-task, signed-intent or public-projection access.
+GRANT SELECT (deployment, snapshot, checked_at) ON TABLE yunipals_arena.capacity
+  TO "REVIEW_ONLY_arena_capacity_sampler";
+GRANT SELECT (deployment, state, updated_at) ON TABLE yunipals_arena.media_job
+  TO "REVIEW_ONLY_arena_capacity_sampler";
+
+-- The historical media role already SELECTs capacity. Publication deletes its
+-- stale deployment cache inside the same transaction as the publication record.
+GRANT DELETE ON TABLE yunipals_arena.capacity
+  TO "REVIEW_ONLY_arena_media_provider";

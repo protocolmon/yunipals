@@ -92,3 +92,22 @@ file. Public island images remain a separate retained asset set:
 Offline relocation, actual production asset/credential qualification and the
 runtime replacement remain separate gates. The completed operational schema
 migration must not be rerun.
+
+The source rebase and complete dynamic inputs are published in
+[`438bc23`](https://github.com/protocolmon/yunipals/commit/438bc23).
+The [modern offline builder](../../../ops/unified-indexer-transition/arena-modern-package-v1.md),
+[unselected installer](../../../ops/unified-indexer-transition/arena-modern-install-v1.md)
+and [constructor qualification](../../../ops/unified-indexer-transition/arena-modern-runtime-preflight-v1.md)
+retain distinct build, install and runtime gates. The package contains the full
+reviewed consumer source, including existing API changes; every changed known
+bundle must have its own changed frozen source inputs. Dependency and non-bundle
+bytes remain fixed. Its included proxy bundle is unselected and conveys no
+approval to replace the active ingestion service or RPC proxy.
+
+[Thirteen current restricted-role PostgreSQL groups](../arena-current-native-role-local-acceptance-2026-10-22.json)
+passed with eight dedicated nonowner roles, and all fixture roles were removed.
+The [finite grant supplement](../../../ops/arena-native-runtime-acceptance/current-grant-delta.sql.review)
+is an inert review document with placeholder role names; it has not been applied
+to production. [All 903 retained production public assets also match](../arena-modern-production-public-assets-check-2026-10-22.json).
+These results do not claim a production role admission, runtime replacement,
+native adoption or film-rendering result.

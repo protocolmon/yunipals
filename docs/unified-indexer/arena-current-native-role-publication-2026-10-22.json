@@ -1,0 +1,36 @@
+{
+  "format": "arena-current-native-role-publication-v1",
+  "files": [
+    {
+      "path": "ops/arena-native-runtime-acceptance/README.md",
+      "sha256": "352b98d4061aacf57ecebfc3361261026477e20619c6bac36a0b9c7191c4f835",
+      "bytes": 3146
+    },
+    {
+      "path": "ops/arena-native-runtime-acceptance/current-grant-delta.sql.review",
+      "sha256": "620640d5ffc16ae472eb9fae886b31282bddd8289a9c8eeb1a6f1e2172b4fb99",
+      "bytes": 1579
+    },
+    {
+      "path": "ops/arena-native-runtime-acceptance/roles.mjs",
+      "sha256": "2ffa013573887428e3194ae4d5ecb46144e91d05c99caf6c203b519b473a3a21",
+      "bytes": 36749
+    },
+    {
+      "path": "docs/unified-indexer/arena-current-native-role-local-acceptance-2026-10-22.json",
+      "sha256": "45655e5a81daf1b00133aeabd7688054d6b9f222177c6497446ca94d5a5c426c",
+      "bytes": 5384
+    }
+  ],
+  "log": {
+    "path": "/tmp/yunipals-arena-current-native-roles-20261022.log",
+    "sha256": "748683658a4c99844607677eba258e6a34b0e32b3bc7e3db33db3e75307fb929",
+    "bytes": 1727
+  },
+  "actualPostgresVersion": "16.15 (Debian 16.15-1.pgdg13+2)",
+  "passedGroups": 13,
+  "dedicatedNonownerRoles": 8,
+  "remainingRoles": 0,
+  "unexpectedRealHttpRequests": 0,
+  "frozenBusinessChanges": 0
+}
