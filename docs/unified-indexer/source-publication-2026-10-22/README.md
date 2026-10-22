@@ -111,3 +111,15 @@ is an inert review document with placeholder role names; it has not been applied
 to production. [All 903 retained production public assets also match](../arena-modern-production-public-assets-check-2026-10-22.json).
 These results do not claim a production role admission, runtime replacement,
 native adoption or film-rendering result.
+
+The current-source [genuine local lifecycle and same-process reorg proof](../arena-current-genuine-rpc-combined-acceptance-2026-10-22.json)
+subsequently passed. It covers real Anvil contracts, Ponder synchronization,
+selected-source startup/recovery, offline adjudication, real film assembly,
+settlement and claims. A separate run retained the same Ponder process across
+two replacement freezes and recovered the saved provider result without another
+POST. Provider responses, Ethereum ownership and controlled VRF remain fixtures;
+the combined lifecycle uses the owner test role, while the separate restricted-role
+suite verifies nonowner DML. The [public source and evidence archive](arena-current-genuine-rpc-combined-acceptance.tar.gz)
+preserves the successful runs and the explicitly diagnosed fixture-only failure.
+All owned children and fixture namespaces were removed. No production runtime
+or source adoption follows from these local results.

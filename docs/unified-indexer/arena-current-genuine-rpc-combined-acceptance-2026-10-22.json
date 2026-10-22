@@ -1,0 +1,569 @@
+{
+  "binary": {
+    "anvilSha256": "10c1c727d6c1de973aeb160e59875b9a9a23464d6e74149ee8abb30b3500311b",
+    "anvilVersion": "1.7.1",
+    "nodeVersion": "24.18.1",
+    "ponderVersion": "0.17.5",
+    "postgresVersion": "16.15"
+  },
+  "boundaries": [
+    "Actual local contract/Ponder/canonical/private worker chain, not a handler receipt feed.",
+    "Actual selected-source startup/refusal and matching restart; current-source same-live-Ponder freeze reorg recovery.",
+    "Provider and Ethereum ownership responses are explicit fixtures; VRF/currency/NFT contracts are mocks.",
+    "Real offline adjudication and ffmpeg assembly; no provider billing/quality claim.",
+    "No production/Git/permissions changes, no mainnet broadcasts or live provider calls.",
+    "All frozen1293 candidate files and historical evidence unchanged.",
+    "Owner test role used for the combined fixture; separate13-group actual dedicated-role proof covers restricted DML."
+  ],
+  "candidatePayload": {
+    "manifestSha256": "a7ec13c29a7af5f37390fffabd27ce7c1b9aa8f8bb1b254f8fafe32123b13393",
+    "mismatches": 0,
+    "payloadFiles": 1293
+  },
+  "checkedAt": "2026-10-22T23:48:08.039613+00:00",
+  "format": "arena-current-genuine-rpc-combined-acceptance-v1",
+  "historicalTransformations": [
+    {
+      "path": "ops/unified-indexer-transition/arena-genuine-rpc-v10.py",
+      "sha256": "3ce778eb9498433760d0bb2b70f00ada9f015a3dd59d13b2a2ee14ae67375093"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-live-reorg-v1.py",
+      "sha256": "8e741fd4bb4099d50a23e71601dc5ba4ca2568cc6106c91e951a27a154651dcf"
+    }
+  ],
+  "passedAttempts": {
+    "a": {
+      "cleanup": {
+        "attempt": "a",
+        "checkedAt": "2026-10-22T23:43:56.541Z",
+        "operationalSchemaRemovedReceipt": true,
+        "ownedChildrenAbsent": true,
+        "ownedNativeNamespaceAbsent": true,
+        "ownedReleaseRows": 0,
+        "remainingArenaRpcNamespaces": 1
+      },
+      "networkGuardSha256": "d2f627891bcb0beb8e8a3df1fb152745832f13ae0e3af4f12a24cc405a281d22",
+      "result": {
+        "children": [
+          {
+            "exitCode": 0,
+            "pid": 2310714
+          },
+          {
+            "exitCode": 0,
+            "pid": 2310720
+          }
+        ],
+        "elapsedSeconds": 68.349,
+        "format": "arena-current-genuine-rpc-local-v1",
+        "mainnetTransactions": 0,
+        "passed": true,
+        "productionCalls": 0,
+        "providerCalls": 0,
+        "report": {
+          "actualPonderBuild": "fadb56f040",
+          "actualPonderManifest": "0x09799dc92b423b0d96abec6ed7d4940c76ce1f1b901a8d2b81f572ffcfdc2ac8",
+          "arenaRuntimeCodeHash": "0x4b1f6346fe2b51c67e11a553bfd0b1f588ba99ce745e7391d84dd74ed59d4b38",
+          "chain": "Anvil 8453, loopback only",
+          "checkedAt": "2026-10-22T23:40:00.695Z",
+          "checks": [
+            "real contract and wallet-signed native calls",
+            "actual Ponder RPC synchronization, native checkpoints and restart-based reorg recovery",
+            "shorter-tip source unavailability and replacement-tip recovery",
+            "entry origin proofs, approval block witnesses and changed inclusion rejection",
+            "opening re-inclusion retains both origins/receipts",
+            "same-byte freeze replay retains encrypted input and withholds stale disclosure",
+            "native settlement and payout progress without extra confirmations",
+            "native credits match contract claims and return to zero",
+            "native client entry, approval and zero-balance claim tracking",
+            "native referee scheduling, scoped action proof, budget check and actual offline adjudication",
+            "nine scoped media tasks, real ffmpeg assembly, publication integrity, exact repair and native scheduling",
+            "published-film hash verified against the contract at a canonical latest head"
+          ],
+          "compilerVersion": "0.8.30+commit.73712a01",
+          "controlledMockVrfWord": "1186",
+          "fixtureClockRefresh": {
+            "after": {
+              "ageMilliseconds": 762,
+              "blockHash": "0xf01e1861a07b18e37e29b3e0c8ec695cca50973759b94f2ad7149762812665ee",
+              "blockNumber": "27",
+              "timestampSeconds": "1792712390",
+              "wallMilliseconds": 1792712390762
+            },
+            "before": {
+              "ageMilliseconds": 20624,
+              "blockHash": "0x869b2799f66cfcd562352fc9bd9443d428aa73b51fc82e81bb91495c88fd0db6",
+              "blockNumber": "26",
+              "timestampSeconds": "1792712370",
+              "wallMilliseconds": 1792712390624
+            },
+            "blocksMined": 1,
+            "earlierNoExtraConfirmationAssertionPreserved": true,
+            "genuineSourceSyncCompleted": true,
+            "productionFreshnessWindowMilliseconds": 120000,
+            "reason": "offline_media_elapsed",
+            "targetTimestampSeconds": "1792712390"
+          },
+          "limitations": [
+            "Controlled Ponder outage/restart reorg recovery, not uninterrupted same-process recovery",
+            "mock currency, islands and VRF wrapper; bounded chosen word targets recorded island195, no randomness-quality claim",
+            "Ethereum NFT ownership point responses are fixture-only; Base action checks use actual Anvil",
+            "recorded reviewed NFT metadata and offline referee validation",
+            "synthetic color/motion/audio and stubbed provider responses; no media quality assessment",
+            "no production runtime grants, replay or cutover"
+          ],
+          "mainnetTransactions": 0,
+          "mediaFilmSha256": "e9c1fdd6448c6e9f5aea3edcfdde975492cefe145ab8a77e15db428f531d95de",
+          "metadataLoads": 4,
+          "minedTransactions": 30,
+          "nativeSchema": "arena_rpc_534b1ac32619ed99",
+          "operationalProjectionRows": 0,
+          "pilotIslandTokenId": "195",
+          "privateRestartSnapshotSha256": "44a88a2335617adb71e53cf4aaac6be0b8997e30f8d29ab15b105265ee8f6c54",
+          "providerRequests": 0,
+          "realPonderForcedStops": 0,
+          "realPonderRestartCount": 4,
+          "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+          "sourceSelectionRecovery": {
+            "actualImmutableReview": true,
+            "matchingRestartRecovered": true,
+            "privateSnapshotSha256": "cf3e8220b55155f814a9867bad699069daa7225bc60d2928a0964d4d06e4bc59",
+            "unboundOldActorRefused": true,
+            "wrongSourceStartupRefused": true
+          },
+          "status": "passed",
+          "stubbedMediaRequests": 9,
+          "stubbedRefereeRequests": 1,
+          "verifiedSoliditySources": 55
+        }
+      },
+      "unchangedNativeHandlersAndSchemas": [
+        {
+          "path": "src/arena.ts",
+          "sha256": "d6bf70c5386202b185b105f33b12a335203686cb8e4cdd3bd5ff2a4e6b23ecfd"
+        },
+        {
+          "path": "src/boosters.ts",
+          "sha256": "a31315d28ff0e5f4078a435c890cf9f8dcf008288f004c163191363c138209a9"
+        },
+        {
+          "path": "ponder.schema.ts",
+          "sha256": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6"
+        },
+        {
+          "path": "lib/arena/state.ts",
+          "sha256": "df7245433631cee59f48d5faaf5af0d8e6c06b7538ad3455351c0ce83f978d67"
+        },
+        {
+          "path": "lib/ownership/transfer.ts",
+          "sha256": "da3bb97ebf1076eb598a00df4926018fc9a5fa9eedd6369ec5fef8b9efd11b6d"
+        },
+        {
+          "path": "lib/unified/handlers.ts",
+          "sha256": "da3b60fe7b440f6f7c7da2aee3982b44a4acd032ce64cc6f97788ff2136b4ce1"
+        },
+        {
+          "path": "lib/unified/schema.ts",
+          "sha256": "6af84033b42ab85f696adcc9c069dfde6c184cdbed5ed71cbbcc01baa6d33d80"
+        },
+        {
+          "path": "lib/boosters/schema.ts",
+          "sha256": "f2ca42ad5b390b22251784dbdb1dc9df801d2a683e1cc187e803930c6254e348"
+        }
+      ]
+    },
+    "c": {
+      "cleanup": {
+        "attempt": "c",
+        "checkedAt": "2026-10-22T23:44:57.957Z",
+        "operationalSchemaRemovedReceipt": true,
+        "ownedChildrenAbsent": true,
+        "ownedNativeNamespaceAbsent": true,
+        "ownedReleaseRows": 0,
+        "remainingArenaRpcNamespaces": 0
+      },
+      "networkGuardSha256": "d2f627891bcb0beb8e8a3df1fb152745832f13ae0e3af4f12a24cc405a281d22",
+      "result": {
+        "children": [
+          {
+            "exitCode": 0,
+            "pid": 2316664
+          },
+          {
+            "exitCode": 0,
+            "pid": 2316670
+          }
+        ],
+        "elapsedSeconds": 68.244,
+        "format": "arena-current-genuine-rpc-local-v1",
+        "mainnetTransactions": 0,
+        "passed": true,
+        "productionCalls": 0,
+        "providerCalls": 0,
+        "report": {
+          "actualPonderBuild": "1d69240ff3",
+          "actualPonderManifest": "0xa842dd8e3d3384290a5b7acd0dabacb31bc2a887b4f08087ddf721bd884670e0",
+          "arenaRuntimeCodeHash": "0x35b1a4fb74f695d5c82f5a1b6c17ce410a751e067a0636ac2d431b68eb7e24db",
+          "chain": "Anvil 8453, loopback only",
+          "checkedAt": "2026-10-22T23:44:01.638Z",
+          "checks": [
+            "real contract and wallet-signed native calls",
+            "actual Ponder RPC synchronization, native checkpoints and restart-based reorg recovery",
+            "shorter-tip source unavailability and replacement-tip recovery",
+            "entry origin proofs, approval block witnesses and changed inclusion rejection",
+            "opening re-inclusion retains both origins/receipts",
+            "same-byte freeze replay retains encrypted input and withholds stale disclosure",
+            "native settlement and payout progress without extra confirmations",
+            "native credits match contract claims and return to zero",
+            "native client entry, approval and zero-balance claim tracking",
+            "native referee scheduling, scoped action proof, budget check and actual offline adjudication",
+            "nine scoped media tasks, real ffmpeg assembly, publication integrity, exact repair and native scheduling",
+            "published-film hash verified against the contract at a canonical latest head"
+          ],
+          "compilerVersion": "0.8.30+commit.73712a01",
+          "controlledMockVrfWord": "458",
+          "fixtureClockRefresh": {
+            "after": {
+              "ageMilliseconds": 925,
+              "blockHash": "0xbc79fb17bddddcce0321c1473311ae6a3f10eab976049c2ed20a9f6b4986027f",
+              "blockNumber": "27",
+              "timestampSeconds": "1792712630",
+              "wallMilliseconds": 1792712630925
+            },
+            "before": {
+              "ageMilliseconds": 19662,
+              "blockHash": "0xce57b55f82272ff9fb0640a5a1f691a5aa8220a65fbb4072cdf67b8a55e1a444",
+              "blockNumber": "26",
+              "timestampSeconds": "1792712611",
+              "wallMilliseconds": 1792712630662
+            },
+            "blocksMined": 1,
+            "earlierNoExtraConfirmationAssertionPreserved": true,
+            "genuineSourceSyncCompleted": true,
+            "productionFreshnessWindowMilliseconds": 120000,
+            "reason": "offline_media_elapsed",
+            "targetTimestampSeconds": "1792712630"
+          },
+          "limitations": [
+            "Controlled Ponder outage/restart reorg recovery, not uninterrupted same-process recovery",
+            "mock currency, islands and VRF wrapper; bounded chosen word targets recorded island195, no randomness-quality claim",
+            "Ethereum NFT ownership point responses are fixture-only; Base action checks use actual Anvil",
+            "recorded reviewed NFT metadata and offline referee validation",
+            "synthetic color/motion/audio and stubbed provider responses; no media quality assessment",
+            "no production runtime grants, replay or cutover"
+          ],
+          "mainnetTransactions": 0,
+          "mediaFilmSha256": "e9c1fdd6448c6e9f5aea3edcfdde975492cefe145ab8a77e15db428f531d95de",
+          "metadataLoads": 4,
+          "minedTransactions": 30,
+          "nativeSchema": "arena_rpc_cdc58f5ac0abcef3",
+          "operationalProjectionRows": 0,
+          "pilotIslandTokenId": "195",
+          "privateRestartSnapshotSha256": "3814f8c40136ff13cdbc31b8423e6c59cc40be8752fb988336e81d4bf8e00617",
+          "providerRequests": 0,
+          "realPonderForcedStops": 0,
+          "realPonderRestartCount": 4,
+          "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+          "sourceSelectionRecovery": {
+            "actualImmutableReview": true,
+            "fullLifecycleInitiallyBound": true,
+            "matchingRestartRecovered": true,
+            "privateSnapshotSha256": "cb814a7d40e6bb24953d51751bbef6ce1b86dca51d10b3eddda6cf37990bd3a4",
+            "unboundOldActorRefused": true,
+            "wrongSourceStartupRefused": true
+          },
+          "status": "passed",
+          "stubbedMediaRequests": 9,
+          "stubbedRefereeRequests": 1,
+          "verifiedSoliditySources": 55
+        }
+      },
+      "unchangedNativeHandlersAndSchemas": [
+        {
+          "path": "src/arena.ts",
+          "sha256": "d6bf70c5386202b185b105f33b12a335203686cb8e4cdd3bd5ff2a4e6b23ecfd"
+        },
+        {
+          "path": "src/boosters.ts",
+          "sha256": "a31315d28ff0e5f4078a435c890cf9f8dcf008288f004c163191363c138209a9"
+        },
+        {
+          "path": "ponder.schema.ts",
+          "sha256": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6"
+        },
+        {
+          "path": "lib/arena/state.ts",
+          "sha256": "df7245433631cee59f48d5faaf5af0d8e6c06b7538ad3455351c0ce83f978d67"
+        },
+        {
+          "path": "lib/ownership/transfer.ts",
+          "sha256": "da3bb97ebf1076eb598a00df4926018fc9a5fa9eedd6369ec5fef8b9efd11b6d"
+        },
+        {
+          "path": "lib/unified/handlers.ts",
+          "sha256": "da3b60fe7b440f6f7c7da2aee3982b44a4acd032ce64cc6f97788ff2136b4ce1"
+        },
+        {
+          "path": "lib/unified/schema.ts",
+          "sha256": "6af84033b42ab85f696adcc9c069dfde6c184cdbed5ed71cbbcc01baa6d33d80"
+        },
+        {
+          "path": "lib/boosters/schema.ts",
+          "sha256": "f2ca42ad5b390b22251784dbdb1dc9df801d2a683e1cc187e803930c6254e348"
+        }
+      ]
+    },
+    "d": {
+      "cleanup": {
+        "attempt": "d",
+        "checkedAt": "2026-10-22T23:46:20.895Z",
+        "operationalSchemaRemovedReceipt": true,
+        "ownedChildrenAbsent": true,
+        "ownedNativeNamespaceAbsent": true,
+        "ownedReleaseRows": 0,
+        "remainingArenaRpcNamespaces": 0
+      },
+      "networkGuardSha256": "d2f627891bcb0beb8e8a3df1fb152745832f13ae0e3af4f12a24cc405a281d22",
+      "result": {
+        "children": [
+          {
+            "exitCode": 0,
+            "pid": 2320204
+          },
+          {
+            "exitCode": 0,
+            "pid": 2320210
+          }
+        ],
+        "elapsedSeconds": 26.252,
+        "format": "arena-current-genuine-rpc-local-v1",
+        "mainnetTransactions": 0,
+        "passed": true,
+        "productionCalls": 0,
+        "providerCalls": 0,
+        "report": {
+          "actualPonderBuild": "e6c33c6788",
+          "actualPonderManifest": "0x012edd5e473b65f05cb5b79f353a36f45f7f218f4e4fecbae6eed954b494f7c3",
+          "checkedAt": "2026-10-22T23:45:42.488Z",
+          "checks": [
+            "same PID/start across two real Ponder RPC reorgs",
+            "orphaned reserved work cannot POST",
+            "re-inclusion requires new disclosure",
+            "same UUID/reservation/ciphertext/signed intent",
+            "saved response retrieval while orphaned",
+            "no adjudication or settlement on orphan branch",
+            "revalidated same-input result applied without replacement POST",
+            "immutable historical provider action proof"
+          ],
+          "ciphertextSha256": "2f28c8abdb0c7399ce57437ab054183b71e9b958a54408826f547bb790bb8229",
+          "durablePrivateSha256": "b46cea7015f08dd27c1f57d112a5c0b3e5d164e1e5d19d912a5ac154b735bcfb",
+          "externalEffectInvariantsAccepted": true,
+          "frozenBranches": [
+            "0xbaf0e267351487321c4a239653859c9bf3df343a143b6096249bb5ae042ccbc3",
+            "0x654e58fd4e3ccb470b66e2e7d26959dab71c5b0b6d3592a087a4aafa0a834a82",
+            "0xd170b865e4b582588103540b880594fc6e7126fb8d2a6a2f4972713020c413a9"
+          ],
+          "fullLifecycleInitiallyBound": true,
+          "limitations": [
+            "isolated Anvil and mock contracts/controlled VRF",
+            "Ethereum ownership responses are fixture-only",
+            "provider responses stubbed, no billing or quality claim",
+            "no film rendering or production role/startup acceptance"
+          ],
+          "mainnetTransactions": 0,
+          "metadataLoads": 4,
+          "minedTransactions": 25,
+          "modeledActualChargeMicrousd": null,
+          "nativeSchema": "arena_rpc_edb87be811a3a041",
+          "processIdentity": {
+            "generation": 1,
+            "pid": 2320257,
+            "startTicks": "2233526753",
+            "stops": 0
+          },
+          "providerRequestIdSha256": "53b69e0ca08efe2197ce838cc73b857835d037ea9d56cce9ad5ad6035668e797",
+          "providerRequests": 0,
+          "providerRetrievals": 1,
+          "providerTaskSha256": "bcccdc87a33835276ba774cda5be06b833f5f46fb67af36e44b1482a67563a51",
+          "realPonderForcedStops": 0,
+          "realPonderRestartCount": 0,
+          "reservationMicrousd": 700000,
+          "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+          "samePonderProcessAcrossBothReorgs": true,
+          "scope": "same_live_ponder_freeze_reorg_external_effect_reconciliation",
+          "signedIntentSha256": "d029fa472a448d588079fc442a14a3a6731380eb16b531a0caefd4f4286a8b93",
+          "status": "passed",
+          "stubbedMediaRequests": 0,
+          "stubbedRefereeRequests": 1,
+          "verifiedSoliditySources": 55
+        }
+      },
+      "unchangedNativeHandlersAndSchemas": [
+        {
+          "path": "src/arena.ts",
+          "sha256": "d6bf70c5386202b185b105f33b12a335203686cb8e4cdd3bd5ff2a4e6b23ecfd"
+        },
+        {
+          "path": "src/boosters.ts",
+          "sha256": "a31315d28ff0e5f4078a435c890cf9f8dcf008288f004c163191363c138209a9"
+        },
+        {
+          "path": "ponder.schema.ts",
+          "sha256": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6"
+        },
+        {
+          "path": "lib/arena/state.ts",
+          "sha256": "df7245433631cee59f48d5faaf5af0d8e6c06b7538ad3455351c0ce83f978d67"
+        },
+        {
+          "path": "lib/ownership/transfer.ts",
+          "sha256": "da3bb97ebf1076eb598a00df4926018fc9a5fa9eedd6369ec5fef8b9efd11b6d"
+        },
+        {
+          "path": "lib/unified/handlers.ts",
+          "sha256": "da3b60fe7b440f6f7c7da2aee3982b44a4acd032ce64cc6f97788ff2136b4ce1"
+        },
+        {
+          "path": "lib/unified/schema.ts",
+          "sha256": "6af84033b42ab85f696adcc9c069dfde6c184cdbed5ed71cbbcc01baa6d33d80"
+        },
+        {
+          "path": "lib/boosters/schema.ts",
+          "sha256": "f2ca42ad5b390b22251784dbdb1dc9df801d2a683e1cc187e803930c6254e348"
+        }
+      ]
+    }
+  },
+  "preservedFailedAttempt": {
+    "attempt": "b",
+    "cleanup": {
+      "attempt": "b",
+      "checkedAt": "2026-10-22T23:44:56.168Z",
+      "operationalSchemaRemovedReceipt": true,
+      "ownedChildrenAbsent": true,
+      "ownedNativeNamespaceAbsent": null,
+      "ownedReleaseRows": null,
+      "remainingArenaRpcNamespaces": 0
+    },
+    "diagnosis": "Test-only second selected-source switch used INSERT rather than UPDATE; actual predecessor guard correctly refused. Corrected only in fresh c fixture, no business changes.",
+    "result": {
+      "children": [
+        {
+          "exitCode": 0,
+          "pid": 2314198
+        },
+        {
+          "exitCode": 1,
+          "pid": 2314204
+        }
+      ],
+      "elapsedSeconds": 49.261,
+      "errorClass": "RuntimeError",
+      "errorCode": "Fixture nonzero exit",
+      "format": "arena-current-genuine-rpc-local-v1",
+      "mainnetTransactions": 0,
+      "passed": false,
+      "productionCalls": 0,
+      "providerCalls": 0
+    }
+  },
+  "publicSources": [
+    {
+      "bytes": 11954,
+      "path": "apps/yunipals-indexer/scripts/fixtures/arena-rpc-postgres-current-live-local.mjs",
+      "sha256": "1bee80f00a02059391baa1930d1650c6c240ac566bba575aed3e8ee32e5d0674"
+    },
+    {
+      "bytes": 11345,
+      "path": "apps/yunipals-indexer/scripts/fixtures/arena-rpc-postgres-current-local.mjs",
+      "sha256": "473cbab99dac6ded36b46aac4edf7ba2e965163c3cea47aed812888a0195eba7"
+    },
+    {
+      "bytes": 8196,
+      "path": "apps/yunipals-indexer/scripts/fixtures/unified-rpc-project-current-local.mjs",
+      "sha256": "4316e82ea7329c5f06c3337e662384a30e594494bc54f2b9dd29763c8cf06bca"
+    },
+    {
+      "bytes": 35996,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-genuine-rpc-local.mjs",
+      "sha256": "14d04efe4fa0be8d0362b5dc569562f35b125a9336fff03da42f7d1c9aeb026a"
+    },
+    {
+      "bytes": 37224,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-genuine-rpc-local.mjs",
+      "sha256": "25b59f3989437f449a2dd576a9fc7e77900032e01c88f404e10d3ef29a920f0d"
+    },
+    {
+      "bytes": 30468,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-live-reorg-local.mjs",
+      "sha256": "e57be2afcf9a0ed9c1b3a915c3f61e875ab2d64bd678e9889a96e83de08e6e64"
+    },
+    {
+      "bytes": 37220,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-v2-genuine-rpc-local.mjs",
+      "sha256": "18b5562579146bca89ee5a2cbd29a337540f3fffe6ea28fd1e2427fb1b467572"
+    },
+    {
+      "bytes": 1936,
+      "path": "ops/arena-current-genuine-rpc/README-live.md",
+      "sha256": "970dc9e9b7d7bcfdb9e5476ce6fb759c72ce452b35aa31f91d3d6e9ff0454a6a"
+    },
+    {
+      "bytes": 2615,
+      "path": "ops/arena-current-genuine-rpc/README.md",
+      "sha256": "9ed5d4ae11e62ff7a15a1a7a5c14449278f266524b33c6ba44329da4ac7288ec"
+    },
+    {
+      "bytes": 1872,
+      "path": "ops/arena-current-genuine-rpc/cleanup-check.mjs",
+      "sha256": "f275aaada71210dfe310a5f85a10754bcfd3238389fc8186ba76052f88862c7e"
+    },
+    {
+      "bytes": 2485,
+      "path": "ops/arena-current-genuine-rpc/prepare-live.py",
+      "sha256": "97355c793b6e522c8f21e2a457521d1a0d8dcb1b1777cc54e7ef6e1c40cad05b"
+    },
+    {
+      "bytes": 5954,
+      "path": "ops/arena-current-genuine-rpc/prepare.py",
+      "sha256": "1eafe4cf06d36b14a1c264e029c6bd8d877f6b2cfcdba05cacde02fe569ac99c"
+    },
+    {
+      "bytes": 6709,
+      "path": "ops/arena-current-genuine-rpc/run-live.py",
+      "sha256": "e420358fe0953d15fe73c42d9414ede23581cc0ecc477c5b8cb5d1d6a2faafac"
+    },
+    {
+      "bytes": 6713,
+      "path": "ops/arena-current-genuine-rpc/run-selected-v2.py",
+      "sha256": "e6b078466322c76268d766d47477416b195c24dad6d75ef908236799733df5a5"
+    },
+    {
+      "bytes": 6710,
+      "path": "ops/arena-current-genuine-rpc/run-selected.py",
+      "sha256": "00f6b392b179e05e473f06e336d60de4c66edae8182dfca7522ea7470cdd06d6"
+    },
+    {
+      "bytes": 6701,
+      "path": "ops/arena-current-genuine-rpc/run.py",
+      "sha256": "c0dfda0db42f8f28f76e94d9fb294ad4292b6346f14a5f166ac6a44089f3ab98"
+    }
+  ],
+  "sameProcessPonderAbsentAfterCleanup": true,
+  "status": "passed",
+  "terminal": {
+    "checkedAt": "2026-10-22T23:46:52.036Z",
+    "operationalSchemaAbsent": true,
+    "ports": [
+      {
+        "closed": true,
+        "port": 55446
+      },
+      {
+        "closed": true,
+        "port": 55447
+      }
+    ]
+  }
+}
