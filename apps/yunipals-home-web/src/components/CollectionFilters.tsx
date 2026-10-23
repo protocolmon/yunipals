@@ -33,6 +33,7 @@ import {
   type TokenMetadataFilter
 } from "@/lib/yunipalsIndexer";
 import { cn } from "@/lib/utils";
+import type { CollectionEdition } from "@/lib/collectionEdition";
 
 const TRAIT_PRIORITY = [
   "Type",
@@ -50,6 +51,8 @@ const TRAIT_PRIORITY = [
 ];
 
 type FilterPanelProps = {
+  edition?: CollectionEdition;
+  onEditionChange?: (edition: CollectionEdition) => void;
   filters: CollectionFilters;
   facets?: CollectionFacets;
   facetsLoading?: boolean;
@@ -446,11 +449,13 @@ function TraitSection({
   facet,
   filters,
   defaultOpen,
+  showCounts = true,
   onChange
 }: {
   facet: CategoricalTraitFacet;
   filters: CollectionFilters;
   defaultOpen: boolean;
+  showCounts?: boolean;
   onChange: (filters: CollectionFilters) => void;
 }) {
   const [search, setSearch] = useState("");
@@ -543,9 +548,11 @@ function TraitSection({
                 >
                   {value}
                 </span>
-                <span className="shrink-0 text-xs font-semibold tabular-nums text-muted">
-                  {formatInteger(count)}
-                </span>
+                {showCounts && (
+                  <span className="shrink-0 text-xs font-semibold tabular-nums text-muted">
+                    {formatInteger(count)}
+                  </span>
+                )}
               </label>
             );
           })}
@@ -573,6 +580,8 @@ function TraitSection({
 }
 
 export function CollectionFilterPanel({
+  edition,
+  onEditionChange,
   filters,
   facets,
   facetsLoading,
@@ -615,6 +624,30 @@ export function CollectionFilterPanel({
         className
       )}
     >
+      {edition && onEditionChange && (
+        <fieldset className="border-b border-line p-4">
+          <legend className="sr-only">Collection edition</legend>
+          <p className="mb-3 text-sm font-black text-ink">Collection</p>
+          <div className="grid grid-cols-2 gap-1 rounded-full bg-line/50 p-1">
+            {(["og", "tcg"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={edition === value}
+                onClick={() => onEditionChange(value)}
+                className={cn(
+                  "min-h-11 rounded-full px-4 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2",
+                  edition === value
+                    ? "bg-ethereum text-white shadow-sm"
+                    : "text-muted hover:text-ink"
+                )}
+              >
+                {value.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-4">
         <div className="flex items-center gap-2">
           <Filter aria-hidden="true" className="text-ethereum" size={17} />
@@ -636,7 +669,7 @@ export function CollectionFilterPanel({
         )}
       </div>
 
-      {showChainFilter && (
+      {showChainFilter && edition !== "tcg" && (
         <ChainFilter
           filters={filters}
           onChange={onChange}
@@ -651,18 +684,22 @@ export function CollectionFilterPanel({
           priceMode={priceMode}
         />
       )}
-      <RarityFilter
-        filters={filters}
-        min={rarityFacet?.min}
-        max={rarityFacet?.max}
-        onChange={onChange}
-      />
-      {/* Solana metadata totals include burned assets; omit misleading counts. */}
-      <MetadataFilter
-        filters={filters}
-        facets={includesSolana(filters) ? undefined : facets}
-        onChange={onChange}
-      />
+      {edition !== "tcg" && (
+        <>
+          <RarityFilter
+            filters={filters}
+            min={rarityFacet?.min}
+            max={rarityFacet?.max}
+            onChange={onChange}
+          />
+          {/* Solana metadata totals include burned assets; omit misleading counts. */}
+          <MetadataFilter
+            filters={filters}
+            facets={includesSolana(filters) ? undefined : facets}
+            onChange={onChange}
+          />
+        </>
+      )}
 
       {facetsLoading && (
         <div className="space-y-2 p-4" aria-label="Loading trait filters">
@@ -705,6 +742,7 @@ export function CollectionFilterPanel({
           facet={facet}
           filters={filters}
           defaultOpen={index < 2}
+          showCounts={edition !== "tcg"}
           onChange={onChange}
         />
       ))}
@@ -723,6 +761,8 @@ type MobileFilterDrawerProps = Omit<
 };
 
 export function MobileFilterDrawer({
+  edition,
+  onEditionChange,
   open,
   filters,
   facets,
@@ -822,6 +862,8 @@ export function MobileFilterDrawer({
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
           <CollectionFilterPanel
+            edition={edition}
+            onEditionChange={onEditionChange}
             filters={draft}
             facets={facets}
             facetsLoading={facetsLoading}

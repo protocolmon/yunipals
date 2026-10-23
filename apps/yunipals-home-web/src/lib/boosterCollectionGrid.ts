@@ -3,7 +3,10 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 
 import { environment } from "@/environment";
 import type { BoosterPage } from "@/lib/boosters";
-import type { CollectionToken } from "@/lib/collectionBrowser";
+import type {
+  CollectionToken,
+  CollectionFacets
+} from "@/lib/collectionBrowser";
 import type { CollectionFilters } from "@/lib/collectionBrowserFilters";
 import type { CollectorFilters } from "@/lib/collector";
 
@@ -22,6 +25,22 @@ const types = [
 ];
 const colors = ["Yellow", "Green", "Blue", "Red", "Purple", "Black"];
 const horns = ["Spiral", "Diamond"];
+const tcgTraitChoices: [string, string[]][] = [
+  ["Type", types],
+  ["Color", colors],
+  ["Horn", horns],
+  ["Glitter", ["No", "Yes"]]
+];
+// Catalog choices, not counts of minted NFTs. TCG filters omit count badges.
+export const tcgCollectionFacets: CollectionFacets = {
+  items: tcgTraitChoices.map(([traitType, values]) => ({
+    kind: "categorical" as const,
+    traitType,
+    values: values.map((value) => ({ value, count: 0 }))
+  })),
+  metadata: { available: 0, missing: 0 },
+  updatedAt: ""
+};
 export type CollectionGridItem<T extends CollectionToken = CollectionToken> =
   | { kind: "original"; token: T }
   | { kind: "pack"; monster: BoosterMonster };

@@ -1,0 +1,65 @@
+{
+  "format": "yunipals-og-tcg-collection-filter-v1",
+  "preparedAt": "2026-10-23T11:19:47.749Z",
+  "default": "og",
+  "queryParameter": "edition",
+  "values": [
+    "og",
+    "tcg"
+  ],
+  "storageKey": "yunipals.collection.filters.v1",
+  "remembered": "full canonical filter query",
+  "precedence": "explicit query, then saved filters on a bare URL, then OG defaults",
+  "editionChange": "resets other filters before switching collection",
+  "sourceIsolation": {
+    "og": "existing OG APIs only",
+    "tcg": "Base pack NFT API only"
+  },
+  "tcgTraits": [
+    "Type",
+    "Color",
+    "Horn",
+    "Glitter"
+  ],
+  "typecheckPassed": true,
+  "existingGridChecksPassed": true,
+  "independentReviewPassed": true,
+  "browserChecks": [
+    "new visitor defaults OG, query+storage match, OG grid has no TCG requests/cards",
+    "TCG is exclusive and has only Type/Color/Horn/Glitter filters",
+    "full trait selection and TCG survive reload and bare collection visits",
+    "explicit shared OG query overrides saved TCG and traits",
+    "back and forward restore the actual edition",
+    "same-route Collection navigation remembers latest selection",
+    "mobile drawer toggles, applies traits, stores query and fits viewport",
+    "blocked local storage preserves explicit TCG links and OG default"
+  ],
+  "browserErrors": [],
+  "manifestSha256": "edfb0f3ff765f5dd1bfe9cf309008b5f6f87ced422e25503fa51cb788c5a4fe5",
+  "scans": {
+    "sourceFindings": 0,
+    "buildFindings": 7,
+    "allBuildCandidatesAlreadyPublished": true,
+    "privateCredentialsFound": 0
+  },
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/collectionEdition.ts",
+      "sha256": "934287fc0d0855dd25993b016175c05f8586b0ae9a14e5bf3371085df3220815"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/components/CollectionFilters.tsx",
+      "sha256": "52a17433ed3236644aff1407a34899228da01c5ffaf54bec2ae9638f81d71f4d"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterCollectionGrid.ts",
+      "sha256": "4eaeb1d43a76593bbda6b03f4507c8ae12316995048addafa0dcfa4284c575d9"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/collection/page.tsx",
+      "sha256": "a7995e163d7392af7ca2c8098c4d9e6a6e38e21861d7a0d83baca154433070b9"
+    }
+  ],
+  "walletConnections": 0,
+  "transactions": 0
+}
