@@ -9,11 +9,16 @@ import { parseArgs } from "node:util";
 const { values } = parseArgs({
   options: {
     mode: { type: "string", default: "prebuilt" },
-    "legacy-proto": { type: "boolean", default: false }
+    "legacy-proto": { type: "boolean", default: false },
+    "ypal-confirmed-sha": { type: "string" }
   }
 });
 if (!["prebuilt", "vercel-cloud"].includes(values.mode))
   throw Error("Use prebuilt or vercel-cloud mode.");
+if (values["legacy-proto"] && values["ypal-confirmed-sha"])
+  throw Error(
+    "The confirmed YPAL deployment cannot use the legacy PROTO preset."
+  );
 
 const app = fileURLToPath(new URL("../../", import.meta.url));
 const repository = fileURLToPath(new URL("../../../../", import.meta.url));
@@ -43,6 +48,9 @@ const child = spawnSync(
     "--standard-setup-sha",
     standardSha,
     ...(values["legacy-proto"] ? [] : ["--ypal-launch-sha", ypalLaunchSha]),
+    ...(values["ypal-confirmed-sha"]
+      ? ["--ypal-confirmed-sha", values["ypal-confirmed-sha"]]
+      : []),
     "--output",
     release
   ],
@@ -97,6 +105,7 @@ console.log(
     manifestSha256: createHash("sha256").update(manifest).digest("hex"),
     setupSha256: setupSha,
     standardSetupSha256: standardSha,
-    ypalLaunchPackageSha256: values["legacy-proto"] ? null : ypalLaunchSha
+    ypalLaunchPackageSha256: values["legacy-proto"] ? null : ypalLaunchSha,
+    ypalConfirmedDeploymentSha256: values["ypal-confirmed-sha"] ?? null
   })
 );

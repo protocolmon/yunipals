@@ -30,6 +30,9 @@ export const environment = {
     (boosterLaunchId === "base-ypal-v1"
       ? ""
       : "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3"),
+  boosterPmon: import.meta.env?.VITE_BOOSTER_PMON?.trim() || "",
+  boosterDeploymentSha256:
+    import.meta.env?.VITE_BOOSTER_DEPLOYMENT_SHA256?.trim() || "",
   boosterRegistry: import.meta.env?.VITE_BOOSTER_REGISTRY?.trim() || "",
   boosterEngine: import.meta.env?.VITE_BOOSTER_ENGINE?.trim() || "",
   boosterMonsters: import.meta.env?.VITE_BOOSTER_MONSTERS?.trim() || "",

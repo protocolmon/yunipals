@@ -13,6 +13,7 @@ import {
   runtime,
   catalogHash,
   qualify,
+  freeClient,
   readConfirmedDeployment,
   candidates,
   readerSql,
@@ -47,6 +48,49 @@ const artwork = await readFile(
     "docs/boosters/ypal-fresh-launch-2026-10-23/backend-approved-artwork-manifest.json"
   )
 );
+test("actual viem wire request uses /unified and free-only headers, never the root RPC route", async () => {
+  const calls = [];
+  const fetcher = async (request, init = {}) => {
+    const url = new URL(typeof request === "string" ? request : request.url);
+    const headers = new Headers(init.headers ?? request.headers);
+    assert.equal(url.origin, "http://127.0.0.1:19202");
+    assert.equal(headers.get("x-yunipals-unified-rpc-profile"), PROFILE);
+    assert.equal(headers.get("x-yunipals-rpc-workload"), "unified_evidence");
+    assert.equal(headers.get("x-yunipals-unified-rpc-permit"), null);
+    const body = init.body ? JSON.parse(init.body) : null;
+    calls.push({ path: url.pathname, method: init.method ?? "GET", body });
+    if (url.pathname === "/metrics")
+      return Response.json({
+        freeRouting: true,
+        paidFallbackOnFreeFailure: false,
+        sourcePaidFallbackOnFreeFailure: false,
+        unified: {
+          profileId: PROFILE,
+          chainId: 8453,
+          sourceRouting: "free_first",
+          traffic: {
+            unified_source: { paidCalls: 0 },
+            unified_evidence: { paidCalls: 0 }
+          }
+        }
+      });
+    if (url.pathname === "/unified/preflight")
+      return Response.json({
+        profileId: PROFILE,
+        chainId: 8453,
+        replay: { mode: "free_only" }
+      });
+    assert.equal(url.pathname, "/unified");
+    assert.equal(init.method, "POST");
+    assert.equal(body.method, "eth_chainId");
+    return Response.json({ jsonrpc: "2.0", id: body.id, result: "0x2105" });
+  };
+  const { client, guard } = await freeClient(fetcher);
+  assert.equal(await client.getChainId(), 8453);
+  await guard();
+  assert.equal(calls.filter((c) => c.method === "POST").length, 1);
+  assert.equal(calls.filter((c) => c.path === "/").length, 0);
+});
 const h = (n) => "0x" + BigInt(n).toString(16).padStart(64, "0");
 const TYPES = {
   EIP712Domain: [

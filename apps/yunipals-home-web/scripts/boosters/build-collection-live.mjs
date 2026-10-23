@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { build } from "vite";
 import { validateBoosterSetup } from "../../src/lib/boosterSetup.ts";
+import { ypalFrontendDeployment } from "./ypal-frontend-deployment.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -20,6 +21,7 @@ const { values } = parseArgs({
     "setup-sha": { type: "string" },
     "standard-setup-sha": { type: "string" },
     "ypal-launch-sha": { type: "string" },
+    "ypal-confirmed-sha": { type: "string" },
     output: {
       type: "string",
       default: "/tmp/yunipals-collection-booster-live-20261022"
@@ -50,6 +52,11 @@ const batchUpgradePackageSha =
 const permitUpgradePackageSha =
   "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc";
 const ypalLaunchPackageSha = values["ypal-launch-sha"];
+let ypalConfirmed = null;
+if (values["ypal-confirmed-sha"] && !ypalLaunchPackageSha)
+  throw Error(
+    "The confirmed YPAL deployment requires the reviewed launch package."
+  );
 if (ypalLaunchPackageSha !== undefined) {
   if (
     !values["full-app"] ||
@@ -64,6 +71,18 @@ if (ypalLaunchPackageSha !== undefined) {
     throw Error(
       "The fresh YPAL launch package differs from the reviewed bytes."
     );
+  if (values["ypal-confirmed-sha"]) {
+    ypalConfirmed = ypalFrontendDeployment(
+      ypal,
+      await readFile(
+        join(
+          root,
+          "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json"
+        )
+      ),
+      values["ypal-confirmed-sha"]
+    );
+  }
 }
 if (values["full-app"]) {
   const metadataUpgrade = await readFile(
@@ -133,10 +152,28 @@ if (ypalLaunchPackageSha) {
     VITE_BOOSTER_LAUNCH_ID: "base-ypal-v1",
     VITE_BOOSTER_PAYMENT_SYMBOL: "YPAL",
     VITE_BOOSTER_PAYMENT_TOKEN: "",
+    VITE_BOOSTER_PMON: "",
+    VITE_BOOSTER_DEPLOYMENT_SHA256: "",
     VITE_BOOSTERS_ENABLED: "false",
     VITE_BOOSTER_REGISTRY: "",
     VITE_BOOSTER_ENGINE: "",
     VITE_BOOSTER_MONSTERS: ""
+  });
+}
+if (ypalConfirmed) {
+  addresses = {
+    registry: ypalConfirmed.registry,
+    engine: ypalConfirmed.engine,
+    monsters: ypalConfirmed.monsters
+  };
+  Object.assign(process.env, {
+    VITE_BOOSTERS_ENABLED: "true",
+    VITE_BOOSTER_REGISTRY: addresses.registry,
+    VITE_BOOSTER_ENGINE: addresses.engine,
+    VITE_BOOSTER_MONSTERS: addresses.monsters,
+    VITE_BOOSTER_PAYMENT_TOKEN: ypalConfirmed.paymentToken,
+    VITE_BOOSTER_PMON: ypalConfirmed.pmon,
+    VITE_BOOSTER_DEPLOYMENT_SHA256: ypalConfirmed.manifestSha256
   });
 }
 // Preserve the main app's existing public service and feature configuration.
@@ -230,8 +267,10 @@ const manifest = {
   apiOrigin: process.env.VITE_YUNIPALS_INDEXER_URL,
   addresses,
   boosterLaunchId: ypalLaunchPackageSha ? "base-ypal-v1" : "base-proto-v1",
-  boosterSalesConfigured: !ypalLaunchPackageSha,
+  boosterSalesConfigured: Boolean(ypalConfirmed || !ypalLaunchPackageSha),
   ypalLaunchPackageSha256: ypalLaunchPackageSha ?? null,
+  ypalConfirmedDeploymentSha256: ypalConfirmed?.manifestSha256 ?? null,
+  boosterPaymentToken: ypalConfirmed?.paymentToken ?? null,
   setupPackageSha256: values["setup-sha"],
   standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
   metadataUpgradePackageSha256: values["full-app"]

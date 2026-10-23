@@ -1,0 +1,31 @@
+{
+  "format": "yunipals-ypal-backend-unified-transport-correction-v1",
+  "historicalBackendSha256": "24bc3a9cb3a987bc007d161a530732f0bc995ade74cd06e537576e4542a3b196",
+  "historicalPreparationEvidenceUnchanged": true,
+  "reason": "The actual proxy refuses unified headers on the root RPC route. RPC POST must use /unified. GET metrics and /unified/preflight remain unchanged.",
+  "files": [
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.mjs",
+      "sha256": "94b78e09d3e5d845229a4ea8afdc481cd17b744e1b6bd9f070cb3fe9aa09a371",
+      "bytes": 29122
+    },
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.test.mjs",
+      "sha256": "bc58d384dab7745503f505c25f9e804224a328798e64fc7ea42464a7dcef19b8",
+      "bytes": 17554
+    }
+  ],
+  "regression": {
+    "kind": "actual_viem_transport_captured_fetch_request",
+    "requiresRpcPostPath": "/unified",
+    "checksProfileAndEvidenceWorkloadHeaders": true,
+    "checksNoPermitHeader": true,
+    "checksNoRootRouteRequest": true,
+    "testsPassed": 11,
+    "logSha256": "d3c5b295a478f927fa2632d3762b224f2fb53a360ed2af8b7f9cf484446f0417",
+    "historicalTenMockChainTestsProvedTransportPath": false
+  },
+  "actualChainRequalificationRequired": true,
+  "productionActionsByAuthor": 0,
+  "sourcePackageAndOwnerUiChanges": 0
+}

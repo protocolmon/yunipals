@@ -788,13 +788,13 @@ export async function writeCandidates(output, files) {
   );
 }
 
-async function freeClient() {
+export async function freeClient(fetcher = fetch) {
   const headers = {
     "x-yunipals-unified-rpc-profile": PROFILE,
     "x-yunipals-rpc-workload": "unified_evidence"
   };
   const get = async (path) => {
-    const r = await fetch("http://127.0.0.1:19202" + path, {
+    const r = await fetcher("http://127.0.0.1:19202" + path, {
       headers,
       signal: AbortSignal.timeout(5000),
       redirect: "error"
@@ -820,10 +820,11 @@ async function freeClient() {
   await guard();
   return {
     client: createPublicClient({
-      transport: http("http://127.0.0.1:19202", {
+      transport: http("http://127.0.0.1:19202/unified", {
         retryCount: 0,
         timeout: 8000,
         batch: false,
+        fetchFn: fetcher,
         fetchOptions: { headers }
       })
     }),

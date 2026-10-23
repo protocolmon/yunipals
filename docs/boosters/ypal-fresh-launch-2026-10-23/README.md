@@ -69,6 +69,29 @@ source has been prepared and accepted. The old booster comparison and temporary
 scanner retirement evidence cannot be reused as proof for a new deployment.
 The final objective remains one managed indexer across the configured chains.
 
-At preparation time YPAL and the new stack are not deployed. No new address,
-public activation, live permit purchase, VRF callback or explorer verification
-is claimed until observed on Base.
+## Confirmed deployment, 23 October 2026
+
+The owner completed all ten actions. The actual receipt-derived addresses are:
+
+- YPAL: `0xCd3709E84fc817b46196FA2D5b7202710AB51346`.
+- Registry: `0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3`.
+- NFT collection: `0x7D62628806E7eeF76A354C7c48787879e3440b16`.
+- Engine: `0xDF4AaA47Fe0e8208b5a33c74898f834B2952189e`.
+
+[deployment.confirmed.json](deployment.confirmed.json) binds all ten successful
+canonical receipts to the reviewed package. Public type 1 is active and unlimited.
+Independent current-state checks cover the deployed bytecode, implementation
+slots, roles, PMON backing/configuration, permit domain, rules and metadata prefix.
+
+[BaseScan results](verification/basescan-results.json) were completed at
+19:00 UTC. YPAL and all three implementations have full exact-source verification.
+The three proxies have correctly linked implementations and a fully verified
+similar-source reference. Its complete creation/runtime bytecode and ABI were
+independently recompiled and match the reviewed deployment exactly; the
+[reference evidence](verification-proxy-reference/README.md) records the distinct
+compiler settings and source paths without calling these new addresses full
+exact-source matches.
+
+The website still awaits the fresh indexing/API switch and buyer activation.
+This deployment and explorer verification do not establish a first YPAL purchase,
+VRF callback or daily claim. Those require separate observations after cutover.
