@@ -1,0 +1,73 @@
+{
+  "format": "yunipals-ypal-reader-cutover-independent-review-v1",
+  "reviewedAt": "2026-10-23T20:36:17.733175+00:00",
+  "verdict": "PASS",
+  "files": [
+    {
+      "path": "ops/booster-launch/ypal-reader-cutover-v1.py",
+      "sha256": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+      "bytes": 45970
+    },
+    {
+      "path": "ops/booster-launch/ypal-reader-cutover-v1-test.py",
+      "sha256": "7e2a06f3dd130c089e12f671a333eaab3d4a52a2472ba42df0125a4a5a44fc55",
+      "bytes": 18191
+    },
+    {
+      "path": "ops/booster-launch/ypal-reader-cutover-v1-postgres-test.mjs",
+      "sha256": "88daf9e9f0dcc54e08091f93a8ef4ff41bb7f4314364b2cc9484391cef9e46f3",
+      "bytes": 5603
+    },
+    {
+      "path": "ops/booster-launch/ypal-reader-cutover-v1.md",
+      "sha256": "7018da2bc157f5ace41b2a2a2031bd09211f659c652aa5ba9e2d0c34c4654943",
+      "bytes": 7036
+    }
+  ],
+  "sourceProducerSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+  "independentExecution": {
+    "pythonControls": {
+      "passed": true,
+      "count": 15,
+      "command": "python3 -I -B ops/booster-launch/ypal-reader-cutover-v1-test.py"
+    },
+    "postgres": {
+      "passed": true,
+      "groups": 7,
+      "image": "postgres:16.15",
+      "scope": "fresh random local database and two synthetic roles; cleanup completed",
+      "relations": 20,
+      "grantedSelects": 10,
+      "oldTenPreserved": true,
+      "command": "DOCKER_HOST=unix:///var/run/docker.sock node ops/booster-launch/ypal-reader-cutover-v1-postgres-test.mjs"
+    }
+  },
+  "reviewedBoundaries": [
+    "Exact accepted source receipt/current owner qualification, build8e88 and actual native table OIDs before any forward phase.",
+    "Existing collector OID73187672/LOGIN/no-password/NOINHERIT/limit6 and negative attributes preserved; complete direct graph and both schema/table ACLs CAS before and after SQL.",
+    "Exactly ten fresh SELECTs plus schema USAGE only if missing; no writes, grant option, role attributes or old-read removal.",
+    "Fixed41fe API/e2b queue/unchanged base units and private input hashes; only public reader environment and two exact drop-ins published.",
+    "Durable staging inode before exclusive hard link; same-byte foreign inode rejected; explicit lost-link inverse reconciliation.",
+    "API stop bound to fresh PID/invocation; new public environment checked as existing UID; genuine queue completion and retained schedule required.",
+    "Completed and partial reader inverse restore old configuration before exact grant inverse; source actions forbidden.",
+    "Active-unready or acknowledged-terminal source is inverse-only, explicit ready=false; forward native readiness remains strict.",
+    "Unknown SQL ACK or interrupted inverse remains manual reconciliation; no blind replay or success inferred from catalog alone."
+  ],
+  "limitations": [
+    "No production reader SQL or service action performed by this reviewer.",
+    "Actual source-ready receipt, actual fresh OIDs and protected host default review still gate execution.",
+    "Local PostgreSQL fixture proves actual generated grant/CAS/rollback/commit/inverse SQL; it does not prove production HTTP or queue readiness."
+  ],
+  "productionChanges": 0,
+  "serviceActionsByReviewer": 0,
+  "providerRequestsByReviewer": 0,
+  "authorHostPeerQualification": {
+    "proofSha256": "713bbe2382099487d7861c13f095b7e7219ea97d4d5403865d3a2a8bf47e7304",
+    "scope": "unchanged old API process; exact canonical public selector literals, no environment values exported",
+    "passed": true,
+    "implementationChanged": false,
+    "reviewerExecution": false,
+    "initialProbeOracleIssue": "old checksum-case public addresses compared with lowercase expected values; no product or guard correction needed",
+    "freshPreparedEnvironment": "explicitly lowercase; exact guard remains unchanged"
+  }
+}

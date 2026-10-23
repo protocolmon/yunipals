@@ -1,0 +1,96 @@
+{
+  "format": "yunipals-ypal-reader-cutover-preparation-v1",
+  "preparedAt": "2026-10-23T20:38:11.678340+00:00",
+  "sourceOnly": true,
+  "files": {
+    "ops/booster-launch/ypal-reader-cutover-v1.py": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+    "ops/booster-launch/ypal-reader-cutover-v1-test.py": "7e2a06f3dd130c089e12f671a333eaab3d4a52a2472ba42df0125a4a5a44fc55",
+    "ops/booster-launch/ypal-reader-cutover-v1-postgres-test.mjs": "88daf9e9f0dcc54e08091f93a8ef4ff41bb7f4314364b2cc9484391cef9e46f3",
+    "ops/booster-launch/ypal-reader-cutover-v1.md": "7018da2bc157f5ace41b2a2a2031bd09211f659c652aa5ba9e2d0c34c4654943"
+  },
+  "dependencies": {
+    "sourceOwner": "ops/booster-launch/ypal-source-start-v1.py",
+    "sourceOwnerSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+    "confirmedManifestSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+    "preparedProducerSha256": "73a6de8dfe347cc3951fd53202013130f6f0ca9ff84f92c54999d03e7807daa0",
+    "preparedBuildId": "8e88ea2e00",
+    "RPCAdmissionProducerSha256": "45cfa08ba3a2de5de775053081b954dbb5a5e732871e8db1b80fa0b16fe5591e",
+    "RPCAdmissionReceiptSha256": "14b54f8aba5179c26cafad5eda647106f1d1d57fe6639278846a4240661b85c7",
+    "profileFileSha256": "0e19f87a728a0150fae82e6125436739864edd86a6b5b1ecdfcd3503e70e0e05"
+  },
+  "scope": {
+    "sourceSchema": "yunipals_boosters_ypal_v1",
+    "oldSchema": "yunipals_boosters_launch_v1",
+    "collectorRoleOid": "73187672",
+    "existingConnectionLimit": 6,
+    "tenFreshSelects": true,
+    "schemaUsageOnlyIfMissing": true,
+    "noRoleAttributeChanges": true,
+    "oldTenReadsPreserved": true,
+    "fullTargetAclAndCollectorDirectGraphCAS": true,
+    "apiSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+    "APIUnitSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+    "queueSha256": "e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33",
+    "sourceOrProxyActions": 0,
+    "credentialChanges": 0,
+    "databaseRowWrites": 0
+  },
+  "verification": {
+    "offlineControls": 15,
+    "realDisposablePostgresGroups": 7,
+    "realRelations": 20,
+    "controlLogSha256": "8a9d3d00b47ad6419499f33ecf85091d2cbf122eb6b32aba3b1a62e2cd00c054",
+    "postgresLogSha256": "7645ee97a7a8e15de4d0943e2ad988232532aff48621055d61dc2eba77954491",
+    "actualExistingAPIProcessPeer": {
+      "reportSha256": "713bbe2382099487d7861c13f095b7e7219ea97d4d5403865d3a2a8bf47e7304",
+      "pid": 1824982,
+      "invocation": "7858a3f608874abb935e635abc69c1d4",
+      "startTicks": 6618518564,
+      "peerCodeSha256": "6b9fda067e24d1a0b50b60c2f5f0840c70c3efb87a71950fc7dad9f52a2e2db3",
+      "publicEnvironmentMatched": true,
+      "privateValuesExported": false,
+      "sourceGuardChanged": false,
+      "earlierProbeMismatch": "Oracle used lowercase old addresses; exact canonical checksum-spelled old deployment passed unchanged primitive."
+    }
+  },
+  "inverse": {
+    "ownedStagingInodeBeforePublication": true,
+    "lostLinkAckHandledOnlyExplicitInverse": true,
+    "partialOrCompletedAPIStartSupported": true,
+    "foreignSameByteInodeRefused": true,
+    "activeNotReadySourceInverseOnly": true,
+    "sourceReadinessClaimedInInverse": false,
+    "noSourceRestart": true,
+    "unknownSQLCommitAcknowledgement": "No graph-only success inference; inspect/manual reconciliation, no automatic retry."
+  },
+  "actualForwardWitnesses": {
+    "sourceReadyReceiptConsumedByAgent": false,
+    "newNamespaceOrTableOidsInvented": false,
+    "productionGrantRehearsalPerformed": false,
+    "productionReadsAdmitted": false,
+    "newAPIOrQueueStarted": false,
+    "publicFreshBackendAccepted": false
+  },
+  "productionActionsByAgent": {
+    "fileWrites": 0,
+    "serviceActions": 0,
+    "ACLChanges": 0,
+    "SQLRowWrites": 0,
+    "providerCalls": 0
+  },
+  "independentReview": {
+    "file": "docs/boosters/ypal-fresh-launch-2026-10-23/reader-cutover-independent-review.json",
+    "sha256": "d3e175a3e7bdefb11c6f920d31c09ec8a62c988eb41d39ad9e06ccac57f511a5",
+    "offlineControls": 15,
+    "actualDisposablePostgresGroups": 7,
+    "productEditsByReviewer": 0
+  },
+  "rootReportedSourceAcceptance": {
+    "resultFile": "/var/backups/yunipals-ypal-source-start-v1-20261023/result.json",
+    "sha256": "581990e80baa6ae074786b7b2cf7c771c82ebe046253a1de23a96f251d900efd",
+    "producerSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+    "schemaOid": "75837058",
+    "ready": true,
+    "qualifiedByRootNotByThisPreparation": true
+  }
+}

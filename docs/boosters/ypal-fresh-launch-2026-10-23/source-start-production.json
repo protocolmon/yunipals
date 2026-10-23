@@ -1,0 +1,140 @@
+{
+  "format": "yunipals-ypal-source-production-acceptance-v1",
+  "source": {
+    "actorPids": [
+      2309283,
+      2309418
+    ],
+    "cgroup": "/system.slice/yunipals-booster-ypal-source.service",
+    "definitionSha256": "f8feeea70910943737605a88a06534993e82f5a92bec1b9fbe5188f8f65eae7e",
+    "invocation": "3744d80464924b5ca1de340ac94c1034",
+    "peerProofs": [
+      {
+        "esbuildExecutable": false,
+        "nodeExecutable": true,
+        "pid": 2309283,
+        "startTicks": 6621438696
+      },
+      {
+        "esbuildExecutable": true,
+        "nodeExecutable": false,
+        "pid": 2309418,
+        "startTicks": 6621439313
+      }
+    ],
+    "pid": 2309283,
+    "startTicks": 6621438696,
+    "unit": "yunipals-booster-ypal-source.service"
+  },
+  "sourceSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+  "protectedResultSha256": "581990e80baa6ae074786b7b2cf7c771c82ebe046253a1de23a96f251d900efd",
+  "operationSha256": "49c8c51b4da5ee70a6266364b309561958b7f10ae14fcdba87769bed791435d9",
+  "preparedResultSha256": "a434f35a154db4d1da13cd5777cd262f9369fc4fa3a65657a743b1df859bfbfc",
+  "confirmedManifestSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "buildId": "8e88ea2e00",
+  "schema": "yunipals_boosters_ypal_v1",
+  "schemaOid": "75837058",
+  "readTableOids": {
+    "_ponder_checkpoint": "75837066",
+    "_ponder_meta": "75837059",
+    "booster_checkpoint": "75837254",
+    "booster_engine_state": "75837224",
+    "booster_event": "75837239",
+    "booster_monster": "75837194",
+    "booster_original": "75837164",
+    "booster_refund": "75837209",
+    "booster_request": "75837179",
+    "booster_type": "75837149"
+  },
+  "acceptance": {
+    "first": {
+      "blockHash": "0x879a79321591f291f81d349986456172d2e70fa45790a1255cda3baab0b56dda",
+      "blockNumber": 52999158,
+      "buildId": "8e88ea2e00",
+      "eventTail": [
+        "2",
+        "52995246"
+      ],
+      "readTableOids": {
+        "_ponder_checkpoint": "75837066",
+        "_ponder_meta": "75837059",
+        "booster_checkpoint": "75837254",
+        "booster_engine_state": "75837224",
+        "booster_event": "75837239",
+        "booster_monster": "75837194",
+        "booster_original": "75837164",
+        "booster_refund": "75837209",
+        "booster_request": "75837179",
+        "booster_type": "75837149"
+      },
+      "ready": true,
+      "schemaOid": "75837058",
+      "timestamp": 1792787663
+    },
+    "quietBlockAdvances": 54,
+    "ready": true,
+    "second": {
+      "blockHash": "0x379db3063bda66ed5536431f7453c02f1ceee0aa41e4da6ddbe99cbb9b40ff28",
+      "blockNumber": 52999212,
+      "buildId": "8e88ea2e00",
+      "eventTail": [
+        "2",
+        "52995246"
+      ],
+      "readTableOids": {
+        "_ponder_checkpoint": "75837066",
+        "_ponder_meta": "75837059",
+        "booster_checkpoint": "75837254",
+        "booster_engine_state": "75837224",
+        "booster_event": "75837239",
+        "booster_monster": "75837194",
+        "booster_original": "75837164",
+        "booster_refund": "75837209",
+        "booster_request": "75837179",
+        "booster_type": "75837149"
+      },
+      "ready": true,
+      "schemaOid": "75837058",
+      "timestamp": 1792787771
+    }
+  },
+  "independentValidation": {
+    "passed": true,
+    "native": {
+      "blockHash": "0x80aaa938867bf9d3451f9ae1df12b02ef7b2a41d5454f4617415a241daf4ce77",
+      "blockNumber": 52999290,
+      "buildId": "8e88ea2e00",
+      "eventTail": [
+        "2",
+        "52995246"
+      ],
+      "readTableOids": {
+        "_ponder_checkpoint": "75837066",
+        "_ponder_meta": "75837059",
+        "booster_checkpoint": "75837254",
+        "booster_engine_state": "75837224",
+        "booster_event": "75837239",
+        "booster_monster": "75837194",
+        "booster_original": "75837164",
+        "booster_refund": "75837209",
+        "booster_request": "75837179",
+        "booster_type": "75837149"
+      },
+      "ready": true,
+      "schemaOid": "75837058",
+      "timestamp": 1792787927
+    }
+  },
+  "oldSource": {
+    "enabled": false,
+    "schemaPreserved": true,
+    "terminal": true
+  },
+  "oldSchemasRetained": true,
+  "sharedSourceRestarted": false,
+  "grantChanges": 0,
+  "readerChanges": 0,
+  "APIOrQueueSwitched": false,
+  "publicYPALPurchasesEnabled": false,
+  "operator": "ops/booster-launch/ypal-source-start-v1.py"
+}

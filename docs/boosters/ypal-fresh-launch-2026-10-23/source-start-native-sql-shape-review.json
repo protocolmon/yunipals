@@ -1,0 +1,585 @@
+{
+  "at": "2026-10-23T20:16:17.685911+00:00",
+  "blockingFindings": [],
+  "catalog": {
+    "passed": true,
+    "value": {
+      "schemaOid": "74518314",
+      "schemaOwner": "73004621",
+      "tables": [
+        {
+          "columns": [
+            {
+              "name": "chain_name",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "chain_id",
+              "nullable": false,
+              "type": "bigint"
+            },
+            {
+              "name": "safe_checkpoint",
+              "nullable": false,
+              "type": "character varying(75)"
+            },
+            {
+              "name": "latest_checkpoint",
+              "nullable": false,
+              "type": "character varying(75)"
+            },
+            {
+              "name": "finalized_checkpoint",
+              "nullable": false,
+              "type": "character varying(75)"
+            }
+          ],
+          "kind": "r",
+          "name": "_ponder_checkpoint",
+          "oid": "74518322",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "value",
+              "nullable": false,
+              "type": "jsonb"
+            }
+          ],
+          "kind": "r",
+          "name": "_ponder_meta",
+          "oid": "74518315",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "block_number",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "block_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "timestamp",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_checkpoint",
+          "oid": "74518510",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "paused",
+              "nullable": false,
+              "type": "boolean"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_engine_state",
+          "oid": "74518480",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "address",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "name",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "args",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "block_number",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "block_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "timestamp",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "transaction_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "log_index",
+              "nullable": false,
+              "type": "integer"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_event",
+          "oid": "74518495",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "collection",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "token_id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "original_key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "request_key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "type_key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "owner",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "minted_to",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "variant_id",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "monster_type",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "color",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "horn",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "glitter",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "is_original",
+              "nullable": false,
+              "type": "boolean"
+            },
+            {
+              "name": "burned",
+              "nullable": false,
+              "type": "boolean"
+            },
+            {
+              "name": "mint_block",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_monster",
+          "oid": "74518450",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "collection",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "token_id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "type_key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "engine",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "owner",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "revealed_at",
+              "nullable": true,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "daily_committed",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "minted",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "remaining",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "pending_request",
+              "nullable": true,
+              "type": "text"
+            },
+            {
+              "name": "burned",
+              "nullable": false,
+              "type": "boolean"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_original",
+          "oid": "74518420",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "engine",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "requester",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "credit",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "returned",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "withdrawn",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_refund",
+          "oid": "74518465",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "engine",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "wrapper",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "request_id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "original_key",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "payer",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "quantity",
+              "nullable": false,
+              "type": "integer"
+            },
+            {
+              "name": "opening",
+              "nullable": false,
+              "type": "boolean"
+            },
+            {
+              "name": "paid",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "rule_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "callback_gas",
+              "nullable": false,
+              "type": "integer"
+            },
+            {
+              "name": "status",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "seed",
+              "nullable": true,
+              "type": "text"
+            },
+            {
+              "name": "requested_at",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "received_at",
+              "nullable": true,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "transaction_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "recipient",
+              "nullable": true,
+              "type": "text"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_request",
+          "oid": "74518435",
+          "owner": "73004621"
+        },
+        {
+          "columns": [
+            {
+              "name": "id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "pack_type_id",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "registry",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "engine",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "payment_token",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "price",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "interval_seconds",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "mints_per_interval",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "total_variants",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            },
+            {
+              "name": "max_batch",
+              "nullable": false,
+              "type": "integer"
+            },
+            {
+              "name": "catalog_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "rule_hash",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "manifest_uri",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "metadata_base_uri",
+              "nullable": false,
+              "type": "text"
+            },
+            {
+              "name": "sales_paused",
+              "nullable": false,
+              "type": "boolean"
+            },
+            {
+              "name": "openings",
+              "nullable": false,
+              "type": "numeric(78,0)"
+            }
+          ],
+          "kind": "r",
+          "name": "booster_type",
+          "oid": "74518405",
+          "owner": "73004621"
+        }
+      ]
+    }
+  },
+  "databaseWrites": 0,
+  "draftSourceSha256": "4aa070e2aa6d0952294739796b78424a54cc35573bb3194947178629786c7cd0",
+  "existingSchemaOnly": "yunipals_boosters_launch_v1",
+  "explain": {
+    "analyzeExecuted": false,
+    "nodeTypes": [
+      "Aggregate",
+      "Index Scan",
+      "Nested Loop",
+      "Result",
+      "Seq Scan",
+      "Sort"
+    ],
+    "passed": true,
+    "planSha256": "aa479ac99e58f1ae753accf0e580b6b32958e6f3acc9a298311d5f8507a2d141"
+  },
+  "format": "yunipals-ypal-source-start-native-sql-shape-v1",
+  "futureSchemaNotTouched": "yunipals_boosters_ypal_v1",
+  "limits": {
+    "actualNFTDataRowsRead": false,
+    "controllerStillDraftAtCapture": true,
+    "currentSourceOrReaderChanged": false,
+    "freshNamespaceQueried": false,
+    "liveAcceptanceOrInverseReviewed": false,
+    "onlySchemaNameSubstitutedForExplain": true
+  },
+  "nativeSqlSha256": "9177883ecb644baee1d84a48c9d4e61f90ae3bd8bf94e65032144ed0b2cc42bb",
+  "providerCalls": 0,
+  "queryExecuted": false,
+  "serviceActions": 0,
+  "staticAppShapeReference": {
+    "capturedAt": "2026-10-23T18:48:13.630381+00:00",
+    "historicalShapeOnlyNotCurrentReadyClaim": true,
+    "keysAndJsonTypes": {
+      "build_id": "str",
+      "heartbeat_at": "int",
+      "is_dev": "int",
+      "is_locked": "int",
+      "is_ready": "int",
+      "table_names": "list",
+      "version": "str",
+      "view_names": "list"
+    },
+    "receiptSha256": "2210e4dcd83a71cb7b46aa357478becb25fc8619eba81e56618287c20dcb32e9"
+  },
+  "userRowsReadOrExported": false,
+  "verdict": "pass_for_SQL_physical_shape_only"
+}

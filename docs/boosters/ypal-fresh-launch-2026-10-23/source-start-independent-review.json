@@ -1,0 +1,53 @@
+{
+  "blockingFindings": [],
+  "documentedManualPrefix": [
+    "A lost acknowledgement between source unit/boot-link publication and its durable created receipt may require exact manual reconciliation. This owner does not promise automatic recovery from every such power-failure prefix. Parent explicitly accepted that scope; reviewer does not claim those prefixes automatically recoverable."
+  ],
+  "files": {
+    "ops/booster-launch/ypal-source-start-v1-test.py": "d8374cd4aae954a70f4f7a7e59089ac086e1049646da5867fa3b28e4e9c832bc",
+    "ops/booster-launch/ypal-source-start-v1.py": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05"
+  },
+  "format": "yunipals-ypal-source-start-independent-review-v1",
+  "independentlyExecuted": {
+    "SQLPhysicalShape": {
+      "EXPLAINOnlyNoAnalyze": true,
+      "file": "docs/boosters/ypal-fresh-launch-2026-10-23/source-start-native-sql-shape-review.json",
+      "futureNamespaceQueried": false,
+      "sha256": "81063fe22877f03d30359925d2fec18d3f54e6625d19cc020e8a765ae60ce925"
+    },
+    "logSha256": "662543a26c06f033a21adca8809e59fee77761b10e72f664d8898577bf2d993e",
+    "offlineControls": 15,
+    "passed": true,
+    "realExplicitBasePreflight": {
+      "controllerStagedByReviewer": false,
+      "file": "docs/boosters/ypal-fresh-launch-2026-10-23/source-start-explicit-base-preflight-actual.json",
+      "logicalCachedPreflightGETs": 2,
+      "logicalFreeOnlyEthChainIdPOSTs": 1,
+      "noFakeResponses": true,
+      "passed": true,
+      "privateEnvironmentLoaded": false,
+      "sha256": "05cfdbe85d94f56aa8d6e880c339003be0b857ffca4cca2eb35ac77fdb827dad"
+    }
+  },
+  "limits": {
+    "SQLWrites": 0,
+    "actualLiveSourceStartOrStopTested": false,
+    "actualSourceReadyOrFinalHandoverQualified": false,
+    "physicalUpstreamRetriesNotMeasured": true,
+    "privateEnvironmentExported": false,
+    "productionServiceActions": 0,
+    "realTransactions": 0
+  },
+  "reviewedAt": "2026-10-23T20:33:17.032788+00:00",
+  "reviewedInvariants": [
+    "Accepted actual preparation73a/a103 and253/14b54 policy producers and receipts are required before the source transition.",
+    "The preflight uses only the new Base endpoint and manifest, a fixed actual appviem URL/hash alias only for exactviem imports from retained public packages, and unchanged68a checks.",
+    "Current full chain qualification occurs immediately before live effects; no source readiness is inferred from the deployment receipts.",
+    "Only the exact old source is stopped, with fresh raw complete kernel backend attribution and actual old tuple drain; unchanged combined source/OG/proxy/private inputs remain fenced.",
+    "Only the owned new definition/argv/UID/cgroup/direct esbuild child can be acknowledged or adopted after lost START acknowledgement.",
+    "Native acceptance requires actual type1 YPAL rules, complete durable checkpoint freshness, current header/time and repeated quiet-block advancement under the same source identity.",
+    "Reader/queue/ACL changes are outside this owner; inverse requires their original configuration, checks old/fresh terminal ownership and preserves all schemas/artifacts.",
+    "Boot activation and original/new source inverse actions are explicitly bounded to fixed owned paths; unknown partial effects never cause automatic retries."
+  ],
+  "verdict": "pass_with_explicit_manual_reconciliation_scope"
+}
