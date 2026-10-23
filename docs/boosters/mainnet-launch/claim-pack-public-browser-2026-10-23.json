@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-23T09:25:04.341Z",
+  "origin": "https://www.yunipals.com",
+  "checks": [
+    "gallery removed",
+    "real artwork peeks behind wrapper",
+    "pointer pull follows drag",
+    "short pull retracts",
+    "opening reaches actual card result",
+    "new introduction",
+    "public pack loads",
+    "eight FAQs below pack",
+    "keyboard Enter/Space",
+    "mobile layout",
+    "24h explanation"
+  ],
+  "api": [
+    200
+  ],
+  "errors": [],
+  "walletConnections": 0,
+  "transactions": 0,
+  "status": 200,
+  "questions": [
+    "What do I get when I open a pack?",
+    "How much does it cost?",
+    "Do I have to mint every day?",
+    "Can I get duplicates?",
+    "What happens if I transfer my original?",
+    "What happens if I burn my original?",
+    "Why is my card image still loading?",
+    "Can I use these Yunipals in Arena or the marketplace?"
+  ],
+  "extractionDiagnostic": {
+    "visibleFraction": 0.027185578186581093,
+    "frontLayer": 20,
+    "cardLayer": 15
+  },
+  "extraction": {
+    "visibleFraction": 0.027185578186581093,
+    "frontLayer": 20,
+    "cardLayer": 15,
+    "drawPixels": 90.22840881347656,
+    "cancelReturnPixels": 0,
+    "realArtworkDecoded": true
+  },
+  "passed": true
+}

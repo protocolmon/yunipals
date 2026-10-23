@@ -6,6 +6,8 @@ import {
     AccessControlUpgradeable
 } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IERC4906} from "@openzeppelin/contracts/interfaces/IERC4906.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {BoosterAdmin} from "./BoosterAdmin.sol";
 import {PackRegistry} from "./PackRegistry.sol";
 
@@ -13,7 +15,7 @@ interface IOriginalBurn {
     function onOriginalBurned(uint256 tokenId) external;
 }
 
-contract YunipalMonsters is ERC721Upgradeable, BoosterAdmin {
+contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
     struct Provenance {
         uint256 packTypeId;
         uint256 originalTokenId;
@@ -26,7 +28,9 @@ contract YunipalMonsters is ERC721Upgradeable, BoosterAdmin {
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public reservedType;
     mapping(uint256 => Provenance) public provenance;
-    uint256[46] private __gap;
+    // Optional token-ID metadata. Existing proxies default to frozen variant metadata.
+    string public tokenMetadataBaseURI;
+    uint256[45] private __gap;
 
     event MonsterMinted(
         uint256 indexed tokenId,
@@ -41,6 +45,7 @@ contract YunipalMonsters is ERC721Upgradeable, BoosterAdmin {
         bool isOriginal
     );
     event OriginalBurned(uint256 indexed tokenId, uint256 indexed packTypeId);
+    event TokenMetadataBaseURISet(string previousURI, string newURI);
 
     constructor() {
         _disableInitializers();
@@ -91,9 +96,60 @@ contract YunipalMonsters is ERC721Upgradeable, BoosterAdmin {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
+        if (bytes(tokenMetadataBaseURI).length != 0) {
+            return string.concat(tokenMetadataBaseURI, Strings.toString(tokenId), ".json");
+        }
         Provenance storage p = provenance[tokenId];
         PackRegistry.Pack memory pack = registry.getPack(p.packTypeId);
         return string.concat(pack.rules.metadataBaseURI, Strings.toString(p.variantId), ".json");
+    }
+
+    /// @notice Configure token-specific metadata without editing any activated pack rules.
+    /// @dev Empty restores each pack's original variant metadata. No reinitializer is required.
+    function setTokenMetadataBaseURI(string calldata baseURI) external onlyRole(CONFIG_ROLE) {
+        _validateMetadataBaseURI(bytes(baseURI));
+        string memory previousURI = tokenMetadataBaseURI;
+        tokenMetadataBaseURI = baseURI;
+        emit TokenMetadataBaseURISet(previousURI, baseURI);
+        if (nextTokenId > 1) emit BatchMetadataUpdate(0, nextTokenId - 1);
+    }
+
+    function _validateMetadataBaseURI(bytes memory uri) private pure {
+        uint256 length = uri.length;
+        require(length <= 512, "metadata URI too long");
+        if (length == 0) return;
+        uint256 prefixLength;
+        if (length >= 8 && keccak256(bytes("https://")) == keccak256(_prefix(uri, 8))) {
+            prefixLength = 8;
+        } else if (length >= 7 && keccak256(bytes("ipfs://")) == keccak256(_prefix(uri, 7))) {
+            prefixLength = 7;
+        } else {
+            revert("metadata URI scheme");
+        }
+        require(length > prefixLength + 1 && _isAlphaNumeric(uri[prefixLength]), "metadata URI authority");
+        require(uri[length - 1] == bytes1("/"), "metadata base slash");
+        // Keep a literal, unambiguous base: no credentials, query/fragment,
+        // escapes, whitespace, control characters or executable URI schemes.
+        for (uint256 i = prefixLength; i < length; ++i) {
+            bytes1 c = uri[i];
+            require(
+                _isAlphaNumeric(c) || c == bytes1("-") || c == bytes1(".") || c == bytes1("_")
+                    || c == bytes1("~") || c == bytes1(":") || c == bytes1("/"),
+                "metadata URI character"
+            );
+        }
+    }
+
+    function _prefix(bytes memory uri, uint256 length) private pure returns (bytes memory result) {
+        result = new bytes(length);
+        for (uint256 i; i < length; ++i) {
+            result[i] = uri[i];
+        }
+    }
+
+    function _isAlphaNumeric(bytes1 c) private pure returns (bool) {
+        return (c >= bytes1("0") && c <= bytes1("9")) || (c >= bytes1("A") && c <= bytes1("Z"))
+            || (c >= bytes1("a") && c <= bytes1("z"));
     }
 
     function _checkEngine(uint256 packTypeId) private view {
@@ -130,9 +186,9 @@ contract YunipalMonsters is ERC721Upgradeable, BoosterAdmin {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721Upgradeable, AccessControlUpgradeable)
+        override(ERC721Upgradeable, AccessControlUpgradeable, IERC165)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == 0x49064906 || super.supportsInterface(interfaceId);
     }
 }

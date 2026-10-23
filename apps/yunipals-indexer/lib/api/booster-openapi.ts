@@ -28,6 +28,33 @@ const ownerParameters = [
   }
 ];
 export const boosterOpenApiPaths = {
+  "/v1/boosters/metadata/{collection}/{tokenId}.json": {
+    get: {
+      tags: ["Boosters"],
+      summary: "Read per-NFT birth metadata with approved shared artwork",
+      description:
+        "Uses one repeatable-read, read-only source snapshot. Birth day is the floor of elapsed seconds between this NFT's MonsterMinted event and its original NFT's MonsterMinted event, divided by86400. Originals are day0; saved batches share their actual mint day. Transfer or burn does not change birth provenance. Artwork is loaded only from configured local catalogs whose commitment and metadata base match the frozen pack. No generation, URI fetch or transaction is triggered. Responses use no-store.",
+      parameters: [pathParameter("collection"), pathParameter("tokenId")],
+      responses: {
+        ...response,
+        "200": {
+          description:
+            "Approved ERC721 variant document with unchanged image/holo assets; adds numeric Birth day and Born date (Unix seconds) attributes. yunipals contains birthMetadataVersion, chainId, collection, tokenId, originalTokenId, isOriginal, birthDay, bornAt/originalBornAt decimal strings and mint/originalMint event/block/hash/transaction/log witnesses."
+        },
+        "202": {
+          description:
+            "Birth provenance is available but shared artwork is missing, queued or blocked. Includes birth attributes and Retry-After:5; GET never creates artwork jobs."
+        },
+        "404": {
+          description: "NFT is not indexed in the configured collection"
+        },
+        "503": {
+          description:
+            "Source is unavailable, mint/original provenance is missing or ambiguous, or the approved local catalog/variant binding cannot be proven. No guessed birth day is returned."
+        }
+      }
+    }
+  },
   "/v1/boosters/art/{catalog}/manifest.json": {
     get: {
       tags: ["Boosters"],

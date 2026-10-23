@@ -1,0 +1,40 @@
+{
+  "format": "yunipals-public-request-monsters-verified-v1",
+  "observedAt": "2026-10-23T09:22:58.739526+00:00",
+  "verified": true,
+  "http": {
+    "path": "/v1/boosters/requests/0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609/95398210973416432093304839780870626144645280554838792215361305546672924156888/monsters",
+    "public": true,
+    "status": 200,
+    "sha256": "5aaa6f10936cf115267bfc97d7d5e7241229ca3b056d6b66a42c61fe530151de",
+    "cacheControl": "no-store",
+    "cors": "*"
+  },
+  "snapshot": {
+    "ready": true,
+    "chainId": 8453,
+    "collection": "0x105319be2182018c31fb10b1be198c3cf238a146",
+    "engine": "0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609",
+    "indexedBlock": "52979015",
+    "indexedTimestamp": "1792747377",
+    "status": "completed",
+    "quantity": 1,
+    "requestId": "95398210973416432093304839780870626144645280554838792215361305546672924156888"
+  },
+  "items": [
+    {
+      "id": "8453:0x105319be2182018c31fb10b1be198c3cf238a146:1",
+      "tokenId": "1",
+      "requestKey": "8453:0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609:95398210973416432093304839780870626144645280554838792215361305546672924156888",
+      "originalKey": "8453:0x105319be2182018c31fb10b1be198c3cf238a146:1",
+      "typeKey": "8453:0xeaee2da120a398f21729d50672ac5d1dd71d7274:1",
+      "isOriginal": true,
+      "burned": false,
+      "metadataUri": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-smoke-v1/73.json"
+    }
+  ],
+  "readProtocol": "existing frozen booster-feature-v5 public GET helper",
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0
+}

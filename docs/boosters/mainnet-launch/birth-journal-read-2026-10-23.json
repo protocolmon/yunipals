@@ -1,0 +1,18 @@
+{
+  "sqlSha256": "9722433be43594f5b26f919dbd4070595a217df03ee44c82b5f0e1e50698929e",
+  "committed": true,
+  "selectGrants": 1,
+  "roleOrLoginChanges": 0,
+  "rowChanges": 0,
+  "postcheck": {
+    "format": "yunipals-booster-birth-journal-read-v1",
+    "database": "yunipals_backfill",
+    "roleOid": "73187672",
+    "schemaOid": "74518314",
+    "tableOid": "74518495",
+    "select": true,
+    "writes": false,
+    "roleOrLoginChanges": 0,
+    "rowChanges": 0
+  }
+}
