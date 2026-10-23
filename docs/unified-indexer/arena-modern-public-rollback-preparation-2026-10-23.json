@@ -1,0 +1,105 @@
+{
+  "acceptedCutoverChildSha256": "a5efd3ed83c3f2168055b84db4d09973ccb6ccc1d194b70ac39fa26110fd98a9",
+  "acceptedCutoverProducerSha256": "983f8baa24a2b82b0dce4e4716c64f9e4f68876db1d809f3a393177b390e81a6",
+  "actualCutoverResult": null,
+  "actualScannerRuntime": null,
+  "actualTargetAdmission": null,
+  "files": [
+    {
+      "bytes": 49910,
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v1.py",
+      "sha256": "d4dfb61cf2d65e320e3c97d0de086784083fdbbf03e69d776126777f7dc933d7"
+    },
+    {
+      "bytes": 25300,
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v1.mjs",
+      "sha256": "f606f0a85b4d59c7eb1084c2546daaed257e5fc56bdccb57c43e81e6beaf40c2"
+    },
+    {
+      "bytes": 20359,
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v1-test.py",
+      "sha256": "0fb9c2fc85f0efad38cbefcaca651f5e0459d91d4508212521d832fe66835d4d"
+    },
+    {
+      "bytes": 13696,
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v1-test.mjs",
+      "sha256": "2b79aa497c0e54a83d03342fe08a744601d9426d9d9a75e399e3b8c41e8109c0"
+    },
+    {
+      "bytes": 16050,
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v1.md",
+      "sha256": "e43979ca3a644b70135b29884e55bfc6d80f57fee175991d018a49bb35ecb7d9"
+    }
+  ],
+  "format": "yunipals-arena-modern-public-rollback-preparation-v1",
+  "independentReview": {
+    "agent": "final_handover",
+    "childSha256": "f606f0a85b4d59c7eb1084c2546daaed257e5fc56bdccb57c43e81e6beaf40c2",
+    "controllerSha256": "d4dfb61cf2d65e320e3c97d0de086784083fdbbf03e69d776126777f7dc933d7",
+    "nodeTestsPassed": 35,
+    "productionActions": 0,
+    "pythonTestsPassed": 37,
+    "result": "code_review_pass; actual hardened namespace/proxy proof pending"
+  },
+  "limits": [
+    "No current production readiness or source switch claimed",
+    "No private database restore or pre-adoption runtime restart path",
+    "Controller/scanner owner not exercised end to end under production systemd",
+    "Target helper and actual receipt hashes remain future protected plan inputs; OIDs are never fabricated"
+  ],
+  "logs": [
+    {
+      "bytes": 136,
+      "path": "/tmp/yunipals-arena-modern-public-rollback-python-20261023.log",
+      "sha256": "2c05259deeb8b10180f0b94a94f0267a787933df366ced196546f1c224302483"
+    },
+    {
+      "bytes": 2795,
+      "path": "/tmp/yunipals-arena-modern-public-rollback-node-20261023.log",
+      "sha256": "386ed1a688b3abddf3def3561f40f85ae5b2cb07fb11bd79c119f3412443b46f"
+    }
+  ],
+  "preparedAt": "2026-10-23T01:37:54.959054+00:00",
+  "productionChanges": {
+    "broadcasts": 0,
+    "credentials": 0,
+    "databases": 0,
+    "providerRequests": 0,
+    "roles": 0,
+    "services": 0,
+    "sourceSelections": 0
+  },
+  "remaining": [
+    "Root review/staging of independently reviewed frozen package",
+    "Actual initial native cutover and completed latest result/epoch",
+    "Separate target package admission/credential review and actual receipts",
+    "Actual hardened scanner import/credential/free-only proxy namespace acceptance",
+    "Actual canonical catch-up and reviewed recovery operation if needed"
+  ],
+  "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "state": "local_preparation_only_not_staged_or_executed",
+  "validation": {
+    "existingCurrentPostgresRollback": {
+      "command": "node --import tsx src/arena/live/rollback.test.ts",
+      "cwd": "apps/yunipals-market-api",
+      "endpoint": "127.0.0.1:55441/arena",
+      "exitCode": 0,
+      "initialSandboxAttempt": "loopback EPERM; rerun with local-only escalation passed",
+      "passed": 6,
+      "resultSession": 85752,
+      "scope": "existing genuine PostgreSQL16 rollback/snapshot/lease/private-history fixture; chain/provider responses are synthetic",
+      "testSourceSha256": "7879a566c034713772402f12e5f34fcd84b532d103bec1542af4b80b45bd818d",
+      "tests": 6
+    },
+    "node": {
+      "passed": 35,
+      "scope": "current official public reducer parity, private-query fence, source-switch facade/XID/canonical serialization and exact scanner0440/private0550 readonlymount/descriptor/stability controls",
+      "tests": 35
+    },
+    "python": {
+      "passed": 37,
+      "scope": "controller/filesystem/owned_acknowledgement controls with synthetic plans only",
+      "tests": 37
+    }
+  }
+}

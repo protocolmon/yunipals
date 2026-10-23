@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Last checked: **23 October 2026, 01:19 UTC**.
+Last checked: **23 October 2026, 01:43 UTC**; replay observed at **01:38 UTC**.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
@@ -22,7 +22,7 @@ Last checked: **23 October 2026, 01:19 UTC**.
 
 **Running:** normal historical replay. **Prepared in parallel:** reviewed handover code and recovery paths, now staged on production. The metadata/cache/reader changes below wait for real native readiness; their live switches have not started.
 
-- [ ] **Complete historical replay.** Running on the same normal free-only source. Latest verified BNB checkpoint: **61,877,997** at 01:16 UTC (about **44.7%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. The same live process has no recorded OOM events and the 25 GB disk reserve remains intact. Complete history and current canonical coverage across all four EVM chains remain unproven.
+- [ ] **Complete historical replay.** Running on the same normal free-only source. Latest verified BNB checkpoint: **64,218,646** at 01:38 UTC (about **46.6%** of the required historical block range; fixed target 129,172,539). This measures block coverage, not elapsed-time completion. The same live process has no recorded OOM events and the 25 GB disk reserve remains intact. Complete history and current canonical coverage across all four EVM chains remain unproven.
 - [x] **Clear the reader permission-history mismatch.** The corrected verifier passed against production at 19:27 UTC, recognizing the already admitted reads and preserving the older metadata permissions. No new permissions or service changes were needed.
 - [x] **Provide cache-build disk capacity.** Completed at 19:33 UTC: copied and verified the seven-file September 30 cold backup, then replaced its two large originals with verified volume links. Reclaimed 7.61 GB; root now has approximately 46.88 GB available. All old paths still resolve; the current October 20 recovery set was untouched.
 - [ ] **Adopt native metadata provenance and publication.** Waiting for replay and the first current native block witnesses. Actual readiness probes reject the historical source with `indexer_not_ready`; this is expected catch-up gating. The legacy metadata worker continues producing the active data.
@@ -57,7 +57,14 @@ Last checked: **23 October 2026, 01:19 UTC**.
 - [ ] Adopt the compatible Arena workers onto native Ponder state, then verify accounting and recovery. The operational schema prerequisite is complete; native adoption is not. Do not rerun the completed owner migration.
 - [x] Publish the latest build corrections and exact historical source baseline. Commit `b270265` is pushed to the public branch; all 1,746 archived source hashes were verified and the extracted contents and current source corrections passed secret scans.
 - [ ] Compare public APIs, collection filters, metadata, rarity, search and Solana responses against their retained baselines.
-- [ ] Rehearse the coordinated source/worker rollback on the actual replacement deployment. Arena runtime-only recovery has passed; the combined source and consumer rollback is still pending. A separate post-native Arena fallback scanner/controller and isolated public-target admission are implemented locally with focused tests passing. Final review, credential-owner completion, actual isolated-target admission and production rollback acceptance remain pending; native private workers and records are retained.
+- [ ] Rehearse the coordinated source/worker rollback on the actual replacement deployment. Arena runtime-only recovery has passed; the combined source and consumer rollback is still pending.
+  - [x] Implement and independently review the post-native Arena fallback scanner/controller. The corrected version passed 37 Python and 35 Node controls; six existing PostgreSQL rollback groups also passed. Original private workers and records remain preserved.
+  - [x] Implement the isolated public fallback database and credential setup. Twelve offline checks and the real PostgreSQL admission/authentication checks passed locally; the finite ten-file package passed its secret scan.
+  - [x] Stage the twelve exact reviewed fallback operator/target files. Actual production hashes and private file modes verified; no operator, SQL, credential or service action ran.
+  - [x] Pass the actual isolated target's production read-only review. The new database, all three roles and both credential paths are absent; existing source/operational database identities match.
+  - [ ] Qualify the actual hardened scanner credential namespace, runtime imports and free-only proxy. A synthetic credential probe is being prepared without real keys, database access or provider calls.
+  - [ ] Admit the actual isolated target and authenticate its dedicated roles. Automatic approval review rejected this separate three-role/database/ACL boundary before execution; its target/credential approval question is pending, independently of the nine-role worker approval.
+  - [ ] Complete the production fallback switch, return and scanner-stop rehearsal after native adoption.
 - [ ] Observe at least 24 hours, including a supervised restart, backup and idle cycle.
 - [ ] Disable every superseded scanner and its restart paths; finalize the operating runbook.
 
@@ -69,4 +76,4 @@ Last checked: **23 October 2026, 01:19 UTC**.
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next concrete deliverable:** finish independent review of the post-native public-source rollback and its isolated target/credential setup while the nine-role approval is pending. Direct cutover/continuation tests and review are complete, and the operator source is staged without execution. Shared collection reader switches remain queued behind replay. The current reader runbook now names the exact production-qualified owner/preview/install entry; historical versioned recipes remain labeled as history. No further pack configuration or activation signature is needed now.
+**Next concrete deliverable:** qualify the scanner's actual hardened execution environment using a bounded synthetic probe. Fallback source staging and the target's production read-only review have passed. The nine-role worker and separate three-role fallback-target approvals remain pending. Direct cutover/continuation tests and review are complete, with operator source staged without execution. Shared collection reader switches remain queued behind replay. No further pack configuration or activation signature is needed now.

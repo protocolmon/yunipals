@@ -1,7 +1,7 @@
 {
   "format": "yunipals-normal-replay-health-observation-v1",
   "checkpoint": {
-    "at": "2026-10-23T01:16:35.635956+00:00",
+    "at": "2026-10-23T01:38:30.964276+00:00",
     "buildId": "bf4939b3ff",
     "checkpoints": [
       {
@@ -10,9 +10,9 @@
         "completeBlock": 26249684
       },
       {
-        "blockTimestamp": 1758407358,
+        "blockTimestamp": 1760163442,
         "chain": 56,
-        "completeBlock": 61877997
+        "completeBlock": 64218646
       },
       {
         "blockTimestamp": 1792690983,
@@ -39,11 +39,11 @@
   },
   "resources": {
     "databaseWrites": 0,
-    "healthAt": "2026-10-23T01:16:35.636167+00:00",
+    "healthAt": "2026-10-23T01:38:30.964535+00:00",
     "providerCalls": 0,
-    "rootFreeBytes": 45502304256,
+    "rootFreeBytes": 45483835392,
     "serviceActions": 0,
-    "sourceMemoryCurrentBytes": 400986112,
+    "sourceMemoryCurrentBytes": 400900096,
     "sourceMemoryEvents": {
       "high": 0,
       "low": 0,
@@ -55,7 +55,7 @@
     "sourceMemoryMaxBytes": 6442450944,
     "volumeFreeBytes": 95476449280
   },
-  "bnbHistoricalBlockCoveragePercent": 44.7,
+  "bnbHistoricalBlockCoveragePercent": 46.6,
   "fixedBnbTarget": 129172539,
   "allChainsCurrent": false,
   "nativeSourcePromoted": false

@@ -1,0 +1,96 @@
+{
+  "format": "yunipals-arena-public-rollback-target-proposal-v1",
+  "status": "prepared_not_admitted",
+  "database": {
+    "name": "yunipals_arena_public_rollback",
+    "port": 5432,
+    "template": "template0",
+    "encoding": "UTF8",
+    "collate": "C",
+    "ctype": "C"
+  },
+  "maintenance": {
+    "database": "yunipals_backfill",
+    "databaseOid": 17584,
+    "port": 5432
+  },
+  "operational": {
+    "database": "yunipals_arena",
+    "databaseOid": 2303669,
+    "port": 15438
+  },
+  "schema": "yunipals_arena",
+  "roles": {
+    "owner": {
+      "name": "arena_public_rollback_owner",
+      "connectionLimit": -1
+    },
+    "writer": {
+      "name": "arena_public_rollback_writer",
+      "connectionLimit": 2
+    },
+    "reader": {
+      "name": "arena_public_rollback_reader",
+      "connectionLimit": 32
+    }
+  },
+  "tables": {
+    "chain_event": [
+      "SELECT",
+      "INSERT"
+    ],
+    "credit": [
+      "SELECT",
+      "INSERT",
+      "UPDATE"
+    ],
+    "deployment": [
+      "SELECT",
+      "INSERT",
+      "UPDATE"
+    ],
+    "tournament": [
+      "SELECT",
+      "INSERT",
+      "UPDATE"
+    ]
+  },
+  "readerPrivileges": [
+    "SELECT"
+  ],
+  "privateFiles": {
+    "writer": "/etc/yunipals-arena/public-rollback-writer.env",
+    "reader": "/etc/yunipals-arena/public-rollback-reader.env"
+  },
+  "privateEnvironmentKey": "ARENA_PUBLIC_ROLLBACK_DATABASE_URL",
+  "sql": {
+    "roles.sql": "d6688cc1c06825a943e34219d834eb1c174c3259cc03e31b26d2e510178bcdbe",
+    "schema.sql": "e816069e282575727e9ff1be28d7fe49323d6b8282e4843268375eec4873ee36"
+  },
+  "consumerSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "sourceFiles": {
+    "apps/yunipals-market-api/src/arena/live/projector.ts": "47374f9c4e688591f6a16d9f54471a6e3d9fe5256be70985155c6c086693d960",
+    "apps/yunipals-market-api/src/arena/live/projection.ts": "c42794e369ea260cb2b722ce90fb111ef922c895819a25ac6fde527efc58ef73",
+    "apps/yunipals-market-api/src/arena/live/rollbackSource.ts": "5ee1a6bdc1e1894c49be58a364e68a4af99c06ad80a0c98dbfd4d81eb949130c",
+    "apps/yunipals-market-api/src/confirmations.ts": "11abd8f5c165762af9aa1d987609ba0ff3f8af318e3d847634f290f873bc3b77"
+  },
+  "fallbackConfirmationPolicy": {
+    "kind": "depth",
+    "subsequentBaseBlocks": 3,
+    "primaryPonderPolicyChanged": false
+  },
+  "actionsExcluded": [
+    "migrateArena",
+    "privateTableCreation",
+    "operationalDatabaseRestore",
+    "legacyRuntimeRestart",
+    "sourceSelection",
+    "scannerStart",
+    "providerCalls",
+    "operationalEnvironmentChanges"
+  ],
+  "admissionAtomic": false,
+  "databaseCreateAcknowledgement": "explicit command acknowledgement plus fresh owned database OID/catalog; unknown outcome is read-only reconciliation only",
+  "emptyTargetRequired": true,
+  "credentialsInitially": "NOLOGIN and NULL passwords; separate exact-review setup/enable/auth phases required"
+}
