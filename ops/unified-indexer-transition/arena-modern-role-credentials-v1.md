@@ -1,0 +1,40 @@
+This operator prepares credentials for the exact eight dormant Arena operational roles and the separate native source reader. It creates no roles or grants, runs no migration, changes no source selector, starts no worker, and reads no provider/signing key for authentication. It preserves the original eight actors, definitions and existing private-input hashes using only the frozen constructor preflight's `retained()`/`actor()` checks. It does not run constructors or require another legacy runtime upgrade.
+
+It requires the actual protected commit receipt `/var/backups/yunipals-arena-native-admission-v1-20261023/result.json`, produced by the reviewed `commit-admission.py`, with both database boundaries acknowledged and all nine real role OIDs. No future receipt, OID or password is supplied by this package. The helper's hash, the receipt's hash and the public plan's hash are explicit inputs. Its read-only `verify_current()` rechecks the exact227 operational and13 source edges, current OIDs, negative role attributes, no membership/ownership/function authority beyond the reviewed source ambient permissions, and the original prepared ACL snapshots. Only expected LOGIN/password fields vary by phase; current ACLs are never normalized.
+
+The public protected plan has exactly these fields:
+
+```json
+{
+  "format": "yunipals-arena-modern-role-credentials-v1",
+  "admissionResultFile": "/var/backups/yunipals-arena-native-admission-v1-20261023/result.json",
+  "admissionResultSha256": "ACTUAL_ACKNOWLEDGED_RECEIPT_SHA256",
+  "admissionHelperFile": "/opt/yunipals-unified/operations/arena-native-admission-20261022/commit-admission.py",
+  "admissionHelperSha256": "ACTUAL_REVIEWED_COMMIT_HELPER_SHA256"
+}
+```
+
+The placeholder strings are deliberately invalid and cannot execute. Stage the operator as a protected root-owned public file; keep the plan root-owned and non-writable by group/others. Each command below requires the same actual plan path and exact plan hash. Default mode is read-only catalog/actor review; `--apply` accepts only that fresh phase review hash.
+
+1. `--phase setup`: require all nine final paths absent and no prior credential attempt. Review the exact role/ACL state with NOLOGIN and no password. `--phase setup --apply <reviewHash>` creates the fixed backup directory0700 and an exclusive durable intent, nine distinct random passwords, nine salted4096-iteration SCRAM-SHA-256 verifiers, then exactly nine exclusive root-owned0600/no-follow environment files. Verifiers go to the fixed cap-dropped local PostgreSQL peer through subprocess stdin. The eight operational changes and the source change are separately acknowledged transactions; all roles remain NOLOGIN. `setup-result.json` is written only after actual role/password/ACL and preservation checks pass.
+2. `--phase enable`: require the exact owned setup receipt, file hashes and original file identities, all nine NOLOGIN roles with the owned verifier hashes, no dedicated-role sessions, dormant native units and fresh connection headroom. `--phase enable --apply <reviewHash>` changes only these acknowledged OIDs to LOGIN, with separate durable per-database acknowledgements. It writes `login-result.json`; this is not authentication acceptance.
+3. `--phase auth`: require the full LOGIN acknowledgement and repeat the exact current checks. `--phase auth --apply <reviewHash>` makes at most one TCP connection at a time to the fixed loopback targets. Each role must reject an incorrect password and reject setting the existing owner role with SQLSTATE42501. The valid credential must prove `session_user=current_user`, exact role/database OIDs, no membership/elevated attributes, and actual zero-row permitted reads in a READ ONLY transaction. The reader proves reads from all13 source relations. These probes do not return private data. Only after all nine and final preservation/catalog checks pass is `auth-result.json` written.
+4. Optional owned inverse before native workers start: `--phase disable`, then `--phase disable --apply <reviewHash>`. It requires the acknowledged LOGIN attempt, exact files/verifiers/OIDs, zero dedicated-role sessions and all native units dormant. It changes only these roles back to NOLOGIN; no file is deleted and no password is rotated. Re-enabling or completing an uncertain inverse requires explicit reconciliation, not another automatic invocation.
+
+The generated operational overlays contain **exactly one key**, `ARENA_DATABASE_URL`, targeting `127.0.0.1:15438/yunipals_arena`. The separately reviewed cutover exec forces entries/new-lobbies false. The source file `/etc/yunipals-arena/native-read.env` contains exactly four keys: unified mode, unified source kind, the actual source008 registered release ID `0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c`, and the dedicated reader URL targeting `127.0.0.1:5432/yunipals_backfill` with a default read-only connection option. There is no `ARENA_REPOSITORY_ROOT` override; the actual retained public artwork tree remains selected by existing configuration. Existing runtime/database/provider/budget/funding/encryption/admission/operator/referee files remain unchanged.
+
+Real TCP password input uses a root-only0600 anonymous memory file descriptor inherited only by psql through `PGPASSFILE=/proc/self/fd/N`. Plaintext passwords never enter argv, environment, stdout, public receipts or an extra on-disk pgpass file. The setup SCRAM verifier is passed only in private SQL stdin. Only hashes, OIDs, metadata and fixed results are exported. Nine private connection files are the only new persistent secret files.
+
+The final authoritative receipt is `/var/backups/yunipals-arena-modern-role-credentials-v1-20261023/auth-result.json`, format `yunipals-arena-native-role-auth-v1`. It contains exact `roles:{name:oid}` for the eight, `sourceRole:{name,oid}`, `credentialFiles:{fixedPath:sha256}` for the nine, operational/source database OIDs, operator/admission-helper/admission-result/setup-result/original-actor-receipt hashes, and `grantsVerified`, `tcpAuthenticationProven`, `loginEnabled` true. The direct cutover owner must pin the actual receipt and producer hash and independently recheck its current files, identities and grant/auth state. A receipt does not start workers or publish a source.
+
+There is deliberately no blind repair, password rotation, duplicate ALTER or partial-state adoption. A lost acknowledgement leaves its original intent and any per-database acknowledgements intact. Later mutation phases refuse missing/mixed/foreign state. Resolve it by an owner-reviewed read-only comparison of those actual OIDs, verifier hashes, file identities and commit acknowledgements before preparing a concrete successor; do not rerun setup, recreate roles or edit an old receipt. The two database boundaries and filesystem writes are not claimed atomic.
+
+Fresh headroom must cover the existing60 operational/31 source runtime pool slots plus a one-connection probe reserve; dedicated roles must have zero sessions during preparation. The original legacy roles are never named by an ALTER, and actual native unit starts are outside this operator.
+
+Local validation:
+
+```sh
+python3 -B ops/unified-indexer-transition/arena-modern-role-credentials-v1-test.py
+```
+
+Twenty-two controls pass, including actual filesystem no-overwrite/no-follow0600 behavior, same-byte foreign inode refusal, wrong target/extra env keys, changed ACL/input refusal, two-database lost acknowledgement boundaries, exact role/OID guards, no plaintext in SQL/results, expected permission-denial SQLSTATE and no false auth receipt. A separate real disposable PostgreSQL16.15 primitive test proved the anonymous0600 FD accepted by libpq, NOLOGIN and wrong-password rejection, actual SQLSTATE42501 for owner escalation, dedicated session/current identity, the owned SCRAM verifier hash and cleanup of its one temporary role. This primitive test is not the future nine-role production authentication proof. No production command was executed by the author.
