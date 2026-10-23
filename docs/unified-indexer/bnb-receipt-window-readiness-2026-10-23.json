@@ -1,0 +1,37 @@
+{
+  "format": "yunipals-bnb-receipt-window-readiness-v1",
+  "observedAt": "2026-10-23T15:27:47.739787+00:00",
+  "source": {
+    "MainPID": "716994",
+    "NRestarts": "0",
+    "ActiveState": "active",
+    "InvocationID": "c3463c9a2e1240e8890e318ba1360cf4"
+  },
+  "schemaOid": 73004622,
+  "buildId": "bf4939b3ff",
+  "committedThroughBlock": 101089566,
+  "ownershipReceiptFloor": 122080975,
+  "marketplaceSourceStartBlock": 123769700,
+  "definitionsMatchAcceptedPublicManifest": true,
+  "manifestHash": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+  "observedCounts": {
+    "receiptCandidates": 0,
+    "marketplaceEvents": 0,
+    "receiptJobs": 0,
+    "storedReceipts": 0
+  },
+  "interpretation": "The candidate has not reached the configured BNB receipt window. Its zero BNB receipt outcome is consistent with zero eligible indexed candidates, rather than a demonstrated receipt RPC failure. The main reader preview still requires an actual indexed Seaport action with full receipt, after the marketplace source begins.",
+  "nextAction": "Keep historical replay progressing. Require actual candidate and Seaport events before rerunning a bounded BNB receipt task and constructing its genuine action fixture. Never insert a synthetic candidate, bypass full receipt validation or relabel fetched blocks as committed coverage.",
+  "limitations": [
+    "This snapshot does not prove receipt RPC availability, native source readiness, historical receipt completeness or main reader acceptance.",
+    "This read-only check does not renew a receipt worker run or any paid allowance."
+  ],
+  "scope": {
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "privateValuesExported": false,
+    "rawOwnershipRowsExported": false
+  },
+  "observationSha256": "b2f84b8a765832ac2290b72f87ed1254d47182d5677c54d9f0f947f858e9baad"
+}
