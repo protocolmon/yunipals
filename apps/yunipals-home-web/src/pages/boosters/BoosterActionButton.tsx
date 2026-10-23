@@ -8,6 +8,7 @@ import {
   type BoosterAction
 } from "@/hooks/useBoosterActions";
 import { cn } from "@/lib/utils";
+import { formatDecimal, formatRoundedAmount } from "@/lib/format";
 
 export const boosterButtonClass =
   "inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2";
@@ -112,31 +113,76 @@ export function BoosterActionButton({
                   </dd>
                 </div>
               )}
+              {review.tokenBalance !== null && (
+                <div className="flex justify-between gap-4">
+                  <dt>Your {review.tokenSymbol} balance</dt>
+                  <dd
+                    className="text-right"
+                    title={`${formatUnits(review.tokenBalance, review.tokenDecimals)} ${review.tokenSymbol}`}
+                  >
+                    {formatDecimal(
+                      formatUnits(review.tokenBalance, review.tokenDecimals),
+                      4
+                    )}{" "}
+                    {review.tokenSymbol}
+                  </dd>
+                </div>
+              )}
+              {review.approvalAmount > 0n && (
+                <div className="flex justify-between gap-4">
+                  <dt>Approval amount</dt>
+                  <dd
+                    className="text-right"
+                    title={`${formatUnits(review.approvalAmount, review.tokenDecimals)} ${review.tokenSymbol}`}
+                  >
+                    {formatDecimal(
+                      formatUnits(review.approvalAmount, review.tokenDecimals)
+                    )}{" "}
+                    {review.tokenSymbol}
+                  </dd>
+                </div>
+              )}
               {!review.approval && review.vrfPrice > 0n && (
                 <div className="flex justify-between gap-4">
                   <dt>VRF quote</dt>
-                  <dd>{formatEther(review.vrfPrice)} ETH</dd>
+                  <dd
+                    className="text-right"
+                    title={`${formatEther(review.vrfPrice)} ETH`}
+                  >
+                    {formatRoundedAmount(review.vrfPrice, 18, "ETH")}
+                  </dd>
                 </div>
               )}
               {!review.approval && review.value > 0n && (
                 <div className="flex justify-between gap-4">
                   <dt>Maximum ETH sent</dt>
-                  <dd className="break-all text-right">
-                    {formatEther(review.value)} ETH
+                  <dd
+                    className="text-right"
+                    title={`${formatEther(review.value)} ETH`}
+                  >
+                    {formatRoundedAmount(review.value, 18, "ETH")}
                   </dd>
                 </div>
               )}
               <div className="flex justify-between gap-4">
                 <dt>Network gas estimate</dt>
-                <dd className="break-all text-right">
-                  {formatEther(review.networkFee)} ETH
+                <dd
+                  className="text-right"
+                  title={`${formatEther(review.networkFee)} ETH`}
+                >
+                  {formatRoundedAmount(review.networkFee, 18, "ETH")}
                 </dd>
               </div>
             </dl>
             {review.approval ? (
               <p className="text-sm text-muted">
-                Approve the exact total pack price, then review the opening
-                transaction. Approval is a separate transaction.
+                Approve{" "}
+                {formatDecimal(
+                  formatUnits(review.approvalAmount, review.tokenDecimals)
+                )}{" "}
+                {review.tokenSymbol} for future pack purchases. Only the total
+                pack price is charged for this opening. Then review the opening
+                transaction.
               </p>
             ) : action.kind === "open" ? (
               <p className="text-sm text-muted">

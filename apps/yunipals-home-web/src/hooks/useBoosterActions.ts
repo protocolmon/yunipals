@@ -45,6 +45,8 @@ type Review = {
   vrfPrice: bigint;
   networkFee: bigint;
   tokenPrice: bigint;
+  tokenBalance: bigint | null;
+  approvalAmount: bigint;
   tokenSymbol: string;
   tokenDecimals: number;
   approval: boolean;
@@ -113,6 +115,8 @@ export function useBoosterActions() {
       let value = 0n;
       let vrfPrice = 0n;
       let tokenPrice = 0n;
+      let tokenBalance: bigint | null = null;
+      let approvalAmount = 0n;
       let tokenSymbol = "PROTO";
       let tokenDecimals = 18;
       let approval = false;
@@ -193,16 +197,20 @@ export function useBoosterActions() {
           ]);
           tokenDecimals = decimals;
           tokenSymbol = symbol;
+          tokenBalance = balance;
           if (balance < tokenPrice)
             throw new Error(`You need more ${symbol} for these packs.`);
           approval = allowance < tokenPrice;
           if (approval) {
+            const defaultApproval = 1000n * 10n ** BigInt(decimals);
+            approvalAmount =
+              tokenPrice > defaultApproval ? tokenPrice : defaultApproval;
             to = token;
             value = 0n;
             data = encodeFunctionData({
               abi: erc20Abi,
               functionName: "approve",
-              args: [deployment.engine, tokenPrice]
+              args: [deployment.engine, approvalAmount]
             });
           } else
             data = boosterPurchaseData(packTypeId, quantity, value, deadline);
@@ -267,6 +275,8 @@ export function useBoosterActions() {
         vrfPrice,
         networkFee,
         tokenPrice,
+        tokenBalance,
+        approvalAmount,
         tokenSymbol,
         tokenDecimals,
         approval,
