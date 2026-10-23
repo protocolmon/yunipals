@@ -28,6 +28,32 @@ const ownerParameters = [
   }
 ];
 export const boosterOpenApiPaths = {
+  "/v1/boosters/recent-openings": {
+    get: {
+      tags: ["Boosters"],
+      summary: "Read recent completed purchase and daily-claim packs",
+      description:
+        "One item per completed request, ordered by its RequestCompleted journal block/log descending, within the ready indexed prefix. All minted NFTs and their MonsterMinted witnesses must match the configured deployment, frozen type/rule, original, quantity and completion transaction. The cover is the request's first mint in log order. Partial, pending, forfeited, foreign or future requests are omitted. Burned or transferred historical covers remain eligible; mintedTo remains the actual recipient. No owner filter, RPC, artwork generation or transaction is triggered. Responses use no-store.",
+      parameters: [
+        {
+          name: "limit",
+          in: "query",
+          schema: { type: "integer", minimum: 1, maximum: 24, default: 12 }
+        }
+      ],
+      responses: {
+        ...response,
+        "200": {
+          description:
+            "BoosterSnapshot plus items:BoosterRecentOpening[]. Each item has requestKey, requestId, engine, opening (true for purchase, false for daily claim), quantity, revealedAt (completion Unix seconds string), and monster (existing BoosterMonster cover). Empty history returns items:[]. No pagination cursor or guessed supply is returned."
+        },
+        "503": {
+          description:
+            "Readiness or a selected request's exact journal provenance is unavailable or inconsistent. No guessed reveal timestamp or partial batch is exposed."
+        }
+      }
+    }
+  },
   "/v1/boosters/metadata/{collection}/{tokenId}.json": {
     get: {
       tags: ["Boosters"],

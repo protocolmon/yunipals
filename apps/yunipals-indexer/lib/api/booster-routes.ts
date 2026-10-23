@@ -7,6 +7,7 @@ import {
 } from "../boosters/config.js";
 import type { boosterReadiness } from "../boosters/readiness.js";
 import { sqlIdentifier } from "../offchain/sql.js";
+import { recentBoosterOpenings } from "./booster-recent-openings.js";
 import {
   boosterIdentity,
   type BoosterMonster,
@@ -240,6 +241,37 @@ export function registerBoosterRoutes(
       items,
       nextCursor: null
     });
+  });
+
+  router.get("/boosters/recent-openings", async (c) => {
+    c.header("Cache-Control", "no-store");
+    const requestedLimit = c.req.query("limit") ?? "12";
+    if (!/^(?:[1-9]|1[0-9]|2[0-4])$/.test(requestedLimit))
+      return c.json({ error: "invalid_limit" }, 400);
+    const deployment = boosterDeployment();
+    if (!deployment) return c.json({ error: "boosters_not_configured" }, 503);
+    const state = await snapshot();
+    if (
+      !state.enabled ||
+      state.indexedBlock == null ||
+      !validId(state.indexedBlock) ||
+      state.indexedTimestamp == null ||
+      !validId(state.indexedTimestamp) ||
+      BigInt(state.indexedTimestamp) === 0n
+    )
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    const items = await recentBoosterOpenings(
+      pool,
+      schema,
+      deployment,
+      {
+        indexedBlock: state.indexedBlock,
+        indexedTimestamp: state.indexedTimestamp
+      },
+      monsterColumns,
+      Number(requestedLimit)
+    );
+    return c.json({ ...state, items });
   });
 
   router.get("/boosters/monsters", async (c) => {

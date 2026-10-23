@@ -597,7 +597,10 @@ function CollectionExplorer() {
   const setEdition = useCallback(
     (nextEdition: CollectionEdition) => {
       if (nextEdition === edition) return;
-      const next = serializeCollectionFilters(clearCollectionFilters(filters));
+      const next = serializeCollectionFilters({
+        ...clearCollectionFilters(filters),
+        sort: nextEdition === "og" ? "rarity-capped-desc" : "token-id-asc"
+      });
       next.set("edition", nextEdition);
       setSelectedTrade(null);
       setSearchParams(next, { replace: false });

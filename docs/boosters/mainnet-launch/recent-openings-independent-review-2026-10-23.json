@@ -1,0 +1,56 @@
+{
+  "format": "yunipals-recent-openings-api-independent-review-v1",
+  "reviewedAt": "2026-10-23T12:27:22.898600+00:00",
+  "passed": true,
+  "preparationSha256": "360d1c86680ffb6ca7b6569e921e4640750f9e596fdcf244b64e1b92628457fb",
+  "sourceFiles": {
+    "packages/yunipals-market-core/src/boosters.ts": "d7361caaab030b18757ba175ece29ae54bccfe7dd4a6f59acec87566de4653a7",
+    "apps/yunipals-indexer/lib/api/booster-routes.ts": "b59caa35f41f35101592a8ef46830fdca1f69c16b2c0bcedfd5232cd76d27775",
+    "apps/yunipals-indexer/lib/api/booster-recent-openings.ts": "2016dfee252975f2498c7e2866f3ab858233841adcbd7f75957ebf602abfc949",
+    "apps/yunipals-indexer/lib/api/booster-openapi.ts": "d083c8ecee6775089566c25ef180f7bcca887febb4bef55ceb02754ac6795949",
+    "apps/yunipals-indexer/test/booster-recent-openings.test.ts": "f20eafca5ba85c4dee99c03b623bbbfe70f6a4bc8c8e7aa6addd482f9d2449bb",
+    "apps/yunipals-indexer/scripts/build-booster-api.mjs": "c8517815b5bfb5e87ce6f722c737770bdfebebfb29a00028463171741f9af007",
+    "apps/yunipals-indexer/scripts/test-booster-recent-api-bundle.mjs": "585ec0d8e512a9a9a18d213586f741e7c340ff080845e5df8d5022ac3b0a9d69",
+    "ops/booster-launch/rollout-recent-openings-api-v1.py": "1b2dc71b35d77a77c6934201a8c4dd8323dd1b4a674ff1af292126d519987281",
+    "ops/booster-launch/rollout-recent-openings-api-v1-test.py": "8ed775ded0270eded81e0ccc82da19be4846eeadf8a2aa50eea5f177a210d7c5",
+    "ops/booster-launch/rollout-recent-openings-api-v1.md": "68920537efb764aeb22329e1a8e14eeb2abb755c1355980255601ec0b686d0f5"
+  },
+  "artifacts": {
+    "manifest.json": "f7657a2bf0eaf13048fc86db67a65f8e203bbb8d7fefcf4be4384444a99c917a",
+    "booster-artwork-sync.mjs": "e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33",
+    "booster-api.mjs": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73"
+  },
+  "allDeclaredSourceAndArtifactHashesRechecked": true,
+  "independentTests": [
+    {
+      "command": "/root/.nvm/versions/node/v24.18.1/bin/node node_modules/vitest/vitest.mjs run test/booster-recent-openings.test.ts",
+      "cwd": "apps/yunipals-indexer",
+      "passed": 37,
+      "exitCode": 0
+    },
+    {
+      "command": "python3 -I -B ops/booster-launch/rollout-recent-openings-api-v1-test.py",
+      "passed": 22,
+      "exitCode": 0
+    }
+  ],
+  "reviewedBoundaries": [
+    "History is one completed request per entry, ordered by genuine completion block/log, with configured engine/wrapper/registry/collection, exact original/type/rule identity and registered maxBatch1..32. Pending/seeded/forfeited or incomplete/duplicate/foreign batches are not exposed.",
+    "All requested monsters must exist and each must have exactly one matching MonsterMinted journal. Raw arguments retain exact JSON shape and values; event IDs, block/hash/transaction/timestamp, recipient, original, pack type and traits bind every pull to the completion transaction and proven indexed prefix.",
+    "The actual first mint log selects the cover; reserved/numeric token/request IDs are not used as reveal ordering. Burned/transferred historical covers remain available, preserving mintedTo.",
+    "Route limits are bounded1..24 with default12, no-store and honest empty history. The read helper performs one SQL statement and no provider or write operation. Existing source readiness remains a separate required gate.",
+    "Rollout authenticates the exact acknowledged b624/b160 API operation/result, prior actor and artwork. New unit bytes differ only by the two immutable API release paths; private environment-file paths and existing catalog configuration are preserved without reading their contents.",
+    "Manager mutation allowlist contains only daemon-reload and restart of yunipals-booster-api.service. Both original source actors, all four proxies and timer/queue definition/program hashes are checked before and after. No source restart, schema/grant/private configuration change or provider request is added.",
+    "Durable operation/restart intents and exact actor/argv/cgroup/start-window reconciliation handle lost restart/reload acknowledgements without repeated START. Explicit inverse restores only the recorded API unit/bundle and preserves old/new artifacts."
+  ],
+  "releaseBlockingFindings": [],
+  "limitations": [
+    "This independent review reran37 focused real-SQL tests and22 real-file rollout controls; the implementation preparation separately records126 related controls, typecheck, disposable PG16 bundled HTTP and production query-only qualification.",
+    "No production rollout, public new-route proof or future current-consumer/handover acknowledgement is established by this review. The actual rollout receipt is required before replacing frozen b624-dependent consumer bindings."
+  ],
+  "productionCalls": 0,
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "sourceEdits": 0
+}

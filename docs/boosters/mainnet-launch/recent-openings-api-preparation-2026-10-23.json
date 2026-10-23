@@ -1,0 +1,83 @@
+{
+  "format": "yunipals-recent-openings-api-preparation-v1",
+  "preparedAt": "2026-10-23T12:22:05.576927+00:00",
+  "preparedOnly": true,
+  "sourceFiles": {
+    "packages/yunipals-market-core/src/boosters.ts": "d7361caaab030b18757ba175ece29ae54bccfe7dd4a6f59acec87566de4653a7",
+    "apps/yunipals-indexer/lib/api/booster-routes.ts": "b59caa35f41f35101592a8ef46830fdca1f69c16b2c0bcedfd5232cd76d27775",
+    "apps/yunipals-indexer/lib/api/booster-recent-openings.ts": "2016dfee252975f2498c7e2866f3ab858233841adcbd7f75957ebf602abfc949",
+    "apps/yunipals-indexer/lib/api/booster-openapi.ts": "d083c8ecee6775089566c25ef180f7bcca887febb4bef55ceb02754ac6795949",
+    "apps/yunipals-indexer/test/booster-recent-openings.test.ts": "f20eafca5ba85c4dee99c03b623bbbfe70f6a4bc8c8e7aa6addd482f9d2449bb",
+    "apps/yunipals-indexer/scripts/build-booster-api.mjs": "c8517815b5bfb5e87ce6f722c737770bdfebebfb29a00028463171741f9af007",
+    "apps/yunipals-indexer/scripts/test-booster-recent-api-bundle.mjs": "585ec0d8e512a9a9a18d213586f741e7c340ff080845e5df8d5022ac3b0a9d69",
+    "ops/booster-launch/rollout-recent-openings-api-v1.py": "1b2dc71b35d77a77c6934201a8c4dd8323dd1b4a674ff1af292126d519987281",
+    "ops/booster-launch/rollout-recent-openings-api-v1-test.py": "8ed775ded0270eded81e0ccc82da19be4846eeadf8a2aa50eea5f177a210d7c5",
+    "ops/booster-launch/rollout-recent-openings-api-v1.md": "68920537efb764aeb22329e1a8e14eeb2abb755c1355980255601ec0b686d0f5"
+  },
+  "artifactDirectory": "apps/yunipals-indexer/artifacts/booster-recent-openings-api-v1",
+  "artifacts": {
+    "manifest.json": "f7657a2bf0eaf13048fc86db67a65f8e203bbb8d7fefcf4be4384444a99c917a",
+    "booster-artwork-sync.mjs": "e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33",
+    "booster-api.mjs": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73"
+  },
+  "previousRuntime": {
+    "bundleSha256": "b624dc518556756399a26e691bd1d53d319bd46d20134f9d6e1356dae3d96088",
+    "unitSha256": "b160e4e6c18a9bfae20bf1780d356eeca41350550c31e63bbb9c7a6d78582ec4",
+    "api": {
+      "pid": 1700549,
+      "invocation": "837b70e85e85443991a2b69a2d58a06f"
+    },
+    "resultSha256": "91e6496cb4efc7548671318beeb63b2592602d545ab884dd3f6bb3f539f70fb8"
+  },
+  "verification": {
+    "relatedApiControls": 126,
+    "newRealSqlControls": 37,
+    "rolloutRealFileControls": 22,
+    "indexerTypecheck": true,
+    "actualCandidateBundledHttpPostgres16": true,
+    "restrictedReaderTables": 10,
+    "fixtureDisposed": true,
+    "providerCalls": 0
+  },
+  "actualHostQueryOnlyQualification": {
+    "sourceHelperSha256": "2016dfee252975f2498c7e2866f3ab858233841adcbd7f75957ebf602abfc949",
+    "publicChildProgramSha256": "c99adbd265c59e8238ea457d9181847af6616809dc38fd1aee7851f22590cbad",
+    "role": "yunipals_unified_collector",
+    "uid": 967,
+    "gid": 961,
+    "transport": "Unix peer authentication",
+    "snapshotIsolation": "repeatable read read only",
+    "statementTimeoutMs": 5000,
+    "transferredFields": "counts/public checkpoint fields/hashes only",
+    "qualification": {
+      "databaseWrites": 0,
+      "dtoSha256": "466822039f9617389a5a91e4a8b2b773e68bdcc22d69f9f9ad0f12dddc3ef461",
+      "openingKinds": [
+        true
+      ],
+      "passed": true,
+      "providerCalls": 0,
+      "quantities": [
+        1
+      ],
+      "readOnly": true,
+      "requestCount": 1,
+      "serviceActions": 0,
+      "snapshotBlock": "52984330",
+      "snapshotTimestamp": "1792758007"
+    },
+    "returncode": 0,
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "production": {
+    "staged": false,
+    "serviceActions": 0,
+    "grantChanges": 0,
+    "schemaChanges": 0,
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "walletActions": 0
+  },
+  "followup": "A new explicit current-feature/handover binding is required only after an actual API rollout; frozen7fc/v6 b624 history remains unchanged."
+}

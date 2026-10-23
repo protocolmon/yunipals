@@ -1,0 +1,50 @@
+{
+  "format": "yunipals-recent-openings-api-source-scan-v1",
+  "findings": 7,
+  "classified": [
+    {
+      "file": "preparation.json",
+      "line": 9,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "c45abad2740231fdf7fcd158dba4bb7342326b9fe4608f64e759f0802df6a2eb"
+    },
+    {
+      "file": "preparation.json",
+      "line": 11,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "72999a9f86f1fd79ade75f35ea9c5949568011a1ebaa7f6582ca60cf63c23aea"
+    },
+    {
+      "file": "preparation.json",
+      "line": 12,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "a953328a69ba2bf507b34fe6b0432e360cd923210aab46f8aadf6c7e8149c189"
+    },
+    {
+      "file": "preparation.json",
+      "line": 13,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "493c03ecac92b22863488005925c6431d7e534653d3381316d2d083fb29da428"
+    },
+    {
+      "file": "preparation.json",
+      "line": 14,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "0697f77df306ccff2c6f1b2d525228cf306cd65409c5f849cca188a7dbe1e473"
+    },
+    {
+      "file": "preparation.json",
+      "line": 15,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "4a1adb672bbed7594c8d06909a1e81cceb0233532e18e3b1e596eec6b3f61c71"
+    },
+    {
+      "file": "preparation.json",
+      "line": 21,
+      "classification": "source or artifact SHA-256 fingerprint",
+      "hashLiteralFingerprint": "5b2c2d5fc44ef1269d567663cac9bc8c4e5899357d8e51948064bd95a5618db7"
+    }
+  ],
+  "credentialValuesFound": 0,
+  "broadAllowlistAdded": false
+}

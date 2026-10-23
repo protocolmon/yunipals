@@ -8,7 +8,12 @@ const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const require = createRequire(path.join(project, "package.json"));
 const toolRequire = createRequire(require.resolve("tsx/package.json"));
 const { build } = toolRequire("esbuild");
-const output = path.join(project, "artifacts/booster-api");
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== "--outdir" || !args[1]))
+  throw new Error("Usage: build-booster-api.mjs [--outdir DIRECTORY]");
+const output = args.length
+  ? path.resolve(project, args[1])
+  : path.join(project, "artifacts/booster-api");
 await mkdir(output, { recursive: true });
 const bundle = path.join(output, "booster-api.mjs");
 const result = await build({

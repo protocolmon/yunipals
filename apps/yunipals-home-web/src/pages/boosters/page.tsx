@@ -15,11 +15,13 @@ import { BoosterOriginalControls } from "./BoosterOriginalControls";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterFAQ } from "./BoosterFAQ";
 import { BoosterBirthDetails } from "./BoosterBirthDetails";
+import { BoosterRecentOpenings } from "./BoosterRecentOpenings";
 
 export function BoosterPage() {
   return (
     <main>
       <BoosterPackSection />
+      <BoosterRecentOpenings />
       <BoosterFAQ />
     </main>
   );

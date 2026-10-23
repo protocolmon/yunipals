@@ -1,0 +1,40 @@
+{
+  "format": "yunipals-recent-openings-and-collection-defaults-preparation-v1",
+  "manifestSha256": "f380e884c9fe825ebd656d86367cc6bf012274b0c14cbdd6c3bceaa66d2214d3",
+  "typecheckPassed": true,
+  "carousel": {
+    "at": "2026-10-23T12:35:29.012Z",
+    "checks": [
+      "genuine live opening appears between pack and eight FAQs with NFT and collection links",
+      "12-request fixture groups daily pulls into one slide; arrows and keyboard move carousel",
+      "mobile carousel stays inside viewport with native horizontal swipe and snap",
+      "reduced-motion navigation scrolls immediately without animation",
+      "empty feed has a truthful empty state and retains packs and FAQ",
+      "feed errors remain local with retry and do not block pack or FAQ"
+    ],
+    "errors": [],
+    "walletConnections": 0,
+    "transactions": 0,
+    "passed": true
+  },
+  "collectionDefaults": {
+    "at": "2026-10-23T12:31:32.771Z",
+    "checks": [
+      "toggle uses brand grape with lavender track; OG defaults capped rarity descending",
+      "new visitor defaults OG, query+storage match, OG grid has no TCG requests/cards",
+      "TCG is exclusive and has only Type/Color/Horn/Glitter filters",
+      "full trait selection and TCG survive reload and bare collection visits",
+      "explicit shared OG query overrides saved TCG and traits",
+      "back and forward restore the actual edition",
+      "same-route Collection navigation remembers latest selection",
+      "mobile drawer toggles, applies traits, stores query and fits viewport",
+      "blocked local storage preserves explicit TCG links and OG default",
+      "old accidental OG ID sort migrates once while preserving other saved traits"
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "NfbPolicyChanged": false,
+  "walletConnections": 0,
+  "transactions": 0
+}

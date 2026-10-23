@@ -58,6 +58,16 @@ export type BoosterMonster = {
   metadataUri: string;
 };
 
+export type BoosterRecentOpening = {
+  requestKey: string;
+  requestId: string;
+  engine: Address;
+  opening: boolean;
+  quantity: number;
+  revealedAt: string;
+  monster: BoosterMonster;
+};
+
 export type BoosterRequest = {
   id: string;
   engine: Address;

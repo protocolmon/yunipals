@@ -628,7 +628,7 @@ export function CollectionFilterPanel({
         <fieldset className="border-b border-line p-4">
           <legend className="sr-only">Collection edition</legend>
           <p className="mb-3 text-sm font-black text-ink">Collection</p>
-          <div className="grid grid-cols-2 gap-1 rounded-full bg-line/50 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-full bg-lavender/25 p-1">
             {(["og", "tcg"] as const).map((value) => (
               <button
                 key={value}
@@ -636,10 +636,10 @@ export function CollectionFilterPanel({
                 aria-pressed={edition === value}
                 onClick={() => onEditionChange(value)}
                 className={cn(
-                  "min-h-11 rounded-full px-4 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2",
+                  "min-h-11 rounded-full px-4 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2",
                   edition === value
-                    ? "bg-ethereum text-white shadow-sm"
-                    : "text-muted hover:text-ink"
+                    ? "bg-grape text-white shadow-sm"
+                    : "text-muted hover:text-grape"
                 )}
               >
                 {value.toUpperCase()}
