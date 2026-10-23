@@ -1,0 +1,59 @@
+{
+  "format": "yunipals-ypal-source-start-preparation-v1",
+  "preparedAt": "2026-10-23T20:22:07.425922+00:00",
+  "files": [
+    {
+      "path": "ops/booster-launch/ypal-source-start-v1.py",
+      "sha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+      "bytes": 49588
+    },
+    {
+      "path": "ops/booster-launch/ypal-source-start-v1-test.py",
+      "sha256": "d8374cd4aae954a70f4f7a7e59089ac086e1049646da5867fa3b28e4e9c832bc",
+      "bytes": 14433
+    },
+    {
+      "path": "ops/booster-launch/ypal-source-start-v1.md",
+      "sha256": "79999be00ba10dd02e4ace327a1d1a24f0a55c1072db57b131a95ddfced97c25",
+      "bytes": 7230
+    }
+  ],
+  "actualDependencies": {
+    "inactiveProducerSha256": "73a6de8dfe347cc3951fd53202013130f6f0ca9ff84f92c54999d03e7807daa0",
+    "inactiveResultSha256": "a434f35a154db4d1da13cd5777cd262f9369fc4fa3a65657a743b1df859bfbfc",
+    "offlineBuildId": "8e88ea2e00",
+    "rpcProducerSha256": "45cfa08ba3a2de5de775053081b954dbb5a5e732871e8db1b80fa0b16fe5591e",
+    "rpcResultSha256": "14b54f8aba5179c26cafad5eda647106f1d1d57fe6639278846a4240661b85c7",
+    "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c"
+  },
+  "checks": {
+    "offlineControls": 15,
+    "offlineControlsPassed": true,
+    "actualOldSchemaCatalogAndExplain": "independent source-agent PASS; column/type proof only",
+    "capturedNativeQuerySha256": "9177883ecb644baee1d84a48c9d4e61f90ae3bd8bf94e65032144ed0b2cc42bb",
+    "isolatedModuleResolutionRegression": "Actual copied public module closure, app-only dependencies; original missing viem reproduced; actual unchanged preflight succeeds with exactly3 strict fake requests and no network."
+  },
+  "scope": {
+    "sourceOnly": true,
+    "fullCurrentDeploymentQualification": "one immediately before live transition; none during default artifact review",
+    "sessionDrain": "fresh current kernel socket attribution; no session-zero or age assumption",
+    "readerChanges": 0,
+    "grantChanges": 0,
+    "sharedSourceRestarted": false,
+    "oldSchemasRetained": true
+  },
+  "limitations": [
+    "Actual fresh schema/native source acceptance has not been run by this author.",
+    "Unknown or foreign replacement prefix is fail closed and requires manual reconciliation.",
+    "Source inverse requires separate reader inverse first if readers have switched."
+  ],
+  "sourceActionsByAuthor": 0,
+  "productionWritesByAuthor": 0,
+  "preflightCorrection": {
+    "supersededUnexecutedCandidateSha256": "65aff8cf70a4aa0a0bcb9db06c550233fd0d19569fac4a62ca2abc2936bad05e",
+    "cause": "Native Node resolution from sibling seaportEvents.ts lacks app viem alias; failure before HTTP.",
+    "scope": "Exact bare viem only for retained packages/ parent; actual app dependency URL/entry bytes pinned; all controller semantics unchanged.",
+    "existingViemEntrySha256": "ea32975364e9f2d599b10639d81985ec6a3ed87f6942fe0cb73b1bf738959057",
+    "actualHostPreflight": "Awaiting independent bounded read-only qualification; no claim yet."
+  }
+}
