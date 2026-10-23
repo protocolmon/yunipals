@@ -1,0 +1,80 @@
+{
+  "format": "yunipals-opening-submission-replay-ui-preparation-v1",
+  "preparedAt": "2026-10-23T21:42:20.431040+00:00",
+  "sourceOnly": true,
+  "deploymentPerformed": false,
+  "sourceFiles": {
+    "apps/yunipals-home-web/src/hooks/useBoosterActions.ts": "87c721440b872c283ce2248eecdfa30cd64180e068c46625bba45e4c1d3888a6",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx": "ae4fdbd7762be243add8ab58abdac0cf4c95756c398a226011a0db6a296004ae",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPurchaseOptions.tsx": "21803637deec2e69b771089b0cc0a015e751e78a47fab8a7ffa9cf8e8b5d2a46",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterClaimPacks.tsx": "274475d4dd198b6c94f7f6f0e852e0f40c7040cd71180c87ae06fe851b1ce225",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPackSection.tsx": "802ae1b3f693801fa22a765bae5fdf407d6ae80ca5e18abec1f78a29a6b00a6b",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterTransactions.tsx": "d48db3faaf41cc63680fa4f6c0f660ddc633cd598f5ada993b2ca903358bfce8",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterRequestOpening.tsx": "18b6fdac180853717c3d890f8a7ef861b70e430a11cfc39f2ad18f4643ae191f",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterOpeningShare.tsx": "a04afec84ab0f2749a11b858556c19820f9a3ebdc938940892c75e195a4005ae",
+    "apps/yunipals-home-web/scripts/test-booster-purchase-ui.mjs": "da4dd89f7ff56883a88d09a06ae7ad76aba88de079b2ea85961e3bc01067ddc9",
+    "apps/yunipals-home-web/scripts/test-booster-opening-ui.mjs": "8b7203bc6342a10f612a6c73e7bd2e516db9e1052d84a1dc36bcb72bc2587501"
+  },
+  "peerOwnedAnimationDependencies": {
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPackOpening.tsx": "a261eef472eafb0bcbf7ac1c88c22f3e1305eacacc324cb201c90dedb8202bcc",
+    "apps/yunipals-home-web/src/pages/boosters/booster-pack-opening.css": "5ea30b365c51cec3d0b7b9ac2766692addad66d655307143b55d8f62d1df6895"
+  },
+  "behavior": {
+    "optionalSeparateApprovalButtonRemoved": true,
+    "unsupportedPermitFallbackPreserved": true,
+    "submittedHashSavedBeforeReceiptWait": true,
+    "onConfirmedStillRequiresSuccessfulReceipt": true,
+    "approvalIsNotOpeningHandoff": true,
+    "closingDoesNotResubmitOrReopenOnConfirmation": true,
+    "progress": [
+      "transaction confirmation",
+      "request synchronization",
+      "Chainlink randomness",
+      "revealed card indexing"
+    ],
+    "publicReplayPath": "/boosters?opening=0x<transaction hash>",
+    "publicReplayRequiresWallet": false,
+    "publicReplayAuthority": [
+      "actual current-engine transaction target and decoded calldata",
+      "successful exact receipt and complete RequestCreated logs",
+      "matching direct request states",
+      "complete per-request card provenance"
+    ],
+    "sameTransactionReplayStartsFromSealedWrapper": true,
+    "copiesSameAppLink": true,
+    "noNewApiOrContractChanges": true
+  },
+  "verification": {
+    "frontendTypecheckPassed": true,
+    "prettierPassed": true,
+    "browserEvidence": [
+      {
+        "file": "/tmp/yunipals-booster-permit-purchase-ui-20261023.json",
+        "sha256": "da6b723e7b0a0b06217056e0540732fc99c3bc4d713e663a647eb0df1318fd54",
+        "groupsPassed": 19,
+        "fixturesOnly": true,
+        "realWalletSends": 0,
+        "realProviderCalls": 0
+      },
+      {
+        "file": "/tmp/yunipals-opening-submission-replay-frozen-20261023.json",
+        "sha256": "dbd59a33f3229a38b34b4ee1622ea9a7d6f8fa31922675f185fa47362ac7fb3e",
+        "groupsPassed": 25,
+        "fixturesOnly": true,
+        "realWalletSends": 0,
+        "realProviderCalls": 0
+      },
+      {
+        "file": "/tmp/yunipals-opening-size-final-layout-20261023.json",
+        "sha256": "254272c3a6c9777aa8816e86445dd2e61382345918092957ab40773d189908e7",
+        "responsiveViewportCases": 6,
+        "fixturesOnly": true,
+        "verifiedBy": "source_oom_recovery"
+      }
+    ]
+  },
+  "limitations": [
+    "Browser checks use synthetic chain and API fixtures with external requests blocked.",
+    "Production deployment and public browser acceptance remain the release owner\u2019s work."
+  ]
+}

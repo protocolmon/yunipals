@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
-import { isAddress, type Hex } from "viem";
+import { Link } from "react-router-dom";
+import { type Hex } from "viem";
 import { useAccount } from "wagmi";
 import {
   boosterAddresses,
@@ -15,21 +16,6 @@ import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
 import { BoosterClaimPacks } from "./BoosterClaimPacks";
-import { BoosterYpalWrap } from "./BoosterYpalWrap";
-
-const ypalWrapDeployment =
-  environment.boostersEnabled &&
-  environment.boosterLaunchId === "base-ypal-v1" &&
-  isAddress(environment.boosterPaymentToken) &&
-  isAddress(environment.boosterPmon)
-    ? {
-        confirmed: true,
-        manifestSha256: environment.boosterDeploymentSha256,
-        chainId: 8453,
-        ypal: environment.boosterPaymentToken,
-        pmon: environment.boosterPmon
-      }
-    : null;
 
 export function BoosterPackSection() {
   const { address } = useAccount();
@@ -37,8 +23,15 @@ export function BoosterPackSection() {
   const [opening, setOpening] = useState<{ wallet: string; hash: Hex } | null>(
     null
   );
-  const onConfirmed = (hash: Hex) => {
-    if (address) setOpening({ wallet: address, hash });
+  const onSubmitted = (hash: Hex, replacedHash?: Hex) => {
+    if (!address) return;
+    setOpening((previous) =>
+      replacedHash
+        ? previous?.hash === replacedHash
+          ? { wallet: address, hash }
+          : previous
+        : { wallet: address, hash }
+    );
   };
   const deployment = boosterAddresses();
   const freshPending =
@@ -228,19 +221,22 @@ export function BoosterPackSection() {
                   paused={Boolean(
                     pack.salesPaused || query.data?.requestsPaused
                   )}
-                  onConfirmed={onConfirmed}
+                  onSubmitted={onSubmitted}
                   onPreview={setPreview}
                 />
+                {environment.boosterLaunchId === "base-ypal-v1" && (
+                  <p className="mt-5 text-sm text-muted">
+                    Need YPAL?{" "}
+                    <Link to="/wrap" className="font-bold text-grape underline">
+                      Get YPAL
+                    </Link>
+                  </p>
+                )}
               </div>
             </article>
           ))}
         </div>
-        {ypalWrapDeployment && (
-          <div className="mt-8 max-w-2xl">
-            <BoosterYpalWrap deployment={ypalWrapDeployment} />
-          </div>
-        )}
-        {deployment && <BoosterClaimPacks onConfirmed={onConfirmed} />}
+        {deployment && <BoosterClaimPacks onSubmitted={onSubmitted} />}
         {deployment && (
           <BoosterTransactions
             autoOpenHash={

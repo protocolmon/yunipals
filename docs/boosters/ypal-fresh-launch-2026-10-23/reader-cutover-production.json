@@ -1,0 +1,115 @@
+{
+  "ACLChanges": 0,
+  "API": {
+    "ExecMainStartTimestampMonotonic": "66215783235382",
+    "Id": "yunipals-booster-api.service",
+    "InvocationID": "3a3b4014f75b4db9968f4c5ee26fa904",
+    "MainPID": "2334701",
+    "startTicks": 6621578322
+  },
+  "admissionSha256": "4743a743eb20b6f5fe0cc867683d27d3cea953bd64d30be50303e31a09b358a1",
+  "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+  "completed": true,
+  "currentProof": {
+    "availability": {
+      "localAndPublicReady": true,
+      "typesGlobalRecentAndArtwork200": true
+    },
+    "native": {
+      "buildId": "8e88ea2e00",
+      "completeBlock": 53000231
+    }
+  },
+  "finalizerSha256": "64f2b55549b1ecbe1088ef529d16435c8a197c5684849f232dd0a4be2a551f99",
+  "format": "yunipals-ypal-reader-finalization-v2",
+  "independentActorsSha256": "e65b20d0c60467db1dd71b02f9f7938be3217d26c470023a28a9c59b831cffcd",
+  "inverseReference": {
+    "operatorSha256": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+    "switchReviewSha256": "0b8a816ce0d6224d5c6f57779571f20fca02ab2770ed3baafd68a24ad306d9f4"
+  },
+  "oldTenReadsPreserved": true,
+  "originalOperatorSha256": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+  "originalResultCreated": false,
+  "phaseReceiptHashes": {
+    "fresh-queue-once-intent.json": "27527ad91b731bc850c67b7fdfc0c14a42a3b508180318e2d73000e8134edcaf",
+    "fresh-queue-once-result.json": "0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53",
+    "load-overlays-intent.json": "b4c400f4a1b70792a9365bce127ef5c8766727598bbd16de27f95dda27775a92",
+    "load-overlays-result.json": "0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53",
+    "resume-original-queue-schedule-intent.json": "7f3cead543e9b41b0dadfc2e2812d33f2c4bc8d120b15e8361739cb588fe0199",
+    "resume-original-queue-schedule-result.json": "0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53",
+    "start-fresh-api-intent.json": "3c3415ae88ccaeedba0540fbfbfeba009fc6045f297771ceb868ba0a90b5ae00",
+    "start-fresh-api-result.json": "0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53",
+    "stop-original-readers-intent.json": "1b2b82775811992dbd751bdd6a2a2702ac83a9b62292a8db314c66159a10a917",
+    "stop-original-readers-result.json": "0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53"
+  },
+  "publicationReceiptHashes": {
+    "file-intent-3c51fd1a.json": "06544f19776c0a55a501f6fd2a5508847bcfdb9fee06feb0fba2934024ba9368",
+    "file-intent-6989811a.json": "8fc9516f4674a0c87e580dfcbef561729c92fc4d5dbdc3f0cb177daf64f65553",
+    "file-intent-f0f0cd35.json": "2e720b6c2b3ea9e7e4f97d7a7bcf477b1066ac2e0c5c6e53f8200e6edb61dee2",
+    "published-3c51fd1a.json": "06544f19776c0a55a501f6fd2a5508847bcfdb9fee06feb0fba2934024ba9368",
+    "published-6989811a.json": "8fc9516f4674a0c87e580dfcbef561729c92fc4d5dbdc3f0cb177daf64f65553",
+    "published-f0f0cd35.json": "2e720b6c2b3ea9e7e4f97d7a7bcf477b1066ac2e0c5c6e53f8200e6edb61dee2"
+  },
+  "published": [
+    {
+      "identity": {
+        "st_dev": 2049,
+        "st_gid": 0,
+        "st_ino": 376967,
+        "st_mode": 33188,
+        "st_mtime_ns": 1792789076356379251,
+        "st_size": 371,
+        "st_uid": 0
+      },
+      "path": "/etc/yunipals-unified/booster-ypal.public.env",
+      "sha256": "a1b21174e5629ff750370a6a613212486687f1b4b3b3f002ab48137ca3e521eb",
+      "temporary": "/etc/yunipals-unified/.ypal-stage-booster-ypal.public.env.tmp"
+    },
+    {
+      "identity": {
+        "st_dev": 2049,
+        "st_gid": 0,
+        "st_ino": 1415977,
+        "st_mode": 33188,
+        "st_mtime_ns": 1792789076366379641,
+        "st_size": 134,
+        "st_uid": 0
+      },
+      "path": "/etc/systemd/system/yunipals-booster-api.service.d/95-ypal.conf",
+      "sha256": "c1d99ddcc88768fb3a88d94a0df101b23f64207dd9943fa979f64cebf095dac5",
+      "temporary": "/etc/systemd/system/yunipals-booster-api.service.d/.ypal-stage-95-ypal.conf.tmp"
+    },
+    {
+      "identity": {
+        "st_dev": 2049,
+        "st_gid": 0,
+        "st_ino": 1415978,
+        "st_mode": 33188,
+        "st_mtime_ns": 1792789076379380148,
+        "st_size": 134,
+        "st_uid": 0
+      },
+      "path": "/etc/systemd/system/yunipals-booster-artwork-queue.service.d/95-ypal.conf",
+      "sha256": "c1d99ddcc88768fb3a88d94a0df101b23f64207dd9943fa979f64cebf095dac5",
+      "temporary": "/etc/systemd/system/yunipals-booster-artwork-queue.service.d/.ypal-stage-95-ypal.conf.tmp"
+    }
+  ],
+  "queue": {
+    "indexedBlock": 52999888,
+    "invocation": "72549ee578e043128ff1589f9999d60a",
+    "monotonicUs": 66215800993828,
+    "queued": 0
+  },
+  "reconciledAcknowledgementOnly": true,
+  "roleAttributesChanged": false,
+  "roleGraphSha256": "8cc4a6bdf7f42d472e284842be9a9d45f2e3ee57c9fc29d89634efd1aa48371d",
+  "schema": "yunipals_boosters_ypal_v1",
+  "serviceActions": 0,
+  "sourceChanges": 0,
+  "sourceReceiptSha256": "581990e80baa6ae074786b7b2cf7c771c82ebe046253a1de23a96f251d900efd",
+  "switchReviewSha256": "0b8a816ce0d6224d5c6f57779571f20fca02ab2770ed3baafd68a24ad306d9f4",
+  "actualProtectedResultSha256": "9bf720f7d669b1863184db4214602a16346f7913d6d2fbdcd4090a42c1ba6e1c",
+  "originalFinalCheckRefusal": "same_reader_base_definitions_required due ordinary five-second queue start job, after all service phases were acknowledged.",
+  "originalFailurePreserved": true,
+  "publicFreshTypesGlobalRecentAndApprovedArtwork200": true
+}

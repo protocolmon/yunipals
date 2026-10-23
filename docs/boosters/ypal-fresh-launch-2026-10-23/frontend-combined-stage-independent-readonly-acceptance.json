@@ -1,0 +1,295 @@
+{
+  "format": "yunipals-ypal-combined-release-live-readonly-v1",
+  "runScope": "standalone-wrap-and-actual-three-card-replay",
+  "origin": "https://yunipals-b7of51sqp-devving.vercel.app",
+  "observedAt": "2026-10-23T21:59:02.530Z",
+  "releaseManifestSha256": "7f5872e9d87f3631d9e3c3e2b7ba3ff028dbfe552e2af8c37a1879d5e2b2d28b",
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "scriptSha256": "a538baffa531a76f41c7fb6c736870262d3f1219557d9f589d8f10c625f2775d",
+  "readerFinalizationReceiptVerified": false,
+  "actualOpeningTransaction": "0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7",
+  "actualRequestIds": [
+    "30582751643770632920893678658617792337567496805906007006450413228818305173241",
+    "23217472439048618091950218259590224155344674435619542086250038280081490374453",
+    "53752971648959452984656149113571701599987596496047729772470578807920582379163"
+  ],
+  "mockedResponses": 0,
+  "walletConnections": 0,
+  "signatures": 0,
+  "transactions": 0,
+  "providerMaximumCalls": 20,
+  "providerCalls": [
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getTransactionReceipt",
+      "shape": "eth_getTransactionReceipt",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getTransactionByHash",
+      "shape": "eth_getTransactionByHash",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getTransactionReceipt",
+      "shape": "eth_getTransactionReceipt",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getTransactionByHash",
+      "shape": "eth_getTransactionByHash",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    }
+  ],
+  "api": [
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/30582751643770632920893678658617792337567496805906007006450413228818305173241",
+      "status": 200,
+      "sha256": "db3ebef697e6542e325ac017ae1e6719634bc699ea5aa526e404c657a342af49"
+    },
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/30582751643770632920893678658617792337567496805906007006450413228818305173241/monsters",
+      "status": 200,
+      "sha256": "b68aed4bdc98a84f2aee56d1d57eea61ec38a78a68197a33abc0c81ba61d2975"
+    },
+    {
+      "path": "/v1/boosters/art/base-mainnet-standard-v1/171.json",
+      "status": 200,
+      "sha256": "563616595381714f901ba7ab694a49bfec6094051cb516972dd335719d05f323"
+    },
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/23217472439048618091950218259590224155344674435619542086250038280081490374453",
+      "status": 200,
+      "sha256": "9dd700281fa57bd129818ee147d0e3de62456b977e95db0b68d53f2f159a02e5"
+    },
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/23217472439048618091950218259590224155344674435619542086250038280081490374453/monsters",
+      "status": 200,
+      "sha256": "80ff56b1c035468c3d56d4195012c82176b67a60722771c0f9fd94e98d7385d5"
+    },
+    {
+      "path": "/v1/boosters/art/base-mainnet-standard-v1/178.json",
+      "status": 200,
+      "sha256": "fcddb02747a698f04e64840cb9667bec74fed756dba515919036492d5c186f3e"
+    },
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/53752971648959452984656149113571701599987596496047729772470578807920582379163",
+      "status": 200,
+      "sha256": "486892acf3d79d3667124b4f290324aef98b8ec3fe8f6b4f11d85ef029b5a20a"
+    },
+    {
+      "path": "/v1/boosters/requests/0xdf4aaa47fe0e8208b5a33c74898f834b2952189e/53752971648959452984656149113571701599987596496047729772470578807920582379163/monsters",
+      "status": 200,
+      "sha256": "e6f3a6e661c9478ef42b992cc32c8a9f4fdccef24c623daeb10856015f311f36"
+    },
+    {
+      "path": "/v1/boosters/art/base-mainnet-standard-v1/244.json",
+      "status": 200,
+      "sha256": "8bdc8d8093b5845ef89f03822d837599976623c8aa59b32f91f20fda1542b6db"
+    }
+  ],
+  "blockedRequests": {
+    "non_get_refused": 6,
+    "third_party_data_refused": 3
+  },
+  "checks": [
+    {
+      "name": "Actual fresh request membership and all three approved artworks",
+      "passed": true,
+      "actualOpening": "0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7",
+      "cards": [
+        {
+          "tokenId": "1",
+          "variantId": "171"
+        },
+        {
+          "tokenId": "3",
+          "variantId": "178"
+        },
+        {
+          "tokenId": "2",
+          "variantId": "244"
+        }
+      ],
+      "mocked": false
+    },
+    {
+      "name": "Responsive fresh pack offer links to standalone GetYPAL with no inline form",
+      "passed": true,
+      "getYpal": "/wrap",
+      "inlineForm": false,
+      "disconnectedForm": true,
+      "viewport": "390x844",
+      "faqKeyboard": true
+    },
+    {
+      "name": "Real disconnected three-card opening, progressive physical extraction and same-hash replay",
+      "passed": true,
+      "disconnected": true,
+      "realTokenIds": [
+        "1",
+        "2",
+        "3"
+      ],
+      "variants": [
+        171,
+        178,
+        244
+      ],
+      "fullRip": true,
+      "shortPullRetracts": true,
+      "sameHashReplayReset": true,
+      "mobileResultActionVisible": true
+    }
+  ],
+  "pageErrors": [],
+  "previewAccess": "existing_automation_access_origin_scoped",
+  "actualCards": [
+    {
+      "tokenId": "1",
+      "variantId": "171",
+      "requestId": "30582751643770632920893678658617792337567496805906007006450413228818305173241",
+      "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482.png"
+    },
+    {
+      "tokenId": "3",
+      "variantId": "178",
+      "requestId": "23217472439048618091950218259590224155344674435619542086250038280081490374453",
+      "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9aa19bcb0b9f13d53941780c77e1e03014226b3d7d03a03203a7bf9ea616d734.png"
+    },
+    {
+      "tokenId": "2",
+      "variantId": "244",
+      "requestId": "53752971648959452984656149113571701599987596496047729772470578807920582379163",
+      "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/97295929f1d013c2309f70e917bd39daeae06df3ca6b1b28bf61851c9d6eeb3c.png"
+    }
+  ],
+  "passed": true,
+  "completedAt": "2026-10-23T21:59:20.814Z",
+  "providerIndividualRequests": 11,
+  "walletAvailable": false,
+  "capabilityResults": [
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "resultSha256": "8ff492f1333e97438020eb65b98a3c9feb4172ef068da92b87af43b5c044dcaa",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "resultSha256": "d6b008da53e945f2975f2e5665297d910574356f641dffb33648967f964f2afe",
+      "status": 200
+    },
+    {
+      "method": "eth_getTransactionReceipt",
+      "shape": "eth_getTransactionReceipt",
+      "resultSha256": "68412d69a3614c40e7e66708bc2480fc63c7fee29f530eb16855c65a31fe1c14",
+      "status": 200
+    },
+    {
+      "method": "eth_getTransactionByHash",
+      "shape": "eth_getTransactionByHash",
+      "resultSha256": "28e90b8cc12143158b9a6449121e0605088e6fe665f9f54ae99803714b06c39d",
+      "status": 200
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "resultSha256": "8ff492f1333e97438020eb65b98a3c9feb4172ef068da92b87af43b5c044dcaa",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "resultSha256": "cffab41febad3ea934c8135bea6a69df5251fe5b327def37c9d848ecfb4468b4",
+      "status": 200
+    },
+    {
+      "method": "eth_getTransactionReceipt",
+      "shape": "eth_getTransactionReceipt",
+      "resultSha256": "68412d69a3614c40e7e66708bc2480fc63c7fee29f530eb16855c65a31fe1c14",
+      "status": 200
+    },
+    {
+      "method": "eth_getTransactionByHash",
+      "shape": "eth_getTransactionByHash",
+      "resultSha256": "28e90b8cc12143158b9a6449121e0605088e6fe665f9f54ae99803714b06c39d",
+      "status": 200
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "resultSha256": "8ff492f1333e97438020eb65b98a3c9feb4172ef068da92b87af43b5c044dcaa",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "resultSha256": "d6b008da53e945f2975f2e5665297d910574356f641dffb33648967f964f2afe",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "exact-opening-multicall",
+      "resultSha256": "bfd882c72bafddb00be35cad5bfc977241e9887f0ccebdcaf3dc0d1585058beb",
+      "status": 200
+    }
+  ]
+}

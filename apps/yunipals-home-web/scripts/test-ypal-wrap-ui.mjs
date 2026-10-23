@@ -10,6 +10,7 @@ import { createServer, transformWithEsbuild } from "vite";
 
 const { values } = parseArgs({
   options: {
+    filter: { type: "string", default: "all" },
     output: {
       type: "string",
       default: "/tmp/yunipals-ypal-wrap-browser-20261023.json"
@@ -24,6 +25,7 @@ const { values } = parseArgs({
     }
   }
 });
+assert(["all", "receipt"].includes(values.filter), "Unknown wrap test filter");
 const root = fileURLToPath(new URL("..", import.meta.url));
 process.chdir(root);
 const pkg = JSON.parse(
@@ -58,7 +60,7 @@ const saved=JSON.parse(sessionStorage.getItem('wrap-fixture')||'null');
 const state=saved||{allowance:scenario==='allowance'||scenario.startsWith('defer')?'100000000000000000000':'0',pmon:'100000000000000000000',ypal:'0',records:[],sequence:0,settled:false};
 const save=()=>sessionStorage.setItem('wrap-fixture',JSON.stringify(state));
 let identity={address:owner,chainId:8453},wallet;const listeners=new Set();let deferred=null;
-window.__wrapSends=[];window.__wrapReads=0;window.__wrapHooks=0;
+window.__wrapSends=[];window.__wrapReads=0;window.__wrapHooks=0;window.__wrapContextReads=0;
 function persistRecord(record){const i=state.records.findIndex(x=>x.hash===record.hash);if(i<0)state.records.push(record);else state.records[i]=record;save();}
 function apply(record){if(record.applied||record.cancel||record.revert)return;record.applied=true;
  if(record.kind==='approve')state.allowance=record.amount;
@@ -93,7 +95,14 @@ export const client={
  readContract:async input=>{window.__wrapReads++;switch(input.functionName){case'pmon':return ypalWrapPmon;case'name':return'Yunipals';case'symbol':return'YPAL';case'decimals':return 18;case'DOMAIN_SEPARATOR':return hashDomain({domain:{name:'Yunipals',version:'1',chainId:8453n,verifyingContract:ypalWrapToken},types});case'balanceOf':return BigInt(input.address.toLowerCase()===ypalWrapPmon.toLowerCase()?state.pmon:state.ypal);case'allowance':return BigInt(state.allowance);default:throw Error('Unexpected read');}},
  estimateFeesPerGas:async()=>({maxFeePerGas:1000000000n,maxPriorityFeePerGas:100000000n}),estimateGas:async()=>100000n,getBalance:async()=>10n**20n,
  call:async()=>{await barrier('call');return{data:'0x'};},
- getTransaction:async({hash})=>transaction(record(hash)),
+ getTransaction:async({hash})=>{
+  const value=transaction(record(hash));
+  if(scenario==='receipt-stale'||scenario==='receipt-transient'){
+   window.__wrapContextReads++;
+   if(!state.settled&&(scenario==='receipt-stale'||window.__wrapContextReads<=2))return{...value,blockHash:null,blockNumber:null};
+  }
+  return value;
+ },
  getTransactionReceipt:async({hash})=>{if(scenario==='pending'&&!state.settled){const e=Error('Pending');e.name='TransactionReceiptNotFoundError';throw e;}return receipt(record(hash));},
  waitForTransactionReceipt:async({hash,onReplaced})=>{
   if(scenario==='pending'&&!state.settled)throw Error('Synthetic timeout; hash retained');
@@ -108,14 +117,28 @@ const modules = {
   [ids.rainbow]: `export const useConnectModal=()=>({openConnectModal:()=>{}});`,
   [ids.action]: `export const boosterButtonClass=${JSON.stringify(buttonClass)};`,
   [ids.fees]: `export const estimateL1Fee=async()=>1000n;`,
-  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterYpalWrap}from'/src/pages/boosters/BoosterYpalWrap';import{deployment,scenario}from'${ids.fixture}';import '/src/globals.css';const root=createRoot(document.getElementById('root'));window.__wrapUnmount=()=>root.unmount();root.render(<React.StrictMode><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><BoosterYpalWrap deployment={scenario==='inactive'?null:deployment}/></QueryClientProvider></React.StrictMode>);`
+  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterYpalWrap}from'/src/pages/boosters/BoosterYpalWrap';import{deployment,scenario}from'${ids.fixture}';import '/src/globals.css';const root=createRoot(document.getElementById('root'));window.__wrapUnmount=()=>root.unmount();function MountedPanel(){React.useEffect(()=>{window.__wrapReady=true;},[]);return <BoosterYpalWrap deployment={scenario==='inactive'?null:deployment}/>;}root.render(<React.StrictMode><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MountedPanel/></QueryClientProvider></React.StrictMode>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "yunipals-wrap-vite-"));
 const server = await createServer({
   root,
   cacheDir,
   configFile: false,
-  server: { host: "127.0.0.1", port: 5207, strictPort: true },
+  optimizeDeps: {
+    noDiscovery: true,
+    entries: [],
+    include: [
+      "react",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "react-dom/client",
+      "@tanstack/react-query",
+      "viem",
+      "viem/chains",
+      "zod"
+    ]
+  },
+  server: { host: "127.0.0.1", port: 5207, strictPort: true, watch: null },
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
@@ -166,12 +189,15 @@ const report = {
   format: "yunipals-ypal-wrap-ui-acceptance-v1",
   observedAt: new Date().toISOString(),
   fixturesOnly: true,
+  testFilter: values.filter,
   providerCalls: 0,
   realTransactions: 0,
   realSignatures: 0,
   checks: [],
   externalRequests: [],
   browserErrors: [],
+  moduleFailures: [],
+  consoleDiagnostics: [],
   screenshots: [],
   sourceSha256: {}
 };
@@ -212,16 +238,60 @@ try {
       );
       return route.abort("blockedbyclient");
     });
-    await context.routeWebSocket("**/*", (socket) => socket.close());
+    await context.routeWebSocket("**/*", (socket) => {
+      if (new URL(socket.url()).origin === origin.replace(/^http/, "ws"))
+        socket.connectToServer();
+      else socket.close();
+    });
     const page = await context.newPage();
     page.setDefaultTimeout(15000);
     page.on("pageerror", (error) => report.browserErrors.push(error.message));
-    await page.goto(origin + "/__wrap-check?scenario=" + scenario, {
-      waitUntil: "networkidle"
+    page.on("console", (message) => {
+      if (message.type() === "error" && report.consoleDiagnostics.length < 8) {
+        const text = message.text().slice(0, 500);
+        report.consoleDiagnostics.push(text);
+        console.log(JSON.stringify({ fixtureConsoleError: text }));
+      }
     });
+    page.on("response", async (response) => {
+      if (response.status() >= 400 && report.moduleFailures.length < 8) {
+        const raw = await response.body().catch(() => Buffer.alloc(0));
+        const item = {
+          path: new URL(response.url()).pathname,
+          status: response.status(),
+          bodySha256: createHash("sha256").update(raw).digest("hex"),
+          outdatedOptimizer: raw.includes(Buffer.from("Outdated Optimize Dep"))
+        };
+        report.moduleFailures.push(item);
+        console.log(JSON.stringify({ fixtureModuleFailure: item }));
+      }
+    });
+    await page.goto(origin + "/__wrap-check?scenario=" + scenario, {
+      waitUntil: "domcontentloaded",
+      timeout: 60000
+    });
+    try {
+      await page.waitForFunction(() => window.__wrapReady === true, undefined, {
+        timeout: 45000
+      });
+    } catch (error) {
+      report.loadDiagnostic = await page.evaluate(() => ({
+        ready: window.__wrapReady ?? null,
+        hooks: window.__wrapHooks ?? null,
+        reads: window.__wrapReads ?? null,
+        body: document.body.innerText.slice(0, 300),
+        rootChildren: document.getElementById("root")?.childElementCount
+      }));
+      throw error;
+    }
     return { page, context };
   }
   async function check(name, action) {
+    if (
+      values.filter === "receipt" &&
+      !/^(Pending hash|Mined receipt|Transient receipt)/.test(name)
+    )
+      return;
     await action();
     assert.deepEqual(report.browserErrors, []);
     assert.deepEqual(report.externalRequests, []);
@@ -266,7 +336,7 @@ try {
       const desktop = "/tmp/yunipals-ypal-wrap-desktop-20261023.png";
       await page.screenshot({ path: desktop, fullPage: true });
       report.screenshots.push(desktop);
-      await review(page, "approve").click();
+      await review(page, "approve").click({ noWaitAfter: true });
       await page.setViewportSize({ width: 390, height: 844 });
       await page.getByRole("dialog").waitFor();
       assert.equal(
@@ -278,7 +348,7 @@ try {
       const mobile = "/tmp/yunipals-ypal-wrap-mobile-review-20261023.png";
       await page.screenshot({ path: mobile, fullPage: true });
       report.screenshots.push(mobile);
-      await confirm(page, "approve").click();
+      await confirm(page, "approve").click({ noWaitAfter: true });
       await page
         .getByText(
           "PMON approval confirmed. Review the wrap action separately.",
@@ -286,8 +356,8 @@ try {
         )
         .waitFor();
       assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
-      await review(page, "wrap").click();
-      await confirm(page, "wrap").click();
+      await review(page, "wrap").click({ noWaitAfter: true });
+      await confirm(page, "wrap").click({ noWaitAfter: true });
       await page
         .getByText(
           "Wrapped 1.234567890123456789 PMON into 1.234567890123456789 YPAL.",
@@ -310,8 +380,8 @@ try {
     "Existing sufficient allowance wraps directly with one send",
     async () => {
       const { page, context } = await visit("allowance");
-      await review(page, "wrap").click();
-      await confirm(page, "wrap").click();
+      await review(page, "wrap").click({ noWaitAfter: true });
+      await confirm(page, "wrap").click({ noWaitAfter: true });
       await page
         .getByText("Wrapped 1 PMON into 1 YPAL.", { exact: true })
         .waitFor();
@@ -347,18 +417,21 @@ try {
     "Pending hash survives reload, blocks sends and resolves only its canonical receipt",
     async () => {
       const { page, context } = await visit("pending");
-      await review(page, "approve").click();
-      await confirm(page, "approve").click();
+      await review(page, "approve").click({ noWaitAfter: true });
+      await confirm(page, "approve").click({ noWaitAfter: true });
       await page
         .getByText("Saved PMON approval transaction", { exact: true })
         .waitFor();
-      await page.reload({ waitUntil: "networkidle" });
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForFunction(() => window.__wrapReady === true, undefined, {
+        timeout: 45000
+      });
       assert.equal(await review(page, "approve").isDisabled(), true);
       await page
         .getByRole("button", { name: "Check pending transaction" })
-        .click();
+        .click({ noWaitAfter: true });
       await page
-        .getByText("The transaction is still pending. Its hash is preserved.", {
+        .getByText("Confirming on Base. Your transaction hash is saved.", {
           exact: true
         })
         .waitFor();
@@ -366,7 +439,7 @@ try {
       await page.evaluate(() => window.__wrapSettle());
       await page
         .getByRole("button", { name: "Check pending transaction" })
-        .click();
+        .click({ noWaitAfter: true });
       await page
         .getByText(
           "PMON approval confirmed. Review the wrap action separately.",
@@ -377,6 +450,100 @@ try {
       await context.close();
     }
   );
+  await check(
+    "Mined receipt with stale transaction context survives reload and manually recovers without resending",
+    async () => {
+      const { page, context } = await visit("receipt-stale");
+      await review(page, "approve").click({ noWaitAfter: true });
+      await confirm(page, "approve").click({ noWaitAfter: true });
+      await page
+        .getByText("Confirming on Base. Your transaction hash is saved.", {
+          exact: true
+        })
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+      assert.equal(await page.evaluate(() => window.__wrapContextReads), 3);
+      assert.equal(
+        await page
+          .getByRole("button", { name: /^Review (?:PMON approval|wrap)$/ })
+          .isDisabled(),
+        true
+      );
+      const saved = await page.evaluate(() =>
+        Object.entries(localStorage).find(([key]) =>
+          key.startsWith("yunipals/ypal-wrap/v1/")
+        )
+      );
+      assert(saved && JSON.parse(saved[1]).hash);
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForFunction(() => window.__wrapReady === true, undefined, {
+        timeout: 45000
+      });
+      await page
+        .getByRole("button", { name: "Check pending transaction", exact: true })
+        .click({ noWaitAfter: true });
+      await page
+        .getByText("Confirming on Base. Your transaction hash is saved.", {
+          exact: true
+        })
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      assert.equal(await page.evaluate(() => window.__wrapContextReads), 3);
+      const retained = await page.evaluate(() =>
+        Object.entries(localStorage).find(([key]) =>
+          key.startsWith("yunipals/ypal-wrap/v1/")
+        )
+      );
+      assert.deepEqual(retained, saved);
+      await page.evaluate(() => window.__wrapSettle());
+      await page
+        .getByRole("button", { name: "Check pending transaction", exact: true })
+        .click({ noWaitAfter: true });
+      await page
+        .getByText(
+          "PMON approval confirmed. Review the wrap action separately.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      assert.equal(
+        await page
+          .getByRole("button", {
+            name: "Check pending transaction",
+            exact: true
+          })
+          .count(),
+        0
+      );
+      await context.close();
+    }
+  );
+  await check(
+    "Transient receipt context recovers on the third read without another wallet entry",
+    async () => {
+      const { page, context } = await visit("receipt-transient");
+      await review(page, "approve").click({ noWaitAfter: true });
+      await confirm(page, "approve").click({ noWaitAfter: true });
+      await page
+        .getByText(
+          "PMON approval confirmed. Review the wrap action separately.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapContextReads), 3);
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+      assert.equal(
+        await page
+          .getByRole("button", {
+            name: "Check pending transaction",
+            exact: true
+          })
+          .count(),
+        0
+      );
+      await context.close();
+    }
+  );
   for (const scenario of ["repriced", "cancel", "revert"])
     await check(
       "Canonical " +
@@ -384,8 +551,8 @@ try {
         " receipt resolves without another automatic send",
       async () => {
         const { page, context } = await visit(scenario);
-        await review(page, "approve").click();
-        await confirm(page, "approve").click();
+        await review(page, "approve").click({ noWaitAfter: true });
+        await confirm(page, "approve").click({ noWaitAfter: true });
         await page
           .getByText(
             scenario === "repriced"
@@ -411,7 +578,7 @@ try {
         " invalidation makes zero wallet-entry attempts",
       async () => {
         const { page, context } = await visit("defer-" + mode);
-        await review(page, "wrap").click();
+        await review(page, "wrap").click({ noWaitAfter: true });
         await page.getByRole("dialog").waitFor();
         await page.evaluate(
           (mode) =>
@@ -419,7 +586,7 @@ try {
               mode === "provider-network" ? "provider" : "call"),
           mode
         );
-        await confirm(page, "wrap").click();
+        await confirm(page, "wrap").click({ noWaitAfter: true });
         await page.waitForFunction(() => window.__wrapReached);
         if (mode === "network" || mode === "provider-network") {
           await page.evaluate(() => window.__wrapIdentity(1));
@@ -437,7 +604,9 @@ try {
           await page.evaluate(() => window.__wrapIdentity(8453));
         }
         if (mode === "dismiss")
-          await page.getByRole("button", { name: "Cancel review" }).click();
+          await page
+            .getByRole("button", { name: "Cancel review" })
+            .click({ noWaitAfter: true });
         if (mode === "unmount")
           await page.evaluate(() => window.__wrapUnmount());
         await page.evaluate(() => window.__wrapRelease());

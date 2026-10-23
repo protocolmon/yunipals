@@ -1,0 +1,25 @@
+{
+  "format": "yunipals-arena-promoted-www-readonly-smoke-v1",
+  "observedAt": "2026-10-23T22:01:47.163Z",
+  "url": "https://www.yunipals.com/arena",
+  "status": 200,
+  "apex": {
+    "status": 308,
+    "location": "https://www.yunipals.com/arena?acceptance=readonly"
+  },
+  "arenaRendered": true,
+  "menus": true,
+  "pageErrors": [],
+  "badSameOriginAssets": [],
+  "main": {
+    "path": "/assets/index-Cfd4KN3L.js",
+    "status": 200,
+    "sha256": "d17ea24be3e03611c2baf0466d1af969e2f4ef5f3ec91be159206f293255c9ca",
+    "recoveryMarkerPresent": true
+  },
+  "errorFallbackVisible": false,
+  "nonGetRequestsDispatched": 0,
+  "blockedNonGetRequests": 1,
+  "walletEntries": 0,
+  "passed": true
+}

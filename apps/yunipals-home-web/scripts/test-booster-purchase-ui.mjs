@@ -24,7 +24,7 @@ const signer=privateKeyToAccount('0x'+'11'.repeat(32)),other=privateKeyToAccount
 export const account=scenario.startsWith('permit')?signer.address:'0xb3883cd96d72b08b8226452305a28d65974a3727';
 export const engine='0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609';
 const token='0xe5a54a517cde8ed48a336b173044b1138aa2c1a3';
-window.__purchase={calls:[],sends:[],sendAttempts:0,saved:[],confirmed:[],signatures:[]};
+window.__purchase={calls:[],sends:[],sendAttempts:0,saved:[],submitted:[],confirmed:[],signatures:[]};
 window.__walletAccount=account;window.__walletChain=8453;window.__walletTime=1792760000n;window.__permitNonce=4n;
 window.__feePrice=2n;window.__ethBalance=10n**18n;window.__tokenBalance=10n**30n;
 let allowance=scenario.startsWith('approval')||(scenario.startsWith('permit')&&scenario!=='permit-allowance')?0n:10n**30n;
@@ -66,7 +66,7 @@ export const client={chain:base,
  async getBalance(){return window.__ethBalance;},
  async estimateGas(tx){await simulatePermit(tx);return 1000000n;},
  async call(tx){if(tx.to.toLowerCase()!== '0x420000000000000000000000000000000000000f'){await simulatePermit(tx);window.__purchase.calls.push(log({simulation:safeDecoded(decoded(tx.data)),value:tx.value}));}return{data:encodeAbiParameters(parseAbiParameters('uint256'),[200n])};},
- async waitForTransactionReceipt({hash}){if(scenario==='permit-pending')return new Promise(()=>{});return{transactionHash:hash,status:scenario==='permit-reverted'?'reverted':'success'};}
+ async waitForTransactionReceipt({hash}){if(scenario==='permit-pending'||scenario==='approval-pending')return new Promise(()=>{});return{transactionHash:hash,status:scenario==='permit-reverted'?'reverted':'success'};}
 };
 export const wallet={
  async getChainId(){return window.__walletChain;},async getAddresses(){
@@ -95,7 +95,7 @@ const modules = {
   [ids.wagmi]: `import {account,client,wallet} from '${ids.fixture}';export const useAccount=()=>({address:account,isConnected:true,chainId:8453});export const usePublicClient=()=>client;export const useWalletClient=()=>({data:wallet});export const useSwitchChain=()=>({isPending:false});`,
   [ids.boosters]: `import {pack,engine,save} from '${ids.fixture}';export const boosterQueryKey=['local-purchase-fixture'];export const boosterAddresses=()=>({registry:pack.registry,engine,monsters:'0x105319be2182018c31fb10b1be198c3cf238a146'});export const saveBoosterTransaction=save;`,
   [ids.rainbow]: `export const useConnectModal=()=>({});`,
-  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterPurchaseOptions}from'/src/pages/boosters/BoosterPurchaseOptions';import{useBoosterActions}from'/src/hooks/useBoosterActions';import{pack}from'${ids.fixture}';import'/src/globals.css';function HookProbe(){window.__purchaseHook=useBoosterActions();return null;}const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});const app=createRoot(document.getElementById('root'));window.__unmountPurchase=()=>app.unmount();app.render(<QueryClientProvider client={query}><HookProbe/><main className="mx-auto max-w-xl p-6"><BoosterPurchaseOptions pack={pack} paused={false} onConfirmed={hash=>window.__purchase.confirmed.push(hash)} onPreview={quantity=>window.__preview=quantity}/></main></QueryClientProvider>);`
+  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterPurchaseOptions}from'/src/pages/boosters/BoosterPurchaseOptions';import{useBoosterActions}from'/src/hooks/useBoosterActions';import{pack}from'${ids.fixture}';import'/src/globals.css';function HookProbe(){window.__purchaseHook=useBoosterActions();return null;}const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});const app=createRoot(document.getElementById('root'));window.__unmountPurchase=()=>app.unmount();app.render(<QueryClientProvider client={query}><HookProbe/><main className="mx-auto max-w-xl p-6"><BoosterPurchaseOptions pack={pack} paused={false} onConfirmed={hash=>window.__purchase.confirmed.push(hash)} onSubmitted={new URLSearchParams(location.search).get("handoff")?hash=>window.__purchase.submitted.push(hash):undefined} onPreview={quantity=>window.__preview=quantity}/></main></QueryClientProvider>);`
 };
 const server = await createServer({
   root,
@@ -443,20 +443,19 @@ try {
   );
 
   await startPermitReview("permit");
-  await dialog
-    .getByRole("button", { name: "Use separate approval", exact: true })
-    .click();
-  await dialog
-    .getByRole("button", { name: "Approve payment", exact: true })
-    .waitFor();
-  assert.equal(await reviewValue("Approval amount").innerText(), "1,000 PROTO");
+  assert.equal(
+    await dialog
+      .getByRole("button", { name: "Use separate approval", exact: true })
+      .count(),
+    0
+  );
   assert.equal(
     await page.evaluate(() => window.__purchase.signatures.length),
     0
   );
   assert.equal(await page.evaluate(() => window.__purchase.sends.length), 0);
   report.checks.push(
-    "Separate approval remains an explicit freshly reviewed 1000 PROTO alternative without signing or sending automatically"
+    "Combined approval has no optional separate-approval button; signing and sending still require explicit confirmation"
   );
 
   for (const scenario of [
@@ -640,6 +639,61 @@ try {
   );
   report.checks.push(
     "Only a successful actual chain receipt confirms; a reverted permit purchase preserves its tracked hash without claiming an opening"
+  );
+  await visit("approval-pending&handoff=1");
+  await page
+    .getByRole("button", { name: "Open pack", exact: true })
+    .last()
+    .click();
+  await dialog
+    .getByRole("button", { name: "Approve payment", exact: true })
+    .click();
+  await page.waitForFunction(() => window.__purchase.saved.length === 1);
+  assert.equal(
+    await page.evaluate(() => window.__purchase.submitted.length),
+    0
+  );
+  assert.equal(
+    await page.evaluate(() => window.__purchase.confirmed.length),
+    0
+  );
+  await dialog
+    .getByText("Waiting for transaction confirmation…", { exact: true })
+    .waitFor();
+  assert.equal(await dialog.isVisible(), true);
+  report.checks.push(
+    "Automatic unsupported-permit fallback keeps its approval confirmation dialog visible and never pretends approval is an opening submission"
+  );
+  await visit("permit-pending&handoff=1");
+  await page
+    .getByRole("button", { name: "Choose 3 packs", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Open 3 packs", exact: true })
+    .last()
+    .click();
+  await signPermitReview();
+  await dialog.getByRole("button", { name: "Open packs", exact: true }).click();
+  await page.waitForFunction(() => window.__purchase.submitted.length === 1);
+  assert.equal(
+    await page.evaluate(() => window.__purchase.confirmed.length),
+    0
+  );
+  assert.equal(
+    await page.evaluate(() => window.__purchase.saved[0].expectedRequestCount),
+    3
+  );
+  assert.equal(await dialog.isVisible(), false);
+  assert.equal(await page.evaluate(() => window.__purchase.sendAttempts), 1);
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Open 3 packs", exact: true })
+      .last()
+      .isDisabled(),
+    true
+  );
+  report.checks.push(
+    "Opening hash is saved and handed to progress immediately while receipt remains pending; the approval dialog closes and duplicate submission stays disabled"
   );
   assert.deepEqual(report.errors, []);
   report.passed = true;

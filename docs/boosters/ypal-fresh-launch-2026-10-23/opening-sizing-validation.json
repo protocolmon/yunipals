@@ -1,0 +1,143 @@
+{
+  "format": "yunipals-opening-sizing-frozen-validation-v1",
+  "passed": true,
+  "sourceSha256": {
+    "src/pages/boosters/BoosterPackOpening.tsx": "a261eef472eafb0bcbf7ac1c88c22f3e1305eacacc324cb201c90dedb8202bcc",
+    "src/pages/boosters/booster-pack-opening.css": "5ea30b365c51cec3d0b7b9ac2766692addad66d655307143b55d8f62d1df6895",
+    "src/pages/boosters/BoosterTransactions.tsx": "d48db3faaf41cc63680fa4f6c0f660ddc633cd598f5ada993b2ca903358bfce8",
+    "src/pages/boosters/BoosterRequestOpening.tsx": "18b6fdac180853717c3d890f8a7ef861b70e430a11cfc39f2ad18f4643ae191f",
+    "src/pages/boosters/BoosterOpeningShare.tsx": "a04afec84ab0f2749a11b858556c19820f9a3ebdc938940892c75e195a4005ae",
+    "src/pages/boosters/BoosterClaimPacks.tsx": "274475d4dd198b6c94f7f6f0e852e0f40c7040cd71180c87ae06fe851b1ce225",
+    "src/lib/boosterReveal.ts": "c176ed66c34b88084150e439fec40ab3a5c2cdd35ae69106ac1fc6e56bce4cd1",
+    "src/lib/boosters.ts": "964fb9bad9389a3cb32d1b0e3e691d6968aab0ba6b9b888ee79d557c7a895482",
+    "src/pages/boosters/BoosterPackSection.tsx": "802ae1b3f693801fa22a765bae5fdf407d6ae80ca5e18abec1f78a29a6b00a6b",
+    "src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96",
+    "src/components/Nav.tsx": "ce8d1a205600443923b787267cde9c808eeb6b66bfbe3a8ef98b1d8e9d2e3ff3",
+    "scripts/test-booster-opening-ui.mjs": "8b7203bc6342a10f612a6c73e7bd2e516db9e1052d84a1dc36bcb72bc2587501"
+  },
+  "responsiveReport": {
+    "file": "/tmp/yunipals-opening-size-final-layout-20261023.json",
+    "sha256": "254272c3a6c9777aa8816e86445dd2e61382345918092957ab40773d189908e7",
+    "checks": 2,
+    "viewportModeCases": 6
+  },
+  "rows": [
+    {
+      "viewport": {
+        "width": 1888,
+        "height": 1333
+      },
+      "mode": "opening",
+      "before": {
+        "wrapperWidth": 290,
+        "headingGap": 407.0506591796875,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-1888x1333-opening-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 366.65625,
+        "headingGap": 32.489349365234375,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-1888x1333-opening-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1888,
+        "height": 1333
+      },
+      "mode": "batch",
+      "before": {
+        "wrapperWidth": 290,
+        "headingGap": 407.5,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-1888x1333-batch-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 366.65625,
+        "headingGap": 33.894561767578125,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-1888x1333-batch-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "mode": "opening",
+      "before": {
+        "wrapperWidth": 157.1875,
+        "headingGap": 227.46578979492188,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-1024x768-opening-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 168.40625,
+        "headingGap": 22.583099365234375,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-1024x768-opening-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "mode": "batch",
+      "before": {
+        "wrapperWidth": 157.1875,
+        "headingGap": 227.83297729492188,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-1024x768-batch-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 168.40625,
+        "headingGap": 21.567230224609375,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-1024x768-batch-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "opening",
+      "before": {
+        "wrapperWidth": 183.859375,
+        "headingGap": 263.7695617675781,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-390x844-opening-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 195.078125,
+        "headingGap": 23.91192626953125,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-390x844-opening-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "batch",
+      "before": {
+        "wrapperWidth": 183.859375,
+        "headingGap": 263.7012939453125,
+        "screenshot": "/tmp/yunipals-opening-size-before-layout-20261023-390x844-batch-sealed.png"
+      },
+      "after": {
+        "wrapperWidth": 195.078125,
+        "headingGap": 25.248443603515625,
+        "screenshot": "/tmp/yunipals-opening-size-final-layout-20261023-390x844-batch-sealed.png",
+        "packAndActionFitViewport": true
+      }
+    }
+  ],
+  "typecheck": {
+    "exitCode": 0,
+    "log": "/tmp/yunipals-opening-size-final-typecheck-20261023.log",
+    "diagnosticBytes": 0
+  },
+  "earlierCaptureNote": "Before capture geometry/screenshots succeeded; its final aggregate hash guard rejected intentional concurrent peer edits. Final responsive report proves frozen sources unchanged.",
+  "providerCalls": 0,
+  "transactions": 0,
+  "signatures": 0
+}

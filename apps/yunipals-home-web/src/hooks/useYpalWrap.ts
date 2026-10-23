@@ -277,10 +277,16 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
     });
   }
   async function complete(record: YpalWrapPending, key: string) {
-    const result = await resolveYpalWrapReceipt(client!, deployment, record);
+    if (!mounted.current || latest.current.storageKey !== key) return;
+    let result = await resolveYpalWrapReceipt(client!, deployment, record);
+    for (let retry = 0; result.status === "pending" && retry < 2; retry++) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!mounted.current || latest.current.storageKey !== key) return;
+      result = await resolveYpalWrapReceipt(client!, deployment, record);
+    }
+    if (!mounted.current || latest.current.storageKey !== key) return;
     if (result.status === "pending") {
-      if (mounted.current)
-        setMessage("The transaction is still pending. Its hash is preserved.");
+      setMessage("Confirming on Base. Your transaction hash is saved.");
       return;
     }
     remember(key, null);

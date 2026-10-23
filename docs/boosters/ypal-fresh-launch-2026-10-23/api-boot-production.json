@@ -1,0 +1,52 @@
+{
+  "actor": {
+    "ExecMainStartTimestampMonotonic": "66215783235382",
+    "Id": "yunipals-booster-api.service",
+    "InvocationID": "3a3b4014f75b4db9968f4c5ee26fa904",
+    "MainPID": "2334701",
+    "startTicks": 6621578322
+  },
+  "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+  "command": [
+    "/usr/bin/systemctl",
+    "enable",
+    "yunipals-booster-api.service"
+  ],
+  "completed": true,
+  "databaseWrites": 0,
+  "definitionHashes": {
+    "/etc/systemd/system/yunipals-booster-api.service": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+    "/etc/systemd/system/yunipals-booster-api.service.d/95-ypal.conf": "c1d99ddcc88768fb3a88d94a0df101b23f64207dd9943fa979f64cebf095dac5"
+  },
+  "finalizationSha256": "9bf720f7d669b1863184db4214602a16346f7913d6d2fbdcd4090a42c1ba6e1c",
+  "format": "yunipals-ypal-api-enable-boot-v1",
+  "inverse": {
+    "device": 2049,
+    "inode": 131530,
+    "neverStopAPI": true,
+    "originalUnitFileState": "disabled",
+    "removeOnlySameSymlink": "/etc/systemd/system/multi-user.target.wants/yunipals-booster-api.service",
+    "target": "/etc/systemd/system/yunipals-booster-api.service",
+    "thenDaemonReload": true
+  },
+  "link": "/etc/systemd/system/multi-user.target.wants/yunipals-booster-api.service",
+  "linkIdentity": {
+    "st_dev": 2049,
+    "st_gid": 0,
+    "st_ino": 131530,
+    "st_mode": 41471,
+    "st_mtime_ns": 1792790225662356541,
+    "st_size": 48,
+    "st_uid": 0
+  },
+  "operatorSha256": "2612b0f8730f3a70eae3b5bbd848424934ec7bda4f28a23cab5ab547f25429f9",
+  "publicAvailability": {
+    "freshYPALIdentity": true,
+    "ready": true,
+    "status": 200
+  },
+  "readerOperatorSha256": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+  "serviceRestarts": 0,
+  "target": "/etc/systemd/system/yunipals-booster-api.service",
+  "actualProtectedResultSha256": "30fabaf05eb34e9b39c513457abf178996deeab72941bc9df9850e5c4ab423a3"
+}

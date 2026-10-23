@@ -225,7 +225,7 @@ export function useBoosterActions() {
     setPhase("idle");
   };
 
-  async function prepare(action: BoosterAction, separateApproval = false) {
+  async function prepare(action: BoosterAction) {
     if (!activePage.current || confirming.current) return;
     const preparation = ++preparing.current;
     setSubmittedHash(null);
@@ -335,10 +335,7 @@ export function useBoosterActions() {
             throw new Error(`You need more ${symbol} for these packs.`);
           approval = allowance < tokenPrice;
           if (approval) {
-            if (
-              !separateApproval &&
-              (await engineSupportsBoosterPermit(client, deployment.engine))
-            )
+            if (await engineSupportsBoosterPermit(client, deployment.engine))
               permit = await readBoosterPermit(client, {
                 owner: account,
                 spender: deployment.engine,
@@ -454,7 +451,9 @@ export function useBoosterActions() {
     }
   }
 
-  async function confirm() {
+  async function confirm(
+    onSubmitted?: (hash: Hex, replacedHash?: Hex) => void
+  ) {
     if (!activePage.current || confirming.current) return;
     confirming.current = true;
     const current = reviewed.current;
@@ -623,6 +622,8 @@ export function useBoosterActions() {
         ...expectation
       });
       setPhase("confirming");
+      if (kind === "open" || kind === "claim") onSubmitted?.(hash);
+      void queries.invalidateQueries({ queryKey: boosterQueryKey });
       let trackedHash = hash;
       let cancelled = false;
       const receipt = await client.waitForTransactionReceipt({
@@ -642,7 +643,11 @@ export function useBoosterActions() {
             undefined,
             trackedHash
           );
+          const replacedHash = trackedHash;
           trackedHash = transaction.hash;
+          setSubmittedHash(trackedHash);
+          if (kind === "open" || kind === "claim")
+            onSubmitted?.(trackedHash, replacedHash);
         }
       });
       if (cancelled)
@@ -678,10 +683,6 @@ export function useBoosterActions() {
     phase,
     error,
     submittedHash,
-    useSeparateApproval: () => {
-      if (!confirming.current && reviewed.current?.action.kind === "open")
-        return prepare(reviewed.current.action, true);
-    },
     dismiss: () => {
       if (!activePage.current || confirming.current) return;
       preparing.current++;

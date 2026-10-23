@@ -18,6 +18,7 @@ import {
   fetchMonsterArtwork,
   type MonsterArtwork
 } from "@/lib/boosters";
+import { BoosterOpeningShare } from "./BoosterOpeningShare";
 import "./booster-pack-opening.css";
 
 export type BoosterOpeningCard = {
@@ -32,6 +33,7 @@ type PackContent = {
   metadataUri?: string;
   artwork?: MonsterArtwork;
   additionalCards?: readonly BoosterOpeningCard[];
+  replayHash?: string;
 };
 export type BoosterPackOpeningProps = PackContent &
   (
@@ -459,6 +461,9 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
               </h2>
             )}
             <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {props.replayHash && (
+                <BoosterOpeningShare hash={props.replayHash} />
+              )}
               {!demo && (
                 <Link
                   className="yunipals-opening-action"

@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "slug": "base-mainnet-standard-v1",
+  "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+  "dictionary": {
+    "schemaVersion": 1,
+    "slug": "base-standard-v1",
+    "types": [
+      {
+        "id": 1,
+        "name": "Yuniair"
+      },
+      {
+        "id": 2,
+        "name": "Yunidonkey"
+      },
+      {
+        "id": 3,
+        "name": "Yunibranch"
+      },
+      {
+        "id": 4,
+        "name": "Yunidragon"
+      },
+      {
+        "id": 5,
+        "name": "Yunicursed"
+      },
+      {
+        "id": 6,
+        "name": "Yunikles"
+      },
+      {
+        "id": 7,
+        "name": "Yuniturtle"
+      },
+      {
+        "id": 8,
+        "name": "Yuniaqua"
+      },
+      {
+        "id": 9,
+        "name": "Yunichick"
+      },
+      {
+        "id": 10,
+        "name": "Yunisheep"
+      },
+      {
+        "id": 11,
+        "name": "Yunifairy"
+      }
+    ],
+    "colors": [
+      {
+        "id": 1,
+        "name": "Yellow"
+      },
+      {
+        "id": 2,
+        "name": "Green"
+      },
+      {
+        "id": 3,
+        "name": "Blue"
+      },
+      {
+        "id": 4,
+        "name": "Red"
+      },
+      {
+        "id": 5,
+        "name": "Purple"
+      },
+      {
+        "id": 6,
+        "name": "Black"
+      }
+    ],
+    "horns": [
+      {
+        "id": 1,
+        "name": "Spiral"
+      },
+      {
+        "id": 2,
+        "name": "Diamond"
+      }
+    ],
+    "glitters": [
+      {
+        "id": 0,
+        "name": "No"
+      },
+      {
+        "id": 1,
+        "name": "Yes"
+      }
+    ]
+  },
+  "recipeVersion": "og-booster-card-v5-species-palette",
+  "recipeSourceSha256": "925e6414d64a2cef5e3cd55518d52db1654262b93411472d67225fc1551a12ef",
+  "references": {
+    "Yuniair:Yellow": {
+      "sha256": "d0b11ed041cbdfc8324eb2da526965f6e0d8c1f3e252c49fce1204b57be293eb",
+      "source": "OG Uniair #1000000089; base; https://meta.yunipals.com/meta?id=1000000089; image https://drive.polychainmonsters.com/ipfs/Qmc5yG7t3bDY7kgvw6u9Z9HNPe4B2Z8Tzoy4mWKBaEn4Av"
+    },
+    "Yuniair:Green": {
+      "sha256": "55bd433599ab3218798034d1ffed6ed6af7fdb11c4051b6a93fc16dfa8adea1e",
+      "source": "OG Uniair #1000000113; ethereum; https://meta.polkamon.com/meta?id=1000000113; image https://drive.polychainmonsters.com/ipfs/QmQzhwaukfZrSwapLUjHyachUdejQXttaxpV3sfMu4Wh3V"
+    },
+    "Yuniair:Blue": {
+      "sha256": "327ded98f46f1c2bb4453c553f8719b239c428c1bdee8fb6934ca3cefcb06f5e",
+      "source": "OG Uniair #1000000067; base; https://meta.yunipals.com/meta?id=1000000067; image https://drive.polychainmonsters.com/ipfs/QmaWG3vdECu4PjGDMt9VD4s7NxpJqAhkU8a8keVyZJwZ1T"
+    },
+    "Yuniair:Red": {
+      "sha256": "d2785321c72f2eb9ae364099090e658546f9a95ad2f8779abee387040ba7ecc2",
+      "source": "OG Uniair #1000000042; ethereum; https://meta.polkamon.com/meta?id=1000000042; image https://drive.polychainmonsters.com/ipfs/QmSTNdNyfb64swBGxm8jfhYundwx1KW7ZWqWXANMKuTwcK"
+    },
+    "Yuniair:Purple": {
+      "sha256": "49ee500f01ba0ed71893b03f5d0d87362c205291b6f7c8a81f6a79c5d98268fe",
+      "source": "OG Uniair #1000002692; ethereum; https://meta.polkamon.com/meta?id=1000002692; image https://drive.polychainmonsters.com/ipfs/QmdC3UL4SNkamn1wFsiexvUVEzP6rUpMrshm1qNWouyd4t"
+    },
+    "Yuniair:Black": {
+      "sha256": "beb2f31dc8edee276d63a009b78bdc572f4d5f086d3b3fe383d538638997e648",
+      "source": "OG Uniair #1000003405; ethereum; https://meta.polkamon.com/meta?id=1000003405; image https://drive.polychainmonsters.com/ipfs/QmV1AC7Sw36pqqbePqLKWBzTrQKM5LeNZoFQ84hFMCpKjm"
+    },
+    "Yunidonkey:Yellow": {
+      "sha256": "8a200daec30e2f62bc8c73326a4f341e71a3880b8d87bea677f149f4768eb3f3",
+      "source": "https://meta.polkamon.com/meta?id=1000002634; https://drive.polychainmonsters.com/ipfs/QmV2vFncVr756Ws9okYEKKpCMgVwRjB7yYVv28PsnVqo1s"
+    },
+    "Yunidonkey:Green": {
+      "sha256": "26cac5473dc3f83251b1af4652f44aef6cbd63f5a2d49ec3644ba5f983637534",
+      "source": "https://meta.polkamon.com/meta?id=1000000732; https://drive.polychainmonsters.com/ipfs/QmUmXh3HFEZqyBB4Cgma6VMsNBpgmVZhzGQk5JA8UpBYLJ"
+    },
+    "Yunidonkey:Blue": {
+      "sha256": "564bb49b1e2d897a48cb138df0df1c322811fc680d2506411b8adbc9d014d566",
+      "source": "https://meta.polkamon.com/meta?id=1000002068; https://drive.polychainmonsters.com/ipfs/QmQweSGPby6LwWa3jDj5R8Mc44tCWjqtxxSQa3R7TPz9iX"
+    },
+    "Yunidonkey:Red": {
+      "sha256": "5cafae120f9368b55dbf93cc9bc74547b623154ff4d08361d7affd5d2ad89a4a",
+      "source": "https://meta.polkamon.com/meta?id=1000002066; https://drive.polychainmonsters.com/ipfs/QmPfFsTcRrBBQ7BkK7oWownQyt4F8E774qYrj5Ce3ihtRD"
+    },
+    "Yunidonkey:Purple": {
+      "sha256": "8e1ea49949b64e3a4308dd96db8922d6518f54f42c47cf46d5bc7abdb274f644",
+      "source": "OG Unidonkey #1000000201; ethereum; https://meta.polkamon.com/meta?id=1000000201; image https://drive.polychainmonsters.com/ipfs/QmTYV5w1xD15fXKnw8Siq9wKKjY8PvzG1H8vWnvWvVXgWj"
+    },
+    "Yunidonkey:Black": {
+      "sha256": "76f34963a8d7ab2710508d1796870ecd4b667d7bae511a5499001991d400307c",
+      "source": "OG Unidonkey #1000004330; base; https://meta.yunipals.com/meta?id=1000004330; image https://drive.polychainmonsters.com/ipfs/QmRQZXc8su73r12n8nqQGL2NkegX7QnQP5KmjrWjYz71Ve"
+    },
+    "Yunibranch:Yellow": {
+      "sha256": "7b1dd446bc68d0f94918e68e3466e200d44435f64a5b9720d4812c3618193beb",
+      "source": "OG Unibranch #1000001445; base; https://meta.yunipals.com/meta?id=1000001445; image https://drive.polychainmonsters.com/ipfs/QmQQtMCthKJRaLMgz2VwJ7N72opbAbimVjRQPs3SjCNbVr"
+    },
+    "Yunibranch:Green": {
+      "sha256": "6257e388638c883f795d0f4d8f9f211836f83286d6a8da1ceb9000ec567b3f74",
+      "source": "OG Unibranch #1000000134; ethereum; https://meta.polkamon.com/meta?id=1000000134; image https://drive.polychainmonsters.com/ipfs/QmeW49wQ6L5SCnVEnwDCcuanE8bFA2LTtGLXxv8vS3pXxE"
+    },
+    "Yunibranch:Blue": {
+      "sha256": "bbee167e3a18c81c52c5c7a901e8f302a1b9c50527ce1938db1a3cfd794718c9",
+      "source": "OG Unibranch #1000000513; ethereum; https://meta.polkamon.com/meta?id=1000000513; image https://drive.polychainmonsters.com/ipfs/QmacEFR7XMbTvJ6FEiydeycZrLDQdm9r3iq1ASupDuBGHu"
+    },
+    "Yunibranch:Red": {
+      "sha256": "6f9e269a852e385ce781c6c4920df4d9a63cfcb3b3c106d460868132546d2914",
+      "source": "OG Unibranch #1000000061; ethereum; https://meta.polkamon.com/meta?id=1000000061; image https://drive.polychainmonsters.com/ipfs/Qmcnvv1NpEJsdopYHq55Q5UomrSAXzxVjeY9t5mfhCLyVM"
+    },
+    "Yunibranch:Purple": {
+      "sha256": "7f389b2071289d2ef4cc68757ab676b9c86307a4eb95a3d86bcef203678d12c5",
+      "source": "OG Unibranch #1000000259; ethereum; https://meta.polkamon.com/meta?id=1000000259; image https://drive.polychainmonsters.com/ipfs/Qmc8bYgYntCv8C4Syijz2CCS2yVRYcYbY6yxNUAt9UwP2p"
+    },
+    "Yunibranch:Black": {
+      "sha256": "c35a1fe5bcd80205566c72cd26a1c59a519fc0a61e46ed3634529c5b9583e6f4",
+      "source": "OG Unibranch #1000004556; ethereum; https://meta.polkamon.com/meta?id=1000004556; image https://drive.polychainmonsters.com/ipfs/QmRELX6h4GfgrGvPSGdhzXsLnepuN4GVNSxxYMTf3cgUyd"
+    },
+    "Yunidragon:Yellow": {
+      "sha256": "0d8be9f4742613a44adcff1dd6f63ed9f5fda317d8f6258aa72ae79782d5cf51",
+      "source": "OG Unidragon #1000000536; base; https://meta.yunipals.com/meta?id=1000000536; image https://drive.polychainmonsters.com/ipfs/QmXaNxq5FAkeavYAsDj2tupz1qQH1nEPUrBMiMUFe4hx9v"
+    },
+    "Yunidragon:Green": {
+      "sha256": "13a6407e01119738948c4e4af82fe403c889f1e413aa0c64f500a05892a35f19",
+      "source": "OG Unidragon #1000000216; ethereum; https://meta.polkamon.com/meta?id=1000000216; image https://drive.polychainmonsters.com/ipfs/QmTfK18gMrBLW3SrqZp4DRWLMZjfm3u57PSdUZVK1TF1Kx"
+    },
+    "Yunidragon:Blue": {
+      "sha256": "6531519092e501370ed2ed2cee90868ca51494558e0d5770cc5d8c12ac4fb783",
+      "source": "OG Unidragon #1000000585; ethereum; https://meta.polkamon.com/meta?id=1000000585; image https://drive.polychainmonsters.com/ipfs/QmSL9qUT54GhKNayNtkdzBSaMSLvzDDxT6XbVb4PkkX4aE"
+    },
+    "Yunidragon:Red": {
+      "sha256": "79a882a0d46623dd8e4c71079b8cdacc74a17af51d2212d222455ef0166d0111",
+      "source": "OG Unidragon #1000000236; ethereum; https://meta.polkamon.com/meta?id=1000000236; image https://drive.polychainmonsters.com/ipfs/QmNYCJx6DnHvHj9Fy3iHGgM1ko7PQLREsXKjE9pSbagbJj"
+    },
+    "Yunidragon:Purple": {
+      "sha256": "c2cea9975dbe3bd6246f95170c74611bca7050e89aebdd2a4970288cf2331238",
+      "source": "OG Unidragon #1000000063; ethereum; https://meta.polkamon.com/meta?id=1000000063; image https://drive.polychainmonsters.com/ipfs/QmPmxTuj5Rq5d3eUqwLKubNuG7c4XJrV22anH7nsWRAWUL"
+    },
+    "Yunidragon:Black": {
+      "sha256": "71ba9a50b6593e44b3afa4cfe85c5f5255197734013876a3f7e7afc06e5f236f",
+      "source": "OG Unidragon #1000000936; base; https://meta.yunipals.com/meta?id=1000000936; image https://drive.polychainmonsters.com/ipfs/QmQ32VNhFn7CyuA9itweMyDW5eR1rtzjuQGcUHGx3ucoYv"
+    },
+    "Yunicursed:Yellow": {
+      "sha256": "e50f401929b9972c5da76dbb9125a8b1a993a22aeb37cddfe0a66a0be801a2f0",
+      "source": "OG Unicursed #1000000109; ethereum; https://meta.polkamon.com/meta?id=1000000109; image https://drive.polychainmonsters.com/ipfs/QmXtV6UdTgFyqGjkQBsZcmx6FxW79g6ioFBRYvYwu59GQh"
+    },
+    "Yunicursed:Green": {
+      "sha256": "d5a3cbab8560c993374b381a3f3678092a697686f0b0b1f22b2835d3595ed5ac",
+      "source": "OG Unicursed #1000000025; ethereum; https://meta.polkamon.com/meta?id=1000000025; image https://drive.polychainmonsters.com/ipfs/QmYerikieJ88fdaVjVzyzEBuX1Pws2tjC8qSXoxRDmi1hZ"
+    },
+    "Yunicursed:Blue": {
+      "sha256": "a32d580d92865ec120c6b23db2f8ca7a63b66639d5aeeb418873d4b0608dea47",
+      "source": "OG Unicursed #1000000309; base; https://meta.yunipals.com/meta?id=1000000309; image https://drive.polychainmonsters.com/ipfs/QmPox3kFcyjgqLNvGAcsg8fTGVxZaB49LDVAEg3ubx1EZf"
+    },
+    "Yunicursed:Red": {
+      "sha256": "f0aecfd0b6dc6e4c994acfbb3431452d5956ce1162652ec5deb6f886e58f13ff",
+      "source": "OG Unicursed #1000000046; ethereum; https://meta.polkamon.com/meta?id=1000000046; image https://drive.polychainmonsters.com/ipfs/QmQ5y5cqR1n5kZcsgPTeCnBpkJTNGzjqQtkYr9A6XwFnbQ"
+    },
+    "Yunicursed:Purple": {
+      "sha256": "f0d77b14cdaf2666fe8c7a856b9c81d8798d16f4eda8013c9676e6130bcc27f0",
+      "source": "OG Unicursed #1000000664; ethereum; https://meta.polkamon.com/meta?id=1000000664; image https://drive.polychainmonsters.com/ipfs/QmPfts8XYHz9df9PctxmXxKTsM7YAoqMuLxAgAzn359GYY"
+    },
+    "Yunicursed:Black": {
+      "sha256": "11c6d87a85356beb893ca78c87952173bae69ea343ed28a955ba5a21e8268270",
+      "source": "OG Unicursed #1000000313; ethereum; https://meta.polkamon.com/meta?id=1000000313; image https://drive.polychainmonsters.com/ipfs/QmfHfPPJBBK2WB52qJjduWoALnSbdQimfhVNV1Hw6xB6rM"
+    },
+    "Yunikles:Yellow": {
+      "sha256": "eb7b0393ab0e889647c98401618f7f86cfedc04cfc6da8983f86fb19f4afb4a2",
+      "source": "OG Unikles #1000000026; ethereum; https://meta.polkamon.com/meta?id=1000000026; image https://drive.polychainmonsters.com/ipfs/QmPgyh552iKVT7nGHtaTck412BaEdvRVAeWzhG7m54jNwE"
+    },
+    "Yunikles:Green": {
+      "sha256": "7b641f55a0766d217c5dd97d7328f146ae48441ba070b4b79ecfe3e0c2ba1176",
+      "source": "OG Unikles #1000000039; ethereum; https://meta.polkamon.com/meta?id=1000000039; image https://drive.polychainmonsters.com/ipfs/QmNeoZ187XuPA3VMEaMQuKF57s4HkDoo37LW6D7PyAm5qv"
+    },
+    "Yunikles:Blue": {
+      "sha256": "fef2b9af553bd7a6ab9dbbefbdf25ff56b2c171afad721ec98bdb8b564bb9db1",
+      "source": "OG Unikles #1000000227; ethereum; https://meta.polkamon.com/meta?id=1000000227; image https://drive.polychainmonsters.com/ipfs/QmekSWKnappNaPYojmAuvJEJzZ8n3LnpDVJa6A7prkPhQp"
+    },
+    "Yunikles:Red": {
+      "sha256": "d45b4e99516463f24ea2fca0591c154b30273dd18d5f2e5a3e7fcbe72b7be77b",
+      "source": "OG Unikles #1000000002; ethereum; https://meta.polkamon.com/meta?id=1000000002; image https://drive.polychainmonsters.com/ipfs/QmVQNMPnPB2HKkNXvB5rCtUcGnE7iNnKg13PJp5AQJkSVF"
+    },
+    "Yunikles:Purple": {
+      "sha256": "39dec5f2a1a8d2d7fac80379192e508999a62cf98e72915be3ee2efb40584725",
+      "source": "OG Unikles #1000000461; base; https://meta.yunipals.com/meta?id=1000000461; image https://drive.polychainmonsters.com/ipfs/QmXf6JNNJ42zqoJnLtJEhnWKfZnYHygkV5fTzHWkGvZrF7"
+    },
+    "Yunikles:Black": {
+      "sha256": "2a60f48747b731d8a2c61720df504274cf39b7d6f27241faf4c971da41dbc08c",
+      "source": "OG Unikles #1000001165; ethereum; https://meta.polkamon.com/meta?id=1000001165; image https://drive.polychainmonsters.com/ipfs/Qmetknud9Jh5ZaGLGemCVbQPTbJY36MAe2AtVyXEYKJ5qD"
+    },
+    "Yuniturtle:Yellow": {
+      "sha256": "52446a55422dfc2bcc8cb43ef473d0f245ae69d7788a196ba840f66c429c688a",
+      "source": "OG Uniturtle #1000000300; base; https://meta.yunipals.com/meta?id=1000000300; image https://drive.polychainmonsters.com/ipfs/Qmca8q5DpEnyw61CobHr69tZPNiJvjA6batN7zCQzmH63T"
+    },
+    "Yuniturtle:Green": {
+      "sha256": "7bfc286cdc832fa442c69b2ef9367a197af4a95570d36159645c39af1851cba1",
+      "source": "Actual OG Uniturtle #1000000214; https://meta.polkamon.com/meta?id=1000000214; code T04C02H10B01G00; image https://drive.polychainmonsters.com/ipfs/QmSQxGf3feNR6uvyaU21estDBDKiwicFGaFiUxcxA8eteA"
+    },
+    "Yuniturtle:Blue": {
+      "sha256": "c7ea7a2e88f015ec453eb7b295149bab9babbb1729d4e45596cf202744b6035b",
+      "source": "OG Uniturtle #1000000022; ethereum; https://meta.polkamon.com/meta?id=1000000022; image https://drive.polychainmonsters.com/ipfs/QmaZ1ryST8BR4DfFwkFLZeUb23aeYX79NLUP34iwU1yCyu"
+    },
+    "Yuniturtle:Red": {
+      "sha256": "61120475695237b8658b49a0f39dee7c2c093f1fb2d5073b7c54a635c4dda24c",
+      "source": "OG Uniturtle #1000000242; ethereum; https://meta.polkamon.com/meta?id=1000000242; image https://drive.polychainmonsters.com/ipfs/QmPgLKX9LUL9T8kQDugUS9bcUzgn8tjxRe6xTrCCR9JauK"
+    },
+    "Yuniturtle:Purple": {
+      "sha256": "92951ed85cd9b05967eb56b1e85506cd81180748008d9fdb506cf3e6a7cbcebf",
+      "source": "OG Uniturtle #1000001269; ethereum; https://meta.polkamon.com/meta?id=1000001269; image https://drive.polychainmonsters.com/ipfs/QmWGwZvbXe9v24cYHFi2NqeKveMNG4cDhe6AdhWdivSPnn"
+    },
+    "Yuniturtle:Black": {
+      "sha256": "1fcfda9f64598dbc432f58ef9deee3f15f62bc099a68af61772e1ae92ed5db2e",
+      "source": "OG Uniturtle #1000000483; ethereum; https://meta.polkamon.com/meta?id=1000000483; image https://drive.polychainmonsters.com/ipfs/QmYnYgf9m6ouVeD1PttewjtXT1AQrGHY5JoNYt71nkLNw6"
+    },
+    "Yuniaqua:Yellow": {
+      "sha256": "5d4846b8526b03c8cbc783e3666c3d6d1fd1b6e6c6fc1d9699f3afdc56524607",
+      "source": "OG Uniaqua #1000000322; base; https://meta.yunipals.com/meta?id=1000000322; image https://drive.polychainmonsters.com/ipfs/QmdxbdvAcwLKVXynqX1946JFigf9p8uE7yk52mSSbybsPt"
+    },
+    "Yuniaqua:Green": {
+      "sha256": "9efe1d31a36df377040cc92742ea6add64b4efe657ee5fff7ef2d71c003781ec",
+      "source": "OG Uniaqua #1000000024; ethereum; https://meta.polkamon.com/meta?id=1000000024; image https://drive.polychainmonsters.com/ipfs/QmYog4qzatV1sgMJEShVwKLs1TjnEBK1bEEhKZPMMwJfna"
+    },
+    "Yuniaqua:Blue": {
+      "sha256": "55af046442b07a17cf39538911635a864b1a41ec39201a0756d182ece66eaa99",
+      "source": "OG Uniaqua #1000000062; ethereum; https://meta.polkamon.com/meta?id=1000000062; image https://drive.polychainmonsters.com/ipfs/QmUzF9zx3FuWC8VkmB8y2EcbkQVeRabKsQazDHxpmkkUGv"
+    },
+    "Yuniaqua:Red": {
+      "sha256": "6132cba67c40df632cca70e2cfd202b2c24233daef5767514d300ec3c93f5cd7",
+      "source": "OG Uniaqua #1000000038; ethereum; https://meta.polkamon.com/meta?id=1000000038; image https://drive.polychainmonsters.com/ipfs/QmSo9E55Q59BnxYsMwWtevnQFquNu35iDRSURUUCh4BQB6"
+    },
+    "Yuniaqua:Purple": {
+      "sha256": "145be1c887be47b489a9275070cf00658779b94d67bd8049ba3c3f6fc94c85a4",
+      "source": "OG Uniaqua #1000000101; ethereum; https://meta.polkamon.com/meta?id=1000000101; image https://drive.polychainmonsters.com/ipfs/QmXQ8Nv99rGCTgh2cD426Z22bPFqtuMyDM9HTqDDQW8SvL"
+    },
+    "Yuniaqua:Black": {
+      "sha256": "63a1758c6541511fb2ff170ec9cb829a4c27561dd95d5bcc515d02a31ba56ea3",
+      "source": "OG Uniaqua #1000002874; ethereum; https://meta.polkamon.com/meta?id=1000002874; image https://drive.polychainmonsters.com/ipfs/QmUCGi19sVDToT9dKH9QjekaECPdEhMzyVi5viVVFj2KXM"
+    },
+    "Yunichick:Yellow": {
+      "sha256": "064ac27a8cbb31b97d4c1050b031b4637e1f9709c591b691643d6413c88d0bf3",
+      "source": "OG Unichick #1000000027; ethereum; https://meta.polkamon.com/meta?id=1000000027; image https://drive.polychainmonsters.com/ipfs/QmRkVuWkhywXVXkFDHo24nrnsKShZKQt8DSM1tgeyBU5a9"
+    },
+    "Yunichick:Green": {
+      "sha256": "9a3a4be1f3be6f809c08caf679eb5b65bfec15f263ba994690a3ac6ccbe2ecb1",
+      "source": "OG Unichick #1000000011; ethereum; https://meta.polkamon.com/meta?id=1000000011; image https://drive.polychainmonsters.com/ipfs/QmSqeB1s99AKGriDVSkUtPxLri7GYQT1yWVubNe5oHEuyC"
+    },
+    "Yunichick:Blue": {
+      "sha256": "b8c66be81f9692916c9b556b4dcc0e6ef05aaf13fce882e7b15da6307e96ca48",
+      "source": "OG Unichick #1000000036; ethereum; https://meta.polkamon.com/meta?id=1000000036; image https://drive.polychainmonsters.com/ipfs/QmQNCda1vcQCgsucSvBhH3zNJjeVBZ2ws3DfvHyiVtTJoe"
+    },
+    "Yunichick:Red": {
+      "sha256": "ae011a552311f5e51a211b5d49001e28d8a9291b7481a338d2d151f3a790cf46",
+      "source": "Actual OG Unichick #1000000017; https://meta.polkamon.com/meta?id=1000000017; code T07C05H01B01G00; image https://drive.polychainmonsters.com/ipfs/QmTSBMBxGKFjqMvvxzbaa9BEyhagAUmyooWMpyPqmpTJLq"
+    },
+    "Yunichick:Purple": {
+      "sha256": "1292284f4bf35fa50944534901d080a2ccb8afdb50103dccb4f29a68bcd4df9e",
+      "source": "OG Unichick #1000000028; ethereum; https://meta.polkamon.com/meta?id=1000000028; image https://drive.polychainmonsters.com/ipfs/QmXBWrensWssehPbsVxJp2RuV784QGXonR4EVofYR6Zo8x"
+    },
+    "Yunichick:Black": {
+      "sha256": "5ed01c8edf031bcd2982bba4bcf7e88401ee2f241f88c7e1fc486d1ac82f1bb0",
+      "source": "OG Unichick #1000001687; ethereum; https://meta.polkamon.com/meta?id=1000001687; image https://drive.polychainmonsters.com/ipfs/QmTS3DJzex8ASPcjfLVhkYiXPuESXHrj3XkttbjHfnSc6f"
+    },
+    "Yunisheep:Yellow": {
+      "sha256": "25891474742c8b1124a4edabdbeedf18efc2fff3a6ea3bf98a31bf6069958cae",
+      "source": "https://meta.polkamon.com/meta?id=1000002683; https://drive.polychainmonsters.com/ipfs/QmfQ9qM1vcC5n8NuA6tXrX1AZJxfuzioFnzbtdhBq1pSgQ"
+    },
+    "Yunisheep:Green": {
+      "sha256": "9bd291e2122b7633eb0dbb50489786b1f6ac8e0117c9858c344cbd1dbf03101b",
+      "source": "https://meta.polkamon.com/meta?id=1000000620; https://drive.polychainmonsters.com/ipfs/QmNWKdq332vxXUvgUig5uvCZwZGUjxGBzK9gWM6C6f4Hcj"
+    },
+    "Yunisheep:Blue": {
+      "sha256": "c2b007a49cccc3fcc57ce7da3ab84b2119bfd8eb48457401158662e88b52fc7e",
+      "source": "https://meta.polkamon.com/meta?id=1000001744; https://drive.polychainmonsters.com/ipfs/QmZcqXtRPDrG2tmrkwLDrFPBuJGX7cMJs87DXqMezCoJmZ"
+    },
+    "Yunisheep:Red": {
+      "sha256": "9946d47fb51abc8fcdbe7b4773de8e3fb04e933ba72bd325cfa592740ed2e4df",
+      "source": "https://meta.polkamon.com/meta?id=1000002035; https://drive.polychainmonsters.com/ipfs/QmP1AYNZERscezNLC8p8yBCVx4K72nRwrZYH1uciCNt5v5"
+    },
+    "Yunisheep:Purple": {
+      "sha256": "9150a53ccb5cfca6c338a04c7703c19386ef3d8d422a392794afcccf4f49bcd2",
+      "source": "OG Unisheep #1000000217; ethereum; https://meta.polkamon.com/meta?id=1000000217; image https://drive.polychainmonsters.com/ipfs/Qmd2T6red2jVQiidbTWiTSpJthT1TerxgQKcuBtU7E5TNq"
+    },
+    "Yunisheep:Black": {
+      "sha256": "6b851668fe1fd3994ef8f1b7fcbaff71af345901737aa6064f2a8a38777137fe",
+      "source": "OG Unisheep #1000000972; ethereum; https://meta.polkamon.com/meta?id=1000000972; image https://drive.polychainmonsters.com/ipfs/QmREC7Httr4E2TtaE9cywnHCi1nBahZN7Vrv4xAu8dgZ5E"
+    },
+    "Yunifairy:Yellow": {
+      "sha256": "1fcf3fa4ef630a9b1981d0215223e3c87845f20313371397f4dd41cb7a861253",
+      "source": "OG Unifairy #1000000070; base; https://meta.yunipals.com/meta?id=1000000070; image https://drive.polychainmonsters.com/ipfs/Qmbedvb9LRCPbZRmP29vjoxPk4p7QHHrD6k2ofNBHE2HqM"
+    },
+    "Yunifairy:Green": {
+      "sha256": "48abf3f92a6319d64a02314be40ff83ba24c26cb891fb6751c8125777e6ff00c",
+      "source": "OG Unifairy #1000000004; ethereum; https://meta.polkamon.com/meta?id=1000000004; image https://drive.polychainmonsters.com/ipfs/Qmd4pzmT3BvhsBLtCW37FGGii5GGSZkmpGcTmFVwVMX5PH"
+    },
+    "Yunifairy:Blue": {
+      "sha256": "27b15bfe8be36b466ec653bb13c7d8a40a2a8fcd8a864cdcbe7fa9892bbbc55a",
+      "source": "OG Unifairy #1000000074; base; https://meta.yunipals.com/meta?id=1000000074; image https://drive.polychainmonsters.com/ipfs/QmcAsq6A1QU9iRdaDbcbwoKBgfik6jc9FbAr2TpDCMHexv"
+    },
+    "Yunifairy:Red": {
+      "sha256": "abb2d8b1e15e888fc1ad216199371a93882ec5d25a6e48e4d2e7de3835bbf328",
+      "source": "OG Unifairy #1000000115; ethereum; https://meta.polkamon.com/meta?id=1000000115; image https://drive.polychainmonsters.com/ipfs/QmchbzzG2k2oDsasBbX9L5ahbNp6rGHShJrywfFakg4r9R"
+    },
+    "Yunifairy:Purple": {
+      "sha256": "faca5aae348b548e5a4da61a0930940bdbbcc380394dcc6b7640e4cc64a48a32",
+      "source": "OG Unifairy #1000000345; ethereum; https://meta.polkamon.com/meta?id=1000000345; image https://drive.polychainmonsters.com/ipfs/QmS5b8Q8FWb8C7XXmQpxxEgDBwjxFmiMV4csJoKgQUPmhM"
+    },
+    "Yunifairy:Black": {
+      "sha256": "922b63b2c1d7399cc429bd0bdfe9029981295fccbe616b3ab1c5030d155219a5",
+      "source": "OG Unifairy #1000004719; ethereum; https://meta.polkamon.com/meta?id=1000004719; image https://drive.polychainmonsters.com/ipfs/QmRmgyp59yJ1PurWBCpmRQgrNGMdSAQWEoSnm2MwoRr1Pg"
+    }
+  },
+  "styleLock": {
+    "id": "lavender-crisp-v1",
+    "selectedBy": "user",
+    "selectedAt": "2026-10-19T14:36:04.323433+00:00",
+    "styles": {
+      "No": {
+        "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a"
+      },
+      "Yes": {
+        "sha256": "b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d"
+      }
+    },
+    "rules": [
+      "Official logo and lavender/grape frame",
+      "Crisp dimensional monster, clean face and contours",
+      "Sparse body glints only for glitter variants",
+      "Holographic finish concentrated in the background",
+      "Golden spiral or faceted diamond forehead horn",
+      "Blend viewer finish with calibrated subject and star masks"
+    ]
+  },
+  "logoSha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951",
+  "metadataBaseURI": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/",
+  "artworkHash": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac"
+}

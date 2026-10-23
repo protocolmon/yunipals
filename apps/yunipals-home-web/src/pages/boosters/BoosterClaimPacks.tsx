@@ -20,9 +20,11 @@ import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
 
 export function BoosterClaimPacks({
-  onConfirmed
+  onConfirmed,
+  onSubmitted
 }: {
-  onConfirmed: (hash: Hex) => void;
+  onConfirmed?: (hash: Hex) => void;
+  onSubmitted?: (hash: Hex, replacedHash?: Hex) => void;
 }) {
   const { address } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
@@ -190,6 +192,7 @@ export function BoosterClaimPacks({
                           Boolean(clock.error)
                         }
                         onConfirmed={onConfirmed}
+                        onSubmitted={onSubmitted}
                       >
                         {paused
                           ? "Claims paused"

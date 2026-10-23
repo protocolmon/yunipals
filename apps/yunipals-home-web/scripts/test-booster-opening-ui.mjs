@@ -23,7 +23,9 @@ const { values } = parseArgs({
       type: "string",
       default: "/tmp/yunipals-booster-opening-ui.json"
     },
-    "components-only": { type: "boolean", default: false }
+    "components-only": { type: "boolean", default: false },
+    "layout-only": { type: "boolean", default: false },
+    port: { type: "string", default: "5198" }
   }
 });
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -45,6 +47,7 @@ const sourcePaths = [
   "src/pages/boosters/booster-pack-opening.css",
   "src/pages/boosters/BoosterTransactions.tsx",
   "src/pages/boosters/BoosterRequestOpening.tsx",
+  "src/pages/boosters/BoosterOpeningShare.tsx",
   "src/pages/boosters/BoosterClaimPacks.tsx",
   "src/lib/boosterReveal.ts",
   "src/lib/boosters.ts",
@@ -122,8 +125,8 @@ const registry='0x1111111111111111111111111111111111111111';
 const engine='0x2222222222222222222222222222222222222222';
 const monsters='0x3333333333333333333333333333333333333333';
 const hash='0x'+'a'.repeat(64),zero='0x'+'0'.repeat(64),blockHash='0x'+'b'.repeat(64);
-export const scenario=()=>new URLSearchParams(location.search).get('scenario')||'revealed';
-const multi=()=>scenario().startsWith('multi');
+export const scenario=()=>new URLSearchParams(location.search).get('scenario')||(location.pathname==='/boosters'?sessionStorage.getItem('fixture-opening-scenario'):null)||'revealed';
+const multi=()=>scenario().startsWith('multi')||scenario()==='submission';
 const requestIds=()=>multi()?['9','250','31']:['9'];
 const originalId=(id)=>multi()?({'9':'7','250':'21','31':'99'}[id]):'7';
 const fulfilled=()=>window.__completeMulti||sessionStorage.getItem('fixture-multi-fulfilled')==='yes';
@@ -154,8 +157,10 @@ export const client={
   if(functionName==='refundCredits')return 0n;
   if(functionName==='MAX_OPEN_PACKS')return 10;
   if(functionName==='getRequest'){
+   if(window.__deferRequestStates)await new Promise(resolve=>{(window.__releaseRequestStates??=[]).push(resolve);});
    const id=String(args[0]);let status=scenario()==='pending'?1:scenario()==='recovery'?2:3;
    if(scenario()==='multi-pending'&&!fulfilled()&&id!=='9')status=1;
+   if(scenario()==='submission'&&!fulfilled())status=1;
    if(scenario()==='multi-recovery'&&!fulfilled()&&id==='250')status=2;
    if(scenario()==='multi-forfeit'&&id==='31')status=4;
    return {originalId:BigInt(originalId(id)),quantity:scenario()==='claim'?3:1,status,opening:scenario()!=='non-opening'&&scenario()!=='claim',payer:owner,paid:10n**18n,ruleHash:zero};
@@ -163,7 +168,7 @@ export const client={
   throw Error('Unexpected local fixture read: '+functionName);
  },
  async getTransactionReceipt(){
-  if(scenario()==='unconfirmed')return null;
+  if(scenario()==='unconfirmed'||(scenario()==='submission'&&!window.__receiptConfirmed))return null;
   if(scenario()==='reverted')return {status:'reverted',transactionHash:hash,blockHash,blockNumber:1234n,logs:[]};
   let ids=requestIds();if(scenario()==='multi-missing')ids=ids.slice(0,2);if(scenario()==='multi-duplicate')ids=['9','9','31'];
   const logs=ids.map((id,index)=>({address:engine,blockHash,blockNumber:1234n,transactionHash:hash,transactionIndex:0,logIndex:10+index,removed:false,
@@ -171,7 +176,7 @@ export const client={
    data:encodeAbiParameters(parseAbiParameters('address,uint32,bool,uint256,bytes32,uint32'),[owner,scenario()==='claim'?3:1,scenario()!=='claim',10n**18n,zero,900000])}));
   return {status:'success',transactionHash:hash,blockHash,blockNumber:1234n,logs};
  },
- async getTransaction(){return{hash,to:engine,input:encodeFunctionData({abi:boosterPurchaseAbi,functionName:'openPacks',args:[2n,scenario()==='multi-wrong-count'?4:3,10n**18n,9999999999n]})};},
+ async getTransaction(){return{hash,to:scenario()==='multi-foreign-engine'?registry:engine,input:scenario()==='claim'?encodeFunctionData({abi:boosterPacksAbi,functionName:'claim',args:[7n,3,10n**18n,9999999999n]}):multi()?encodeFunctionData({abi:boosterPurchaseAbi,functionName:'openPacks',args:[2n,scenario()==='multi-wrong-count'?4:3,10n**18n,9999999999n]}):encodeFunctionData({abi:boosterPacksAbi,functionName:'openPack',args:[2n,10n**18n,9999999999n]})};},
  async getStorageAt(){return '0x'+'0'.repeat(24)+'92e2351a83b6c445c94d0b887259d2b940c82a5a';},
  async getBlock(){return{timestamp:1792740601n};}
 };`;
@@ -188,17 +193,18 @@ import '/src/globals.css';
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
 window.__refreshBoosters=()=>query.invalidateQueries();
 function Harness(){
- const mode=new URLSearchParams(location.search).get('mode')||'opening';
+ const mode=new URLSearchParams(location.search).get('mode')||(new URLSearchParams(location.search).has('opening')?'transactions':'opening');
  const [open,setOpen]=useState(false),[closed,setClosed]=useState(0);
- return <MemoryRouter><QueryClientProvider client={query}><main>
-  {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:<BoosterTransactions/>}
+ const [submitted,setSubmitted]=useState(mode==='submitted'?'0x'+'a'.repeat(64):null);
+ return <MemoryRouter initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><main>
+  {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:<BoosterTransactions autoOpenHash={submitted} onOpeningClosed={()=>setSubmitted(null)}/>}
  </main></QueryClientProvider></MemoryRouter>;
 }
 createRoot(document.getElementById('root')).render(<Harness/>);`;
 const modules = {
   [ids.entry]: entry,
   [ids.boosters]: fixture,
-  [ids.wagmi]: `import {owner,client,scenario} from '${ids.boosters}';export const useAccount=()=>({address:scenario()==='offer-public'?'0x9999999999999999999999999999999999999999':owner,isConnected:true,chainId:8453});export const usePublicClient=()=>client;`,
+  [ids.wagmi]: `import {owner,client,scenario} from '${ids.boosters}';export const useAccount=()=>({address:scenario().startsWith('multi-replay')||scenario()==='multi-foreign-engine'?undefined:scenario()==='offer-public'?'0x9999999999999999999999999999999999999999':owner,isConnected:!scenario().startsWith('multi-replay'),chainId:8453});export const usePublicClient=()=>client;`,
   [ids.action]: `import React from 'react';export function BoosterActionButton({children,disabled,action}){return <button type="button" disabled={disabled} data-fixture-action={JSON.stringify(action)} onClick={()=>{if(action?.kind==='recover'){window.__completeMulti=true;sessionStorage.setItem('fixture-multi-fulfilled','yes');window.__refreshBoosters?.();}}}>{children}</button>}`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "yunipals-opening-vite-"));
@@ -206,7 +212,12 @@ const server = await createServer({
   cacheDir,
   root,
   configFile: false,
-  server: { host: "127.0.0.1", port: 5198, strictPort: true },
+  server: {
+    host: "127.0.0.1",
+    port: Number(values.port),
+    strictPort: true,
+    hmr: false
+  },
   esbuild: { jsx: "automatic" },
   resolve: {
     alias: {
@@ -247,7 +258,11 @@ const server = await createServer({
               '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="400" height="600" rx="25" fill="#c4b5fd"/><text x="25" y="300" font-size="30">Fixture Yunidragon</text></svg>'
             );
           }
-          if (req.url?.split("?")[0] !== "/__booster-opening-check")
+          if (
+            !["/__booster-opening-check", "/boosters"].includes(
+              req.url?.split("?")[0]
+            )
+          )
             return next();
           const html = await vite.transformIndexHtml(
             req.url,
@@ -286,7 +301,8 @@ page.setDefaultTimeout(12000);
 page.on("pageerror", (error) => report.browserErrors.push(error.message));
 const visit = (query) =>
   page.goto(`${origin}/__booster-opening-check?${query}`, {
-    waitUntil: "networkidle"
+    waitUntil: "load",
+    timeout: 45000
   });
 const dialog = () =>
   page.getByRole("dialog", { name: "Yunipals pack opening", exact: true });
@@ -316,6 +332,7 @@ async function drag(locator, dx, dy, cancel = false) {
   await page.mouse.up();
 }
 async function run(name, fn) {
+  if (values["layout-only"] && !name.startsWith("Responsive")) return;
   await fn();
   assert.deepEqual(report.browserErrors, []);
   report.checks.push({ name, passed: true });
@@ -499,6 +516,93 @@ async function protectedLayout(target = page) {
   return geometry;
 }
 try {
+  await run(
+    "Responsive demo and actual wrapper fill the opening scene without a heading gap",
+    async () => {
+      report.responsiveWrapper = [];
+      for (const viewport of [
+        { width: 1888, height: 1333 },
+        { width: 1024, height: 768 },
+        { width: 390, height: 844 }
+      ]) {
+        await page.setViewportSize(viewport);
+        for (const mode of ["opening", "batch"]) {
+          await visit(`mode=${mode}`);
+          await page
+            .getByRole("button", { name: "Start local opening" })
+            .click();
+          await page
+            .locator(".yunipals-opening-body")
+            .evaluate((image) => image.decode());
+          const protectedGeometry = await protectedLayout();
+          const geometry = await page.evaluate(() => {
+            const bounds = (selector) => {
+              const r = document
+                .querySelector(selector)
+                .getBoundingClientRect();
+              return {
+                top: r.top,
+                bottom: r.bottom,
+                left: r.left,
+                right: r.right,
+                width: r.width,
+                height: r.height
+              };
+            };
+            return {
+              pack: bounds(".yunipals-opening-shell"),
+              header: bounds(".yunipals-opening-header"),
+              action: bounds(".yunipals-opening-content > button:last-child"),
+              dialogScrollHeight: document.querySelector("dialog").scrollHeight
+            };
+          });
+          assert(
+            geometry.pack.top - geometry.header.bottom >= 0 &&
+              geometry.pack.top - geometry.header.bottom <= 48,
+            "The sealed wrapper sits directly below the protected heading"
+          );
+          assert(
+            Math.abs(
+              (geometry.pack.left + geometry.pack.right) / 2 -
+                viewport.width / 2
+            ) <= 1,
+            "The wrapper stays horizontally centered"
+          );
+          assert(
+            geometry.pack.top >= 0 && geometry.pack.bottom <= viewport.height,
+            "The complete sealed wrapper fits the viewport"
+          );
+          assert(
+            geometry.action.top >= 0 &&
+              geometry.action.bottom <= viewport.height,
+            "The explicit opening action remains in view"
+          );
+          assert(
+            geometry.dialogScrollHeight <= viewport.height + 1,
+            "The sealed scene does not require vertical scrolling"
+          );
+          if (viewport.width >= 1800)
+            assert(
+              geometry.pack.width >= 350,
+              "Large desktop openings use a prominent wrapper"
+            );
+          const screenshot =
+            values.output.replace(/\.json$/, "") +
+            `-${viewport.width}x${viewport.height}-${mode}-sealed.png`;
+          await page.screenshot({ path: screenshot });
+          report.responsiveWrapper.push({
+            viewport,
+            mode,
+            ...geometry,
+            protectedGeometry,
+            screenshot
+          });
+          await page.keyboard.press("Escape");
+        }
+      }
+      await page.setViewportSize({ width: 1100, height: 1000 });
+    }
+  );
   if (!values["components-only"])
     await run(
       "Real pack offer uses decoded portrait artwork, correct price/rules and demo entry",
@@ -768,7 +872,7 @@ try {
         report.browserErrors.push(error.message)
       );
       await mobile.goto(`${origin}/__booster-opening-check?mode=opening`, {
-        waitUntil: "networkidle"
+        waitUntil: "load"
       });
       await mobile.getByRole("button", { name: "Start local opening" }).click();
       await mobile
@@ -1317,6 +1421,138 @@ try {
         .first()
         .waitFor();
       await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Submitted hash opens progress before any receipt/API request; confirmation, syncing and VRF are distinct and closing never resubmits",
+    async () => {
+      await visit("mode=submitted&scenario=submission");
+      await page
+        .getByRole("dialog", { name: "Your 3 packs", exact: true })
+        .waitFor();
+      await page
+        .getByText("Waiting for transaction confirmation…", { exact: true })
+        .waitFor();
+      assert.equal(await dialog().count(), 0);
+      await page.evaluate(() => {
+        window.__deferRequestStates = true;
+        window.__receiptConfirmed = true;
+        window.__refreshBoosters();
+      });
+      await page
+        .getByText("Transaction confirmed. Syncing your pack requests…", {
+          exact: true
+        })
+        .waitFor();
+      await page.evaluate(() => {
+        window.__deferRequestStates = false;
+        for (const resolve of window.__releaseRequestStates ?? []) resolve();
+      });
+      await page.getByText(/Waiting for Chainlink randomness/).waitFor();
+      assert.equal(await dialog().count(), 0);
+      await page
+        .getByRole("button", { name: "Close pack", exact: true })
+        .click();
+      await page.evaluate(() => {
+        window.__completeMulti = true;
+        window.__refreshBoosters();
+      });
+      await page
+        .getByRole("button", { name: "View 3 cards", exact: true })
+        .waitFor();
+      assert.equal(
+        await page.getByRole("dialog").count(),
+        0,
+        "Confirmation must not reopen a closed submitted dialog"
+      );
+    }
+  );
+  await run(
+    "Public replay link restores all three cards from actual receipt+input without wallet/local ownership and can replay again",
+    async () => {
+      await visit(
+        "mode=transactions&scenario=multi-replay&opening=0x" + "a".repeat(64)
+      );
+      await dialog().waitFor();
+      for (const [index, id] of ["7", "21", "99"].entries()) {
+        if (index === 0) {
+          await page
+            .getByRole("button", { name: "Rip pack seal", exact: true })
+            .focus();
+          await page.keyboard.press("Enter");
+        } else {
+          await page
+            .getByRole("button", { name: "Pull next card", exact: true })
+            .click();
+        }
+        await waitStage("extracting");
+        await page
+          .getByRole("button", { name: "Pull card upward", exact: true })
+          .focus();
+        await page.keyboard.press("Enter");
+        await waitStage("results");
+        await page
+          .getByRole("heading", { name: "Fixture Yunipal #" + id, exact: true })
+          .waitFor();
+      }
+      const replay = page
+        .getByRole("link", { name: "Replay opening", exact: true })
+        .last();
+      assert.equal(
+        await replay.getAttribute("href"),
+        "/boosters?opening=0x" + "a".repeat(64)
+      );
+      await Promise.all([
+        page.waitForURL(/\/boosters\?opening=/),
+        replay.click()
+      ]);
+      await waitStage("sealed");
+      await page
+        .getByRole("button", { name: "Rip pack seal", exact: true })
+        .focus();
+      await page.keyboard.press("Enter");
+      await waitStage("extracting");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+      await dialog().waitFor({ state: "detached" });
+      await visit(
+        "mode=transactions&scenario=multi-replay&opening=0x" + "a".repeat(64)
+      );
+      await waitStage("sealed");
+      await page.keyboard.press("Escape");
+      await dialog().waitFor({ state: "detached" });
+      assert.equal(await dialog().count(), 0);
+      await visit(
+        "mode=transactions&scenario=multi-replay&opening=0x" + "a".repeat(64)
+      );
+      await waitStage("sealed");
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Public replay refuses foreign-engine calldata, incomplete batches and malformed links without revealing any card",
+    async () => {
+      for (const scenario of [
+        "multi-foreign-engine",
+        "multi-missing",
+        "multi-wrong-count"
+      ]) {
+        await visit(
+          "mode=transactions&scenario=" +
+            scenario +
+            "&opening=0x" +
+            "a".repeat(64)
+        );
+        await page
+          .getByText(/No cards can be shown until this transaction is verified/)
+          .waitFor();
+        assert.equal(await dialog().count(), 0);
+        await page
+          .getByRole("button", { name: "Close pack", exact: true })
+          .click();
+      }
+      await visit("mode=transactions&scenario=multi-replay&opening=not-a-hash");
+      assert.equal(await page.getByRole("dialog").count(), 0);
     }
   );
   assert.deepEqual(

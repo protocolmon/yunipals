@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useAccount, usePublicClient } from "wagmi";
 import { parseEventLogs, type Hex } from "viem";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
   boosterTransactionExpectation,
@@ -22,6 +23,7 @@ import {
 } from "@/lib/boosters";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
+import { BoosterOpeningShare } from "./BoosterOpeningShare";
 
 type TrackedTransaction = StoredBoosterTransaction & {
   status: string;
@@ -31,6 +33,81 @@ type TrackedTransaction = StoredBoosterTransaction & {
   forfeited?: number;
 };
 
+function SubmittedOpening({
+  hash,
+  quantity,
+  status,
+  onClose,
+  onRetry
+}: {
+  hash: string;
+  quantity: number;
+  status: string;
+  onClose: () => void;
+  onRetry: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  useEffect(() => {
+    const element = dialog.current;
+    const previous = document.activeElement;
+    if (element && !element.open) element.showModal();
+    return () => {
+      element?.close();
+      if (previous instanceof HTMLElement && previous.isConnected)
+        previous.focus();
+    };
+  }, []);
+  return createPortal(
+    <dialog
+      ref={dialog}
+      aria-labelledby={titleId}
+      className="w-full max-w-md rounded-card bg-white p-7 text-ink shadow-card backdrop:bg-ink/70"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+    >
+      <h2 id={titleId} className="font-display text-2xl">
+        {quantity > 1 ? `Your ${quantity} packs` : "Your pack"}
+      </h2>
+      <p role="status" className="mt-5 text-muted">
+        {status}
+      </p>
+      <p className="mt-4 text-sm text-muted">
+        Your transaction is saved. You can close this and return from recent
+        pack transactions. Reopening never submits another transaction.
+      </p>
+      <a
+        href={`https://basescan.org/tx/${hash}`}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-4 inline-block text-sm font-bold text-grape underline"
+      >
+        View transaction
+      </a>
+      <BoosterOpeningShare hash={hash} />
+      <div className="mt-5 flex gap-3">
+        <button
+          type="button"
+          className="rounded-full border border-line px-4 py-2 text-sm font-bold"
+          onClick={onRetry}
+        >
+          Refresh status
+        </button>
+        <button
+          type="button"
+          className="rounded-full bg-grape px-4 py-2 text-sm font-bold text-white"
+          onClick={onClose}
+        >
+          Close pack
+        </button>
+      </div>
+    </dialog>,
+    document.body
+  );
+}
+
 export function BoosterTransactions({
   autoOpenHash = null,
   onOpeningClosed
@@ -39,12 +116,82 @@ export function BoosterTransactions({
   onOpeningClosed?: () => void;
 }) {
   const { address } = useAccount();
+  const [search, setSearch] = useSearchParams();
   const [opening, setOpening] = useState<{
     hash: string;
     wallet: string;
   } | null>(null);
   const client = usePublicClient({ chainId: 8453 });
   const deployment = boosterAddresses();
+  const permalink = search.get("opening");
+  const selectedHash =
+    opening && address && opening.wallet.toLowerCase() === address.toLowerCase()
+      ? opening.hash
+      : (autoOpenHash ??
+        (permalink && /^0x[0-9a-f]{64}$/i.test(permalink) ? permalink : null));
+  const stored =
+    address && deployment
+      ? readBoosterTransactions(address, deployment.engine).find(
+          (row) => row.hash.toLowerCase() === selectedHash?.toLowerCase()
+        )
+      : undefined;
+  const closeOpening = () => {
+    setOpening(null);
+    onOpeningClosed?.();
+    if (search.has("opening")) {
+      const next = new URLSearchParams(search);
+      next.delete("opening");
+      setSearch(next, { replace: true });
+    }
+  };
+  // Public replay derives the entire group from the actual engine calldata and
+  // successful receipt. Neither a wallet nor locally saved intent grants cards.
+  const selected = useQuery({
+    queryKey: [
+      ...boosterQueryKey,
+      "opening-transaction",
+      deployment?.engine,
+      selectedHash
+    ],
+    enabled: Boolean(selectedHash && client && deployment),
+    retry: false,
+    refetchInterval: (query) => (query.state.data?.requests ? false : 4000),
+    queryFn: async () => {
+      const hash = selectedHash as Hex;
+      const receipt = await readBoosterTransactionReceipt(() =>
+        client!.getTransactionReceipt({ hash })
+      );
+      if (!receipt)
+        return {
+          status: "Waiting for transaction confirmation…",
+          requests: undefined
+        };
+      if (receipt.status !== "success")
+        return {
+          status: "This transaction reverted. No packs were opened.",
+          requests: undefined
+        };
+      const transaction = await client!.getTransaction({ hash });
+      let expected: BoosterRevealExpectation;
+      try {
+        expected = boosterTransactionExpectation(transaction, {
+          hash,
+          engine: deployment!.engine,
+          kind: "open"
+        });
+      } catch {
+        expected = boosterTransactionExpectation(transaction, {
+          hash,
+          engine: deployment!.engine,
+          kind: "claim"
+        });
+      }
+      return {
+        status: "Transaction confirmed. Loading your pack requests…",
+        requests: confirmedBoosterRequests(receipt, expected)
+      };
+    }
+  });
   const refund = useQuery({
     queryKey: [...boosterQueryKey, "refund", address],
     enabled: Boolean(address && client && deployment),
@@ -150,18 +297,11 @@ export function BoosterTransactions({
       );
     }
   });
-  if (!address || (!query.data?.length && !refund.data && !query.error))
+  if (
+    !selectedHash &&
+    (!address || (!query.data?.length && !refund.data && !query.error))
+  )
     return null;
-  const selectedHash =
-    opening?.wallet.toLowerCase() === address.toLowerCase()
-      ? opening.hash
-      : autoOpenHash;
-  const selected = query.data?.find(
-    (row) =>
-      row.hash.toLowerCase() === selectedHash?.toLowerCase() &&
-      (row.kind === "open" || row.kind === "claim") &&
-      Boolean(row.requests?.length)
-  );
   return (
     <div
       className="mt-7 rounded-card border border-line bg-white p-5"
@@ -220,7 +360,7 @@ export function BoosterTransactions({
                   type="button"
                   className="rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape"
                   onClick={() =>
-                    setOpening({ hash: row.hash, wallet: address })
+                    setOpening({ hash: row.hash, wallet: address! })
                   }
                 >
                   {terminal
@@ -232,6 +372,7 @@ export function BoosterTransactions({
                     : "View pack progress"}
                 </button>
               )}
+              {total > 0 && <BoosterOpeningShare hash={row.hash} />}
               {row.requests?.length === 1 && row.status === "Revealed" && (
                 <Link
                   className="font-bold underline"
@@ -256,14 +397,28 @@ export function BoosterTransactions({
           );
         })}
       </ul>
-      {selected?.requests && deployment && (
+      {selectedHash && !selected.data?.requests && (
+        <SubmittedOpening
+          key={selectedHash}
+          hash={selectedHash}
+          quantity={stored?.expectedRequestCount ?? 1}
+          status={
+            selected.error
+              ? "Pack transaction details are temporarily unavailable. No cards can be shown until this transaction is verified."
+              : stored?.cancelled
+                ? "This transaction was cancelled. No packs were opened."
+                : (selected.data?.status ??
+                  "Waiting for transaction confirmation…")
+          }
+          onClose={closeOpening}
+          onRetry={() => void selected.refetch()}
+        />
+      )}
+      {selected.data?.requests && deployment && (
         <BoosterRequestOpening
-          key={selected.hash}
-          requests={selected.requests}
-          onClose={() => {
-            setOpening(null);
-            onOpeningClosed?.();
-          }}
+          key={selectedHash}
+          requests={selected.data.requests}
+          onClose={closeOpening}
         />
       )}
     </div>

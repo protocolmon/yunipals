@@ -19,6 +19,10 @@ if (values["legacy-proto"] && values["ypal-confirmed-sha"])
   throw Error(
     "The confirmed YPAL deployment cannot use the legacy PROTO preset."
   );
+const ypalConfirmedSha = values["legacy-proto"]
+  ? undefined
+  : (values["ypal-confirmed-sha"] ??
+    "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c");
 
 const app = fileURLToPath(new URL("../../", import.meta.url));
 const repository = fileURLToPath(new URL("../../../../", import.meta.url));
@@ -48,9 +52,7 @@ const child = spawnSync(
     "--standard-setup-sha",
     standardSha,
     ...(values["legacy-proto"] ? [] : ["--ypal-launch-sha", ypalLaunchSha]),
-    ...(values["ypal-confirmed-sha"]
-      ? ["--ypal-confirmed-sha", values["ypal-confirmed-sha"]]
-      : []),
+    ...(ypalConfirmedSha ? ["--ypal-confirmed-sha", ypalConfirmedSha] : []),
     "--output",
     release
   ],
@@ -106,6 +108,6 @@ console.log(
     setupSha256: setupSha,
     standardSetupSha256: standardSha,
     ypalLaunchPackageSha256: values["legacy-proto"] ? null : ypalLaunchSha,
-    ypalConfirmedDeploymentSha256: values["ypal-confirmed-sha"] ?? null
+    ypalConfirmedDeploymentSha256: ypalConfirmedSha ?? null
   })
 );

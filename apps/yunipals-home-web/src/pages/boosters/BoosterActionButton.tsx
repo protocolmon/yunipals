@@ -18,13 +18,15 @@ export function BoosterActionButton({
   children,
   disabled = false,
   className,
-  onConfirmed
+  onConfirmed,
+  onSubmitted
 }: {
   action: BoosterAction;
   children: ReactNode;
   disabled?: boolean;
   className?: string;
   onConfirmed?: (hash: Hex) => void;
+  onSubmitted?: (hash: Hex, replacedHash?: Hex) => void;
 }) {
   const { isConnected, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -33,10 +35,12 @@ export function BoosterActionButton({
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [burnAcknowledged, setBurnAcknowledged] = useState(false);
+  const [openingSubmitted, setOpeningSubmitted] = useState(false);
   const visible =
-    actions.review !== null ||
-    actions.phase !== "idle" ||
-    actions.error !== null;
+    !openingSubmitted &&
+    (actions.review !== null ||
+      actions.phase !== "idle" ||
+      actions.error !== null);
   const busy = actions.phase !== "idle";
   useEffect(() => {
     if (visible && !dialog.current?.open) dialog.current?.showModal();
@@ -60,7 +64,10 @@ export function BoosterActionButton({
         onClick={() => {
           if (!isConnected) openConnectModal?.();
           else if (chainId !== 8453) switcher.switchChain({ chainId: 8453 });
-          else void actions.prepare(action);
+          else {
+            setOpeningSubmitted(false);
+            void actions.prepare(action);
+          }
         }}
       >
         {busy && (
@@ -257,7 +264,14 @@ export function BoosterActionButton({
               className={boosterButtonClass}
               disabled={busy || (action.kind === "burn" && !burnAcknowledged)}
               onClick={async () => {
-                const hash = await actions.confirm();
+                const hash = await actions.confirm(
+                  onSubmitted
+                    ? (hash, replacedHash) => {
+                        setOpeningSubmitted(true);
+                        onSubmitted(hash, replacedHash);
+                      }
+                    : undefined
+                );
                 if (hash) onConfirmed?.(hash);
               }}
             >
@@ -268,15 +282,6 @@ export function BoosterActionButton({
                 : review.approval
                   ? "Approve payment"
                   : "Confirm"}
-            </button>
-          )}
-          {review?.permitApproval && !review.permitSigned && !busy && (
-            <button
-              type="button"
-              className="rounded-full border border-line px-5 py-3 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ink"
-              onClick={() => void actions.useSeparateApproval()}
-            >
-              Use separate approval
             </button>
           )}
           {actions.error && !busy && !actions.submittedHash && (

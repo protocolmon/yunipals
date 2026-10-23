@@ -20,6 +20,7 @@ import {
 } from "@/lib/boosters";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterActionButton } from "./BoosterActionButton";
+import { BoosterOpeningShare } from "./BoosterOpeningShare";
 
 type Props = { onClose: () => void } & (
   | { requestId: string; requests?: never }
@@ -114,6 +115,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
     }))
   });
   const completed = states.filter((query) => query.data?.status === 3).length;
+  const loadingRequests = states.some((query) => query.isPending);
   const forfeited = states.filter((query) => query.data?.status === 4).length;
   const recovery = states.filter((query) => query.data?.status === 2).length;
   const terminal = validGroup && completed + forfeited === entries.length;
@@ -165,6 +167,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
       <BoosterPackOpening
         {...pulls[0]}
         additionalCards={pulls.slice(1)}
+        replayHash={requests?.[0]?.transactionHash}
         onClose={onClose}
       />
     );
@@ -192,13 +195,15 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
         </button>
       </div>
       <p role="status" className="mt-5 text-muted">
-        {forfeited === entries.length
-          ? "These requests were forfeited because their originals were burned. No cards were minted."
-          : pulls?.length
-            ? `${pulls.length} revealed ${pulls.length === 1 ? "card is" : "cards are"} ready. ${forfeited} ${forfeited === 1 ? "request was" : "requests were"} forfeited because an original was burned.`
-            : terminal
-              ? "Your Yunipals are minted. Preparing all of your cards…"
-              : `${completed} of ${entries.length} ${entries.length === 1 ? "pack is" : "packs are"} revealed. ${recovery ? "Finish the requests below to continue." : "Waiting for Chainlink randomness. You can close this and return from recent pack transactions."}`}
+        {loadingRequests
+          ? "Transaction confirmed. Syncing your pack requests…"
+          : forfeited === entries.length
+            ? "These requests were forfeited because their originals were burned. No cards were minted."
+            : pulls?.length
+              ? `${pulls.length} revealed ${pulls.length === 1 ? "card is" : "cards are"} ready. ${forfeited} ${forfeited === 1 ? "request was" : "requests were"} forfeited because an original was burned.`
+              : terminal
+                ? "Your Yunipals are minted. Preparing all of your cards…"
+                : `${completed} of ${entries.length} ${entries.length === 1 ? "pack is" : "packs are"} revealed. ${recovery ? "Finish the requests below to continue." : "Waiting for Chainlink randomness. You can close this and return from recent pack transactions."}`}
       </p>
       {errored && (
         <p role="alert" className="mt-4 text-sm text-muted">
@@ -240,6 +245,9 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
         All completed requests open together in one wrapper. Reopening never
         requests another mint.
       </p>
+      {requests?.[0] && (
+        <BoosterOpeningShare hash={requests[0].transactionHash} />
+      )}
       <Link
         to="/collection"
         onClick={onClose}

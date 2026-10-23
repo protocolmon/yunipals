@@ -164,8 +164,8 @@ function fixture(kind: YpalWrapKind = "wrap") {
   };
   const transaction = {
     hash,
-    blockHash,
-    blockNumber: 100n,
+    blockHash: blockHash as Hex | null,
+    blockNumber: 100n as bigint | null,
     chainId: 8453,
     from: owner,
     to: action.to,
@@ -373,17 +373,71 @@ test("wrong amount, recipient or duplicate wrapping events cannot prove success"
     );
   }
 });
-test("receipt sender, chain, canonical header, destination and exact calldata are checked", async () => {
+test("receipt sender, chain, destination and exact calldata remain hard checks", async () => {
   for (const mutate of [
     (f: ReturnType<typeof fixture>) => (f.transaction.from = other),
     (f: ReturnType<typeof fixture>) => (f.transaction.chainId = 1),
-    (f: ReturnType<typeof fixture>) => (f.options.canonical = false),
     (f: ReturnType<typeof fixture>) => (f.transaction.to = other),
-    (f: ReturnType<typeof fixture>) => (f.transaction.input = "0x1234" as Hex),
-    (f: ReturnType<typeof fixture>) => (f.transaction.blockHash = hash)
+    (f: ReturnType<typeof fixture>) => (f.transaction.input = "0x1234" as Hex)
   ]) {
     const f = fixture();
     mutate(f);
+    await assert.rejects(
+      resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record)
+    );
+  }
+});
+test("same-hash pending, stale or inconsistent block context remains unconfirmed", async () => {
+  for (const change of [
+    { blockHash: null, blockNumber: null },
+    { blockHash: hash, blockNumber: 100n },
+    { blockHash, blockNumber: 101n }
+  ]) {
+    const f = fixture();
+    Object.assign(f.transaction, change);
+    assert.deepEqual(
+      await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+      { status: "pending", reason: "confirming" }
+    );
+  }
+  const f = fixture();
+  f.options.canonical = false;
+  assert.deepEqual(
+    await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+    { status: "pending", reason: "confirming" }
+  );
+});
+test("missing transaction after a mined receipt is pending and canonical recheck recovers the same action", async () => {
+  const f = fixture();
+  let missing = true;
+  f.client.getTransaction = (async () => {
+    if (missing) {
+      const error = Error("missing");
+      error.name = "TransactionNotFoundError";
+      throw error;
+    }
+    return f.transaction;
+  }) as unknown as PublicClient["getTransaction"];
+  assert.deepEqual(
+    await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+    { status: "pending", reason: "confirming" }
+  );
+  missing = false;
+  assert.equal(
+    (await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record))
+      .status,
+    "success"
+  );
+});
+test("foreign receipt or transaction hashes remain hard failures even with stale block fields", async () => {
+  for (const field of ["receipt", "transaction"] as const) {
+    const f = fixture();
+    if (field === "receipt") f.receipt.transactionHash = blockHash;
+    else {
+      f.transaction.hash = blockHash;
+      f.transaction.blockHash = null;
+      f.transaction.blockNumber = null;
+    }
     await assert.rejects(
       resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record)
     );

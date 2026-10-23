@@ -18,11 +18,13 @@ export function BoosterPurchaseOptions({
   pack,
   paused,
   onConfirmed,
+  onSubmitted,
   onPreview
 }: {
   pack: BoosterType;
   paused: boolean;
-  onConfirmed: (hash: Hex) => void;
+  onConfirmed?: (hash: Hex) => void;
+  onSubmitted?: (hash: Hex, replacedHash?: Hex) => void;
   onPreview: (quantity: number) => void;
 }) {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -137,6 +139,7 @@ export function BoosterPurchaseOptions({
           action={{ kind: "open", packTypeId: pack.packTypeId, quantity }}
           disabled={paused}
           onConfirmed={onConfirmed}
+          onSubmitted={onSubmitted}
         >
           {paused
             ? "Openings paused"

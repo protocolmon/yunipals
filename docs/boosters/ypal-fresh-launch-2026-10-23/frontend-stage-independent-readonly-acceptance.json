@@ -1,0 +1,173 @@
+{
+  "format": "yunipals-ypal-live-readonly-v1",
+  "origin": "https://yunipals-fpxxed02z-devving.vercel.app",
+  "observedAt": "2026-10-23T21:04:26.939Z",
+  "releaseManifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "scriptSha256": "3fce468d81011c2021ef0039ed26080f9e3349f6a00311b43043d56950ed8c2d",
+  "readerFinalizationReceiptVerified": false,
+  "mockedResponses": 0,
+  "walletConnections": 0,
+  "signatures": 0,
+  "transactions": 0,
+  "providerMaximumCalls": 6,
+  "providerCalls": [
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "multicall3-exact-getter",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    },
+    {
+      "method": "eth_call",
+      "shape": "multicall3-exact-getter",
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "endpoint": "https://base-rpc.publicnode.com",
+      "status": "requested"
+    }
+  ],
+  "api": [
+    {
+      "path": "/v1/boosters/types",
+      "status": 200,
+      "sha256": "2bb4b84ce9e1241fc03cf7e09f93c7894b769d219cfa003d91d1e76fad7d1662"
+    },
+    {
+      "path": "/v1/boosters/monsters?limit=24",
+      "status": 200,
+      "sha256": "bfbe5c019553b582d4b1b2bcfd3bb1f8c1c76c2a32a34eeab48a9541cd56d94e"
+    },
+    {
+      "path": "/v1/boosters/recent-openings?limit=12",
+      "status": 200,
+      "sha256": "9810a0dade4dcca59e63172a84096d23bf1a7523a4be7118c00828ccfbda6ae0"
+    },
+    {
+      "path": "/v1/boosters/art/base-mainnet-standard-v1/81.json",
+      "status": 200,
+      "sha256": "5d3a6bacd5cef77ed92471964e4b841bbb24e97c7be5fe7db6d3ee266c7388d4"
+    }
+  ],
+  "blockedRequests": {
+    "non_get_refused": 4,
+    "third_party_data_refused": 2
+  },
+  "checks": [
+    {
+      "name": "Actual fresh YPAL API/source frame and history isolation",
+      "passed": true,
+      "publicReadiness": "actual gated types200/fresh complete checkpoint; private readyz checked by reader owner",
+      "indexedBlock": "53000060",
+      "realTypes": 1,
+      "globalRows": 0,
+      "recentRows": 0,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "paymentToken": "0xcd3709e84fc817b46196fa2d5b7202710ab51346"
+    },
+    {
+      "name": "Approved standard artwork metadata and real offer, FAQ and Get YPAL",
+      "passed": true,
+      "approvedVariant": 81,
+      "offerCount": 1,
+      "faqKeyboard": true,
+      "getYpalDisconnected": true
+    },
+    {
+      "name": "Actual engine quantity10 and one-wrapper three-card preview",
+      "passed": true,
+      "actualMaxOpenPacks": 10,
+      "capabilityResults": [
+        {
+          "method": "eth_getStorageAt",
+          "shape": "implementation",
+          "result": "0x0000000000000000000000004830118fdaf7926fa6c8e05165df999981570e2a",
+          "status": 200
+        },
+        {
+          "method": "eth_call",
+          "shape": "multicall3-exact-getter",
+          "result": "0x000000000000000000000000000000000000000000000000000000000000000a",
+          "status": 200
+        },
+        {
+          "method": "eth_getStorageAt",
+          "shape": "implementation",
+          "result": "0x0000000000000000000000004830118fdaf7926fa6c8e05165df999981570e2a",
+          "status": 200
+        },
+        {
+          "method": "eth_call",
+          "shape": "multicall3-exact-getter",
+          "result": "0x000000000000000000000000000000000000000000000000000000000000000a",
+          "status": 200
+        }
+      ],
+      "previewCards": 3,
+      "transactions": 0
+    },
+    {
+      "name": "Actual OG collection and original main navigation",
+      "passed": true,
+      "realOgRows": 24,
+      "firstOgToken": "1000347682",
+      "originalLinks": true,
+      "purchaseOnHome": false
+    },
+    {
+      "name": "Mobile menu, YPAL offer and accessible FAQ",
+      "passed": true,
+      "viewport": "390x844",
+      "sameAppPacks": true,
+      "faq": true,
+      "horizontalOverflow": false
+    }
+  ],
+  "pageErrors": [],
+  "previewAccess": "existing_automation_access_origin_scoped",
+  "passed": true,
+  "completedAt": "2026-10-23T21:04:38.014Z",
+  "providerIndividualRequests": 4,
+  "walletAvailable": false,
+  "capabilityResults": [
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "result": "0x0000000000000000000000004830118fdaf7926fa6c8e05165df999981570e2a",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "multicall3-exact-getter",
+      "result": "0x000000000000000000000000000000000000000000000000000000000000000a",
+      "status": 200
+    },
+    {
+      "method": "eth_getStorageAt",
+      "shape": "implementation",
+      "result": "0x0000000000000000000000004830118fdaf7926fa6c8e05165df999981570e2a",
+      "status": 200
+    },
+    {
+      "method": "eth_call",
+      "shape": "multicall3-exact-getter",
+      "result": "0x000000000000000000000000000000000000000000000000000000000000000a",
+      "status": 200
+    }
+  ]
+}

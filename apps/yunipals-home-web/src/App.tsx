@@ -41,6 +41,11 @@ const BoosterYpalSetupPage = lazy(() =>
     default: module.BoosterYpalSetupPage
   }))
 );
+const YpalWrapPage = lazy(() =>
+  import("@/pages/wrap/page").then((module) => ({
+    default: module.YpalWrapPage
+  }))
+);
 const freshYpalLaunch = environment.boosterLaunchId === "base-ypal-v1";
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
@@ -157,6 +162,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
+          <Route path="/wrap" element={<YpalWrapPage />} />
           <Route
             path="/boosters/setup/ypal"
             element={<BoosterYpalSetupPage />}

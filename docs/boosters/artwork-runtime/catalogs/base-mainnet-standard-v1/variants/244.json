@@ -1,0 +1,36 @@
+{
+  "name": "Yunifairy",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/97295929f1d013c2309f70e917bd39daeae06df3ca6b1b28bf61851c9d6eeb3c.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunifairy"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 244,
+    "artworkSha256": "97295929f1d013c2309f70e917bd39daeae06df3ca6b1b28bf61851c9d6eeb3c",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunifairy-green-spiral-glitter-no-2880b73179-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

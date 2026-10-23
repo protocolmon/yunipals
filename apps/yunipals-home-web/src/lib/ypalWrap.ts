@@ -248,11 +248,10 @@ export function parseYpalWrapPending(
     manifestSha256: record.manifestSha256
   };
 }
-function receiptMissing(error: unknown): boolean {
+function resultMissing(error: unknown, name: string): boolean {
   let current = error;
   for (let i = 0; i < 5 && current && typeof current === "object"; i++) {
-    if ("name" in current && current.name === "TransactionReceiptNotFoundError")
-      return true;
+    if ("name" in current && current.name === name) return true;
     current = "cause" in current ? current.cause : null;
   }
   return false;
@@ -274,20 +273,46 @@ export async function resolveYpalWrapReceipt(
   try {
     receipt = await client.getTransactionReceipt({ hash: pending.hash });
   } catch (error) {
-    if (receiptMissing(error)) return { status: "pending" as const };
+    if (resultMissing(error, "TransactionReceiptNotFoundError"))
+      return { status: "pending" as const };
     throw error;
   }
-  const transaction = await client.getTransaction({ hash: pending.hash });
-  assertPermitReceiptIdentity(receipt, transaction, pending.hash);
-  const header = await client.getBlock({ blockNumber: receipt.blockNumber });
+  let transaction;
+  try {
+    transaction = await client.getTransaction({ hash: pending.hash });
+  } catch (error) {
+    if (resultMissing(error, "TransactionNotFoundError"))
+      return { status: "pending" as const, reason: "confirming" as const };
+    throw error;
+  }
   if (
-    transaction.chainId !== 8453 ||
-    !same(transaction.from, pending.owner) ||
-    header.hash?.toLowerCase() !== receipt.blockHash.toLowerCase()
+    receipt.transactionHash?.toLowerCase() !== pending.hash.toLowerCase() ||
+    transaction.hash?.toLowerCase() !== pending.hash.toLowerCase()
   )
+    assertPermitReceiptIdentity(receipt, transaction, pending.hash);
+  // A receipt can become available before another RPC read has its mined
+  // transaction context. Keep the saved hash until all reads agree.
+  if (
+    !receipt.blockHash ||
+    transaction.blockHash?.toLowerCase() !== receipt.blockHash.toLowerCase() ||
+    transaction.blockNumber !== receipt.blockNumber
+  )
+    return { status: "pending" as const, reason: "confirming" as const };
+  assertPermitReceiptIdentity(receipt, transaction, pending.hash);
+  if (transaction.chainId !== 8453 || !same(transaction.from, pending.owner))
     throw Error(
-      "The wrapping receipt is not canonical or was sent by another wallet."
+      "The wrapping transaction was sent by another wallet or on another network."
     );
+  let header;
+  try {
+    header = await client.getBlock({ blockNumber: receipt.blockNumber });
+  } catch (error) {
+    if (resultMissing(error, "BlockNotFoundError"))
+      return { status: "pending" as const, reason: "confirming" as const };
+    throw error;
+  }
+  if (header.hash?.toLowerCase() !== receipt.blockHash.toLowerCase())
+    return { status: "pending" as const, reason: "confirming" as const };
   const action = ypalWrapTransaction(
     deployment,
     pending.kind,
