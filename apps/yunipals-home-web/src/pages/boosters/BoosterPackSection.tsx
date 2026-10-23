@@ -45,10 +45,12 @@ export function BoosterPackSection() {
             <h1 className="font-display text-3xl text-ink sm:text-5xl">
               Unwrap a little magic.
             </h1>
-            <p className="mt-4 max-w-2xl text-muted sm:text-lg">
-              One original starts a collection. It earns more Yunipals over
-              time, with unused days saved and no duplicate variants within its
-              collection.
+            <p className="mt-4 max-w-2xl font-semibold text-ink sm:text-xl">
+              Open a pack. Meet your first Yunipal. Then mint another every day.
+            </p>
+            <p className="mt-3 max-w-2xl text-muted sm:text-lg">
+              Each pack unlocks its own collection of 264 unique variants.
+              Unused daily mints stack up, so you can claim them later.
             </p>
           </div>
         </div>
@@ -112,7 +114,7 @@ export function BoosterPackSection() {
                   Yunipals booster pack
                 </h2>
                 <p className="mt-3 text-muted">
-                  Tear it open. Meet your original. Grow a whole collection.
+                  Your first Yunipal unlocks daily mints for its own collection.
                 </p>
                 <ul className="my-7 space-y-4 text-sm text-muted">
                   <li className="flex gap-3">
@@ -123,10 +125,11 @@ export function BoosterPackSection() {
                     />
                     <span>
                       <strong className="text-ink">
-                        {formatInteger(pack.totalVariants)} possible variants.
+                        {formatInteger(pack.totalVariants)} unique variants to
+                        collect.
                       </strong>{" "}
-                      Every remaining variant has the same chance on each draw,
-                      with no duplicates within this original’s collection.
+                      Your first Yunipal counts as one. Each new mint adds a
+                      variant you haven’t received from this pack before.
                     </span>
                   </li>
                   <li className="flex gap-3">
@@ -141,8 +144,8 @@ export function BoosterPackSection() {
                         {pack.mintsPerInterval === 1 ? "" : "s"} every{" "}
                         {Number(pack.intervalSeconds) / 3600} hours
                       </strong>{" "}
-                      after reveal. Unused credits accumulate; claims only cost
-                      VRF and gas.
+                      after reveal. Saved mints add up while you’re away. You
+                      only pay ETH for randomness and network fees.
                     </span>
                   </li>
                 </ul>
@@ -152,7 +155,7 @@ export function BoosterPackSection() {
                     ? `${formatUnits(BigInt(pack.price), 18)} PROTO`
                     : "See payment details in review"}{" "}
                   <span className="block pt-1 text-sm font-normal text-muted">
-                    + ETH for VRF and gas
+                    + ETH for randomness and network fees
                   </span>
                 </p>
                 <p className="mt-3 text-sm text-muted">
