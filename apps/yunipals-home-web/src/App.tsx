@@ -21,6 +21,11 @@ import { ActivityPage } from "@/pages/orders/ActivityPage";
 import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
 import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const BoosterBatchSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterBatchSetupPage").then((module) => ({
+    default: module.BoosterBatchSetupPage
+  }))
+);
 const BoosterMetadataSetupPage = lazy(() =>
   import("@/pages/boosters/BoosterMetadataSetupPage").then((module) => ({
     default: module.BoosterMetadataSetupPage
@@ -148,6 +153,10 @@ function AppContent() {
           <Route
             path="/boosters/setup/standard"
             element={<BoosterSetupPage key="standard" kind="standard" />}
+          />
+          <Route
+            path="/boosters/setup/batch"
+            element={<BoosterBatchSetupPage />}
           />
           <Route
             path="/boosters/setup/metadata"

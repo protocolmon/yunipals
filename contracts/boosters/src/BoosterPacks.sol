@@ -67,6 +67,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     uint256[41] private __gap;
 
     uint32 public constant CALLBACK_RESERVE = 150_000;
+    uint32 public constant MAX_OPEN_PACKS = 10;
     event RequestsPaused(bool paused);
     event RequestCreated(
         uint256 indexed requestId,
@@ -136,7 +137,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     }
 
     function quote(uint256 packTypeId, uint32 quantity, uint256 gasPrice)
-        external
+        public
         view
         returns (uint256 price, uint32 callbackGas)
     {
@@ -144,6 +145,17 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         require(pack.active && pack.rules.engine == address(this), "invalid type");
         callbackGas = _callbackGas(pack.rules, quantity);
         price = wrapper.estimateRequestPriceNative(callbackGas, 1, gasPrice);
+    }
+
+    /// @notice Total VRF estimate; callbackGas applies to each independent original.
+    function quoteOpenPacks(uint256 packTypeId, uint32 count, uint256 gasPrice)
+        external
+        view
+        returns (uint256 price, uint32 callbackGas)
+    {
+        require(count > 0 && count <= MAX_OPEN_PACKS, "invalid batch size");
+        (price, callbackGas) = quote(packTypeId, 1, gasPrice);
+        price *= count;
     }
 
     function claimable(uint256 originalId) public view returns (uint32) {
@@ -163,29 +175,68 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         nonReentrant
         returns (uint256 requestId, uint256 originalId)
     {
+        PackRegistry.Pack memory pack = _openingPack(packTypeId, deadline);
+        _burnPayment(pack.rules.paymentToken, pack.rules.price);
+        uint256 paid;
+        (requestId, originalId, paid) = _open(packTypeId, pack, _paymentBudget(maxVrfPrice));
+        _refund(msg.sender, msg.value - paid);
+    }
+
+    /// @notice Buy independent originals atomically with one payment and ETH refund.
+    function openPacks(uint256 packTypeId, uint32 count, uint256 maxTotalVrfPrice, uint256 deadline)
+        external
+        payable
+        nonReentrant
+        returns (uint256[] memory requestIds, uint256[] memory originalIds)
+    {
+        require(count > 0 && count <= MAX_OPEN_PACKS, "invalid batch size");
+        PackRegistry.Pack memory pack = _openingPack(packTypeId, deadline);
+        _burnPayment(pack.rules.paymentToken, uint256(pack.rules.price) * count);
+        requestIds = new uint256[](count);
+        originalIds = new uint256[](count);
+        uint256 paid;
+        uint256 budget = _paymentBudget(maxTotalVrfPrice);
+        for (uint256 i; i < count; ++i) {
+            uint256 price;
+            (requestIds[i], originalIds[i], price) = _open(packTypeId, pack, budget - paid);
+            paid += price;
+        }
+        _refund(msg.sender, msg.value - paid);
+    }
+
+    function _openingPack(uint256 packTypeId, uint256 deadline)
+        private
+        view
+        returns (PackRegistry.Pack memory pack)
+    {
         require(!requestsPaused && block.timestamp <= deadline, "requests paused or expired");
-        PackRegistry.Pack memory pack = registry.getPack(packTypeId);
+        pack = registry.getPack(packTypeId);
         require(pack.rules.engine == address(this), "invalid engine");
-        registry.reserveOpening(packTypeId);
-        originalId = monsters.reserveOriginal(packTypeId);
-        Original storage s = originals[originalId];
-        s.packTypeId = packTypeId;
-        s.remaining = pack.totalVariants;
-        IERC20 token = IERC20(pack.rules.paymentToken);
+    }
+
+    function _burnPayment(address paymentToken, uint256 amount) private {
+        IERC20 token = IERC20(paymentToken);
         uint256 beforeBalance = token.balanceOf(address(this));
         uint256 beforeSupply = token.totalSupply();
-        token.safeTransferFrom(msg.sender, address(this), pack.rules.price);
+        token.safeTransferFrom(msg.sender, address(this), amount);
+        require(token.balanceOf(address(this)) == beforeBalance + amount, "unsupported transfer fee");
+        IBurnable(address(token)).burn(amount);
         require(
-            token.balanceOf(address(this)) == beforeBalance + pack.rules.price, "unsupported transfer fee"
-        );
-        IBurnable(address(token)).burn(pack.rules.price);
-        require(
-            token.balanceOf(address(this)) == beforeBalance
-                && token.totalSupply() == beforeSupply - pack.rules.price,
+            token.balanceOf(address(this)) == beforeBalance && token.totalSupply() == beforeSupply - amount,
             "burn accounting mismatch"
         );
-        requestId = _request(originalId, 1, true, pack, maxVrfPrice);
-        emit PaymentBurned(requestId, msg.sender, address(token), pack.rules.price);
+    }
+
+    function _open(uint256 packTypeId, PackRegistry.Pack memory pack, uint256 budget)
+        private
+        returns (uint256 requestId, uint256 originalId, uint256 paid)
+    {
+        registry.reserveOpening(packTypeId);
+        originalId = monsters.reserveOriginal(packTypeId);
+        originals[originalId].packTypeId = packTypeId;
+        originals[originalId].remaining = pack.totalVariants;
+        (requestId, paid) = _request(originalId, 1, true, pack, budget);
+        emit PaymentBurned(requestId, msg.sender, pack.rules.paymentToken, pack.rules.price);
     }
 
     function claim(uint256 originalId, uint32 quantity, uint256 maxVrfPrice, uint256 deadline)
@@ -202,7 +253,9 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         );
         PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
         s.dailyCommitted += quantity;
-        requestId = _request(originalId, quantity, false, pack, maxVrfPrice);
+        uint256 paid;
+        (requestId, paid) = _request(originalId, quantity, false, pack, _paymentBudget(maxVrfPrice));
+        _refund(msg.sender, msg.value - paid);
     }
 
     function _request(
@@ -210,11 +263,11 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         uint32 quantity,
         bool opening,
         PackRegistry.Pack memory pack,
-        uint256 maxVrfPrice
-    ) private returns (uint256 id) {
+        uint256 paymentBudget
+    ) private returns (uint256 id, uint256 price) {
         uint32 callbackGas = _callbackGas(pack.rules, quantity);
-        uint256 price = wrapper.calculateRequestPriceNative(callbackGas, 1);
-        require(price <= maxVrfPrice && msg.value >= price, "VRF price exceeds budget");
+        price = wrapper.calculateRequestPriceNative(callbackGas, 1);
+        require(price <= paymentBudget, "VRF price exceeds budget");
         address coordinator = IProofWrapper(address(wrapper)).s_vrfCoordinator();
         address blockhashStore = IProofCoordinator(coordinator).BLOCKHASH_STORE();
         require(coordinator.code.length != 0 && blockhashStore.code.length != 0, "invalid proof dependencies");
@@ -251,7 +304,6 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
             pack.ruleHash,
             callbackGas
         );
-        _refund(msg.sender, msg.value - price);
     }
 
     /// @notice Wrapper authentication is stored in proxy storage, not a constructor immutable.
@@ -386,5 +438,9 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     function _callbackGas(PackRegistry.Rules memory rules, uint32 quantity) private pure returns (uint32) {
         require(quantity > 0 && quantity <= rules.maxBatch, "invalid batch size");
         return rules.baseGas + rules.perMintGas * quantity;
+    }
+
+    function _paymentBudget(uint256 maximum) private view returns (uint256) {
+        return msg.value < maximum ? msg.value : maximum;
     }
 }

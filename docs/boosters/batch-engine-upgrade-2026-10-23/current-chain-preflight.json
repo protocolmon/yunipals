@@ -1,0 +1,19 @@
+{
+  "format": "yunipals-batch-engine-current-chain-preflight-v1",
+  "observedAt": "2026-10-23T13:02:53.112Z",
+  "chainId": 8453,
+  "blockNumber": "52985612",
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+  "proxyCodeKeccak256": "0xa7022e521c634305b0b86f45a8c10af47878d58952877dac7af4a6cbbb165d34",
+  "implementation": "0x92e2351a83b6c445c94d0b887259d2b940c82a5a",
+  "implementationCodeKeccak256": "0x5a38a2010b49e7acdf9c76659d12aefd5da62bee6ec93973c898a71452852c8a",
+  "upgraderRole": true,
+  "registry": "0xeaeE2da120a398f21729D50672AC5d1Dd71d7274",
+  "monsters": "0x105319be2182018c31FB10B1bE198c3cf238a146",
+  "wrapper": "0xb0407dbe851f8318bd31404A49e658143C982F23",
+  "requestsPaused": false,
+  "maxOpenPacks": null,
+  "signatures": 0,
+  "broadcasts": 0
+}

@@ -105,6 +105,68 @@ test("pending transactions survive reloads and stay scoped to wallet and engine"
   assert.deepEqual(readBoosterTransactions(account, engine, storage), []);
 });
 
+test("multi-pack expectations survive reloads and replacements without dropping legacy hashes", () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    }
+  };
+  const wallet = "0x1111111111111111111111111111111111111111";
+  const engine = "0x2222222222222222222222222222222222222222";
+  const first = {
+    hash: `0x${"12".repeat(32)}` as const,
+    kind: "open" as const,
+    expectedRequestCount: 3,
+    packTypeId: "2",
+    quantity: 1
+  };
+  saveBoosterTransaction(wallet, engine, first, storage);
+  assert.deepEqual(readBoosterTransactions(wallet, engine, storage), [first]);
+  const replacement = { ...first, hash: `0x${"34".repeat(32)}` as const };
+  saveBoosterTransaction(wallet, engine, replacement, storage, first.hash);
+  assert.deepEqual(readBoosterTransactions(wallet, engine, storage), [
+    replacement
+  ]);
+  const claim = {
+    hash: `0x${"56".repeat(32)}` as const,
+    kind: "claim" as const,
+    expectedRequestCount: 1,
+    packTypeId: "2",
+    quantity: 7,
+    originalId: "900"
+  };
+  saveBoosterTransaction(wallet, engine, claim, storage);
+  assert.deepEqual(readBoosterTransactions(wallet, engine, storage), [
+    replacement,
+    claim
+  ]);
+  assert.deepEqual(readBoosterTransactions(engine, engine, storage), []);
+  const key = [...values.keys()][0];
+  values.set(
+    key,
+    JSON.stringify([
+      {
+        ...first,
+        expectedRequestCount: 11,
+        packTypeId: "01",
+        quantity: 33,
+        originalId: "-1",
+        arbitrary: "not trusted"
+      }
+    ])
+  );
+  assert.deepEqual(readBoosterTransactions(wallet, engine, storage), [
+    { hash: first.hash, kind: first.kind }
+  ]);
+  values.set(key, JSON.stringify([{ ...first, expectedRequestCount: 1.5 }]));
+  assert.equal(
+    readBoosterTransactions(wallet, engine, storage)[0].expectedRequestCount,
+    undefined
+  );
+});
+
 test("artwork accepts durable URLs and rejects executable or credential-bearing locations", () => {
   assert.equal(
     boosterAssetUrl("ipfs://cid/image.png"),

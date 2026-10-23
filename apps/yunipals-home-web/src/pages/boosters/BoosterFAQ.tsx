@@ -7,6 +7,11 @@ const questions = [
       "You get one Yunipal NFT—your original—and unlock its own collection of 264 unique variants. Your original counts as the first of 264. Its type, color, horn and glitter are chosen at random. Only the original earns daily mints; the Yunipals minted after it don’t."
   },
   {
+    question: "Can I open more than one pack at once?",
+    answer:
+      "Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total PROTO price and randomness fee. If a token approval is needed, that is a separate transaction."
+  },
+  {
     question: "How much does it cost?",
     answer:
       "A pack costs 1 PROTO on Base, plus a small amount of ETH for Chainlink randomness (VRF) and network fees. The full 1 PROTO is burned when your opening request succeeds. You don’t pay PROTO again for daily mints—just ETH for randomness and network fees when you claim."

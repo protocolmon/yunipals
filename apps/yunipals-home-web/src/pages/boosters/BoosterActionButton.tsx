@@ -91,6 +91,12 @@ export function BoosterActionButton({
         {review && (
           <>
             <dl className="my-5 space-y-3 text-sm">
+              {review.action.kind === "open" && (
+                <div className="flex justify-between gap-4">
+                  <dt>Originals requested</dt>
+                  <dd>{review.action.quantity ?? 1}</dd>
+                </div>
+              )}
               {review.action.kind === "claim" && (
                 <div className="flex justify-between gap-4">
                   <dt>Mints requested</dt>
@@ -99,7 +105,7 @@ export function BoosterActionButton({
               )}
               {review.tokenPrice > 0n && (
                 <div className="flex justify-between gap-4">
-                  <dt>Pack price</dt>
+                  <dt>Total pack price</dt>
                   <dd>
                     {formatUnits(review.tokenPrice, review.tokenDecimals)}{" "}
                     {review.tokenSymbol}
@@ -129,15 +135,18 @@ export function BoosterActionButton({
             </dl>
             {review.approval ? (
               <p className="text-sm text-muted">
-                Approve the exact pack price, then review the opening
-                transaction.
+                Approve the exact total pack price, then review the opening
+                transaction. Approval is a separate transaction.
               </p>
             ) : action.kind === "open" ? (
               <p className="text-sm text-muted">
-                The full pack price is burned when this request succeeds, even
-                if reveal is delayed indefinitely. Excess ETH is returned
+                The full price is burned when this transaction succeeds, even if
+                reveal is delayed indefinitely. Excess ETH is returned
                 immediately. The VRF charge includes callback minting and is
                 spent once requested.
+                {review.action.kind === "open" &&
+                  (review.action.quantity ?? 1) > 1 &&
+                  " Each purchased pack creates its own original and randomness request. All cards appear in one opening."}
               </p>
             ) : action.kind === "claim" ? (
               <p className="text-sm text-muted">

@@ -1,0 +1,201 @@
+{
+  "format": "yunipals-booster-opening-component-ui-v1",
+  "observedAt": "2026-10-23T13:23:02.417Z",
+  "fixturesOnly": true,
+  "packVisualIncluded": false,
+  "providerCalls": 0,
+  "transactions": 0,
+  "signatures": 0,
+  "externalRequests": [],
+  "browserErrors": [],
+  "checks": [
+    {
+      "name": "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
+      "passed": true
+    },
+    {
+      "name": "Three accrued credits make one daily pack with an exact quantity-three claim",
+      "passed": true
+    },
+    {
+      "name": "Ten accrued credits cap one daily pack at seven and preserve three saved pulls",
+      "passed": true
+    },
+    {
+      "name": "Zero credits, a paused source and a foreign owner never enable a daily claim",
+      "passed": true
+    },
+    {
+      "name": "Card stays behind the opaque wrapper and emerges through its moving mouth; cancelled draw retracts",
+      "passed": true
+    },
+    {
+      "name": "Mobile touch pulls the wrapper down with real pointer capture, cancels safely and fully clears the card on completion",
+      "passed": true
+    },
+    {
+      "name": "Ready demo uses actual strip drag; short/cancelled gestures never reveal",
+      "passed": true
+    },
+    {
+      "name": "Keyboard and reduced motion complete the same steps without looping animations",
+      "passed": true
+    },
+    {
+      "name": "Real transaction component never offers an opening for cancelled, failed, VRF-pending, recovery or mismatched requests",
+      "passed": true
+    },
+    {
+      "name": "One torn pack pulls nonsequential NFT identities in order without another tear or mint",
+      "passed": true
+    },
+    {
+      "name": "A confirmed daily request opens only its three verified request cards",
+      "passed": true
+    },
+    {
+      "name": "One confirmed purchase transaction reveals all three exact originals through one wrapper and survives reload",
+      "passed": true
+    },
+    {
+      "name": "Asynchronous partial fulfillment waits for every request across close/reload before one combined wrapper",
+      "passed": true
+    },
+    {
+      "name": "Recovery remains request-specific while the completed originals stay in the same wrapper",
+      "passed": true
+    },
+    {
+      "name": "Forfeited requests are explicit and never invent a card or lose the two completed originals",
+      "passed": true
+    },
+    {
+      "name": "Missing logs, duplicate requests and a wrong actual purchase count cannot open any wrapper",
+      "passed": true
+    },
+    {
+      "name": "Indexer delay preserves the whole group and legacy stored hashes recover their actual purchase count",
+      "passed": true
+    },
+    {
+      "name": "Only confirmed onchain opening+Revealed can explicitly launch the genuine NFT opening",
+      "passed": true
+    }
+  ],
+  "sourceSha256": {
+    "src/pages/boosters/BoosterPackOpening.tsx": "b54e0befb5f3830149cdc4191bdde1ca3648e2e4d6241ece8f774d9ee6026f2b",
+    "src/pages/boosters/booster-pack-opening.css": "1fa9436441e3058e425973d9ce230356fd3cd8847acd8c8b5de128a38a69dd55",
+    "src/pages/boosters/BoosterTransactions.tsx": "1a65b1ef9cab13bba0559763a27aee11afec967ce7fcc30d8dc3764703e60ad7",
+    "src/pages/boosters/BoosterRequestOpening.tsx": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+    "src/pages/boosters/BoosterClaimPacks.tsx": "f33dbe731a27da60e64f8f6f6243b86a6a9819db138f2886f5aa86b950ed4c75",
+    "src/lib/boosterReveal.ts": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+    "src/pages/boosters/BoosterPackSection.tsx": "4a03946ae0e6c318a53b19d175bc25c429c4bb8751680399ae40d78fedf77757",
+    "src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96",
+    "src/components/Nav.tsx": "da902f3a94e58df1cc35412330686fb65507250d6367584e613413b1b276bfd3"
+  },
+  "extractionGeometry": {
+    "closed": {
+      "cardTop": 348.5,
+      "cardBottom": 738.155029296875,
+      "cardHeight": 389.655029296875,
+      "mouth": 340.085,
+      "visibleFraction": 0,
+      "visibleTopOnCard": false,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "halfPeek": {
+      "cardTop": 334.63641357421875,
+      "cardBottom": 724.2913818359375,
+      "cardHeight": 389.65496826171875,
+      "mouth": 340.085,
+      "visibleFraction": 0.013983105233041937,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "smallPeek": {
+      "cardTop": 329.49200439453125,
+      "cardBottom": 719.14697265625,
+      "cardHeight": 389.65496826171875,
+      "mouth": 340.085,
+      "visibleFraction": 0.027185578186581093,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "partial": {
+      "cardTop": 185.89942932128906,
+      "cardBottom": 601.6085357666016,
+      "cardHeight": 415.7091064453125,
+      "mouth": 384.88498779296873,
+      "visibleFraction": 0.4786653825632677,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "returned": {
+      "cardTop": 329.49200439453125,
+      "cardBottom": 719.14697265625,
+      "cardHeight": 389.65496826171875,
+      "mouth": 340.085,
+      "visibleFraction": 0.027185578186581093,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    }
+  },
+  "mobileExtractionGeometry": {
+    "smallPeek": {
+      "cardTop": 292.3492126464844,
+      "cardBottom": 623.9091796875,
+      "cardHeight": 331.5599670410156,
+      "mouth": 301.36481249999997,
+      "visibleFraction": 0.027191460820721824,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "partial": {
+      "cardTop": 292.3492126464844,
+      "cardBottom": 623.9091796875,
+      "cardHeight": 331.5599670410156,
+      "mouth": 426.36481249999997,
+      "visibleFraction": 0.40419716846255205,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "returned": {
+      "cardTop": 292.3492126464844,
+      "cardBottom": 623.9091796875,
+      "cardHeight": 331.5599670410156,
+      "mouth": 301.36481249999997,
+      "visibleFraction": 0.027191460820721824,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    },
+    "completed": {
+      "cardTop": 292.3492126464844,
+      "cardBottom": 623.9091796875,
+      "cardHeight": 331.5599670410156,
+      "mouth": 679.7748466796875,
+      "visibleFraction": 1,
+      "visibleTopOnCard": true,
+      "belowMouthCardInHitStack": false,
+      "frontLayer": 20,
+      "cardLayer": 15
+    }
+  },
+  "passed": true,
+  "completedAt": "2026-10-23T13:24:01.910Z"
+}

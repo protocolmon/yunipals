@@ -1,0 +1,104 @@
+{
+  "format": "yunipals-multipack-reveal-ui-preparation-v1",
+  "preparedAt": "2026-10-23T13:25:06.817609+00:00",
+  "preparedOnly": true,
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterRequestOpening.tsx",
+      "sha256": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+      "bytes": 9012
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterTransactions.tsx",
+      "sha256": "1a65b1ef9cab13bba0559763a27aee11afec967ce7fcc30d8dc3764703e60ad7",
+      "bytes": 9932
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.ts",
+      "sha256": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+      "bytes": 9733
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.test.ts",
+      "sha256": "e37982d45e8aa08ea49ad1671116095a7f8b5e8792ff68d7eb782c2e13a94410",
+      "bytes": 11886
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosters.ts",
+      "sha256": "bf4c6e3d9e8106e8448994dab84533e32efe888ebdeb2485242c5e9886ddd2a0",
+      "bytes": 9789
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosters.test.ts",
+      "sha256": "42cdc32f730a38e3e0752df86e54931239c84d51ad64d316c9e6dfe7aa3e9b8a",
+      "bytes": 6915
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-opening-ui.mjs",
+      "sha256": "aace2bfead4824c3d5b70c17dce04ac094a0c94c012dfe656580496522eb9d95",
+      "bytes": 46927
+    }
+  ],
+  "hookInterface": {
+    "purchaseActionCountField": "quantity",
+    "storedFields": [
+      "expectedRequestCount",
+      "packTypeId",
+      "quantity",
+      "originalId"
+    ],
+    "purchaseExpectedRequestCount": "action.quantity ?? 1",
+    "purchaseQuantityPerRequest": 1,
+    "claimExpectedRequestCount": 1,
+    "claimQuantity": "action.quantity",
+    "replacementMetadataPreservedByRootHook": true
+  },
+  "invariants": [
+    "Every configured-engine RequestCreated log from the same successful transaction is parsed and bound to receipt transaction/block/hash/log identity; exact count, unique request/original/log identities, kind/type/quantity are checked. No payer query or adjacent ID inference is used.",
+    "Actual signed openPack/openPacks/claim calldata recovers historical missing purchase count and handles changed replacements; local hints cannot fabricate requests or block a legitimate changed original/quantity. Every direct getRequest must match its creation event.",
+    "Creation transaction/block/log identity is part of request/card query keys. All completed request card batches are verified before a single physical wrapper presents the combined cards in creation-log order.",
+    "Pending, seeded/recovery and indexer-delayed requests retain the group. Recovery controls target each exact request. Forfeitures are explicit and require acknowledgement before showing only the completed originals; no forfeited card is invented.",
+    "Transferred and burned historical cards retain request identity and are never filtered by current owner. Current daily claim beneficiary is not assumed to equal the old payer.",
+    "Stored hashes and optional count/type/quantity/original hints survive scoped reload/replacement; malformed optional hints preserve recoverable hashes. No local card payload or saved request ID is trusted as proof.",
+    "Latest five purchase/claim groups remain visible even after recovery/approval/burn transactions, alongside latest five transactions; storage remains bounded to thirty records.",
+    "Existing single opening, daily batch, keyboard, touch, cancelled-drag, mouth-clipping and one-tear animation behavior remain covered."
+  ],
+  "validation": {
+    "revealUnitCases": 11,
+    "storageAndExistingBoosterCases": 6,
+    "browserGroups": 18,
+    "fullFrontendTypecheck": true,
+    "targetedGitDiffCheck": true,
+    "reactReview": "Hooks stay unconditional; bounded useQueries parallelize independent requests, declarative derived state, accessible dialog focus/cleanup/status/recovery controls, no added dependency or write flow."
+  },
+  "browserEvidence": {
+    "path": "/tmp/yunipals-booster-multipack-opening-ui-frozen-20261023.json",
+    "sha256": "d0bbff292724db8891d62534b44082eb0b7ac0be109c8c1d252a86e32c010901",
+    "sourceSha256": {
+      "src/pages/boosters/BoosterPackOpening.tsx": "b54e0befb5f3830149cdc4191bdde1ca3648e2e4d6241ece8f774d9ee6026f2b",
+      "src/pages/boosters/booster-pack-opening.css": "1fa9436441e3058e425973d9ce230356fd3cd8847acd8c8b5de128a38a69dd55",
+      "src/pages/boosters/BoosterTransactions.tsx": "1a65b1ef9cab13bba0559763a27aee11afec967ce7fcc30d8dc3764703e60ad7",
+      "src/pages/boosters/BoosterRequestOpening.tsx": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+      "src/pages/boosters/BoosterClaimPacks.tsx": "f33dbe731a27da60e64f8f6f6243b86a6a9819db138f2886f5aa86b950ed4c75",
+      "src/lib/boosterReveal.ts": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+      "src/pages/boosters/BoosterPackSection.tsx": "4a03946ae0e6c318a53b19d175bc25c429c4bb8751680399ae40d78fedf77757",
+      "src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96",
+      "src/components/Nav.tsx": "da902f3a94e58df1cc35412330686fb65507250d6367584e613413b1b276bfd3"
+    },
+    "fixturesOnly": true,
+    "externalRequests": 0,
+    "providerCalls": 0,
+    "transactions": 0,
+    "signatures": 0,
+    "browserErrors": []
+  },
+  "remaining": [
+    "Independent review and root canonical build/publication.",
+    "Multi-pack transactions stay disabled on the known original deployed implementation until its reviewed owner-signed contract upgrade; this package performs no upgrade."
+  ],
+  "productionActions": 0,
+  "chainTransactions": 0,
+  "databaseWrites": 0,
+  "dependenciesAdded": 0,
+  "commits": 0
+}

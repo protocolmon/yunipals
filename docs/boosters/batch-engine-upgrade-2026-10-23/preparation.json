@@ -1,0 +1,85 @@
+{
+  "format": "yunipals-batch-engine-owner-preparation-v1",
+  "preparedAt": "2026-10-23T13:33:42.064395+00:00",
+  "route": "/boosters/setup/batch",
+  "status": "unsigned-not-broadcast",
+  "packageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+  "productFreeze": {
+    "apps/yunipals-home-web/src/App.tsx": "415b5f0392a718a9ea315e85a3e109bcb97748bba2d81ae9f26be6a4348e1964",
+    "apps/yunipals-home-web/src/lib/boosterBatchSetup.ts": "7e44e2d4ad45f30981c276e639ff34b85835524a60595d49b1c7877b3cb5c724",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterBatchSetupPage.tsx": "67d3596664f3706b0fc5a7d2fe96aacd9bf465b1408a447d9a6e0848863ed25c",
+    "apps/yunipals-home-web/scripts/boosters/build-collection-live.mjs": "1725f29330917eb8ca43a939baf66c8a9ecead0a0607b6f9cae113685f82e5f5",
+    "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e"
+  },
+  "files": {
+    "scripts/boosters/prepare-batch-engine-upgrade.mjs": "31d4489d79317247a32f7e89b50db3b01d83be91cf986cd95c269e8bb74b1dc8",
+    "scripts/boosters/prepare-batch-engine-upgrade.test.mjs": "557c004916b2645c089094d3cbca4eff97d5b44ca7234f679ac6ec3e34ceee5d",
+    "scripts/boosters/read-batch-engine-preflight.mjs": "fa65fd26f08b10c7e1a5dec03fe0569ac47c41f180c879ad9cf2e6a264b3c0be",
+    "apps/yunipals-home-web/src/lib/boosterBatchSetup.ts": "7e44e2d4ad45f30981c276e639ff34b85835524a60595d49b1c7877b3cb5c724",
+    "apps/yunipals-home-web/src/lib/boosterBatchSetup.test.ts": "284a37b5d7bd8059faede5ce36267e38009d87a7bf530199c5b7ed90f27aeccf",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterBatchSetupPage.tsx": "67d3596664f3706b0fc5a7d2fe96aacd9bf465b1408a447d9a6e0848863ed25c",
+    "apps/yunipals-home-web/src/App.tsx": "415b5f0392a718a9ea315e85a3e109bcb97748bba2d81ae9f26be6a4348e1964",
+    "apps/yunipals-home-web/scripts/boosters/build-collection-live.mjs": "1725f29330917eb8ca43a939baf66c8a9ecead0a0607b6f9cae113685f82e5f5",
+    "apps/yunipals-home-web/scripts/test-booster-batch-setup-ui.mjs": "d9cbff9f8009af94c77bd1baf0f87b403a65641643e4b08b75fc03952daad147",
+    "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/upgrade.unsigned.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/solc-standard-input.json": "f66676caa22a03b578f154d5adf09d0e4099f001cff308aa1884aa6f8e642e9c",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/README.md": "cc001b8f73cf49264144778137fb93d03dadd55aeedd0e70b72ef40e88bfd521",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/current-chain-preflight.json": "d34723294469c8fc02f91d6e35d6027f1343db190fcbc34e5bb04725d876cd85",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/owner-browser-acceptance.json": "f9de6a5ff177961f79867b80697b54154a682cea688e9d863db39fb46bb21bb6"
+  },
+  "contractReferences": {
+    "contracts/boosters/src/BoosterPacks.sol": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d",
+    "contracts/boosters/foundry.toml": "89e269d6e48180f04188a688beb5fff7c04300ea3b3f76ec265aa61ad68ccf6c",
+    "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.json": "8da9b7aed33a518e222add0f0fedda49a3e7471168fc3d7165c6b482f388eeb6",
+    "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.immutable-references.json": "12ef0eeb4c9c168abc5b99c05e4ef2545a8341e13e9bf30475548899eda1c83c"
+  },
+  "validation": {
+    "builderControls": 8,
+    "frontendHelperControls": 22,
+    "frontendTypecheck": true,
+    "standaloneCompilerCreationAndRuntimeByteIdentical": true,
+    "runtimeBytes": 24258,
+    "creationBytes": 24489,
+    "buildProfile": "batch",
+    "optimizerRuns": 1,
+    "defaultProfileOptimizerRuns": 200,
+    "browser": {
+      "format": "yunipals-booster-batch-owner-browser-v1",
+      "passed": true,
+      "packageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+      "checks": [
+        "owner connects and reviews exact package, roles, proxy and fee quote without automatic wallet writes",
+        "network change during deferred final simulation invalidates the review and sends zero transactions",
+        "one explicit deploy signature uses creation bytes and actual receipt address; upgrade is a separate review",
+        "refresh recovers saved deployment without another signature and wrong manual runtime is rejected",
+        "second explicit signature upgrades the verified implementation with empty initialization and validates actual slot/max10",
+        "completed reload has no repeated writes and owner page fits a mobile viewport",
+        "confirmed reverted deployment requires explicit receipt resolution before a fresh review and never auto resubmits"
+      ],
+      "syntheticWalletTransactions": 2,
+      "realNetworkProviderCalls": 0,
+      "blockedUnrelatedRequests": 4,
+      "productionActions": 0
+    }
+  },
+  "reproducibleCommands": [
+    "node scripts/boosters/prepare-batch-engine-upgrade.test.mjs",
+    "cd apps/yunipals-home-web && node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/boosterBatchSetup.test.ts",
+    "cd apps/yunipals-home-web && node node_modules/typescript/bin/tsc --noEmit"
+  ],
+  "production": {
+    "signatures": 0,
+    "broadcasts": 0,
+    "deployments": 0,
+    "upgrades": 0,
+    "sourceOrIndexerChanges": 0,
+    "privateConfigurationExports": 0
+  },
+  "remaining": [
+    "parent review/publication/full-artifact read-only browser proof",
+    "owner explicitly signs implementation deployment",
+    "owner verifies actual receipt/address and explicitly signs empty-init proxy upgrade",
+    "normal UI detects capability before enabling multipurchase"
+  ]
+}

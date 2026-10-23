@@ -44,6 +44,8 @@ try {
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const metadataUpgradePackageSha =
   "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966";
+const batchUpgradePackageSha =
+  "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e";
 if (values["full-app"]) {
   const metadataUpgrade = await readFile(
     join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
@@ -52,6 +54,11 @@ if (values["full-app"]) {
     throw Error(
       "The metadata upgrade package differs from the reviewed bytes."
     );
+  const batchUpgrade = await readFile(
+    join(app, "public/boosters/engine-batch-upgrade-v1.json")
+  );
+  if (sha(batchUpgrade) !== batchUpgradePackageSha)
+    throw Error("The engine batch package differs from the reviewed bytes.");
 }
 const setupFile = join(app, "public/boosters/mainnet-smoke-setup.json");
 const setup = await readFile(setupFile);
@@ -141,7 +148,10 @@ const assets = [
 if (values["standard-setup-sha"])
   assets.push("boosters/mainnet-standard-setup.json");
 if (values["full-app"])
-  assets.push("boosters/monsters-token-metadata-upgrade-v1.json");
+  assets.push(
+    "boosters/monsters-token-metadata-upgrade-v1.json",
+    "boosters/engine-batch-upgrade-v1.json"
+  );
 for (const name of assets) {
   await mkdir(join(output, name, ".."), { recursive: true });
   await copyFile(join(app, "public", name), join(output, name));
@@ -184,6 +194,7 @@ const manifest = {
   metadataUpgradePackageSha256: values["full-app"]
     ? metadataUpgradePackageSha
     : null,
+  batchUpgradePackageSha256: values["full-app"] ? batchUpgradePackageSha : null,
   publicAssets: assets,
   files: entries
 };

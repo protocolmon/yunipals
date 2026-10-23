@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
-import { formatUnits, type Hex } from "viem";
+import { Clock3, Layers3, Sparkles } from "lucide-react";
+import { type Hex } from "viem";
 import { useAccount } from "wagmi";
 import {
   boosterAddresses,
@@ -11,14 +11,14 @@ import {
 } from "@/lib/boosters";
 import { formatInteger } from "@/lib/format";
 import { environment } from "@/environment";
-import { BoosterActionButton } from "./BoosterActionButton";
+import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
 import { BoosterClaimPacks } from "./BoosterClaimPacks";
 
 export function BoosterPackSection() {
   const { address } = useAccount();
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState<number | null>(null);
   const [opening, setOpening] = useState<{ wallet: string; hash: Hex } | null>(
     null
   );
@@ -156,41 +156,14 @@ export function BoosterPackSection() {
                     </span>
                   </li>
                 </ul>
-                <p className="text-2xl font-bold text-ink">
-                  {pack.paymentToken.toLowerCase() ===
-                  "0xe5a54a517cde8ed48a336b173044b1138aa2c1a3"
-                    ? `${formatUnits(BigInt(pack.price), 18)} PROTO`
-                    : "See payment details in review"}{" "}
-                  <span className="block pt-1 text-sm font-normal text-muted">
-                    + ETH for randomness and network fees
-                  </span>
-                </p>
-                <p className="mt-3 text-sm text-muted">
-                  The full pack price is burned when your opening request
-                  succeeds.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <BoosterActionButton
-                    action={{ kind: "open", packTypeId: pack.packTypeId }}
-                    disabled={pack.salesPaused || query.data?.requestsPaused}
-                    onConfirmed={onConfirmed}
-                  >
-                    {pack.salesPaused || query.data?.requestsPaused
-                      ? "Openings paused"
-                      : "Open pack"}
-                  </BoosterActionButton>
-                  <button
-                    type="button"
-                    onClick={() => setPreview(true)}
-                    className="flex items-center gap-2 rounded-full border border-grape/20 bg-lavender/20 px-5 py-3 text-sm font-bold text-grape transition-colors hover:bg-lavender/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
-                  >
-                    <PlayCircle size={19} aria-hidden="true" />
-                    Try the opening
-                  </button>
-                </div>
-                <p className="mt-3 text-xs text-muted">
-                  Try the opening is a preview. No wallet or purchase needed.
-                </p>
+                <BoosterPurchaseOptions
+                  pack={pack}
+                  paused={Boolean(
+                    pack.salesPaused || query.data?.requestsPaused
+                  )}
+                  onConfirmed={onConfirmed}
+                  onPreview={setPreview}
+                />
               </div>
             </article>
           ))}
@@ -204,11 +177,19 @@ export function BoosterPackSection() {
             onOpeningClosed={() => setOpening(null)}
           />
         )}
-        {preview && (
+        {preview !== null && (
           <BoosterPackOpening
             mode="demo"
             metadataUri={`${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-smoke-v1/73.json`}
-            onClose={() => setPreview(false)}
+            additionalCards={Array.from(
+              { length: preview - 1 },
+              (_, index) => ({
+                collection: "",
+                tokenId: "",
+                metadataUri: `${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-smoke-v1/${[80, 81, 82, 83][index % 4]}.json`
+              })
+            )}
+            onClose={() => setPreview(null)}
           />
         )}
       </div>

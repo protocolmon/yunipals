@@ -19,9 +19,15 @@ import {
   boosterQueryKey,
   saveBoosterTransaction
 } from "@/lib/boosters";
+import {
+  boosterPurchaseAbi,
+  boosterPurchaseData,
+  readBoosterPurchaseLimit,
+  validateBoosterPurchaseQuantity
+} from "@/lib/boosterPurchase";
 
 export type BoosterAction =
-  | { kind: "open"; packTypeId: string }
+  | { kind: "open"; packTypeId: string; quantity?: number }
   | { kind: "claim"; packTypeId: string; originalId: string; quantity: number }
   | { kind: "recover"; requestId: string }
   | { kind: "burn"; tokenId: string }
@@ -127,16 +133,39 @@ export function useBoosterActions() {
           throw new Error("This pack is unavailable.");
         if (action.kind === "open" && pack.salesPaused)
           throw new Error("New openings are paused for this pack.");
-        const quantity = action.kind === "open" ? 1 : action.quantity;
-        [vrfPrice] = await client.readContract({
-          address: deployment.engine,
-          abi: boosterPacksAbi,
-          functionName: "quote",
-          args: [packTypeId, quantity, gasPrice]
-        });
+        const quantity =
+          action.kind === "open"
+            ? validateBoosterPurchaseQuantity(action.quantity)
+            : action.quantity;
+        if (action.kind === "open" && quantity > 1) {
+          validateBoosterPurchaseQuantity(
+            quantity,
+            await readBoosterPurchaseLimit(client, deployment.engine)
+          );
+          [vrfPrice] = await client.readContract({
+            address: deployment.engine,
+            abi: boosterPurchaseAbi,
+            functionName: "quoteOpenPacks",
+            args: [packTypeId, quantity, gasPrice]
+          });
+        } else {
+          [vrfPrice] = await client.readContract({
+            address: deployment.engine,
+            abi: boosterPacksAbi,
+            functionName: "quote",
+            args: [packTypeId, quantity, gasPrice]
+          });
+        }
         value = vrfPrice + vrfPrice / 10n + 1n;
         if (action.kind === "open") {
-          tokenPrice = pack.rules.price;
+          tokenPrice = pack.rules.price * BigInt(quantity);
+          if (
+            pack.rules.supplyCap > 0n &&
+            pack.openings + BigInt(quantity) > pack.rules.supplyCap
+          )
+            throw new Error(
+              "There aren’t enough packs left for this quantity."
+            );
           const token = pack.rules.paymentToken;
           const [balance, allowance, decimals, symbol] = await Promise.all([
             client.readContract({
@@ -165,7 +194,7 @@ export function useBoosterActions() {
           tokenDecimals = decimals;
           tokenSymbol = symbol;
           if (balance < tokenPrice)
-            throw new Error(`You need ${symbol} to open this pack.`);
+            throw new Error(`You need more ${symbol} for these packs.`);
           approval = allowance < tokenPrice;
           if (approval) {
             to = token;
@@ -176,11 +205,7 @@ export function useBoosterActions() {
               args: [deployment.engine, tokenPrice]
             });
           } else
-            data = encodeFunctionData({
-              abi: boosterPacksAbi,
-              functionName: "openPack",
-              args: [packTypeId, value, deadline]
-            });
+            data = boosterPurchaseData(packTypeId, quantity, value, deadline);
         } else
           data = encodeFunctionData({
             abi: boosterPacksAbi,
@@ -286,9 +311,26 @@ export function useBoosterActions() {
       const kind = current.approval
         ? ("approval" as const)
         : current.action.kind;
+      const expectation = current.approval
+        ? {}
+        : current.action.kind === "open"
+          ? {
+              expectedRequestCount: current.action.quantity ?? 1,
+              packTypeId: current.action.packTypeId,
+              quantity: 1
+            }
+          : current.action.kind === "claim"
+            ? {
+                expectedRequestCount: 1,
+                packTypeId: current.action.packTypeId,
+                quantity: current.action.quantity,
+                originalId: current.action.originalId
+              }
+            : {};
       saveBoosterTransaction(current.account, deployment.engine, {
         hash,
-        kind
+        kind,
+        ...expectation
       });
       setPhase("confirming");
       let trackedHash = hash;
@@ -304,7 +346,8 @@ export function useBoosterActions() {
             {
               hash: transaction.hash,
               kind,
-              cancelled
+              cancelled,
+              ...expectation
             },
             undefined,
             trackedHash

@@ -1,0 +1,17 @@
+{
+  "format": "yunipals-batch-purchase-ui-v1",
+  "observedAt": "2026-10-23T13:17:09.158Z",
+  "fixturesOnly": true,
+  "realProviderCalls": 0,
+  "realTransactions": 0,
+  "checks": [
+    "Three originals: correct total price, one atomic call, aggregate ETH ceiling and persisted request count",
+    "Exact total approval followed by a fresh batch review; only one opening transaction",
+    "insufficient: no approval or opening sent",
+    "soldout: no approval or opening sent",
+    "Legacy implementation keeps single purchases operational and cannot send unsupported batch calls",
+    "Maximum ten, multi-card demo selection, and mobile layout"
+  ],
+  "errors": [],
+  "passed": true
+}

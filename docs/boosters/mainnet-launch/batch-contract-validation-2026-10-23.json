@@ -1,0 +1,49 @@
+{
+  "format": "yunipals-batch-contract-validation-v1",
+  "files": [
+    {
+      "path": "contracts/boosters/src/BoosterPacks.sol",
+      "sha256": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d"
+    },
+    {
+      "path": "contracts/boosters/foundry.toml",
+      "sha256": "89e269d6e48180f04188a688beb5fff7c04300ea3b3f76ec265aa61ad68ccf6c"
+    },
+    {
+      "path": "contracts/boosters/test/BoosterMultiPack.t.sol",
+      "sha256": "5a884e6e4755b4da012e1507dfc1b509b22e0ca4a38d4cc1caede562a1faa1a8"
+    },
+    {
+      "path": "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.json",
+      "sha256": "8da9b7aed33a518e222add0f0fedda49a3e7471168fc3d7165c6b482f388eeb6"
+    },
+    {
+      "path": "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.immutable-references.json",
+      "sha256": "12ef0eeb4c9c168abc5b99c05e4ef2545a8341e13e9bf30475548899eda1c83c"
+    }
+  ],
+  "artifact": "contracts/boosters/out-batch/BoosterPacks.sol/BoosterPacks.json",
+  "artifactSha256": "edc5f515b2e9c2b3912afbc30f570f962dfba9af21f9e351ff4ab1188a18ead1",
+  "compiler": "Solidity0.8.30/Cancun/viaIR",
+  "optimizerRuns": 1,
+  "profile": "batch",
+  "defaultOptimizerRunsUnchanged": 200,
+  "runtimeBytes": 24258,
+  "creationBytes": 24489,
+  "eip170Margin": 318,
+  "maximumPacks": 10,
+  "localMockGasTenPacks": 3744042,
+  "focusedTestsPassed": 14,
+  "focusedFuzzCases": 256,
+  "fullTestsPassed": 76,
+  "fullTestsFailed": 0,
+  "networkForkTestsSkipped": 7,
+  "invariantRuns": 48,
+  "invariantCalls": 2880,
+  "allTenStorageRowsIncludingGapUnchanged": true,
+  "legacyUpgradeProof": "Exact audited creation payload,49rawslots,pendingclaim/opening,refunds,pooldraws,proofcontext,rolesandpausepreserved",
+  "fullLogSha256": "2740c2d7708231b0ced58af2fc9478295ecf8f3f28bd0a594f6aea6373c16096",
+  "focusedLogSha256": "cb6cc88d3f3964891d535eed1cf4a10dfaf1cf5f37338e22adac7511bcaf853a",
+  "deploymentOrBroadcastActions": 0,
+  "liveGasEstimateClaimed": false
+}

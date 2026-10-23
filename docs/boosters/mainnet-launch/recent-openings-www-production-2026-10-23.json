@@ -1,0 +1,22 @@
+{
+  "format": "yunipals-recent-openings-www-production-v1",
+  "sourceCommit": "6700671c",
+  "deployment": "https://yunipals-6fnw91alf-devving.vercel.app",
+  "deploymentId": "dpl_74X78GYvyhC9uVT9QQgz7ksknHgr",
+  "releaseManifestSha256": "f380e884c9fe825ebd656d86367cc6bf012274b0c14cbdd6c3bceaa66d2214d3",
+  "at": "2026-10-23T12:48:55.136Z",
+  "origin": "https://www.yunipals.com",
+  "checks": [
+    "exact promoted full-app manifest",
+    "real completed opening and loaded artwork appear between pack and FAQ",
+    "opening card links to real NFT details and birth metadata",
+    "brand-purple toggle and OG capped rarity descending are live",
+    "NFB #3 remains included as requested",
+    "mobile layout and actual card image fit viewport"
+  ],
+  "errors": [],
+  "walletConnections": 0,
+  "transactions": 0,
+  "passed": true,
+  "completedOpenings": 1
+}

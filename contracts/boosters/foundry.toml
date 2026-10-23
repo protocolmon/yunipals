@@ -16,5 +16,10 @@ fs_permissions = [{ access = "read", path = "./config" }, { access = "read", pat
 [profile.default.fuzz]
 runs = 256
 
+[profile.batch]
+optimizer_runs = 1
+out = "out-batch"
+cache_path = "cache-batch"
+
 [fmt]
 line_length = 110

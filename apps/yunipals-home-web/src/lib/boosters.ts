@@ -237,6 +237,10 @@ export type StoredBoosterTransaction = {
   hash: Hex;
   kind: "open" | "claim" | "recover" | "burn" | "refund" | "approval";
   cancelled?: boolean;
+  expectedRequestCount?: number;
+  packTypeId?: string;
+  quantity?: number;
+  originalId?: string;
 };
 const storageKey = (wallet: string, engine: string) =>
   `yunipals/boosters/v1/8453/${engine.toLowerCase()}/${wallet.toLowerCase()}`;
@@ -251,16 +255,49 @@ export function readBoosterTransactions(
     );
     if (!Array.isArray(rows)) return [];
     return rows
-      .filter(
-        (row): row is StoredBoosterTransaction =>
-          typeof row === "object" &&
-          row !== null &&
-          (row.cancelled === undefined || typeof row.cancelled === "boolean") &&
-          /^0x[0-9a-f]{64}$/i.test(row.hash) &&
-          ["open", "claim", "recover", "burn", "refund", "approval"].includes(
+      .flatMap((value): StoredBoosterTransaction[] => {
+        if (typeof value !== "object" || value === null) return [];
+        const row = value as Record<string, unknown>;
+        if (
+          typeof row.hash !== "string" ||
+          !/^0x[0-9a-f]{64}$/i.test(row.hash) ||
+          typeof row.kind !== "string" ||
+          !["open", "claim", "recover", "burn", "refund", "approval"].includes(
             row.kind
+          ) ||
+          (row.cancelled !== undefined && typeof row.cancelled !== "boolean")
+        )
+          return [];
+        const saved: StoredBoosterTransaction = {
+          hash: row.hash as Hex,
+          kind: row.kind as StoredBoosterTransaction["kind"]
+        };
+        if (typeof row.cancelled === "boolean") saved.cancelled = row.cancelled;
+        if (
+          typeof row.expectedRequestCount === "number" &&
+          Number.isInteger(row.expectedRequestCount) &&
+          row.expectedRequestCount >= 1 &&
+          row.expectedRequestCount <= 10
+        )
+          saved.expectedRequestCount = row.expectedRequestCount;
+        if (
+          typeof row.quantity === "number" &&
+          Number.isInteger(row.quantity) &&
+          row.quantity >= 1 &&
+          row.quantity <= 32
+        )
+          saved.quantity = row.quantity;
+        for (const field of ["packTypeId", "originalId"] as const)
+          if (
+            typeof row[field] === "string" &&
+            /^(0|[1-9][0-9]{0,77})$/.test(row[field]) &&
+            BigInt(row[field]) < 2n ** 256n
           )
-      )
+            saved[field] = row[field];
+        // Optional local hints are never the authority for minted identities.
+        // Keep the transaction recoverable even if a hint is malformed.
+        return [saved];
+      })
       .slice(-30);
   } catch {
     return [];

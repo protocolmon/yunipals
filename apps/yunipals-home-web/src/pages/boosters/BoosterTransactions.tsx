@@ -5,13 +5,31 @@ import { parseEventLogs, type Hex } from "viem";
 import { Link } from "react-router-dom";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
+  boosterTransactionExpectation,
+  boosterTransactionHistory,
+  confirmedBoosterRequests,
+  confirmedBoosterRequestState,
+  type BoosterCreatedRequest,
+  type BoosterRequestState,
+  type BoosterRevealExpectation
+} from "@/lib/boosterReveal";
+import {
   boosterAddresses,
   boosterQueryKey,
   readBoosterTransactions,
-  readBoosterTransactionReceipt
+  readBoosterTransactionReceipt,
+  type StoredBoosterTransaction
 } from "@/lib/boosters";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
+
+type TrackedTransaction = StoredBoosterTransaction & {
+  status: string;
+  requests?: BoosterCreatedRequest[];
+  states?: BoosterRequestState[];
+  completed?: number;
+  forfeited?: number;
+};
 
 export function BoosterTransactions({
   autoOpenHash = null,
@@ -43,14 +61,14 @@ export function BoosterTransactions({
     queryKey: [...boosterQueryKey, "transactions", deployment?.engine, address],
     enabled: Boolean(address && client && deployment),
     refetchInterval: 4000,
-    queryFn: async () => {
+    queryFn: async (): Promise<TrackedTransaction[]> => {
       if (!address || !client || !deployment) return [];
       return Promise.all(
-        readBoosterTransactions(address, deployment.engine)
-          .slice(-5)
-          .reverse()
-          .map(async (row) => {
-            if (row.cancelled) return { ...row, status: "Cancelled" };
+        boosterTransactionHistory(
+          readBoosterTransactions(address, deployment.engine)
+        ).map(async (row): Promise<TrackedTransaction> => {
+          if (row.cancelled) return { ...row, status: "Cancelled" };
+          try {
             const receipt = await readBoosterTransactionReceipt(() =>
               client.getTransactionReceipt({ hash: row.hash })
             );
@@ -58,60 +76,92 @@ export function BoosterTransactions({
               return { ...row, status: "Waiting for confirmation" };
             if (receipt.status !== "success")
               return { ...row, status: "Transaction reverted" };
-            const [request] = parseEventLogs({
+            if (row.kind !== "open" && row.kind !== "claim")
+              return { ...row, status: "Confirmed" };
+            const events = parseEventLogs({
               abi: boosterPacksAbi,
               eventName: "RequestCreated",
               logs: receipt.logs.filter(
                 (log) => log.address.toLowerCase() === deployment.engine
               )
             });
-            if (!request) return { ...row, status: "Confirmed" };
-            const state = await client.readContract({
-              address: deployment.engine,
-              abi: boosterPacksAbi,
-              functionName: "getRequest",
-              args: [request.args.requestId]
-            });
-            return {
+            if (!events.length)
+              return { ...row, status: "Request details unavailable" };
+            let expected: BoosterRevealExpectation = {
               ...row,
-              requestId: request.args.requestId.toString(),
-              originalId: state.originalId.toString(),
-              opening: state.opening,
-              quantity: state.quantity,
-              status: [
-                "Unknown",
-                "Awaiting randomness",
-                "Ready for recovery",
-                "Revealed",
-                "Forfeited"
-              ][state.status]
+              engine: deployment.engine,
+              kind: row.kind
             };
-          })
+            // Recover actual multi-pack count after a reload or wallet
+            // replacement. Never infer missing requests from nearby IDs/payer.
+            if (
+              events.length > 1 ||
+              (row.expectedRequestCount ?? 1) > 1 ||
+              events.some(
+                ({ args }) =>
+                  (row.packTypeId !== undefined &&
+                    row.packTypeId !== args.packTypeId.toString()) ||
+                  (row.originalId !== undefined &&
+                    row.originalId !== args.originalId.toString()) ||
+                  (row.quantity !== undefined && row.quantity !== args.quantity)
+              )
+            )
+              expected = boosterTransactionExpectation(
+                await client.getTransaction({
+                  hash: receipt.transactionHash
+                }),
+                expected
+              );
+            const requests = confirmedBoosterRequests(receipt, expected);
+            const states = await Promise.all(
+              requests.map(async (created) =>
+                confirmedBoosterRequestState(
+                  await client.readContract({
+                    address: deployment.engine,
+                    abi: boosterPacksAbi,
+                    functionName: "getRequest",
+                    args: [BigInt(created.requestId)]
+                  }),
+                  created
+                )
+              )
+            );
+            const completed = states.filter(
+              (state) => state.status === 3
+            ).length;
+            const forfeited = states.filter(
+              (state) => state.status === 4
+            ).length;
+            const status =
+              completed === requests.length
+                ? "Revealed"
+                : forfeited === requests.length
+                  ? "Forfeited"
+                  : completed + forfeited === requests.length
+                    ? "Partly revealed"
+                    : states.some((state) => state.status === 2)
+                      ? "Ready for recovery"
+                      : "Awaiting randomness";
+            return { ...row, requests, states, completed, forfeited, status };
+          } catch {
+            return { ...row, status: "Request details unavailable" };
+          }
+        })
       );
     }
   });
   if (!address || (!query.data?.length && !refund.data && !query.error))
     return null;
-  const selected =
-    opening && opening.wallet === address
-      ? query.data?.find(
-          (row) =>
-            row.hash === opening.hash &&
-            (row.kind === "open" || row.kind === "claim") &&
-            "opening" in row &&
-            row.opening === (row.kind === "open") &&
-            "requestId" in row
-        )
-      : autoOpenHash
-        ? query.data?.find(
-            (row) =>
-              row.hash === autoOpenHash &&
-              (row.kind === "open" || row.kind === "claim") &&
-              "requestId" in row &&
-              "opening" in row &&
-              row.opening === (row.kind === "open")
-          )
-        : undefined;
+  const selectedHash =
+    opening?.wallet.toLowerCase() === address.toLowerCase()
+      ? opening.hash
+      : autoOpenHash;
+  const selected = query.data?.find(
+    (row) =>
+      row.hash.toLowerCase() === selectedHash?.toLowerCase() &&
+      (row.kind === "open" || row.kind === "claim") &&
+      Boolean(row.requests?.length)
+  );
   return (
     <div
       className="mt-7 rounded-card border border-line bg-white p-5"
@@ -132,30 +182,40 @@ export function BoosterTransactions({
         </div>
       )}
       <ul className="mt-3 space-y-3">
-        {query.data?.map((row) => (
-          <li
-            key={row.hash}
-            className="flex flex-wrap items-center gap-3 text-sm"
-          >
-            <a
-              href={`https://basescan.org/tx/${row.hash}`}
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
+        {query.data?.map((row) => {
+          const total = row.requests?.length ?? 0;
+          const terminal =
+            row.status === "Revealed" || row.status === "Partly revealed";
+          const quantity = row.requests?.[0]?.quantity ?? 1;
+          return (
+            <li
+              key={row.hash}
+              className="flex flex-wrap items-center gap-3 text-sm"
             >
-              {row.kind === "approval"
-                ? "Approval"
-                : row.kind === "claim"
-                  ? "Daily claim"
-                  : row.kind === "open"
-                    ? "Pack opening"
-                    : "Transaction"}
-            </a>
-            <span>{row.status}</span>
-            {(row.kind === "open" || row.kind === "claim") &&
-              row.status === "Revealed" &&
-              "opening" in row &&
-              row.opening === (row.kind === "open") && (
+              <a
+                href={`https://basescan.org/tx/${row.hash}`}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                {row.kind === "approval"
+                  ? "Approval"
+                  : row.kind === "claim"
+                    ? "Daily claim"
+                    : row.kind === "open"
+                      ? total > 1
+                        ? `${total} pack opening`
+                        : "Pack opening"
+                      : "Transaction"}
+              </a>
+              <span>{row.status}</span>
+              {total > 1 && (
+                <span className="text-muted">
+                  {row.completed ?? 0} of {total} packs revealed
+                  {row.forfeited ? ` · ${row.forfeited} forfeited` : ""}
+                </span>
+              )}
+              {total > 0 && row.status !== "Forfeited" && (
                 <button
                   type="button"
                   className="rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape"
@@ -163,43 +223,49 @@ export function BoosterTransactions({
                     setOpening({ hash: row.hash, wallet: address })
                   }
                 >
-                  {row.kind === "claim"
-                    ? `Open daily pack · ${"quantity" in row ? row.quantity : 1} pulls`
-                    : "Reveal Yunipal"}
+                  {terminal
+                    ? row.kind === "claim"
+                      ? `Open daily pack · ${quantity} pulls`
+                      : total > 1
+                        ? `Reveal ${row.completed} Yunipals`
+                        : "Reveal Yunipal"
+                    : "View pack progress"}
                 </button>
               )}
-            {"originalId" in row && row.status === "Revealed" && (
-              <Link
-                className="font-bold underline"
-                to={`/monsters/${deployment?.monsters}/${row.originalId}`}
-              >
-                View original
-              </Link>
-            )}
-            {"requestId" in row &&
-              row.requestId &&
-              row.status === "Ready for recovery" && (
-                <BoosterActionButton
-                  action={{ kind: "recover", requestId: row.requestId }}
+              {row.requests?.length === 1 && row.status === "Revealed" && (
+                <Link
+                  className="font-bold underline"
+                  to={`/monsters/${deployment?.monsters}/${row.requests[0].originalId}`}
                 >
-                  Finish reveal
-                </BoosterActionButton>
+                  View original
+                </Link>
               )}
-          </li>
-        ))}
+              {row.requests?.map((created, index) =>
+                row.states?.[index]?.status === 2 ? (
+                  <BoosterActionButton
+                    key={created.requestId}
+                    action={{ kind: "recover", requestId: created.requestId }}
+                  >
+                    {total > 1
+                      ? `Finish reveal · pack ${index + 1}`
+                      : "Finish reveal"}
+                  </BoosterActionButton>
+                ) : null
+              )}
+            </li>
+          );
+        })}
       </ul>
-      {selected &&
-        "requestId" in selected &&
-        typeof selected.requestId === "string" &&
-        deployment && (
-          <BoosterRequestOpening
-            requestId={selected.requestId}
-            onClose={() => {
-              setOpening(null);
-              onOpeningClosed?.();
-            }}
-          />
-        )}
+      {selected?.requests && deployment && (
+        <BoosterRequestOpening
+          key={selected.hash}
+          requests={selected.requests}
+          onClose={() => {
+            setOpening(null);
+            onOpeningClosed?.();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,68 @@
+{
+  "format": "yunipals-batch-purchase-independent-review-v1",
+  "reviewedAt": "2026-10-23T13:20:45.949741+00:00",
+  "verdict": "pass_no_concrete_blocker",
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPurchase.ts",
+      "sha256": "1f69d217b68c9eac94019da7c73b87d020492d617355a340599cee86ee133110"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPurchase.test.ts",
+      "sha256": "68a26131b058978604ded7be9a25e72cec2a1d1f4e01f9853b2b45d9c7f76cd9"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/hooks/useBoosterActions.ts",
+      "sha256": "9dfcdbbbc3807a3af582e73fff2dc0a8cca7da912a4fe3aa12ba2b12508a2a07"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterPurchaseOptions.tsx",
+      "sha256": "be461bee00eaed9b6b0a8080f868b36746fea0a64ab74c763368cc40c0375329"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx",
+      "sha256": "4709fba6ee67a34968ede3563df97b1644cfa0059567c84340c738deaa211fe8"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-purchase-ui.mjs",
+      "sha256": "6f9cae5ca27d7f998b2a439668d79c41ea66b33104f31407db46473955dec9ac"
+    }
+  ],
+  "findings": [
+    "Payment-token balance/allowance/approval use the exact aggregate price multiplied by count. Insufficient balance or supply prevents signing. Approval is separately confirmed before a fresh opening review.",
+    "The VRF estimate is the total quote with one10percent+1 ceiling/value; call simulation and120percent gas estimate plus BaseL1 fee and native balance checks are applied before wallet confirmation.",
+    "Known old92e implementation preserves single opening without calling the absent capability getter. Unknown/RPC failure is not interpreted as successful legacy capability; quantity is checked again when preparing a batch.",
+    "The count defaults to1 for existing callers, is bounded by onchain capability andUI10, and purchases encode one atomic openPacks call while single purchase retains openPack.",
+    "Saved receipt hints keep expected request count separate from per-request mint quantity1. Replacement handling persists them to the replacement hash; the separate reveal helper treats actual replacement calldata as authoritative for the new count/type.",
+    "The real component fixture also passes count10, demo quantity and mobile layout checks with no external requests."
+  ],
+  "tests": {
+    "purchaseHelper": {
+      "passed": 5,
+      "failed": 0,
+      "logSha256": "8eee5408c89bcbaff7c5ac7aa648b18b3929e892dc6d594e82a168727022985f"
+    },
+    "actualComponentsBrowser": {
+      "passed": 6,
+      "failed": 0,
+      "reportSha256": "e16243b835a4417d4ba2d618ec5396f2de73f9115ec697d82a5493baf6594f07",
+      "checks": [
+        "Three originals: correct total price, one atomic call, aggregate ETH ceiling and persisted request count",
+        "Exact total approval followed by a fresh batch review; only one opening transaction",
+        "insufficient: no approval or opening sent",
+        "soldout: no approval or opening sent",
+        "Legacy implementation keeps single purchases operational and cannot send unsupported batch calls",
+        "Maximum ten, multi-card demo selection, and mobile layout"
+      ]
+    }
+  },
+  "limitations": [
+    "Only local synthetic provider/wallet fixtures were used; no live transaction or production action was performed.",
+    "The separate owner upgrade builder/validator/page financial review will be recorded after its final source/package freeze."
+  ],
+  "sourceEdits": 0,
+  "productionActions": 0,
+  "realProviderCalls": 0,
+  "realTransactions": 0,
+  "gitMutations": 0
+}

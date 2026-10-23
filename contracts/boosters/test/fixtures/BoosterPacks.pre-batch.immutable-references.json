@@ -1,0 +1,17 @@
+{
+  "description": "Exact old compiler UUPS immutable offsets, independently rebuilt from committed mainnet verification input and byte-equal to frozen pre-batch fixture.",
+  "fixtureSha256": "8da9b7aed33a518e222add0f0fedda49a3e7471168fc3d7165c6b482f388eeb6",
+  "verificationInputSha256": "b1a73d9ee14e2a38876ef856e4beae76fdb61d8dc5a81c665ecf2610062b1fbd",
+  "immutableReferences": {
+    "1890": [
+      {
+        "length": 32,
+        "start": 2230
+      },
+      {
+        "length": 32,
+        "start": 2526
+      }
+    ]
+  }
+}

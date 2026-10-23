@@ -1,0 +1,425 @@
+{
+  "format": "yunipals-production-qualified-source-health-snapshot-v1",
+  "capturedAt": "2026-10-23T13:26:34.020127+00:00",
+  "preparedAt": "2026-10-23T13:30:14.280171+00:00",
+  "qualification": {
+    "databaseWrites": 0,
+    "financialExpiresAt": "2026-11-19T18:00:00+00:00",
+    "financialWindowRenewed": false,
+    "format": "yunipals-source6-normal-proxy-requalification-v1",
+    "freeOnly": true,
+    "nativeCaughtUpClaimed": false,
+    "normalOperationalRuntime": "infinity",
+    "operatorSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "originalRuntimeReceiptSha256": "e0772a5a895626690ca5bb221ab653bf5c88f4caa3ca0ebeb189985d6cda157f",
+    "originalWholeValidationPassed": false,
+    "paidAuthority": false,
+    "providerRpcRequests": 0,
+    "qualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "runtime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    },
+    "serviceChanges": 0,
+    "sourceRestarted": false,
+    "validated": true
+  },
+  "runtime": {
+    "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "pid": 716994,
+    "startMonotonicMicroseconds": 66117947533239,
+    "startTicks": 6611794751
+  },
+  "native": {
+    "buildId": "bf4939b3ff",
+    "catalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+    "checkpoints": [
+      {
+        "blockTimestamp": 1792690499,
+        "chain": 1,
+        "completeBlock": 26249684
+      },
+      {
+        "blockTimestamp": 1780046506,
+        "chain": 56,
+        "completeBlock": 101089566
+      },
+      {
+        "blockTimestamp": 1792690983,
+        "chain": 137,
+        "completeBlock": 95990408
+      },
+      {
+        "blockTimestamp": 1792691223,
+        "chain": 8453,
+        "completeBlock": 52950938
+      }
+    ],
+    "meta": {
+      "build": "bf4939b3ff",
+      "heartbeatAtMs": "1792761986577",
+      "locked": "1",
+      "observedAtMs": "1792761994015",
+      "ready": "0"
+    },
+    "schema": "unified_shadow_20261020_7e7375b0"
+  },
+  "resources": {
+    "memoryCurrentBytes": 402530304,
+    "memoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "memoryMaxBytes": 6442450944,
+    "rootFreeBytes": 45098864640
+  },
+  "financial": {
+    "authority": {
+      "activePermits": 0,
+      "profile": true,
+      "profilePermitRows": 2
+    },
+    "paidAuthority": false,
+    "policyChanged": false,
+    "profile": {
+      "enabled": true,
+      "expiresAt": "2026-11-19T18:00:00+00:00",
+      "manifest": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+      "profileId": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+      "scope": "yunipals-opensea"
+    }
+  },
+  "historicalPaidPermits": [
+    {
+      "chainId": 56,
+      "enabled": false,
+      "expiresAt": "2026-10-22T04:18:43.731762+00:00",
+      "maximumCu": "16287000",
+      "spentCu": "2615240"
+    },
+    {
+      "chainId": 8453,
+      "enabled": false,
+      "expiresAt": "2026-10-22T04:18:43.731762+00:00",
+      "maximumCu": "3000000",
+      "spentCu": "1205660"
+    }
+  ],
+  "proxies": {
+    "base": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 13,
+      "definitionsSha256": "c211ed8d96ce59499ce69ebfcc9449a14ad1d64e920319513dd876d5c777bdbd",
+      "invocation": "3b9d328b83ac4d5092014dc46d1816bb",
+      "pid": "1437936"
+    },
+    "bnb": {
+      "commandSha256": "da5ffc67d3775d60ffa20b457da0487983a056edc7d1acd41757330bc752f6a9",
+      "definitionCount": 12,
+      "definitionsSha256": "0f8b7c286baf8da043ac03dd7532f04d4e508c29a89d3ddc0444ed3b23c86795",
+      "invocation": "98fbcb89089c412a9d106e195b0a16a5",
+      "pid": "1437937"
+    },
+    "ethereum": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 9,
+      "definitionsSha256": "6bc6cb648b7d73816e8559781d9a730e0de08ecdff06dae4f009d92045a4b226",
+      "invocation": "27bf6e46b2d44c519511278840891fd3",
+      "pid": "1437938"
+    },
+    "polygon": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 9,
+      "definitionsSha256": "3b5ebc5425bdb8c0e983d0cfd96c7aa00d79e7f9c2e6fdc417c0267656b6aa83",
+      "invocation": "3cfae093ac7649b087c2f76b073850b3",
+      "pid": "1437939"
+    }
+  },
+  "nativeProgressAssessment": {
+    "currentBnbCompleteBlock": 101089566,
+    "fixedHistoricalRange": {
+      "startBlock": 7579200,
+      "endBlock": 129172539,
+      "percent": 76.904
+    },
+    "comparisonObservedAt": "2026-10-23T12:09:53.412002+00:00",
+    "comparisonBnbCompleteBlock": 98937535,
+    "comparisonSeconds": 4600.608,
+    "nativeBnbCheckpointAdvance": 2152031,
+    "nativeCompletedEventsDelta": 6.0,
+    "nativeApplicationAdvanceSincePriorSnapshotProven": true,
+    "lastCommittedRangeAt": "2026-10-23T12:27:21.286160+00:00",
+    "lastCommittedRange": [
+      101089274,
+      101090763
+    ],
+    "lastCommittedRangeEventCount": 6,
+    "fetchGaugeBnb": 102825936.0,
+    "fetchGaugeIsNotNativeCoverage": true,
+    "frameworkReady": false,
+    "nativeCaughtUpClaimed": false,
+    "assessment": "The original process committed an additional 2,152,031 BNB blocks and six native events since the 12:09 snapshot without restarting. Its latest observed native commit was 12:27:21 UTC; later fetch gauge progress is separate from committed coverage. The latest 100 same-invocation messages are informational with no fixed fatal/native-failure category, but this bounded tail is not an exhaustive incident audit. No restart is indicated or performed by this observation."
+  },
+  "boundedNativeDetail": {
+    "databaseWrites": 0,
+    "format": "yunipals-shared-native-consumer-readonly-v1",
+    "lastNativeCommitLog": {
+      "completed": true,
+      "rawMessagesExported": false,
+      "rows": [
+        {
+          "atMicroseconds": 1792758441286160,
+          "blockRange": [
+            101089274,
+            101090763
+          ],
+          "categories": [
+            "nativeRangeCommitted"
+          ],
+          "chain": "bnb",
+          "event_count": 6
+        }
+      ]
+    },
+    "nativeMetrics": {
+      "aggregates": {
+        "ponder_indexing_cache_query_duration_count": {
+          "all": 36493.0
+        },
+        "ponder_indexing_cache_query_duration_sum": {
+          "all": 122938.34487884214
+        },
+        "ponder_indexing_cache_requests_total": {
+          "all": 60760.0
+        },
+        "ponder_indexing_completed_events": {
+          "all": 27684.0
+        },
+        "ponder_indexing_function_duration_count": {
+          "all": 27684.0
+        },
+        "ponder_indexing_function_duration_sum": {
+          "all": 64310.276626023704
+        },
+        "ponder_indexing_store_queries_total": {
+          "all": 120687.0
+        },
+        "ponder_indexing_store_raw_sql_duration_count": {
+          "all": 0.0
+        },
+        "ponder_indexing_store_raw_sql_duration_sum": {
+          "all": 0.0
+        }
+      },
+      "gauges": [
+        {
+          "labels": {
+            "group": "extract"
+          },
+          "name": "ponder_historical_concurrency_group_duration",
+          "value": 67051664.03562596
+        },
+        {
+          "labels": {
+            "group": "transform"
+          },
+          "name": "ponder_historical_concurrency_group_duration",
+          "value": 104696.1122400033
+        },
+        {
+          "labels": {
+            "step": "format"
+          },
+          "name": "ponder_historical_extract_duration",
+          "value": 93.08537727258954
+        },
+        {
+          "labels": {
+            "step": "build"
+          },
+          "name": "ponder_historical_extract_duration",
+          "value": 359.95418095971763
+        },
+        {
+          "labels": {
+            "step": "decode"
+          },
+          "name": "ponder_historical_extract_duration",
+          "value": 227.6806309685544
+        },
+        {
+          "labels": {
+            "step": "prefetch"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 661.5797319775011
+        },
+        {
+          "labels": {
+            "step": "begin"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 7646.4424640311845
+        },
+        {
+          "labels": {
+            "step": "index"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 65485.135010928534
+        },
+        {
+          "labels": {
+            "step": "load"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 27003.15867103772
+        },
+        {
+          "labels": {
+            "step": "finalize"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 2302.576127010687
+        },
+        {
+          "labels": {
+            "step": "commit"
+          },
+          "name": "ponder_historical_transform_duration",
+          "value": 887.1047190475201
+        },
+        {
+          "labels": {
+            "chain": "bnb"
+          },
+          "name": "ponder_indexing_timestamp",
+          "value": 1780046506.0
+        },
+        {
+          "labels": {
+            "chain": "mainnet"
+          },
+          "name": "ponder_indexing_timestamp",
+          "value": 1792688087.0
+        },
+        {
+          "labels": {
+            "chain": "polygon"
+          },
+          "name": "ponder_indexing_timestamp",
+          "value": 1792688583.0
+        },
+        {
+          "labels": {
+            "chain": "base"
+          },
+          "name": "ponder_indexing_timestamp",
+          "value": 1792690409.0
+        },
+        {
+          "labels": {
+            "chain": "bnb"
+          },
+          "name": "ponder_sync_block",
+          "value": 102825936.0
+        },
+        {
+          "labels": {
+            "chain": "mainnet"
+          },
+          "name": "ponder_sync_block",
+          "value": 26249684.0
+        },
+        {
+          "labels": {
+            "chain": "polygon"
+          },
+          "name": "ponder_sync_block",
+          "value": 95990408.0
+        },
+        {
+          "labels": {
+            "chain": "base"
+          },
+          "name": "ponder_sync_block",
+          "value": 52950938.0
+        },
+        {
+          "labels": {
+            "chain": "bnb"
+          },
+          "name": "ponder_sync_block_timestamp",
+          "value": 1780046506.0
+        },
+        {
+          "labels": {
+            "chain": "mainnet"
+          },
+          "name": "ponder_sync_block_timestamp",
+          "value": 1792689851.0
+        },
+        {
+          "labels": {
+            "chain": "polygon"
+          },
+          "name": "ponder_sync_block_timestamp",
+          "value": 1792690868.0
+        },
+        {
+          "labels": {
+            "chain": "base"
+          },
+          "name": "ponder_sync_block_timestamp",
+          "value": 1792690399.0
+        }
+      ]
+    },
+    "observedAt": "2026-10-23T13:27:42.399619+00:00",
+    "providerCalls": 0,
+    "recentNativeErrors": {
+      "completed": false,
+      "returncode": 1,
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runtime": {
+      "ActiveState": "active",
+      "InvocationID": "c3463c9a2e1240e8890e318ba1360cf4",
+      "MainPID": "716994",
+      "NRestarts": "0"
+    },
+    "serviceActions": 0
+  },
+  "boundedRecentJournal": {
+    "format": "yunipals-bounded-native-journal-classification-v1",
+    "observedAt": "2026-10-23T13:29:10.336280+00:00",
+    "sameInvocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "rows": 100,
+    "firstTimestampMicroseconds": 1792762136542673,
+    "latestTimestampMicroseconds": 1792762149871108,
+    "categoryCounts": {},
+    "priorityCounts": {
+      "6": 100
+    },
+    "rawMessagesExported": false,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "databaseWrites": 0
+  },
+  "detailCaptureSha256": "1fd26ab93bdde46921a4adae4233bfdd72e65b04c39e5ddbb9241d2c8f9f043c",
+  "originalWholeNormalValidatorClaimedPassed": false,
+  "nfbExclusionPolicyChanged": false,
+  "receiptProbeExecutionNotPartOfThisSnapshot": true,
+  "productionActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "productSourceEdits": 0,
+  "newPaidAllowanceCu": 0
+}

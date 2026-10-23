@@ -109,39 +109,66 @@ const ids = {
   action: "virtual:booster-opening-action.tsx"
 };
 const fixture = `
-import {encodeEventTopics,encodeAbiParameters,parseAbiParameters} from 'viem';
+import {encodeEventTopics,encodeAbiParameters,encodeFunctionData,parseAbiParameters} from 'viem';
 import {boosterPacksAbi} from '@protopals/yunipals-market-core/boosterAbi';
+import {boosterPurchaseAbi} from '/src/lib/boosterPurchase';
+import {readBoosterTransactions as readStored,saveBoosterTransaction} from '/src/lib/boosters.ts';
 export const owner='0xB3883Cd96d72B08b8226452305A28D65974a3727';
 const registry='0x1111111111111111111111111111111111111111';
 const engine='0x2222222222222222222222222222222222222222';
 const monsters='0x3333333333333333333333333333333333333333';
-const hash='0x'+'a'.repeat(64),zero='0x'+'0'.repeat(64);
+const hash='0x'+'a'.repeat(64),zero='0x'+'0'.repeat(64),blockHash='0x'+'b'.repeat(64);
 export const scenario=()=>new URLSearchParams(location.search).get('scenario')||'revealed';
+const multi=()=>scenario().startsWith('multi');
+const requestIds=()=>multi()?['9','250','31']:['9'];
+const originalId=(id)=>multi()?({'9':'7','250':'21','31':'99'}[id]):'7';
+const fulfilled=()=>window.__completeMulti||sessionStorage.getItem('fixture-multi-fulfilled')==='yes';
 const fixturePack={id:'fixture-pack-2',packTypeId:'2',registry,engine,manifestUri:'ipfs://fixture-standard',totalVariants:264,mintsPerInterval:1,intervalSeconds:'86400',maxBatch:scenario()==='daily-ten'?32:7,paymentToken:'0xe5a54a517cde8ed48a336b173044b1138aa2c1a3',price:'1000000000000000000',salesPaused:false};
 export const fixtureArtwork={name:'Fixture Yunidragon',image:'/__fixture-card.svg',attributes:{type:'Yunidragon',color:'Blue',horn:'Spiral',glitter:'No'},status:'ready',holo:null};
 export const boosterQueryKey=['booster-opening-local-fixture'];
 export const boosterAddresses=()=>({registry,engine,monsters});
 export const visibleBoosterTypes=(rows)=>rows;
-export const readBoosterTransactions=()=>scenario()==='empty'?[]:[{hash,kind:scenario()==='claim'?'claim':'open',cancelled:scenario()==='cancelled',submittedAt:1}];
+const fixtureStorageKey='yunipals/boosters/v1/8453/'+engine+'/'+owner.toLowerCase();
+if(sessionStorage.getItem('fixture-opening-scenario')!==scenario()){
+ localStorage.removeItem(fixtureStorageKey);sessionStorage.removeItem('fixture-multi-fulfilled');
+ sessionStorage.setItem('fixture-opening-scenario',scenario());
+}
+if(scenario()!=='empty'&&!readStored(owner,engine).length)saveBoosterTransaction(owner,engine,{
+ hash,kind:scenario()==='claim'?'claim':'open',cancelled:scenario()==='cancelled',
+ ...(multi()&&scenario()!=='multi-legacy'?{expectedRequestCount:3,packTypeId:'2',quantity:1}:{}),
+ ...(scenario()==='claim'?{expectedRequestCount:1,packTypeId:'2',quantity:3,originalId:'7'}:{})
+});
+export const readBoosterTransactions=()=>readStored(owner,engine);
 export const readBoosterTransactionReceipt=(read)=>read();
 export const fetchBoosterMonster=async(collection,tokenId)=>{(window.__openingMonsterFetches??=[]).push(tokenId);return{item:{tokenId,metadataUri:'fixture:'+tokenId,collection,isOriginal:tokenId==='7',owner}}};
 export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name});
 export const fetchBoosterOwner=async()=>{const selected=scenario(),daily=selected.startsWith('daily-'),credits=selected==='daily-ten'?10:selected==='daily-zero'?0:3;return{items:daily?[{id:'8453:'+monsters+':7',tokenId:'7',collection:monsters,engine,owner:selected==='daily-foreign'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-credits*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack}]:[],nextCursor:null,requestsPaused:selected==='daily-paused'}};
-export const fetchBoosterRequestMonsters=async()=>({items:(scenario()==='claim'?['17','41','99']:['7']).map(tokenId=>({tokenId,collection:monsters,requestKey:'8453:'+engine+':9',originalKey:'8453:'+monsters+':7',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId}))});
+export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:scenario()==='multi-incomplete'&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
 export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[fixturePack]});
 export const client={
- async readContract({functionName}){
+ async readContract({functionName,args}){
   if(functionName==='refundCredits')return 0n;
-  if(functionName==='getRequest')return {originalId:7n,quantity:scenario()==='claim'?3:1,status:scenario()==='pending'?1:scenario()==='recovery'?2:3,opening:scenario()!=='non-opening'&&scenario()!=='claim'};
+  if(functionName==='MAX_OPEN_PACKS')return 10;
+  if(functionName==='getRequest'){
+   const id=String(args[0]);let status=scenario()==='pending'?1:scenario()==='recovery'?2:3;
+   if(scenario()==='multi-pending'&&!fulfilled()&&id!=='9')status=1;
+   if(scenario()==='multi-recovery'&&!fulfilled()&&id==='250')status=2;
+   if(scenario()==='multi-forfeit'&&id==='31')status=4;
+   return {originalId:BigInt(originalId(id)),quantity:scenario()==='claim'?3:1,status,opening:scenario()!=='non-opening'&&scenario()!=='claim',payer:owner,paid:10n**18n,ruleHash:zero};
+  }
   throw Error('Unexpected local fixture read: '+functionName);
  },
  async getTransactionReceipt(){
   if(scenario()==='unconfirmed')return null;
-  if(scenario()==='reverted')return {status:'reverted',logs:[]};
-  const topics=encodeEventTopics({abi:boosterPacksAbi,eventName:'RequestCreated',args:{requestId:9n,originalId:7n,packTypeId:2n}});
-  const data=encodeAbiParameters(parseAbiParameters('address,uint32,bool,uint256,bytes32,uint32'),[owner,scenario()==='claim'?3:1,scenario()!=='claim',10n**18n,zero,900000]);
-  return {status:'success',logs:[{address:engine,topics,data}]};
+  if(scenario()==='reverted')return {status:'reverted',transactionHash:hash,blockHash,blockNumber:1234n,logs:[]};
+  let ids=requestIds();if(scenario()==='multi-missing')ids=ids.slice(0,2);if(scenario()==='multi-duplicate')ids=['9','9','31'];
+  const logs=ids.map((id,index)=>({address:engine,blockHash,blockNumber:1234n,transactionHash:hash,transactionIndex:0,logIndex:10+index,removed:false,
+   topics:encodeEventTopics({abi:boosterPacksAbi,eventName:'RequestCreated',args:{requestId:BigInt(id),originalId:BigInt(originalId(id)),packTypeId:2n}}),
+   data:encodeAbiParameters(parseAbiParameters('address,uint32,bool,uint256,bytes32,uint32'),[owner,scenario()==='claim'?3:1,scenario()!=='claim',10n**18n,zero,900000])}));
+  return {status:'success',transactionHash:hash,blockHash,blockNumber:1234n,logs};
  },
+ async getTransaction(){return{hash,to:engine,input:encodeFunctionData({abi:boosterPurchaseAbi,functionName:'openPacks',args:[2n,scenario()==='multi-wrong-count'?4:3,10n**18n,9999999999n]})};},
+ async getStorageAt(){return '0x'+'0'.repeat(24)+'92e2351a83b6c445c94d0b887259d2b940c82a5a';},
  async getBlock(){return{timestamp:1792740601n};}
 };`;
 const entry = `
@@ -155,6 +182,7 @@ import {BoosterPackSection} from '/src/pages/boosters/BoosterPackSection';
 import {fixtureArtwork,boosterAddresses} from '${ids.boosters}';
 import '/src/globals.css';
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
+window.__refreshBoosters=()=>query.invalidateQueries();
 function Harness(){
  const mode=new URLSearchParams(location.search).get('mode')||'opening';
  const [open,setOpen]=useState(false),[closed,setClosed]=useState(0);
@@ -167,7 +195,7 @@ const modules = {
   [ids.entry]: entry,
   [ids.boosters]: fixture,
   [ids.wagmi]: `import {owner,client} from '${ids.boosters}';export const useAccount=()=>({address:owner,isConnected:true,chainId:8453});export const usePublicClient=()=>client;`,
-  [ids.action]: `import React from 'react';export function BoosterActionButton({children,disabled,action}){return <button type="button" disabled={disabled} data-fixture-action={JSON.stringify(action)}>{children}</button>}`
+  [ids.action]: `import React from 'react';export function BoosterActionButton({children,disabled,action}){return <button type="button" disabled={disabled} data-fixture-action={JSON.stringify(action)} onClick={()=>{if(action?.kind==='recover'){window.__completeMulti=true;sessionStorage.setItem('fixture-multi-fulfilled','yes');window.__refreshBoosters?.();}}}>{children}</button>}`
 };
 const server = await createServer({
   root,
@@ -767,7 +795,7 @@ try {
         ["reverted", "Transaction reverted"],
         ["pending", "Awaiting randomness"],
         ["recovery", "Ready for recovery"],
-        ["non-opening", "Revealed"]
+        ["non-opening", "Request details unavailable"]
       ]) {
         await visit(`mode=transactions&scenario=${scenario}`);
         await page.getByText(status, { exact: true }).waitFor();
@@ -857,6 +885,217 @@ try {
         .getByRole("heading", { name: "Fixture Yunipal #17", exact: true })
         .waitFor();
       await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "One confirmed purchase transaction reveals all three exact originals through one wrapper and survives reload",
+    async () => {
+      await visit("mode=transactions&scenario=multi");
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .click();
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page
+        .getByRole("button", { name: "Rip pack seal", exact: true })
+        .focus();
+      await page.keyboard.press("Enter");
+      for (const [index, token] of ["7", "21", "99"].entries()) {
+        await waitStage("extracting");
+        assert.equal(
+          await page
+            .getByRole("button", { name: "Rip pack seal", exact: true })
+            .count(),
+          0
+        );
+        await page
+          .getByRole("button", { name: "Pull card upward", exact: true })
+          .focus();
+        await page.keyboard.press("Enter");
+        await waitStage("revealing");
+        await page
+          .getByRole("button", { name: "Reveal card", exact: true })
+          .focus();
+        await page.keyboard.press("Enter");
+        await waitStage("results");
+        await page
+          .getByRole("heading", {
+            name: `Fixture Yunipal #${token}`,
+            exact: true
+          })
+          .waitFor();
+        if (index < 2)
+          await page
+            .getByRole("button", { name: "Pull next card", exact: true })
+            .click();
+      }
+      assert.deepEqual(
+        await page.evaluate(() => [
+          ...new Set(window.__openingRequestCardFetches)
+        ]),
+        ["9", "250", "31"]
+      );
+      await page.getByRole("button", { name: "Done", exact: true }).click();
+      await page.reload();
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .waitFor();
+      const saved = await page.evaluate(() =>
+        JSON.parse(
+          localStorage.getItem(
+            [...Object.keys(localStorage)].find((key) =>
+              key.startsWith("yunipals/boosters/v1/8453/")
+            )
+          )
+        )
+      );
+      assert.equal(saved[0].expectedRequestCount, 3);
+      assert.equal(saved[0].quantity, 1);
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .click();
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Asynchronous partial fulfillment waits for every request across close/reload before one combined wrapper",
+    async () => {
+      await visit("mode=transactions&scenario=multi-pending");
+      await page.getByText("1 of 3 packs revealed", { exact: true }).waitFor();
+      await page
+        .getByRole("button", { name: "View pack progress", exact: true })
+        .click();
+      await page
+        .getByRole("heading", { name: "Your 3 packs", exact: true })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Rip pack seal", exact: true })
+          .count(),
+        0
+      );
+      await page.keyboard.press("Escape");
+      await page.reload();
+      await page.getByText("1 of 3 packs revealed", { exact: true }).waitFor();
+      await page.evaluate(() => {
+        window.__completeMulti = true;
+        sessionStorage.setItem("fixture-multi-fulfilled", "yes");
+        window.__refreshBoosters();
+      });
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .click();
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Recovery remains request-specific while the completed originals stay in the same wrapper",
+    async () => {
+      await visit("mode=transactions&scenario=multi-recovery");
+      await page
+        .getByRole("button", { name: "View pack progress", exact: true })
+        .click();
+      const finish = page
+        .getByRole("dialog", { name: "Your 3 packs", exact: true })
+        .getByRole("button", {
+          name: "Finish reveal · pack 2",
+          exact: true
+        });
+      await finish.waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Rip pack seal", exact: true })
+          .count(),
+        0
+      );
+      await finish.click();
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Forfeited requests are explicit and never invent a card or lose the two completed originals",
+    async () => {
+      await visit("mode=transactions&scenario=multi-forfeit");
+      await page
+        .getByRole("button", { name: "Reveal 2 Yunipals", exact: true })
+        .click();
+      await page
+        .getByRole("dialog", { name: "Your 3 packs", exact: true })
+        .getByRole("button", { name: "Open 2 revealed cards", exact: true })
+        .click();
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 2", { exact: true }).waitFor();
+      assert.deepEqual(
+        await page.evaluate(() => [
+          ...new Set(window.__openingRequestCardFetches)
+        ]),
+        ["9", "250"]
+      );
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Missing logs, duplicate requests and a wrong actual purchase count cannot open any wrapper",
+    async () => {
+      for (const scenario of [
+        "multi-missing",
+        "multi-duplicate",
+        "multi-wrong-count"
+      ]) {
+        await visit(`mode=transactions&scenario=${scenario}`);
+        await page
+          .getByText("Request details unavailable", { exact: true })
+          .waitFor();
+        assert.equal(
+          await page
+            .getByRole("button", {
+              name: /Reveal .*Yunipals|View pack progress/
+            })
+            .count(),
+          0
+        );
+        assert.equal(await dialog().count(), 0);
+      }
+    }
+  );
+  await run(
+    "Indexer delay preserves the whole group and legacy stored hashes recover their actual purchase count",
+    async () => {
+      await visit("mode=transactions&scenario=multi-incomplete");
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .click();
+      await page
+        .getByRole("heading", { name: "Your 3 packs", exact: true })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Rip pack seal", exact: true })
+          .count(),
+        0
+      );
+      await page.evaluate(() => {
+        window.__completeMulti = true;
+        sessionStorage.setItem("fixture-multi-fulfilled", "yes");
+        window.__refreshBoosters();
+      });
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+      await visit("mode=transactions&scenario=multi-legacy");
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .waitFor();
+      await page.reload();
+      await page
+        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .waitFor();
     }
   );
   await run(
