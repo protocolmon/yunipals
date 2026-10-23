@@ -1,0 +1,98 @@
+{
+  "format": "yunipals-ypal-owner-ui-independent-review-v1",
+  "reviewedAt": "2026-10-23T18:03:11.027909+00:00",
+  "verdict": "passed",
+  "openConcreteFindings": 0,
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-ypal-setup-ui.mjs",
+      "sha256": "2ee264d4d6f9de5d899106bb1629a3c241b71c8d5a29e113a20f8cbdbab200fe"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterYpalDeployment.test.ts",
+      "sha256": "970e6bc4e92758e33960ab6fd58ead52fa11e1bad37a29e8cbf1121553f50753"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterYpalDeployment.ts",
+      "sha256": "5ef118a9bb68080087bffad7f875e704bc99ea959ec7e6dbd38ac6ed6f233456"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/fixtures/ypal-approved-art-manifest.json",
+      "sha256": "79e85ccfa753bb81d8115a17e963f3b427e276f5e68b24d0a3ee284d85c3c2bf"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterYpalSetupPage.tsx",
+      "sha256": "97f6b8da8f7d7d79672615cbc6f22afa375d8ef6e023a467af055e31c672b27c"
+    }
+  ],
+  "package": {
+    "path": "apps/yunipals-home-web/public/boosters/ypal-fresh-launch-v1.json",
+    "sha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886",
+    "ypalProjectionMatchesFrozenDeploymentArtifactExactly": true,
+    "frozenYPALArtifactSha256": "fab7be912152379a9a51a5e82532547db46df2a4ae98603ff6a530d94840baa3"
+  },
+  "independentValidation": {
+    "helperControlsPassed": 12,
+    "actualComponentBrowserGroupsPassed": 13,
+    "browserErrors": [],
+    "unexpectedExternalRequests": [],
+    "actualOwnerExportAcceptedByBackendManifestFunction": true,
+    "exportFields": 19,
+    "exportReceipts": 10,
+    "evidence": [
+      {
+        "file": "/tmp/yunipals-ypal-owner-independent-helper-final-20261023.log",
+        "sha256": "f06360b67d4bac468affd8e94d34f6d00eabfca0f050bc5cfd1371f082d2255b"
+      },
+      {
+        "file": "/tmp/yunipals-ypal-owner-independent-browser-20261023.json",
+        "sha256": "67bb23decd0620c8104374a63f1044c556fa676378d38df468e00e6a8ac31a1c"
+      },
+      {
+        "file": "/tmp/yunipals-ypal-owner-independent-browser-20261023.log",
+        "sha256": "8f582429a2a1ba4c00e69567a9ccd3dd650941dfeb94637c8f8fc035ef4105b7"
+      },
+      {
+        "file": "/tmp/yunipals-ypal-owner-export-seam-20261023.mjs",
+        "sha256": "f32796d6fd943a7b1e19d305231e81d324d5aad1259a827f2d38c04a3a4286a8"
+      },
+      {
+        "file": "/tmp/yunipals-ypal-owner-export-seam-20261023.log",
+        "sha256": "61684444e27099b60cd269a4184999d317894a554e10bd0edd243c76b66a2c15"
+      }
+    ]
+  },
+  "confirmedBoundaries": [
+    "Seven deployments and three configuration/activation calls each require a fresh explicit review and wallet confirmation; no nonce or deployment address is predicted.",
+    "Confirmed receipt and transaction hash/block identity, canonical block headers, exact owner/chain/value/calldata and unique actual contract addresses determine the verified prefix.",
+    "PMON and self immutable runtime substitutions, complete implementation bytecode, ERC1967 slots, UUPS identity, all required owner roles, registry/NFT/engine/wrapper relationships, token branding/backing/burn/owner/lock and actual-address EIP712 domain are verified.",
+    "The only configured pack is fresh type1, priced at1YPAL with264 approved variants, one daily mint and unlimited supply; current catalog and complete rule calldata are compared before activation and export.",
+    "Current owner/account/chain/provider, review identity/version, expiry and mounted state are checked after deferred work and synchronously before wallet entry. Network/account away-and-back, dismissal and unmount scenarios make zero send attempts.",
+    "Saved hashes survive reload, pending transactions block new sends, only confirmed cancelled/reverted states may be explicitly cleared, and manual same-nonce recovery still requires the exact successful step transaction and current deployed state.",
+    "The canonical19-field export with all10 five-field receipt records is accepted by the backend manifest function; only a complete verified prefix can be exported.",
+    "Published artwork commitment is recomputed with the approved catalog and metadata path, and the NFT token-metadata base incorporates the actual fresh collection address."
+  ],
+  "relatedEvidence": [
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/owner-ui-preparation.json",
+      "sha256": "a0451a3469c2576715e451717b49a22db622d5d8eac665525e328e7f310dd05f"
+    },
+    {
+      "path": "contracts/ypal/evidence/preparation.json",
+      "sha256": "720d06757a16cf90daf6eff8d09e2fc3c90765225a539f78f6df52531df814b9"
+    }
+  ],
+  "actions": {
+    "productEdits": 0,
+    "productionActions": 0,
+    "realProviderCalls": 0,
+    "realWalletSignatures": 0,
+    "realTransactions": 0
+  },
+  "limits": [
+    "Browser and helper checks use synthetic local wallets, receipts and RPCs. This review does not establish a production deployment or fresh backend/indexer activation.",
+    "The backend check exercises its manifest-schema function only. Actual chain chronology/CREATE-address checks and source/reader admission remain the separate backend validator and owner workflow.",
+    "The token implementation was authored separately by this reviewer; its source/contract validation is recorded in its own package. This verdict is an independent review of the owner helper/page authored by another agent.",
+    "The unmount guard prevents future wallet entry, and does not attempt to cancel a wallet RPC already explicitly invoked."
+  ]
+}

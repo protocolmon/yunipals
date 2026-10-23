@@ -5,6 +5,7 @@ import { formatUnits, type Hex } from "viem";
 import { usePublicClient } from "wagmi";
 import type { BoosterType } from "@protopals/yunipals-market-core/boosters";
 
+import { environment } from "@/environment";
 import { boosterAddresses, boosterQueryKey } from "@/lib/boosters";
 import { readBoosterPurchaseLimit } from "@/lib/boosterPurchase";
 import { cn } from "@/lib/utils";
@@ -121,8 +122,8 @@ export function BoosterPurchaseOptions({
       )}
       <p className="mt-6 text-2xl font-bold text-ink" aria-live="polite">
         {pack.paymentToken.toLowerCase() ===
-        "0xe5a54a517cde8ed48a336b173044b1138aa2c1a3"
-          ? `${formatUnits(total, 18)} PROTO`
+        environment.boosterPaymentToken.toLowerCase()
+          ? `${formatUnits(total, 18)} ${environment.boosterPaymentSymbol}`
           : "See payment details in review"}
         <span className="block pt-1 text-sm font-normal text-muted">
           + ETH for randomness and network fees

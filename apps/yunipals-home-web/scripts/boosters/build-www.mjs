@@ -7,7 +7,10 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 const { values } = parseArgs({
-  options: { mode: { type: "string", default: "prebuilt" } }
+  options: {
+    mode: { type: "string", default: "prebuilt" },
+    "legacy-proto": { type: "boolean", default: false }
+  }
 });
 if (!["prebuilt", "vercel-cloud"].includes(values.mode))
   throw Error("Use prebuilt or vercel-cloud mode.");
@@ -25,6 +28,8 @@ const setupSha =
   "bc1ab30332108dc40db4b3f86b8ac6c1a0efff456555f40af486389afb305d6e";
 const standardSha =
   "56ed3b186acc69e38c04f3f7390a55eb267a1e10029f06de05b0450a0b4c8860";
+const ypalLaunchSha =
+  "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886";
 const child = spawnSync(
   process.execPath,
   [
@@ -37,6 +42,7 @@ const child = spawnSync(
     setupSha,
     "--standard-setup-sha",
     standardSha,
+    ...(values["legacy-proto"] ? [] : ["--ypal-launch-sha", ypalLaunchSha]),
     "--output",
     release
   ],
@@ -90,6 +96,7 @@ console.log(
     output,
     manifestSha256: createHash("sha256").update(manifest).digest("hex"),
     setupSha256: setupSha,
-    standardSetupSha256: standardSha
+    standardSetupSha256: standardSha,
+    ypalLaunchPackageSha256: values["legacy-proto"] ? null : ypalLaunchSha
   })
 );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Clock3, Layers3, Sparkles } from "lucide-react";
+import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
 import { type Hex } from "viem";
 import { useAccount } from "wagmi";
 import {
@@ -26,6 +26,8 @@ export function BoosterPackSection() {
     if (address) setOpening({ wallet: address, hash });
   };
   const deployment = boosterAddresses();
+  const freshPending =
+    environment.boosterLaunchId === "base-ypal-v1" && !deployment;
   const query = useQuery({
     queryKey: [...boosterQueryKey, "types"],
     queryFn: ({ signal }) => fetchBoosterTypes(signal),
@@ -61,10 +63,60 @@ export function BoosterPackSection() {
             </p>
           </div>
         </div>
-        {!deployment && (
+        {!deployment && !freshPending && (
           <p className="rounded-card border border-line bg-white p-6 text-muted">
             Coming soon. Pack traits and artwork are being prepared.
           </p>
+        )}
+        {freshPending && (
+          <article className="grid overflow-hidden rounded-card border border-line bg-white shadow-card md:grid-cols-2">
+            <div className="flex items-center justify-center bg-gradient-to-br from-lavender/60 via-lavender/20 to-sky/40 px-8 py-10 sm:py-12">
+              <img
+                src="/images/boosters/yunipals-pack-v1.png"
+                alt="Lavender Yunipals booster pack featuring a blue Yunidragon with a golden spiral horn"
+                width={1024}
+                height={1536}
+                fetchPriority="high"
+                draggable={false}
+                className="w-56 max-w-full drop-shadow-xl motion-safe:animate-float sm:w-72"
+              />
+            </div>
+            <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
+              <p className="mb-4 flex items-center gap-2 text-sm font-bold text-grape">
+                <Sparkles size={18} aria-hidden="true" />
+                Yunipals TCG
+              </p>
+              <h2 className="font-display text-2xl text-ink sm:text-3xl">
+                Yunipals booster pack
+              </h2>
+              <p className="mt-4 text-muted">
+                264 unique variants. One original unlocks another mint every 24
+                hours, with unused days saved. No duplicates within its
+                collection.
+              </p>
+              <p className="mt-6 text-2xl font-bold text-ink">
+                1 YPAL
+                <span className="block pt-1 text-sm font-normal text-muted">
+                  + ETH for randomness and network fees
+                </span>
+              </p>
+              <p className="mt-4 text-sm text-muted" role="status">
+                YPAL packs are being prepared. Purchases will open after
+                deployment.
+              </p>
+              <button
+                type="button"
+                onClick={() => setPreview(3)}
+                className="mt-6 flex w-fit items-center gap-2 rounded-full border border-grape/20 bg-lavender/20 px-5 py-3 text-sm font-bold text-grape transition-colors hover:bg-lavender/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+              >
+                <PlayCircle size={18} aria-hidden="true" />
+                Try the opening
+              </button>
+              <p className="mt-3 text-xs text-muted">
+                A preview only. No wallet or purchase needed.
+              </p>
+            </div>
+          </article>
         )}
         {deployment && query.isPending && (
           <div

@@ -19,6 +19,7 @@ const { values } = parseArgs({
     "full-app": { type: "boolean", default: false },
     "setup-sha": { type: "string" },
     "standard-setup-sha": { type: "string" },
+    "ypal-launch-sha": { type: "string" },
     output: {
       type: "string",
       default: "/tmp/yunipals-collection-booster-live-20261022"
@@ -48,6 +49,22 @@ const batchUpgradePackageSha =
   "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e";
 const permitUpgradePackageSha =
   "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc";
+const ypalLaunchPackageSha = values["ypal-launch-sha"];
+if (ypalLaunchPackageSha !== undefined) {
+  if (
+    !values["full-app"] ||
+    ypalLaunchPackageSha !==
+      "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886"
+  )
+    throw Error("Use the reviewed YPAL launch checksum with the full app.");
+  const ypal = await readFile(
+    join(app, "public/boosters/ypal-fresh-launch-v1.json")
+  );
+  if (sha(ypal) !== ypalLaunchPackageSha)
+    throw Error(
+      "The fresh YPAL launch package differs from the reviewed bytes."
+    );
+}
 if (values["full-app"]) {
   const metadataUpgrade = await readFile(
     join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
@@ -76,7 +93,7 @@ const deployment = JSON.parse(
     join(root, "docs/boosters/mainnet-smoke/deployment.confirmed.json")
   )
 );
-const addresses = {
+let addresses = {
   registry: deployment.contracts.registry.proxy,
   engine: deployment.contracts.engine.proxy,
   monsters: deployment.contracts.monsters.proxy
@@ -108,6 +125,20 @@ Object.assign(process.env, {
   // This is build configuration, never a browser-exposed VITE_* value.
   YUNIPALS_LICENSE_OUTPUT: join(output, "THIRD_PARTY_LICENSES.txt")
 });
+// Publish the fresh owner setup before any new address exists. The old test
+// deployment must not be presented as a YPAL purchase or collection.
+if (ypalLaunchPackageSha) {
+  addresses = { registry: "", engine: "", monsters: "" };
+  Object.assign(process.env, {
+    VITE_BOOSTER_LAUNCH_ID: "base-ypal-v1",
+    VITE_BOOSTER_PAYMENT_SYMBOL: "YPAL",
+    VITE_BOOSTER_PAYMENT_TOKEN: "",
+    VITE_BOOSTERS_ENABLED: "false",
+    VITE_BOOSTER_REGISTRY: "",
+    VITE_BOOSTER_ENGINE: "",
+    VITE_BOOSTER_MONSTERS: ""
+  });
+}
 // Preserve the main app's existing public service and feature configuration.
 // Only the temporary smoke-test preset disables unrelated sections.
 if (!values["full-app"]) {
@@ -122,6 +153,7 @@ await build({
   logLevel: "warn"
 });
 const assets = [
+  ...(ypalLaunchPackageSha ? ["boosters/ypal-fresh-launch-v1.json"] : []),
   "favicon.ico",
   "favicon-32x32.png",
   "icon-192.png",
@@ -197,6 +229,9 @@ const manifest = {
   arenaEnabled: values["full-app"],
   apiOrigin: process.env.VITE_YUNIPALS_INDEXER_URL,
   addresses,
+  boosterLaunchId: ypalLaunchPackageSha ? "base-ypal-v1" : "base-proto-v1",
+  boosterSalesConfigured: !ypalLaunchPackageSha,
+  ypalLaunchPackageSha256: ypalLaunchPackageSha ?? null,
   setupPackageSha256: values["setup-sha"],
   standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
   metadataUpgradePackageSha256: values["full-app"]

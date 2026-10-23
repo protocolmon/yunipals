@@ -36,6 +36,12 @@ const BoosterMetadataSetupPage = lazy(() =>
     default: module.BoosterMetadataSetupPage
   }))
 );
+const BoosterYpalSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterYpalSetupPage").then((module) => ({
+    default: module.BoosterYpalSetupPage
+  }))
+);
+const freshYpalLaunch = environment.boosterLaunchId === "base-ypal-v1";
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -152,24 +158,58 @@ function AppContent() {
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
           <Route
+            path="/boosters/setup/ypal"
+            element={<BoosterYpalSetupPage />}
+          />
+          <Route
             path="/boosters/setup"
-            element={<BoosterSetupPage key="smoke" />}
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterSetupPage key="smoke" />
+              )
+            }
           />
           <Route
             path="/boosters/setup/standard"
-            element={<BoosterSetupPage key="standard" kind="standard" />}
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterSetupPage key="standard" kind="standard" />
+              )
+            }
           />
           <Route
             path="/boosters/setup/batch"
-            element={<BoosterBatchSetupPage />}
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterBatchSetupPage />
+              )
+            }
           />
           <Route
             path="/boosters/setup/permit"
-            element={<BoosterPermitSetupPage />}
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterPermitSetupPage />
+              )
+            }
           />
           <Route
             path="/boosters/setup/metadata"
-            element={<BoosterMetadataSetupPage />}
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterMetadataSetupPage />
+              )
+            }
           />
           <Route
             path="/monsters/:collection/:tokenId"

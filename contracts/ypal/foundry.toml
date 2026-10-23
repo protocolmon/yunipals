@@ -1,0 +1,29 @@
+[profile.default]
+src = "src"
+test = "test"
+solc_version = "0.8.28"
+evm_version = "paris"
+optimizer = true
+optimizer_runs = 1
+via_ir = true
+bytecode_hash = "none"
+extra_output = ["storageLayout"]
+libs = ["../boosters/lib"]
+remappings = ["solady/=verified-source/solady/", "@openzeppelin/contracts/=verified-source/@openzeppelin/contracts/", "forge-std/=../boosters/lib/forge-std/src/"]
+fs_permissions = [{ access = "read", path = "./out" }]
+
+[profile.default.fuzz]
+runs = 256
+
+[profile.integration]
+allow_paths = ["../boosters/src"]
+src = "integration"
+test = "integration"
+out = "out-integration"
+cache_path = "cache-integration"
+solc_version = "0.8.30"
+evm_version = "cancun"
+remappings = ["boosters-src/=../boosters/src/", "@openzeppelin/contracts/=../boosters/lib/openzeppelin/", "@openzeppelin/contracts-upgradeable/=../boosters/lib/openzeppelin-upgradeable/", "@chainlink/contracts/=../boosters/lib/chainlink/", "forge-std/=../boosters/lib/forge-std/src/"]
+
+[fmt]
+line_length = 110

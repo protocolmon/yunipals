@@ -1,4 +1,7 @@
 import { ChevronDown } from "lucide-react";
+import { environment } from "@/environment";
+
+const paymentSymbol = environment.boosterPaymentSymbol;
 
 const questions = [
   {
@@ -8,13 +11,11 @@ const questions = [
   },
   {
     question: "Can I open more than one pack at once?",
-    answer:
-      "Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total PROTO price and randomness fee. Where supported, sign a gas-free approval that’s included in the opening transaction. A separate, reusable approval is also available."
+    answer: `Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total ${paymentSymbol} price and randomness fee. Where supported, sign a gas-free approval that’s included in the opening transaction. A separate, reusable approval is also available.`
   },
   {
     question: "How much does it cost?",
-    answer:
-      "A pack costs 1 PROTO on Base, plus a small amount of ETH for Chainlink randomness (VRF) and network fees. The full 1 PROTO is burned when your opening request succeeds. You don’t pay PROTO again for daily mints—just ETH for randomness and network fees when you claim."
+    answer: `A pack costs 1 ${paymentSymbol} on Base, plus a small amount of ETH for Chainlink randomness (VRF) and network fees. The full 1 ${paymentSymbol} is burned when your opening request succeeds. You don’t pay ${paymentSymbol} again for daily mints—just ETH for randomness and network fees when you claim.`
   },
   {
     question: "Do I have to mint every day?",
@@ -47,6 +48,14 @@ const questions = [
       "These Yunipals appear in your collection and can be transferred between wallets. They aren’t eligible for Arena and aren’t included in Yunipals marketplace features."
   }
 ];
+
+if (environment.boosterLaunchId === "base-ypal-v1") {
+  questions.splice(3, 0, {
+    question: "What is YPAL?",
+    answer:
+      "YPAL (Yunipals) wraps PMON one-for-one on Base: wrapping 1 PMON gives you 1 YPAL, and unused YPAL can be unwrapped back to PMON. When a pack burns YPAL, its backing PMON is sent to the burn destination. YPAL is a separate token from PROTO."
+  });
+}
 
 export function BoosterFAQ() {
   return (

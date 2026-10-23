@@ -11,7 +11,10 @@ import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
 const navigation = [
   { label: "Collection", to: "/" },
-  ...(environment.boostersEnabled ? [{ label: "Packs", to: "/boosters" }] : []),
+  ...(environment.boostersEnabled ||
+  environment.boosterLaunchId === "base-ypal-v1"
+    ? [{ label: "Packs", to: "/boosters" }]
+    : []),
   { label: "Leaderboard", to: "/leaderboard" },
   { label: "Arena", to: "/arena" }
 ];

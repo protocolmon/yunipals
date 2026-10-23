@@ -4,6 +4,7 @@ import { useAccount, usePublicClient } from "wagmi";
 import { Clock3, Layers3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Hex } from "viem";
+import { environment } from "@/environment";
 import {
   accruedBoosterCredits,
   boosterBatchSize,
@@ -166,8 +167,8 @@ export function BoosterClaimPacks({
                 ) : quantity > 0 ? (
                   <>
                     <p className="mt-3 text-sm text-muted">
-                      No PROTO needed. Pay only ETH for randomness and network
-                      fees.
+                      No {environment.boosterPaymentSymbol} needed. Pay only ETH
+                      for randomness and network fees.
                     </p>
                     {claimable > BigInt(quantity) && (
                       <p className="mt-2 text-sm text-muted">

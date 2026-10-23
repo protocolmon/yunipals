@@ -1,0 +1,112 @@
+{
+  "format": "yunipals-ypal-validation-v1",
+  "validatedAt": "2026-10-23T17:46:22.240751+00:00",
+  "status": "passed",
+  "deploymentArtifactSha256": "fab7be912152379a9a51a5e82532547db46df2a4ae98603ff6a530d94840baa3",
+  "candidateSourceSha256": "a416138f3045d1109d66d7ffb64e1c64327ca77d96fb8231031facb11eb39394",
+  "localUnitTests": {
+    "passed": 13,
+    "failed": 0,
+    "fuzzRuns": 256,
+    "differentialBaseline": "extracted original PROTO"
+  },
+  "artifactControls": {
+    "passed": 4,
+    "failed": 0
+  },
+  "forkIntegration": {
+    "passed": 2,
+    "failed": 0,
+    "blockNumber": 52993724,
+    "chainId": 8453,
+    "rpc": "https://mainnet.base.org",
+    "providerCredentialsUsed": false,
+    "transactionsBroadcast": 0,
+    "deploymentsOnlyInForkMemory": true,
+    "pmonFunding": "synthetic local balance fixture",
+    "wrapperAndCoordinator": "actual pinned Base code/storage, no mockCall replacements",
+    "callbacks": "explicit injected wrapper callbacks, not live VRF fulfillments",
+    "purchaseCountPerCase": 3,
+    "cases": [
+      "fresh exact-price YPAL permit",
+      "front-run/consumed permit plus exact existing allowance"
+    ],
+    "packTypes": 1,
+    "packPriceYPAL": "1",
+    "variants": 264,
+    "dailyMints": 1,
+    "maxOpenPacks": 10,
+    "maxSavedPulls": 7,
+    "backingBurnVerified": true,
+    "pmonTotalSupplyUnchanged": true
+  },
+  "compilation": {
+    "originalCompiler": {
+      "version": "v0.8.28+commit.7893614a",
+      "nativeSha256": "9a0fb7e0db2c0641dbae1c5cc645dc686820c83af516226abb1c0a2f76636f25",
+      "settings": {
+        "optimizer": {
+          "enabled": true,
+          "runs": 1
+        },
+        "viaIR": true,
+        "metadata": {
+          "bytecodeHash": "none"
+        },
+        "evmVersion": "paris",
+        "outputSelection": {
+          "*": {
+            "*": [
+              "evm.bytecode",
+              "evm.deployedBytecode",
+              "devdoc",
+              "userdoc",
+              "metadata",
+              "abi",
+              "storageLayout"
+            ],
+            "": [
+              "ast"
+            ]
+          }
+        }
+      }
+    },
+    "completeAbiEntriesUnchanged": 69,
+    "nineDependencySourcesByteExact": true,
+    "mainSourceBrandingOnly": true,
+    "compilerStorageRowsUnchanged": true,
+    "forgeCreationExactlyDeploymentArtifact": true,
+    "forgeRuntimeExactlyDeploymentArtifact": true,
+    "creationBytes": 5496,
+    "runtimeBytes": 5161
+  },
+  "logs": [
+    {
+      "file": "/tmp/yunipals-ypal-unit-tests-final-20261023.log",
+      "sha256": "dd81539fa882cdedfd93323f80ba1abd54e990457881f7d29e18fee029c9d68b",
+      "passed": 13
+    },
+    {
+      "file": "/tmp/yunipals-ypal-real-pmon-fork-final-20261023.log",
+      "sha256": "70b8b5e8c446ff24bc414086c7b7aa6cfb24388a75a636b22e5ae2dcf3280f3e",
+      "passed": 2
+    },
+    {
+      "file": "/tmp/yunipals-ypal-artifact-controls-20261023.log",
+      "sha256": "62c4cf05986198ce771fd676f8836076d72d2f8dc62a26ae189426588bfec11d",
+      "passed": 4
+    },
+    {
+      "file": "/tmp/yunipals-ypal-reproducible-build-final-20261023.log",
+      "sha256": "79239f6d8893e1d2b4f0b93ff697e2bf225b0dc3d2b430b7bcaab2cc153b31be"
+    }
+  ],
+  "limits": [
+    "The fork tests do not establish a mainnet deployment, live purchase, live VRF callback, or an elapsed-day claim.",
+    "The production owner must directly deploy YPAL to retain creator ownership and verify actual constructor state/runtime.",
+    "The fresh booster stack, public pack configuration and frontend activation are separate owner operations."
+  ],
+  "productionActions": 0,
+  "broadcasts": 0
+}

@@ -4,6 +4,18 @@ Last checked: **23 October 2026, 19:27 CEST (Berlin)**.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
+**Latest pack decision:** restart with fresh **YPAL (Yunipals)** and fresh pack/NFT contracts, ignoring the old PROTO test openings. One unlimited public type, no capped test pack. The earlier delivered PROTO launch below is historical; it is not proof that the new YPAL deployment is live. [Fresh launch scope](../boosters/ypal-fresh-launch-2026-10-23/README.md).
+
+## Fresh YPAL rollout
+
+- [x] Confirm fresh token, registry, engine and NFT collection; retain 1 YPAL, 264 variants, one daily credit, no boost and up to ten originals per transaction.
+- [x] Prepare the exact PROTO-derived YPAL source with original dependencies/compiler, 13 contract tests, differential fuzzing, four artifact controls and two real-PMON local fork purchase cases. No new mainnet deployment is claimed.
+- [x] Freeze one unsigned ten-action public deployment package, `12bad482…`, with receipt-derived dependencies, per-NFT metadata and one unlimited pack. No predicted future addresses or test type.
+- [ ] Finish and publish the owner setup page, then observe the owner's actual deployment/configuration receipts.
+- [ ] Verify the deployed token, implementations and proxies on BaseScan.
+- [ ] Bind a new launch schema, API, artwork queue and www collection to the fresh deployment. Hide old PROTO history and purchasing; retain OG and shared BNB replay.
+- [ ] Update the final shared-source manifest and handover proofs for the new active contracts, then retire its temporary source after native acceptance.
+
 ## Delivered
 
 - [x] Restore the public collection and verify desktop/mobile viewing.
@@ -84,11 +96,7 @@ Last checked: **23 October 2026, 19:27 CEST (Berlin)**.
 
 ## Waiting or deferred
 
-- [ ] **Owner activates the permit upgrade:** sign implementation deployment and proxy upgrade on the separate [permit setup page](https://www.yunipals.com/boosters/setup/permit). The unsigned package is `ee7eb521…`; it upgrades the current EBA implementation and adds permit support without reconfiguring pack types. The fresh Base check confirms the existing implementation, owner role, unchanged dependencies and actual PROTO permit domain. [Preflight](../boosters/permit-engine-upgrade-2026-10-23/mainnet-preflight.json). Until activation, the live separate-approval flow remains available. First genuine mainnet permit purchase and callback, then BaseScan verification of the actual deployed implementation, remain unobserved.
-- [ ] **First genuine multi-pack purchase and reveal:** the owner deployment and upgrade are complete. Approved implementation `0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471` is installed, its ten-pack limit and existing contract links are verified, and the actual public selector enables multiple packs and updates prices. BaseScan confirms full matching source/ABI/settings and the current proxy association. [Activation](../boosters/batch-engine-upgrade-2026-10-23/mainnet-activation.json), [explorer verification](../boosters/batch-engine-upgrade-2026-10-23/verification/basescan-results.json). A real batch purchase, all callbacks and one-wrapper reveal still need their first observation; demo preview does not establish that.
-- [ ] **Owner activates per-NFT birth metadata:** the actual timestamp API and [owner setup page](https://www.yunipals.com/boosters/setup/metadata) are live. Original #1 returns Birth day 0 and mint time 22 October 2026, 19:33:29 CEST with unchanged approved artwork. Contract/storage review and 62 ordinary tests, 35 birth-API cases, 25 owner-helper cases and seven owner-browser controls pass. The API's catalog-name error was corrected and recorded; the exact required journal SELECT is admitted. **Only the wallet-signed implementation deployment and atomic upgrade remain** for tokenURI activation. Existing NFT tokenURI values still use shared variant metadata until those signatures.
-- [ ] **First genuine daily mainnet claim:** owner test after **23 October 2026, 19:33:29 CEST (Berlin)**. The elapsed-time requirement cannot be established by a fork test.
-- [ ] Genuine accumulated-batch mainnet observations. Existing fork tests cover the rules, but elapsed live days remain separate evidence.
+- The superseded PROTO permit/metadata upgrades and old elapsed-day/batch observations are archived. The user chose a fresh YPAL stack and no additional test pack; their old setup signatures are no longer requested. Fresh permit and per-NFT metadata support are included in the new deployment package above.
 - [ ] **Unattended artwork generation:** the durable artwork queue runs, but new variant images currently require manual generation and review. An unattended provider worker remains unconfigured; missing images can show as pending.
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.

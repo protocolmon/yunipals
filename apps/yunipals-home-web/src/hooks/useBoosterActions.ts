@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { environment } from "@/environment";
 import {
   BaseError,
   encodeFunctionData,
@@ -248,7 +249,7 @@ export function useBoosterActions() {
       let tokenPrice = 0n;
       let tokenBalance: bigint | null = null;
       let approvalAmount = 0n;
-      let tokenSymbol = "PROTO";
+      let tokenSymbol = environment.boosterPaymentSymbol;
       let tokenDecimals = 18;
       let approval = false;
       let permit: BoosterPermit | null = null;
