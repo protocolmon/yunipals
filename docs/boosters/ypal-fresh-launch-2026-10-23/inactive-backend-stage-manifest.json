@@ -1,0 +1,100 @@
+{
+  "format": "yunipals-ypal-inactive-backend-stage-v1",
+  "inputRoot": "/var/backups/yunipals-ypal-backend-input-v1-20261023",
+  "operationsRoot": "/opt/yunipals-unified/operations/free-replay-20261020",
+  "files": [
+    {
+      "path": "artwork-manifest.json",
+      "source": "docs/boosters/ypal-fresh-launch-2026-10-23/backend-approved-artwork-manifest.json",
+      "sha256": "79e85ccfa753bb81d8115a17e963f3b427e276f5e68b24d0a3ee284d85c3c2bf",
+      "bytes": 22818,
+      "mode": "0o600",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/artwork-manifest.json"
+    },
+    {
+      "path": "confirmed.json",
+      "source": "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json",
+      "sha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+      "bytes": 4566,
+      "mode": "0o600",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/confirmed.json"
+    },
+    {
+      "path": "launch.unsigned.json",
+      "source": "apps/yunipals-home-web/public/boosters/ypal-fresh-launch-v1.json",
+      "sha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886",
+      "bytes": 233001,
+      "mode": "0o600",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/launch.unsigned.json"
+    },
+    {
+      "path": "operations/ypal-old-runtime-inventory-v1.py",
+      "source": "ops/booster-launch/ypal-old-runtime-inventory-v1.py",
+      "sha256": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b",
+      "bytes": 18969,
+      "mode": "0o600",
+      "destinationRoot": "operationsRoot",
+      "destination": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-old-runtime-inventory-v1.py"
+    },
+    {
+      "path": "public/ops/booster-launch/ypal-backend-prepare-v1.mjs",
+      "source": "ops/booster-launch/ypal-backend-prepare-v1.mjs",
+      "sha256": "94b78e09d3e5d845229a4ea8afdc481cd17b744e1b6bd9f070cb3fe9aa09a371",
+      "bytes": 29122,
+      "mode": "0o644",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/public/ops/booster-launch/ypal-backend-prepare-v1.mjs"
+    },
+    {
+      "path": "public/ops/booster-launch/ypal-backend-qualification-v1.mjs",
+      "source": "ops/booster-launch/ypal-backend-qualification-v1.mjs",
+      "sha256": "dcb7c8af69db9aa7fcd4b0a17efb5f3e1c1ad9cd85c9994aa1f9433bd3308c78",
+      "bytes": 8676,
+      "mode": "0o644",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/public/ops/booster-launch/ypal-backend-qualification-v1.mjs"
+    },
+    {
+      "path": "public/package.json",
+      "source": null,
+      "sha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+      "bytes": 18,
+      "mode": "0o644",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/public/package.json"
+    },
+    {
+      "path": "public/packages/yunipals-market-core/src/boosterAbi.ts",
+      "source": "packages/yunipals-market-core/src/boosterAbi.ts",
+      "sha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba",
+      "bytes": 44016,
+      "mode": "0o644",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/public/packages/yunipals-market-core/src/boosterAbi.ts"
+    },
+    {
+      "path": "ypal-backend-owner-v1.py",
+      "source": "ops/booster-launch/ypal-backend-owner-v1.py",
+      "sha256": "a1033872bb5c8a5c434ec5bfae4f3d99629c3e2b417de2e1d76e0fa48623aba1",
+      "bytes": 41891,
+      "mode": "0o600",
+      "destinationRoot": "inputRoot",
+      "destination": "/var/backups/yunipals-ypal-backend-input-v1-20261023/ypal-backend-owner-v1.py"
+    }
+  ],
+  "requiredRootOwnedSymlink": {
+    "path": "public/node_modules",
+    "target": "/opt/yunipals-unified/booster-api-releases/41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73/node_modules",
+    "notIncludedInArchive": true
+  },
+  "profileMustAlreadyBeStaged": {
+    "file": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-rpc-19212/profile.json",
+    "sha256": "0e19f87a728a0150fae82e6125436739864edd86a6b5b1ecdfcd3503e70e0e05"
+  },
+  "serviceOrDatabaseActions": 0,
+  "publicSourceOnly": true,
+  "noOverwrite": true
+}

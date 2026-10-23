@@ -1,0 +1,42 @@
+{
+  "actualFutureReceiptSha256": null,
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "files": {
+    "docs/boosters/ypal-fresh-launch-2026-10-23/rpc-proxy-readonly-baseline.json": "a162fe9e97682397c160c5bdf5b8d1c16a1318fdeaa28579d85d44e489fbfb58",
+    "ops/booster-launch/ypal-rpc-admission-v1.md": "039ca042ad2c6788d694fde88a9f61ae591568d495611e1dc99caf5b9ba3a40e",
+    "ops/booster-launch/ypal-rpc-admission-v1.py": "d9e0cafdfcb817f7835d3856b920013a51b967defa17f239f76ee0416329093e",
+    "ops/booster-launch/ypal-rpc-admission-v1.test.py": "e9a6e6a5a5896400f8811c0da65be39f4050c63b76ab836c24a5cab2697734de",
+    "ops/booster-launch/ypal-rpc-approval-v1.json": "f19bce3cedd60f0bb5b8ae4cfbd3fd9ca1f642f3a73d799f4f4df889028b77c5",
+    "ops/booster-launch/ypal-rpc-official-v1.mjs": "7f0e32c019c396dbd956f12253413bcce287403076755fcabc5371ffa2d50304",
+    "ops/booster-launch/ypal-rpc-official-v1.test.mjs": "448213ff35f7379e90ec822fbfd4deb025f9de505b8d9a19f98bf3c6d928e9bf",
+    "ops/booster-launch/ypal-rpc-profile-v1.json": "0e19f87a728a0150fae82e6125436739864edd86a6b5b1ecdfcd3503e70e0e05"
+  },
+  "format": "yunipals-ypal-rpc-admission-preparation-v1",
+  "manifestHash": "0x83262c45a53f94ed561c6116fc9efeccf69bd55839e7296f7f5276bc7c89e9ac",
+  "preparedAt": "2026-10-23T19:12:14.390212+00:00",
+  "productionEffects": {
+    "databaseWrites": 0,
+    "originalSourceRestarted": false,
+    "paidAuthority": false,
+    "profileAdmitted": false,
+    "providerRpcRequests": 0,
+    "proxyStarted": false,
+    "serviceChanges": 0
+  },
+  "profileId": "0x25308afec8bf9d4992afb5dbf52675d958ee1c619533e7917ae3fe08dbd29c86",
+  "retainedPolicySources": {
+    "packages/yunipals-indexer-client/src/sources.ts": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+    "packages/yunipals-indexer-server/src/identity.ts": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+    "packages/yunipals-indexer-server/src/rpc-policy.ts": "f1a9061e07b83b310281add38597df5a47692be18eb64288feb12cf3ddf3fd75",
+    "packages/yunipals-market-core/src/registry.ts": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9"
+  },
+  "status": "prepared_not_production_executed",
+  "validation": {
+    "actualDisposablePostgresPassed": true,
+    "officialPolicyCases": 6,
+    "postgresLogSha256": "23293e515bd3baaefa860f0c0a5e77ab1d9a275d769260d20f9b20b05be589f6",
+    "pythonControls": 19,
+    "pythonLogSha256": "afe33b7203828aec153280b76aca72fa1d8bb68cac5c418ff36a47b94d254641",
+    "retainedExactPolicySourcesUsed": true
+  }
+}

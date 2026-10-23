@@ -1,0 +1,236 @@
+{
+  "at": "2026-10-23T18:56:36.357499+00:00",
+  "baseProperties": {
+    "AmbientCapabilities": "",
+    "CapabilityBoundingSet": "",
+    "DropInPaths": "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zz-base-islands-free-logs.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzz-unified-shadow-20261020.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzz-unified-free-replay-20261020.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzz-unified-log-route-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzz-unified-source-fallback-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzz-base-tenderly-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzz-unified-range-hints-v5-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzz-unified-source6-free-first-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzz-source6-normal-profile-v2-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzz-source6-normal-queued-source-v1-20261021.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzzz-source6-selective-v2-20261022.conf /etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzzzzzz-evidence-code-v1-20261022.conf",
+    "ExecStart": {
+      "argv": [
+        "/opt/node-v24.18.1/bin/node",
+        "/opt/yunipals-unified/operations/free-replay-20261020/source6-selective-source-proxy-v6/rpc-budget-proxy.mjs"
+      ],
+      "sha256": "d8e58d18f7f88bb8b13d4f2d85d562ddd71f7ffc2c96b913410d5a656202f5c8"
+    },
+    "FragmentPath": "/etc/systemd/system/yunipals-market-production-rpc@.service",
+    "Group": "yunipals-market-prod-rpc",
+    "IPAddressAllow": "",
+    "IPAddressDeny": "",
+    "Id": "yunipals-market-production-rpc@base.service",
+    "InaccessiblePaths": "",
+    "InvocationID": "3b9d328b83ac4d5092014dc46d1816bb",
+    "LockPersonality": "yes",
+    "MainPID": "1437936",
+    "MemoryDenyWriteExecute": "no",
+    "MemoryMax": "805306368",
+    "NoNewPrivileges": "yes",
+    "PrivateDevices": "yes",
+    "PrivateTmp": "yes",
+    "ProtectControlGroups": "yes",
+    "ProtectHome": "yes",
+    "ProtectKernelModules": "yes",
+    "ProtectKernelTunables": "yes",
+    "ProtectSystem": "strict",
+    "ReadOnlyPaths": "",
+    "ReadWritePaths": "",
+    "Restart": "on-failure",
+    "RestartUSec": "5s",
+    "RestrictAddressFamilies": "AF_INET AF_INET6 AF_UNIX",
+    "RestrictNamespaces": "yes",
+    "RestrictRealtime": "yes",
+    "RestrictSUIDSGID": "yes",
+    "SystemCallFilter": "~",
+    "TasksMax": "96",
+    "TimeoutStopUSec": "30s",
+    "UMask": "0077",
+    "User": "yunipals-market-prod-rpc",
+    "WorkingDirectory": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api"
+  },
+  "definitions": {
+    "/etc/systemd/system/yunipals-market-production-rpc@.service": {
+      "directives": [
+        "Description",
+        "After",
+        "Wants",
+        "Requires",
+        "StartLimitIntervalSec",
+        "StartLimitBurst",
+        "Type",
+        "User",
+        "Group",
+        "WorkingDirectory",
+        "Environment",
+        "EnvironmentFile",
+        "EnvironmentFile",
+        "EnvironmentFile",
+        "EnvironmentFile",
+        "ExecStart",
+        "Restart",
+        "RestartSec",
+        "TimeoutStopSec",
+        "KillSignal",
+        "UMask",
+        "NoNewPrivileges",
+        "ProtectSystem",
+        "ProtectHome",
+        "PrivateTmp",
+        "PrivateDevices",
+        "ProtectKernelTunables",
+        "ProtectKernelModules",
+        "ProtectKernelLogs",
+        "ProtectControlGroups",
+        "ProtectClock",
+        "ProtectHostname",
+        "ProtectProc",
+        "ProcSubset",
+        "RestrictSUIDSGID",
+        "LockPersonality",
+        "RestrictRealtime",
+        "RestrictNamespaces",
+        "CapabilityBoundingSet",
+        "AmbientCapabilities",
+        "RestrictAddressFamilies",
+        "SystemCallArchitectures",
+        "MemoryHigh",
+        "MemoryMax",
+        "CPUQuota",
+        "TasksMax",
+        "LimitNOFILE",
+        "WantedBy"
+      ],
+      "sha256": "aff4b18548970c7256cb6aabd1eeab7c392338f0577bf13a8c57462e10f2f028",
+      "specifiers": [
+        "%i"
+      ]
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zz-base-islands-free-logs.conf": {
+      "directives": [
+        "EnvironmentFile"
+      ],
+      "sha256": "0a10807752d4646273d475ce279b842ecc3fa9de9ff85ad281729f50a467019a",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzz-unified-shadow-20261020.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment"
+      ],
+      "sha256": "3e45f651177fede787fab80b38c08c81598db6415db2fdac4dff6f88cd19b6e6",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzz-unified-free-replay-20261020.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment"
+      ],
+      "sha256": "b05bdb6b0aeabcc657d478d8676e4342840d832a8d2823e491c54e1932c811e1",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzz-unified-log-route-20261021.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment"
+      ],
+      "sha256": "639e948f4b19a3d21560c5d352aebd43783ef9da4b24cd63cf0d9935e7c3139e",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzz-unified-source-fallback-20261021.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment"
+      ],
+      "sha256": "afcfb593950b394aab9bad8e09942e674c2172c45529d35aeff9ca7e86cc2edd",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzz-base-tenderly-20261021.conf": {
+      "directives": [
+        "EnvironmentFile"
+      ],
+      "sha256": "61ae7e414ce96c2dbc3d01e02620aeaa226aaa5ac929899c16915d0900bb61ad",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzz-unified-range-hints-v5-20261021.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment"
+      ],
+      "sha256": "72f835f2296b7621712929d174cdc73c406b82118ce73e193fdfbe3fb283c274",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzz-unified-source6-free-first-20261021.conf": {
+      "directives": [
+        "ExecStart",
+        "ExecStart",
+        "WorkingDirectory",
+        "Environment",
+        "Environment",
+        "Environment",
+        "EnvironmentFile"
+      ],
+      "sha256": "554c2bb94db671b81c3bf590fdf2fc7d5456dc47b6a8e786f7b0be8afb7a836a",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzz-source6-normal-profile-v2-20261021.conf": {
+      "directives": [
+        "EnvironmentFile"
+      ],
+      "sha256": "0977708accc50bcc682690fe6be858e40a84d3d48da6df8fd306cc6455997d29",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzz-source6-normal-queued-source-v1-20261021.conf": {
+      "directives": [
+        "EnvironmentFile",
+        "ExecStart",
+        "ExecStart"
+      ],
+      "sha256": "6375d971a7fbeb0cee1c2f0c9014a52ba18403737d46da9e2dd5579e32df7495",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzzz-source6-selective-v2-20261022.conf": {
+      "directives": [
+        "EnvironmentFile",
+        "ExecStart",
+        "ExecStart"
+      ],
+      "sha256": "5b2e6522acb1281b8c738c33f1219f3369f712b50ac506b1d62c4b14a7c29cb4",
+      "specifiers": []
+    },
+    "/etc/systemd/system/yunipals-market-production-rpc@base.service.d/zzzzzzzzzzzzzzzzzzzzzzzzz-evidence-code-v1-20261022.conf": {
+      "directives": [
+        "EnvironmentFile",
+        "ExecStart",
+        "ExecStart"
+      ],
+      "sha256": "c2763a3d305bdcac2609625acaebc5e61c2745604ce20bc35e8607377105f22c",
+      "specifiers": []
+    }
+  },
+  "effectivePublicEnvironment": {
+    "MARKET_RPC_PROXY_CHAIN_ID": "8453",
+    "MARKET_RPC_PROXY_PORT": "19202",
+    "MARKET_RPC_PROXY_UNIFIED_PROFILE_FILE": "/opt/yunipals-unified/operations/free-replay-20261020/normal-rpc-profile-v1.json",
+    "MARKET_RPC_PROXY_UNIFIED_PROFILE_ID": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+    "MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY": "false"
+  },
+  "format": "yunipals-ypal-rpc-readonly-inventory-v1",
+  "newPort19212Free": true
+}

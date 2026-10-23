@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "model": "alchemy-2026-09-08",
+  "scope": "yunipals-opensea",
+  "coordinatorId": "faf1bb8c-4306-4c43-b55e-6ac5fa038567",
+  "reviewId": "24f3ddaf-e780-459f-99bf-9eaaef73f5bc",
+  "manifest": {
+    "version": 1,
+    "ponderVersion": "0.17.5",
+    "ordering": "multichain",
+    "coverage": "ponder-live-blocks-v1",
+    "sources": [
+      {
+        "id": "boosters:boosterengine",
+        "feature": "boosters",
+        "chainId": 8453,
+        "contractName": "BoosterEngine",
+        "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+        "startBlock": "52995174",
+        "endBlock": null,
+        "enabled": true,
+        "abiHash": "0x4127c2493eff266363adae3bb24fcf53038b7da4d72af5f517600e2a7920635d",
+        "events": [
+          "BlockhashCheckpointed",
+          "Initialized",
+          "OriginalRevealed",
+          "PaymentBurned",
+          "ProofContextRecorded",
+          "RandomnessReceived",
+          "RandomnessRestored",
+          "RecoveryRequired",
+          "RefundCredited",
+          "RefundReturned",
+          "RefundWithdrawn",
+          "RequestCompleted",
+          "RequestCreated",
+          "RequestForfeited",
+          "RequestsPaused",
+          "RoleAdminChanged",
+          "RoleGranted",
+          "RoleRevoked",
+          "Upgraded"
+        ],
+        "receiptRequirement": "none",
+        "policies": [
+          {
+            "kind": "latest"
+          },
+          {
+            "kind": "finalized"
+          }
+        ]
+      },
+      {
+        "id": "boosters:boostermonsters",
+        "feature": "boosters",
+        "chainId": 8453,
+        "contractName": "BoosterMonsters",
+        "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+        "startBlock": "52995029",
+        "endBlock": null,
+        "enabled": true,
+        "abiHash": "0x680148b00be6884d25a426041f93861ac175dfe3535224636c46cdcb3daa3a94",
+        "events": [
+          "Approval",
+          "ApprovalForAll",
+          "Initialized",
+          "MonsterMinted",
+          "OriginalBurned",
+          "RoleAdminChanged",
+          "RoleGranted",
+          "RoleRevoked",
+          "Transfer",
+          "Upgraded"
+        ],
+        "receiptRequirement": "none",
+        "policies": [
+          {
+            "kind": "latest"
+          },
+          {
+            "kind": "finalized"
+          }
+        ]
+      },
+      {
+        "id": "boosters:boosterregistry",
+        "feature": "boosters",
+        "chainId": 8453,
+        "contractName": "BoosterRegistry",
+        "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+        "startBlock": "52995007",
+        "endBlock": null,
+        "enabled": true,
+        "abiHash": "0xadfe0b475fd8d3f48aa768e359b6112834f3048a297263baaa01db4fbea8a79d",
+        "events": [
+          "Initialized",
+          "RoleAdminChanged",
+          "RoleGranted",
+          "RoleRevoked",
+          "SalesPaused",
+          "TypeActivated",
+          "TypeConfigured",
+          "Upgraded"
+        ],
+        "receiptRequirement": "none",
+        "policies": [
+          {
+            "kind": "latest"
+          },
+          {
+            "kind": "finalized"
+          }
+        ]
+      }
+    ]
+  },
+  "limits": {
+    "batchCalls": 10,
+    "logRange": 10000,
+    "addresses": 50,
+    "topicValues": 128
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "authorPreparationSha256": "86de59c507163eef759c4095bae83c440df81c42ebf21b25304a648fb2807c86",
+  "concreteBlockingFindings": [],
+  "format": "yunipals-ypal-wrap-independent-review-v1",
+  "independentlyExecuted": {
+    "browserGroups": 14,
+    "browserLogSha256": "c56e17127b37aecb633af3924437797914a327c2190081a8aa8da97c19f36db0",
+    "browserReportSha256": "5a662db49133e1e21be473bd3c62f92ce33ba7e67158cd4fb996282979d19033",
+    "helperCases": 11,
+    "helperLogSha256": "3ebd80603d573de6f59b5cbc6aa231269f696e3cdb0101c09ea86a7b6eac8376",
+    "portsReleased": true
+  },
+  "limits": {
+    "activationStillParentOwned": true,
+    "actualProviderCalls": 0,
+    "actualWalletSigning": false,
+    "liveWrappingPerformed": false,
+    "productionWrites": 0,
+    "syntheticBrowserOnly": true
+  },
+  "reviewedAt": "2026-10-23T19:15:27.949812+00:00",
+  "reviewedInvariants": [
+    "Only the actual confirmed Base deployment, PMON backing, exact runtime and Yunipals permit domain are accepted.",
+    "Exact amount approval and wrapping are separately reviewed and submitted, with zero native value and no automatic wallet calls.",
+    "Pending hashes remain scoped to manifest/token/PMON/owner, and ambiguous responses retain the record.",
+    "Receipt resolution checks canonical block/transaction identity, reviewed calldata, exact PMON backing transfer, YPAL mint and Wrap event.",
+    "Wallet/account/network/form/provider changes and unmount invalidate reviews; the final mounted/currentReview/provider fence is synchronous immediately before wallet entry.",
+    "Canonical cancellation or revert permits a fresh explicit action; foreign replacement calldata cannot become a wrapping success."
+  ],
+  "sourceFiles": {
+    "apps/yunipals-home-web/scripts/test-ypal-wrap-ui.mjs": "34264c9a37c83e4c6deb067ac6f78e896ae3b4241bb7c05806648707d6e9c8ea",
+    "apps/yunipals-home-web/src/hooks/useYpalWrap.ts": "701380f588de01cae29e5f8939b388365ffa5401588c97cf2ba70c1332b51786",
+    "apps/yunipals-home-web/src/lib/ypalWrap.test.ts": "ab98c0ed5ecc03f83a3d1da8af7a8bdc38cb655dc88e3f1ad6a8a45fbc5eedb0",
+    "apps/yunipals-home-web/src/lib/ypalWrap.ts": "9ccab65ac2a8498872b8a1eaebdb26d8d6b5b0cc5b433110b6039df8ed4fdc4f",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterYpalWrap.tsx": "b7b41b57a9e10a27ec17ff24e006635c1a73e690fd83d64f47d4a01f979f61e7"
+  },
+  "verdict": "pass"
+}

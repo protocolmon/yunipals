@@ -1,0 +1,38 @@
+{
+  "blockingFindings": [],
+  "executed": {
+    "command": "python3 -I -B ops/booster-launch/ypal-backend-prepare-owner-v2-test.py",
+    "controls": 4,
+    "passed": true
+  },
+  "format": "yunipals-ypal-backend-prepare-v2-independent-review-v1",
+  "futureLiveInterfaceNote": "The stored normalized preparation snapshot intentionally lacks combinedBackends. Actual live stop/drain must capture and validate fresh raw complete kernel-attributed inventory; it cannot pass the normalized preparation snapshot directly to the historical verify_drain helper.",
+  "limits": {
+    "databaseWrites": 0,
+    "inactivePreparationOnly": true,
+    "liveStopDrainOrSourceAcceptanceReviewed": false,
+    "productionEffects": 0,
+    "providerCalls": 0,
+    "trackedSourceEdits": 0
+  },
+  "reviewed": {
+    "fixedRetainedOwnerA103Authenticated": true,
+    "oldBackendTuplesActorRolesSchemaPrivateHashesRemainBound": true,
+    "onlyAdditionalHashExclusions": [
+      "source.sessionAttribution.sourceRoleBackendCount",
+      "source.sessionAttribution.combinedBackends"
+    ],
+    "positiveCompleteKernelAttributionStillMandatory": true,
+    "producerReboundToActualWrapper": true,
+    "retainedPrepareReviewAndApplyBehaviorOtherwiseUnchanged": true,
+    "snapshotDeepCopyRetained": true
+  },
+  "reviewedAt": "2026-10-23T19:38:42.226596+00:00",
+  "sourcePins": {
+    "ops/booster-launch/ypal-backend-owner-v1.py": "a1033872bb5c8a5c434ec5bfae4f3d99629c3e2b417de2e1d76e0fa48623aba1",
+    "ops/booster-launch/ypal-backend-prepare-owner-v2-test.py": "ec3cdb09dbc3af29843929b7f8f07afdb20932977758ffe211201cc1dd470ac7",
+    "ops/booster-launch/ypal-backend-prepare-owner-v2.py": "118ed515b420a77862f14463e1dde047c6b8929286652fca61ffa09e65f75a62",
+    "ops/booster-launch/ypal-old-runtime-inventory-v1.py": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b"
+  },
+  "verdict": "pass_for_inactive_preparation_only"
+}

@@ -1,0 +1,116 @@
+{
+  "cause": {
+    "classification": "libpq_nonregular_password_file_warning",
+    "exactPublicWarning": "WARNING: password file \"/dev/null\" is not a plain file\n",
+    "sqlExitCode": 0,
+    "stderrSha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff",
+    "strictStderrCheckPreserved": true
+  },
+  "correctedDiagnostic": {
+    "actualReviewHashExported": false,
+    "commands": [
+      {
+        "exitCode": 0,
+        "stage": "manager-show",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1274
+      },
+      {
+        "exitCode": 0,
+        "stage": "manager-show",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2399
+      },
+      {
+        "exitCode": 0,
+        "stage": "peer-psql-readonly",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 922
+      },
+      {
+        "exitCode": 0,
+        "stage": "peer-official-review",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 611
+      },
+      {
+        "exitCode": 0,
+        "stage": "manager-show",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2399
+      }
+    ],
+    "databaseWrites": 0,
+    "diagnosticOnly": true,
+    "format": "yunipals-ypal-rpc-default-readonly-diagnosis-v1",
+    "providerRpcRequests": 0,
+    "reviewPassed": true,
+    "serviceChanges": 0,
+    "stagedOwnerUnchanged": true
+  },
+  "diagnosticReceiptSha256": {
+    "corrected": "0928cf831bc52dfbe5466f16465f5c1c7c4b7f62ab1dbd50d889c8710b099052",
+    "original": "9cd6492c7f24d7d98146aa99195f1a241f50acf8cec273a54d2b9e27b83e707c"
+  },
+  "format": "yunipals-ypal-rpc-default-review-diagnosis-v1",
+  "limitations": {
+    "frozenOwnerEdited": false,
+    "productionReviewAccepted": false,
+    "productionReviewHashExported": false,
+    "profileAdmitted": false,
+    "proxyStarted": false
+  },
+  "observedAt": "2026-10-23T19:18:38.852437+00:00",
+  "originalFailure": {
+    "commands": [
+      {
+        "exitCode": 0,
+        "stage": "manager-show",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 1274
+      },
+      {
+        "exitCode": 0,
+        "stage": "manager-show",
+        "stderrBytes": 0,
+        "stderrCategories": [],
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 2399
+      },
+      {
+        "exitCode": 0,
+        "stage": "peer-psql-readonly",
+        "stderrBytes": 55,
+        "stderrCategories": [],
+        "stderrSha256": "88cb46494b3249cb7cc354338357ec6718eae891e2a2bbf86715ce129869ecff",
+        "stdoutBytes": 922
+      }
+    ],
+    "databaseWrites": 0,
+    "errorClass": "RuntimeError",
+    "fixedCode": "bounded_command_ack_required",
+    "format": "yunipals-ypal-rpc-default-readonly-diagnosis-v1",
+    "providerRpcRequests": 0,
+    "reviewPassed": false,
+    "serviceChanges": 0
+  },
+  "proposedNarrowCorrection": {
+    "PGPASSFILE": "/run/yunipals-ypal-rpc-no-password-file",
+    "passwordPromptDisabled": true,
+    "postgresPeerIdentityUnchanged": true,
+    "requirePathAbsent": true
+  },
+  "stagedProducerSha256": "d9e0cafdfcb817f7835d3856b920013a51b967defa17f239f76ee0416329093e"
+}

@@ -1,0 +1,43 @@
+{
+  "format": "yunipals-ypal-rpc-admission-production-v1",
+  "checkedAt": "2026-10-23T19:32:26.700366+00:00",
+  "helper": "ops/booster-launch/ypal-rpc-admission-v2.py",
+  "helperSha256": "45cfa08ba3a2de5de775053081b954dbb5a5e732871e8db1b80fa0b16fe5591e",
+  "retainedV1Sha256": "d9e0cafdfcb817f7835d3856b920013a51b967defa17f239f76ee0416329093e",
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "defaultReviewHash": "de20a524bed0276812df47c87a10157e87edd459a56a81be84d90a38f0f3dc3c",
+  "officialReviewHash": "0x0c6acac297c4b60d9491e19a833f1ddef132bbff90f87b9ef34e5826142cda54",
+  "productionRollbackRehearsal": {
+    "passed": true,
+    "catalogUnchanged": true,
+    "databaseCommitted": false
+  },
+  "productionProfileAdmitted": true,
+  "newPermits": 0,
+  "paidAuthority": false,
+  "budgetUnchanged": true,
+  "expiry": "2026-11-19T18:00:00.000Z",
+  "profileId": "0x25308afec8bf9d4992afb5dbf52675d958ee1c619533e7917ae3fe08dbd29c86",
+  "profileFileSha256": "0e19f87a728a0150fae82e6125436739864edd86a6b5b1ecdfcd3503e70e0e05",
+  "manifestHash": "0x83262c45a53f94ed561c6116fc9efeccf69bd55839e7296f7f5276bc7c89e9ac",
+  "endpoint": "http://127.0.0.1:19212/unified",
+  "actualProtectedResultSha256": "14b54f8aba5179c26cafad5eda647106f1d1d57fe6639278846a4240661b85c7",
+  "newProxy": {
+    "definitionHashes": {
+      "/etc/systemd/system/yunipals-ypal-base-rpc.service": "37cdf81effaf8c43346dad504af9e36d33f5b0010b8e5f64559ca7a07d893f78"
+    },
+    "invocation": "76e58064c4544d69a2a7b090b1102a01",
+    "pid": 2238064,
+    "startMonotonicMicroseconds": 66210191662347,
+    "startTicks": 6621019164,
+    "unit": "yunipals-ypal-base-rpc.service"
+  },
+  "bootEnabled": true,
+  "oldProxiesUnchanged": true,
+  "originalSourceRestarted": false,
+  "newBoosterSourceStarted": false,
+  "APIOrQueueSwitched": false,
+  "publicYPALPurchasesEnabled": false,
+  "providerRpcRequestsDuringAdmissionAndProxyQualification": 0,
+  "localValidationCaptureSha256": "7bd38d94671e95fb8198cca9c141f8a006ec743289b4ecd53944ddcfcc3282fc"
+}

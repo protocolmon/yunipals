@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
-import { type Hex } from "viem";
+import { isAddress, type Hex } from "viem";
 import { useAccount } from "wagmi";
 import {
   boosterAddresses,
@@ -15,6 +15,21 @@ import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
 import { BoosterClaimPacks } from "./BoosterClaimPacks";
+import { BoosterYpalWrap } from "./BoosterYpalWrap";
+
+const ypalWrapDeployment =
+  environment.boostersEnabled &&
+  environment.boosterLaunchId === "base-ypal-v1" &&
+  isAddress(environment.boosterPaymentToken) &&
+  isAddress(environment.boosterPmon)
+    ? {
+        confirmed: true,
+        manifestSha256: environment.boosterDeploymentSha256,
+        chainId: 8453,
+        ypal: environment.boosterPaymentToken,
+        pmon: environment.boosterPmon
+      }
+    : null;
 
 export function BoosterPackSection() {
   const { address } = useAccount();
@@ -220,6 +235,11 @@ export function BoosterPackSection() {
             </article>
           ))}
         </div>
+        {ypalWrapDeployment && (
+          <div className="mt-8 max-w-2xl">
+            <BoosterYpalWrap deployment={ypalWrapDeployment} />
+          </div>
+        )}
         {deployment && <BoosterClaimPacks onConfirmed={onConfirmed} />}
         {deployment && (
           <BoosterTransactions
@@ -232,13 +252,13 @@ export function BoosterPackSection() {
         {preview !== null && (
           <BoosterPackOpening
             mode="demo"
-            metadataUri={`${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-smoke-v1/73.json`}
+            metadataUri={`${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-standard-v1/81.json`}
             additionalCards={Array.from(
               { length: preview - 1 },
               (_, index) => ({
                 collection: "",
                 tokenId: "",
-                metadataUri: `${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-smoke-v1/${[80, 81, 82, 83][index % 4]}.json`
+                metadataUri: `${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-standard-v1/${[80, 83, 82, 81][index % 4]}.json`
               })
             )}
             onClose={() => setPreview(null)}
