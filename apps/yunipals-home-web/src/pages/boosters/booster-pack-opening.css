@@ -18,13 +18,37 @@
   backdrop-filter: blur(12px);
 }
 .yunipals-opening-content {
+  --opening-pack-width: clamp(145px, calc((100dvh - 20rem) / 2.85), 290px);
   min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: safe center;
-  padding: 4rem 1.25rem 2rem;
+  justify-content: flex-start;
+  padding: 4rem 1.25rem 1.5rem;
   background: radial-gradient(55% 48% at 50% 47%, #a78bfa57, transparent 72%);
+}
+.yunipals-opening-header {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: min(100%, 32rem);
+  text-align: center;
+}
+.yunipals-opening-instructions {
+  margin-top: 1rem;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffffcc;
+}
+.yunipals-opening-viewport {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: calc(var(--opening-pack-width) * 2.85 + 1rem);
+  /* Raised cards and tear particles stay in the scene below the instructions. */
+  overflow: hidden;
+  isolation: isolate;
 }
 .yunipals-opening-close {
   position: fixed;
@@ -60,8 +84,12 @@
   cursor: default;
 }
 .yunipals-opening-shell {
-  position: relative;
-  width: min(330px, 72vw);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: min(var(--opening-pack-width), 72vw);
   aspect-ratio: 2 / 3;
   perspective: 1000px;
   isolation: isolate;
@@ -237,8 +265,7 @@
 }
 .yunipals-opening-rip-hit,
 .yunipals-opening-card-hit,
-.yunipals-opening-pack-hit,
-.yunipals-opening-reveal-hit {
+.yunipals-opening-pack-hit {
   position: absolute;
   z-index: 50;
   border: 0;
@@ -266,10 +293,6 @@
   top: 15%;
   bottom: 2%;
   cursor: grab;
-}
-.yunipals-opening-reveal-hit {
-  inset: 0;
-  cursor: ew-resize;
 }
 .yunipals-opening-rip-hit:active,
 .yunipals-opening-card-hit:active,
@@ -362,30 +385,6 @@
 .yunipals-opening-dialog[data-settling="true"]
   .yunipals-opening-extract-window {
   transition: clip-path 0.56s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.yunipals-opening-dialog[data-stage="revealing"] .yunipals-opening-wrapper {
-  z-index: 0;
-  transform: translateY(calc(var(--pack-offset) + var(--pull-y) + 80px));
-  transition: transform 0.55s ease-out;
-  pointer-events: none;
-}
-.yunipals-opening-dialog[data-stage="revealing"] .yunipals-opening-body {
-  transform: rotate(3deg) scale(0.92);
-  opacity: 0.42;
-  transition:
-    transform 0.55s ease-out,
-    opacity 0.55s ease-out;
-}
-.yunipals-opening-reveal-card {
-  position: absolute;
-  left: 5%;
-  top: -8%;
-  width: 90%;
-  z-index: 25;
-  transform: translateX(var(--reveal-x)) rotate(var(--reveal-rotate));
-}
-.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-reveal-card {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .yunipals-opening-result {
   width: min(350px, 80vw);

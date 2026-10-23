@@ -115,7 +115,7 @@ export function BoosterPackSection() {
               <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
                 <p className="mb-4 flex items-center gap-2 text-sm font-bold text-grape">
                   <Sparkles size={18} aria-hidden="true" />
-                  Pack #{pack.packTypeId}
+                  Yunipals TCG
                 </p>
                 <h2 className="font-display text-2xl text-ink sm:text-3xl">
                   Yunipals booster pack

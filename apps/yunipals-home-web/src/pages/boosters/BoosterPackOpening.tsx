@@ -38,10 +38,10 @@ export type BoosterPackOpeningProps = PackContent &
     | { mode: "demo"; tokenId?: never; collection?: never }
     | { mode?: "revealed"; tokenId: string; collection: string }
   );
-type Stage = "sealed" | "opening" | "extracting" | "revealing" | "results";
-type GestureKind = "swipe" | "draw" | "pull" | "reveal";
+type Stage = "sealed" | "opening" | "extracting" | "results";
+type GestureKind = "swipe" | "draw" | "pull";
 type Motion = Record<GestureKind, number>;
-const INITIAL: Motion = { swipe: 0, draw: 0, pull: 0, reveal: 0 };
+const INITIAL: Motion = { swipe: 0, draw: 0, pull: 0 };
 const PARTICLES = Array.from({ length: 18 }, (_, index) => {
   const angle = (Math.PI * 2 * index) / 18 - Math.PI / 2;
   const distance = 90 + (index % 4) * 24;
@@ -88,7 +88,6 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
   } | null>(null);
   const drawDistance = Math.max(210, Math.min(325, distance * 1.48));
   const pullDistance = Math.max(190, Math.min(320, distance * 1.4));
-  const revealDistance = Math.max(170, Math.min(270, distance * 1.18));
   const packDrawOffset = Math.min(105, drawDistance * 0.32);
   const completedDraw = Math.max(
     drawDistance,
@@ -142,7 +141,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     element.showModal();
     element
       .querySelector<HTMLButtonElement>('[data-stage-action="sealed"]')
-      ?.focus();
+      ?.focus({ preventScroll: true });
     return () => {
       element.close();
       document.body.style.overflow = overflow;
@@ -171,9 +170,12 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     return () => observer.disconnect();
   }, [stage === "results"]);
   useEffect(() => {
-    dialog.current
-      ?.querySelector<HTMLButtonElement>(`[data-stage-action="${stage}"]`)
-      ?.focus();
+    const element = dialog.current;
+    if (!element) return;
+    element.scrollTop = 0;
+    element
+      .querySelector<HTMLButtonElement>(`[data-stage-action="${stage}"]`)
+      ?.focus({ preventScroll: true });
   }, [stage]);
 
   const later = (next: Stage, milliseconds: number) => {
@@ -199,20 +201,13 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
       setStage("opening");
       haptic(18);
       later("extracting", reduced ? 220 : 720);
-    } else if (kind === "draw" || kind === "pull") {
+    } else {
       setMotion((value) => ({
         ...value,
         [kind]: kind === "draw" ? -completedDraw : completedPull
       }));
       haptic(12);
-      later("revealing", reduced ? 140 : 560);
-    } else {
-      setMotion((value) => ({
-        ...value,
-        reveal: (value.reveal < 0 ? -1 : 1) * revealDistance * 1.18
-      }));
-      haptic(10);
-      later("results", reduced ? 140 : 460);
+      later("results", reduced ? 140 : 560);
     }
   };
   const reset = (kind: GestureKind, value: number) => {
@@ -267,15 +262,11 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
         ? distance
         : current.kind === "draw"
           ? drawDistance
-          : current.kind === "pull"
-            ? pullDistance
-            : revealDistance;
+          : pullDistance;
     const value =
       current.kind === "swipe" || current.kind === "pull"
         ? Math.max(0, Math.min(maximum, current.kind === "swipe" ? x : y))
-        : current.kind === "draw"
-          ? Math.max(-maximum, Math.min(0, y))
-          : Math.max(-maximum, Math.min(maximum, x));
+        : Math.max(-maximum, Math.min(0, y));
     setMotion((previous) => ({ ...previous, [current.kind]: value }));
     current.value = value;
     const now = performance.now();
@@ -304,10 +295,8 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
         : current.kind === "draw"
           ? -value / drawDistance >= 0.52 ||
             (-value / drawDistance >= 0.24 && vy <= -650)
-          : current.kind === "pull"
-            ? value / pullDistance >= 0.48 ||
-              (value / pullDistance >= 0.22 && vy >= 650)
-            : Math.abs(value) / revealDistance >= 0.38 || Math.abs(vx) >= 650;
+          : value / pullDistance >= 0.48 ||
+            (value / pullDistance >= 0.22 && vy >= 650);
     if (!cancelled && enough) finish(current.kind);
     else reset(current.kind, value);
   };
@@ -362,9 +351,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     "--draw-scale": 0.96 + drawProgress * 0.12,
     "--draw-rotate": `${-drawProgress * 2.5}deg`,
     "--pack-offset": `${drawProgress * packDrawOffset}px`,
-    "--peek-distance": `${Math.min(24, packHeight * 0.04)}px`,
-    "--reveal-x": `${motion.reveal}px`,
-    "--reveal-rotate": `${(motion.reveal / revealDistance) * 12}deg`
+    "--peek-distance": `${Math.min(24, packHeight * 0.04)}px`
   } as CSSProperties;
   const card = artwork?.image ? (
     <BoosterCardViewer artwork={artwork} interactive={stage === "results"} />
@@ -380,7 +367,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
         <button
           type="button"
           className="mt-4 underline"
-          disabled={stage !== "revealing" && stage !== "results"}
+          disabled={stage !== "results"}
           onClick={() => {
             if (!demo && !activeCard.metadataUri) void monster.refetch();
             if (metadataUri) void artworkQuery.refetch();
@@ -417,29 +404,52 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
         >
           <X aria-hidden="true" size={22} />
         </button>
-        <p className="display text-center text-3xl sm:text-4xl">
-          {stage === "results"
-            ? demo
-              ? "A little preview of the magic."
-              : "Meet your Yunipal."
-            : "A little magic inside."}
-        </p>
-        <p
-          id={descriptionId}
-          className="mt-3 max-w-md text-center text-sm text-white/75"
-        >
-          {demo
-            ? "Demo preview — no NFT is minted."
-            : "Your NFT is already revealed on Base. This opening replays its reveal."}
-        </p>
-        {totalCards > 1 && (
+        <header className="yunipals-opening-header">
+          <h1 className="display text-center text-2xl sm:text-4xl">
+            {stage === "results"
+              ? demo
+                ? "A little preview of the magic."
+                : "Meet your Yunipal."
+              : "A little magic inside."}
+          </h1>
           <p
-            className="mt-2 text-sm font-semibold text-white/80"
-            aria-live="polite"
+            id={descriptionId}
+            className="mt-3 max-w-md text-center text-sm text-white/75"
           >
-            Card {cardIndex + 1} of {totalCards}
+            {demo
+              ? "Demo preview — no NFT is minted."
+              : "Your NFT is already revealed on Base. This opening replays its reveal."}
           </p>
-        )}
+          {totalCards > 1 && (
+            <p
+              className="mt-2 text-sm font-semibold text-white/80"
+              aria-live="polite"
+            >
+              Card {cardIndex + 1} of {totalCards}
+            </p>
+          )}
+          <p className="yunipals-opening-instructions" aria-live="polite">
+            {stage === "sealed"
+              ? "Swipe right along the glowing seal."
+              : stage === "opening"
+                ? "Open a little wonder…"
+                : stage === "extracting"
+                  ? "Pull the card up, or pull the wrapper down."
+                  : hasMoreCards
+                    ? "Your card is revealed. Pull the next card when you’re ready."
+                    : "Your card is revealed. Tilt it to see the holo shine."}
+          </p>
+          {stage === "results" && (
+            <button
+              type="button"
+              data-stage-action="results"
+              onClick={hasMoreCards ? nextCard : replay}
+              className="yunipals-opening-action mt-3"
+            >
+              {hasMoreCards ? "Pull next card" : "Replay opening"}
+            </button>
+          )}
+        </header>
         {stage === "results" ? (
           <div className="yunipals-opening-result">
             {card}
@@ -449,14 +459,6 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
               </h2>
             )}
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <button
-                type="button"
-                data-stage-action="results"
-                onClick={hasMoreCards ? nextCard : replay}
-                className="yunipals-opening-action"
-              >
-                {hasMoreCards ? "Pull next card" : "Replay opening"}
-              </button>
               {!demo && (
                 <Link
                   className="yunipals-opening-action"
@@ -486,146 +488,113 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
           </div>
         ) : (
           <>
-            <p
-              className="my-5 text-center text-sm font-semibold text-white/80"
-              aria-live="polite"
-            >
-              {stage === "sealed"
-                ? "Swipe right along the glowing seal."
-                : stage === "opening"
-                  ? "Open a little wonder…"
-                  : stage === "extracting"
-                    ? "Pull the card up, or pull the wrapper down."
-                    : "Swipe the card aside to reveal it."}
-            </p>
-            <div ref={shell} className="yunipals-opening-shell">
-              {(stage === "opening" || stage === "extracting") && (
-                <div
-                  className="yunipals-opening-extract-window"
-                  aria-hidden="true"
-                >
-                  <div className="yunipals-opening-extract-card">
-                    <div className="yunipals-opening-card-peek">{card}</div>
+            <div className="yunipals-opening-viewport">
+              <div ref={shell} className="yunipals-opening-shell">
+                {(stage === "opening" || stage === "extracting") && (
+                  <div
+                    className="yunipals-opening-extract-window"
+                    aria-hidden="true"
+                  >
+                    <div className="yunipals-opening-extract-card">
+                      <div className="yunipals-opening-card-peek">{card}</div>
+                    </div>
                   </div>
-                </div>
-              )}
-              {stage === "revealing" && (
-                <div className="yunipals-opening-reveal-card">
-                  {card}
-                  <button
-                    type="button"
-                    aria-label="Reveal card"
-                    data-stage-action="revealing"
-                    disabled={settling}
-                    className="yunipals-opening-reveal-hit"
-                    {...control("reveal")}
+                )}
+                <div className="yunipals-opening-wrapper">
+                  <img
+                    src={packImage}
+                    alt="Yunipals foil booster pack"
+                    draggable={false}
+                    className="yunipals-opening-body"
                   />
-                </div>
-              )}
-              <div className="yunipals-opening-wrapper">
-                <img
-                  src={packImage}
-                  alt="Yunipals foil booster pack"
-                  draggable={false}
-                  className="yunipals-opening-body"
-                />
-                {stage === "sealed" && (
-                  <>
-                    <div className="yunipals-opening-attached">
-                      <img src={packImage} alt="" draggable={false} />
-                    </div>
-                    <div className="yunipals-opening-curl">
-                      <img src={packImage} alt="" draggable={false} />
-                      <div className="yunipals-opening-curl-highlight" />
-                    </div>
-                    <div className="yunipals-opening-foil" />
-                    <div className="yunipals-opening-glint" />
-                    <div className="yunipals-opening-seam" />
-                    <div className="yunipals-opening-seam-progress" />
-                    <span className="yunipals-opening-tab">
-                      <ChevronRight
-                        aria-hidden="true"
-                        size={16}
-                        strokeWidth={3.2}
+                  {stage === "sealed" && (
+                    <>
+                      <div className="yunipals-opening-attached">
+                        <img src={packImage} alt="" draggable={false} />
+                      </div>
+                      <div className="yunipals-opening-curl">
+                        <img src={packImage} alt="" draggable={false} />
+                        <div className="yunipals-opening-curl-highlight" />
+                      </div>
+                      <div className="yunipals-opening-foil" />
+                      <div className="yunipals-opening-glint" />
+                      <div className="yunipals-opening-seam" />
+                      <div className="yunipals-opening-seam-progress" />
+                      <span className="yunipals-opening-tab">
+                        <ChevronRight
+                          aria-hidden="true"
+                          size={16}
+                          strokeWidth={3.2}
+                        />
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Rip pack seal"
+                        data-stage-action="sealed"
+                        className="yunipals-opening-rip-hit"
+                        {...control("swipe")}
                       />
-                    </span>
+                    </>
+                  )}
+                  {stage === "opening" && (
+                    <>
+                      <img
+                        src={packImage}
+                        alt=""
+                        draggable={false}
+                        className="yunipals-opening-torn-top"
+                      />
+                      {!reduced &&
+                        PARTICLES.map((particle, index) => (
+                          <span
+                            key={index}
+                            className="yunipals-opening-particle"
+                            style={
+                              {
+                                "--particle-x": `${particle.x}px`,
+                                "--particle-y": `${particle.y}px`,
+                                "--particle-rotate": `${particle.rotate}deg`,
+                                animationDelay: `${0.18 + particle.delay}s`,
+                                backgroundColor: particle.color
+                              } as CSSProperties
+                            }
+                          />
+                        ))}
+                    </>
+                  )}
+                </div>
+                {stage === "extracting" && (
+                  <div className="yunipals-opening-extract-controls">
                     <button
                       type="button"
-                      aria-label="Rip pack seal"
-                      data-stage-action="sealed"
-                      className="yunipals-opening-rip-hit"
-                      {...control("swipe")}
+                      aria-label="Pull card upward"
+                      data-stage-action="extracting"
+                      disabled={settling}
+                      className="yunipals-opening-card-hit"
+                      {...control("draw")}
                     />
-                  </>
-                )}
-                {stage === "opening" && (
-                  <>
-                    <img
-                      src={packImage}
-                      alt=""
-                      draggable={false}
-                      className="yunipals-opening-torn-top"
+                    <button
+                      type="button"
+                      aria-label="Pull pack downward"
+                      disabled={settling}
+                      className="yunipals-opening-pack-hit"
+                      {...control("pull")}
                     />
-                    {!reduced &&
-                      PARTICLES.map((particle, index) => (
-                        <span
-                          key={index}
-                          className="yunipals-opening-particle"
-                          style={
-                            {
-                              "--particle-x": `${particle.x}px`,
-                              "--particle-y": `${particle.y}px`,
-                              "--particle-rotate": `${particle.rotate}deg`,
-                              animationDelay: `${0.18 + particle.delay}s`,
-                              backgroundColor: particle.color
-                            } as CSSProperties
-                          }
-                        />
-                      ))}
-                  </>
+                  </div>
                 )}
               </div>
-              {stage === "extracting" && (
-                <div className="yunipals-opening-extract-controls">
-                  <button
-                    type="button"
-                    aria-label="Pull card upward"
-                    data-stage-action="extracting"
-                    disabled={settling}
-                    className="yunipals-opening-card-hit"
-                    {...control("draw")}
-                  />
-                  <button
-                    type="button"
-                    aria-label="Pull pack downward"
-                    disabled={settling}
-                    className="yunipals-opening-pack-hit"
-                    {...control("pull")}
-                  />
-                </div>
-              )}
             </div>
             <button
               type="button"
-              className="yunipals-opening-action mt-6"
+              className="yunipals-opening-action mt-4"
               disabled={settling || stage === "opening"}
-              onClick={() =>
-                finish(
-                  stage === "sealed"
-                    ? "swipe"
-                    : stage === "extracting"
-                      ? "draw"
-                      : "reveal"
-                )
-              }
+              onClick={() => finish(stage === "sealed" ? "swipe" : "draw")}
             >
               {stage === "sealed"
                 ? "Rip open"
                 : stage === "extracting"
                   ? "Pull out card"
-                  : stage === "revealing"
-                    ? "Reveal Yunipal"
-                    : "Opening…"}
+                  : "Opening…"}
             </button>
           </>
         )}

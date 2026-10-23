@@ -1,7 +1,9 @@
 // Real React components with local request/receipt fixtures; no chain or wallet.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import ts from "typescript";
@@ -45,9 +47,11 @@ const sourcePaths = [
   "src/pages/boosters/BoosterRequestOpening.tsx",
   "src/pages/boosters/BoosterClaimPacks.tsx",
   "src/lib/boosterReveal.ts",
+  "src/lib/boosters.ts",
   "src/pages/boosters/BoosterPackSection.tsx",
   "src/pages/collection/page.tsx",
-  "src/components/Nav.tsx"
+  "src/components/Nav.tsx",
+  "scripts/test-booster-opening-ui.mjs"
 ];
 const sourceSha256 = Object.fromEntries(
   await Promise.all(
@@ -112,7 +116,7 @@ const fixture = `
 import {encodeEventTopics,encodeAbiParameters,encodeFunctionData,parseAbiParameters} from 'viem';
 import {boosterPacksAbi} from '@protopals/yunipals-market-core/boosterAbi';
 import {boosterPurchaseAbi} from '/src/lib/boosterPurchase';
-import {readBoosterTransactions as readStored,saveBoosterTransaction} from '/src/lib/boosters.ts';
+import {readBoosterTransactions as readStored,saveBoosterTransaction,visibleBoosterTypes as actualVisibleBoosterTypes} from '/src/lib/boosters.ts';
 export const owner='0xB3883Cd96d72B08b8226452305A28D65974a3727';
 const registry='0x1111111111111111111111111111111111111111';
 const engine='0x2222222222222222222222222222222222222222';
@@ -127,7 +131,7 @@ const fixturePack={id:'fixture-pack-2',packTypeId:'2',registry,engine,manifestUr
 export const fixtureArtwork={name:'Fixture Yunidragon',image:'/__fixture-card.svg',attributes:{type:'Yunidragon',color:'Blue',horn:'Spiral',glitter:'No'},status:'ready',holo:null};
 export const boosterQueryKey=['booster-opening-local-fixture'];
 export const boosterAddresses=()=>({registry,engine,monsters});
-export const visibleBoosterTypes=(rows)=>rows;
+export const visibleBoosterTypes=actualVisibleBoosterTypes;
 const fixtureStorageKey='yunipals/boosters/v1/8453/'+engine+'/'+owner.toLowerCase();
 if(sessionStorage.getItem('fixture-opening-scenario')!==scenario()){
  localStorage.removeItem(fixtureStorageKey);sessionStorage.removeItem('fixture-multi-fulfilled');
@@ -144,7 +148,7 @@ export const fetchBoosterMonster=async(collection,tokenId)=>{(window.__openingMo
 export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name});
 export const fetchBoosterOwner=async()=>{const selected=scenario(),daily=selected.startsWith('daily-'),credits=selected==='daily-ten'?10:selected==='daily-zero'?0:3;return{items:daily?[{id:'8453:'+monsters+':7',tokenId:'7',collection:monsters,engine,owner:selected==='daily-foreign'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-credits*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack}]:[],nextCursor:null,requestsPaused:selected==='daily-paused'}};
 export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:scenario()==='multi-incomplete'&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
-export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[fixturePack]});
+export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[{...fixturePack,id:"fixture-smoke-1",packTypeId:"1",manifestUri:"https://api.example.invalid/boosters/base-mainnet-smoke-v1/manifest.json"},fixturePack]});
 export const client={
  async readContract({functionName,args}){
   if(functionName==='refundCredits')return 0n;
@@ -194,10 +198,12 @@ createRoot(document.getElementById('root')).render(<Harness/>);`;
 const modules = {
   [ids.entry]: entry,
   [ids.boosters]: fixture,
-  [ids.wagmi]: `import {owner,client} from '${ids.boosters}';export const useAccount=()=>({address:owner,isConnected:true,chainId:8453});export const usePublicClient=()=>client;`,
+  [ids.wagmi]: `import {owner,client,scenario} from '${ids.boosters}';export const useAccount=()=>({address:scenario()==='offer-public'?'0x9999999999999999999999999999999999999999':owner,isConnected:true,chainId:8453});export const usePublicClient=()=>client;`,
   [ids.action]: `import React from 'react';export function BoosterActionButton({children,disabled,action}){return <button type="button" disabled={disabled} data-fixture-action={JSON.stringify(action)} onClick={()=>{if(action?.kind==='recover'){window.__completeMulti=true;sessionStorage.setItem('fixture-multi-fulfilled','yes');window.__refreshBoosters?.();}}}>{children}</button>}`
 };
+const cacheDir = await mkdtemp(join(tmpdir(), "yunipals-opening-vite-"));
 const server = await createServer({
+  cacheDir,
   root,
   configFile: false,
   server: { host: "127.0.0.1", port: 5198, strictPort: true },
@@ -378,6 +384,120 @@ async function extractionGeometry(target = page) {
     return result;
   });
 }
+async function protectedLayout(target = page) {
+  if (
+    (await target
+      .locator("[data-stage]")
+      .first()
+      .getAttribute("data-stage")) === "results"
+  ) {
+    await target.waitForFunction(
+      () =>
+        document.activeElement?.getAttribute("data-stage-action") === "results"
+    );
+  }
+  const geometry = await target.evaluate(() => {
+    const header = document.querySelector(".yunipals-opening-header");
+    const instructions = document.querySelector(
+      ".yunipals-opening-instructions"
+    );
+    const scene = document.querySelector(".yunipals-opening-viewport");
+    const card = document.querySelector(
+      ".yunipals-opening-extract-card .tilt-card, .yunipals-opening-result .tilt-card"
+    );
+    const rect = (element) => {
+      if (!element) return null;
+      const value = element.getBoundingClientRect();
+      return {
+        top: value.top,
+        right: value.right,
+        bottom: value.bottom,
+        left: value.left,
+        width: value.width,
+        height: value.height
+      };
+    };
+    const h = rect(header),
+      i = rect(instructions),
+      c = rect(card);
+    const title = rect(header.querySelector("h1"));
+    const close = rect(document.querySelector(".yunipals-opening-close"));
+    const atInstruction = document.elementFromPoint(
+      (i.left + i.right) / 2,
+      (i.top + i.bottom) / 2
+    );
+    return {
+      header: h,
+      focusedAction: document.activeElement?.getAttribute("data-stage-action"),
+      focusedActionBounds: rect(document.activeElement),
+      viewportHeight: innerHeight,
+      title,
+      close,
+      titleIntersectsClose:
+        title.top < close.bottom &&
+        title.bottom > close.top &&
+        title.left < close.right &&
+        title.right > close.left,
+      instructions: i,
+      scene: rect(scene),
+      card: c,
+      instructionsOnTop:
+        instructions === atInstruction || instructions.contains(atInstruction),
+      cardIntersectsHeader: Boolean(
+        c &&
+          c.top < h.bottom &&
+          c.bottom > h.top &&
+          c.left < h.right &&
+          c.right > h.left
+      ),
+      horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
+      misleadingReveal:
+        document
+          .querySelector("dialog")
+          ?.textContent.includes("Swipe the card aside to reveal it.") || false,
+      redundantRevealButtons: [
+        ...document.querySelectorAll("dialog button")
+      ].filter(
+        (button) =>
+          button.textContent.trim() === "Reveal Yunipal" ||
+          button.getAttribute("aria-label") === "Reveal card"
+      ).length
+    };
+  });
+  assert(
+    geometry.header.top >= 0,
+    "Opening heading stays within the top of the viewport"
+  );
+  assert(
+    geometry.header.bottom <= (await target.evaluate(() => innerHeight)),
+    "Opening instructions fit the viewport"
+  );
+  assert(
+    geometry.instructionsOnTop,
+    "The browser paints the instructions above their own background"
+  );
+  assert.equal(
+    geometry.cardIntersectsHeader,
+    false,
+    "Moving card never covers the protected header/instructions"
+  );
+  if (geometry.focusedAction) {
+    assert(
+      geometry.focusedActionBounds.top >= 0 &&
+        geometry.focusedActionBounds.bottom <= geometry.viewportHeight,
+      "The automatically focused stage action is inside the viewport"
+    );
+  }
+  assert.equal(
+    geometry.titleIntersectsClose,
+    false,
+    "Close control never covers the heading"
+  );
+  assert.equal(geometry.horizontalOverflow, false);
+  assert.equal(geometry.misleadingReveal, false);
+  assert.equal(geometry.redundantRevealButtons, 0);
+  return geometry;
+}
 try {
   if (!values["components-only"])
     await run(
@@ -431,6 +551,20 @@ try {
         await page.setViewportSize({ width: 1100, height: 1000 });
       }
     );
+  await run(
+    "Public offer hides the smoke type for owner and other wallets without internal pack IDs",
+    async () => {
+      for (const scenario of ["empty", "offer-public"]) {
+        await visit(`mode=pack&scenario=${scenario}`);
+        const offers = page.locator("#booster-packs article");
+        await offers.first().waitFor();
+        assert.equal(await offers.count(), 1);
+        const text = await offers.innerText();
+        assert(text.includes("Yunipals TCG"));
+        assert(!/Pack #(?:1|2)|Smoke|Test pack/i.test(text));
+      }
+    }
+  );
   await run(
     "Three accrued credits make one daily pack with an exact quantity-three claim",
     async () => {
@@ -552,6 +686,7 @@ try {
       const halfPeek = await extractionGeometry();
       await seek(900);
       const smallPeek = await extractionGeometry();
+      await protectedLayout();
       assert(halfPeek.visibleFraction > 0);
       assert(smallPeek.visibleFraction > halfPeek.visibleFraction);
       assert(smallPeek.visibleFraction < 0.08);
@@ -567,9 +702,10 @@ try {
         y = box.y + box.height / 2;
       await page.mouse.move(x, y);
       await page.mouse.down();
-      await page.mouse.move(x, y - 140, { steps: 14 });
+      await page.mouse.move(x, y - 105, { steps: 14 });
       assert(await grab.evaluate((element) => element.hasPointerCapture(1)));
       const partial = await extractionGeometry();
+      await protectedLayout();
       report.extractionGeometry = { closed, halfPeek, smallPeek, partial };
       assert(partial.visibleFraction > 0.25 && partial.visibleFraction < 0.8);
       assert(partial.visibleTopOnCard);
@@ -657,9 +793,10 @@ try {
         for (let step = 1; step <= 12; step++)
           await touch("touchMove", x, y + (amount * step) / 12);
       };
-      await pull(125);
+      await pull(90);
       assert(await grab.evaluate((element) => element.hasPointerCapture(2)));
       const partial = await extractionGeometry(mobile);
+      await protectedLayout(mobile);
       assert(partial.visibleFraction > 0.25 && partial.visibleFraction < 0.8);
       assert(partial.visibleTopOnCard);
       assert.equal(partial.belowMouthCardInHitStack, false);
@@ -680,9 +817,10 @@ try {
       await touch("touchEnd");
       await mobile.waitForTimeout(240);
       const completed = await extractionGeometry(mobile);
+      await protectedLayout(mobile);
       assert.equal(completed.visibleFraction, 1);
       assert(completed.cardBottom <= completed.mouth);
-      await waitStage("revealing", mobile);
+      await waitStage("results", mobile);
       assert(
         await mobile.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -695,6 +833,71 @@ try {
         completed
       };
       await mobileContext.close();
+    }
+  );
+  await run(
+    "Protected instructions and automatic reveal fit 1024x768 and 390x844 throughout pull settling",
+    async () => {
+      const measurements = [];
+      for (const viewport of [
+        { width: 1024, height: 768 },
+        { width: 390, height: 844 }
+      ]) {
+        await page.setViewportSize(viewport);
+        await visit("mode=batch");
+        await page.getByRole("button", { name: "Start local opening" }).click();
+        const sealed = await protectedLayout();
+        await page
+          .getByRole("button", { name: "Rip open", exact: true })
+          .click();
+        await waitStage("extracting");
+        await page.waitForTimeout(950);
+        const peek = await protectedLayout();
+        const grab = page.getByRole("button", { name: "Pull card upward" });
+        const box = await grab.boundingBox();
+        const x = box.x + box.width / 2,
+          y = box.y + box.height / 2;
+        await page.mouse.move(x, y);
+        await page.mouse.down();
+        await page.mouse.move(x, y - 85, { steps: 12 });
+        const partial = await protectedLayout();
+        await page.mouse.move(x, y - 300, { steps: 16 });
+        await page.mouse.up();
+        await page.waitForTimeout(120);
+        const settling = await protectedLayout();
+        assert.equal(await stage().getAttribute("data-stage"), "extracting");
+        assert.equal(await stage().getAttribute("data-settling"), "true");
+        await waitStage("results");
+        const revealed = await protectedLayout();
+        await page.getByRole("button", { name: "Pull next card" }).focus();
+        await page.keyboard.press("Enter");
+        await waitStage("extracting");
+        const nextPeek = await protectedLayout();
+        assert.equal(
+          await page.getByRole("button", { name: "Rip pack seal" }).count(),
+          0
+        );
+        await page
+          .getByRole("button", { name: "Pull out card", exact: true })
+          .click();
+        await waitStage("results");
+        await protectedLayout();
+        await page.screenshot({
+          path: `/tmp/yunipals-opening-protected-${viewport.width}x${viewport.height}-20261023.png`
+        });
+        measurements.push({
+          viewport,
+          sealed,
+          peek,
+          partial,
+          settling,
+          revealed,
+          nextPeek
+        });
+        await page.keyboard.press("Escape");
+      }
+      report.protectedLayout = measurements;
+      await page.setViewportSize({ width: 1100, height: 1000 });
     }
   );
   await run(
@@ -727,12 +930,6 @@ try {
         0,
         -320
       );
-      await waitStage("revealing");
-      await drag(
-        page.getByRole("button", { name: "Reveal card", exact: true }),
-        300,
-        0
-      );
       await waitStage("results");
       await page
         .getByRole("button", { name: "Replay opening", exact: true })
@@ -761,11 +958,6 @@ try {
         .getByRole("button", { name: "Pull pack downward", exact: true })
         .focus();
       await page.keyboard.press("Space");
-      await waitStage("revealing");
-      await page
-        .getByRole("button", { name: "Reveal card", exact: true })
-        .focus();
-      await page.keyboard.press("Enter");
       await waitStage("results");
       assert.equal(
         await dialog().evaluate(
@@ -801,7 +993,7 @@ try {
         await page.getByText(status, { exact: true }).waitFor();
         assert.equal(
           await page
-            .getByRole("button", { name: "Reveal Yunipal", exact: true })
+            .getByRole("button", { name: "View card", exact: true })
             .count(),
           0,
           scenario
@@ -827,9 +1019,6 @@ try {
           0
         );
         await page.getByRole("button", { name: "Pull card upward" }).focus();
-        await page.keyboard.press("Enter");
-        await waitStage("revealing");
-        await page.getByRole("button", { name: "Reveal card" }).focus();
         await page.keyboard.press("Enter");
         await waitStage("results");
         await page
@@ -877,9 +1066,6 @@ try {
       await waitStage("extracting");
       await page.getByRole("button", { name: "Pull card upward" }).focus();
       await page.keyboard.press("Enter");
-      await waitStage("revealing");
-      await page.getByRole("button", { name: "Reveal card" }).focus();
-      await page.keyboard.press("Enter");
       await waitStage("results");
       await page
         .getByRole("heading", { name: "Fixture Yunipal #17", exact: true })
@@ -892,7 +1078,7 @@ try {
     async () => {
       await visit("mode=transactions&scenario=multi");
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .click();
       await waitStage("sealed");
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
@@ -910,11 +1096,6 @@ try {
         );
         await page
           .getByRole("button", { name: "Pull card upward", exact: true })
-          .focus();
-        await page.keyboard.press("Enter");
-        await waitStage("revealing");
-        await page
-          .getByRole("button", { name: "Reveal card", exact: true })
           .focus();
         await page.keyboard.press("Enter");
         await waitStage("results");
@@ -938,7 +1119,7 @@ try {
       await page.getByRole("button", { name: "Done", exact: true }).click();
       await page.reload();
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .waitFor();
       const saved = await page.evaluate(() =>
         JSON.parse(
@@ -952,7 +1133,7 @@ try {
       assert.equal(saved[0].expectedRequestCount, 3);
       assert.equal(saved[0].quantity, 1);
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .click();
       await waitStage("sealed");
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
@@ -985,7 +1166,7 @@ try {
         window.__refreshBoosters();
       });
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .click();
       await waitStage("sealed");
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
@@ -1023,7 +1204,7 @@ try {
     async () => {
       await visit("mode=transactions&scenario=multi-forfeit");
       await page
-        .getByRole("button", { name: "Reveal 2 Yunipals", exact: true })
+        .getByRole("button", { name: "View 2 cards", exact: true })
         .click();
       await page
         .getByRole("dialog", { name: "Your 3 packs", exact: true })
@@ -1069,7 +1250,7 @@ try {
     async () => {
       await visit("mode=transactions&scenario=multi-incomplete");
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .click();
       await page
         .getByRole("heading", { name: "Your 3 packs", exact: true })
@@ -1090,11 +1271,11 @@ try {
       await page.keyboard.press("Escape");
       await visit("mode=transactions&scenario=multi-legacy");
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .waitFor();
       await page.reload();
       await page
-        .getByRole("button", { name: "Reveal 3 Yunipals", exact: true })
+        .getByRole("button", { name: "View 3 cards", exact: true })
         .waitFor();
     }
   );
@@ -1103,7 +1284,7 @@ try {
     async () => {
       await visit("mode=transactions&scenario=revealed");
       const reveal = page.getByRole("button", {
-        name: "Reveal Yunipal",
+        name: "View card",
         exact: true
       });
       await reveal.waitFor();
@@ -1128,11 +1309,6 @@ try {
       await waitStage("extracting");
       await page
         .getByRole("button", { name: "Pull card upward", exact: true })
-        .focus();
-      await page.keyboard.press("Enter");
-      await waitStage("revealing");
-      await page
-        .getByRole("button", { name: "Reveal card", exact: true })
         .focus();
       await page.keyboard.press("Enter");
       await waitStage("results");
@@ -1165,6 +1341,7 @@ try {
   await writeFile(values.output, JSON.stringify(report, null, 2) + "\n");
   await browser.close();
   await server.close();
+  await rm(cacheDir, { recursive: true, force: true });
 }
 console.log(
   JSON.stringify({

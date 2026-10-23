@@ -6,7 +6,6 @@ import {
   type Hex
 } from "viem";
 import { environment } from "@/environment";
-import { boosterSetupOwner } from "@/lib/boosterSetup";
 import type {
   BoosterMonster,
   BoosterOriginal,
@@ -27,11 +26,10 @@ export const boosterQueryKey = [
 
 export function visibleBoosterTypes<T extends Pick<BoosterType, "manifestUri">>(
   packs: T[],
-  wallet?: string
+  _wallet?: string
 ): T[] {
-  const owner = wallet?.toLowerCase() === boosterSetupOwner.toLowerCase();
   return packs.filter(
-    (pack) => owner || !pack.manifestUri.includes("/base-mainnet-smoke-v1/")
+    (pack) => !pack.manifestUri.includes("/base-mainnet-smoke-v1/")
   );
 }
 

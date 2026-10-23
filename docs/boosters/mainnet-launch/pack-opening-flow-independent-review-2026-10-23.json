@@ -1,0 +1,158 @@
+{
+  "format": "yunipals-booster-opening-ui-independent-review-v1",
+  "reviewedAt": "2026-10-23T15:02:11.386276+00:00",
+  "verdict": "pass",
+  "productSourceEditedByReviewer": false,
+  "reviewedFiles": [
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterPackOpening.tsx",
+      "sha256": "a98b46aff5f658993623b0fd1933261d237850cc6eb7c89607939c4e9d0f2d7a"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/booster-pack-opening.css",
+      "sha256": "d5e7fea0125f814430aa8c3ed0d0bd1365810a16abd3047b8b718e496d282bad"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-opening-ui.mjs",
+      "sha256": "b82715832a78ba1b01dd85931d17d3fd07e1711edf7661dc5dbf703e357879ae"
+    }
+  ],
+  "componentDependencies": {
+    "src/pages/boosters/BoosterPackOpening.tsx": "a98b46aff5f658993623b0fd1933261d237850cc6eb7c89607939c4e9d0f2d7a",
+    "src/pages/boosters/booster-pack-opening.css": "d5e7fea0125f814430aa8c3ed0d0bd1365810a16abd3047b8b718e496d282bad",
+    "src/pages/boosters/BoosterTransactions.tsx": "fe7fdb38f46c423da97b62106ad8193d052fedefb546d3327a1383ae5782891e",
+    "src/pages/boosters/BoosterRequestOpening.tsx": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+    "src/pages/boosters/BoosterClaimPacks.tsx": "f33dbe731a27da60e64f8f6f6243b86a6a9819db138f2886f5aa86b950ed4c75",
+    "src/lib/boosterReveal.ts": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+    "src/lib/boosters.ts": "964fb9bad9389a3cb32d1b0e3e691d6968aab0ba6b9b888ee79d557c7a895482",
+    "src/pages/boosters/BoosterPackSection.tsx": "c18af3946a9f4bd0fdf06504ee83e5a88cb83f57e596b2977a1b0adea0e5a470",
+    "src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96",
+    "src/components/Nav.tsx": "da902f3a94e58df1cc35412330686fb65507250d6367584e613413b1b276bfd3",
+    "scripts/test-booster-opening-ui.mjs": "b82715832a78ba1b01dd85931d17d3fd07e1711edf7661dc5dbf703e357879ae"
+  },
+  "independentBrowser": {
+    "reportFile": "yunipals-booster-opening-independent-final-20261023.json",
+    "reportSha256": "8d3e33d039942e24180557ddaae9a09b48fd801a68a4bb53dc496d6febf37222",
+    "checks": [
+      {
+        "name": "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
+        "passed": true
+      },
+      {
+        "name": "Real pack offer uses decoded portrait artwork, correct price/rules and demo entry",
+        "passed": true
+      },
+      {
+        "name": "Public offer hides the smoke type for owner and other wallets without internal pack IDs",
+        "passed": true
+      },
+      {
+        "name": "Three accrued credits make one daily pack with an exact quantity-three claim",
+        "passed": true
+      },
+      {
+        "name": "Ten accrued credits cap one daily pack at seven and preserve three saved pulls",
+        "passed": true
+      },
+      {
+        "name": "Zero credits, a paused source and a foreign owner never enable a daily claim",
+        "passed": true
+      },
+      {
+        "name": "Card stays behind the opaque wrapper and emerges through its moving mouth; cancelled draw retracts",
+        "passed": true
+      },
+      {
+        "name": "Mobile touch pulls the wrapper down with real pointer capture, cancels safely and fully clears the card on completion",
+        "passed": true
+      },
+      {
+        "name": "Protected instructions and automatic reveal fit 1024x768 and 390x844 throughout pull settling",
+        "passed": true
+      },
+      {
+        "name": "Ready demo uses actual strip drag; short/cancelled gestures never reveal",
+        "passed": true
+      },
+      {
+        "name": "Keyboard and reduced motion complete the same steps without looping animations",
+        "passed": true
+      },
+      {
+        "name": "Real transaction component never offers an opening for cancelled, failed, VRF-pending, recovery or mismatched requests",
+        "passed": true
+      },
+      {
+        "name": "One torn pack pulls nonsequential NFT identities in order without another tear or mint",
+        "passed": true
+      },
+      {
+        "name": "A confirmed daily request opens only its three verified request cards",
+        "passed": true
+      },
+      {
+        "name": "One confirmed purchase transaction reveals all three exact originals through one wrapper and survives reload",
+        "passed": true
+      },
+      {
+        "name": "Asynchronous partial fulfillment waits for every request across close/reload before one combined wrapper",
+        "passed": true
+      },
+      {
+        "name": "Recovery remains request-specific while the completed originals stay in the same wrapper",
+        "passed": true
+      },
+      {
+        "name": "Forfeited requests are explicit and never invent a card or lose the two completed originals",
+        "passed": true
+      },
+      {
+        "name": "Missing logs, duplicate requests and a wrong actual purchase count cannot open any wrapper",
+        "passed": true
+      },
+      {
+        "name": "Indexer delay preserves the whole group and legacy stored hashes recover their actual purchase count",
+        "passed": true
+      },
+      {
+        "name": "Only confirmed onchain opening+Revealed can explicitly launch the genuine NFT opening",
+        "passed": true
+      }
+    ],
+    "groupsPassed": 21,
+    "groupsFailed": 0,
+    "browserErrors": [],
+    "providerCalls": 0,
+    "transactions": 0,
+    "signatures": 0,
+    "externalNetworkBlocked": true,
+    "fixturesOnly": true,
+    "desktopViewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "mobileViewport": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "independentCoreControls": {
+    "command": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/boosters.test.ts",
+    "workingDirectory": "apps/yunipals-home-web",
+    "passed": 6,
+    "failed": 0
+  },
+  "findings": [],
+  "confirmedBehavior": [
+    "The opaque wrapper and mouth clip hide the card below the torn opening; the small first peek grows during a real draw or wrapper pull, and cancelled drags retract.",
+    "Successful extraction goes directly to the face-up result. No extra reveal stage, swipe instruction, or reveal button remains.",
+    "The protected header stays clear of the moving card and the fixed Close control; the single Next card or Replay action receives visible in-viewport focus.",
+    "One wrapper pulls the exact nonsequential NFT identities belonging to the completed transaction, without another tear or any mint call.",
+    "Daily claims, asynchronous fulfillment, recovery, forfeiture, close/reload, actual count validation and missing/duplicate receipt refusal retain their existing request-group semantics.",
+    "The capped smoke offer is hidden for every wallet, including the owner, while ordinary packs remain public."
+  ],
+  "limitations": [
+    "The browser proof uses actual React components with synthetic local receipt and API fixtures; it does not execute a real purchase, reveal, or wallet signature.",
+    "Production deployment and live-site acceptance are separate owner actions."
+  ]
+}

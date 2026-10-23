@@ -1,0 +1,211 @@
+{
+  "behavior": [
+    "Seal swipe or keyboard rip opens one wrapper.",
+    "Pulling the card upward or wrapper downward gradually exposes the approved card, then automatically shows its revealed result after settling.",
+    "There is no second reveal-card stage/button or misleading swipe-to-reveal instruction.",
+    "Header/instructions remain in a protected layout region outside the clipped physical scene.",
+    "The focused Pull next card/Replay opening action is visible in the protected result header.",
+    "Batch and daily cards remain verified by the unchanged exact receipt/request grouping; each subsequent card is pulled from the same torn-wrapper state."
+  ],
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterPackOpening.tsx",
+      "sha256": "a98b46aff5f658993623b0fd1933261d237850cc6eb7c89607939c4e9d0f2d7a"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/booster-pack-opening.css",
+      "sha256": "d5e7fea0125f814430aa8c3ed0d0bd1365810a16abd3047b8b718e496d282bad"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-opening-ui.mjs",
+      "sha256": "b82715832a78ba1b01dd85931d17d3fd07e1711edf7661dc5dbf703e357879ae"
+    }
+  ],
+  "format": "yunipals-physical-opening-flow-fix-preparation-v1",
+  "independentReview": "Consumer agent reviewing/rerunning exact frozen bytes separately; no completion claimed here.",
+  "preparedAt": "2026-10-23T14:58:35.062Z",
+  "scope": {
+    "approvedArtworkOrHoloChanged": false,
+    "changedProductFiles": [
+      "apps/yunipals-home-web/src/pages/boosters/BoosterPackOpening.tsx",
+      "apps/yunipals-home-web/src/pages/boosters/booster-pack-opening.css"
+    ],
+    "gitMutations": 0,
+    "productionActions": 0,
+    "transactionOrRequestVerificationChanged": false
+  },
+  "screenshots": [
+    {
+      "file": "/tmp/yunipals-opening-protected-1024x768-20261023.png",
+      "sha256": "8dc88f8e5b29ee424d0e6020b060e2f4b90c8aaa0ef1188fbd226c55364c5b35",
+      "syntheticArtwork": true
+    },
+    {
+      "file": "/tmp/yunipals-opening-protected-390x844-20261023.png",
+      "sha256": "cdcf4c096c05db263b1a63476075108ad8c66f64cd5ebb63731c193139cc7f3f",
+      "syntheticArtwork": true
+    }
+  ],
+  "validation": {
+    "browserErrors": [],
+    "checks": [
+      {
+        "name": "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
+        "passed": true
+      },
+      {
+        "name": "Real pack offer uses decoded portrait artwork, correct price/rules and demo entry",
+        "passed": true
+      },
+      {
+        "name": "Public offer hides the smoke type for owner and other wallets without internal pack IDs",
+        "passed": true
+      },
+      {
+        "name": "Three accrued credits make one daily pack with an exact quantity-three claim",
+        "passed": true
+      },
+      {
+        "name": "Ten accrued credits cap one daily pack at seven and preserve three saved pulls",
+        "passed": true
+      },
+      {
+        "name": "Zero credits, a paused source and a foreign owner never enable a daily claim",
+        "passed": true
+      },
+      {
+        "name": "Card stays behind the opaque wrapper and emerges through its moving mouth; cancelled draw retracts",
+        "passed": true
+      },
+      {
+        "name": "Mobile touch pulls the wrapper down with real pointer capture, cancels safely and fully clears the card on completion",
+        "passed": true
+      },
+      {
+        "name": "Protected instructions and automatic reveal fit 1024x768 and 390x844 throughout pull settling",
+        "passed": true
+      },
+      {
+        "name": "Ready demo uses actual strip drag; short/cancelled gestures never reveal",
+        "passed": true
+      },
+      {
+        "name": "Keyboard and reduced motion complete the same steps without looping animations",
+        "passed": true
+      },
+      {
+        "name": "Real transaction component never offers an opening for cancelled, failed, VRF-pending, recovery or mismatched requests",
+        "passed": true
+      },
+      {
+        "name": "One torn pack pulls nonsequential NFT identities in order without another tear or mint",
+        "passed": true
+      },
+      {
+        "name": "A confirmed daily request opens only its three verified request cards",
+        "passed": true
+      },
+      {
+        "name": "One confirmed purchase transaction reveals all three exact originals through one wrapper and survives reload",
+        "passed": true
+      },
+      {
+        "name": "Asynchronous partial fulfillment waits for every request across close/reload before one combined wrapper",
+        "passed": true
+      },
+      {
+        "name": "Recovery remains request-specific while the completed originals stay in the same wrapper",
+        "passed": true
+      },
+      {
+        "name": "Forfeited requests are explicit and never invent a card or lose the two completed originals",
+        "passed": true
+      },
+      {
+        "name": "Missing logs, duplicate requests and a wrong actual purchase count cannot open any wrapper",
+        "passed": true
+      },
+      {
+        "name": "Indexer delay preserves the whole group and legacy stored hashes recover their actual purchase count",
+        "passed": true
+      },
+      {
+        "name": "Only confirmed onchain opening+Revealed can explicitly launch the genuine NFT opening",
+        "passed": true
+      }
+    ],
+    "command": "/root/.nvm/versions/node/v24.18.1/bin/node scripts/test-booster-opening-ui.mjs --output /tmp/yunipals-booster-opening-protected-focused-flow-final-20261023.json",
+    "cwd": "/root/yunipals/apps/yunipals-home-web",
+    "externalRequests": [],
+    "fixturesOnly": true,
+    "fullFrontendTypecheck": "passed",
+    "gitDiffCheck": "passed",
+    "isolatedTemporaryViteCache": true,
+    "providerCalls": 0,
+    "report": {
+      "file": "/tmp/yunipals-booster-opening-protected-focused-flow-final-20261023.json",
+      "sha256": "fc93b1faf94c1d86668d68fdbe906ab5c1090c243f883396d1d94b969ea095ab"
+    },
+    "responsiveMeasuredBounds": [
+      {
+        "cardIntersectsHeaderAtAnyMeasuredStage": false,
+        "closeBottom": 60,
+        "focusedAction": "results",
+        "focusedActionBounds": {
+          "bottom": 299,
+          "height": 47,
+          "left": 436.28125,
+          "right": 587.71875,
+          "top": 252,
+          "width": 151.4375
+        },
+        "instructionsOnTopAtEveryMeasuredStage": true,
+        "partialCardHeaderClearance": 156.12957763671875,
+        "resultHeaderTop": 64,
+        "settlingCardHeaderClearance": 28.575439453125,
+        "titleIntersectsClose": false,
+        "viewport": {
+          "height": 768,
+          "width": 1024
+        }
+      },
+      {
+        "cardIntersectsHeaderAtAnyMeasuredStage": false,
+        "closeBottom": 60,
+        "focusedAction": "results",
+        "focusedActionBounds": {
+          "bottom": 283.796875,
+          "height": 47,
+          "left": 119.28125,
+          "right": 270.71875,
+          "top": 236.796875,
+          "width": 151.4375
+        },
+        "instructionsOnTopAtEveryMeasuredStage": true,
+        "partialCardHeaderClearance": 194.436767578125,
+        "resultHeaderTop": 64,
+        "settlingCardHeaderClearance": 53.03179931640625,
+        "titleIntersectsClose": false,
+        "viewport": {
+          "height": 844,
+          "width": 390
+        }
+      }
+    ],
+    "signatures": 0,
+    "sourceSha256": {
+      "scripts/test-booster-opening-ui.mjs": "b82715832a78ba1b01dd85931d17d3fd07e1711edf7661dc5dbf703e357879ae",
+      "src/components/Nav.tsx": "da902f3a94e58df1cc35412330686fb65507250d6367584e613413b1b276bfd3",
+      "src/lib/boosterReveal.ts": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+      "src/lib/boosters.ts": "964fb9bad9389a3cb32d1b0e3e691d6968aab0ba6b9b888ee79d557c7a895482",
+      "src/pages/boosters/BoosterClaimPacks.tsx": "f33dbe731a27da60e64f8f6f6243b86a6a9819db138f2886f5aa86b950ed4c75",
+      "src/pages/boosters/BoosterPackOpening.tsx": "a98b46aff5f658993623b0fd1933261d237850cc6eb7c89607939c4e9d0f2d7a",
+      "src/pages/boosters/BoosterPackSection.tsx": "c18af3946a9f4bd0fdf06504ee83e5a88cb83f57e596b2977a1b0adea0e5a470",
+      "src/pages/boosters/BoosterRequestOpening.tsx": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+      "src/pages/boosters/BoosterTransactions.tsx": "fe7fdb38f46c423da97b62106ad8193d052fedefb546d3327a1383ae5782891e",
+      "src/pages/boosters/booster-pack-opening.css": "d5e7fea0125f814430aa8c3ed0d0bd1365810a16abd3047b8b718e496d282bad",
+      "src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96"
+    },
+    "transactions": 0
+  }
+}

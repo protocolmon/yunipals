@@ -227,8 +227,8 @@ export function BoosterTransactions({
                     ? row.kind === "claim"
                       ? `Open daily pack · ${quantity} pulls`
                       : total > 1
-                        ? `Reveal ${row.completed} Yunipals`
-                        : "Reveal Yunipal"
+                        ? `View ${row.completed} cards`
+                        : "View card"
                     : "View pack progress"}
                 </button>
               )}

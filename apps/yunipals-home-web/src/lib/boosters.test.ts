@@ -11,7 +11,7 @@ import {
 } from "./boosters";
 import { boosterSetupOwner } from "./boosterSetup";
 
-test("the capped smoke type is shown only to the approved owner; ordinary packs stay public", () => {
+test("the capped test offer stays hidden for every wallet, including the owner; ordinary packs stay public", () => {
   const smoke = {
     manifestUri:
       "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-smoke-v1/manifest.json"
@@ -30,7 +30,7 @@ test("the capped smoke type is shown only to the approved owner; ordinary packs 
   );
   assert.deepEqual(
     visibleBoosterTypes([smoke, standard], boosterSetupOwner.toLowerCase()),
-    [smoke, standard]
+    [standard]
   );
 });
 
