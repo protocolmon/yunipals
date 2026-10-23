@@ -1,0 +1,65 @@
+{
+  "format": "yunipals-arena-direct-native-v2-preparation-v1",
+  "status": "prepared-not-staged",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-direct-native-cutover-v2.py",
+      "sha256": "8c1c31233dd112daf036ee75d44d8847d70dfe1181aec509ce3b895a06ebe079"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-direct-native-cutover-v2-test.py",
+      "sha256": "a4f72f9b288b6f7f83ce543d766e025ef3b84a3bdc561ded9ecff2b084eda037"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-direct-native-cutover-v2.md",
+      "sha256": "b332324575ee098cd91a5bf608176d3642c3f4095886d74549be96336e045dc0"
+    }
+  ],
+  "pythonControls": 33,
+  "retainedChildControls": 9,
+  "postgres": {
+    "format": "yunipals-arena-direct-native-local-postgres-v1",
+    "passed": true,
+    "postgres": "16.15",
+    "migrations": 12,
+    "realCommitBoundaries": 3,
+    "onlineReviewCanonicalFloorProven": true,
+    "preCommitFailureRolledBack": true,
+    "lostAcknowledgementsReconciledByActualXid": 3,
+    "abortedSelectorForwardPublication": true,
+    "actualInProgressXidRefused": true,
+    "adoptedOrigins": 2,
+    "ciphertextsAadProviderUuidSignedBytesPreserved": true,
+    "sourceSwitchHistoryRows": 1,
+    "mutableRecoveryAllowedWithRetainedLedger": true,
+    "metadataFixtureOverrideOnly": [
+      "database",
+      "port",
+      "owner"
+    ],
+    "httpRequests": 0,
+    "productionActions": 0
+  },
+  "evidence": [
+    {
+      "path": "/tmp/yunipals-arena-direct-native-v2-tests-20261023.log",
+      "sha256": "95cda653d3d5d3c6fddbb69be42a2ac2b45ccf537adfb49db254d34eb80428ed"
+    },
+    {
+      "path": "/tmp/yunipals-arena-direct-native-v2-child-controls-20261023.log",
+      "sha256": "4c3539ee4f865b5716f3815f652421bce02a2764de942f0fbb224a582b6e2ec2"
+    },
+    {
+      "path": "/tmp/yunipals-arena-direct-native-v2-postgres-20261023.log",
+      "sha256": "80733f9ab7e686680056968da14a79dc4c6ccdd02a9374430224c9b3152df295"
+    },
+    {
+      "path": "/tmp/yunipals-arena-direct-native-v2-pg-driver-20261023.mjs",
+      "sha256": "2608475827d84b201af8fcc2a1702421c7830d5865d444980acac9374d92951e"
+    }
+  ],
+  "businessMethodsAstIdenticalExceptSourceQualification": true,
+  "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+  "originalWholeValidationPassed": false,
+  "productionActions": 0
+}

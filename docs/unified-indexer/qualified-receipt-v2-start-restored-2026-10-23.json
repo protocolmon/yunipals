@@ -1,0 +1,26 @@
+{
+  "format": "yunipals-qualified-receipt-v2-start-restored-v1",
+  "operatorSha256": "325efeb168a364c0ba99e02ad7cb0dc773025a5c1911dddda5cfc88e302838f7",
+  "reviewHash": "be42ae22cf8310109601cec7c782e08b0b252712a9ed25dbf680c0531066de0f",
+  "startCalls": 1,
+  "workerInvocation": "d4c52a1889ed45b8aa99493f2ee41b33",
+  "workerExitStatus": 127,
+  "fixedCause": "setpriv: setresuid failed: Operation not permitted",
+  "actualRuntimeReceiptProduced": false,
+  "automaticRetry": false,
+  "observedReceiptProviderCalls": 0,
+  "receiptRowsAndLeasesUnchanged": true,
+  "beforeAfterEvidence": "qualified-receipt-first-attempt-observation-2026-10-23.json",
+  "actualOwnedRestore": {
+    "at": "2026-10-23T11:33:00.066141+00:00",
+    "originalFragmentUnchanged": true,
+    "paidAuthority": false,
+    "receiptRowsOrLeasesReset": false,
+    "restored": true,
+    "sourceRestarted": false,
+    "supportRemainsStopped": true
+  },
+  "restoreReceiptSha256": "53f198868ed0701db29565bb6ff956502e8838e1a9cd83b2226566a5c8bace9a",
+  "nextVersion": "source6-qualified-receipts-v3.py",
+  "nextVersionActuallyStarted": false
+}

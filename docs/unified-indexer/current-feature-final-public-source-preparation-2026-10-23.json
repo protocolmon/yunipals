@@ -1,0 +1,158 @@
+{
+  "format": "yunipals-current-feature-final-public-source-preparation-v1",
+  "preparedAt": "2026-10-23T11:35:39.471596+00:00",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v1.py",
+      "sha256": "73afd1e1015232b27106754d71f8b148afc0cd8ff77637e39a92aa2382ad64a6",
+      "bytes": 7617
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v1.files.json",
+      "sha256": "935eedcc01f8be78dc8ad2dd3cc29999dc3c5d7233468e06acc8d4ebad48902e",
+      "bytes": 9468
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v1.test.py",
+      "sha256": "06d6ab772252de8ba523aa88e02c43ffff144c2835aa7299eaed09ed81aab731",
+      "bytes": 10966
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v1.md",
+      "sha256": "5a5fb67aea3e7d44b8bff4937d9de63a41a681bcbf1a45eb77b6cfcff1ae3d6a",
+      "bytes": 3141
+    }
+  ],
+  "payloadSourceFiles": [
+    {
+      "source": "ops/unified-indexer-transition/booster-api-binding-v2.py",
+      "sha256": "4ce2f6216ee3774ad89ca5ed53bae9db606d292354715497c0eb00df74f3e909",
+      "bytes": 8329
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-api-checks-v1.py",
+      "sha256": "591c117583e9d0568340dfe6f0390c8ddb7bcd984efbcb41afea35b645ab13bf",
+      "bytes": 8367
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-feature-v1.test.py",
+      "sha256": "c19716a6bf5e097598beb59ef5befbd9bbc990dfd2598617a40560f306c84aa4",
+      "bytes": 13339
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v6.md",
+      "sha256": "bf301905fa5cc7ad93aca70bb13c3e74865111c0a60257952f08e70092dde7fb",
+      "bytes": 6309
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v6.postgres-test.mjs",
+      "sha256": "e8876e4c6bd4c9c5636d5d387594cd15118a96e8a272fa7779de25e2100d612c",
+      "bytes": 13738
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v6.py",
+      "sha256": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b",
+      "bytes": 82425
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v6.test.py",
+      "sha256": "cd549f3854b4680bb93304afe496af6f86ddf1a62477fd0637d8431f37382396",
+      "bytes": 43817
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v2.py",
+      "sha256": "0daf6d004107d1cfea362c538384ff74b23a61e3daf2536e4574aed9084def2f",
+      "bytes": 15927
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v2.test.py",
+      "sha256": "812a8226c71e1861ee14fe67985510972cdd1c231c977f6b0a2a04ead7b6f90b",
+      "bytes": 5706
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-operational-live-booster-v1.py",
+      "sha256": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+      "bytes": 5740
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-policy-v2.py",
+      "sha256": "235c1a65309f92440335faf881d592371b10c3df824c50a1aa55ef68092ab720",
+      "bytes": 6401
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-runtime-v3.py",
+      "sha256": "5f42dccc1e632848594c763ff2490d56fbb063f32e0e022a72f88e07fe9b7811",
+      "bytes": 16582
+    },
+    {
+      "source": "docs/unified-indexer/booster-current-feature-handover-preparation-2026-10-23.json",
+      "sha256": "059212625769080774b07fb6eb9713b467dacb7ad7c4d1976845d50c5728e17c",
+      "bytes": 5091
+    },
+    {
+      "source": "docs/unified-indexer/booster-current-feature-readonly-qualification-2026-10-23.json",
+      "sha256": "bfdb5709764409684fb7ae002e2cbc545b18ab0a694c6d6fc0c4d0ce38843f05",
+      "bytes": 599
+    },
+    {
+      "source": "docs/unified-indexer/booster-feature-v6-postgres-acceptance-2026-10-23.json",
+      "sha256": "aafe29a06e450aaa8ccc6e42561ecab3e65fdbb04d930ac9e9c5f320b1838172",
+      "bytes": 694
+    },
+    {
+      "source": "docs/unified-indexer/current-feature-handover-independent-review-2026-10-23.json",
+      "sha256": "e6a42f12f1db946d1da9a9d96348361d91dc17475637b8e9805ff89741399e83",
+      "bytes": 3206
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v3-independent-review-2026-10-23.json",
+      "sha256": "26f9eee3861a2c5aa03a11030c7fab77f70d7357a502bd0452eb54f88c99ef11",
+      "bytes": 3906
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v3-preparation-2026-10-23.json",
+      "sha256": "bf5ea50fedf0ba4560447c7956caaf82aa2f205ae5108dbaaf547ecf53984bf9",
+      "bytes": 1915
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v3-test.py",
+      "sha256": "4dca4f6c69509b1e7e60e58d6653207a34b3ffae000dab734d8dbadd735e7f0d",
+      "bytes": 10349
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v3.md",
+      "sha256": "28f21d7950b76d01ace6587ebaea24b5d31aab658b68e3fa8fd440c72955cc7c",
+      "bytes": 2995
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v3.py",
+      "sha256": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6",
+      "bytes": 113416
+    }
+  ],
+  "payloadCount": 21,
+  "historicalPublicDependencyCount": 23,
+  "manifestSha256": "935eedcc01f8be78dc8ad2dd3cc29999dc3c5d7233468e06acc8d4ebad48902e",
+  "validation": {
+    "realFilesystemControls": 11,
+    "passed": true,
+    "defaultReadOnly": true,
+    "noOverwrite": true,
+    "partialStagingRequiresFreshReview": true,
+    "operationalReceiptRequirement": false
+  },
+  "operatorBindings": {
+    "consumerEntrySha256": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+    "featureOwnerSha256": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b",
+    "finalSupervisorSha256": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6",
+    "apiBundleSha256": "b624dc518556756399a26e691bd1d53d319bd46d20134f9d6e1356dae3d96088",
+    "apiUnitSha256": "b160e4e6c18a9bfae20bf1780d356eeca41350550c31e63bbb9c7a6d78582ec4",
+    "launchReads": 10,
+    "nativeReadDelta": 8
+  },
+  "finalIndependentReviewSha256": "26f9eee3861a2c5aa03a11030c7fab77f70d7357a502bd0452eb54f88c99ef11",
+  "runtimeGatesModified": false,
+  "staged": false,
+  "productionActions": 0,
+  "runtimeReadinessClaimed": false
+}

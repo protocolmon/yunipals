@@ -1,0 +1,234 @@
+{
+  "format": "yunipals-arena-public-scanner-production-qualification-v4",
+  "status": "actual-synthetic-qualification-passed",
+  "host": "168.119.172.10",
+  "operatorPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-public-scanner-probe-v4.py",
+  "operatorSha256": "1c95c5c1422393864eaac6b5a2aabd21e5618153c8a5e6bd1335054984a39494",
+  "localControlsPassed": 20,
+  "serviceRuns": 1,
+  "realCredentialsProvided": 0,
+  "productionDatabaseRequests": 0,
+  "providerRequests": 0,
+  "networkReachabilityTested": false,
+  "financialAuthorityTested": false,
+  "actualScannerStarted": false,
+  "sourceRuntimeChanged": false,
+  "priorProbeVersionsPreserved": true,
+  "onHostEvidenceDirectory": "/var/backups/yunipals-arena-public-scanner-probe-v4-20261023",
+  "review": {
+    "databaseRequests": 0,
+    "format": "yunipals-arena-public-scanner-probe-owner-v4",
+    "review": {
+      "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+      "databaseRequests": 0,
+      "format": "yunipals-arena-public-scanner-probe-owner-v4",
+      "networkReachabilityClaimed": false,
+      "operatorSha256": "1c95c5c1422393864eaac6b5a2aabd21e5618153c8a5e6bd1335054984a39494",
+      "providerRequests": 0,
+      "realCredentialsProvided": 0,
+      "source": {
+        "childSha256": "f606f0a85b4d59c7eb1084c2546daaed257e5fc56bdccb57c43e81e6beaf40c2",
+        "manifestSha256": "fe6a122bd9dbac6614ff2126db2010a4f73bc54921f8dc40109a9c850ee3eb3e",
+        "probeSha256": "34a2051062a2ba52d93a87c0598a4330ed29de8e1a5354954617ada80494d5ed",
+        "publicImportSourceSha256": {
+          "apps/yunipals-market-api/src/arena/live/projection.ts": "c42794e369ea260cb2b722ce90fb111ef922c895819a25ac6fde527efc58ef73",
+          "apps/yunipals-market-api/src/arena/live/projector.ts": "47374f9c4e688591f6a16d9f54471a6e3d9fe5256be70985155c6c086693d960",
+          "apps/yunipals-market-api/src/confirmations.ts": "11abd8f5c165762af9aa1d987609ba0ff3f8af318e3d847634f290f873bc3b77",
+          "apps/yunipals-market-api/src/rpcBudgetProxyRegistry.ts": "aeeab285d36ade995761bcccd3dc179324ed2a611d4c7713fb826df01ca143da",
+          "packages/yunipals-market-core/src/arena.ts": "4a340d2e82135b85d8239e448aac3bc9f850b3f5738865b56791e44767ba71d9"
+        },
+        "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24"
+      },
+      "syntheticInputSha256": "cb76d5dd66aaaf32f7de734a160d0cf52cce0eec5e3acc3e3f33288b689319b5",
+      "unit": "yunipals-arena-public-rollback-reader-probe-v1.service",
+      "unitSha256": "bf59b9d7728b9de65f36f48abf17b91c53214004d4c27bd86d7c6c62b4022277"
+    },
+    "reviewHash": "a6e794ed0ad747da6ae2adec44efe74d53c7b6fb4c916d3f037c6c41c523f08e",
+    "serviceJobs": 0
+  },
+  "actualRun": {
+    "actualNamespace": {
+      "gid": 63605,
+      "invocation": "0de5cf4617444b519f030aadcc588267",
+      "pid": 1716134,
+      "startTicks": 6617874692,
+      "uid": 63605
+    },
+    "cleanup": {
+      "bootLinksCreated": 0,
+      "cleanupComplete": true,
+      "existingScannerChanged": false,
+      "format": "yunipals-arena-public-scanner-probe-owner-v4",
+      "publicProbeFilesRemoved": true,
+      "syntheticInputRemoved": true,
+      "unitFileRemoved": true
+    },
+    "format": "yunipals-arena-public-scanner-probe-owner-v4",
+    "networkReachabilityClaimed": false,
+    "productionDatabaseRequests": 0,
+    "proof": {
+      "childSha256": "f606f0a85b4d59c7eb1084c2546daaed257e5fc56bdccb57c43e81e6beaf40c2",
+      "credential": {
+        "expectedUnit": "yunipals-arena-public-rollback-reader-probe-v1.service",
+        "fileRoot0440DirectoryRoot0550ReadonlyTmpfsVerified": true,
+        "qualified": true,
+        "realCredentialsProvided": 0,
+        "syntheticSha256": "6c8c192b46531a49a9d0902a7f1de0e37f9b42c687a6738aa33c2b2a7d4c4606"
+      },
+      "credentialMetadata": {
+        "credentialDirectoryMatches": true,
+        "directory": {
+          "bytes": 60,
+          "directory": true,
+          "gid": 0,
+          "mode": "550",
+          "present": true,
+          "regularFile": false,
+          "symlink": false,
+          "uid": 0
+        },
+        "exactMounts": [
+          {
+            "filesystem": "tmpfs",
+            "flags": [
+              "ro",
+              "nosuid",
+              "nodev",
+              "noexec",
+              "relatime",
+              "nosymfollow"
+            ],
+            "mountId": "1009",
+            "optionalFields": [
+              "shared:1032",
+              "master:712"
+            ]
+          }
+        ],
+        "file": {
+          "bytes": 152,
+          "directory": false,
+          "gid": 0,
+          "mode": "440",
+          "present": true,
+          "regularFile": true,
+          "symlink": false,
+          "uid": 0
+        },
+        "processGid": 63605,
+        "processUid": 63605
+      },
+      "format": "yunipals-arena-public-scanner-synthetic-probe-v1",
+      "qualified": true,
+      "runtime": {
+        "databaseConnections": 0,
+        "databasePoolMax": 1,
+        "fallbackBaseDepth": 3,
+        "financialAuthorityTested": false,
+        "freeProfileId": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+        "freeProxyUrl": "http://127.0.0.1:19202/unified",
+        "installedProjectorImported": true,
+        "networkAttempts": 0,
+        "proxyConstructorOnly": true,
+        "proxyReachabilityTested": false,
+        "qualified": true,
+        "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+        "suppressedTsxParentIpc": 1
+      },
+      "syntheticOnly": true
+    },
+    "providerRequests": 0,
+    "qualified": true,
+    "realCredentialsProvided": 0
+  },
+  "terminalVerification": {
+    "activationPaths": [],
+    "format": "yunipals-arena-scanner-v4-terminal-verification-v1",
+    "productionDatabaseRequests": 0,
+    "providerRequests": 0,
+    "publicDirectoryAbsent": true,
+    "qualified": true,
+    "readOnlyVerification": true,
+    "realCredentialsProvided": 0,
+    "receipts": [
+      {
+        "bytes": 1492,
+        "mode": "0o600",
+        "name": "operation.json",
+        "sha256": "a6e794ed0ad747da6ae2adec44efe74d53c7b6fb4c916d3f037c6c41c523f08e",
+        "uid": 0
+      },
+      {
+        "bytes": 111,
+        "mode": "0o600",
+        "name": "actor.json",
+        "sha256": "85611854ea684c2eeb6237c36a1e494d500002223a57cbd8689dd7fcd96ebeee",
+        "uid": 0
+      },
+      {
+        "bytes": 1442,
+        "mode": "0o600",
+        "name": "probe-proof.json",
+        "sha256": "3e04aa29ae827988ee7961db1b1f4b602f309cd32832345a5fa682e9854f8fd2",
+        "uid": 0
+      },
+      {
+        "bytes": 1996,
+        "mode": "0o600",
+        "name": "result.json",
+        "sha256": "b95c08711674b27e2ab4820a9d49757a4aafc2fc545390eedde67769d3afd412",
+        "uid": 0
+      },
+      {
+        "bytes": 215,
+        "mode": "0o600",
+        "name": "cleanup-result.json",
+        "sha256": "9418bdc2b1923763adedb272e817dd7e21e4e19cb803aaf3a9cd32175dfe67bc",
+        "uid": 0
+      },
+      {
+        "bytes": 1136,
+        "mode": "0o600",
+        "name": "files.json",
+        "sha256": "0459f6adf4f3307315e5e62fcec488a0f7154984b83ac33ea143dc0e33ca273a",
+        "uid": 0
+      },
+      {
+        "bytes": 127,
+        "mode": "0o600",
+        "name": "start-intent.json",
+        "sha256": "30acf146e9ed7209320c3adc062e0caa22f590415dee1add05aa2f8a146779b9",
+        "uid": 0
+      }
+    ],
+    "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+    "stderrBytes": 0,
+    "syntheticInputAbsent": true,
+    "terminal": {
+      "ActiveState": "inactive",
+      "ExecMainStatus": "0",
+      "Job": "",
+      "LoadState": "not-found",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead"
+    },
+    "unit": "yunipals-arena-public-rollback-reader-probe-v1.service",
+    "unitFileAbsent": true
+  },
+  "localEvidence": [
+    {
+      "path": "/tmp/yunipals-arena-scanner-v4-production-review-20261023.json",
+      "sha256": "a13f9476fb2b86eab377022165fc65dc49bfacbe67e8f94f9e047005bf5c9e00"
+    },
+    {
+      "path": "/tmp/yunipals-arena-scanner-v4-production-run-20261023.json",
+      "sha256": "275fc3c327a8c6bcfaaad6ca4620d3ef837cb901ea67c658eb2c5566c45c76d2"
+    },
+    {
+      "path": "/tmp/yunipals-arena-scanner-v4-terminal-verification-20261023.json",
+      "sha256": "5d1ec05ba305ca41711e166e058bf6ab99b07a9f59a1d65c4e3dfc4df955b017"
+    }
+  ],
+  "scope": "Actual DynamicUser synthetic systemd credential mount and installed public projector/client constructors only. This is not target database authentication, RPC reachability, source readiness, fallback activation or financial authorization."
+}

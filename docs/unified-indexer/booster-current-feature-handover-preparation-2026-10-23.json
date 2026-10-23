@@ -1,0 +1,127 @@
+{
+  "format": "yunipals-current-booster-handover-preparation-v1",
+  "preparedAt": "2026-10-23T11:06:22.532317+00:00",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/booster-api-binding-v2.py",
+      "sha256": "4ce2f6216ee3774ad89ca5ed53bae9db606d292354715497c0eb00df74f3e909",
+      "bytes": 8329
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-owned-booster-policy-v2.py",
+      "sha256": "235c1a65309f92440335faf881d592371b10c3df824c50a1aa55ef68092ab720",
+      "bytes": 6401
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-owned-booster-runtime-v3.py",
+      "sha256": "5f42dccc1e632848594c763ff2490d56fbb063f32e0e022a72f88e07fe9b7811",
+      "bytes": 16582
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-operational-live-booster-v1.py",
+      "sha256": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+      "bytes": 5740
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-current-api-checks-v1.py",
+      "sha256": "591c117583e9d0568340dfe6f0390c8ddb7bcd984efbcb41afea35b645ab13bf",
+      "bytes": 8367
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-source-parity-v2.py",
+      "sha256": "0daf6d004107d1cfea362c538384ff74b23a61e3daf2536e4574aed9084def2f",
+      "bytes": 15927
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-feature-handover-v6.py",
+      "sha256": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b",
+      "bytes": 82425
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-current-feature-v1.test.py",
+      "sha256": "c19716a6bf5e097598beb59ef5befbd9bbc990dfd2598617a40560f306c84aa4",
+      "bytes": 13339
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-source-parity-v2.test.py",
+      "sha256": "812a8226c71e1861ee14fe67985510972cdd1c231c977f6b0a2a04ead7b6f90b",
+      "bytes": 5706
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-feature-handover-v6.test.py",
+      "sha256": "cd549f3854b4680bb93304afe496af6f86ddf1a62477fd0637d8431f37382396",
+      "bytes": 43817
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-feature-handover-v6.postgres-test.mjs",
+      "sha256": "e8876e4c6bd4c9c5636d5d387594cd15118a96e8a272fa7779de25e2100d612c",
+      "bytes": 13738
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-feature-handover-v6.md",
+      "sha256": "bf301905fa5cc7ad93aca70bb13c3e74865111c0a60257952f08e70092dde7fb",
+      "bytes": 6309
+    },
+    {
+      "path": "docs/unified-indexer/booster-current-feature-readonly-qualification-2026-10-23.json",
+      "sha256": "bfdb5709764409684fb7ae002e2cbc545b18ab0a694c6d6fc0c4d0ce38843f05",
+      "bytes": 599
+    },
+    {
+      "path": "docs/unified-indexer/booster-feature-v6-postgres-acceptance-2026-10-23.json",
+      "sha256": "aafe29a06e450aaa8ccc6e42561ecab3e65fdbb04d930ac9e9c5f320b1838172",
+      "bytes": 694
+    }
+  ],
+  "currentApi": {
+    "bundleSha256": "b624dc518556756399a26e691bd1d53d319bd46d20134f9d6e1356dae3d96088",
+    "unitSha256": "b160e4e6c18a9bfae20bf1780d356eeca41350550c31e63bbb9c7a6d78582ec4",
+    "rolloutReceiptSha256": "91e6496cb4efc7548671318beeb63b2592602d545ab884dd3f6bb3f539f70fb8",
+    "launchReads": 10,
+    "launchJournalOid": "74518495",
+    "nativeJournalOid": "73032629"
+  },
+  "tests": {
+    "currentFeatureControls": 12,
+    "lifecycleControls": 23,
+    "parityControls": 8,
+    "actualDisposablePostgresGroups": 11,
+    "actualReadOnlyCurrentBindingAndFeatureGETs": true,
+    "approvedAssetsVerified": 4
+  },
+  "latestNativeInventory": {
+    "scope": "earlier_bounded_readonly_observation_not_a_current_readiness_claim",
+    "schema": "unified_shadow_20261020_7e7375b0",
+    "schemaOid": "73004622",
+    "buildId": "bf4939b3ff",
+    "nativeBaseComplete": 52950938,
+    "launchBaseComplete": 52981366,
+    "nativeReady": false,
+    "existingNativePonderReads": 2,
+    "nativeBoosterReadsMissing": 8
+  },
+  "futureRequiredEvidence": [
+    "actual full native readiness and caught-up Base checkpoint",
+    "four final consumer installations made through new entry",
+    "eight native SELECT admission",
+    "fresh common-boundary parity v2",
+    "actual feature reader switch",
+    "genuine newer event and post-switch parity before temporary-source retirement"
+  ],
+  "receiptSeams": {
+    "consumerFormat": "yunipals-consumer-operational-install-v7",
+    "consumerOperatorSha256": "exact_new_consumer_entry_file_SHA",
+    "consumerAcknowledgement": "acknowledgedCurrentBoosterFeature",
+    "handoverBase": "/var/backups/yunipals-booster-feature-handover-v6-20261023",
+    "grantFormat": "yunipals-booster-eight-read-admission-v2",
+    "inverseField": "eightReadInverse",
+    "oldReadsField": "oldTenReadsPreserved",
+    "inverseValidationFormat": "yunipals-booster-feature-inverse-validation-v1"
+  },
+  "productionDatabaseWrites": 0,
+  "productionServiceActions": 0,
+  "productionProviderCalls": 0,
+  "historicalFilesModified": false,
+  "oldWholeNormalValidatorClaimedPassed": false,
+  "actualHandoverApplied": false
+}

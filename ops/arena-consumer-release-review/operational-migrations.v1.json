@@ -1,0 +1,97 @@
+{
+  "format": "yunipals-arena-operational-migration-expectations-v1",
+  "sourceDigest": "9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d",
+  "derivation": "actual frozen schema modules transpiled in memory, private checksum constants exported for metadata only; no migration function called and no database/provider module imported",
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identitySchema.ts",
+      "sha256": "6d6281fa13786043626facf514a0a3326f6027b541507e172bbfed46c3fa4bb4",
+      "bytes": 7841
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/disclosureSchema.ts",
+      "sha256": "94939d6cfdd0bd4920c7d914dad51bfa8c44996f305590866ec57d625763cdd1",
+      "bytes": 1109
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/disclosureQueueSchema.ts",
+      "sha256": "a4c790830e5abd7cd6c29edc17e084305921989fe42cff8cb6149bea12f231f5",
+      "bytes": 1197
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/transactionSchema.ts",
+      "sha256": "e5b7074bdcb2b1f0479984a01704287993784112b8ac5034e436f9fc8143ef37",
+      "bytes": 5841
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientTransactionSchema.ts",
+      "sha256": "fcfe4dea30df2ee6f60dc34b98f39c3ef5b766d97f1b521aaec0384a5677fb44",
+      "bytes": 4702
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/providerSchema.ts",
+      "sha256": "3d9695e3a653c91a6f341274bdb87af624eecf80398cc61c58b5d47713da9ee4",
+      "bytes": 4601
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaSchema.ts",
+      "sha256": "7fe87baa830f75d99135f278824890e0beee04ce1a72b9e23b8fbde71d3131f9",
+      "bytes": 6023
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSelectionSchema.ts",
+      "sha256": "dd1dd33069213f8e413f71d4ddd39a877c66b6a853ff56ba05d701e48eb4bf9e",
+      "bytes": 10865
+    }
+  ],
+  "markers": [
+    {
+      "version": 1,
+      "checksum": "93eb88af5705ceefebdb9d26797385cbae53e718576821fe45bed5ea5207ec35"
+    },
+    {
+      "version": 2,
+      "checksum": "c52b30e51b0184a1bf5856870e11cb2da173f04555c30390b6215654850123e8"
+    },
+    {
+      "version": 3,
+      "checksum": "ce82df321d9eac792584a85dea81561c40f96b473364854381cc823a72ae5c93"
+    },
+    {
+      "version": 4,
+      "checksum": "97283c0b017211c394767932a734d4a5b767a346edfe64ea25325a7ad6570e79"
+    },
+    {
+      "version": 5,
+      "checksum": "2333131e81efbcff88a7c17eebebb923353236a07032de64447d81ccf7ba5c45"
+    },
+    {
+      "version": 6,
+      "checksum": "eda0ea54c682f2f3c92e87ed6cd1289cc558ea224408bf73681f051263b42590"
+    },
+    {
+      "version": 7,
+      "checksum": "d8266d8f7948d1a8d977f6146e06c74f83bca0bb5f5f72149183f73e25c08b00"
+    },
+    {
+      "version": 8,
+      "checksum": "0f5b0066c27deda1c0c3ceb94f78d99d07ac1460f343da920946d0c512e840ba"
+    },
+    {
+      "version": 9,
+      "checksum": "90e16206b04144bd06db867bf794ed96083a947743a17bfc6f89bb87135c2f27"
+    },
+    {
+      "version": 10,
+      "checksum": "645378e8698a5d09806b1c4ff1cc84bf58cf78764104049e6a573dfd57538862"
+    },
+    {
+      "version": 11,
+      "checksum": "8e24e92ebfb27d60e79954e9a468764a206031ca9dc3b666ea9ade586ad268f9"
+    },
+    {
+      "version": 12,
+      "checksum": "ac3064c12b2f94fecda8fa37f556017456c159fdd4dfb38edbbf53ef420826dc"
+    }
+  ]
+}

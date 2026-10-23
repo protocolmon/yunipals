@@ -1,0 +1,100 @@
+{
+  "format": "yunipals-qualified-receipt-v3-preparation-v1",
+  "preparedAt": "2026-10-23T11:44:52.375716+00:00",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v3.py",
+      "sha256": "b4c450f2d7d3f2404939dc2e6ddb704b8eb627ac88f0eadbeff8f3763c630e0c",
+      "bytes": 19265
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v3.test.py",
+      "sha256": "79aef153e8455181ba9c1588680491e38a454712d9e19590cdcb179f3bf86655",
+      "bytes": 13623
+    },
+    {
+      "path": "ops/unified-indexer-transition/support-probe-runner-v6.mjs",
+      "sha256": "019d9dd5bde40d3821273c2be624ebcb6fa53968f7f0748dea8c7ebb763363e4",
+      "bytes": 13732
+    },
+    {
+      "path": "ops/unified-indexer-transition/support-probe-runner-v6.test.mjs",
+      "sha256": "7cefaf6224e0a12ad12bfd11e8813953a52510a5825d4e72f04d654bb3ce3bf0",
+      "bytes": 11694
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipt-entry-v3.mjs",
+      "sha256": "81745864c296b252526d125142b8ef16c37aeb32498007a5b09e90267832b93b",
+      "bytes": 761
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipt-probe-v3.mjs",
+      "sha256": "f014900df11adb76f7c8e4f9f900cb45879189170c8f6fb6acb94ad2d2eabbec",
+      "bytes": 2203
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipt-probe-v3.py",
+      "sha256": "f89ced9f929090bc1669daabeaab6c09e801da444b1034f0703c9d4f75d80080",
+      "bytes": 2880
+    },
+    {
+      "path": "ops/unified-indexer-transition/stage-source6-qualified-receipts-v3.py",
+      "sha256": "38a3a2671f1724d3c7e01889f3aa56aca8ce392695d42533a47dc8c1e68020c9",
+      "bytes": 55397
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v3.md",
+      "sha256": "407080aa062c960f15650ba36221788bf80ecd6fe902fe50a7b064176b46126c",
+      "bytes": 6637
+    }
+  ],
+  "actualPriorFailure": {
+    "invocation": "d4c52a1889ed45b8aa99493f2ee41b33",
+    "fixedMessage": "setpriv: setresuid failed: Operation not permitted",
+    "restoredByRoot": true,
+    "receiptWorkObserved": 0
+  },
+  "actualReadOnlyNss": {
+    "uid": 969,
+    "gid": 963,
+    "groupIds": [
+      963
+    ],
+    "extraGroups": 0
+  },
+  "ownerDelta": {
+    "baselineSha256": "325efeb168a364c0ba99e02ad7cb0dc773025a5c1911dddda5cfc88e302838f7",
+    "changedFunctions": [
+      "command",
+      "drop_bytes",
+      "configuration",
+      "authority",
+      "actor_boundary"
+    ],
+    "newFunctions": [
+      "inherited_identity"
+    ],
+    "applyActorInspectRestoreSourceQualificationReviewQuietAstUnchanged": true
+  },
+  "runnerDelta": "one group predicate only; empty or963, no extra group",
+  "loopSha256": "477376b0a5d8b377a313c248627789af5c0f7d34f569f8ed58e0498bfe0d6691",
+  "limits": {
+    "rpcCalls": 256,
+    "loopSeconds": 840,
+    "systemdSeconds": 900,
+    "maximumConcurrentUpstream": 1,
+    "newPaidAllowanceCu": 0
+  },
+  "validation": {
+    "pythonControls": 16,
+    "nodeRunnerControls": 13,
+    "nodeUnchangedLoopControls": 4,
+    "passed": true,
+    "actualHardenedSystemdProbeRun": false
+  },
+  "staged": false,
+  "productionActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "sourceOrProxyRestarts": 0
+}

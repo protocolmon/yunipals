@@ -1,0 +1,57 @@
+{
+  "databaseWrites": false,
+  "format": "yunipals-receipt-peer-inspection-v1",
+  "inspected": true,
+  "observerRunnable": false,
+  "receiptsRunnable": true,
+  "releaseId": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+  "rpcCalls": 0,
+  "serviceActions": 0,
+  "source": {
+    "chains": [
+      {
+        "chainId": 1,
+        "completeThroughBlock": "26249684",
+        "witnessBlock": null
+      },
+      {
+        "chainId": 56,
+        "completeThroughBlock": "97443371",
+        "witnessBlock": null
+      },
+      {
+        "chainId": 137,
+        "completeThroughBlock": "95990408",
+        "witnessBlock": null
+      },
+      {
+        "chainId": 8453,
+        "completeThroughBlock": "52950938",
+        "witnessBlock": null
+      }
+    ],
+    "frameworkReady": false,
+    "observedAtMs": 1792753154435,
+    "running": true
+  },
+  "sourceErrorCodes": [
+    "indexer_not_ready"
+  ],
+  "sourceReadinessSummary": {
+    "count": 26,
+    "ready": 0,
+    "reasons": {
+      "observation_stale": 26
+    }
+  },
+  "rawPeerInspectionSha256": "044d620371b4b7fe31b31e01b80bd28faf43774f660fe08708e96c543eff0178",
+  "restrictedPeer": {
+    "uid": 969,
+    "gid": 963,
+    "supplementaryGroups": [],
+    "capabilities": "zero",
+    "noNewPrivileges": true,
+    "role": "yunipals_unified_support"
+  },
+  "meaning": "Existing exact runner inspect-only confirms historical receipt eligibility while native/source observers remain unavailable. No service, grant, row, provider or source readiness changed."
+}

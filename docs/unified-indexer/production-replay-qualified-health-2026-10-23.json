@@ -1,0 +1,205 @@
+{
+  "format": "yunipals-production-replay-qualified-health-observation-v1",
+  "observedAt": "2026-10-23T10:41:45.031595+00:00",
+  "runtime": {
+    "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "pid": 716994,
+    "startMonotonicMicroseconds": 66117947533239,
+    "startTicks": 6611794751
+  },
+  "schema": "unified_shadow_20261020_7e7375b0",
+  "buildId": "bf4939b3ff",
+  "nativeCatalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+  "proxyAcknowledgement": {
+    "databaseWrites": 0,
+    "financialExpiresAt": "2026-11-19T18:00:00+00:00",
+    "financialWindowRenewed": false,
+    "format": "yunipals-source6-normal-proxy-requalification-v1",
+    "freeOnly": true,
+    "nativeCaughtUpClaimed": false,
+    "normalOperationalRuntime": "infinity",
+    "operatorSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "originalRuntimeReceiptSha256": "e0772a5a895626690ca5bb221ab653bf5c88f4caa3ca0ebeb189985d6cda157f",
+    "originalWholeValidationPassed": false,
+    "paidAuthority": false,
+    "providerRpcRequests": 0,
+    "qualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "runtime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    },
+    "serviceChanges": 0,
+    "sourceRestarted": false,
+    "validated": true
+  },
+  "proxyTuples": {
+    "base": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 13,
+      "definitionsSha256": "c211ed8d96ce59499ce69ebfcc9449a14ad1d64e920319513dd876d5c777bdbd",
+      "invocation": "3b9d328b83ac4d5092014dc46d1816bb",
+      "pid": "1437936"
+    },
+    "bnb": {
+      "commandSha256": "da5ffc67d3775d60ffa20b457da0487983a056edc7d1acd41757330bc752f6a9",
+      "definitionCount": 12,
+      "definitionsSha256": "0f8b7c286baf8da043ac03dd7532f04d4e508c29a89d3ddc0444ed3b23c86795",
+      "invocation": "98fbcb89089c412a9d106e195b0a16a5",
+      "pid": "1437937"
+    },
+    "ethereum": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 9,
+      "definitionsSha256": "6bc6cb648b7d73816e8559781d9a730e0de08ecdff06dae4f009d92045a4b226",
+      "invocation": "27bf6e46b2d44c519511278840891fd3",
+      "pid": "1437938"
+    },
+    "polygon": {
+      "commandSha256": "19e1d046dae4f2ba15644c055573556c5a3022361090b241e11e8786bcceee57",
+      "definitionCount": 9,
+      "definitionsSha256": "3b5ebc5425bdb8c0e983d0cfd96c7aa00d79e7f9c2e6fdc417c0267656b6aa83",
+      "invocation": "3cfae093ac7649b087c2f76b073850b3",
+      "pid": "1437939"
+    }
+  },
+  "nativeCheckpoints": [
+    {
+      "blockTimestamp": 1792690499,
+      "chain": 1,
+      "completeBlock": 26249684
+    },
+    {
+      "blockTimestamp": 1778403363,
+      "chain": 56,
+      "completeBlock": 97443371
+    },
+    {
+      "blockTimestamp": 1792690983,
+      "chain": 137,
+      "completeBlock": 95990408
+    },
+    {
+      "blockTimestamp": 1792691223,
+      "chain": 8453,
+      "completeBlock": 52950938
+    }
+  ],
+  "bnb": {
+    "completeBlock": 97443371,
+    "historicalStartBlock": 7579200,
+    "fixedTargetBlock": 129172539,
+    "historicalBlockCoveragePercent": 73.91,
+    "remainingToFixedTarget": 31729168,
+    "priorObservationAt": "2026-10-23T07:40:25.702424+00:00",
+    "currentShortWindowCommittedAdvance": 0,
+    "latestActualNativeCommit": {
+      "atMicroseconds": 1792751784248364,
+      "blockRange": [
+        97442845,
+        97463417
+      ],
+      "categories": [
+        "nativeRangeCommitted"
+      ],
+      "chain": "bnb",
+      "event_count": 23
+    },
+    "latestActualNativeCommitAt": "2026-10-23T10:36:24.248364+00:00",
+    "fetchGauge": 97481496.0,
+    "fetchGaugeIsNotNativeCoverage": true,
+    "advanceBeyondPriorObservation": 6164708
+  },
+  "activity": {
+    "metricWindow": [
+      "2026-10-23T10:38:45.728974+00:00",
+      "2026-10-23T10:41:39.198171+00:00"
+    ],
+    "metricDeltas": {
+      "ponder_sync_block": 72776.0,
+      "ponder_historical_completed_blocks": 157892.0,
+      "ponder_rpc_request_error_total": 189.0
+    },
+    "nativeExtractionWindow": [
+      "2026-10-23T10:40:44.429729+00:00",
+      "2026-10-23T10:41:39.476627+00:00"
+    ],
+    "nativeExtractionDurationCounterDeltas": {
+      "build": 0.11158201098442078,
+      "format": 0.012065991759300232,
+      "decode": 0.0
+    },
+    "processedNativeEventCount": 27677.0,
+    "cachedHeaderOrLogAheadThrough98000000": false,
+    "lastExtractionJournalSearch": "bounded_timeout_not_extended",
+    "databaseQueryTextExported": false,
+    "rawJournalMessagesExported": false
+  },
+  "nativeFrameworkReady": false,
+  "resources": {
+    "memoryCurrentBytes": 402345984,
+    "memoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "memoryMaxBytes": 6442450944,
+    "rootFreeBytes": 45132668928
+  },
+  "financial": {
+    "authority": {
+      "activePermits": 0,
+      "profile": true,
+      "profilePermitRows": 2
+    },
+    "paidAuthority": false,
+    "policyChanged": false,
+    "profile": {
+      "enabled": true,
+      "expiresAt": "2026-11-19T18:00:00+00:00",
+      "manifest": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+      "profileId": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+      "scope": "yunipals-opensea"
+    }
+  },
+  "historicalPaidPermits": [
+    {
+      "chainId": 56,
+      "enabled": false,
+      "expiresAt": "2026-10-22T04:18:43.731762+00:00",
+      "maximumCu": "16287000",
+      "spentCu": "2615240"
+    },
+    {
+      "chainId": 8453,
+      "enabled": false,
+      "expiresAt": "2026-10-22T04:18:43.731762+00:00",
+      "maximumCu": "3000000",
+      "spentCu": "1205660"
+    }
+  ],
+  "allFourChainsCurrentProven": false,
+  "sourceRestartRecommended": false,
+  "nextAction": "Keep the acknowledged normal free-only replay running. Current committed coverage is conservative and behind an active event-empty fetch/extraction window. Native reader/adoption readiness remains false; continue unaffected fallback qualification preparation instead of restarting or renewing paid authority.",
+  "evidence": [
+    {
+      "file": "/tmp/yunipals-current-replay-qualified-readonly-20261023.jsonl",
+      "sha256": "4b9690035b30c3f8816ff67101f71883f1af78a6d89cf9c7798586f666a826f3"
+    },
+    {
+      "file": "/tmp/yunipals-shared-native-consumer-current-readonly-samples-20261023.jsonl",
+      "sha256": "d2262b2a9e0c9400e5d1f660d3b4905073b4e81adcb0de2bc8563d43061fdaf3"
+    },
+    {
+      "file": "/tmp/yunipals-shared-replay-activity-readonly-samples-20261023.jsonl",
+      "sha256": "276a35e1445e9378bd8421307f4142af06e5e9f3fac96a0a9057134aaf74a863"
+    }
+  ],
+  "databaseWrites": 0,
+  "serviceActions": 0,
+  "providerCalls": 0
+}

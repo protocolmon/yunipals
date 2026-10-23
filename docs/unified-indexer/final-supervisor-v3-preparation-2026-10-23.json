@@ -1,0 +1,50 @@
+{
+  "format": "yunipals-final-supervisor-v3-preparation-v1",
+  "preparedAt": "2026-10-23T11:12:22.400033+00:00",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v3.py",
+      "sha256": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6",
+      "bytes": 113416
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v3-test.py",
+      "sha256": "4dca4f6c69509b1e7e60e58d6653207a34b3ffae000dab734d8dbadd735e7f0d",
+      "bytes": 10349
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v3.md",
+      "sha256": "28f21d7950b76d01ace6587ebaea24b5d31aab658b68e3fa8fd440c72955cc7c",
+      "bytes": 2995
+    }
+  ],
+  "validation": {
+    "pythonControls": 71,
+    "passed": true,
+    "changedProductionFunctions": [
+      "current_source",
+      "feature_inverse"
+    ],
+    "otherProductionFunctionsAstIdentical": true,
+    "historicalV2Modified": false
+  },
+  "bindings": {
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "consumerEntrySha256": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+    "featureOwnerSha256": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b",
+    "featureInversePreservedReadsField": "oldTenReadsPreserved"
+  },
+  "originalWholeNormalValidationClaimedPassed": false,
+  "actualNativeReadyClaimed": false,
+  "futureReceiptPinsInvented": false,
+  "staged": false,
+  "productionMutations": 0,
+  "remainingActualGates": [
+    "full native replay and canonical acceptance",
+    "four current consumer installations",
+    "v6 native eight-read admission and feature switch/retirement",
+    "final plan review with actual direct proofs",
+    "owner-reviewed staging and apply"
+  ]
+}

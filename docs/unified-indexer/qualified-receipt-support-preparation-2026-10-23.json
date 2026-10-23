@@ -1,0 +1,161 @@
+{
+  "format": "yunipals-qualified-receipt-support-preparation-v2",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v2.py",
+      "sha256": "325efeb168a364c0ba99e02ad7cb0dc773025a5c1911dddda5cfc88e302838f7",
+      "bytes": 18116
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v2.test.py",
+      "sha256": "c863cfdd227a0aea66d41fa701b5949d1022b373982ce52a2926cf4fee641f10",
+      "bytes": 9411
+    },
+    {
+      "path": "ops/unified-indexer-transition/stage-source6-qualified-receipts-v2.py",
+      "sha256": "855ee06a4aaa9de3c46b161a4e6db004b8cd89e4d99c493111b10540fe378c6b",
+      "bytes": 27120
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-qualified-receipts-v2.md",
+      "sha256": "cbabb1bc092885ff9f679c62135379b534c91fbfbfedd0dc48018b3f8cb7b771",
+      "bytes": 6023
+    }
+  ],
+  "actualReadOnlyEligibility": {
+    "acknowledgementSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "acknowledgementValidated": true,
+    "activePaidAuthority": false,
+    "actualOverlayEntrySha256": "014769192103aa421838f98f462a7d1f16c83c08729ef6083392eac828106d35",
+    "databaseWrites": 0,
+    "existingRestrictedRoleGrantsMatch": true,
+    "financialWindowRenewed": false,
+    "format": "yunipals-receipt-eligibility-readonly-v1",
+    "observedAt": "2026-10-23T10:51:39.090449+00:00",
+    "originalPaidCeilingCu": 20000000,
+    "providerCalls": 0,
+    "quiet": {
+      "ActiveState": "inactive",
+      "ExecMainStartTimestampMonotonic": "0",
+      "InvocationID": "",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead"
+    },
+    "serviceActions": 0,
+    "sourceRuntime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    },
+    "summary": {
+      "at": "2026-10-23T10:51:30.33381+00:00",
+      "chains": [
+        {
+          "activeJobLeases": 0,
+          "chainId": 1,
+          "completeThroughBlock": "26249684",
+          "dueJobs": 2618,
+          "eligibleCompleteCandidates": 2705,
+          "eligibleWithoutEvidence": 2618,
+          "evidenceForCurrentCandidates": 87,
+          "nativeCandidates": 2705,
+          "nextPublicMissingCandidate": {
+            "blockHash": "0x35b3ae7f21e1c895bb5693f70c216dcd50d6c9f9a32776c39fb70b7d65730ec3",
+            "blockNumber": "20102042",
+            "transactionHash": "0x32ca8a5157a5bff21b7d4541f8026afb1347e5797bb68b9af9338d07d95d27b4"
+          }
+        },
+        {
+          "activeJobLeases": 0,
+          "chainId": 56,
+          "completeThroughBlock": "97443371",
+          "dueJobs": 0,
+          "eligibleCompleteCandidates": 0,
+          "eligibleWithoutEvidence": 0,
+          "evidenceForCurrentCandidates": 0,
+          "nativeCandidates": 0,
+          "nextPublicMissingCandidate": null
+        },
+        {
+          "activeJobLeases": 0,
+          "chainId": 137,
+          "completeThroughBlock": "95990408",
+          "dueJobs": 994,
+          "eligibleCompleteCandidates": 1282,
+          "eligibleWithoutEvidence": 994,
+          "evidenceForCurrentCandidates": 288,
+          "nativeCandidates": 1282,
+          "nextPublicMissingCandidate": {
+            "blockHash": "0x6490741ea5bec550a9a881847d996b0358dd073e50cc08ec13eaf597d73b3edf",
+            "blockNumber": "59575583",
+            "transactionHash": "0xb1f05d2c15a3c06315b52447f6dbad76d637febc0f9959d780d5c22718ddd6b9"
+          }
+        },
+        {
+          "activeJobLeases": 0,
+          "chainId": 8453,
+          "completeThroughBlock": "52950938",
+          "dueJobs": 5764,
+          "eligibleCompleteCandidates": 6326,
+          "eligibleWithoutEvidence": 5764,
+          "evidenceForCurrentCandidates": 562,
+          "nativeCandidates": 6326,
+          "nextPublicMissingCandidate": {
+            "blockHash": "0xfe4cc07656849e0fed548ff8b0df4afe6579f60f84a496236e79a2fb38e80b25",
+            "blockNumber": "22441729",
+            "transactionHash": "0x53a028cc284eef5f1b3ba4c93b97ca2ea5c734b8fcb665274417c565e10120fc"
+          }
+        }
+      ],
+      "historicalDiscovery": [
+        {
+          "blockNumber": "26216028",
+          "chainId": 1
+        },
+        {
+          "blockNumber": null,
+          "chainId": 56
+        },
+        {
+          "blockNumber": "95438027",
+          "chainId": 137
+        },
+        {
+          "blockNumber": "52649217",
+          "chainId": 8453
+        }
+      ],
+      "meta": {
+        "build": "bf4939b3ff",
+        "heartbeatAtMs": "1792752684428",
+        "locked": "1",
+        "ready": "0"
+      },
+      "readOnly": true
+    },
+    "unit": {
+      "ActiveState": "inactive",
+      "DropInPaths": "",
+      "MainPID": "0",
+      "MemoryMax": "805306368",
+      "Restart": "no",
+      "RuntimeMaxUSec": "1h",
+      "SubState": "dead"
+    }
+  },
+  "eligibilityReceiptSha256": "bd660947e51f45098e1e57ba1bc5f1c36266c85c119bb2ca332bc541af8feeee",
+  "validation": {
+    "pythonBoundaryControls": 12,
+    "unchangedLoopNodeControls": 4,
+    "preservedOldOwnerSha256": "12e0c7debc3681d558948f308ebb3801e1a51a9baf8b5ee01f65fb8deac94281",
+    "preservedLoopSha256": "477376b0a5d8b377a313c248627789af5c0f7d34f569f8ed58e0498bfe0d6691",
+    "unchangedFunctions": "All old functions except authority and apply; apply differs only in result receipt metadata. New source_qualification validates the existing exact ACK."
+  },
+  "stagedByThisPreparation": false,
+  "serviceStarted": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "newPaidAllowanceCu": 0
+}
