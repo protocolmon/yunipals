@@ -1,0 +1,107 @@
+{
+  "cacheReuse": {
+    "currentBnbReplayMayContinueUnchanged": true,
+    "freshBoosterFilterIntervalsMustBeProven": true,
+    "futureBuildIdPredicted": false,
+    "implementationEvidence": {
+      "src/build/index.ts": "a94d4d9e62ee79b6b674e16e02723fe9d88fae37c7a3813795f3f6eeec45e3c4",
+      "src/database/index.ts": "06f43ae19abd534b42f4f496a7277316e5a6baccdb0145b0056e98e7d6fd7612",
+      "src/runtime/fragments.ts": "f7c984a985bdd63b3d9297171c7ef92ad753e76b2ba2e9329d7c531f36aca537",
+      "src/sync-store/index.ts": "8bdd7224f2ea3f4aac61e1ae727f465683aac056243b4f950e2488800b14b1aa"
+    },
+    "localPonderVersion": "0.17.5",
+    "nativeDerivedStateAndCheckpointsTransferable": false,
+    "newNamespaceHandlerReplayRequired": true,
+    "sameOldNativeSchemaAllowed": false,
+    "samePhysicalSyncStoreRequired": true,
+    "unchangedFilterIntervalsMayBeReused": true
+  },
+  "confirmedDeployment": {
+    "file": "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json",
+    "sha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c"
+  },
+  "createdAt": "2026-10-23T19:28:37.597035+00:00",
+  "financial": {
+    "actualFutureReviewHash": null,
+    "coordinatorId": "faf1bb8c-4306-4c43-b55e-6ac5fa038567",
+    "existingBudgetChanged": false,
+    "expiresAt": "2026-11-19T18:00:00.000Z",
+    "expiryExtended": false,
+    "limits": {
+      "addresses": 50,
+      "batchCalls": 10,
+      "logRange": 10000,
+      "topicValues": 128
+    },
+    "paidAuthority": false,
+    "permits": [],
+    "scope": "yunipals-opensea"
+  },
+  "format": "yunipals-ypal-future-combined-source-proposal-v1",
+  "future": {
+    "buildId": null,
+    "candidateBuilt": false,
+    "changedEvmSources": 3,
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "manifestSourceCount": 12,
+    "nativeCoverageAccepted": false,
+    "nativeSchema": null,
+    "profileAdmitted": false,
+    "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+    "releaseId": null,
+    "sourceDigest": null,
+    "sourceRegistered": false,
+    "unchangedEvmSources": 9
+  },
+  "necessaryFutureActions": [
+    "Preserve the current source, native/cache schemas and profiles while preparing.",
+    "Build and verify the minimal combined source/config overlay with retained ABIs and individual fresh starts, producing actual new source/build/release identities.",
+    "Admit the full profile through official review/ROLLBACK/COMMIT and qualify all four chain routes against its new profile ID. Current d059 and Base-only25308 routes cannot substitute.",
+    "Use a new namespace against the same physical ponder_sync store. Replay all handlers and fetch only unproved filter intervals under unchanged free-only limits.",
+    "Requalify canonical native coverage, selectors, role/table identities and reader/cache/Arena/booster parity. Compare fresh YPAL projection against the launch source at the same boundary.",
+    "Preserve Solana manifest, single-writer lock, staged run, monotonic publication/schedule and the entire budget-ledger prefix through reviewed supervisor handover.",
+    "After actual acceptance and owned inverse, retire temporary/legacy writers and all restart paths, leaving one managed logical indexer service with the retained Solana worker."
+  ],
+  "original": {
+    "buildId": "bf4939b3ff",
+    "manifestHash": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+    "nativeSchema": "unified_shadow_20261020_7e7375b0",
+    "profile": {
+      "file": "ops/unified-indexer-transition/normal-rpc-profile-v1.json",
+      "sha256": "0efe9214bb3cb2d833a8ee93cabefed30a834215a27ca346a85724e4d2b5f81e"
+    },
+    "qualifiedSourceAckSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "releaseId": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+    "runtimeInvocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "runtimePid": 716994,
+    "sourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78"
+  },
+  "productionEffects": {
+    "databaseWrites": 0,
+    "ownershipRowsChanged": false,
+    "providerCalls": 0,
+    "runtimeOrExistingFilesModified": false,
+    "schemaOrCacheReset": false,
+    "sourceOrProxyRestarted": false
+  },
+  "solanaPreservedSeparately": {
+    "changeWorkerOrAssetDescriptors": false,
+    "evmRpcProfileIncludesSolana": false,
+    "freshActualPrefixPublicationStagedRunLockAcceptanceRequired": true,
+    "historicalSnapshotIsCurrentClaimed": false,
+    "manifest": {
+      "checksum": "f9499fc3399ae235c0d3dd1c1664e4e9933dc57c5ec653e5c6368b100c295d07",
+      "count": 10000
+    },
+    "resetBudgetLedgerOrPublication": false,
+    "retainedPublicSourceManifest": {
+      "file": "docs/unified-indexer/production-solana-source-manifest-2026-10-20.json",
+      "sha256": "db9c1911dfc3999ca237cd9dcbfa127e5971f3c03bb5897ae3067859de951e9a"
+    },
+    "retainedSupervisorStateSql": {
+      "file": "ops/solana-acceptance/supervisor-handover-state-v1.sql",
+      "sha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0"
+    }
+  },
+  "status": "offline_proposal_not_admitted_or_built"
+}

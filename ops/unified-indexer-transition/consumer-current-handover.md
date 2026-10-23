@@ -1,6 +1,6 @@
-# Current shared-reader handover
+# Historical pre-YPAL shared-reader handover
 
-Prepared 23 October 2026. This is the current operator map for the four collection/cache consumers. Their production switches are still pending native source readiness. Public collection and booster purchases continue serving through their accepted launch path; none of these migration gates disables pack sales.
+Prepared earlier on 23 October 2026. **Superseded for execution by the fresh YPAL rollout:** the exact operators below bind old PROTO launch actors and the old shared namespace. They must not be executed unchanged against the new deployment. See [the actual fresh YPAL handover map](consumer-ypal-handover.md). This retained map documents the four collection/cache consumers before that change. Their production switches are still pending native source readiness. Public collection and booster purchases continue serving through their accepted launch path; none of these migration gates disables pack sales.
 
 The current staged entry is `consumer-operational-live-booster-v2.py`. Use its explicit `owner`, `preview` or `install` first argument. It composes the frozen owner-v6, preview-v6 and install-v7 implementations, the already committed marketplace read history, and the current ten-read booster guard bound to the live API. Run this entry for the four collection/cache consumers. The underlying `consumer-operational-marketplace-ack-v2.py` remains a frozen dependency; invoking it or the raw cores directly omits the current booster acknowledgement. These bindings preserve existing permissions and live pack service; they do not activate marketplace scanners or sales migration.
 

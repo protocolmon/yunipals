@@ -429,26 +429,29 @@ Keep unknown deployments and ABI changes visible as blocked sources. One fatal P
 
 ## 10. Booster rollout within this migration
 
-Use the confirmed deployment rather than deploying again:
+The 23 October owner-approved fresh YPAL deployment supersedes the earlier PROTO test rollout. Use the actual confirmed addresses and individual proxy-creation starts; do not deploy another test pack:
 
-| Contract | Base proxy |
-| --- | --- |
-| PackRegistry | `0xeaeE2da120a398f21729D50672AC5d1Dd71d7274` |
-| YunipalMonsters | `0x105319be2182018c31FB10B1bE198c3cf238a146` |
-| BoosterPacks | `0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609` |
+| Contract | Base address | Verified start block |
+| --- | --- | --- |
+| YPAL (Yunipals), PMON wrapper | `0xCd3709E84fc817b46196FA2D5b7202710AB51346` | Token creation is retained in the deployment export; it is not an additional EVM source subscription. |
+| PackRegistry | `0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3` | 52995007 |
+| YunipalMonsters | `0x7D62628806E7eeF76A354C7c48787879e3440b16` | 52995029 |
+| BoosterPacks | `0xDF4AaA47Fe0e8208b5a33c74898f834B2952189e` | 52995174 |
 
-The common safe deployment start is block **52848542**, from the confirmed manifest. More precise per-contract starts can be used if verified and covered by tests.
+The authority is [deployment.confirmed.json](boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json), SHA-256 `3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c`. The owner completed all ten transactions and activated public type 1. Keep one unlimited public pack, 1 YPAL burned per original, 264 variants, one daily mint credit per 24 hours after reveal, no speed boost, duplicate-free draws per original and up to ten originals per transaction. Fresh history excludes the old PROTO test openings; original OG/NFB collection indexing is unchanged.
 
-After unified-source acceptance:
+The dedicated YPAL source/API/queue and www purchases are already live. The first three-original purchase completed genuine Chainlink fulfillment, NFT-specific metadata and all three card artworks. Wrapping is on the same app at `/wrap`. These results do not establish the first elapsed daily claim or the final combined-source handover.
 
-1. Publish the durable artwork API/catalog and existing approved variants.
-2. Connect the private booster frontend to the shared API and confirmed contracts.
-3. Configure/activate the one-pack smoke type through the owner's wallet.
-4. Verify a real opening, Chainlink reveal, indexed rights/ownership, and on-demand artwork.
-5. Verify the actual daily claim, batch behavior, and the recovery scenarios in the existing launch checklist.
-6. Register the separate public unlimited-sales type and enable the public UI when launch checks pass.
+Remaining source consolidation:
 
-The one-pack cap remains immutable after activation. Consolidation does not change the agreed 264 variants, 1 PROTO burn, one mint per 24 hours, or pending-rights behavior.
+1. Compile and qualify the minimal combined manifest/config overlay with the three actual addresses and individual starts, retaining the other nine source descriptors, event interfaces, confirmation policies and financial limits.
+2. Admit and qualify its full four-chain free-only RPC profile. Preserve existing budgets, expired paid permits and the original profile expiry. Do not substitute the dedicated three-contract Base profile for the full profile.
+3. Use a new native namespace and actual build/release identity in the same physical database. Reuse only certified compatible `ponder_sync` intervals through normal Ponder behavior; replay handlers from original starts. Keep old schemas/cache, and never transfer or relabel a native checkpoint.
+4. Compare the fresh launch and combined booster projections at a common canonical boundary. Admit the exact new reads and switch the API/artwork queue with actor-bound receipts and an owned inverse.
+5. Observe a genuine newer event on the combined source, then retire `yunipals-booster-ypal-source.service` and its boot/restart paths. The older PROTO source is already stopped/disabled and is not the sole remaining retirement target.
+6. Verify the first genuine elapsed daily claim after 24 October 2026, 21:24:37 UTC, plus the retained recovery scenarios. Publish metadata per NFT, including Birth day and canonical mint provenance, while sharing the variant artwork.
+
+The durable artwork queue is running; unseen variants still need approved subscription-assisted generation/review. Eleven variant artworks are published after the first fresh purchase. Do not describe the queue as an unattended image generator or claim all 264 images exist.
 
 ## 11. Implementation batches and completion criteria
 

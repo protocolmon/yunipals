@@ -1,0 +1,261 @@
+{
+  "format": "yunipals-unified-current-dependency-audit-v1",
+  "preparedAt": "2026-10-23T22:19:36.725236+00:00",
+  "observedAt": "2026-10-23T22:14:24.137083+00:00",
+  "actualReadOnlyQualification": true,
+  "observations": [
+    {
+      "file": "/tmp/yunipals-solana-qualified-audit-20261023.json",
+      "sha256": "e327418eedfdaa969a59133e9462947fbf395384a8c2e1b72ac8a73e1debb900"
+    },
+    {
+      "file": "/tmp/yunipals-current-consumer-solana-prerequisites-20261023.json",
+      "sha256": "2f0d8bdb53a49071612b9d90d3c40803011f56851d9c35d06079a1cd0db21d02"
+    }
+  ],
+  "productionDatabaseWrites": 0,
+  "productionServiceActions": 0,
+  "providerHttpRpcCalls": 0,
+  "privateValuesOrOwnershipRowsExported": false,
+  "sourceFilesChanged": false,
+  "solana": {
+    "sameOriginalInvocation": true,
+    "normalizedHashes": {
+      "invocationSha256": "3fcdc4212432c06b0906faf6e6077cf68102629e3a75b17bfd86269926d669b4",
+      "resolvedAddressSetSha256": "a85a6b1893a054999a2f6e5cadf2f8b0c3edb8563779c9667195b5ab419408fc",
+      "definitionHashes": [
+        "a7497a7c7e5d266d1b40cffec4e647a46f7f339f78a0eb426e153b474b9be1b4"
+      ],
+      "selectedFileHashes": [
+        "1351fdee6b57bcac48a2dd86f8dc3874cea7175ddab685d5155577cba7255b0f",
+        "35fff6e13432aabe6bd1b3dceffb45115d7cb78c5abc585511dcd2ce817c58ff"
+      ],
+      "settingsSha256": "f7a7efcefcab85881d9976ee2298da83122b46c50823e702637a78462c3ea3d6",
+      "workerSha256": "3e2b150e79c5f9e68718c4e5de9311cd0b1045cb09c07aafcfb093f91f76db6e"
+    },
+    "normalizedHashDefinitions": {
+      "invocationSha256": "SHA256(JSON string of invocation, no newline)",
+      "resolvedAddressSetSha256": "SHA256(compact sorted-key JSON array of numeric allowCidrs, no newline)"
+    },
+    "matchesPriorApprovedSummary": {
+      "invocationSha256": true,
+      "resolvedAddressSetSha256": true,
+      "definitionHashes": true,
+      "selectedFileHashes": true,
+      "settingsSha256": true,
+      "workerSha256": true
+    },
+    "actualStagedAckSha256": "35093ff3fee4532b29e017f91451bde8f7fb4deeafeff4f80524e81647dd4a60",
+    "stagedChildFileBytesAndUid970ReadabilityVerified": true,
+    "exactStagedEgressMatchesFreshFixedHeliusDns": true,
+    "newEgressOverlayNeededNow": false,
+    "publishedRun": {
+      "assetCount": 10000,
+      "completedAt": "2026-10-23T22:00:39.905022+00:00",
+      "id": 1655,
+      "missingCount": 2,
+      "state": "published"
+    },
+    "stagedRows": 10000,
+    "ledgerCurrent": {
+      "credits": "155930",
+      "latestId": "15664",
+      "rolling31DayCredits": "155930",
+      "rows": 15593,
+      "todayCredits": "8700"
+    },
+    "oldEntireLedgerPrefixPreserved": {
+      "credits": "144430",
+      "rows": 14443,
+      "sha256": "3acaced576093982f060ff4201e89b9ad165f34d5658ec4fd3b5b6c178d70a47",
+      "throughId": "14514"
+    },
+    "workerLock": {
+      "granted": 0,
+      "waiting": 0
+    },
+    "handoverAccepted": false
+  },
+  "consumerGates": {
+    "cacheGuards": {
+      "count": 35,
+      "epochs": 4,
+      "legacy": 12,
+      "native": 0
+    },
+    "generation": {
+      "currentId": "103",
+      "readIdentity": null,
+      "releaseId": null,
+      "state": "ready"
+    },
+    "nativeMetadata": [],
+    "publication": {
+      "baseCheckedAt": "2026-10-23T22:14:05.453155+00:00",
+      "baseErrorPresent": false,
+      "lastWorkerAt": "2026-10-23T22:14:19.552896+00:00"
+    },
+    "roles": [
+      {
+        "inherit": false,
+        "limit": 2,
+        "login": false,
+        "memberships": 0,
+        "name": "yunipals_islands_staking",
+        "oid": "73765879",
+        "unsafe": false
+      },
+      {
+        "inherit": false,
+        "limit": 6,
+        "login": false,
+        "memberships": 0,
+        "name": "yunipals_unified_api",
+        "oid": "73187671",
+        "unsafe": false
+      },
+      {
+        "inherit": false,
+        "limit": 6,
+        "login": true,
+        "memberships": 0,
+        "name": "yunipals_unified_collector",
+        "oid": "73187672",
+        "unsafe": false
+      },
+      {
+        "inherit": false,
+        "limit": 6,
+        "login": false,
+        "memberships": 0,
+        "name": "yunipals_unified_islands_api",
+        "oid": "73187674",
+        "unsafe": false
+      },
+      {
+        "inherit": false,
+        "limit": 6,
+        "login": false,
+        "memberships": 0,
+        "name": "yunipals_unified_read_cache",
+        "oid": "73187673",
+        "unsafe": false
+      }
+    ],
+    "staking": {
+      "ownershipIdentityColumns": 2,
+      "positionRows": 459,
+      "scanRows": 1
+    }
+  },
+  "futureBootOwnership": {
+    "yunipals-booster-api.service": {
+      "device": 2049,
+      "gid": 0,
+      "inode": 131530,
+      "isSymlink": true,
+      "path": "/etc/systemd/system/multi-user.target.wants/yunipals-booster-api.service",
+      "target": "/etc/systemd/system/yunipals-booster-api.service",
+      "uid": 0
+    },
+    "yunipals-booster-ypal-source.service": {
+      "device": 2049,
+      "gid": 0,
+      "inode": 131102,
+      "isSymlink": true,
+      "path": "/etc/systemd/system/multi-user.target.wants/yunipals-booster-ypal-source.service",
+      "target": "/etc/systemd/system/yunipals-booster-ypal-source.service",
+      "uid": 0
+    }
+  },
+  "actualFreshBindings": {
+    "sourceProducerSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+    "sourceResultSha256": "581990e80baa6ae074786b7b2cf7c771c82ebe046253a1de23a96f251d900efd",
+    "sourceSchema": "yunipals_boosters_ypal_v1",
+    "sourceBuild": "8e88ea2e00",
+    "sourceSchemaOid": "75837058",
+    "sourceUnit": "yunipals-booster-ypal-source.service",
+    "readerFinalizationFile": "/var/backups/yunipals-ypal-reader-cutover-v1-20261023/finalization-v2-result.json",
+    "readerFinalizationSha256": "9bf720f7d669b1863184db4214602a16346f7913d6d2fbdcd4090a42c1ba6e1c",
+    "originalReaderResultExistsClaimed": false,
+    "apiBootReceiptSha256": "30fabaf05eb34e9b39c513457abf178996deeab72941bc9df9850e5c4ab423a3",
+    "apiActor": {
+      "Id": "yunipals-booster-api.service",
+      "MainPID": "2334701",
+      "InvocationID": "3a3b4014f75b4db9968f4c5ee26fa904",
+      "UnitFileState": "enabled"
+    },
+    "apiDefinitionHashes": {
+      "/etc/systemd/system/yunipals-booster-api.service": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+      "/etc/systemd/system/yunipals-booster-api.service.d/95-ypal.conf": "c1d99ddcc88768fb3a88d94a0df101b23f64207dd9943fa979f64cebf095dac5"
+    }
+  },
+  "operatorReferences": {
+    "consumerEntryHistorical": {
+      "file": "ops/unified-indexer-transition/consumer-operational-live-booster-v2.py",
+      "sha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39"
+    },
+    "consumerMainDraft": {
+      "file": "ops/unified-indexer-transition/consumer-operational-current-main-v1.py",
+      "sha256": "2ba4898638315f768d5ab1f9456c9c31ce3f691096c8001fd81220796b198335"
+    },
+    "boosterHandoverHistorical": {
+      "file": "ops/unified-indexer-transition/booster-feature-handover-v7.py",
+      "sha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984"
+    },
+    "finalSupervisorHistorical": {
+      "file": "ops/unified-indexer-transition/final-supervisor-handover-v4.py",
+      "sha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5"
+    },
+    "finalSupervisorDraft": {
+      "file": "ops/unified-indexer-transition/final-supervisor-handover-v5.py",
+      "sha256": "ac97d87040676f82d19ef59b829cc8e073e804a3e172fbbba09ba8110def3a92"
+    },
+    "metadataNativeCandidates": {
+      "file": "ops/unified-indexer-transition/metadata-readview-v4-candidates-stage-v1.py",
+      "sha256": "19b3ab7f987e652f74288d5da681a569258f94d3eccc3207db7a9ec8e23bfb5c"
+    },
+    "generationReadiness": {
+      "file": "ops/unified-indexer-transition/consumer-generation-v4-readiness.mjs",
+      "sha256": "8ce978ef00619eb2bc1130bd49db3cfd352eb5d75a012af707de9e64b221a3dc"
+    },
+    "generationRefresh": {
+      "file": "ops/unified-indexer-transition/consumer-generation-v4-refresh.service.example",
+      "sha256": "c8ed82d0d819e6fc1dfc62ead62795433cae3c7b34b1be95eee8ecd395fb59a3"
+    },
+    "guardTransition": {
+      "file": "ops/unified-indexer-transition/consumer-v4-cache-guard-transition.mjs",
+      "sha256": "00e308486aa958e8fe30e53fe5d5164a7e3c4f7c81ec9a27b8976cce84f0b689"
+    },
+    "stakingDormantOwner": {
+      "file": "ops/unified-indexer-transition/staking-v4-dormant-install-v1.py",
+      "sha256": "2ca856ae92c53c5459598b3a110eb41e3fb705e43d1db2dc74dca3e305dd8353"
+    },
+    "solanaInventory": {
+      "file": "ops/solana-acceptance/final-supervisor-inventory-v1.py",
+      "sha256": "ba5727f3774e697800181e0b7a36921db6a328ea5f0e6d95f213f5a1aae44912"
+    },
+    "solanaStateQuery": {
+      "file": "ops/solana-acceptance/supervisor-handover-state-v1.sql",
+      "sha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0"
+    }
+  },
+  "requiredNextSequence": [
+    "Bind the actual new combined source build/schema/release/profile and canonical readiness; the source agent owns this preparation and launch. Existing source008/PROTO schema and its readiness cannot be relabeled.",
+    "Create the explicit fresh-YPAL/current-main consumer guard binding from the accepted source581, read admission4743, finalized reader9bf and boot30fa records. Preserve ten old and ten fresh launch reads, current source/API/queue identities and private inputs.",
+    "Retarget native metadata/readview and native Arena acceptance to the actual accepted combined source, then perform genuine metadata adoption/provenance/current publication. Existing v4 commands are implementation references, not a ready new-source execution.",
+    "Publish a new real ownership generation carrying the accepted release/read identity; generation103 remains historical. Coordinate existing capacity/no-backup window and drain the exact current generation writer.",
+    "Execute native cache guard ownership transition with actual new relation OIDs and epochs; then positive API previews, finite DML owner slices, cache-first installation and the other three restricted-reader installs.",
+    "Verify native staking once after the exact enabled legacy staking unit/schedule is retired. Preserve its current operational rows; the native timer is not installed and cannot be claimed accepted.",
+    "At a common canonical boundary prove the fresh YPAL source and combined source parity including full batches, journal birth metadata, recent first-mint cover/order, rights, requests, transfers, burns and refunds. Rehearse/admit the exact actual missing new-native SELECT set; do not assume the old eight-read count remains valid in a new namespace.",
+    "Switch the current API and artwork queue only after actual parity/readiness. Observe a genuine newer event, retire the exact fresh source and its owned boot link; preserve serving API boot unless its own reviewed replacement explicitly retires that unit.",
+    "A concrete final supervisor successor must bind those current consumer/feature/source receipts, add the fresh source to writer/activation inventory, and retain all ten final acceptance checks/four installs/Solana ledger-lock-schedule/private config/resource/financial gates. Then perform the owned shared start, normally scheduled fresh Solana publication, restart/inverse and agreed observation."
+  ],
+  "remainingAuthoritativeGaps": [
+    "Actual accepted new combined source/build/readiness and matching reader/source identity.",
+    "Fresh YPAL-aware consumer/feature/final supervisor executable producer chain; old e283/v7/final4 and deferred current-main/v8/final5 cannot be used unchanged.",
+    "Native metadata adoption/current publication, new real generation replacing103, native guard transition, four actual reader installations and native staking verification.",
+    "Fresh YPAL common-boundary parity, exact new OID read admission, API+queue handover and genuine-event source retirement.",
+    "Actual managed Solana/shared source cutover, new scheduled publication, restart/inverse and observation."
+  ]
+}

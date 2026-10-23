@@ -2,9 +2,15 @@
 
 Goal started 20 October 2026. The [implementation plan](/root/yunipals/docs/unified-indexer-implementation-plan.md) remains the acceptance contract. The unified source/consumer cutover remains pending.
 
-## Current acceptance — 23 October, 01:43 UTC
+## Current acceptance — 23 October, 22:07 UTC
 
-The [concise checklist](CHECKLIST.md) tracks the remaining rollout. Collection and public packs are live on the single www app. The shared source is still replaying history; its same live process reached BNB block64,218,646 at01:38UTC,46.6% of the fixed historical block range. Native publication and reader switches remain pending actual current coverage.
+The [concise checklist](CHECKLIST.md) is the current rollout status; dated entries below remain historical evidence. The single www app now serves public YPAL packs, `/wrap`, normal OG/TCG collection views and FAQ. The fresh source, API, five-second artwork queue and API boot path are live. The first real three-pack purchase revealed NFTs 1–3 (variants 171/244/178); all three actual artworks and the glitter mask are published. The genuine elapsed daily claim becomes eligible on 24 October at 21:24:37 UTC. See the [fresh public acceptance](../boosters/ypal-fresh-launch-2026-10-23/frontend-combined-www-independent-readonly-acceptance.json).
+
+The [22:07 bounded source observation](production-shared-source-status-2026-10-23T220750Z.json) records the same old-manifest shared process at BNB **119,730,093**, **92.23%** of the fixed historical range, with no restarts/OOM. `/health` is 200, `/ready` is 503 and current canonical witnesses are absent. This is retained old-build progress, not readiness of the eventual YPAL combined source. The sampled sync metric is below the durable checkpoint and is not a fetched-coverage bound.
+
+The running shared manifest still names old PROTO contracts. The new full YPAL manifest/profile proposal changes only three addresses and their verified starts, preserving the other nine sources and budgets. Normal Ponder requires a new native namespace/build and handler replay, while certified raw intervals in the same physical `ponder_sync` cache can be reused. Actual capacity/cache/pool checks are informing the next owned stop/start; no native checkpoints will be copied. The fresh YPAL pack source/API remains available until combined parity and handover. Native metadata, cache generation, reader installs, Arena adoption, managed Solana transfer, coordinated rollback and observation remain incomplete.
+
+The Arena white-page mitigation is deployed: an independently reproduced cached old chunk returned 404 and left an empty app. Recognized stale-asset failures now recover once, with a visible error fallback for other failures. The [post-promotion Arena browser check](../boosters/ypal-fresh-launch-2026-10-23/arena-post-promote-acceptance.json) passed at 22:01 UTC. The exact exception in the user's browser was unavailable; it is not claimed as proven.
 
 The modern1796-file Arena consumer now has an [actual completed build proof](arena-modern-completed-build-proof-2026-10-23.json), [fresh inactive install receipt](arena-modern-installed-receipt-2026-10-23.json) and [all-eight retained-context constructor acceptance](arena-modern-production-artifact-acceptance-2026-10-23.json). Both independent runtime archives match, every constructor closed, and original workers/configuration/source selection stayed unchanged. All eight rendered service definitions also passed systemd verification without installation or startup.
 

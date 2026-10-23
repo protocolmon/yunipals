@@ -1,0 +1,37 @@
+{
+  "buildId": null,
+  "files": {
+    "ops/unified-indexer-transition/ypal-combined-rpc-approval-v1.json": "79b047cec82b5108eb79f56588c62b3bc2857b3c863dceb7d2239a14e87e5da5",
+    "ops/unified-indexer-transition/ypal-combined-rpc-profile-v1.json": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b",
+    "ops/unified-indexer-transition/ypal-combined-source-diff-v1.json": "8d58180d556a76ae785bfb0d86503197c5a9100b95f5d4bbe43d9dc3ddd1a40b",
+    "ops/unified-indexer-transition/ypal-combined-source-manifest-v1.json": "a80c527caa8b7696cd9dc351d695a2b9d973c215a05a051669f1aa469dc68bd7",
+    "ops/unified-indexer-transition/ypal-combined-source-profile-v1.md": "84d44129a234b3ac3ee4f1168ba09bd4fcef9c9fd72d00878808eba6be21c5b8",
+    "ops/unified-indexer-transition/ypal-combined-source-profile-v1.test.mjs": "326a77508edcb8ae1fae2145ce723c349dab4dd46df7a2b7b0fb4fba3925089f",
+    "ops/unified-indexer-transition/ypal-combined-source-proposal-v1.json": "d313830082c83b1416f440b0892a4e675f05d80a99e71adf16f67c470b2fe26f"
+  },
+  "format": "yunipals-ypal-future-combined-source-preparation-v1",
+  "futureManifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+  "futureProfileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+  "preparedAt": "2026-10-23T19:30:11.759131+00:00",
+  "productionEffects": {
+    "cacheOrNativeResets": 0,
+    "databaseWrites": 0,
+    "ownershipRowsChanged": false,
+    "profileOrPermitChanges": 0,
+    "providerCalls": 0,
+    "runtimeChanges": 0,
+    "sourceRestart": false
+  },
+  "releaseId": null,
+  "sourceDigest": null,
+  "status": "offline_only_not_built_admitted_or_selected",
+  "validation": {
+    "actualPonderFragmentImplementationUsed": true,
+    "changedSources": 3,
+    "logSha256": "922cc1c58cffd2496b1c03f03db9ebe68f6953479d1428e28eab55d9905cfa5e",
+    "manifestChangedScalarCount": 6,
+    "offlineControls": 6,
+    "passed": true,
+    "unchangedSources": 9
+  }
+}

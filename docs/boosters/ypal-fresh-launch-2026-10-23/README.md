@@ -92,6 +92,18 @@ independently recompiled and match the reviewed deployment exactly; the
 compiler settings and source paths without calling these new addresses full
 exact-source matches.
 
-The website still awaits the fresh indexing/API switch and buyer activation.
-This deployment and explorer verification do not establish a first YPAL purchase,
-VRF callback or daily claim. Those require separate observations after cutover.
+The fresh launch source, API and artwork queue are now serving, and the reviewed
+website is live on [www.yunipals.com/boosters](https://www.yunipals.com/boosters).
+Wrapping is part of the same app at [/wrap](https://www.yunipals.com/wrap).
+The [first genuine three-pack purchase](https://basescan.org/tx/0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7)
+completed Chainlink reveal and per-NFT metadata for NFTs 1–3, variants 171/244/178.
+All three card artworks and the glitter mask are published. The
+[public acceptance](frontend-combined-www-independent-readonly-acceptance.json)
+and [artwork acceptance](first-live-artwork-production.json) record the actual
+checks, including the complete batch replay link.
+
+The first genuine elapsed daily claim remains untested until 24 October 2026,
+21:24:37 UTC. Unseen variant artwork still requires approved operator generation
+and review; the five-second queue is not an unattended image generator.
+Final combined-source parity, API/queue handover and temporary-source retirement
+remain part of the [single-indexer checklist](../../unified-indexer/CHECKLIST.md).
