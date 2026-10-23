@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-current-main-observation-acknowledged-production-v1",
+  "observedAt": "2026-10-23T17:22:19.037402+00:00",
+  "helperFile": "ops/unified-indexer-transition/consumer-current-main-observation-v1.py",
+  "helperSha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+  "installedHelperAlreadyPublished": true,
+  "readOnlyReview": {
+    "acknowledged": false,
+    "acknowledgementDirectoryExists": false,
+    "actualProcessEnvironmentCompared": true,
+    "collectorAndIslandsExactOriginalObservations": true,
+    "currentMainInvocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+    "currentPrivateInputBindingSha256": "5c265aa18a102f428cf0900e6d63b49bb852a7c5f5234d81f3f3ebc363fdfc43",
+    "databaseCalls": 0,
+    "format": "yunipals-current-main-ack-readonly-review-v1",
+    "operatorSha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+    "originalMainInvocation": "61a721b3e677483a9dd4c273decbdee3",
+    "privateValuesExported": false,
+    "providerCalls": 0,
+    "reviewHash": "bcb334efe2f10713edcb4b66393c71820c74ddf37fe095f248d4285f851fcdc3",
+    "serviceActions": 0,
+    "sourceReadinessQualified": false
+  },
+  "actualAcknowledgement": {
+    "acknowledged": true,
+    "databaseCalls": 0,
+    "format": "yunipals-current-main-reader-observation-v1",
+    "installedValidationPassed": true,
+    "liveSelectionChanged": false,
+    "privateValuesExported": false,
+    "providerCalls": 0,
+    "receiptFile": "/var/backups/yunipals-current-main-reader-observation-v1-20261023/consumer-native-20261023-a/result.json",
+    "receiptSha256": "c0d230ff3b6929bb830c207c0c0ed39d70156147e4295ae95e14691a2f83bfbb",
+    "reviewHash": "bcb334efe2f10713edcb4b66393c71820c74ddf37fe095f248d4285f851fcdc3",
+    "serviceActions": 0,
+    "sourceReadinessQualified": false
+  },
+  "sanitizedCaptures": {
+    "/tmp/yunipals-current-main-ack-readonly-review-20261023.json": "bc21670da5e9cd79c74490b257b2c18d0946d0c9931a63c00dd97bf5429c80c3",
+    "/tmp/yunipals-current-main-ack-applied-20261023.json": "f581e959dd6d8527d1422328af01b19f93cc272856d98e8983aa4911668f4e4e"
+  },
+  "scope": {
+    "newProtectedEvidenceRecords": 1,
+    "originalObservationOrRuntimeReceiptModified": false,
+    "privateValuesExported": false,
+    "databaseOrPermissionChanges": 0,
+    "providerRequests": 0,
+    "serviceActions": 0,
+    "sourceReadinessClaimed": false,
+    "consumerSuccessorCompositionActivated": false
+  },
+  "remaining": "The new consumer composition must explicitly consume this protected acknowledgement, requalify remaining legacy peers and verify exact owned replacement or restored-peer evidence. Native source readiness and all operational admission gates remain separate."
+}
