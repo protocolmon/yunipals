@@ -1,10 +1,17 @@
 import { Hono } from "hono";
 import type { Pool } from "pg";
 import { isAddress } from "viem";
-import { boosterDeployment, type BoosterDeployment } from "../boosters/config.js";
+import {
+  boosterDeployment,
+  type BoosterDeployment
+} from "../boosters/config.js";
 import type { boosterReadiness } from "../boosters/readiness.js";
 import { sqlIdentifier } from "../offchain/sql.js";
-import { boosterIdentity } from "../../../../packages/yunipals-market-core/src/boosters.js";
+import {
+  boosterIdentity,
+  type BoosterMonster,
+  type BoosterRequest
+} from "../../../../packages/yunipals-market-core/src/boosters.js";
 
 const typeColumns = `id, pack_type_id AS "packTypeId", registry, engine,
   payment_token AS "paymentToken", price, interval_seconds::text AS "intervalSeconds",
@@ -32,7 +39,9 @@ export function registerBoosterRoutes(
   dependencies: {
     pool: Pick<Pool, "query">;
     schemaName: string;
-    readSnapshot?: (deployment: BoosterDeployment) => ReturnType<typeof boosterReadiness>;
+    readSnapshot?: (
+      deployment: BoosterDeployment
+    ) => ReturnType<typeof boosterReadiness>;
   }
 ) {
   const { pool } = dependencies;
@@ -42,7 +51,10 @@ export function registerBoosterRoutes(
     () =>
       new Response(JSON.stringify({ error: "booster_index_unavailable" }), {
         status: 503,
-        headers: { "Content-Type": "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store"
+        }
       })
   );
   const snapshot = async () => {
@@ -121,6 +133,113 @@ export function registerBoosterRoutes(
     return result.rows[0]
       ? c.json({ ...state, item: result.rows[0] })
       : c.json({ error: "request_not_indexed" }, 404);
+  });
+
+  router.get("/boosters/requests/:engine/:requestId/monsters", async (c) => {
+    c.header("Cache-Control", "no-store");
+    const { engine, requestId } = c.req.param();
+    if (!isAddress(engine) || !validId(requestId))
+      return c.json({ error: "invalid_request_identity" }, 400);
+    const deployment = boosterDeployment();
+    if (!deployment) return c.json({ error: "boosters_not_configured" }, 503);
+    if (engine.toLowerCase() !== deployment.engine)
+      return c.json({ error: "invalid_request_identity" }, 400);
+    const state = await snapshot();
+    if (!state.enabled)
+      return c.json({ error: "boosters_not_configured" }, 503);
+    if (state.indexedBlock === null || state.indexedBlock === undefined)
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    const requestKey = boosterIdentity(engine, requestId);
+    const result = await pool.query<{
+      id: string;
+      status: BoosterRequest["status"];
+      quantity: number;
+      originalKey: string;
+      typeKey: string;
+      items: BoosterMonster[];
+    }>(
+      `SELECT r.id,r.status,r.quantity,r.original_key AS "originalKey",o.type_key AS "typeKey",
+        (SELECT coalesce(jsonb_agg(items ORDER BY items."tokenId"::numeric),'[]'::jsonb)
+         FROM (SELECT ${monsterColumns}
+           FROM ${schema}.booster_monster m
+           JOIN ${schema}.booster_type p ON p.id=m.type_key AND p.id=o.type_key
+             AND p.engine=r.engine AND p.registry=$5 AND p.rule_hash=r.rule_hash
+           WHERE r.status='completed' AND r.quantity BETWEEN 1 AND 7
+             AND m.request_key=r.id AND m.original_key=r.original_key
+             AND m.collection=$4 AND m.mint_block<=$6::bigint
+           ORDER BY m.token_id::numeric LIMIT 8) items) AS items
+       FROM ${schema}.booster_request r
+       JOIN ${schema}.booster_original o ON o.id=r.original_key
+         AND o.collection=$4 AND o.engine=r.engine
+       WHERE r.id=$1 AND r.engine=$2 AND r.request_id=$3`,
+      [
+        requestKey,
+        deployment.engine,
+        requestId,
+        deployment.monsters,
+        deployment.registry,
+        state.indexedBlock
+      ]
+    );
+    const request = result.rows[0];
+    if (!request) return c.json({ error: "request_not_indexed" }, 404);
+    if (
+      !Number.isInteger(request.quantity) ||
+      request.quantity < 1 ||
+      request.quantity > 7
+    )
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    if (request.status === "forfeited")
+      return c.json(
+        {
+          ...state,
+          error: "request_forfeited",
+          status: request.status,
+          requestId,
+          quantity: request.quantity,
+          items: [],
+          nextCursor: null
+        },
+        409
+      );
+    if (request.status === "pending" || request.status === "seeded")
+      return c.json(
+        {
+          ...state,
+          error: "request_not_completed",
+          status: request.status,
+          requestId,
+          quantity: request.quantity,
+          items: [],
+          nextCursor: null
+        },
+        409
+      );
+    const items = request.items;
+    if (
+      request.status !== "completed" ||
+      !Array.isArray(items) ||
+      items.length !== request.quantity ||
+      new Set(items.map((item) => item.id)).size !== request.quantity ||
+      items.some(
+        (item) =>
+          item.collection !== deployment.monsters ||
+          item.requestKey !== requestKey ||
+          item.originalKey !== request.originalKey ||
+          item.typeKey !== request.typeKey ||
+          !validId(item.tokenId) ||
+          item.id !== boosterIdentity(deployment.monsters, item.tokenId)
+      )
+    )
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    return c.json({
+      ...state,
+      requestId,
+      status: request.status,
+      quantity: request.quantity,
+      items,
+      nextCursor: null
+    });
   });
 
   router.get("/boosters/monsters/:collection/:tokenId", async (c) => {

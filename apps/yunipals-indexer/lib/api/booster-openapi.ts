@@ -89,6 +89,31 @@ export const boosterOpenApiPaths = {
       responses: response
     }
   },
+  "/v1/boosters/requests/{engine}/{requestId}/monsters": {
+    get: {
+      tags: ["Boosters"],
+      summary: "Read the exact monster set minted by a completed request",
+      description:
+        "Returns one complete, numerically ordered set of at most seven monsters, scoped to the configured engine, collection and frozen pack rules. Ownership transfers and later burns do not change request provenance. No wallet filter or global token-ID inference is used. Responses are not cached.",
+      parameters: [pathParameter("engine"), pathParameter("requestId")],
+      responses: {
+        ...response,
+        "200": {
+          description:
+            "Booster snapshot plus requestId, completed status, quantity, exact BoosterMonster items and nextCursor:null. Every item's requestKey matches this request."
+        },
+        "404": { description: "Request is not indexed in this deployment" },
+        "409": {
+          description:
+            "Request is pending or seeded (request_not_completed), or its pending mints were forfeited (request_forfeited). Includes status and empty items; no reveal may be shown."
+        },
+        "503": {
+          description:
+            "Source is not ready, or the completed request's exact quantity/monster set is not yet available. Retry without guessing token IDs."
+        }
+      }
+    }
+  },
   ...Object.fromEntries(
     ["monsters", "originals", "requests"].map((resource) => [
       `/v1/owners/{address}/booster-${resource}`,
