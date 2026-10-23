@@ -120,3 +120,17 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/)ops/unified-indexer-transition/arena-modern-package-v1\.py$''']
 regexes = ['''^b5022fdd7a3b1b29d57681f872f7c014f70a21e165440d6ea37d221b6e8e0ff3$''']
+
+[[rules.allowlists]]
+description = "Exact public generated Arena API unit digest in the modern build proof"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)docs/unified-indexer/arena-modern-completed-build-proof-2026-10-23\.json$''']
+regexes = ['''^5a60dec85c9a77241b377d60cd9c888236a74450adb8567dcc834f9d0593157a$''']
+
+[[rules.allowlists]]
+description = "Exact public retained Arena API service file digest in the admission proposal"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/arena-native-admission-20261022/proposal\.current\.json$''']
+regexes = ['''^963eef06c381e36fd3709ff52fd1f15eb2d4f77c463d9f96dfb87c6cf28dc27b$''']

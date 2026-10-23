@@ -1,0 +1,738 @@
+{
+  "format": "yunipals-arena-modern-package-v1",
+  "status": "passed",
+  "reviewHash": "d168992776c64f6fe253c5ff7e2677fbf9aa3d0a9ef63b0ef20fee2b859ea92d",
+  "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "source": {
+    "archive": "/mnt/HC_Volume_107222036/arena-modern-package-20261022/source.tar.gz",
+    "archiveSha256": "d32f168507bbdede7d1e9bbdf1a5af21d8e6f0f806c782b5548622dce8183a96",
+    "manifestSha256": "fe6a122bd9dbac6614ff2126db2010a4f73bc54921f8dc40109a9c850ee3eb3e",
+    "files": 1796,
+    "baseSourceDigest": "3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d",
+    "baseManifestSha256": "1cdf261d411007868ad1f026a58cae381b02c5f92c6a9a45da30e9867e9f7df8",
+    "baseArchiveSha256": "af09ea5b6f557f582e5203dbca38eed6641280bc5b5f49ee180a76b528a7aa2f",
+    "baseBuildProofSha256": "50491f6ddd840a65cbd07d45eeb2923edd88eb62647a8cce5587050d6077b000",
+    "baseRuntimeArchiveSha256": "795fdbb047dbe7009543839389c687cacaa3834001f0dc18650f3be077959774",
+    "baseRuntimeInventorySha256": "e98d1204597345ca2746fd159260b36d7f4f43bac45b8ca9c6ce01a8871f5e6b",
+    "overlayManifestSha256": "a7ec13c29a7af5f37390fffabd27ce7c1b9aa8f8bb1b254f8fafe32123b13393",
+    "overlayArchiveSha256": "4975231a4a19ebbb32490a255e1e9f532f3593cb422b5fed1371922829d2505b",
+    "overlayFiles": 1293,
+    "overlayInventorySha256": "895ee36c14eb3149c5a66358350162a49674fecbc7c6be4136f590b0d0967e50",
+    "byteIdenticalSecondCapture": true
+  },
+  "runtime": {
+    "archive": "/mnt/HC_Volume_107222036/arena-modern-package-20261022/runtime-a/runtime-supplement.tar.gz",
+    "archiveSha256": "07c5ade8f3c9845bec1f0efb77a9e31a4df62360055e51d1bfb609ecfca5bb76",
+    "inventory": "/mnt/HC_Volume_107222036/arena-modern-package-20261022/runtime-a/runtime-supplement.inventory.json",
+    "inventorySha256": "ac0d38db4bc0d31e499a07eee8d35196262495bdbca9c6e7ace57f61b17afd61",
+    "helperSha256": "49c1aef0a5aa38c3142e2132a1e88339889ebfcca917ea6f8dcb4e41f39793c4",
+    "entries": 60922,
+    "regularBytes": 325489843,
+    "exactDelta": {
+      "paths": 60922,
+      "basePaths": 60918,
+      "packages": 330,
+      "addedEntries": [
+        "apps/yunipals-market-api/dist/arena-monitor.mjs",
+        "apps/yunipals-market-api/dist/arena-monitor.mjs.map",
+        "apps/yunipals-market-api/dist/arena-recovery.mjs",
+        "apps/yunipals-market-api/dist/arena-recovery.mjs.map"
+      ],
+      "changedBundlesAndMaps": [
+        "apps/yunipals-market-api/dist/arena-capacity.mjs",
+        "apps/yunipals-market-api/dist/arena-capacity.mjs.map",
+        "apps/yunipals-market-api/dist/arena-control.mjs",
+        "apps/yunipals-market-api/dist/arena-control.mjs.map",
+        "apps/yunipals-market-api/dist/arena-inspect.mjs",
+        "apps/yunipals-market-api/dist/arena-inspect.mjs.map",
+        "apps/yunipals-market-api/dist/arena-lobby.mjs",
+        "apps/yunipals-market-api/dist/arena-lobby.mjs.map",
+        "apps/yunipals-market-api/dist/arena-media-adoption.mjs",
+        "apps/yunipals-market-api/dist/arena-media-adoption.mjs.map",
+        "apps/yunipals-market-api/dist/arena-media.mjs",
+        "apps/yunipals-market-api/dist/arena-media.mjs.map",
+        "apps/yunipals-market-api/dist/arena-migrate.mjs",
+        "apps/yunipals-market-api/dist/arena-migrate.mjs.map",
+        "apps/yunipals-market-api/dist/arena-monitor.mjs",
+        "apps/yunipals-market-api/dist/arena-monitor.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-client.mjs",
+        "apps/yunipals-market-api/dist/arena-native-client.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-disclosure.mjs",
+        "apps/yunipals-market-api/dist/arena-native-disclosure.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-execution.mjs",
+        "apps/yunipals-market-api/dist/arena-native-execution.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-inspect.mjs",
+        "apps/yunipals-market-api/dist/arena-native-inspect.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-media.mjs",
+        "apps/yunipals-market-api/dist/arena-native-media.mjs.map",
+        "apps/yunipals-market-api/dist/arena-native-referee.mjs",
+        "apps/yunipals-market-api/dist/arena-native-referee.mjs.map",
+        "apps/yunipals-market-api/dist/arena-projector.mjs",
+        "apps/yunipals-market-api/dist/arena-projector.mjs.map",
+        "apps/yunipals-market-api/dist/arena-recovery.mjs",
+        "apps/yunipals-market-api/dist/arena-recovery.mjs.map",
+        "apps/yunipals-market-api/dist/arena-referee.mjs",
+        "apps/yunipals-market-api/dist/arena-referee.mjs.map",
+        "apps/yunipals-market-api/dist/arena-server.mjs",
+        "apps/yunipals-market-api/dist/arena-server.mjs.map",
+        "apps/yunipals-market-api/dist/arena-settlement.mjs",
+        "apps/yunipals-market-api/dist/arena-settlement.mjs.map",
+        "apps/yunipals-market-api/dist/arena-source-switch.mjs",
+        "apps/yunipals-market-api/dist/arena-source-switch.mjs.map",
+        "apps/yunipals-market-api/dist/marketplace-consumer.mjs",
+        "apps/yunipals-market-api/dist/marketplace-consumer.mjs.map",
+        "apps/yunipals-market-api/dist/marketplace-rollback.mjs",
+        "apps/yunipals-market-api/dist/marketplace-rollback.mjs.map",
+        "apps/yunipals-market-api/dist/migrate.mjs",
+        "apps/yunipals-market-api/dist/migrate.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-discovery.mjs",
+        "apps/yunipals-market-api/dist/opensea-discovery.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-probe.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-read-worker.mjs",
+        "apps/yunipals-market-api/dist/opensea-read-worker.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-signature-fleet.mjs",
+        "apps/yunipals-market-api/dist/opensea-signature-fleet.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-signature-worker.mjs",
+        "apps/yunipals-market-api/dist/opensea-signature-worker.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-stream.mjs",
+        "apps/yunipals-market-api/dist/opensea-stream.mjs.map",
+        "apps/yunipals-market-api/dist/opensea-worker.mjs",
+        "apps/yunipals-market-api/dist/opensea-worker.mjs.map",
+        "apps/yunipals-market-api/dist/rpc-budget-proxy.mjs",
+        "apps/yunipals-market-api/dist/rpc-budget-proxy.mjs.map",
+        "apps/yunipals-market-api/dist/sale-worker.mjs",
+        "apps/yunipals-market-api/dist/sale-worker.mjs.map",
+        "apps/yunipals-market-api/dist/server.mjs",
+        "apps/yunipals-market-api/dist/server.mjs.map",
+        "apps/yunipals-market-api/dist/worker.mjs",
+        "apps/yunipals-market-api/dist/worker.mjs.map"
+      ],
+      "artifactScope": "full_consumer_artifact",
+      "arenaQualifiedChangedBundles": [
+        "apps/yunipals-market-api/dist/arena-capacity.mjs",
+        "apps/yunipals-market-api/dist/arena-control.mjs",
+        "apps/yunipals-market-api/dist/arena-inspect.mjs",
+        "apps/yunipals-market-api/dist/arena-lobby.mjs",
+        "apps/yunipals-market-api/dist/arena-media-adoption.mjs",
+        "apps/yunipals-market-api/dist/arena-media.mjs",
+        "apps/yunipals-market-api/dist/arena-migrate.mjs",
+        "apps/yunipals-market-api/dist/arena-monitor.mjs",
+        "apps/yunipals-market-api/dist/arena-native-client.mjs",
+        "apps/yunipals-market-api/dist/arena-native-disclosure.mjs",
+        "apps/yunipals-market-api/dist/arena-native-execution.mjs",
+        "apps/yunipals-market-api/dist/arena-native-inspect.mjs",
+        "apps/yunipals-market-api/dist/arena-native-media.mjs",
+        "apps/yunipals-market-api/dist/arena-native-referee.mjs",
+        "apps/yunipals-market-api/dist/arena-projector.mjs",
+        "apps/yunipals-market-api/dist/arena-recovery.mjs",
+        "apps/yunipals-market-api/dist/arena-referee.mjs",
+        "apps/yunipals-market-api/dist/arena-server.mjs",
+        "apps/yunipals-market-api/dist/arena-settlement.mjs",
+        "apps/yunipals-market-api/dist/arena-source-switch.mjs"
+      ],
+      "otherQualifiedChangedConsumerBundles": [
+        "apps/yunipals-market-api/dist/marketplace-consumer.mjs",
+        "apps/yunipals-market-api/dist/marketplace-rollback.mjs",
+        "apps/yunipals-market-api/dist/migrate.mjs",
+        "apps/yunipals-market-api/dist/opensea-discovery.mjs",
+        "apps/yunipals-market-api/dist/opensea-probe.mjs",
+        "apps/yunipals-market-api/dist/opensea-read-worker.mjs",
+        "apps/yunipals-market-api/dist/opensea-signature-fleet.mjs",
+        "apps/yunipals-market-api/dist/opensea-signature-worker.mjs",
+        "apps/yunipals-market-api/dist/opensea-stream.mjs",
+        "apps/yunipals-market-api/dist/opensea-worker.mjs",
+        "apps/yunipals-market-api/dist/rpc-budget-proxy.mjs",
+        "apps/yunipals-market-api/dist/sale-worker.mjs",
+        "apps/yunipals-market-api/dist/server.mjs",
+        "apps/yunipals-market-api/dist/worker.mjs"
+      ],
+      "changedBundleSourceQualifications": [
+        {
+          "path": "apps/yunipals-market-api/dist/arena-capacity.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/capacityWorker.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-control.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/control.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-inspect.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-lobby.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/control.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-media-adoption.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-media.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/media.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-migrate.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/schema.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-monitor.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/health.ts",
+            "apps/yunipals-market-api/src/arena/live/healthWorker.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-client.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/clientTransactions.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-disclosure.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-execution.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-inspect.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-media.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/media.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-native-referee.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeRefereeWorker.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-projector.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/clientTransactions.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/projector.ts",
+            "apps/yunipals-market-api/src/arena/live/projectorWorker.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-recovery.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/recovery.ts",
+            "apps/yunipals-market-api/src/arena/live/recoveryCli.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-referee.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/refereeWorker.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-server.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/clientTransactions.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/http.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeReadModels.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/readModels.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/server.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-settlement.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/admission.ts",
+            "apps/yunipals-market-api/src/arena/live/capacity.ts",
+            "apps/yunipals-market-api/src/arena/live/catalog.ts",
+            "apps/yunipals-market-api/src/arena/live/config.ts",
+            "apps/yunipals-market-api/src/arena/live/funding.ts",
+            "apps/yunipals-market-api/src/arena/live/identity.ts",
+            "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+            "apps/yunipals-market-api/src/arena/live/intake.ts",
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "apps/yunipals-market-api/src/arena/live/runtime.ts",
+            "apps/yunipals-market-api/src/arena/live/settlement.ts",
+            "apps/yunipals-market-api/src/arena/live/storage.ts",
+            "apps/yunipals-market-api/src/confirmations.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/arena-source-switch.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+            "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+            "packages/yunipals-indexer-server/src/arena.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts",
+            "packages/yunipals-market-core/src/arena.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/marketplace-consumer.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/bnb/recovery.ts",
+            "apps/yunipals-market-api/src/indexer/bnbOrderProcessing.ts",
+            "apps/yunipals-market-api/src/indexer/consumerEnvironment.ts",
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/marketplace-rollback.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/bnb/recovery.ts",
+            "apps/yunipals-market-api/src/indexer/bnbOrderProcessing.ts",
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/migrate.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-discovery.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-probe.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-read-worker.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-signature-fleet.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "apps/yunipals-market-api/src/openseaSignatureFleet.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-signature-worker.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-stream.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/opensea-worker.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/rpc-budget-proxy.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/rpcBudgetProxy.ts",
+            "packages/yunipals-indexer-server/src/rpc-policy.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/sale-worker.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/indexer/consumerEnvironment.ts",
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/server.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/bnb/recovery.ts",
+            "apps/yunipals-market-api/src/indexer/bnbDiscoveryRead.ts",
+            "apps/yunipals-market-api/src/indexer/bnbOrderProcessing.ts",
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/ownershipSql.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        },
+        {
+          "path": "apps/yunipals-market-api/dist/worker.mjs",
+          "changedSourcePaths": [
+            "apps/yunipals-market-api/src/bnb/recovery.ts",
+            "apps/yunipals-market-api/src/indexer/bnbOrderProcessing.ts",
+            "apps/yunipals-market-api/src/indexer/consumerEnvironment.ts",
+            "apps/yunipals-market-api/src/indexer/ownership.ts",
+            "apps/yunipals-market-api/src/indexer/sourcePool.ts",
+            "packages/yunipals-indexer-server/src/event-topics.ts",
+            "packages/yunipals-indexer-server/src/paging.ts"
+          ]
+        }
+      ],
+      "candidateProxyUnselected": true,
+      "sourceReplayOrProxyActivationApproved": false,
+      "dependencyBytesLinksShimsAndMetadataUnchanged": true,
+      "pathTypesModesAndLinkTargetsUnchanged": true,
+      "normalizationApplied": false
+    },
+    "separateRelocatedTreeRebuildByteIdentical": true
+  },
+  "verification": {
+    "twoFullTypechecks": true,
+    "sourceVerification": "pinned_runtime_supplement_all_manifest_bytes_and_checksum_list",
+    "legacyNodeSourceVerifierUsed": false,
+    "catalogPoolHashNormalizedAfterExactComparison": true,
+    "targetedCredentialReaderSuites": 2,
+    "credentialControlsPerSuite": 79,
+    "modernAcceptanceSuites": 2,
+    "modernChecksPerSuite": 21,
+    "ordinaryMarketBuilds": 2,
+    "bundleCount": 36,
+    "catalog": {
+      "islands": 898,
+      "identityProfiles": 4,
+      "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+      "poolHash": "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c"
+    },
+    "exclusiveRelocation": {
+      "command": "install",
+      "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+      "entriesVerified": 60922,
+      "regularBytesVerified": 325489843,
+      "installedRoots": [
+        "node_modules",
+        "apps/yunipals-indexer/node_modules",
+        "apps/yunipals-market-api/node_modules",
+        "packages/yunipals-indexer-server/node_modules",
+        "packages/yunipals-market-core/node_modules",
+        "apps/yunipals-market-api/dist"
+      ],
+      "sourceUnchanged": true,
+      "networkCalls": 0
+    },
+    "dependencyPackages": 330,
+    "packageManagerInstalls": 0,
+    "downloads": 0,
+    "indexerApplicationInputsUnchanged": true,
+    "nativePonderBuildPerformed": false,
+    "activePonderRuntimeChanged": false
+  },
+  "media": {
+    "assetsQualified": false,
+    "mediaComplete": false,
+    "requiredIslandPngCount": 898,
+    "requiredExternalAssetCount": 903,
+    "sourceArchiveContainsIslandPngs": false,
+    "smallPublicReferenceMediaIncluded": true,
+    "qualificationDeferred": true,
+    "attachmentRequiredBeforeMediaEnablement": true
+  },
+  "nativeUnits": {
+    "root": "/opt/yunipals-unified/releases/264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+    "files": {
+      "yunipals-arena-native-api.service": "5a60dec85c9a77241b377d60cd9c888236a74450adb8567dcc834f9d0593157a",
+      "yunipals-arena-native-disclosure.service": "39cde56c6a2bf6c0f920eb406a3c5bd35c1291d31530e2a9bc8a991bc84da2f2",
+      "yunipals-arena-native-client.service": "dc5319a9ac25e36390c2a4a64baf3e0b5f7347f8b7442f04e79fa6448a154314",
+      "yunipals-arena-native-referee.service": "920a8f1ab23b9a56daa6b29e02fbe89a2113b45bf673b46ec81534aae17b077c",
+      "yunipals-arena-native-media.service": "8b3b0a705c7e0649cd70a8822a9bc6b816df6c6f08e187cc59a7606ef0ac029b",
+      "yunipals-arena-native-execution@lobby.service": "d61c4bd408a2ff190fcf760fec5613c7990543c6d05276384f502cc5292abeb9",
+      "yunipals-arena-native-execution@referee.service": "1d4a062f5857df0b58e2f5c230d14f268c617c82e95642ca70763bfaaa303ca7",
+      "yunipals-arena-native-capacity.service": "68abc62f4769f0be2e33edbd0ef5420661f2413a02df63480493387393902432"
+    },
+    "unitsInstalledOrStarted": false,
+    "lobbyExecutionKey": "/etc/yunipals-arena/operator.key",
+    "entriesEnabled": false,
+    "newLobbiesEnabled": false
+  },
+  "qualifications": [
+    "Full consumer artifact only; the candidate proxy remains unselected and is not approved for source/replay/proxy activation. No live source/proxy/selector/worker replacement, schema migration, grants or readiness acceptance.",
+    "330 accepted dependencies preserve all bytes, shims, metadata, link targets and modes; no package manager or download is used.",
+    "Only monitor/recovery bundles and maps add runtime paths; each changed known consumer bundle binds an actual changed frozen source in its fully verified source map, without a build-config waiver. Arena and other changed bundles are listed separately.",
+    "Public catalog metadata, four exact reference images and soundtrack are source-qualified; 898 retained island PNGs remain external. Media-ready is not claimed.",
+    "Indexer application inputs are unchanged. Shared source may change transitively; no native Ponder build is performed and no active Ponder runtime is changed."
+  ]
+}

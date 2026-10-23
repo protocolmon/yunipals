@@ -1,0 +1,20 @@
+{
+  "format": "yunipals-arena-modern-install-v1",
+  "proofSha256": "a2b353f788d5d6a15408c3ee9cc3e46d100a9fd6a0c4b90230fd9f53091bc01e",
+  "buildReviewHash": "d168992776c64f6fe253c5ff7e2677fbf9aa3d0a9ef63b0ef20fee2b859ea92d",
+  "packageOperatorSha256": "d00836a798cf9a1ddd24ba3558b0752d9082bbdbddd56bf43833faba9b81cd21",
+  "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "manifestSha256": "fe6a122bd9dbac6614ff2126db2010a4f73bc54921f8dc40109a9c850ee3eb3e",
+  "runtimeArchiveSha256": "07c5ade8f3c9845bec1f0efb77a9e31a4df62360055e51d1bfb609ecfca5bb76",
+  "runtimeInventorySha256": "ac0d38db4bc0d31e499a07eee8d35196262495bdbca9c6e7ace57f61b17afd61",
+  "target": "/opt/yunipals-unified/releases/264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "artifact": "/var/tmp/yunipals-runtime-264a3322-20261022",
+  "serviceChanges": 0,
+  "databaseChanges": 0,
+  "sourceSelectionsChanged": 0,
+  "installed": true,
+  "installedEntriesVerified": 60922,
+  "sourceFilesVerified": 1796,
+  "runtimeStarted": false,
+  "olderArtifactsModified": false
+}

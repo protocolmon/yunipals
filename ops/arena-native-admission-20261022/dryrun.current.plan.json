@@ -1,0 +1,49 @@
+{
+  "format": "yunipals-arena-native-current-admission-dryrun-v1",
+  "status": "prepared_not_executed",
+  "candidateSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "proposalSha256": "f172c11d9168233304d7648360e92d207e481d83545ef080a5b6f9c4855af496",
+  "rehearsals": [
+    {
+      "database": "yunipals_arena",
+      "unixPort": 15438,
+      "sqlFile": "operational-roles.current.sql.review",
+      "sqlSha256": "310b817daf1ee7254e54d21a783334638d3ef58aee3c430dd10f4991a704d9b3",
+      "onlyTransformation": {
+        "requireExactFinalBytes": "COMMIT;\n",
+        "replaceFinalBytesWith": "ROLLBACK;\n"
+      },
+      "mode": "root_via_existing_postgres_peer_no_password",
+      "persistentRoleOrGrantChanges": 0,
+      "LOGIN": false,
+      "privateFiles": false,
+      "services": false,
+      "requiresNativeCoverage": false
+    },
+    {
+      "database": "yunipals_backfill",
+      "unixPort": 5432,
+      "sqlFile": "source-reader.current.sql.review",
+      "sqlSha256": "8e98f0303073f64fbcc11648c81825af521f151e9903dd44c28619346520dd4f",
+      "onlyTransformation": {
+        "requireExactFinalBytes": "COMMIT;\n",
+        "replaceFinalBytesWith": "ROLLBACK;\n"
+      },
+      "mode": "root_via_existing_postgres_peer_no_password",
+      "persistentRoleOrGrantChanges": 0,
+      "LOGIN": false,
+      "privateFiles": false,
+      "services": false,
+      "requiresNativeCoverage": false
+    }
+  ],
+  "preconditions": [
+    "Recheck actual role names absent; do not adopt existing names or OIDs.",
+    "Verify all twelve committed markers/current table/schema/database identities.",
+    "Bind owner-v11 and runtime-restore-v1 receipts and current preserved configuration."
+  ],
+  "commitNotAuthorizedByThisPlan": true,
+  "schemaMigrationNeverInvoked": true,
+  "sourceSelectionOrAdoptionNeverInvoked": true,
+  "concreteNextOwnerImplementation": "A new committed-schema direct-native owner must bind actual candidate build/install/constructor, role/config/login/auth, normal-source/canonical opening witnesses and stop/start ownership; historical v7 migration launcher is not reused."
+}
