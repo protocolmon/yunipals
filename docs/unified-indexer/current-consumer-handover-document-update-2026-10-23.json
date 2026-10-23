@@ -1,0 +1,61 @@
+{
+  "commandsVerified": 5,
+  "consumerModeDispatchAndDependencyPinsVerified": true,
+  "databaseWrites": 0,
+  "document": {
+    "file": "ops/unified-indexer-transition/consumer-current-handover.md",
+    "sha256": "c12e2300c39c45a41b40dd58d64a32306526554588a9ba6d5a9e93eb78eff281"
+  },
+  "featureAndSupervisorHelpCommandsPassed": true,
+  "format": "yunipals-current-consumer-handover-document-verification-v1",
+  "gitDiffCheckPassed": true,
+  "manifestSha256": "fda31f4b8d8eb03b80a40d9d2e3b0a88e801c4585f3af23410d6a07bb0ad24a9",
+  "nativeAndOwnerGatesPreserved": true,
+  "operatorsChanged": 0,
+  "productionActions": 0,
+  "productionSourceStageReceipt": {
+    "capturedProductionResultSha256": "a50b85367c62ed687b0d58c5c66f69668e71035f6d693410a73d99bcf5c425a7",
+    "file": "docs/unified-indexer/current-feature-final-v2-production-stage-2026-10-23.json",
+    "sha256": "af51e0b1d9a23cfa5772449599b5b42d4c0ac9b660481eefb9c393f0c766a9d2",
+    "verifiedAt": "2026-10-23T14:48:07.496479+00:00"
+  },
+  "providerCalls": 0,
+  "tablePinsVerified": [
+    {
+      "file": "consumer-operational-live-booster-v2.py",
+      "sha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39"
+    },
+    {
+      "file": "consumer-owned-booster-runtime-v4.py",
+      "sha256": "ae099a6430ec9fb902e723e4da558923002ea9b9c309ae9776d59e892a248e41"
+    },
+    {
+      "file": "booster-feature-handover-v7.py",
+      "sha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984"
+    },
+    {
+      "file": "final-supervisor-handover-v4.py",
+      "sha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5"
+    },
+    {
+      "file": "consumer-operational-marketplace-ack-v2.py",
+      "sha256": "9a5190ee5bbb74ea72bd128359e1c14ead3083148b430210515119d82851ef4d"
+    },
+    {
+      "file": "consumer-accepted-marketplace-acl-v2.py",
+      "sha256": "4fa510efd86714404655403617d46cd597fb099b6ed3d9a003cf293269c34a36"
+    },
+    {
+      "file": "consumer-operational-owner-v6.py",
+      "sha256": "f120fbadfc36170be1c8d29eff15015ab23106042953436faf37474953fce27d"
+    },
+    {
+      "file": "consumer-operational-preview-v6.py",
+      "sha256": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777"
+    },
+    {
+      "file": "consumer-operational-install-v7.py",
+      "sha256": "9a59728a3dbdac9c039d1bd1e0c35557a15ece2ec018c5b6bee25bcfcae7d078"
+    }
+  ]
+}
