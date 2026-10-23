@@ -1,16 +1,18 @@
 # Unified indexer implementation progress
 
-Goal started 20 October 2026. The [implementation plan](/root/yunipals/docs/unified-indexer-implementation-plan.md) remains the acceptance contract. Production cutover has not started.
+Goal started 20 October 2026. The [implementation plan](/root/yunipals/docs/unified-indexer-implementation-plan.md) remains the acceptance contract. The unified source/consumer cutover remains pending.
 
-## Current acceptance — 23 October, 00:31 UTC
+## Current acceptance — 23 October, 00:52 UTC
 
-The [concise checklist](CHECKLIST.md) tracks the remaining rollout. Collection and public packs are live on the single www app. The shared source is still replaying history; its same live process reached BNB block56,835,591 at00:16UTC,40.5% of the fixed historical block range. Native publication and reader switches remain pending actual current coverage.
+The [concise checklist](CHECKLIST.md) tracks the remaining rollout. Collection and public packs are live on the single www app. The shared source is still replaying history; its same live process reached BNB block60,068,440 at00:52UTC,43.2% of the fixed historical block range. Native publication and reader switches remain pending actual current coverage.
 
 The modern1796-file Arena consumer now has an [actual completed build proof](arena-modern-completed-build-proof-2026-10-23.json), [fresh inactive install receipt](arena-modern-installed-receipt-2026-10-23.json) and [all-eight retained-context constructor acceptance](arena-modern-production-artifact-acceptance-2026-10-23.json). Both independent runtime archives match, every constructor closed, and original workers/configuration/source selection stayed unchanged. All eight rendered service definitions also passed systemd verification without installation or startup.
 
+The [retained public media dependency check](arena-modern-production-media-dependencies-2026-10-23.json) additionally proves the four offline Python scripts match the installed candidate and import under the actual media worker's UID/mount context with readable font and ffmpeg/ffprobe available. It performed no rendering or provider request. The [00:52 replay/resource observation](production-normal-replay-health-2026-10-23.json) confirms the same live source process at BNB block60,068,440,43.2% of the fixed historical block range, with no recorded OOM events and both disk reserves intact.
+
 The exact nine-role proposal passed its [two-database production rollback rehearsal](arena-current-role-production-rollback-rehearsal-2026-10-23.json), with all roles absent afterward. Its separate commit and credential owners have real local PostgreSQL and independent-review evidence, and the [fresh production commit review](arena-current-role-production-commit-review-2026-10-23.json) passed. Automatic approval review rejected the actual COMMIT command before execution, requiring explicit approval for nine production roles and240 grant edges. The bundled role/private-connection/LOGIN/authentication question is pending; none of those changes has run.
 
-The committed-schema direct-native cutover is being completed and independently reviewed. It does not rerun migrations or perform an extra legacy-worker upgrade. Production adoption, source publication, worker replacement, combined rollback and sustained observation remain incomplete.
+The initial committed-schema direct-native cutover implementation passed independent review, 15 Python controls, eight Node controls and real PostgreSQL adoption/source-selection tests with two lost commit acknowledgements. Its explicit forward continuation is being wired and tested; a separate post-native isolated-public rollback owner is being designed. It does not rerun migrations or perform an extra legacy-worker upgrade. Production adoption, source publication, worker replacement, combined rollback and sustained observation remain incomplete.
 
 ## Implemented in the first batch
 
