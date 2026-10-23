@@ -1,0 +1,88 @@
+{
+  "format": "yunipals-ypal-www-staged-build-v1",
+  "checkedAt": "2026-10-23T20:08:51.280290+00:00",
+  "deploymentUrl": "https://yunipals-fpxxed02z-devving.vercel.app",
+  "canonicalOrigin": "https://www.yunipals.com",
+  "canonicalPromoted": false,
+  "canonicalManifestSha256": "c0f78225033d81758f52244dfc05879aed7af2818a4efa9e74cf41ddb10a501b",
+  "stagedManifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "frontendSourceCommit": "08483087",
+  "existingProjectReused": true,
+  "actualStageManifestReadAndMatched": true,
+  "fixtureBrowserAcceptance": "wrap-wired-build-acceptance.json",
+  "freshBackendAcceptancePending": true,
+  "publicYPALPurchasesEnabled": false,
+  "artifactScan": {
+    "manifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+    "baselineManifestSha256": "d1e5c42b4129bc982076c3efab6c81e39cca2c963f834ade6d7299d9a5077e07",
+    "findings": 9,
+    "classified": [
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/RELEASE-MANIFEST.json",
+        "rule": "generic-api-key",
+        "candidateSha256": "7fd98fca9e17d1b9b4af54f5a307a83298522764470fb3c2eae4d654fcc3b2ca",
+        "classification": "actual-public-YPAL-contract-address",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-DsZPbNrk.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "9c9d2b0707d95c1c62990d54db1505f1c6ef8461502349ecf6da341d2929c476",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/boosters/mainnet-smoke-setup.json",
+        "rule": "generic-api-key",
+        "candidateSha256": "5244d6e2150a3de8e8fd261fdf6c361689c413198e3bbea4b76d9c1bd13140bc",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/boosters/mainnet-standard-setup.json",
+        "rule": "generic-api-key",
+        "candidateSha256": "5244d6e2150a3de8e8fd261fdf6c361689c413198e3bbea4b76d9c1bd13140bc",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-B6ORlMYF.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "f926053877a254fc022e42225a7a6790e6e8740c6b0fb757b510ec9aefe5dbdf",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-DsZPbNrk.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "7abc7b73503342951b76a0b706b7a3739d1c1fe068b94a9b39ce9eded7add463",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-B1wvjioc.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "deb4d2a3badeaeb24f4e2c09af635a2ce23da6e341f0927527f5afd66980b282",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-B1wvjioc.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "7fd98fca9e17d1b9b4af54f5a307a83298522764470fb3c2eae4d654fcc3b2ca",
+        "classification": "actual-public-YPAL-contract-address",
+        "valuesExported": false
+      },
+      {
+        "file": "/tmp/yunipals-collection-booster-live-www-1792783059763/assets/index-B1wvjioc.js",
+        "rule": "generic-api-key",
+        "candidateSha256": "cb996b577e4f1a079d5bcde945b37a161e17fd7ab6cea7c3044e053fddad18bd",
+        "classification": "previously-published-unchanged",
+        "valuesExported": false
+      }
+    ],
+    "privateCredentialsFound": 0,
+    "broadAllowlistAdded": false
+  }
+}

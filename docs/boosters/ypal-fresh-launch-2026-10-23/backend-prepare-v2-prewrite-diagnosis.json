@@ -1,0 +1,119 @@
+{
+  "actualBoundedPublicReadsAuthorized": true,
+  "actualProviderReadsPerformed": true,
+  "databaseWrites": 0,
+  "diagnosticReceiptSha256": {
+    "effectPrefix": "0fef44076e0a5cba2df69fb358e474157714eb1d15fb9d78aa13425c25a574cd",
+    "realDefault": "8a530d3728901db0bab90cf3ccb394c090c924626d12c55a5eb214226542b749"
+  },
+  "effectPrefix": {
+    "at": "2026-10-23T19:42:38.790027+00:00",
+    "baseExists": false,
+    "baseFiles": [],
+    "databaseWrites": 0,
+    "format": "yunipals-ypal-inactive-prepare-effect-readonly-v1",
+    "journal": {
+      "classified": [],
+      "exitCode": 0,
+      "lineCount": 0,
+      "stderrBytes": 0
+    },
+    "probeState": {
+      "exitCode": 0,
+      "properties": {
+        "ActiveState": "inactive",
+        "ControlGroup": "",
+        "ControlPID": "0",
+        "ExecMainExitTimestamp": "",
+        "ExecMainStartTimestamp": "",
+        "ExecMainStatus": "0",
+        "Id": "yunipals-ypal-build-probe-v1.service",
+        "InvocationID": "",
+        "Job": "",
+        "LoadState": "not-found",
+        "MainPID": "0",
+        "NRestarts": "0",
+        "Result": "success",
+        "SubState": "dead"
+      },
+      "stderrBytes": 0
+    },
+    "providerCalls": 0,
+    "rootExists": false,
+    "rootFiles": [],
+    "serviceActions": 0
+  },
+  "finding": "A fresh real default review completes every stage but the approved static hash changes only because one positively attributed old-launch PostgreSQL backend pid/backendStart changed. Comparing that review against the earlier supplied hash would reject before the first write. The original generic exception itself did not persist its hidden fixedCode.",
+  "format": "yunipals-ypal-inactive-prepare-prewrite-diagnosis-v1",
+  "frozenSourcesModified": false,
+  "inverseNeeded": false,
+  "nextSafeAction": "Prepare and independently review an immutable inactive-only stable-hash successor excluding oldBackends along with the already-observational combinedBackends/count, keeping all actual kernel attribution, actor, roles, schema/private inputs and unrelated fields mandatory. Never rerun the prior apply blindly. Live stop/drain must use freshly captured raw backend tuples.",
+  "observedAt": "2026-10-23T19:47:26.023826+00:00",
+  "paidProviderUsed": false,
+  "probeStarted": false,
+  "producer": {
+    "file": "ops/booster-launch/ypal-backend-prepare-owner-v2.py",
+    "sha256": "118ed515b420a77862f14463e1dde047c6b8929286652fca61ffa09e65f75a62"
+  },
+  "realReadOnlyDefaultDiagnostic": {
+    "at": "2026-10-23T19:46:10.003707+00:00",
+    "baseExists": false,
+    "bindingMatches": false,
+    "currentReviewHash": "f7ac742c3f8394dbc890b3aa7940e4d5c69f5dfcd2013f0a6ba23cff1c2edae8",
+    "databaseWrites": 0,
+    "defaultReviewPassed": true,
+    "diffs": [
+      {
+        "afterSha256": "71a6361c21f018d7e7c45f4f19ca2b95cec34c1444b5ed92c89a09d7024e6b94",
+        "beforeSha256": "81d211580472d7bc6c363a303eb107532b90d7b915d8dae9dd20ccfd44380047",
+        "path": "/snapshot/source/sessionAttribution/oldBackends/2/backendStart"
+      },
+      {
+        "afterSha256": "67b34f237c988e3a571aaa1c4c78186c5b3871cf3a29480eaa007b2c2ea0969a",
+        "beforeSha256": "97dc66faf3721ea11c372d35175a7a83d5be4b1afc000796406038478aa37858",
+        "path": "/snapshot/source/sessionAttribution/oldBackends/2/pid"
+      }
+    ],
+    "format": "yunipals-ypal-preparation-default-readonly-diagnosis-v1",
+    "freshRootExists": false,
+    "priorReviewHash": "748ad69190320dffc48f50e0eeb46214eeb14a527c556ea84695711c7b37d476",
+    "probeStarted": false,
+    "providerCallsScope": "only real fixed credential-free public Base deployment qualifier under its existing cap",
+    "serviceActions": 0,
+    "stages": [
+      {
+        "completed": true,
+        "stage": "state"
+      },
+      {
+        "completed": true,
+        "stage": "probe_terminal"
+      },
+      {
+        "completed": true,
+        "stage": "resources"
+      },
+      {
+        "completed": true,
+        "stage": "old_snapshot"
+      },
+      {
+        "completed": true,
+        "stage": "proposal"
+      },
+      {
+        "completed": true,
+        "stage": "chain"
+      },
+      {
+        "completed": true,
+        "stage": "code_proof"
+      },
+      {
+        "completed": true,
+        "stage": "independent"
+      }
+    ]
+  },
+  "serviceActions": 0
+}
