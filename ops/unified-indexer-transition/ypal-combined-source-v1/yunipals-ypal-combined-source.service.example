@@ -1,0 +1,36 @@
+[Unit]
+Description=Unified Yunipals ingestion with the confirmed fresh YPAL stack
+After=network.target postgresql.service yunipals-combined-rpc@ethereum.service yunipals-combined-rpc@base.service yunipals-combined-rpc@polygon.service yunipals-combined-rpc@bnb.service
+
+[Service]
+Type=simple
+User=yunipals_unified_shadow
+Group=yunipals_unified_shadow
+WorkingDirectory=/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer
+ExecStart=/usr/bin/env -i /opt/node-v24.18.1/bin/node --max-old-space-size=4096 --env-file=/var/lib/yunipals-unified-shadow/20261020-008028af-a/launch.env --env-file=/opt/yunipals-unified/operations/free-replay-20261020/source6-free-runtime-v2.env --env-file=/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/combined.public.env /var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/node_modules/ponder/dist/esm/bin/ponder.js start --schema unified_ypal_20261023_v1 --hostname 127.0.0.1 --port 9028
+Restart=on-failure
+RestartSec=10
+RuntimeMaxSec=infinity
+TimeoutStopSec=60
+KillMode=control-group
+MemoryMax=6442450944
+MemorySwapMax=0
+TasksMax=64
+LimitCORE=0
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+ReadWritePaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache
+BindPaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.ponder:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/.ponder /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.vite-temp:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/node_modules/.vite-temp /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/ponder-env.d.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder-env.d.ts
+BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/ponder.config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder.config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/booster-config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/boosters/config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/rpc-preflight.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/unified/rpc-preflight.ts
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

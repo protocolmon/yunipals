@@ -1,6 +1,6 @@
 # Unified Yunipals indexer implementation plan
 
-Prepared 20 October 2026. Status: implementation and additive production preparation are underway; a bounded inactive shadow replay has run, and consumer cutover remains pending. See [implementation progress](/root/yunipals/docs/unified-indexer/progress.md) for completed code, checks, and remaining rollout gates.
+Prepared 20 October 2026. Status: implementation and additive production preparation are underway; the actual combined YPAL source is running with a registered candidate release; native cached replay and consumer cutover remain pending. See [implementation progress](/root/yunipals/docs/unified-indexer/progress.md) for completed code, checks, and remaining rollout gates.
 
 Revised after the Arena discussion and live inventory: use native Ponder handlers and tables for EVM chain state. Solana consolidation is included at the user's request. Following the discussion about extra Base blocks, the working implementation policy is latest complete Base blocks, with canonical/current-state checks and recovery for external effects; the earlier five-block application buffer is no longer the target default. A native Base metadata path now has local recent-reorg publication/read tests; production parity and coordinated rollback acceptance remain required before enabling it.
 
@@ -31,6 +31,8 @@ manifest must subsequently select the new deployment, compare the fresh launch
 source at a common canonical boundary and retire that temporary scanner. Frozen
 old PROTO reader/environment proofs cannot authorize the new deployment or be
 rewritten to claim they covered it.
+
+**Actual combined replacement — 23 October, 23:17 UTC:** after the fresh launch was serving, the reviewed owner drained the obsolete combined invocation and started full YPAL build `71e2a7f3b7` in `unified_ypal_20261023_v1`, reusing the same certified raw sync store. Old native/cache data and the exact boot inode remain retained; old checkpoints were not transferred. The new source is boot-enabled, registered as candidate `4e77f52b…`, and replaying cached history. Readers and the fresh YPAL launch source remain selected as before until actual canonical acceptance and parity. This supersedes the earlier instruction to keep the original combined process running throughout preparation; it does not retire the fresh YPAL scanner or establish completed consolidation.
 
 The user explicitly prioritizes restoring the collection and launching booster packs; marketplace migration and sales-history acceptance are deferred. Keep the verified legacy collection API serving OG holdings. Publish the existing collection frontend, durable approved artwork and a booster-only API. Use the existing tested Base booster Ponder configuration temporarily so the combined runtime's BNB historical barrier cannot delay Base pack requests and reveals. Preserve the combined candidate, its cache and checkpoints. After launch, compare booster history at a common canonical boundary, switch its reader to the combined source and retire the temporary process. This is an intermediate launch path; the final requirement remains one managed indexing service for all configured sources. Marketplace, Arena, Solana and global derived-generation migration gates must not be represented as pack-launch prerequisites.
 

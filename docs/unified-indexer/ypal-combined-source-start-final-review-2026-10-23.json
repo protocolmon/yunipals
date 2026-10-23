@@ -1,0 +1,134 @@
+{
+  "format": "yunipals-ypal-combined-source-start-final-review-v1",
+  "preparedAt": "2026-10-23T23:13:41.291257+00:00",
+  "status": "final-owner-independently-reviewed; root default review and apply remain separate",
+  "supersedesOnlyUnexecutedCandidate": {
+    "preparationPath": "docs/unified-indexer/ypal-combined-source-start-preparation-2026-10-23.json",
+    "preparationSha256": "055cdaf118f44a97e8ed143731daefb80574f9f8aaf36862faf07ee135a619aa",
+    "oldOwnerSha256": "1236e38dd23b782d8546fb05f1e799db82e347061dec88c85d99521fcf4f1f81",
+    "historicalPreparationRetained": true
+  },
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.py",
+      "sha256": "3a70a1167f7e8ffcc73689bc8f0b668319ad1801801c4b403fc791998a7686f6",
+      "bytes": 36576
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.test.py",
+      "sha256": "bb18d5e84c4ce539f9f91b268d20f05383a638542ff2ded1e7348db600bcf315",
+      "bytes": 21847
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/START.md",
+      "sha256": "11ba76fb031d8a238d6be91df88bb725461de70c2d8c428a5b6c49788656f535",
+      "bytes": 8090
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/yunipals-ypal-combined-source.service.example",
+      "sha256": "4ddfaa8bf5d50be23e5caf920b8b9bf982c82d1c36b0d6977855a0e117d4f7fb",
+      "bytes": 2609
+    }
+  ],
+  "actualHostBuildResultSha256": "e09e54bfba64e345f53bf7c0488cc21b3f20f025448f995fed6e12677af4fd3d",
+  "unchangedInactivePlanSha256": "ad60dfc787f29facb485cea4ac2d4a4f65058867415241e796816d620a393bd0",
+  "unchangedSourceDigest": "02e217b73809bf22aed75a35407a2c175c16f49a7eab91c674be86de28507984",
+  "actualRoutes": {
+    "producerSha256": "5e5e82df6744e8a6c049b062ef39ae7c68171cf72920e58ce4bdba7877cac4ff",
+    "resultPath": "/var/backups/yunipals-ypal-combined-rpc-routes-v1-20261023/result.json",
+    "resultSha256": "ec89a39edf14be9e08982f1bc6a3b51c208ddcd712ee41533d3ad3b303c0fa16",
+    "completed": true,
+    "paidAuthority": false,
+    "budgetUnchanged": true,
+    "oldSourceAndLiveYpalActorsUnchanged": true
+  },
+  "readonlyHostCompatibility": {
+    "oldSource": {
+      "pid": 716994,
+      "startTicks": 6611794751,
+      "childPid": 717174,
+      "childStartTicks": 6611795287,
+      "capInhValueSha256": "f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e",
+      "capBndValueSha256": "d984c7de822c5fcb3a5b069faac937cf92a47564dfb77c5b528dd70cd9e98cf9",
+      "permittedEffectiveAmbientZero": true,
+      "NNP": true,
+      "policy": "exact already-qualified legacy hashes only for OLD; NEW remains all five zero"
+    },
+    "run": {
+      "mode": "0755",
+      "uid": 0,
+      "gid": 0
+    },
+    "runLock": {
+      "mode": "01777",
+      "uid": 0,
+      "gid": 0,
+      "device": 28,
+      "inode": 1
+    },
+    "existingTransitionLock": {
+      "mode": "0600",
+      "uid": 0,
+      "gid": 0,
+      "device": 28,
+      "inode": 47,
+      "regular": true,
+      "nlink": 1
+    }
+  },
+  "concreteReviewCorrections": [
+    "OLD actor capability guard pins its exact accepted inherited/bounding hashes while NEW stays zero",
+    "OLD stop and NEW inverse stop fence exact actor after durable intent immediately before manager call",
+    "Finish-only unlink accepts only equal protected owned intent and CASes exact inode/bytes; handles unit already removed before unload ACK",
+    "Root sticky1777 shared-lock parent allowed with root0600 regular nlink1 O_NOFOLLOW and postflock fd/path identity fence"
+  ],
+  "verification": {
+    "authorControls": 30,
+    "independentControls": 30,
+    "independentReviewer": "final_handover",
+    "independentVerdict": "PASS; no remaining concrete blocker",
+    "authorFinalLogSha256": "0a2d4e7fb7e3748798255a237dfbce680055583cd86a498695b709a67247acc6",
+    "realFilesystemCases": [
+      "same boot symlink inode inverse",
+      "foreign inode refusal",
+      "exclusive transition lock",
+      "actual sticky root lock parent + fd/path replacement refusal",
+      "umask077 directory traversability; chown calls asserted in local sandbox",
+      "actual restore() boot-unlink intent prefix",
+      "actual restore() unit-unlink intent prefix",
+      "actual restore() already-removed unit prefix"
+    ],
+    "productionWrites": 0,
+    "productionServiceChanges": 0,
+    "providerCalls": 0
+  },
+  "rootNextDefaultReviewArgv": [
+    "python3",
+    "-I",
+    "-B",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/start-source.py",
+    "--rpc-owner-sha",
+    "5e5e82df6744e8a6c049b062ef39ae7c68171cf72920e58ce4bdba7877cac4ff",
+    "--rpc-result-sha",
+    "ec89a39edf14be9e08982f1bc6a3b51c208ddcd712ee41533d3ad3b303c0fa16",
+    "--build-result-sha",
+    "e09e54bfba64e345f53bf7c0488cc21b3f20f025448f995fed6e12677af4fd3d"
+  ],
+  "rootApply": "append --apply ACTUAL_RETURNED_REVIEW_HASH to the same command once after review",
+  "newHostFilesToStageOnly": [
+    {
+      "source": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.py",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/start-source.py",
+      "noOverwrite": true
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-combined-source-v1/yunipals-ypal-combined-source.service.example",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/yunipals-ypal-combined-source.service.example",
+      "noOverwrite": true
+    }
+  ],
+  "sourceStartedByAuthor": false,
+  "oldSourceDrainedByAuthor": false,
+  "nativeCoverageAccepted": false,
+  "readerOrWorkerSelectionsChanged": false
+}

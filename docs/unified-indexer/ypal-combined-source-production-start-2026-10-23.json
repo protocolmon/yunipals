@@ -1,0 +1,389 @@
+{
+  "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+  "buildId": "71e2a7f3b7",
+  "candidateSourceDigest": "02e217b73809bf22aed75a35407a2c175c16f49a7eab91c674be86de28507984",
+  "checkpointCopied": false,
+  "completed": true,
+  "format": "yunipals-ypal-combined-source-start-v1",
+  "hostBuildResultSha256": "e09e54bfba64e345f53bf7c0488cc21b3f20f025448f995fed6e12677af4fd3d",
+  "liveYPALAndOldRoutesPreserved": true,
+  "native": {
+    "app": {
+      "build_id": "71e2a7f3b7",
+      "heartbeat_at": 1792797441502,
+      "is_dev": 0,
+      "is_locked": 1,
+      "is_ready": 0,
+      "table_names": [
+        "token",
+        "token_lifecycle",
+        "transfer_event",
+        "admin_role_event",
+        "contract_owner_event",
+        "booster_type",
+        "booster_original",
+        "booster_request",
+        "booster_monster",
+        "booster_refund",
+        "booster_engine_state",
+        "booster_event",
+        "booster_checkpoint",
+        "chain_checkpoint",
+        "chain_block",
+        "indexer_source",
+        "canonical_event",
+        "transaction_candidate",
+        "arena_tournament",
+        "arena_seat",
+        "arena_credit"
+      ],
+      "version": "6",
+      "view_names": []
+    },
+    "checkpoints": {
+      "1": "161702580400000000000000010000000012134519000000000000000000000000000000000",
+      "137": "163791283600000000000001370000000021814218000000000000000000000000000000000",
+      "56": "162153258600000000000000560000000007579197000000000000000000000000000000000",
+      "8453": "173123749700000000000084530000000022224075000000000000000000000000000000000"
+    },
+    "clock": 1792797443545,
+    "schemaOid": "75963410",
+    "tables": {
+      "_ponder_checkpoint": {
+        "kind": "r",
+        "oid": "75963418",
+        "owner": "73004621"
+      },
+      "_ponder_meta": {
+        "kind": "r",
+        "oid": "75963411",
+        "owner": "73004621"
+      },
+      "_reorg__admin_role_event": {
+        "kind": "r",
+        "oid": "75963478",
+        "owner": "73004621"
+      },
+      "_reorg__arena_credit": {
+        "kind": "r",
+        "oid": "75963733",
+        "owner": "73004621"
+      },
+      "_reorg__arena_seat": {
+        "kind": "r",
+        "oid": "75963718",
+        "owner": "73004621"
+      },
+      "_reorg__arena_tournament": {
+        "kind": "r",
+        "oid": "75963703",
+        "owner": "73004621"
+      },
+      "_reorg__booster_checkpoint": {
+        "kind": "r",
+        "oid": "75963613",
+        "owner": "73004621"
+      },
+      "_reorg__booster_engine_state": {
+        "kind": "r",
+        "oid": "75963583",
+        "owner": "73004621"
+      },
+      "_reorg__booster_event": {
+        "kind": "r",
+        "oid": "75963598",
+        "owner": "73004621"
+      },
+      "_reorg__booster_monster": {
+        "kind": "r",
+        "oid": "75963553",
+        "owner": "73004621"
+      },
+      "_reorg__booster_original": {
+        "kind": "r",
+        "oid": "75963523",
+        "owner": "73004621"
+      },
+      "_reorg__booster_refund": {
+        "kind": "r",
+        "oid": "75963568",
+        "owner": "73004621"
+      },
+      "_reorg__booster_request": {
+        "kind": "r",
+        "oid": "75963538",
+        "owner": "73004621"
+      },
+      "_reorg__booster_type": {
+        "kind": "r",
+        "oid": "75963508",
+        "owner": "73004621"
+      },
+      "_reorg__canonical_event": {
+        "kind": "r",
+        "oid": "75963673",
+        "owner": "73004621"
+      },
+      "_reorg__chain_block": {
+        "kind": "r",
+        "oid": "75963643",
+        "owner": "73004621"
+      },
+      "_reorg__chain_checkpoint": {
+        "kind": "r",
+        "oid": "75963628",
+        "owner": "73004621"
+      },
+      "_reorg__contract_owner_event": {
+        "kind": "r",
+        "oid": "75963493",
+        "owner": "73004621"
+      },
+      "_reorg__indexer_source": {
+        "kind": "r",
+        "oid": "75963658",
+        "owner": "73004621"
+      },
+      "_reorg__token": {
+        "kind": "r",
+        "oid": "75963433",
+        "owner": "73004621"
+      },
+      "_reorg__token_lifecycle": {
+        "kind": "r",
+        "oid": "75963448",
+        "owner": "73004621"
+      },
+      "_reorg__transaction_candidate": {
+        "kind": "r",
+        "oid": "75963688",
+        "owner": "73004621"
+      },
+      "_reorg__transfer_event": {
+        "kind": "r",
+        "oid": "75963463",
+        "owner": "73004621"
+      },
+      "admin_role_event": {
+        "kind": "r",
+        "oid": "75963471",
+        "owner": "73004621"
+      },
+      "arena_credit": {
+        "kind": "r",
+        "oid": "75963726",
+        "owner": "73004621"
+      },
+      "arena_seat": {
+        "kind": "r",
+        "oid": "75963711",
+        "owner": "73004621"
+      },
+      "arena_tournament": {
+        "kind": "r",
+        "oid": "75963696",
+        "owner": "73004621"
+      },
+      "booster_checkpoint": {
+        "kind": "r",
+        "oid": "75963606",
+        "owner": "73004621"
+      },
+      "booster_engine_state": {
+        "kind": "r",
+        "oid": "75963576",
+        "owner": "73004621"
+      },
+      "booster_event": {
+        "kind": "r",
+        "oid": "75963591",
+        "owner": "73004621"
+      },
+      "booster_monster": {
+        "kind": "r",
+        "oid": "75963546",
+        "owner": "73004621"
+      },
+      "booster_original": {
+        "kind": "r",
+        "oid": "75963516",
+        "owner": "73004621"
+      },
+      "booster_refund": {
+        "kind": "r",
+        "oid": "75963561",
+        "owner": "73004621"
+      },
+      "booster_request": {
+        "kind": "r",
+        "oid": "75963531",
+        "owner": "73004621"
+      },
+      "booster_type": {
+        "kind": "r",
+        "oid": "75963501",
+        "owner": "73004621"
+      },
+      "canonical_event": {
+        "kind": "r",
+        "oid": "75963666",
+        "owner": "73004621"
+      },
+      "chain_block": {
+        "kind": "r",
+        "oid": "75963636",
+        "owner": "73004621"
+      },
+      "chain_checkpoint": {
+        "kind": "r",
+        "oid": "75963621",
+        "owner": "73004621"
+      },
+      "contract_owner_event": {
+        "kind": "r",
+        "oid": "75963486",
+        "owner": "73004621"
+      },
+      "indexer_source": {
+        "kind": "r",
+        "oid": "75963651",
+        "owner": "73004621"
+      },
+      "token": {
+        "kind": "r",
+        "oid": "75963426",
+        "owner": "73004621"
+      },
+      "token_lifecycle": {
+        "kind": "r",
+        "oid": "75963441",
+        "owner": "73004621"
+      },
+      "transaction_candidate": {
+        "kind": "r",
+        "oid": "75963681",
+        "owner": "73004621"
+      },
+      "transfer_event": {
+        "kind": "r",
+        "oid": "75963456",
+        "owner": "73004621"
+      }
+    }
+  },
+  "nativeCoverageAccepted": false,
+  "nativeFrameworkReady": false,
+  "newBoot": {
+    "identity": {
+      "st_dev": 2049,
+      "st_gid": 0,
+      "st_ino": 2719748,
+      "st_mode": 41471,
+      "st_uid": 0
+    },
+    "path": "/etc/systemd/system/multi-user.target.wants/yunipals-ypal-combined-source.service",
+    "target": "/etc/systemd/system/yunipals-ypal-combined-source.service"
+  },
+  "oldBootDisabled": true,
+  "oldSourceStopped": true,
+  "operationSha256": "a80ce9cca2da0dd5e40958db16e65f46e82ea859e861cfb110407e4bf93b9336",
+  "operatorSha256": "3a70a1167f7e8ffcc73689bc8f0b668319ad1801801c4b403fc791998a7686f6",
+  "paidAuthority": false,
+  "readerOrWorkerSelectionsChanged": false,
+  "rpcOwnerSha256": "5e5e82df6744e8a6c049b062ef39ae7c68171cf72920e58ce4bdba7877cac4ff",
+  "rpcResultSha256": "ec89a39edf14be9e08982f1bc6a3b51c208ddcd712ee41533d3ad3b303c0fa16",
+  "schema": "unified_ypal_20261023_v1",
+  "sessionOwnership": {
+    "freshYPAL": [
+      {
+        "backendStart": "2026-10-23T20:35:23.885324+00:00",
+        "pid": 2309512,
+        "transport": "unix-peer-inode"
+      },
+      {
+        "backendStart": "2026-10-23T20:36:11.251973+00:00",
+        "pid": 2310472,
+        "transport": "unix-peer-inode"
+      },
+      {
+        "backendStart": "2026-10-23T23:17:24.636077+00:00",
+        "pid": 2472622,
+        "transport": "unix-peer-inode"
+      }
+    ],
+    "yunipals-ypal-combined-source.service": [
+      {
+        "backendStart": "2026-10-23T23:17:21.466602+00:00",
+        "pid": 2472573,
+        "transport": "unix-peer-inode"
+      },
+      {
+        "backendStart": "2026-10-23T23:17:22.290129+00:00",
+        "pid": 2472587,
+        "transport": "unix-peer-inode"
+      },
+      {
+        "backendStart": "2026-10-23T23:17:22.645654+00:00",
+        "pid": 2472591,
+        "transport": "unix-peer-inode"
+      }
+    ]
+  },
+  "source": {
+    "cgroup": "/system.slice/yunipals-ypal-combined-source.service",
+    "invocation": "9d9fb09dc91a41b4889639576ce7348d",
+    "pid": 2472127,
+    "processes": [
+      {
+        "commandSha256": "4c3b515f1f91fe1fa443e73b9036a2ac651290faf264aec8c91198d519687ef6",
+        "environmentFileHashes": {
+          "/opt/yunipals-unified/operations/free-replay-20261020/source6-free-runtime-v2.env": "6abd96e429a3dd1b601727fb2f13bc57eb003e44549d54c82350126eabdd8dfe",
+          "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/combined.public.env": "2c90fd857ad082e960d26672043db11be1ee4326e83076cabdf4373b90a07411",
+          "/var/lib/yunipals-unified-shadow/20261020-008028af-a/launch.env": "feb8b0e9dd8cd55042d7c3722c83c37471dc702166fa27554f791f262dde6038"
+        },
+        "environmentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "executableSha256": "9560c1d9325e30a88cf39562f8bc22e5d034dd0c2742fc7eb9dafd128db96623",
+        "parentPid": 1,
+        "pid": 2472127,
+        "privileges": {
+          "CapAmb": "0000000000000000",
+          "CapBnd": "0000000000000000",
+          "CapEff": "0000000000000000",
+          "CapInh": "0000000000000000",
+          "CapPrm": "0000000000000000",
+          "Gid": "964\t964\t964\t964",
+          "Groups": "964",
+          "NoNewPrivs": "1",
+          "Uid": "970\t970\t970\t970"
+        },
+        "publicEnvironmentMatched": true,
+        "startTicks": 6622410657
+      },
+      {
+        "commandSha256": "78a7660e60679507cdfbed8d8c79de2c3dcffaeed74d29bbabab76c714b05a49",
+        "environmentFileHashes": {},
+        "environmentSha256": "6d621f6b2431ebf4b174ffd4550ae36dfd928781059e6f59ea548a82e62545ac",
+        "executableSha256": "3074edb0e77ce0733791997fa4fc4f3e9288726da3a4d5d32a5d1abefc4174b6",
+        "parentPid": 2472127,
+        "pid": 2472312,
+        "privileges": {
+          "CapAmb": "0000000000000000",
+          "CapBnd": "0000000000000000",
+          "CapEff": "0000000000000000",
+          "CapInh": "0000000000000000",
+          "CapPrm": "0000000000000000",
+          "Gid": "964\t964\t964\t964",
+          "Groups": "964",
+          "NoNewPrivs": "1",
+          "Uid": "970\t970\t970\t970"
+        },
+        "publicEnvironmentMatched": true,
+        "startTicks": 6622411167
+      }
+    ],
+    "startMonotonicMicroseconds": 66224106592340
+  },
+  "protectedResultSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+  "recordedAt": "2026-10-23T23:39:13.775135+00:00",
+  "scope": "Actual bootstrap and owned source replacement; framework catch-up and canonical acceptance remain separate."
+}

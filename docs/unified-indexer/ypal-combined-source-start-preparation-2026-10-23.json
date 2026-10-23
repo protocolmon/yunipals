@@ -1,0 +1,122 @@
+{
+  "format": "yunipals-ypal-combined-source-start-preparation-v1",
+  "preparedAt": "2026-10-23T23:07:09.914515+00:00",
+  "status": "source-owner-frozen-awaiting-independent-review-and-actual-route-runtime",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.py",
+      "sha256": "1236e38dd23b782d8546fb05f1e799db82e347061dec88c85d99521fcf4f1f81",
+      "bytes": 34664
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.test.py",
+      "sha256": "51e437f72db349d519c583bc8873da75b5257b86fa94c40a0c48ce76585b4c54",
+      "bytes": 15548
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/START.md",
+      "sha256": "9b43c07ffc55787bc305a6366818e80e729ba720c647bbe736f8ff0f80937355",
+      "bytes": 7694
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/yunipals-ypal-combined-source.service.example",
+      "sha256": "4ddfaa8bf5d50be23e5caf920b8b9bf982c82d1c36b0d6977855a0e117d4f7fb",
+      "bytes": 2609
+    }
+  ],
+  "candidate": {
+    "sourceDigest": "02e217b73809bf22aed75a35407a2c175c16f49a7eab91c674be86de28507984",
+    "buildId": "71e2a7f3b7",
+    "schema": "unified_ypal_20261023_v1",
+    "unit": "yunipals-ypal-combined-source.service",
+    "databasePoolMax": 5,
+    "heapMiB": 4096,
+    "memoryMaxBytes": 6442450944,
+    "runtimeMax": "infinity",
+    "port": 9028,
+    "publicStage": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage",
+    "runtimeArea": "/var/lib/yunipals-unified-ypal/combined-v1-source008",
+    "nativeCoverageAccepted": false,
+    "readerOrWorkerSelectionChanged": false
+  },
+  "actualInactiveHostBuild": {
+    "path": "/var/backups/yunipals-combined-source-inactive-build-v1-20261023/result.json",
+    "sha256": "e09e54bfba64e345f53bf7c0488cc21b3f20f025448f995fed6e12677af4fd3d",
+    "planSha256": "ad60dfc787f29facb485cea4ac2d4a4f65058867415241e796816d620a393bd0",
+    "passed": true,
+    "uid": 970,
+    "gid": 964,
+    "offlineFixtures": 12,
+    "providerCalls": 0,
+    "databaseCalls": 0,
+    "socketAttempts": 0,
+    "seconds": 4.799,
+    "allEightOriginalActorsAndThreeOriginalFilesUnchanged": true,
+    "newNativeNamespaceAndRuntimeAreaAbsent": true
+  },
+  "actualReadonlyStartupBoundaryChecks": {
+    "retainedPublicSourceFiles": 198,
+    "baseManifestSha256": "55017c503920ddf2d4083bee2425d4daed656cafd0d36e4f88a6352d5903d15d",
+    "sourceCodePinsSha256": "453759495324de5919abf243e1804ae10f24eab14c187e4f85723259934f3b32",
+    "loadedOldUnitAllRequestedPropertiesPresent": true,
+    "absentNewUnitOmittedOnlyExecStart": true,
+    "stdoutExport": "public hashes and missing property names only",
+    "serviceChanges": 0,
+    "databaseWrites": 0,
+    "providerCalls": 0
+  },
+  "requiredRoutes": {
+    "ownerFile": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-routes-v1.py",
+    "actualReviewedOwnerShaRequiredAtReview": true,
+    "actualCompletedRuntimeResultShaRequiredAtReview": true,
+    "runtimeReceiptAssumed": false,
+    "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "admissionReceiptSha256": "b47cd2411c3e10c8b0538761d88b26e0aa14b78b3aa7510a2c314fd1ab581430",
+    "poolOneArtifactStageSha256": "302757381870bbe92e07754deb25fa62d2ccfe972d8ad84bde24ed208516757d",
+    "endpoints": {
+      "1": "http://127.0.0.1:19221/unified",
+      "8453": "http://127.0.0.1:19222/unified",
+      "137": "http://127.0.0.1:19223/unified",
+      "56": "http://127.0.0.1:19224/unified"
+    },
+    "paidAuthority": false,
+    "profileRenewed": false
+  },
+  "transition": {
+    "drainsOnly": "yunipals-unified-source6-free-v2.service",
+    "oldPid": 716994,
+    "oldInvocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "qualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "qualifierResultSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "oldWholeValidationPassed": false,
+    "oldBootSymlinkDevice": 2049,
+    "oldBootSymlinkInode": 131541,
+    "sameInodeInverse": true,
+    "positiveKernelPgBackendAttributionImmediatelyBeforeAndAfterStop": true,
+    "oldNativeNamespaceAndPonderSyncRetained": true,
+    "checkpointCopyOrRelabel": false,
+    "lostStartAck": "explicit observe-only reconcile-start; no repeated start",
+    "inverse": "exact owned new invocation/restart stop, same original boot inode/program restore once; explicit finish only observes uncertain actions",
+    "sharedTransitionLock": "/run/lock/yunipals-ypal-combined-transition.lock",
+    "newRoutesHealthRequiredForInverse": false,
+    "unrecordedFilesystemPrefix": "manual narrow reconciliation, never automatic adoption"
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-combined-source-v1/start-source.test.py",
+    "passed": 23,
+    "logSha256": "dcf7454ec1602460dc64efa1bb7cb373e805e9d88e63567053e9853f2eecf2f3",
+    "localFilesystemOwnershipSyscalls": "asserted; local sandbox cannot assign arbitrary uid/gid",
+    "productionActions": 0,
+    "providerCalls": 0
+  },
+  "untouched": [
+    "current original source/runtime/profile",
+    "standalone fresh YPAL source/API/queue and timer",
+    "all five existing RPC proxies",
+    "root-owned run-inactive-build.py",
+    "frozen config/build payload and ad60 inactive plan",
+    "all reader/worker/source selections",
+    "financial expiry/allowance/paid permits"
+  ]
+}

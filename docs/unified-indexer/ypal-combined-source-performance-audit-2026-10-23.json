@@ -1,0 +1,1648 @@
+{
+  "format": "yunipals-ypal-combined-source-readonly-performance-audit-v1",
+  "preparedAt": "2026-10-23T23:39:23.402029+00:00",
+  "completed": true,
+  "source": {
+    "pid": 2472127,
+    "invocation": "9d9fb09dc91a41b4889639576ce7348d",
+    "startTicks": 6622410657,
+    "buildId": "71e2a7f3b7",
+    "nativeSchema": "unified_ypal_20261023_v1",
+    "runtimeResultSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+    "sameActorVerifiedBeforeAndAfterBothSamples": true,
+    "restarts": 0
+  },
+  "samples": [
+    {
+      "observedAt": "2026-10-23T23:29:02.314369+00:00",
+      "native": {
+        "buildId": "71e2a7f3b7",
+        "coverage": [
+          {
+            "chainId": 1,
+            "chainName": "mainnet",
+            "completeThroughBlock": "26258496",
+            "frameworkFinalizedThroughBlock": "26258496",
+            "latestBlockTimestamp": "1792796651",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "26258496"
+          },
+          {
+            "chainId": 56,
+            "chainName": "bnb",
+            "completeThroughBlock": "10315906",
+            "frameworkFinalizedThroughBlock": "10315906",
+            "latestBlockTimestamp": "1629831196",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "10315906"
+          },
+          {
+            "chainId": 137,
+            "chainName": "polygon",
+            "completeThroughBlock": "96061180",
+            "frameworkFinalizedThroughBlock": "96061180",
+            "latestBlockTimestamp": "1792797141",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "96061180"
+          },
+          {
+            "chainId": 8453,
+            "chainName": "base",
+            "completeThroughBlock": "22283040",
+            "frameworkFinalizedThroughBlock": "22283040",
+            "latestBlockTimestamp": "1731355427",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "22283040"
+          }
+        ],
+        "frameworkReady": false,
+        "heartbeatAgeMs": 9933,
+        "locked": true,
+        "schemaOid": "75963410",
+        "tables": 44
+      },
+      "completedEventsTotal": 417041.0,
+      "resources": {
+        "memoryAvailableBytes": 21652787200,
+        "memoryCurrentBytes": 1519964160,
+        "memoryEvents": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "memoryMaxBytes": 6442450944,
+        "rootAvailableBytes": 43857473536
+      },
+      "packApi": {
+        "buildId": "8e88ea2e00",
+        "httpStatus": 200,
+        "indexedAgeSeconds": 3,
+        "indexedTimestamp": "1792798139",
+        "ready": true
+      },
+      "sourcePgBackendCountAtCapturedKernelHandles": 2,
+      "sourcePgActivity": [
+        {
+          "count": 1,
+          "max_active_query_seconds": null,
+          "max_transaction_seconds": null,
+          "state": "idle",
+          "wait_class": "Client",
+          "wait_event": "ClientRead"
+        },
+        {
+          "count": 1,
+          "max_active_query_seconds": null,
+          "max_transaction_seconds": 24.509101,
+          "state": "idle in transaction",
+          "wait_class": "Client",
+          "wait_event": "ClientRead"
+        }
+      ],
+      "pendingOwnedPgLocks": 0,
+      "sourceQueryQueues": {
+        "admin": 0.0,
+        "sync": 7.0,
+        "user": 0.0,
+        "readonly": 0.0
+      },
+      "cgroupCPU": {
+        "burst_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_bursts": 0,
+        "nr_periods": 0,
+        "nr_throttled": 0,
+        "system_usec": 28546784,
+        "throttled_usec": 0,
+        "usage_usec": 342326472,
+        "user_usec": 313779687
+      },
+      "processIO": {
+        "rchar": 14438748973,
+        "read_bytes": 10055680,
+        "syscr": 419456,
+        "syscw": 132471,
+        "wchar": 643206559,
+        "write_bytes": 8192
+      },
+      "hostPressure": {
+        "cpu": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 0.0
+          },
+          "some": {
+            "avg10": 2.89,
+            "avg300": 3.22,
+            "avg60": 3.14,
+            "total": 314624331061.0
+          }
+        },
+        "io": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 83638638393.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 87182405031.0
+          }
+        },
+        "memory": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 8095369478.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 8526298758.0
+          }
+        }
+      },
+      "proxies": [
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "ethereum",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 11,
+            "freeFailures": 0,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 1170,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 10,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "base",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 2295,
+            "freeFailures": 1175,
+            "freeOnlyFailures": 1,
+            "freePacingWaitMs": 217115,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 2294,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "polygon",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 24,
+            "freeFailures": 0,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 2394,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 23,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "bnb",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 228,
+            "freeFailures": 1113,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 161795,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 227,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      ],
+      "nativeTableBytes": 832823296,
+      "syncCacheTableBytes": 4384866304,
+      "largestNativeTables": [
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 381739,
+          "live_row_stat_estimate": 412574,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "canonical_event",
+          "total_bytes": 505004032
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 313313,
+          "live_row_stat_estimate": 340553,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "transfer_event",
+          "total_bytes": 176988160
+        },
+        {
+          "dead_row_stat_estimate": 7302,
+          "estimated_rows": 245549,
+          "live_row_stat_estimate": 266121,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "token",
+          "total_bytes": 81084416
+        },
+        {
+          "dead_row_stat_estimate": 198,
+          "estimated_rows": 245549,
+          "live_row_stat_estimate": 266121,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "token_lifecycle",
+          "total_bytes": 66289664
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 4179,
+          "live_row_stat_estimate": 4376,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "transaction_candidate",
+          "total_bytes": 2531328
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": -1,
+          "live_row_stat_estimate": 32,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "admin_role_event",
+          "total_bytes": 65536
+        },
+        {
+          "dead_row_stat_estimate": 4,
+          "estimated_rows": 4,
+          "live_row_stat_estimate": 4,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "_ponder_checkpoint",
+          "total_bytes": 32768
+        },
+        {
+          "dead_row_stat_estimate": 4,
+          "estimated_rows": 1,
+          "live_row_stat_estimate": 1,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "_ponder_meta",
+          "total_bytes": 32768
+        }
+      ]
+    },
+    {
+      "observedAt": "2026-10-23T23:30:40.811650+00:00",
+      "native": {
+        "buildId": "71e2a7f3b7",
+        "coverage": [
+          {
+            "chainId": 1,
+            "chainName": "mainnet",
+            "completeThroughBlock": "26258496",
+            "frameworkFinalizedThroughBlock": "26258496",
+            "latestBlockTimestamp": "1792796651",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "26258496"
+          },
+          {
+            "chainId": 56,
+            "chainName": "bnb",
+            "completeThroughBlock": "10356775",
+            "frameworkFinalizedThroughBlock": "10356775",
+            "latestBlockTimestamp": "1629954319",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "10356775"
+          },
+          {
+            "chainId": 137,
+            "chainName": "polygon",
+            "completeThroughBlock": "96061180",
+            "frameworkFinalizedThroughBlock": "96061180",
+            "latestBlockTimestamp": "1792797141",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "96061180"
+          },
+          {
+            "chainId": 8453,
+            "chainName": "base",
+            "completeThroughBlock": "22283094",
+            "frameworkFinalizedThroughBlock": "22283094",
+            "latestBlockTimestamp": "1731355535",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "22283094"
+          }
+        ],
+        "frameworkReady": false,
+        "heartbeatAgeMs": 8388,
+        "locked": true,
+        "schemaOid": "75963410",
+        "tables": 44
+      },
+      "completedEventsTotal": 445332.0,
+      "resources": {
+        "memoryAvailableBytes": 21683363840,
+        "memoryCurrentBytes": 1523814400,
+        "memoryEvents": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "memoryMaxBytes": 6442450944,
+        "rootAvailableBytes": 43804024832
+      },
+      "packApi": {
+        "buildId": "8e88ea2e00",
+        "httpStatus": 200,
+        "indexedAgeSeconds": 1,
+        "indexedTimestamp": "1792798239",
+        "ready": true
+      },
+      "sourcePgBackendCountAtCapturedKernelHandles": 3,
+      "sourcePgActivity": [
+        {
+          "count": 1,
+          "max_active_query_seconds": null,
+          "max_transaction_seconds": null,
+          "state": "idle",
+          "wait_class": "Client",
+          "wait_event": "ClientRead"
+        },
+        {
+          "count": 2,
+          "max_active_query_seconds": null,
+          "max_transaction_seconds": 3.061658,
+          "state": "idle in transaction",
+          "wait_class": "Client",
+          "wait_event": "ClientRead"
+        }
+      ],
+      "pendingOwnedPgLocks": 0,
+      "sourceQueryQueues": {
+        "admin": 0.0,
+        "sync": 4.0,
+        "user": 0.0,
+        "readonly": 0.0
+      },
+      "cgroupCPU": {
+        "burst_usec": 0,
+        "core_sched.force_idle_usec": 0,
+        "nr_bursts": 0,
+        "nr_periods": 0,
+        "nr_throttled": 0,
+        "system_usec": 31393743,
+        "throttled_usec": 0,
+        "usage_usec": 382500676,
+        "user_usec": 351106932
+      },
+      "processIO": {
+        "rchar": 15672004645,
+        "read_bytes": 10055680,
+        "syscr": 467759,
+        "syscw": 155782,
+        "wchar": 690383176,
+        "write_bytes": 8192
+      },
+      "hostPressure": {
+        "cpu": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 0.0
+          },
+          "some": {
+            "avg10": 2.89,
+            "avg300": 3.1,
+            "avg60": 2.86,
+            "total": 314627600740.0
+          }
+        },
+        "io": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 83638762124.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 87182537863.0
+          }
+        },
+        "memory": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 8095373640.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 8526302932.0
+          }
+        }
+      },
+      "proxies": [
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "ethereum",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 11,
+            "freeFailures": 0,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 1170,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 10,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 1,
+          "chain": "base",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 2683,
+            "freeFailures": 1373,
+            "freeOnlyFailures": 1,
+            "freePacingWaitMs": 253214,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 2682,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "polygon",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 24,
+            "freeFailures": 0,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 2394,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 23,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        },
+        {
+          "activeUpstreamRequests": 0,
+          "chain": "bnb",
+          "maximumConcurrentUpstreamRequests": 2,
+          "traffic": {
+            "freeCalls": 249,
+            "freeFailures": 1220,
+            "freeOnlyFailures": 0,
+            "freePacingWaitMs": 177709,
+            "freeRateLimitRetries": 0,
+            "paidCalls": 0,
+            "sourcePacingTimeouts": 0
+          },
+          "unifiedSource": {
+            "freeCalls": 248,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      ],
+      "nativeTableBytes": 885571584,
+      "syncCacheTableBytes": 4384866304,
+      "largestNativeTables": [
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 439031,
+          "live_row_stat_estimate": 443436,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "canonical_event",
+          "total_bytes": 537575424
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 357577,
+          "live_row_stat_estimate": 360982,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "transfer_event",
+          "total_bytes": 187924480
+        },
+        {
+          "dead_row_stat_estimate": 9576,
+          "estimated_rows": 268937,
+          "live_row_stat_estimate": 282386,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "token",
+          "total_bytes": 86261760
+        },
+        {
+          "dead_row_stat_estimate": 268,
+          "estimated_rows": 278613,
+          "live_row_stat_estimate": 282386,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "token_lifecycle",
+          "total_bytes": 70328320
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": 4179,
+          "live_row_stat_estimate": 4400,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "transaction_candidate",
+          "total_bytes": 2555904
+        },
+        {
+          "dead_row_stat_estimate": 0,
+          "estimated_rows": -1,
+          "live_row_stat_estimate": 32,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "admin_role_event",
+          "total_bytes": 65536
+        },
+        {
+          "dead_row_stat_estimate": 16,
+          "estimated_rows": 4,
+          "live_row_stat_estimate": 4,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "_ponder_checkpoint",
+          "total_bytes": 32768
+        },
+        {
+          "dead_row_stat_estimate": 2,
+          "estimated_rows": 1,
+          "live_row_stat_estimate": 1,
+          "schema": "unified_ypal_20261023_v1",
+          "table": "_ponder_meta",
+          "total_bytes": 32768
+        }
+      ]
+    }
+  ],
+  "observedDelta": {
+    "seconds": 98.497281,
+    "nativeCompleteBlocks": {
+      "1": 0,
+      "56": 40869,
+      "137": 0,
+      "8453": 54
+    },
+    "events": 28291.0,
+    "averageSourceCpuCoreEquivalent": 0.4078711979876886,
+    "gcPauseSeconds": 1.3353278579711918,
+    "secondEventLoopP99Seconds": 0.002222079,
+    "handlerDurationMsByEvent": [
+      {
+        "labels": {
+          "event": "YunipalsEthereum:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:Transfer"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:Transfer"
+        },
+        "delta": 24351.74761500687
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:Transfer"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:Transfer"
+        },
+        "delta": 9273.29975299642
+      },
+      {
+        "labels": {
+          "event": "YunipalsBaseMetadata:Mint"
+        },
+        "delta": 465.46511800109874
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:RoleRevoked"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsIslands:OwnershipTransferred"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsIslands:Transfer"
+        },
+        "delta": 0.0
+      }
+    ],
+    "handlerCountsByEvent": [
+      {
+        "labels": {
+          "event": "YunipalsEthereum:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:setup"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:Transfer"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBnb:Transfer"
+        },
+        "delta": 16298.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsPolygon:Transfer"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:RoleGranted"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBase:Transfer"
+        },
+        "delta": 6000.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsBaseMetadata:Mint"
+        },
+        "delta": 6000.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsEthereum:RoleRevoked"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsIslands:OwnershipTransferred"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "event": "YunipalsIslands:Transfer"
+        },
+        "delta": 0.0
+      }
+    ],
+    "transformDurationMsByStep": [
+      {
+        "labels": {
+          "step": "prefetch"
+        },
+        "delta": 287.59061599953566
+      },
+      {
+        "labels": {
+          "step": "begin"
+        },
+        "delta": 233.36084899981506
+      },
+      {
+        "labels": {
+          "step": "index"
+        },
+        "delta": 31994.45788899972
+      },
+      {
+        "labels": {
+          "step": "load"
+        },
+        "delta": 4319.369364000042
+      },
+      {
+        "labels": {
+          "step": "finalize"
+        },
+        "delta": 17.356419000192545
+      },
+      {
+        "labels": {
+          "step": "commit"
+        },
+        "delta": 7.645452999742702
+      }
+    ],
+    "extractDurationMsByStep": [
+      {
+        "labels": {
+          "step": "format"
+        },
+        "delta": 50.15339500003029
+      },
+      {
+        "labels": {
+          "step": "build"
+        },
+        "delta": 171.69146899983753
+      },
+      {
+        "labels": {
+          "step": "decode"
+        },
+        "delta": 159.4841329997871
+      }
+    ],
+    "pipelineElapsedCountersMs": [
+      {
+        "labels": {
+          "group": "extract"
+        },
+        "delta": 76394.86557199969
+      },
+      {
+        "labels": {
+          "group": "transform"
+        },
+        "delta": 36820.84495099995
+      }
+    ],
+    "pipelineCountersOverlapAndAreNotAdditiveWallFractions": true,
+    "cacheQueryDurationsMs": [
+      {
+        "labels": {
+          "method": "flush",
+          "table": "indexer_source"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "admin_role_event"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "token"
+        },
+        "delta": 3194.9729350000853
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "token_lifecycle"
+        },
+        "delta": 2988.606457999791
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "transfer_event"
+        },
+        "delta": 2134.949427000014
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "canonical_event"
+        },
+        "delta": 3538.5972590001766
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "transaction_candidate"
+        },
+        "delta": 69.72771099989768
+      },
+      {
+        "labels": {
+          "method": "find",
+          "table": "token_lifecycle"
+        },
+        "delta": 116.05152200022712
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "contract_owner_event"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "load",
+          "table": "transaction_candidate"
+        },
+        "delta": 13.658459999947809
+      },
+      {
+        "labels": {
+          "method": "find",
+          "table": "token"
+        },
+        "delta": 27528.02740000887
+      }
+    ],
+    "cacheQueryCounts": [
+      {
+        "labels": {
+          "method": "flush",
+          "table": "indexer_source"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "admin_role_event"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "token"
+        },
+        "delta": 18.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "token_lifecycle"
+        },
+        "delta": 18.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "transfer_event"
+        },
+        "delta": 12.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "canonical_event"
+        },
+        "delta": 12.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "transaction_candidate"
+        },
+        "delta": 6.0
+      },
+      {
+        "labels": {
+          "method": "find",
+          "table": "token_lifecycle"
+        },
+        "delta": 91.0
+      },
+      {
+        "labels": {
+          "method": "flush",
+          "table": "contract_owner_event"
+        },
+        "delta": 0.0
+      },
+      {
+        "labels": {
+          "method": "load",
+          "table": "transaction_candidate"
+        },
+        "delta": 6.0
+      },
+      {
+        "labels": {
+          "method": "find",
+          "table": "token"
+        },
+        "delta": 20833.0
+      }
+    ],
+    "databaseWideCounters": {
+      "blk_read_time": 0,
+      "blk_write_time": 0,
+      "blks_hit": 2876528,
+      "blks_read": 952576,
+      "deadlocks": 0,
+      "temp_bytes": 530837532,
+      "temp_files": 181,
+      "tup_deleted": 6445,
+      "tup_fetched": 873662,
+      "tup_inserted": 85898,
+      "tup_returned": 16291525,
+      "tup_updated": 5014,
+      "xact_commit": 1875,
+      "xact_rollback": 36
+    },
+    "databaseWideTempSpillBytes": 530837532,
+    "databaseWideLogicalPageReadBytes": 7803502592,
+    "dbCountersNotAttributedSolelyToNewSource": true
+  },
+  "plannerObservation": {
+    "observedAt": "2026-10-23T23:35:04.134343+00:00",
+    "settings": {
+      "autovacuumAnalyzeScaleFactor": "0.1",
+      "autovacuumAnalyzeThreshold": "50",
+      "defaultWorkMem": "4MB",
+      "maintenanceWorkMem": "64MB",
+      "trackIoTiming": "off"
+    },
+    "pgStatStatementsInstalled": false,
+    "tableStatistics": [
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 25,
+        "estimated_pages": 193906,
+        "estimated_rows": 985560,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-22T08:50:17.356831+00:00",
+        "last_autovacuum": "2026-10-22T08:39:23.558092+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 653,
+        "n_ins_since_vacuum": 89925,
+        "n_live_tup": 1064729,
+        "n_mod_since_analyze": 79169,
+        "oid": "17756",
+        "owner": "16388",
+        "reloptions": null,
+        "schema": "ponder_sync",
+        "table": "blocks",
+        "total_bytes": 1768062976
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 2671,
+        "estimated_pages": 13,
+        "estimated_rows": 113,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-23T23:34:21.378746+00:00",
+        "last_autovacuum": "2026-10-23T23:33:21.471075+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 96,
+        "n_ins_since_vacuum": 0,
+        "n_live_tup": 113,
+        "n_mod_since_analyze": 212,
+        "oid": "17993",
+        "owner": "16388",
+        "reloptions": null,
+        "schema": "ponder_sync",
+        "table": "intervals",
+        "total_bytes": 196608
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 12,
+        "estimated_pages": 152115,
+        "estimated_rows": 2028864,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-22T07:57:08.139949+00:00",
+        "last_autovacuum": "2026-10-22T07:03:10.89619+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 10394,
+        "n_ins_since_vacuum": 263404,
+        "n_live_tup": 2211036,
+        "n_mod_since_analyze": 182172,
+        "oid": "17772",
+        "owner": "16388",
+        "reloptions": null,
+        "schema": "ponder_sync",
+        "table": "logs",
+        "total_bytes": 1501577216
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 25,
+        "estimated_pages": 114871,
+        "estimated_rows": 1136629,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-22T09:03:17.150109+00:00",
+        "last_autovacuum": "2026-10-22T08:44:20.86529+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 784,
+        "n_ins_since_vacuum": 86134,
+        "n_live_tup": 1204315,
+        "n_mod_since_analyze": 67686,
+        "oid": "17765",
+        "owner": "16388",
+        "reloptions": null,
+        "schema": "ponder_sync",
+        "table": "transactions",
+        "total_bytes": 1114890240
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 10,
+        "estimated_pages": 58628,
+        "estimated_rows": 487107,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-23T23:32:30.929013+00:00",
+        "last_autovacuum": "2026-10-23T23:30:27.285805+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 0,
+        "n_ins_since_vacuum": 106880,
+        "n_live_tup": 545533,
+        "n_mod_since_analyze": 58426,
+        "oid": "75963666",
+        "owner": "73004621",
+        "reloptions": null,
+        "schema": "unified_ypal_20261023_v1",
+        "table": "canonical_event",
+        "total_bytes": 663683072
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 11,
+        "estimated_pages": 9906,
+        "estimated_rows": 320122,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-23T23:33:23.549277+00:00",
+        "last_autovacuum": "2026-10-23T23:31:24.086276+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 10572,
+        "n_ins_since_vacuum": 46456,
+        "n_live_tup": 340075,
+        "n_mod_since_analyze": 27202,
+        "oid": "75963426",
+        "owner": "73004621",
+        "reloptions": null,
+        "schema": "unified_ypal_20261023_v1",
+        "table": "token",
+        "total_bytes": 103555072
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 10,
+        "estimated_pages": 7258,
+        "estimated_rows": 308478,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-23T23:32:24.385952+00:00",
+        "last_autovacuum": "2026-10-23T23:31:25.947662+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 222,
+        "n_ins_since_vacuum": 45456,
+        "n_live_tup": 341049,
+        "n_mod_since_analyze": 32716,
+        "oid": "75963441",
+        "owner": "73004621",
+        "reloptions": null,
+        "schema": "unified_ypal_20261023_v1",
+        "table": "token_lifecycle",
+        "total_bytes": 84762624
+      },
+      {
+        "analyze_count": 0,
+        "autoanalyze_count": 10,
+        "estimated_pages": 18748,
+        "estimated_rows": 412054,
+        "last_analyze": null,
+        "last_autoanalyze": "2026-10-23T23:33:25.559037+00:00",
+        "last_autovacuum": "2026-10-23T23:31:26.999215+00:00",
+        "last_vacuum": null,
+        "n_dead_tup": 0,
+        "n_ins_since_vacuum": 61867,
+        "n_live_tup": 439874,
+        "n_mod_since_analyze": 27820,
+        "oid": "75963456",
+        "owner": "73004621",
+        "reloptions": null,
+        "schema": "unified_ypal_20261023_v1",
+        "table": "transfer_event",
+        "total_bytes": 229007360
+      }
+    ],
+    "validPrimaryIndexes": [
+      {
+        "schema": "ponder_sync",
+        "table": "blocks",
+        "name": "blocks_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "ponder_sync",
+        "table": "intervals",
+        "name": "intervals_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "ponder_sync",
+        "table": "logs",
+        "name": "logs_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "ponder_sync",
+        "table": "transactions",
+        "name": "transactions_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "unified_ypal_20261023_v1",
+        "table": "canonical_event",
+        "name": "canonical_event_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "unified_ypal_20261023_v1",
+        "table": "token",
+        "name": "token_collection_token_id_pk",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "unified_ypal_20261023_v1",
+        "table": "token_lifecycle",
+        "name": "token_lifecycle_collection_token_id_lifecycle_pk",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      },
+      {
+        "schema": "unified_ypal_20261023_v1",
+        "table": "transfer_event",
+        "name": "transfer_event_pkey",
+        "indisvalid": true,
+        "indisready": true,
+        "indisprimary": true
+      }
+    ],
+    "plans": [
+      {
+        "analyzeExecuted": false,
+        "name": "bnb-blocks-source-equivalent",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 3000,
+          "Plan Width": 83,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "blocks_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 783195,
+              "Plan Width": 83,
+              "Plans": [],
+              "Relation Name": "blocks",
+              "Startup Cost": 0.43,
+              "Total Cost": 585560.26
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 2243.39
+        },
+        "planSha256": "8b9a08b521753bf9e1685f827f55f2cfbe1e92c6876f28f786eaf4bf648c88a2",
+        "querySha256": "e8229dcb404392cb75ab27267f77f6f9818b3a449cc58a540991eec669611b26"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "bnb-transactions-source-equivalent",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 3000,
+          "Plan Width": 169,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "transactions_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 888864,
+              "Plan Width": 169,
+              "Plans": [],
+              "Relation Name": "transactions",
+              "Startup Cost": 0.43,
+              "Total Cost": 375127.32
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 1266.52
+        },
+        "planSha256": "e994e9eef0be6e02d05bf982ecec352f8a4661703fbd6c6454224808476b13ca",
+        "querySha256": "0b3ff582c46d1ad893a6131ba1c9ecaa733d37136f8c12bea6339ea435b62e90"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "bnb-logs-address-range-subset",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 3000,
+          "Plan Width": 413,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "logs_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 561085,
+              "Plan Width": 413,
+              "Plans": [],
+              "Relation Name": "logs",
+              "Startup Cost": 0.43,
+              "Total Cost": 694646.68
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 3714.55
+        },
+        "planSha256": "e5d528391b6fb8ac6511cf0a8f5eda67c1fe4a2ccb3eee4830edf51c4ca72880",
+        "querySha256": "dc02c47631d814743a46601516a0c0e0a0dbc0c72ae0b5da886f77b4171e7e0a"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "base-blocks-source-equivalent",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 114,
+          "Plan Width": 83,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "blocks_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 114,
+              "Plan Width": 83,
+              "Plans": [],
+              "Relation Name": "blocks",
+              "Startup Cost": 0.43,
+              "Total Cost": 283.53
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 283.53
+        },
+        "planSha256": "899c4a6e4d45cc4c04849a08baf9a72b7c3d1733402e16acc0334bc9c63e4a64",
+        "querySha256": "5fa60a065d38e63e93fbc31c183cd1e4dcee85f90bfd855988d360fc04128ff6"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "base-transactions-source-equivalent",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 120,
+          "Plan Width": 169,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "transactions_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 120,
+              "Plan Width": 169,
+              "Plans": [],
+              "Relation Name": "transactions",
+              "Startup Cost": 0.43,
+              "Total Cost": 297.04
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 297.04
+        },
+        "planSha256": "86d847979bd2109bd69cba7a9cebf738f3b65b42c6444100baa4e1df57ad7c1b",
+        "querySha256": "3a34a342a10946f776405450ca7392dfbcb065ff3dc4c2bd764aa23b13078345"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "base-logs-address-range-subset",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 3000,
+          "Plan Width": 413,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "logs_pkey",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 141903,
+              "Plan Width": 413,
+              "Plans": [],
+              "Relation Name": "logs",
+              "Startup Cost": 0.43,
+              "Total Cost": 649779.78
+            }
+          ],
+          "Startup Cost": 0.43,
+          "Total Cost": 13737.55
+        },
+        "planSha256": "f2ff77cc124868e4714543792426a8a43b9283becf6e4040d3615cef5e55c97b",
+        "querySha256": "e89b14c8fe2da366e451d6ef4a393ffbab34982335a419ee709e714a497cf49b"
+      },
+      {
+        "analyzeExecuted": false,
+        "name": "native-token-key-source-equivalent",
+        "plan": {
+          "Async Capable": false,
+          "Node Type": "Limit",
+          "Parallel Aware": false,
+          "Plan Rows": 1,
+          "Plan Width": 208,
+          "Plans": [
+            {
+              "Async Capable": false,
+              "Index Name": "token_collection_token_id_pk",
+              "Node Type": "Index Scan",
+              "Parallel Aware": false,
+              "Parent Relationship": "Outer",
+              "Plan Rows": 1,
+              "Plan Width": 208,
+              "Plans": [],
+              "Relation Name": "token",
+              "Startup Cost": 0.42,
+              "Total Cost": 8.44
+            }
+          ],
+          "Startup Cost": 0.42,
+          "Total Cost": 8.44
+        },
+        "planSha256": "787417ac563f8db8cb4685607aceaf2938cbaa8a88de46fd01fcb0cf03503ce4",
+        "querySha256": "5ac00051441962fc8aa71df99daaab2be401f93c22bf497220290dcd9e49b911"
+      }
+    ],
+    "limitations": [
+      "EXPLAIN only; no query execution or ANALYZE",
+      "Log explain is only address/range subset, not all actual event/topic filters",
+      "Native token uses a synthetic key and executes no row query",
+      "No SQL text/parameters, raw owners or histogram values exported"
+    ],
+    "analysis": "Cache statistics are more than24h old with6\u20139% row-estimate growth; automatic threshold remains10%. Relevant new native tables were autoanalyzed within minutes. These subset plans already use valid primary indexes without sorting/seqscan; no demonstrated ANALYZE speedup or spill attribution."
+  },
+  "supportedOptions": {
+    "ponderVersion": "0.17.5",
+    "sourcePins": [
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/internal/options.ts",
+        "sha256": "37acc27ce7a33b6b3cae9df54ce66fa5b08b3db0faea396fd279e1a20b916d59"
+      },
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/bin/commands/start.ts",
+        "sha256": "7835c613218838488a704cdc3ad4a05317df002695750bc0f79e2304c9b8c7a3"
+      },
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/build/index.ts",
+        "sha256": "a94d4d9e62ee79b6b674e16e02723fe9d88fae37c7a3813795f3f6eeec45e3c4"
+      },
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/runtime/multichain.ts",
+        "sha256": "36bd9d26b64cbfce04cc9c9162cd8f949d690f2b1e4740e4b78a34ee1afd23f8"
+      },
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/indexing-store/cache.ts",
+        "sha256": "578d585774617ab67dcb6b2b5fb9e6649d9834cd6cd1a37ed4c115da0a7021d6"
+      },
+      {
+        "path": "apps/yunipals-indexer/node_modules/ponder/src/sync-store/index.ts",
+        "sha256": "8bdd7224f2ea3f4aac61e1ae727f465683aac056243b4f950e2488800b14b1aa"
+      }
+    ],
+    "PONDER_MAX_THREADS": {
+      "supported": true,
+      "affectsOnlyExperimentalIsolatedController": true,
+      "usefulForCurrentMultichain": false
+    },
+    "PONDER_CACHE_BYTES": {
+      "supported": true,
+      "sameNode4096HeapDefaultFormulaBytes": 939524096,
+      "actualOverrideNotAssumedAbsent": true,
+      "measuredHeapUsedBytes": [
+        340951352,
+        313252088
+      ],
+      "capacityPressureOrEvictionBottleneckProven": false,
+      "recommendChange": false
+    },
+    "databasePoolConfigMax": {
+      "supported": true,
+      "currentTotal": 5,
+      "syncPool": 1,
+      "userPool": 1,
+      "poolSettingsExcludedFromPonderConfigContentHash": true,
+      "contractManifestOrNativeBuildNeedNotChangeIfOnlyPoolChanges": true,
+      "sourceClosureEnvironmentActorReceiptStillNeedNewQualifiedOwnerForAnyChange": true,
+      "measuredBenefitFromIncrease": false,
+      "recommendChange": false
+    }
+  },
+  "conclusion": {
+    "currentReplayAdvancing": true,
+    "cpuGcMemoryOrLockSaturationObserved": false,
+    "currentHandlersMadeIndexingRpcCallsDuringWindow": false,
+    "providerFetchContinuesAheadWithEndpointFailures": true,
+    "paidAuthority": false,
+    "paidCalls": 0,
+    "refusedSourceCalls": 0,
+    "providerFailureDoesNotByItselfProveCachedHandlerStall": true,
+    "mostMeasuredWaitIsInCachedExtractionAndTokenFindCallbacks": "28,291 events progressed; index32s/load4.3s/token-find27.5s; extract-await counter76.4s, with overlap. Snapshot PG backends waited ClientRead and held no pending locks; cannot conclude disk/SQL saturation from cluster counters.",
+    "tuningOrRestartRecommended": false,
+    "cacheAnalyze": "Narrow ANALYZE of blocks/transactions/logs is plausible maintenance for stale estimates, but not authorized/executed here and not established as a performance fix. No full-DB maintenance proposed.",
+    "nextSafeAction": "Leave this acknowledged ingestion running; complete release/read-view and consumer handover preparation while native coverage catches up. A future performance change requires a measured supported candidate and exact same-build qualification.",
+    "uniformCatchupEtaProvided": false
+  },
+  "evidence": [
+    {
+      "path": "/tmp/yunipals-combined-source-performance-sample-20261023.py",
+      "sha256": "5a0f7e3cb8af02a53d12ed75d9facc2ee66b4b285e2537f6005965baa0558e51"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-performance-first-20261023.json",
+      "sha256": "de69efebda4a30ff729b52b399538b44c0396cb20e3e7806632884f783987435"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-performance-second-20261023.json",
+      "sha256": "56af21d6da76324bcb084352b83badfe2b91ef1af7f8a768f8f8a0a92402902e"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-performance-delta-20261023.json",
+      "sha256": "eb1ae04af3a05523c214e237ce6ecba4b915bab23de015fb4e2774c613357481"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-planner-observation-20261023.py",
+      "sha256": "0a6019b442d2670d29e8c21df04df076a1c21d814fd0552f77693ced8fefb136"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-planner-observation-20261023.json",
+      "sha256": "fb616619fb4f078a4abe0e8904337cfe71e9777ee7f9c8078e62f69c09812249"
+    }
+  ],
+  "productionWrites": 0,
+  "serviceChanges": 0,
+  "providerRpcRequestsByObserver": 0,
+  "configurationChanges": 0,
+  "rawOwnershipRowsSqlParametersOrPrivateValuesExported": false
+}
