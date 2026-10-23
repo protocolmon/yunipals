@@ -26,6 +26,11 @@ const BoosterBatchSetupPage = lazy(() =>
     default: module.BoosterBatchSetupPage
   }))
 );
+const BoosterPermitSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterPermitSetupPage").then((module) => ({
+    default: module.BoosterPermitSetupPage
+  }))
+);
 const BoosterMetadataSetupPage = lazy(() =>
   import("@/pages/boosters/BoosterMetadataSetupPage").then((module) => ({
     default: module.BoosterMetadataSetupPage
@@ -157,6 +162,10 @@ function AppContent() {
           <Route
             path="/boosters/setup/batch"
             element={<BoosterBatchSetupPage />}
+          />
+          <Route
+            path="/boosters/setup/permit"
+            element={<BoosterPermitSetupPage />}
           />
           <Route
             path="/boosters/setup/metadata"

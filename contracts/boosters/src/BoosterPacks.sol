@@ -2,6 +2,7 @@
 pragma solidity 0.8.30;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {
     ReentrancyGuardUpgradeable
@@ -68,6 +69,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
 
     uint32 public constant CALLBACK_RESERVE = 150_000;
     uint32 public constant MAX_OPEN_PACKS = 10;
+    uint256 public constant PERMIT_OPEN_VERSION = 1;
     event RequestsPaused(bool paused);
     event RequestCreated(
         uint256 indexed requestId,
@@ -153,7 +155,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         view
         returns (uint256 price, uint32 callbackGas)
     {
-        require(count > 0 && count <= MAX_OPEN_PACKS, "invalid batch size");
+        if (count == 0 || count > MAX_OPEN_PACKS) revert("invalid batch size");
         (price, callbackGas) = quote(packTypeId, 1, gasPrice);
         price *= count;
     }
@@ -189,9 +191,51 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         nonReentrant
         returns (uint256[] memory requestIds, uint256[] memory originalIds)
     {
-        require(count > 0 && count <= MAX_OPEN_PACKS, "invalid batch size");
-        PackRegistry.Pack memory pack = _openingPack(packTypeId, deadline);
-        _burnPayment(pack.rules.paymentToken, uint256(pack.rules.price) * count);
+        return _openPacks(packTypeId, count, maxTotalVrfPrice, _openingPacks(packTypeId, count, deadline));
+    }
+
+    /// @notice Best-effort EIP-2612 permit and one atomic purchase of independent originals.
+    /// @dev Permit signs exactly price * count for this caller and engine. A consumed
+    /// or unavailable permit is harmless if existing allowance still pays the burn.
+    /// RequestCreated events identify every new request and original.
+    function openPacksWithPermit(
+        uint256 packTypeId,
+        uint32 count,
+        uint256 maxTotalVrfPrice,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external payable nonReentrant {
+        PackRegistry.Pack memory pack = _openingPacks(packTypeId, count, deadline);
+        uint256 amount;
+        // A uint128 price times at most ten cannot overflow uint256.
+        unchecked {
+            amount = uint256(pack.rules.price) * count;
+        }
+        address tokenAddress = pack.rules.paymentToken;
+        bytes memory permitData =
+            abi.encodeCall(IERC20Permit.permit, (msg.sender, address(this), amount, deadline, v, r, s));
+        // No ETH or return-data copy. Payment below remains authoritative after
+        // failure, including a permit already submitted by a front-runner.
+        assembly ("memory-safe") {
+            pop(call(gas(), tokenAddress, 0, add(permitData, 32), mload(permitData), 0, 0))
+        }
+        _openPacks(packTypeId, count, maxTotalVrfPrice, pack);
+    }
+
+    function _openPacks(
+        uint256 packTypeId,
+        uint32 count,
+        uint256 maxTotalVrfPrice,
+        PackRegistry.Pack memory pack
+    ) private returns (uint256[] memory requestIds, uint256[] memory originalIds) {
+        uint256 amount;
+        // A uint128 price times at most ten cannot overflow uint256.
+        unchecked {
+            amount = uint256(pack.rules.price) * count;
+        }
+        _burnPayment(pack.rules.paymentToken, amount);
         requestIds = new uint256[](count);
         originalIds = new uint256[](count);
         uint256 paid;
@@ -202,6 +246,15 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
             paid += price;
         }
         _refund(msg.sender, msg.value - paid);
+    }
+
+    function _openingPacks(uint256 packTypeId, uint32 count, uint256 deadline)
+        private
+        view
+        returns (PackRegistry.Pack memory)
+    {
+        if (count == 0 || count > MAX_OPEN_PACKS) revert("invalid batch size");
+        return _openingPack(packTypeId, deadline);
     }
 
     function _openingPack(uint256 packTypeId, uint256 deadline)

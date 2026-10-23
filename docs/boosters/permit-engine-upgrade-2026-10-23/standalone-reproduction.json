@@ -1,0 +1,17 @@
+{
+  "format": "yunipals-permit-standalone-solc-reproduction-v1",
+  "compilerFile": "/tmp/yunipals-solc-0.8.30",
+  "compilerSha256": "f3e987dc6ecebd4bd350c48edcbc320b46cf9e3109bd3fc3d88f1acaf4c428f7",
+  "inputFile": "docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json",
+  "inputSha256": "4c72f37ef060a68374322f4c9d9753dc3285c38958346a06756f6e4dad97cf85",
+  "creationByteIdentical": true,
+  "runtimeTemplateByteIdentical": true,
+  "allAbiEntriesIdenticalIgnoringOrder": true,
+  "rawAbiOrderIdentical": false,
+  "immutableOffsetsIdentical": true,
+  "immutableAstIdsMayDiffer": true,
+  "runtimeBytes": 24569,
+  "outputSha256": "18ca2dfc2b8d1534ba3f2cab5add2f20ca38628e12a96af8f11acd71acc6652a",
+  "productionActions": 0,
+  "providerCalls": 0
+}

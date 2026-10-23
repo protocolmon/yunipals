@@ -83,11 +83,13 @@ export function BoosterActionButton({
         }}
       >
         <h2 id={titleId} className="text-xl font-bold">
-          {review?.approval
-            ? "Approve pack payment"
-            : action.kind === "burn"
-              ? "Burn this Yunipal?"
-              : "Review transaction"}
+          {review?.permitApproval && !review.permitSigned
+            ? "Approve and open"
+            : review?.approval
+              ? "Approve pack payment"
+              : action.kind === "burn"
+                ? "Burn this Yunipal?"
+                : "Review transaction"}
         </h2>
         {review && (
           <>
@@ -168,13 +170,24 @@ export function BoosterActionButton({
                 <dt>Network gas estimate</dt>
                 <dd
                   className="text-right"
-                  title={`${formatEther(review.networkFee)} ETH`}
+                  title={
+                    review.networkFee === null
+                      ? undefined
+                      : `${formatEther(review.networkFee)} ETH`
+                  }
                 >
-                  {formatRoundedAmount(review.networkFee, 18, "ETH")}
+                  {review.networkFee === null
+                    ? "After approval signature"
+                    : formatRoundedAmount(review.networkFee, 18, "ETH")}
                 </dd>
               </div>
             </dl>
-            {review.approval ? (
+            {review.permitApproval && !review.permitSigned ? (
+              <p className="text-sm text-muted">
+                Sign a gas-free approval, then review one transaction that
+                includes the approval and opens your packs.
+              </p>
+            ) : review.approval ? (
               <p className="text-sm text-muted">
                 Approve{" "}
                 {formatDecimal(
@@ -248,7 +261,22 @@ export function BoosterActionButton({
                 if (hash) onConfirmed?.(hash);
               }}
             >
-              {review.approval ? "Approve payment" : "Confirm"}
+              {review.permitApproval
+                ? review.permitSigned
+                  ? "Open packs"
+                  : "Sign approval"
+                : review.approval
+                  ? "Approve payment"
+                  : "Confirm"}
+            </button>
+          )}
+          {review?.permitApproval && !review.permitSigned && !busy && (
+            <button
+              type="button"
+              className="rounded-full border border-line px-5 py-3 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ink"
+              onClick={() => void actions.useSeparateApproval()}
+            >
+              Use separate approval
             </button>
           )}
           {actions.error && !busy && !actions.submittedHash && (

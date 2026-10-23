@@ -46,6 +46,8 @@ const metadataUpgradePackageSha =
   "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966";
 const batchUpgradePackageSha =
   "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e";
+const permitUpgradePackageSha =
+  "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc";
 if (values["full-app"]) {
   const metadataUpgrade = await readFile(
     join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
@@ -59,6 +61,11 @@ if (values["full-app"]) {
   );
   if (sha(batchUpgrade) !== batchUpgradePackageSha)
     throw Error("The engine batch package differs from the reviewed bytes.");
+  const permitUpgrade = await readFile(
+    join(app, "public/boosters/engine-permit-upgrade-v1.json")
+  );
+  if (sha(permitUpgrade) !== permitUpgradePackageSha)
+    throw Error("The engine permit package differs from the reviewed bytes.");
 }
 const setupFile = join(app, "public/boosters/mainnet-smoke-setup.json");
 const setup = await readFile(setupFile);
@@ -150,7 +157,8 @@ if (values["standard-setup-sha"])
 if (values["full-app"])
   assets.push(
     "boosters/monsters-token-metadata-upgrade-v1.json",
-    "boosters/engine-batch-upgrade-v1.json"
+    "boosters/engine-batch-upgrade-v1.json",
+    "boosters/engine-permit-upgrade-v1.json"
   );
 for (const name of assets) {
   await mkdir(join(output, name, ".."), { recursive: true });
@@ -195,6 +203,9 @@ const manifest = {
     ? metadataUpgradePackageSha
     : null,
   batchUpgradePackageSha256: values["full-app"] ? batchUpgradePackageSha : null,
+  permitUpgradePackageSha256: values["full-app"]
+    ? permitUpgradePackageSha
+    : null,
   publicAssets: assets,
   files: entries
 };

@@ -1,0 +1,152 @@
+{
+  "format": "yunipals-permit-engine-independent-review-v1",
+  "reviewedAt": "2026-10-23T16:04:26.776211+00:00",
+  "verdict": "pass",
+  "findings": [],
+  "reviewedPublicFiles": [
+    {
+      "path": "contracts/boosters/src/BoosterPacks.sol",
+      "sha256": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8"
+    },
+    {
+      "path": "contracts/boosters/test/BoosterPermit.t.sol",
+      "sha256": "ae8e426a0f1f76be58b959a30b451420a08fa118607434b57915b62665bd4b9e"
+    },
+    {
+      "path": "contracts/boosters/foundry.toml",
+      "sha256": "3d9f808eeb47ca61fdf0a57230637477ae4f1a4548a4dcdec1c0c08f96fdecd1"
+    },
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json",
+      "sha256": "4c72f37ef060a68374322f4c9d9753dc3285c38958346a06756f6e4dad97cf85"
+    }
+  ],
+  "currentApprovedBatchBaseline": {
+    "sourceSha256": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d",
+    "unsignedPackageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "oldCreationAndRuntimeMatchApprovedPackage": true
+  },
+  "independentFocusedTests": {
+    "command": "FOUNDRY_PROFILE=permit /tmp/yunipals-foundry/node_modules/@foundry-rs/forge-linux-amd64/bin/forge test --use /tmp/yunipals-solc-0.8.30 --offline --match-contract 'BoosterPermitTest|BoosterMultiPackTest' -vv",
+    "workingDirectory": "contracts/boosters",
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "permitCases": [
+      "testPermitBatchBurnsExactTotalAndKeepsEachOriginalWithPayer",
+      "testPermitSupportsOneAndTenIndependentPacks",
+      "testFrontRunPermitUsesAlreadyGrantedAllowance",
+      "testInvalidPermitMayUseExistingAllowance",
+      "testInvalidSignatureWithoutAllowanceRevertsAtomically",
+      "testWrongAmountWithoutAllowanceRevertsAtomically",
+      "testWrongSpenderWithoutAllowanceRevertsAtomically",
+      "testAnotherCallerCannotUseOwnersPermit",
+      "testExpiredPermitAndPurchaseDoNotChangeState",
+      "testReplayedPermitCannotBuyAgainAfterAllowanceSpent",
+      "testLaterWrapperFailureRollsBackPermitNonceAndEntireBatch",
+      "testAggregateBudgetFailureRollsBackPermitNonceAndEntireBatch",
+      "testPermitReentrancyIsRefusedByExistingGuard",
+      "testCountBoundsAndPausePrecedePermit",
+      "testNonPermitFutureTokenWithExistingAllowanceStillWorks",
+      "testPriceUpperBoundTimesTenIsExact",
+      "testPermitForAnotherChainCannotSpendWithoutAllowance",
+      "testPausedSalesRollBackPermitNonceAndAllowance",
+      "testRuntimeFitsEip170"
+    ],
+    "existingBatchCases": [
+      "testAggregateBurnIndependentRequestsAndSingleRefund",
+      "testQuotesUseOneOriginalCallbackPerPackAndCountBounds",
+      "testTotalVrfCapAndMsgValueAreEachAggregateBudgets",
+      "testEachActualChangingWrapperPriceIsChargedWithinTotalCap",
+      "testLaterWrapperFailureAndDuplicateIdRollbackEntirePurchase",
+      "testSupplyExhaustionRollsBackAllReservationsAndBurns",
+      "testBurnAndTransferAccountingCannotUseUnsupportedToken",
+      "testRejectedAggregateRefundStaysFullyBackedAcrossOtherPurchases",
+      "testWrapperAndRefundCallbacksCannotReenterPurchases",
+      "testIndependentOutOfOrderClocksClaimsTransferBurnAndSavedSeedRecovery",
+      "testPausesDeadlineAndInvalidTypePreserveSinglePackBehavior",
+      "testExactLegacyProxyUpgradePreservesPendingRightsPoolsAndRefunds",
+      "testMaximumPurchaseGasAndDeployedSize",
+      "testFuzzAggregatePaidAndCount"
+    ],
+    "batchFuzzRuns": 256,
+    "stdoutSha256": "279f6152c11a2fedab9c2535ea6d0a013bf6ac754c1ce67a80207b3665ed14a3",
+    "full95SuiteRerunClaimed": false
+  },
+  "compatibility": {
+    "allTenRecursiveStorageLayoutRowsIdentical": true,
+    "applicationFieldsUnchanged": 9,
+    "originalAndRequestStructsRecursivelyCompared": true,
+    "gapStartSlot": 8,
+    "gapSlots": 41,
+    "lastReservedSlot": 48,
+    "newStorageOrInitializer": false,
+    "priorAbiEntries": 75,
+    "allPriorAbiEntriesPreserved": true,
+    "priorFunctionCount": 43,
+    "candidateFunctionCount": 45,
+    "abiAdditions": [
+      "PERMIT_OPEN_VERSION() returns(uint256)",
+      "openPacksWithPermit(uint256,uint32,uint256,uint256,uint8,bytes32,bytes32) payable returns nothing"
+    ],
+    "getterOneVerifiedByExecution": true,
+    "existingEventsAndCustomErrorsPreserved": true,
+    "allOtherExistingCompilerSourceHashesUnchanged": true,
+    "compilerSourceClosureChange": "only BoosterPacks.sol changed; IERC20Permit.sol added as a non-inherited interface"
+  },
+  "permitAuthorizationAndAccounting": [
+    "Permit owner is msg.sender and spender is the same engine proxy through address(this). Signed value is exactly configured uint128 price times count1..10; unchecked multiplication is bounded and exercised at uint128max/count10.",
+    "Permit failure or previously consumed nonce is tolerated only because the unchanged safeTransferFrom and exact burn accounting must still obtain payment from the caller. Another caller cannot spend the owner permit.",
+    "Existing nonReentrant guard covers the permit call and every purchase effect. Permit call copies no return data and transfers no ETH.",
+    "Count/request pause/deadline validation occurs before permit. Later sales/cap/wrapper/budget failures revert the entire transaction, including permit nonce and allowance changes.",
+    "Existing per-original reservations, request events, payer ownership, callback/claim/refund recovery and old single/batch interfaces remain intact."
+  ],
+  "build": {
+    "profile": "permit",
+    "compiler": "0.8.30+commit.73712a01",
+    "optimizerRuns": 1,
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "bytecodeHash": "none",
+    "runtimeBytes": 24569,
+    "runtimeEip170Limit": 24576,
+    "runtimeMarginBytes": 7,
+    "initcodeBytes": 24800,
+    "initcodeEip3860Limit": 49152,
+    "exactCompilerProfileAndArtifactRequired": true,
+    "creationKeccak256": "0xf023699aa88555c93441bd0a9cdecd621b1d5387a047ef704e68bf496411189c",
+    "runtimeTemplateKeccak256": "0x9b40d5a6910713f30cbb8c2df1197b2332b77bf98741e1c0e7711fd6a10d49e7",
+    "permitSelector": "0x7ff1362d",
+    "versionSelector": "0x7835092d",
+    "immutableRanges": [
+      {
+        "start": 2273,
+        "length": 32
+      },
+      {
+        "start": 2569,
+        "length": 32
+      }
+    ],
+    "unresolvedLibraryReferences": false
+  },
+  "independentStandaloneCompilation": {
+    "command": "/tmp/yunipals-solc-0.8.30 --standard-json < docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json",
+    "all43InputContentsMatchCurrentFiles": true,
+    "creationByteIdentical": true,
+    "runtimeTemplateByteIdentical": true,
+    "abi77EntriesIdenticalIgnoringOrder": true,
+    "immutableRangesIdenticalIgnoringASTIds": true,
+    "compilerErrors": 0,
+    "compilerWarnings": 0,
+    "stdoutSha256": "18ca2dfc2b8d1534ba3f2cab5add2f20ca38628e12a96af8f11acd71acc6652a"
+  },
+  "additionalStructuralEvidenceSha256": "401b5c2d536746d7b66ea1192cf43578199d602cf4baab77ed07d13dcdfc94a8",
+  "limitations": [
+    "Review used local standard-permit and wrapper mocks plus the previously approved batch artifact. No provider, current-chain fork, production token signature, wallet or deployment was exercised.",
+    "This is the scoped independent review of the frozen contract addition, not a claim that an unsigned builder, wallet UI, live upgrade or indexer migration has completed."
+  ],
+  "productionActions": 0,
+  "sourceEditsByReviewer": 0,
+  "signaturesOrBroadcasts": 0
+}

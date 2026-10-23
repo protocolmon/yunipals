@@ -11,6 +11,7 @@ import {
   type TransactionReceipt
 } from "viem";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
+import { boosterPermitAbi } from "./boosterPermit";
 import {
   boosterTransactionExpectation,
   boosterTransactionHistory,
@@ -347,6 +348,44 @@ test("actual multi-purchase calldata recovers legacy counts and validates wallet
       { ...expected, kind: "claim" }
     )
   );
+});
+
+test("permit purchases recover their actual count while retaining engine, hash and complete receipt guards", () => {
+  for (const quantity of [1, 3]) {
+    const input = encodeFunctionData({
+      abi: boosterPermitAbi,
+      functionName: "openPacksWithPermit",
+      args: [2n, quantity, 100n, 999999n, 27, ruleHash, blockHash]
+    });
+    const transaction = { hash: transactionHash, to: engine, input };
+    const intent = boosterTransactionExpectation(transaction, {
+      ...expected,
+      expectedRequestCount: 9,
+      packTypeId: "99"
+    });
+    assert.equal(intent.expectedRequestCount, quantity);
+    assert.equal(intent.packTypeId, "2");
+    const value = quantity === 1 ? receipt(["90"], ["7"]) : receipt();
+    assert.equal(confirmedBoosterRequests(value, intent).length, quantity);
+    assert.throws(() =>
+      confirmedBoosterRequests(receipt(["90", "2"], ["7", "100"]), intent)
+    );
+    assert.throws(() =>
+      boosterTransactionExpectation(
+        { ...transaction, to: collection },
+        expected
+      )
+    );
+    assert.throws(() =>
+      boosterTransactionExpectation(
+        { ...transaction, hash: blockHash },
+        expected
+      )
+    );
+    assert.throws(() =>
+      boosterTransactionExpectation(transaction, { ...expected, kind: "claim" })
+    );
+  }
 });
 
 test("a signed replacement claim uses its actual original/quantity instead of stale local hints", () => {

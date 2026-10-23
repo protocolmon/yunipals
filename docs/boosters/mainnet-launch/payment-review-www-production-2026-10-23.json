@@ -1,0 +1,175 @@
+{
+  "format": "yunipals-payment-review-www-production-v1",
+  "sourceCommit": "86d4b3aa",
+  "deployment": "https://yunipals-8vetryjzk-devving.vercel.app",
+  "deploymentId": "dpl_GWd6TQ8ARwsLLc4kUpUz8SUTr2BB",
+  "origin": "https://www.yunipals.com/boosters",
+  "releaseManifestSha256": "e7a91378520494a16d7869d01748e16218651cccf78846742aba10e2d1f1449c",
+  "changes": [
+    "Show the connected wallet PROTO balance, including an exact tooltip.",
+    "Round estimated ETH fees to three significant digits while preserving exact tooltip and submitted amounts.",
+    "When a separate token approval is needed, default to1000PROTO or the full total if larger; retain sufficient existing allowance and re-read balance after confirmation."
+  ],
+  "validation": {
+    "actualComponentBrowser": {
+      "format": "yunipals-batch-purchase-ui-v1",
+      "observedAt": "2026-10-23T15:39:16.686Z",
+      "fixturesOnly": true,
+      "realProviderCalls": 0,
+      "realTransactions": 0,
+      "checks": [
+        "Three originals: correct total price, one atomic call, aggregate ETH ceiling and persisted request count",
+        "Default 1000 PROTO approval followed by a fresh balance and batch review; only one opening transaction",
+        "Actual review hook exposes current PROTO balance, 1000 default or exact larger approval, existing allowance and finite gas without sending",
+        "insufficient: no approval or opening sent",
+        "soldout: no approval or opening sent",
+        "Legacy implementation keeps single purchases operational and cannot send unsupported batch calls",
+        "Maximum ten, multi-card demo selection, and mobile layout"
+      ],
+      "errors": [],
+      "passed": true
+    },
+    "actualPublicSiteBrowser": {
+      "at": "2026-10-23T15:58:01.485Z",
+      "origin": "https://www.yunipals.com",
+      "checks": [
+        "exact full-app build manifest",
+        "exact unsigned batch package and preserved metadata upgrade package",
+        "real completed opening and loaded artwork appear between pack and FAQ",
+        "public offer omits internal pack numbers",
+        "quantity control renders with safe legacy single default",
+        "real built preview tears and extracts directly to revealed result with no redundant reveal action",
+        "opening card links to real NFT details and birth metadata",
+        "brand-purple toggle and OG capped rarity descending are live",
+        "NFB #3 remains included as requested",
+        "owner batch setup loads and cannot sign without the approved wallet",
+        "mobile layout and actual card image fit viewport"
+      ],
+      "errors": [],
+      "walletConnections": 0,
+      "transactions": 0,
+      "passed": true,
+      "completedOpenings": 1
+    },
+    "marketFormatterControlsPassed": 2,
+    "frontendTypecheckPassed": true,
+    "fullAppBuildPassed": true,
+    "stagedManifestMatchesLocal": true,
+    "sourceScan": {
+      "findings": 1,
+      "classification": "existing publicly deployed PROTO token address in the local wallet fixture",
+      "exactPaymentTokenMatchesPublishedSetup": true,
+      "newCredentials": 0,
+      "broadAllowlistAdded": false
+    },
+    "artifactScan": {
+      "baselineManifestSha256": "3d6c0b9e96c440195f97d8f58c9c34a0162cc3df88a9820cf70e5cab36efce91",
+      "findings": 7,
+      "classified": [
+        {
+          "file": "/root/yunipals/.vercel/output/static/boosters/mainnet-smoke-setup.json",
+          "rule": "generic-api-key",
+          "candidateSha256": "5244d6e2150a3de8e8fd261fdf6c361689c413198e3bbea4b76d9c1bd13140bc",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/boosters/mainnet-standard-setup.json",
+          "rule": "generic-api-key",
+          "candidateSha256": "5244d6e2150a3de8e8fd261fdf6c361689c413198e3bbea4b76d9c1bd13140bc",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/assets/index-CLoGy3h7.js",
+          "rule": "generic-api-key",
+          "candidateSha256": "deb4d2a3badeaeb24f4e2c09af635a2ce23da6e341f0927527f5afd66980b282",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/assets/index-tMecguX5.js",
+          "rule": "generic-api-key",
+          "candidateSha256": "9c9d2b0707d95c1c62990d54db1505f1c6ef8461502349ecf6da341d2929c476",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/assets/index-DYrReHg9.js",
+          "rule": "generic-api-key",
+          "candidateSha256": "f926053877a254fc022e42225a7a6790e6e8740c6b0fb757b510ec9aefe5dbdf",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/assets/index-tMecguX5.js",
+          "rule": "generic-api-key",
+          "candidateSha256": "7abc7b73503342951b76a0b706b7a3739d1c1fe068b94a9b39ce9eded7add463",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        },
+        {
+          "file": "/root/yunipals/.vercel/output/static/assets/index-CLoGy3h7.js",
+          "rule": "generic-api-key",
+          "candidateSha256": "cb996b577e4f1a079d5bcde945b37a161e17fd7ab6cea7c3044e053fddad18bd",
+          "candidateAlreadyPublished": true,
+          "valuesExported": false
+        }
+      ],
+      "privateCredentialsFound": 0,
+      "broadAllowlistAdded": false
+    }
+  },
+  "reviewedBuildInputs": {
+    "apps/yunipals-home-web/src/hooks/useBoosterActions.ts": "8269bdf8c75093a4b43566137b097b62452922fdc60d399bbd2538fba88bf29f",
+    "apps/yunipals-home-web/src/lib/boosters.ts": "964fb9bad9389a3cb32d1b0e3e691d6968aab0ba6b9b888ee79d557c7a895482",
+    "apps/yunipals-home-web/src/lib/boosterReveal.ts": "4c617723f5ec6ccd278285703d0ccab9d9007f855631182404fa7b0c1b7ca25d",
+    "apps/yunipals-home-web/src/pages/boosters/page.tsx": "5dd3d490c0943f684dcdf3f0b6d3b1d7d2d089831f1d372af90663907ff8ac20",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx": "7a70ddd476f28052ba4f7f086395e51cb0bece21d75694ef28aa04555b382069",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterClaimPacks.tsx": "f33dbe731a27da60e64f8f6f6243b86a6a9819db138f2886f5aa86b950ed4c75",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterRequestOpening.tsx": "6e3866f5babb4578eca90480cddf7613f10a8359701b3b7281daf9c837901e10",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterCollection.tsx": "b0423297f65a8eea947a7db3ead2d4ae05ea17baacc768633c712c12c73107a9",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterOriginalControls.tsx": "48f1c07d9171198a661c354ec071eda2b7b84c6090036d54a1331a880c308406",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPackOpening.tsx": "a98b46aff5f658993623b0fd1933261d237850cc6eb7c89607939c4e9d0f2d7a",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPackSection.tsx": "c18af3946a9f4bd0fdf06504ee83e5a88cb83f57e596b2977a1b0adea0e5a470",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterFAQ.tsx": "1dc6a3e63ca567d34f71b626beb59f74cc4ba8227957d722bfc5cb9d55473e8f",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterTransactions.tsx": "fe7fdb38f46c423da97b62106ad8193d052fedefb546d3327a1383ae5782891e",
+    "apps/yunipals-home-web/src/pages/boosters/booster-pack-opening.css": "d5e7fea0125f814430aa8c3ed0d0bd1365810a16abd3047b8b718e496d282bad",
+    "apps/yunipals-home-web/src/App.tsx": "415b5f0392a718a9ea315e85a3e109bcb97748bba2d81ae9f26be6a4348e1964",
+    "apps/yunipals-home-web/src/lib/boosterMetadataSetup.ts": "3b5f1fc9fdb7a66a2bf0244540a49e78f11075ad369a71f476b187b422a0ed71",
+    "apps/yunipals-home-web/src/lib/boosterMetadataSetup.test.ts": "c17bb1e86c43c9d023ef78a1354ed0b66e53fc43f2c2722d05c2d5689f313fe9",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterMetadataSetupPage.tsx": "e11afd553a3f406c0b48b8319592a0ffb376d161e46f2c78f5b812aeb19a26f0",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterBirthDetails.tsx": "49e83438b7dbbe8c835fa758051ce9a8fd3ad0031d078854517cb4954d22813c",
+    "apps/yunipals-home-web/scripts/boosters/build-collection-live.mjs": "1725f29330917eb8ca43a939baf66c8a9ecead0a0607b6f9cae113685f82e5f5",
+    "apps/yunipals-home-web/public/boosters/monsters-token-metadata-upgrade-v1.json": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+    "apps/yunipals-home-web/src/lib/boosterCollectionGrid.ts": "4eaeb1d43a76593bbda6b03f4507c8ae12316995048addafa0dcfa4284c575d9",
+    "apps/yunipals-home-web/src/lib/boosterCollectionGrid.test.ts": "c7eb3c1237480f20244faf1498f88a7bd826dc6c6e698c4a0e78d0568bee997e",
+    "apps/yunipals-home-web/src/hooks/useBoosterCollectionCards.ts": "62cefa10b82f87425318f496d3a333d27cd2e4e98dacea7eebbba0a6d0928462",
+    "apps/yunipals-home-web/src/components/CollectionPackCard.tsx": "9c5e24044d61de9a533a100dbfc0b03148266026be1615a31d4d1576943f6406",
+    "apps/yunipals-home-web/src/components/CollectionPackPagination.tsx": "3e0fb5f18747a9ccb55994ccfac3b10f93c43cc5f265f76f975368d55c0557b1",
+    "apps/yunipals-home-web/src/pages/collection/page.tsx": "1274d144213814dc1628f2d3dd22bd2414064e714631ccba2bd40ddad2d11f96",
+    "apps/yunipals-home-web/src/pages/collector/page.tsx": "dfc9e2cfbca2c6894931889ef051d4e4e4b0d57093af42ac8fc27345a09942e1",
+    "apps/yunipals-home-web/src/lib/collectionEdition.ts": "c17e97416a83b9de3c92561b435e14a95ab4d06f2000cf6c59b4b959d6fee748",
+    "apps/yunipals-home-web/src/components/CollectionFilters.tsx": "e040021b92cfd45181812c81c1474f62cc2be4d2093201b35474094d44f03ab4",
+    "apps/yunipals-home-web/src/lib/boosterRecentOpenings.ts": "265a60d35f64129bbd9a430f1be08180e56eb62e4fcf8a2edf93bbe17118b35b",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterRecentOpenings.tsx": "9a3d74aa6c7f0e30c73dcac00824e7f6bf96cfe978313129ba267a2f2577110d",
+    "packages/yunipals-market-core/src/boosters.ts": "d7361caaab030b18757ba175ece29ae54bccfe7dd4a6f59acec87566de4653a7",
+    "apps/yunipals-home-web/src/lib/boosterPurchase.ts": "1f69d217b68c9eac94019da7c73b87d020492d617355a340599cee86ee133110",
+    "apps/yunipals-home-web/src/lib/boosterPurchase.test.ts": "68a26131b058978604ded7be9a25e72cec2a1d1f4e01f9853b2b45d9c7f76cd9",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterPurchaseOptions.tsx": "be461bee00eaed9b6b0a8080f868b36746fea0a64ab74c763368cc40c0375329",
+    "packages/yunipals-market-core/src/boosterAbi.ts": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba",
+    "apps/yunipals-home-web/src/lib/boosterBatchSetup.ts": "7e44e2d4ad45f30981c276e639ff34b85835524a60595d49b1c7877b3cb5c724",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterBatchSetupPage.tsx": "67d3596664f3706b0fc5a7d2fe96aacd9bf465b1408a447d9a6e0848863ed25c",
+    "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "contracts/boosters/src/BoosterPacks.sol": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d",
+    "contracts/boosters/foundry.toml": "89e269d6e48180f04188a688beb5fff7c04300ea3b3f76ec265aa61ad68ccf6c",
+    "apps/yunipals-home-web/src/lib/format.ts": "d02be1672c1e9d3c609fbef29fddb09c9069a22c17ab61b8b933e154f4a3eeb0",
+    "apps/yunipals-home-web/src/lib/marketplace/format.ts": "bc7cba3e8ad8050fdcbdf5c7807654bd68f822d7ad01b630d8b3257584cb48e2"
+  },
+  "scope": {
+    "liveWalletApprovalBroadcasts": 0,
+    "permitUpgradeActivated": false,
+    "newContractTransactions": 0,
+    "existingEngineImplementation": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471"
+  }
+}

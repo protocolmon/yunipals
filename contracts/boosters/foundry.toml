@@ -21,5 +21,10 @@ optimizer_runs = 1
 out = "out-batch"
 cache_path = "cache-batch"
 
+[profile.permit]
+optimizer_runs = 1
+out = "out-permit"
+cache_path = "cache-permit"
+
 [fmt]
 line_length = 110

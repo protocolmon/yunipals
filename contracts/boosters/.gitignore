@@ -3,4 +3,6 @@ out/
 cache/
 out-batch/
 cache-batch/
+out-permit/
+cache-permit/
 broadcast/

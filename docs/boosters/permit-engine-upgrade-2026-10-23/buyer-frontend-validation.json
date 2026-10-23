@@ -1,0 +1,112 @@
+{
+  "format": "yunipals-booster-permit-buyer-validation-v1",
+  "validatedAt": "2026-10-23T16:51:47.800667+00:00",
+  "status": "passed",
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-home-web/src/hooks/useBoosterActions.ts",
+      "sha256": "e69598a653349ce781fee67da9e38c5cc82987e48bfadce0b26f522e2a136bfa"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.ts",
+      "sha256": "94ac4636b35c08f7685653c05b29cb159e246f0e95ab7dee82fe838b7575fa0f"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.test.ts",
+      "sha256": "8aeb66bffb0570b1ba0bf1fd07622515e4eefa9bc7a3820839572212407314d7"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.ts",
+      "sha256": "c176ed66c34b88084150e439fec40ab3a5c2cdd35ae69106ac1fc6e56bce4cd1"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.test.ts",
+      "sha256": "6763a40af96183a670e6112b53852ac1a5db71df86c157231857a76988d29d81"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-purchase-ui.mjs",
+      "sha256": "70dfdb38e2cb64a35c87847047ec2defadeba82545669e6562d185aff55a0ce3"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx",
+      "sha256": "a5ab4092456ed4ce05e0a8db17973c34b5a3eb6f1de14d9b9097a68e7dae2ea1"
+    }
+  ],
+  "validation": {
+    "helperControls": 7,
+    "revealReceiptControls": 12,
+    "actualComponentBrowserGroups": 17,
+    "frontendTypecheck": true,
+    "diffCheck": true,
+    "unitLogs": [
+      {
+        "file": "yunipals-booster-permit-helper-tests-20261023.log",
+        "sha256": "ff48f893cb7de942e05d91da369b601c8c1849f3bad5dba5b7d4f74a572d64af",
+        "passed": 7,
+        "failed": 0
+      },
+      {
+        "file": "yunipals-booster-permit-reveal-tests-20261023.log",
+        "sha256": "e3147546f56762185059e206c04531a0930916b10a55c74368bfcd9918f39355",
+        "passed": 12,
+        "failed": 0
+      }
+    ],
+    "browserReport": {
+      "file": "yunipals-booster-permit-purchase-ui-20261023.json",
+      "sha256": "1f5149c1cf2f28d82a1622977b45fbe5ae77363772c074c1f2afa42c4d407737",
+      "checks": [
+        "Three originals: correct total price, one atomic call, aggregate ETH ceiling and persisted request count",
+        "Default 1000 PROTO approval followed by a fresh balance and batch review; only one opening transaction",
+        "Actual review hook exposes current PROTO balance, 1000 default or exact larger approval, existing allowance and finite gas without sending",
+        "insufficient: no approval or opening sent",
+        "soldout: no approval or opening sent",
+        "Legacy implementation keeps single purchases operational and cannot send unsupported batch calls",
+        "Maximum ten, multi-card demo selection, and mobile layout",
+        "Exact-price permits for one and three packs require signature then explicit gas review; one engine transaction, immutable deadline and ordinary saved request grouping",
+        "Separate approval remains an explicit freshly reviewed 1000 PROTO alternative without signing or sending automatically",
+        "Known old engines, unsupported capability or token domain use separate approval; an existing sufficient allowance keeps the direct purchase",
+        "Rejected or wrong-wallet signatures, wallet/chain switches, expired/replayed permissions and failed full-call simulation never send or trigger automatic approval",
+        "Nonce drift without sufficient allowance and expiry after the final review invalidate the signed review before any transaction",
+        "Expiry during the final awaited wallet preflight is rechecked synchronously before wallet entry; zero send attempts",
+        "Unmounting the actual React root during the final awaited wallet check invalidates the review before wallet entry; zero send attempts",
+        "A safely consumed permit remains usable when the exact-price allowance already exists; no re-sign or extra approval transaction",
+        "Synchronous double clicks produce one signature and one transaction; a pending chain receipt stays unconfirmed without duplicate sends",
+        "Only a successful actual chain receipt confirms; a reverted permit purchase preserves its tracked hash without claiming an opening"
+      ]
+    },
+    "browserFixtureOnly": true,
+    "actualProviderCalls": 0,
+    "actualWalletSignatures": 0,
+    "actualTransactions": 0
+  },
+  "flow": {
+    "firstReview": "Exact-price EIP-2612 signature only; no transaction or unsigned-open simulation.",
+    "secondReview": "The complete signed engine call is simulated and estimated, then explicit second confirmation sends one ordinary engine transaction.",
+    "signedDeadlinePreserved": true,
+    "signaturePersistedOrLogged": false,
+    "currentWalletAccountChainRechecked": true,
+    "domainVerifiedAgainstToken": true,
+    "nonceDriftRequiresExactPriceAllowance": true,
+    "existingReceiptGroupingPreserved": true,
+    "separateApprovalDefaultTokenUnits": "1000",
+    "separateApprovalMayIncreaseToRequiredPrice": true,
+    "finalSendFenceAfterLastAwait": true,
+    "unmountedPageCannotInitiateWalletRequest": true
+  },
+  "failureCoverage": [
+    "Unsupported old engine and unverified token domain offer a separately reviewed approval.",
+    "Rejected, malformed or wrong-wallet signatures never send or trigger fallback automatically.",
+    "Account/chain changes during signing refuse; nonce/expiry changes before send refuse unless an already-consumed permit left sufficient allowance.",
+    "Fresh VRF price beyond the signed ETH budget and post-sign ETH or PROTO shortage refuse.",
+    "Synchronous double clicks produce one signature and one transaction; pending and reverted chain receipts never claim confirmation.",
+    "Expiry during the final awaited wallet preflight refuses synchronously before wallet.sendTransaction; the actual wallet entry counter remains zero.",
+    "Unmounting the actual React root while the final wallet read is deferred clears the active review and preparation identity; releasing it produces zero wallet send entries."
+  ],
+  "limitations": [
+    "Real signature recovery and sequential-call validation use synthetic local test accounts and mocked RPCs; no production wallet or provider is contacted.",
+    "The new permit entrypoint must be deployed and activated before this path becomes available. The known existing implementations retain the working separate-approval path.",
+    "Production deployment and live wallet/chain acceptance are separate owner actions.",
+    "The lifecycle guard prevents a future wallet request after unmount. It does not attempt to cancel a wallet RPC already invoked by an explicit confirmation."
+  ]
+}

@@ -8,6 +8,7 @@ import {
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import { boosterPurchaseAbi } from "@/lib/boosterPurchase";
+import { boosterPermitAbi } from "@/lib/boosterPermit";
 
 export type BoosterCreatedRequest = {
   requestId: string;
@@ -94,17 +95,21 @@ export function boosterTransactionExpectation(
       transaction.to?.toLowerCase() === expected.engine.toLowerCase()
   );
   const decoded = decodeFunctionData({
-    abi: [...boosterPacksAbi, ...boosterPurchaseAbi],
+    abi: [...boosterPacksAbi, ...boosterPurchaseAbi, ...boosterPermitAbi],
     data: transaction.input
   });
   const args = decoded.args as readonly unknown[];
   requireReceipt(Array.isArray(args));
   const method = String(decoded.functionName);
-  if (method === "openPack" || method === "openPacks") {
+  if (
+    method === "openPack" ||
+    method === "openPacks" ||
+    method === "openPacksWithPermit"
+  ) {
     requireReceipt(expected.kind === "open" && typeof args[0] === "bigint");
     return {
       ...expected,
-      expectedRequestCount: method === "openPacks" ? count(args[1], 10) : 1,
+      expectedRequestCount: method === "openPack" ? 1 : count(args[1], 10),
       packTypeId: args[0].toString(),
       quantity: 1,
       originalId: undefined

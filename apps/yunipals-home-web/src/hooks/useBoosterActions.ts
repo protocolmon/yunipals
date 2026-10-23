@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
@@ -25,6 +25,14 @@ import {
   readBoosterPurchaseLimit,
   validateBoosterPurchaseQuantity
 } from "@/lib/boosterPurchase";
+import {
+  boosterPermitPurchaseData,
+  boosterPermitTypedData,
+  engineSupportsBoosterPermit,
+  readBoosterPermit,
+  validateBoosterPermitFreshness,
+  type BoosterPermit
+} from "@/lib/boosterPermit";
 
 export type BoosterAction =
   | { kind: "open"; packTypeId: string; quantity?: number }
@@ -43,13 +51,16 @@ type Review = {
   maxFeePerGas: bigint;
   maxPriorityFeePerGas: bigint;
   vrfPrice: bigint;
-  networkFee: bigint;
+  networkFee: bigint | null;
   tokenPrice: bigint;
   tokenBalance: bigint | null;
   approvalAmount: bigint;
   tokenSymbol: string;
   tokenDecimals: number;
   approval: boolean;
+  permitApproval: boolean;
+  permitSigned: boolean;
+  permit?: BoosterPermit;
   expiresAt: number;
 };
 
@@ -64,7 +75,125 @@ export function useBoosterActions() {
   >("idle");
   const [error, setError] = useState<string | null>(null);
   const [submittedHash, setSubmittedHash] = useState<Hex | null>(null);
+  const latest = useRef({ address, chainId, client, wallet: wallet.data });
+  latest.current = { address, chainId, client, wallet: wallet.data };
+  const reviewed = useRef<Review | null>(null);
+  const preparing = useRef(0);
+  const confirming = useRef(false);
+  const activePage = useRef(true);
+  useEffect(() => {
+    activePage.current = true;
+    return () => {
+      activePage.current = false;
+      reviewed.current = null;
+      preparing.current++;
+    };
+  }, []);
+  const updateReview = (value: Review | null) => {
+    if (!activePage.current) return;
+    reviewed.current = value;
+    setReview(value);
+  };
+
+  async function checkedWallet(
+    account: Address,
+    expectedWallet?: NonNullable<typeof wallet.data>
+  ) {
+    const state = latest.current;
+    if (
+      !activePage.current ||
+      !state.client ||
+      !state.wallet ||
+      (expectedWallet && state.wallet !== expectedWallet) ||
+      state.chainId !== 8453 ||
+      state.address?.toLowerCase() !== account.toLowerCase()
+    )
+      throw new Error("Your wallet changed. Review this transaction again.");
+    const [actualChain, accounts] = await Promise.all([
+      state.wallet.getChainId(),
+      state.wallet.getAddresses()
+    ]);
+    if (
+      !activePage.current ||
+      actualChain !== 8453 ||
+      accounts[0]?.toLowerCase() !== account.toLowerCase() ||
+      latest.current.wallet !== state.wallet ||
+      latest.current.chainId !== 8453 ||
+      latest.current.address?.toLowerCase() !== account.toLowerCase()
+    )
+      throw new Error("Your wallet changed. Review this transaction again.");
+    return { client: state.client, wallet: state.wallet };
+  }
+
+  async function currentPermit(
+    current: Review,
+    currentClient: NonNullable<typeof client>,
+    timestamp: bigint,
+    gasPrice: bigint
+  ) {
+    const deployment = boosterAddresses();
+    const permit = current.permit;
+    if (
+      !deployment ||
+      !permit ||
+      current.action.kind !== "open" ||
+      current.to.toLowerCase() !== deployment.engine ||
+      permit.owner.toLowerCase() !== current.account.toLowerCase() ||
+      permit.spender.toLowerCase() !== deployment.engine
+    )
+      throw new Error("Review these packs again.");
+    const quantity = validateBoosterPurchaseQuantity(current.action.quantity);
+    const [pack, fresh, allowance, balance, supported, quote] =
+      await Promise.all([
+        currentClient.readContract({
+          address: deployment.registry,
+          abi: packRegistryAbi,
+          functionName: "getPack",
+          args: [BigInt(current.action.packTypeId)]
+        }),
+        readBoosterPermit(currentClient, permit),
+        currentClient.readContract({
+          address: permit.token,
+          abi: erc20Abi,
+          functionName: "allowance",
+          args: [current.account, deployment.engine]
+        }),
+        currentClient.readContract({
+          address: permit.token,
+          abi: erc20Abi,
+          functionName: "balanceOf",
+          args: [current.account]
+        }),
+        engineSupportsBoosterPermit(currentClient, deployment.engine),
+        currentClient.readContract({
+          address: deployment.engine,
+          abi: boosterPurchaseAbi,
+          functionName: "quoteOpenPacks",
+          args: [BigInt(current.action.packTypeId), quantity, gasPrice]
+        })
+      ]);
+    validateBoosterPermitFreshness(permit, fresh, timestamp, allowance);
+    if (
+      !supported ||
+      !pack.active ||
+      pack.salesPaused ||
+      pack.rules.engine.toLowerCase() !== deployment.engine ||
+      pack.rules.paymentToken.toLowerCase() !== permit.token.toLowerCase() ||
+      pack.rules.price * BigInt(quantity) !== permit.value ||
+      permit.value !== current.tokenPrice ||
+      balance < current.tokenPrice ||
+      (pack.rules.supplyCap > 0n &&
+        pack.openings + BigInt(quantity) > pack.rules.supplyCap)
+    )
+      throw new Error(
+        "This pack or your payment balance changed. Review these packs again."
+      );
+    if (quote[0] > current.value)
+      throw new Error("The randomness fee changed. Review these packs again.");
+    return { tokenBalance: balance, vrfPrice: quote[0] };
+  }
   const fail = (cause: unknown) => {
+    if (!activePage.current) return;
     const message =
       cause instanceof BaseError
         ? cause.shortMessage
@@ -95,10 +224,12 @@ export function useBoosterActions() {
     setPhase("idle");
   };
 
-  async function prepare(action: BoosterAction) {
+  async function prepare(action: BoosterAction, separateApproval = false) {
+    if (!activePage.current || confirming.current) return;
+    const preparation = ++preparing.current;
     setSubmittedHash(null);
     setError(null);
-    setReview(null);
+    updateReview(null);
     setPhase("quoting");
     try {
       const deployment = boosterAddresses();
@@ -120,6 +251,7 @@ export function useBoosterActions() {
       let tokenSymbol = "PROTO";
       let tokenDecimals = 18;
       let approval = false;
+      let permit: BoosterPermit | null = null;
       const expiresAt = Math.floor(Date.now() / 1000) + 600;
       const deadline = block.timestamp + 600n;
       if (action.kind === "open" || action.kind === "claim") {
@@ -202,16 +334,33 @@ export function useBoosterActions() {
             throw new Error(`You need more ${symbol} for these packs.`);
           approval = allowance < tokenPrice;
           if (approval) {
-            const defaultApproval = 1000n * 10n ** BigInt(decimals);
-            approvalAmount =
-              tokenPrice > defaultApproval ? tokenPrice : defaultApproval;
-            to = token;
-            value = 0n;
-            data = encodeFunctionData({
-              abi: erc20Abi,
-              functionName: "approve",
-              args: [deployment.engine, approvalAmount]
-            });
+            if (
+              !separateApproval &&
+              (await engineSupportsBoosterPermit(client, deployment.engine))
+            )
+              permit = await readBoosterPermit(client, {
+                owner: account,
+                spender: deployment.engine,
+                token,
+                value: tokenPrice,
+                deadline
+              });
+            if (permit) {
+              approval = false;
+              approvalAmount = tokenPrice;
+              data = "0x";
+            } else {
+              const defaultApproval = 1000n * 10n ** BigInt(decimals);
+              approvalAmount =
+                tokenPrice > defaultApproval ? tokenPrice : defaultApproval;
+              to = token;
+              value = 0n;
+              data = encodeFunctionData({
+                abi: erc20Abi,
+                functionName: "approve",
+                args: [deployment.engine, approvalAmount]
+              });
+            }
           } else
             data = boosterPurchaseData(packTypeId, quantity, value, deadline);
         } else
@@ -256,14 +405,27 @@ export function useBoosterActions() {
         value,
         ...fees
       };
-      await client.call(transaction);
-      const estimate = await client.estimateGas(transaction);
-      const gas = (estimate * 120n) / 100n;
-      const l1Fee = await estimateL1Fee(client, { ...transaction, gas });
-      const networkFee = gas * fees.maxFeePerGas + l1Fee;
-      if ((await client.getBalance({ address: account })) < value + networkFee)
+      let gas = 0n;
+      let networkFee: bigint | null = null;
+      if (!permit) {
+        await client.call(transaction);
+        const estimate = await client.estimateGas(transaction);
+        gas = (estimate * 120n) / 100n;
+        const l1Fee = await estimateL1Fee(client, { ...transaction, gas });
+        networkFee = gas * fees.maxFeePerGas + l1Fee;
+      }
+      if (
+        (await client.getBalance({ address: account })) <
+        value + (networkFee ?? 0n)
+      )
         throw new Error("You need more ETH for randomness and network gas.");
-      setReview({
+      if (preparation !== preparing.current) return;
+      if (
+        latest.current.chainId !== 8453 ||
+        latest.current.address?.toLowerCase() !== account.toLowerCase()
+      )
+        throw new Error("Your wallet changed. Review this transaction again.");
+      updateReview({
         action,
         account,
         to,
@@ -280,17 +442,23 @@ export function useBoosterActions() {
         tokenSymbol,
         tokenDecimals,
         approval,
+        permitApproval: permit !== null,
+        permitSigned: false,
+        ...(permit ? { permit } : {}),
         expiresAt
       });
       setPhase("idle");
     } catch (cause) {
-      fail(cause);
+      if (preparation === preparing.current) fail(cause);
     }
   }
 
   async function confirm() {
-    const current = review;
+    if (!activePage.current || confirming.current) return;
+    confirming.current = true;
+    const current = reviewed.current;
     let broadcast = false;
+    let permitSendAttempted = false;
     try {
       const deployment = boosterAddresses();
       if (
@@ -304,9 +472,120 @@ export function useBoosterActions() {
         throw new Error("Your wallet changed. Review this transaction again.");
       if (Date.now() / 1000 >= current.expiresAt)
         throw new Error("The quote expired. Review this transaction again.");
+      const active = await checkedWallet(current.account);
       setError(null);
       setPhase("signing");
-      const hash = await wallet.data.sendTransaction({
+      if (current.permitApproval && !current.permitSigned) {
+        if (!current.permit || current.action.kind !== "open")
+          throw new Error("Review these packs again.");
+        const permit = current.permit!;
+        const before = await active.client.getBlock({ blockTag: "latest" });
+        await currentPermit(
+          current,
+          active.client,
+          before.timestamp,
+          current.maxFeePerGas
+        );
+        await checkedWallet(current.account, active.wallet);
+        const signature = await active.wallet.signTypedData({
+          account: current.account,
+          ...boosterPermitTypedData(permit)
+        });
+        const signed = await checkedWallet(current.account, active.wallet);
+        const data = await boosterPermitPurchaseData(
+          permit,
+          signature,
+          BigInt(current.action.packTypeId),
+          current.action.quantity ?? 1,
+          current.value
+        );
+        setPhase("quoting");
+        const [fees, block] = await Promise.all([
+          signed.client.estimateFeesPerGas(),
+          signed.client.getBlock({ blockTag: "latest" })
+        ]);
+        const refreshed = await currentPermit(
+          current,
+          signed.client,
+          block.timestamp,
+          fees.maxFeePerGas
+        );
+        const transaction = {
+          account: current.account,
+          to: current.to,
+          data,
+          value: current.value,
+          ...fees
+        };
+        await signed.client.call(transaction);
+        const estimate = await signed.client.estimateGas(transaction);
+        const gas = (estimate * 120n) / 100n;
+        const l1Fee = await estimateL1Fee(signed.client, {
+          ...transaction,
+          gas
+        });
+        const networkFee = gas * fees.maxFeePerGas + l1Fee;
+        if (
+          (await signed.client.getBalance({ address: current.account })) <
+          current.value + networkFee
+        )
+          throw new Error("You need more ETH for randomness and network gas.");
+        await checkedWallet(current.account, active.wallet);
+        if (
+          Date.now() / 1000 >= current.expiresAt ||
+          reviewed.current !== current
+        )
+          throw new Error("The quote expired. Review this transaction again.");
+        updateReview({
+          ...current,
+          ...refreshed,
+          data,
+          gas,
+          networkFee,
+          maxFeePerGas: fees.maxFeePerGas,
+          maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+          permitSigned: true
+        });
+        setPhase("idle");
+        return;
+      }
+      if (current.permitApproval) {
+        const block = await active.client.getBlock({ blockTag: "latest" });
+        await currentPermit(
+          current,
+          active.client,
+          block.timestamp,
+          current.maxFeePerGas
+        );
+        await active.client.call({
+          account: current.account,
+          to: current.to,
+          data: current.data,
+          value: current.value,
+          maxFeePerGas: current.maxFeePerGas,
+          maxPriorityFeePerGas: current.maxPriorityFeePerGas
+        });
+        if (
+          current.networkFee === null ||
+          (await active.client.getBalance({ address: current.account })) <
+            current.value + current.networkFee
+        )
+          throw new Error("You need more ETH for randomness and network gas.");
+        await checkedWallet(current.account, active.wallet);
+        permitSendAttempted = true;
+      }
+      if (
+        !activePage.current ||
+        Date.now() / 1000 >= current.expiresAt ||
+        reviewed.current !== current ||
+        latest.current.wallet !== active.wallet ||
+        latest.current.chainId !== 8453 ||
+        latest.current.address?.toLowerCase() !== current.account.toLowerCase()
+      )
+        throw new Error(
+          "The quote expired or your wallet changed. Review this transaction again."
+        );
+      const hash = await active.wallet.sendTransaction({
         account: current.account,
         chain: client.chain,
         to: current.to,
@@ -371,18 +650,23 @@ export function useBoosterActions() {
         throw new Error(
           "The transaction reverted. Its onchain changes were rolled back."
         );
-      setReview(null);
+      updateReview(null);
       setPhase("idle");
       await queries.invalidateQueries({ queryKey: boosterQueryKey });
       if (
         current.approval &&
-        address?.toLowerCase() === current.account.toLowerCase()
-      )
+        latest.current.address?.toLowerCase() === current.account.toLowerCase()
+      ) {
+        confirming.current = false;
         await prepare(current.action);
+      }
       if (!current.approval) return receipt.transactionHash;
     } catch (cause) {
-      if (broadcast) setReview(null);
+      if (broadcast || permitSendAttempted || current?.permitSigned)
+        updateReview(null);
       fail(cause);
+    } finally {
+      confirming.current = false;
     }
   }
 
@@ -393,8 +677,14 @@ export function useBoosterActions() {
     phase,
     error,
     submittedHash,
+    useSeparateApproval: () => {
+      if (!confirming.current && reviewed.current?.action.kind === "open")
+        return prepare(reviewed.current.action, true);
+    },
     dismiss: () => {
-      setReview(null);
+      if (!activePage.current || confirming.current) return;
+      preparing.current++;
+      updateReview(null);
       setError(null);
     }
   };

@@ -1,0 +1,123 @@
+{
+  "format": "yunipals-current-main-observer-installed-production-v1",
+  "observedAt": "2026-10-23T15:57:34.422843+00:00",
+  "sourceCommit": "3baf7e27",
+  "stagerCommit": "8bb2fe87",
+  "stagerSha256": "d0c68b13929e95c9b91faa65fcfce53f3db2a4ed50d953e4b99533fabf817e7d",
+  "exactTransportSha256": "4a8e45a1ae52cbfb02f317c39b6acb163debfe70ee2f6dcdaf014d06f7628afb",
+  "transportExecutedOnce": true,
+  "capturedResultSha256": "a62bf0986ca1c13a880647d25a970697e2685dc176a2dc9b246c0e1bab57d52f",
+  "productionResult": {
+    "approvedReviewHash": "ac0bc4183891dde49c1ffbfcaa81ab47bdff93d7eb083f1ab3070a5800eb52b8",
+    "databaseCalls": 0,
+    "format": "yunipals-current-main-observation-public-stage-v1",
+    "installedDefault": {
+      "acknowledged": false,
+      "actualProcessEnvironmentCompared": true,
+      "collectorAndIslandsExactOriginalObservations": true,
+      "currentMainInvocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+      "currentPrivateFileCount": 3,
+      "currentPrivateInputBindingSha256": "29e9ad20ef9fd5b5f8406409ebe7147a8a2b0d60c3f97b1d9651f9d90e6fc1ad",
+      "databaseCalls": 0,
+      "mainRuntimeEquivalence": {
+        "acceptedProofSha256": "caa2626c651d29e9a2bdb15e16be2e390d39b6c96ba27a6976cd921f991d2717",
+        "afterState": {
+          "ActiveState": "active",
+          "Id": "yunipals-api.service",
+          "InvocationID": "29aaa668db3d4e0cb9ebdddf851324d6",
+          "LoadState": "loaded",
+          "SubState": "running"
+        },
+        "beforeState": {
+          "ActiveState": "active",
+          "Id": "yunipals-api.service",
+          "InvocationID": "06856aa8d51d438ab965849bd288f2c6",
+          "LoadState": "loaded",
+          "SubState": "running"
+        },
+        "definitionsSha256": "d91709bfdb4edc068e7da1445eb858d87b331f0b8b9beb39ffa8d2d2a7d9addd",
+        "execIdentitySha256": "ad38818c8c0d200f5cbcea979c36a4a97c380a47d1111cc4882e2dfb425038f0",
+        "healthy": true,
+        "privateSettingsSha256": "89ba7e6fb1f5d3d501246ab77f82854f3180d4bcb7713d3e150b54693560b641",
+        "result": "success",
+        "runtimeFilesSha256": "4c46d4330ffa466927addcdb8a0152ac0552fb5831a8fe97ec4091bef6662e53",
+        "unit": "yunipals-api.service"
+      },
+      "operatorSha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+      "originalMainInvocation": "61a721b3e677483a9dd4c273decbdee3",
+      "originalMainMismatchExplicit": true,
+      "privateValuesExported": false,
+      "providerCalls": 0,
+      "reviewHash": "bcb334efe2f10713edcb4b66393c71820c74ddf37fe095f248d4285f851fcdc3",
+      "serviceActions": 0,
+      "sourceReadinessQualified": false
+    },
+    "installedDefaultQualified": true,
+    "privateAcknowledgementWrites": 0,
+    "providerCalls": 0,
+    "publicFiles": {
+      "consumer-current-main-observation-v1.py": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+      "consumer-retained-selectors-observe-v1.py": "066c74a83a2933544b2e204c253e10756bc8cb4e8e9665e63123ddc29b273350"
+    },
+    "runtimeIdentitiesUnchanged": true,
+    "serviceActions": 0,
+    "sourceReadinessClaimed": false,
+    "staged": true
+  },
+  "readOnlyPostcheckSha256": "ec7dd2b799411b9a2cae2ebe5bcb4b718c5a35a7b4122595b4e71b97ae7dd900",
+  "postcheck": {
+    "actors": {
+      "yunipals-api.service": {
+        "ActiveState": "active",
+        "Id": "yunipals-api.service",
+        "InvocationID": "29aaa668db3d4e0cb9ebdddf851324d6",
+        "Job": "",
+        "MainPID": "1437990",
+        "SubState": "running"
+      },
+      "yunipals-booster-api.service": {
+        "ActiveState": "active",
+        "Id": "yunipals-booster-api.service",
+        "InvocationID": "7858a3f608874abb935e635abc69c1d4",
+        "Job": "",
+        "MainPID": "1824982",
+        "SubState": "running"
+      },
+      "yunipals-unified-source6-free-v2.service": {
+        "ActiveState": "active",
+        "Id": "yunipals-unified-source6-free-v2.service",
+        "InvocationID": "c3463c9a2e1240e8890e318ba1360cf4",
+        "Job": "",
+        "MainPID": "716994",
+        "SubState": "running"
+      }
+    },
+    "databaseCalls": 0,
+    "files": {
+      "consumer-current-main-observation-v1.py": {
+        "gid": 0,
+        "links": 1,
+        "mode": "0o644",
+        "regular": true,
+        "sha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+        "uid": 0
+      },
+      "consumer-retained-selectors-observe-v1.py": {
+        "gid": 0,
+        "links": 1,
+        "mode": "0o644",
+        "regular": true,
+        "sha256": "066c74a83a2933544b2e204c253e10756bc8cb4e8e9665e63123ddc29b273350",
+        "uid": 0
+      }
+    },
+    "observedAt": "2026-10-23T15:57:34.422843+00:00",
+    "privateAcknowledgementDirectoryExists": false,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "scope": "two public observer files plus installed default read-only qualification",
+  "privateAcknowledgementCreated": false,
+  "downstreamConsumerEntryChanged": false,
+  "nativeSourceReadinessOrReaderAdmissionClaimed": false
+}

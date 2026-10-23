@@ -9,7 +9,7 @@ const questions = [
   {
     question: "Can I open more than one pack at once?",
     answer:
-      "Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total PROTO price and randomness fee. If a token approval is needed, that is a separate transaction."
+      "Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total PROTO price and randomness fee. Where supported, sign a gas-free approval that’s included in the opening transaction. A separate, reusable approval is also available."
   },
   {
     question: "How much does it cost?",
