@@ -1,0 +1,95 @@
+{
+  "format": "yunipals-receipt-v3-synthetic-gc-reconciliation-review-v1",
+  "reviewedAt": "2026-10-23T14:06:30.403639+00:00",
+  "verdict": "acknowledged_existing_single_run_success",
+  "inputSummarySha256": "124e4c41d4d1bb946b33157e632b271ba7a19cded5e9afa1dda44ab5d7fbd066",
+  "automaticOperatorAcceptancePassed": false,
+  "automaticOperatorSha256": "d28d2b0f4b15613593ca766318a867e5316f24e0fe6f14ef6427bf06a4d94b1c",
+  "automaticFailurePreserved": true,
+  "repeatedStartPerformed": false,
+  "reviewerProductionActions": 0,
+  "actualProbe": {
+    "unit": "yunipals-qualified-receipt-v3-identity-probe.service",
+    "invocation": "5fc5e6a4797e49cea159258d8b8d1ce0",
+    "pid": 1917452,
+    "uid": 969,
+    "gid": 963,
+    "groupIds": [
+      963
+    ],
+    "qualified": true,
+    "noNewPrivileges": true,
+    "capabilitiesEmpty": true,
+    "importsVerified": true,
+    "providerCalls": 0,
+    "databaseCalls": 0,
+    "credentialReads": 0,
+    "workerStarted": false,
+    "maximumRuntimeSeconds": 30,
+    "definitionSha256": "deb6a9246344dbe72634021651d966f45dff20f2ac94d8b50d41a232787cf3d9",
+    "rendererSha256": "f89ced9f929090bc1669daabeaab6c09e801da444b1034f0703c9d4f75d80080",
+    "probeScriptSha256": "f014900df11adb76f7c8e4f9f900cb45879189170c8f6fb6acb94ad2d2eabbec",
+    "nodeMessageSha256": "93004aaa33b664de376c7ac8de55bea38c7b437eb085b4b010a87697ed0bce6e"
+  },
+  "terminalAcknowledgement": {
+    "mode": "same_boot_same_unit_same_invocation_systemd_success_after_node_result",
+    "messageId": "7ad2d189f7e94e70a38c781354912448",
+    "codeFunction": "unit_log_success",
+    "managerPid": 1,
+    "managerExecutable": "/usr/lib/systemd/systemd",
+    "messageSha256": "d6257c3903b5a9d46550636a51b39791c53caa59e3ea05c0a302133470158e90",
+    "reconstructedMessageHashMatched": true,
+    "occurredAfterQualifiedNode": true,
+    "withinIntentThirtySeconds": true,
+    "unitResultFieldAbsent": true,
+    "managerInvocationAndStartMetadataGarbageCollected": true,
+    "terminalPid": 0,
+    "terminalResult": "success",
+    "terminalExecMainStatus": 0
+  },
+  "receipts": [
+    {
+      "name": "before.json",
+      "sha256": "34ae781bf7c25831d36a1eaba9d35cfa8d50c158c810cd2a170031aebb58adc3"
+    },
+    {
+      "name": "cleanup.json",
+      "sha256": "852c6df11c525022ab444a8f683f323c4fd31a145b46b33b423056b83e77bd98"
+    },
+    {
+      "name": "intent.json",
+      "sha256": "bfb88d0260742e3637528c7cebe461f26903ea0982b9190b8ee10db1c045c9b5"
+    },
+    {
+      "name": "terminal.json",
+      "sha256": "f9550b86661e1257cbd7c2e8271995587fafe87e3fab03600cfbeae3a2c3ded3"
+    },
+    {
+      "name": "unit-created.json",
+      "sha256": "b9a85692e44597cf0a102c221c140da1152672fe8c39c37fea28d9efb79dd5fa"
+    }
+  ],
+  "cleanup": {
+    "removed": true,
+    "sourceRestarted": false,
+    "sourceUnchanged": true,
+    "supportUnchanged": true,
+    "workerStarted": false
+  },
+  "validation": {
+    "allFiveProtectedReceiptSummariesReencodedToExactHashes": true,
+    "freshReviewHashRecomputed": true,
+    "originalNodeJsonSerializationHashMatched": true,
+    "canonicalManagerSuccessTextHashMatched": true,
+    "sameBootUnitInvocationAndOrderingVerified": true,
+    "negativeControlsRejected": [
+      "manager_invocation",
+      "manager_unit",
+      "manager_success_class",
+      "wrong_node_uid",
+      "wrong_node_boot",
+      "reversed_terminal_order"
+    ]
+  },
+  "scope": "Actual synthetic OS peer identity, capability and public-definition import qualification only. This acknowledgement does not claim the d28 automatic validator passed, run a receipt worker, qualify native catch-up, renew financial authority, or replace source8f/add6 validation. The real v3 default review remains required before a separately reviewed worker attempt."
+}

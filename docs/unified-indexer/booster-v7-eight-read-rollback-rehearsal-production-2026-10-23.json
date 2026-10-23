@@ -1,0 +1,113 @@
+{
+  "format": "yunipals-booster-v7-eight-read-rollback-rehearsal-production-v1",
+  "status": "actual-rollback-rehearsed-and-readonly-verified",
+  "verifiedAt": "2026-10-23T14:48:07.496479+00:00",
+  "operator": {
+    "path": "ops/unified-indexer-transition/booster-feature-handover-v7.py",
+    "sha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984"
+  },
+  "capturedProductionResultSha256": "31708e486ae7f242a88886030205dbf89fcbc1b6029754f2575b00ce317b0d18",
+  "protectedReceipts": {
+    "protectedReviewFile": "/var/backups/yunipals-booster-feature-handover-v7-20261023/grants-review.json",
+    "protectedReviewFileSha256": "62685a1a90c409d71c069d4f0be8cf35feff9ef04d0626b99463b2e2b22a4361",
+    "reviewHash": "78431761217b88952e5a93e9fc9cd25315021f42003f6920a395f1d33fc852c1",
+    "protectedSqlFile": "/var/backups/yunipals-booster-feature-handover-v7-20261023/grants-rehearsal.sql",
+    "protectedSqlFileSha256": "0e62b476072e9771c44fcc37dc2b19b8fa6d8b1275566d3875510e6596e7da67"
+  },
+  "reviewFormat": "yunipals-booster-eight-read-admission-v2",
+  "actualRollbackRehearsed": true,
+  "scope": {
+    "role": "yunipals_unified_collector",
+    "roleOid": "73187672",
+    "schema": "unified_shadow_20261020_7e7375b0",
+    "privilege": "SELECT",
+    "relations": [
+      "booster_checkpoint",
+      "booster_engine_state",
+      "booster_event",
+      "booster_monster",
+      "booster_original",
+      "booster_refund",
+      "booster_request",
+      "booster_type"
+    ],
+    "count": 8,
+    "grantOptions": false,
+    "writeGrants": false
+  },
+  "graphs": {
+    "beforeGraphSha256": "90c7c5f79724dcf2e4466c757ba282422770a22fbb01574674980dfe1bb09759",
+    "hypotheticalAfterGraphSha256": "9d77464fb4475a844c52c2706632af5c7ce022d452fa32b553644a43e34fdeed",
+    "currentGraphSha256": "90c7c5f79724dcf2e4466c757ba282422770a22fbb01574674980dfe1bb09759",
+    "currentGraphEqualsReviewedBefore": true
+  },
+  "postRehearsal": {
+    "launchReads": {
+      "_ponder_checkpoint": true,
+      "_ponder_meta": true,
+      "booster_checkpoint": true,
+      "booster_engine_state": true,
+      "booster_event": true,
+      "booster_monster": true,
+      "booster_original": true,
+      "booster_refund": true,
+      "booster_request": true,
+      "booster_type": true
+    },
+    "targetReads": {
+      "_ponder_checkpoint": true,
+      "_ponder_meta": true,
+      "booster_checkpoint": false,
+      "booster_engine_state": false,
+      "booster_event": false,
+      "booster_monster": false,
+      "booster_original": false,
+      "booster_refund": false,
+      "booster_request": false,
+      "booster_type": false
+    },
+    "oldTenReadsPreserved": true,
+    "priorTwoNativeReadsPreserved": true,
+    "eightNativeReadsAbsent": true,
+    "roleUnchanged": true,
+    "loginBefore": true,
+    "loginCurrent": true,
+    "loginChanged": false
+  },
+  "transaction": {
+    "sqlEndsWithRollback": true,
+    "sqlContainsCommit": false,
+    "grantsExecutedWithinRolledBackTransaction": 8,
+    "persistentDatabaseChanges": 0,
+    "noPersistentCommitPerformed": true
+  },
+  "absentCommitAndHandoverFiles": [
+    "grants-inputs.json",
+    "grants-intent.json",
+    "grants-ack.json",
+    "grants-result.json",
+    "switch-intent.json",
+    "switch-result.json",
+    "retirement-result.json"
+  ],
+  "readOnlyVerification": {
+    "stdoutSha256": "9f801da8ebf1384bfdd1efa36319c66d475e335273e69dd3f9317fa35e28b0a8",
+    "procedure": "Frozen v7 eight_read_review validated actual protected review; protected SQL exactly equals grant_sql(before,after); Host.snapshot(False) equals reviewed before graph. No owner phase called.",
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "productionFileWrites": 0
+  },
+  "sourceReadinessOrFourInstallsClaimed": false,
+  "apiQueueSelectionChanged": false,
+  "temporarySourceRetired": false,
+  "remainingPersistentAdmissionGates": [
+    "separate exact eight-read authorization; cited historical86 excludes this delta",
+    "actual fresh native locked/ready/current complete prefix",
+    "four actual current-entry consumer installs and exact final artifact",
+    "same actual rollback review and exact before graph"
+  ],
+  "historicalSequencingReview": "docs/unified-indexer/booster-v7-native-admission-sequencing-2026-10-23.json",
+  "historicalSequencingObservationSupersededOnlyForRehearsalStatus": true,
+  "frozenOperatorsChanged": false
+}

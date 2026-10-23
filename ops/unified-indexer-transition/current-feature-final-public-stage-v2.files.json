@@ -1,0 +1,157 @@
+{
+  "format": "yunipals-current-feature-final-public-source-files-v2",
+  "payload": [
+    {
+      "source": "ops/unified-indexer-transition/booster-api-binding-v3.py",
+      "target": "free-replay-20261020/booster-api-binding-v3.py",
+      "sha256": "55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309",
+      "bytes": 8329
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-api-checks-v2.py",
+      "target": "free-replay-20261020/booster-current-api-checks-v2.py",
+      "sha256": "1da3a94b5514233396d311b1677291348430c6dd96030ab0ca838ffb59470bdf",
+      "bytes": 11144
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-feature-v2.test.py",
+      "target": "free-replay-20261020/booster-current-feature-v2.test.py",
+      "sha256": "2014bdc648a2a31d783f92d4aa70d017b02cb8e9b596d65af95f83220034a560",
+      "bytes": 15739
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.md",
+      "target": "free-replay-20261020/booster-feature-handover-v7.md",
+      "sha256": "7fe0c9222bdec974d548bfb35bbbf655cc8565cb32da17e75b8712be612ed0b1",
+      "bytes": 8018
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.postgres-test.mjs",
+      "target": "free-replay-20261020/booster-feature-handover-v7.postgres-test.mjs",
+      "sha256": "127757ad3e3411087734599d4323fe0a4e3b529497232da3439e94189e55fc52",
+      "bytes": 18600
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.py",
+      "target": "free-replay-20261020/booster-feature-handover-v7.py",
+      "sha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+      "bytes": 82425
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.test.py",
+      "target": "free-replay-20261020/booster-feature-handover-v7.test.py",
+      "sha256": "2c2a2021fba55d49ca04589fcb770077d1e8a06a2d734a06ea352715f7e57047",
+      "bytes": 43817
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v3.py",
+      "target": "free-replay-20261020/booster-source-parity-v3.py",
+      "sha256": "7aa661c86a5dd1ef6efcfe9ca6e9494c7bfe2b055bd0b1e8daec9f4457e3a18a",
+      "bytes": 21081
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v3.test.py",
+      "target": "free-replay-20261020/booster-source-parity-v3.test.py",
+      "sha256": "87686f431b0cc538104b8efcb8049296c02c7ca56ea001a5044a4c067e619470",
+      "bytes": 6403
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-operational-live-booster-v2.py",
+      "target": "free-replay-20261020/consumer-operational-live-booster-v2.py",
+      "sha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+      "bytes": 5770
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-policy-v3.py",
+      "target": "free-replay-20261020/consumer-owned-booster-policy-v3.py",
+      "sha256": "a9c6d98bb831f936426220e6f5d288827c38215b56e55349a126cdffc97ef613",
+      "bytes": 6443
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-runtime-v4.py",
+      "target": "free-replay-20261020/consumer-owned-booster-runtime-v4.py",
+      "sha256": "ae099a6430ec9fb902e723e4da558923002ea9b9c309ae9776d59e892a248e41",
+      "bytes": 16587
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4-test.py",
+      "target": "free-replay-20261020/final-supervisor-handover-v4-test.py",
+      "sha256": "01ee5ba6dd61526922a4ccb112e8b4ae9a4df2275d1fca7c9aad2e4462fc0efe",
+      "bytes": 12516
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4.md",
+      "target": "free-replay-20261020/final-supervisor-handover-v4.md",
+      "sha256": "43566d2c776ea406234ae1bfeba7e2e52366696be5be618b4d274286f1dce5bf",
+      "bytes": 4208
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4.py",
+      "target": "free-replay-20261020/final-supervisor-handover-v4.py",
+      "sha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5",
+      "bytes": 113416
+    },
+    {
+      "source": "docs/unified-indexer/booster-feature-v7-postgres-acceptance-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/booster-feature-v7-postgres-acceptance-2026-10-23.json",
+      "sha256": "1244cf1a6259818d33fc52cd8414e38dd6d3447e9cb4c2ead7513dd78befc92b",
+      "bytes": 1428
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-handover-independent-review-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/booster-recent-feature-handover-independent-review-2026-10-23.json",
+      "sha256": "51efae01ab9c1d73603dea40796e58aff8da05cf72d47c95311a9e1f5848996b",
+      "bytes": 6653
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-handover-preparation-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/booster-recent-feature-handover-preparation-2026-10-23.json",
+      "sha256": "0658b8a2125ae3441ed7cedd3e765e407b5c91e45528803c1ab71b1f45c6657f",
+      "bytes": 4651
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-readonly-qualification-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/booster-recent-feature-readonly-qualification-2026-10-23.json",
+      "sha256": "7122d5f3b81aa354d62f0e30a00aa7e472984a8d51726472217a13f3d73b093c",
+      "bytes": 3746
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v4-independent-review-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/final-supervisor-v4-independent-review-2026-10-23.json",
+      "sha256": "ec6157fb427864209783dc530ae9dba2f43f6ed83a032221fbe40dac0cd3ccb8",
+      "bytes": 4821
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v4-preparation-2026-10-23.json",
+      "target": "free-replay-20261020/current-feature-final-source-v2-20261023/final-supervisor-v4-preparation-2026-10-23.json",
+      "sha256": "9f2d4f84233274dfb03d1f9eda973b9ca60c8cb133f8fc7837a5c01a8af7393d",
+      "bytes": 2970
+    }
+  ],
+  "historicalPublicDependencies": {
+    "free-replay-20261020/booster-api-admit.py": "c62778869948e0a94a190a1edd839d9c982ea3fd4b82cc69c82776f0499fb58e",
+    "free-replay-20261020/booster-feature-handover-v5.py": "3dc1889e9d0cf9233d71324c7b1a4af88da7bd5bd103f9b44d756aaab91e4e50",
+    "free-replay-20261020/consumer-accepted-marketplace-acl-v2.py": "4fa510efd86714404655403617d46cd597fb099b6ed3d9a003cf293269c34a36",
+    "free-replay-20261020/consumer-operational-install-v7.py": "9a59728a3dbdac9c039d1bd1e0c35557a15ece2ec018c5b6bee25bcfcae7d078",
+    "free-replay-20261020/consumer-operational-marketplace-ack-v2.py": "9a5190ee5bbb74ea72bd128359e1c14ead3083148b430210515119d82851ef4d",
+    "free-replay-20261020/consumer-operational-owner-v6.py": "f120fbadfc36170be1c8d29eff15015ab23106042953436faf37474953fce27d",
+    "free-replay-20261020/consumer-operational-preview-v6.py": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777",
+    "free-replay-20261020/consumer-owned-booster-graph-v1.json": "dd3ca9be25666cb223c157ed942094669884b5145f595d457fe559fdcc834dc0",
+    "free-replay-20261020/consumer-owned-booster-policy.py": "54f1b81223a7003261c08c845a1f6614bd7f22ac68160d8d1081974e8d32f859",
+    "free-replay-20261020/consumer-owned-booster-runtime-v2.py": "f8b32d84e552ab6df51836a0e297f26131fb1d2faecb2aba1e4c7bc3bf82945e",
+    "free-replay-20261020/final-supervisor-handover-v1.py": "848150920dd624b65832b9a9a87e35f8d6f8831052b3598ac8b93275c886dd92",
+    "free-replay-20261020/final-supervisor-handover-v2.py": "8ad5845ef641ad74bd4fbead7b01be74e5db4fbf54c8bbe140366267e5c06eab",
+    "free-replay-20261020/final-supervisor-resources-v1.conf.example": "d72a2f712b6667aa9aed9766d7f77d10fda5f6a01fb8455cf03cd60c00a42651",
+    "free-replay-20261020/normal-rpc-profile-v1.json": "0efe9214bb3cb2d833a8ee93cabefed30a834215a27ca346a85724e4d2b5f81e",
+    "free-replay-20261020/source6-base-priority/rpc-preflight.ts": "1b9ff9fc67138d008bab65626228cef3b3c6e664e74a32d23ec36c82077c9ba8",
+    "free-replay-20261020/source6-normal-proxy-requalification-v1.py": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "free-replay-20261020/source6-normal-replay-successor-v2.py": "c8c06c03d4bb929f0171876939bb0887254a08f135e4c25a31fbaa238ae166fb",
+    "free-replay-20261020/supervisor-handover-state-v1.sql": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0",
+    "solana-consolidation-20261021/helius-egress.conf.candidate": "8a3011e5bcbcf84638738ecfd2781550d0b8343979cd9e5a284b2de8e0e40ab7",
+    "solana-consolidation-20261021/run-indexer.sh": "899b72669add542f3a405494c6382b5a50870875cd5d725d4a3df4fbed577b2e",
+    "solana-consolidation-20261021/yunipals-indexer.service.candidate": "e40738b49d5480258bc52e79a1dbf83e2341494482e8b1f0d0d568120d5ca1ae",
+    "solana-consolidation-final-20261021-v1/ponder-normal-final-v1.public.env": "f8adcd0dd13a9f5ae26edec713c960bf459108b86718387742af1b365235d710",
+    "solana-consolidation-final-20261022-v4/normal-transport-final-v4.conf": "bd39471bb3899cd001b74b2d1296785f46760f3d31277392d1a521e588e094c8"
+  },
+  "operationalReceiptsRequired": false
+}

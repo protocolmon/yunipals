@@ -1,0 +1,165 @@
+{
+  "format": "yunipals-current-feature-final-public-source-preparation-v2",
+  "preparedAt": "2026-10-23T13:55:15.684868+00:00",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.py",
+      "sha256": "7bf2ef8969cb4694af40f9ae018c00b29c203685b9bb4930a09bb61cf1cdfc72",
+      "bytes": 7617
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.files.json",
+      "sha256": "fda31f4b8d8eb03b80a40d9d2e3b0a88e801c4585f3af23410d6a07bb0ad24a9",
+      "bytes": 9481
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.test.py",
+      "sha256": "532ad252109defd3a38ee730796d9e351d8aef6cbfe7b42e43336c1602b98fca",
+      "bytes": 11496
+    },
+    {
+      "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.md",
+      "sha256": "6f8dbc17fbed494dc16d75725c843399666c87a2236d39ccb3d975124e143ec7",
+      "bytes": 3975
+    }
+  ],
+  "payloadSourceFiles": [
+    {
+      "source": "ops/unified-indexer-transition/booster-api-binding-v3.py",
+      "sha256": "55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309",
+      "bytes": 8329
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-api-checks-v2.py",
+      "sha256": "1da3a94b5514233396d311b1677291348430c6dd96030ab0ca838ffb59470bdf",
+      "bytes": 11144
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-current-feature-v2.test.py",
+      "sha256": "2014bdc648a2a31d783f92d4aa70d017b02cb8e9b596d65af95f83220034a560",
+      "bytes": 15739
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.md",
+      "sha256": "7fe0c9222bdec974d548bfb35bbbf655cc8565cb32da17e75b8712be612ed0b1",
+      "bytes": 8018
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.postgres-test.mjs",
+      "sha256": "127757ad3e3411087734599d4323fe0a4e3b529497232da3439e94189e55fc52",
+      "bytes": 18600
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.py",
+      "sha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+      "bytes": 82425
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-feature-handover-v7.test.py",
+      "sha256": "2c2a2021fba55d49ca04589fcb770077d1e8a06a2d734a06ea352715f7e57047",
+      "bytes": 43817
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v3.py",
+      "sha256": "7aa661c86a5dd1ef6efcfe9ca6e9494c7bfe2b055bd0b1e8daec9f4457e3a18a",
+      "bytes": 21081
+    },
+    {
+      "source": "ops/unified-indexer-transition/booster-source-parity-v3.test.py",
+      "sha256": "87686f431b0cc538104b8efcb8049296c02c7ca56ea001a5044a4c067e619470",
+      "bytes": 6403
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-operational-live-booster-v2.py",
+      "sha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+      "bytes": 5770
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-policy-v3.py",
+      "sha256": "a9c6d98bb831f936426220e6f5d288827c38215b56e55349a126cdffc97ef613",
+      "bytes": 6443
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-owned-booster-runtime-v4.py",
+      "sha256": "ae099a6430ec9fb902e723e4da558923002ea9b9c309ae9776d59e892a248e41",
+      "bytes": 16587
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4-test.py",
+      "sha256": "01ee5ba6dd61526922a4ccb112e8b4ae9a4df2275d1fca7c9aad2e4462fc0efe",
+      "bytes": 12516
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4.md",
+      "sha256": "43566d2c776ea406234ae1bfeba7e2e52366696be5be618b4d274286f1dce5bf",
+      "bytes": 4208
+    },
+    {
+      "source": "ops/unified-indexer-transition/final-supervisor-handover-v4.py",
+      "sha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5",
+      "bytes": 113416
+    },
+    {
+      "source": "docs/unified-indexer/booster-feature-v7-postgres-acceptance-2026-10-23.json",
+      "sha256": "1244cf1a6259818d33fc52cd8414e38dd6d3447e9cb4c2ead7513dd78befc92b",
+      "bytes": 1428
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-handover-independent-review-2026-10-23.json",
+      "sha256": "51efae01ab9c1d73603dea40796e58aff8da05cf72d47c95311a9e1f5848996b",
+      "bytes": 6653
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-handover-preparation-2026-10-23.json",
+      "sha256": "0658b8a2125ae3441ed7cedd3e765e407b5c91e45528803c1ab71b1f45c6657f",
+      "bytes": 4651
+    },
+    {
+      "source": "docs/unified-indexer/booster-recent-feature-readonly-qualification-2026-10-23.json",
+      "sha256": "7122d5f3b81aa354d62f0e30a00aa7e472984a8d51726472217a13f3d73b093c",
+      "bytes": 3746
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v4-independent-review-2026-10-23.json",
+      "sha256": "ec6157fb427864209783dc530ae9dba2f43f6ed83a032221fbe40dac0cd3ccb8",
+      "bytes": 4821
+    },
+    {
+      "source": "docs/unified-indexer/final-supervisor-v4-preparation-2026-10-23.json",
+      "sha256": "9f2d4f84233274dfb03d1f9eda973b9ca60c8cb133f8fc7837a5c01a8af7393d",
+      "bytes": 2970
+    }
+  ],
+  "historicalPublicDependencyCount": 23,
+  "historicalPublicDependenciesUnchangedFromV1": true,
+  "payloadCount": 21,
+  "verification": {
+    "realFilesystemControls": 11,
+    "finalSupervisorControls": 72,
+    "recentFeatureControls": 46,
+    "recentFeatureRealPostgresGroups": 14,
+    "operationalReceiptReads": 0,
+    "runtimeValidationPerformed": false,
+    "runtimeOrAcceptanceGatesChanged": false
+  },
+  "bindings": {
+    "apiBundleSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+    "apiUnitSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+    "consumerEntrySha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "featureOwnerSha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "finalSupervisorSha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5",
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d"
+  },
+  "historicalFilesPreserved": {
+    "current-feature-final-public-stage-v1.py": "73afd1e1015232b27106754d71f8b148afc0cd8ff77637e39a92aa2382ad64a6",
+    "current-feature-final-public-stage-v1.files.json": "935eedcc01f8be78dc8ad2dd3cc29999dc3c5d7233468e06acc8d4ebad48902e",
+    "final-supervisor-handover-v3.py": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6",
+    "consumer-operational-live-booster-v1.py": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+    "booster-feature-handover-v6.py": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b"
+  },
+  "staged": false,
+  "productionMutations": 0,
+  "operationalReadinessClaimed": false,
+  "futureReceiptPinsInvented": false
+}

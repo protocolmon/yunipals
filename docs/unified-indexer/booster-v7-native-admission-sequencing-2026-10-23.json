@@ -1,0 +1,165 @@
+{
+  "format": "yunipals-booster-v7-native-admission-sequencing-review-v1",
+  "reviewOnly": true,
+  "observedProduction": {
+    "collectorRoleOid": "73187672",
+    "currentConsumerAdmissions": {
+      "yunipals_unified_api": {
+        "exists": false
+      },
+      "yunipals_unified_collector": {
+        "exists": false
+      },
+      "yunipals_unified_islands_api": {
+        "exists": false
+      },
+      "yunipals_unified_read_cache": {
+        "exists": false
+      }
+    },
+    "databaseWrites": 0,
+    "exactBeforeGraphValidated": true,
+    "format": "yunipals-native-booster-admission-readonly-observation-v1",
+    "handoverEvidenceDirectoryExists": false,
+    "launchReadsPreserved": true,
+    "nativeReads": {
+      "_ponder_checkpoint": true,
+      "_ponder_meta": true,
+      "booster_checkpoint": false,
+      "booster_engine_state": false,
+      "booster_event": false,
+      "booster_monster": false,
+      "booster_original": false,
+      "booster_refund": false,
+      "booster_request": false,
+      "booster_type": false
+    },
+    "observedAt": "2026-10-23T14:21:49.399460+00:00",
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sources": [
+      {
+        "buildId": "bf4939b3ff",
+        "completeBaseBlock": 52950938,
+        "dev": "0",
+        "heartbeatAgeSeconds": 1.24,
+        "locked": "1",
+        "ready": "0",
+        "schema": "unified_shadow_20261020_7e7375b0",
+        "version": "6"
+      },
+      {
+        "buildId": "6d581272ce",
+        "completeBaseBlock": 52987979,
+        "dev": "0",
+        "heartbeatAgeSeconds": 6.8,
+        "locked": "1",
+        "ready": "1",
+        "schema": "yunipals_boosters_launch_v1",
+        "version": "6"
+      }
+    ],
+    "stagedPublicSources": {
+      "booster-feature-handover-v7.py": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+      "consumer-operational-live-booster-v2.py": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+      "final-supervisor-handover-v4.py": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5"
+    }
+  },
+  "observationProgramSha256": "dcb7517f0e5420a9ae83adb46f63cf42cf14fa9cb048a6c8111e8ff11786b97d",
+  "observationStdoutSha256": "f3f05311809709834178ccf5b00f1b59752c93faf359a2624bb70d5908f1cf74",
+  "publicSourcePins": {
+    "ops/unified-indexer-transition/booster-feature-handover-v7.py": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "ops/unified-indexer-transition/consumer-operational-live-booster-v2.py": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "ops/unified-indexer-transition/booster-api-binding-v3.py": "55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309",
+    "ops/unified-indexer-transition/consumer-owned-booster-runtime-v4.py": "ae099a6430ec9fb902e723e4da558923002ea9b9c309ae9776d59e892a248e41",
+    "ops/unified-indexer-transition/consumer-owned-booster-policy-v3.py": "a9c6d98bb831f936426220e6f5d288827c38215b56e55349a126cdffc97ef613",
+    "ops/unified-indexer-transition/booster-source-parity-v3.py": "7aa661c86a5dd1ef6efcfe9ca6e9494c7bfe2b055bd0b1e8daec9f4457e3a18a",
+    "ops/unified-indexer-transition/final-supervisor-handover-v4.py": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5"
+  },
+  "grantScope": {
+    "role": "yunipals_unified_collector",
+    "roleOid": 73187672,
+    "database": "yunipals_backfill",
+    "schema": "unified_shadow_20261020_7e7375b0",
+    "schemaOid": 73004622,
+    "ownerOid": 73004621,
+    "relations": {
+      "booster_checkpoint": 73032644,
+      "booster_engine_state": 73032614,
+      "booster_event": 73032629,
+      "booster_monster": 73032584,
+      "booster_original": 73032554,
+      "booster_refund": 73032599,
+      "booster_request": 73032569,
+      "booster_type": 73032539
+    },
+    "privilege": "SELECT",
+    "grantOption": false,
+    "persistentGrantCount": 8,
+    "scopeStatementsNotExecuted": [
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_checkpoint TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_engine_state TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_event TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_monster TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_original TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_refund TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_request TO yunipals_unified_collector;",
+      "GRANT SELECT ON TABLE unified_shadow_20261020_7e7375b0.booster_type TO yunipals_unified_collector;"
+    ],
+    "preserveTwoNativePonderReads": true,
+    "preserveTenLaunchReads": true,
+    "loginChanges": false,
+    "writeGrants": false,
+    "schemaChanges": false
+  },
+  "earlier86ApprovalComparison": {
+    "file": "docs/unified-indexer/prepared-production-read-permissions-2026-10-21.txt",
+    "sha256": "e3c3729257c2eb6685ec0aa930a910107839b1cbc2d82eb4a2b07e83b902e74c",
+    "exactStatementCount": 86,
+    "matchingEightStatements": 0,
+    "boosterMentions": 0,
+    "coversEightNativeReads": false,
+    "otherAuthorizationInferred": false
+  },
+  "sequencing": {
+    "rollbackRehearsalRequiresNativeFrameworkReady": false,
+    "rollbackRehearsalPerformed": false,
+    "rollbackRehearsalCreatesPrivateEvidence": true,
+    "rollbackRehearsalExecutesRolledBackGrantSQL": true,
+    "persistentCommitRequiresFrameworkReady": true,
+    "persistentCommitNativeBuild": "bf4939b3ff",
+    "persistentCommitMinimumCompleteBaseBlock": 52848542,
+    "persistentCommitRequiresLocked": true,
+    "persistentCommitRequiresFreshHeartbeatAndCheckpointSeconds": 180,
+    "persistentCommitRequiresFourActualCurrentEntryConsumerInstalls": true,
+    "persistentCommitBeforeGraphExact": true,
+    "lostSQLAcknowledgementNeverReissuesSQL": true,
+    "sourceSelectionOrRuntimeChangesAllowedByAdmission": false
+  },
+  "batchEngineUpgradeCompatibility": {
+    "engineProxy": "0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609",
+    "handoverPinsOnchainEngineImplementation": false,
+    "handoverPinsOnchainEngineRuntimeHash": false,
+    "sourceServiceHashIsSystemdDefinitionNotEngineCode": true,
+    "reviewedChangePreservesProxyRulesEventsStorage": true,
+    "changesToFrozenHandoverRequiredForImplementationOnlyUpgrade": false,
+    "freshCanonicalParityStillRequiredAfterAnyNewEvents": true,
+    "ownerUpgradeActuallyExecutedClaimed": false
+  },
+  "remainingActualGates": [
+    "parent-owned exact eight-grant rollback rehearsal",
+    "separate authorization for these eight persistent reads; cited86 approval excludes them",
+    "native combined framework locked/ready/current complete Base prefix",
+    "four actual current-entry consumer installs with final artifact and live receipt verification",
+    "exact reviewed eight-read commit",
+    "fresh initial same-boundary v3 parity and owned API/queue schema switch",
+    "genuine newer event, post-event parity and temporary source retirement"
+  ],
+  "actionsByThisReview": {
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "productionFileWrites": 0,
+    "frozenSourceEdits": 0
+  }
+}

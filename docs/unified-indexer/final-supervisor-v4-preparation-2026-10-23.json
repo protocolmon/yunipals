@@ -1,0 +1,66 @@
+{
+  "format": "yunipals-final-supervisor-v4-preparation-v1",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v4.py",
+      "sha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5",
+      "bytes": 113416
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v4-test.py",
+      "sha256": "01ee5ba6dd61526922a4ccb112e8b4ae9a4df2275d1fca7c9aad2e4462fc0efe",
+      "bytes": 12516
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v4.md",
+      "sha256": "43566d2c776ea406234ae1bfeba7e2e52366696be5be618b4d274286f1dce5bf",
+      "bytes": 4208
+    }
+  ],
+  "validation": {
+    "pythonControls": 72,
+    "allFunctionsAndClassesAstIdenticalToV3": true,
+    "onlyChangedConstants": [
+      "EVIDENCE",
+      "CONSUMER_OPERATOR_SHA",
+      "FEATURE_HELPER",
+      "FEATURE_HELPER_SHA"
+    ],
+    "historicalV3Sha256": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6",
+    "fullAcceptanceCheckCount": 10,
+    "actualConsumerInstallCount": 4,
+    "sourceBindingsUnchanged": true,
+    "solanaAndOwnedInverseGatesUnchanged": true
+  },
+  "bindings": {
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "consumerEntrySha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "featureOwnerSha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "featureInversePreservedReadsField": "oldTenReadsPreserved",
+    "currentApiBundleSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+    "currentApiUnitSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+    "actualRolloutReceiptSha256": "6f2b288741503d2f5d34ee9ba4563d0215b9144b2b6b22cc38f2763378799080"
+  },
+  "currentFeaturePreparation": {
+    "file": "docs/unified-indexer/booster-recent-feature-handover-preparation-2026-10-23.json",
+    "sha256": "0658b8a2125ae3441ed7cedd3e765e407b5c91e45528803c1ab71b1f45c6657f"
+  },
+  "currentFeatureIndependentReview": {
+    "file": "docs/unified-indexer/booster-recent-feature-handover-independent-review-2026-10-23.json",
+    "sha256": "51efae01ab9c1d73603dea40796e58aff8da05cf72d47c95311a9e1f5848996b"
+  },
+  "financialOnlyArenaProofDoesNotQualifyNativeReadiness": true,
+  "originalWholeNormalValidationClaimedPassed": false,
+  "actualNativeReadyClaimed": false,
+  "futureReceiptPinsInvented": false,
+  "staged": false,
+  "productionMutations": 0,
+  "remainingActualGates": [
+    "full native/canonical acceptance",
+    "four actual current-entry consumer installs",
+    "eight native booster SELECT admission and actual v7 reader/queue handover",
+    "actual newer event/post-event parity/owned old-source retirement",
+    "actual final plan direct proofs and separate reviewed apply"
+  ]
+}

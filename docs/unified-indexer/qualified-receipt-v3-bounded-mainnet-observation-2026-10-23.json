@@ -1,0 +1,325 @@
+{
+  "actualLoopCompletion": {
+    "at": "2026-10-23T14:15:43.803539+00:00",
+    "batches": 55,
+    "event": "bounded_receipt_support_complete",
+    "exitStatus": 0,
+    "failed": 3,
+    "orphaned": 0,
+    "restartCount": 0,
+    "retry": 3,
+    "rpcCalls": 256,
+    "stoppedBeforeRuntimeLimitAfterCallLimit": true,
+    "stored": 77,
+    "unitResult": "success"
+  },
+  "canonicalWitnessCreated": false,
+  "completedAt": "2026-10-23T14:23:31.241385+00:00",
+  "durableReceiptCounts": {
+    "activeLeasesAfter": 0,
+    "afterAt": "2026-10-23T14:23:31.509702+00:00",
+    "beforeAt": "2026-10-23T13:58:59.231736+00:00",
+    "chains": [
+      {
+        "activeLeasesAfter": 0,
+        "attemptsAfter": 0,
+        "chainId": 1,
+        "eligibleCandidates": 2705,
+        "evidenceAfter": 111,
+        "evidenceBefore": 87,
+        "jobsAfter": 2594,
+        "jobsBefore": 2618,
+        "nativeCompleteBlock": "26249684",
+        "storedDelta": 24
+      },
+      {
+        "activeLeasesAfter": 0,
+        "attemptsAfter": 0,
+        "chainId": 56,
+        "eligibleCandidates": 0,
+        "evidenceAfter": 0,
+        "evidenceBefore": 0,
+        "jobsAfter": 0,
+        "jobsBefore": 0,
+        "nativeCompleteBlock": "101089566",
+        "storedDelta": 0
+      },
+      {
+        "activeLeasesAfter": 0,
+        "attemptsAfter": 1,
+        "chainId": 137,
+        "eligibleCandidates": 1282,
+        "evidenceAfter": 315,
+        "evidenceBefore": 288,
+        "jobsAfter": 967,
+        "jobsBefore": 994,
+        "nativeCompleteBlock": "95990408",
+        "storedDelta": 27
+      },
+      {
+        "activeLeasesAfter": 0,
+        "attemptsAfter": 0,
+        "chainId": 8453,
+        "eligibleCandidates": 6326,
+        "evidenceAfter": 588,
+        "evidenceBefore": 562,
+        "jobsAfter": 5738,
+        "jobsBefore": 5764,
+        "nativeCompleteBlock": "52950938",
+        "storedDelta": 26
+      }
+    ],
+    "remainingJobs": 9299,
+    "storedDelta": 77,
+    "supportDatabaseSessionsAfter": 0
+  },
+  "evidence": [
+    {
+      "file": "/tmp/yunipals-qualified-receipts-v3-owner-result-20261023.json",
+      "sha256": "4897323d15404ccf09371bd341d468aa979c6d499cb2c01d5ebaa86d746d2d74"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipt-v3-baseline-20261023.json",
+      "sha256": "9c3f84e6ce781687231c6b64e56d35ffab74c8eda92d5c021eed94d127172cab"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipt-v3-monitor-20261023.jsonl",
+      "sha256": "f2e32e09c55be9959162115bf1dd40e5477bd55606a79f29644267d441f341da"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipt-v3-outcomes-20261023.json",
+      "sha256": "7fe07e3cde1b11931e2f840cf1810b9ffcff84af2db015c9468a0d6c36ba4b97"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipt-v3-failure-classification-20261023.json",
+      "sha256": "f2df0766fea325011157dd68a8d3e97930b26c94fe3bde0a8c4291471b1ed275"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipts-v3-restore-result-20261023.json",
+      "sha256": "4d584800e8ba3ed2c24df7c5ce234d51a1a32bbc7bded839d17f5bae28fb8cc4"
+    },
+    {
+      "file": "/tmp/yunipals-qualified-receipt-v3-restored-observation-20261023.json",
+      "sha256": "0cf46b89b7de30a2bc8f0acccc13802dadaaea4996d38eb408ce678fc5df73cc"
+    }
+  ],
+  "failureObservation": {
+    "ethereumEvidenceRefusedCalls": 2,
+    "ethereumProxyEntrySha256": "d8e58d18f7f88bb8b13d4f2d85d562ddd71f7ffc2c96b913410d5a656202f5c8",
+    "ethereumProxyJournalRowsDuringRun": 0,
+    "ethereumRefusalReason": "not_determined_from_recorded_aggregate_telemetry",
+    "failedLoopBatches": [
+      {
+        "at": "2026-10-23T14:08:47.136423+00:00",
+        "chainId": 1,
+        "totals": {
+          "batches": 9,
+          "failed": 1,
+          "orphaned": 0,
+          "retry": 1,
+          "rpcCalls": 42,
+          "stored": 12
+        }
+      },
+      {
+        "at": "2026-10-23T14:10:35.193485+00:00",
+        "chainId": 1,
+        "totals": {
+          "batches": 21,
+          "failed": 2,
+          "orphaned": 0,
+          "retry": 2,
+          "rpcCalls": 98,
+          "stored": 28
+        }
+      },
+      {
+        "at": "2026-10-23T14:15:38.802663+00:00",
+        "chainId": 137,
+        "totals": {
+          "batches": 55,
+          "failed": 3,
+          "orphaned": 0,
+          "retry": 3,
+          "rpcCalls": 256,
+          "stored": 77
+        }
+      }
+    ],
+    "lastPolygonBatchExhaustedRemainingThreeCallAllowance": true,
+    "noErrorFreeClaim": true,
+    "remainingJobErrorDoesNotIdentifyExactRpcFailureCause": true,
+    "remainingJobErrors": [
+      {
+        "active_leases": 0,
+        "attempts": 1,
+        "chain_id": 137,
+        "error_code": "receipt_rpc_unavailable",
+        "jobs": 1
+      }
+    ]
+  },
+  "financialWindowRenewed": false,
+  "format": "yunipals-qualified-receipt-v3-bounded-mainnet-observation-v1",
+  "observerActions": {
+    "credentialValuesExported": 0,
+    "databaseWrites": 0,
+    "providerRpcCalls": 0,
+    "rawJournalMessagesExported": 0,
+    "serviceActions": 0
+  },
+  "paidAuthority": false,
+  "proxyEvidence": {
+    "base": {
+      "evidenceAfter": {
+        "freeCalls": 78,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "evidenceBefore": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeOnly": true
+    },
+    "bnb": {
+      "evidenceAfter": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "evidenceBefore": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeOnly": true
+    },
+    "ethereum": {
+      "evidenceAfter": {
+        "freeCalls": 94,
+        "paidCalls": 0,
+        "refused": 2
+      },
+      "evidenceBefore": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeOnly": true
+    },
+    "polygon": {
+      "evidenceAfter": {
+        "freeCalls": 82,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "evidenceBefore": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeOnly": true
+    }
+  },
+  "receiptHistoryCompleteClaimed": false,
+  "restoredState": {
+    "alerts": [],
+    "at": "2026-10-23T14:23:31.241385+00:00",
+    "localBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 4,
+      "indexedBlock": 52988030,
+      "indexedTimestamp": 1792765407,
+      "ready": true,
+      "status": 200
+    },
+    "originalFragmentSha256": "5afdb87ded1b7beb3c2d60abd8825fe311032a403977b537266ebe706d6cd214",
+    "publicBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 4,
+      "indexedBlock": 52988030,
+      "indexedTimestamp": 1792765407,
+      "ready": true,
+      "status": 200
+    },
+    "rootFreeBytes": 45004800000,
+    "sourceMemoryBytes": 402583552,
+    "unit": {
+      "ActiveState": "inactive",
+      "DropInPaths": "",
+      "ExecMainStatus": "0",
+      "FragmentPath": "/run/systemd/system/yunipals-unified-support-source6-v2.service",
+      "Group": "yunipals_unified_support",
+      "InvocationID": "",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Result": "success",
+      "RuntimeMaxUSec": "1h",
+      "SubState": "dead",
+      "User": "yunipals_unified_support"
+    }
+  },
+  "rootOwnedRestore": {
+    "file": "/var/backups/yunipals-source6-qualified-receipts-v3-20261023/restored.json",
+    "sha256": "9c6d2b73dd2c2934069e1acb5448aef5ac30b2aaf1e25ed82c0ce886c868773b",
+    "value": {
+      "at": "2026-10-23T14:18:57.355444+00:00",
+      "originalFragmentUnchanged": true,
+      "paidAuthority": false,
+      "receiptRowsOrLeasesReset": false,
+      "restored": true,
+      "sourceRestarted": false,
+      "supportRemainsStopped": true
+    }
+  },
+  "scope": "One real bounded free-only receipt-support probe. BNB has no eligible candidates at the retained native prefix. This proves neither complete receipt history nor source/public-market readiness.",
+  "source": {
+    "nativeCaughtUpClaimed": false,
+    "originalWholeValidationPassed": false,
+    "qualificationOperatorSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "qualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "runtime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    },
+    "sourceRestarted": false
+  },
+  "sourceReadinessClaimed": false,
+  "twoMinuteObservation": {
+    "alerts": [],
+    "allLocalAndPublicResponsesReadyHttp200": true,
+    "allSourceIdentitiesMatch": true,
+    "allWorkerIdentitiesMatch": true,
+    "firstAt": "2026-10-23T14:08:43.599690+00:00",
+    "firstIndexedBlock": 52987586,
+    "lastAt": "2026-10-23T14:10:43.562716+00:00",
+    "lastIndexedBlock": 52987646,
+    "maximumBaseActiveRequests": 1,
+    "maximumBaseQueuedSourceRequests": 0,
+    "maximumLocalIndexedAgeSeconds": 4,
+    "maximumPublicIndexedAgeSeconds": 4,
+    "maximumSourceMemoryBytes": 403259392,
+    "minimumRootFreeBytes": 44878962688,
+    "nominalIntervalSeconds": 10,
+    "samples": 13
+  },
+  "workerStart": {
+    "maximumRpcCalls": 256,
+    "maximumRuntimeSeconds": 900,
+    "operatorSha256": "b4c450f2d7d3f2404939dc2e6ddb704b8eb627ac88f0eadbeff8f3763c630e0c",
+    "runtime": {
+      "invocation": "7c86ca8dbd7e40ffb8f77b070e6a00e4",
+      "pid": 1924663,
+      "startMonotonicMicroseconds": 66191117053246,
+      "startTicks": 6619111703
+    },
+    "runtimeReceiptSha256": "64b782f17deb70e56ffc1e5f360b196b39be88581c07fadeade57eb59fd9e42c"
+  }
+}
