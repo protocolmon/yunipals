@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Last checked: **23 October 2026, 15:26 CEST (Berlin)**.
+Last checked: **23 October 2026, 15:41 CEST (Berlin)**.
 
 **The collection and public booster packs are live together at [www.yunipals.com](https://www.yunipals.com/).** Old app links redirect to the matching www route. The remaining migration moves the existing services onto the single managed indexer. Dashboard maintenance is dropped; this file is the concise status checklist.
 
@@ -26,7 +26,7 @@ Last checked: **23 October 2026, 15:26 CEST (Berlin)**.
 
 ## Working now: multi-pack purchases and shared collection readers
 
-- [ ] **Buy several packs in one transaction.** Implementing an atomic, bounded engine purchase plus quantity/total-price controls and a single wrapper containing all purchased originals. Each original keeps independent collection progress and daily rights. Local purchase UI checks pass; contract size, upgrade compatibility, reveal checks and the unsigned owner upgrade package are being completed. The current mainnet engine still supports one purchased pack per transaction until the owner signs its upgrade.
+- [x] **Implement and publish multi-pack purchasing.** The engine supports one to ten independent originals in one atomic purchase; the frontend combines their cards into one torn wrapper, with quantity/total-price review and reload-safe receipt matching. Contract/storage/upgrade checks, 76 local contract tests, 31 purchase/reveal/owner browser groups and ten actual public-site checks pass. The exact source and unsigned upgrade are published. [Production acceptance](../boosters/mainnet-launch/batch-www-production-2026-10-23.json). Mainnet activation and its genuine batch test remain below.
 
 **Current priority:** complete shared replay and its reader/worker handover while preserving the live collection and packs. Per-NFT birth metadata is implemented and published; only its owner signatures remain below. The original replay process is retained, but the latest interval has no new committed coverage and needs further diagnosis. Current-feature handover and recovery successors have passed independent review. The metadata/cache/reader changes below still wait for native readiness; their live switches have not started.
 
@@ -80,6 +80,7 @@ Last checked: **23 October 2026, 15:26 CEST (Berlin)**.
 
 ## Waiting or deferred
 
+- [ ] **Owner enables multi-pack purchases:** open [batch setup](https://www.yunipals.com/boosters/setup/batch) with the approved Base owner wallet, sign the reviewed implementation deployment, then the separate proxy upgrade. The page verifies the exact deployed code and uses an empty initialization payload. Existing mainnet purchases remain single until those signatures. Afterwards, perform the first genuine multi-pack transaction and verify all callbacks and cards. Token approval, if needed, remains separate from the one opening transaction.
 - [ ] **Owner activates per-NFT birth metadata:** the actual timestamp API and [owner setup page](https://www.yunipals.com/boosters/setup/metadata) are live. Original #1 returns Birth day 0 and mint time 22 October 2026, 19:33:29 CEST with unchanged approved artwork. Contract/storage review and 62 ordinary tests, 35 birth-API cases, 25 owner-helper cases and seven owner-browser controls pass. The API's catalog-name error was corrected and recorded; the exact required journal SELECT is admitted. **Only the wallet-signed implementation deployment and atomic upgrade remain** for tokenURI activation. Existing NFT tokenURI values still use shared variant metadata until those signatures.
 - [ ] **First genuine daily mainnet claim:** owner test after **23 October 2026, 19:33:29 CEST (Berlin)**. The elapsed-time requirement cannot be established by a fork test.
 - [ ] Genuine accumulated-batch mainnet observations. Existing fork tests cover the rules, but elapsed live days remain separate evidence.
