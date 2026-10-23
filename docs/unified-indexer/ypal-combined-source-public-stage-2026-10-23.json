@@ -1,0 +1,18 @@
+{
+  "format": "yunipals-combined-source-public-stage-v1",
+  "files": {
+    "ponder.config.ts": "c4ff1ec83c766aa90286b5d73fd22b457135baa6e5880b4b52c4f8d06eca53a4",
+    "booster-config.ts": "01180f821236a693ecda5d7e697adefce59d42a50faf5837b8cddbf44bd4a13d",
+    "rpc-preflight.ts": "15d2157d5fd126d1d63383186b037d14b767314c2bf9552ee379cfffa869ca91",
+    "combined.public.env": "2c90fd857ad082e960d26672043db11be1ee4326e83076cabdf4373b90a07411",
+    "CANDIDATE-SOURCE-MANIFEST.json": "ce44cfb9eca0f25e6b0c309d638c1ebb33db8b0ee3f0b5c19cef1c4ef9cde390",
+    "render.json": "38a55a8de300c1ea5ea56d81c8b7aae4724d4c0ef60b7f04501086b12be4ccf0",
+    "offline-build.mjs": "be4a6573c7a4a5e1c248fefa2e7fd7689890afc6212a939915bf03327f2f3d10",
+    "local-build.json": "c73ab57191e50bc50296a9a177942f90c012e88d3bec764b37f36f4124132bde"
+  },
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "runtimePathsCreated": 0,
+  "privateFilesCopied": 0
+}

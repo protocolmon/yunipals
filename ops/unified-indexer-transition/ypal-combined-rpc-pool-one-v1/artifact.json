@@ -1,0 +1,31 @@
+{
+  "format": "yunipals-combined-rpc-pool-one-artifact-v1",
+  "preimage": {
+    "path": "/opt/yunipals-unified/operations/free-replay-20261020/source6-selective-source-proxy-v6/rpc-budget-proxy.mjs",
+    "sha256": "d8e58d18f7f88bb8b13d4f2d85d562ddd71f7ffc2c96b913410d5a656202f5c8"
+  },
+  "artifact": {
+    "file": "rpc-budget-proxy.mjs",
+    "sha256": "8afd0184d8e51d920a303ecfa729354189f240b0164d5d62655fb172818cc69c",
+    "bytes": 111657
+  },
+  "change": {
+    "factory": "createOpenSeaRequestBudget",
+    "poolMaxBefore": 2,
+    "poolMaxAfter": 1,
+    "changedBytes": 1
+  },
+  "intendedUnits": [
+    "yunipals-combined-rpc@ethereum.service",
+    "yunipals-combined-rpc@base.service",
+    "yunipals-combined-rpc@polygon.service",
+    "yunipals-combined-rpc@bnb.service"
+  ],
+  "allOtherCompiledBytesIdentical": true,
+  "selectedForProduction": false,
+  "oldProxyArtifactsModified": false,
+  "databaseConnections": 0,
+  "providerRequests": 0,
+  "serviceActions": 0,
+  "roleOrBudgetChanges": 0
+}

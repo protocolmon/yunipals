@@ -1,0 +1,150 @@
+{
+  "actual": {
+    "buildId": "71e2a7f3b7",
+    "calls": [
+      {
+        "chain": 1,
+        "path": "/unified/preflight",
+        "workload": "unified_source"
+      },
+      {
+        "chain": 1,
+        "path": "/unified/preflight",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 1,
+        "path": "/unified",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 56,
+        "path": "/unified/preflight",
+        "workload": "unified_source"
+      },
+      {
+        "chain": 56,
+        "path": "/unified/preflight",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 56,
+        "path": "/unified",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 137,
+        "path": "/unified/preflight",
+        "workload": "unified_source"
+      },
+      {
+        "chain": 137,
+        "path": "/unified/preflight",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 137,
+        "path": "/unified",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 8453,
+        "path": "/unified/preflight",
+        "workload": "unified_source"
+      },
+      {
+        "chain": 8453,
+        "path": "/unified/preflight",
+        "workload": "unified_evidence"
+      },
+      {
+        "chain": 8453,
+        "path": "/unified",
+        "workload": "unified_evidence"
+      }
+    ],
+    "configHash": "0f394941a10f8ad3407029be841ea82a20633b3323f03d95dcfff613c063377d",
+    "contracts": {
+      "BnbSeaport": {
+        "address": "0x0000000000000068f116a894984e2db1123eb395",
+        "startBlock": 123769700
+      },
+      "BoosterEngine": {
+        "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+        "startBlock": 52995174
+      },
+      "BoosterMonsters": {
+        "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+        "startBlock": 52995029
+      },
+      "BoosterRegistry": {
+        "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+        "startBlock": 52995007
+      },
+      "YunipalsArena": {
+        "address": [
+          "0xebd141b6ae36f74fe70b9139b262ee9771b72aca"
+        ],
+        "startBlock": 52648146
+      },
+      "YunipalsBase": {
+        "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+        "startBlock": 22224075
+      },
+      "YunipalsBaseIslandsV2": {
+        "address": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+        "startBlock": 52587956
+      },
+      "YunipalsBaseMetadata": {
+        "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+        "startBlock": 22224075
+      },
+      "YunipalsBnb": {
+        "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+        "startBlock": 7579197
+      },
+      "YunipalsEthereum": {
+        "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+        "startBlock": 12134519
+      },
+      "YunipalsIslands": {
+        "address": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+        "startBlock": 14570451
+      },
+      "YunipalsPolygon": {
+        "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+        "startBlock": 21814218
+      }
+    },
+    "databaseCalls": 0,
+    "effectivePoolMax": 5,
+    "elapsedMilliseconds": 4799,
+    "format": "yunipals-combined-YPAL-inactive-Ponder-build-v1",
+    "gid": 964,
+    "indexingHash": "8fdfce8c688a96a995023887e62ae028128c0db59d78f93025d2de63938e5af3",
+    "interceptedFixtureRequests": 12,
+    "namespace": "unified_ypal_20261023_v1",
+    "poolMax": 5,
+    "realProviderRequests": 0,
+    "schemaHash": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6",
+    "socketAttempts": 0,
+    "uid": 970,
+    "viemSha256": "ea32975364e9f2d599b10639d81985ec6a3ed87f6942fe0cb73b1bf738959057"
+  },
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "yunipals-combined-inactive-production-build-v1",
+  "newNativeNamespaceAbsent": true,
+  "originalActorsAndFilesUnchanged": true,
+  "planSha256": "ad60dfc787f29facb485cea4ac2d4a4f65058867415241e796816d620a393bd0",
+  "protectedResultSha256": "e09e54bfba64e345f53bf7c0488cc21b3f20f025448f995fed6e12677af4fd3d",
+  "providerCalls": 0,
+  "runtimeAreaAbsent": true,
+  "sourceStarts": 0,
+  "recordedAt": "2026-10-23T22:49:57.978769+00:00",
+  "notes": [
+    "The build used twelve explicit offline preflight fixtures and zero real provider/database calls. Its wrapper made read-only namespace-absence probes before and after.",
+    "The actual Ponder source was not started; the old combined and fresh YPAL source/API/proxy actors and original source bytes remained unchanged.",
+    "The new native namespace and runtime area remain absent. The separate owned inactive-probe cache is retained; do not repeat its acknowledged operation."
+  ]
+}
