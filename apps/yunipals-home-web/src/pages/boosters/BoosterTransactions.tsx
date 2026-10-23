@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { parseEventLogs } from "viem";
+import { parseEventLogs, type Hex } from "viem";
 import { Link } from "react-router-dom";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
@@ -11,9 +11,15 @@ import {
   readBoosterTransactionReceipt
 } from "@/lib/boosters";
 import { BoosterActionButton } from "./BoosterActionButton";
-import { BoosterPackOpening } from "./BoosterPackOpening";
+import { BoosterRequestOpening } from "./BoosterRequestOpening";
 
-export function BoosterTransactions() {
+export function BoosterTransactions({
+  autoOpenHash = null,
+  onOpeningClosed
+}: {
+  autoOpenHash?: Hex | null;
+  onOpeningClosed?: () => void;
+}) {
   const { address } = useAccount();
   const [opening, setOpening] = useState<{
     hash: string;
@@ -71,6 +77,7 @@ export function BoosterTransactions() {
               requestId: request.args.requestId.toString(),
               originalId: state.originalId.toString(),
               opening: state.opening,
+              quantity: state.quantity,
               status: [
                 "Unknown",
                 "Awaiting randomness",
@@ -85,18 +92,26 @@ export function BoosterTransactions() {
   });
   if (!address || (!query.data?.length && !refund.data && !query.error))
     return null;
-  const revealed =
-    opening?.wallet === address
+  const selected =
+    opening && opening.wallet === address
       ? query.data?.find(
           (row) =>
             row.hash === opening.hash &&
-            row.kind === "open" &&
-            row.status === "Revealed" &&
+            (row.kind === "open" || row.kind === "claim") &&
             "opening" in row &&
-            row.opening === true &&
-            "originalId" in row
+            row.opening === (row.kind === "open") &&
+            "requestId" in row
         )
-      : undefined;
+      : autoOpenHash
+        ? query.data?.find(
+            (row) =>
+              row.hash === autoOpenHash &&
+              (row.kind === "open" || row.kind === "claim") &&
+              "requestId" in row &&
+              "opening" in row &&
+              row.opening === (row.kind === "open")
+          )
+        : undefined;
   return (
     <div
       className="mt-7 rounded-card border border-line bg-white p-5"
@@ -137,10 +152,10 @@ export function BoosterTransactions() {
                     : "Transaction"}
             </a>
             <span>{row.status}</span>
-            {row.kind === "open" &&
+            {(row.kind === "open" || row.kind === "claim") &&
               row.status === "Revealed" &&
               "opening" in row &&
-              row.opening === true && (
+              row.opening === (row.kind === "open") && (
                 <button
                   type="button"
                   className="rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape"
@@ -148,7 +163,9 @@ export function BoosterTransactions() {
                     setOpening({ hash: row.hash, wallet: address })
                   }
                 >
-                  Reveal Yunipal
+                  {row.kind === "claim"
+                    ? `Open daily pack · ${"quantity" in row ? row.quantity : 1} pulls`
+                    : "Reveal Yunipal"}
                 </button>
               )}
             {"originalId" in row && row.status === "Revealed" && (
@@ -171,14 +188,16 @@ export function BoosterTransactions() {
           </li>
         ))}
       </ul>
-      {revealed &&
-        "originalId" in revealed &&
-        typeof revealed.originalId === "string" &&
+      {selected &&
+        "requestId" in selected &&
+        typeof selected.requestId === "string" &&
         deployment && (
-          <BoosterPackOpening
-            collection={deployment.monsters}
-            tokenId={revealed.originalId}
-            onClose={() => setOpening(null)}
+          <BoosterRequestOpening
+            requestId={selected.requestId}
+            onClose={() => {
+              setOpening(null);
+              onOpeningClosed?.();
+            }}
           />
         )}
     </div>

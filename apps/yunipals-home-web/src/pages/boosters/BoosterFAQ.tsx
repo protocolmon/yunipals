@@ -14,7 +14,7 @@ const questions = [
   {
     question: "Do I have to mint every day?",
     answer:
-      "No. Your first extra mint becomes available 24 hours after your original is revealed. After that, you earn one every 24 hours. Unused mints stack up, so you can claim them whenever you like, up to seven at a time. Daily mints continue until you’ve collected all 264 variants, including your original. There’s no paid speed boost."
+      "No. Your first extra mint becomes available 24 hours after your original is revealed. After that, you earn one every 24 hours. Unused mints stack up as a daily pack on this page. Open it like a normal pack: saved mints become multiple pulls, up to seven per opening. Any extra pulls stay saved. Your cards appear in Collection. Daily mints continue until you’ve collected all 264 variants, including your original. There’s no paid speed boost."
   },
   {
     question: "Can I get duplicates?",

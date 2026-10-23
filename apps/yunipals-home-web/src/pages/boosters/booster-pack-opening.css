@@ -64,10 +64,12 @@
   width: min(330px, 72vw);
   aspect-ratio: 2 / 3;
   perspective: 1000px;
+  isolation: isolate;
 }
 .yunipals-opening-wrapper {
   position: absolute;
   inset: 0;
+  z-index: 20;
   transform-style: preserve-3d;
 }
 .yunipals-opening-dialog[data-stage="sealed"] .yunipals-opening-wrapper {
@@ -110,9 +112,7 @@
     0 100%
   );
   filter: drop-shadow(0 22px 24px #0000007a);
-  transition:
-    transform 0.55s ease-out,
-    opacity 0.55s ease-out;
+  transition: opacity 0.55s ease-out;
 }
 .yunipals-opening-attached,
 .yunipals-opening-curl {
@@ -296,9 +296,6 @@
   );
   animation: yunipals-pack-tear 0.66s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-.yunipals-opening-dialog[data-stage="opening"] .yunipals-opening-body {
-  transform: translateY(22px) rotate(-2deg) scale(0.98);
-}
 .yunipals-opening-particle {
   position: absolute;
   left: 50%;
@@ -316,10 +313,25 @@
 .yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-body {
   transform: translateY(var(--pull-y));
 }
+.yunipals-opening-extract-window {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  /* This fixed shell-coordinate mask ends at the moving wrapper mouth.
+     It also prevents the PNG's transparent side margins exposing the card. */
+  clip-path: inset(
+    -150% -30% calc(91.7% - var(--pack-offset) - var(--pull-y)) -30%
+  );
+  pointer-events: none;
+}
+.yunipals-opening-dialog[data-stage="opening"]
+  .yunipals-opening-extract-window {
+  visibility: hidden;
+}
 .yunipals-opening-extract-card {
   position: absolute;
   left: 9%;
-  top: 1.6%;
+  top: 10%;
   width: 82%;
   z-index: 15;
   transform: translateY(var(--draw-y)) rotate(var(--draw-rotate))
@@ -327,17 +339,42 @@
   transform-origin: top center;
   pointer-events: none;
 }
+.yunipals-opening-card-peek {
+  transform: translateY(calc(-1 * var(--peek-distance)));
+}
+.yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-card-peek {
+  animation: yunipals-card-peek 0.9s cubic-bezier(0.45, 0, 0.25, 1) both;
+}
+.yunipals-opening-extract-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.yunipals-opening-extract-controls button {
+  pointer-events: auto;
+}
 .yunipals-opening-dialog[data-settling="true"] .yunipals-opening-extract-card,
-.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-wrapper {
-  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-wrapper,
+.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-body {
+  transition: transform 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.yunipals-opening-dialog[data-settling="true"]
+  .yunipals-opening-extract-window {
+  transition: clip-path 0.56s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .yunipals-opening-dialog[data-stage="revealing"] .yunipals-opening-wrapper {
   z-index: 0;
+  transform: translateY(calc(var(--pack-offset) + var(--pull-y) + 80px));
+  transition: transform 0.55s ease-out;
   pointer-events: none;
 }
 .yunipals-opening-dialog[data-stage="revealing"] .yunipals-opening-body {
-  transform: translateY(180px) rotate(3deg) scale(0.92);
+  transform: rotate(3deg) scale(0.92);
   opacity: 0.42;
+  transition:
+    transform 0.55s ease-out,
+    opacity 0.55s ease-out;
 }
 .yunipals-opening-reveal-card {
   position: absolute;
@@ -372,6 +409,14 @@
   to {
     transform: translate(96px, -88px) rotate(18deg) rotateX(-48deg) scale(1.03);
     opacity: 0;
+  }
+}
+@keyframes yunipals-card-peek {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-1 * var(--peek-distance)));
   }
 }
 @keyframes yunipals-pack-particle {

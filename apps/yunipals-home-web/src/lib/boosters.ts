@@ -109,6 +109,15 @@ export const fetchBoosterRequest = (
     `/boosters/requests/${engine}/${id}`,
     signal
   );
+export const fetchBoosterRequestMonsters = (
+  engine: string,
+  id: string,
+  signal?: AbortSignal
+) =>
+  read<BoosterPage<BoosterMonster>>(
+    `/boosters/requests/${engine}/${id}/monsters`,
+    signal
+  );
 export const fetchBoosterOwner = <T extends BoosterMonster | BoosterOriginal>(
   owner: string,
   resource: "monsters" | "originals",

@@ -2,10 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { isAddress } from "viem";
 import { Sparkles } from "lucide-react";
-import type {
-  BoosterMonster,
-  BoosterOriginal
-} from "@protopals/yunipals-market-core/boosters";
+import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import {
   boosterAddresses,
   boosterQueryKey,
@@ -13,7 +10,6 @@ import {
   fetchMonsterArtwork
 } from "@/lib/boosters";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
-import { BoosterOriginalControls } from "./BoosterOriginalControls";
 
 export function BoosterArtwork({
   uri,
@@ -66,15 +62,6 @@ export function BoosterArtwork({
 export function BoosterCollection({ owner }: { owner: string }) {
   const deployment = boosterAddresses();
   const enabled = deployment !== null && isAddress(owner);
-  const originals = useInfiniteQuery({
-    queryKey: [...boosterQueryKey, "originals", owner.toLowerCase()],
-    enabled,
-    initialPageParam: null as string | null,
-    queryFn: ({ signal, pageParam }) =>
-      fetchBoosterOwner<BoosterOriginal>(owner, "originals", pageParam, signal),
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
-    refetchInterval: 15_000
-  });
   const monsters = useInfiniteQuery({
     queryKey: [...boosterQueryKey, "monsters", owner.toLowerCase()],
     enabled,
@@ -85,7 +72,6 @@ export function BoosterCollection({ owner }: { owner: string }) {
     refetchInterval: 15_000
   });
   if (!enabled) return null;
-  const rights = originals.data?.pages.flatMap((page) => page.items) ?? [];
   const items = monsters.data?.pages.flatMap((page) => page.items) ?? [];
   return (
     <section
@@ -96,67 +82,27 @@ export function BoosterCollection({ owner }: { owner: string }) {
         Booster Yunipals
       </h2>
       <p className="mt-2 text-muted">
-        Your originals and offspring on Base. Each original tracks its own
-        complete collection, including offspring you have transferred.
+        Your Yunipals from booster packs on Base. Open daily packs from the
+        Packs page.
       </p>
-      {(originals.isPending || monsters.isPending) && (
+      {monsters.isPending && (
         <p role="status" className="mt-4 animate-pulse">
           Loading booster collection…
         </p>
       )}
-      {(originals.error || monsters.error) && (
+      {monsters.error && (
         <p role="alert" className="mt-4">
-          {originals.error?.message ?? monsters.error?.message}{" "}
+          {monsters.error.message}{" "}
           <button
             type="button"
             className="underline"
             onClick={() => {
-              void originals.refetch();
               void monsters.refetch();
             }}
           >
             Try again
           </button>
         </p>
-      )}
-      {rights.length > 0 && (
-        <>
-          <h3 className="mb-4 mt-8 text-lg font-bold">
-            Originals and daily mints
-          </h3>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {rights.map((original) => (
-              <article
-                key={original.id}
-                className="rounded-card border border-line p-5"
-              >
-                {BigInt(original.minted) > 0n ? (
-                  <Link
-                    to={`/monsters/${original.collection}/${original.tokenId}`}
-                    className="font-bold underline"
-                  >
-                    Original #{original.tokenId}
-                  </Link>
-                ) : (
-                  <p className="font-bold">
-                    Original #{original.tokenId} · awaiting reveal
-                  </p>
-                )}
-                <BoosterOriginalControls original={original} />
-              </article>
-            ))}
-          </div>
-        </>
-      )}
-      {originals.hasNextPage && (
-        <button
-          type="button"
-          className="mt-4 rounded-full border border-line px-5 py-3 font-bold"
-          disabled={originals.isFetchingNextPage}
-          onClick={() => void originals.fetchNextPage()}
-        >
-          Load more originals
-        </button>
       )}
       <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
         {items.map((monster) => (

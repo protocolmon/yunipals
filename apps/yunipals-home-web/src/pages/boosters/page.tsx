@@ -10,18 +10,16 @@ import {
   fetchMonsterArtwork
 } from "@/lib/boosters";
 import { BoosterPackSection } from "./BoosterPackSection";
-import { BoosterCollection, BoosterArtwork } from "./BoosterCollection";
+import { BoosterArtwork } from "./BoosterCollection";
 import { BoosterOriginalControls } from "./BoosterOriginalControls";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterFAQ } from "./BoosterFAQ";
 
 export function BoosterPage() {
-  const { address } = useAccount();
   return (
     <main>
       <BoosterPackSection />
       <BoosterFAQ />
-      {address && <BoosterCollection owner={address} />}
     </main>
   );
 }

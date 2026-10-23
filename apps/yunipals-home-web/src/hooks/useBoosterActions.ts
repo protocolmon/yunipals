@@ -326,6 +326,7 @@ export function useBoosterActions() {
         address?.toLowerCase() === current.account.toLowerCase()
       )
         await prepare(current.action);
+      if (!current.approval) return receipt.transactionHash;
     } catch (cause) {
       if (broadcast) setReview(null);
       fail(cause);

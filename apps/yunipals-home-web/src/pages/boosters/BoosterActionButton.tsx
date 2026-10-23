@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useSwitchChain } from "wagmi";
-import { formatEther, formatUnits } from "viem";
+import { formatEther, formatUnits, type Hex } from "viem";
 import { Loader2 } from "lucide-react";
 import {
   useBoosterActions,
@@ -16,12 +16,14 @@ export function BoosterActionButton({
   action,
   children,
   disabled = false,
-  className
+  className,
+  onConfirmed
 }: {
   action: BoosterAction;
   children: ReactNode;
   disabled?: boolean;
   className?: string;
+  onConfirmed?: (hash: Hex) => void;
 }) {
   const { isConnected, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -45,8 +47,8 @@ export function BoosterActionButton({
   const label = !isConnected
     ? "Connect wallet"
     : chainId !== 8453
-    ? "Switch to Base"
-    : children;
+      ? "Switch to Base"
+      : children;
   const review = actions.review;
   return (
     <>
@@ -83,8 +85,8 @@ export function BoosterActionButton({
           {review?.approval
             ? "Approve pack payment"
             : action.kind === "burn"
-            ? "Burn this Yunipal?"
-            : "Review transaction"}
+              ? "Burn this Yunipal?"
+              : "Review transaction"}
         </h2>
         {review && (
           <>
@@ -171,8 +173,8 @@ export function BoosterActionButton({
             {actions.phase === "quoting"
               ? "Getting fees and checking the transaction…"
               : actions.phase === "signing"
-              ? "Confirm in your wallet…"
-              : "Waiting for transaction confirmation…"}
+                ? "Confirm in your wallet…"
+                : "Waiting for transaction confirmation…"}
           </p>
         )}
         {actions.error && (
@@ -186,7 +188,10 @@ export function BoosterActionButton({
               type="button"
               className={boosterButtonClass}
               disabled={busy || (action.kind === "burn" && !burnAcknowledged)}
-              onClick={() => void actions.confirm()}
+              onClick={async () => {
+                const hash = await actions.confirm();
+                if (hash) onConfirmed?.(hash);
+              }}
             >
               {review.approval ? "Approve payment" : "Confirm"}
             </button>

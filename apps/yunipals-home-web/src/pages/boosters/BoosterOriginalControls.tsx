@@ -1,14 +1,12 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, usePublicClient } from "wagmi";
 import {
   accruedBoosterCredits,
-  boosterBatchSize,
   type BoosterOriginal
 } from "@protopals/yunipals-market-core/boosters";
 import { boosterQueryKey, fetchBoosterRequest } from "@/lib/boosters";
 import { formatInteger } from "@/lib/format";
-import { BoosterActionButton } from "./BoosterActionButton";
 
 export function BoosterOriginalControls({
   original
@@ -25,9 +23,7 @@ export function BoosterOriginalControls({
     refetchInterval: 15000
   });
   const now = clock.data ?? BigInt(original.revealedAt ?? "0");
-  const [quantity, setQuantity] = useState(1);
   const { claimable, nextAt } = accruedBoosterCredits(original, now);
-  const max = boosterBatchSize(original, now);
   const requestId = original.pendingRequest?.split(":").at(-1);
   const pending = useQuery({
     queryKey: [...boosterQueryKey, "request", original.engine, requestId],
@@ -37,7 +33,6 @@ export function BoosterOriginalControls({
     refetchInterval: 5000
   });
   const own = address?.toLowerCase() === original.owner.toLowerCase();
-  const selected = Math.min(quantity, max);
   return (
     <div className="mt-4 space-y-3 text-sm">
       {clock.error && (
@@ -76,37 +71,13 @@ export function BoosterOriginalControls({
               Pending NFTs follow this original’s owner.
             </p>
           )}
-          {own && max > 0 && (
-            <div className="flex flex-wrap items-end gap-3">
-              <label className="flex flex-col gap-1">
-                Mints in this batch
-                <input
-                  type="number"
-                  min={1}
-                  max={max}
-                  value={selected}
-                  onChange={(event) =>
-                    setQuantity(
-                      Math.max(
-                        1,
-                        Math.min(max, Number(event.target.value) || 1)
-                      )
-                    )
-                  }
-                  className="w-24 rounded-full border border-line px-4 py-3 focus-visible:ring-2 focus-visible:ring-ink"
-                />
-              </label>
-              <BoosterActionButton
-                action={{
-                  kind: "claim",
-                  packTypeId: original.pack.packTypeId,
-                  originalId: original.tokenId,
-                  quantity: selected
-                }}
-              >
-                Claim {selected}
-              </BoosterActionButton>
-            </div>
+          {own && (
+            <Link
+              to="/boosters#daily-packs"
+              className="inline-block font-bold text-grape underline"
+            >
+              Open daily packs
+            </Link>
           )}
           {BigInt(original.remaining) === 0n && (
             <p className="font-bold text-success">
@@ -114,13 +85,6 @@ export function BoosterOriginalControls({
             </p>
           )}
         </>
-      )}
-      {!original.burned && pending.data?.item.status === "seeded" && (
-        <BoosterActionButton
-          action={{ kind: "recover", requestId: pending.data.item.requestId }}
-        >
-          Finish reveal
-        </BoosterActionButton>
       )}
     </div>
   );

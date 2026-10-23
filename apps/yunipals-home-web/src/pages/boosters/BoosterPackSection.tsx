@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
-import { formatUnits } from "viem";
+import { formatUnits, type Hex } from "viem";
 import { useAccount } from "wagmi";
 import {
   boosterAddresses,
@@ -14,10 +14,17 @@ import { environment } from "@/environment";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
+import { BoosterClaimPacks } from "./BoosterClaimPacks";
 
 export function BoosterPackSection() {
   const { address } = useAccount();
   const [preview, setPreview] = useState(false);
+  const [opening, setOpening] = useState<{ wallet: string; hash: Hex } | null>(
+    null
+  );
+  const onConfirmed = (hash: Hex) => {
+    if (address) setOpening({ wallet: address, hash });
+  };
   const deployment = boosterAddresses();
   const query = useQuery({
     queryKey: [...boosterQueryKey, "types"],
@@ -166,6 +173,7 @@ export function BoosterPackSection() {
                   <BoosterActionButton
                     action={{ kind: "open", packTypeId: pack.packTypeId }}
                     disabled={pack.salesPaused || query.data?.requestsPaused}
+                    onConfirmed={onConfirmed}
                   >
                     {pack.salesPaused || query.data?.requestsPaused
                       ? "Openings paused"
@@ -187,7 +195,15 @@ export function BoosterPackSection() {
             </article>
           ))}
         </div>
-        {deployment && <BoosterTransactions />}
+        {deployment && <BoosterClaimPacks onConfirmed={onConfirmed} />}
+        {deployment && (
+          <BoosterTransactions
+            autoOpenHash={
+              opening && opening.wallet === address ? opening.hash : null
+            }
+            onOpeningClosed={() => setOpening(null)}
+          />
+        )}
         {preview && (
           <BoosterPackOpening
             mode="demo"
