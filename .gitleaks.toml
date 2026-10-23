@@ -134,3 +134,10 @@ condition = "AND"
 regexTarget = "secret"
 paths = ['''(^|/)ops/arena-native-admission-20261022/proposal\.current\.json$''']
 regexes = ['''^963eef06c381e36fd3709ff52fd1f15eb2d4f77c463d9f96dfb87c6cf28dc27b$''']
+
+[[rules.allowlists]]
+description = "Exact public credential-owner source digest in the direct native cutover"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-direct-native-cutover-v1\.py$''']
+regexes = ['''^ed295fe81712a37f781cc97134d1202c43213fb34dc07be54896b06b530a6f0c$''']
