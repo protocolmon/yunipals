@@ -1,0 +1,28 @@
+{
+  "format": "yunipals-normal-grid-www-production-v1",
+  "observedAt": "2026-10-23T10:34:37Z",
+  "origin": "https://www.yunipals.com",
+  "deployment": "https://yunipals-m4mf42w07-devving.vercel.app",
+  "deploymentId": "dpl_EeFEpShfjtd3CWpyjcpph3HceMjf",
+  "sourceCommit": "b0e44e61",
+  "manifestSha256": "b394338fd628da8ac1d6a14fa157149ed15d3ff1595b69e3b8f2260ade8e678b",
+  "metadataUpgradePackageSha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+  "globalApiBundleSha256": "b624dc518556756399a26e691bd1d53d319bd46d20134f9d6e1356dae3d96088",
+  "separateBoosterGalleries": false,
+  "actualGlobalGrid": {
+    "existingCardsLoaded": 24,
+    "packCardsLoaded": 1,
+    "combinedCardsLoaded": 25
+  },
+  "originalNftBirthDay": 0,
+  "originalNftBornAt": "2026-10-22T17:33:29.000Z",
+  "birthMetadataApiReady": true,
+  "ownerSetupRoute": "/boosters/setup/metadata",
+  "metadataContractActivated": false,
+  "productionContractTransactionsByAgent": 0,
+  "indexerProcessesRestarted": 0,
+  "remaining": [
+    "Owner signs implementation deployment and atomic metadata upgrade in the published setup page.",
+    "Genuine first elapsed daily mainnet claim remains due after 2026-10-23T17:33:29Z."
+  ]
+}

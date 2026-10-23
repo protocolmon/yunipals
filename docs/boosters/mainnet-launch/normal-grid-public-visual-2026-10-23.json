@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-23T10:33:45.225Z",
+  "responses": [
+    {
+      "path": "/yunipals-indexer/v1/boosters/monsters",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/traits",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-smoke-v1/73.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/tokens",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art-assets/d5dd692207b847d780c9de07bd146b8446c16ac97ee417deb9b6e4fadcf49837.png",
+      "status": 200
+    },
+    {
+      "path": "/appkit/v1/config",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/traits",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/tokens",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "walletConnections": 0,
+  "transactions": 0,
+  "packCards": 1,
+  "originalCards": 24,
+  "gridText": "COLLECTION SHELF\n\nALL ACTIVE YUNIPALS\n\n1,016,059 originals · 25 loaded\n\nSort collection\nRarity: high to low\nFilters\nFilter by chain\n\nChains\n\nCombine one or more networks.\n\nAll\nEthereum\nBase\nPolygon\nBNB Chain\nSolana\nRarity points\nMetadata\nType\nSearch Type\nUnidonkey\n150,879\nUnisheep\n147,440\nUnifairy\n121,243\nUnichick\n118,173\nUnicursed\n95,853\nUniair\n67,743\nUniturtle\n67,548\nUnikles\n64,660\nShow all 127 values\nColor\nSearch Color\nGreen\n290,849\nBlue\n229,866\nRed\n197,724\nYellow\n170,531\nPurple\n98,157\nGhost\n3,461\nGleaming Gold\n3,261\nLight Rainbow\n2,719\nShow all 57 values\nBackground\nGlitter\nHorn\nSpecial\nSound\nVariant\nAirdrop\nFirst Edition\nOrigin Chain\nOpening Network\nCelestial\nSeries\n\nRankings and sale filters apply to the original collection. Pack cards match chain, type, color, horn and glitter; more cards are loaded separately.\n\nBase\n\nRainbow Uniaqua\n\n#1000004001856\n\n22,077,234.3 RP\nRainbow Uniaqua\nRainbow Glitter\nBase\n\nYunidragon\n\n#1\n\nYellow\nSpiral\nGlitter\nBNB Chain\n\nRainbow Uniaqua\n\n#1000004001856\n\n22,077,234.3 RP\nRainbow Uniaqua\nRainbow Glitter\nEthereum\n\nBitcoin Unidragon\n\n#1000347682\n\n8,097,539.3 RP\nBitcoin Unidragon\nSpecial\nGlitter\nBase\n\nMultiVAC Unipanda\n\n#10002584888\n\n3,373,974.7 RP\nMu",
+  "passed": true
+}
