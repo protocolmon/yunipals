@@ -42,6 +42,17 @@ try {
   if (error.code !== "ENOENT") throw error;
 }
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const metadataUpgradePackageSha =
+  "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966";
+if (values["full-app"]) {
+  const metadataUpgrade = await readFile(
+    join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
+  );
+  if (sha(metadataUpgrade) !== metadataUpgradePackageSha)
+    throw Error(
+      "The metadata upgrade package differs from the reviewed bytes."
+    );
+}
 const setupFile = join(app, "public/boosters/mainnet-smoke-setup.json");
 const setup = await readFile(setupFile);
 if (sha(setup) !== values["setup-sha"])
@@ -129,6 +140,8 @@ const assets = [
 ];
 if (values["standard-setup-sha"])
   assets.push("boosters/mainnet-standard-setup.json");
+if (values["full-app"])
+  assets.push("boosters/monsters-token-metadata-upgrade-v1.json");
 for (const name of assets) {
   await mkdir(join(output, name, ".."), { recursive: true });
   await copyFile(join(app, "public", name), join(output, name));
@@ -168,6 +181,9 @@ const manifest = {
   addresses,
   setupPackageSha256: values["setup-sha"],
   standardSetupPackageSha256: values["standard-setup-sha"] ?? null,
+  metadataUpgradePackageSha256: values["full-app"]
+    ? metadataUpgradePackageSha
+    : null,
   publicAssets: assets,
   files: entries
 };

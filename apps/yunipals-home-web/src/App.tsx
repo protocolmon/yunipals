@@ -21,6 +21,11 @@ import { ActivityPage } from "@/pages/orders/ActivityPage";
 import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
 import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const BoosterMetadataSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterMetadataSetupPage").then((module) => ({
+    default: module.BoosterMetadataSetupPage
+  }))
+);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -143,6 +148,10 @@ function AppContent() {
           <Route
             path="/boosters/setup/standard"
             element={<BoosterSetupPage key="standard" kind="standard" />}
+          />
+          <Route
+            path="/boosters/setup/metadata"
+            element={<BoosterMetadataSetupPage />}
           />
           <Route
             path="/monsters/:collection/:tokenId"

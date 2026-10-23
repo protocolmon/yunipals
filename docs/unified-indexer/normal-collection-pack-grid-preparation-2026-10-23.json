@@ -1,0 +1,94 @@
+{
+  "format": "yunipals-normal-collection-pack-grid-preparation-v1",
+  "preparedAt": "2026-10-23T10:19:04.841933+00:00",
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterCollectionGrid.ts",
+      "sha256": "8d62cfc2b9776ab45c7fdb842bb195dec0d4934045eda047ed2f643af408985e",
+      "bytes": 6849
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterCollectionGrid.test.ts",
+      "sha256": "c7eb3c1237480f20244faf1498f88a7bd826dc6c6e698c4a0e78d0568bee997e",
+      "bytes": 6368
+    },
+    {
+      "path": "apps/yunipals-home-web/src/hooks/useBoosterCollectionCards.ts",
+      "sha256": "62cefa10b82f87425318f496d3a333d27cd2e4e98dacea7eebbba0a6d0928462",
+      "bytes": 1615
+    },
+    {
+      "path": "apps/yunipals-home-web/src/components/CollectionPackCard.tsx",
+      "sha256": "9c5e24044d61de9a533a100dbfc0b03148266026be1615a31d4d1576943f6406",
+      "bytes": 2277
+    },
+    {
+      "path": "apps/yunipals-home-web/src/components/CollectionPackPagination.tsx",
+      "sha256": "3e0fb5f18747a9ccb55994ccfac3b10f93c43cc5f265f76f975368d55c0557b1",
+      "bytes": 1379
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/collection/page.tsx",
+      "sha256": "b653426b5551b51ddafc090c2afbeaf29d9c062aad545c9fb167e19a732b167b",
+      "bytes": 54246
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/collector/page.tsx",
+      "sha256": "dfc9e2cfbca2c6894931889ef051d4e4e4b0d57093af42ac8fc27345a09942e1",
+      "bytes": 36608
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-collection-pack-grid-ui.mjs",
+      "sha256": "cecd39426c1d9cf80456494987f1336d56ba8927bc11f902dc400c4c856c8eff",
+      "bytes": 12313
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-opening-ui.mjs",
+      "sha256": "0462adbe23f15508baeb2ee651e5f062775562c43b5a382de993ee64fb0e00a6",
+      "bytes": 36980
+    }
+  ],
+  "behavior": {
+    "global": "Existing normal grid interleaves the global all-wallet active pack page with OG tokens; no connected wallet required.",
+    "profile": "Existing normal holdings grid interleaves exact resolved Base-owner pack pages with OG holdings. Hidden-only view excludes pack cards.",
+    "identity": "chain:contract:tokenId for EVM, chain:mintAddress for Solana; pack and OG token1 remain separate.",
+    "ranking": "OG scores/market/visibility/leaderboards are preserved unchanged; pack cards have no rarity, market or Arena controls.",
+    "filters": "Chain plus four pack traits and profile name/token search apply to loaded pack cards. Other traits/ranking/sale filters apply to originals as explained beside grid.",
+    "pagination": "Independent bounded24-item source cursor with Load more pack cards; retains existing OG forward/back or infinite cursor, no whole-collection fetch. Filtered pages with a continuation retain the load action.",
+    "artwork": "Existing shared-variant query cache and BoosterCardViewer, detail links use collection+token identity."
+  },
+  "apiRequirement": {
+    "global": "GET /v1/boosters/monsters?limit=24&after=<numeric tokenId>",
+    "owner": "GET /v1/owners/:owner/booster-monsters?limit=24&after=<numeric tokenId>",
+    "response": "Existing ready-prefix BoosterPage<BoosterMonster> with numeric ASC tokenId cursor, active minted NFTs only."
+  },
+  "validation": {
+    "frontendTypecheck": "passed",
+    "adapterChecks": 13,
+    "browser": {
+      "format": "yunipals-normal-collection-pack-grid-ui-v1",
+      "passed": true,
+      "checks": [
+        "disconnected global collection combines all-owner pack cards and OG token1 in the same normal grid without identity collision, rank or trade controls",
+        "independent bounded pack continuation adds cards once and preserves OG results",
+        "shared color and chain filters apply while unrelated OG special/ranking filters do not silently hide pack cards",
+        "collector uses only the resolved profile owner endpoint and follows that owner's cursor without exposing another owner's cards",
+        "hidden-only profile view excludes public pack cards and restoring visible view returns them without a separate gallery",
+        "wrong-owner API response is refused while the owner's OG grid remains usable"
+      ],
+      "externalProviderCalls": 0,
+      "blockedUnrelatedRequests": 20,
+      "runtimeErrors": [],
+      "productionActions": 0
+    },
+    "browserReportSha256": "d9da33c1a19a5a5ca5d1e75a5d334f32e327ec7d1777b4039ef29706795e0c95",
+    "openingComponentChecks": 12,
+    "openingReportSha256": "f8a81a969a1323679f2da519a6d8bb1aa9eac92d4956186ad19e338e194034e4",
+    "prettier": "passed",
+    "metadataFiveFileFreezeUnchanged": true
+  },
+  "productionMutations": 0,
+  "remaining": [
+    "Parent independent review, global route API publication and canonical frontend build/deploy."
+  ]
+}

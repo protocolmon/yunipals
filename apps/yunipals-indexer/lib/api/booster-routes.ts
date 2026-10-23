@@ -242,6 +242,63 @@ export function registerBoosterRoutes(
     });
   });
 
+  router.get("/boosters/monsters", async (c) => {
+    c.header("Cache-Control", "no-store");
+    const cursor = c.req.query("after") ?? "0";
+    const requestedLimit = c.req.query("limit") ?? "24";
+    if (!validId(cursor)) return c.json({ error: "invalid_cursor" }, 400);
+    if (!/^(?:[1-9][0-9]?|100)$/.test(requestedLimit))
+      return c.json({ error: "invalid_limit" }, 400);
+    const limit = Number(requestedLimit);
+    const deployment = boosterDeployment();
+    if (!deployment) return c.json({ error: "boosters_not_configured" }, 503);
+    const state = await snapshot();
+    if (
+      !state.enabled ||
+      state.indexedBlock === null ||
+      !validId(state.indexedBlock)
+    )
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    const result = await pool.query<BoosterMonster>(
+      `SELECT ${monsterColumns} FROM ${schema}.booster_monster m
+       JOIN ${schema}.booster_type p ON p.id=m.type_key AND p.registry=$1 AND p.engine=$2
+       JOIN ${schema}.booster_original o ON o.id=m.original_key AND o.collection=$3
+         AND o.engine=$2 AND o.type_key=p.id
+       JOIN ${schema}.booster_request r ON r.id=m.request_key AND r.engine=$2
+         AND r.original_key=o.id AND r.rule_hash=p.rule_hash AND r.status='completed'
+         AND r.opening=m.is_original
+       WHERE m.collection=$3 AND NOT m.burned AND m.mint_block>0
+         AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
+         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric
+       ORDER BY m.token_id::numeric,m.id LIMIT $6`,
+      [
+        deployment.registry,
+        deployment.engine,
+        deployment.monsters,
+        state.indexedBlock,
+        cursor,
+        limit + 1
+      ]
+    );
+    const rows = result.rows;
+    if (
+      new Set(rows.map((item) => item.tokenId)).size !== rows.length ||
+      rows.some(
+        (item) =>
+          !validId(item.tokenId) ||
+          item.collection !== deployment.monsters ||
+          item.id !== boosterIdentity(deployment.monsters, item.tokenId)
+      )
+    )
+      return c.json({ error: "booster_index_unavailable" }, 503);
+    const items = rows.slice(0, limit);
+    return c.json({
+      ...state,
+      items,
+      nextCursor: rows.length > limit ? items.at(-1)!.tokenId : null
+    });
+  });
+
   router.get("/boosters/monsters/:collection/:tokenId", async (c) => {
     const { collection, tokenId } = c.req.param();
     if (!isAddress(collection) || !validId(tokenId))

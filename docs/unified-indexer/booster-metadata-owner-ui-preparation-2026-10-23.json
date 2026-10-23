@@ -1,0 +1,70 @@
+{
+  "format": "yunipals-booster-metadata-owner-ui-preparation-v1",
+  "preparedAt": "2026-10-23T09:53:57.945152+00:00",
+  "route": "/boosters/setup/metadata",
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "chainId": 8453,
+  "proxy": "0x105319be2182018c31FB10B1bE198c3cf238a146",
+  "packageSha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/App.tsx",
+      "sha256": "479f3777677882195bf502da383100c573788b773c264348d735434a1373a760",
+      "bytes": 7447
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterMetadataSetup.ts",
+      "sha256": "3b5f1fc9fdb7a66a2bf0244540a49e78f11075ad369a71f476b187b422a0ed71",
+      "bytes": 12284
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterMetadataSetup.test.ts",
+      "sha256": "c17bb1e86c43c9d023ef78a1354ed0b66e53fc43f2c2722d05c2d5689f313fe9",
+      "bytes": 10647
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterMetadataSetupPage.tsx",
+      "sha256": "e11afd553a3f406c0b48b8319592a0ffb376d161e46f2c78f5b812aeb19a26f0",
+      "bytes": 28845
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-metadata-setup-ui.mjs",
+      "sha256": "ee815f3eb3e21579d2f6f2fad356867f7a72aeef797b58052049cf0053700df5",
+      "bytes": 18735
+    }
+  ],
+  "validation": {
+    "fullFrontendTypecheck": "passed",
+    "focusedHelperTests": 25,
+    "browser": {
+      "format": "yunipals-booster-metadata-owner-browser-v1",
+      "passed": true,
+      "packageSha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+      "checks": [
+        "owner connects and reviews exact package, roles, proxy and fee quote without automatic wallet writes",
+        "network change during deferred final simulation invalidates the review and sends zero transactions",
+        "one explicit deploy signature uses creation bytes and actual receipt address; unavailable API blocks upgrade",
+        "refresh recovers saved deployment without another signature and wrong manual runtime is rejected",
+        "second explicit signature atomically upgrades actual implementation with frozen metadata URL and validates resulting slot/token URI",
+        "completed reload has no repeated writes and owner page fits a mobile viewport",
+        "confirmed reverted deployment requires explicit receipt resolution before a fresh review and never auto resubmits"
+      ],
+      "syntheticWalletTransactions": 2,
+      "realNetworkProviderCalls": 0,
+      "blockedUnrelatedRequests": 4,
+      "productionActions": 0
+    },
+    "browserReportSha256": "71ad060a2b34089804837ed07eb8d76fdc1e37eded8f52bab642fd23bb50dab5"
+  },
+  "signingSteps": [
+    "Explicitly review and sign creation transaction; recover its actual receipt.contractAddress and verify address-patched UUPS runtime.",
+    "After verified token1 metadata API readiness, explicitly review and sign upgradeToAndCall(actualImplementation, frozenMetadataSetterCalldata)."
+  ],
+  "recovery": "Versioned localStorage is a hint only. Reverify saved or manually supplied implementation code, exact successful owner deployment receipt and current proxy slot/configuration. Pending hashes prevent repeated submissions. Confirmed cancelled/reverted receipts require explicit read-only resolution.",
+  "productionTransactions": 0,
+  "productionDeployments": 0,
+  "remaining": [
+    "Parent independent review and canonical frontend build/publication.",
+    "Owner signs the two onchain steps explicitly after the published metadata API passes readiness."
+  ]
+}

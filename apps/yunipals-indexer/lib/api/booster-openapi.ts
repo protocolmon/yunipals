@@ -100,6 +100,39 @@ export const boosterOpenApiPaths = {
       responses: response
     }
   },
+  "/v1/boosters/monsters": {
+    get: {
+      tags: ["Boosters"],
+      summary: "Browse revealed booster monsters across all wallets",
+      description:
+        "Returns unburned, minted NFTs only from the configured collection, registry and engine. Original/request membership and completed status are verified within the ready indexed prefix. Results use ascending numeric token IDs, with limit+1 pagination; nextCursor is the final returned token ID only when another page exists. Ownership does not restrict this public browse. No-store responses; existing owner-scoped routes are unchanged.",
+      parameters: [
+        {
+          name: "after",
+          in: "query",
+          schema: { type: "string", pattern: "^(0|[1-9][0-9]{0,77})$" },
+          description:
+            "Exclusive numeric token-ID cursor returned by the previous page; must fit uint256"
+        },
+        {
+          name: "limit",
+          in: "query",
+          schema: { type: "integer", minimum: 1, maximum: 100, default: 24 }
+        }
+      ],
+      responses: {
+        ...response,
+        "200": {
+          description:
+            "Existing BoosterPage<BoosterMonster> envelope: ready deployment snapshot, numeric-ordered items and nextCursor or null. Empty results are items:[] with nextCursor:null."
+        },
+        "503": {
+          description:
+            "Source/configuration is unavailable or the paged NFT identity set is inconsistent. No unready or cross-deployment rows are exposed."
+        }
+      }
+    }
+  },
   "/v1/boosters/monsters/{collection}/{tokenId}": {
     get: {
       tags: ["Boosters"],

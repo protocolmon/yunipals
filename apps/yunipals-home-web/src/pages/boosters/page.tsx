@@ -14,6 +14,7 @@ import { BoosterArtwork } from "./BoosterCollection";
 import { BoosterOriginalControls } from "./BoosterOriginalControls";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterFAQ } from "./BoosterFAQ";
+import { BoosterBirthDetails } from "./BoosterBirthDetails";
 
 export function BoosterPage() {
   return (
@@ -119,6 +120,10 @@ export function BoosterMonsterPage() {
                 </div>
               ))}
             </dl>
+            <BoosterBirthDetails
+              collection={monster.collection}
+              tokenId={monster.tokenId}
+            />
             {!monster.burned && (
               <Link
                 className="mt-5 block break-all text-sm underline"

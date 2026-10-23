@@ -82,15 +82,23 @@ assert(
 );
 assert(!/import\s.*BoosterPackSection/.test(collectionText));
 assert(
-  rendered.has("BoosterCollection"),
-  "Owned booster collection stays on the collection page"
+  !rendered.has("BoosterCollection"),
+  "Homepage must not mount a separate booster gallery"
+);
+assert(
+  rendered.has("CollectionPackCard"),
+  "Pack cards share the normal collection grid"
+);
+assert(
+  collectionText.includes("useBoosterCollectionCards"),
+  "Normal collection includes global pack pagination"
 );
 const navText = await readFile(`${root}/src/components/Nav.tsx`, "utf8");
 assert(/<ScanSearch\b/.test(navText), "Grading uses the inspection icon");
 assert(navText.includes("Grading is coming soon"));
 assert(!navText.includes("Battles are coming soon"));
 report.checks.push({
-  name: "Homepage truly omits purchase component and retains owned collection; Grading uses ScanSearch",
+  name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
   passed: true
 });
 

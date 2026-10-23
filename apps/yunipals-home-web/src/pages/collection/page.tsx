@@ -105,7 +105,14 @@ import {
   type TokenAttribute
 } from "@/lib/yunipalsIndexer";
 
-import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
+import { CollectionPackCard } from "@/components/CollectionPackCard";
+import { CollectionPackPagination } from "@/components/CollectionPackPagination";
+import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
+import {
+  collectionGridIdentity,
+  mergeCollectionGrid,
+  packGridFilters
+} from "@/lib/boosterCollectionGrid";
 
 import { CollectionTabs } from "./CollectionTabs";
 import { IslandDetail } from "./islands/IslandDetail";
@@ -610,6 +617,12 @@ function CollectionExplorer() {
       return true;
     });
   }, [useLegacy, legacyTokensQuery.data, catalogItems]);
+  const packFilters = useMemo(() => packGridFilters(filters), [filters]);
+  const packCards = useBoosterCollectionCards(packFilters);
+  const gridItems = useMemo(
+    () => mergeCollectionGrid(tokens, packCards.items),
+    [tokens, packCards.items]
+  );
   const tokensQuery = useLegacy ? legacyTokensQuery : catalog.query;
   const totalMatches = tokensQuery.data?.pages[0]?.total;
   const catalogPage = !useLegacy ? catalog.query.data?.pages[0] : undefined;
@@ -640,6 +653,7 @@ function CollectionExplorer() {
         exact: true
       });
     void capabilities.refetch();
+    if (packCards.enabled) void packCards.query.refetch();
   }
 
   function submitLookup(event: FormEvent<HTMLFormElement>) {
@@ -760,7 +774,7 @@ function CollectionExplorer() {
                     }}
                     className="inline-flex min-h-11 items-center justify-center rounded-full border border-grape/20 bg-white px-6 py-3 text-sm font-bold text-grape transition hover:bg-lavender/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
                   >
-                    Browse OG collection
+                    Browse collection
                   </Link>
                 </div>
               )}
@@ -824,10 +838,6 @@ function CollectionExplorer() {
         </div>
       </section>
 
-      {environment.boostersEnabled && address && (
-        <BoosterCollection owner={address} />
-      )}
-
       <section id="collection" className="scroll-mt-24 px-4 py-12 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
@@ -853,14 +863,14 @@ function CollectionExplorer() {
                 {incompleteEmptyResults
                   ? "Listings temporarily unavailable"
                   : totalMatches !== undefined
-                    ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "Yunipals"}`
+                    ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : packCards.enabled ? "originals" : "Yunipals"}`
                     : "Loading collection…"}
                 {catalogPage &&
                   !incompleteEmptyResults &&
                   filters.sale === "listed" &&
                   ` · ${formatInteger(catalogPage.verifiedListedTotal)} ${catalogPage.listingCompleteness === "complete" ? "for sale" : "verified listings"}`}
-                {tokens.length > 0 &&
-                  ` · ${formatInteger(tokens.length)} loaded`}
+                {gridItems.length > 0 &&
+                  ` · ${formatInteger(gridItems.length)} loaded`}
               </p>
             </div>
 
@@ -1064,7 +1074,21 @@ function CollectionExplorer() {
                     )}
                   </div>
                 )}
-              {catalogError ? (
+              {packCards.enabled && (
+                <p className="mb-4 text-xs text-muted">
+                  Rankings and sale filters apply to the original collection.
+                  Pack cards match chain, type, color, horn and glitter; more
+                  cards are loaded separately.
+                </p>
+              )}
+              {gridItems.length > 0 &&
+                (catalogError || tokensQuery.isError) && (
+                  <p role="alert" className="mb-4 text-sm text-muted">
+                    {catalogError ??
+                      "Some original collection results could not be loaded."}
+                  </p>
+                )}
+              {catalogError && gridItems.length === 0 ? (
                 <div
                   role="alert"
                   className="rounded-card border border-line bg-white p-6 text-sm"
@@ -1078,9 +1102,13 @@ function CollectionExplorer() {
                     Clear sale and price filters
                   </button>
                 </div>
-              ) : tokensQuery.isLoading ? (
+              ) : (tokensQuery.isLoading ||
+                  (packCards.enabled && packCards.query.isPending)) &&
+                gridItems.length === 0 ? (
                 <TokenGridSkeleton count={12} />
-              ) : tokensQuery.isError && tokens.length === 0 ? (
+              ) : (tokensQuery.isError ||
+                  (packCards.enabled && packCards.query.isError)) &&
+                gridItems.length === 0 ? (
                 <div role="alert" className="space-y-3">
                   {marketFiltered && (
                     <p className="text-sm text-muted">
@@ -1090,7 +1118,7 @@ function CollectionExplorer() {
                   )}
                   <QueryError onRetry={refreshCatalog} />
                 </div>
-              ) : tokens.length === 0 ? (
+              ) : gridItems.length === 0 ? (
                 <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
                   <Users
                     aria-hidden="true"
@@ -1100,7 +1128,9 @@ function CollectionExplorer() {
                   <p className="mt-3 font-bold text-ink">
                     {incompleteEmptyResults
                       ? "Listings are temporarily unavailable."
-                      : "No Yunipals match this combination."}
+                      : packCards.query.hasNextPage
+                        ? "No matches in the loaded cards yet."
+                        : "No Yunipals match this combination."}
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     {incompleteEmptyResults
@@ -1121,46 +1151,63 @@ function CollectionExplorer() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-                  {tokens.map((token, index) => (
-                    <TokenCard
-                      key={collectionTokenKey(token)}
-                      token={token}
-                      eager={index < 6}
-                      market={
-                        catalog.configured &&
-                        !withSolana &&
-                        token.chain !== "solana" && (
-                          <CatalogCardMarket
+                  {gridItems.map((item, index) =>
+                    item.kind === "pack" ? (
+                      <CollectionPackCard
+                        key={collectionGridIdentity(item)}
+                        monster={item.monster}
+                      />
+                    ) : (
+                      (() => {
+                        const token = item.token;
+                        return (
+                          <TokenCard
+                            key={collectionGridIdentity(item)}
+                            token={token}
+                            eager={index < 6}
                             market={
-                              useLegacy
-                                ? { status: "unknown", listings: [] }
-                                : (marketByAsset.get(
-                                    marketplaceAssetKey(token)
-                                  ) ?? { status: "unknown", listings: [] })
-                            }
-                            account={address}
-                            canBuy={
-                              Boolean(
-                                capabilities.data?.[token.chain]?.read &&
-                                  capabilities.data?.[token.chain]?.buy
-                              ) && !capabilities.isError
-                            }
-                            onBuy={(order, trigger) =>
-                              requestTradingConsent(() =>
-                                setSelectedTrade({
-                                  order,
-                                  trigger,
-                                  name: token.name || "Yunipal"
-                                })
+                              catalog.configured &&
+                              !withSolana &&
+                              token.chain !== "solana" && (
+                                <CatalogCardMarket
+                                  market={
+                                    useLegacy
+                                      ? { status: "unknown", listings: [] }
+                                      : (marketByAsset.get(
+                                          marketplaceAssetKey(token)
+                                        ) ?? {
+                                          status: "unknown",
+                                          listings: []
+                                        })
+                                  }
+                                  account={address}
+                                  canBuy={
+                                    Boolean(
+                                      capabilities.data?.[token.chain]?.read &&
+                                        capabilities.data?.[token.chain]?.buy
+                                    ) && !capabilities.isError
+                                  }
+                                  onBuy={(order, trigger) =>
+                                    requestTradingConsent(() =>
+                                      setSelectedTrade({
+                                        order,
+                                        trigger,
+                                        name: token.name || "Yunipal"
+                                      })
+                                    )
+                                  }
+                                />
                               )
                             }
                           />
-                        )
-                      }
-                    />
-                  ))}
+                        );
+                      })()
+                    )
+                  )}
                 </div>
               )}
+
+              <CollectionPackPagination cards={packCards} />
 
               {!useLegacy &&
                 catalog.query.isRefetchError &&

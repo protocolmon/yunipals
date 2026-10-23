@@ -1,0 +1,52 @@
+{
+  "format": "yunipals-booster-active-catalog-proof-v1",
+  "chainId": 8453,
+  "collection": "0x105319be2182018c31fb10b1be198c3cf238a146",
+  "registry": "0xeaee2da120a398f21729d50672ac5d1dd71d7274",
+  "engine": "0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609",
+  "sourceSchema": "yunipals_boosters_launch_v1",
+  "catalogDirectory": "/var/lib/yunipals-booster-artwork/catalogs",
+  "packBindings": [
+    {
+      "packTypeId": "1",
+      "catalogSlug": "base-mainnet-smoke-v1",
+      "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+      "metadataBaseURI": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-smoke-v1/",
+      "manifestSha256": "1283230cddf7d3eedb7e617159a288976838798584e7cf3334a1495f18cc4adf",
+      "catalogHashMatches": true,
+      "metadataBaseURIMatches": true,
+      "manifestSlugMatches": true,
+      "manifestPresent": true
+    },
+    {
+      "packTypeId": "2",
+      "catalogSlug": "base-mainnet-standard-v1",
+      "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+      "metadataBaseURI": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/",
+      "manifestSha256": "79e85ccfa753bb81d8115a17e963f3b427e276f5e68b24d0a3ee284d85c3c2bf",
+      "catalogHashMatches": true,
+      "metadataBaseURIMatches": true,
+      "manifestSlugMatches": true,
+      "manifestPresent": true
+    }
+  ],
+  "observedIncorrectPublicEnvironmentCatalogs": [
+    "base-mainnet-smoke-v1",
+    "base-standard-v1"
+  ],
+  "correctPublicEnvironmentCatalogs": [
+    "base-mainnet-smoke-v1",
+    "base-mainnet-standard-v1"
+  ],
+  "incorrectCatalogManifestAbsent": true,
+  "journalSerializationOrUintTypeChangeRequired": false,
+  "sourceGuardsChanged": false,
+  "sourceRuntimeRestarted": false,
+  "proofMethod": "One fixed read-only collector peer transaction scoped to pack IDs1/2; only their URI-derived local public manifest files were read.",
+  "databaseWrites": 0,
+  "aclWrites": 0,
+  "serviceActions": 0,
+  "rawOwnershipRowsExported": false,
+  "credentialValuesExported": false,
+  "preparedAt": "2026-10-23T09:57:05.691867+00:00"
+}

@@ -21,7 +21,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { environment } from "@/environment";
-import { BoosterCollection } from "@/pages/boosters/BoosterCollection";
+import { CollectionPackCard } from "@/components/CollectionPackCard";
+import { CollectionPackPagination } from "@/components/CollectionPackPagination";
+import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
+import {
+  collectionGridIdentity,
+  mergeCollectionGrid,
+  packGridFilters
+} from "@/lib/boosterCollectionGrid";
 import { CollectorIslands } from "./components/CollectorIslands";
 
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
@@ -277,6 +284,16 @@ function YunipalsCollectorPage() {
     [tokensQuery.data]
   );
   const tokens = indexedTokens;
+  const packFilters = useMemo(() => packGridFilters(filters), [filters]);
+  const packCards = useBoosterCollectionCards(
+    packFilters,
+    resolvedAddresses?.base ?? canonicalOwner,
+    activeVisibility === "visible"
+  );
+  const gridItems = useMemo(
+    () => mergeCollectionGrid(tokens, packCards.items),
+    [tokens, packCards.items]
+  );
   const pendingPurchases = useMemo(() => {
     if (activeVisibility !== "visible") return [];
     const owners = new Set(
@@ -548,7 +565,6 @@ function YunipalsCollectorPage() {
         </div>
       </section>
 
-      <BoosterCollection owner={resolvedAddresses?.base ?? canonicalOwner} />
       <section className="px-4 pb-16 pt-6 sm:pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -564,7 +580,7 @@ function YunipalsCollectorPage() {
                     : "Active Yunipals"}
               </h2>
               <p className="mt-2 text-sm font-medium text-muted">
-                Showing {formatInteger(tokens.length)} {activeVisibility}{" "}
+                Showing {formatInteger(gridItems.length)} {activeVisibility}{" "}
                 results on this page
                 {isOwnCollection && activeVisibility === "visible" && (
                   <> · Hidden NFTs still count toward your score</>
@@ -694,14 +710,35 @@ function YunipalsCollectorPage() {
             </div>
           )}
 
+          {packCards.enabled && (
+            <p className="mt-4 text-xs text-muted">
+              Rankings apply to the original collection. Pack cards match chain,
+              type, color and search; more cards are loaded separately.
+            </p>
+          )}
+          {gridItems.length > 0 &&
+            (collection.viewError || tokensQuery.isError) && (
+              <p role="alert" className="mt-4 text-sm text-muted">
+                {collection.viewError ??
+                  "Some original collection results could not be loaded."}
+              </p>
+            )}
           <div
             className="mt-7"
-            aria-busy={collection.loading || tokensQuery.isFetching}
+            aria-busy={
+              collection.loading ||
+              tokensQuery.isFetching ||
+              packCards.query.isFetching
+            }
           >
-            {collection.viewError ? null : collection.loading &&
-              tokens.length === 0 ? (
+            {collection.viewError &&
+            gridItems.length === 0 ? null : (collection.loading ||
+                (packCards.enabled && packCards.query.isPending)) &&
+              gridItems.length === 0 ? (
               <TokenGridSkeleton count={12} />
-            ) : tokensQuery.isError && tokens.length === 0 ? (
+            ) : (tokensQuery.isError ||
+                (packCards.enabled && packCards.query.isError)) &&
+              gridItems.length === 0 ? (
               <QueryError
                 message={
                   collection.cursorError
@@ -714,7 +751,7 @@ function YunipalsCollectorPage() {
                     : void tokensQuery.refetch()
                 }
               />
-            ) : tokens.length === 0 ? (
+            ) : gridItems.length === 0 ? (
               <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
                 {activeVisibility === "hidden" ? (
                   <EyeOff
@@ -730,11 +767,13 @@ function YunipalsCollectorPage() {
                   />
                 )}
                 <p className="mt-3 font-bold text-ink">
-                  {hasCollectorFilters(filters)
-                    ? "No matches"
-                    : activeVisibility === "hidden"
-                      ? "No hidden NFTs"
-                      : "No visible Yunipals"}
+                  {packCards.query.hasNextPage
+                    ? "No matches in the loaded cards yet."
+                    : hasCollectorFilters(filters)
+                      ? "No matches"
+                      : activeVisibility === "hidden"
+                        ? "No hidden NFTs"
+                        : "No visible Yunipals"}
                 </p>
                 <p className="mx-auto mt-1 max-w-lg text-sm text-muted">
                   {hasCollectorFilters(filters)
@@ -746,62 +785,77 @@ function YunipalsCollectorPage() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                {tokens.map((token, index) => (
-                  <TokenCard
-                    key={tokenKey(token)}
-                    token={token}
-                    eager={index < 6}
-                    action={
-                      canManageToken(token) ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            visibilityMutation.clearFeedback();
-                            setVisibilityAction({
-                              token,
-                              hidden: activeVisibility === "visible"
-                            });
-                          }}
-                          disabled={
-                            visibilityMutation.isPending ||
-                            tokensQuery.isFetching
+                {gridItems.map((item, index) =>
+                  item.kind === "pack" ? (
+                    <CollectionPackCard
+                      key={collectionGridIdentity(item)}
+                      monster={item.monster}
+                    />
+                  ) : (
+                    (() => {
+                      const token = item.token;
+                      return (
+                        <TokenCard
+                          key={collectionGridIdentity(item)}
+                          token={token}
+                          eager={index < 6}
+                          action={
+                            canManageToken(token) ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  visibilityMutation.clearFeedback();
+                                  setVisibilityAction({
+                                    token,
+                                    hidden: activeVisibility === "visible"
+                                  });
+                                }}
+                                disabled={
+                                  visibilityMutation.isPending ||
+                                  tokensQuery.isFetching
+                                }
+                                className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
+                                aria-label={`${
+                                  activeVisibility === "visible"
+                                    ? "Hide"
+                                    : "Unhide"
+                                } ${token.name || `Yunipal #${token.tokenId}`}`}
+                                title={
+                                  activeVisibility === "visible"
+                                    ? "Hide NFT"
+                                    : "Unhide NFT"
+                                }
+                              >
+                                {visibilityMutation.isPending &&
+                                visibilityMutation.pendingTokenKey ===
+                                  tokenKey(token) ? (
+                                  <Loader2
+                                    aria-hidden="true"
+                                    className="animate-spin"
+                                    size={15}
+                                  />
+                                ) : activeVisibility === "visible" ? (
+                                  <EyeOff aria-hidden="true" size={15} />
+                                ) : (
+                                  <Eye aria-hidden="true" size={15} />
+                                )}
+                              </button>
+                            ) : undefined
                           }
-                          className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
-                          aria-label={`${
-                            activeVisibility === "visible" ? "Hide" : "Unhide"
-                          } ${token.name || `Yunipal #${token.tokenId}`}`}
-                          title={
-                            activeVisibility === "visible"
-                              ? "Hide NFT"
-                              : "Unhide NFT"
-                          }
-                        >
-                          {visibilityMutation.isPending &&
-                          visibilityMutation.pendingTokenKey ===
-                            tokenKey(token) ? (
-                            <Loader2
-                              aria-hidden="true"
-                              className="animate-spin"
-                              size={15}
-                            />
-                          ) : activeVisibility === "visible" ? (
-                            <EyeOff aria-hidden="true" size={15} />
-                          ) : (
-                            <Eye aria-hidden="true" size={15} />
-                          )}
-                        </button>
-                      ) : undefined
-                    }
-                  />
-                ))}
+                        />
+                      );
+                    })()
+                  )
+                )}
               </div>
             )}
           </div>
 
+          <CollectionPackPagination cards={packCards} />
           {!collection.viewError && !collection.loading && (
             <nav
               className="mt-7 flex flex-wrap items-center justify-center gap-3"
-              aria-label="Collection pages"
+              aria-label="Original collection pages"
             >
               <button
                 type="button"
