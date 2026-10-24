@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-24",
+  "dependencies": {
+    "actualObserverReceipt": "81c899831cf5f1fab1c5acd86448d6b44b11189b5db88e47c4fe579e85e0c088",
+    "candidateParity": "b04ff03dadbc8fa8f167fdec862b071ee4dc6e89268bed84a5260c77c2290aa4",
+    "currentObserver": "2a84e16a31df3d5266d0ff3992753d01c6849b3755d173a6e29f2f1cdeebab93",
+    "ordinaryIntake": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+    "preservedUnqualifiedWitness": "fc461eb69c2f4252c0a42b2812ee0dd7c1bede1cceb95187715b50a9004b39a4",
+    "unchangedWitness": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c"
+  },
+  "evidence": {
+    "contextCountsPersistOnFailure": true,
+    "currentControlRowsGenuine": true,
+    "currentSourceAndObserverBeforeAfter": true,
+    "exclusiveCaptureIntent": true,
+    "namedNewCaptureDirectories": true,
+    "ongoingReadinessClaimed": false,
+    "rawLogsRemainRootPrivate": true,
+    "rawRequestMetadataExported": false,
+    "repeatedIntentDispatchAllowed": false
+  },
+  "files": [
+    {
+      "bytes": 18776,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v1.py",
+      "sha256": "721cb61ff3ad87efc2a3caa331c98fc43ddf65d47a122d65bf1b24b6fddce239"
+    },
+    {
+      "bytes": 11930,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v1.test.py",
+      "sha256": "538b571ac2c769c1188611ab640767890002d07f556d0a3d91d6d939e1d1dc60"
+    },
+    {
+      "bytes": 4641,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v1.md",
+      "sha256": "22151c781272cf186ea5a076a7d60f2ec1628d56c3277a9f013c9234cb9b69f2"
+    }
+  ],
+  "format": "yunipals-alchemy-ordinary-witness-preparation-v1",
+  "scope": {
+    "additionalLocalContextInspectionExcludedFromWitnessCounters": true,
+    "allSixCandidateSemanticsRetained": true,
+    "canonicalFixedPoints": 5,
+    "contextHttpAttemptsMeasured": true,
+    "contextNonGetAllowed": false,
+    "historicallyMissingLegacyHashesPreserved": 4,
+    "maximumContextGetDispatchesPerFrame": 512,
+    "newProviderRpcMethods": 0,
+    "serviceActions": 0,
+    "sourceOrBudgetActions": 0,
+    "statusWrites": 0,
+    "witnessChanged": false,
+    "witnessHttpCalls": 12,
+    "witnessPermitHeaders": 0,
+    "witnessRetries": 0,
+    "witnessRpcCalls": 21
+  },
+  "status": {
+    "futureAcknowledgementInvented": false,
+    "hostExecuted": false,
+    "ordinaryResultAndInputRequiredAtInvocation": true,
+    "qualifiedCaptureClaimed": false,
+    "sourceOnlyPrepared": true
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v1.test.py",
+    "focusedControls": 8,
+    "localLogSha256": "26414f368fc8766ba90323af0219bd1e2bf102b6e20bb3417249234b5b508262"
+  }
+}
