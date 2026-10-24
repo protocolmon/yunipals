@@ -1,0 +1,70 @@
+{
+  "format": "yunipals-ypal-combined-read-current-context-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-read-current-context-v1.input.json.example",
+      "sha256": "0283ca1193ccce491f400aa65a4c9027adbc788d95ba3726117705f119b4ac99",
+      "bytes": 288
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-read-current-context-v1.md",
+      "sha256": "4a839d06149e96e60776fe76a382ba7178392df037ba52847fdfb47fddd3667d",
+      "bytes": 5567
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-read-current-context-v1.py",
+      "sha256": "f77cb1b93f655f2caa1fedbfd0a6275030320719093d97aa8e607fd7922b30dc",
+      "bytes": 19169
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-read-current-context-v1.test.py",
+      "sha256": "a238ad8c0576b9bb67eb6d5b77c9cbf8af9c9f63ba41871fc5095f4a6468ae22",
+      "bytes": 15476
+    }
+  ],
+  "localControlsPassed": 12,
+  "actualRPCProducerBound": true,
+  "actualRPCAcknowledgementAssumed": false,
+  "actualArenaAdmissionAssumed": false,
+  "new143BaselineCaptured": false,
+  "readScope": 143,
+  "historicalPlanSha256": "fc79c53da5dc2ce3ccc9ce5c86f69ecfb75f0d25b2836d746f90f29e59ce6e0e",
+  "historicalCatalogSqlSha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991",
+  "historicalPlansAndRehearsalsUnmodified": true,
+  "orderingEnforced": {
+    "actualArena13BeforeNew143Baseline": true,
+    "featureOperationAbsentBeforeBaseline": true,
+    "actualArenaIntersectingEdgesPresentInFeatureCatalogBeforeAndAfter": true,
+    "oldFeaturePredicateWeakened": false
+  },
+  "currentSourceScope": {
+    "kind": "acknowledged-c96-pool5",
+    "sourceReceiptSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "nativeRelations": 44,
+    "poolMaximum": 5,
+    "laterPool8NeedsActualSuccessor": true,
+    "sourceReadinessClaimed": false
+  },
+  "remainingActualInputs": [
+    "actual new Arena-v2 admission and explicit auth-phase proof",
+    "fresh approved new143/cache/current baseline plans preserving exact143 grant list"
+  ],
+  "authorHostCalls": 0,
+  "authorProviderCalls": 0,
+  "authorProductionDatabaseWrites": 0,
+  "authorServiceActions": 0,
+  "authorGitActions": 0,
+  "fullGoalAccepted": false,
+  "actualRPCAcknowledgement": {
+    "file": "/var/backups/yunipals-ypal-retained-proxy-current-v3-20261024/result.json",
+    "producerSha256": "80519249b13b968c696b5582104990cb6e310a410eeac42fe0f139296ecf99bf",
+    "receiptSha256": "152178ab94fd1b4c974d392633a201eaf04da412ce1295e29842e9cdeb35722b",
+    "componentSha256": "57f0520e640ccd50743f02e0891bfb2ab3491e0368f698ea6d6f209d0d43c757",
+    "capturedAt": "2026-10-24T08:10:09Z",
+    "capturedAndIndependentlyRevalidatedBy": "parent-root",
+    "qualificationByThisPreparationPerformed": false
+  }
+}

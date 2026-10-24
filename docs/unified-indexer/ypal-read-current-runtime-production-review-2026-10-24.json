@@ -1,0 +1,25 @@
+{
+  "ArenaAdmissionOr143BaselineQualified": false,
+  "databaseWrites": 0,
+  "format": "yunipals-read-current-runtime-public-review-v1",
+  "nativeTables": 44,
+  "poolMaximum": 5,
+  "producerSha256": "f77cb1b93f655f2caa1fedbfd0a6275030320719093d97aa8e607fd7922b30dc",
+  "providerCalls": 0,
+  "qualifiedRuntimeContext": true,
+  "serviceChanges": 0,
+  "sha256": "9696a3e23ecb78cc69ad26e4723d0a81879a7b586c97d524c2a20860a3daec97",
+  "sourceEpoch": "acknowledged-c96-pool5",
+  "sourceOrRpcActorChanged": false,
+  "sourcePid": 2472127,
+  "sourceReadinessQualified": false,
+  "sourceRelease": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+  "fullRuntimeReportRemainsPrivateOnProduction": true,
+  "rootControlsPassed": 12,
+  "old143PlanUnmodified": true,
+  "limitations": [
+    "This qualifies the separate source/RPC runtime interface, not the Arena admission or any new143 plan, grant, LOGIN or reader switch.",
+    "The acknowledged source is c96/pool5. A later real recovery requires its own explicit predecessor/config/epoch successor.",
+    "Arena13 admission must precede new143/cache/current baseline capture and feature catalogBefore."
+  ]
+}
