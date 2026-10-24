@@ -1,0 +1,37 @@
+{
+  "format": "yunipals-arena-ypal-restored-code-v1",
+  "files": {
+    "arena-ypal-native-v1.mjs": "bbade6fb6e64079046b16ce650ffe495577e9a10f4d9cc2d835f479b8a04eba1",
+    "arena-ypal-native-v1.adoption.mjs": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162",
+    "arena-ypal-native-v1.catalog.py": "933c3357ae1c231012f24d9235ec6a97fb2e7db2f1a5ce1046adbf9e6cdb1430",
+    "arena-ypal-native-v1.proposal.json": "ca56a4be29abe53f5b7a6b3f4c8a13d6a557c1e38fa07521df78e10fd4fe3d80",
+    "arena-ypal-native-v2.rehearsal.py": "ed2c7fee798b343d10dde2904ff7d3a2ac8ebfe97879e8d14e503632a8ac3e1a",
+    "arena-ypal-native-v2.admission.py": "543986e8986b4b44b11b65d247cfcc0b6ebd7a6cf27ef52626f22a6fd650db7e",
+    "arena-ypal-native-v2.credentials.py": "30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e",
+    "arena-ypal-native-v1.source.sql.review": "a045f16cd35135d6ae60c522f39bbefe50a683d57906482e78597edec9ca1c45",
+    "arena-ypal-native-v1.actors.py": "07eaedc6b3a5616ae2473d386187f72f7bbd56665a0f26483c4edeaf9812ef46",
+    "arena-ypal-native-v2.context.py": "b50169a2cd5f4b88454d85046cc48e1a861e07c103d4b39faa3ec98dcb3775bd",
+    "arena-ypal-restored-v1.py": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a",
+    "arena-ypal-restored-v1.source.py": "68d1d2c91abc8e981c8ef19b7f4a2c7edf13bbba14ac3d2f7507da192adaf737"
+  },
+  "source": {
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+    "baseRpc": "http://127.0.0.1:19222/unified",
+    "policy": "latest",
+    "subsequentBlocks": 0,
+    "deployment": "8453:0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+    "startBlock": "52648146",
+    "abiHash": "0x92fff205c89c168c18abdb66ac1f46329941822e998ceccbaa153a13db183f53"
+  },
+  "authority": {
+    "migrationsPerformed": 0,
+    "oldWholeValidationClaimed": false,
+    "rolesRequireSeparateAdmission": true,
+    "configurationSecretsReused": true
+  }
+}
