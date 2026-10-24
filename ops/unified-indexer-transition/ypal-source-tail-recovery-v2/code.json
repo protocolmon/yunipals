@@ -1,0 +1,15 @@
+{
+  "format": "yunipals-source-tail-recovery-v2-code",
+  "operatorSha256": "47ab74673e33c624d368d9e549989d091e1538cfe15565ab56c161917afaa8d7",
+  "probeSha256": "99e775d28e17cede94f0d00ec8de63cc0728cf1d2f60d3efc0ed91cbcd40d6b7",
+  "preflightSha256": "c6dbc0cb643a9ddd738294e0e379003bf3bf45e545b42000fd431507c9bdb296",
+  "offlineRunnerSha256": "e0cafe6860ba5934373c55574feb2d0741fd2333a190a9f98531d7a723c53f87",
+  "inactiveBuildPlanSha256": "ef4d77f345089c96106e203d78105c19bb6523a97460fba0992e161e938ec0c3",
+  "rpc": {
+    "file": "ypal-retained-proxy-current-v3.py",
+    "sha256": "80519249b13b968c696b5582104990cb6e310a410eeac42fe0f139296ecf99bf"
+  },
+  "registeredBaseInventoryIsAncestryOnly": true,
+  "operationalOverlayConfigSha256": "35a6ba332f858790d3f476ef0e3aaa7c04c0e4284ec015ffe48a5dfbf82d81fb",
+  "immutablePriorOperatorSha256": "dde8b925ffd76f5e86c67a8ca59406ab383e6e50002e63564d7bd2fe820b5dd7"
+}

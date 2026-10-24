@@ -1,0 +1,30 @@
+{
+  "format": "yunipals-source-restored-current-context-preparation-v1",
+  "sourceOnly": true,
+  "actualRestoreReceiptSha256": "0ee963f2dd62d2acafa7cc8f9a96a5c95330bd89b16ec9f874eff9e6343029e1",
+  "restoreProducerSha256": "de4a42360c46a641896d5a03847bca15b8aa48bb9fdf19aa3dc9cfedda7c1d34",
+  "actualRuntimeQualifiedByAuthor": false,
+  "checks": {
+    "syntheticScopeRaceAndProtectedFileControls": 12,
+    "hostActions": 0,
+    "providerRequests": 0,
+    "productionDatabaseActions": 0
+  },
+  "files": [
+    {
+      "path": "ypal-source-restored-current-context-v1.py",
+      "sha256": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae",
+      "bytes": 10631
+    },
+    {
+      "path": "ypal-source-restored-current-context-v1.test.py",
+      "sha256": "5bd68179163297c24d82ee270e4b2e394dba4506a94a8568286bc8de54b7d1c1",
+      "bytes": 9961
+    },
+    {
+      "path": "ypal-source-restored-current-context-v1.md",
+      "sha256": "540222c512ec9098e5d052ab54717b44ebd37d17cbef26a753cc297b854d96a9",
+      "bytes": 3363
+    }
+  ]
+}

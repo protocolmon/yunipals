@@ -1,0 +1,28 @@
+{
+  "format": "yunipals-source-tail-restore-preparation-v1",
+  "sourceOnly": true,
+  "sourceActionsByAuthor": 0,
+  "productionDatabaseActionsByAuthor": 0,
+  "providerRequestsByAuthor": 0,
+  "focusedSyntheticAndFilesystemControls": 13,
+  "actualNewRestoreResultBound": false,
+  "ancestorOperatorSha256": "47ab74673e33c624d368d9e549989d091e1538cfe15565ab56c161917afaa8d7",
+  "ancestorOperationSha256": "c4f0e96876e29f0319a61e9241aed84a326fd8e7014b8078e560a6071074ecdc",
+  "files": [
+    {
+      "path": "ypal-source-tail-restore-v1.py",
+      "sha256": "de4a42360c46a641896d5a03847bca15b8aa48bb9fdf19aa3dc9cfedda7c1d34",
+      "bytes": 13777
+    },
+    {
+      "path": "ypal-source-tail-restore-v1.test.py",
+      "sha256": "15616bf4f3beb641fe00338f74d107910b0c1146cbea31ba474b8f206b95a013",
+      "bytes": 10860
+    },
+    {
+      "path": "ypal-source-tail-restore-v1.md",
+      "sha256": "6112f5ab4e9c09df8ddb0633e52e7d3a297d7fef66826d5ba61e709fbc0763c1",
+      "bytes": 3905
+    }
+  ]
+}

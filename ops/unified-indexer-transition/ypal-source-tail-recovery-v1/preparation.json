@@ -1,0 +1,91 @@
+{
+  "format": "yunipals-source-tail-recovery-preparation-v1",
+  "sourceOnly": true,
+  "hostProbePerformedByAuthor": false,
+  "sourceActionsByAuthor": 0,
+  "databaseWritesByAuthor": 0,
+  "providerRequestsByAuthor": 0,
+  "actualLocalBuild": {
+    "file": "local-build.json",
+    "sha256": "6a2aae03f46f2ae09f4689e69c14a5ddaadb19d401dc71fbc3235966a6df0eaa",
+    "sameBuildId": "71e2a7f3b7",
+    "poolMaximum": 8,
+    "realProviderRequests": 0,
+    "databaseCalls": 0,
+    "socketAttempts": 0
+  },
+  "checks": {
+    "realFilesystemLifecycleControls": 26,
+    "configurationASTControls": 4,
+    "officialPreflightWithTwelveSyntheticReads": true,
+    "productionSourceReadinessQualified": false,
+    "postRestartPerformanceImprovementClaimed": false
+  },
+  "files": [
+    {
+      "path": "recover.py",
+      "sha256": "dde8b925ffd76f5e86c67a8ca59406ab383e6e50002e63564d7bd2fe820b5dd7",
+      "bytes": 46325
+    },
+    {
+      "path": "recover.test.py",
+      "sha256": "9c1b704f53fcc94424fcb2f6ac5d924729a9eb14b5ba838e17e92202c695cdc2",
+      "bytes": 16529
+    },
+    {
+      "path": "probe.py",
+      "sha256": "8203cbf032f41ec9fde376bfc062af6de85e90c736ea57547020bd2609ac7ae8",
+      "bytes": 10325
+    },
+    {
+      "path": "prepare.py",
+      "sha256": "812af577b5ffdd38e7c303446b0fad166e2626ec5fef77e3f4e26c08eae6e88d",
+      "bytes": 3499
+    },
+    {
+      "path": "preflight.mjs",
+      "sha256": "c6dbc0cb643a9ddd738294e0e379003bf3bf45e545b42000fd431507c9bdb296",
+      "bytes": 3579
+    },
+    {
+      "path": "offline-build.mjs",
+      "sha256": "e0cafe6860ba5934373c55574feb2d0741fd2333a190a9f98531d7a723c53f87",
+      "bytes": 5936
+    },
+    {
+      "path": "config-equivalence.test.mjs",
+      "sha256": "a924e86bad722e331c2b4d023361760eb9a515d084802d8c0fc92ee502cbd9e7",
+      "bytes": 1758
+    },
+    {
+      "path": "pool8.ponder.config.ts",
+      "sha256": "35a6ba332f858790d3f476ef0e3aaa7c04c0e4284ec015ffe48a5dfbf82d81fb",
+      "bytes": 4798
+    },
+    {
+      "path": "local-build.json",
+      "sha256": "6a2aae03f46f2ae09f4689e69c14a5ddaadb19d401dc71fbc3235966a6df0eaa",
+      "bytes": 3280
+    },
+    {
+      "path": "inactive-build.plan.json",
+      "sha256": "9543e108c1c704e3b19c0430bd784bcd1fd7ca733519b792f1334915d40a0def",
+      "bytes": 5664
+    },
+    {
+      "path": "input.json.example",
+      "sha256": "72e03e09919742a91854259a2cd119fe9fe54c259cbaf3be013abf339b5df401",
+      "bytes": 307
+    },
+    {
+      "path": "code.json",
+      "sha256": "6ba5bdcb3bd1cd889c5bc8b1e60022bcca0a0b29750a83d2aeeb2bf4a501972a",
+      "bytes": 807
+    },
+    {
+      "path": "README.md",
+      "sha256": "87e13dbcf3fb0b9ffa683c6350510edeba5f7a7f6daab18e3431dff7f69369b9",
+      "bytes": 10123
+    }
+  ]
+}
