@@ -101,6 +101,8 @@ class Plan(unittest.TestCase):
             lines = definitions[stem + ".service"].decode().splitlines()
             self.assertIn("TimeoutStartSec=900", lines)
             self.assertIn("TimeoutStopSec=90", lines)
+            self.assertIn("PrivateTmp=yes", lines)
+            self.assertIn("BindReadOnlyPaths=" + str(p.IMPORT_INVENTORY), lines)
             self.assertIn("ExecStart=/usr/bin/python3 -I -B " + str(p.LIFECYCLE) + " --deadline-" + label + " " + digest, lines)
             self.assertNotIn("RuntimeMaxSec=900", lines)
             timer = definitions[stem + ".timer"].decode().splitlines()

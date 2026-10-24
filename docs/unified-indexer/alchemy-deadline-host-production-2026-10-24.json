@@ -1,0 +1,22 @@
+{
+  "completed": [
+    "constructor",
+    "actual_14_Ponder_runtime_files",
+    "initial_whole_manual_only_skipped",
+    "actual_source_actor",
+    "source_inputs",
+    "source_runtime",
+    "native44",
+    "source_kernel_sessions",
+    "free_route_ethereum",
+    "free_route_base",
+    "free_route_polygon",
+    "free_route_bnb"
+  ],
+  "databaseWrites": 0,
+  "format": "yunipals-alchemy-host-four-cap-preflight-v1",
+  "nativeTables": 44,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "sourceKernelBackends": 3
+}

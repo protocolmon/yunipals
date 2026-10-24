@@ -23,6 +23,7 @@ PROFILE = "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff"
 PROXY_ARTIFACT_SHA = "10c34c878d5a617fe31d4fffd6a8b020610b39b988de1cf2aac0cb11e7ac59d8"
 TIMEOUT_SHA = "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192"
 FINANCIAL_BASE = Path("/var/backups/yunipals-ypal-alchemy-catchup-financial-v1-20261024")
+IMPORT_INVENTORY = Path("/var/tmp/yunipals-runtime-6e112a0c-20261021/runtime-supplement.inventory.json")
 EFFECT_NAMES = (
     "paid-definition-intent", "paid-definition-installed", "paid-start-intent",
     "paid-started", "paid-stop-intent", "paid-stopped", "free-definition-restored",
@@ -138,6 +139,7 @@ def deadline_definitions(plan, plan_sha):
                    "ExecStart=/usr/bin/python3 -I -B " + str(LIFECYCLE) + " " + flag + " " + plan_sha + "\n"
                    "Restart=no\nTimeoutStartSec=900\nTimeoutStopSec=90\nKillMode=control-group\n"
                    "NoNewPrivileges=yes\nUMask=0077\nProtectSystem=strict\nProtectHome=read-only\nPrivateTmp=yes\n"
+                   "BindReadOnlyPaths=" + str(IMPORT_INVENTORY) + "\n"
                    "CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_KILL\nAmbientCapabilities=\n"
                    "ReadWritePaths=" + str(BASE) + " " + str(FINANCIAL_BASE) + " /etc/systemd/system " +
                    str(STAGE) + " /run/lock\n").encode()
