@@ -1,0 +1,182 @@
+{
+  "format": "yunipals-ypal-native-cutover-source-preparation-v2",
+  "sourceOnly": true,
+  "runtimeManifestSha256": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8",
+  "publicationFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v2.py",
+      "bytes": 12120,
+      "sha256": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-proof-v2.py",
+      "bytes": 30264,
+      "sha256": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-finish-v3.py",
+      "bytes": 5241,
+      "sha256": "f072c85e82872a750e7e76dd17349718c7e6574b2e833c9c4d9b80ff9e147374"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v2.test.py",
+      "bytes": 28942,
+      "sha256": "c04d64e6570358e5fdead815e252d218402d510478e5f4109eea854387edb443"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v2.manifest.json",
+      "bytes": 5717,
+      "sha256": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v2.md",
+      "bytes": 12045,
+      "sha256": "fa590e3a1d62fba706baca35fa9cfde3a0864377b2e24cf37b2e8179c8e2da10"
+    }
+  ],
+  "publicationFileCountExcludingThisPreparation": 6,
+  "externalManifestContexts": {
+    "read": {
+      "file": "ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932"
+    },
+    "phase": {
+      "file": "ypal-restored-read-cache-provider-v1.py",
+      "sha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9"
+    },
+    "metadata": {
+      "file": "ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3"
+    },
+    "metadataStatic": {
+      "file": "ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4"
+    },
+    "observer": {
+      "file": "ypal-restored-ordinary-observer-v1.py",
+      "sha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3"
+    }
+  },
+  "unchangedWireManifestSha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+  "scopedActualPeerRuntimeQualification": {
+    "producerSha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76",
+    "receiptSha256": "521e0bb514f1f6ba306b82d489f19ea53183dcdd2aa1e76aa65498cc184f1899",
+    "stageResultSha256": "6efd1d9d5ee083e71fe3b99ac3aff6238c9b96b5a0da5ae3e2d961bf71a25107"
+  },
+  "actualPeerQualificationIsCoordinatorIntegration": false,
+  "contextComposition": {
+    "fresh143ProducerSha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+    "cachePhaseProducerSha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+    "restoredRuntimeContextSha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+    "metadataProducerSha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+    "generationProducerSha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+    "observerProducerSha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3",
+    "originalWholeValidatorsPassed": false
+  },
+  "reuse": {
+    "templateSha256": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+    "newOwnerConstants": [
+      "BASE",
+      "FORMAT",
+      "MANIFEST",
+      "PROOF"
+    ],
+    "launchFunctions": [
+      "child",
+      "action_preflight"
+    ],
+    "additionalReceiptInputs": [
+      "readPlanSha256",
+      "readContextInputSha256",
+      "cacheInputsSha256"
+    ],
+    "unchangedFunctionCount": 84,
+    "inverseMetadataCaptureSeam": "exact_selected_active_or_terminal_without_dispatch",
+    "unchangedFunctionsSha256": "2be461f013470c8756a511f5747b4119e734bcdec319397924afe35bbe1c8513",
+    "wireManifestSha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+    "historicalModulePatched": false,
+    "sourceDependentConstructorInherited": false,
+    "originalWholeValidatorPassed": false
+  },
+  "dependencySourcePinsVerified": 30,
+  "dependencySourceFilesAlreadyGitTracked": [
+    "ops/unified-indexer-transition/ypal-generation-publisher-install-v1.py",
+    "ops/unified-indexer-transition/ypal-main-api-install-v1.py",
+    "ops/unified-indexer-transition/ypal-native-generation-v1.py",
+    "ops/unified-indexer-transition/retained-workers-stage-v1.py",
+    "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+    "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+    "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.py",
+    "ops/unified-indexer-transition/ownership-parity-peer-v2.mjs",
+    "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
+    "ops/unified-indexer-transition/fixed-boundary-witness-v3.mjs",
+    "ops/unified-indexer-transition/metadata-fixed-parity-v4.py",
+    "ops/unified-indexer-transition/ypal-feature-handover-v1.py",
+    "ops/unified-indexer-transition/consumer-operational-preview-v6.py",
+    "ops/unified-indexer-transition/ypal-native-cutover-v1.py",
+    "ops/unified-indexer-transition/ypal-native-cutover-proof-v1.py",
+    "ops/unified-indexer-transition/ypal-native-cutover-v1.manifest.json",
+    "ops/unified-indexer-transition/ypal-cache-finish-v2.py",
+    "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.py",
+    "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.py",
+    "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.mjs",
+    "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-read-admission-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-read-admission-v1.columns.sql",
+    "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-cache-peer-runtime-v1.py",
+    "ops/unified-indexer-transition/ypal-restored-cache-sql-v1.mjs",
+    "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.py"
+  ],
+  "untrackedDependencies": [],
+  "localValidation": {
+    "focusedControlCount": 18,
+    "passed": true,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-native-cutover-v2.test.py -v",
+    "outputSha256": "ec2eb7b1eda90d825108097a4482339eadc8a77327dde6981ad3574667c049b3",
+    "realSealedFDAndHeldACKPipes": true,
+    "actualProductionActions": false,
+    "newPostgresBusinessChildRun": false,
+    "frozen950bUnchangedSincePriorPGProof": true,
+    "reusedMetadataInverseReachedOriginalStartBoundary": true,
+    "SQLAndManagerAdaptersIsolated": true
+  },
+  "phaseRules": {
+    "Arena13BeforeFresh143BaselineAndFeatureCapture": true,
+    "exact143AndSeparateCache4Scope": true,
+    "twoLOGINSeparateAuthorization": true,
+    "newObserverRecordedActivationNotCurrentWriterProof": true,
+    "currentObserverAndWriterIndependentlyQualifiedAroundCanonicalWitness": true,
+    "forwardRequiresActiveRestoredSource": true,
+    "inverseUsesExactActiveOrTerminalRestoredSource": true,
+    "phaseLeafQualifiesCurrentWriter": false,
+    "newCacheFinishAndInverseShareProducerAndBase": true,
+    "fullDependencyTreeAuthorizedBeforePeerModuleEvaluation": true,
+    "unknownACKAutomaticResend": false,
+    "exactSelectedTerminalMetadataCaptureHasNoDispatch": true,
+    "sharedMetadataSessionsUseFreshKernelAttribution": true,
+    "postDropMetadataInverseBindsOwnedIntentAndBootPhase": true
+  },
+  "actualRuntimeState": {
+    "fresh143Committed": false,
+    "cache4Committed": false,
+    "newMetadataSelected": false,
+    "newGenerationCandidateAccepted": false,
+    "newObserverActivated": false,
+    "newReaderLOGINAdmitted": false,
+    "publicationCommitted": false,
+    "readersCutOver": false,
+    "servingInverseExecuted": false,
+    "coordinatorHostQualified": false
+  },
+  "limitations": [
+    "All operational construction requires actual new143/cache/metadata/generation/observer acknowledgements and exact protected inputs; no absent receipt is manufactured.",
+    "Current all-source readiness/canonical acceptance remains independent of fixed-boundary capture and observer ancestry.",
+    "Later managed source/global graph authority belongs to an explicit separate caller; source-independent reader/cache leaves claim neither.",
+    "Recurring-generation lineage/24-hour refresh, feature retirement, Arena and final managed EVM/Solana handover remain separate owners."
+  ],
+  "privateProductionDataPublished": false
+}

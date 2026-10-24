@@ -1,0 +1,82 @@
+{
+  "format": "yunipals-ypal-native-cutover-source-v2",
+  "wireManifestSha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+  "dataIdentity": {
+    "sourceRelease": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "readSchema": "yunipals_ownership_4e77f52b_v4",
+    "readSchemaOid": "75994954",
+    "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67",
+    "nativeRelations": 44
+  },
+  "files": {
+    "ypal-native-cutover-v2.py": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+    "ypal-native-cutover-proof-v2.py": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14",
+    "ypal-cache-finish-v3.py": "f072c85e82872a750e7e76dd17349718c7e6574b2e833c9c4d9b80ff9e147374",
+    "ypal-native-cutover-v1.mjs": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+    "ypal-native-reader-probe-v1.mjs": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f",
+    "ypal-native-cutover-v1.action.sql": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50"
+  },
+  "dependencies": {
+    "ypal-generation-publisher-install-v1.py": "6fd77eac7014eb68b5f605d04a8d432c95866bc55a9f0814bf76ffb24943610c",
+    "ypal-main-api-install-v1.py": "2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633",
+    "ypal-native-generation-v1.py": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6",
+    "retained-workers-stage-v1.py": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416",
+    "ypal-generation-recovery-v1.mjs": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+    "ypal-cache-guard-transition-v1.mjs": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+    "ypal-combined-ordinary-observer-owner-v1.py": "f81c2e321304c36c1dc63f26dfecb23ecb1a5a84dc3facabdce06a240300f0f6",
+    "ownership-parity-peer-v2.mjs": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920",
+    "ownership-parity-peer-v4.mjs": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+    "fixed-boundary-witness-v3.mjs": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c",
+    "metadata-fixed-parity-v4.py": "d367701ea44de7cb5fada336d182f5c1a47536cc4221fdd120a048ea9641ee53",
+    "ypal-feature-handover-v1.py": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "consumer-operational-preview-v6.py": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777",
+    "ypal-native-cutover-v1.py": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+    "ypal-native-cutover-proof-v1.py": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946",
+    "ypal-native-cutover-v1.manifest.json": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+    "ypal-cache-finish-v2.py": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa",
+    "ypal-cache-guard-owner-v1.py": "c54f8af6846df7a013fe0b39680806aa623e29d0bde145e62fc47e65107794ba",
+    "ypal-reader-peer-runtime-v1.py": "cc7842d51a6adb242991423b3bfb850452315c37e169107331332d2460dc0ffa",
+    "ypal-reader-peer-runtime-v1.mjs": "6728fcb405de2bf7fc302678dae4aa6184ed51effd22823375d4e0a078792cc1",
+    "ypal-restored-read-current-context-v1.py": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+    "ypal-restored-metadata-context-v1.py": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "ypal-restored-metadata-handover-v1.py": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+    "ypal-restored-generation-v1.py": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+    "ypal-restored-read-admission-v1.py": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+    "ypal-restored-read-admission-v1.columns.sql": "8efbbf11ba14c0ec645dfa0a9acc1ef64e89fc70315fb8d3b4cb66308162e4bf",
+    "ypal-restored-read-cache-provider-v1.py": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+    "ypal-restored-cache-peer-runtime-v1.py": "055ce7679c040de4286a30d71cf132c041878fa858d35cc4cdb81a62167fda6f",
+    "ypal-restored-cache-sql-v1.mjs": "118fdf4723320fed6b761ff953878dadc055ccfd62f4cf9da8219ce46e2492ab",
+    "ypal-restored-ordinary-observer-v1.py": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3"
+  },
+  "contexts": {
+    "read": {
+      "file": "ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932"
+    },
+    "phase": {
+      "file": "ypal-restored-read-cache-provider-v1.py",
+      "sha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9"
+    },
+    "metadata": {
+      "file": "ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3"
+    },
+    "metadataStatic": {
+      "file": "ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4"
+    },
+    "observer": {
+      "file": "ypal-restored-ordinary-observer-v1.py",
+      "sha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3"
+    }
+  },
+  "transportQualification": {
+    "producerSha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76",
+    "receiptSha256": "521e0bb514f1f6ba306b82d489f19ea53183dcdd2aa1e76aa65498cc184f1899",
+    "stageResultSha256": "6efd1d9d5ee083e71fe3b99ac3aff6238c9b96b5a0da5ae3e2d961bf71a25107"
+  }
+}
