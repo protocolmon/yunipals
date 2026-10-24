@@ -1,0 +1,59 @@
+{
+  "authority": {
+    "READ143AcknowledgementSeparateFromCurrentGraph": true,
+    "canonicalCoverageQualified": false,
+    "financialAuthorityQualified": false,
+    "manufacturesManagedEpoch": false,
+    "oldRestoredOrCatchupPredicateClaimedPassed": false,
+    "paidManagedTransitionAuthorized": false,
+    "recordedReadSameBootAncestryRetained": true,
+    "runtimeRefsAreInvocationInputs": true,
+    "sourceKind": "standalone"
+  },
+  "date": "2026-10-24",
+  "dependencies": {
+    "currentREADAdmission": "c2da9d590d75823ec5ecf3038f73da93854e760faadb91bbc71e135f56e0a15a",
+    "ordinaryRuntime": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+    "sourceIndependentQueryComponents": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4"
+  },
+  "files": [
+    {
+      "bytes": 14753,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "sha256": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986"
+    },
+    {
+      "bytes": 11190,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.test.py",
+      "sha256": "b0d105eb3a633f5c2a53558d63e1690105961c06dcf3675e030f5e773cef8661"
+    },
+    {
+      "bytes": 4721,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.md",
+      "sha256": "8399389a51cdb8383f24e87a24c143b88f99617e9acfaf503c9f7eb5893d2beb"
+    }
+  ],
+  "format": "yunipals-alchemy-ordinary-consumer-context-preparation-v1",
+  "scope": {
+    "databaseWrites": 0,
+    "historicalReadSqlEdges": 143,
+    "loginChanges": 0,
+    "nativeRelations": 44,
+    "newRoles": 0,
+    "providerCalls": 0,
+    "registeredSources": 12,
+    "serviceActions": 0
+  },
+  "status": {
+    "actualOrdinaryResultAndInputRequiredAtInvocation": true,
+    "consumerOwnerRetargeted": false,
+    "futureAcknowledgementInvented": false,
+    "hostQualificationPerformed": false,
+    "sourceOnlyPrepared": true
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.test.py",
+    "focusedControls": 6,
+    "localLogSha256": "91e7b4890ab4a0498335c8aec919273178aae69a01085aca3337f4c4994afd12"
+  }
+}
