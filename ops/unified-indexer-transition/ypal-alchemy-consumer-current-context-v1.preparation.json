@@ -1,0 +1,73 @@
+{
+  "actualReadonlyPreflight": {
+    "aggregateSha256": "8160a41aa92482c0450d9c0f802b79546201574e2e0e9fa4732fb716c7c58985",
+    "arenaNativeRoleCount": 0,
+    "columnOverlapCount": 0,
+    "completed": true,
+    "missingReadCount": 143,
+    "newIntakeExecuted": false,
+    "presentReadCount": 0,
+    "rawCatalogExported": false,
+    "stakingLogin": false
+  },
+  "authority": {
+    "canonicalCoverageQualified": false,
+    "financialAuthorityQualified": false,
+    "forwardConsumerMutationQualified": false,
+    "intakeOnly": true,
+    "new143AdmissionQualified": false,
+    "writerHandoverQualified": false
+  },
+  "databaseWrites": 0,
+  "date": "2026-10-24",
+  "files": [
+    {
+      "bytes": 13279,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-consumer-current-context-v1.py",
+      "sha256": "70faf2514d0240625f0a1eaa84f527be5fb16bcf4391e56e8644bc708ae2d420"
+    },
+    {
+      "bytes": 9644,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-consumer-current-context-v1.test.py",
+      "sha256": "13fe8bc83c0a00e6038987047a06053b834fa99de80d3eb44a3da03f39d477a4"
+    },
+    {
+      "bytes": 7187,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-consumer-current-context-v1.md",
+      "sha256": "9675586128396acaf419da50675d196ce11751c5af015f9a2c9b8ae0f12d9558"
+    },
+    {
+      "bytes": 3527,
+      "path": "docs/unified-indexer/alchemy-consumer-current-preflight-2026-10-24.json",
+      "sha256": "31d7ff302909464a78d2e62c2ae260abd515da41c3104dd2ae64ca6a53defae4"
+    },
+    {
+      "bytes": 5921,
+      "path": "docs/unified-indexer/alchemy-consumer-current-preflight-2026-10-24.program.py",
+      "sha256": "5261ae1d1628c29b7d79caf81add2d5ef7541cffbb9fc3014d4b5403d4d3f0ba"
+    }
+  ],
+  "format": "yunipals-alchemy-consumer-current-context-preparation-v1",
+  "gitActions": 0,
+  "literalDependencies": {
+    "ypal-alchemy-source-completion-v1.py": "0e147b366ff29194326f09d9a56d5a8d5bca77fe6c83b3ac9584f30dc6dee8f0",
+    "ypal-restored-metadata-context-v1.py": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "ypal-source-restored-current-context-v1.py": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae"
+  },
+  "providerCalls": 0,
+  "remainingGates": [
+    "Parent independent source review, publication/staging and actual new intake runtime proof.",
+    "Catch-up cleanup or explicit accepted ordinary-writer handover before consumer mutation.",
+    "Arena thirteen source admissions before new READ143/catalogBefore baseline; no actual Arena or READ143 admission exists.",
+    "Exact separate cache-four-read and two-LOGIN authorizations/journals must be established; this capture conveys neither.",
+    "Ordinary observer after actual READ143/support prerequisites, fresh control status/anchors, then a new protected canonical witness capture."
+  ],
+  "scope": "Read-only current paid completion intake and separate historical query components; no consumer constructors or actions.",
+  "serviceActions": 0,
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-consumer-current-context-v1.test.py",
+    "passed": 6,
+    "privateLogSha256": "6af0e6c6e142de031548a49370fc459b42338e0aaa08f9ee61ac48282b1b5942",
+    "productionIntakeExecuted": false
+  }
+}
