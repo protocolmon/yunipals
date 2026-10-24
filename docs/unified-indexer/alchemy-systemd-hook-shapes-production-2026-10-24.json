@@ -1,0 +1,36 @@
+{
+  "databaseWrites": 0,
+  "hooks": {
+    "ExecCondition": {
+      "empty": true,
+      "rows": 0,
+      "type": "a(sasbttttuii)"
+    },
+    "ExecStartPost": {
+      "empty": true,
+      "rows": 0,
+      "type": "a(sasbttttuii)"
+    },
+    "ExecStartPre": {
+      "empty": true,
+      "rows": 0,
+      "type": "a(sasbttttuii)"
+    },
+    "ExecStop": {
+      "empty": true,
+      "rows": 0,
+      "type": "a(sasbttttuii)"
+    },
+    "ExecStopPost": {
+      "empty": true,
+      "rows": 0,
+      "type": "a(sasbttttuii)"
+    }
+  },
+  "preservationFields": {
+    "extra": [],
+    "missing": []
+  },
+  "providerCalls": 0,
+  "serviceActions": 0
+}

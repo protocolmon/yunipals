@@ -181,6 +181,9 @@ class Fixture:
                 return json.dumps({'type': '(uo)', 'data': self.jobs[unit]})
             if prop == 'EnvironmentFiles':
                 return json.dumps({'type': 'a(sb)', 'data': [[str(self.env_paths[unit]), False]]})
+            if prop in {'ExecCondition', 'ExecStartPre', 'ExecStartPost', 'ExecStop', 'ExecStopPost'}:
+                return json.dumps(getattr(self, 'hook_bus_values', {}).get(prop,
+                    {'type': 'a(sasbttttuii)', 'data': []}))
             if hasattr(self, 'bus_values'):
                 return json.dumps(self.bus_values[(unit, prop)])
             raise AssertionError(args)
@@ -188,7 +191,8 @@ class Fixture:
             unit = args[2]
             fields = [arg.split('=', 1)[1] for arg in args[3:]]
             values = {'UnitFileState': 'enabled', **self.security.get(unit, {}), **self.states[unit]}
-            return '\n'.join(key + '=' + values[key] for key in fields)
+            return '\n'.join(key + '=' + values[key] for key in fields
+                             if key not in getattr(self, 'omitted_manager_properties', set()))
         raise AssertionError(args)
 
     @staticmethod
@@ -235,6 +239,19 @@ class Fixture:
 
 
 class Tests(unittest.TestCase):
+    def test_actual31_field_manager_shape_uses_five_typed_empty_hooks(self):
+        f = Fixture(self)
+        f.omitted_manager_properties = {'ExecCondition', 'ExecStartPre', 'ExecStartPost', 'ExecStop', 'ExecStopPost'}
+        self.assertEqual(len(f.v.UNIT_SECURITY_FIELDS) - len(f.omitted_manager_properties), 31)
+        self.assertTrue(f.validate()['paidRequestsQuiet'])
+        f.hook_bus_values = {'ExecStop': {'type': 'a(sasbttttuii)', 'data': [['foreign-hook']]}}
+        with self.assertRaisesRegex(RuntimeError, 'actual_typed_empty'): f.validate()
+        f.hook_bus_values = {'ExecStop': {'type': 'as', 'data': []}}
+        with self.assertRaisesRegex(RuntimeError, 'actual_typed_empty'): f.validate()
+        f.hook_bus_values = {}
+        f.omitted_manager_properties.add('KillMode')
+        with self.assertRaisesRegex(RuntimeError, 'complete_actual_manager'): f.validate()
+
     def test_actual_financial_acknowledge_result_is_consumed_by_actual_leaf(self):
         # Execute the actual producer's result builder and actual financial model
         # against its public offline snapshot fixture, rather than copying its

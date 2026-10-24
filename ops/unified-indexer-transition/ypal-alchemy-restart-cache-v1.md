@@ -117,3 +117,14 @@ config/schema/handler hashes. Its output is exclusive under `/tmp`; it never edi
 the running tree or reads real database credentials. The derivation's fake headers
 and original installed runtime/build checks are evidence about configuration, not an
 actual host cache matrix.
+
+The14 production Ponder files have captured metadata rootUID0/GID964, mode0640,
+single link. The runtime gate requires that exact metadata plus unchanged full
+stat/hash CAS. Root independently read and hashed all14 under the actual
+NoNewPrivileges four-cap0x1e0 deadline context; no peer reader, permission change
+or DAC capability is needed. The local12 controls copy the exact installed
+bytes into a disposable production-shaped fixture and reject foreign group,
+writable mode and same-length byte drift. SQL/filter semantics and prior seven
+genuine Ponder/PostgreSQL groups are unchanged and were not rerun for this
+metadata-only correction. Historicala792 is retained by root before explicit
+inactive helper replacement; this source packet performs no host replacement.

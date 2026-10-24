@@ -72,8 +72,8 @@ def validate_runtime():
              'literal_public_Ponder_semantics_path_required')
         path = root / relative
         before = path.lstat()
-        need(stat.S_ISREG(before.st_mode) and before.st_uid == before.st_gid == 0 and
-             before.st_nlink >= 1 and not before.st_mode & 0o022 and before.st_size <= 2000000,
+        need(stat.S_ISREG(before.st_mode) and before.st_uid == 0 and before.st_gid == 964 and
+             stat.S_IMODE(before.st_mode) == 0o640 and before.st_nlink == 1 and before.st_size <= 2000000,
              'root_owned_accepted_Ponder_semantics_file_required')
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
         try:

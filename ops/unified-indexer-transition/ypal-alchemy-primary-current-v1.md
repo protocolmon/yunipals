@@ -120,3 +120,13 @@ was never deployed and had no actual operation or financial receipts. That
 historical Git version remains preserved. The current source-only validation is
 32 focused Python controls plus one genuine read-only disposable PG16 group;
 actual host qualification and financial admission remain unclaimed.
+
+Production manager compatibility: normal and `--all` systemctl show returned31
+of36 security fields. Only ExecCondition, ExecStartPre, ExecStartPost, ExecStop
+and ExecStopPost may be omitted. Each omitted field must independently return
+Service D-Bus type `a(sasbttttuii)` and an empty data array before its canonical
+empty string is supplied. A missing different field, nonempty hook, unsupported
+type or query error refuses. No omitted value is treated as a default.33 focused
+Python controls pass after this correction; the unchanged earlier timestamp PG
+regression remains separate evidence. Historical8de source is retained by root
+and in the local pre-production-compatibility snapshot.

@@ -3,7 +3,9 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
+import tempfile
 import types
 import unittest
 
@@ -111,12 +113,29 @@ class Controls(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'closed_Ponder'): m.prefix(100, [['100', '111', True, False]])
 
     def test_actual_installed_bytes_and_readonly_query_wrapper(self):
-        n, c, p = fixture(); original = m.RUNTIME; m.RUNTIME = HERE.parents[1] / 'apps/yunipals-indexer/node_modules/ponder'
+        n, c, p = fixture(); original = m.RUNTIME
         queries = []
-        try:
-            v = m.validate_restart_capture(lambda sql: (queries.append(sql), c)[1], p, n)
-            self.assertEqual(v['installedPonder']['publicFiles'], 14)
-        finally: m.RUNTIME = original
+        installed = HERE.parents[1] / 'apps/yunipals-indexer/node_modules/ponder'
+        # Copy exact installed bytes, then apply the actual captured production
+        # metadata; do not mutate the dependency store or assume local pnpm modes.
+        with tempfile.TemporaryDirectory(prefix='.ponder-runtime-shape-', dir=HERE) as tmp:
+            m.RUNTIME = Path(tmp)
+            pins = json.loads(m.FILTERS.read_bytes())['runtimeFiles']
+            for relative in pins:
+                path = m.RUNTIME / relative; path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes((installed / relative).read_bytes())
+                os.chown(path, 0, 964); path.chmod(0o640)
+            try:
+                v = m.validate_restart_capture(lambda sql: (queries.append(sql), c)[1], p, n)
+                self.assertEqual(v['installedPonder']['publicFiles'], 14)
+                path = m.RUNTIME / next(iter(pins))
+                os.chown(path, 0, 0)
+                with self.assertRaisesRegex(RuntimeError, 'root_owned_accepted'): m.validate_runtime()
+                os.chown(path, 0, 964); path.chmod(0o660)
+                with self.assertRaisesRegex(RuntimeError, 'root_owned_accepted'): m.validate_runtime()
+                path.chmod(0o640); raw = path.read_bytes(); path.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+                with self.assertRaisesRegex(RuntimeError, 'semantics_bytes'): m.validate_runtime()
+            finally: m.RUNTIME = original
         self.assertEqual(len(queries), 1); self.assertIn('range_agg(part)', queries[0]); self.assertIn('ANY(w.ids)', queries[0])
         self.assertNotIn('UPDATE ', queries[0]); self.assertNotIn('INSERT ', queries[0])
 

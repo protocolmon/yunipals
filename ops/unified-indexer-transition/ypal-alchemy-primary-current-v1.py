@@ -153,6 +153,18 @@ def environment_files(m, unit):
 def manager_properties(m, unit, fields):
     value = dict(line.split("=", 1) for line in as_text(m.run(["/usr/bin/systemctl", "show", unit,
                  *["--property=" + key for key in fields]])).splitlines())
+    missing = set(fields) - set(value)
+    hooks = {"ExecCondition", "ExecStartPre", "ExecStartPost", "ExecStop", "ExecStopPost"}
+    need(set(value) <= set(fields) and missing <= hooks, "complete_actual_manager_property_set_required")
+    if missing:
+        need(unit.endswith(".service"), "typed_service_hooks_only_required")
+        obj = "/org/freedesktop/systemd1/unit/" + "".join(c if c.isalnum() else "_" + format(ord(c), "02x") for c in unit)
+        for key in sorted(missing):
+            typed = json.loads(as_text(m.run(["/usr/bin/busctl", "--json=short", "get-property",
+                "org.freedesktop.systemd1", obj, "org.freedesktop.systemd1.Service", key])))
+            need(typed["type"] == "a(sasbttttuii)" and typed["data"] == [],
+                 "omitted_service_hook_requires_actual_typed_empty_array")
+            value[key] = ""
     need(set(value) == set(fields), "complete_actual_manager_property_set_required")
     return value
 

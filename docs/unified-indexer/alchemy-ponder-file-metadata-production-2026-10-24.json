@@ -1,0 +1,148 @@
+{
+  "databaseWrites": 0,
+  "files": [
+    {
+      "bytes": 2958,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "package.json",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 14728,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/runtime/index.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 20890,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/runtime/fragments.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 14493,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/runtime/filter.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 25327,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/runtime/multichain.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 44226,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/runtime/historical.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 34209,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/build/config.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 5781,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/utils/interval.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 5436,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/utils/checkpoint.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 2540,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/internal/options.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 44055,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/sync-store/index.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 7067,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/sync-store/schema.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 30858,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/database/index.js",
+      "shaMatches": true,
+      "uid": 0
+    },
+    {
+      "bytes": 39422,
+      "gid": 964,
+      "mode": "0o640",
+      "nlink": 1,
+      "regular": true,
+      "relative": "dist/esm/rpc/actions.js",
+      "shaMatches": true,
+      "uid": 0
+    }
+  ],
+  "format": "yunipals-actual-ponder-public-file-metadata-v1",
+  "providerCalls": 0,
+  "serviceActions": 0
+}

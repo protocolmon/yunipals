@@ -4,8 +4,8 @@
   "files": [
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.py",
-      "bytes": 12850,
-      "sha256": "a79248e1aa896d9488d7a2aacb25cdafd8fcda333adb62e40d6919084166cd10"
+      "bytes": 12869,
+      "sha256": "35f751938c96bcd10e5f36412c8e7f7e0a31129874c2544c49116e85fafc59e4"
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.filters.json",
@@ -19,8 +19,8 @@
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.test.py",
-      "bytes": 7640,
-      "sha256": "c9723991ce1adc0773e3b16c9b5486f0e48407537e8d183d916a8ed44ff42f82"
+      "bytes": 8864,
+      "sha256": "2c00e45f7b9b49be2985cbe5be0a01584a57b1a2046baeea6afe30b9e000e202"
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.ponder.test.mjs",
@@ -29,8 +29,8 @@
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.md",
-      "bytes": 7755,
-      "sha256": "3baa1c9873dc3eea52e85be018ae0e43a1cf80e57c006229ba0dda44ecdc9e36"
+      "bytes": 8530,
+      "sha256": "4b94e1e533e7dd92afa1bfc47a57103397a7ca79f5b658dcd44afc7a7a9ca235"
     }
   ],
   "validation": {
@@ -54,7 +54,15 @@
       }
     ],
     "disposablePostgresCleanup": true,
-    "initialSandboxSubprocessTimeoutNotCounted": true
+    "initialSandboxSubprocessTimeoutNotCounted": true,
+    "metadataCorrectionControls": {
+      "passed": 12,
+      "log": "/tmp/yunipals-alchemy-restart-cache-python-controls-20261024.log",
+      "sha256": "6e0330017bfaee78956b7d20766fa9f65ca3d928869dc1abb516cd5b6f9425f8",
+      "initialSandboxChownEINVALNotCounted": true,
+      "localFixtureApprovedEscalation": true,
+      "unchangedSqlPonderPostgresRepeated": false
+    }
   },
   "interface": "validate_restart_capture(query, plan, native)",
   "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
@@ -90,5 +98,19 @@
     "fixtureExecutesActualSourceQueryArgv": true,
     "financial15438Rejected": true,
     "historicalUnpublishedGateSha256": "4b5fe374bc17199c0af98e675cb888c521cc8fcfe79da4e9a2806387e3360383"
+  },
+  "actualRuntimeMetadataCorrection": {
+    "historicalInactiveGateSha256": "a79248e1aa896d9488d7a2aacb25cdafd8fcda333adb62e40d6919084166cd10",
+    "metadataEvidenceSha256": "d0c54bf29d4f80b3fe6ad91cf385cbe80fb67b5614b13af80c4fdc15ad29dbdf",
+    "fourCapReadEvidenceSha256": "443f8d83d9c6b154a364e6bf8d346e40c116e11df63827dad3be91fd2eaf5bfb",
+    "uid": 0,
+    "gid": 964,
+    "mode": "0640",
+    "nlink": 1,
+    "actual14HashesMatch": true,
+    "actualFourCapRootReadAll14": true,
+    "producer": "root separate read-only production observations",
+    "newPermissionsOrCapabilities": false,
+    "statAndHashCasUnchanged": true
   }
 }

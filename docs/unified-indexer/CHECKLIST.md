@@ -10,6 +10,8 @@ Latest source check: **24 October 2026, 15:04 UTC**. The same restored source ha
 
 **Latest pack decision:** restart with fresh **YPAL (Yunipals)** and fresh pack/NFT contracts, ignoring the old PROTO test openings. One unlimited public type, no capped test pack. The earlier delivered PROTO launch below is historical; it is not proof that the new YPAL deployment is live. [Fresh launch scope](../boosters/ypal-fresh-launch-2026-10-23/README.md).
 
+**Alchemy transition, 19:00 UTC:** the actual cache matrix covers all 80 configured log filters through their saved native safe checkpoints with zero older holes. BNB is saved through129,524,066; its seven log filters are continuously cached through129,524,092. The switch will retain this progress and build71e2a7f3b7. The actual restricted financial peer also passes, with4,547,000 CU booked against the original20M ceiling. Seven reviewed public support files are staged inactive; routing and services remain unchanged. Actual server qualification found two validation assumptions to correct: Ponder public files use root:964/0640, and systemd exposes empty service hooks through typed D-Bus rather than `systemctl show`. These are recovery-check fixes, not missing indexed history. [Actual cache and peer observations](alchemy-cache-peer-production-2026-10-24.json).
+
 ## Fresh YPAL rollout
 
 - [x] Confirm fresh token, registry, engine and NFT collection; retain 1 YPAL, 264 variants, one daily credit, no boost and up to ten originals per transaction.

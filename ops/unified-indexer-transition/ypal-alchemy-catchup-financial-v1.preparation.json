@@ -48,7 +48,7 @@
     "fixedProtectedFilePrimitivesSha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
     "profileFileSha256": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b",
     "officialCheckpointDecoderSha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
-    "separatelyReviewedCloseLeafSha256": "8de3b2ea30f20b8120b3c2ee5e7efd3b046438f4f211e430b36045edaba8c37c"
+    "separatelyReviewedCloseLeafSha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215"
   },
   "scope": {
     "originalAllowanceCu": "20000000",
