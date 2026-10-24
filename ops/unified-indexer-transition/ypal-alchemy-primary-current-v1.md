@@ -11,6 +11,7 @@ Run the local controls with:
 
 ```
 python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py
+node ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.postgres.test.mjs
 python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py
 ```
 
@@ -63,10 +64,22 @@ set do not themselves prove a paid start.
 record the same fixed manager fields, typed no-job property, enabled state and
 root-owned boot-link inode/target packet used by this leaf. Current free program,
 NoNewPrivs=1 and all five zero capability masks are checked independently of the
-saved actor. `/metrics` must show free-first, zero paid calls and zero active or
-queued upstream work. A final four-route actor/input/definition/security/activation
+saved actor. `/metrics` must show `free_first`, integer zero paid calls and all
+five actual fallback flags strictly false. Healthy FREE requests may remain
+active or queued: integer counts must be nonnegative, active work must not exceed
+the reported upstream limit (1 through64), and queued work must not exceed the
+actual source queue limit64. This is a paid-quiet leaf; the lifecycle separately
+drains owned paid processes and budget sessions under its source lock.
+A final four-route actor/input/definition/security/activation
 CAS follows the per-route metrics reads. Only matched recorded budget backend
 identities must drain; unrelated role connections are not globally required zero.
+Both lifecycle capture and this leaf project `backend_start::text` before JSON
+serialization. Native timestamp JSON uses a `T` separator while the text cast
+uses a space, so mixing those projections can miss an identical live backend.
+The disposable PG16 test reproduces that distinction on its own still-live
+connection, demonstrates the former comparison miss, and executes the actual
+fixed leaf to refuse the matching text PID/start tuple. It adapts only the role
+predicate to that disposable client; it reads no production backend.
 
 `validate_deadline_prepared(plan_sha, deadline_receipt_sha)` can run before any
 financial admission. The fixed `deadline-prepared.json` binds that exact operation
@@ -101,3 +114,9 @@ ACK or empty cgroup alone never becomes never-paid. All runtime receipts and pri
 private; successful exports contain only bounded hashes/modes and authority flags.
 Both exports keep `sourceActorQualified:false`; neither replaces source, financial,
 canonical, readiness or complete lifecycle acceptance.
+
+This same-v1 correction supersedes published source552bd85d, which root confirmed
+was never deployed and had no actual operation or financial receipts. That
+historical Git version remains preserved. The current source-only validation is
+32 focused Python controls plus one genuine read-only disposable PG16 group;
+actual host qualification and financial admission remain unclaimed.

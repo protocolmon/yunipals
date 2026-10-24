@@ -1,0 +1,15 @@
+{
+  "databaseConnections": 0,
+  "databaseOperations": 0,
+  "financialAuthorityQualified": false,
+  "format": "yunipals-alchemy-primary-import-v2",
+  "loadedDependencyFiles": 468,
+  "nativeMetadataReads": 1,
+  "originalFailedImportPreserved": true,
+  "providerCalls": 0,
+  "qualificationResultSha256": "e2ef0d552fea4a0bedd6efe91cd3b23148ae53c6b396593c6dfd5c5615762334",
+  "qualified": true,
+  "runtimeSelected": false,
+  "serviceActions": 0,
+  "sourceLifecycleQualified": false
+}

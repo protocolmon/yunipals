@@ -1,0 +1,86 @@
+{
+  "format": "yunipals-alchemy-mixed-plan-host-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_BOUNDED_COMPONENT_SCOPE",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.py",
+      "bytes": 11227,
+      "sha256": "613890e63a7d086b6aa8685a52c11a369f8cc821953b663f1f21ebe183d15851"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.test.py",
+      "bytes": 11275,
+      "sha256": "928dcc1ce091cbb8bdeeacafbd96550d9faddc90d0fd68f2e617934e36eee952"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.py",
+      "bytes": 17932,
+      "sha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.test.py",
+      "bytes": 15502,
+      "sha256": "3280125ea414fb7d5c88974078ca2a6599fec6b8951de3300dde94062737314e"
+    }
+  ],
+  "independentlyPassed": {
+    "planControls": 14,
+    "hostControls": 13
+  },
+  "logs": [
+    {
+      "file": "/tmp/yunipals-alchemy-mixed-plan-independent-controls-20261024.log",
+      "sha256": "4ecedbc89c63de78646d7d3bdd810a4ded7ba7d82ed458da059ec79f191f9852"
+    },
+    {
+      "file": "/tmp/yunipals-alchemy-mixed-host-independent-controls-20261024.log",
+      "sha256": "504334941e35e2e567be725b9db1a42454796ff1d7cd85c60f2ef44f81abe8b9"
+    }
+  ],
+  "reviewedPaths": [
+    "Fixed proxy_mode selects paid_logs_free_blocks only for BNB; ethereum/base/polygon select paid_primary. Exactly two public flags are appended as the final proxy EnvironmentFile; conflicting modes are not selected.",
+    "Same10c34 artifact and original private file order, unit hardening/security, boot activation, zero-capability single process and new epoch/start window remain checked by Host.paid_route. No new artifact or provider authority is inferred.",
+    "Source env-i command preserves every original argument and the original three Node env-files, adding only the fourth scoped-permit file before the same Ponder entrypoint. Real Node24 env-i fixture confirms retained values, cleared parent environment and final override.",
+    "Exact20M original cap/additional15M split, four per-chain permits,8h maximum and UTC-minus900s deadline remain unchanged; normal10M and renewal remain unapproved. Actual financial owner independently binds configured minima/cache requirements.",
+    "Host.source_epoch retains exact six namespace comparisons and actor/public-environment recheck. Backing metadata now comes from a fixed UID970/GID964 empty-environment Python stat-only peer with clear groups, bounding/ambient/inheritable capabilities removed and NoNewPrivileges; no cache permissions or root DAC capabilities are added.",
+    "Local real cross-UID fixture proves cap0x1e0 root cannot directly stat owner-only cache, while the cap0 source peer returns only expected device/inode/UID/GID/kind for all six paths.",
+    "Existing source identity/heartbeat independent stop inspection, PID/start epoch/socket attribution, bounded budget subset mapping, and manager unit/verb restrictions remain present."
+  ],
+  "actualHostEvidence": {
+    "file": "/tmp/yunipals-deadline-capabilities-peer-readonly-production-20261024.json",
+    "sha256": "2b3759c087e2f5170a38c90ddb520502919d748a23874b1e5811131f88df0c32",
+    "performedBy": "root, separate bounded read-only capture",
+    "reviewedAggregate": {
+      "effectiveCapabilities": "0x1e0",
+      "boundingCapabilities": "0x1e0",
+      "noNewPrivileges": true,
+      "supplementaryGroups": [],
+      "sourceUIDCap0PeerStatSucceeded": true,
+      "originalThreeEnvReadableByRootFourCaps": [
+        true,
+        true,
+        true
+      ]
+    },
+    "independentlyRepeatedOnProduction": false
+  },
+  "limitations": [
+    "Review covers these four exact helper files only. Main lifecycle remains WIP and is not accepted by this review.",
+    "Root reported the separate mixed billing/queue HTTP controls; those were not repeated here and this review does not assert live provider selection or financial admission.",
+    "Caller must authenticate current artifacts/dependencies/private inputs/operation and financial records, own complete paid/source stop/drain and immediate final manager CAS, and verify actual mode metrics and current source before claiming a completed transition.",
+    "Runtime paid request authorization, configured minimum restart cache proof and timer close/UTC recovery remain separate real prerequisites."
+  ],
+  "hostActions": 0,
+  "productionDatabaseCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "wholeLifecycleQualified": false,
+  "sourceActorQualified": false,
+  "financialAuthorityQualified": false,
+  "preservedHistoricalReviews": [
+    "docs/unified-indexer/alchemy-source-plan-env-corrected-independent-review-2026-10-24.json",
+    "/tmp/yunipals-alchemy-source-switch-host-independent-review-20261024.json"
+  ]
+}

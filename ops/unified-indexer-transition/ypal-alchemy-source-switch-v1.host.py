@@ -23,6 +23,19 @@ API = "yunipals-booster-api.service"
 SOURCE_DROP = Path("/etc/systemd/system") / (SOURCE + ".d/99-alchemy-catchup-v1.conf")
 PROXY_DROP_NAME = "99-alchemy-catchup-v1.conf"
 PORTS = {"ethereum": 19221, "base": 19222, "polygon": 19223, "bnb": 19224}
+BACKING_STAT_PEER = r'''import json,os,pathlib,stat,sys
+assert os.geteuid()==970 and os.getegid()==964 and not os.getgroups()
+status=dict(line.split(':',1)for line in pathlib.Path('/proc/self/status').read_text().splitlines()if':'in line)
+assert status['NoNewPrivs'].strip()=='1'
+assert all(int(status[key],16)==0 for key in ['CapInh','CapPrm','CapEff','CapBnd','CapAmb'])
+paths=json.load(sys.stdin);assert isinstance(paths,dict)and len(paths)==6
+result={}
+for inside,backing in paths.items():
+ assert isinstance(inside,str)and inside.startswith('/')and isinstance(backing,str)and backing.startswith('/')
+ row=pathlib.Path(backing).stat()
+ result[inside]={'device':row.st_dev,'inode':row.st_ino,'uid':row.st_uid,'gid':row.st_gid,'kind':stat.S_IFMT(row.st_mode)}
+print(json.dumps(result,sort_keys=True))
+'''
 
 
 def need(ok, code):
@@ -237,11 +250,12 @@ class Host:
         actual = json.loads(self.m.command(["/usr/bin/setpriv", "--reuid=970", "--regid=964", "--clear-groups",
             "--inh-caps=-all", "--ambient-caps=-all", "--no-new-privs", "/usr/bin/env", "-i", "/usr/bin/python3", "-I", "-B",
             "-c", self.m.NAMESPACE_PEER], encoded({"pid": actor["parent"]["pid"], "paths": paths})))
-        expected = {}
-        for inside, backing in paths.items():
-            row = Path(backing).stat()
-            expected[inside] = {"device": row.st_dev, "inode": row.st_ino, "uid": row.st_uid, "gid": row.st_gid,
-                                "kind": stat.S_IFMT(row.st_mode)}
+        # The root deadline deliberately has no DAC bypass capability. Read
+        # owner970 cache inode metadata through the existing source UID rather
+        # than adding root capabilities or changing any cache permissions.
+        expected = json.loads(self.m.command(["/usr/bin/setpriv", "--reuid=970", "--regid=964", "--clear-groups",
+            "--inh-caps=-all", "--ambient-caps=-all", "--bounding-set=-all", "--no-new-privs",
+            "/usr/bin/env", "-i", "/usr/bin/python3", "-I", "-B", "-c", BACKING_STAT_PEER], encoded(paths)))
         public = json.loads(self.m.command(["/usr/bin/setpriv", "--reuid=970", "--regid=964", "--clear-groups",
             "--inh-caps=-all", "--ambient-caps=-all", "--no-new-privs", "/usr/bin/env", "-i", "/usr/bin/python3", "-I", "-B",
             "-c", self.source.s.PUBLIC_ENV_PEER, str(actor["parent"]["pid"]), json.dumps(expected_environment)]))

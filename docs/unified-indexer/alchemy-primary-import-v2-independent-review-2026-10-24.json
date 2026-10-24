@@ -1,0 +1,45 @@
+{
+  "format": "yunipals-alchemy-primary-import-v2-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_SOURCE_ONLY",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.py",
+      "bytes": 8199,
+      "sha256": "44d502b19bdae6a484db2da719bae154c9a96480d006d7bb9536f0c4ea36f083"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.test.py",
+      "bytes": 5494,
+      "sha256": "47bd617dd44e23207ce303c8bb264079a57dda4a1df916c8271881a5483e34a9"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.md",
+      "bytes": 3046,
+      "sha256": "97303565e8a40931d3b9a41cf95247502fef1fd0babe882d3072f69579a4f9a3"
+    }
+  ],
+  "scope": "Bounded independent critical source read; actual production qualification remains a separate root operation.",
+  "criticalPaths": [
+    "Exact immutable01da parent is loaded with original __file__/BASE; original qualified_stage retains its own original receipt/file/actor/dependency scope.",
+    "Exact1825 import guard accepts only four reversible classification substitutions. Native metadata getter still increments a separate bounded0..1 counter then throws BEFORE any native addon; database constructor/method/network/listen/pool/spawn denial and loaded-closure authorization remain unchanged.",
+    "Actual localNode24 and installed5ef4 pgESM reproduces one guarded lazy CJS native lookup with zero real database/network/Pool operations; this is not permission to permit addon/connection execution.",
+    "New qualifier has distinct format/BASE and new producer identities in its own intent/result; it does not re-run original qualify, overwrite old receipts or relabel the preserved original failed attempt.",
+    "Exact original failed intent/stderr and empty stdout are authenticated before/after, with no raw logs exported. Source-only default and readonly review do not mutate services/SQL/roles or choose an active runtime."
+  ],
+  "verification": {
+    "authorFocusedControlsPassed": 9,
+    "independentBroadTestRepeat": false,
+    "reason": "All critical source/namespace/guard derivations inspected; no new finding justified another identical cross-UID fixture run.",
+    "independentActualPgInteropProof": "/tmp/yunipals-pg-native-interop-probe-20261024.json"
+  },
+  "limitations": [
+    "Actual new inactive import must still pass with genuine installed dependencies/current peers under its own exclusive reviewed operation.",
+    "Neither classification correction nor imported exports qualify financial admission, current source/proxy runtime, readiness or paid provider selection."
+  ],
+  "hostActions": 0,
+  "providerCalls": 0,
+  "databaseConnections": 0,
+  "serviceActions": 0,
+  "runtimeSelected": false
+}

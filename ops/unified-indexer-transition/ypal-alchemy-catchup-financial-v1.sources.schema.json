@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed Alchemy catch-up financial source bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "closeLeaf", "rangeEvidence"],
+  "properties": {
+    "format": {
+      "const": "yunipals-ypal-alchemy-catchup-financial-v1-sources"
+    },
+    "closeLeaf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256"],
+      "properties": {
+        "file": { "const": "ypal-alchemy-primary-current-v1.py" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "rangeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captureHelperSha256", "rawReceiptSha256", "decoderSha256"],
+      "properties": {
+        "captureHelperSha256": { "$ref": "#/$defs/sha256" },
+        "rawReceiptSha256": { "$ref": "#/$defs/sha256" },
+        "decoderSha256": {
+          "const": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^(?!0{64}$)[a-f0-9]{64}$"
+    }
+  }
+}

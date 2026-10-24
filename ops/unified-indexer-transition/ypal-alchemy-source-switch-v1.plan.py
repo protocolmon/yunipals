@@ -87,10 +87,15 @@ def source_environment(plan):
                    for chain, row in rows.items()).encode()
 
 
-def proxy_environment(chain):
+def proxy_mode(chain):
     need(chain in CHAINS, "one_fixed_chain_required")
-    return ("MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY=true\n"
-            "MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_LOGS=false\n").encode()
+    return "paid_logs_free_blocks" if chain == "bnb" else "paid_primary"
+
+
+def proxy_environment(chain):
+    mixed = proxy_mode(chain) == "paid_logs_free_blocks"
+    return ("MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY=" + ("false" if mixed else "true") + "\n" +
+            "MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_LOGS=" + ("true" if mixed else "false") + "\n").encode()
 
 
 def proxy_drop(chain):

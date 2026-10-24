@@ -67,8 +67,10 @@ class Plan(unittest.TestCase):
             self.assertIn("EnvironmentFile=" + str(p.STAGE / (chain + ".public.env")), actual)
             self.assertNotIn("Environment=", "\n".join(actual))
             flags = dict(line.split("=", 1) for line in p.proxy_environment(chain).decode().splitlines())
-            self.assertEqual(flags["MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY"], "true")
-            self.assertEqual(flags["MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_LOGS"], "false")
+            mixed = chain == "bnb"
+            self.assertEqual(flags["MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY"], "false" if mixed else "true")
+            self.assertEqual(flags["MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_LOGS"], "true" if mixed else "false")
+            self.assertEqual(p.proxy_mode(chain), "paid_logs_free_blocks" if mixed else "paid_primary")
 
     def test_source_keeps_pool5_config_booster_backing_and_writable_mounts(self):
         raw = p.source_drop().decode()

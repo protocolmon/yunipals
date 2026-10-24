@@ -191,9 +191,18 @@ def activation(m, unit):
 
 def quiet_metrics(port):
     value = metrics(port)
-    need(value["unified"]["sourceRouting"] == "free_first" and value["traffic"]["paidCalls"] == 0 and
-         value["activeUpstreamRequests"] == 0 and value["queuedSourceRequests"] == 0,
-         "actual_free_route_without_paid_or_waiting_work_required")
+    fallback_flags = ("paidFallbackOnFreeFailure", "foregroundPaidFallbackOnFreeFailure",
+                      "orderPaidFallbackOnFreeFailure", "sourcePaidFallbackOnFreeFailure",
+                      "salePaidFallbackOnFreeFailure")
+    active, queued = value["activeUpstreamRequests"], value["queuedSourceRequests"]
+    maximum, queue_limit = value["maximumConcurrentUpstreamRequests"], value["sourceQueueLimit"]
+    need(value["unified"]["sourceRouting"] == "free_first" and
+         type(value["traffic"]["paidCalls"]) is int and value["traffic"]["paidCalls"] == 0 and
+         all(value[key] is False for key in fallback_flags) and
+         all(type(v) is int for v in (active, queued, maximum, queue_limit)) and
+         1 <= maximum <= 64 and queue_limit == 64 and
+         0 <= active <= maximum and 0 <= queued <= queue_limit,
+         "actual_free_route_without_paid_and_with_bounded_free_work_required")
     return True
 
 
@@ -433,7 +442,7 @@ def validate_paid_quiet(quiet_result_sha, financial_result_sha):
     need(len(drained) <= 8 and all(type(v["pid"]) is int and v["pid"] > 0 and
          isinstance(v["backendStart"], str) and 0 < len(v["backendStart"]) <= 100 for v in drained),
          "bounded_actual_owned_proxy_backend_epochs_required")
-    rows = m.query("SELECT coalesce(jsonb_agg(jsonb_build_object('pid',pid,'backendStart',backend_start)), '[]'::jsonb) "
+    rows = m.query("SELECT coalesce(jsonb_agg(jsonb_build_object('pid',pid,'backendStart',backend_start::text)), '[]'::jsonb) "
                    "FROM pg_stat_activity WHERE usesysid=16394")
     need(not any(v["pid"] == current["pid"] and v["backendStart"] == current["backendStart"]
                  for v in drained for current in rows), "all_recorded_paid_backend_epochs_must_be_drained")

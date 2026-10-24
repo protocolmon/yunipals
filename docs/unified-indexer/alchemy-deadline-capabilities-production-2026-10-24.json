@@ -1,0 +1,20 @@
+{
+  "databaseWrites": 0,
+  "format": "yunipals-deadline-four-cap-peer-readonly-inspection-v1",
+  "inspection": {
+    "backingMetadataSha256": "4c7fc7ca9a5b1070944cb20614535f4969098e9002c08b6c8cc27bb1cbd6852b",
+    "boundingCapabilities": "0x1e0",
+    "effectiveCapabilities": "0x1e0",
+    "noNewPrivileges": true,
+    "originalThreeEnvReadableByRootFourCaps": [
+      true,
+      true,
+      true
+    ],
+    "rawValuesRead": false,
+    "sourceUIDCap0PeerStatSucceeded": true,
+    "supplementaryGroups": []
+  },
+  "providerCalls": 0,
+  "serviceActions": 0
+}

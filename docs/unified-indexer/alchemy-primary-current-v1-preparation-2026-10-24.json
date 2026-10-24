@@ -5,22 +5,27 @@
   "files": [
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py",
-      "bytes": 31975,
-      "sha256": "552bd85d811645ee0ba02c2ab0747438d5bbab96e0edc59c850870e8d6f59862"
+      "bytes": 32642,
+      "sha256": "8de3b2ea30f20b8120b3c2ee5e7efd3b046438f4f211e430b36045edaba8c37c"
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py",
-      "bytes": 31444,
-      "sha256": "5d5b440e79e11c435a8adfcb4cda5380dca7f73a2f3db9ec4c7800533b921994"
+      "bytes": 33805,
+      "sha256": "c9828165c625a960f573c200f801d617855bf9b582c340b0545a8514f9a6e68b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.postgres.test.mjs",
+      "bytes": 3717,
+      "sha256": "f4bcce88cb86e557ea24bb16aabc296569dd89c7cde6380db4d8f037abef4df2"
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.md",
-      "bytes": 7065,
-      "sha256": "2c7f1e1d51b7f849b2bf1ed2be1df4734fc545e4cc7c0ef03518ce6987675e64"
+      "bytes": 8436,
+      "sha256": "8b87f27d70a53c6477316751ce55b90ba05021d0dcd65684607c729d1f863806"
     }
   ],
-  "focusedTestsPassed": 29,
-  "controlsLogSha256": "28587d857c86124c6580a2e3c880f006c1ea7a4dcf0ec05a0c20e4fa0152b57e",
+  "focusedTestsPassed": 32,
+  "controlsLogSha256": "8176d047a59b9b22db02c16f8cc256f37fb32b5267b1494d7dcc17d9a81c4f23",
   "controls": [
     "Real protected receipt files and exact admission-link/plan/result bindings.",
     "Never-paid all-nine-journal absence and mixed never/prepared/stopped branches.",
@@ -31,7 +36,9 @@
     "Deadline preparation works before financial result/admission link exist.",
     "Actual financial Owner.acknowledge result builder and actual financial model are executed against the public offline snapshot, then consumed by the actual quiet leaf; producer format is not mirrored.",
     "Explicit lost-start terminalScanRequired branch executes two complete same-UID proc scans initially and before final four-actor CAS. Real escaped subprocess refuses; after exit its actual kernel tuple is absent. Same-UID argv drift/unknown live program and paid-path references refuse.",
-    "Actual six-key timer schema has no MainPID; service-only PID query plus typed Unit no-job and exact Timer due proof accepted. Nonzero timer Job refuses."
+    "Actual six-key timer schema has no MainPID; service-only PID query plus typed Unit no-job and exact Timer due proof accepted. Nonzero timer Job refuses.",
+    "All five actual8afd metrics paid fallback flags must be strictly false, routing free_first and typed paidCalls zero; bounded nonnegative active/queued FREE traffic accepted. Paid mode/calls/each fallback flag and malformed or excessive queue/concurrency values refuse.",
+    "Actual lifecycle source projection and actual leaf emitted SQL both use backend_start::text. Genuine disposable PG16 reproduces native JSON T separator vs text space for one still-live connection; actual leaf accepted the old mismatched projection and refuses the fixed equal text PID/start tuple. No production or write query."
   ],
   "knownUnqualifiedPrefixes": [],
   "lifecycleOwner": "ypal-alchemy-source-switch-v1.py (separate root-owned implementation; not qualified by this packet)",
@@ -68,5 +75,28 @@
     "mainPidAbsent": true,
     "servicesOnlyMainPidFix": true,
     "rawProductionValuesExported": false
+  },
+  "genuinePostgresGroupsPassed": 1,
+  "commands": [
+    "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py",
+    "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.postgres.test.mjs",
+    "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py"
+  ],
+  "sameVersionCorrections": {
+    "historicalPublishedNeverDeployedSourceSha256": "552bd85d811645ee0ba02c2ab0747438d5bbab96e0edc59c850870e8d6f59862",
+    "rootActualState": "Leaf path and financial BASE absent; no actual receipts, so same-v1 correction permitted while historical Git preserved.",
+    "backendSerialization": "backend_start::text matches actual lifecycle capture exactly; no timezone parser.",
+    "financialQuietScope": "Paid activity must be absent; legitimate bounded FREE work may continue. Exact original8afd actor/environment/security/activation still required."
+  },
+  "genuinePostgresEvidence": {
+    "fixture": "Existing fixed postgres:16.15 disposable container yunipals-unified-indexer-test-20261020,127.0.0.1:56967",
+    "sql": "BEGIN READ ONLY; SET LOCAL timezone=UTC; pg_stat_activity own still-live test client only; ROLLBACK",
+    "groups": 1,
+    "passed": true,
+    "sandboxAttempt": "Initial Docker inspect EPERM before database access; exact isolated read-only test approved and passed with escalation.",
+    "databaseWrites": 0,
+    "productionDatabaseAccess": false,
+    "providerCalls": 0,
+    "hostActions": 0
   }
 }

@@ -2712,6 +2712,74 @@ test("mixed source queue drains bursts within eight upstream slots and preserves
   assert.deepEqual(fixture.counts.chargedMethods, []);
 });
 
+test("hybrid billing keeps successful numeric headers free and pays only for log queries", async () => {
+  const fixture = await historicalUnifiedProxyFixture({ paidLogs: true });
+  const headers = [0, 1, 2].map(sourceBlockRequest);
+  assert.equal((await fixture.request(headers)).status, 200);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.permitAttempts, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+
+  const opened = await fixture.request(fixture.logs, {
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(opened.status, 200);
+  assert.equal(fixture.counts.freeDispatches, 1);
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getLogs"]);
+  assert.equal(
+    (await fixture.metrics()).unified.sourceRouting,
+    "paid_logs_free_blocks"
+  );
+});
+
+test("hybrid billing bounds header fallback by its exact permit after public failure", async () => {
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    freeFails: true
+  });
+  assert.equal(
+    (
+      await fixture.request(sourceBlockRequest(0), {
+        [unifiedRpcPermitHeader]: fixture.permit
+      })
+    ).status,
+    200
+  );
+  assert.ok(fixture.counts.freeDispatches > 0);
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getBlockByNumber"]);
+
+  assert.equal((await fixture.request(sourceBlockRequest(1))).status, 403);
+  assert.equal(
+    (
+      await fixture.request(
+        { ...sourceBlockRequest(2), params: ["0x12d", true] },
+        { [unifiedRpcPermitHeader]: fixture.permit }
+      )
+    ).status,
+    403
+  );
+  assert.equal(fixture.counts.paidDispatches, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getBlockByNumber"]);
+});
+
+test("hybrid billing cannot bypass the monetary cap during header fallback", async () => {
+  const fixture = await historicalUnifiedProxyFixture({
+    paidLogs: true,
+    freeFails: true,
+    budgetDenied: true
+  });
+  const denied = await fixture.request(sourceBlockRequest(0), {
+    [unifiedRpcPermitHeader]: fixture.permit
+  });
+  assert.equal(denied.status, 429);
+  assert.equal(fixture.counts.permitApprovals, 1);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal((await waitForSourceQueue(fixture, 0)).activeUpstreamRequests, 0);
+});
+
 test("mixed source queue defers paid admission and removes cancelled paid work without spending", async (t) => {
   const held = heldSourceReply();
   t.after(held.release);

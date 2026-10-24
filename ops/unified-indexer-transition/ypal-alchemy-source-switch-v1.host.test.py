@@ -3,6 +3,7 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -173,6 +174,42 @@ class Restarts(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "fixture_namespace_inspection_reached"):
             host.source_epoch(operation, intent, "free", allow_restart_for_stop=True)
 
+
+class NarrowRootPeer(unittest.TestCase):
+    def test_four_cap_root_inspects_owner_only_cache_through_cap0_source_uid(self):
+        with tempfile.TemporaryDirectory(prefix="alchemy-backing-peer-") as tmp:
+            root = Path(tmp); root.chmod(0o755)
+            cache = root / "cache"; cache.mkdir(mode=0o700)
+            paths = {}
+            for index in range(6):
+                path = (cache if index < 3 else root) / ("backing" + str(index))
+                if index < 2: path.mkdir(mode=0o700)
+                else: path.write_bytes(b"public fixture"); path.chmod(0o600 if index < 3 else 0o644)
+                if index < 3: os.chown(path, 970, 964)
+                paths["/fixture/inside" + str(index)] = str(path)
+            os.chown(cache, 970, 964)
+            wrapper = r'''import json,os,pathlib,subprocess,sys
+data=json.load(sys.stdin)
+status=dict(line.split(':',1)for line in pathlib.Path('/proc/self/status').read_text().splitlines()if':'in line)
+assert os.geteuid()==0 and int(status['CapEff'],16)==int(status['CapBnd'],16)==0x1e0
+try:pathlib.Path(next(iter(data['paths'].values()))).stat();raise AssertionError('root_DAC_bypass_unexpected')
+except PermissionError:pass
+args=['/usr/bin/setpriv','--reuid=970','--regid=964','--clear-groups','--inh-caps=-all','--ambient-caps=-all','--bounding-set=-all','--no-new-privs','/usr/bin/env','-i','/usr/bin/python3','-I','-B','-c',data['peer']]
+result=subprocess.run(args,input=json.dumps(data['paths']).encode(),capture_output=True,timeout=8)
+assert result.returncode==0 and not result.stderr
+print(result.stdout.decode(),end='')
+'''
+            result = subprocess.run(["/usr/bin/setpriv", "--clear-groups",
+                "--bounding-set=-all,+setuid,+setgid,+setpcap,+kill", "--inh-caps=-all", "--ambient-caps=-all",
+                "--no-new-privs", "/usr/bin/env", "-i", "/usr/bin/python3", "-I", "-B", "-c", wrapper],
+                input=h.encoded({"paths": paths, "peer": h.BACKING_STAT_PEER}), capture_output=True, timeout=12)
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
+            actual = json.loads(result.stdout)
+            self.assertEqual(set(actual), set(paths))
+            for inside, backing in paths.items():
+                row = Path(backing).stat()
+                self.assertEqual((actual[inside]["device"], actual[inside]["inode"], actual[inside]["uid"], actual[inside]["gid"]),
+                                 (row.st_dev, row.st_ino, row.st_uid, row.st_gid))
     def test_owned_source_stop_identity_is_independent_of_database_and_heartbeat_health(self):
         host = h.Host.__new__(h.Host)
         parent = {"pid": 12, "argv": ["/node", "/project/ponder.js"], "cwd": "/project",

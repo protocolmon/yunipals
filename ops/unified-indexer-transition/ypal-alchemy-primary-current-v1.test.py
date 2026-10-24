@@ -62,7 +62,11 @@ class Fixture:
         self.env_data = {}
         self.jobs = {}
         self.metrics = {port: {'unified': {'sourceRouting': 'free_first'}, 'traffic': {'paidCalls': 0},
-                              'activeUpstreamRequests': 0, 'queuedSourceRequests': 0} for port in self.v.CHAINS.values()}
+                              'activeUpstreamRequests': 0, 'queuedSourceRequests': 0,
+                              'maximumConcurrentUpstreamRequests': 2, 'sourceQueueLimit': 64,
+                              **dict.fromkeys(('paidFallbackOnFreeFailure', 'foregroundPaidFallbackOnFreeFailure',
+                                  'orderPaidFallbackOnFreeFailure', 'sourcePaidFallbackOnFreeFailure',
+                                  'salePaidFallbackOnFreeFailure'), False)} for port in self.v.CHAINS.values()}
         self.rows = []
         self.hook = None
         self.metric_calls = 0
@@ -503,16 +507,51 @@ class Tests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'final_four'):
                     f.validate()
 
-    def test_paid_or_queued_or_active_metrics_refuse(self):
-        for path in ('paidCalls', 'queuedSourceRequests', 'activeUpstreamRequests', 'sourceRouting'):
+    def test_free_active_and_queued_work_does_not_block_paid_quiet(self):
+        f = Fixture(self, {'base': 'paid-stopped', 'bnb': 'prepared-stopped'})
+        for metric in f.metrics.values():
+            metric.update(activeUpstreamRequests=2, queuedSourceRequests=17)
+        self.assertTrue(f.validate()['paidRequestsQuiet'])
+
+    def test_paid_mode_calls_and_each_actual_fallback_flag_refuse(self):
+        flags = ('paidFallbackOnFreeFailure', 'foregroundPaidFallbackOnFreeFailure',
+                 'orderPaidFallbackOnFreeFailure', 'sourcePaidFallbackOnFreeFailure',
+                 'salePaidFallbackOnFreeFailure')
+        source = FILE.with_name('ypal-combined-rpc-pool-one-v1') / 'rpc-budget-proxy.mjs'
+        self.assertEqual(load().sha(source.read_bytes()), load().FREE_ARTIFACT_SHA)
+        text = source.read_text()
+        for key in flags:
+            self.assertIn(key, text)
+        for path in ('paidCalls', 'sourceRouting', *flags):
             with self.subTest(field=path):
                 f = Fixture(self)
                 metric = f.metrics[f.v.CHAINS['base']]
                 if path == 'paidCalls': metric['traffic'][path] = 1
                 elif path == 'sourceRouting': metric['unified'][path] = 'paid_primary'
-                else: metric[path] = 1
+                else: metric[path] = True
                 with self.assertRaisesRegex(RuntimeError, 'free_route_without_paid'):
                     f.validate()
+
+    def test_free_work_metrics_are_typed_and_bounded(self):
+        for key, value in (('activeUpstreamRequests', -1), ('activeUpstreamRequests', 3),
+                           ('activeUpstreamRequests', False), ('queuedSourceRequests', 65),
+                           ('queuedSourceRequests', '1'), ('maximumConcurrentUpstreamRequests', 65),
+                           ('sourceQueueLimit', 65), ('sourcePaidFallbackOnFreeFailure', 0)):
+            with self.subTest(key=key, value=value):
+                f = Fixture(self)
+                f.metrics[f.v.CHAINS['base']][key] = value
+                with self.assertRaisesRegex(RuntimeError, 'free_route_without_paid'):
+                    f.validate()
+
+    def test_backend_tuple_projection_matches_actual_lifecycle_sql(self):
+        f = Fixture(self)
+        statements = []
+        f.m.query = lambda sql: statements.append(sql) or []
+        f.validate()
+        lifecycle = FILE.with_name('ypal-alchemy-source-switch-v1.py').read_text()
+        projection = "jsonb_build_object('pid',pid,'backendStart',backend_start::text)"
+        self.assertIn(projection, lifecycle)
+        self.assertIn(projection, statements[0])
 
     def test_deadlines_can_be_prepared_before_financial_commit(self):
         f = Fixture(self)
