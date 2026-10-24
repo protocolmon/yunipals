@@ -1,0 +1,34 @@
+{
+  "format": "yunipals-restored-metadata-generation-independent-source-review-v1",
+  "observedAt": "2026-10-24T12:09:10.486920+00:00",
+  "verdict": "PASS",
+  "files": {
+    "ypal-restored-metadata-context-v1.py": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "ypal-restored-metadata-context-v1.test.py": "8081e20a53c841ecf2ae9698c01e449a606aa7ba931594f7db8ca2cfc46e0bc3",
+    "ypal-restored-metadata-handover-v1.py": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+    "ypal-restored-metadata-handover-v1.test.py": "dd8d3d0b92399693c86536f8abcda9fa8ef4cfabef318db1c441888e201b6fa3",
+    "ypal-restored-generation-v1.py": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+    "ypal-restored-generation-v1.test.py": "e3e0e2d59e5639e1c6fc361f5a0f9f9b946a4e5cbf9bd7f2a1fab46031c815a0",
+    "ypal-restored-generation-capacity-watch-v1.py": "c65a9e9c88b397c98ff21c93bcf0a0782e054b2d6313620820603c6dd7f67ac6"
+  },
+  "executedLocalControls": {
+    "staticContext": 11,
+    "metadata": 36,
+    "generation": 20
+  },
+  "correctedFinding": {
+    "generationConsumerSDKTimeoutSignature": "fixed_by_explicit_SDK_command_facade_and_regression"
+  },
+  "scope": [
+    "explicit_static_construction_and_active_or_terminal_inverse_source_leaf",
+    "fresh143_ref3_and_mandatory_phase_callback",
+    "new_metadata_operation_and_private_session_boot_recovery_bodies",
+    "new_generation_metadata_CLI_context_and_database_only_candidate_leaf",
+    "retained_snapshot_capsule_and_capacity_algorithms"
+  ],
+  "limitations": [
+    "No production host, provider, DB, service, credential or approval actions.",
+    "No actual new permission/adoption/build/cutover acknowledgement exists or is inferred.",
+    "Local retained lifecycle controls use synthetic fixtures and are distinct from actual runtime qualification."
+  ]
+}

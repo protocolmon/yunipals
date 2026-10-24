@@ -1,0 +1,95 @@
+{
+  "format": "yunipals-ypal-restored-generation-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+      "bytes": 40435
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-generation-capacity-watch-v1.py",
+      "sha256": "c65a9e9c88b397c98ff21c93bcf0a0782e054b2d6313620820603c6dd7f67ac6",
+      "bytes": 10104
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-generation-v1.test.py",
+      "sha256": "e3e0e2d59e5639e1c6fc361f5a0f9f9b946a4e5cbf9bd7f2a1fab46031c815a0",
+      "bytes": 8778
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-generation-v1.md",
+      "sha256": "61de018a05e9f7e6e1c85593c38620ea0e0e1110a32a0bf8f0e5456546d48c53",
+      "bytes": 9140
+    }
+  ],
+  "historicalOwner": {
+    "path": "ops/unified-indexer-transition/ypal-native-generation-v1.py",
+    "sha256": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6",
+    "bytes": 38576
+  },
+  "historicalMonitor": {
+    "path": "ops/unified-indexer-transition/ypal-generation-capacity-watch-v1.py",
+    "sha256": "0a0d1cfa850e60850ea3f2f53ffeccacbdc66130e058112443269064f3f4d36a",
+    "bytes": 10075
+  },
+  "requiredNewMetadataProducer": {
+    "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+    "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+    "bytes": 54661
+  },
+  "staticQueryContext": {
+    "path": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+    "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "bytes": 11874
+  },
+  "controls": {
+    "passed": 20,
+    "failed": 0,
+    "productionActions": 0,
+    "scope": "Retained local lifecycle/FS controls plus new constructor/identity/static leaf/timeout interface and AST controls"
+  },
+  "ownerASTSeams": [
+    "Host.__init__",
+    "Host.consumers",
+    "review",
+    "operation",
+    "worker_terminal",
+    "unit_bytes",
+    "accept_candidate",
+    "validate_candidate_database_current",
+    "main"
+  ],
+  "monitorASTFunctionChanges": 0,
+  "monitorIdentityConstantChanges": ["UNIT", "WORK", "APP", "ENV_FILES"],
+  "unchangedComponents": {
+    "installedArtifact": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+    "capsule": {
+      "path": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+      "bytes": 16971
+    },
+    "guard": {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+      "bytes": 14898
+    },
+    "bridgeSQLUnchanged": true,
+    "capacityAndCancellationBodiesUnchanged": true
+  },
+  "candidateFormat": "yunipals-ypal-restored-generation-candidate-v1",
+  "candidateCurrentDatabaseLeafAuthority": {
+    "sourceReadinessQualified": false,
+    "metadataCurrentReadinessQualified": false,
+    "readAdmissionGraphQualified": false,
+    "cacheActorQualified": false
+  },
+  "actualFutureAcknowledgementSupplied": false,
+  "generationBuilt": false,
+  "generationPublished": false,
+  "productionQueries": 0,
+  "databaseWrites": 0,
+  "serviceActions": 0,
+  "providerCalls": 0,
+  "gitActions": 0
+}

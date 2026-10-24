@@ -1,0 +1,117 @@
+{
+  "format": "yunipals-restored-read-cache-independent-review-v1",
+  "verdict": "PASS",
+  "packetSha256": "08558d7173ecc6fd34013d3209757fbe46efb780d4c31241a39a6899e139bc61",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.py",
+      "bytes": 28543,
+      "sha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.columns.sql",
+      "bytes": 775,
+      "sha256": "8efbbf11ba14c0ec645dfa0a9acc1ef64e89fc70315fb8d3b4cb66308162e4bf"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.test.py",
+      "bytes": 13344,
+      "sha256": "e2f903837209e3c0371b34a7e681152c160ca642052405556bdcd403f9613d9d"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-admission-v1-postgres.test.mjs",
+      "bytes": 15879,
+      "sha256": "2516dc19ff9ac5f64537cd4eeea75aac793a0ce9d2a126c04bf1a741a42ec425"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.md",
+      "bytes": 5149,
+      "sha256": "44e8a44dd78642c86a5797e1d95c736ea61014375b8f8c0f2cfb549a19cb9612"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.py",
+      "bytes": 29951,
+      "sha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.test.py",
+      "bytes": 10700,
+      "sha256": "fd8b2a465ccf6605bb27734336abf43f09cd91c12fc68ce6a8bc37e8048aec60"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-cache-peer-runtime-v1.py",
+      "bytes": 3409,
+      "sha256": "055ce7679c040de4286a30d71cf132c041878fa858d35cc4cdb81a62167fda6f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-cache-peer-runtime-v1.test.py",
+      "bytes": 6148,
+      "sha256": "0f1e186dfd46dad1b83f1be17489c3ffe072da066c316ca6aeae9c4b64dc7c00"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-cache-sql-v1.mjs",
+      "bytes": 5196,
+      "sha256": "118fdf4723320fed6b761ff953878dadc055ccfd62f4cf9da8219ce46e2492ab"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-cache-sql-v1.test.mjs",
+      "bytes": 2263,
+      "sha256": "b7d4849bb0f0f876139b72f9209ee22f515923604693d9589f55f444fc995a84"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.md",
+      "bytes": 5975,
+      "sha256": "f7bbdd615f2b8d71a764f2556eee8b13dd020fcac5ab8b7764c280ed0b7866c2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-cache-v1.preparation.json",
+      "bytes": 5197,
+      "sha256": "b189be04b63a4f6f2132ce39fc0cf201a3fba6a5c1808786686f2285e0fc1178"
+    }
+  ],
+  "independentControls": {
+    "readAdmissionPython": 15,
+    "cacheProviderPython": 12,
+    "actualUid111SealedImport": 4,
+    "fixedSqlDriver": 7,
+    "disposableLocalPostgreSQL16": 14,
+    "failed": 0
+  },
+  "findingsClosed": [
+    {
+      "finding": "Matching pre-existing column SELECT could pass forward admission but make table-level REVOKE noninvertible",
+      "severity": "P2",
+      "correction": "Exact relation/grantee column SELECT overlap refuses before fresh plan; unrelated ACLs remain exact",
+      "evidence": "Independent actual PG14 includes grant/revoke column-loss semantics, overlap refusal and unrelated-column positive"
+    },
+    {
+      "finding": "New SQL application name differed from retained no-unresolved-session recovery predicate",
+      "severity": "P2",
+      "correction": "Driver application name aligns with retained predicate; dedicated source/control check passes"
+    },
+    {
+      "finding": "Author self-audit: facade accepted an ignored passed acknowledgement argument",
+      "correction": "Facade now checks exact current configured admission acknowledgement; independent control passes"
+    }
+  ],
+  "reviewScope": [
+    "No old c9.load, metadata.load or old-source runtime constructor is used as current authority",
+    "Fresh Arena13-before-baseline ordering and exact143 existing-role read SQL with full all-grantee column ACL preservation",
+    "Separate four-cache-read authorization plus exact acknowledged full catalog and explicit two-LOGIN phase",
+    "New c54 execution namespace preserves lifecycle/private/boot/kernel-session/XID/unknown-ACK/inverse bodies",
+    "Static construction remains separate from explicit active994 or terminal fbb source proof",
+    "New metadata and generation producer/receipt identities are pinned explicitly",
+    "Three fixed sealed public modules under UID111; private/unlisted/query-fragment access refused; no import-time DB/provider startup"
+  ],
+  "limits": [
+    "Source and local synthetic tests only; actual host layout, live actors, future protected plans/acknowledgements and actual admission are not qualified",
+    "Canonical/framework/source readiness, reader availability and financial authority require separate actual phase proofs",
+    "No production, provider, role/grant, service, source or Git action occurred"
+  ],
+  "productionQueries": 0,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "sourceEdits": 0,
+  "gitActions": 0
+}

@@ -1,0 +1,24 @@
+{
+  "format": "yunipals-restored-ordinary-observer-independent-source-review-v1",
+  "observedAt": "2026-10-24T12:15:06.573004+00:00",
+  "verdict": "PASS",
+  "files": {
+    "ypal-restored-ordinary-observer-v1.py": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3",
+    "ypal-restored-ordinary-observer-v1.service.example": "0f1334d356a2cce76cae585fb60ff920e9d55eb2d8b13c4c0a56c4c4036b9126",
+    "ypal-restored-ordinary-observer-v1.test.py": "a51da283770164891c9350c52f62c494ca0a0679f9a14610daaa58defdb75caf"
+  },
+  "localControlsPassed": 32,
+  "findings": [],
+  "reviewed": [
+    "initial active READ91b+994 qualification and immutable plan/rehearsal/intent/result ancestry",
+    "logical registered4e manifest/native44/cache identity versus separate current writer authority",
+    "current support role/effective and column negative authority/nine-RPC-only scope",
+    "source-independent sustained unit, boot inode/oneattempt start/currentsameinvocation",
+    "stop and reconciliation independent of DB/source health with owned process and unit proofs"
+  ],
+  "limitations": [
+    "No host, provider, permission, credential, service or production SQL actions.",
+    "Local tests use retained synthetic lifecycle/recorded-chain fixtures.",
+    "No actual new READ143 or observer activation receipt exists or is inferred."
+  ]
+}

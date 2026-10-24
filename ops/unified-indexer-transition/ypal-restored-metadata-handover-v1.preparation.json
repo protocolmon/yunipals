@@ -1,0 +1,80 @@
+{
+  "format": "yunipals-ypal-restored-metadata-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+      "bytes": 11874
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.test.py",
+      "sha256": "8081e20a53c841ecf2ae9698c01e449a606aa7ba931594f7db8ca2cfc46e0bc3",
+      "bytes": 10357
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+      "bytes": 54661
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.test.py",
+      "sha256": "dd8d3d0b92399693c86536f8abcda9fa8ef4cfabef318db1c441888e201b6fa3",
+      "bytes": 9764
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.sources.example.json",
+      "sha256": "cb97649e14073a64e4eb080475be885286a01c6cd8ce78ef9d51e0579c3bdffa",
+      "bytes": 260
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.input.example.json",
+      "sha256": "a03d6f4317b015c8a21c3a31dae80bc512f64c37edebf7d720006a0dceee7795",
+      "bytes": 208
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.md",
+      "sha256": "b92f4ffb46bbd61778d87bd00b0e43dad89edc98aeced8f0b877af15a9993d33",
+      "bytes": 9655
+    }
+  ],
+  "historicalMetadataProducer": {
+    "path": "ops/unified-indexer-transition/ypal-native-metadata-handover-v1.py",
+    "sha256": "772a626934399a9ed53bc9a6c1a6b4af688c88b41995268a75246adc878b4ba1",
+    "bytes": 44399
+  },
+  "staticContext": {
+    "testControls": 11,
+    "independentlyReviewed": true,
+    "sourceAuthorityQualified": false
+  },
+  "newMetadataOwner": {
+    "testControls": 36,
+    "existingLifecycleControls": 27,
+    "newConstructorAndASTControls": 9,
+    "commonFunctionASTSeams": [
+      "Host.__init__",
+      "Host.refresh",
+      "review",
+      "operation",
+      "main"
+    ],
+    "operationalBodiesUnchanged": true,
+    "inverseSQLSha256": "332424e8b243596599aa831b0cba866e6881c36b729f071e02a2500a675fb473",
+    "identityConstantsChanged": ["FORMAT", "BASE", "ADMISSION_FILE", "DROP"],
+    "sourceManifestUsesActualFuturePins": true,
+    "actualFutureAcknowledgementSupplied": false
+  },
+  "frozenContextsUnchanged": [
+    "ypal-restored-read-current-context-v1.py",
+    "ypal-source-restored-current-context-v1.py",
+    "ypal-native-metadata-handover-v1.py"
+  ],
+  "currentOrFutureAdmissionQualified": false,
+  "metadataSelected": false,
+  "productionObservations": 0,
+  "productionDatabaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitActions": 0
+}
