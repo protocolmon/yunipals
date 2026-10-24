@@ -1,0 +1,61 @@
+{
+  "backendIdentitiesExported": false,
+  "currentCanonicalCoverageQualified": false,
+  "databaseActivity": {
+    "backendCount": 5,
+    "blockingBackendCount": 0,
+    "maximumQueryAgeSeconds": 8,
+    "maximumTransactionAgeSeconds": 8,
+    "readOnly": true
+  },
+  "databaseWrites": 0,
+  "fetchPositions": {
+    "base": 53027476,
+    "bnb": 129497495,
+    "mainnet": 26262394,
+    "polygon": 96091239
+  },
+  "format": "yunipals-restored-source-tail-aggregate-v1",
+  "observedAt": "2026-10-24T14:00:25.009621+00:00",
+  "providerCalls": 0,
+  "proxyObservations": [
+    {
+      "activeUpstreamRequests": 0,
+      "cachedObservedHead": "26262459",
+      "chainId": 1,
+      "currentCanonicalHeadQualified": false,
+      "queuedSourceRequests": 0,
+      "sourcePaidCalls": 0
+    },
+    {
+      "activeUpstreamRequests": 0,
+      "cachedObservedHead": "53027506",
+      "chainId": 8453,
+      "currentCanonicalHeadQualified": false,
+      "queuedSourceRequests": 0,
+      "sourcePaidCalls": 0
+    },
+    {
+      "activeUpstreamRequests": 0,
+      "cachedObservedHead": "96092658",
+      "chainId": 137,
+      "currentCanonicalHeadQualified": false,
+      "queuedSourceRequests": 0,
+      "sourcePaidCalls": 0
+    },
+    {
+      "activeUpstreamRequests": 0,
+      "cachedObservedHead": "129512656",
+      "chainId": 56,
+      "currentCanonicalHeadQualified": false,
+      "queuedSourceRequests": 0,
+      "sourcePaidCalls": 0
+    }
+  ],
+  "queryTextExported": false,
+  "runningTimeoutFixQualified": false,
+  "serviceActions": 0,
+  "sourceInvocation": "2069ffe9ed0d4621a7cfe40cb98dcbf4",
+  "sourcePid": 3111295,
+  "syncQueryQueue": 8
+}
