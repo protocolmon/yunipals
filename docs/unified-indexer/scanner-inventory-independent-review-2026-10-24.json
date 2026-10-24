@@ -1,0 +1,38 @@
+{
+  "actualHostCaptured": false,
+  "actualRepositoryScanPassed": true,
+  "candidateFiles": 786,
+  "candidateInventorySha256": "e622b0c34427b8f62fc6d06f70e5b21ec1573c124bf73d84cf6c48de3890553b",
+  "covered": [
+    "explicit detection scope and classified source/deployment candidates",
+    "mixed BNB discovery versus bounded maker reconstruction and market admission",
+    "unknown scanner/filter/config/activation evidence and changed candidate refusal",
+    "repository and declared source-root symlinks refuse before external reads",
+    "unknown service/timer/cron/boot/restart and process fixture changes refuse",
+    "only exact audit CLI/literal shell envelope may be separated; compound commands refuse",
+    "same command path never confers installed-program or retirement authority"
+  ],
+  "databaseWrites": 0,
+  "evidenceDigestValuesAndDetectorUnchanged": true,
+  "exitCode": 0,
+  "focusedControls": 25,
+  "format": "yunipals-scanner-inventory-independent-review-v1",
+  "independentlyRerun": true,
+  "installedProgramProvenanceQualified": false,
+  "knownLimits": [
+    "Detection is syntactic; it cannot prove absence of arbitrary indirect event scanning",
+    "Only detected candidates are byte-pinned, not all unrelated repository code",
+    "Actual host capture, reviewed host plan and installed runtime manifests remain separate",
+    "Installed program provenance and scanner retirement acceptance remain false"
+  ],
+  "lexicalMatchField": "matchSha256",
+  "operatorSha256": "ff68ce210195aafa4e9d175bc327e783ecd66fbe2240bc3307e26dea83bc23cb",
+  "productionSingleIngestorAccepted": false,
+  "providerCalls": 0,
+  "publicationScanNote": "All2176 earlier findings were individually verified public lexical digests under an ambiguous field label. Renaming that label changes no digest or discovery policy.",
+  "reviewedAt": "2026-10-24T14:43:50.861049+00:00",
+  "scannerRetirementAccepted": false,
+  "serviceActions": 0,
+  "sourceOnly": true,
+  "testsSha256": "80a0c5bd91fee9981c2b52465674fea1136825fc3d6172a0af94843a46340885"
+}

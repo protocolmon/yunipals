@@ -147,6 +147,7 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
   - [ ] Complete the production fallback switch, return and scanner-stop rehearsal after native adoption.
 - [ ] Resume the ordinary native rarity/leaderboard refresh worker and verify a newer generation with explicit retention/rollback lineage. The installed artifact includes the recurring worker, but the current reader/cache acceptance binds the first native generation and deliberately keeps recurring generation stopped; managed-source adoption does not complete this requirement.
 - [ ] Observe at least 24 hours, including a supervised restart, backup and idle cycle.
+- [x] Implement and independently verify the scanner inventory gate. All25 focused controls and the bounded repository scan pass with786 classified discovery/deployment candidates. Bounded trading admission checks remain allowed. Unknown detected entrypoints, source-root symlinks and changed boot/restart facts refuse; actual host capture, installed-program provenance and scanner retirement remain unqualified. [Procedure](../../ops/unified-indexer-transition/scanner-inventory-gate-v1.md), [review](scanner-inventory-independent-review-2026-10-24.json).
 - [ ] Disable every superseded scanner and its restart paths; finalize the operating runbook.
 
 ## Waiting or deferred
