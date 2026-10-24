@@ -1,0 +1,71 @@
+{
+  "actualPrerequisiteProbe": {
+    "aggregateSha256": "8605fa4a288bd37cd2f82e882c7ac00a4f4c0d284559e9429ec60379028979e0",
+    "allPermitFreeLanesFreeOnly": true,
+    "databaseWrites": 0,
+    "existingSupportRoleLogin": true,
+    "nativeReadsMissingBefore143": 5,
+    "policyGETs": 8,
+    "providerPOSTs": 0,
+    "roleMemberships": 0,
+    "serviceActions": 0,
+    "supportRoleOid": "73036832",
+    "unitAbsent": true,
+    "unixGid": 963,
+    "unixUid": 969
+  },
+  "authority": {
+    "canonicalAcceptanceClaimed": false,
+    "initialWriterQualificationSeparate": true,
+    "ongoingObserverQualifiesWriter": false,
+    "paidAuthority": false,
+    "recordedReadSameBootAncestryRetained": true,
+    "sourceReadinessAuthority": false
+  },
+  "date": "2026-10-24",
+  "dependencies": {
+    "currentReadAdmission": "c2da9d590d75823ec5ecf3038f73da93854e760faadb91bbc71e135f56e0a15a",
+    "initialWriterIntake": "70faf2514d0240625f0a1eaa84f527be5fb16bcf4391e56e8644bc708ae2d420",
+    "retainedObserverOwner": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3",
+    "sameTemplate": "0f1334d356a2cce76cae585fb60ff920e9d55eb2d8b13c4c0a56c4c4036b9126",
+    "sameWorkerInstallationReceipt": "2bc98b3ddf3fc26f044489ada6b4583d547dbabb3b161a5c417f44e25d98f972"
+  },
+  "files": [
+    {
+      "bytes": 10022,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-observer-v1.py",
+      "sha256": "2a84e16a31df3d5266d0ff3992753d01c6849b3755d173a6e29f2f1cdeebab93"
+    },
+    {
+      "bytes": 9909,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-observer-v1.test.py",
+      "sha256": "b0a0c45436fb202c3bccf5b5396eda8e32bc8da709160127a6049a6833ef8136"
+    },
+    {
+      "bytes": 3699,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-observer-v1.md",
+      "sha256": "447725586a955bbe5479dfde2be1a5235853618430827a82c144848488be2836"
+    }
+  ],
+  "format": "yunipals-alchemy-ordinary-observer-preparation-v1",
+  "scope": {
+    "additionalGrantEdges": 0,
+    "loginChanges": 0,
+    "newRoles": 0,
+    "poolMaximum": 2,
+    "sourceOrConsumerSelectionsChanged": false,
+    "workerChanged": false
+  },
+  "status": {
+    "actualRead143ReceiptInvented": false,
+    "actualRead143ReceiptRequired": true,
+    "observerStarted": false,
+    "productionSingleIngestorAccepted": false,
+    "sourceOnlyPrepared": true
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-ordinary-observer-v1.test.py",
+    "focusedControls": 8,
+    "localLogSha256": "79e20038f412da82d0f7fe951701d3d01bfa829cf97b995b66b0bfaf09caf57b"
+  }
+}
