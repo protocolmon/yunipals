@@ -253,17 +253,18 @@ class Context:
         import types
         pure = self.m.module(OPS / "ypal-combined-read-admission-v2.py", "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd")
         peer = types.SimpleNamespace(m=types.SimpleNamespace(run=self.m.command,protected=self.m.protected))
-        # Only pure definition/environment preservation and SDK kernel leaves;
-        # no historical permission/source constructor or installed-app claim.
+        # Only pure definition/environment and scoped process-metadata
+        # preservation; no legacy environ/exe peer or installed-app claim.
         sdk = self.m.Host.__new__(self.m.Host)
         unit = "yunipals-indexer.service"
         consumers=pure.consumer_frame(peer)
         return {"consumers":consumers,"currentFrames":{name:self.unit_preservation(name)for name in consumers},
-                "legacyParent":{"actor":sdk.actor(unit),"activation":sdk.activation(unit),"definitions":sdk.definitions(unit)},
+                "legacyParent":{"frame":self.unit_preservation(unit),"activation":sdk.activation(unit),"definitions":sdk.definitions(unit),
+                    "preservationOnly":True,"otherRuntimeAuthorityQualified":False},
                 "installedApplicationClosureQualified":False,"retirementQualified":False}
 
     def unit_preservation(self,unit):
-        need(unit in {FRESH,API,"yunipals-api.service","yunipals-collector-api.service","yunipals-islands-api.service","yunipals-metadata.service"},
+        need(unit in {FRESH,API,"yunipals-api.service","yunipals-collector-api.service","yunipals-islands-api.service","yunipals-metadata.service","yunipals-indexer.service"},
              "finite_current_peer_preservation_units_required")
         fields=["Id","FragmentPath","DropInPaths","MainPID","InvocationID","ControlGroup","ActiveState","SubState","UnitFileState","User","Group",
                 "WorkingDirectory","After","Requires","Wants","PartOf","BindsTo","TriggeredBy","Triggers","WantedBy","RequiredBy","UpheldBy"]

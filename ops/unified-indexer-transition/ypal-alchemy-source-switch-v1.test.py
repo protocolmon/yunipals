@@ -456,6 +456,28 @@ class Fixture(unittest.TestCase):
         private=o.Context.source_private_inputs(self.c,actor)
         self.assertEqual([row['identity']for row in private],[leaf.file_identity(path)for path in [definition,environment,node_input]])
 
+    def test_legacy_parent_uses_scoped_frame_without_privileged_environment_peer(self):
+        unit='yunipals-indexer.service';definition=self.root/'legacy.service';p.exclusive(definition,b'[Service]\n# synthetic original\n')
+        system=self.root/'system';system.mkdir(mode=0o755)
+        group=Path('/sys/fs/cgroup/system.slice')/unit/'cgroup.procs'
+        state={'Id':unit,'FragmentPath':str(definition),'DropInPaths':'','MainPID':'0'}
+        for key in ['After','Requires','Wants','PartOf','BindsTo','TriggeredBy','Triggers','WantedBy','RequiredBy','UpheldBy']:state[key]=''
+        class NoLegacyPeer:
+            def actor(self,*args,**kwargs):raise AssertionError('legacy actor/environ peer must never run')
+            def activation(self,name):return {'actualStaticActivationFixture':name}
+            def definitions(self,name):return {'actualStaticDefinitionsFixture':name}
+        self.m.Host=NoLegacyPeer
+        self.m.module=lambda *args:types.SimpleNamespace(consumer_frame=lambda peer:{})
+        self.m.command=lambda args:json.dumps({'type':'a(sb)','data':[]}).encode();self.h.rpc_m=object()
+        self.c.unit_preservation=types.MethodType(o.Context.unit_preservation,self.c)
+        real_exists=Path.exists
+        with patch.object(p,'SYSTEM',system),patch.object(leaf,'manager_properties',return_value=state),patch.object(Path,'exists',lambda path:False if path==group else real_exists(path)):
+            result=o.Context.og(self.c)
+        parent=result['legacyParent'];self.assertNotIn('actor',parent)
+        self.assertTrue(parent['preservationOnly']);self.assertFalse(parent['otherRuntimeAuthorityQualified'])
+        self.assertEqual(parent['frame']['definitions'][str(definition)]['identity'],leaf.file_identity(definition))
+        self.assertTrue(parent['frame']['preservationOnly']);self.assertFalse(result['installedApplicationClosureQualified']);self.assertFalse(result['retirementQualified'])
+
     def test_unknown_initial_stop_that_left_exact_original_actor_alive_closes_without_resend(self):
         self.close_fixture();self.intent('source-initial-stop-intent.json',actor=self.original)
         before=self.owner.digest('source-initial-stop-intent.json');self.h.source.state=lambda unit:{'MainPID':'999001'}

@@ -1,0 +1,78 @@
+{
+  "format": "yunipals-alchemy-main-legacy-frame-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_NARROW_PRESERVATION_SCOPE",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
+      "sha256": "7ae9a516fe1145f25676ba97e98c92a86123bf8797cf7758537ef7fde855f5a6",
+      "bytes": 87797
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+      "sha256": "7e4e805f0bf453a4f73cd0e4d948416542f915c87f90203614cd9bcf6dc9a906",
+      "bytes": 43781
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.manifest.py",
+      "sha256": "a4291d66e4d42f10940359811e7bd14fb707123e8641f19c2727bcd0ed2d20b6",
+      "bytes": 3759
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.md",
+      "sha256": "0bac79211b32c43c7ba283bfc8fef48cc5a8fc9211c236e9da03398366ab7401",
+      "bytes": 15486
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.preparation.json",
+      "sha256": "2e2408f4372d6b8964c36d38b7e62335815c69e16bac86d5723b4e9f6b9ca578",
+      "bytes": 5012
+    }
+  ],
+  "finitePacketSha256": "5c36c310b9f796c0299b26b98e3b82eefb8b5d64c6f2fa8e551abbe792e10ce6",
+  "ancestry": [
+    {
+      "file": "docs/unified-indexer/alchemy-source-switch-main-independent-review-2026-10-24.json",
+      "sha256": "917b74934313e139c131a31d8d5364902b9dd5e50f152f67fecc10c30ac3bc1f"
+    },
+    {
+      "file": "docs/unified-indexer/alchemy-source-switch-sdk-identity-independent-review-2026-10-24.json",
+      "sha256": "a8cf0a7e196508695234dcb58ff364107de00c948e63d44dce5a4f9857d08b61"
+    }
+  ],
+  "historicalMainSha256": "ca6646d111e2eda34c81bb40f8d47a3a1aad9290843fc5c13dd6906fee115b72",
+  "delta": [
+    "Context.og no longer invokes SDK.actor for yunipals-indexer.service; it captures the explicit unit_preservation frame instead.",
+    "Exactly one finite unit_preservation allowlist member added: yunipals-indexer.service. Other units remain refused.",
+    "Legacy parent record explicitly says preservationOnly true and otherRuntimeAuthorityQualified false. Overall installedApplicationClosureQualified and retirementQualified remain false.",
+    "Original SDK.activation and SDK.definitions retained; their frozen real bodies inspect manager, protected definitions and boot links without actor/environ/exe/cwd peer access.",
+    "Only the og body/comment and finite allowlist changed from historicalca66; source routing, finance, cache, deadline, start/stop/reconcile/close bodies are unchanged."
+  ],
+  "preservedEvidence": [
+    "Manager identity/definition and declared working-directory fields.",
+    "Actual bounded cgroup PIDs, kernel start ticks, command hashes, UID/GID/groups/capability status and before/after cgroup/manager CAS.",
+    "Ordered typed EnvironmentFiles plus process-declared Node env-file hashes and real six-field inode identities.",
+    "Original boot activation and definition hashes; no raw environment values or privileged proc environ/exe/cwd reads."
+  ],
+  "validation": {
+    "controlsPassed": 39,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+    "log": "/tmp/yunipals-alchemy-main-legacy-frame-independent-controls-20261024.log",
+    "logSha256": "4cc47058e705862b10644e9c588bd42f336c3f7543a37a77d2505a6d244a80f2",
+    "newExecutableRegression": "Actual Context.og delegates to actual unit_preservation over real protected definition with explicit manager/proc fixture; SDK.actor raises if invoked, definitions/boot remain captured, and false authority fields are asserted."
+  },
+  "limitations": [
+    "Preservation-only frame is intentionally not complete installed legacy application, process-environment, retirement, source or financial authority.",
+    "Root actual restricted-namespace preflight retry remains separate; no production operation or financial receipt is claimed.",
+    "Earlier full review and SDK fix remain immutable historical evidence; all current source/finance/cache/session/unknown-ACK gates outside this narrow delta remain applicable."
+  ],
+  "hostActions": 0,
+  "productionDatabaseCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "productionActivationQualified": false,
+  "financialAuthorityQualified": false,
+  "legacyRuntimeAuthorityQualified": false,
+  "legacyRetirementQualified": false
+}

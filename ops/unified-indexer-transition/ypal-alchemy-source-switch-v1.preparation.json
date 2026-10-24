@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
-      "sha256": "ca6646d111e2eda34c81bb40f8d47a3a1aad9290843fc5c13dd6906fee115b72",
-      "bytes": 87684
+      "sha256": "7ae9a516fe1145f25676ba97e98c92a86123bf8797cf7758537ef7fde855f5a6",
+      "bytes": 87797
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
-      "sha256": "b48019d5212c92ffed7b0dd2c15d25fe9e9da3b3786ee7822af3dd206f8e5f6c",
-      "bytes": 41843
+      "sha256": "7e4e805f0bf453a4f73cd0e4d948416542f915c87f90203614cd9bcf6dc9a906",
+      "bytes": 43781
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.manifest.py",
@@ -19,12 +19,12 @@
     },
     {
       "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.md",
-      "sha256": "b9a8598036ad3c2a5f4acdf666ff0ae434eb50230a3b6f7b1881bf9a9ece7b60",
-      "bytes": 15135
+      "sha256": "0bac79211b32c43c7ba283bfc8fef48cc5a8fc9211c236e9da03398366ab7401",
+      "bytes": 15486
     }
   ],
   "validation": {
-    "focusedOwnerFilesystemProtocolControls": 38,
+    "focusedOwnerFilesystemProtocolControls": 39,
     "actualManagerOrProviderInvocationsInTests": 0,
     "syntheticPeersExplicit": true
   },
@@ -92,7 +92,8 @@
     "ownedProxyFullMergedEnvironmentProof": true,
     "acknowledgedFreeProxyPreservedDuringRepeatedClose": true,
     "backendDrainUsesExactPidAndBackendStart": true,
-    "sixFieldIdentitiesUseActualFileMetadataNotFiveFieldSdk": true
+    "sixFieldIdentitiesUseActualFileMetadataNotFiveFieldSdk": true,
+    "legacyParentPreservationUsesMetadataFrameWithoutEnvironmentPeer": true
   },
   "production": {
     "ownerExecuted": false,
