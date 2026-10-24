@@ -1,0 +1,24 @@
+{
+  "format": "yunipals-restored-managed-inactive-review-refusal-v1",
+  "actualAttempt": "published75d inactive review after two-file bootstrap",
+  "completed": false,
+  "fixedCode": "managed_runtime_and_operation_must_stay_inactive",
+  "reason": "Inactive review incorrectly required the existing legacy parent terminal before staging; that parent remains active.",
+  "protectedEvidence": {
+    "bootstrapBeforeSha256": "73c917baa965c8c58aa83ac5591bdf28a0a57821805e01b3a57785a7bff4cc38",
+    "bootstrapStagedSha256": "45dcdce06d12d514e5ab9931c0a3566d4e4bf0e64ac847212f2e469d1edd8bd9",
+    "parentDiagnosticSha256": "efdd2b6162586ec67695b967cfcf0f4b47fd9556bc5cd187f4a9f3c0a0cba8fc",
+    "legacyPreservationSha256": "88612494b05fb612cc3ec9f501901858c03ee0fcbb726c4f5119ee4ab54ecff2"
+  },
+  "bootstrapReviewOrResultFileCreated": false,
+  "stagerAuditOrRuntimeDirectoryCreated": false,
+  "managedRuntimeConstructed": false,
+  "newSuccessor": "ypal-restored-managed-host-preparation-v2.py",
+  "actualV2HostExecutionCompleted": false,
+  "scope": "Fixed preserved-input provenance only; private argv, environment values and raw host reports remain on the production host.",
+  "installedApplicationClosureQualified": false,
+  "retirementQualified": false,
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0
+}

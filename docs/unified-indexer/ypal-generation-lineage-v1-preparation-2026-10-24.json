@@ -1,0 +1,55 @@
+{
+  "format": "yunipals-ypal-generation-lineage-source-v1",
+  "sourceOnly": true,
+  "files": {
+    "ops/unified-indexer-transition/ypal-generation-lineage-v1.mjs": "b3841f214cfb6f058bfcaca007ee0b0099d6b8940c881faf1f142baa7a833655",
+    "ops/unified-indexer-transition/ypal-generation-lineage-cycle-v1.mjs": "e89b68afee0a2c52b9d8a6c692ba4ec1d1e5a5a45c33fb01f375031ce6821a72",
+    "ops/unified-indexer-transition/ypal-generation-lineage-ledger-v1.mjs": "c1a107b1dd236503c63304461a097a18318d9669abf7853ac797cf828059923d",
+    "ops/unified-indexer-transition/ypal-generation-lineage-recovery-build-v1.mjs": "96b6adb8ce72677746aefaf6c459ba151495ecf8fe35e4c0d0a4c7bc95d02a45",
+    "ops/unified-indexer-transition/ypal-generation-lineage-recovery-v1.mjs": "9761243c16c3ed775393e7aeddcc4c688b05ae5db132628a41ef07057f056926",
+    "ops/unified-indexer-transition/ypal-generation-lineage-v1.test.mjs": "b96a3ccfbdbe340d6090c5292fb1d25db88f2d889c6efe3609419a2dfb8a4ca5",
+    "ops/unified-indexer-transition/ypal-generation-lineage-v1.postgres.test.mjs": "844237167c0cd7b33dc2ce62111b9f0ba61a6d35c5734ddf491dfcd5ca627b46",
+    "ops/unified-indexer-transition/ypal-generation-lineage-v1.md": "e87c1e39b1bc8d79fcf61a91aafcc2c3f80b5f337af561fa373ff4b562e61ca8"
+  },
+  "unchangedRuntimeDependencies": {
+    "ypal-native-cutover-v1.mjs": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+    "ypal-generation-recovery-v1.mjs": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+    "ypal-cache-guard-transition-v1.mjs": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2"
+  },
+  "requiredInstalledArtifacts": {
+    "unpublishedPreparation": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+    "atomicPublication": "2b104015af8aa0fd6f4710c07bcc73125819e663a3d2f15de8d31443e587cefe"
+  },
+  "baselineProof": {
+    "f81EmbeddedProjectionSourceSha256": "91c2f88b015d8d451f971b76f369fee60acc54d6f6d4d4c133c243285a22f424",
+    "f81PreparationMapSha256": "a3ab4315411d0621940cb0e6716f1a93bcb4a4010f836efda65f29fef8de44cd",
+    "unchangedCleanupBodySha256": "2d56fedf4a1fae3a3df4e002920608717980a151f4222a5225ad0f480dfa9c54",
+    "unchangedPrepareFunctionThroughEOFSha256": "ef222bf3b29e3feeb1681b7c7d789c609f60908e21e7879424cb264bcd9e56cc"
+  },
+  "scope": {
+    "logicalLineageAndCapsuleComponentPrepared": true,
+    "hostStaged": false,
+    "productionQueries": 0,
+    "serviceActions": 0,
+    "providerCalls": 0,
+    "roleActions": 0,
+    "workerActivationQualified": false,
+    "currentReaderServingQualified": false,
+    "actualRollbackRehearsalQualified": false,
+    "sustainableOrdinaryRefreshQualified": false,
+    "twentyFourHourRefreshQualified": false
+  },
+  "verification": {
+    "filesystemGroups": 9,
+    "postgresGroups": 16,
+    "databaseFixture": "fresh disposable synthetic PG16 database with actual native DDL and official source",
+    "privateBaselineRequired": false,
+    "syntheticClockAgingOnlyForCleanupEligibility": true
+  },
+  "requiredFollowup": [
+    "new receipt-gated supervised singleton activation owner with existing reserve, backup exclusion and private-input policy",
+    "new lineage-aware reader/cache/managed phase acceptance preserving all static and canonical predicates",
+    "actual coordinated rollback rehearsal before activation",
+    "actual sustained cadence and archive-frontier observations before24-hour acceptance"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "format": "yunipals-restored-managed-host-preparation-v2-source",
+  "sourceOnly": true,
+  "operatorSha256": "da720c27ebde1400662c1723fa2fe770e4d006f42d4975e59777c2f06e1a36a3",
+  "testsSha256": "0fe5652ba2dc3bbb362565f7c1a4b443b6dd3fe21113ebeb840a2b9be3e8f550",
+  "immutableV1Sha256": "75d376801cee9d55b17df7bc155d30c63460cb4829f347ad372d2d79b7efa673",
+  "unchangedPublicPlanSha256": "e81fa22d0ff9f25cbb4d667b6d537caf710b50fb1e775503a233f95d07bb638a",
+  "unchangedManagedOwnerSha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5",
+  "publicPayloadCommit": "0c4832b5fdbf3e32d1eb402e5ad1c395ef114087",
+  "actualPrivateReadOnlyPacketSha256": "88612494b05fb612cc3ec9f501901858c03ee0fcbb726c4f5119ee4ab54ecff2",
+  "reuseSeams": [
+    "New format and exclusive audit BASE",
+    "Exact legacy preservation predicate and digest-only capture binding",
+    "All v1 public staging/preflight functions and other Host method bodies unchanged"
+  ],
+  "localControls": {
+    "authorPassed": 10,
+    "independentlyRerunByRootPassed": 10,
+    "hostCalls": 0,
+    "productionDatabaseCalls": 0,
+    "externalNetworkCalls": 0,
+    "realLocalFileFingerprintControls": true
+  },
+  "requiredLegacyScope": {
+    "exactExistingActorAndActivation": true,
+    "historicalDefinitionDigests": 4,
+    "typedOrderedEnvironmentFiles": 2,
+    "actualNodePonderCompilerConfigAndLoaderFingerprints": true,
+    "currentProcessAndActivationRecheck": true,
+    "privateValuesTransferred": false,
+    "rawPrivatePathsExported": false,
+    "installedApplicationClosureQualified": false,
+    "newManagedWriterQualified": false,
+    "currentWriterQualified": false,
+    "retirementQualified": false,
+    "sourceReadinessQualified": false,
+    "financialAuthorityQualified": false
+  },
+  "futureHostExecution": {
+    "completed": false,
+    "publicSourceStagedByV2": false,
+    "completedInverseQualified": false,
+    "actualREADAdmissionQualified": false,
+    "nativeAdoptionQualified": false,
+    "managedOwnerParentTerminalGateChanged": false
+  },
+  "actionsByAuthor": {
+    "hostCalls": 0,
+    "productionDatabaseWrites": 0,
+    "roleOrGrantChanges": 0,
+    "serviceActions": 0,
+    "providerCalls": 0,
+    "gitActions": 0
+  },
+  "limitations": [
+    "Only readonly preservation of the specifically captured existing legacy parent is qualified.",
+    "Opaque application dependencies and actual managed/current-writer/retirement authority are explicitly excluded.",
+    "The legacy parent must still be retired before the separately frozen managed owner can run.",
+    "Unknown or partial public staging has no automatic retry, overwrite or service action."
+  ]
+}
