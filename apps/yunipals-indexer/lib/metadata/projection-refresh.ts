@@ -23,7 +23,8 @@ import {
   nativeProjectionSnapshotEnabled,
   preservedProjectionGenerations,
   projectionPublicationSourcePredicate,
-  projectionSourceSnapshot
+  projectionSourceSnapshot,
+  type ProjectionSourceSnapshot
 } from "./projection-snapshot.js";
 
 const scopes = Array.from(
@@ -182,6 +183,131 @@ export async function validateGeneration(
   };
 }
 
+/** Publication boundary for a caller-owned READ COMMITTED transaction. The
+ * caller may stage private derived data first, then invoke this fresh canonical
+ * CAS immediately before its own COMMIT. Failures require caller rollback. */
+export async function publishGenerationInTransaction(
+  client: PoolClient,
+  id: string,
+  release: string | null,
+  predecessor: string | null,
+  additionalSourceSnapshot?: ProjectionSourceSnapshot
+) {
+  // PostgreSQL rejects SAVEPOINT outside a transaction before any business write.
+  await client.query("SAVEPOINT yunipals_generation_publication");
+  if (
+    nativeProjectionSnapshotEnabled() &&
+    (
+      await client.query<{ isolation: string }>(
+        "SELECT current_setting('transaction_isolation') AS isolation"
+      )
+    ).rows[0]?.isolation !== "read committed"
+  )
+    throw new Error("projection_publication_requires_read_committed");
+  await client.query("SET LOCAL lock_timeout='500ms'");
+  await client.query("SET LOCAL statement_timeout='2s'");
+  const active = await client.query<{ current_id: string | null }>(
+    "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
+  );
+  if (active.rows[0]?.current_id !== predecessor)
+    throw new Error("projection_predecessor_changed");
+  const candidate = await client.query<{
+    state: string;
+    metadata_release_id: string | null;
+    format_version: number;
+    source_mode: string;
+    validated: boolean;
+    source_snapshot: unknown;
+  }>(
+    `SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated,
+      validation->'sourceSnapshot' AS source_snapshot FROM metadata_projection.generation g
+      WHERE id=$1 AND ${generationOwnershipProof("g")}`,
+    [id]
+  );
+  if (
+    candidate.rows[0]?.state !== "ready" ||
+    candidate.rows[0].metadata_release_id !== release ||
+    candidate.rows[0].format_version !== 1 ||
+    candidate.rows[0].source_mode !== (archiveMode ? "archive" : "legacy") ||
+    !candidate.rows[0].validated
+  ) {
+    throw new Error("projection_candidate_not_ready");
+  }
+  if (archiveMode) {
+    const currentRelease = await client.query<{ release_id: string }>(
+      "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
+    );
+    if (currentRelease.rows[0]?.release_id !== release)
+      throw new Error("projection_source_release_changed");
+  }
+  const sourceSnapshot = nativeProjectionSnapshotEnabled()
+    ? projectionSourceSnapshot(candidate.rows[0]!.source_snapshot)
+    : null;
+  if (
+    sourceSnapshot &&
+    (sourceSnapshot.metadataReleaseId !== release ||
+      sourceSnapshot.predecessor !== predecessor)
+  )
+    throw new Error("projection_snapshot_binding_changed");
+  const additional =
+    additionalSourceSnapshot === undefined
+      ? null
+      : projectionSourceSnapshot(additionalSourceSnapshot);
+  if (
+    additional &&
+    (!sourceSnapshot ||
+      additional.releaseId !== sourceSnapshot.releaseId ||
+      additional.readIdentity !== sourceSnapshot.readIdentity ||
+      additional.manifestHash !== sourceSnapshot.manifestHash ||
+      additional.metadataReleaseId !== release ||
+      additional.predecessor !== predecessor ||
+      additional.baseMetadataFrontier !== sourceSnapshot.baseMetadataFrontier)
+  )
+    throw new Error("projection_additional_snapshot_binding_changed");
+  const publication = await client.query(
+    `UPDATE metadata_projection.active
+    SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton
+      AND current_id IS NOT DISTINCT FROM $3::bigint
+      AND EXISTS(SELECT 1 FROM metadata_projection.generation g WHERE g.id=$1 AND g.state='ready'
+        AND g.metadata_release_id IS NOT DISTINCT FROM $2::text AND g.format_version=1
+        AND g.source_mode='${archiveMode ? "archive" : "legacy"}' AND g.validation IS NOT NULL
+        AND ${generationOwnershipProof("g")}
+        ${sourceSnapshot ? "AND g.validation->'sourceSnapshot'=$4::jsonb" : ""})
+      ${archiveMode ? "AND EXISTS(SELECT 1 FROM metadata_source.archive_release WHERE state='active' AND release_id=$2)" : ""}
+      ${sourceSnapshot ? `AND ${projectionPublicationSourcePredicate("$4")}` : ""}
+      ${additional ? `AND ${projectionPublicationSourcePredicate("$5")}` : ""}
+    RETURNING current_id`,
+    sourceSnapshot
+      ? [
+          id,
+          release,
+          predecessor,
+          JSON.stringify(sourceSnapshot),
+          ...(additional ? [JSON.stringify(additional)] : [])
+        ]
+      : [id, release, predecessor]
+  );
+  if (publication.rowCount !== 1)
+    throw new Error("projection_publication_source_changed");
+  await client.query(
+    "UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1",
+    [id]
+  );
+  if (sourceSnapshot) {
+    // Stamp exactly the identity accepted by the pointer statement, rather
+    // than sampling a potentially newer marker in a separate statement.
+    await client.query(
+      `INSERT INTO metadata.derived_snapshot
+      (name,metadata_release_id,ownership_release_id,ownership_read_identity) VALUES('traits',$1,$2,$3)
+      ON CONFLICT(name)DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,
+        ownership_release_id=EXCLUDED.ownership_release_id,ownership_read_identity=EXCLUDED.ownership_read_identity,updated_at=now()`,
+      [release, sourceSnapshot.releaseId, sourceSnapshot.readIdentity]
+    );
+  } else await stampDerivedSnapshot(client, "traits", release);
+  await client.query("RELEASE SAVEPOINT yunipals_generation_publication");
+  return active.rows[0]?.current_id ?? null;
+}
+
 export async function publishGeneration(
   client: PoolClient,
   id: string,
@@ -190,86 +316,14 @@ export async function publishGeneration(
 ) {
   await client.query("BEGIN");
   try {
-    await client.query("SET LOCAL lock_timeout='500ms'");
-    await client.query("SET LOCAL statement_timeout='2s'");
-    const active = await client.query<{ current_id: string | null }>(
-      "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
+    const previous = await publishGenerationInTransaction(
+      client,
+      id,
+      release,
+      predecessor
     );
-    if (active.rows[0]?.current_id !== predecessor)
-      throw new Error("projection_predecessor_changed");
-    const candidate = await client.query<{
-      state: string;
-      metadata_release_id: string | null;
-      format_version: number;
-      source_mode: string;
-      validated: boolean;
-      source_snapshot: unknown;
-    }>(
-      `SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated,
-        validation->'sourceSnapshot' AS source_snapshot FROM metadata_projection.generation g
-        WHERE id=$1 AND ${generationOwnershipProof("g")}`,
-      [id]
-    );
-    if (
-      candidate.rows[0]?.state !== "ready" ||
-      candidate.rows[0].metadata_release_id !== release ||
-      candidate.rows[0].format_version !== 1 ||
-      candidate.rows[0].source_mode !== (archiveMode ? "archive" : "legacy") ||
-      !candidate.rows[0].validated
-    ) {
-      throw new Error("projection_candidate_not_ready");
-    }
-    if (archiveMode) {
-      const currentRelease = await client.query<{ release_id: string }>(
-        "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
-      );
-      if (currentRelease.rows[0]?.release_id !== release)
-        throw new Error("projection_source_release_changed");
-    }
-    const sourceSnapshot = nativeProjectionSnapshotEnabled()
-      ? projectionSourceSnapshot(candidate.rows[0]!.source_snapshot)
-      : null;
-    if (
-      sourceSnapshot &&
-      (sourceSnapshot.metadataReleaseId !== release ||
-        sourceSnapshot.predecessor !== predecessor)
-    )
-      throw new Error("projection_snapshot_binding_changed");
-    const publication = await client.query(
-      `UPDATE metadata_projection.active
-      SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton
-        AND current_id IS NOT DISTINCT FROM $3::bigint
-        AND EXISTS(SELECT 1 FROM metadata_projection.generation g WHERE g.id=$1 AND g.state='ready'
-          AND g.metadata_release_id IS NOT DISTINCT FROM $2::text AND g.format_version=1
-          AND g.source_mode='${archiveMode ? "archive" : "legacy"}' AND g.validation IS NOT NULL
-          AND ${generationOwnershipProof("g")}
-          ${sourceSnapshot ? "AND g.validation->'sourceSnapshot'=$4::jsonb" : ""})
-        ${archiveMode ? "AND EXISTS(SELECT 1 FROM metadata_source.archive_release WHERE state='active' AND release_id=$2)" : ""}
-        ${sourceSnapshot ? `AND ${projectionPublicationSourcePredicate("$4")}` : ""}
-      RETURNING current_id`,
-      sourceSnapshot
-        ? [id, release, predecessor, JSON.stringify(sourceSnapshot)]
-        : [id, release, predecessor]
-    );
-    if (publication.rowCount !== 1)
-      throw new Error("projection_publication_source_changed");
-    await client.query(
-      "UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1",
-      [id]
-    );
-    if (sourceSnapshot) {
-      // Stamp exactly the identity accepted by the pointer statement, rather
-      // than sampling a potentially newer marker in a separate statement.
-      await client.query(
-        `INSERT INTO metadata.derived_snapshot
-        (name,metadata_release_id,ownership_release_id,ownership_read_identity) VALUES('traits',$1,$2,$3)
-        ON CONFLICT(name)DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,
-          ownership_release_id=EXCLUDED.ownership_release_id,ownership_read_identity=EXCLUDED.ownership_read_identity,updated_at=now()`,
-        [release, sourceSnapshot.releaseId, sourceSnapshot.readIdentity]
-      );
-    } else await stampDerivedSnapshot(client, "traits", release);
     await client.query("COMMIT");
-    return active.rows[0]?.current_id ?? null;
+    return previous;
   } catch (error) {
     await client.query("ROLLBACK").catch(() => undefined);
     // A lost commit response is ambiguous. The caller checks the pointer.

@@ -1,0 +1,96 @@
+{
+  "format": "yunipals-generation-publisher-runtime-v1-preparation",
+  "scope": "inactive_caller_owned_library_artifact_only",
+  "artifactDigest": "2b104015af8aa0fd6f4710c07bcc73125819e663a3d2f15de8d31443e587cefe",
+  "manifestSha256": "1a8174b05977bd6ef1adfd50a9f5679543c6be1325bbbf126a81cafec23c7b84",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-build-v1.mjs",
+      "bytes": 11988,
+      "sha256": "df3d9fca9c8e63dac8f653cc98be8ec5317429669527d939f452ecabfca3137a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-build-v1.test.mjs",
+      "bytes": 7309,
+      "sha256": "2e2c80220e212209f3aae50da3721f4e548efe4b3626eac3afdb893fc2cb0a79"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-install-v1.py",
+      "bytes": 10270,
+      "sha256": "6fd77eac7014eb68b5f605d04a8d432c95866bc55a9f0814bf76ffb24943610c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-install-v1.test.py",
+      "bytes": 3938,
+      "sha256": "981485c522fbf556b6cc95aa737f6b07bfd9cf5330e023284a6ef2ca6db940d3"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-runtime-v1.manifest.json",
+      "bytes": 17239,
+      "sha256": "1a8174b05977bd6ef1adfd50a9f5679543c6be1325bbbf126a81cafec23c7b84"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-publisher-v1.md",
+      "bytes": 6186,
+      "sha256": "5dea5a3423d9423a9ba2fa2be897ea349d7a8692abe0c3318747db4e26281a55"
+    }
+  ],
+  "artifactFiles": [
+    {
+      "path": "dist/native-leaderboard-preparation.mjs.map",
+      "bytes": 127797,
+      "sha256": "58d670ce215c84d85d3f98e7dcad82b545692033800ecf3ea2e9a0abafe41bb2"
+    },
+    {
+      "path": "dist/native-leaderboard-preparation.mjs",
+      "bytes": 47701,
+      "sha256": "203417c7fb002a63271e25abb6cc6c95a0ea39d0902a2868d4c31a1547f36bb0"
+    },
+    {
+      "path": "dist/projection-publication.mjs.map",
+      "bytes": 113983,
+      "sha256": "deb4478e83bb66b0ca3a5fb8cf5821b20ce1760a3bf24de3db3f82ac9662375b"
+    },
+    {
+      "path": "dist/projection-publication.mjs",
+      "bytes": 62130,
+      "sha256": "fdfb15298ca117a1d15088021f0aa47878bfa43cecc257ba2b42e1fadfd61817"
+    }
+  ],
+  "runtimeOutputFiles": 4,
+  "sourceAndResolutionInputs": 31,
+  "libraryMapping": [
+    {
+      "source": "apps/yunipals-indexer/lib/leaderboard/native-preparation.ts",
+      "artifact": "dist/native-leaderboard-preparation.mjs",
+      "requiredExports": [
+        "prepareNativeLeaderboardCandidate",
+        "stagePreparedNativeLeaderboard"
+      ],
+      "executeAsCommand": false
+    },
+    {
+      "source": "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "artifact": "dist/projection-publication.mjs",
+      "requiredExports": [
+        "publishGenerationInTransaction"
+      ],
+      "executeAsCommand": false
+    }
+  ],
+  "predecessorCandidateArtifactDigest": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+  "predecessorCandidateArtifactModified": false,
+  "transactionOwnerRequired": true,
+  "coordinatedPublicationAndConsumerCutoverRequired": true,
+  "productionReadinessClaimed": false,
+  "productionExecutionAuthorized": false,
+  "dependencyInstalls": 0,
+  "databaseActions": 0,
+  "providerRequests": 0,
+  "serviceActions": 0,
+  "tests": {
+    "buildImportAndRelocationGroups": 5,
+    "realFilesystemInstallerControls": 4,
+    "genuinePostgresReviewedSourceGroups": 32
+  }
+}

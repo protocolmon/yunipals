@@ -49,3 +49,23 @@ The separate runtime artifact, complete recovery capsule, actual read admission,
 native metadata readiness, capacity check and owned execution remain rollout gates.
 Native candidate publication, leaderboard replacement and reader selection belong
 to the subsequent coordinated cutover; a prepared candidate is not an active one.
+
+The private leaderboard preparation now supports that cutover without publishing
+before its expensive computation. On one dedicated client, a repeatable-read
+transaction computes session-private wallet statistics and returns an immutable
+handle. A later read-committed transaction checks the complete private-row digest,
+stages the wallet rows and leaderboard stamp invisibly, and applies the final
+pointer update with both canonical source proofs. The caller commits the pointer,
+traits stamp, leaderboard stamp and wallet rows together. A failed proof or caller
+rollback leaves the previous committed tuple intact. The handle is bound to the
+exact client and temporary relation; copied handles, changed rows and changed
+metadata or canonical anchors refuse before publication.
+
+The expanded genuine PostgreSQL suite covers 32 groups, including private
+preparation, old/new visibility across a single commit, complete rollback,
+same-count wallet mutations, independent source-anchor races and transaction
+context refusal. Run it with `node --import tsx
+scripts/test-native-leaderboard-preparation.mjs`. The separate
+[publication library artifact](../../ops/unified-indexer-transition/ypal-generation-publisher-v1.md)
+is installed inactive; this does not start a generation or perform the reader
+switch.

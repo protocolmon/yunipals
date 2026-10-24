@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import { stampDerivedSnapshot } from "../ownership/derived-snapshot.js";
 import { assertOwnershipAvailable } from "../ownership/readiness.js";
 import { metadataScanReadRelation as metadataReadRelation } from "../metadata/read-source.js";
@@ -20,7 +21,8 @@ import {
   captureProjectionInputs,
   nativeProjectionSnapshotEnabled,
   projectionPublicationSourcePredicate,
-  projectionSourceSnapshot
+  projectionSourceSnapshot,
+  type ProjectionInputSnapshot
 } from "../metadata/projection-snapshot.js";
 import { generationOwnershipProof } from "../ownership/projection-proof.js";
 
@@ -257,6 +259,67 @@ $preserve_read_grants$;
   }
 }
 
+/** The one aggregation used by ordinary refresh and unpublished preparation.
+ * Input relations come only from the native capture or the configured legacy reader. */
+export async function populatePrivateWalletStats(
+  client: PoolClient,
+  input: ProjectionInputSnapshot | null,
+  updatedAt: Date
+) {
+  const metadataInput = input?.metadataRelation ?? metadataReadRelation;
+  const tokenInput = input?.tokenRelation ?? `${ponderSchema}.token`;
+  await client.query(
+    `CREATE TEMP TABLE next_wallet_stats (LIKE leaderboard.wallet_stats INCLUDING ALL) ON COMMIT ${input ? "PRESERVE ROWS" : "DROP"}`
+  );
+  if (input)
+    await client.query(`DO $private_stats$ DECLARE a record;BEGIN FOR a IN
+      SELECT x.grantee FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner)))x
+      WHERE c.oid='pg_temp.next_wallet_stats'::regclass AND x.grantee<>c.relowner LOOP
+      EXECUTE format('REVOKE ALL ON pg_temp.next_wallet_stats FROM %s',CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee))END);
+      END LOOP;END $private_stats$`);
+  await client.query(
+    `
+      INSERT INTO next_wallet_stats(scope, owner, monster_count, total_rarity, unique_types,
+        special_count, glitter_count, collector_score, score_version, updated_at)
+      WITH scopes(scope) AS (SELECT unnest($3::text[])),
+      token_traits AS MATERIALIZED (
+        SELECT m.collection, m.token_id, m.lifecycle,
+          COALESCE(${rarityPointsCappedSql}, 0) AS rarity,
+          traits.monster_type, traits.is_special, traits.is_glitter
+        FROM ${metadataInput} m
+        ${localRarityJoin}
+        LEFT JOIN LATERAL (
+          SELECT rarity_attribute->>'value' AS value
+          FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) rarity_attribute
+          WHERE rarity_attribute->>'trait_type' = 'Rarity Points' LIMIT 1
+        ) rp ON true
+        -- Aggregate each token's attributes once, without sorting its full JSON
+        -- once per attribute. Materialize the compact result before scope joins.
+        LEFT JOIN LATERAL (
+          SELECT max(a->>'value') FILTER (WHERE a->>'trait_type' = 'Type') AS monster_type,
+            bool_or(a->>'trait_type' = 'Special' AND a->>'value' = 'Yes') AS is_special,
+            bool_or(a->>'trait_type' = 'Glitter' AND a->>'value' <> 'None') AS is_glitter
+          FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) a
+        ) traits ON true
+      ), aggregates AS (
+        SELECT s.scope, lower(t.owner) AS owner, count(*)::int AS monster_count,
+          sum(COALESCE(x.rarity, 0)) AS total_rarity,
+          count(DISTINCT x.monster_type)::int AS unique_types,
+          count(*) FILTER (WHERE x.is_special)::int AS special_count,
+          count(*) FILTER (WHERE x.is_glitter)::int AS glitter_count
+        FROM scopes s JOIN ${tokenInput} t ON s.scope='all' OR t.collection = ANY(string_to_array(s.scope, '+'))
+        LEFT JOIN token_traits x ON x.collection=t.collection
+          AND x.token_id=t.token_id::numeric AND x.lifecycle=t.lifecycle
+        WHERE NOT t.burned AND t.collection=ANY($4::text[]) GROUP BY s.scope, lower(t.owner)
+      )
+      SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
+        round((1000*ln(1+total_rarity) + 50*monster_count + 500*unique_types + 750*special_count + 250*glitter_count)::numeric, 4),
+        $1, $2 FROM aggregates
+    `,
+    [scoreVersion, updatedAt, collectionScopes, collectionSlugs]
+  );
+}
+
 export async function refreshLeaderboard(expectedGenerationId?: string) {
   if (
     expectedGenerationId !== undefined &&
@@ -290,8 +353,6 @@ export async function refreshLeaderboard(expectedGenerationId?: string) {
       await assertOwnershipAvailable(client, collectionSlugs);
       if (archiveMode) await assertChainReady(client, collectionSlugs);
     }
-    const metadataInput = input?.metadataRelation ?? metadataReadRelation;
-    const tokenInput = input?.tokenRelation ?? `${ponderSchema}.token`;
     const generation = input
       ? (
           await client.query<{ id: string; snapshot: unknown }>(
@@ -331,57 +392,8 @@ export async function refreshLeaderboard(expectedGenerationId?: string) {
     await client.query(
       "SELECT pg_advisory_xact_lock(hashtext('yunipals:leaderboard-refresh'))"
     );
-    await client.query(
-      `CREATE TEMP TABLE next_wallet_stats (LIKE leaderboard.wallet_stats INCLUDING ALL) ON COMMIT ${input ? "PRESERVE ROWS" : "DROP"}`
-    );
+    await populatePrivateWalletStats(client, input, updatedAt);
     privateStats = Boolean(input);
-    if (input)
-      await client.query(`DO $private_stats$ DECLARE a record;BEGIN FOR a IN
-      SELECT x.grantee FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner)))x
-      WHERE c.oid='pg_temp.next_wallet_stats'::regclass AND x.grantee<>c.relowner LOOP
-      EXECUTE format('REVOKE ALL ON pg_temp.next_wallet_stats FROM %s',CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee))END);
-      END LOOP;END $private_stats$`);
-    await client.query(
-      `
-      INSERT INTO next_wallet_stats(scope, owner, monster_count, total_rarity, unique_types,
-        special_count, glitter_count, collector_score, score_version, updated_at)
-      WITH scopes(scope) AS (SELECT unnest($3::text[])),
-      token_traits AS MATERIALIZED (
-        SELECT m.collection, m.token_id, m.lifecycle,
-          COALESCE(${rarityPointsCappedSql}, 0) AS rarity,
-          traits.monster_type, traits.is_special, traits.is_glitter
-        FROM ${metadataInput} m
-        ${localRarityJoin}
-        LEFT JOIN LATERAL (
-          SELECT rarity_attribute->>'value' AS value
-          FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) rarity_attribute
-          WHERE rarity_attribute->>'trait_type' = 'Rarity Points' LIMIT 1
-        ) rp ON true
-        -- Aggregate each token's attributes once, without sorting its full JSON
-        -- once per attribute. Materialize the compact result before scope joins.
-        LEFT JOIN LATERAL (
-          SELECT max(a->>'value') FILTER (WHERE a->>'trait_type' = 'Type') AS monster_type,
-            bool_or(a->>'trait_type' = 'Special' AND a->>'value' = 'Yes') AS is_special,
-            bool_or(a->>'trait_type' = 'Glitter' AND a->>'value' <> 'None') AS is_glitter
-          FROM jsonb_array_elements(COALESCE(m.attributes, '[]')) a
-        ) traits ON true
-      ), aggregates AS (
-        SELECT s.scope, lower(t.owner) AS owner, count(*)::int AS monster_count,
-          sum(COALESCE(x.rarity, 0)) AS total_rarity,
-          count(DISTINCT x.monster_type)::int AS unique_types,
-          count(*) FILTER (WHERE x.is_special)::int AS special_count,
-          count(*) FILTER (WHERE x.is_glitter)::int AS glitter_count
-        FROM scopes s JOIN ${tokenInput} t ON s.scope='all' OR t.collection = ANY(string_to_array(s.scope, '+'))
-        LEFT JOIN token_traits x ON x.collection=t.collection
-          AND x.token_id=t.token_id::numeric AND x.lifecycle=t.lifecycle
-        WHERE NOT t.burned AND t.collection=ANY($4::text[]) GROUP BY s.scope, lower(t.owner)
-      )
-      SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
-        round((1000*ln(1+total_rarity) + 50*monster_count + 500*unique_types + 750*special_count + 250*glitter_count)::numeric, 4),
-        $1, $2 FROM aggregates
-    `,
-      [scoreVersion, updatedAt, collectionScopes, collectionSlugs]
-    );
     if (input) {
       // Keep computed rows session-private while obtaining a fresh publication
       // snapshot. Public approval TTL and canonical guards remain unchanged.

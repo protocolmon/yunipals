@@ -1,5 +1,11 @@
 # Inactive native generation runtime
 
+Rebuild this immutable candidate runtime from public commit `4aa5f2b0` on
+`codex/indexer-monorepo`. Later revisions add separately packaged publication
+libraries and intentionally differ from this builder's exact application pins.
+Use a separate checkout at that revision when running this v2 builder or its
+build tests; the installed artifact remains unchanged.
+
 This immutable package contains four entrypoints: unpublished generation
 preparation, the existing combined refresh, the recurring leaderboard worker and
 leaderboard-only completion. Its digest is `f81cdb76…`. The preparation entry
