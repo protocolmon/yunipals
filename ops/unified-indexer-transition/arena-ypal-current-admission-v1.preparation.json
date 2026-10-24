@@ -1,0 +1,74 @@
+{
+  "actualAncestry": {
+    "actualGeneratorProofSha256": "5c61585c38a4ef310966408bcdd172ba6a681417c4b419fbc99460126a66da6c",
+    "addedGeneratedFunctions": 21,
+    "allFunctionsInvoker": true,
+    "currentCatalogSha256": "b709ebaf92d05a92e89781bf329506ef85e7a2ca77830df1fb80c41c048685aa",
+    "currentSourceBeforeAfterPassed": true,
+    "eightActorAcknowledgementCurrent": true,
+    "existingDefaultReviewPassed": false,
+    "fixedRefusal": "actual_new_source_ambient_function_defaultACL_or_identity_changed",
+    "generatorFilesMatchedAcceptedRuntime": 2,
+    "originalCatalogSha256": "938a9821e266b79c5963f0f66ffc52a9a301bc908d8a870744feeed9272a4083",
+    "sameSourcePID": true,
+    "totalFunctions": 23
+  },
+  "approvedScope": {
+    "credentialsInThisOperator": false,
+    "loginInThisOperator": false,
+    "newRoles": 9,
+    "operationalEdges": 227,
+    "requiredEdges": 240,
+    "sourceSelects": 13
+  },
+  "date": "2026-10-24",
+  "files": [
+    {
+      "bytes": 22687,
+      "path": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.py",
+      "sha256": "c04d5c42fff6934b89b8d009c947e4230c63555cbe91e5a5a91aa3a0b9281035"
+    },
+    {
+      "bytes": 13658,
+      "path": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.test.py",
+      "sha256": "bfbca71b5985676cca31e38a19dd166b4edf7bc1b87d341cbbd096ffcad87376"
+    },
+    {
+      "bytes": 80246,
+      "path": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.proposal.json",
+      "sha256": "0789c643ff3513aec9f8d5cceb95eb15226b60c007e82d80ac37b51d4a538ac4"
+    },
+    {
+      "bytes": 976,
+      "path": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.manifest.json",
+      "sha256": "c46aaa553b51e0feae2f099c7b0e4165736ccbb67d91f9a8d9ccfaee8c5804f0"
+    },
+    {
+      "bytes": 4442,
+      "path": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.md",
+      "sha256": "bfcf44d1bd10bda826b7e1da8bed57ee02a71956c9817dd40ebb6f9aa9a6edc1"
+    }
+  ],
+  "format": "yunipals-arena-current-admission-preparation-v1",
+  "limits": [
+    "Actual host Context timing must fit12seconds before any held transaction; old timeout remains15seconds.",
+    "Current70f execution is valid only during the actual paid completion window; post-admission catalog leaves intentionally qualify no writer.",
+    "Actual role admission must precede root new READ143 baseline; no role or SQL body is changed by publication.",
+    "Credentials/LOGIN require their distinct exact admission-linked owner; they are not dispatched here."
+  ],
+  "newExecution": {
+    "admitted": false,
+    "credentialWrites": 0,
+    "loginChanges": 0,
+    "providerCalls": 0,
+    "rehearsed": false,
+    "reviewed": false,
+    "roleChanges": 0,
+    "serviceActions": 0
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/arena-ypal-current-admission-v1.test.py",
+    "focusedControls": 9,
+    "privateLogSha256": "b73992fc7932fa3a019823c94007f20b6674b5b6fc6f0614cf0b46c558646f9d"
+  }
+}
