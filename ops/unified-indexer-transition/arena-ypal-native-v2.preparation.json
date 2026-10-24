@@ -1,0 +1,154 @@
+{
+  "format": "yunipals-arena-ypal-native-v2-preparation-v1",
+  "status": "prepared-actual-actor-and-RPC-context-bound-no-admission-or-cutover",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.admission.postgres.test.py",
+      "sha256": "64fb11a675f2952c94a061f492da915f3e2beb24efe99612d2136a480abb0647",
+      "bytes": 9206
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.admission.py",
+      "sha256": "543986e8986b4b44b11b65d247cfcc0b6ebd7a6cf27ef52626f22a6fd650db7e",
+      "bytes": 26406
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.admission.test.py",
+      "sha256": "0a2aefb07eaa4d17fa4c67d5a085db058b7f9f7af775cdf8f272d8728de3896c",
+      "bytes": 18543
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.context.py",
+      "sha256": "b50169a2cd5f4b88454d85046cc48e1a861e07c103d4b39faa3ec98dcb3775bd",
+      "bytes": 7743
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.context.test.py",
+      "sha256": "0069a877207de360ca548c3656e4f1addb46d4e68c032a5c97ad2faf98335065",
+      "bytes": 6026
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.credentials.py",
+      "sha256": "30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e",
+      "bytes": 27448
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.credentials.test.py",
+      "sha256": "df85844f61478cf9785634daf8c13f9531a75a661cda97009eb7b1efef85e1c3",
+      "bytes": 12913
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.manifest.json",
+      "sha256": "e6ad4daa39f31f545abc09f7a1b465b4a06033257b1b5e9f69e76375e8d22ff3",
+      "bytes": 2197
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.md",
+      "sha256": "99d716b2ca29968c8ff84d49eae380fcb096c1b4c69ff01745ca5993231ddffb",
+      "bytes": 7214
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.py",
+      "sha256": "92b043b5a69d8cf8e62085f9c17545e8fb0a2ff2658916b8c62a2aa85216f04e",
+      "bytes": 77709
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.rehearsal.py",
+      "sha256": "ed2c7fee798b343d10dde2904ff7d3a2ac8ebfe97879e8d14e503632a8ac3e1a",
+      "bytes": 2045
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.source.py",
+      "sha256": "2c045d5769a91c9f98ea28a598017cbfd0cccbfb71fd5569a8d2728fce143bd8",
+      "bytes": 4526
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v2.test.py",
+      "sha256": "c87b54f81126c1686c5b9aa52b23060ec5cca175449a3842721df7adaa696429",
+      "bytes": 44404
+    }
+  ],
+  "actualActorAcknowledgement": {
+    "producerSha256": "07eaedc6b3a5616ae2473d386187f72f7bbd56665a0f26483c4edeaf9812ef46",
+    "resultSha256": "d3f1b61c244979dbf8b94281ba0d062e35fbca5ee52a1c92d9b9d97bd52781d4",
+    "reviewHash": "c7b78f2b5c149d9c21aec4bbaf9dd83fab19f6a3ad5a5b6469c70820872f95bf",
+    "capturedBy": "parent-root",
+    "originalActors": 3,
+    "restartedActors": 5,
+    "databaseWrites": 0,
+    "serviceChanges": 0,
+    "providerCalls": 0
+  },
+  "localControls": {
+    "context": 7,
+    "admission": 12,
+    "credentials": 22,
+    "nativeOwner": 40
+  },
+  "localPostgres": {
+    "actualExtraUpdateRejected": true,
+    "actualInteractivePsqlCommitAcknowledged": true,
+    "actualSourceReads": 13,
+    "fixtureOnly": true,
+    "format": "yunipals-arena-ypal-admission-local-pg-proof-v2",
+    "ownedScramAndLoginPhasesPassed": true,
+    "passed": true,
+    "postgres": "16.15",
+    "preparedOidsDurableBeforeCommit": true,
+    "productionActions": 0,
+    "restrictedAuthQueryWithoutResetRejected": true,
+    "sessionUserEqualsResetCurrentUser": true,
+    "operatorSha256": "543986e8986b4b44b11b65d247cfcc0b6ebd7a6cf27ef52626f22a6fd650db7e"
+  },
+  "historicalV1CodeManifestSha256": "75db8f6ae4b7121753d6d6425992bbb60856b4632f95d707c18e126fec91a5b2",
+  "historicalV1Unmodified": true,
+  "sourceQualificationBound": true,
+  "nativeCutoverReady": false,
+  "roleAdmissionPerformed": false,
+  "credentialsConfigured": false,
+  "productionActionsByAuthor": 0,
+  "sameLogicalGrantScope": {
+    "operational": 227,
+    "source": 13,
+    "total": 240
+  },
+  "unchangedNativeLeaves": {
+    "childSha256": "bbade6fb6e64079046b16ce650ffe495577e9a10f4d9cc2d835f479b8a04eba1",
+    "pureAdoptionSha256": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162"
+  },
+  "explicitRemainingInput": "Actual v2 role admission/authentication, new plan with canonical floor and current latest native/canonical coverage; no role OIDs or future receipts guessed. A real pool8 source epoch needs a separate admitted successor context.",
+  "compositionPathCorrection": {
+    "admissionBase": "/var/backups/yunipals-arena-ypal-admission-v2-20261024",
+    "credentialsBase": "/var/backups/yunipals-arena-ypal-credentials-v2-20261024",
+    "actualModuleJoinControlPassed": true,
+    "historicalV1Unmodified": true
+  },
+  "unchangedAdmissionFunctionBodies": [
+    "boundary",
+    "catalog_sql",
+    "current_catalog",
+    "peer_identity",
+    "expected",
+    "validate_catalog",
+    "graph",
+    "expected_graph",
+    "Lines",
+    "save",
+    "saved"
+  ],
+  "runtimeManifestSha256": "e6ad4daa39f31f545abc09f7a1b465b4a06033257b1b5e9f69e76375e8d22ff3",
+  "actualRPCAcknowledgement": {
+    "file": "/var/backups/yunipals-ypal-retained-proxy-current-v3-20261024/result.json",
+    "producerSha256": "80519249b13b968c696b5582104990cb6e310a410eeac42fe0f139296ecf99bf",
+    "receiptSha256": "152178ab94fd1b4c974d392633a201eaf04da412ce1295e29842e9cdeb35722b",
+    "componentSha256": "57f0520e640ccd50743f02e0891bfb2ab3491e0368f698ea6d6f209d0d43c757",
+    "capturedAt": "2026-10-24T08:10:09Z",
+    "capturedAndIndependentlyRevalidatedBy": "parent-root",
+    "authorLiveRPCOrSourceValidationPerformed": false
+  },
+  "ordering": {
+    "Arena13SourceAdmissionBeforeNew143CacheAndCurrentBaselines": true,
+    "Arena13SourceAdmissionBeforeFeatureCatalogBeforeCapture": true,
+    "old143ScopeAndPlansUnmodified": true
+  }
+}
