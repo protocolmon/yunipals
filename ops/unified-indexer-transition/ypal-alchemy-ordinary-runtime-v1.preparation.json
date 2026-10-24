@@ -52,12 +52,12 @@
   "hostActions": 0,
   "databaseWrites": 0,
   "providerCalls": 0,
-  "pendingIndependentReview": true,
+  "pendingIndependentReview": false,
   "independentBusinessReview": {
     "reviewer": "bnb_replay_performance",
-    "sourceSha256": "db4c4c97b7495fe3bdd21437c02ded11451525f7aa112009734eab10f6d9e322",
-    "controlsPassed": 18,
-    "privateReviewSha256": "fd980fdbe7f75c91e10776b3815bc02dfa70ee64e1ead428efe1b1a4ebf923c6",
-    "scope": "Business source/lifecycle only; current final delta limits CLI to aggregate output."
+    "sourceSha256": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+    "controlsPassed": 19,
+    "sourceOnlyReviewSha256": "dc3849a2bb74279a53a463956d8fa74d15b1cda40f98dfd5f272356b62394d3c",
+    "scope": "Independent business/lifecycle review plus exact CLI-only privacy delta; no actual runtime adoption claimed."
   }
 }
