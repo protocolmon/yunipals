@@ -5,8 +5,10 @@ distinct namespace. Exactly seven identity/path constants and three receipt,
 helper and lock literals change. A reverse-AST control proves no other body
 change. Historical30a and its journals remain unchanged.
 
-The actual c04d current-admission receipt is required. No future ACK is embedded.
-The admission adapter exposes its source-free `verify_current` and static
+The actual source-completion combined9 receipt is required. It explicitly joins
+the original operational8 ACK with the new source-only13 ACK; c04d's failed
+parent is preserved and is not presented as complete. No future ACK is embedded.
+The source-completion adapter exposes its source-free `verify_current` and static
 `create()[0]` query context; it does not qualify or replace a writer. Every
 catalog/auth phase preserves the exact nine role OIDs and 227/13 ACL scope.
 The full original private/runtime/schema proof and current eight-Arena-actor

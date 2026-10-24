@@ -29,7 +29,7 @@ class Controls(unittest.TestCase):
         changed={'FORMAT','AUTH_FORMAT','BASE','ADMISSION','PROPOSAL','PROPOSAL_SHA','ADMISSION_HELPER_SHA'}
         for node in actual.body:
             if isinstance(node,ast.Assign)and len(node.targets)==1 and isinstance(node.targets[0],ast.Name)and node.targets[0].id in changed:node.value=values[node.targets[0].id]
-        reverse={'yunipals-arena-ypal-current-admission-v1':'yunipals-arena-ypal-admission-v2','arena-ypal-current-admission-v1.py':'arena-ypal-native-v2.admission.py',
+        reverse={'yunipals-arena-ypal-source-completion-v1':'yunipals-arena-ypal-admission-v2','arena-ypal-source-completion-v1.py':'arena-ypal-native-v2.admission.py',
                  '/run/lock/yunipals-arena-ypal-current-credentials-v1.lock':'/run/lock/yunipals-arena-ypal-credentials-v2.lock'}
         class Reverse(ast.NodeTransformer):
             def visit_Constant(self,node):
@@ -45,13 +45,13 @@ class Controls(unittest.TestCase):
         for value in [None,'0'*64,'missing','A'*64]:
             with self.assertRaises(RuntimeError):m.plan(value)
         proposal=json.loads((HERE/m.PROPOSAL.name).read_bytes());roles={w['role']:900000+i for i,w in enumerate(proposal['workers'])}
-        receipt={'format':'yunipals-arena-ypal-current-admission-v1','operatorSha256':m.ADMISSION_HELPER_SHA,'commitOutcome':'commit_confirmed',
+        receipt={'format':'yunipals-arena-ypal-source-completion-v1','operatorSha256':m.ADMISSION_HELPER_SHA,'commitOutcome':'commit_confirmed',
                  'proposalSha256':m.PROPOSAL_SHA,'roles':roles,'sourceRole':{'name':'arena_native_reader','oid':900009},
                  'sqlSha256':{'operational':proposal['sql']['operational-roles.current.sql.review'],'source':proposal['sql']['arena-ypal-native-v1.source.sql.review']},
                  'operationalDatabaseOid':2303669,'sourceDatabaseOid':17584,'acknowledgedCurrentActors':{'sha256':n.ACTOR_ACK_SHA},'oldWholeInvocationGatePassed':False,
                  'perDatabase':{'operational':{'commitOutcome':'commit_confirmed','roles':roles},'source':{'commitOutcome':'commit_confirmed','roles':{'arena_native_reader':900009}}}}
         raw=(HERE/m.ADMISSION_HELPER.name).read_bytes();self.assertEqual(len(n.validate_admission(p,receipt,raw,proposal)),9)
-        for value in ['yunipals-arena-ypal-admission-v2','foreign']:
+        for value in ['yunipals-arena-ypal-admission-v2','yunipals-arena-ypal-current-admission-v1','foreign']:
             bad=copy.deepcopy(receipt);bad['format']=value
             with self.assertRaises(n.Refusal):n.validate_admission(p,bad,raw,proposal)
 

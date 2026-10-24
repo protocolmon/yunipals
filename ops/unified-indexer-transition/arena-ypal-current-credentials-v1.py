@@ -18,9 +18,9 @@ AUTH_FORMAT='yunipals-arena-ypal-current-role-auth-v1'
 OPS=Path('/opt/yunipals-unified/operations/free-replay-20261020')
 OLD=OPS/'arena-ypal-native-v2.credentials.py'
 OLD_SHA='30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e'
-ADMISSION_HELPER=OPS/'arena-ypal-current-admission-v1.py'
-ADMISSION_HELPER_SHA='c04d5c42fff6934b89b8d009c947e4230c63555cbe91e5a5a91aa3a0b9281035'
-ADMISSION=Path('/var/backups/yunipals-arena-ypal-current-admission-v1-20261024/result.json')
+ADMISSION_HELPER=OPS/'arena-ypal-source-completion-v1.py'
+ADMISSION_HELPER_SHA='2cac6ffdb5b3162b3e6431364974a2ab61a3c33be97cb358c3505a80d8046dc6'
+ADMISSION=Path('/var/backups/yunipals-arena-ypal-source-completion-v1-20261024/result.json')
 PROPOSAL=OPS/'arena-ypal-current-admission-v1.proposal.json'
 PROPOSAL_SHA='0789c643ff3513aec9f8d5cceb95eb15226b60c007e82d80ac37b51d4a538ac4'
 BASE=Path('/var/backups/yunipals-arena-ypal-current-credentials-v1-20261024')
@@ -47,8 +47,8 @@ def transform(raw):
         if isinstance(node,ast.Assign)and len(node.targets)==1 and isinstance(node.targets[0],ast.Name)and node.targets[0].id in values:
             key=node.targets[0].id;node.value=ast.parse(values[key],mode='eval').body;found.append(key)
     need(set(found)==set(values)and len(found)==len(values),'exact_seven_credential_identity_constants_required')
-    changes={'yunipals-arena-ypal-admission-v2':'yunipals-arena-ypal-current-admission-v1',
-             'arena-ypal-native-v2.admission.py':'arena-ypal-current-admission-v1.py',
+    changes={'yunipals-arena-ypal-admission-v2':'yunipals-arena-ypal-source-completion-v1',
+             'arena-ypal-native-v2.admission.py':'arena-ypal-source-completion-v1.py',
              '/run/lock/yunipals-arena-ypal-credentials-v2.lock':'/run/lock/yunipals-arena-ypal-current-credentials-v1.lock'}
     counts={key:0 for key in changes}
     class Literals(ast.NodeTransformer):
