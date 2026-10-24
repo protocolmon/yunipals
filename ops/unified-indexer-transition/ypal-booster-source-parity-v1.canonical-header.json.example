@@ -1,0 +1,27 @@
+{
+  "format": "yunipals-base-canonical-header-v1",
+  "chainId": 8453,
+  "number": 53000661,
+  "hash": null,
+  "parentHash": null,
+  "timestamp": null,
+  "observedAt": null,
+  "latest": {
+    "number": null,
+    "hash": null,
+    "parentHash": null,
+    "timestamp": null
+  },
+  "finalized": {
+    "number": null,
+    "hash": null,
+    "parentHash": null,
+    "timestamp": null
+  },
+  "repeatedBoundary": {
+    "number": 53000661,
+    "hash": null,
+    "parentHash": null,
+    "timestamp": null
+  }
+}

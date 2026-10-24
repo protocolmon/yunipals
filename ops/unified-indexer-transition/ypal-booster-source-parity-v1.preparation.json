@@ -1,0 +1,162 @@
+{
+  "format": "yunipals-ypal-booster-source-parity-v1-source-preparation",
+  "status": "production-staged-static-review-and-data-preflight-complete",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.py",
+      "bytes": 37847,
+      "sha256": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.test.py",
+      "bytes": 17365,
+      "sha256": "76e373407c78d315a0d48c2e1e5b9a17b2f54fce7c59e17d99a8633e36bc0fee"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.postgres-test.py",
+      "bytes": 11037,
+      "sha256": "360127bc27b535747ef5303011aebccfe62de16cf50dc6682fceb105d8e453b8"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.plan.json.example",
+      "bytes": 579,
+      "sha256": "0ca69622c5f7e8ad88b2090fb961a790c7ea6265b5ba5d7078909284ac78d1fc"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.canonical-header.json.example",
+      "bytes": 500,
+      "sha256": "14378dceade14e606fb9d737b940951be28373995c89abccc90b3e7f079ad16b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.md",
+      "bytes": 10625,
+      "sha256": "f5ce812a22cc5496494f53633f1519efbf8f3ca94642502e3867fb5d62b6611c"
+    }
+  ],
+  "unchangedPublicDependencies": [
+    {
+      "path": "ops/unified-indexer-transition/booster-source-parity.py",
+      "bytes": 12616,
+      "sha256": "9f01e4c41dc0b7c9411022b266a62d2ff4d9c08c8041976d54f4786656df451f"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/boosters/schema.ts",
+      "bytes": 4218,
+      "sha256": "f2ca42ad5b390b22251784dbdb1dc9df801d2a683e1cc187e803930c6254e348"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json",
+      "bytes": 4566,
+      "sha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-rpc-profile-v1.json",
+      "bytes": 10287,
+      "sha256": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b"
+    }
+  ],
+  "privateRuntimePublicInputs": {
+    "deployment": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+    "combinedProfile": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b",
+    "freshProfile": "0e19f87a728a0150fae82e6125436739864edd86a6b5b1ecdfcd3503e70e0e05"
+  },
+  "sourceContext": {
+    "left": {
+      "schema": "yunipals_boosters_ypal_v1",
+      "oid": "75837058",
+      "build": "8e88ea2e00",
+      "manifestHash": "0x83262c45a53f94ed561c6116fc9efeccf69bd55839e7296f7f5276bc7c89e9ac"
+    },
+    "right": {
+      "schema": "unified_ypal_20261023_v1",
+      "oid": "75963410",
+      "build": "71e2a7f3b7",
+      "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+      "release": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+      "readSchema": "yunipals_ownership_4e77f52b_v4",
+      "readSchemaOid": "75994954",
+      "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67"
+    }
+  },
+  "exactRelations": [
+    "booster_type",
+    "booster_original",
+    "booster_request",
+    "booster_monster",
+    "booster_refund",
+    "booster_engine_state",
+    "booster_checkpoint",
+    "booster_event"
+  ],
+  "allFieldPayloads": true,
+  "exceptAllDirections": 2,
+  "digest": "SHA256 of normalized full rows ordered by id COLLATE C",
+  "eventJsonArgumentNormalization": "unchanged original jsonb semantics",
+  "noRowsSampledOrTruncated": true,
+  "maximumFullRowsPerRelation": 50000,
+  "minimumKnownBoundary": 53000661,
+  "snapshot": "one repeatable-read read-only transaction",
+  "nativeCompleteCheckpointAdapter": "Ponder0.17.5 complete-block suffix, partial block minus1",
+  "requiresNoPostBoundaryFeatureTailOnBothSides": true,
+  "requiresFreshLiveRuntimeHeartbeat": true,
+  "requiresGlobalFrameworkReadyForFixedPrefix": false,
+  "currentReadinessQualified": false,
+  "canonicalInput": "separate actual normalized boundary/repeat/latest/finalized observation; producer performs no RPC",
+  "capturePath": "fixed BASE/captures/<bounded-explicit-captureId>/result.json",
+  "captureIdPattern": "[a-z][a-z0-9-]{0,47}",
+  "exclusiveOperationDirectoryMode": "0700",
+  "exclusiveRootReportMode": "0600",
+  "overwritesAllowed": false,
+  "automaticRetriesAllowed": false,
+  "functions": [
+    "capture_path(capture_id)",
+    "validate_receipt(value)",
+    "validate_current_prefix(result_sha, canonical_header, capture_id)"
+  ],
+  "statementTimeoutSeconds": 45,
+  "lockTimeoutSeconds": 1,
+  "idleTransactionTimeoutSeconds": 15,
+  "workMemory": "8MB",
+  "temporaryFileLimit": "512MB",
+  "outerProcessGroupTimeoutSeconds": 150,
+  "processGroupTerminationGraceSecondsPerSignal": 2,
+  "minimumDiskReserveBytes": 28991029248,
+  "sqlSha256AtMinimumBoundary": "679b2318cb4c734ac2fd9643f5bdaa012a7e7f1019847cb74fdbd1ed775572b4",
+  "tests": {
+    "selfContainedSyntheticFilesystemAndProcessControls": 15,
+    "genuineLocalPostgresGroups": 10,
+    "genuineNativeDdl": true,
+    "allFixtureRowsSynthetic": true,
+    "productionFormatReceiptFromPgFixture": false,
+    "privateProductionBaselineRequired": false,
+    "productionCalls": 0,
+    "providerCalls": 0
+  },
+  "actualProductionCapturePerformed": false,
+  "actualRuntimeReadinessClaimed": false,
+  "actualFutureReceiptInvented": false,
+  "independentReviewPerformed": true,
+  "productionPreparation": {
+    "staged": true,
+    "staticReviewPassed": true,
+    "staticReviewDatabaseConnections": 0,
+    "readOnlyPreflightPassed": true,
+    "boundary": 53004016,
+    "freshCompleteThrough": 53014464,
+    "combinedCompleteThrough": 53004016,
+    "lastFeatureEventBoth": 53000665,
+    "postBoundaryEventsBoth": 0,
+    "nativeBoundaryWitnessPresent": false,
+    "canonicalCapturePerformed": false,
+    "readinessClaimed": false,
+    "providerCalls": 0,
+    "databaseWrites": 0,
+    "serviceActions": 0,
+    "detailedReportsPublished": false
+  },
+  "rootValidation": {
+    "focusedControlsPassed": 15,
+    "actualNativePostgresGroupsPassed": 10,
+    "actualNativeRowsAreSynthetic": true
+  }
+}

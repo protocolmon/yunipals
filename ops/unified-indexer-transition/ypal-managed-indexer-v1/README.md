@@ -33,7 +33,8 @@ node ops/unified-indexer-transition/ypal-managed-indexer-v1/launcher.test.mjs
 node --check ops/unified-indexer-transition/ypal-managed-indexer-v1/launcher.mjs
 ```
 
-Use the pinned Node24.18.1 runtime. Twelve local controls passed. These execute
+Use the pinned Node24.18.1 runtime. Twelve local controls passed; independent
+review reran all twelve and verified the current source bindings. These execute
 real child processes with fake private files and substitute worker programs;
 they verify file precedence, native arguments, working directories, heap,
 credential separation, sibling failure, restart-prevention status, shutdown,

@@ -2,7 +2,7 @@
 Description=Unified Yunipals YPAL EVM and Solana ingestion
 After=network-online.target postgresql.service yunipals-combined-rpc@ethereum.service yunipals-combined-rpc@base.service yunipals-combined-rpc@polygon.service yunipals-combined-rpc@bnb.service
 Wants=network-online.target
-Conflicts=yunipals-ypal-combined-source.service yunipals-unified-source6-free-v2.service yunipals-solana.service yunipals-booster-launch.service yunipals-bnb.service yunipals-islands-indexer.service yunipals-base-islands-v2.service
+Conflicts=yunipals-ypal-combined-source.service yunipals-unified-source6-free-v2.service yunipals-solana.service yunipals-booster-ypal-source.service yunipals-booster-launch.service yunipals-bnb.service yunipals-islands-indexer.service yunipals-base-islands-v2.service
 StartLimitIntervalSec=600
 StartLimitBurst=3
 

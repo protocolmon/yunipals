@@ -1,6 +1,6 @@
 {
   "format": "yunipals-ypal-managed-indexer-launcher-preparation-v1",
-  "status": "source-only-local-lifecycle-tested",
+  "status": "source-only-independently-reviewed-local-lifecycle-tested",
   "files": [
     {
       "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/launcher.mjs",
@@ -19,13 +19,13 @@
     },
     {
       "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/yunipals-indexer.service.example",
-      "bytes": 2784,
-      "sha256": "e1b5210b76ddafc760f5db1b4d9cf6f040f16bf7f599c8427c790ddce93229b2"
+      "bytes": 2821,
+      "sha256": "16f2f4d84999d8f26cfeb9b30d38c6385d66ce6f6018f8b4343c21d80e6f0f59"
     },
     {
       "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/README.md",
-      "bytes": 4201,
-      "sha256": "f786f06fa04d1784a3516beece3d475fe2a8a22b139ba065b89714c1a17d033f"
+      "bytes": 4279,
+      "sha256": "4623bcda07d113befcf65c7369f24eb06add8c73d2169ed5f6f89dc35dd69f50"
     }
   ],
   "node": "24.18.1",
@@ -37,7 +37,7 @@
   "serviceActions": 0,
   "actualProductionUnitStaged": false,
   "actualProductionSwitchPerformed": false,
-  "independentReviewPerformed": false,
+  "independentReviewPerformed": true,
   "actualManagedOwnerComplete": false,
   "unitParserCheck": {
     "passed": true,
@@ -53,12 +53,20 @@
     "sourceFilesOrEnvironmentValuesReadByParent": false
   },
   "remaining": [
-    "Independent review",
     "Actual phase-aware managed handover owner and inverse",
     "Fresh private child authentication and egress qualification",
     "Source/reader/native Arena/fresh YPAL gates",
     "Exclusive source and Solana writer transfer",
     "Sustained observer dependency and ownership transfer",
     "Production scheduled publication, restart, backup and 24-hour observation"
-  ]
+  ],
+  "actualTemporaryYpalSourceInConflictSet": true,
+  "independentReview": {
+    "verdict": "pass-source-only",
+    "realChildProcessControlsPassed": 12,
+    "bindingsPassed": true,
+    "productionCalls": 0,
+    "actualWorkerImports": 0,
+    "reviewSha256": "9ebfc5648d036fc49d48a79d000f7b08fbfd965d5774fb220a201ff80caf9aa3"
+  }
 }
