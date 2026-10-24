@@ -1,0 +1,23 @@
+{
+  "actualAdmissionResultSha256": "620bb80a35dda4852af32e1a8867812133da260c8ac328802bdbd025e7049d97",
+  "allNineAuthenticationChecksPassed": true,
+  "authenticationReceiptSha256": "ad2c6c8a5252b42931f5a0927af486999b6f366db1d3b716c0b3cda1318249ee",
+  "completed": true,
+  "credentialSetupReceiptSha256": "99e533afd9180841bd078be993eec763cf07474a4eb88c84e6a82fd9d97e4c52",
+  "errorClass": null,
+  "exitCode": 0,
+  "format": "yunipals-arena-current-role-auth-production-v1",
+  "loginReceiptSha256": "91f28a868e761094d702f63f94445f4343f19cfc8a6eee4094391765f71670af",
+  "nativeWorkersSwitched": false,
+  "observedAt": "2026-10-24T23:00:49.998991+00:00",
+  "operationalPermissions": 227,
+  "phase": "auth-apply",
+  "privateValuesExported": false,
+  "reviewHash": null,
+  "roleCount": 9,
+  "sourceReadPermissions": 13,
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutSha256": "771b25c19ef75200ca6ebb2985108b3f5ec664ed63a7dc235e6bb927346ae152",
+  "zeroEffectFirstFailureArchived": true
+}
