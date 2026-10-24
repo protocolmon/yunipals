@@ -339,6 +339,49 @@ try {
       `UPDATE ${physical}.${table} SET ${columns} WHERE collection='bnb'`,
       [head - 21]
     );
+  await db.query(
+    "UPDATE metadata_projection.generation SET ownership_release_id=NULL,ownership_read_identity=NULL WHERE id=$1",
+    [predecessor]
+  );
+  await db.query(
+    "UPDATE metadata.derived_snapshot SET ownership_release_id=NULL,ownership_read_identity=NULL WHERE name='traits'"
+  );
+  await db.query(
+    "INSERT INTO metadata.derived_snapshot(name,metadata_release_id)VALUES('leaderboard','fixture-archive')"
+  );
+  await db.query(
+    "INSERT INTO leaderboard.wallet_stats(scope,owner,monster_count,total_rarity,unique_types,special_count,glitter_count,collector_score,score_version,updated_at)VALUES('all','synthetic-legacy-wallet',1,7,1,0,0,7,'fixture',now())"
+  );
+  const globalBefore = (
+    await db.query(
+      "SELECT jsonb_build_object('pointer',(SELECT to_jsonb(a)FROM metadata_projection.active a),'stamps',(SELECT jsonb_agg(to_jsonb(s)ORDER BY name)FROM metadata.derived_snapshot s),'wallets',(SELECT jsonb_agg(to_jsonb(s)ORDER BY scope,owner)FROM leaderboard.wallet_stats s))AS v"
+    )
+  ).rows[0].v;
+  const staged = await refreshProjectionGeneration({ publish: false });
+  assert(staged.prepared);
+  const stagedRow = (
+    await db.query(
+      "SELECT state,published_at,validation FROM metadata_projection.generation WHERE id=$1",
+      [staged.generationId]
+    )
+  ).rows[0];
+  assert.equal(stagedRow.state, "ready");
+  assert.equal(stagedRow.published_at, null);
+  assert.equal(
+    stagedRow.validation.sourceSnapshot.readIdentity,
+    plan.readIdentity
+  );
+  assert.deepEqual(
+    (
+      await db.query(
+        "SELECT jsonb_build_object('pointer',(SELECT to_jsonb(a)FROM metadata_projection.active a),'stamps',(SELECT jsonb_agg(to_jsonb(s)ORDER BY name)FROM metadata.derived_snapshot s),'wallets',(SELECT jsonb_agg(to_jsonb(s)ORDER BY scope,owner)FROM leaderboard.wallet_stats s))AS v"
+      )
+    ).rows[0].v,
+    globalBefore
+  );
+  checks.push(
+    "native_candidate_build_and_validation_leave_legacy_global_pointer_wallets_and_stamps_unchanged"
+  );
   const generated = await refreshProjectionGeneration();
   const published = generated.generationId;
   const candidate = (

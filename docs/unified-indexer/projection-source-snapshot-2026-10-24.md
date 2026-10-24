@@ -24,9 +24,16 @@ can complete an acknowledged generation without starting another trait build.
 IDs so a rollout can retain its exact recovery predecessors during cleanup.
 Its default behavior is unchanged when no list is configured.
 
-The actual local PostgreSQL test covers 19 groups, including approval expiry,
+The explicit `prepare-native-generation.ts` entry builds and validates a ready,
+unpublished candidate. It preserves the active generation, both derived stamps
+and the existing wallet statistics. This separation is required because the
+current legacy readers reject the native ownership identity. The existing
+default refresh command still publishes; it is not the preparation command.
+
+The actual local PostgreSQL test covers 20 groups, including approval expiry,
 complete generation publication, canonical races, a role with SELECT-only native
-access, cleanup retention, and leaderboard-only completion and reorg refusal.
+access, cleanup retention, unpublished candidate preservation, and leaderboard-only
+completion and reorg refusal.
 The full indexer typecheck and an independent rerun passed. Run from
 `apps/yunipals-indexer`:
 
@@ -40,3 +47,5 @@ removes its own database and reader role. It performs no production or provider
 requests. These checks do not mean a production generation has been built.
 The separate runtime artifact, complete recovery capsule, actual read admission,
 native metadata readiness, capacity check and owned execution remain rollout gates.
+Native candidate publication, leaderboard replacement and reader selection belong
+to the subsequent coordinated cutover; a prepared candidate is not an active one.

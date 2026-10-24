@@ -320,7 +320,11 @@ async function cleanupGenerations(client: PoolClient) {
 }
 
 /** Build into stable tables; readers never see the candidate until the pointer commits. */
-export async function refreshProjectionGeneration() {
+export async function refreshProjectionGeneration(
+  options: { publish?: boolean } = {}
+) {
+  if (options.publish === false && !nativeProjectionSnapshotEnabled())
+    throw new Error("Unpublished preparation requires native generation mode");
   const client = await pool.connect();
   const updatedAt = new Date();
   let id: string | undefined;
@@ -483,6 +487,17 @@ export async function refreshProjectionGeneration() {
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
       [id, JSON.stringify(validation)]
     );
+    if (options.publish === false) {
+      // Reader ownership identities share the active pointer and derived
+      // stamps. Preparation must leave them untouched until coordinated cutover.
+      return {
+        updatedAt,
+        generationId: id,
+        prepared: true as const,
+        predecessor,
+        validation
+      };
+    }
     const publicationStarted = performance.now();
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
