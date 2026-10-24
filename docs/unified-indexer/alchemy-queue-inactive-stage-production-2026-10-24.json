@@ -1,0 +1,46 @@
+{
+  "bootstrap": {
+    "actorFrameSha256": "72833ee5f5a923bf97ffca7288695c06a55d6381a2bae4dfcf9201a79bc16a4b",
+    "actualResultSha256": "53be080d89b7ae620a806be0b02af4beb0ca2426e1418a3db28e7c67af1d1208",
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "yunipals-alchemy-queue-public-bootstrap-v1",
+    "helperSha256": "01da39ab60ba2fc73b5acf8184b0c3bd44a074bf0f9c8f95ffbfecc510b43c73",
+    "newPublicFiles": 6,
+    "privateValuesExported": false,
+    "providerCalls": 0,
+    "publicSourceOnly": true,
+    "runtimeImportQualified": false,
+    "runtimeSelected": false,
+    "serviceActions": 0,
+    "sourceAndServingEpochsUnchanged": true
+  },
+  "firstImportPassed": false,
+  "format": "yunipals-alchemy-queue-inactive-stage-production-v1",
+  "review": {
+    "actorFrameSha256": "72833ee5f5a923bf97ffca7288695c06a55d6381a2bae4dfcf9201a79bc16a4b",
+    "actorUnits": 7,
+    "databaseConnections": 0,
+    "financialAuthorityQualified": false,
+    "format": "yunipals-alchemy-primary-stage-v1",
+    "peerBindingSha256": "75e8c062342c65f9e74d313c300ec2797f4c72d9f7473653529b5324cf556a86",
+    "providerCalls": 0,
+    "publicFiles": 5,
+    "retainedContextSha256": "b154b5d8d5f66eba70ccc17507b20bd18243a622321e086c26e0342726ba9e7d",
+    "reviewHash": "a8565839380b5e1eb20c463b064081233e62b5eb044919822ac6d61d6980824e",
+    "runtimeSelected": false,
+    "serviceActions": 0,
+    "sourceLifecycleQualified": false
+  },
+  "runtimeSelected": false,
+  "stage": {
+    "databaseConnections": 0,
+    "format": "yunipals-alchemy-primary-stage-v1",
+    "providerCalls": 0,
+    "publicFiles": 5,
+    "runtimeSelected": false,
+    "serviceActions": 0,
+    "stageResultSha256": "8e3ab987d429fb4bee90a664ab305725efd435d0ac67373a186d8316660ffec4",
+    "staged": true
+  }
+}
