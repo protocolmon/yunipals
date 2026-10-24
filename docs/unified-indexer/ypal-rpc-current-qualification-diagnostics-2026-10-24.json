@@ -1,0 +1,63 @@
+{
+  "format": "yunipals-current-rpc-qualification-progress-v1",
+  "observedAt": "2026-10-24T08:01:37.030474+00:00",
+  "fiveRetainedProxiesHaveNewerInvocations": true,
+  "combinedFourAlsoHaveNewerInvocations": true,
+  "combinedRouteDiagnostics": {
+    "base": {
+      "currentInvocation": "861d2637d6854960a2b04bf96a1de285",
+      "currentPid": 2886019,
+      "fullEnvironmentQualified": false,
+      "newerInvocationWithZeroNRestarts": true,
+      "originalPidGone": true,
+      "sameOriginalFixedActorFields": true,
+      "sameOriginalStaticPlan": true,
+      "sameOriginalUnitEnvironmentAndBootPublicationInodes": true,
+      "semanticActorSha256": "faea05720ff5521ebde79948aba4321803332e2e16c33ba2e0f00635a06acb85"
+    },
+    "bnb": {
+      "currentInvocation": "d14a189e740849a4a8473b44ccd83647",
+      "currentPid": 2886025,
+      "fullEnvironmentQualified": false,
+      "newerInvocationWithZeroNRestarts": true,
+      "originalPidGone": true,
+      "sameOriginalFixedActorFields": true,
+      "sameOriginalStaticPlan": true,
+      "sameOriginalUnitEnvironmentAndBootPublicationInodes": true,
+      "semanticActorSha256": "f621537b4a92dbc4b743359e67e9eee7ddf5302024b93a93a193eec19f11da42"
+    },
+    "ethereum": {
+      "currentInvocation": "f53fc23f341548b39aa64c5f33a8a7c3",
+      "currentPid": 2886026,
+      "fullEnvironmentQualified": false,
+      "newerInvocationWithZeroNRestarts": true,
+      "originalPidGone": true,
+      "sameOriginalFixedActorFields": true,
+      "sameOriginalStaticPlan": true,
+      "sameOriginalUnitEnvironmentAndBootPublicationInodes": true,
+      "semanticActorSha256": "68f0ef2e634babc3655439c7f418e7acdd4507ad5e92e3829768f9b383e49ed6"
+    },
+    "polygon": {
+      "currentInvocation": "ff49536571f44a6b9cc62e0c50fcde78",
+      "currentPid": 2886027,
+      "fullEnvironmentQualified": false,
+      "newerInvocationWithZeroNRestarts": true,
+      "originalPidGone": true,
+      "sameOriginalFixedActorFields": true,
+      "sameOriginalStaticPlan": true,
+      "sameOriginalUnitEnvironmentAndBootPublicationInodes": true,
+      "semanticActorSha256": "39a2d287934c46a3c3b6f7913c11722e6f6c9d8652d34a1c67ee83ddd1795219"
+    }
+  },
+  "stagedV2ProducerSha256": "498e0c62dc1b00b474403436d999e33d80f3781413b9e73ef23d0d31dde7cf64",
+  "actualV2ReviewPassed": false,
+  "actualV2Refusal": "owned_start_window_required",
+  "refusalOrigin": "The historical combined-route owner enforces its original start window; its original four actor tuples are no longer current.",
+  "freshAcknowledgementCaptured": false,
+  "wholeCurrentRpcQualified": false,
+  "restartCauseEstablished": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceChanges": 0,
+  "nextRequiredEvidence": "A separately reviewed finite nine-unit acknowledgement must prove each cohort against its own original receipt, all required environment values, programs, privileges, unit/env/boot inodes and unchanged free-only policies. Frozen historical validators are not weakened."
+}

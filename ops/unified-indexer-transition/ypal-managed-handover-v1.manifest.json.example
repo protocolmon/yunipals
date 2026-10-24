@@ -1,0 +1,21 @@
+{
+  "format": "yunipals-ypal-managed-code-v1",
+  "producers": {
+    "readers": {
+      "file": "ypal-native-cutover-v1.py",
+      "sha256": null
+    },
+    "arena": {
+      "file": "arena-ypal-native-v2.py",
+      "sha256": null
+    },
+    "cache": {
+      "file": "ypal-cache-finish-v2.py",
+      "sha256": null
+    },
+    "rpc": {
+      "file": "ypal-retained-proxy-current-v1.py",
+      "sha256": null
+    }
+  }
+}

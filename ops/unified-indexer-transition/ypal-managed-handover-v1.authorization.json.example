@@ -1,0 +1,11 @@
+{
+  "format": "yunipals-ypal-managed-handover-v1-authorization",
+  "readerReceiptSha256": null,
+  "featureReceiptSha256": null,
+  "arenaReceiptSha256": null,
+  "catalog": null,
+  "columnBaseline": {
+    "file": null,
+    "sha256": null
+  }
+}

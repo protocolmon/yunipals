@@ -1,0 +1,88 @@
+{
+  "format": "yunipals-ypal-managed-handover-preparation-v1",
+  "sourceOnly": true,
+  "productionStaged": false,
+  "productionRuntimeQualified": false,
+  "sourcePoolMaximum": 5,
+  "sourceBuildId": "71e2a7f3b7",
+  "nativeCheckpointsCopied": false,
+  "selectedPointersChanged": false,
+  "databaseWritesByOwner": 0,
+  "providerCallsByOwner": 0,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.py",
+      "sha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+      "bytes": 94185
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.test.py",
+      "sha256": "593fea57d78a15bdbeb7974c8802e40db33ea67adfb45d576adb5dd91765337e",
+      "bytes": 27646
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.postgres.test.mjs",
+      "sha256": "1206232322c23949796a6f01e49ab04fd0ba74657faafb68e3c5d492111998d9",
+      "bytes": 12899
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.solana.sql",
+      "sha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0",
+      "bytes": 3495
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.columns.sql",
+      "sha256": "2fb66a5b8e2460827a60c5e4f70ffc0f9d16ac165ca79aba1fa04c1033629264",
+      "bytes": 1770
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.md",
+      "sha256": "76f6243675dbea9f98b6819a333af2f121a151fe46c9733c52db97568bed0a90",
+      "bytes": 12930
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.manifest.json.example",
+      "sha256": "f72d57233128477857f16ee484013fee6d9f1021506bb960944f24c900437510",
+      "bytes": 417
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.input.json.example",
+      "sha256": "c21e0589addcce7a4e6f32a51fe362a28a2a7b3710ce8d434cc45ae7685a23ed",
+      "bytes": 1724
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-handover-v1.authorization.json.example",
+      "sha256": "889a9d5a18cb51039e66b91f3d7a8c47c46508c681dfd1c1d76805c2a839c4ad",
+      "bytes": 242
+    }
+  ],
+  "localValidation": {
+    "pythonControls": 33,
+    "postgresGroups": 12,
+    "postgresVersion": "16.15",
+    "syntheticFixtureOnly": true,
+    "productionActions": 0
+  },
+  "commands": [
+    "python3 -I -B ops/unified-indexer-transition/ypal-managed-handover-v1.test.py",
+    "cd apps/yunipals-indexer && node --import tsx ../../ops/unified-indexer-transition/ypal-managed-handover-v1.postgres.test.mjs"
+  ],
+  "historicalDependenciesUnmodified": {
+    "managedLauncherSha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321",
+    "managedUnitSha256": "16f2f4d84999d8f26cfeb9b30d38c6385d66ce6f6018f8b4343c21d80e6f0f59",
+    "managedPublicEnvironmentSha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a",
+    "genericSolanaSqlSha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0",
+    "historicalSevenRoleCatalogSqlSha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991"
+  },
+  "requiredActualEvidence": [
+    "actual RPC-only current-proxy acknowledgement; historical whole guard remains false",
+    "completed native reader/cache/metadata publication acknowledgements",
+    "new Arena v2 admission/auth/adoption acknowledgement",
+    "feature post-event parity and temporary source retirement",
+    "ordinary observer installation/start acknowledgement",
+    "explicit new all-grantee column baseline authorization",
+    "fresh canonical readiness on all four chains",
+    "owned scheduled Solana publication and supervised restart results"
+  ],
+  "fullGoalAcceptanceClaimed": false
+}
