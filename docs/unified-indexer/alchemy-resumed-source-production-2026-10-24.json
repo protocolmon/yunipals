@@ -1,0 +1,166 @@
+{
+  "bnbGapObservation": {
+    "gapBlocks": 137,
+    "head": 129584611,
+    "headProvider": "publicnode",
+    "nativeBlock": 129584474,
+    "observedAt": "2026-10-24T21:19:08.099351+00:00",
+    "observerPaidCalls": 0,
+    "observerRpcCalls": 1
+  },
+  "completionOperatorSha256": "0e147b366ff29194326f09d9a56d5a8d5bca77fe6c83b3ac9584f30dc6dee8f0",
+  "completionReceiptSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+  "financial": {
+    "existingWindowExpiryUTC": "2026-10-24T23:45:00Z",
+    "expiryExtended": false,
+    "newAdmission": false,
+    "normalDailyBudgetChanged": false,
+    "originalTotalCeilingCU": 20000000,
+    "supplementalCleanupUTC": "2026-10-24T23:40:00Z"
+  },
+  "format": "yunipals-alchemy-resumed-source-production-v1",
+  "laterReadOnlyCurrentCheck": {
+    "claimOfLaterFullQualification": false,
+    "code": "all_required_backends_need_unique_positive_stable_kernel_attribution",
+    "completed": false,
+    "earlierFullCurrentCheckPassed": true,
+    "sourceAction": false,
+    "subsequentBasicProgressReadPassed": true
+  },
+  "migration": {
+    "canonicalAcceptanceQualified": false,
+    "consumerCutoverComplete": false,
+    "duplicateScannersRetired": false,
+    "managedSolanaAdopted": false
+  },
+  "observedAt": "2026-10-24T21:20:25.491213+00:00",
+  "originalStartAcknowledgementRewritten": false,
+  "packChecks": {
+    "localReadyAndPublicTypesQualified": true,
+    "observedAt": "2026-10-24T21:19:08.099351+00:00",
+    "requestHttpStatusWithProductionHeaders": 200,
+    "wwwBoostersHttpStatus": 200,
+    "wwwWrapHttpStatus": 200
+  },
+  "phases": {
+    "capture": {
+      "artifactHashes": {
+        "/var/backups/yunipals-alchemy-source-completion-v1-20261024/context.json": "a02cdda15913831480f17968ec58228a9d2fe65ae7f6811a577dd35145c4c5b0"
+      },
+      "completed": true,
+      "exitCode": 0,
+      "phase": "capture",
+      "result": {
+        "bindfixCompleted": true,
+        "captured": true
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "4943ac99965e1a00bc42ecfcf04e1bf6b6a7d62454820091629c29b3c4ffaeae"
+    },
+    "current": {
+      "artifactHashes": {},
+      "completed": true,
+      "exitCode": 0,
+      "phase": "current",
+      "result": {
+        "completionResultSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+        "currentWriterQualified": true,
+        "financialAuthorityQualified": false,
+        "original440PaidStartAcknowledged": false,
+        "positiveKernelSessions": 5,
+        "sourcePID": 3806762,
+        "sourceReadinessQualified": false,
+        "validated": true
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "8441d0233bd118989c07900e59559ba4f797ba7d83dec0b820bd616e3e5b5994"
+    },
+    "install-guards": {
+      "artifactHashes": {
+        "/var/backups/yunipals-alchemy-source-completion-v1-20261024/guard-overlays.json": "9988e15300cf5460fa2f685b2933a3b66bce39d0c2af463c3761ce26a87e9179",
+        "/var/backups/yunipals-alchemy-source-completion-v1-20261024/reload-ack.json": "9e8da7ab575ce0d1d9c98dd72c48dd5b27ebe060d05f1a9d6850e716bb114785"
+      },
+      "completed": true,
+      "exitCode": 0,
+      "phase": "install-guards",
+      "result": {
+        "guardOverlaysInstalled": true
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "94a6a2b98a2c8a95dd3716ed83932d027ab1e10e8879d1abe26237193f4b5507"
+    },
+    "qualify": {
+      "artifactHashes": {},
+      "completed": true,
+      "exitCode": 0,
+      "phase": "qualify",
+      "result": {
+        "actualThreeRWAndThreeROBindings": true,
+        "databaseWrites": 0,
+        "newStartIntentCreated": false,
+        "oldPendingStartHasNoEffect": true,
+        "providerCalls": 0,
+        "qualified": true,
+        "serviceActions": 0
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "c0a4efd647b0de09c8059f565b40e5ccc336fab507541f446bd8624565cc82b3"
+    },
+    "start": {
+      "artifactHashes": {
+        "/var/backups/yunipals-alchemy-source-completion-v1-20261024/result.json": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+        "/var/backups/yunipals-alchemy-source-completion-v1-20261024/start-intent.json": "32d974038f921b11f5f8fb810f636762f2a3277412a1f7983dce5ea775a1f3ba"
+      },
+      "completed": true,
+      "exitCode": 0,
+      "phase": "start",
+      "result": {
+        "completionResultSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+        "financialAuthorityQualified": false,
+        "original440PaidStartAcknowledged": false,
+        "sourcePID": 3806762,
+        "sourceStarted": true
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "e3295abf994a7aa97bd17f7eeffadf08e90f789f1e040aacbe983cd11d5a03c4"
+    }
+  },
+  "progress": {
+    "activeState": "active",
+    "canonicalAcceptanceQualified": false,
+    "coverage": {
+      "1": 26265086,
+      "137": 96114020,
+      "56": 129584624,
+      "8453": 53043646
+    },
+    "databaseWrites": 0,
+    "frameworkReady": 1,
+    "heartbeatAgeMilliseconds": 9415,
+    "observedAt": "2026-10-24T21:20:25.491213+00:00",
+    "providerCalls": 0,
+    "restarts": 0,
+    "sourcePID": 3806762
+  },
+  "publicSourceCommit": "c216ef593e9bb3a47b4632fd72a4afcd26227237",
+  "routing": {
+    "base": "alchemy-primary",
+    "bnb": "alchemy-event-logs-public-headers-bounded-alchemy-fallback",
+    "ethereum": "alchemy-primary",
+    "polygon": "alchemy-primary"
+  },
+  "rpcTrafficObservation": {
+    "observedAt": "2026-10-24T21:18:16.531019+00:00",
+    "paidCalls": {
+      "base": 698,
+      "bnb": 158,
+      "ethereum": 13,
+      "polygon": 18
+    }
+  }
+}
