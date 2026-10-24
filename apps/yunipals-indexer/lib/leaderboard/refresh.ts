@@ -11,8 +11,18 @@ import {
   rarityPointsCappedSql,
   rarityPointsSql
 } from "../rarity/read-source.js";
-import { refreshProjectionGeneration } from "../metadata/projection-refresh.js";
+import {
+  assertProjectionBuildCapacity,
+  refreshProjectionGeneration
+} from "../metadata/projection-refresh.js";
 import { projectionMode } from "../metadata/projection-mode.js";
+import {
+  captureProjectionInputs,
+  nativeProjectionSnapshotEnabled,
+  projectionPublicationSourcePredicate,
+  projectionSourceSnapshot
+} from "../metadata/projection-snapshot.js";
+import { generationOwnershipProof } from "../ownership/projection-proof.js";
 
 export const scoreVersion = "collector-score-v1";
 const archiveMode = metadataSourceMode() === "archive";
@@ -247,17 +257,67 @@ $preserve_read_grants$;
   }
 }
 
-export async function refreshLeaderboard() {
+export async function refreshLeaderboard(expectedGenerationId?: string) {
+  if (
+    expectedGenerationId !== undefined &&
+    !/^[1-9][0-9]{0,18}$/.test(expectedGenerationId)
+  )
+    throw new Error("Invalid leaderboard completion generation");
   const client = await pool.connect();
   const updatedAt = new Date();
+  const native = nativeProjectionSnapshotEnabled();
+  let privateStats = false;
   try {
+    if (native) {
+      await client.query(
+        "SELECT pg_advisory_lock(hashtext('yunipals:trait-refresh'))"
+      );
+      await client.query(
+        "SELECT pg_advisory_lock(hashtext('yunipals:leaderboard-refresh'))"
+      );
+      await assertProjectionBuildCapacity(client, "leaderboard");
+    } else if (expectedGenerationId !== undefined)
+      throw new Error(
+        "Leaderboard-only completion requires native generation mode"
+      );
     if (archiveMode)
       await client.query(
         "SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))"
       );
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
-    await assertOwnershipAvailable(client, collectionSlugs);
-    if (archiveMode) await assertChainReady(client, collectionSlugs);
+    const input = await captureProjectionInputs(client);
+    if (!input) {
+      await assertOwnershipAvailable(client, collectionSlugs);
+      if (archiveMode) await assertChainReady(client, collectionSlugs);
+    }
+    const metadataInput = input?.metadataRelation ?? metadataReadRelation;
+    const tokenInput = input?.tokenRelation ?? `${ponderSchema}.token`;
+    const generation = input
+      ? (
+          await client.query<{ id: string; snapshot: unknown }>(
+            `SELECT g.id, g.validation->'sourceSnapshot' AS snapshot FROM metadata_projection.active a
+      JOIN metadata_projection.generation g ON g.id=a.current_id WHERE a.singleton AND g.state='ready'
+        AND g.published_at IS NOT NULL AND ${generationOwnershipProof("g")}`
+          )
+        ).rows[0]
+      : null;
+    const publishedProof = input
+      ? projectionSourceSnapshot(generation?.snapshot)
+      : null;
+    if (
+      input &&
+      (!generation ||
+        (expectedGenerationId !== undefined &&
+          expectedGenerationId !== generation.id) ||
+        input.proof.predecessor !== generation.id ||
+        publishedProof!.releaseId !== input.proof.releaseId ||
+        publishedProof!.readIdentity !== input.proof.readIdentity ||
+        publishedProof!.manifestHash !== input.proof.manifestHash ||
+        publishedProof!.metadataReleaseId !== input.proof.metadataReleaseId ||
+        publishedProof!.baseMetadataFrontier !==
+          input.proof.baseMetadataFrontier)
+    )
+      throw new Error("leaderboard_published_generation_changed");
     const release =
       metadataSourceMode() === "archive"
         ? (
@@ -272,8 +332,15 @@ export async function refreshLeaderboard() {
       "SELECT pg_advisory_xact_lock(hashtext('yunipals:leaderboard-refresh'))"
     );
     await client.query(
-      "CREATE TEMP TABLE next_wallet_stats (LIKE leaderboard.wallet_stats INCLUDING ALL) ON COMMIT DROP"
+      `CREATE TEMP TABLE next_wallet_stats (LIKE leaderboard.wallet_stats INCLUDING ALL) ON COMMIT ${input ? "PRESERVE ROWS" : "DROP"}`
     );
+    privateStats = Boolean(input);
+    if (input)
+      await client.query(`DO $private_stats$ DECLARE a record;BEGIN FOR a IN
+      SELECT x.grantee FROM pg_class c CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner)))x
+      WHERE c.oid='pg_temp.next_wallet_stats'::regclass AND x.grantee<>c.relowner LOOP
+      EXECUTE format('REVOKE ALL ON pg_temp.next_wallet_stats FROM %s',CASE WHEN a.grantee=0 THEN 'PUBLIC' ELSE quote_ident(pg_get_userbyid(a.grantee))END);
+      END LOOP;END $private_stats$`);
     await client.query(
       `
       INSERT INTO next_wallet_stats(scope, owner, monster_count, total_rarity, unique_types,
@@ -283,7 +350,7 @@ export async function refreshLeaderboard() {
         SELECT m.collection, m.token_id, m.lifecycle,
           COALESCE(${rarityPointsCappedSql}, 0) AS rarity,
           traits.monster_type, traits.is_special, traits.is_glitter
-        FROM ${metadataReadRelation} m
+        FROM ${metadataInput} m
         ${localRarityJoin}
         LEFT JOIN LATERAL (
           SELECT rarity_attribute->>'value' AS value
@@ -304,7 +371,7 @@ export async function refreshLeaderboard() {
           count(DISTINCT x.monster_type)::int AS unique_types,
           count(*) FILTER (WHERE x.is_special)::int AS special_count,
           count(*) FILTER (WHERE x.is_glitter)::int AS glitter_count
-        FROM scopes s JOIN ${ponderSchema}.token t ON s.scope='all' OR t.collection = ANY(string_to_array(s.scope, '+'))
+        FROM scopes s JOIN ${tokenInput} t ON s.scope='all' OR t.collection = ANY(string_to_array(s.scope, '+'))
         LEFT JOIN token_traits x ON x.collection=t.collection
           AND x.token_id=t.token_id::numeric AND x.lifecycle=t.lifecycle
         WHERE NOT t.burned AND t.collection=ANY($4::text[]) GROUP BY s.scope, lower(t.owner)
@@ -315,12 +382,53 @@ export async function refreshLeaderboard() {
     `,
       [scoreVersion, updatedAt, collectionScopes, collectionSlugs]
     );
+    if (input) {
+      // Keep computed rows session-private while obtaining a fresh publication
+      // snapshot. Public approval TTL and canonical guards remain unchanged.
+      await client.query("COMMIT");
+      await client.query("BEGIN");
+      await client.query("SET LOCAL lock_timeout='500ms'");
+      await client.query(
+        "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
+      );
+      await client.query(
+        "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
+      );
+      const accepted = await client.query(
+        `UPDATE metadata_projection.active a SET updated_at=a.updated_at
+        WHERE a.singleton AND a.current_id=$1 AND EXISTS(SELECT 1 FROM metadata_projection.generation g
+          JOIN metadata.derived_snapshot s ON s.name='traits' AND s.metadata_release_id=g.metadata_release_id
+            AND s.ownership_release_id=g.ownership_release_id AND s.ownership_read_identity=g.ownership_read_identity
+          WHERE g.id=a.current_id AND g.state='ready' AND g.published_at IS NOT NULL
+            AND g.validation->'sourceSnapshot'=$3::jsonb AND ${generationOwnershipProof("g")})
+          AND EXISTS(SELECT 1 FROM metadata_source.archive_release r WHERE r.state='active' AND r.release_id=$4)
+          AND ${projectionPublicationSourcePredicate("$2")}
+          AND ${projectionPublicationSourcePredicate("$3")}
+        RETURNING a.current_id`,
+        [
+          generation!.id,
+          JSON.stringify(input.proof),
+          JSON.stringify(publishedProof),
+          release
+        ]
+      );
+      if (accepted.rowCount !== 1)
+        throw new Error("leaderboard_publication_source_changed");
+    }
     await client.query("DELETE FROM leaderboard.wallet_stats");
     await client.query(`INSERT INTO leaderboard.wallet_stats(scope, owner, monster_count, total_rarity,
       unique_types, special_count, glitter_count, collector_score, score_version, updated_at)
       SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
         collector_score, score_version, updated_at FROM next_wallet_stats`);
-    await stampDerivedSnapshot(client, "leaderboard", release ?? null);
+    if (input)
+      await client.query(
+        `INSERT INTO metadata.derived_snapshot
+      (name,metadata_release_id,ownership_release_id,ownership_read_identity)VALUES('leaderboard',$1,$2,$3)
+      ON CONFLICT(name)DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,
+        ownership_release_id=EXCLUDED.ownership_release_id,ownership_read_identity=EXCLUDED.ownership_read_identity,updated_at=now()`,
+        [release, input.proof.releaseId, input.proof.readIdentity]
+      );
+    else await stampDerivedSnapshot(client, "leaderboard", release ?? null);
     await client.query("COMMIT");
     return {
       updatedAt,
@@ -336,12 +444,26 @@ export async function refreshLeaderboard() {
     await client.query("ROLLBACK");
     throw error;
   } finally {
+    if (privateStats)
+      await client
+        .query("DROP TABLE pg_temp.next_wallet_stats")
+        .catch(() => undefined);
     if (archiveMode)
       await client
         .query(
           "SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))"
         )
         .catch(() => undefined);
+    if (native) {
+      await client
+        .query(
+          "SELECT pg_advisory_unlock(hashtext('yunipals:leaderboard-refresh'))"
+        )
+        .catch(() => undefined);
+      await client
+        .query("SELECT pg_advisory_unlock(hashtext('yunipals:trait-refresh'))")
+        .catch(() => undefined);
+    }
     client.release();
   }
 }

@@ -4,7 +4,7 @@ import type { PoolClient } from "pg";
 
 import { collectionSlugs } from "../constants.js";
 import { pool } from "../offchain/db.js";
-import { ponderSchema } from "../offchain/sql.js";
+import { physicalPonderSchema, ponderSchema } from "../offchain/sql.js";
 import {
   localRarityJoin,
   rarityPointsCappedSql,
@@ -18,6 +18,13 @@ import {
   assertOwnershipAvailable
 } from "../ownership/readiness.js";
 import { generationOwnershipProof } from "../ownership/projection-proof.js";
+import {
+  captureProjectionInputs,
+  nativeProjectionSnapshotEnabled,
+  preservedProjectionGenerations,
+  projectionPublicationSourcePredicate,
+  projectionSourceSnapshot
+} from "./projection-snapshot.js";
 
 const scopes = Array.from(
   { length: (1 << collectionSlugs.length) - 1 },
@@ -43,7 +50,10 @@ function bytes(value: string | undefined, fallback: number) {
   return number;
 }
 
-export async function assertProjectionBuildCapacity(client: PoolClient) {
+export async function assertProjectionBuildCapacity(
+  client: PoolClient,
+  phase: "generation" | "leaderboard" = "generation"
+) {
   if (process.env.PROJECTION_TEST_BYPASS_CAPACITY === "1") {
     const url = new URL(process.env.DATABASE_URL ?? "");
     if (
@@ -67,14 +77,38 @@ export async function assertProjectionBuildCapacity(client: PoolClient) {
   const size = await client.query<{ estimated: string }>(`
     SELECT sum(pg_total_relation_size(relation))::text AS estimated
     FROM unnest(ARRAY['metadata.token_search','metadata.token_trait','metadata.projection_revision']::regclass[]) relation`);
-  const nextGeneration = Math.max(
-    8e9,
-    Math.ceil(Number(size.rows[0]?.estimated ?? 0) * 1.5)
-  );
+  const nextGeneration =
+    phase === "generation"
+      ? Math.max(8e9, Math.ceil(Number(size.rows[0]?.estimated ?? 0) * 1.5))
+      : Math.ceil(
+          Number(
+            (
+              await client.query<{ bytes: string }>(
+                "SELECT pg_total_relation_size('leaderboard.wallet_stats')::text AS bytes"
+              )
+            ).rows[0]!.bytes
+          ) * 1.5
+        );
+  // The private inputs coexist with the candidate until its build commits.
+  // Include heap/TOAST and compact-token/index headroom; do not borrow the
+  // ordinary backup or free-space reserve for the snapshot.
+  const snapshotInputs = nativeProjectionSnapshotEnabled()
+    ? Math.ceil(
+        Number(
+          (
+            await client.query<{ bytes: string }>(
+              `SELECT (pg_table_size('metadata.token_metadata')+
+          pg_table_size('${physicalPonderSchema}.token')*2)::text AS bytes`
+            )
+          ).rows[0]!.bytes
+        ) * 1.5
+      )
+    : 0;
   const required =
     bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9) +
     bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9) +
-    nextGeneration;
+    nextGeneration +
+    snapshotInputs;
   if (free < required) {
     throw new Error(
       `projection_capacity_insufficient: free=${free} required=${required}`
@@ -132,7 +166,20 @@ export async function validateGeneration(
   ) {
     throw new Error("projection_invalid_collection");
   }
-  return { ...row, collections: coverage.rows };
+  const captured = (
+    await client.query<{ snapshot: unknown }>(
+      "SELECT validation->'sourceSnapshot' AS snapshot FROM metadata_projection.generation WHERE id=$1",
+      [id]
+    )
+  ).rows[0]?.snapshot;
+  const sourceSnapshot = nativeProjectionSnapshotEnabled()
+    ? projectionSourceSnapshot(captured)
+    : undefined;
+  return {
+    ...row,
+    collections: coverage.rows,
+    ...(sourceSnapshot ? { sourceSnapshot } : {})
+  };
 }
 
 export async function publishGeneration(
@@ -156,8 +203,10 @@ export async function publishGeneration(
       format_version: number;
       source_mode: string;
       validated: boolean;
+      source_snapshot: unknown;
     }>(
-      `SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated FROM metadata_projection.generation g
+      `SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated,
+        validation->'sourceSnapshot' AS source_snapshot FROM metadata_projection.generation g
         WHERE id=$1 AND ${generationOwnershipProof("g")}`,
       [id]
     );
@@ -177,16 +226,48 @@ export async function publishGeneration(
       if (currentRelease.rows[0]?.release_id !== release)
         throw new Error("projection_source_release_changed");
     }
-    await client.query(
+    const sourceSnapshot = nativeProjectionSnapshotEnabled()
+      ? projectionSourceSnapshot(candidate.rows[0]!.source_snapshot)
+      : null;
+    if (
+      sourceSnapshot &&
+      (sourceSnapshot.metadataReleaseId !== release ||
+        sourceSnapshot.predecessor !== predecessor)
+    )
+      throw new Error("projection_snapshot_binding_changed");
+    const publication = await client.query(
       `UPDATE metadata_projection.active
-      SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton`,
-      [id]
+      SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton
+        AND current_id IS NOT DISTINCT FROM $3::bigint
+        AND EXISTS(SELECT 1 FROM metadata_projection.generation g WHERE g.id=$1 AND g.state='ready'
+          AND g.metadata_release_id IS NOT DISTINCT FROM $2::text AND g.format_version=1
+          AND g.source_mode='${archiveMode ? "archive" : "legacy"}' AND g.validation IS NOT NULL
+          AND ${generationOwnershipProof("g")}
+          ${sourceSnapshot ? "AND g.validation->'sourceSnapshot'=$4::jsonb" : ""})
+        ${archiveMode ? "AND EXISTS(SELECT 1 FROM metadata_source.archive_release WHERE state='active' AND release_id=$2)" : ""}
+        ${sourceSnapshot ? `AND ${projectionPublicationSourcePredicate("$4")}` : ""}
+      RETURNING current_id`,
+      sourceSnapshot
+        ? [id, release, predecessor, JSON.stringify(sourceSnapshot)]
+        : [id, release, predecessor]
     );
+    if (publication.rowCount !== 1)
+      throw new Error("projection_publication_source_changed");
     await client.query(
       "UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1",
       [id]
     );
-    await stampDerivedSnapshot(client, "traits", release);
+    if (sourceSnapshot) {
+      // Stamp exactly the identity accepted by the pointer statement, rather
+      // than sampling a potentially newer marker in a separate statement.
+      await client.query(
+        `INSERT INTO metadata.derived_snapshot
+        (name,metadata_release_id,ownership_release_id,ownership_read_identity) VALUES('traits',$1,$2,$3)
+        ON CONFLICT(name)DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,
+          ownership_release_id=EXCLUDED.ownership_release_id,ownership_read_identity=EXCLUDED.ownership_read_identity,updated_at=now()`,
+        [release, sourceSnapshot.releaseId, sourceSnapshot.readIdentity]
+      );
+    } else await stampDerivedSnapshot(client, "traits", release);
     await client.query("COMMIT");
     return active.rows[0]?.current_id ?? null;
   } catch (error) {
@@ -197,6 +278,7 @@ export async function publishGeneration(
 }
 
 async function cleanupGenerations(client: PoolClient) {
+  const preserved = preservedProjectionGenerations();
   await client.query("BEGIN");
   let retired: string[];
   try {
@@ -204,14 +286,18 @@ async function cleanupGenerations(client: PoolClient) {
     await client.query(
       "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
     );
-    const rows = await client.query<{ id: string }>(`
+    const rows = await client.query<{ id: string }>(
+      `
       UPDATE metadata_projection.generation g SET state='retired',retired_at=now()
       WHERE state IN ('ready','failed','building')
         AND started_at < now()-interval '15 minutes'
         AND (published_at IS NULL OR published_at < now()-interval '15 minutes')
         AND id NOT IN (SELECT current_id FROM metadata_projection.active WHERE current_id IS NOT NULL
           UNION SELECT previous_id FROM metadata_projection.active WHERE previous_id IS NOT NULL)
-      RETURNING id`);
+        AND NOT(id=ANY($1::bigint[]))
+      RETURNING id`,
+      [preserved]
+    );
     retired = rows.rows.map((row) => row.id);
     await client.query("COMMIT");
   } catch (error) {
@@ -253,8 +339,13 @@ export async function refreshProjectionGeneration() {
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
     // Large generation inserts and facets spill heavily at PostgreSQL's 4 MB default.
     await client.query("SET LOCAL work_mem = '64MB'");
-    await assertOwnershipAvailable(client, collectionSlugs);
-    if (archiveMode) await assertChainReady(client, collectionSlugs);
+    const input = await captureProjectionInputs(client);
+    if (!input) {
+      await assertOwnershipAvailable(client, collectionSlugs);
+      if (archiveMode) await assertChainReady(client, collectionSlugs);
+    }
+    const metadataInput = input?.metadataRelation ?? metadataScanReadRelation;
+    const tokenInput = input?.tokenRelation ?? `${ponderSchema}.token`;
     const release = archiveMode
       ? ((
           await client.query<{ release_id: string }>(
@@ -282,12 +373,23 @@ export async function refreshProjectionGeneration() {
           "SELECT current_id FROM metadata_projection.active WHERE singleton"
         )
       ).rows[0]?.current_id ?? null;
+    if (input) {
+      if (
+        input.proof.metadataReleaseId !== release ||
+        input.proof.predecessor !== predecessor
+      )
+        throw new Error("projection_input_context_changed");
+      await client.query(
+        "UPDATE metadata_projection.generation SET validation=$2::jsonb WHERE id=$1",
+        [id, JSON.stringify({ sourceSnapshot: input.proof })]
+      );
+    }
     const searchInsert = await client.query(
       `INSERT INTO metadata_projection.search
       (generation_id,collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped,updated_at)
       SELECT $1::bigint,m.collection,m.token_id,m.lifecycle,(m.document IS NOT NULL),
         ${rarityPointsSql},${rarityPointsCappedSql},$2
-      FROM ${metadataScanReadRelation} m ${localRarityJoin}
+      FROM ${metadataInput} m ${localRarityJoin}
       LEFT JOIN LATERAL (SELECT a->>'value' AS value
         FROM jsonb_array_elements(COALESCE(m.attributes,'[]')) a
         WHERE a->>'trait_type'='Rarity Points' LIMIT 1) rp ON true`,
@@ -299,7 +401,7 @@ export async function refreshProjectionGeneration() {
       (generation_id,collection,token_id,lifecycle,trait_type,value,value_numeric)
       SELECT DISTINCT $1::bigint,m.collection,m.token_id,m.lifecycle,a->>'trait_type',a->>'value',
         CASE WHEN a->>'value' ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN (a->>'value')::numeric END
-      FROM ${metadataScanReadRelation} m
+      FROM ${metadataInput} m
       CROSS JOIN LATERAL jsonb_array_elements(COALESCE(m.attributes,'[]')) a
       WHERE m.document IS NOT NULL AND a ? 'trait_type' AND a ? 'value'
         AND a->>'trait_type' IS NOT NULL AND a->>'value' IS NOT NULL`,
@@ -310,7 +412,7 @@ export async function refreshProjectionGeneration() {
         `INSERT INTO metadata_projection.revision
       (generation_id,collection,token_id,lifecycle,metadata_content_hash)
       SELECT $1::bigint,m.collection,m.token_id,m.lifecycle,m.content_hash
-      FROM ${metadataScanReadRelation} m`,
+      FROM ${metadataInput} m`,
         [id]
       );
     // This limit is local to the build transaction; the facet sort runs once for all scopes.
@@ -324,7 +426,7 @@ export async function refreshProjectionGeneration() {
           bool_and(f.value_numeric IS NOT NULL) AS numeric_value
         FROM metadata_projection.trait f
         WHERE f.generation_id=$1 AND EXISTS (
-          SELECT 1 FROM ${ponderSchema}.token t
+          SELECT 1 FROM ${tokenInput} t
           WHERE t.collection=f.collection AND t.token_id::numeric=f.token_id
             AND t.lifecycle=f.lifecycle AND NOT t.burned
         )
@@ -357,7 +459,7 @@ export async function refreshProjectionGeneration() {
       WITH per_collection AS MATERIALIZED (
         SELECT t.collection,count(*) FILTER(WHERE s.metadata_available)::int AS available,
           count(*) FILTER(WHERE NOT COALESCE(s.metadata_available,false))::int AS missing
-        FROM ${ponderSchema}.token t LEFT JOIN metadata_projection.search s
+        FROM ${tokenInput} t LEFT JOIN metadata_projection.search s
           ON s.generation_id=$1 AND s.collection=t.collection
             AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
         WHERE NOT t.burned AND t.collection IN ('ethereum','base','polygon','bnb') GROUP BY t.collection
