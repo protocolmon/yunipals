@@ -1,0 +1,143 @@
+{
+  "format": "yunipals-ypal-main-api-runtime-v1-preparation",
+  "scope": "inactive_MAIN_API_only",
+  "artifactDigest": "40e35c622534b9030622759116cf3b85361ad914211a76a7fd47ee06b60968f9",
+  "manifestSha256": "986a288dcebe5e7ce910b36d83f97178ce7c47336a0e9910e0d013e3ff3e347a",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-baseline-v1/apps/yunipals-indexer/lib/api/booster-openapi.ts",
+      "bytes": 3320,
+      "sha256": "6461925aee7c911de00b76e7cbfa8cd526222cffee71ad689e82c06bf6c8f176"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-baseline-v1/apps/yunipals-indexer/lib/api/booster-routes.ts",
+      "bytes": 8824,
+      "sha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-baseline-v1/apps/yunipals-indexer/lib/leaderboard/refresh.ts",
+      "bytes": 15218,
+      "sha256": "17ac61e71a8b3666a3aea5cefbc23eb22a26bc2bc89eeb8ffcbb35a8b1848b73"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-baseline-v1/apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "bytes": 17898,
+      "sha256": "5762994995aee7dcf0d80197a2784054d7acb49f83d32b7ad01ff69d0995396a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-baseline-v1/packages/yunipals-market-core/src/boosters.ts",
+      "bytes": 3135,
+      "sha256": "5d6dc7ad01e1770837840f8b71ab740cbf9bc06e210f3f8500c5234e0df4fd1e"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-build-v1.mjs",
+      "bytes": 12432,
+      "sha256": "ea39077630d355516cee9de7b366732a9d78c2e364114312dbcb673d13e2637f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-build-v1.test.mjs",
+      "bytes": 7356,
+      "sha256": "d1688878a621d15164c1bc5bb5c98f7ab7352afd4e6990f08e2b9c5eb3bf355d"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-install-v1.py",
+      "bytes": 10165,
+      "sha256": "2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-install-v1.test.py",
+      "bytes": 3900,
+      "sha256": "32e125ed066f5e819a6e47f9e20e26233cbf5ea8872b6eb489faf5d7f12a52ba"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-runtime-v1.manifest.json",
+      "bytes": 41078,
+      "sha256": "986a288dcebe5e7ce910b36d83f97178ce7c47336a0e9910e0d013e3ff3e347a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-runtime-v1.md",
+      "bytes": 5809,
+      "sha256": "fc4edc1d18c695b84f3cfa6acf0862a6fd284b14d82d5ca8a6d2c49a6dba92c0"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-main-api-v1-postgres.test.mjs",
+      "bytes": 15339,
+      "sha256": "85c2bf3e77e1be9d40dffcbfb8fc3ada4d80e896bcc7f3d43ae8b6d0998344ca"
+    }
+  ],
+  "artifactFiles": [
+    {
+      "path": "dist/main-api.mjs.map",
+      "bytes": 831127,
+      "sha256": "92f4769ed7651432ed62731236851cb2c2e2159281bdab85f9828ed4f9d68d8e"
+    },
+    {
+      "path": "dist/main-api.mjs",
+      "bytes": 413458,
+      "sha256": "2bdd4bf19094b7e4f911ce859f0f9900fe93680f86c7719078a3a2471893f053"
+    }
+  ],
+  "sourceAndResolutionInputs": 94,
+  "allowedRuntimeChanges": [
+    {
+      "path": "packages/yunipals-indexer-server/src/action-evidence.ts",
+      "bytes": 21158,
+      "sha256": "39ea4712e6a3d1de5a82974439d3bcdb80f4e7f60ad10d6b770a91cd0f75c0fd",
+      "predecessorSha256": "1abaea641e2dda87ef9d9ed5f640ea690ee79e6a238cddfb8de82816fbf8794b",
+      "previousConsumerSha256": "163b87644e5899a6bcaa1613dba46c59eb478677fdacef848194d8eca5062664"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/event-topics.ts",
+      "bytes": 671,
+      "sha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a",
+      "predecessorSha256": null,
+      "previousConsumerSha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterAbi.ts",
+      "bytes": 44016,
+      "sha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba",
+      "predecessorSha256": "61049528cc583b2d4948a688e1c7a67c07bfd48a37785c5f11a4f22f54ed5850",
+      "previousConsumerSha256": "61049528cc583b2d4948a688e1c7a67c07bfd48a37785c5f11a4f22f54ed5850"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterSourceAbi.e8145098.ts",
+      "bytes": 40023,
+      "sha256": "996dec2b07b985763b6e80960b7e36930b5c7976eb9d012ccdee0b7b5493b4fa",
+      "predecessorSha256": null,
+      "previousConsumerSha256": null
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterSourceAbi.ts",
+      "bytes": 1853,
+      "sha256": "6e8b457fd73d1667dca35cfc48d46bd095b06352d488554cb78160db58103925",
+      "predecessorSha256": null,
+      "previousConsumerSha256": null
+    },
+    {
+      "path": "packages/yunipals-market-core/src/indexedAction.ts",
+      "bytes": 8278,
+      "sha256": "14a7548a982d6d1ab6a3a941f44f5e8a4b53e233d7cee79156d05e03ef78ced4",
+      "predecessorSha256": "ae1d9be3b392c530b1e799c2b34eaeca20ce7daeff5bceeb0c11f8de37435cc6",
+      "previousConsumerSha256": "ae1d9be3b392c530b1e799c2b34eaeca20ce7daeff5bceeb0c11f8de37435cc6"
+    }
+  ],
+  "tests": {
+    "offlineBuildMapImportRelocationGroups": 5,
+    "selfContainedInstallerFilesystemControls": 4,
+    "syntheticBuiltHttpPostgresGroups": 9,
+    "syntheticBuiltHttpPostgresExitCode": 0,
+    "syntheticBuiltHttpPostgresStderrBytes": 0
+  },
+  "knownProductionTransactionMapping": "Separate prior protected evidence only; not a covered-point API preview.",
+  "syntheticFixtureNotProductionEvidence": true,
+  "productionSourceReadyClaimed": false,
+  "productionPreviewPassed": false,
+  "productionRuntimeChanged": false,
+  "dependenciesInstalled": 0,
+  "providerRequests": 0,
+  "productionDatabaseActions": 0,
+  "serviceActions": 0,
+  "marketplaceReceiptBehaviorChanged": false,
+  "coordinatedReaderCutoverStillRequired": true
+}
