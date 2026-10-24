@@ -1,0 +1,70 @@
+{
+  "actualReadOnlyPreflight": {
+    "actualNewAdmissionQualified": false,
+    "allColumnAclSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "arenaNativeLoginCount": 0,
+    "arenaNativeRoleCount": 0,
+    "canonicalCoverageQualified": false,
+    "catalogSha256": "fe30c0dc31d10c2b3934ab08218b20eab0204ad4e4da76d4fe8e7e624a6dcad2",
+    "columnOverlapCount": 0,
+    "completed": true,
+    "currentMissingReadCount": 143,
+    "currentPresentReadCount": 0,
+    "databaseWrites": 0,
+    "format": "yunipals-current-consumer-readonly-preflight-v1",
+    "historicalReadScopeCount": 143,
+    "missingByExistingRole": {
+      "yunipals": 23,
+      "yunipals_islands_staking": 11,
+      "yunipals_unified_api": 28,
+      "yunipals_unified_collector": 26,
+      "yunipals_unified_islands_api": 21,
+      "yunipals_unified_read_cache": 26,
+      "yunipals_unified_support": 8
+    },
+    "nativeIdentitySha256": "5851bd59c51ba5608f79b562c8c935d8a711765664b24a5ab097d36e02d48d7f",
+    "presentByExistingRole": {},
+    "providerCalls": 0,
+    "sameRegisteredNative44": true,
+    "serviceActions": 0,
+    "sourceCompletionSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+    "sourcePID": 3806762,
+    "sourceReadinessQualified": true,
+    "stakingCurrentReadFunctions": [
+      {
+        "bodySha256": "fd1e2fee4454023224cfc4bc9817cec2eabf9383bd00016e70b31d75efcb4268",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "invoker": true,
+        "name": "source_boundary",
+        "oid": "75994965",
+        "owner": "10",
+        "stakingCanExecute": false
+      },
+      {
+        "bodySha256": "beddd1ec8b6356a370e44b5d5b735b6ad8ed3ee72e1d05b8e381ba37c2913298",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "invoker": true,
+        "name": "source_probe",
+        "oid": "75994968",
+        "owner": "10",
+        "stakingCanExecute": false
+      }
+    ],
+    "stakingRole": {
+      "limit": 2,
+      "login": false,
+      "memberships": 0,
+      "oid": "73765879",
+      "sessions": 0
+    }
+  },
+  "captureDateUTC": "2026-10-24",
+  "permissionsApplied": false,
+  "privateLocalAggregateSha256": "8160a41aa92482c0450d9c0f802b79546201574e2e0e9fa4732fb716c7c58985",
+  "readerSwitched": false,
+  "roleCreated": false
+}
