@@ -1,0 +1,106 @@
+{
+  "format": "yunipals-generation-snapshot-runtime-v2-preparation",
+  "artifactDigest": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+  "manifestSha256": "85acb526541fe09acbfd17a87a14be494c02123a61501a41b01e91f1d9c01188",
+  "scope": "inactive_runtime_only",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-build-v2.mjs",
+      "bytes": 12012,
+      "sha256": "5ee2f8b2483755853031d715592756575a01cf451f78c50cd90d85c866550ddf"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-build-v2.test.mjs",
+      "bytes": 4837,
+      "sha256": "fba57afc3640efc8a6dc9914e27415df61156255f6f3783043e4edd2954ce829"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-install-v2.py",
+      "bytes": 10303,
+      "sha256": "0c031bdc798b8466ea29624bbfdb253e392830ab2b2f833be4c41d6fb91c5e8f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-install-v2.test.py",
+      "bytes": 3410,
+      "sha256": "1dd7f3bcc5314cb076383c781f7aea1be2b73d35164b2df0d714bb53b99d59e0"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-baseline-indexer-package-v1.json",
+      "bytes": 8221,
+      "sha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-baseline-market-core-package-v1.json",
+      "bytes": 1855,
+      "sha256": "9570b4333acf2407f819cb66923d59ec1aeb7b3475b46527a34d52d101a16617"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-baseline-lock-v1.yaml",
+      "bytes": 325459,
+      "sha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-snapshot-runtime-v2.manifest.json",
+      "bytes": 20307,
+      "sha256": "85acb526541fe09acbfd17a87a14be494c02123a61501a41b01e91f1d9c01188"
+    }
+  ],
+  "artifactFiles": [
+    {
+      "path": "dist/generation-prepare.mjs.map",
+      "bytes": 112864,
+      "sha256": "a3ab4315411d0621940cb0e6716f1a93bcb4a4010f836efda65f29fef8de44cd"
+    },
+    {
+      "path": "dist/generation-prepare.mjs",
+      "bytes": 61380,
+      "sha256": "5ddfc402e5433bbc7e349186a2707fc5ab1b0b6d15d74d9a434c8a94e8f710ac"
+    },
+    {
+      "path": "dist/generation-refresh.mjs.map",
+      "bytes": 139257,
+      "sha256": "6788294729c8a518fb1d4c49c6113ed1968072a65a0b6ecdae048928fd4ba35c"
+    },
+    {
+      "path": "dist/generation-refresh.mjs",
+      "bytes": 79662,
+      "sha256": "eb27e0760d9d0e0ea3e36f5cdb2bb8862640dba95da720c8754cbbb90e6928ec"
+    },
+    {
+      "path": "dist/leaderboard-worker.mjs.map",
+      "bytes": 152812,
+      "sha256": "c44860f3004cd50dc44549aac502fc8a4ee61e46bb97a91c61e86cdb58312a4c"
+    },
+    {
+      "path": "dist/leaderboard-worker.mjs",
+      "bytes": 86009,
+      "sha256": "623f73642e9e750106577a5d6dacfc66d5ddb2a8c9815e2728364d0d4cd954b2"
+    },
+    {
+      "path": "dist/leaderboard-only.mjs.map",
+      "bytes": 130923,
+      "sha256": "78e1be226b3dd07e964f0d75fbb203b6199317c20830b9fe99db2f79431b5ac5"
+    },
+    {
+      "path": "dist/leaderboard-only.mjs",
+      "bytes": 54001,
+      "sha256": "d1f489ff3caeb34e2d7fd601f857d20722005dbe51f21acc6fc0300a42849d64"
+    }
+  ],
+  "runtimeOutputFiles": 8,
+  "installedSourceChanged": false,
+  "dependencyInstalls": 0,
+  "serviceActions": 0,
+  "databaseActions": 0,
+  "providerRequests": 0,
+  "ownerExecutionQualified": false,
+  "servingPublicationAuthorized": false,
+  "tests": {
+    "relocatedBuildGroups": 4,
+    "realFilesystemInstallerControls": 4,
+    "actualPostgreSQLApplicationGroups": 20
+  },
+  "requiredActualReadAdmissionReceipt": true,
+  "candidateOnlyEntry": "dist/generation-prepare.mjs",
+  "genericPublicationMustNotRunBeforeCoordinatedReaders": true
+}
