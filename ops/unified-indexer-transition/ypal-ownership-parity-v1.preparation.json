@@ -1,6 +1,6 @@
 {
   "format": "yunipals-ypal-ownership-parity-v1-source-preparation",
-  "status": "production-staged-static-review-and-coverage-preflight-complete",
+  "status": "production-full-six-collection-data-parity-independently-accepted",
   "sourceFiles": [
     {
       "path": "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
@@ -39,8 +39,8 @@
     },
     {
       "path": "ops/unified-indexer-transition/ypal-ownership-parity-v1.md",
-      "bytes": 9869,
-      "sha256": "860a1de7f3081384918858a76b6fde38c6ec706d60f7492c2a1a62f6f414b7c1"
+      "bytes": 10352,
+      "sha256": "b771e2d8cc912a915cf5583c980c67e0157523a08fceeb0382b6845033532ed8"
     }
   ],
   "unchangedDependencies": [
@@ -84,7 +84,7 @@
   "retries": 0,
   "originalFixtureCasesViaGenuineLocalPostgres": 4,
   "genuinePostgresScope": "Unchanged peer-v2 all-six transfer/burn/remint normalized queries. New production-only OID/peer preflight uses deterministic adapters in tests.",
-  "productionCapturePerformed": false,
+  "productionCapturePerformed": true,
   "productionReadinessClaimed": false,
   "providerRequestsPerformed": 0,
   "actualFutureReceiptInvented": false,
@@ -125,19 +125,34 @@
   "productionPreflightPerformed": true,
   "productionStaticReviewPerformed": true,
   "productionPreflight": {
-    "eligible": false,
+    "eligible": true,
     "allSixCollectionsChecked": true,
-    "coveredCollectionBoundaries": 5,
-    "bnbCompleteThrough": "126174632",
+    "coveredCollectionBoundaries": 6,
+    "bnbCompleteThrough": "129408606",
     "bnbFixedBoundary": "128816538",
-    "bnbDeficit": "2641906",
+    "bnbDeficit": "0",
     "databaseWrites": 0,
     "providerCalls": 0,
     "serviceActions": 0,
-    "fullDatasetScanPerformed": false,
-    "parityReportCreated": false,
+    "fullDatasetScanPerformed": true,
+    "parityReportCreated": true,
     "sourceReadinessQualified": false,
     "canonicalWitnessQualified": false,
     "detailedReportsPublished": false
+  },
+  "productionCapture": {
+    "privateReportSha256": "b04ff03dadbc8fa8f167fdec862b071ee4dc6e89268bed84a5260c77c2290aa4",
+    "allSixCollections": true,
+    "exactDataParity": true,
+    "independentAllDatasetsAndBucketsEqual": true,
+    "pureReceiptValidatorPassed": true,
+    "allBoundaryHashesMatch": false,
+    "missingHistoricalHashes": 4,
+    "sourceReadinessQualified": false,
+    "canonicalWitnessQualified": false,
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "rawReportExported": false
   }
 }

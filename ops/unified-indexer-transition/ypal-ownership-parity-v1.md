@@ -26,11 +26,17 @@ The actual comparison heights are unchanged:
 | Polygon  |                95,883,932 |
 | Base     | 52,870,956 and 52,870,977 |
 
-The actual production preflight on 24 October confirms BNB checkpoint
-126,174,632 is **2,641,906 blocks short**. The other five collection boundaries
-are covered. This observation is neither full parity nor current source/canonical
-acceptance. Use a fresh preflight before capture; do not omit BNB, truncate the
-baseline or run a full dataset scan when any fixed boundary is incomplete.
+The first production preflight on24 October found BNB126,174,632 below the saved
+boundary. A later fresh preflight records BNB129,408,606, with all six fixed
+boundaries covered. The subsequent full read-only comparison now passes exact
+data equality for every dataset/digest/bucket. Independent on-host inspection
+and the pure producer receipt validator pass against the unchanged private
+baseline. The actual private report SHA256 is
+`b04ff03dadbc8fa8f167fdec862b071ee4dc6e89268bed84a5260c77c2290aa4`.
+The [public aggregate receipt](../../docs/unified-indexer/ypal-all-six-ownership-parity-production-2026-10-24.json)
+contains only counts and qualification flags. Current canonical/source
+readiness remains separate and unqualified; four original historical boundary
+hashes were never recorded. No boundary or baseline was shortened or replaced.
 
 ## Fixed proof context
 
@@ -52,10 +58,10 @@ files are never overwritten.
 
 The three exact runtime modules and the protected parity plan have been staged.
 Actual static review passed without database connections or provider requests;
-the separate read-only coverage preflight passed its identity checks and reported
-the incomplete BNB boundary above. The private output directory is empty apart
-from the review/preflight records. No full parity report or canonical witness
-has been captured, and no consumer, permission or service selection changed.
+the subsequent fresh read-only preflight proved all six fixed boundaries covered.
+The actual full parity report now exists at the fixed private output path and
+has passed independent inspection. No canonical witness has been captured, and
+no consumer, permission or service selection changed.
 
 Use the pinned Node 24.18.1 runtime with a clean environment, no credentials,
 no `PGPASSWORD`/service selector, and an absent `PGPASSFILE` sentinel. Default
@@ -121,8 +127,9 @@ The intended protected paths in the plan examples are:
 - `/var/backups/yunipals-ypal-ownership-parity-v1-20261024/parity.json`
 - `/var/backups/yunipals-ypal-fixed-boundary-witness-v3-20261024/result.json`
 
-No actual capture or SHA is supplied by this preparation. The coordinator must
-pin the actual files and both exact producer source hashes. The pure exports are
+The actual all-six parity capture now exists with the SHA above; the canonical
+witness remains pending. The coordinator must pin the actual files and both
+exact producer source hashes. The pure exports are
 `validateParityReceipt(receipt, baselineBytes)` and
 `validateWitnessReceipt(witnessReceipt, parityBytes, baselineBytes)`. The first
 recomputes all six complete dataset/count/hash/bucket equalities against the

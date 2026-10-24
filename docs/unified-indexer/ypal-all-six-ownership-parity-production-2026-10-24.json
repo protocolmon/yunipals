@@ -1,0 +1,85 @@
+{
+  "format": "yunipals-ypal-all-six-ownership-parity-production-summary-v1",
+  "date": "2026-10-24",
+  "sourceRelease": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+  "sourceSchema": "unified_ypal_20261023_v1",
+  "sourceSchemaOid": "75963410",
+  "buildId": "71e2a7f3b7",
+  "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67",
+  "producerSha256": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+  "privateReportSha256": "b04ff03dadbc8fa8f167fdec862b071ee4dc6e89268bed84a5260c77c2290aa4",
+  "baselineSha256": "69f91e57c10171dd7b8ab2424236dd22c07e913b27b0376fdc579bde0d549540",
+  "fullDatasetScanPerformed": true,
+  "allSixCollectionsCompared": true,
+  "exactDataParity": true,
+  "allDatasetsAndBucketsComparedIndependently": true,
+  "pureReceiptValidatorPassed": true,
+  "collections": [
+    {
+      "collection": "ethereum",
+      "counts": {
+        "admin_role_event": 17,
+        "token": 36686,
+        "token_lifecycle": 36686,
+        "transfer_event": 57588
+      }
+    },
+    {
+      "collection": "base",
+      "counts": {
+        "admin_role_event": 3,
+        "token": 440194,
+        "token_lifecycle": 440194,
+        "transfer_event": 446730
+      }
+    },
+    {
+      "collection": "polygon",
+      "counts": {
+        "admin_role_event": 7,
+        "token": 15970,
+        "token_lifecycle": 15970,
+        "transfer_event": 29346
+      }
+    },
+    {
+      "collection": "bnb",
+      "counts": {
+        "admin_role_event": 13,
+        "token": 580093,
+        "token_lifecycle": 580093,
+        "transfer_event": 1232554
+      }
+    },
+    {
+      "collection": "ethereum-islands",
+      "counts": {
+        "admin_role_event": 0,
+        "contract_owner_event": 3,
+        "token": 898,
+        "token_lifecycle": 898,
+        "transfer_event": 1616
+      }
+    },
+    {
+      "collection": "base-islands-v2",
+      "counts": {
+        "token": 898,
+        "token_lifecycle": 898,
+        "transfer_event": 901
+      }
+    }
+  ],
+  "missingHistoricalBoundaryHashes": 4,
+  "allBoundaryHashesMatch": false,
+  "processExitCode": 3,
+  "processExitCodeMeaning": "Exact data equality with four historical boundary hashes absent from the unchanged legacy baseline.",
+  "sourceReadinessQualified": false,
+  "canonicalWitnessQualified": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "rawOwnershipRowsPublished": false,
+  "fullReportPublished": false,
+  "fullReportRetainedRootPrivateOnProduction": true
+}
