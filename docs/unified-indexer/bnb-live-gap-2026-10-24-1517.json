@@ -1,0 +1,47 @@
+{
+  "format": "yunipals-bnb-live-gap-and-rate-v1",
+  "headObservation": {
+    "actualChainId": 56,
+    "boundedProviderRPCRequests": 3,
+    "caughtUpPercentOfChainHeightIsMeaningful": false,
+    "coverage": {
+      "chainId": 56,
+      "chainName": "bnb",
+      "completeThroughBlock": "129506777",
+      "frameworkFinalizedThroughBlock": "129506777",
+      "recoveryThroughBlock": "129506777"
+    },
+    "databaseWrites": 0,
+    "externalHeadAgeSeconds": 1.37,
+    "externalHeadBlock": 129536351,
+    "externalHeadHash": "0xab883f9fb9967b185aadfa93e772d8063c6f926b1f732ff80069dcec5f1f5927",
+    "externalHeadTimestamp": 1792855026,
+    "format": "yunipals-bnb-fresh-head-gap-v1",
+    "frameworkReady": 0,
+    "freeOnlyVerified": true,
+    "gapBlocks": 29574,
+    "observedAt": "2026-10-24T15:17:07.374166+00:00",
+    "paidCalls": 0,
+    "rpcProfileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+    "serviceActions": 0,
+    "sourceInvocation": "2069ffe9ed0d4621a7cfe40cb98dcbf4",
+    "sourcePid": 3111295
+  },
+  "timeSpanObservation": {
+    "backlogSeconds": 13315,
+    "boundedProviderRPCRequests": 2,
+    "databaseWrites": 0,
+    "format": "yunipals-bnb-gap-time-span-v1",
+    "indexedBlock": 129506777,
+    "indexedBlockTimestamp": 1792841711,
+    "observedAt": "2026-10-24T15:18:20.700719+00:00",
+    "recent4096AverageBlockSeconds": 0.4501953125,
+    "serviceActions": 0
+  },
+  "measuredCommittedRatePerMinute": 117.6,
+  "committedRateSampleMinutes": 66.34,
+  "recentChainBlocksPerMinute": 133.2754880694143,
+  "gapShrinkingReliablyProven": false,
+  "catchupETAQualified": false,
+  "conclusion": "The longer measured indexing rate is below recent chain growth. A finish-time estimate needs a verified shrinking live gap, not a fixed historical replay target."
+}

@@ -1735,10 +1735,11 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
         response(output, 400, { error: "selective_free_batch_unavailable" });
         return;
       }
-      // Buffer only this explicitly selected source mode, after full request
+      // Buffer explicitly selected paid source modes, after full request
       // validation. Normal/legacy callers retain their existing backpressure.
       const sourceRequest =
-        unifiedSourcePaidLogs && unifiedWorkload === "unified_source"
+        (unifiedSourcePaidPrimary || unifiedSourcePaidLogs) &&
+        unifiedWorkload === "unified_source"
           ? new AbortController()
           : undefined;
       if (sourceRequest) {

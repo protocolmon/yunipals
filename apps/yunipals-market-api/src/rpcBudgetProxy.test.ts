@@ -2451,6 +2451,7 @@ async function historicalUnifiedProxyFixture(
     paidFallback?: boolean;
     evidencePaidFallback?: boolean;
     profileReady?: boolean;
+    paidPrimary?: boolean;
     paidLogs?: boolean;
     maximumConcurrentUpstreamRequests?: number;
     freeRequestTimeoutMs?: number;
@@ -2586,6 +2587,7 @@ async function historicalUnifiedProxyFixture(
       freeRequestTimeoutMs: options.freeRequestTimeoutMs,
       maximumConcurrentUpstreamRequests:
         options.maximumConcurrentUpstreamRequests,
+      unifiedSourcePaidPrimary: options.paidPrimary,
       unifiedSourcePaidLogs: options.paidLogs,
       sourcePaidFallbackOnFreeFailure: options.paidFallback ?? false,
       orderPaidFallbackOnFreeFailure: options.evidencePaidFallback ?? false,
@@ -2871,7 +2873,69 @@ test("mixed source queue releases an acquired slot when paid budget admission fa
   assert.equal((await waitForSourceQueue(fixture, 0)).activeUpstreamRequests, 0);
 });
 
-test("normal unified source retains immediate overload behavior without mixed paid-logs mode", async (t) => {
+test("paid primary queues blocks and logs before permit admission and cancels without spending", async (t) => {
+  const held = heldSourceReply();
+  t.after(held.release);
+  const fixture = await historicalUnifiedProxyFixture({
+    paidPrimary: true,
+    maximumConcurrentUpstreamRequests: 1,
+    freeRequestTimeoutMs: 3000,
+    beforeReply: async (_route, ids) => {
+      if (ids[0] === 0) await held.blocked;
+    }
+  });
+  const headers = { [unifiedRpcPermitHeader]: fixture.permit };
+  const first = fixture.request(sourceBlockRequest(0), headers);
+  for (let attempt = 0; fixture.counts.paidDispatches === 0; attempt++) {
+    assert.ok(attempt < 100);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+  }
+  const waiting = fixture.request({ ...fixture.logs, id: 1 }, headers);
+  const abort = new AbortController();
+  const cancelled = fixture
+    .request(sourceBlockRequest(2), headers, "/unified", abort.signal)
+    .catch((error: unknown) => error);
+  await waitForSourceQueue(fixture, 2);
+  assert.equal(fixture.counts.permitAttempts, 1);
+  assert.deepEqual(fixture.counts.chargedMethods, ["eth_getBlockByNumber"]);
+  abort.abort();
+  await cancelled;
+  await waitForSourceQueue(fixture, 1);
+  assert.equal(fixture.counts.permitAttempts, 1);
+  held.release();
+  assert.equal((await first).status, 200);
+  assert.equal((await waiting).status, 200);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.equal(fixture.counts.paidDispatches, 2);
+  assert.equal(fixture.counts.permitApprovals, 2);
+  assert.deepEqual(fixture.counts.chargedMethods, [
+    "eth_getBlockByNumber",
+    "eth_getLogs"
+  ]);
+  const metrics = await waitForSourceQueue(fixture, 0);
+  assert.equal(metrics.maximumObservedUpstreamRequests, 1);
+  assert.equal(metrics.queuedSourceBytes, 0);
+  assert.equal(metrics.traffic.sourceQueueCancellations, 1);
+});
+
+test("paid primary still rejects absent or out-of-range permits before dispatch", async () => {
+  const fixture = await historicalUnifiedProxyFixture({ paidPrimary: true });
+  const noPermit = await fixture.request(sourceBlockRequest(1));
+  assert.equal(noPermit.status, 403);
+  const outside = await fixture.request(
+    { ...sourceBlockRequest(2), params: ["0x12d", false] },
+    { [unifiedRpcPermitHeader]: fixture.permit }
+  );
+  assert.equal(outside.status, 403);
+  assert.equal(fixture.counts.permitAttempts, 2);
+  assert.equal(fixture.counts.permitApprovals, 0);
+  assert.equal(fixture.counts.paidDispatches, 0);
+  assert.equal(fixture.counts.freeDispatches, 0);
+  assert.deepEqual(fixture.counts.chargedMethods, []);
+  assert.equal((await fixture.metrics()).activeUpstreamRequests, 0);
+});
+
+test("normal unified source retains immediate overload behavior without paid mode", async (t) => {
   const held = heldSourceReply();
   t.after(held.release);
   const fixture = await historicalUnifiedProxyFixture({
