@@ -1,0 +1,34 @@
+{
+  "actualInverseExecuted": false,
+  "codeReview": [
+    "metadata callback dispatches to new completed graph-only inverse_scope",
+    "recurring generation intentionally remains stopped; restored read-cache is a distinct unit",
+    "reused legacy_serving and metadata recovery functions continue checking actual readers/private inputs and monotonic cursor"
+  ],
+  "command": "python3 -I -B ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.test.py",
+  "databaseWrites": 0,
+  "exitCode": 0,
+  "focusedControls": 13,
+  "format": "yunipals-ypal-native-inverse-leaf-independent-review-v1",
+  "frozenProducersChanged": false,
+  "independentlyRerun": true,
+  "knownLimits": [
+    "SQL, service and local HTTP observations in this local suite are fixtures",
+    "actual completed production inverse does not exist yet",
+    "current writer, source readiness, canonical and financial qualification remain caller responsibilities"
+  ],
+  "operatorSha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28",
+  "productionRecoveryQualified": false,
+  "providerCalls": 0,
+  "reviewedAt": "2026-10-24T13:25:37.888681+00:00",
+  "scope": [
+    "actual protected-file operation/inverse/result hash chain",
+    "reused READ143 graph and all-grantee columns",
+    "current original reader private/start/boot facts",
+    "cache/global inverse commit journals and unknown-XID refusal",
+    "metadata acknowledgement or explicit reconciliation and owned inode checks",
+    "source-independent completed context and separated stable binding/live observations"
+  ],
+  "serviceActions": 0,
+  "testSha256": "8ccb7076328f5ed28af79e60964899016e2319ada7811b597d4371369f2f4943"
+}
