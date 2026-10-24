@@ -1,0 +1,10 @@
+{
+  "format": "yunipals-ypal-fixed-boundary-witness-plan-v3",
+  "sourceRoot": "/opt/yunipals-unified/releases/008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+  "baselineFile": "/opt/yunipals-unified/operations/fixed-boundary-20261020/legacy-baseline.json",
+  "profileFile": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-v1/profile.json",
+  "runtimeInventoryFile": "/var/tmp/yunipals-runtime-008028af-20261020/runtime-supplement.inventory.json",
+  "candidateReportFile": null,
+  "candidateReportSha256": null,
+  "output": "/var/backups/yunipals-ypal-ownership-parity-v1-20261024/parity.json"
+}
