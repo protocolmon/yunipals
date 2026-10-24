@@ -1,0 +1,51 @@
+{
+  "format": "yunipals-restored-read-current-independent-review-v1",
+  "verdict": "pass",
+  "sourceOnly": true,
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+      "bytes": 14593
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.test.py",
+      "sha256": "4735b85ee2d65308bfb4334571b5c839f640f8bcfc8928400cb2b4ddd0952401",
+      "bytes": 10947
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.input.json.example",
+      "sha256": "49731f500e5d93eb40c9b595981a865ad2d6d73364305b41e71709bfa3967a51",
+      "bytes": 288
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.md",
+      "sha256": "046e449b599378d8a4c287b0e90b378df2c78e521e373a61b7b517c599a585f9",
+      "bytes": 4843
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.preparation.json",
+      "sha256": "faeec7db6242e26bef335a22ed0d6574982a5e1d633f5a794d9ba0aa640b3e86",
+      "bytes": 1546
+    }
+  ],
+  "rootIndependentControlsPassed": 12,
+  "scope": [
+    "Actual994/de4/0ee active source binding, with advancing observations separated from stable identity",
+    "Exact historical143 statement scope retained as scope evidence, without a fabricated current admission ACK",
+    "Arena13-before-baseline and feature ordering retain exact grantors and column identities",
+    "ReaderHost uses bounded READ selectors and one repeatable read-only catalog transaction",
+    "Privileged source primitives are explicitly separate from read/admission authority",
+    "No obsolete c96 source/view/load constructor is called or reported passed"
+  ],
+  "limitations": {
+    "actualHostRuntimeQualified": false,
+    "actualFresh143PlanOrAdmissionExists": false,
+    "actualCacheAdmissionQualified": false,
+    "terminalInverseSourceQualified": false,
+    "allGranteeColumnCatalogAuthoritySupplied": false
+  },
+  "reviewProductionActions": 0,
+  "reviewProviderCalls": 0,
+  "reviewDatabaseConnections": 0
+}
