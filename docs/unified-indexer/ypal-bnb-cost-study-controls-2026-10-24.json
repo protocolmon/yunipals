@@ -1,0 +1,18 @@
+{
+  "format": "yunipals-bnb-cost-study-v1-controls",
+  "passed": 8,
+  "groups": [
+    "installed historical engine fetches100quietheaders for interval1",
+    "installed historical engine fetches10quietheaders for interval10",
+    "nonsampled synthetic events retain all6logs and5transactions",
+    "invalid or unbounded fixture inputs refuse beforeRPC",
+    "actual realtime gap engine keeps266headers at both polling rates",
+    "sparse callbacks do not remove stock realtime header continuity",
+    "poll renderer changes only exactBNB2s field; foreign source refuses",
+    "real three-variant build proof reproduces71e and requires new sparse build"
+  ],
+  "isolatedSyntheticRpcOnly": true,
+  "productionChanges": 0,
+  "providerCalls": 0,
+  "databaseConnections": 0
+}

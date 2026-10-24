@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-bnb-cost-study-v1-preparation",
+  "scope": "source-only cost diagnosis; no production optimization activated",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-bnb-cost-study-v1.mjs",
+      "sha256": "2e82a014600971f83dc0bc5dee2063c0ba00116011ee460783a65afca81a34e7",
+      "bytes": 20583
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-bnb-cost-study-v1.test.mjs",
+      "sha256": "78b377008c503e916f2ba7caad522562216fac970874246524dca37b8aa15024",
+      "bytes": 4574
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-bnb-cost-study-v1.ponder-files.json",
+      "sha256": "8d23c2a50ed66655d2e13bd8af093eba5cebe19cf0541efa27a0480abf9f29ca",
+      "bytes": 2502
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-bnb-cost-study-v1.md",
+      "sha256": "931d579bd14229be1769bece2f8a602325695e13a0bf6be42df7963a9fef3d35",
+      "bytes": 7659
+    },
+    {
+      "path": "docs/unified-indexer/ypal-bnb-cost-study-2026-10-24.json",
+      "sha256": "c22bec608efb04d1a71e965230c5c4a4f199766221a9e1c344626a620c03f661",
+      "bytes": 16463
+    },
+    {
+      "path": "docs/unified-indexer/ypal-bnb-cost-study-controls-2026-10-24.json",
+      "sha256": "e3259d4a73a443e6ad42485231a8de5ff540813a1354d223d9d969ef14cc1b36",
+      "bytes": 771
+    }
+  ],
+  "controlsPassed": 8,
+  "actualRuntimeVersion": "patched Ponder0.17.5",
+  "actualProductionVolumeAggregateSha256": "94c0750811defc69827f4a8f83a9a038239a5789f9e72ef69e17d4036492524c",
+  "syntheticTailAndRealtime": true,
+  "actualTailEventsMeasured": false,
+  "realBaselineBuild": "71e2a7f3b7",
+  "pollingOnlyBuild": "71e2a7f3b7",
+  "sparseDiagnosticBuild": "67d8a35489",
+  "recommendedProductionChange": "none; retain interval1 and2s polling for now",
+  "newNativeSourceQualified": false,
+  "estimatedPermanentHeaderCuSavingsFrom10sPolling": 0,
+  "dbCountsAreHandlerMethodCalls": true,
+  "productionActions": 0,
+  "providerCalls": 0,
+  "databaseConnections": 0,
+  "gitActions": 0
+}

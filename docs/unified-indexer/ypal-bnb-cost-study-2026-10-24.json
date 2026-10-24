@@ -1,0 +1,490 @@
+{
+  "format": "yunipals-bnb-cost-study-v1",
+  "actualInstalledPonder": "0.17.5",
+  "sourceOnly": true,
+  "runtimeFilesManifestSha256": "8d23c2a50ed66655d2e13bd8af093eba5cebe19cf0541efa27a0480abf9f29ca",
+  "installedRuntimeFiles": [
+    {
+      "path": "package.json",
+      "sha256": "e280124810f611e6f7f5b1d61b49880864ecb23906f4719bc35aa2e92ce8c8f8",
+      "bytes": 2958
+    },
+    {
+      "path": "dist/esm/build/index.js",
+      "sha256": "433c6c62479cb3a4eaf747e1dc687b69fb76b7bffd502f7e3162a70bbe98359c",
+      "bytes": 25766
+    },
+    {
+      "path": "dist/esm/sync-historical/index.js",
+      "sha256": "f9e84b78ba4e965ef856c4ff8f555bc871f3ca1c5528ad30d2398ce4b673372f",
+      "bytes": 33368
+    },
+    {
+      "path": "dist/esm/sync-realtime/index.js",
+      "sha256": "f17cf9876faf3a644e2245349caaacc9553d22fad7c20ac8b279b707d72afa7d",
+      "bytes": 41059
+    },
+    {
+      "path": "dist/esm/runtime/historical.js",
+      "sha256": "9ff112e17a18f60cdb8aa6125882d7d0a3e99f36635de5ace7ea52cc9c944028",
+      "bytes": 44226
+    },
+    {
+      "path": "dist/esm/runtime/realtime.js",
+      "sha256": "41cf28ac504b44a904691417324c363ec8a561cc4e897134d5286f69b59b04d8",
+      "bytes": 33876
+    },
+    {
+      "path": "dist/esm/rpc/index.js",
+      "sha256": "eac7d55d2ef1bdae20b671b91ff4dcb544972d7cdc41fe972e0ecf0196f45976",
+      "bytes": 32773
+    },
+    {
+      "path": "dist/esm/database/index.js",
+      "sha256": "cd51e275d4ef2034038070e5f517a858e78ac07cd5e6c46adc0add24782aa3b8",
+      "bytes": 30858
+    },
+    {
+      "path": "src/build/index.ts",
+      "sha256": "a94d4d9e62ee79b6b674e16e02723fe9d88fae37c7a3813795f3f6eeec45e3c4",
+      "bytes": 25772
+    },
+    {
+      "path": "src/sync-historical/index.ts",
+      "sha256": "ae6092c62c979c762fe70d32f6a9b4901e2c572427f60f69645191ff5b6425db",
+      "bytes": 31813
+    },
+    {
+      "path": "src/sync-realtime/index.ts",
+      "sha256": "3683c8b512ffd05f36a4f23d7088ae6f042da877b242050dea5494d77de86f1d",
+      "bytes": 39172
+    },
+    {
+      "path": "src/runtime/historical.ts",
+      "sha256": "b0f4461bcefe39cd691e92a956abdce33dfef3228e498d0ec3f7009b0256a10c",
+      "bytes": 44558
+    },
+    {
+      "path": "src/runtime/realtime.ts",
+      "sha256": "ab7667b51c2efa86d8b456efff4c71bada9e7522d82b51f56f2f2e0372ab88a0",
+      "bytes": 34365
+    },
+    {
+      "path": "src/rpc/index.ts",
+      "sha256": "ada3658e6a5bda310f92848c9b76120fcbc93384d88bc1cb343c5a493406e20f",
+      "bytes": 28873
+    },
+    {
+      "path": "src/database/index.ts",
+      "sha256": "06f43ae19abd534b42f4f496a7277316e5a6baccdb0145b0056e98e7d6fd7612",
+      "bytes": 32019
+    }
+  ],
+  "observedProductionSampleNotTail": {
+    "from": 129499248,
+    "to": 129509247,
+    "nftEvents": 0,
+    "seaportEvents": 6,
+    "eventBlocks": 5,
+    "input": "/tmp/yunipals-bnb-source-volume-production-20261024.json",
+    "inputSha256": "94c0750811defc69827f4a8f83a9a038239a5789f9e72ef69e17d4036492524c",
+    "observedAt": "2026-10-24T15:57:15.885066+00:00"
+  },
+  "historicalQuiet": [
+    {
+      "kind": "synthetic-historical-tail",
+      "interval": 1,
+      "blocks": 31000,
+      "syntheticEvents": 0,
+      "syntheticEventBlocks": 0,
+      "fullHeaderRequests": 31000,
+      "callbackCount": 31000,
+      "baselineApplicationDbOperations": 93000,
+      "cacheRows": {
+        "blocks": 31000,
+        "logs": 0,
+        "transactions": 0
+      },
+      "actualRpcActionValidated": true,
+      "milliseconds": 669,
+      "sourceReceiptEnrichmentBenchmarked": false,
+      "productionTailEventCountClaimed": false
+    },
+    {
+      "kind": "synthetic-historical-tail",
+      "interval": 10,
+      "blocks": 31000,
+      "syntheticEvents": 0,
+      "syntheticEventBlocks": 0,
+      "fullHeaderRequests": 3100,
+      "callbackCount": 3100,
+      "baselineApplicationDbOperations": 9300,
+      "cacheRows": {
+        "blocks": 3100,
+        "logs": 0,
+        "transactions": 0
+      },
+      "actualRpcActionValidated": true,
+      "milliseconds": 204,
+      "sourceReceiptEnrichmentBenchmarked": false,
+      "productionTailEventCountClaimed": false
+    }
+  ],
+  "historicalExplicitSyntheticNonempty": [
+    {
+      "kind": "synthetic-historical-tail",
+      "interval": 1,
+      "blocks": 31000,
+      "syntheticEvents": 6,
+      "syntheticEventBlocks": 5,
+      "fullHeaderRequests": 31000,
+      "callbackCount": 31000,
+      "baselineApplicationDbOperations": 93000,
+      "cacheRows": {
+        "blocks": 31000,
+        "logs": 6,
+        "transactions": 5
+      },
+      "actualRpcActionValidated": true,
+      "milliseconds": 531,
+      "sourceReceiptEnrichmentBenchmarked": false,
+      "productionTailEventCountClaimed": false
+    },
+    {
+      "kind": "synthetic-historical-tail",
+      "interval": 10,
+      "blocks": 31000,
+      "syntheticEvents": 6,
+      "syntheticEventBlocks": 5,
+      "fullHeaderRequests": 3104,
+      "callbackCount": 3100,
+      "baselineApplicationDbOperations": 9300,
+      "cacheRows": {
+        "blocks": 3104,
+        "logs": 6,
+        "transactions": 5
+      },
+      "actualRpcActionValidated": true,
+      "milliseconds": 316,
+      "sourceReceiptEnrichmentBenchmarked": false,
+      "productionTailEventCountClaimed": false
+    }
+  ],
+  "realtime": [
+    {
+      "kind": "installed-Ponder-realtime-gap-reconciliation",
+      "syntheticMilliseconds": 120000,
+      "syntheticBlockTimeMs": 450,
+      "pollingInterval": 2000,
+      "interval": 1,
+      "indexedBlocks": 266,
+      "latestHeaderRequests": 60,
+      "missingHeaderRequests": 206,
+      "totalFullHeaderRequests": 266,
+      "blockCallbacks": 266,
+      "baselineApplicationDbOperations": 798,
+      "syntheticZeroBloomLogRequests": 266,
+      "realTimeWaits": false,
+      "providerRequests": 0
+    },
+    {
+      "kind": "installed-Ponder-realtime-gap-reconciliation",
+      "syntheticMilliseconds": 120000,
+      "syntheticBlockTimeMs": 450,
+      "pollingInterval": 10000,
+      "interval": 1,
+      "indexedBlocks": 266,
+      "latestHeaderRequests": 12,
+      "missingHeaderRequests": 254,
+      "totalFullHeaderRequests": 266,
+      "blockCallbacks": 266,
+      "baselineApplicationDbOperations": 798,
+      "syntheticZeroBloomLogRequests": 266,
+      "realTimeWaits": false,
+      "providerRequests": 0
+    },
+    {
+      "kind": "installed-Ponder-realtime-gap-reconciliation",
+      "syntheticMilliseconds": 120000,
+      "syntheticBlockTimeMs": 450,
+      "pollingInterval": 2000,
+      "interval": 10,
+      "indexedBlocks": 266,
+      "latestHeaderRequests": 60,
+      "missingHeaderRequests": 206,
+      "totalFullHeaderRequests": 266,
+      "blockCallbacks": 26,
+      "baselineApplicationDbOperations": 78,
+      "syntheticZeroBloomLogRequests": 266,
+      "realTimeWaits": false,
+      "providerRequests": 0
+    },
+    {
+      "kind": "installed-Ponder-realtime-gap-reconciliation",
+      "syntheticMilliseconds": 120000,
+      "syntheticBlockTimeMs": 450,
+      "pollingInterval": 10000,
+      "interval": 10,
+      "indexedBlocks": 266,
+      "latestHeaderRequests": 12,
+      "missingHeaderRequests": 254,
+      "totalFullHeaderRequests": 266,
+      "blockCallbacks": 26,
+      "baselineApplicationDbOperations": 78,
+      "syntheticZeroBloomLogRequests": 266,
+      "realTimeWaits": false,
+      "providerRequests": 0
+    }
+  ],
+  "offlineBuild": {
+    "project": "/tmp/yunipals-bnb-cost-build-eDJfbt/apps/yunipals-indexer",
+    "publicSourceExportSha256": "a4f7f3cc6d6b0f611135e571d442e0a2a44dd13137129254318edb23b651b7ab",
+    "variants": {
+      "baseline": {
+        "buildId": "71e2a7f3b7",
+        "configHash": "0f394941a10f8ad3407029be841ea82a20633b3323f03d95dcfff613c063377d",
+        "schemaHash": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6",
+        "indexingHash": "8fdfce8c688a96a995023887e62ae028128c0db59d78f93025d2de63938e5af3",
+        "pollingIntervals": {
+          "mainnet": 12000,
+          "base": 2000,
+          "polygon": 30000,
+          "bnb": 2000
+        },
+        "bnbCheckpointInterval": 1,
+        "bnbActualHandlerInsertOps": 62000,
+        "bnbActualHandlerDeleteOps": 31000,
+        "bnbActualHandlerTotalOps": 93000,
+        "poolMax": 5,
+        "contracts": {
+          "BoosterRegistry": {
+            "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+            "startBlock": 52995007
+          },
+          "BoosterEngine": {
+            "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+            "startBlock": 52995174
+          },
+          "BoosterMonsters": {
+            "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+            "startBlock": 52995029
+          },
+          "YunipalsBnb": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 7579197
+          },
+          "YunipalsBaseMetadata": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsBaseIslandsV2": {
+            "address": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+            "startBlock": 52587956
+          },
+          "YunipalsArena": {
+            "address": [
+              "0xebd141b6ae36f74fe70b9139b262ee9771b72aca"
+            ],
+            "startBlock": 52648146
+          },
+          "BnbSeaport": {
+            "address": "0x0000000000000068f116a894984e2db1123eb395",
+            "startBlock": 123769700
+          },
+          "YunipalsIslands": {
+            "address": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+            "startBlock": 14570451
+          },
+          "YunipalsEthereum": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 12134519
+          },
+          "YunipalsBase": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsPolygon": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 21814218
+          }
+        },
+        "interceptedFixtureCalls": 12,
+        "socketAttempts": 0,
+        "databaseConnections": 0,
+        "providerCalls": 0,
+        "configFileSha256": "c4ff1ec83c766aa90286b5d73fd22b457135baa6e5880b4b52c4f8d06eca53a4"
+      },
+      "poll10": {
+        "buildId": "71e2a7f3b7",
+        "configHash": "0f394941a10f8ad3407029be841ea82a20633b3323f03d95dcfff613c063377d",
+        "schemaHash": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6",
+        "indexingHash": "8fdfce8c688a96a995023887e62ae028128c0db59d78f93025d2de63938e5af3",
+        "pollingIntervals": {
+          "mainnet": 12000,
+          "base": 2000,
+          "polygon": 30000,
+          "bnb": 10000
+        },
+        "bnbCheckpointInterval": 1,
+        "bnbActualHandlerInsertOps": 62000,
+        "bnbActualHandlerDeleteOps": 31000,
+        "bnbActualHandlerTotalOps": 93000,
+        "poolMax": 5,
+        "contracts": {
+          "BoosterRegistry": {
+            "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+            "startBlock": 52995007
+          },
+          "BoosterEngine": {
+            "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+            "startBlock": 52995174
+          },
+          "BoosterMonsters": {
+            "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+            "startBlock": 52995029
+          },
+          "YunipalsBnb": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 7579197
+          },
+          "YunipalsBaseMetadata": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsBaseIslandsV2": {
+            "address": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+            "startBlock": 52587956
+          },
+          "YunipalsArena": {
+            "address": [
+              "0xebd141b6ae36f74fe70b9139b262ee9771b72aca"
+            ],
+            "startBlock": 52648146
+          },
+          "BnbSeaport": {
+            "address": "0x0000000000000068f116a894984e2db1123eb395",
+            "startBlock": 123769700
+          },
+          "YunipalsIslands": {
+            "address": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+            "startBlock": 14570451
+          },
+          "YunipalsEthereum": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 12134519
+          },
+          "YunipalsBase": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsPolygon": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 21814218
+          }
+        },
+        "interceptedFixtureCalls": 12,
+        "socketAttempts": 0,
+        "databaseConnections": 0,
+        "providerCalls": 0,
+        "configFileSha256": "7c6137e1f59f5bd7a29cfcfe15ead9d0fa81699972f27db21c12a010bc010827"
+      },
+      "sparse10": {
+        "buildId": "67d8a35489",
+        "configHash": "9b658d35f1ab2ac1f374a61b5bd5ce9b8ec417a72ee7f2cd878bbedf303ccf0f",
+        "schemaHash": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6",
+        "indexingHash": "8fdfce8c688a96a995023887e62ae028128c0db59d78f93025d2de63938e5af3",
+        "pollingIntervals": {
+          "mainnet": 12000,
+          "base": 2000,
+          "polygon": 30000,
+          "bnb": 2000
+        },
+        "bnbCheckpointInterval": 10,
+        "bnbActualHandlerInsertOps": 6200,
+        "bnbActualHandlerDeleteOps": 3100,
+        "bnbActualHandlerTotalOps": 9300,
+        "poolMax": 5,
+        "contracts": {
+          "BoosterRegistry": {
+            "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+            "startBlock": 52995007
+          },
+          "BoosterEngine": {
+            "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+            "startBlock": 52995174
+          },
+          "BoosterMonsters": {
+            "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+            "startBlock": 52995029
+          },
+          "YunipalsBnb": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 7579197
+          },
+          "YunipalsBaseMetadata": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsBaseIslandsV2": {
+            "address": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+            "startBlock": 52587956
+          },
+          "YunipalsArena": {
+            "address": [
+              "0xebd141b6ae36f74fe70b9139b262ee9771b72aca"
+            ],
+            "startBlock": 52648146
+          },
+          "BnbSeaport": {
+            "address": "0x0000000000000068f116a894984e2db1123eb395",
+            "startBlock": 123769700
+          },
+          "YunipalsIslands": {
+            "address": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+            "startBlock": 14570451
+          },
+          "YunipalsEthereum": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 12134519
+          },
+          "YunipalsBase": {
+            "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+            "startBlock": 22224075
+          },
+          "YunipalsPolygon": {
+            "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+            "startBlock": 21814218
+          }
+        },
+        "interceptedFixtureCalls": 12,
+        "socketAttempts": 0,
+        "databaseConnections": 0,
+        "providerCalls": 0,
+        "configFileSha256": "4024a6c469af38f597fa79a346c6e20fc4aff422347460292e3889296648f3a1"
+      }
+    }
+  },
+  "productionEventTailMeasured": false,
+  "dbWorkIsHandlerMethodCallsNotPhysicalSQLBenchmark": true,
+  "conditionalHeaderFloor": {
+    "syntheticBlocks": 266,
+    "syntheticSeconds": 120,
+    "publishedCuPerHeader": 20,
+    "computedCuPerDayAtThatRate": 3830400,
+    "actualBillClaimed": false,
+    "source": "https://www.alchemy.com/docs/reference/compute-unit-costs"
+  },
+  "recommendation": {
+    "keepBuild": "71e2a7f3b7",
+    "keepBnbPollingMs": 2000,
+    "keepBnbBlockInterval": 1,
+    "polling10sIsNotHeaderCuFix": true,
+    "sparse10IsNotPermanentHeaderCuFix": true,
+    "nativeRebuildJustForRemainingTailRecommended": false,
+    "baseLatestUnchanged": true
+  },
+  "sockets": 0,
+  "providerCalls": 0,
+  "databaseConnections": 0,
+  "serviceActions": 0
+}
