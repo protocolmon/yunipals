@@ -1,0 +1,140 @@
+{
+  "format": "yunipals-ypal-feature-handover-preparation-v1",
+  "preparedAt": "2026-10-24T05:21:07.041569+00:00",
+  "status": "independently-reviewed-and-production-staged-awaiting-actual-prerequisites",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-feature-handover-v1.py",
+      "sha256": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+      "bytes": 71415
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-feature-handover-v1.test.py",
+      "sha256": "eaed49340a4ccd59590cf385b28b2763d1440ef5a289f446d1077379a7694255",
+      "bytes": 27960
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-feature-handover-v1.postgres.test.mjs",
+      "sha256": "3e4abe23a931c74a07f33d3e2ed0ad678b9885bc5b6893edc4f62a66168ca08f",
+      "bytes": 9733
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-feature-handover-v1.md",
+      "sha256": "e12d74612a7a2feab36135db76f15cfbdfa4cbf68739bd804d2f96fcd79108ff",
+      "bytes": 11133
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-feature-handover-v1.manifest.json",
+      "sha256": "7ef511b0fd73ad131ac47cdb3df1e806284974d068743849cea1e6ad7fcb2f6f",
+      "bytes": 252
+    }
+  ],
+  "externalDependencies": [
+    {
+      "path": "ops/booster-launch/ypal-reader-cutover-v1.py",
+      "sha256": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/booster-launch/ypal-source-start-v1.py",
+      "sha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-release-register-v1.py",
+      "sha256": "c034cca76a101a19aa1a668ff5b91eaa883fda775406ba52e9b6a3ec8993133d",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-read-admission-v2.py",
+      "sha256": "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.py",
+      "sha256": "c54f8af6846df7a013fe0b39680806aa623e29d0bde145e62fc47e65107794ba",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.py",
+      "sha256": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+      "gitTracked": true
+    }
+  ],
+  "runtimeCodeManifestSha256": "7ef511b0fd73ad131ac47cdb3df1e806284974d068743849cea1e6ad7fcb2f6f",
+  "target": {
+    "physicalSchema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67",
+    "newSELECTs": 8,
+    "newRoles": 0,
+    "LOGINChanges": 0,
+    "current143WholeGraphQualified": false,
+    "collectorOnlyCurrentGraphQualified": true
+  },
+  "tests": {
+    "focusedControls": 25,
+    "focusedLogSha256": "4a9753dd0b500f336b672af2c4002fcc8fd53543c157888009ca6c8d7ea48b45",
+    "postgresGroups": 9,
+    "postgresImage": "postgres:16.15",
+    "postgresLogSha256": "b2e599a5a7ef4dc237f8cd02fed634853e5eba5e05ba6f9eaef75bd974db3f36",
+    "postgresChecks": [
+      "native tables must retain unfiltered ordinary-table semantics before reader switch",
+      "real PUBLIC columnUPDATE effective for collector refuses despite no table-level write",
+      "real preexisting collector columnSELECT refuses before tableGRANT; foreign columnACL retained",
+      "actual native column/OID/schema/collector six-slot catalog",
+      "actual eight owner-grantor SELECTs rollback leaves exact full prior graph",
+      "real concurrent foreign write-grant refuses before eight-read COMMIT",
+      "actual COMMIT exact eight edges with writer grantor and unchanged role",
+      "real collector can read10 but cannot DELETE events",
+      "actual inverse removes only8 and preserves old20/meta/checkpoint/USAGE"
+    ],
+    "productionActions": 0,
+    "providerRequests": 0
+  },
+  "actualInputsStillRequired": [
+    "acknowledged143readresult",
+    "acknowledgedcache4prepared/commitresult",
+    "namedinitialfull8paritycaptureandfreshcanonicalinput",
+    "freshBase/native/currentactualAPIreadiness",
+    "separategenuinelynewpostswitcheventandfull8capture"
+  ],
+  "claims": {
+    "actualHostDefaultReviewPerformed": false,
+    "actualFeature8SELECTsCommitted": false,
+    "actualFeatureSwitched": false,
+    "actualTemporarySourceRetired": false,
+    "originalWholeValidatorsPassed": false,
+    "paidAuthorityCreated": false,
+    "productionActions": 0,
+    "providerRequests": 0,
+    "gitMutations": 0
+  },
+  "inverse": "Exactownedstatic/proxy/role/nativeOIDproof allowscombinedterminal; APIterminal/automaticrestartonlyinverse; retainedYPALmustcatchup/currentlastservedcursorbeforeoldAPI; unknownACKsneverretried",
+  "limitations": [
+    "No production qualification or fabricated future ACK is included.",
+    "Unknown manager/COMMIT acknowledgement, incomplete filesystem publication, partial retirement, or interrupted inverse may require narrow manual reconciliation.",
+    "The current41fe API requires framework is_ready=1 before a safe switch despite separately scoped Base freshness.",
+    "The broader seven-role/reader/Solana/managed-source proof remains with its separate coordinator."
+  ],
+  "independentReview": {
+    "focusedControls": 25,
+    "genuinePostgresGroups": 9,
+    "rootRepeatedSameCounts": true,
+    "producerSha256": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "independentReviewSha256": "4aac503fe0e184f9c33d51d321126c489b6aa5bec8d8ef6d958bce42cfed86c9"
+  },
+  "productionStage": {
+    "ownerHashVerified": true,
+    "manifestHashVerified": true,
+    "syntaxParsed": true,
+    "producerExecuted": false,
+    "databaseCalls": 0,
+    "providerCalls": 0,
+    "serviceChanges": 0,
+    "privateOperationCreated": false,
+    "privateInputsFabricated": false
+  }
+}
