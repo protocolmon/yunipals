@@ -1,0 +1,104 @@
+{
+  "format": "yunipals-arena-ypal-native-local-validation-v1",
+  "passed": true,
+  "codeManifestSha256": "75db8f6ae4b7121753d6d6425992bbb60856b4632f95d707c18e126fec91a5b2",
+  "tests": [
+    {
+      "suite": "ownerControls",
+      "controls": 35,
+      "passed": true,
+      "localLog": "/tmp/yunipals-arena-ypal-native-controls-20261024.log",
+      "logSha256": "872c28b407c7802cc0921efca63ed84d5f7c89c38b5e77cab4e0b498718ea568"
+    },
+    {
+      "suite": "childControls",
+      "controls": 11,
+      "passed": true,
+      "localLog": "/tmp/yunipals-arena-ypal-child-controls-20261024.log",
+      "logSha256": "986d056566c54f3db051f15866eabc17f6500e0288b149d52228f29f4c5c263a"
+    },
+    {
+      "suite": "admissionControls",
+      "controls": 12,
+      "passed": true,
+      "localLog": "/tmp/yunipals-arena-ypal-admission-controls-20261024.log",
+      "logSha256": "50fe9787d03a2a023898300654daf92786d132bd2327d41ec3f21ad75e4328d9"
+    },
+    {
+      "suite": "credentialControls",
+      "controls": 22,
+      "passed": true,
+      "localLog": "/tmp/yunipals-arena-ypal-credential-controls-20261024.log",
+      "logSha256": "1ac993fd0acda09c5c737d85425dda883dd01d8015bccd80fd34c54aacc3cd71"
+    }
+  ],
+  "postgres16_15": {
+    "catalog": {
+      "passed": true,
+      "groups": 5,
+      "postgres": "16.15",
+      "productionIdentityRefused": true,
+      "fullSelectRoundTrip": true,
+      "relations": 13,
+      "functions": 2,
+      "defaultAclOwners": 2,
+      "bodyHashOnly": true
+    },
+    "admission": {
+      "actualExtraUpdateRejected": true,
+      "actualInteractivePsqlCommitAcknowledged": true,
+      "actualSourceReads": 13,
+      "fixtureOnly": true,
+      "format": "yunipals-arena-ypal-admission-local-pg-proof-v1",
+      "ownedScramAndLoginPhasesPassed": true,
+      "passed": true,
+      "postgres": "16.15",
+      "preparedOidsDurableBeforeCommit": true,
+      "productionActions": 0,
+      "restrictedAuthQueryWithoutResetRejected": true,
+      "sessionUserEqualsResetCurrentUser": true
+    },
+    "adoption": {
+      "format": "yunipals-arena-ypal-native-local-postgres-v1",
+      "passed": true,
+      "postgres": "16.15",
+      "migrations": 12,
+      "realCommitBoundaries": 3,
+      "onlineReviewCanonicalFloorProven": true,
+      "preCommitFailureRolledBack": true,
+      "lostAcknowledgementsReconciledByActualXid": 3,
+      "abortedSelectorForwardPublication": true,
+      "actualInProgressXidRefused": true,
+      "adoptedOrigins": 2,
+      "ciphertextsAadProviderUuidSignedBytesPreserved": true,
+      "sourceSwitchHistoryRows": 1,
+      "mutableRecoveryAllowedWithRetainedLedger": true,
+      "metadataFixtureOverrideOnly": [
+        "database",
+        "port",
+        "owner"
+      ],
+      "httpRequests": 0,
+      "productionActions": 0
+    }
+  },
+  "actualProductionCatalogCapture": {
+    "producerSha256": "933c3357ae1c231012f24d9235ec6a97fb2e7db2f1a5ce1046adbf9e6cdb1430",
+    "sqlSha256": "45f22f2cafb863f8aed8abcae98407b294f9b155925639fc2abdcaaa0edb9515",
+    "protectedResultSha256": "938a9821e266b79c5963f0f66ffc52a9a301bc908d8a870744feeed9272a4083",
+    "publicSummarySha256": "8fa8e006e4d7d4e51baeba1f25f5ff1908445fabc9148a1f8511ca5ba1401142",
+    "capturedBy": "parent-root",
+    "sourceRoleAbsent": true,
+    "databaseWrites": 0,
+    "serviceChanges": 0,
+    "providerCalls": 0
+  },
+  "operationalMigrationsPerformed": 0,
+  "roleAdmissionPerformed": false,
+  "credentialsConfigured": false,
+  "loginEnabled": false,
+  "sourceSelected": false,
+  "workersReplaced": false,
+  "productionActionsByAuthor": 0,
+  "actualReadinessClaimed": false
+}

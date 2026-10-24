@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-arena-ypal-native-independent-preparation-review-v1",
+  "date": "2026-10-24",
+  "verdict": "local-controls-and-source-staging-pass-production-default-review-refused",
+  "publicPacketSha256": "d3306aa27edb4bf0f3c7501b3f84a8e66a56e2f285e938620560bc6ba7ab3d58",
+  "ownerSha256": "c539c8d99a2e14eedaa0387dd25fdce044e51f3c68459b95768c60c081f2d22e",
+  "codeManifestSha256": "75db8f6ae4b7121753d6d6425992bbb60856b4632f95d707c18e126fec91a5b2",
+  "independentlyRepeatedControls": {
+    "owner": 35,
+    "sealedChild": 11,
+    "roleAdmission": 12,
+    "credentials": 22
+  },
+  "genuineLocalPostgres": {
+    "catalogGroups": 5,
+    "exact13ReadsCommitAndScramLoginMatrixPassed": true,
+    "adoptionSelectorAndThreeLostCommitAcknowledgementsPassed": true,
+    "fixtureDataOnly": true
+  },
+  "productionStage": {
+    "exactFiles": 22,
+    "oneExistingCatalogProducerRetained": true,
+    "pythonSyntaxParsed": true,
+    "producersExecutedDuringStage": false,
+    "databaseConnectionsDuringStage": 0,
+    "serviceChanges": 0,
+    "privateInputsWritten": false
+  },
+  "actualReadonlyProductionReview": {
+    "producerSha256": "2eb8c84292b8547650e94ead891a8b987e027786e082f6377c8299d38e69edaf",
+    "passed": false,
+    "fixedCode": "retained_original_actor_identity_changed",
+    "rolesCreated": 0,
+    "loginChanges": 0,
+    "passwordChanges": 0,
+    "serviceChanges": 0,
+    "successfulAcknowledgementWritten": false
+  },
+  "readonlyRestartDiagnosis": {
+    "officialProgramIdentitiesMatch": true,
+    "originalDefinitionHashesUnchanged": true,
+    "privateInputHashesUnchanged": true,
+    "actorsStillMatchOriginalAcknowledgement": 3,
+    "actorsWithNewerPidAndInvocation": 5,
+    "allEightActive": true,
+    "newActorAcknowledgementCreated": false,
+    "newSuccessorRequired": true
+  },
+  "sourceAndCanonicalReadinessQualified": false,
+  "roleAdmissionPerformed": false,
+  "workersReplaced": false,
+  "privateCatalogsOrCredentialsPublished": false
+}
