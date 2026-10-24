@@ -16,6 +16,7 @@ import {
 } from "../../../../packages/yunipals-indexer-server/src/rpc-policy.js";
 import type { SourceManifest } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { sourceManifestHash } from "./sources.js";
+import { boundedRpcFetch } from "./rpc-call-deadline.js";
 
 const productionEndpoints: Record<number, string> = {
   1: "http://127.0.0.1:19201/unified",
@@ -170,7 +171,17 @@ export function unifiedRpcHttpTransport(
 ): HttpTransport {
   const config = unifiedRpcConfiguration(env);
   if (!config) return http(url, options);
-  const transport = http(url, {
+  const boundedHttp =
+    (selected: HttpTransportConfig): HttpTransport =>
+    (parameters) =>
+      http(url, {
+        ...selected,
+        fetchFn: boundedRpcFetch(
+          selected.fetchFn ?? globalThis.fetch,
+          parameters.timeout ?? selected.timeout ?? 10_000
+        )
+      })(parameters);
+  const transport = boundedHttp({
     ...options,
     batch: {
       batchSize: Math.min(10, config.profile.limits.batchCalls),
@@ -183,7 +194,7 @@ export function unifiedRpcHttpTransport(
   // source block methods retain the existing bounded batch scheduler.
   const logTransport =
     workload === "unified_source"
-      ? http(url, {
+      ? boundedHttp({
           ...options,
           batch: false,
           fetchOptions: { headers: config.headers(workload, chainId) }
@@ -192,7 +203,7 @@ export function unifiedRpcHttpTransport(
   const blockTransports =
     workload === "unified_source"
       ? [5, 2].map((batchSize) =>
-          http(url, {
+          boundedHttp({
             ...options,
             batch: {
               batchSize: Math.min(batchSize, config.profile.limits.batchCalls),
@@ -315,7 +326,8 @@ export function unifiedRpcHttpTransport(
               throw new RpcError(error, {
                 code: -32005,
                 name: "UnifiedRpcLogResponseTooLargeError",
-                shortMessage: "backend response too large: source log response exceeded the client byte limit"
+                shortMessage:
+                  "backend response too large: source log response exceeded the client byte limit"
               });
             }
           }

@@ -1,0 +1,78 @@
+{
+  "format": "yunipals-reader-peer-runtime-host-preparation-v1",
+  "status": "source-only-independently-reviewed-host-not-run",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.py",
+      "sha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76",
+      "bytes": 25647
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.test.py",
+      "sha256": "5fbdbd9fd58293b33dac74bfd3231ca40ee812eab5450677dd4e2d6263bd24aa",
+      "bytes": 9960
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.md",
+      "sha256": "456b505f43cb6f7e915becee210548b30817422b3acb9d7ff1a3ff28b830b6b0",
+      "bytes": 5522
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.transport-review.json",
+      "sha256": "a6ea297e6b2e4df82b32bc8f83796552697de4ffeea9772773d6cdd36e759678",
+      "bytes": 2626
+    }
+  ],
+  "verification": {
+    "localControls": 11,
+    "testLogSha256": "5e874cdadb9c21c76a5440b17ae38c56bacb48597da057d05497170142e5fd53",
+    "originalTransportIndependentReviewSha256": "a6ea297e6b2e4df82b32bc8f83796552697de4ffeea9772773d6cdd36e759678",
+    "sourceSyntaxPassed": true,
+    "pgTransitivelyAuthenticatedBeforeEvaluation": true,
+    "authorizationMechanism": "full exact dependency-tree bytes/modes/links/extra-and-missing CAS before any qualification subprocess",
+    "independentHostOwnerReview": {
+      "path": "docs/unified-indexer/ypal-reader-peer-runtime-host-independent-review-2026-10-24.json",
+      "sha256": "1d9e469e45fc419da467be6f86e86cf76cbc84870c7a460805369ab488dc10ef",
+      "verdict": "pass",
+      "controls": 11,
+      "originalPreEvaluationFindingClosed": true
+    }
+  },
+  "hostState": {
+    "incomingUploadExecuted": false,
+    "persistentOPSStagePerformed": false,
+    "qualificationExecuted": false,
+    "firstReadOnlyCheck": "frozen child public dependency absent",
+    "actualOSMapping": {
+      "postgres": {
+        "uid": 111,
+        "gid": 113
+      },
+      "yunipals_unified_api": {
+        "uid": 968,
+        "gid": 962
+      }
+    },
+    "rawProductionLogsIncluded": false
+  },
+  "approvalReview": {
+    "firstUploadRejectedBeforeExecution": true,
+    "originalRejectedWrapperSha256": "1139dfc8d3650f6533a17ef46a44d556f105a57ff6e9334a3581cd6f9df78727",
+    "originalRejectionRecordSha256": "fa8298f467c5d68471b05e92dd66e2a401a1701c23595cd3b1c460b0afb4b8c7",
+    "original15PayloadManifestSha256": "e5d3ab79849026e65567a269acb8dc0e0a1e0eaeae5af23b81440b750a99cd76",
+    "oldRejectedUploadMustNotBeRetried": true,
+    "publicPublicationAndNewReviewRequiredBeforeAnyNewPublicOnlyStaging": true
+  },
+  "limits": {
+    "privateEnvironmentReads": 0,
+    "databaseConnections": 0,
+    "providerRequests": 0,
+    "serviceActions": 0,
+    "applicationStarted": false,
+    "PoolConstructed": false,
+    "sourceEpochAuthority": false,
+    "coordinatorIntegrated": false,
+    "nativeCutoverQualified": false,
+    "existingPermissionsChanged": 0
+  }
+}
