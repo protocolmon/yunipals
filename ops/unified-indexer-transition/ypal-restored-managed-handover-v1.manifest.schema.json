@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed restored managed handover source manifest, not an acknowledgement",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "producers"],
+  "properties": {
+    "format": { "const": "yunipals-ypal-restored-managed-handover-v1-sources" },
+    "producers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readerCachePhase", "feature", "arena", "readerInverse"],
+      "properties": {
+        "readerCachePhase": {
+          "allOf": [{ "$ref": "#/$defs/producer" }],
+          "properties": {
+            "file": { "const": "ypal-restored-reader-cache-phase-v1.py" }
+          }
+        },
+        "feature": {
+          "allOf": [{ "$ref": "#/$defs/producer" }],
+          "properties": {
+            "file": { "const": "ypal-restored-feature-handover-v1.py" }
+          }
+        },
+        "arena": {
+          "allOf": [{ "$ref": "#/$defs/producer" }],
+          "properties": { "file": { "const": "arena-ypal-restored-v1.py" } }
+        },
+        "readerInverse": {
+          "allOf": [{ "$ref": "#/$defs/producer" }],
+          "properties": {
+            "file": { "const": "ypal-native-inverse-leaf-v1.py" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256"],
+      "properties": {
+        "file": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^(?!0{64}$)[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

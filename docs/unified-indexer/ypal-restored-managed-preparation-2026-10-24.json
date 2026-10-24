@@ -1,0 +1,136 @@
+{
+  "format": "yunipals-ypal-restored-managed-preparation-v1",
+  "sourceOnly": true,
+  "operatorSha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5",
+  "testsSha256": "57f69aa478a1b64cff984c5319087d78b0ceb63ea89b029284fac0d7296da539",
+  "externalSourceManifestSha256": "4dcf9b9970afcf0515f0e0e02357ece74a8d706cd5a4fb2430208519677e4ed7",
+  "directPhaseProducers": {
+    "readerCachePhase": {
+      "file": "ypal-restored-reader-cache-phase-v1.py",
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1"
+    },
+    "feature": {
+      "file": "ypal-restored-feature-handover-v1.py",
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035"
+    },
+    "arena": {
+      "file": "arena-ypal-restored-v1.py",
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a"
+    },
+    "readerInverse": {
+      "file": "ypal-native-inverse-leaf-v1.py",
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+    }
+  },
+  "runtime": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/launcher.mjs",
+      "bytes": 7277,
+      "sha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/service.public.env",
+      "bytes": 901,
+      "sha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/yunipals-indexer.service.example",
+      "bytes": 2841,
+      "sha256": "33d47b7f75ee40c40af0b71c18cefe9ebce08f64f877e3051f5f71bb1e009cda"
+    }
+  ],
+  "localValidation": {
+    "passed": 31,
+    "failed": 0,
+    "meaningfulScope": [
+      "actual pinned four-producer closure including new post-feature phase facade",
+      "own start database-clock/heartbeat floor and positive kernel-source subset",
+      "source-only static construction and exact business-primitive namespace",
+      "actual loaded settings with three RW and three RO mounts plus transport/env/flag negatives",
+      "real no-replace rename races and lost rename/stop/start ACK prefixes",
+      "post-intent all-writer CAS prevents implicit legacy stops through Conflicts",
+      "observation-only review fields do not weaken immutable authority binding",
+      "current writer proof is separate from complete forward consumer catalog",
+      "partial drain preserves undrained Solana",
+      "original static and boot restored before terminal-source inverse",
+      "new standalone inverse with completed reader and post-reader feature recovery on both sides of once-only start",
+      "restored Solana current epoch cannot be silently relabelled"
+    ]
+  },
+  "businessReuse": {
+    "historicalSDKSha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+    "frozenModulesEdited": false,
+    "oldSourceWholeValidatorClaimed": false,
+    "observerRewritten": false,
+    "privilegedPrimitivesAreAuthority": false
+  },
+  "futureActualGates": [
+    "Arena13-before-READ143 baseline and approved READ143 admission",
+    "actual separate cache4 and two reader LOGIN approvals/acknowledgements",
+    "current metadata provenance and unpublished native candidate/publication/reader/cache ACKs",
+    "all-six canonical parity and current all-four source readiness",
+    "actual restored feature and Arena acceptance",
+    "actual sustained observer activation",
+    "current UID970 public launcher readability and reviewed Node executable digest",
+    "actual managed epoch, scheduled Solana publication and supervised restart"
+  ],
+  "closedOrSeparate": {
+    "actualManagedAcknowledgementExists": false,
+    "productionQualified": false,
+    "OSRebootQualified": false,
+    "unacknowledgedAutomaticEpochAccepted": false,
+    "recurringGenerationAnd24HourLineageAccepted": false,
+    "goalComplete": false
+  },
+  "actions": {
+    "hostCalls": 0,
+    "productionDatabaseWrites": 0,
+    "roleChanges": 0,
+    "grants": 0,
+    "serviceActions": 0,
+    "providerCalls": 0,
+    "gitActions": 0
+  },
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.py",
+      "bytes": 63251,
+      "sha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.test.py",
+      "bytes": 30119,
+      "sha256": "57f69aa478a1b64cff984c5319087d78b0ceb63ea89b029284fac0d7296da539"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.manifest.json",
+      "bytes": 732,
+      "sha256": "4dcf9b9970afcf0515f0e0e02357ece74a8d706cd5a4fb2430208519677e4ed7"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.manifest.schema.json",
+      "bytes": 1584,
+      "sha256": "8a551f5ab3a4e88fd34fd7c8cad30c705a40924b1cac149dbcf97eb11570b72f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.md",
+      "bytes": 13766,
+      "sha256": "563587b87ba0b219cdb75dfcb118175efbae38f233328613f2b9b4a834d5ff5a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/launcher.mjs",
+      "bytes": 7277,
+      "sha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/service.public.env",
+      "bytes": 901,
+      "sha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/yunipals-indexer.service.example",
+      "bytes": 2841,
+      "sha256": "33d47b7f75ee40c40af0b71c18cefe9ebce08f64f877e3051f5f71bb1e009cda"
+    }
+  ]
+}

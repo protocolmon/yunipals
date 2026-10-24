@@ -1,0 +1,104 @@
+{
+  "format": "yunipals-ypal-restored-managed-handover-independent-review-v1",
+  "verdict": "PASS",
+  "scope": "Source-only independent review and local controls; no production qualification.",
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.py",
+      "bytes": 63251,
+      "sha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.test.py",
+      "bytes": 30119,
+      "sha256": "57f69aa478a1b64cff984c5319087d78b0ceb63ea89b029284fac0d7296da539"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.manifest.json",
+      "bytes": 732,
+      "sha256": "4dcf9b9970afcf0515f0e0e02357ece74a8d706cd5a4fb2430208519677e4ed7"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/launcher.mjs",
+      "bytes": 7277,
+      "sha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/service.public.env",
+      "bytes": 901,
+      "sha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/yunipals-indexer.service.example",
+      "bytes": 2841,
+      "sha256": "33d47b7f75ee40c40af0b71c18cefe9ebce08f64f877e3051f5f71bb1e009cda"
+    }
+  ],
+  "composedProducerFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.py",
+      "bytes": 8989,
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.py",
+      "bytes": 6638,
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.py",
+      "bytes": 78408,
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.py",
+      "bytes": 24313,
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+    }
+  ],
+  "validation": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-restored-managed-handover-v1.test.py",
+    "controlsPassed": 31,
+    "exitCode": 0,
+    "outputSha256": "c3e19aee5f4ecb36ed86e89e5ebe6dac9c2ea2f0db8872eee188b52f798e1bed",
+    "fullCriticalConstructorForwardAndInverseSourceInspected": true,
+    "unchangedLauncherEnvironmentAndPinnedBusinessMethodBytesVerified": true,
+    "actualHostOrPostgresOrProviderAcceptance": false
+  },
+  "criticalPathsReviewed": [
+    "Static-only constructor and explicit initial restored994/de4 context; no obsolete c96 whole-validator success.",
+    "Exact independent nine-RPC, sustained logical observer, free/expiry and deadline-host-build ancestry.",
+    "Exact current writer role, public/program/private input hashes, six mount bindings and ordered child private environment files.",
+    "Native schema44/cache/build/release identity, database-clock bounded new writer heartbeat, fresh current canonical readiness and positive kernel-owned source backend attribution.",
+    "Full before/after native catalog and all-grantee column ACLs for forward/final acceptance; source-only writer leaf keeps consumer authority separate.",
+    "Reader/cache predicate invokes explicit new287438 facade and corrected11b2 feature; actual Arena13 must precede fresh143 baseline.",
+    "Exact old writer drains and boot retirement, no-replace inode publication and post-intent all-writer CAS before both owned starts.",
+    "Genuine new scheduled 10000-asset Solana publication, preserved ledger prefix/budget and separately acknowledged once-only supervised restart.",
+    "Inverse restores original definitions/boot before terminal source qualification; independent observer is untouched.",
+    "Source-independent authenticated reader inverse d5dbc plus corrected feature inverse are checked before and after the new standalone restart; explicit own epoch and positive source/temporary-source sessions.",
+    "Unknown/lost manager acknowledgements require owned reconciliation, never automatic start/stop replay; foreign definitions/inodes/actors refuse."
+  ],
+  "resolvedFinding": {
+    "historicalFeaturePredicateBlockedNewFeature": true,
+    "closedByFixedReaderCachePhase": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1",
+    "historicalE506Relabelled": false
+  },
+  "limitations": [
+    "Actual protected prerequisite receipts, permissions, canonical/readiness, peers and host runtime remain to be qualified by the separate owner.",
+    "This review does not claim a managed source, actual Solana schedule/restart, reader inverse or final goal has run.",
+    "A foreign or unacknowledged metadata invocation, unresolved shared-role backend or unknown partial manager prefix deliberately refuses recovery; this is not authority for an unrelated worker adoption.",
+    "No recurring generation lineage, paid authority or current financial approval is conferred."
+  ],
+  "actions": {
+    "productionWrites": 0,
+    "hostCalls": 0,
+    "providerCalls": 0,
+    "serviceChanges": 0,
+    "roleGrants": 0,
+    "gitMutations": 0
+  },
+  "sourceActorQualified": false,
+  "currentWriterQualified": false,
+  "financialAuthorityQualified": false,
+  "goalComplete": false
+}
