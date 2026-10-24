@@ -1,0 +1,45 @@
+{
+  "format": "yunipals-alchemy-source-plan-independent-review-v2",
+  "date": "2026-10-24",
+  "verdict": "PASS_PURE_COMPONENT_ONLY",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.py",
+      "bytes": 11003,
+      "sha256": "aa930ffbb933a6b9bbec3599b4c95ccee58761a2dca1763c89ac5f8db13a4231"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.test.py",
+      "bytes": 11093,
+      "sha256": "dae0a03a8bf4caa6455bbe6f898362035bc691f7e60cc9d6bbe0d7fdfc6300cd"
+    }
+  ],
+  "focusedControlsPassed": 14,
+  "controlsLogSha256": "5867e86c055541ae2a6fc540ab1c6fff73cfe8905b2e0fc32694f3d4dca9bdb7",
+  "criticalPaths": [
+    "Original20M total authority and additional15M exact four-chain allocation retained; normal10M and automatic renewal forbidden.",
+    "Exact finite same-day permit window, at least one hour, maximum8h and UTC-minus900s shutdown margin enforced.",
+    "Source preserves exact original env-i Node argv plus exactly one fourth Node --env-file after the original three; real Node24 fixture proves parent env cleared, retained values preserved and final scoped permit overrides applied. Proxy paid-primary still uses its last ordered systemd EnvironmentFile.",
+    "Source drop changes only three explicit read-only code binds; original writable namespace mounts/pool5 remain outside this renderer and must be requalified by lifecycle.",
+    "Deadline oneshots use actual TimeoutStart900/Stop90, NoNewPrivileges and bounded root capabilities permitting UID/GID/cap dropping in peers; ProtectHome read-only permits retained private paths.",
+    "Exclusive no-follow/no-overwrite writes preserve original wire bytes and fsync; exact inode/hash no-replace moves fsync both parents.",
+    "Removing only the fourth env-file yields byte-equivalent original public command argv; current source qualification must verify exactly that addition and all four permit values."
+  ],
+  "limitations": [
+    "Pure renderer/filesystem component only; no actual lifecycle startup, role/financial admission, current source/proxy or production sandbox qualification accepted.",
+    "Actual lifecycle must revalidate full unit/security and complete ordered environment after overlays, verify exact pool5/code/timeout bytes and prohibit foreign later drop-ins.",
+    "No positive paid-start-lost-ACK terminal proof is supplied by these pure helpers."
+  ],
+  "sourceLifecycleQualified": false,
+  "financialAuthorityQualified": false,
+  "hostQualified": false,
+  "providerCalls": 0,
+  "databaseWrites": 0,
+  "serviceActions": 0,
+  "supersedesHistoricalReview": {
+    "file": "docs/unified-indexer/alchemy-source-plan-independent-review-2026-10-24.json",
+    "sha256": "c88198cc76cc859535873ca7799f26e53dd9f340a9ccbf217d192396af8bb78c",
+    "actualSourceEnvironmentRendererAccepted": false,
+    "reason": "Retained source ExecStart begins env -i, which clears a systemd EnvironmentFile before Node. Earlier pure source overlay was insufficient for actual source activation."
+  }
+}

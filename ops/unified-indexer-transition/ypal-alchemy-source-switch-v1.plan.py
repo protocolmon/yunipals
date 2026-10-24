@@ -105,7 +105,17 @@ def source_drop():
         (OPS / "ypal-combined-source-v1-stage/booster-config.ts", PROJECT + "/lib/boosters/config.ts"),
         (OPS / "ypal-rpc-deadline-host-build-v1/rpc-preflight.ts", PROJECT + "/lib/unified/rpc-preflight.ts")
     ]
-    return ("[Service]\nEnvironmentFile=" + str(STAGE / "source.public.env") +
+    # The retained ExecStart begins with env -i. A systemd EnvironmentFile
+    # would be erased before Node starts, so append a fourth Node env-file
+    # after the original three, preserving every original argument in order.
+    command = ("/usr/bin/env -i " + NODE + " --max-old-space-size=4096 " +
+               "--env-file=/var/lib/yunipals-unified-shadow/20261020-008028af-a/launch.env " +
+               "--env-file=" + str(OPS / "source6-free-runtime-v2.env") + " " +
+               "--env-file=" + str(OPS / "ypal-combined-source-v1-stage/combined.public.env") + " " +
+               "--env-file=" + str(STAGE / "source.public.env") + " " +
+               PROJECT + "/node_modules/ponder/dist/esm/bin/ponder.js start " +
+               "--schema unified_ypal_20261023_v1 --hostname 127.0.0.1 --port 9028")
+    return ("[Service]\nExecStart=\nExecStart=" + command +
             "\nBindReadOnlyPaths=\nBindReadOnlyPaths=" + " ".join(str(a) + ":" + b for a, b in pairs) + "\n").encode()
 
 

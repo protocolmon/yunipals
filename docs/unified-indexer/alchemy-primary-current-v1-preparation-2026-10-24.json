@@ -1,0 +1,72 @@
+{
+  "format": "yunipals-alchemy-primary-current-v1-preparation",
+  "sourceOnly": true,
+  "hostQualified": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py",
+      "bytes": 31975,
+      "sha256": "552bd85d811645ee0ba02c2ab0747438d5bbab96e0edc59c850870e8d6f59862"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py",
+      "bytes": 31444,
+      "sha256": "5d5b440e79e11c435a8adfcb4cda5380dca7f73a2f3db9ec4c7800533b921994"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.md",
+      "bytes": 7065,
+      "sha256": "2c7f1e1d51b7f849b2bf1ed2be1df4734fc545e4cc7c0ef03518ce6987675e64"
+    }
+  ],
+  "focusedTestsPassed": 29,
+  "controlsLogSha256": "28587d857c86124c6580a2e3c880f006c1ea7a4dcf0ec05a0c20e4fa0152b57e",
+  "controls": [
+    "Real protected receipt files and exact admission-link/plan/result bindings.",
+    "Never-paid all-nine-journal absence and mixed never/prepared/stopped branches.",
+    "Actual /proc PID/start escaped-process refusal and exact budget backend tuple drain.",
+    "Private file, definition, actor, boot-link, manager job and security drift refusal.",
+    "Late first-route actor/definition drift after last metrics read refuses at final four-route CAS.",
+    "Typed exact deadline timer due/start/stop timeout proof; RuntimeMax cannot replace oneshot timeout.",
+    "Deadline preparation works before financial result/admission link exist.",
+    "Actual financial Owner.acknowledge result builder and actual financial model are executed against the public offline snapshot, then consumed by the actual quiet leaf; producer format is not mirrored.",
+    "Explicit lost-start terminalScanRequired branch executes two complete same-UID proc scans initially and before final four-actor CAS. Real escaped subprocess refuses; after exit its actual kernel tuple is absent. Same-UID argv drift/unknown live program and paid-path references refuse.",
+    "Actual six-key timer schema has no MainPID; service-only PID query plus typed Unit no-job and exact Timer due proof accepted. Nonzero timer Job refuses."
+  ],
+  "knownUnqualifiedPrefixes": [],
+  "lifecycleOwner": "ypal-alchemy-source-switch-v1.py (separate root-owned implementation; not qualified by this packet)",
+  "financialAuthorityQualified": false,
+  "sourceActorQualified": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "formatCorrection": {
+    "historicalUnpublishedLeafSha256": "44a12e84ab91763d8d83999db87dab7b9e3c56f1e349abfc00e9683223363ed9",
+    "reason": "Result format corrected to actual producer yunipals-ypal-alchemy-catchup-financial-v1; old candidate was never production qualified."
+  },
+  "terminalScanScope": "Fixed RPC account metadata plus same-account stat/argv only. Lifecycle still owns complete interrupted-prefix role/session attribution; leaf does not infer no financial effects from missing ACK.",
+  "actualTimerSchemaEvidence": {
+    "source": "Root bounded read-only production systemctl show of existing yunipals-booster-artwork-queue.timer, session66649",
+    "requested": [
+      "Id",
+      "MainPID",
+      "ActiveState",
+      "LoadState",
+      "FragmentPath",
+      "DropInPaths",
+      "UnitFileState"
+    ],
+    "observedKeys": [
+      "Id",
+      "ActiveState",
+      "LoadState",
+      "FragmentPath",
+      "DropInPaths",
+      "UnitFileState"
+    ],
+    "mainPidAbsent": true,
+    "servicesOnlyMainPidFix": true,
+    "rawProductionValuesExported": false
+  }
+}

@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import shlex
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -76,6 +77,19 @@ class Plan(unittest.TestCase):
         self.assertIn("ypal-rpc-deadline-host-build-v1/rpc-preflight.ts:", raw)
         self.assertNotIn("BindPaths=", raw)
         self.assertNotIn("pool8", raw)
+
+    def test_source_command_preserves_original_argv_with_one_fourth_node_env_file(self):
+        original = (HERE / "ypal-combined-source-v1/yunipals-ypal-combined-source.service.example").read_text()
+        retained = next(line for line in original.splitlines() if line.startswith("ExecStart="))[len("ExecStart="):]
+        command = next(line for line in p.source_drop().decode().splitlines() if line.startswith("ExecStart=/"))[len("ExecStart="):]
+        before, after = shlex.split(retained), shlex.split(command)
+        addition = "--env-file=" + str(p.STAGE / "source.public.env")
+        self.assertEqual(after.count(addition), 1)
+        self.assertEqual([arg for arg in after if arg != addition], before)
+        files = [arg for arg in after if arg.startswith("--env-file=")]
+        self.assertEqual(len(files), 4)
+        self.assertEqual(files[-1], addition)
+        self.assertNotIn("EnvironmentFile=", p.source_drop().decode())
 
     def test_exact_deadline_targets_and_real_oneshot_timeout(self):
         value = fixture(); digest = p.sha(p.encoded(value)); definitions = p.deadline_definitions(value, digest)
@@ -150,6 +164,22 @@ class Filesystem(unittest.TestCase):
         self.assertTrue(value["sourceOnly"])
         self.assertFalse(value["sourceLifecycleQualified"])
         self.assertEqual((value["databaseWrites"], value["serviceActions"], value["providerCalls"]), (0, 0, 0))
+
+    def test_real_node_env_i_four_files_keeps_retained_values_and_overrides_old_permit(self):
+        node = Path("/root/.nvm/versions/node/v24.18.1/bin/node")
+        if not node.exists(): self.skipTest("Node24 fixture executable unavailable")
+        files = []
+        for name, raw in [("launch", "RETAINED_PRIVATE_FIXTURE=retained\nUNIFIED_RPC_REPLAY_PERMIT_ID_56=old-launch\n"),
+                          ("runtime", "UNIFIED_RPC_REPLAY_PERMIT_ID_56=old-runtime\n"),
+                          ("combined", "UNIFIED_RPC_POLICY_REQUIRED=true\nUNIFIED_RPC_REPLAY_PERMIT_ID_56=old-combined\n"),
+                          ("paid", p.source_environment(fixture()).decode())]:
+            path = self.base / (name + ".env"); path.write_text(raw); files.append(path)
+        code = "console.log(JSON.stringify({retained:process.env.RETAINED_PRIVATE_FIXTURE,policy:process.env.UNIFIED_RPC_POLICY_REQUIRED,permit:process.env.UNIFIED_RPC_REPLAY_PERMIT_ID_56,cleared:process.env.YUNIPALS_TEST_PARENT_MARKER===undefined}))"
+        result = subprocess.run(["/usr/bin/env", "-i", str(node), *["--env-file=" + str(path) for path in files],
+                                 "--input-type=module", "-e", code], capture_output=True, check=True, text=True, timeout=5,
+                                env={**os.environ, "YUNIPALS_TEST_PARENT_MARKER": "must-clear"})
+        self.assertEqual(json.loads(result.stdout), {"retained": "retained", "policy": "true", "cleared": True,
+                                                     "permit": p.validate_plan(fixture())["bnb"]["permitId"]})
 
 
 if __name__ == "__main__":
