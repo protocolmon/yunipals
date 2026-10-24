@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-alchemy-source-switch-v2-source-preparation",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v2.py",
+      "sha256": "440f5b39d803c2332a4531327ec46df2692370a70d543b27eca12ae03865eb0f",
+      "bytes": 21062
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v2.test.py",
+      "sha256": "54ac25679101c2117fc3824ad388866252ea340ff5b5e1083c708767d9e8b2cf",
+      "bytes": 8214
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-identity-v2.py",
+      "sha256": "01e9bfb127a29edeb6a985702a3d921d706186c8a3680e8c3765bce5f68321c2",
+      "bytes": 3765
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-identity-v2.test.py",
+      "sha256": "e472d71b40ccba417d24f0b3ba0ce279aa8f11f90725df048505aa4012f77b4c",
+      "bytes": 4278
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v2.md",
+      "sha256": "41694212e20591fbdf01b1dfce27b475024391fa217fb52f9e30d60af7be6788",
+      "bytes": 5892
+    }
+  ],
+  "validation": {
+    "successorControls": 8,
+    "identityGroups": 4,
+    "actualHostActions": 0
+  },
+  "scope": {
+    "actualOriginalAdmissionOnly": true,
+    "newFinancialAdmission": false,
+    "rearm": false,
+    "expiryOrCreditExtension": false,
+    "sameOriginalPlanAndFourPermitIds": true,
+    "same71eNativeAndCache": true,
+    "newDeadlineCloseAndUTCNamespace": true,
+    "managedOrConsumerAdapterQualified": false
+  },
+  "production": {
+    "executed": false,
+    "paidActivated": false,
+    "databaseWrites": 0,
+    "serviceActions": 0,
+    "providerCalls": 0
+  }
+}
