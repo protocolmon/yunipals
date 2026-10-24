@@ -1,0 +1,86 @@
+{
+  "format": "yunipals-alchemy-main-sdk-identity-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_NARROW_SUCCESSOR",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
+      "sha256": "ca6646d111e2eda34c81bb40f8d47a3a1aad9290843fc5c13dd6906fee115b72",
+      "bytes": 87684
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+      "sha256": "b48019d5212c92ffed7b0dd2c15d25fe9e9da3b3786ee7822af3dd206f8e5f6c",
+      "bytes": 41843
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.manifest.py",
+      "sha256": "a4291d66e4d42f10940359811e7bd14fb707123e8641f19c2727bcd0ed2d20b6",
+      "bytes": 3759
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.md",
+      "sha256": "b9a8598036ad3c2a5f4acdf666ff0ae434eb50230a3b6f7b1881bf9a9ece7b60",
+      "bytes": 15135
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.preparation.json",
+      "sha256": "9b8cc9fad0701a2c1223a522c553803c7b9e59f70cae55f438a139b02af8fd2f",
+      "bytes": 4935
+    }
+  ],
+  "finitePacketSha256": "7a8da57b9931b9860795327bf1f2b0a9622197a5602a4b5d89713849da19f073",
+  "priorFullCriticalReview": {
+    "file": "docs/unified-indexer/alchemy-source-switch-main-independent-review-2026-10-24.json",
+    "sha256": "917b74934313e139c131a31d8d5364902b9dd5e50f152f67fecc10c30ac3bc1f",
+    "historicalMainSha256": "7e58988ef8aa5e28b0529071f9cbc27127e8285cd3f2b7c021ad426abe80e943",
+    "preserved": true
+  },
+  "actualSdkContract": {
+    "file": "ops/unified-indexer-transition/ypal-managed-handover-v1.py",
+    "sha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+    "identityKeys": [
+      "st_dev",
+      "st_ino",
+      "st_mode",
+      "st_uid",
+      "st_gid"
+    ],
+    "st_nlinkAbsent": true,
+    "sdkModified": false
+  },
+  "delta": {
+    "occurrences": 4,
+    "from": "six(self.m.identity(Path(path)))",
+    "to": "self.leaf.file_identity(path)",
+    "entireRuntimeMatchesOnlyTheseSubstitutions": true,
+    "sites": [
+      "unit definition identity",
+      "systemd EnvironmentFiles identity",
+      "process-declared Node env-file identity",
+      "source three ordered Node env-files identity"
+    ],
+    "actualFileLinkCountRead": true,
+    "inventedDefaultLinkCount": false,
+    "oldSdkGlobalOrReceiptModified": false
+  },
+  "validation": {
+    "focusedControlsPassed": 38,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+    "log": "/tmp/yunipals-alchemy-main-sdk-identity-independent-controls-20261024.log",
+    "logSha256": "c7b093e686753ea67618729c5ce11e89fa1ed20f273cecd8e63aa1ca3e1a7bae",
+    "newExecutableRegression": "Genuine frozen five-field SDK identity, real protected definition and private files, actual Context.unit_preservation through all three sites under explicit manager/proc fixture, then actual source_private_inputs fourth site."
+  },
+  "reason": "Root actual isolated lifecycle probe reached stage/import/build qualification, then failed st_nlink because the retained SDK identity returns five fields. New owner explicitly uses its pinned leaf six-field identity at the four owned capture sites.",
+  "limitations": [
+    "Narrow source correction and local controls only; actual isolated host probe retry and lifecycle activation remain root-owned and were not performed here.",
+    "Earlier production compatibility findings and full source/financial/session/cache/unknown-ACK prerequisites remain as recorded in the preserved full critical review."
+  ],
+  "hostActions": 0,
+  "productionDatabaseCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "productionActivationQualified": false,
+  "financialAuthorityQualified": false
+}

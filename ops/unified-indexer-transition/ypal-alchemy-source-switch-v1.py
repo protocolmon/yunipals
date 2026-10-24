@@ -270,7 +270,7 @@ class Context:
         state=self.leaf.manager_properties(self.h.rpc_m,unit,fields)
         for key in ["After","Requires","Wants","PartOf","BindsTo","TriggeredBy","Triggers","WantedBy","RequiredBy","UpheldBy"]:
             state[key]=" ".join(sorted(state[key].split()))
-        definitions={path:{"sha256":sha(self.m.protected(path)),"identity":six(self.m.identity(Path(path)))}for path in
+        definitions={path:{"sha256":sha(self.m.protected(path)),"identity":self.leaf.file_identity(path)}for path in
                      [state["FragmentPath"],*state["DropInPaths"].split()]if path}
         object_path="/org/freedesktop/systemd1/unit/"+"".join(c if c.isalnum()else"_"+format(ord(c),"02x")for c in unit)
         typed=json.loads(self.m.command(["/usr/bin/busctl","--json=short","get-property","org.freedesktop.systemd1",object_path,"org.freedesktop.systemd1.Service","EnvironmentFiles"]))
@@ -279,7 +279,7 @@ class Context:
         for path,optional in typed["data"]:
             need(type(optional)is bool and Path(path).is_absolute()and".."not in Path(path).parts,"literal_current_peer_private_input_required")
             if not os.path.lexists(path):need(optional,"required_current_peer_input_absent");private[path]=None
-            else:private[path]={"sha256":sha(self.m.protected(path)),"identity":six(self.m.identity(Path(path)))}
+            else:private[path]={"sha256":sha(self.m.protected(path)),"identity":self.leaf.file_identity(path)}
         group=Path("/sys/fs/cgroup/system.slice")/unit/"cgroup.procs"
         pids=sorted(int(v)for v in group.read_text().split())if group.exists()else[]
         need(len(pids)<=16 and (state["MainPID"]=="0"or int(state["MainPID"])in pids),"bounded_current_peer_cgroup_frame_required")
@@ -294,7 +294,7 @@ class Context:
                     need(index+1<len(argv),"literal_current_Node_envfile_argument_required");declared.append(argv[index+1])
             need(len(declared)<=16 and all(Path(path).is_absolute()and".."not in Path(path).parts for path in declared),"bounded_literal_current_Node_private_files_required")
             node_inputs[str(pid)]=declared
-            for path in declared:private[path]={"sha256":sha(self.m.protected(path)),"identity":six(self.m.identity(Path(path)))}
+            for path in declared:private[path]={"sha256":sha(self.m.protected(path)),"identity":self.leaf.file_identity(path)}
             status=dict(v.split(":",1)for v in(proc/"status").read_text().splitlines()if":"in v)
             processes.append({"pid":pid,"startTicks":ticks,"commandSha256":sha(command),"privileges":{k:status[k].strip()for k in
                 ["Uid","Gid","Groups","NoNewPrivs","CapInh","CapPrm","CapEff","CapBnd","CapAmb"]}})
@@ -336,7 +336,7 @@ class Context:
         paths=[value.split("=",1)[1]for value in actor["parent"]["argv"]if value.startswith("--env-file=")]
         need(len(paths)==3 and len(set(paths))==3 and all(Path(path).is_absolute()and".."not in Path(path).parts for path in paths),
              "exact_original_three_ordered_private_Node_environment_files_required")
-        return [{"path":path,"sha256":sha(self.m.protected(path)),"identity":six(self.m.identity(Path(path)))}for path in paths]
+        return [{"path":path,"sha256":sha(self.m.protected(path)),"identity":self.leaf.file_identity(path)}for path in paths]
 
     def private_current(self,op):
         need(self.source_private_inputs(op["source"])==op["sourcePrivateInputs"],"same_original_private_Node_files_and_inodes_required")

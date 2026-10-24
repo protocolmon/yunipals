@@ -429,6 +429,33 @@ class Fixture(unittest.TestCase):
         paths[0].write_bytes(b'SYNTHETIC=changed\n')
         with self.assertRaisesRegex(RuntimeError,'same_original_private_Node'):o.Context.private_current(self.c,op)
 
+    def test_genuine_five_field_SDK_uses_actual_six_field_file_identity_at_all_four_sites(self):
+        sdk=load(HERE/'ypal-managed-handover-v1.py','genuine_frozen_five_field_SDK')
+        self.m.identity=sdk.identity
+        definition=self.root/'original.service';environment=self.root/'private.env';node_input=self.root/'node.env'
+        for path in [definition,environment,node_input]:p.exclusive(path,b'SYNTHETIC=actual-root-file\n')
+        self.assertEqual(set(self.m.identity(definition)),{'st_dev','st_ino','st_mode','st_uid','st_gid'})
+        system=self.root/'system';system.mkdir(mode=0o755)
+        pid=os.getpid();group=Path('/sys/fs/cgroup/system.slice')/o.FRESH/'cgroup.procs'
+        command=Path('/proc')/str(pid)/'cmdline'
+        state={'FragmentPath':str(definition),'DropInPaths':'','MainPID':str(pid)}
+        for key in ['After','Requires','Wants','PartOf','BindsTo','TriggeredBy','Triggers','WantedBy','RequiredBy','UpheldBy']:state[key]=''
+        typed={'type':'a(sb)','data':[[str(environment),False]]}
+        self.h.rpc_m=object();self.m.command=lambda args:json.dumps(typed).encode()
+        real_exists=Path.exists;real_text=Path.read_text;real_bytes=Path.read_bytes
+        def exists(path):return True if path==group else real_exists(path)
+        def read_text(path,*args,**kwargs):return str(pid)if path==group else real_text(path,*args,**kwargs)
+        def read_bytes(path):return ('node\0--env-file='+str(node_input)+'\0').encode()if path==command else real_bytes(path)
+        with patch.object(p,'SYSTEM',system),patch.object(leaf,'manager_properties',return_value=state),patch.object(Path,'exists',exists),patch.object(Path,'read_text',read_text),patch.object(Path,'read_bytes',read_bytes):
+            frame=o.Context.unit_preservation(self.c,o.FRESH)
+        self.assertEqual(frame['definitions'][str(definition)]['identity'],leaf.file_identity(definition))
+        for path in [environment,node_input]:
+            self.assertEqual(frame['privateInputHashes'][str(path)]['identity'],leaf.file_identity(path))
+            self.assertEqual(frame['privateInputHashes'][str(path)]['identity']['st_nlink'],path.lstat().st_nlink)
+        actor={'parent':{'argv':['node',*['--env-file='+str(path)for path in [definition,environment,node_input]],'ponder.js']}}
+        private=o.Context.source_private_inputs(self.c,actor)
+        self.assertEqual([row['identity']for row in private],[leaf.file_identity(path)for path in [definition,environment,node_input]])
+
     def test_unknown_initial_stop_that_left_exact_original_actor_alive_closes_without_resend(self):
         self.close_fixture();self.intent('source-initial-stop-intent.json',actor=self.original)
         before=self.owner.digest('source-initial-stop-intent.json');self.h.source.state=lambda unit:{'MainPID':'999001'}
