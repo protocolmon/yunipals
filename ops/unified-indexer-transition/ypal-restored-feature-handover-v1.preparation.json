@@ -1,0 +1,122 @@
+{
+  "format": "yunipals-ypal-restored-feature-source-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.py",
+      "bytes": 6638,
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-context-v1.py",
+      "bytes": 36071,
+      "sha256": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.test.py",
+      "bytes": 20918,
+      "sha256": "ea74686983673838f87ea5ef277eca953bcde2f4c9304aa935e53a37f6bd3edb"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.postgres.test.mjs",
+      "bytes": 14056,
+      "sha256": "b37065f4ed1deb02513d66bc22263d8b891640baecf49870aa2d7f31de789672"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.manifest.json",
+      "bytes": 1192,
+      "sha256": "1f0a56a8a5af846247dcddb58251a173d45aa150040b9f079f9579ab235c2da3"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.input.json.example",
+      "bytes": 216,
+      "sha256": "6fc73280a064ae617ec23159e16c8be2d63554a4c7c5e193759401c73be57b9c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.md",
+      "bytes": 9776,
+      "sha256": "010bfd00635dc12ecb9fc2982e6c51fa0d0ac475f14f5dc3e32987f0230681f0"
+    }
+  ],
+  "dependencies": {
+    "ypal-restored-metadata-context-v1.py": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "ypal-restored-read-current-context-v1.py": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+    "ypal-restored-read-admission-v1.py": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+    "ypal-restored-read-cache-provider-v1.py": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+    "ypal-native-cutover-v2.py": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+    "ypal-booster-source-parity-v1.py": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+    "ypal-feature-handover-v1.py": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "ypal-native-inverse-leaf-v1.py": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+  },
+  "historicalStaticHelpers": {
+    "ops/booster-launch/ypal-reader-cutover-v1.py": "f6037061b599ebf949a781e6dc685cfc97961c8cff40bd6b7bf73a78113fe3d8",
+    "ops/booster-launch/ypal-backend-owner-v1.py": "a1033872bb5c8a5c434ec5bfae4f3d99629c3e2b417de2e1d76e0fa48623aba1",
+    "ops/unified-indexer-transition/ypal-feature-handover-v1.test.py": "eaed49340a4ccd59590cf385b28b2763d1440ef5a289f446d1077379a7694255"
+  },
+  "auditedSeams": {
+    "unchangedOwnerBodies": true,
+    "newNamespaceIdentities": [
+      "FORMAT",
+      "BASE",
+      "INPUT",
+      "MANIFEST",
+      "SELECTOR",
+      "DROPS"
+    ],
+    "replacedHostMethods": [
+      "__init__",
+      "baseline",
+      "combined",
+      "source_actor",
+      "restart_temporary_source",
+      "inverse_source",
+      "sessions",
+      "peers",
+      "queue_proof"
+    ],
+    "additionalFinalStartFence": "terminal CAS immediately before systemctl start after preservation reads",
+    "oldModuleGlobalsPatched": false,
+    "oldConstructorsCalled": false,
+    "immutableReaderPublicationAuthentication": "current coordinator core/published only; no Context/reader leaf/application Pool",
+    "postReaderInversePhase": "actual d5db same-operation/full143/column proof + authenticated cache-before collector and exact acknowledged four delta; rechecked after actor/session/HTTP observations"
+  },
+  "localValidation": {
+    "pythonControls": 42,
+    "reusedFrozenFilesystemLifecycleControls": 25,
+    "newConstructorEpochAndInverseControls": 17,
+    "genuineDisposablePostgreSQLGroups": 11,
+    "postgresImage": "postgres:16.15",
+    "actualNativeColumns": true,
+    "eightOnlyAclRoundTrip": true,
+    "foreignColumnAclPreserved": true,
+    "temporaryNative10IdentityQuery": true,
+    "realSameCollectorCacheFourRemoval": true,
+    "completedReaderInversePhase": true
+  },
+  "exports": {
+    "validate_feature_leaf": "(result_sha, manifest_sha, input_sha)",
+    "validate_inverse_leaf": "(result_sha, manifest_sha, input_sha, reader_inverse_refs=None)",
+    "temporarySourceActor": "SDK unit/parent/processes plus owned namespace/native identity and hashed normalized environment",
+    "sessionAuthority": "positive temporary subset; caller owns complete shared writer accounting",
+    "reader_inverse_refs": "exact {result_sha,manifest_sha}; mandatory post-reader143 phase; fixed d5db validates actual completed inverse"
+  },
+  "authority": {
+    "productionExecution": false,
+    "newReadAdmissionSupplied": false,
+    "cachePreparedAcknowledgementSupplied": false,
+    "threeReaderAcknowledgementSupplied": false,
+    "eightGrantsCommitted": false,
+    "apiSwitched": false,
+    "temporarySourceRetired": false,
+    "readinessQualified": false,
+    "goalComplete": false
+  },
+  "limitations": [
+    "Actual new READ/cache/three-reader receipts are mandatory; no future ACK is invented.",
+    "Forward requires exact acknowledged de4 restored5 epoch. Managed later composition needs its own current source/reader/role proof.",
+    "Inverse leaf is source-independent and same-boot, with exact temporary actor and positive kernel session subset.",
+    "Existing partial-prefix/unknown-action outcomes require explicit inspection/manual reconciliation; no automatic retries.",
+    "Detailed production catalogs/configs/actors/reports are not publication payloads.",
+    "Three-argument inverse leaf qualifies pre-reader143+cache4; after actual reader inverse, explicit completed-reader refs qualify restored143 without relabelling capture-time facts."
+  ]
+}

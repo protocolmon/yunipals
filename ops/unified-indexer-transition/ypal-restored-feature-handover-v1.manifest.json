@@ -1,0 +1,17 @@
+{
+  "format": "yunipals-ypal-restored-feature-code-v1",
+  "files": {
+    "ypal-restored-feature-handover-v1.py": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035",
+    "ypal-restored-feature-context-v1.py": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be"
+  },
+  "dependencies": {
+    "ypal-restored-metadata-context-v1.py": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+    "ypal-restored-read-current-context-v1.py": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+    "ypal-restored-read-admission-v1.py": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+    "ypal-restored-read-cache-provider-v1.py": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+    "ypal-native-cutover-v2.py": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+    "ypal-booster-source-parity-v1.py": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+    "ypal-feature-handover-v1.py": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "ypal-native-inverse-leaf-v1.py": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+  }
+}
