@@ -1,0 +1,37 @@
+{
+  "format": "yunipals-alchemy-ordinary-financial-independent-review-v1",
+  "scope": "Independent source review and local focused controls only",
+  "verdict": "pass",
+  "producerSha256": "89a4bfd327ce52419af20e915fb13d2e5a856d27f51fa6a896838869ad4977d0",
+  "testSha256": "55e4221adc04ddfdf86c05494aad8c2c49001bc68460e4d2f809cbbf94afcaa0",
+  "planProducerSha256": "cf7191a578de5ee2390acccb95fb5812253c461ffe178d009660819911f54980",
+  "focusedControlsPassed": 24,
+  "focusedControlsFailed": 0,
+  "policy": {
+    "globalDailyCu": 2000000,
+    "sharedSourceDailyCu": 1500000,
+    "foregroundReserveCu": 200000,
+    "automaticProfileOrPermitRenewal": false,
+    "originalProfileExpiryPreserved": true,
+    "catchupWindowExtended": false,
+    "countersResetOrRefunded": false
+  },
+  "reviewed": [
+    "Initial admission authenticates the exact old completion, source drain, four-free quiet and closed catch-up financial receipt chains at their actual immutable paths.",
+    "Fresh range evidence explicitly describes the acknowledged stopped source after closure; all eighty actual fragment prefixes and native44/cache/checkpoints are bound, with no live-actor or fetch-gauge coverage claim.",
+    "A real separate authorization and actual current-day bookings determine headroom. Admission changes exactly the global/source daily ceilings and four finite permits, retaining the profile, foreground reserve, other allocations, catalogs, ACLs and counters.",
+    "The genuine fixed zero-capability financial peer, held XID/backend identity, exact before/after snapshot, durable intent and sole COMMIT protocol are retained. A matching actual ROLLBACK with aborted XID is required first.",
+    "Unknown COMMIT outcomes require read-only committed-XID reconciliation; attempts are not automatically resent, and durable counters must remain monotonic.",
+    "Current financial validation and four-permit disable authenticate their own receipts and current ledger without requalifying the old source, proxies or timers. Disable changes no daily policy or counters and claims no lifecycle authority."
+  ],
+  "callerObligations": [
+    "Obtain actual old closure/drain/free-route receipts, fresh post-close coverage/header capture, new authorization, review and rollback before admission.",
+    "The runtime owner separately retires every old cleanup timer/service/boot path and qualifies its new proxy/source epochs before ordinary paid effects.",
+    "Before source recovery or managed handover, qualify actual paid quiet and the separate completed ordinary permit-disable acknowledgement.",
+    "Keep raw catalogs, process observations, authorizations and transaction receipts host-private."
+  ],
+  "productionActionsByReviewer": 0,
+  "actualAdmissionClaimed": false,
+  "sourceRuntimeOrCanonicalQualificationClaimed": false,
+  "rawProductionReceiptsIncluded": false
+}
