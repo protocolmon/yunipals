@@ -1,0 +1,27 @@
+{
+  "format": "yunipals-arena-ypal-current-actors-preparation-v1",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.actors.py",
+      "sha256": "07eaedc6b3a5616ae2473d386187f72f7bbd56665a0f26483c4edeaf9812ef46",
+      "bytes": 13805
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.actors.test.py",
+      "sha256": "932af60a73a87f575ec114c313057b0af4f0e8961e46e2f6c21617c9e78a338a",
+      "bytes": 10437
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.actors.md",
+      "sha256": "eef123966d8c8f4a849273a70a11b20d06eec8956c81fecbd16c877a0dffeb37",
+      "bytes": 4270
+    }
+  ],
+  "controls": 10,
+  "localLogSha256": "b1ffeabc40f88ee7ce6275f50729b53ab7d81718da8408f8975e7c9ca763b353",
+  "oldV1Unmodified": true,
+  "actualAcknowledgementCreatedByAuthor": false,
+  "databaseWrites": 0,
+  "serviceChanges": 0,
+  "providerCalls": 0
+}
