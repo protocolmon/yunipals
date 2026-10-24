@@ -1,0 +1,114 @@
+{
+  "format": "yunipals-ordinary-observer-source-preparation-v1",
+  "status": "runtime-installed-inactive-owner-staged",
+  "artifactDigest": "8c713a57dde009540564619e45de8b487af77787faf4f07a916d340d710a8753",
+  "manifestSha256": "a09e273ba1bacbb72f9722c1c40e9a1242ce9d003bab658b93a573aa233117a2",
+  "files": [
+    {
+      "path": "apps/yunipals-indexer/scripts/unified-observer.ts",
+      "sha256": "a46dbc0e7c25bd3ecea089e1cd0d6b367cc6c24a6adfb7141e921eaf0530c766",
+      "bytes": 8529
+    },
+    {
+      "path": "apps/yunipals-indexer/scripts/test-unified-observer.mjs",
+      "sha256": "0be49d9b0b4c0d0cea53e95ccfe7df20bd6006d509d7e611c72c93ad8624907b",
+      "bytes": 5779
+    },
+    {
+      "path": "apps/yunipals-indexer/scripts/test-unified-observer-postgres.mjs",
+      "sha256": "889a3f4e869c849ee2e7aef894b2c0f06d70e8d2a5010edfd59a244551082e84",
+      "bytes": 10689
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-build-v1.mjs",
+      "sha256": "d70b10f25ef06fb12599f02395cf18def95b5504b87ae219e53d29ac1e952712",
+      "bytes": 10902
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-build-v1.test.mjs",
+      "sha256": "c8155ca73d6f01461309760ebea7977fef68ed818007f2f20ca191afc34f0bbb",
+      "bytes": 6715
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-install-v1.py",
+      "sha256": "bf012fab894bee4e28d5f8e492309e492ca32c3d3bedbd97f699c17ed31be738",
+      "bytes": 10240
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-install-v1.test.py",
+      "sha256": "5c29e5e5483c4b93719d9a28d56a39185d71fb335ce6c70d4a0d38ee2e932ffc",
+      "bytes": 3946
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-runtime-v1.manifest.json",
+      "sha256": "a09e273ba1bacbb72f9722c1c40e9a1242ce9d003bab658b93a573aa233117a2",
+      "bytes": 14283
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-observer-baseline-booster-abi-v1.ts",
+      "sha256": "61049528cc583b2d4948a688e1c7a67c07bfd48a37785c5f11a4f22f54ed5850",
+      "bytes": 42059
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.py",
+      "bytes": 40642,
+      "sha256": "f81c2e321304c36c1dc63f26dfecb23ecb1a5a84dc3facabdce06a240300f0f6"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.test.py",
+      "bytes": 11271,
+      "sha256": "3c85c15c2dde6e36ec3f94c10dac708e2d39f6c72c9dd7825a3e62f5f5aeb13b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.postgres.test.mjs",
+      "bytes": 5152,
+      "sha256": "2903da659f4b83d155b5ff96027949d23ab783b2fba30e6f9ff91712468fadac"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.md",
+      "bytes": 7637,
+      "sha256": "88943709b60437102dfb06182211807f95bce3b77d4ee72952cfb11e469673f0"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-serving-v1.service.example",
+      "bytes": 1938,
+      "sha256": "8ab59f3420ee81673eac6e2bea57cfd9b0971b3d862af04d5ebb4fe962746428"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-runtime-v1.md",
+      "bytes": 3129,
+      "sha256": "ba9ffe1e9f850f4a37d2b51a3757978fa42943d3d4639191cf566677c1185b4f"
+    }
+  ],
+  "sourceAndResolutionInputs": 34,
+  "tests": {
+    "entryFocusedControls": 18,
+    "entryGenuinePostgresGroups": 8,
+    "independentEntryReviewPassed": true,
+    "rootBuildImportRelocationGroups": 5,
+    "rootInstallerFilesystemControls": 4,
+    "rootActivationLifecycleControls": 21,
+    "rootActivationPermissionPostgresGroups": 7
+  },
+  "scope": {
+    "officialObserverAlgorithmChanged": false,
+    "receiptHistoryEnabled": false,
+    "paidAuthorityChanged": false,
+    "nativeWriteAuthorityAdded": false,
+    "runtimeInstalledInactive": true,
+    "activationOwnerAndTemplateStaged": true,
+    "actualReadAdmissionSupplied": false,
+    "serviceUnitCreated": false,
+    "bootLinkCreated": false,
+    "observerStarted": false,
+    "actualCoverageAccepted": false,
+    "detailedProductionObservationsPublished": false
+  },
+  "servingContract": {
+    "runtimeMaximumSeconds": null,
+    "explicitOwnedActivationRequired": true,
+    "initial143AdmissionRequired": true,
+    "laterQualificationObserverScoped": true,
+    "finalSupervisorAdoptionOrRetirementRequired": true
+  }
+}
