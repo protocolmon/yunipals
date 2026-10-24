@@ -15,7 +15,8 @@ import {
 import { seaportDeployment } from "../../yunipals-market-core/src/registry.js";
 import { seaportRuntimeHashes } from "../../yunipals-market-core/src/seaportRuntime.js";
 import { validateTransactionReceipt } from "../../yunipals-market-core/src/receiptEvidence.js";
-import { yunipalMonstersAbi } from "../../yunipals-market-core/src/boosterAbi.js";
+import { yunipalMonstersSourceAbi } from "../../yunipals-market-core/src/boosterSourceAbi.js";
+import { boosterIdentity } from "../../yunipals-market-core/src/boosters.js";
 import { indexerTransaction, sqlIdentifier } from "./database.js";
 import { manifestDigest, transactionEvidenceHash } from "./identity.js";
 import { parseIndexedEventTopics } from "./event-topics.js";
@@ -48,6 +49,13 @@ class EvidenceUnavailable extends Error {
 }
 function unavailable(reason: IndexedActionReason): never {
   throw new EvidenceUnavailable(reason);
+}
+function compiledAbiDigest(select: () => unknown): string {
+  try {
+    return manifestDigest(select());
+  } catch {
+    unavailable("source_definition_mismatch");
+  }
 }
 function unsigned(value: unknown): value is string {
   return typeof value === "string" && decimal.test(value);
@@ -153,7 +161,10 @@ function sourceFor(release: RegisteredRelease, request: IndexedActionRequest) {
     /^0x0{40}$/.test(source.address) ||
     (!booster && source.address !== seaportDeployment.address.toLowerCase()) ||
     !unsigned(source.startBlock) ||
-    source.abiHash !== manifestDigest(indexedActionAbi(request.action)) ||
+    source.abiHash !==
+      compiledAbiDigest(() =>
+        indexedActionAbi(request.action, source.abiHash)
+      ) ||
     !source.events.includes(indexedActionEventName(request.action)) ||
     source.receiptRequirement !== (booster ? "none" : "full") ||
     !source.policies.some((policy) => policy.kind === "latest")
@@ -368,7 +379,11 @@ export async function readIndexedActionEvidence(
         const matches = rows.filter((row, index) => {
           if (row.name !== indexedActionEventName(request.action)) return false;
           try {
-            const args = decodeIndexedActionLog(request.action, logs[index]!);
+            const args = decodeIndexedActionLog(
+              request.action,
+              logs[index]!,
+              source.abiHash
+            );
             if (
               manifestDigest(normalizedArgs(args)) !==
               manifestDigest(normalizedArgs(logs[index]!.args))
@@ -470,7 +485,10 @@ export async function readIndexedActionEvidence(
             monsters.contractName !== "BoosterMonsters" ||
             !monsters.address ||
             !address.test(monsters.address) ||
-            monsters.abiHash !== manifestDigest(yunipalMonstersAbi)
+            monsters.abiHash !==
+              compiledAbiDigest(() =>
+                yunipalMonstersSourceAbi(monsters.abiHash)
+              )
           )
             unavailable("source_definition_mismatch");
           const projection = (
@@ -488,7 +506,7 @@ export async function readIndexedActionEvidence(
             }>(
               `SELECT engine,request_id,original_key,payer,quantity,opening,paid,rule_hash,callback_gas,transaction_hash
           FROM ${schema}.booster_request WHERE id=$1 LIMIT 2`,
-              [`${source.address}:${action.requestId}`]
+              [boosterIdentity(source.address, action.requestId)]
             )
           ).rows;
           const row = projection[0];
@@ -497,7 +515,8 @@ export async function readIndexedActionEvidence(
             !row ||
             row.engine !== source.address ||
             row.request_id !== action.requestId ||
-            row.original_key !== `${monsters.address}:${action.originalId}` ||
+            row.original_key !==
+              boosterIdentity(monsters.address, action.originalId) ||
             row.payer !== action.payer ||
             row.quantity !== action.quantity ||
             row.opening !== action.opening ||

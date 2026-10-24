@@ -1,4 +1,5 @@
 import type { Pool, PoolClient } from "pg";
+import { randomBytes } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { encodeAbiParameters, encodeEventTopics, getAbiItem } from "viem";
 import type { ReadinessReason } from "../../../packages/yunipals-indexer-client/src/readiness.js";
@@ -8,6 +9,12 @@ import {
   type IndexedActionRequest
 } from "../../../packages/yunipals-market-core/src/indexedAction.js";
 import { boosterPacksAbi } from "../../../packages/yunipals-market-core/src/boosterAbi.js";
+import { boosterIdentity } from "../../../packages/yunipals-market-core/src/boosters.js";
+import {
+  boosterPacksSourceAbi,
+  boosterSourceAbiHashes,
+  yunipalMonstersSourceAbi
+} from "../../../packages/yunipals-market-core/src/boosterSourceAbi.js";
 import { seaportEventAbi } from "../../../packages/yunipals-market-core/src/seaportEvents.js";
 import { seaportRuntimeHashes } from "../../../packages/yunipals-market-core/src/seaportRuntime.js";
 import { receiptLogsBloom } from "../../../packages/yunipals-market-core/src/receiptEvidence.js";
@@ -153,7 +160,10 @@ function encodedEvent(request: IndexedActionRequest) {
   };
 }
 
-function fixture(kind: Kind = "bnb-validate") {
+function fixture(
+  kind: Kind = "bnb-validate",
+  projectionDb?: Pick<PoolClient, "query">
+) {
   const request = actionRequest(kind);
   const selectedRelease = structuredClone(release);
   const source = selectedRelease.manifest.sources.find(
@@ -235,9 +245,10 @@ function fixture(kind: Kind = "bnb-validate") {
     too_large: false as boolean | null
   };
   const projection = {
+    id: boosterIdentity(engine, "1"),
     engine,
     request_id: "1",
-    original_key: `${monsters}:2`,
+    original_key: boosterIdentity(monsters, "2"),
     payer,
     quantity: 1,
     opening: true,
@@ -312,8 +323,12 @@ function fixture(kind: Kind = "bnb-validate") {
     if (sql.includes(".chain_block")) return { rows: state.witnesses };
     if (sql.includes(".transaction_candidate"))
       return { rows: state.candidates };
-    if (sql.includes(".booster_request")) return { rows: state.projections };
-    if (/^(BEGIN|SET LOCAL|COMMIT|ROLLBACK)/.test(sql)) return { rows: [] };
+    if (sql.includes(".booster_request"))
+      return projectionDb
+        ? projectionDb.query(sql, params)
+        : { rows: state.projections.filter((row) => row.id === params[0]) };
+    if (/^(BEGIN|SET LOCAL|COMMIT|ROLLBACK)/.test(sql))
+      return projectionDb ? projectionDb.query(sql, params) : { rows: [] };
     throw new Error("Unexpected query");
   });
   const releaseConnection = vi.fn();
@@ -347,8 +362,14 @@ describe("exact indexed action evidence", () => {
       const f = fixture(kind);
       const topics = JSON.parse(f.event.topics) as string[];
       expect(topics.length).toBeLessThan(4);
-      f.event.topics = JSON.stringify([...topics, ...Array(4 - topics.length).fill(null)]);
-      expect(await f.read()).toMatchObject({ state: "indexed", reason: "action_indexed" });
+      f.event.topics = JSON.stringify([
+        ...topics,
+        ...Array(4 - topics.length).fill(null)
+      ]);
+      expect(await f.read()).toMatchObject({
+        state: "indexed",
+        reason: "action_indexed"
+      });
     }
   );
   it("rejects an interior null instead of accepting a different log", async () => {
@@ -410,6 +431,106 @@ describe("exact indexed action evidence", () => {
       f.query.mock.calls.some(([sql]) => sql.includes("transaction_evidence"))
     ).toBe(false);
     expect(JSON.stringify(value)).not.toContain("seed");
+    expect(
+      f.query.mock.calls.find(([sql]) => sql.includes(".booster_request"))?.[1]
+    ).toEqual([boosterIdentity(engine, "1")]);
+  });
+  it.each(["id", "original_key"] as const)(
+    "refuses unprefixed, foreign-chain, foreign-collection and foreign-token %s values",
+    async (field) => {
+      const collection = field === "id" ? engine : monsters;
+      const id = field === "id" ? "1" : "2";
+      for (const value of [
+        `${collection}:${id}`,
+        `56:${collection}:${id}`,
+        boosterIdentity(addr(99), id),
+        boosterIdentity(collection, "99")
+      ]) {
+        const f = fixture("booster-request-created");
+        f.projection[field] = value;
+        expect(await f.read()).toMatchObject({
+          state: "source_unavailable",
+          reason: "projection_inconsistent",
+          proof: null,
+          application: { state: "not_evaluated", component: "booster_request" }
+        });
+      }
+    }
+  );
+  it.each(["e8145098", "current"] as const)(
+    "verifies the exact %s full engine/monsters manifest ABI pair",
+    async (version) => {
+      const f = fixture("booster-request-created");
+      const hashes = boosterSourceAbiHashes[version];
+      f.source.abiHash = hashes.boosterPacks;
+      f.event.abi_hash = hashes.boosterPacks;
+      f.selectedRelease.manifest.sources.find(
+        (s) => s.id === "boosters:boostermonsters"
+      )!.abiHash = hashes.yunipalMonsters;
+      f.state.marker.manifest_hash = f.selectedRelease.manifestHash =
+        manifestDigest(f.selectedRelease.manifest);
+      expect(await f.read()).toMatchObject({
+        state: "indexed",
+        reason: "action_indexed",
+        proof: { kind: "canonical_event", receiptRequirement: "none" },
+        application: { state: "applied", component: "booster_request" }
+      });
+    }
+  );
+  it.each(["engine", "monsters"])(
+    "refuses an unknown %s full ABI with source_definition_mismatch",
+    async (contract) => {
+      const f = fixture("booster-request-created");
+      const source =
+        contract === "engine"
+          ? f.source
+          : f.selectedRelease.manifest.sources.find(
+              (s) => s.id === "boosters:boostermonsters"
+            )!;
+      source.abiHash = hash(99);
+      if (contract === "engine") f.event.abi_hash = source.abiHash;
+      expect(await f.read()).toMatchObject({
+        state: "source_unavailable",
+        reason: "source_definition_mismatch",
+        proof: null
+      });
+    }
+  );
+  it.each(["e8145098", "current"] as const)(
+    "recomputes both full %s ABI hashes, refusing content drift even outside event fields",
+    async (version) => {
+      const hashes = boosterSourceAbiHashes[version];
+      for (const select of [boosterPacksSourceAbi, yunipalMonstersSourceAbi]) {
+        const f = fixture("booster-request-created");
+        f.source.abiHash = f.event.abi_hash = hashes.boosterPacks;
+        f.selectedRelease.manifest.sources.find(
+          (s) => s.id === "boosters:boostermonsters"
+        )!.abiHash = hashes.yunipalMonsters;
+        const abi = select(
+          select === boosterPacksSourceAbi
+            ? hashes.boosterPacks
+            : hashes.yunipalMonsters
+        );
+        const entry = abi.find((item) => item.type === "function")!;
+        const original = entry.name;
+        try {
+          // Simulate a compiled catalog edit with a stale accepted digest.
+          Object.assign(entry, { name: "changedFunction" });
+          expect(await f.read()).toMatchObject({
+            state: "source_unavailable",
+            reason: "source_definition_mismatch",
+            proof: null
+          });
+        } finally {
+          Object.assign(entry, { name: original });
+        }
+      }
+    }
+  );
+  it("does not relabel a historical journal ABI as the current compatible event ABI", async () => {
+    const f = fixture("booster-request-created");
+    f.event.abi_hash = boosterSourceAbiHashes.e8145098.boosterPacks;
+    expect((await f.read()).reason).toBe("canonical_event_invalid");
   });
   it("does not accept a different transaction, order hash or offerer just because its receipt block is covered", async () => {
     for (const mutation of [
@@ -569,6 +690,90 @@ describe("exact indexed action evidence", () => {
     empty.state.projections = [];
     expect((await empty.read()).reason).toBe("projection_inconsistent");
   });
+  it.skipIf(process.env.INDEXED_ACTION_LOCAL_POSTGRES_TEST !== "1")(
+    "executes the real read-only projection lookup against PostgreSQL for both ABI versions",
+    async () => {
+      // Only this repository's disposable local PostgreSQL fixture is used.
+      // Release/status discovery stays mocked; the projection SQL and its
+      // transaction are real. This is not whole-source/API acceptance.
+      const { Client } = await import("pg");
+      const database = `indexed_action_${randomBytes(8).toString("hex")}`;
+      const options = {
+        host: "127.0.0.1",
+        port: 56967,
+        user: "unified_test",
+        password: "unified_disposable_test",
+        connectionTimeoutMillis: 3000,
+        statement_timeout: 5000
+      };
+      const admin = new Client({ ...options, database: "postgres" });
+      const db = new Client({ ...options, database });
+      let created = false;
+      try {
+        await admin.connect();
+        await admin.query(`CREATE DATABASE "${database}" TEMPLATE template0`);
+        created = true;
+        await db.connect();
+        await db.query(`CREATE SCHEMA action_source;
+          CREATE TABLE action_source.booster_request (
+            id text PRIMARY KEY, engine text NOT NULL, request_id text NOT NULL,
+            original_key text NOT NULL, payer text NOT NULL, quantity integer NOT NULL,
+            opening boolean NOT NULL, paid text NOT NULL, rule_hash text NOT NULL,
+            callback_gas integer NOT NULL, transaction_hash text NOT NULL)`);
+        const projection = fixture("booster-request-created").projection;
+        const values = Object.values(projection);
+        await db.query(
+          `INSERT INTO action_source.booster_request VALUES (${values.map((_, i) => `$${i + 1}`).join(",")})`,
+          values
+        );
+        let realSelects = 0;
+        const projectionDb = {
+          query: async (sql: string, params: unknown[]) => {
+            if (sql.includes(".booster_request")) {
+              expect(params).toEqual([boosterIdentity(engine, "1")]);
+              expect(
+                (await db.query("SHOW transaction_read_only")).rows[0]
+              ).toEqual({ transaction_read_only: "on" });
+              realSelects++;
+            }
+            return db.query(sql, params);
+          }
+        } as Pick<PoolClient, "query">;
+        for (const version of ["e8145098", "current"] as const) {
+          const f = fixture("booster-request-created", projectionDb);
+          const hashes = boosterSourceAbiHashes[version];
+          f.source.abiHash = f.event.abi_hash = hashes.boosterPacks;
+          f.selectedRelease.manifest.sources.find(
+            (s) => s.id === "boosters:boostermonsters"
+          )!.abiHash = hashes.yunipalMonsters;
+          expect(await f.read()).toMatchObject({
+            state: "indexed",
+            application: { state: "applied", component: "booster_request" }
+          });
+        }
+        await db.query("UPDATE action_source.booster_request SET id=$1", [
+          `${engine}:1`
+        ]);
+        const missing = fixture("booster-request-created", projectionDb);
+        expect((await missing.read()).reason).toBe("projection_inconsistent");
+        await db.query(
+          "UPDATE action_source.booster_request SET id=$1,original_key=$2",
+          [boosterIdentity(engine, "1"), `${monsters}:2`]
+        );
+        const wrongOriginal = fixture("booster-request-created", projectionDb);
+        expect((await wrongOriginal.read()).reason).toBe(
+          "projection_inconsistent"
+        );
+        expect(realSelects).toBe(4);
+      } finally {
+        await db.end();
+        if (created)
+          await admin.query(`DROP DATABASE "${database}" WITH (FORCE)`);
+        await admin.end();
+      }
+    },
+    20000
+  );
   it("does not invent canonical inclusion when both the transaction and retained block witness are absent", async () => {
     const f = fixture();
     f.state.events = [];

@@ -1,5 +1,5 @@
 import { decodeEventLog, type Hex } from "viem";
-import { boosterPacksAbi } from "./boosterAbi.js";
+import { boosterPacksSourceAbi } from "./boosterSourceAbi.js";
 import { seaportEventAbi } from "./seaportEvents.js";
 
 export type IndexedAction =
@@ -213,9 +213,12 @@ export function parseIndexedActionRequest(
   };
 }
 
-export function indexedActionAbi(action: IndexedAction) {
+export function indexedActionAbi(
+  action: IndexedAction,
+  sourceAbiHash?: string
+) {
   return action.kind === "booster-request-created"
-    ? boosterPacksAbi
+    ? boosterPacksSourceAbi(sourceAbiHash)
     : seaportEventAbi;
 }
 export function indexedActionEventName(action: IndexedAction) {
@@ -226,21 +229,25 @@ export function indexedActionEventName(action: IndexedAction) {
       : "OrderCancelled";
 }
 
-/** Decode raw journal bytes with the compiled ABI, rather than trusting its
- * convenient decoded args column. The caller also checks that column agrees. */
+/** Decode raw journal bytes with the exact known source ABI when supplied.
+ * The caller also verifies its full manifest digest and the decoded args column. */
 export function decodeIndexedActionLog(
   action: IndexedAction,
-  log: { topics: readonly string[]; data: string }
+  log: { topics: readonly string[]; data: string },
+  sourceAbiHash?: string
 ): Record<string, unknown> {
   const decoded = decodeEventLog({
-    abi: indexedActionAbi(action),
+    abi: indexedActionAbi(action, sourceAbiHash),
     topics: log.topics as [Hex, ...Hex[]],
     data: log.data as Hex,
     strict: true
   });
   if (decoded.eventName !== indexedActionEventName(action))
     throw new Error("Unexpected indexed action event.");
-  return decoded.args as Record<string, unknown>;
+  const args: unknown = decoded.args;
+  if (!args || typeof args !== "object" || Array.isArray(args))
+    throw new Error("Expected named indexed action arguments.");
+  return args as Record<string, unknown>;
 }
 
 export function matchesIndexedAction(
