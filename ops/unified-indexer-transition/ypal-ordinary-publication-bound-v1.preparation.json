@@ -101,6 +101,11 @@
       "bytes": 25115,
       "file": "ypal-ordinary-reader-bound-v1.manifest.json",
       "sha256": "bbd19325eded8dd90b2ea8c0e8844b9ad6134fd78416206bb0491978a07f3095"
+    },
+    {
+      "bytes": 27546,
+      "file": "ypal-ordinary-publication-bound-v1.stage.json",
+      "sha256": "cfec2660debc99716008434c37c3b94730cc20e1d62a06faf63648a20c7ded28"
     }
   ],
   "format": "yunipals-ypal-ordinary-publication-bound-v1-source-preparation",
@@ -116,6 +121,8 @@
     "separately_reviewed_publication_steps",
     "genuine_feature_handover_and_actual_five_receipt_refs"
   ],
+  "publicStageClosureFile": "ypal-ordinary-publication-bound-v1.stage.json",
+  "publicStageClosureSha256": "cfec2660debc99716008434c37c3b94730cc20e1d62a06faf63648a20c7ded28",
   "readerInverseDispatchOpen": false,
   "recoveryComponent": {
     "allFourCountShaTupleChecksPreserved": true,
