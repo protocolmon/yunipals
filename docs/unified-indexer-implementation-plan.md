@@ -1,6 +1,6 @@
 # Unified Yunipals indexer implementation plan
 
-Prepared 20 October 2026. Status: implementation and additive production preparation are underway; the actual combined YPAL source is running with a registered candidate release; native cached replay and consumer cutover remain pending. See [implementation progress](/root/yunipals/docs/unified-indexer/progress.md) for completed code, checks, and remaining rollout gates.
+Prepared 20 October 2026. Updated 25 October: the combined YPAL source has caught up and runs under the approved ongoing Alchemy caps. Corrected V5 read views are created, and all six collection probes were ready in the actual creation receipt. Fresh canonical acceptance, equivalent V5 reader permissions, consumer cutover, managed Solana adoption and duplicate-scanner retirement remain pending. See the [current checklist](unified-indexer/CHECKLIST.md) for actual rollout evidence and remaining work.
 
 Revised after the Arena discussion and live inventory: use native Ponder handlers and tables for EVM chain state. Solana consolidation is included at the user's request. Following the discussion about extra Base blocks, the working implementation policy is latest complete Base blocks, with canonical/current-state checks and recovery for external effects; the earlier five-block application buffer is no longer the target default. A native Base metadata path now has local recent-reorg publication/read tests; production parity and coordinated rollback acceptance remain required before enabling it.
 
