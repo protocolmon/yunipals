@@ -1,0 +1,49 @@
+{
+  "candidateAccepted": false,
+  "exactQueryDiagnostic": {
+    "actualFunctionSourceSha256": "6202db1e5124ce81823854ffa09e77410b6495c695b463028bc150bc57b564b3",
+    "actualRuntimeStartedUnix": 1792938282.3704858,
+    "candidateAccepted": false,
+    "databaseWrites": 0,
+    "exactSourceExpressionEvaluated": true,
+    "fixedActualCandidateStartBoundaryCount": 1,
+    "fixedDifferenceBytes": 1,
+    "fixedExitCode": 0,
+    "fixedSqlSha256": "3c767d2197204697557b5152ac99b1efd45dd39781ce8565328f66655c70ef04",
+    "format": "root-generation-count-query-diagnostic-v1",
+    "fullReviewRepeated": false,
+    "function": "successful_worker",
+    "generationId": "105",
+    "observedAt": "2026-10-25T15:39:54.135429+00:00",
+    "originalExitCode": 1,
+    "originalNumericKeywordBoundaryMissingSpace": true,
+    "originalSqlSha256": "1efe43c6140fcbcf2b89d2f08706b51c33bd09e513db8dea6b68545d61277efe",
+    "originalSqlState": "42601",
+    "providerCalls": 0,
+    "rawRowsExported": false,
+    "serviceActions": 0
+  },
+  "failedReview": {
+    "completed": false,
+    "elapsedSeconds": 136.229,
+    "exitCode": 1,
+    "format": "root-generation-accept-v2-phase",
+    "observedAt": "2026-10-25T15:34:13.733416+00:00",
+    "operatorSha256": "b6b6eb8c707290c29fbcd6eedf2e13c6c1d5dcc293a3806b0d6ab76bc9ab49fe",
+    "phase": "review",
+    "report": {
+      "automaticRetryAllowed": false,
+      "completed": false,
+      "fixedCode": "bounded_command_ACK_unknown_inspect_no_retry",
+      "format": "yunipals-ypal-ordinary-generation-accept-v2",
+      "previousAcceptanceCLIPassed": false
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "d7cbdd935a3ecf8dad647733efaee129435ef7c83d9d9846d6eb3158ac3bff61"
+  },
+  "format": "yunipals-generation-acceptance-count-query-production-v1",
+  "fullCandidateValidationQualified": false,
+  "publicationChanged": false,
+  "rebuildRequired": false
+}
