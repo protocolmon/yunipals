@@ -1,0 +1,62 @@
+{
+  "actualStages": {
+    "accept": {
+      "completed": true,
+      "elapsedSeconds": 266.606,
+      "exitCode": 0,
+      "format": "root-generation-accept-v3-phase",
+      "observedAt": "2026-10-25T15:58:47.833971+00:00",
+      "operatorSha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3",
+      "phase": "accept",
+      "report": {
+        "automaticRetryAllowed": false,
+        "candidateAccepted": true,
+        "candidateSha256": "f130e6bc5725e5b79acce67f9d7de067182e7cc3758fae35aa8ef8ab6064a9aa",
+        "format": "yunipals-ypal-ordinary-generation-accept-v3",
+        "originalAttemptCandidateCLIPassed": false,
+        "published": false
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "d98eb2fff02b14f38cd0d7150e334eb66699fb0bec3d56f36d844a3c0822b363"
+    },
+    "review": {
+      "completed": true,
+      "elapsedSeconds": 167.306,
+      "exitCode": 0,
+      "format": "root-generation-accept-v3-phase",
+      "observedAt": "2026-10-25T15:52:58.001047+00:00",
+      "operatorSha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3",
+      "phase": "review",
+      "report": {
+        "automaticRetryAllowed": false,
+        "candidateAccepted": false,
+        "format": "yunipals-ypal-ordinary-generation-accept-v3",
+        "originalAttemptCandidateCLIPassed": false,
+        "reviewHash": "338b0b6217dc538c68a1659dc26d162a837aa2bd6a0de662f6f7533192e6b7b9"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "7be0d7e49e93200b88a083826b62c8b83b7dc6087ec76696c5a4e9c8b8be37a6"
+    },
+    "stage": {
+      "candidateAccepted": false,
+      "completed": true,
+      "databaseWrites": 0,
+      "existingFilesOverwritten": 0,
+      "format": "root-generation-accept-v3-phase",
+      "observedAt": "2026-10-25T15:49:00.223327+00:00",
+      "operatorSha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3",
+      "phase": "stage",
+      "publicFilesCreated": 2,
+      "publicFilesVerified": 170,
+      "serviceActions": 0
+    }
+  },
+  "candidateSha256": "f130e6bc5725e5b79acce67f9d7de067182e7cc3758fae35aa8ef8ab6064a9aa",
+  "format": "yunipals-generation-acceptance-production-v3",
+  "generationId": "105",
+  "originalAttemptCandidateCLIPassed": false,
+  "priorFailedReviewsPreserved": true,
+  "published": false
+}
