@@ -1,0 +1,35 @@
+{
+  "actualQualification": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T10:00:32.595032+00:00",
+    "phase": "qualify",
+    "report": {
+      "activeUnits": 11,
+      "callbackElapsedNanoseconds": 6878686158,
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-ordinary-source-authority-v5",
+      "nativeRelations": 44,
+      "positiveKernelSessions": 5,
+      "productionCallbackDeadlineQualified": false,
+      "providerCalls": 0,
+      "resultSha256": "308559bffa280ce20782f527319cadeaca2ed506687805eb4e7a6c13f0a062ec",
+      "retiredUnits": 12,
+      "serviceActions": 0,
+      "validated": true
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "cac496eaa76083a988af102e83ad4c60003adc9ce4b3c82b7bf8c72a00f604ef"
+  },
+  "completePublicationCallbackTimingQualified": false,
+  "databaseWrites": 0,
+  "format": "yunipals-ordinary-source-authority-v5-production-summary-v1",
+  "goalComplete": false,
+  "localControls": 27,
+  "mountNamespaceAndSixBackingInodesRequired": true,
+  "relevantAncestorsAndDescendantsCompared": true,
+  "scopedMounts": 6,
+  "serviceActions": 0,
+  "unrelatedHostMountChurnIgnored": true
+}

@@ -1,0 +1,56 @@
+{
+  "actualSteps": {
+    "selector-review": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:00:25.669562+00:00",
+      "phase": "selector-review",
+      "report": {
+        "databaseWrites": 0,
+        "format": "yunipals-ypal-ordinary-generation-candidates-v5",
+        "providerCalls": 0,
+        "reviewHash": "03e2d97edc9ab0d1a3d6de42200baad0e7e8aaca3c28fabe0a583de186fcef62",
+        "serviceActions": 0,
+        "staged": false
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "f238b59ee90ff9489fbeaa35de74aa8c49466fab0415d91bb11b28709b7d2dc6"
+    },
+    "selector-stage": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:03:08.333293+00:00",
+      "phase": "selector-stage",
+      "report": {
+        "databaseWrites": 0,
+        "format": "yunipals-ypal-ordinary-generation-candidates-v5",
+        "providerCalls": 0,
+        "receiptSha256": "451c497495c138e887bd95acfa426f40f5bf7194369ca22df42c85f6611b579b",
+        "serviceActions": 0,
+        "staged": true
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "a30f03abe444bc9f0ed34b2ee2863f51693ddbdb5d98390dca90316cb6d26fa9"
+    },
+    "stage": {
+      "completed": true,
+      "databaseWrites": 0,
+      "observedAt": "2026-10-25T09:45:10.298307+00:00",
+      "phase": "stage",
+      "publicFilesCreated": 2,
+      "publicFilesVerified": 3,
+      "serviceActions": 0
+    }
+  },
+  "completedMetadataReceiptSha256": "6d8998f33db107a278097aff8b419cb0bea684151b2e73f7b72fc20a48906c1b",
+  "format": "yunipals-ordinary-generation-v5c-preparation-production-v1",
+  "generation103StillSelected": true,
+  "generationProducerSha256": "ada329e57969155d091d3b5d276de767cb5a09760095a4499090b0589d81b7da",
+  "generationReview": "in-progress",
+  "generationStarted": false,
+  "goalComplete": false,
+  "monitorSha256": "f1ebc76c182d4146de7c006fa2dad5567aa8fb6d0dfe16e807648a2792911885",
+  "readerOrTrafficSwitched": false
+}
