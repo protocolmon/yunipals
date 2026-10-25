@@ -1,5 +1,19 @@
 {
   "actualSteps": {
+    "generation-review": {
+      "completed": false,
+      "exitCode": 1,
+      "observedAt": "2026-10-25T10:06:00.435744+00:00",
+      "phase": "generation-review",
+      "report": {
+        "completed": false,
+        "fixedCode": "full_one_shot_window_before_next_backup_required",
+        "format": "yunipals-ypal-ordinary-generation-v5c"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "7f1cd1429e567dfde0a49dabf5b4a530b09f26f25aee91d51049cdf867f64968"
+    },
     "selector-review": {
       "completed": true,
       "exitCode": 0,
@@ -42,15 +56,41 @@
       "publicFilesCreated": 2,
       "publicFilesVerified": 3,
       "serviceActions": 0
+    },
+    "stage-entry": {
+      "completed": true,
+      "databaseWrites": 0,
+      "observedAt": "2026-10-25T10:12:03.707834+00:00",
+      "phase": "stage-entry",
+      "publicFilesCreated": 1,
+      "publicFilesVerified": 4,
+      "serviceActions": 0
     }
   },
   "completedMetadataReceiptSha256": "6d8998f33db107a278097aff8b419cb0bea684151b2e73f7b72fc20a48906c1b",
+  "explicitPhaseEntry": {
+    "file": "ypal-ordinary-generation-phase-v1.py",
+    "focusedControls": 4,
+    "individualQueryAndProcessLimitsUnchanged": true,
+    "originalCliWrapperClaimed": false,
+    "ownerMainUnchanged": true,
+    "ownerSha256": "ada329e57969155d091d3b5d276de767cb5a09760095a4499090b0589d81b7da",
+    "phaseDeadlineSeconds": 480,
+    "sha256": "79ef997f3553115fc648df18787e43b91d3617c4dccf56b92dae14833b72508e"
+  },
   "format": "yunipals-ordinary-generation-v5c-preparation-production-v1",
   "generation103StillSelected": true,
   "generationProducerSha256": "ada329e57969155d091d3b5d276de767cb5a09760095a4499090b0589d81b7da",
-  "generationReview": "in-progress",
+  "generationReview": "stopped_before_effects_for_backup_window",
   "generationStarted": false,
   "goalComplete": false,
   "monitorSha256": "f1ebc76c182d4146de7c006fa2dad5567aa8fb6d0dfe16e807648a2792911885",
+  "nextBackup": {
+    "activeBackupJobsAtObservation": 0,
+    "nextAt": "2026-10-25T10:17:33Z",
+    "observedAt": "2026-10-25T10:08:05Z",
+    "timer": "yunipals-arena-backup.timer",
+    "timersChanged": false
+  },
   "readerOrTrafficSwitched": false
 }
