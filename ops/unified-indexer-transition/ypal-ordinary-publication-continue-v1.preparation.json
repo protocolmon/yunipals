@@ -1,0 +1,108 @@
+{
+  "actualCacheInputSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+  "actualHeldQualificationRequired": true,
+  "actualProductionQualificationClaimed": false,
+  "cacheInputChanged": false,
+  "continuationAuthority": {
+    "file": "ypal-ordinary-cache-continuation-authority-v1.py",
+    "manifestFile": "ypal-ordinary-cache-continuation-authority-v1.manifest.json",
+    "manifestSha256": "1131a7c181917cef8521475b7181341a15fbc9c09019beb3dff91e7d0cc13c48",
+    "sha256": "c413474538ad61e21b5d41736b1ca86687c2b4540639a1a760b4993ae2438dd7"
+  },
+  "effectSQLPeersAndWireUnchanged": true,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "explicitCommitTailSeconds": 5,
+  "files": [
+    {
+      "bytes": 6716,
+      "file": "ypal-ordinary-cache-continuation-context-v1.py",
+      "sha256": "f0aeed34d9bfc0fe710a82465af253c879d2c118c36ec9ff9232d75318b88449"
+    },
+    {
+      "bytes": 5326,
+      "file": "ypal-ordinary-read-cache-continue-v1.py",
+      "sha256": "e4b0a18fc1358a04da6a6a47c8363d193836d23493a28f6c09a1780e3dadc06e"
+    },
+    {
+      "bytes": 4055,
+      "file": "ypal-ordinary-reader-continue-v1.py",
+      "sha256": "5858b50e59ddc1d5ee04e0f8443143d0d6aee78fd927fee4f6d9fbe9b62a747d"
+    },
+    {
+      "bytes": 7476,
+      "file": "ypal-ordinary-publication-continue-v1.py",
+      "sha256": "6bf7e33971d3331d84ba843ca4952db3f9024ebcee56fba0ff67a5cecbab0151"
+    },
+    {
+      "bytes": 6421,
+      "file": "ypal-ordinary-publication-continue-inputs-v1.py",
+      "sha256": "9fb641bf7cd35aed3032e2d080a77e92b53f58e6692c29b9baff012f4e4e0332"
+    },
+    {
+      "bytes": 3776,
+      "file": "ypal-ordinary-publication-continue-manifest-v1.py",
+      "sha256": "9be7d281fafd5dfab9fdba1a9c7dff0ee6db4219eb9d4cdaef7d6a57ed7a238c"
+    },
+    {
+      "bytes": 28311,
+      "file": "ypal-ordinary-reader-continue-v1.manifest.json",
+      "sha256": "2f0834fda702e6bc2a2bbbb49a2502c7d50b7201aae6978f7aeed340a28426de"
+    },
+    {
+      "bytes": 23091,
+      "file": "ypal-ordinary-publication-continue-v1.test.py",
+      "sha256": "1f6b119d0a9d413cb6702a3afc98512c8135132d8c2d204d999eb6f33e913d4e"
+    },
+    {
+      "bytes": 8838,
+      "file": "ypal-ordinary-publication-continue-v1.md",
+      "sha256": "3551e0100795379d882bb231130a834c615ea04b08406627231079aeabca1886"
+    },
+    {
+      "bytes": 52138,
+      "file": "ypal-ordinary-publication-continue-v1.stage.json",
+      "sha256": "1d767112421a08612cd0866d5acf6700c76c05b2317d8f7d4dc004c5d33b291e"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-continue-v1-preparation",
+  "metadataApprovalTTLSeconds": 90,
+  "oldStandaloneTimingReused": false,
+  "priorAttempt": {
+    "bootArchiveCopied": false,
+    "newSuccessClaimedForOldProducer": false,
+    "originalFailedJournalsAndInodesPreserved": true,
+    "providerSha256": "8be988601c168c37ed5cc9dbbf348e2ad00312cd234786a2d3e00c6f4224a834",
+    "readerSha256": "973cc75929e6ee3c906ac12103933603272cb41fdceec248bea3461b971dbda5",
+    "stopActionRepeated": false,
+    "transactionId": "16540148"
+  },
+  "productionApprovalCadenceSolved": false,
+  "publicFileCount": 229,
+  "publicStageClosureFile": "ypal-ordinary-publication-continue-v1.stage.json",
+  "publicStageClosureSha256": "1d767112421a08612cd0866d5acf6700c76c05b2317d8f7d4dc004c5d33b291e",
+  "readerInverseDispatchOpen": false,
+  "readerSourceManifestSha256": "2f0834fda702e6bc2a2bbbb49a2502c7d50b7201aae6978f7aeed340a28426de",
+  "rootStepsPending": [
+    "Verify and stage exact finite source closure without overwrite.",
+    "Qualify actual prior-aborted/current-catalog authority and create new actual post-drain rollback rehearsal records.",
+    "Qualify complete real held SQL plus callback with wrong ACK, actual rollback/catalog proof, fresh official approval and exact new context.",
+    "Resolve periodic official-approval expiry and any changed metadata actor through actual separate source authority.",
+    "Review actual new held receipt before explicit commit; reconcile every unknown effect without replay.",
+    "Use actual new prepared ACK to render ten reader refs, then qualify LOGIN/publication callbacks and effects independently.",
+    "Qualify separate current-prefix inverse caller and later native physical ready0 continuation before rollback effects."
+  ],
+  "verification": {
+    "actualCompositionControlsPassed": 12,
+    "independentAuthorityControlsPassed": 20,
+    "independentReviewPending": false,
+    "protocolAgent": "No findings; independently reran12/12 and reviewed actual domains, full source/boot/inverse lineage, manifest closure and API recipe.",
+    "publicStageHashesAndOriginsChecked": 229,
+    "pythonSourcesCompiled": 7
+  }
+}
