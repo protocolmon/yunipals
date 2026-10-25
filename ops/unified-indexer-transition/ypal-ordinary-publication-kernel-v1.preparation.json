@@ -1,0 +1,51 @@
+{
+  "actualProductionQualificationClaimed": false,
+  "cacheInputChanged": false,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 4961,
+      "file": "ypal-ordinary-publication-kernel-v1.py",
+      "sha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a"
+    },
+    {
+      "bytes": 5616,
+      "file": "ypal-ordinary-publication-kernel-v1.test.py",
+      "sha256": "9d31dd129e27bae4073ec2166671979e35ed64b62b8b51fec16fbc2d86e54264"
+    },
+    {
+      "bytes": 3879,
+      "file": "ypal-ordinary-publication-kernel-v1.md",
+      "sha256": "a287ba937522ef9ee9e5af73e976d75633d7977ae2cf0ae9151be4d1d2c07a83"
+    },
+    {
+      "bytes": 49339,
+      "file": "ypal-ordinary-publication-kernel-v1.stage.json",
+      "sha256": "d527d90edfebd43fae93e6200e58dad1a0f1cc965a31a0f7c39d21ddd3887e5e"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-kernel-v1-preparation",
+  "freshWholeCallbackTimingsRequired": true,
+  "oldSourceQualificationReused": false,
+  "publicStageClosureFile": "ypal-ordinary-publication-kernel-v1.stage.json",
+  "publicStageClosureSha256": "d527d90edfebd43fae93e6200e58dad1a0f1cc965a31a0f7c39d21ddd3887e5e",
+  "readerInverseDispatchOpen": false,
+  "sourceGuard": {
+    "file": "ypal-ordinary-source-authority-v6.py",
+    "manifestFile": "ypal-ordinary-source-authority-v6.manifest.json",
+    "manifestSha256": "80e2b98a8b69542ea438ebe7f8a1bc90144b48ca2238c74bb8f40fb21b5d7452",
+    "sha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82"
+  },
+  "unchangedPublishedDataGraph": "d7b41de8",
+  "verification": {
+    "actualCompositionControlsPassed": 5,
+    "independentReviewPending": false,
+    "protocolAgent": "no findings; actual5/5 independently rerun and nested source/timing routing reviewed"
+  }
+}
