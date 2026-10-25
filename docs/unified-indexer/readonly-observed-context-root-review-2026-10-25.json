@@ -1,0 +1,18 @@
+{
+  "CIndependentReview": "no findings",
+  "actualPreparedConstructorPreserved": true,
+  "callerSha256": "f04a6fde624aa5a3805f6f8b4b3f34fa0d03e1e036f4a8237c88b3261f822d4f",
+  "effectQualificationAndInverseDispatchClosed": true,
+  "findings": [],
+  "finiteOwnRowsVerified": 8,
+  "format": "yunipals-readonly-observed-context-root-review-v1",
+  "fullMetadataAndSourceBodiesPreserved": true,
+  "fullRuntimeSourcesAndDocRead": true,
+  "helperSha256": "f536ddc6eb003a04817642833846fd2d035b4c74c2aa7477b4f85ce3b548fdc2",
+  "immutableOwner3ACKAndCONT4BaselinePreserved": true,
+  "independentCallerControlsPassed": 5,
+  "independentHelperControlsPassed": 13,
+  "productionReconciliationAccepted": false,
+  "sourceManifestsByteReproduced": true,
+  "stageOriginsVerified": 311
+}
