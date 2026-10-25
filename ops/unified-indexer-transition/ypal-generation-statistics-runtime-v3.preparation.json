@@ -1,0 +1,181 @@
+{
+  "format": "yunipals-generation-statistics-runtime-v3-preparation",
+  "scope": "source_and_local_synthetic_validation_only",
+  "artifactDigest": "a39b937dbe2278478ccbecb16af362707e9b8160092488c15e513a28e5a2878a",
+  "manifestSha256": "4ec5e6012b38bcad0a20816fd71c6eb54bd8137a4e477a396ce1149812109442",
+  "metafileSha256": "d316b54ad0edfb1783628ba079bc8c0ea36eddb366b7c59ff6fc4eb8381eea9f",
+  "artifactDirectory": "/tmp/ypal-generation-statistics-runtime-v3-20261025",
+  "archive": {
+    "path": "/tmp/ypal-generation-statistics-runtime-v3-20261025.tar.gz",
+    "sha256": "6b59d80f045f2e54005ed8a97f4c9318aefcd12b19a5ca2974f44a317106c281",
+    "privateConfigurationsIncluded": false,
+    "runtimeDependenciesBundled": false
+  },
+  "files": [
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "bytes": 24712,
+      "sha256": "e6a3deb86690a77ce60b5069c842de4c9dde8f594af4dd20b11c27aa651b6941"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-f81-phase-diagnostic-v1.mjs",
+      "bytes": 4277,
+      "sha256": "5a7b397080eb0e27621914e26d4922fd6d4deb11d08e1b7f4ea66ea9d5c894b4"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-f81-phase-diagnostic-v1.test.mjs",
+      "bytes": 2274,
+      "sha256": "5ed71dd31a138dff8f4712b6968625c0336bb1d9fdcf3c0d66476ff0f722bee8"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-f81-facet-benchmark-v1.mjs",
+      "bytes": 17709,
+      "sha256": "7f4cce9d0017def4f93e978ace7da7c6d26228349ed47107f6f8b9a38dc3871e"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-f81-facet-benchmark-v1.results.json",
+      "bytes": 151732,
+      "sha256": "858f21ebcc9e49331adcc334df37b0d768f260132d94f757c6b814dd7a6ba93a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-f81-planner-options-v1.test.mjs",
+      "bytes": 2255,
+      "sha256": "833ca04f86cf5ff96a80ece29b9852cd82ef95575edd3087a914bbe37eb0ebf1"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-statistics-source-v3.mjs",
+      "bytes": 4265,
+      "sha256": "62004c8d28649c9bdcb1e4e6ee3c9ee3a9700b1dc8a3a0faa6a53c40baf33238"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-build-v3.mjs",
+      "bytes": 13212,
+      "sha256": "5ebd6189420b058721242c3b26ab87ab6d12e42f3eb35ddf8990c8db08b873d2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-build-v3.test.mjs",
+      "bytes": 6064,
+      "sha256": "a6d7738b561ed3bcb0bb2541b5e4d1cf1855951fa63adeef10cdcb24e247f406"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-install-v3.py",
+      "bytes": 10303,
+      "sha256": "3baf253bba615e30d0f2ffb1c6a1b76625b7bd5f3cfb0cebbe176a41ee952a9b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-runtime-install-v3.test.py",
+      "bytes": 3402,
+      "sha256": "87fbc03ec03ae5034eade1b0168f57322fc85af1b1205e525194ec6f209e8ebf"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-snapshot-runtime-v3.manifest.json",
+      "bytes": 20882,
+      "sha256": "4ec5e6012b38bcad0a20816fd71c6eb54bd8137a4e477a396ce1149812109442"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-statistics-v3.postgres.test.mjs",
+      "bytes": 7307,
+      "sha256": "a092be23b6857c546ac7b2e2ae437338cf87419986c5b897d01aacdaca7357fd"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-statistics-runtime-v3.commands.txt",
+      "bytes": 3533,
+      "sha256": "e69ddf38e0c4ed5bde32e0bef3e753fbf4969b590983d9d4b63403e3542a4ac8"
+    }
+  ],
+  "reconstruction": {
+    "authenticatedF81Inputs": 37,
+    "authenticatedOutputFiles": 8,
+    "untouchedV2BuilderReproducedExactF81": true,
+    "driftedWorktreeInputsPreserved": [
+      "apps/yunipals-indexer/lib/leaderboard/refresh.ts",
+      "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "apps/yunipals-indexer/package.json",
+      "packages/yunipals-market-core/package.json",
+      "pnpm-lock.yaml"
+    ],
+    "artifactInputDelta": [
+      {
+        "path": "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+        "beforeSha256": "91c2f88b015d8d451f971b76f369fee60acc54d6f6d4d4c133c243285a22f424",
+        "afterSha256": "27b7828f96be5f94ea974ed21da85bc1b43775431b762df71655fa81a1da5c42",
+        "purpose": "analyze_new_trait_generation_before_facets"
+      }
+    ],
+    "worktreeBeforeProjectionSha256": "593d11e8a2ec1bc4b7548db8ec19a58332a4e362e50360cc972c0524b8c29004",
+    "worktreeAfterProjectionSha256": "e6a3deb86690a77ce60b5069c842de4c9dde8f594af4dd20b11c27aa651b6941",
+    "reconstructedNewProjectionSha256": "27b7828f96be5f94ea974ed21da85bc1b43775431b762df71655fa81a1da5c42",
+    "independentReconstructionRebuildByteIdentical": true,
+    "repeatedAndRelocatedBuildsByteIdentical": true,
+    "changedJSOnlyAddedAnalyzeStatement": true,
+    "leaderboardOnlyJSUnchanged": true
+  },
+  "tests": {
+    "deterministicBuildGroups": 5,
+    "installerFilesystemGroups": 4,
+    "installerDependencyReadinessMocked": true,
+    "genuinePG": {
+      "format": "yunipals-projection-snapshot-postgres-v1",
+      "passed": true,
+      "groups": 22,
+      "checks": [
+        "actual_90s_guard_expires_in_RR_but_single_statement_private_capture_survives_and_drops_at_commit",
+        "native_candidate_build_and_validation_leave_legacy_global_pointer_wallets_and_stamps_unchanged",
+        "new_trait_ANALYZE_failure_rolls_back_candidate_payload_snapshot_and_global_state_before_facets",
+        "actual_new_bundled_preparation_CLI_builds_validates_and_preserves_global_data_pool4",
+        "actual_full_search_traits_revision_facets_build_persists_four_anchor_proof_and_publishes_matching_stamp",
+        "canonical_anchor_hash_change_refuses_without_pointer_stamp_or_published_change",
+        "canonical_anchor_delete_refuses",
+        "halted_source_refuses",
+        "stale_source_refuses",
+        "changed_read_identity_refuses",
+        "archive_release_change_refuses",
+        "native_metadata_frontier_change_refuses_even_with_fresh_approval",
+        "native_checkpoint_regression_refuses",
+        "candidate_snapshot_mutation_refuses",
+        "ordinary_head_advance_preserving_metadata_frontier_and_all_canonical_anchors_succeeds",
+        "nonowner_invoker_role_captures_and_publishes_with_zero_native_UPDATE_or_SECDEF_grants",
+        "canonical_change_after_preliminary_checks_is_refused_inside_pointer_UPDATE",
+        "rollback_generation_retention_is_explicit_and_strict",
+        "actual_cleanup_keeps_explicit_capsule_predecessor_payload_and_cleans_unretained_candidate",
+        "native_leaderboard_only_completes_exact_published_generation_without_second_trait_build",
+        "leaderboard_fresh_publication_rejects_post_compute_reorg_without_replacing_rows_or_stamp",
+        "reorg_before_leaderboard_capture_refuses_even_when_current_frame_is_fresh_and_canonical"
+      ],
+      "productionQueries": 0,
+      "providerCalls": 0,
+      "publicTtlModified": false,
+      "nativeWriteGrantsAdded": 0
+    },
+    "genuinePGLog": {
+      "path": "/tmp/ypal-generation-statistics-v3-postgres-tests-20261025.log",
+      "sha256": "9bb764342d83f01121273639201036bd0c0cfe49633e4a874441109279d58968"
+    },
+    "facetBenchmarkRecord": "ops/unified-indexer-transition/ypal-generation-f81-facet-benchmark-v1.results.json",
+    "leadingZerosDuplicateNumericAliasesAll15ScopesAndForeignNumericErrorsPreserved": true,
+    "PGOPTIONSAndURLPrecedenceVerifiedLocally": true,
+    "prettierPassed": true,
+    "productionDependencyReadinessQualified": false
+  },
+  "capacityIncident": {
+    "shared512MBFixtureFailedBeforeFacet": true,
+    "sharedFixtureAutoRecovered": true,
+    "ownedInterruptedSyntheticDatabaseDropped": true,
+    "successfulDedicated2GBFixtureSourceOnly": true,
+    "successfulFixtureRemoved": true
+  },
+  "production": {
+    "hostCalls": 0,
+    "databaseQueries": 0,
+    "serviceActions": 0,
+    "roleActions": 0,
+    "providerCalls": 0,
+    "dependencyInstalls": 0,
+    "installed": false,
+    "runtimeActivated": false,
+    "candidateBuilt": false,
+    "productionAccepted": false,
+    "actualInstallACKRequired": true,
+    "newAttemptOwnerRequired": true
+  }
+}

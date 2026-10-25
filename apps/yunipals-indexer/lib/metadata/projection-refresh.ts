@@ -473,6 +473,8 @@ export async function refreshProjectionGeneration(
       FROM ${metadataInput} m`,
         [id]
       );
+    // Include the new generation in statistics before planning its facet joins.
+    await client.query("ANALYZE metadata_projection.trait");
     // This limit is local to the build transaction; the facet sort runs once for all scopes.
     await client.query("SET LOCAL work_mem = '256MB'");
     await client.query(

@@ -1,0 +1,4857 @@
+{
+  "format": "yunipals-generation-f81-facet-benchmark-review-v1",
+  "syntheticOnly": true,
+  "artifactSha256": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+  "fixture": {
+    "postgres": "16.15",
+    "dataStorage": "dedicated 2GB tmpfs",
+    "containerRemoved": true,
+    "productionScaleClaimed": false,
+    "physicalIOTimingRepresentative": false,
+    "credentialsReadOrCreated": false
+  },
+  "runs": [
+    {
+      "format": "yunipals-generation-f81-facet-benchmark-v1",
+      "syntheticOnly": true,
+      "tokensPerGeneration": 50000,
+      "traitsPerToken": 12,
+      "exactFacetSqlSha256": "9e7c84c91ce1fe6725a0bc3ed754cbe68864dadfba9763db19b6013b198b48a4",
+      "exactFacetStatusSqlSha256": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03",
+      "preservedScopes": [
+        "ethereum",
+        "base",
+        "ethereum+base",
+        "polygon",
+        "ethereum+polygon",
+        "base+polygon",
+        "ethereum+base+polygon",
+        "bnb",
+        "ethereum+bnb",
+        "base+bnb",
+        "ethereum+base+bnb",
+        "polygon+bnb",
+        "ethereum+polygon+bnb",
+        "base+polygon+bnb",
+        "all"
+      ],
+      "cases": [
+        {
+          "name": "text-index-old-statistics-plan",
+          "statementTimeoutMs": 12000,
+          "facet": {
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Semi",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 5,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "indexCondition": "(generation_id = '104'::bigint)"
+              },
+              {
+                "depth": 5,
+                "node": "Bitmap Heap Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 60,
+                "filter": "((NOT burned) AND ((token_id)::numeric = f.token_id))"
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Index Scan",
+                "index": "yunipals_projection_token_inp_collection_token_id_lifecycle_idx",
+                "estimatedRows": 12500,
+                "indexCondition": "((collection = f.collection) AND (lifecycle = f.lifecycle))"
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2
+              }
+            ],
+            "totalCost": 1092.1,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": null
+          },
+          "completed": true,
+          "elapsedMs": 2.935
+        },
+        {
+          "name": "text-index-old-statistics",
+          "statementTimeoutMs": 12000,
+          "completed": false,
+          "postgresCode": "57014",
+          "errorClass": "error",
+          "elapsedMs": 12001.493
+        },
+        {
+          "name": "text-index-old-statistics-no-nested-loop",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 1828.158,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 1752,
+                "sharedHits": 603757,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 1,
+                "actualRows": 573924,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash Join",
+                "join": "Semi",
+                "estimatedRows": 1,
+                "actualRows": 573924,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "trait_pkey",
+                "estimatedRows": 1,
+                "actualRows": 600000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Hash",
+                "estimatedRows": 47828,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47828,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "CTE Scan",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 1751,
+                "sharedHits": 603347,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 10000001793.86,
+            "jit": {
+              "Functions": 46,
+              "Options": {
+                "Inlining": true,
+                "Optimization": true,
+                "Expressions": true,
+                "Deforming": true
+              },
+              "Timing": {
+                "Generation": 5.167,
+                "Inlining": 102.169,
+                "Optimization": 222.987,
+                "Emission": 174.449,
+                "Total": 504.771
+              }
+            },
+            "settings": {
+              "work_mem": "256MB",
+              "enable_nestloop": "off"
+            },
+            "planningMs": 0.351
+          },
+          "status": {
+            "executionMs": 217.076,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 1,
+                "sharedHits": 847,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 32695,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 32695,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 433,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Sort",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 15,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 10000001991.7,
+            "jit": {
+              "Functions": 38,
+              "Options": {
+                "Inlining": true,
+                "Optimization": true,
+                "Expressions": true,
+                "Deforming": true
+              },
+              "Timing": {
+                "Generation": 1.115,
+                "Inlining": 9.359,
+                "Optimization": 98.084,
+                "Emission": 67.059,
+                "Total": 175.618
+              }
+            },
+            "settings": {
+              "work_mem": "256MB",
+              "enable_nestloop": "off"
+            },
+            "planningMs": 0.218
+          },
+          "resultSha256": "79569e00b81c2074bb381033e7ab185e8d371fa0b0621c6ece563fdf9b31c28a",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 2053.731
+        },
+        {
+          "name": "numeric-expression-index-old-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 2093.816,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168881,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Semi",
+                "estimatedRows": 1,
+                "actualRows": 573924,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "actualRows": 600000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Bitmap Heap Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 60,
+                "actualRows": 1,
+                "loops": 600000,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Index Scan",
+                "index": "ypal_f81_token_numeric_idx",
+                "estimatedRows": 60,
+                "actualRows": 1,
+                "loops": 600000,
+                "indexCondition": "((collection = f.collection) AND ((token_id)::numeric = f.token_id) AND (lifecycle = f.lifecycle))",
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 213,
+                "localHits": 1799787,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 384,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 4292,
+                "sharedHits": 168369,
+                "localReads": 213,
+                "localHits": 2373711,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 185.16,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.792
+          },
+          "status": {
+            "executionMs": 46.207,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 846,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 433,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 2228.27,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.224
+          },
+          "resultSha256": "79569e00b81c2074bb381033e7ab185e8d371fa0b0621c6ece563fdf9b31c28a",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 2149.641
+        },
+        {
+          "name": "text-index-fresh-trait-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 566.371,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5664,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Inner",
+                "estimatedRows": 301350,
+                "actualRows": 573924,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "trait",
+                "estimatedRows": 602700,
+                "actualRows": 600000,
+                "loops": 1,
+                "filter": "(generation_id = '104'::bigint)",
+                "rowsRemovedByFilter": 1200000,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Aggregate",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10285,
+                "sharedHits": 5188,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 56707.18,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.415
+          },
+          "status": {
+            "executionMs": 44.647,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 846,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47850,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 433,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 2228.27,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.197
+          },
+          "resultSha256": "79569e00b81c2074bb381033e7ab185e8d371fa0b0621c6ece563fdf9b31c28a",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 617.006
+        },
+        {
+          "name": "numeric-expression-index-fresh-trait-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 604.785,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5763,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Inner",
+                "estimatedRows": 301350,
+                "actualRows": 573924,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "trait",
+                "estimatedRows": 602700,
+                "actualRows": 600000,
+                "loops": 1,
+                "filter": "(generation_id = '104'::bigint)",
+                "rowsRemovedByFilter": 1200000,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 47888,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Aggregate",
+                "estimatedRows": 47888,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47888,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 10253,
+                "sharedHits": 5220,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 56708.51,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 1.124
+          },
+          "status": {
+            "executionMs": 52.338,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 846,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 47888,
+                "actualRows": 47827,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 47888,
+                "actualRows": 47827,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 2173,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 131,
+                "actualRows": 50000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 433,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 801,
+                "localReads": 0,
+                "localHits": 448,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 2228.86,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.277
+          },
+          "resultSha256": "79569e00b81c2074bb381033e7ab185e8d371fa0b0621c6ece563fdf9b31c28a",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 664.096
+        }
+      ],
+      "semantics": [
+        {
+          "name": "leading-zero-duplicates-and-lifecycles",
+          "guardedIndex": {
+            "created": true,
+            "elapsedMs": 0.9311740000048303
+          },
+          "original": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "valid-noncanonical-numeric-casts",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "burned-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "foreign-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "noNestedLoop": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "after": {
+            "completed": false,
+            "postgresCode": "22P02"
+          }
+        },
+        {
+          "name": "matching-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "noNestedLoop": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "after": {
+            "completed": false,
+            "postgresCode": "22P02"
+          }
+        }
+      ],
+      "productionCalls": 0,
+      "providerCalls": 0,
+      "settings": {
+        "version": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "shared_buffers": "128MB",
+        "random_page_cost": "4",
+        "effective_cache_size": "4GB",
+        "parallel_workers": "2"
+      },
+      "oldGenerationStatistics": {
+        "n_distinct": 2,
+        "most_common_vals": "{103,102}",
+        "most_common_freqs": [
+          0.50016665,
+          0.49983335
+        ],
+        "correlation": 0.49965993
+      },
+      "unseenCandidateStatistics": {
+        "n_distinct": 2,
+        "most_common_vals": "{103,102}",
+        "most_common_freqs": [
+          0.50016665,
+          0.49983335
+        ]
+      },
+      "numericIndex": {
+        "created": true,
+        "elapsedMs": 105.92492200000197
+      },
+      "traitAnalyzeMs": 136.74447900000087,
+      "freshCandidateStatistics": {
+        "n_distinct": 3,
+        "most_common_vals": "{104,102,103}",
+        "most_common_freqs": [
+          0.33483332,
+          0.33383334,
+          0.33133334
+        ]
+      },
+      "secondNumericIndex": {
+        "created": true,
+        "elapsedMs": 140.67005300000164
+      },
+      "completedVariantsMatch": true,
+      "passed": true,
+      "syntheticDatabaseDropped": true,
+      "rawExplainArtifact": {
+        "path": "/tmp/ypal-f81-facet-benchmark-v1-50000-isolated.json",
+        "sha256": "184fe677af885cf000a1f3c9fd277734d097c4199db3c9b5a89517acc3369591",
+        "bytes": 257522
+      },
+      "databaseBytesAfterSyntheticDataCleanup": "8420375"
+    },
+    {
+      "format": "yunipals-generation-f81-facet-benchmark-v1",
+      "syntheticOnly": true,
+      "tokensPerGeneration": 2000,
+      "traitsPerToken": 12,
+      "exactFacetSqlSha256": "9e7c84c91ce1fe6725a0bc3ed754cbe68864dadfba9763db19b6013b198b48a4",
+      "exactFacetStatusSqlSha256": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03",
+      "preservedScopes": [
+        "ethereum",
+        "base",
+        "ethereum+base",
+        "polygon",
+        "ethereum+polygon",
+        "base+polygon",
+        "ethereum+base+polygon",
+        "bnb",
+        "ethereum+bnb",
+        "base+bnb",
+        "ethereum+base+bnb",
+        "polygon+bnb",
+        "ethereum+polygon+bnb",
+        "base+polygon+bnb",
+        "all"
+      ],
+      "cases": [
+        {
+          "name": "text-index-old-statistics-plan",
+          "statementTimeoutMs": 12000,
+          "facet": {
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Semi",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 5,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "indexCondition": "(generation_id = '104'::bigint)"
+              },
+              {
+                "depth": 5,
+                "node": "Bitmap Heap Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 2,
+                "filter": "((NOT burned) AND ((token_id)::numeric = f.token_id))"
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Index Scan",
+                "index": "yunipals_projection_token_inp_collection_token_id_lifecycle_idx",
+                "estimatedRows": 500,
+                "indexCondition": "((collection = f.collection) AND (lifecycle = f.lifecycle))"
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2
+              }
+            ],
+            "totalCost": 69.23,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": null
+          },
+          "completed": true,
+          "elapsedMs": 2.433
+        },
+        {
+          "name": "text-index-old-statistics",
+          "statementTimeoutMs": 12000,
+          "facet": {
+            "executionMs": 1551.959,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 1,
+                "sharedHits": 7495,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Semi",
+                "estimatedRows": 1,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "actualRows": 24000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Bitmap Heap Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 2,
+                "actualRows": 1,
+                "loops": 24000,
+                "filter": "((NOT burned) AND ((token_id)::numeric = f.token_id))",
+                "rowsRemovedByFilter": 260,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Index Scan",
+                "index": "yunipals_projection_token_inp_collection_token_id_lifecycle_idx",
+                "estimatedRows": 500,
+                "actualRows": 500,
+                "loops": 24000,
+                "indexCondition": "((collection = f.collection) AND (lifecycle = f.lifecycle))",
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 10,
+                "localHits": 95990,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 384,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 314126,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 69.23,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.263
+          },
+          "status": {
+            "executionMs": 1.968,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 1,
+                "sharedHits": 78,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 17,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 110.33,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.221
+          },
+          "resultSha256": "3da1271822c9cd73b1fc15f00d2e327cf01315b03efc3ecbbedcaa8525515bd2",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 1565.487
+        },
+        {
+          "name": "text-index-old-statistics-no-nested-loop",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 450.465,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7597,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 1,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash Join",
+                "join": "Semi",
+                "estimatedRows": 1,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "actualRows": 24000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Hash",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "CTE Scan",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 10000000094.36,
+            "jit": {
+              "Functions": 46,
+              "Options": {
+                "Inlining": true,
+                "Optimization": true,
+                "Expressions": true,
+                "Deforming": true
+              },
+              "Timing": {
+                "Generation": 1.493,
+                "Inlining": 55.723,
+                "Optimization": 192.391,
+                "Emission": 146.687,
+                "Total": 396.294
+              }
+            },
+            "settings": {
+              "work_mem": "256MB",
+              "enable_nestloop": "off"
+            },
+            "planningMs": 0.256
+          },
+          "status": {
+            "executionMs": 173.572,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 77,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 17,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Sort",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 15,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 10000000110.56,
+            "jit": {
+              "Functions": 38,
+              "Options": {
+                "Inlining": true,
+                "Optimization": true,
+                "Expressions": true,
+                "Deforming": true
+              },
+              "Timing": {
+                "Generation": 1.029,
+                "Inlining": 9.986,
+                "Optimization": 93.861,
+                "Emission": 66.185,
+                "Total": 171.061
+              }
+            },
+            "settings": {
+              "work_mem": "256MB",
+              "enable_nestloop": "off"
+            },
+            "planningMs": 0.188
+          },
+          "resultSha256": "3da1271822c9cd73b1fc15f00d2e327cf01315b03efc3ecbbedcaa8525515bd2",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 632.882
+        },
+        {
+          "name": "numeric-expression-index-old-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 82.96,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7561,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Semi",
+                "estimatedRows": 1,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Index Scan",
+                "relation": "trait",
+                "index": "projection_trait_filter_idx",
+                "estimatedRows": 1,
+                "actualRows": 24000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Bitmap Heap Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 2,
+                "actualRows": 1,
+                "loops": 24000,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Index Scan",
+                "index": "ypal_f81_token_numeric_idx",
+                "estimatedRows": 2,
+                "actualRows": 1,
+                "loops": 24000,
+                "indexCondition": "((collection = f.collection) AND ((token_id)::numeric = f.token_id) AND (lifecycle = f.lifecycle))",
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 10,
+                "localHits": 47990,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 384,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 7085,
+                "localReads": 10,
+                "localHits": 70958,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 22.81,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.303
+          },
+          "status": {
+            "executionMs": 1.898,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 77,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 17,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 110.33,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.198
+          },
+          "resultSha256": "3da1271822c9cd73b1fc15f00d2e327cf01315b03efc3ecbbedcaa8525515bd2",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 93.778
+        },
+        {
+          "name": "text-index-fresh-trait-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 35.931,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 1162,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Inner",
+                "estimatedRows": 12017,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "trait",
+                "estimatedRows": 24034,
+                "actualRows": 24000,
+                "loops": 1,
+                "filter": "(generation_id = '104'::bigint)",
+                "rowsRemovedByFilter": 48000,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Aggregate",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 3463.6,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.388
+          },
+          "status": {
+            "executionMs": 2.005,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 77,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 17,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 110.33,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.183
+          },
+          "resultSha256": "3da1271822c9cd73b1fc15f00d2e327cf01315b03efc3ecbbedcaa8525515bd2",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 43.545
+        },
+        {
+          "name": "numeric-expression-index-fresh-trait-statistics",
+          "statementTimeoutMs": 30000,
+          "facet": {
+            "executionMs": 37.675,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 1078,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Subquery Scan",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Inner",
+                "estimatedRows": 12017,
+                "actualRows": 22968,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "trait",
+                "estimatedRows": 24034,
+                "actualRows": 24000,
+                "loops": 1,
+                "filter": "(generation_id = '104'::bigint)",
+                "rowsRemovedByFilter": 48000,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Aggregate",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "(NOT burned)",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 1536,
+                "actualRows": 384,
+                "loops": 15,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 259,
+                "actualRows": 180,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Sort",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "CTE Scan",
+                "estimatedRows": 2587,
+                "actualRows": 3072,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 619,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 3463.6,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.297
+          },
+          "status": {
+            "executionMs": 1.97,
+            "plan": [
+              {
+                "depth": 0,
+                "node": "ModifyTable",
+                "relation": "facet_status",
+                "estimatedRows": 0,
+                "actualRows": 0,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 77,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 1,
+                "node": "Subquery Scan",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 2,
+                "node": "Aggregate",
+                "estimatedRows": 7,
+                "actualRows": 15,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Aggregate",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Hash Join",
+                "join": "Left",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Seq Scan",
+                "relation": "yunipals_projection_token_input",
+                "estimatedRows": 1914,
+                "actualRows": 1914,
+                "loops": 1,
+                "filter": "((NOT burned) AND (collection = ANY ('{ethereum,base,polygon,bnb}'::text[])))",
+                "rowsRemovedByFilter": 86,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 5,
+                "node": "Hash",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 6,
+                "node": "Bitmap Heap Scan",
+                "relation": "search",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 7,
+                "node": "Bitmap Index Scan",
+                "index": "search_pkey",
+                "estimatedRows": 5,
+                "actualRows": 2000,
+                "loops": 1,
+                "indexCondition": "(generation_id = '104'::bigint)",
+                "sharedReads": 0,
+                "sharedHits": 17,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 3,
+                "node": "Nested Loop",
+                "join": "Inner",
+                "estimatedRows": 7,
+                "actualRows": 32,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "CTE Scan",
+                "estimatedRows": 4,
+                "actualRows": 4,
+                "loops": 1,
+                "sharedReads": 0,
+                "sharedHits": 32,
+                "localReads": 0,
+                "localHits": 32,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              },
+              {
+                "depth": 4,
+                "node": "Function Scan",
+                "estimatedRows": 15,
+                "actualRows": 15,
+                "loops": 4,
+                "sharedReads": 0,
+                "sharedHits": 0,
+                "localReads": 0,
+                "localHits": 0,
+                "tempReadBlocks": 0,
+                "tempWrittenBlocks": 0
+              }
+            ],
+            "totalCost": 110.33,
+            "jit": null,
+            "settings": {
+              "work_mem": "256MB"
+            },
+            "planningMs": 0.2
+          },
+          "resultSha256": "3da1271822c9cd73b1fc15f00d2e327cf01315b03efc3ecbbedcaa8525515bd2",
+          "facetRows": 180,
+          "statusRows": 15,
+          "completed": true,
+          "elapsedMs": 44.608
+        }
+      ],
+      "semantics": [
+        {
+          "name": "leading-zero-duplicates-and-lifecycles",
+          "guardedIndex": {
+            "created": true,
+            "elapsedMs": 1.052053999999771
+          },
+          "original": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "valid-noncanonical-numeric-casts",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "02102e4508015d5cd8fa1426e68819c81c0368632e4e922b0046fb009866175a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 8,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "burned-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "noNestedLoop": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          },
+          "after": {
+            "completed": true,
+            "sha256": "de6e8647fad65048113f89503a723c05c8614699f93cfe0ba4bed719ad3fc19a",
+            "facetRows": 15,
+            "statusRows": 15,
+            "allKindValues": [
+              {
+                "count": 2,
+                "value": "A"
+              },
+              {
+                "count": 1,
+                "value": "B"
+              },
+              {
+                "count": 1,
+                "value": "C"
+              },
+              {
+                "count": 1,
+                "value": "D"
+              }
+            ],
+            "allStatus": {
+              "scope": "all",
+              "singleton": true,
+              "available": 6,
+              "missing": 1
+            }
+          }
+        },
+        {
+          "name": "foreign-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "noNestedLoop": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "after": {
+            "completed": false,
+            "postgresCode": "22P02"
+          }
+        },
+        {
+          "name": "matching-nonnumeric-token",
+          "guardedIndex": {
+            "created": false,
+            "rejectedByGuard": true
+          },
+          "original": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "noNestedLoop": {
+            "completed": false,
+            "postgresCode": "22P02"
+          },
+          "after": {
+            "completed": false,
+            "postgresCode": "22P02"
+          }
+        }
+      ],
+      "productionCalls": 0,
+      "providerCalls": 0,
+      "settings": {
+        "version": "16.15 (Debian 16.15-1.pgdg13+2)",
+        "shared_buffers": "128MB",
+        "random_page_cost": "4",
+        "effective_cache_size": "4GB",
+        "parallel_workers": "2"
+      },
+      "oldGenerationStatistics": {
+        "n_distinct": 2,
+        "most_common_vals": "{103,102}",
+        "most_common_freqs": [
+          0.5003,
+          0.4997
+        ],
+        "correlation": 0.4983408
+      },
+      "unseenCandidateStatistics": {
+        "n_distinct": 2,
+        "most_common_vals": "{103,102}",
+        "most_common_freqs": [
+          0.5003,
+          0.4997
+        ]
+      },
+      "numericIndex": {
+        "created": true,
+        "elapsedMs": 8.294093999999859
+      },
+      "traitAnalyzeMs": 68.75689499999999,
+      "freshCandidateStatistics": {
+        "n_distinct": 3,
+        "most_common_vals": "{104,102,103}",
+        "most_common_freqs": [
+          0.3338,
+          0.33356667,
+          0.33263335
+        ]
+      },
+      "secondNumericIndex": {
+        "created": true,
+        "elapsedMs": 5.7936399999998685
+      },
+      "completedVariantsMatch": true,
+      "passed": true,
+      "syntheticDatabaseDropped": true,
+      "rawExplainArtifact": {
+        "path": "/tmp/ypal-f81-facet-benchmark-v1-2000-isolated.json",
+        "sha256": "fd31c9f02c4bcdfd4b09f3d1ec0f44b337bd89051f72451abb43a3b42c53df6e",
+        "bytes": 311386
+      },
+      "databaseBytesAfterSyntheticDataCleanup": "8551447"
+    }
+  ],
+  "initialSharedFixtureRun": {
+    "completed": false,
+    "phase": "synthetic-baseline-loading",
+    "cause": "shared512MBtmpfs_wal_no_space",
+    "ownedSyntheticDatabaseDropped": true,
+    "fixtureAutoRecovered": true,
+    "excludedFromPerformanceEvidence": true
+  },
+  "limitations": [
+    "Synthetic traits600000 per candidate, not actual production cardinality/15GB allocation.",
+    "Old generation MCVs reproduce IDs102/103 and unseen104, but production frequency/correlation and physical bloat are not copied.",
+    "Only exact f81 facet/facet_status measured; global planner setting effects on earlier source-capture/search phases remain unqualified.",
+    "Cold-cache/production I/O and end-to-end generation completion are not established."
+  ]
+}

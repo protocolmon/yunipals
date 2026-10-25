@@ -1,0 +1,52 @@
+SOURCE / LOCAL BUILD ONLY commands (choose fresh output names if repeating)
+
+cd /root/yunipals
+YPAL_NODE=/root/.nvm/versions/node/v24.18.1/bin/node
+"$YPAL_NODE" ops/unified-indexer-transition/ypal-generation-statistics-source-v3.mjs --artifact /tmp/yunipals-generation-snapshot-runtime-v2-final-20261024 --out /tmp/ypal-generation-statistics-v3-fresh-source
+"$YPAL_NODE" /tmp/ypal-generation-statistics-v3-fresh-source/ops/unified-indexer-transition/ypal-generation-runtime-build-v3.mjs --out /tmp/ypal-generation-statistics-v3-fresh-runtime
+"$YPAL_NODE" ops/unified-indexer-transition/ypal-generation-runtime-build-v3.test.mjs --tree /tmp/ypal-generation-statistics-v3-fresh-source
+python3 ops/unified-indexer-transition/ypal-generation-runtime-install-v3.test.py
+
+The installer filesystem test consumes the already-built public artifact at
+/tmp/ypal-generation-statistics-runtime-v3-20261025. It mocks dependency readiness;
+it does not establish any production dependency or installation acknowledgement.
+
+Actual completed local PG run (requires the separate ephemeral PG16 fixture on
+localhost56981, not the capacity-limited shared fixture):
+
+"$YPAL_NODE" ops/unified-indexer-transition/ypal-generation-statistics-v3.postgres.test.mjs --tree /tmp/ypal-generation-statistics-v3-fresh-source
+
+The PG runner copies additional public fixture sources without overwriting any
+of the37 runtime inputs. It uses synthetic _test databases, pool4 and an explicit
+local-only capacity bypass; no bypass is configured in the built artifact.
+The completed ephemeral fixture was removed after testing.
+
+Reproducible public payload archive:
+
+tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -czf /tmp/ypal-generation-statistics-runtime-v3-fresh.tar.gz -C /tmp/ypal-generation-statistics-v3-fresh-runtime .
+sha256sum /tmp/ypal-generation-statistics-runtime-v3-fresh.tar.gz
+tar -tzf /tmp/ypal-generation-statistics-runtime-v3-fresh.tar.gz
+
+Existing actual payload:
+/tmp/ypal-generation-statistics-runtime-v3-20261025.tar.gz
+SHA2566b59d80f045f2e54005ed8a97f4c9318aefcd12b19a5ca2974f44a317106c281
+
+ROOT-OWNED production steps below are a recipe only; this source task did not
+transfer, stage, review or install production files. Root must first authenticate
+the finite source/installer pins, payload hash and fresh dependency state.
+Transfer the actual public archive and exact V3 installer using root's approved
+channel. Stage into a fresh protected directory, never over the old f81 artifact.
+
+mkdir -m0700 /opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-snapshot-runtime-v3
+tar -xzf /var/tmp/ypal-generation-statistics-runtime-v3-20261025.tar.gz -C /opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-snapshot-runtime-v3 --no-same-owner
+/usr/bin/python3 -I -B /opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-runtime-install-v3.py
+
+Review the actual command's returned bindingSha256 and dependency verification;
+do not substitute any synthetic filesystem-test receipt or invented digest.
+The existing installer protocol requires that actual review binding explicitly:
+
+/usr/bin/python3 -I -B /opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-runtime-install-v3.py --install --expected ACTUAL_RETURNED_BINDING_SHA256
+
+The actual successful install resultSha256 must then be supplied to the new
+attempt owner and consumer adapters. This task creates no generation candidate,
+source/current-reader readiness, publication, service or production acceptance.
