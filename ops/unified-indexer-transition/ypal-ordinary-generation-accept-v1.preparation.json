@@ -1,0 +1,58 @@
+{
+  "actualEffects": {
+    "buildStarts": 0,
+    "candidateAcceptance": 0,
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "productionAccess": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "bytes": 8566,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-terminal-v1.py",
+      "sha256": "5ac441e3c3b0d3494cd256682f987a60b1d4119d4be6c1db7cb446642bb79613"
+    },
+    {
+      "bytes": 5649,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-terminal-v1.test.py",
+      "sha256": "66adbeed2327b28c77a98099b64b976a7c4d30748b782a30f6faa774c8b9225c"
+    },
+    {
+      "bytes": 33420,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v1.py",
+      "sha256": "1e29585a8c1b09747c061e47e0b2fbf2a984d10949c12f36d847b336f8a5259d"
+    },
+    {
+      "bytes": 10328,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v1.test.py",
+      "sha256": "ac60ec66bb5482edada658a36e0a609216fa9d9164e13a61f59e57291fa2f77e"
+    },
+    {
+      "bytes": 4439,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v1.md",
+      "sha256": "b61fd666508660fd1717fa9cf153c322dd9e4741c32bec40d710c4c0a8cd66d6"
+    },
+    {
+      "bytes": 17549,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v1.manifest.json",
+      "sha256": "22974ec0ca74066655753aa83c79288d527d8f572ffec324bc160b266532e457"
+    }
+  ],
+  "format": "yunipals-ordinary-generation-accept-v1-preparation",
+  "remainingAcceptance": [
+    "actual_complete_V2_Host_and_acceptance_review",
+    "fresh_exact_review_hash_before_exclusive_new_acceptance",
+    "actual_new_candidate_receipt",
+    "new_explicit_consumer_build_operation_path_and_producer_binding",
+    "separate_coordinated_publication"
+  ],
+  "runtimeSourceFiles": 167,
+  "sourceOnly": true,
+  "validation": {
+    "acceptanceSourceGroups": 10,
+    "originalStrictTerminalInvocationGatePassed": false,
+    "pureTerminalGroups": 8,
+    "rootSafeScalarFixturePassed": true
+  }
+}
