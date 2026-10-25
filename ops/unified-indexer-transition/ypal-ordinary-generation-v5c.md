@@ -5,7 +5,7 @@ source and metadata checks, pool limit, disk reserve and backup exclusion window
 Its new identity paths distinguish its actual execution from unused V5b work.
 
 The explicit metadata constructor binds
-`ypal-ordinary-publication-query-v1.py`. Only the byte-identical full-publication
+`ypal-ordinary-publication-query-v2.py`. Only the byte-identical full-publication
 count gets a 60-second read-only statement limit. The original SQL compiler and
 publication-proof body are authenticated and unchanged. Every other query keeps
 its original limit. The original 10-second check timed out; a production read-only

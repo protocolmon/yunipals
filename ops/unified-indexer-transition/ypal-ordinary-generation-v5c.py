@@ -35,8 +35,8 @@ GUARD=OPS/'ypal-ordinary-cache-transition-v5.mjs'
 GUARD_SHA='591fce0365e6581644a064470cb830d0ec06c2e135e439cb58dac02d8bc1e8b2'
 CAPSULE=OPS/'ypal-ordinary-generation-recovery-v5.mjs'
 CAPSULE_SHA='a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df'
-QUERY=OPS/'ypal-ordinary-publication-query-v1.py'
-QUERY_SHA='f0f7505ae6695ecbc11483d990314794aea8a7d3cb3c731b220f7abffe16a568'
+QUERY=OPS/'ypal-ordinary-publication-query-v2.py'
+QUERY_SHA='deeaead42909617877af48b6749ab2704e205624ee979ed55b3df92c9dbd544c'
 
 
 def need(ok,code):
