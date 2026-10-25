@@ -1,0 +1,26 @@
+{
+  "actualApiQueueSwitched": false,
+  "actualFeatureInputCreated": false,
+  "contextSha256": "9c025c89b021b7cfd156b4094c030041152f46aa62305d8c80a641f505677118",
+  "format": "yunipals-feature-bound-source-staging-production-v1",
+  "genuinePostSwitchBusinessEventObserved": false,
+  "independentSourceReviewNoFindings": true,
+  "manifestSha256": "dda74ac69d400d22e6a6cace532a9022e4619cd23643cc9d00b4e9de4c11bb47",
+  "ownerSha256": "2a6b2c598004a621eb0282daec74b191a118d9d2bf44b1c68db50342b3fe081f",
+  "scannerRetired": false,
+  "sourceCommit": "b85bdf97828d6da6204d53e1faaaf64191b5ef5c",
+  "sourceFixtureControlsPassed": 33,
+  "staging": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "observedAt": "2026-10-25T13:03:34.873184+00:00",
+    "permissionChanges": 0,
+    "phase": "stage",
+    "providerCalls": 0,
+    "publicFilesCreated": 3,
+    "publicFilesVerified": 19,
+    "serviceActions": 0
+  },
+  "wholeSourceGoalComplete": false
+}

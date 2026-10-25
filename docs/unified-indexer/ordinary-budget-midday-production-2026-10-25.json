@@ -1,0 +1,62 @@
+{
+  "bookableNowCu": {
+    "background": 1171000,
+    "shared": 1371000,
+    "source": 874000
+  },
+  "bookedToday": {
+    "backgroundCu": 629000,
+    "sharedCu": 629000,
+    "sourceCu": 626000
+  },
+  "databaseWrites": 0,
+  "day": "2026-10-25",
+  "financialAckSha256": "181cc20ac191a91a5cb32fe203fc287747d8cc8ec1695056b08cbb9301e7829a",
+  "financialCurrentQualified": true,
+  "financialLeafSha256": "a254e6689b496b33e59995681d16ca8ec43c24dc61c9d8374aba1feef179757b",
+  "format": "yunipals-ordinary-midday-readonly-summary-recipe-v1",
+  "methodDailyBookedCuAvailable": false,
+  "observedAt": "2026-10-25T13:06:53.929000+00:00",
+  "ordinaryPermitsByChain": [
+    {
+      "chainId": 1,
+      "enabled": true,
+      "permitMaximumCuLifetime": "40500000",
+      "permitSpentCuLifetime": "4140",
+      "secondsToPermitExpiry": 2177586
+    },
+    {
+      "chainId": 56,
+      "enabled": true,
+      "permitMaximumCuLifetime": "40500000",
+      "permitSpentCuLifetime": "10600",
+      "secondsToPermitExpiry": 2177586
+    },
+    {
+      "chainId": 137,
+      "enabled": true,
+      "permitMaximumCuLifetime": "40500000",
+      "permitSpentCuLifetime": "617920",
+      "secondsToPermitExpiry": 2177586
+    },
+    {
+      "chainId": 8453,
+      "enabled": true,
+      "permitMaximumCuLifetime": "40500000",
+      "permitSpentCuLifetime": "48080",
+      "secondsToPermitExpiry": 2177586
+    }
+  ],
+  "policy": {
+    "foregroundReserveCu": 200000,
+    "sharedDailyCu": 2000000,
+    "sourceDailyCu": 1500000
+  },
+  "previousDaysWorkloadLedgerSha256": "e500721f8c20edf84a09ce6706c1a0bcefcb4cfc3edee307c1546e261bc05b14",
+  "providerCalls": 0,
+  "sameUtcAndPermitWindowFor40Minutes": true,
+  "secondsToUtcReset": 39186,
+  "serviceActions": 0,
+  "snapshotSha256": "fd67c2ea3ddd0e5715d48459f722da79166ccd00dad8f905dbb54c62bfe70d6c",
+  "sourceActorQualified": false
+}
