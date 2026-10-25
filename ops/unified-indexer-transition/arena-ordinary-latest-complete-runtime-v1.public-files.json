@@ -1,0 +1,116 @@
+{
+  "format": "yunipals-arena-ordinary-runtime-public-files-v1",
+  "scope": "public_build_outputs_and_manifest_only",
+  "artifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234",
+  "artifactManifestSha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-capacity.mjs",
+      "bytes": 251464,
+      "sha256": "41a070b16b5bd5941cc86d41daddd54b71782435d0ecacefad84abda563c10e4",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-capacity.mjs.map",
+      "bytes": 498664,
+      "sha256": "5e655ca534b619095005d2dc5b5bfec99e4cbc112c8cb4cc92be92dea9d45b37",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-client.mjs",
+      "bytes": 281812,
+      "sha256": "340c2eec04ae8fdef45132538de080108783ef4238540033dc924bb02ce59e7e",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-client.mjs.map",
+      "bytes": 544034,
+      "sha256": "f39d0b1e25851cfa75de039be6cfd52c0d6a63767903208dc82a1c4987cc0e9d",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-disclosure.mjs",
+      "bytes": 184467,
+      "sha256": "33ca44a98cc84d206d449095abb1f174f9be1eb61fdf873c4c6dd165c49f0cf2",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-disclosure.mjs.map",
+      "bytes": 358548,
+      "sha256": "08f3c812f0b025f237257cba2ce70f3dcbe2dcc7de46175b628dbd9f65c3b412",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-execution.mjs",
+      "bytes": 287995,
+      "sha256": "029ace28e3408fc12e24436a444189b2e2c9274fcc598b878aec5176e52d28eb",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-execution.mjs.map",
+      "bytes": 583628,
+      "sha256": "41d5543b64ac6c0aa72832967ae2830fbad1830ffbfcdc3d99efaa59c670e7c2",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-media.mjs",
+      "bytes": 303756,
+      "sha256": "62bf36da0d6fe9ccdc9479b328d85cff717cc7fc590f35cc560d4d6573fc6ad7",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-media.mjs.map",
+      "bytes": 572236,
+      "sha256": "6aaac6c2ea2d67369d6eebace116032bb7ad7b224a3902cf7d616996c7a8939b",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-referee.mjs",
+      "bytes": 274227,
+      "sha256": "e732ad7c3c71c23dd11a9f719170b375c90cb4491770acb31fa4e71ade723644",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-native-referee.mjs.map",
+      "bytes": 520742,
+      "sha256": "cb569a12c6d21fe9fb076ef07bdd82a0ef0e9c55005f083cae0a00bc2f8c5eba",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-owner-reader.mjs",
+      "bytes": 137481,
+      "sha256": "7707bcb8520cb01e0be809c6b84930c766290bc82c7f4b86078d4f2dd5de7f77",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-owner-reader.mjs.map",
+      "bytes": 350855,
+      "sha256": "8fc8315f4e64aa74498fd1331a90f3fc7a1ef27f32512d90e8b996127d14752a",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-server.mjs",
+      "bytes": 336897,
+      "sha256": "5df353a011e6e7e1ae76bbb18ff378dac78e797ca34228b2372e9b0f204bc255",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/dist/arena-server.mjs.map",
+      "bytes": 675708,
+      "sha256": "20f4e953ab066452d6bfdfd0fe1c7c629b8be4fb3634ed5816e754417bb0b4f6",
+      "mode": 420
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1/manifest.json",
+      "bytes": 33677,
+      "sha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+      "mode": 420
+    }
+  ],
+  "privateInputsIncluded": false,
+  "runtimeSelected": false,
+  "workersStarted": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

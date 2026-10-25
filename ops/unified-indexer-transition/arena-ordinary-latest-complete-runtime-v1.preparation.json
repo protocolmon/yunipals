@@ -1,0 +1,40 @@
+{
+  "format": "yunipals-arena-ordinary-runtime-local-preparation-v1",
+  "preparedAtDate": "2026-10-25",
+  "scope": "local_deterministic_public_artifact_materialization_only",
+  "builder": {
+    "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-build-v1.mjs",
+    "sha256": "011ba9d3a3769024b8cee3c321aae263c8c0a023c417f286a2a5011693710e88"
+  },
+  "nodeVersion": "24.18.1",
+  "command": "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/arena-ordinary-latest-complete-build-v1.mjs --out /root/yunipals/ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1",
+  "artifactRoot": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1",
+  "artifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234",
+  "artifactManifestSha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+  "publicFilesManifest": {
+    "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-runtime-v1.public-files.json",
+    "sha256": "1466bd61e09a9b294480e5cc9e6448a2870196efadba17954693ee72dbe1b4ba"
+  },
+  "validation": {
+    "independentBuildPassesInsideFrozenBuilder": 2,
+    "outputFiles": 16,
+    "manifestFiles": 1,
+    "sourceInputs": 92,
+    "exactExistingManifestBytes": true,
+    "allFileSizesAndHashesVerified": true,
+    "finiteDirectoryLayoutVerified": true,
+    "regularSingleLinkFiles": true,
+    "fileMode": "0644",
+    "preexistingSourceFilesChanged": 0
+  },
+  "dependencyRuntimeSource": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "dependencyTreeIncluded": false,
+  "credentialsIncluded": false,
+  "authenticationReceiptsIncluded": false,
+  "productionInstallationQualified": false,
+  "runtimeSelected": false,
+  "workersStarted": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}
