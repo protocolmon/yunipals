@@ -1,0 +1,59 @@
+{
+  "acceptedMetadataBaselineInvalidated": false,
+  "arenaInspectionDiagnostic": {
+    "result": {
+      "children": [
+        {
+          "errorClass": "Error",
+          "fixedCode": "fresh_derived_cursor_must_equal_current_native_complete_boundary",
+          "genuineExportedMainInvoked": true,
+          "returnCode": 1,
+          "sameInspectionActionAndDescriptors": true,
+          "stderrBytes": 1045,
+          "stderrSha256": "6fdd8b658fccb1db2ac2a550aee6f12bccde852c238ba00bfc93d40232f52e16",
+          "stdoutBytes": 0,
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "completed": false,
+      "databaseWrites": 0,
+      "errorClass": "RuntimeError",
+      "observedAt": "2026-10-25T23:32:46.866897+00:00",
+      "oneShotCaptureRepeated": false,
+      "originalInspectorCommandReplayed": false,
+      "privateTraceSha256": "f640fa723eb39d79a361a0c1dae16b0bbd929d17205e33d4c37f4c9253041817",
+      "providerCalls": 0,
+      "sameWorkerEpoch": true,
+      "serviceActions": 0
+    },
+    "resultSha256": "f0658f575fc635b8b4f9fe2f6d7576d9c4d99817c5341bd3d3c1354ecc04d008"
+  },
+  "arenaTrafficSwitched": false,
+  "cacheCommitDispatched": false,
+  "format": "yunipals-actual-consumer-observation-diagnostics-2026-10-25",
+  "metadataActorDiagnostic": {
+    "result": {
+      "acknowledgedActorSha256": "c08aefe776726ecbe763a9100b754170c0a43cf8a79bcc0e881abc67e70140da",
+      "actorDiffPaths": [
+        ".unit.ExecStart"
+      ],
+      "actorMatchesACK": false,
+      "actualActorSha256": "f0426e3fb3085f978839297e4a181a411cb7d8887b868c031ed75cc8eaa46056",
+      "bootMatchesACK": true,
+      "databaseWrites": 0,
+      "observedAt": "2026-10-25T23:32:12.295700+00:00",
+      "priorEpochTerminal": true,
+      "priorLiveCount": 0,
+      "priorProcessCount": 1,
+      "privateEvidenceSha256": "4ec81a9390b62f9c1f4f285084febafbe202f5816dcbe545c00e0e25ac94da6c",
+      "providerCalls": 0,
+      "serviceActions": 0
+    },
+    "resultSha256": "a2c686eddf2d94791d1d12df86ca2e37660e031365fe70a407447fb188a59209"
+  },
+  "remaining": [
+    "Resolve metadata ExecStart status rendering while preserving the actual immutable acknowledgement and all kernel/private/program checks.",
+    "Resolve Arena read-only latest-boundary observation race while preserving exact prefix, state parity and freshness checks.",
+    "Complete full permission catalog reconciliation before another held transaction test."
+  ]
+}

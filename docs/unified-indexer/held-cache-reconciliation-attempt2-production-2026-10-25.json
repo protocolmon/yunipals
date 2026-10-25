@@ -1,0 +1,47 @@
+{
+  "actualRemoteResult": {
+    "LOGINDispatched": false,
+    "automaticRetryAllowed": false,
+    "callerSha256": "c4d86df5b1228147f9677db49d76932f4d187b67ffd09172a92f553c835a4f92",
+    "completed": false,
+    "databaseWrites": 0,
+    "elapsedNanoseconds": 17544055292,
+    "errorClass": "RuntimeError",
+    "exceptionMetadataCaptureCount": 1,
+    "failureCode": "actual_new_metadata_actor_boot_and_previous_epoch_terminal_required",
+    "format": "root-CONT4-held-reconcile-v1",
+    "metadataCaptureAttemptCount": 1,
+    "metadataCaptureCount": 1,
+    "metadataCaptureHistorySha256": "90d9192bd5f8ddb430aa2ea7d95a17d66054ea19ea4f559f618faa94225c511c",
+    "metadataDiscardedCaptureCount": 1,
+    "metadataEpochInstanceCount": 1,
+    "metadataRefsSha256": "7de7b1a24a9360a7eca2db8d36d1934c7a7ac20d46a6f6e1813219a1ebee2021",
+    "observedAt": "2026-10-25T23:30:17.719408+00:00",
+    "outcomeReconciliationRequired": true,
+    "privateDiagnosticSha256": "756975a538566e88a4cc63ce5f9dc7c028a4397ece4e0584655ccd1d5971aa46",
+    "proofHashes": {
+      "authenticated-baseline-metadata-histories": "d9f3a8fc021c79ae73cd933dde3feb5514d4e597a35376ee9e05c41aff3ba72c",
+      "authenticated-prerequisites": "00ebae073c5e388266a9a921e38c97a9f00b9601d962cc78f411864fc0fb9307",
+      "baseline-root-result": "b0fcc2b2430bda7a47acd5eb204797126bd76b7c25bdfd4fefcae1282e8f1bb1",
+      "failed-audit-frame-before": "594843ec81a2c905cd5184c3a34ec78a7b69cf2e2a166bead7401b628d8e8e60",
+      "failed-audit-records": "498f3343b9bda133a1d9eb0754ebfbeaae80461cc4807622cf37ad8d9ec7f49d",
+      "failed-root-result": "36ef1e9d7e5ad8ececf961632c60d9298697f562152174ca9b6895fbf134f352"
+    },
+    "providerRefreshRequested": false,
+    "qualificationDispatched": false,
+    "readOnlyReconciliation": true,
+    "readerManifestSha256": "1c131cf6a0da4613ecf83b3c11028433be0192cd7ee3f99a360ea80268df1b24",
+    "realCOMMITDispatched": false,
+    "serviceActionsDispatched": 0,
+    "sourcePostflightAccepted": false,
+    "stage": "full-live-preflight",
+    "wholeCatalogRestoredQualified": false
+  },
+  "actualRemoteResultSha256": "f0bfd5c361826f83797a2e55a35a105e2a311da29c1f6dd652a8c3b4d0747827",
+  "format": "yunipals-actual-held-cache-reconciliation-attempt2",
+  "fullCatalogAccepted": false,
+  "localTransportAnnotation": {
+    "remoteAuditInspectionRequired": true
+  },
+  "repeated": false
+}

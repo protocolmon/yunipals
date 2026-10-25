@@ -1,0 +1,22 @@
+{
+  "actualImmutableUpgradeACKPreserved": true,
+  "actualPublicCommandFixtureSha256": "0b3554ec11dd8f3ff1b1b31b8767cd0c0e577ed328a2e5d74d10c7f058fd32d1",
+  "actualRawActorReturned": true,
+  "databaseWrites": 0,
+  "deploymentPathsVerified": 265,
+  "findings": [],
+  "format": "yunipals-metadata-current-observer-root-review-v1",
+  "fullSourceAndTestsRead": true,
+  "independentControlsPassed": 11,
+  "manifestSha256": "cbd018b3dd15b2874a6b6834e76b07538d2ac493831428d6701136de2a41d432",
+  "onlyComparisonSeam": "Permit exact positive recorded ExecStart pid/time to zero/unavailable presentation only after all other actor bytes match.",
+  "otherKernelPrivateProgramBootAndTerminalChecksPreserved": true,
+  "preparationRowsVerified": 266,
+  "preparationSha256": "0cf92e0acc6bd9e9720adeb1f9fac9e75381ecd6cdfcdc360a2b9ac301bdc05c",
+  "productionCurrentQualified": false,
+  "providerCalls": 0,
+  "runtimeSourceFilesVerified": 261,
+  "serviceActions": 0,
+  "sourceManifestByteReproduced": true,
+  "sourceSha256": "17a24566753c1903e1c4be3a0f9d66f24d44cd9aaee30b16ceedb21cceeb2498"
+}
