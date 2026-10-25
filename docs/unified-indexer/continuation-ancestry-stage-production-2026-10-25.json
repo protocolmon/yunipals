@@ -1,0 +1,17 @@
+{
+  "candidateInputsCreated": 0,
+  "commit": "703cda2d6a77a179147c1808a9f06b728282679b",
+  "completed": true,
+  "currentReadinessClaimed": false,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "externalExistingOnlyVerified": 0,
+  "format": "root-frozen-continuation-ancestry-source-stage",
+  "observedAt": "2026-10-25T21:32:31.561436+00:00",
+  "permissionChanges": 0,
+  "providerCalls": 0,
+  "publicFilesCreated": 3,
+  "publicFilesVerified": 229,
+  "resultSha256": "61863d9ced01e718b99088d0fcc99e452306618df8b5371942642689c4cc6962",
+  "serviceActions": 0
+}

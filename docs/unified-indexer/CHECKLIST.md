@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 21:27 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 21:32 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
 
 Current verified milestones:
 
@@ -21,14 +21,15 @@ The existing collection APIs passed nine HTTP/response checks at 18:19 UTC, incl
 
 - [x] Install and verify the native Arena recovery support artifact inactive. It is published in the public branch; no projector, worker, data-source selection or SQL change has occurred. [Actual installation](native-arena-derived-support-inactive-install-production-2026-10-25.json).
 
-The metadata scheduling fix is now active and acknowledged: PID 1180697, invocation `eeccbac374de412ca9781e00a1126ba7`, zero restarts at 21:27 UTC. Its actual activation acknowledgement is `18da893e…`. The original activation refusals and later read-only observation failures remain preserved. A separate 37-sample observation saw three approval renewals with all sample predicates passing, but its final process check failed; it does not qualify the full migration. The official full verification attempt at 21:22 UTC stopped during caller construction because the frozen `ypal-ordinary-publication-continue-v1.py` dependency was missing on the server. No baseline, cadence observation, cache commit, reader login or service action ran in that attempt. The next step is to publish and stage the exact missing immutable dependency, then run verification under a fresh audit namespace.
+The metadata scheduling fix is now active and acknowledged: PID 1180697, invocation `eeccbac374de412ca9781e00a1126ba7`, zero restarts at 21:27 UTC. Its actual activation acknowledgement is `18da893e…`. The original activation refusals and later read-only observation failures remain preserved. A separate 37-sample observation saw three approval renewals with all sample predicates passing, but its final process check failed; it does not qualify the full migration. The official full verification attempt at 21:22 UTC stopped during caller construction because the frozen `ypal-ordinary-publication-continue-v1.py` dependency was missing on the server. No baseline, cadence observation, cache commit, reader login or service action ran in that attempt. At 21:32 UTC the exact original dependency packet was published and staged: all 229 files verified, three missing files created, no overwrites or service changes. Both root and independent agent checks passed; no runtime policy changed. Full verification under a fresh audit namespace remains pending. [Actual dependency repair](continuation-ancestry-stage-production-2026-10-25.json).
 
 The corrected Arena recovery support is installed and its read-only production review passed. Its start refused a changed review hash before creating its operation directory, public runtime directory, unit or socket; all four absences were checked. Native Arena adoption remains pending. The public collection, boosters, wrap and Arena routes returned HTTP 200 at 21:27 UTC; these route checks do not prove browser rendering or a new wallet transaction. [Current activation and verification evidence](metadata-activation-and-continuation-status-production-2026-10-25.json).
 
 Remaining migration work:
 
 - [x] Activate and acknowledge the new metadata worker through its reviewed lifecycle change, with the actual new process identity.
-- [ ] Complete full metadata current-state verification and official approval-cadence observation. Repair the missing immutable caller dependency first.
+- [x] Repair the missing immutable continuation dependencies without changing their source or policy.
+- [ ] Complete full metadata current-state verification and official approval-cadence observation.
 - [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The earlier commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; the separate approval refresh scheduling fix is now active, while full verification and new transaction qualification remain pending. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
 - [ ] Qualify replacement readers, publish generation 105 and switch the collection APIs/cache/staking workers. Actual previews and serving compatibility checks remain mandatory.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source; verify one genuine later opening or claim and complete eight-table parity before retiring its temporary scanner.
@@ -201,4 +202,4 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next production step:** stage the missing immutable continuation dependency, complete the full current-metadata and approval-cadence checks, then run the new rollback-only cache baseline and complete held-transaction qualification before any cache commit. Preserve every failed attempt. Generation 105 is already accepted; publication, cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
+**Next production step:** complete the full current-metadata and approval-cadence checks, then run the new rollback-only cache baseline and complete held-transaction qualification before any cache commit. Preserve every failed attempt. Generation 105 is already accepted; publication, cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
