@@ -1,0 +1,22 @@
+{
+  "format": "yunipals-arena-ordinary-runtime-production-installation-v1",
+  "installedAt": "2026-10-25T02:27:23.632655+00:00",
+  "installedFilesValidatedAt": "2026-10-25T02:28:05.377228+00:00",
+  "artifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234",
+  "manifestSha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+  "installerProducerSha256": "7889fca5e47734f263eb51c5f2338e4080e17070188876db26bf4cc0080b2dad",
+  "actualReviewSha256": "69eac56f954c0a53fdffcb842e495b5bc339688280782f1f72a8494df181c1e0",
+  "actualInstallationReceiptSha256": "ad024517f4ae8e348382cea0f589b4c432eaf4261797048cba5c66b676dabe84",
+  "compiledOutputs": 16,
+  "uniqueWorkerEntries": 7,
+  "ownerReaderFacades": 1,
+  "installed": true,
+  "runtimeSelected": false,
+  "runtimeDependenciesQualifiedByThisInstallation": false,
+  "workersConstructedByThisInstallation": false,
+  "businessBodiesChanged": false,
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "privateAuthenticationFingerprintPublished": false
+}

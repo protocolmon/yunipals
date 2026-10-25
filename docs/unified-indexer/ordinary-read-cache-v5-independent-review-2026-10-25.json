@@ -1,0 +1,39 @@
+{
+  "commands": [
+    "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-read-cache-v5.test.py",
+    "/root/.nvm/versions/node/v24.18.1/bin/node --import ./apps/yunipals-indexer/node_modules/tsx/dist/loader.mjs ops/unified-indexer-transition/ypal-ordinary-cache-v5.postgres.test.mjs"
+  ],
+  "criticalPaths": [
+    "Actual6-return static READ host authenticates143 baseline plus V5b71 chain without current writer construction; selector receipts bind same metadata input/read triple and exact candidate files",
+    "Current full direct/relation/schema/function/all-grantee column ACL graph composes separate cache4 and explicit owner2LOGIN scope; unmanaged cache ACL drift remains refused",
+    "Actual metadata9b and generation1ae factories and current callbacks remain separate; current source is qualified only at forward or explicit owned-terminal inverse scope",
+    "Exact historical06eb/521e dependency inventory preauthorization precedes first installed dependency evaluation in each CLI invocation; all new public entry/driver/guard bytes are sealed separately",
+    "Same-client real XID and positive backend attribution, root-fsynced prepared ACK before sole COMMIT, readonly committed-XID reconciliation/no resend and inverse/monotonic epochs retained",
+    "V5 binding uses591f/a194 graph, genuine native44/cache metadata frame and two selector environment seams; driver business reverses to exact published predecessor with one guard import change"
+  ],
+  "filesVerified": 10,
+  "findings": [],
+  "format": "yunipals-ordinary-read-cache-v5-independent-review-v1",
+  "limits": {
+    "fullReaderCutoverAccepted": false,
+    "hostQualificationPerformed": false,
+    "oldFrozenFilesEdited": false,
+    "productionCacheInputOrCommitInvented": false,
+    "servicesStoppedOrStarted": false
+  },
+  "packetSha256": "46435ff3bc51839bc5b47c9e4c848e9ddd89f4b18bd93c9d93f574018241eda3",
+  "producerSha256": "387c6a16d5f0c203731212d1a54b618919c0413e4235a37a35510cff584d8cc2",
+  "reviewer": "final_handover",
+  "scopeNotes": [
+    "Dependency inventory caching is once per invocation on retained root-owned/nonwritable installed runtime, not a fresh whole-inventory pass for every child. New sealed entry bytes and qualifier/receipt are reauthenticated.",
+    "Inherited preservation.restoredSourceEpochQualified wire label is retained; actual current authority is explicit ordinary sourceBinding and all historical whole-validator flags remain false. No acceptance predicate uses that legacy label.",
+    "Coordinator producer may be absent only during initial standalone cache preparation; publication still requires the exact actual reader manifest/hash. No future receipt or publication is qualified by this review."
+  ],
+  "validation": {
+    "focusedPythonControlsRerun": 8,
+    "genuineDisposablePostgresGroupsRerun": 11,
+    "productionActions": 0,
+    "providerCalls": 0
+  },
+  "verdict": "PASS"
+}

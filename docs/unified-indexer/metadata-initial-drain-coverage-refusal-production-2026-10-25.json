@@ -1,0 +1,31 @@
+{
+  "format": "yunipals-metadata-initial-drain-coverage-refusal-production-v1",
+  "reviewPassedAt": "2026-10-25T02:39:53.999453+00:00",
+  "reviewEligibleCoverage": true,
+  "reviewSha256": "044ec2845e00dfa026d4732f9717a7cbecfec9d38ed1dafc023a49d291b09ab4",
+  "drainAttemptFinishedAt": "2026-10-25T02:45:34.417267+00:00",
+  "drainAttemptSucceeded": false,
+  "fixedCode": "actual_native_coverage_required_before_metadata_drain",
+  "metadataOperationCreated": false,
+  "metadataWorkerStopped": false,
+  "metadataAdopted": false,
+  "earlierReviewRelabelled": false,
+  "laterReadonlyObservation": {
+    "observedAt": "2026-10-25T02:53:23.303303+00:00",
+    "baseReady": true,
+    "baseError": null,
+    "proofAgeMilliseconds": 526.088,
+    "verifiedMetadataBoundary": "53053725",
+    "legacyNextBlock": "53053717",
+    "nativeWitness": "53053727",
+    "ingestionMode": "rpc",
+    "frameworkReady": 1,
+    "metadataOperationExists": false,
+    "databaseWrites": 0
+  },
+  "historicalPublishedRowsNeedingNativeProvenance": 440194,
+  "originalPerBatchLimit": 5000,
+  "originalMaximumNumberedBatches": 128,
+  "coverageGuardRelaxed": false,
+  "effectRetryPerformed": false
+}

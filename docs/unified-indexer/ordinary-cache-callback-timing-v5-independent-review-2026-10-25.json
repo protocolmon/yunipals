@@ -1,0 +1,50 @@
+{
+  "format": "yunipals-ordinary-cache-callback-timing-independent-review-v5",
+  "reviewedAtDate": "2026-10-25",
+  "verdict": "PASS_READONLY_HELPER_SOURCE_ONLY",
+  "publicPacketSha256": "bb7e49c59eda16931611a7b5e6262fa23f4bae63b4afca85c5d9466003d224bb",
+  "files": [
+    {
+      "bytes": 9028,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-callback-timing-v5.py",
+      "sha256": "c32c3885d322d4fbcd4b06998d5969e66d5ea4beb6f818341723353379f43bfb"
+    },
+    {
+      "bytes": 3897,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-callback-timing-v5.test.py",
+      "sha256": "3faa209950a1e61b171cf51e1d249345d824a8c069311e292ac6b5d3d26b1c30"
+    },
+    {
+      "bytes": 2434,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-callback-timing-v5.md",
+      "sha256": "ba38238181d97e7c4f1b1080f3eb854581e99af153a724b8703c165b0069fa09"
+    }
+  ],
+  "validation": {
+    "independentlyPassedControls": 3,
+    "exitCode": 0,
+    "allThreePinsVerified": true,
+    "criticalCallgraphReadCompleted": true
+  },
+  "reviewedProperties": [
+    "Source-timing mode executes the genuine pinned5a observe_runtime API with the supplied actual ordinary result/input references, including both complete3bf current captures and static registered/native dataset checks. It does not substitute a synthetic source proof.",
+    "Callback mode requires protected actual387c cache input and constructor, actual metadata/generation/selector receipts, genuine cache operation/rehearsal and owned stopped cache. It refuses once sql-intent or committed acknowledgement exists.",
+    "The exact c54 nested prepared body is selected from authenticated source. Only the final save(sql-prepared.json,value) call target changes; all plan/read-extension, stopped/private, full current source, generation and metadata checks remain.",
+    "The rehearsal packet is explicitly synthetic timing input. Its only durable prepared observation is written under the helper capture directory with neverProductionPreparedACK=true, not to the original cache operation path.",
+    "No SQL transaction, COMMIT protocol, role admission, service manager, cache commit/apply or source lifecycle method is dispatched. Named capture directories and files are exclusive root0700/0600, preserving failed observations without an effect retry.",
+    "Detailed runtime observations remain in the root-private result. Public output contains elapsed time, hash, status and bounded fixed codes; no argv, process environment, private configuration or raw ownership rows are emitted."
+  ],
+  "concreteBlockingFindings": [],
+  "limits": [
+    "No production timing measurement was performed by this reviewer.",
+    "A callback benchmark runs outside an open SQL transaction and cannot qualify the child roundtrip, lock duration, same-client COMMIT or actual15-second/90-second idle limits.",
+    "Full source and graph checks remain mandatory; no permission is inferred to memoize readiness, remove checks or extend timeouts."
+  ],
+  "productionTimingQualified": false,
+  "productionCommitQualified": false,
+  "hostActions": 0,
+  "productionDatabaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "frozenFilesChanged": 0
+}
