@@ -1,0 +1,76 @@
+{
+  "format": "yunipals-latest-complete-main-api-public-preparation-v1",
+  "sourceOnly": true,
+  "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+  "manifestSha256": "bba6126ae55299eeb885a3ef72a17155398ad4e0c604f582898abd3952b2e6a2",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-build-v1.mjs",
+      "bytes": 12786,
+      "sha256": "2542be97ea63e0f0bab5716a78646f9c9802a806cacaf95b118b5da004364d24"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-build-v1.test.mjs",
+      "bytes": 7681,
+      "sha256": "9b4e4df7c1c86936d3cca786a90da3c37924d2adbbef4b3e874b1c8e3aac8fda"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-postgres.test.mjs",
+      "bytes": 16799,
+      "sha256": "fc0113d38d82f87d60862e54aecb5b9742a13c3c7b5b92fdb13cde1668249262"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-install-v1.py",
+      "bytes": 10224,
+      "sha256": "43d98f0aa8993b408133f24a77bdab50663fa79fb77840c7478db369d7e7be9f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-install-v1.test.py",
+      "bytes": 3932,
+      "sha256": "69ddce2d9d3ac1f63c6a134bc9a9ebebe75cd6e3812727223a641c35e0da6da1"
+    },
+    {
+      "path": "docs/unified-indexer/latest-complete-main-api-independent-review-2026-10-25.json",
+      "bytes": 3866,
+      "sha256": "8dce62889ad3793498ba2e052e6b1e4033b045821d0cbffefaf7231f9eac0980"
+    },
+    {
+      "path": "docs/unified-indexer/latest-complete-api-dependency-inspection-2026-10-25.json",
+      "bytes": 846,
+      "sha256": "60244c6b8553ce961f84b55551f3334f19e4fd6b9c14620fc06b4dfd0aa4a22e"
+    },
+    {
+      "path": "docs/unified-indexer/latest-complete-main-api-runtime-v1.md",
+      "bytes": 1836,
+      "sha256": "71f6c6b52347d3d7006e72cf8bdeb7450b3cfdd63b896a03ed1e850a1dcfe5bc"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-runtime-v1/manifest.json",
+      "bytes": 41212,
+      "sha256": "bba6126ae55299eeb885a3ef72a17155398ad4e0c604f582898abd3952b2e6a2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-runtime-v1/metafile.json",
+      "bytes": 65831,
+      "sha256": "7e254e7d00bf56ee69bf0cae988bc4a724f9dc0628295f1c9d8b04226e0693ba"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-runtime-v1/dist/main-api.mjs.map",
+      "bytes": 832763,
+      "sha256": "2e444a19eae0ba1086ffb09150992b3a15a1772a00d4ffa5d92703c3d45432b1"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-runtime-v1/dist/main-api.mjs",
+      "bytes": 414209,
+      "sha256": "08acd504d7802a22619a7aa7a5f79cc8eecfb25c068611c7321a319508b5f04c"
+    }
+  ],
+  "validation": {
+    "buildGroups": 5,
+    "realPostgresHttpGroups": 10,
+    "installerFilesystemGroups": 4
+  },
+  "runtimeDependencyTargetVerifiedHere": false,
+  "productionInstalled": false,
+  "servicesChanged": false
+}
