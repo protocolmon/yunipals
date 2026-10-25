@@ -1,0 +1,17 @@
+{
+  "candidateInputsCreated": 0,
+  "commit": "8569c43dbc0ad49cab885e12a279348c117ec8e2",
+  "completed": true,
+  "currentReadinessClaimed": false,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "externalExistingOnlyVerified": 6,
+  "format": "root-projector3-source-stage",
+  "observedAt": "2026-10-25T22:37:10.438500+00:00",
+  "permissionChanges": 0,
+  "providerCalls": 0,
+  "publicFilesCreated": 3,
+  "publicFilesVerified": 168,
+  "resultSha256": "5fe27b0536b4fbdc4b9526ee07b2d910186d726aaf42ad5c3df2af4189fa6181",
+  "serviceActions": 0
+}

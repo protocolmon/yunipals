@@ -1,52 +1,34 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 21:48 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 23:15 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
-Current verified milestones:
+Current accepted milestones:
 
-- [x] Shared EVM indexer caught up using retained checkpoints. Canonical acceptance passed for all six collection sources, including BNB. [Acceptance](ordinary-v5-canonical-acceptance-production-2026-10-25.json).
-- [x] Ongoing Alchemy policy enabled: 1.5M source CUs/day, 2M total/day, with the 200k foreground reserve. The latest separate budget check was 13:06 UTC. [Budget evidence](ordinary-budget-midday-production-2026-10-25.json).
+- [x] Shared EVM indexing caught up from retained checkpoints. Canonical acceptance passed for all six collection sources, including BNB. [Acceptance](ordinary-v5-canonical-acceptance-production-2026-10-25.json).
+- [x] Ongoing Alchemy policy enabled: 1.5M source CUs/day, 2M total/day, preserving the 200k foreground reserve. [Policy evidence](ordinary-budget-midday-production-2026-10-25.json).
 - [x] Required reader and Arena role permissions applied. No grant approval is waiting.
 - [x] Native metadata adopted; all 440,194 published records have verified canonical provenance. [Completion](metadata-canonical-verification-production-2026-10-25.json).
-- [x] Collection/rarity/search generation 105 built and accepted at 15:58 UTC. It is ready and unpublished; public selection remains 103/102. [Acceptance](generation-acceptance-production-2026-10-25.json).
-- [x] Full cache review passed at 16:53 UTC; real SQL rollback rehearsal passed at 17:07 UTC.
-- [x] Old cache writer drained at 17:17 UTC, with its original boot link archived.
-- [x] Standalone cache callback checks passed at 17:21 UTC in 77.12 seconds. This was outside the held SQL transaction; the required complete transaction rehearsal and commit remain unaccepted. [Actual cache records](publication-cache-handover-production-2026-10-25.json).
-- [x] Reviewed API/feature/Arena/Solana handover source staged: 252 public files verified, 24 created, none overwritten. Staging changed no services or permissions. [Actual staging](publication-cache-handover-production-2026-10-25.json).
-- [x] Publish and stage the reviewed feature/Arena recovery source: 279 public files and six existing external prerequisites verified at 18:01 UTC, 32 created, none overwritten. No runtime input, service install/start or actual rollback is claimed. [Actual staging and limits](recovery-source-stage-production-2026-10-25.json).
+- [x] Metadata scheduling fix activated and acknowledged. Full current-state verification, 31 official approval samples, two renewals and the final source postflight passed at 22:46 UTC. Maximum approval age was 60.96 seconds against the unchanged 90-second limit. The bounded read-capture fix discarded and retried two unstable snapshots successfully. [Actual complete verification](metadata-current-cadence-cache-baseline-production-2026-10-25.json), [reviewed fix](bounded-metadata-retry-v4-root-review-2026-10-25.json).
+- [x] Collection/rarity/search generation 105 built and accepted at 15:58 UTC. It is unpublished; public selection remains 103/102. [Acceptance](generation-acceptance-production-2026-10-25.json).
+- [x] Old cache writer drained at 17:17 UTC, preserving its original boot link and failed-attempt journals.
+- [x] New cache baseline, authorization and real rollback rehearsal accepted at 22:46 UTC. Transaction 16768535 aborted as required; no production cache commit or prepared acknowledgement was created. [Actual baseline](metadata-current-cadence-cache-baseline-production-2026-10-25.json).
 
-The existing collection APIs passed nine HTTP/response checks at 18:19 UTC, including capped-rarity sorting across all four chains. The fresh pack API is ready and returns one public pack type. Earlier observations of the old metadata worker caught approval ages exceeding the unchanged 90-second limit, followed by renewal, including an expiry while all five database connections were idle. Nine kernel captures qualified and four were discarded. These observations motivated the scheduling fix now active below; they do not prove the historical failure's precise subcondition. [Earlier sampling and HTTP checks](metadata-approval-readiness-production-2026-10-25.json).
+The complete held-transaction rehearsal stopped before completing its callback. PostgreSQL confirms its transaction 16775453 aborted, the child process is gone and its exact database backend is gone. A read-only comparison of the full permission catalog, column ACLs and reader graph is required before any new attempt. Its first wrapper stopped before opening a database context because a local transport-status field differed from the authenticated server result; a narrow correction preserves both original records. The original qualifier hid the underlying caught error; a separate pass-through diagnostic is being prepared to retain it privately without changing the checks. The successful baseline remains accepted. [Actual failed rehearsal and initial reconciliation](held-cache-qualification-failure-production-2026-10-25.json).
 
-- [x] Install and independently verify the reviewed metadata scheduling artifact inactive at 19:24 UTC. The original metadata worker and shared ingestor retain their exact running identities; no runtime activation or cadence acceptance is claimed. [Actual installation](native-metadata-approval-inactive-install-production-2026-10-25.json).
-
-- [x] Install and verify the native Arena recovery support artifact inactive. It is published in the public branch; no projector, worker, data-source selection or SQL change has occurred. [Actual installation](native-arena-derived-support-inactive-install-production-2026-10-25.json).
-
-The metadata scheduling fix is now active and acknowledged: PID 1180697, invocation `eeccbac374de412ca9781e00a1126ba7`, zero restarts at 21:27 UTC. Its actual activation acknowledgement is `18da893e…`. The original activation refusals and later read-only observation failures remain preserved. A separate 37-sample observation saw three approval renewals with all sample predicates passing, but its final process check failed; it does not qualify the full migration. The official full verification attempt at 21:22 UTC stopped during caller construction because the frozen `ypal-ordinary-publication-continue-v1.py` dependency was missing on the server. No baseline, cadence observation, cache commit, reader login or service action ran in that attempt. At 21:32 UTC the exact original dependency packet was published and staged: all 229 files verified, three missing files created, no overwrites or service changes. Both root and independent agent checks passed; no runtime policy changed. Full verification under a fresh audit namespace remains pending. [Actual dependency repair](continuation-ancestry-stage-production-2026-10-25.json).
-
-The corrected Arena recovery support is installed and its read-only production review passed. Its start refused a changed review hash before creating its operation directory, public runtime directory, unit or socket; all four absences were checked. Native Arena adoption remains pending. The public collection, boosters, wrap and Arena routes returned HTTP 200 at 21:27 UTC; these route checks do not prove browser rendering or a new wallet transaction. [Current activation and verification evidence](metadata-activation-and-continuation-status-production-2026-10-25.json).
-
-The repaired verification attempt passed full current metadata prerequisites and all 31 official approval samples, observing two renewals and a maximum approval age of 58.47 seconds. The same metadata actor qualified before and after sampling. The run then failed its final source postflight at the database-connection inventory command. Its exact child error is still being diagnosed; this does not qualify the overall cadence/baseline. No baseline invocation, cache commit, reader login or service action occurred. [Actual failed attempt and observed samples](metadata-cadence-postflight-failure-production-2026-10-25.json).
-
-The reviewed API/Arena/Solana continuation source is now published and staged: 305 public files verified, 13 created, none overwritten; no runtime inputs or service changes. [Actual source staging](forward-continuation-v3-stage-production-2026-10-25.json).
-
-The coordinated recovery and native-return source is also published and staged: 350 public files and six existing external prerequisites verified, 28 files created, no overwrites. Local and independent controls pass. This is prepared recovery code; the actual coordinated rollback and return have not run. [Actual recovery staging](coordinated-recovery-v3-stage-production-2026-10-25.json).
+The Arena startup diagnostic identified exactly two changing review fields: the global connection count and its derived available-capacity value. The reviewed successor retains fresh capacity and role-limit checks while binding startup authorization to stable facts. Its source and actual input are staged; the runtime has not started. [Actual paired reviews](native-arena-startup-review-pair-production-2026-10-25.json), [source staging](native-arena-projector-v3-source-stage-production-2026-10-25.json), [actual input](native-arena-projector-v3-input-production-2026-10-25.json).
 
 Remaining migration work:
 
-- [x] Activate and acknowledge the new metadata worker through its reviewed lifecycle change, with the actual new process identity.
-- [x] Repair the missing immutable continuation dependencies without changing their source or policy.
-- [ ] Finish verification acceptance: full current metadata and 31 approval samples passed, but final source inventory postflight failed. Diagnose that exact error before a new qualification attempt.
-- [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The earlier commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; the separate approval refresh scheduling fix is now active, while full verification and new transaction qualification remain pending. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
-- [ ] Qualify replacement readers, publish generation 105 and switch the collection APIs/cache/staking workers. Actual previews and serving compatibility checks remain mandatory.
-- [ ] Switch the fresh YPAL API and artwork queue to the shared source; verify one genuine later opening or claim and complete eight-table parity before retiring its temporary scanner.
-- [ ] Adopt managed EVM/Solana supervision and native Arena workers.
-- [ ] Finish and execute coordinated rollback, then return to native readers/workers. Three parallel agents are completing the remaining source/consumer recovery paths and independent review; production dispatch stays with the root agent.
-- [ ] Enable and verify recurring native rarity/leaderboard refresh with retained generation lineage.
-- [ ] Complete actual process-restart and 24-hour observation acceptance, then retire the remaining duplicate scanners and finish handover evidence.
+- [ ] Complete the failed held test's full catalog reconciliation, then qualify the complete real transaction/callback path with a new rollback-only test. The old standalone 77.12-second measurement is not authority for commit.
+- [ ] Commit native cache guards and authenticate the prepared acknowledgement returned by that commit. Do not invoke a second prepare-ack save.
+- [ ] Qualify replacement readers, publish generation 105 and switch collection APIs, cache and staking. Verify actual previews and serving compatibility.
+- [ ] Switch the fresh YPAL API and artwork queue to the shared source. Require complete eight-table parity and a genuine newer opening or claim before retiring its temporary scanner.
+- [ ] Start and qualify the Arena support worker, adopt native Arena workers and managed EVM/Solana supervision.
+- [ ] Execute coordinated rollback and return to native readers/workers. Three parallel agents continue the remaining recovery paths and independent review; production dispatch remains with the root agent.
+- [ ] Enable recurring native rarity/leaderboard refresh and verify generation lineage and retention.
+- [ ] Complete a supervised process restart and at least 24 hours of observation, then retire all remaining duplicate scanners and finish handover evidence.
 
-The first genuine YPAL three-pack purchase, reveal, per-NFT metadata and all three images are accepted. The real daily claim has been eligible since 24 October at 21:24:37 UTC and remains untested; a wallet signature is required for that live test. Unseen card artwork still uses the operator workflow. Marketplace history and additional reorg stress coverage remain deferred as requested.
-
-The earlier failed build, checker refusals and diagnostic reproductions remain separate records. The failed pre-effect drain was inspected before a new attempt; the successful drain does not relabel that failure. A successful cache commit itself creates its prepared acknowledgement; do not repeat that save. [Receipt correction](publication-cache-prepare-ack-erratum-2026-10-25.md).
+The genuine YPAL three-pack purchase, reveal, per-NFT metadata and all three images are accepted. The live daily claim remains untested and requires a wallet signature. Unseen artwork uses the operator workflow. Marketplace history and additional reorg stress coverage remain deferred as requested. Earlier failed attempts remain preserved and are not relabelled as successful.
 
 ## Fresh YPAL rollout
 
