@@ -1,0 +1,21 @@
+{
+  "currentOrRetryAuthority": false,
+  "deploymentTargets": 2,
+  "findings": [],
+  "finiteRowsVerified": 5,
+  "format": "yunipals-arena-boundary-diagnostic-root-review-v1",
+  "fullRuntimeSourcesRead": true,
+  "independentCReview": "no findings",
+  "independentNodeTestFilePassed": true,
+  "independentPythonControlsPassed": 6,
+  "nodeGroupsInFile": 8,
+  "nodeSourceSha256": "6a97f5c6cc37bd4790ef0f9b15438652fc7ba3580de5aad0af4faa16fcadbed7",
+  "originalInspectorUnchanged": true,
+  "originalOwnerResultPreserved": true,
+  "originalReturnedRuntimeAndRowsUnchanged": true,
+  "preparationSha256": "2fc9b0e32f1ea97b8ebc7b673e37a10eca04216a4a63dc4d20bac6ce23891770",
+  "privateRawAndScalarOnlyOutput": true,
+  "productionDiagnosticExecuted": false,
+  "pythonSourceSha256": "b3e9186de3fc3fbf8085c4c927b633d86684a5194ded947c8cc52884569a4453",
+  "separateLaterCanonicalProbeExplicit": true
+}
