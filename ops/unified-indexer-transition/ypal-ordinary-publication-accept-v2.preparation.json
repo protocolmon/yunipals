@@ -1,0 +1,104 @@
+{
+  "actualCandidateReceiptInvented": false,
+  "actualGenerationAcceptanceProducer": {
+    "file": "ypal-ordinary-generation-accept-v3.py",
+    "sha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3"
+  },
+  "callbackTimingQualifiedByThisWork": false,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 3826,
+      "file": "ypal-ordinary-generation-accept-binding-v2.py",
+      "sha256": "e8eeb5f9fb883dc7a94227abf21d2cf4899ce913864dcca006720b2c905682dc"
+    },
+    {
+      "bytes": 2669,
+      "file": "ypal-ordinary-read-cache-accept-v2.py",
+      "sha256": "8be988601c168c37ed5cc9dbbf348e2ad00312cd234786a2d3e00c6f4224a834"
+    },
+    {
+      "bytes": 2762,
+      "file": "ypal-ordinary-reader-accept-v2.py",
+      "sha256": "973cc75929e6ee3c906ac12103933603272cb41fdceec248bea3461b971dbda5"
+    },
+    {
+      "bytes": 2884,
+      "file": "ypal-ordinary-publication-accept-v2.py",
+      "sha256": "7c518d97f1c4f425dce8dee8a4ad3f6f06a37454b0346de177c4cd60b32e56d0"
+    },
+    {
+      "bytes": 2471,
+      "file": "ypal-ordinary-publication-accept-manifest-v2.py",
+      "sha256": "9b4ee87ced656f12676518dc0a0cb034c5148aaae5e832ae9ebfd6510c7b00df"
+    },
+    {
+      "bytes": 3022,
+      "file": "ypal-ordinary-publication-input-render-accept-v2.py",
+      "sha256": "31ae49e472c2dc03fc84e70fdd8f443094b0959b591542f46a92a74d3f74ba85"
+    },
+    {
+      "bytes": 5317,
+      "file": "ypal-ordinary-publication-accept-v2.test.py",
+      "sha256": "510c66c4b42da25a890208bec48cc7421b55ce6bcc15a1331e463507a1723f46"
+    },
+    {
+      "bytes": 10274,
+      "file": "ypal-ordinary-publication-accept-v2.md",
+      "sha256": "2f3ead163d5ef84b2d364641062afa128d437c89ad62edf581fc21000ee3612f"
+    },
+    {
+      "bytes": 22237,
+      "file": "ypal-ordinary-generation-accept-binding-v2.manifest.json",
+      "sha256": "0f5bcd31ead0971f6d3fba26f238f8d7eefbc20f39d2db8a51ca9a356f6aac27"
+    },
+    {
+      "bytes": 26502,
+      "file": "ypal-ordinary-reader-accept-v2.manifest.json",
+      "sha256": "688442913b575d8d68c9e2f07b46f355c57ebe7e2ab79a055d3d8d614774a666"
+    },
+    {
+      "bytes": 24439,
+      "file": "ypal-ordinary-publication-accept-v2.stage.json",
+      "sha256": "45715563b4208fe94bb9bfdc8c6cac740e6819989adba8b64d47a2c96b166df9"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-accept-v2-preparation",
+  "independentReview": {
+    "productionQualificationClaimed": false,
+    "protocolAgent": "no findings; final actual10/10 and exact two-manifest reproduction"
+  },
+  "newSchemaInvented": false,
+  "originalAttemptCandidateCLIPassed": false,
+  "originalBuildOperationFile": "/var/backups/yunipals-ypal-ordinary-generation-attempt-v2-20261025/operation.json",
+  "originalBuildProducerSha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+  "previousAcceptanceCLIPassed": false,
+  "previousSqlAcceptanceCLIPassed": false,
+  "productionStillRequired": [
+    "actual accepted candidate from actual V3 acceptance owner",
+    "exclusive actual renderer input only after exit0",
+    "genuine current source/private/catalog/cache qualification",
+    "fresh separate full cache/beforeLOGIN/afterLOGIN callback timing",
+    "new actual downstream acknowledgement successors",
+    "separately qualified inverse source and held-SQL caller route"
+  ],
+  "publicStageClosureFile": "ypal-ordinary-publication-accept-v2.stage.json",
+  "publicStageClosureSha256": "45715563b4208fe94bb9bfdc8c6cac740e6819989adba8b64d47a2c96b166df9",
+  "publishedDownstreamSuccessClaimed": false,
+  "publishedPredecessorFamilyPreserved": true,
+  "readerInverseDispatchOpen": false,
+  "runtimeIndependentReviewPending": false,
+  "sourceControlEvidence": {
+    "actualComposedModules": true,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-publication-accept-v2.test.py",
+    "passed": 10,
+    "syntheticReceiptsAreProductionEvidence": false
+  },
+  "sqlWirePeerQuerySourceGuardUnchanged": true
+}
