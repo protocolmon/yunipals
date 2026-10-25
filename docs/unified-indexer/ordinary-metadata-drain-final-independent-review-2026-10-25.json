@@ -1,0 +1,26 @@
+{
+  "commands": [
+    "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-metadata-drain-v1.test.py"
+  ],
+  "criticalPaths": [
+    "Action digest excludes only oldSessions; actual full original binding and all actor/private/boot/input/source/READ/candidate authority retained",
+    "Original cf779 drain body receives exactly one additional pre-first-effect fence; genuine 9b operation, fresh pre-stop positive kernel sessions, durable stop intent and terminal proof remain",
+    "At most three proved readonly backend-churn observations within a 90-second bound including slow success; effect failures are never retried",
+    "Own exclusive intent/result and exact original operation/drained chain support lost acknowledgment reconciliation without effect dispatch or later-phase adoption"
+  ],
+  "findings": [],
+  "focusedControlsRerun": 19,
+  "format": "yunipals-ordinary-metadata-drain-final-independent-review-v1",
+  "limits": {
+    "databaseWritesByReviewer": 0,
+    "historicalB75ReviewSupersededForCurrentBytes": true,
+    "hostActionsByReviewer": 0,
+    "productionDrainQualifiedByTests": false,
+    "sourceBytesChangedByReviewer": false
+  },
+  "packetSha256": "ad72e5cb3ae18ea54b91d2d0b456dd4c1c43ddb6c81c9efdee2b27306e1d88f5",
+  "reviewer": "final_handover",
+  "sourceSha256": "920982e39c4a5aa6e2eebd20f7850a1497a2905b6b6031813f9d96e59c6de51e",
+  "testSha256": "e912f8e0fc584413e4d2ca1cc7b784d421ba16cf97fc1ff6f97ab78ef0260a9c",
+  "verdict": "PASS"
+}
