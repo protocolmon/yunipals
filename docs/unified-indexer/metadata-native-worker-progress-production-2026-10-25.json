@@ -1,5 +1,70 @@
 {
   "acceptanceSampleCount": 3,
+  "acceptedSelection": {
+    "acceptanceSampleCount": 3,
+    "allAcceptanceApprovalsReady": true,
+    "allAcceptanceProbes": true,
+    "bootLinkPreserved": true,
+    "databaseWrites": 0,
+    "format": "root-actual-metadata-completion-observation-v1",
+    "latestRemainingPublished": 437858,
+    "observedAt": "2026-10-25T04:20:55.156609+00:00",
+    "originalTailFiles": [
+      "native-started.json",
+      "native-observed.json",
+      "boot-publish-intent.json",
+      "selected.json"
+    ],
+    "ownJournalFiles": [
+      "prestart-terminal.json",
+      "review.json",
+      "start-intent.json",
+      "started-actor.json"
+    ],
+    "selected": true,
+    "selectedActorInvocation": "b7939080dc1f41508f94e0214cce9ca6",
+    "selectedActorPid": "101456",
+    "selectedReceiptSha256": "2829182fa96599513f07099118ab0c16b0ceff8d04330537a9c90bd5231e35ba",
+    "selectionReconciliationResult": {
+      "actualSelectedReceiptSha256": "2829182fa96599513f07099118ab0c16b0ceff8d04330537a9c90bd5231e35ba",
+      "completed": true,
+      "format": "yunipals-ypal-ordinary-metadata-selection-reconcile-v1",
+      "managerActions": 0,
+      "operatorSha256": "a25fd8a5b23e95eb368f057ac710d873ef09bb436695a9b28d80cf8abf630790",
+      "originalFailedSelectReclassified": false,
+      "originalOperationSha256": "8aa248a21585cfffd2dc936968f214a2b007b3460f866e2d1346c1432d42a70d",
+      "ownStartIntentSha256": "e1ff75082bb05aee29a1d4090c042121fa3b81fc0fab705ea85eae18045414bc",
+      "parent9aSuccessClaimed": false,
+      "parentProducerSha256": "9a1dd6344bacac8dfcad75cc67f769c0ba46aec9db6f752f2b672cde9a59b8b5"
+    },
+    "selectionReconciliationResultSha256": "d67ff7ebdcb1c603c4ec33abed4267c75145ff61eb653f81e638aeadb6c7031f",
+    "serviceActions": 0,
+    "state": {
+      "ActiveState": "active",
+      "ControlPID": "0",
+      "ExecMainStartTimestampMonotonic": "66327515281227",
+      "InvocationID": "b7939080dc1f41508f94e0214cce9ca6",
+      "MainPID": "101456",
+      "NRestarts": "0",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    }
+  },
+  "actualReceiptReconciliation": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T04:20:29.581462+00:00",
+    "phase": "apply",
+    "report": {
+      "completed": true,
+      "format": "yunipals-ypal-ordinary-metadata-selection-reconcile-v1",
+      "managerActions": 0,
+      "resultSha256": "d67ff7ebdcb1c603c4ec33abed4267c75145ff61eb653f81e638aeadb6c7031f"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "e9bf106c3e221aab01202e68e182f87b2fe3a1798133fdfeab766d6cd7676876"
+  },
   "allAcceptanceApprovalsReady": true,
   "allAcceptanceProbes": true,
   "allPriorFailuresRetained": true,
@@ -33,8 +98,8 @@
     "SubState": "running",
     "UnitFileState": "enabled"
   },
-  "observedAt": "2026-10-25T04:03:11.905975+00:00",
-  "originalSelectionReceiptPresent": false,
+  "observedAt": "2026-10-25T04:20:55.156609+00:00",
+  "originalSelectionReceiptPresent": true,
   "publicBootDifference": {
     "changedKeys": [
       "ExecStart"
@@ -65,6 +130,150 @@
     "stderrBytes": 0,
     "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "stdoutSha256": "d29e3ecda07efd6016df321ac6cbf3067e6b90fb699305e5867365862f590a4a"
+  },
+  "readonlySourceAuthorityV2Qualification": {
+    "completed": false,
+    "exitCode": 1,
+    "observedAt": "2026-10-25T04:13:26.780357+00:00",
+    "phase": "qualify",
+    "report": {
+      "automaticRetryAllowed": false,
+      "fixedCode": "exact_fixed_source_and_proxy_cgroups_required",
+      "format": "yunipals-ypal-ordinary-source-authority-v2",
+      "privateFailureSha256": "bdd850379f298603b3b4205f726786c114401e131edec4a5a6de0075942c65a5",
+      "validated": false
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "f8e9a989ceaf1fe934a70042bd1cd4fb59a598f9b6fc90e3ffff6fcfe58bce7e"
+  },
+  "readonlyTypedKernelCgroups": {
+    "databaseWrites": 0,
+    "observedAt": "2026-10-25T04:16:31.356677+00:00",
+    "serviceActions": 0,
+    "units": [
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/yunipals-booster-ypal-source.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/yunipals-booster-ypal-source.service",
+        "typedCgroup": {
+          "data": "/system.slice/yunipals-booster-ypal-source.service",
+          "type": "s"
+        },
+        "unit": "yunipals-booster-ypal-source.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@base.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@base.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@base.service",
+          "type": "s"
+        },
+        "unit": "yunipals-combined-rpc@base.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@bnb.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@bnb.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@bnb.service",
+          "type": "s"
+        },
+        "unit": "yunipals-combined-rpc@bnb.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@ethereum.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@ethereum.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@ethereum.service",
+          "type": "s"
+        },
+        "unit": "yunipals-combined-rpc@ethereum.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@polygon.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@polygon.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dcombined\\x2drpc.slice/yunipals-combined-rpc@polygon.service",
+          "type": "s"
+        },
+        "unit": "yunipals-combined-rpc@polygon.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@base.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@base.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@base.service",
+          "type": "s"
+        },
+        "unit": "yunipals-market-production-rpc@base.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@bnb.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@bnb.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@bnb.service",
+          "type": "s"
+        },
+        "unit": "yunipals-market-production-rpc@bnb.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@ethereum.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@ethereum.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@ethereum.service",
+          "type": "s"
+        },
+        "unit": "yunipals-market-production-rpc@ethereum.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@polygon.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@polygon.service",
+        "typedCgroup": {
+          "data": "/system.slice/system-yunipals\\x2dmarket\\x2dproduction\\x2drpc.slice/yunipals-market-production-rpc@polygon.service",
+          "type": "s"
+        },
+        "unit": "yunipals-market-production-rpc@polygon.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/yunipals-ypal-base-rpc.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/yunipals-ypal-base-rpc.service",
+        "typedCgroup": {
+          "data": "/system.slice/yunipals-ypal-base-rpc.service",
+          "type": "s"
+        },
+        "unit": "yunipals-ypal-base-rpc.service"
+      },
+      {
+        "actualCgroupFileExists": true,
+        "kernelCgroup": "/system.slice/yunipals-ypal-combined-source.service",
+        "kernelEqualsTyped": true,
+        "managerDisplay": "/system.slice/yunipals-ypal-combined-source.service",
+        "typedCgroup": {
+          "data": "/system.slice/yunipals-ypal-combined-source.service",
+          "type": "s"
+        },
+        "unit": "yunipals-ypal-combined-source.service"
+      }
+    ]
   },
   "readonlyUnitStateDiagnostic": {
     "databaseWrites": 0,
@@ -211,5 +420,5 @@
     ]
   },
   "remainingArchivePublicationsAtAcceptance": 437858,
-  "selectionReceiptReconciliationPending": true
+  "selectionReceiptReconciliationPending": false
 }

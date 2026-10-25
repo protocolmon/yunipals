@@ -2,9 +2,9 @@
 
 Goal started 20 October 2026. The [implementation plan](/root/yunipals/docs/unified-indexer-implementation-plan.md) remains the acceptance contract. The unified source/consumer cutover remains pending.
 
-## Current acceptance — 25 October, 04:08 UTC
+## Current acceptance — 25 October, 04:21 UTC
 
-The native metadata worker is running with zero restarts after actual drain, committed adoption and three successful native approval/probe samples. Its original boot-link inode is restored. Final selection receipt reconciliation remains pending because systemd reload cleared only the ExecStart presentation start-time/PID. The actual process, invocation, private configuration and command remain unchanged. All failed attempts are preserved. Historical provenance stamping, derived generation/cache, reader and worker cutovers, fresh booster scanner retirement, managed Solana adoption, rollback and observation remain incomplete. No approval is currently pending; the approved ongoing1.5M/2M daily Alchemy caps are active. [Current detailed checklist](CHECKLIST.md), [actual metadata progress and diagnostic](metadata-native-worker-progress-production-2026-10-25.json).
+The native metadata handover is now accepted. Its worker is running with zero restarts after actual drain, committed adoption and three successful native approval/probe samples. The original boot-link inode is restored. A new receipt-only owner authenticated the actual ExecStart presentation reset and current worker, then sealed selection at04:20UTC without replaying service or database actions. Independent observation at04:20:55UTC confirms the same process. All failed attempts remain recorded. Historical provenance stamping, derived generation/cache, reader and worker cutovers, fresh booster scanner retirement, managed Solana adoption, rollback and observation remain incomplete. The faster source/publication checks remain unqualified while their actual nested cgroup assumptions are corrected. No approval is currently pending; the approved ongoing1.5M/2M daily Alchemy caps are active. [Current detailed checklist](CHECKLIST.md), [actual metadata acceptance and diagnostic history](metadata-native-worker-progress-production-2026-10-25.json).
 
 ## Historical acceptance — 24 October, 10:38 UTC
 
