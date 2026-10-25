@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-25",
+  "effects": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "hostActions": 0,
+    "productionQueries": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.py",
+      "sha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-handover-v5.py",
+      "sha256": "9b9184e685d3171beba3bce2f09aa3ddbb9c57f980e5243bd4c9710017f7825f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.test.py",
+      "sha256": "b2947a6d2028e28fbc472c1ce5dc248d1e681fad3565eb745a5516a096bc2eaa"
+    }
+  ],
+  "findings": [],
+  "findingsClosed": [
+    "prior draft TCP inet mask mismatch",
+    "prior draft permanent old shared-role peer epoch requirement",
+    "missing explicit V5 constructor/candidate receipt authentication"
+  ],
+  "format": "yunipals-ordinary-V5-metadata-independent-review-v1",
+  "limitations": [
+    "No production default review, private candidate staging, drain/adoption/selection or inverse was executed.",
+    "Host command/runtime/private file compatibility remains an actual production preflight requirement.",
+    "Later managed writer authority must be supplied through an explicit phase callback; initial ordinary runtime receipt remains ancestry.",
+    "This focused review does not claim full production workflow or metadata provenance acceptance."
+  ],
+  "reviewed": [
+    "explicit actual V5 creator and V5b equivalent logical admission references; no old READ143 alias",
+    "new private candidate directory and exclusive intent/result authentication",
+    "retained actual six-selector renderer and original private/database credentials unchanged",
+    "actual new initialize path with staged candidate files and phase callback",
+    "source-independent fbb query primitives separate from current ordinary 5a1 proof",
+    "original cf779 lifecycle bodies reused in new globals with exact source hashes",
+    "host(client_addr) avoids inet mask mismatch in frozen real TCP mapper",
+    "client FD startTicks checked against actor before positive owned backend attribution",
+    "owned terminal subset accepts legitimate unrelated reconnects and refuses known owned PID/backend epochs",
+    "already-terminal path authenticates known invocation/static/private/boot then proves fresh positive residual kernel ownership",
+    "unknown official-command intent refuses redispatch",
+    "private CLI output is retained in protected observation files with aggregate stdout"
+  ],
+  "scope": "local_source_constructor_business_reuse_and_focused_kernel_lifecycle_controls",
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.test.py",
+    "focusedPythonControls": 9
+  },
+  "verdict": "PASS"
+}
