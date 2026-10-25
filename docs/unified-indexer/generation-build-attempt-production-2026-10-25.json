@@ -1,0 +1,386 @@
+{
+  "activityTruncationSettingSeparatelyConfirmed": "1kB",
+  "actualSteps": {
+    "build": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:38:09.443090+00:00",
+      "phase": "build",
+      "report": {
+        "acknowledged": true,
+        "format": "yunipals-ypal-ordinary-generation-v5c",
+        "phase": "build",
+        "privateObservationSha256": "ac21feefb3e930ca9b8f0a9029695e62a72bceeb5571a48537cacca9867fbf0b",
+        "resultSha256": "475a0e66bc9473d3d36657a7e13b3a79a6161f1a26744fe342964fb670b00978"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "f71a73f7c7f6d9b3b46a1e1f05439f9d6eb581057f93b6e7e50b5f10192264f7"
+    },
+    "capsule": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:32:55.730910+00:00",
+      "phase": "capsule",
+      "report": {
+        "acknowledged": true,
+        "format": "yunipals-ypal-ordinary-generation-v5c",
+        "phase": "capsule",
+        "privateObservationSha256": "bd234c2cd834f5a17019674cb59ad1ce5b3f20dca541ce9d2bb8cddff722c338"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "ba6e5a1fb323818b6494c46de18bda6258032d6fab572d1515322f90eff6a606"
+    },
+    "drain": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:28:49.072178+00:00",
+      "phase": "drain",
+      "report": {
+        "databaseWrites": 0,
+        "format": "yunipals-ypal-ordinary-generation-v5c",
+        "generationStarted": false,
+        "operationSha256": "08c4510a38e48a835ba7097234f08a8b07e7f555c0dea6f08b4931f5c8778045",
+        "privateObservationSha256": "62209ce4edfee0e6ea44e07fbfa1f370eeb463b5202a1d51485d1dd42982db03",
+        "reviewHash": "08c4510a38e48a835ba7097234f08a8b07e7f555c0dea6f08b4931f5c8778045"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "1385d23838eaca067ff989a2b7406436733a98613a089adeb608c0deb6e8946b"
+    },
+    "generation-review-after-backup": {
+      "completed": true,
+      "exitCode": 0,
+      "observedAt": "2026-10-25T10:22:51.487352+00:00",
+      "phase": "generation-review-after-backup",
+      "report": {
+        "databaseWrites": 0,
+        "format": "yunipals-ypal-ordinary-generation-v5c",
+        "generationStarted": false,
+        "operationSha256": null,
+        "privateObservationSha256": "22bd74da77a34f06670d0b52590c6a35eb24b439f68820a7d0f674f895a83480",
+        "reviewHash": "08c4510a38e48a835ba7097234f08a8b07e7f555c0dea6f08b4931f5c8778045"
+      },
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "f5b82cf07bad0309385bb9e828d1c0da9d08f8e1d9cf969c01cf50ae1840d768"
+    }
+  },
+  "format": "yunipals-generation-build-attempt-production-v1",
+  "goalComplete": false,
+  "newAttemptStarted": false,
+  "newReadyCandidateObserved": false,
+  "phaseAttribution": {
+    "activityTruncationSettingVerified": false,
+    "actualDatabaseObservationSuppliedByCaller": true,
+    "artifactManifestSha256": "85acb526541fe09acbfd17a87a14be494c02123a61501a41b01e91f1d9c01188",
+    "artifactSha256": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+    "candidates": [
+      {
+        "exactObservedMatch": false,
+        "fullQueryBytes": 583,
+        "fullQuerySha256": "b40728cb3677b582917d576aa8281ed6b57e42ea8e667b2e82e41eec7fec545b",
+        "observedPrefixBytes": 583,
+        "observedPrefixSha256": "b40728cb3677b582917d576aa8281ed6b57e42ea8e667b2e82e41eec7fec545b",
+        "phase": "candidate-trait"
+      },
+      {
+        "exactObservedMatch": false,
+        "fullQueryBytes": 247,
+        "fullQuerySha256": "35dbdd31646f0e2798b5fcca44a39050c5ffb6e3aafb9adc2e7909d9a6c72bac",
+        "observedPrefixBytes": 247,
+        "observedPrefixSha256": "35dbdd31646f0e2798b5fcca44a39050c5ffb6e3aafb9adc2e7909d9a6c72bac",
+        "phase": "candidate-revision"
+      },
+      {
+        "exactObservedMatch": true,
+        "fullQueryBytes": 1862,
+        "fullQuerySha256": "9e7c84c91ce1fe6725a0bc3ed754cbe68864dadfba9763db19b6013b198b48a4",
+        "observedPrefixBytes": 1023,
+        "observedPrefixSha256": "1bd700db5f79fb3af8a5520f2d69528f0a09339d6a5c285043b3836ea6443c5e",
+        "phase": "candidate-facet"
+      },
+      {
+        "exactObservedMatch": false,
+        "fullQueryBytes": 953,
+        "fullQuerySha256": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03",
+        "observedPrefixBytes": 953,
+        "observedPrefixSha256": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03",
+        "phase": "candidate-facet_status"
+      }
+    ],
+    "databaseConnections": 0,
+    "databaseWrites": 0,
+    "format": "yunipals-generation-f81-phase-diagnostic-v1",
+    "matchingPhase": "candidate-facet",
+    "observedQueryBytes": 1023,
+    "observedQuerySha256": "1bd700db5f79fb3af8a5520f2d69528f0a09339d6a5c285043b3836ea6443c5e",
+    "preparationSha256": "5ddfc402e5433bbc7e349186a2707fc5ab1b0b6d15d74d9a434c8a94e8f710ac",
+    "providerCalls": 0,
+    "resumabilityClaimed": false,
+    "serviceActions": 0,
+    "statementCompletionClaimed": false
+  },
+  "priorFailedAttemptPreserved": true,
+  "retainedState": {
+    "activityQuerySize": "1kB",
+    "database": "yunipals_backfill",
+    "databaseWrites": 0,
+    "generations": [
+      {
+        "id": "103",
+        "metadata_release_id": "metadata-20260921-v1",
+        "ownership_read_identity": null,
+        "ownership_release_id": null,
+        "published": true,
+        "source_mode": "archive",
+        "state": "ready",
+        "validation_keys": [
+          "collections",
+          "facet_count",
+          "scope_count",
+          "trait_count",
+          "search_count",
+          "revision_count",
+          "missing_revision"
+        ]
+      },
+      {
+        "id": "102",
+        "metadata_release_id": "metadata-20260921-v1",
+        "ownership_read_identity": null,
+        "ownership_release_id": null,
+        "published": true,
+        "source_mode": "archive",
+        "state": "ready",
+        "validation_keys": [
+          "collections",
+          "facet_count",
+          "scope_count",
+          "trait_count",
+          "search_count",
+          "revision_count",
+          "missing_revision"
+        ]
+      },
+      {
+        "id": "101",
+        "metadata_release_id": "metadata-20260921-v1",
+        "ownership_read_identity": null,
+        "ownership_release_id": null,
+        "published": true,
+        "source_mode": "archive",
+        "state": "retired",
+        "validation_keys": [
+          "collections",
+          "facet_count",
+          "scope_count",
+          "trait_count",
+          "search_count",
+          "revision_count",
+          "missing_revision"
+        ]
+      }
+    ],
+    "observedAt": "2026-10-25T11:20:24.341087+00:00",
+    "originalBuildRepeated": false,
+    "pointer": {
+      "current": "103",
+      "previous": "102"
+    },
+    "role": "postgres",
+    "serviceActions": 0,
+    "statementStatsExtension": [],
+    "stderrSummary": {
+      "bytes": 1487,
+      "frames": [
+        {
+          "column": 73,
+          "file": "client.js",
+          "line": 204
+        },
+        {
+          "column": 12,
+          "file": "connection.js",
+          "line": 64
+        },
+        {
+          "column": 10,
+          "file": "client.js",
+          "line": 422
+        },
+        {
+          "column": 16,
+          "file": "client.js",
+          "line": 222
+        },
+        {
+          "column": 12,
+          "file": "connection.js",
+          "line": 64
+        }
+      ],
+      "sqlStates": []
+    },
+    "tableStatsApproximate": [
+      {
+        "bytes": 57344,
+        "deadRows": 34,
+        "deletedRows": 0,
+        "insertedRows": 0,
+        "lastAutovacuum": "2026-10-16T03:26:53.273566+00:00",
+        "lastVacuum": null,
+        "liveRows": 1,
+        "relation": "active"
+      },
+      {
+        "bytes": 720896,
+        "deadRows": 0,
+        "deletedRows": 24665,
+        "insertedRows": 24665,
+        "lastAutovacuum": "2026-10-20T01:22:24.89498+00:00",
+        "lastVacuum": null,
+        "liveRows": 610,
+        "relation": "facet"
+      },
+      {
+        "bytes": 65536,
+        "deadRows": 15,
+        "deletedRows": 1275,
+        "insertedRows": 1275,
+        "lastAutovacuum": "2026-10-19T12:43:08.490762+00:00",
+        "lastVacuum": null,
+        "liveRows": 30,
+        "relation": "facet_status"
+      },
+      {
+        "bytes": 114688,
+        "deadRows": 26,
+        "deletedRows": 0,
+        "insertedRows": 89,
+        "lastAutovacuum": null,
+        "lastVacuum": null,
+        "liveRows": 99,
+        "relation": "generation"
+      },
+      {
+        "bytes": 73728,
+        "deadRows": 38,
+        "deletedRows": 0,
+        "insertedRows": 0,
+        "lastAutovacuum": "2026-10-21T22:15:04.130958+00:00",
+        "lastVacuum": null,
+        "liveRows": 4,
+        "relation": "read_epoch"
+      },
+      {
+        "bytes": 32768,
+        "deadRows": 35,
+        "deletedRows": 35,
+        "insertedRows": 35,
+        "lastAutovacuum": null,
+        "lastVacuum": null,
+        "liveRows": 0,
+        "relation": "read_guard"
+      },
+      {
+        "bytes": 8790622208,
+        "deadRows": 0,
+        "deletedRows": 3561465156,
+        "insertedRows": 3488950914,
+        "lastAutovacuum": "2026-10-25T10:02:59.527436+00:00",
+        "lastVacuum": null,
+        "liveRows": 3403509,
+        "relation": "read_member"
+      },
+      {
+        "bytes": 65536,
+        "deadRows": 34,
+        "deletedRows": 8220,
+        "insertedRows": 7985,
+        "lastAutovacuum": "2026-10-21T22:12:57.60445+00:00",
+        "lastVacuum": null,
+        "liveRows": 8,
+        "relation": "read_set"
+      },
+      {
+        "bytes": 1427939328,
+        "deadRows": 0,
+        "deletedRows": 82389900,
+        "insertedRows": 85608504,
+        "lastAutovacuum": "2026-10-25T11:06:07.099886+00:00",
+        "lastVacuum": "2026-10-20T01:11:38.250891+00:00",
+        "liveRows": 1459172,
+        "relation": "revision"
+      },
+      {
+        "bytes": 4081065984,
+        "deadRows": 0,
+        "deletedRows": 82389900,
+        "insertedRows": 86484562,
+        "lastAutovacuum": "2026-10-25T11:05:06.649833+00:00",
+        "lastVacuum": "2026-10-20T01:11:30.144901+00:00",
+        "liveRows": 1053428,
+        "relation": "search"
+      },
+      {
+        "bytes": 15067013120,
+        "deadRows": 0,
+        "deletedRows": 906710545,
+        "insertedRows": 942146536,
+        "lastAutovacuum": "2026-10-25T11:13:10.376254+00:00",
+        "lastVacuum": "2026-10-20T01:11:34.374057+00:00",
+        "liveRows": 14742132,
+        "relation": "trait"
+      }
+    ],
+    "traitGenerationStats": [
+      {
+        "commonValues": "{102,103}",
+        "correlation": 0.7001764,
+        "distinct": 2,
+        "frequencies": [
+          0.506,
+          0.494
+        ]
+      }
+    ],
+    "traitIndexes": [
+      {
+        "definition": "CREATE UNIQUE INDEX trait_pkey ON metadata_projection.trait USING btree (generation_id, collection, token_id, lifecycle, trait_type, value)",
+        "name": "trait_pkey"
+      },
+      {
+        "definition": "CREATE INDEX projection_trait_filter_idx ON metadata_projection.trait USING btree (generation_id, collection, trait_type, value, token_id, lifecycle)",
+        "name": "projection_trait_filter_idx"
+      },
+      {
+        "definition": "CREATE INDEX projection_trait_numeric_idx ON metadata_projection.trait USING btree (generation_id, collection, trait_type, value_numeric, token_id, lifecycle) WHERE (value_numeric IS NOT NULL)",
+        "name": "projection_trait_numeric_idx"
+      }
+    ]
+  },
+  "terminalResult": {
+    "automaticRetry": false,
+    "childExit": 1,
+    "elapsedSeconds": 1471.393,
+    "failure": "bounded_generation_duration_reached",
+    "invocation": "0ec51b22c502493aa9c81cbecde084a8",
+    "minimumAvailableBytes": 45534822400,
+    "ownedTermination": {
+      "noAdminGrantRequired": true,
+      "remainingBackends": 0,
+      "terminatedBackends": [
+        {
+          "pid": 531217,
+          "terminated": true
+        }
+      ]
+    },
+    "reserveBytes": 25000000000,
+    "safetyAbortThresholdBytes": 30000000000,
+    "workerResultSha256": "e4b134e73a1ae2348a3996e85050541d3f6161d72173051a088ab7c39b3f09c4"
+  },
+  "unpublishedTransactionRolledBack": true
+}
