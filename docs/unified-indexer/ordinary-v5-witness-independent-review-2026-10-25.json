@@ -1,0 +1,70 @@
+{
+  "actualArtifactSha256": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc",
+  "files": [
+    {
+      "bytes": 205,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.entry.ts",
+      "sha256": "62725db2394eb3603ab42ee10a1ed8d143807b0f182c19fb4359ddabbecbc410"
+    },
+    {
+      "bytes": 3312,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.build.mjs",
+      "sha256": "491b1d31eece7324dcff43cae1bdfc23a6cf7f928f3163f48731b14e2992af58"
+    },
+    {
+      "bytes": 18684,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.mjs",
+      "sha256": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc"
+    },
+    {
+      "bytes": 2184,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.sources.json",
+      "sha256": "ba5d4f5f89191f069f01b71becc5d4db540646458638b1ce188d38a4013d2fb3"
+    },
+    {
+      "bytes": 15985,
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v5.mjs",
+      "sha256": "359ebcef8fb6e2342087eb4a7e62811cd1dd10b2ad7353ff682d20112f08c484"
+    },
+    {
+      "bytes": 12196,
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v5.test.mjs",
+      "sha256": "01084e92eeaa9f50de58569b9cdb104e1dbdedb2d1158b5273910faf24f3fd1b"
+    },
+    {
+      "bytes": 7768,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v5.py",
+      "sha256": "6a188b53065b80809a6a573d64ed05b02a8df98c0432ae0610ca3aaae2621980"
+    },
+    {
+      "bytes": 6224,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v5.test.py",
+      "sha256": "b4240b71e8d9dc08ae9381e15b8d955260373843655ef24a8386965c9b49495f"
+    }
+  ],
+  "findings": [],
+  "format": "yunipals-V5-witness-independent-review-v1",
+  "gitActions": 0,
+  "independentActualReadOnlyCompiles": 2,
+  "nodeControlsPassed": 6,
+  "officialSourceFiles": 10,
+  "productionActions": 0,
+  "productionCaptureAccepted": false,
+  "providerCalls": 0,
+  "pythonControlsPassed": 6,
+  "repeatBuildEqual": true,
+  "reviewedAt": "2026-10-25T00:35:46.066619+00:00",
+  "runtimeExternalImports": [
+    "node:crypto"
+  ],
+  "sourceEdits": 0,
+  "verdict": "PASS",
+  "verifiedScope": [
+    "actual_created_V5_receipt_and_OID_body_marker_before_after",
+    "new_capture_identity_not_old_witness_relabel",
+    "unchanged_RR_snapshot_and_strict_all_six_equality",
+    "unchanged_canonical21RPC12HTTP_no_permits_no_retries",
+    "reused_measured_context_GET_counters_and_caps",
+    "root_private_exclusive_new_output_and_unknown_intent_no_retry"
+  ]
+}
