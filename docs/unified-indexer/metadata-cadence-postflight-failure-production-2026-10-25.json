@@ -1,0 +1,59 @@
+{
+  "actualRunnerResult": {
+    "LOGINDispatched": false,
+    "automaticRetryAllowed": false,
+    "baselineCompleted": false,
+    "baselineStarted": false,
+    "cadenceAccepted": false,
+    "callerSha256": "a4a1269b25aaa336fc101cc51252d7d1c275ccef0be63d84e59a4df1b2a22730",
+    "completed": false,
+    "elapsedNanoseconds": 472134609722,
+    "errorClass": "RuntimeError",
+    "failureCode": "bounded_readonly_inventory_command_required",
+    "format": "root-CONT3-current-cadence-baseline-v1",
+    "fullCurrentQualified": true,
+    "heldApplyDispatched": false,
+    "heldQualificationPerformed": false,
+    "metadataRefsSha256": "7de7b1a24a9360a7eca2db8d36d1934c7a7ac20d46a6f6e1813219a1ebee2021",
+    "observedAt": "2026-10-25T21:41:50.550909+00:00",
+    "outcomeReconciliationRequired": false,
+    "privateDiagnosticSha256": "d9760168e3355122c9d0ed5b7bd952cbced9535e4a6b8d58b4125e9857b405a9",
+    "proofHashes": {
+      "actor-after-cadence": "422a2ef0f20aa9ea5aef718cb9a28061a49bf409cb895b19d29c9fd8999ab42f",
+      "actor-before-cadence": "422a2ef0f20aa9ea5aef718cb9a28061a49bf409cb895b19d29c9fd8999ab42f",
+      "context": "e00b5f137718ae8dbc6e6fdae5ac42e3a6b1352aa1665be196a3dbe9bd63f5cd",
+      "full-current-prerequisites": "7e4009c67cb838e51677df8b382616b57f4660cfc930c84568d6edaa0aecf644",
+      "metadata-ack": "bfe8d790388bd3567fd47056461732a4c16a8d001734a04c8405ab01fc2a9035",
+      "source-preflight": "09e68eb7e43cb001befd4e1de44fb0c2abb4c70adf69db680c70ea766c7fe422"
+    },
+    "providerRefreshRequested": false,
+    "readOnlyCaptureFailureCount": 3,
+    "readerManifestSha256": "518d91ec7341543d7a07ba62d92d0b2f583ac52eec240d234b9deeca5f39712d",
+    "realCOMMITDispatched": false,
+    "remoteAuditInspectionRequired": true,
+    "resultSha256": "95a6a8b76287f7d226269d852758571ec4f8f4ac9ebf34a783ec187d3d76f952",
+    "sampleCount": 31,
+    "serviceActionsDispatched": 0,
+    "stage": "cadence-source-postflight"
+  },
+  "approvalsPending": false,
+  "diagnosis": {
+    "automaticRetryAuthorized": false,
+    "baselineIntentAbsent": true,
+    "exactChildFailureCauseProven": false,
+    "failedStep": "source postflight database connection inventory",
+    "fixedError": "bounded_readonly_inventory_command_required",
+    "originalFailurePreserved": true
+  },
+  "format": "root-current-cadence-postflight-failure-v1",
+  "fullMigrationComplete": false,
+  "sampleSummary": {
+    "cadenceOverallAccepted": false,
+    "maximumApprovalAgeSeconds": 58.46549,
+    "metadataActorBeforeAndAfterProofSha256": "422a2ef0f20aa9ea5aef718cb9a28061a49bf409cb895b19d29c9fd8999ab42f",
+    "metadataActorProofsEqual": true,
+    "minimumApprovalRemainingSeconds": 31.440208385,
+    "renewalCount": 2,
+    "sampleCount": 31
+  }
+}

@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 21:32 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 21:48 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
 
 Current verified milestones:
 
@@ -25,11 +25,17 @@ The metadata scheduling fix is now active and acknowledged: PID 1180697, invocat
 
 The corrected Arena recovery support is installed and its read-only production review passed. Its start refused a changed review hash before creating its operation directory, public runtime directory, unit or socket; all four absences were checked. Native Arena adoption remains pending. The public collection, boosters, wrap and Arena routes returned HTTP 200 at 21:27 UTC; these route checks do not prove browser rendering or a new wallet transaction. [Current activation and verification evidence](metadata-activation-and-continuation-status-production-2026-10-25.json).
 
+The repaired verification attempt passed full current metadata prerequisites and all 31 official approval samples, observing two renewals and a maximum approval age of 58.47 seconds. The same metadata actor qualified before and after sampling. The run then failed its final source postflight at the database-connection inventory command. Its exact child error is still being diagnosed; this does not qualify the overall cadence/baseline. No baseline invocation, cache commit, reader login or service action occurred. [Actual failed attempt and observed samples](metadata-cadence-postflight-failure-production-2026-10-25.json).
+
+The reviewed API/Arena/Solana continuation source is now published and staged: 305 public files verified, 13 created, none overwritten; no runtime inputs or service changes. [Actual source staging](forward-continuation-v3-stage-production-2026-10-25.json).
+
+The coordinated recovery and native-return source is also published and staged: 350 public files and six existing external prerequisites verified, 28 files created, no overwrites. Local and independent controls pass. This is prepared recovery code; the actual coordinated rollback and return have not run. [Actual recovery staging](coordinated-recovery-v3-stage-production-2026-10-25.json).
+
 Remaining migration work:
 
 - [x] Activate and acknowledge the new metadata worker through its reviewed lifecycle change, with the actual new process identity.
 - [x] Repair the missing immutable continuation dependencies without changing their source or policy.
-- [ ] Complete full metadata current-state verification and official approval-cadence observation.
+- [ ] Finish verification acceptance: full current metadata and 31 approval samples passed, but final source inventory postflight failed. Diagnose that exact error before a new qualification attempt.
 - [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The earlier commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; the separate approval refresh scheduling fix is now active, while full verification and new transaction qualification remain pending. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
 - [ ] Qualify replacement readers, publish generation 105 and switch the collection APIs/cache/staking workers. Actual previews and serving compatibility checks remain mandatory.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source; verify one genuine later opening or claim and complete eight-table parity before retiring its temporary scanner.
@@ -202,4 +208,4 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next production step:** complete the full current-metadata and approval-cadence checks, then run the new rollback-only cache baseline and complete held-transaction qualification before any cache commit. Preserve every failed attempt. Generation 105 is already accepted; publication, cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
+**Next production step:** diagnose the exact read-only connection-inventory error in the final source postflight, then obtain complete verification acceptance, run the new rollback-only cache baseline and complete held-transaction qualification before any cache commit. Preserve every failed attempt. Generation 105 is already accepted; publication, cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
