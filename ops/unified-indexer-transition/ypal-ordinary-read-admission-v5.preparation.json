@@ -1,0 +1,65 @@
+{
+  "authority": {
+    "loginChanges": 0,
+    "nativeRegrants": 0,
+    "newDml": 0,
+    "newRoles": 0,
+    "productionAdmitted": false,
+    "selectorChanges": 0,
+    "serviceActions": 0
+  },
+  "dependencies": [
+    {
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "sha256": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-readview-v5.py",
+      "sha256": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.py",
+      "sha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-combined-read-admission-v2.py",
+      "sha256": "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-fresh-forward-epoch-v1.py",
+      "sha256": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-combined-read-admission-v1.catalog.sql",
+      "sha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.columns.sql",
+      "sha256": "8efbbf11ba14c0ec645dfa0a9acc1ef64e89fc70315fb8d3b4cb66308162e4bf"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.py",
+      "sha256": "c2da9d590d75823ec5ecf3038f73da93854e760faadb91bbc71e135f56e0a15a"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-runtime-v1.py",
+      "sha256": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-read-admission-v5-preparation",
+  "immutableBaselineCount": 143,
+  "inputCandidateSha256": "1bb069f27782e70354e7a70fdbcd7f91e8a9afab0f639fd1d636823f14e8e87c",
+  "newLogicalCount": "derived from actual authenticated catalogs, never guessed",
+  "oldWholeValidatorPassed": false,
+  "operatorSha256": "adadc7f8a92f8bebc89c5824eed963b863c9f1293bf9e05b0f533ca0b4a903f7",
+  "scope": "existing-role equivalent logical reads only",
+  "testSha256": "32ca40cb95083a9ec8182f331154daee327e9d52fcf5fb70f6bbf8e31acb22f5",
+  "validation": {
+    "activationClaimed": false,
+    "focusedControls": 8,
+    "focusedPassed": true,
+    "independentGenuinePostgresGroups": 5,
+    "independentGenuinePostgresPassed": true,
+    "postgresFixture": "disposable PG16; exact19 V5 DDL and owner-generated transaction/graph bodies; fixture-only role/OID mappings"
+  }
+}
