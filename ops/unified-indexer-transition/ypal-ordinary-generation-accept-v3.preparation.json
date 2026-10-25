@@ -1,0 +1,61 @@
+{
+  "actualEffects": {
+    "buildStarts": 0,
+    "candidateAcceptance": 0,
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "productionAccess": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "bytes": 24985,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.py",
+      "sha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3"
+    },
+    {
+      "bytes": 9336,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.test.py",
+      "sha256": "900758e586c5e7af4e3b15e131db4077d856a01974d1a918bdde2181d9259c8b"
+    },
+    {
+      "bytes": 6702,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.postgres.test.mjs",
+      "sha256": "fad08a6f0423450a2f8303df77c5666b8a7fcac3dad6197a7df0ee5d8a4bc58b"
+    },
+    {
+      "bytes": 3816,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.md",
+      "sha256": "90f1db936ab33b45ba3cc03ccd3ca30c57bed0cd25d4b1296873018e5f8f4aa5"
+    },
+    {
+      "bytes": 17763,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.manifest.json",
+      "sha256": "30e849c9fc9f65b86599baf505fcc99ad6161f181664805f63c639f4709e021c"
+    }
+  ],
+  "format": "yunipals-ordinary-generation-accept-v3-preparation",
+  "previousAcceptanceCLIPassed": false,
+  "previousAcceptanceProducerSha256": "1e29585a8c1b09747c061e47e0b2fbf2a984d10949c12f36d847b336f8a5259d",
+  "previousSqlAcceptanceCLIPassed": false,
+  "previousSqlAcceptanceProducerSha256": "b6b6eb8c707290c29fbcd6eedf2e13c6c1d5dcc293a3806b0d6ab76bc9ab49fe",
+  "remainingAcceptance": [
+    "actual_new_complete_Host_readonly_review",
+    "fresh_exact_review_hash_before_new_candidate_acceptance",
+    "actual_candidate_receipt",
+    "newconsumer_source_bindings_and_fresh_complete_callback_timing",
+    "separate_coordinated_publication"
+  ],
+  "runtimeSourceFiles": 169,
+  "sourceOnly": true,
+  "validation": {
+    "fixedWholeValidatorPassed": true,
+    "fixtureDatabaseRemoved": true,
+    "originalSQLSTATE": "42601",
+    "postgres": "16.15",
+    "postgresGroups": 13,
+    "processAndWorkerOutputEvidence": "synthetic_fixture",
+    "retainedCommandSeconds": 8,
+    "sourceGroups": 8
+  }
+}
