@@ -1,5 +1,38 @@
 {
-  "adoptionReviewStarted": false,
+  "adoption": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T13:32:49.047126+00:00",
+    "phase": "adopt",
+    "report": {
+      "automaticRetryAllowed": false,
+      "format": "yunipals-ypal-ordinary-generation-attempt-v2",
+      "generationStarted": false,
+      "operationSha256": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5",
+      "reviewHash": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "80f0542eeb1d40813ad59d26a40f7cc5b75e9c3990e82e86f9db21ae607e318e"
+  },
+  "adoptionReview": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T13:24:39.566437+00:00",
+    "phase": "review",
+    "report": {
+      "automaticRetryAllowed": false,
+      "format": "yunipals-ypal-ordinary-generation-attempt-v2",
+      "generationStarted": false,
+      "operationSha256": null,
+      "reviewHash": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "544c2c60c0d4dd4a0d48b68d31248ea57b327d39ac4acd04b83b8c8020eb47be"
+  },
+  "adoptionReviewStarted": true,
+  "buildStartStillRequiresFreshFullWindow": true,
   "candidateAccepted": false,
   "format": "yunipals-generation-attempt-v2-production",
   "generationPublished": false,
@@ -19,9 +52,16 @@
     "stdoutSha256": "9006f2a925df9101148cb2b0c65d5aa7521ae791140986896579592322917112"
   },
   "localControlsPassed": 26,
-  "newOperationCreated": false,
+  "newOperationCreated": true,
   "newWorkerStarted": false,
+  "operationSha256": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5",
   "ownerSha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+  "precedingBackup": {
+    "exited": "2026-10-25T13:17:29Z",
+    "invocation": "6563283730a740579647caf6055db0c0",
+    "result": "success",
+    "started": "2026-10-25T13:17:13Z"
+  },
   "separateActualBuildWindowStillRequired": true,
   "sourceCommit": "42e1eb34f318c1e2df055b3591be073990de4931",
   "staging": {
