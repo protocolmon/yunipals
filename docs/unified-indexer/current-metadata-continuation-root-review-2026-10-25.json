@@ -1,0 +1,21 @@
+{
+  "actualHeldTransactionQualified": false,
+  "actualProgramEpochQualified": false,
+  "approvalValiditySeconds": 90,
+  "commitTailSeconds": 5,
+  "databaseWrites": 0,
+  "format": "yunipals-current-metadata-continuation-root-review-v2",
+  "independentComposedFamilyControlsPassed": 8,
+  "independentMetadataHelperControlsPassed": 11,
+  "lifecycleOperatorSha256": "5f395d9e4cc68edd88e7b0a7c0d3db2fff80901aa881c373186387285e5a92e3",
+  "lifecycleSourceManifestSha256": "7d53fd78c48264f41b1c053468b61c806f57e135b90f70dbaa0828cca69fc90e",
+  "oldTimingReused": false,
+  "preparationSha256": "98e9379fe63a5cde8d77cc74ad1ffbf55da8f5fc2792da55b7033cae18bbd9d5",
+  "priorAbortedTransactionId": "16540148",
+  "providerCalls": 0,
+  "readerManifestSha256": "8c08dd3285dca10b36012e84807ea932ebfafc119c926989a048e66ff1fed743",
+  "rootComposedFamilyControlsPassed": 8,
+  "rootMetadataHelperControlsPassed": 11,
+  "serviceActions": 0,
+  "stageSha256": "0dc56dab6ae02f747963d67c8d9730a14147994fdb8db1fe16692ad02245fe0a"
+}

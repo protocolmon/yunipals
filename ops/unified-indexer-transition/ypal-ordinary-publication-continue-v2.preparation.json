@@ -1,0 +1,131 @@
+{
+  "actualCacheInputSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+  "actualHeldQualificationRequired": true,
+  "actualMetadataEpochQualified": false,
+  "cacheInputChanged": false,
+  "effectSQLPeersWireAndQueryUnchanged": true,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "explicitCommitTailSeconds": 5,
+  "files": [
+    {
+      "bytes": 15970,
+      "file": "ypal-ordinary-metadata-current-epoch-v1.py",
+      "sha256": "7175b73f0f278a77b92ccabc2bd38258de81197884cc24bcbe30a7abdaa09e0f"
+    },
+    {
+      "bytes": 5280,
+      "file": "ypal-ordinary-cache-continuation-authority-v2.py",
+      "sha256": "6ab6b0ae7e0bff7107cee6c50a709de631e505c1acef101a34ce9ec6290e303f"
+    },
+    {
+      "bytes": 5337,
+      "file": "ypal-ordinary-read-cache-continue-v2.py",
+      "sha256": "6155280da8f53e6e3448c024bc3e142a5f69a8d3e1a6a39ae3faa8c1d44d1a34"
+    },
+    {
+      "bytes": 9302,
+      "file": "ypal-ordinary-reader-continue-v2.py",
+      "sha256": "1d86989516bbcd4823c11f12761a073585437315e0d2e2c9b7f9e7253792f4a7"
+    },
+    {
+      "bytes": 6853,
+      "file": "ypal-ordinary-publication-continue-v2.py",
+      "sha256": "5234d3fae4d7231ad7b966eae133d9132c71ad3098ce463672720c563d9f3aa2"
+    },
+    {
+      "bytes": 3768,
+      "file": "ypal-ordinary-publication-continue-inputs-v2.py",
+      "sha256": "bb89dc2a3e798e7d507a9fa723ba7eb4ec679ffe64c7e83922bfb8d35c697ba7"
+    },
+    {
+      "bytes": 4452,
+      "file": "ypal-ordinary-publication-continue-manifest-v2.py",
+      "sha256": "ca66e80b9880d945bbadaed2bab40de70b0425d5a49f73f00a3c0d01ae19d7e4"
+    },
+    {
+      "bytes": 14281,
+      "file": "ypal-ordinary-metadata-current-epoch-v1.test.py",
+      "sha256": "efbb0fbb1031fb6a6775657c450466892e360d854d1d3b8a715006e709c49ed8"
+    },
+    {
+      "bytes": 14480,
+      "file": "ypal-ordinary-publication-continue-v2.test.py",
+      "sha256": "2d8008a1dabbf84c129824ddd893689d6d7a6d39a7fa3aca09acc4cf70236eb4"
+    },
+    {
+      "bytes": 8033,
+      "file": "ypal-ordinary-publication-continue-v2.md",
+      "sha256": "550ca93626f9cf0914debdaa1d6cd86064d6a57bf2715deb6159cbedb8e025b0"
+    },
+    {
+      "bytes": 670,
+      "file": "ypal-ordinary-metadata-current-epoch-v1.manifest.json",
+      "sha256": "ac005ac44651a31c954426cca6edde676a4e337ab2c926d001538fc784a7ab62"
+    },
+    {
+      "bytes": 1599,
+      "file": "ypal-ordinary-cache-continuation-authority-v2.manifest.json",
+      "sha256": "cd1f95a8db31650e2eb1283819a25ca9f528b5a950d35b19ae757625e3b4ffe6"
+    },
+    {
+      "bytes": 34317,
+      "file": "ypal-ordinary-reader-continue-v2.manifest.json",
+      "sha256": "8c08dd3285dca10b36012e84807ea932ebfafc119c926989a048e66ff1fed743"
+    },
+    {
+      "bytes": 64626,
+      "file": "ypal-ordinary-publication-continue-v2.stage.json",
+      "sha256": "0dc56dab6ae02f747963d67c8d9730a14147994fdb8db1fe16692ad02245fe0a"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-continue-v2-preparation",
+  "historicalMetadataActorQualifiedAsCurrent": false,
+  "historicalMetadataSelectionRetained": true,
+  "metadataApprovalTTLSeconds": 90,
+  "metadataArtifact": {
+    "digest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+    "manifestSha256": "fc579afc4169b658df1cd3f8faaaba1fa811b0a1db3999c5deba322870712c3b"
+  },
+  "metadataLifecycle": {
+    "actualEpochReceiptEmitted": false,
+    "actualResultInputRefsRequired": true,
+    "file": "ypal-native-metadata-approval-epoch-v2.py",
+    "manifestSha256": "7d53fd78c48264f41b1c053468b61c806f57e135b90f70dbaa0828cca69fc90e",
+    "sha256": "5f395d9e4cc68edd88e7b0a7c0d3db2fff80901aa881c373186387285e5a92e3"
+  },
+  "oldTimingReused": false,
+  "priorAbortedTransactionId": "16540148",
+  "priorDraftValidation": {
+    "controlsPassed": 19,
+    "lifecycleProducerSha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+    "metadataHelperSha256": "d09c015d6e9cba4eed80acd71e9a80dcfd597fb42ddc5bed8eee850b2b69d82c",
+    "oldLifecycleEffectSuccessClaimed": false,
+    "supersededBeforeConsumerPublication": true
+  },
+  "priorFailedJournalsAndInodesPreserved": true,
+  "publicFileCount": 280,
+  "publicStageClosureFile": "ypal-ordinary-publication-continue-v2.stage.json",
+  "publicStageClosureSha256": "0dc56dab6ae02f747963d67c8d9730a14147994fdb8db1fe16692ad02245fe0a",
+  "readerInverseDispatchOpen": false,
+  "readerSourceManifestSha256": "8c08dd3285dca10b36012e84807ea932ebfafc119c926989a048e66ff1fed743",
+  "rootStepsPending": [
+    "Verify and stage exact sources without overwriting frozen files.",
+    "Obtain actual lifecycle acceptance/result/input refs and prove new current metadata actor/cadence before live continuation qualification.",
+    "Construct genuine new post-drain records, qualify complete held SQL+callback with wrong ACK/actual rollback, and review exact90-second remaining budget.",
+    "Explicitly authorize commit only after actual qualification; reconcile every unknown outcome without replay.",
+    "Use actual new prepared ACK and separate metadata refs to qualify LOGIN/publication and later current-prefix inverse independently."
+  ],
+  "verification": {
+    "actualCompositionControlsPassed": 8,
+    "independentReviewPending": false,
+    "metadataCurrentControlsPassed": 11,
+    "protocolAgent": "No findings; independently reran11+8 after actual Owner2 repin and byte-reproduced helper/authority/reader manifests. Prior draft remains historical.",
+    "publicStageHashesAndOriginsChecked": 280
+  }
+}
