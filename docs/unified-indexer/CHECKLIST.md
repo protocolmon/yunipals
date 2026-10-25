@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 19:31 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 20:02 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
 
 Current verified milestones:
 
@@ -20,6 +20,8 @@ The existing collection APIs passed nine HTTP/response checks at 18:19 UTC, incl
 - [x] Install and independently verify the reviewed metadata scheduling artifact inactive at 19:24 UTC. The original metadata worker and shared ingestor retain their exact running identities; no runtime activation or cadence acceptance is claimed. [Actual installation](native-metadata-approval-inactive-install-production-2026-10-25.json).
 
 - [x] Install and verify the native Arena recovery support artifact inactive. It is published in the public branch; no projector, worker, data-source selection or SQL change has occurred. [Actual installation](native-arena-derived-support-inactive-install-production-2026-10-25.json).
+
+The first metadata-program activation passed its live read-only review, then refused before effects because the fresh review hash changed. A subsequent paired live review differed only in unrelated database peers (seven versus six); selected actor, owned sessions, source, config, scan, boot and state matched. The new operation and overlay are absent, and the original worker is still running. A narrow successor will retain all owned facts while excluding only unrelated peers from authorization hashing. [Actual attempt, reconciliation and diagnostic](native-metadata-epoch-first-activation-production-2026-10-25.json).
 
 Remaining migration work:
 
