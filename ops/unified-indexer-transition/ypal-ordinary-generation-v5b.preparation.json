@@ -1,0 +1,77 @@
+{
+  "dependencies": [
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.py",
+      "sha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-handover-v5.py",
+      "sha256": "9b9184e685d3171beba3bce2f09aa3ddbb9c57f980e5243bd4c9710017f7825f"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-candidates-v5.py",
+      "sha256": "869a37bf324575c569c22fe020cc4ad62e9776429e1e5a137078bf5acaa262ca"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-cache-candidates-v1.py",
+      "sha256": "3d42ae007e722edc582a2a8907282869af37d940eeba93f7426d327280a428b3"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-runtime-install-v2.py",
+      "sha256": "0c031bdc798b8466ea29624bbfdb253e392830ab2b2f833be4c41d6fb91c5e8f"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-fresh-forward-epoch-v1.py",
+      "sha256": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c"
+    }
+  ],
+  "effectStatus": "source only; root qualifies actual metadata/provenance/disk/backup window before effects",
+  "format": "yunipals-ypal-ordinary-generation-v5b-preparation",
+  "guardSha256": "591fce0365e6581644a064470cb830d0ec06c2e135e439cb58dac02d8bc1e8b2",
+  "heldPredecessor": {
+    "actualOperationsOrEffects": 0,
+    "producerSha256": "c9baba6776fd14270d63c09258d3cea3f2dd18306f21df50fc614ee909e9e9f3",
+    "reason": "V4 guard binding in recovery graph",
+    "sourceAndHistoryPreserved": true
+  },
+  "monitorSha256": "1d5103094766df54d5603e3ae8eccf0e144a628e9ea35a00fa3a8f199d82d5b3",
+  "postgresTestSha256": "5600dc8c8c6aefdd63c2aeacb17d098c63fb8085d07de6e63f0e09fd8bb38d12",
+  "preserved": {
+    "abortFreeBytes": 30000000000,
+    "f81CompiledWorker": true,
+    "genericCapsuleSchemaV1Unchanged": true,
+    "maximumMonitorSeconds": 1470,
+    "minimumReserveBytes": 25000000000,
+    "original103AndPriorRetained": true,
+    "poolMaximum": 4,
+    "sameNative71e": true,
+    "serviceRuntimeMaxSeconds": 1500
+  },
+  "recoverySha256": "a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df",
+  "runtimeSha256": "1ae130895711cd6ec7ddb26a23deb93c62f1bef7c859787b762ce5552a40f512",
+  "testSha256": "9fe2fb7eaa7753813b5c7163f228d4910ad25b3f977360663c2eb2619441fc87",
+  "validation": {
+    "actualCapsuleCaptured": false,
+    "candidatePublished": false,
+    "focusedControlsPassed": 8,
+    "generationBuilt": false,
+    "genuinePeerBridgeUsesNewGraph": true,
+    "genuinePostgresGroupsPassed": 14,
+    "independentFocusedControlsPassed": 8,
+    "independentReviewPending": false,
+    "independentReviewSha256": "dd5e250f350e793a93ef4b6de078741e89907a42bb52776d447d673980a2a67b",
+    "oldV4IdentityRefused": true
+  }
+}

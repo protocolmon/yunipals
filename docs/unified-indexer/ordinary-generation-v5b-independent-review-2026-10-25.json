@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-25",
+  "effects": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "hostActions": 0,
+    "productionQueries": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "bytes": 9104,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5b.py",
+      "sha256": "1ae130895711cd6ec7ddb26a23deb93c62f1bef7c859787b762ce5552a40f512"
+    },
+    {
+      "bytes": 10189,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-watch-v5b.py",
+      "sha256": "1d5103094766df54d5603e3ae8eccf0e144a628e9ea35a00fa3a8f199d82d5b3"
+    },
+    {
+      "bytes": 14898,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-transition-v5.mjs",
+      "sha256": "591fce0365e6581644a064470cb830d0ec06c2e135e439cb58dac02d8bc1e8b2"
+    },
+    {
+      "bytes": 16974,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-recovery-v5.mjs",
+      "sha256": "a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df"
+    },
+    {
+      "bytes": 9995,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5b.test.py",
+      "sha256": "9fe2fb7eaa7753813b5c7163f228d4910ad25b3f977360663c2eb2619441fc87"
+    },
+    {
+      "bytes": 15609,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-recovery-v5.postgres.test.mjs",
+      "sha256": "5600dc8c8c6aefdd63c2aeacb17d098c63fb8085d07de6e63f0e09fd8bb38d12"
+    },
+    {
+      "bytes": 5770,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5b.md",
+      "sha256": "98327ab34a4cf3c59c579f72f62bbd24fb80c36906131b1f3ebbc55c6d58e044"
+    },
+    {
+      "bytes": 3231,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5b.preparation.json",
+      "sha256": "fd6c388ee4ab22e82d2e879921a1f3390bcf9688f1da6c092660ccfd71a365e3"
+    }
+  ],
+  "findings": [],
+  "format": "yunipals-ordinary-generation-V5b-independent-review-v1",
+  "limitations": [
+    "No host preflight, capsule capture, generation build/publication, activation restore or production SQL was executed by reviewer.",
+    "The inspected genuine PG14 program covers new graph/dataURL/lostACK and actual103 restore; its reported successful run was not repeated.",
+    "Actual metadata selection/provenance/current writer/capacity/backup window remain mandatory runtime prerequisites.",
+    "Capsule capture/inverse retains separately bounded direct postgres authority; business publication authority is not enlarged."
+  ],
+  "reviewed": [
+    "new1ae operation/base/unit/candidate format identity without relabeling held c9b predecessor",
+    "real9b91 metadata namespace construction and actual metadata execution/READ refs",
+    "selector exclusive intent/result chain and actual five/four public selector scope",
+    "guard591f is exact6cba business with only V5 schema/identity binding changes",
+    "recoverya194 is exactB45 business with only explicit new guard import",
+    "BRIDGE replaces the new guard specifier into its authenticated dataURL and avoids old V4 dependency resolution",
+    "candidate database leaf/capsule verification and source-independent false authority outputs preserved",
+    "prepared callback before sole capsule COMMIT and read-only lostACK verification unchanged",
+    "generation103/null-identity predecessor plus old stamps/wallets/guard catalog preservation",
+    "same native71e/pool4/25GB reserve/30GB abort/1470s monitor and no backup overlap checks",
+    "typed actual backup Timer scalar-or-singleton data is strict nonnegative int, not boolean",
+    "old c9b source remains separate and unused by this graph"
+  ],
+  "scope": "source_constructor_V5_guard_capsule_import_graph_and_retained_business_bodies",
+  "sourcePacketSha256": "26035d9fa40907e8cf299c201ea615b78224a8ca76af68d5f7a3240da82c17df",
+  "tests": {
+    "focusedPythonIndependentlyRerun": 8,
+    "genuinePostgresProgramInspectedGroups": 14,
+    "genuinePostgresRepeatPerformed": false,
+    "passed": true
+  },
+  "verdict": "PASS"
+}
