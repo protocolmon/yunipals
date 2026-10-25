@@ -22,9 +22,23 @@ records. This measurement does not itself accept a generation or switch readers.
 
 Use the actual metadata input, read admission, f81 installation and staged
 selector receipts described in `ypal-ordinary-generation-v5b.next-commands.md`,
-but invoke `ypal-ordinary-generation-v5c.py`. For completed provenance batch 2,
+but invoke the explicit `ypal-ordinary-generation-phase-v1.py` entry. It calls
+the authenticated V5c main with the same arguments. For completed provenance batch2,
 use the actual hash of `provenance-2-observed.json`; the separate completion
 producer records its ancestry without claiming the failed original phase passed.
+
+Actual completed provenance receipt:
+`6d8998f33db107a278097aff8b419cb0bea684151b2e73f7b72fc20a48906c1b`.
+Actual staged selector receipt:
+`451c497495c138e887bd95acfa426f40f5bf7194369ca22df42c85f6611b579b`.
+Keep the existing f81 install acknowledgement on the host as the input source;
+do not substitute the metadata-worker or Arena installation receipts.
+
+The first review stopped before effects because the next Arena backup fell
+inside the required build window. That backup completed successfully at
+10:17:50UTC on25October; its timer stayed active and unchanged. A separate
+post-backup review owns the next review hash. Do not reuse the failed review's
+hash or repeat a drain/capsule/build with an unknown acknowledgement.
 
 New operation directory:
 `/var/backups/yunipals-ypal-ordinary-generation-v5c-20261025`.
