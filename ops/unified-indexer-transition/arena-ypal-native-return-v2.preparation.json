@@ -1,0 +1,95 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "externalPrerequisites": 6,
+  "files": [
+    {
+      "bytes": 47353,
+      "file": "arena-ypal-native-return-v2.py",
+      "sha256": "b76c85f3669caf3a1d770ce56f7dd136a717f0a91ab5f005deab47fbaed42163"
+    },
+    {
+      "bytes": 39478,
+      "file": "arena-ypal-native-return-v2.manifest.json",
+      "sha256": "364bcc9354f109187d30c2d27ac08a76fa1ad7dd4f8c986ece76342d243cd130"
+    },
+    {
+      "bytes": 2541,
+      "file": "arena-ypal-native-return-v2-manifest.py",
+      "sha256": "4ae74c9534a9d0fed09cf76e65f4816ecd8d0a13cc70b2a91cf1101d85c90e49"
+    },
+    {
+      "bytes": 2986,
+      "file": "arena-ypal-native-return-child-v2.mjs",
+      "sha256": "92abc5f99ae9eba7ebc405109a51e2c6e4263c8b8e9e96100a86b2398ad8fd9b"
+    },
+    {
+      "bytes": 7458,
+      "file": "arena-ypal-native-return-v2.test.py",
+      "sha256": "c074f67d12c9d2c5eaa99a15fddfea3a067d2d1283a93e8eb691722a07f4c99f"
+    },
+    {
+      "bytes": 2205,
+      "file": "arena-ypal-native-return-child-v2.test.mjs",
+      "sha256": "83588a25c8a436f99e94c049aab10ddfa346fb739fa4e1046a6bd6366cdbcc7a"
+    },
+    {
+      "bytes": 2735,
+      "file": "arena-ypal-native-return-child-v2.test.py",
+      "sha256": "14a693236b2cafd17a176f89faaf63e139c356d65c5870001351e7a32d60b4e7"
+    },
+    {
+      "bytes": 2158,
+      "file": "arena-ypal-native-return-v2.postgres.test.mjs",
+      "sha256": "3aa88858eb9884ca41b64a3eca0755820e01e9efccc93a353f161398aaa60c27"
+    },
+    {
+      "bytes": 1810,
+      "file": "arena-ypal-native-return-v2.postgres.test.py",
+      "sha256": "ce7cca3a0f69703d100969e2827d511a03ee861203c665217a74ff85fe687eaa"
+    },
+    {
+      "bytes": 7273,
+      "file": "arena-ypal-native-return-v2.md",
+      "sha256": "a420ac09aea581640f3c11218c8d105e353cb198198f81c596e8f9250663215b"
+    },
+    {
+      "bytes": 82255,
+      "file": "arena-ypal-native-return-v2.stage.json",
+      "sha256": "7dd566275a013a9177203bb2c1701515a9efad1af0f75fe4e139e0531e3f0f59"
+    }
+  ],
+  "format": "yunipals-arena-ypal-native-return-v2-preparation",
+  "knownRequiredFollowups": [
+    "actual completed C2 inverse and completed feature-inverse3 ACK plus genuine postfeature3 input",
+    "actual projector2 current/support/admission/auth/native8/private11/financial/budget/source/canonical qualifications",
+    "new owned plan/operation/review/prepare/publish with actual XIDs and fresh native-direct actor/selector ACK",
+    "ready1 ordering before later cacheguard inversion or separately qualified continuation",
+    "actual full coordinated rehearsal/final native current and business acceptance remain incomplete"
+  ],
+  "originalOwnerCLIPassedClaimed": false,
+  "publicStageClosureCount": 345,
+  "publicStageClosureFile": "arena-ypal-native-return-v2.stage.json",
+  "publicStageClosureSha256": "7dd566275a013a9177203bb2c1701515a9efad1af0f75fe4e139e0531e3f0f59",
+  "sourceOnly": true,
+  "verification": {
+    "actualNativeArenaSourceConstructorAndSameDelegatedBackendVerified": true,
+    "childNodeControlsPassed": 3,
+    "fullTransactionPrivateAndXIDBodiesRetained": true,
+    "independentParentSourceReview": "A: no concrete findings, independently17/17 passed",
+    "localFixtureSchemasRolesSocketsRemoved": true,
+    "parentControlsPassed": 17,
+    "postgresVersion": "16.15",
+    "productionAccess": 0,
+    "realPostgreSQLTransactionGroupsPassed": 12,
+    "realSealedMemfdControlsPassed": 3,
+    "realSharedNativePostgreSQLGroupsPassed": 14
+  }
+}
