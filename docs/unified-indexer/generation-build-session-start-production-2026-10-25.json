@@ -1,0 +1,108 @@
+{
+  "caller": {
+    "automaticRetryAllowed": false,
+    "backupTimersModified": false,
+    "callerExitCode": 0,
+    "callerSha256": "be76ac934c89ca315ae6e54ad2576fb1803d1d22f9b0e6ffc1fe7d630b16153b",
+    "callerStderrBytes": 0,
+    "callerStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "callerStdoutSha256": "cbaba27d6d8a330833c0696e812f43935e62fb035c23b827ce6a9a742ebd9b99",
+    "format": "root-generation-after-backup-v1",
+    "observedAt": "2026-10-25T14:24:41.969140+00:00",
+    "report": {
+      "automaticRetryAllowed": false,
+      "completed": true,
+      "format": "yunipals-ypal-ordinary-generation-build-session-v1",
+      "generationAcceptedClaimed": false,
+      "generationPreparedClaimed": false,
+      "generationStartedByCaller": true,
+      "inputSha256": "f5e35a8c4a25b9b7bf95f4a02c32096c62e95da66b2a198e6172eeaaeef29c28",
+      "oneGenuineHostPerInvocation": true,
+      "operationSha256": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5",
+      "operatorSha256": "be76ac934c89ca315ae6e54ad2576fb1803d1d22f9b0e6ffc1fe7d630b16153b",
+      "originalBuildReviewAndRepeatedChecksUnchanged": true,
+      "originalMainInvoked": false,
+      "originalOwnerSha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+      "originalWorkerStartReceiptSha256": "67e38ec9227d6c3d1b93f7c42b8cdd5bf1df55fc4a396aff5eb9995577a5b9bf",
+      "parentMaximumSeconds": 900,
+      "publicationAllowed": false,
+      "readonlyReconciliation": false,
+      "reviewHash": "bea9ea546d2b502f1c26eacc8f7a56bbe9c781f5d5ee703d9ac374bc6d2b5391",
+      "reviewSha256": "deb4dd767287ab20730feac4518941099f654fb95a843e9ec46f1d7a6b0d0237",
+      "stageDurationsNanoseconds": {
+        "buildCall": 219235804001,
+        "buildReview": 118135041204,
+        "hostConstructor": 43375658698
+      }
+    },
+    "resultSha256": "b40c0f193bfa313e1e195db289a33646d06461509a5275539e9252ecac7605eb"
+  },
+  "format": "yunipals-generation-build-session-start-production-v1",
+  "generationAccepted": false,
+  "generationPrepared": false,
+  "generationPublished": false,
+  "independentWorkerObservation": {
+    "availableBytes": 51311710208,
+    "databaseWrites": 0,
+    "latestStatement": {
+      "file": "statement-0014.json",
+      "sample": {
+        "applicationName": "yunipals_ypal_ordinary_generation_attempt_v2_20261025",
+        "format": "yunipals-ypal-ordinary-generation-attempt-watch-v2-statement",
+        "observedUnix": 1792938433.6426547,
+        "rawSqlExported": false,
+        "rows": [
+          {
+            "backendStartedUnix": "1792938283.974967",
+            "pid": 761611,
+            "queryBytes": 1023,
+            "querySha256": "a7b469c9c7d9f930297ddd21beb78e0ee85bfb2d037d1b87e1eedcea65876f03",
+            "queryStartedUnix": "1792938284.034052",
+            "state": "active",
+            "waitEvent": null,
+            "waitEventType": null
+          }
+        ]
+      },
+      "sha256": "00c1799c9803e9ba2ab899cc11dffb96829d7c5613a923c7e32a1b9a298ed965"
+    },
+    "maximumSeconds": 2400,
+    "observedAt": "2026-10-25T14:27:19.555276+00:00",
+    "privateStderrBytes": 0,
+    "privateStdoutBytes": 0,
+    "sameAcknowledgedInvocation": true,
+    "serviceActions": 0,
+    "startReceiptSha256": "67e38ec9227d6c3d1b93f7c42b8cdd5bf1df55fc4a396aff5eb9995577a5b9bf",
+    "startedUnix": 1792938282.3704858,
+    "statementSamples": 15,
+    "unit": {
+      "ActiveState": "active",
+      "Id": "yunipals-ypal-ordinary-generation-attempt-v2.service",
+      "InvocationID": "7f1cda77051e4f00bfd51a8a20e9e8ec",
+      "MainPID": "761561",
+      "NRestarts": "0",
+      "Result": "success",
+      "SubState": "running"
+    },
+    "workerIntentSha256": "13c45cb1a76a68b1b05f11403cdd62329e6447694c9626ca3d0f5c69370fc20b",
+    "workerResult": null
+  },
+  "limits": {
+    "abortFreeBytes": 30000000000,
+    "automaticRetry": false,
+    "reserveBytes": 25000000000,
+    "workerMaximumSeconds": 2400
+  },
+  "observedAt": "2026-10-25T14:27:19.555276+00:00",
+  "phaseCompletionClaimed": false,
+  "publishedPointerObservation": {
+    "currentGeneration": "103",
+    "databaseWrites": 0,
+    "observedAt": "2026-10-25T14:29:22.021324+00:00",
+    "previousGeneration": "102",
+    "serviceActions": 0
+  },
+  "sampledSqlPhase": [
+    "capture-inputs-do-block"
+  ]
+}

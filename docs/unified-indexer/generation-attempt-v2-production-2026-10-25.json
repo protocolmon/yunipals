@@ -32,7 +32,8 @@
     "stdoutSha256": "544c2c60c0d4dd4a0d48b68d31248ea57b327d39ac4acd04b83b8c8020eb47be"
   },
   "adoptionReviewStarted": true,
-  "buildStartStillRequiresFreshFullWindow": true,
+  "buildStartStillRequiresFreshFullWindow": false,
+  "callerResultSha256": "b40c0f193bfa313e1e195db289a33646d06461509a5275539e9252ecac7605eb",
   "candidateAccepted": false,
   "format": "yunipals-generation-attempt-v2-production",
   "generationPublished": false,
@@ -53,7 +54,7 @@
   },
   "localControlsPassed": 26,
   "newOperationCreated": true,
-  "newWorkerStarted": false,
+  "newWorkerStarted": true,
   "operationSha256": "dfc3adef373c5c904ec2143cce22ccd7aba4c93d80b6586c8c0f0e71f3e362b5",
   "ownerSha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
   "precedingBackup": {
@@ -73,5 +74,8 @@
     "publicFilesCreated": 2,
     "publicFilesVerified": 165,
     "serviceActions": 0
-  }
+  },
+  "workerInvocation": "7f1cda77051e4f00bfd51a8a20e9e8ec",
+  "workerMainPid": "761561",
+  "workerStartReceiptSha256": "67e38ec9227d6c3d1b93f7c42b8cdd5bf1df55fc4a396aff5eb9995577a5b9bf"
 }
