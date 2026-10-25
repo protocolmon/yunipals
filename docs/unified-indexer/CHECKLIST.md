@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 17:56 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 19:15 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
 
 Current verified milestones:
 
@@ -11,16 +11,19 @@ Current verified milestones:
 - [x] Collection/rarity/search generation 105 built and accepted at 15:58 UTC. It is ready and unpublished; public selection remains 103/102. [Acceptance](generation-acceptance-production-2026-10-25.json).
 - [x] Full cache review passed at 16:53 UTC; real SQL rollback rehearsal passed at 17:07 UTC.
 - [x] Old cache writer drained at 17:17 UTC, with its original boot link archived.
-- [x] Complete cache commit checks passed at 17:21 UTC: 77.12 seconds within its 240-second window. [Actual cache records](publication-cache-handover-production-2026-10-25.json).
+- [x] Standalone cache callback checks passed at 17:21 UTC in 77.12 seconds. This was outside the held SQL transaction; the required complete transaction rehearsal and commit remain unaccepted. [Actual cache records](publication-cache-handover-production-2026-10-25.json).
 - [x] Reviewed API/feature/Arena/Solana handover source staged: 252 public files verified, 24 created, none overwritten. Staging changed no services or permissions. [Actual staging](publication-cache-handover-production-2026-10-25.json).
+- [x] Publish and stage the reviewed feature/Arena recovery source: 279 public files and six existing external prerequisites verified at 18:01 UTC, 32 created, none overwritten. No runtime input, service install/start or actual rollback is claimed. [Actual staging and limits](recovery-source-stage-production-2026-10-25.json).
+
+The existing collection APIs passed nine HTTP/response checks at 18:19 UTC, including capped-rarity sorting across all four chains. The fresh pack API is ready and returns one public pack type. A separate live native-metadata sample caught approval age 94.08 seconds exceeding its unchanged 90-second limit while all other gates matched; five seconds later it refreshed and passed. A later sample tied to the actual metadata worker observed approval expiry at 90.11 seconds while all five of its database connections were idle, followed by renewal. Nine kernel captures qualified and four were discarded. The same-worker scheduling fix has passed local controls and independent review; installation and actual production acceptance remain pending. These observations do not prove the historical failure's precise subcondition. [Actual sampling and current HTTP checks](metadata-approval-readiness-production-2026-10-25.json).
 
 Remaining migration work:
 
-- [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The actual commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; the particular approval condition is still being investigated. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
+- [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The actual commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; normal-operation observations have isolated a separate approval refresh scheduling defect; its production fix and new transaction qualification remain pending. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
 - [ ] Qualify replacement readers, publish generation 105 and switch the collection APIs/cache/staking workers. Actual previews and serving compatibility checks remain mandatory.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source; verify one genuine later opening or claim and complete eight-table parity before retiring its temporary scanner.
 - [ ] Adopt managed EVM/Solana supervision and native Arena workers.
-- [ ] Finish and execute coordinated rollback, then return to native readers/workers. Three parallel agents are completing the remaining recovery code and independent reviews.
+- [ ] Finish and execute coordinated rollback, then return to native readers/workers. Three parallel agents are completing the metadata lifecycle change, its authenticated reader integration and independent review, alongside the remaining recovery paths.
 - [ ] Enable and verify recurring native rarity/leaderboard refresh with retained generation lineage.
 - [ ] Complete actual process-restart and 24-hour observation acceptance, then retire the remaining duplicate scanners and finish handover evidence.
 

@@ -1,0 +1,650 @@
+{
+  "actualApprovalSampling": {
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-metadata-approval-readonly-sampling",
+    "historicalFailureCauseProved": false,
+    "observedAt": "2026-10-25T18:11:46.317258+00:00",
+    "providerCalls": 0,
+    "resultSha256": "9c29125351aa941960dac0e6bfe28d2ed6936d57e379b41c62747eb04e758e2f",
+    "samples": [
+      {
+        "approvalAgeSeconds": 94.08083,
+        "approvalReady": false,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:10:45.019742+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 0,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 4.792282,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:10:50.132986+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 1,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 9.896815,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:10:55.237519+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 2,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 15.007114,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:00.347818+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 3,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 20.115189,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:05.455893+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 4,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 25.217425,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:10.558129+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 5,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 30.321554,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:15.662258+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 6,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 35.419974,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:20.760678+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 7,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 40.526059,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:25.866763+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 8,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 45.630105,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:30.970809+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 9,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 50.731274,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:36.071978+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 10,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 55.836651,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:41.177355+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 11,
+        "sourceReady": true,
+        "stateReady": true
+      },
+      {
+        "approvalAgeSeconds": 60.950783,
+        "approvalReady": true,
+        "checkedBlockCovered": true,
+        "checkedHashRetained": true,
+        "frontierMatches": true,
+        "implementationMatches": true,
+        "observedAt": "2026-10-25T18:11:46.291487+00:00",
+        "querySucceeded": true,
+        "readIdentityMatches": true,
+        "sample": 12,
+        "sourceReady": true,
+        "stateReady": true
+      }
+    ],
+    "serviceActions": 0
+  },
+  "actualExecutedProgram": {
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-selected-metadata-executed-program-check",
+    "programMatchesAcknowledgedNormalizationArtifact": true,
+    "programSha256": "5c868742926fb5a56583bc25d87a814ce91c9509728c67df0ab507f8f40adc21",
+    "serviceActions": 0,
+    "workingDirectorySourceIsNotExecutedBundle": true
+  },
+  "actualExistingHTTPChecks": {
+    "apiActorEpochQualified": false,
+    "canonicalParityClaimed": false,
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-post-cache-attempt-http-check",
+    "freshPackChecks": [
+      {
+        "bodySha256": "e1c23188a4ff8682c14151b465f12760196d49a4ba6513ab27a6f9fa204e149c",
+        "path": "/readyz",
+        "status": 200
+      },
+      {
+        "bodySha256": "3dab89e42cb75f734442cd532a9a1278a55c1ee1f37196b713f847129d8b53db",
+        "path": "/v1/boosters/types",
+        "publicPackTypes": 1,
+        "status": 200
+      }
+    ],
+    "httpAndResponseShapeOnly": true,
+    "legacyCollectionChecks": [
+      {
+        "bodySha256": "33488ec793d89de006040a03303e5082c60ef57ebc16c8abc9cc67418e803e4e",
+        "path": "/ready",
+        "ready": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "758be3225cc8a558f52cafd0b547319c694f405f7d0a6af3660ac796adca1e8c",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=ethereum&limit=2&metadata=all&sort=token-id-asc",
+        "rarityDescending": false,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "1d1b4bafe6e1062ce647e2683ac1b6bc648470f1b835d18f1e485304011593d7",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=ethereum&limit=2&metadata=all&sort=rarity-capped-desc",
+        "rarityDescending": true,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "0c4ef8e6d56eb3da5c9a288ac57ad03349b675e62478e4f443e4841aa0b669f7",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=base&limit=2&metadata=all&sort=token-id-asc",
+        "rarityDescending": false,
+        "rarityPresent": false,
+        "status": 200
+      },
+      {
+        "bodySha256": "10faf5ff9cdbc14d8cf68b9bd48a707613fd8209533248bb475a54e11456e206",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=base&limit=2&metadata=all&sort=rarity-capped-desc",
+        "rarityDescending": true,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "51987df0c84e8867fbadd9e41443a5db229c7688928423b97034715799931be4",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=polygon&limit=2&metadata=all&sort=token-id-asc",
+        "rarityDescending": false,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "eedaf869089605144ff6cb702e44dd6b32095cb4a7ba7cee7dcae251eb1c343b",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=polygon&limit=2&metadata=all&sort=rarity-capped-desc",
+        "rarityDescending": true,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "7a91b7ba4cf2f09ff47b9565d4e7321b3bd6b45a700f309c53e2049bb8114152",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=bnb&limit=2&metadata=all&sort=token-id-asc",
+        "rarityDescending": false,
+        "rarityPresent": true,
+        "status": 200
+      },
+      {
+        "bodySha256": "b055c08a05aafc162abae434c10032ef2127a933a0d73e5d348084337e9bfd78",
+        "items": 2,
+        "nonempty": true,
+        "path": "/v1/tokens?chain=bnb&limit=2&metadata=all&sort=rarity-capped-desc",
+        "rarityDescending": true,
+        "rarityPresent": true,
+        "status": 200
+      }
+    ],
+    "observedAt": "2026-10-25T18:19:33.900853+00:00",
+    "serviceActions": 0
+  },
+  "actualOwnedWorkerCadence": {
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-owned-metadata-cadence-v2-readonly",
+    "historicalFailureCauseProved": false,
+    "kernelAttributionQualified": false,
+    "observedAt": "2026-10-25T18:46:05.613504+00:00",
+    "positiveKernelSamples": 9,
+    "providerCalls": 0,
+    "resultSha256": "bb6b5784a0b38d27a4220e91b2003d0254764c3e9128c2d9c69cc034a35e200f",
+    "sameSelectedMetadataActor": true,
+    "samples": [
+      {
+        "approvalAgeSeconds": 72.322441,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417186,
+        "observedAt": "2026-10-25T18:45:12.267265+00:00",
+        "ownedActivities": [
+          {
+            "hash": "10e449fae4a02ae9b663ec09b4499a6f",
+            "nativeLease": false,
+            "queryAge": 13.840119,
+            "state": "active",
+            "wait": null,
+            "words": [
+              "token_metadata",
+              "token_publication"
+            ]
+          }
+        ],
+        "ownedBackendCount": 1
+      },
+      {
+        "approvalAgeSeconds": 76.810286,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417186,
+        "observedAt": "2026-10-25T18:45:16.745596+00:00",
+        "ownedActivities": [
+          {
+            "hash": "10e449fae4a02ae9b663ec09b4499a6f",
+            "nativeLease": false,
+            "queryAge": 18.319966,
+            "state": "active",
+            "wait": "DataFileRead",
+            "words": [
+              "token_metadata",
+              "token_publication"
+            ]
+          }
+        ],
+        "ownedBackendCount": 1
+      },
+      {
+        "exceptionClass": "AssertionError",
+        "kernelCaptureQualified": false,
+        "mainCpuTicks": 417186,
+        "observedAt": "2026-10-25T18:45:21.121785+00:00"
+      },
+      {
+        "approvalAgeSeconds": 85.650415,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417208,
+        "observedAt": "2026-10-25T18:45:25.588998+00:00",
+        "ownedActivities": [
+          {
+            "hash": "25e0c32b64e78d4293cc035108497461",
+            "nativeLease": false,
+            "queryAge": 0.000899,
+            "state": "active",
+            "wait": "ClientRead",
+            "words": [
+              "token_metadata"
+            ]
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 0.019097,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 1.597856,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 0.408361,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 0.410911,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 5
+      },
+      {
+        "approvalAgeSeconds": 90.112774,
+        "approvalReady": false,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417247,
+        "observedAt": "2026-10-25T18:45:30.055263+00:00",
+        "ownedActivities": [
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 1.55399,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 3.210676,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 6.063389,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 0.019165,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 4.876443,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 5
+      },
+      {
+        "exceptionClass": "AssertionError",
+        "kernelCaptureQualified": false,
+        "mainCpuTicks": 417281,
+        "observedAt": "2026-10-25T18:45:34.472226+00:00"
+      },
+      {
+        "approvalAgeSeconds": 0.585569,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417285,
+        "observedAt": "2026-10-25T18:45:38.931510+00:00",
+        "ownedActivities": [
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 4.227601,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 4.63358,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 4.227962,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          },
+          {
+            "hash": "a4fc4e7c6389b9e03ba9db5e29b76706",
+            "nativeLease": false,
+            "queryAge": 0.507042,
+            "state": "active",
+            "wait": null,
+            "words": [
+              "base_metadata_frame"
+            ]
+          },
+          {
+            "hash": "1d0ba376e273b9d622641124d8c59264",
+            "nativeLease": false,
+            "queryAge": 4.630021,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 5
+      },
+      {
+        "exceptionClass": "AssertionError",
+        "kernelCaptureQualified": false,
+        "mainCpuTicks": 417312,
+        "observedAt": "2026-10-25T18:45:43.345823+00:00"
+      },
+      {
+        "exceptionClass": "AssertionError",
+        "kernelCaptureQualified": false,
+        "mainCpuTicks": 417313,
+        "observedAt": "2026-10-25T18:45:47.697315+00:00"
+      },
+      {
+        "approvalAgeSeconds": 13.847348,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417338,
+        "observedAt": "2026-10-25T18:45:52.189907+00:00",
+        "ownedActivities": [
+          {
+            "hash": "c7be8a0a715a9fddbd99802bcd758912",
+            "nativeLease": false,
+            "queryAge": 1.482537,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 1
+      },
+      {
+        "approvalAgeSeconds": 18.316996,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417339,
+        "observedAt": "2026-10-25T18:45:56.659728+00:00",
+        "ownedActivities": [
+          {
+            "hash": "c7be8a0a715a9fddbd99802bcd758912",
+            "nativeLease": false,
+            "queryAge": 0.841167,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 1
+      },
+      {
+        "approvalAgeSeconds": 22.803154,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417341,
+        "observedAt": "2026-10-25T18:46:01.144114+00:00",
+        "ownedActivities": [
+          {
+            "hash": "c7be8a0a715a9fddbd99802bcd758912",
+            "nativeLease": false,
+            "queryAge": 0.248838,
+            "state": "idle",
+            "wait": "ClientRead",
+            "words": []
+          }
+        ],
+        "ownedBackendCount": 1
+      },
+      {
+        "approvalAgeSeconds": 27.272883,
+        "approvalReady": true,
+        "kernelCaptureQualified": true,
+        "mainCpuTicks": 417342,
+        "observedAt": "2026-10-25T18:46:05.613160+00:00",
+        "ownedActivities": [
+          {
+            "hash": "cde6a8c3a27ebc9712cdf9f9d2547c66",
+            "nativeLease": false,
+            "queryAge": 0.019604,
+            "state": "active",
+            "wait": null,
+            "words": [
+              "publication_job",
+              "archive_release"
+            ]
+          }
+        ],
+        "ownedBackendCount": 1
+      }
+    ],
+    "serviceActions": 0,
+    "sourceHashes": {
+      "archive-worker.ts": "44d4edddc65d103739d0d61f53a73b1048d4665554c421732311c3c8b4e926c7",
+      "native-base.ts": "e31698338a76fd0fffbb6bc2c638ab35963a96d8c586e82ff634e6645795b9ad"
+    },
+    "ticksPerSecond": 100
+  },
+  "ageExpiryObservedOutsideCacheDDL": true,
+  "allOtherApprovalGatesMatchedAtExpiredSample": true,
+  "approvalTTLChanged": false,
+  "cacheCommitRetried": false,
+  "format": "yunipals-metadata-approval-readiness-production-v1",
+  "historicalCacheFailureSpecificConditionProved": false,
+  "historicalServerDetail": "base_metadata_approval_pending",
+  "metadataRuntimeChanged": false,
+  "ownedWorkerObservationLimits": {
+    "allSamplesKernelQualified": false,
+    "discardedKernelCaptures": 4,
+    "expiredApprovalObservedWithFiveOwnedBackendsIdle": true,
+    "newSchedulerProductionAcceptanceClaimed": false,
+    "positiveKernelCaptures": 9,
+    "preciseHistoricalCacheFailureCauseProved": false
+  },
+  "remainingAcceptance": [
+    "deploy and qualify the reviewed same-worker approval scheduler with its actual new process identity",
+    "qualify explicit continuation of the proven aborted cache transaction against that actual metadata identity",
+    "switch readers/services and complete coordinated rollback/native return"
+  ],
+  "sharedRoleActivitySummary": {
+    "actualResultSha256": "1053ee817e8805fd272ecc820752bf536b9a89136b3ea632201d0d484ee88187",
+    "maximumObservedActiveQueryAgeSeconds": 4.601837,
+    "processAttributionQualified": false,
+    "samples": 9
+  }
+}

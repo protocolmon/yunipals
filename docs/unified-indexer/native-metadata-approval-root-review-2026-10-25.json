@@ -1,0 +1,46 @@
+{
+  "additionalIngestors": 0,
+  "approvalValiditySeconds": 90,
+  "artifactDigest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+  "currentMetadataEpochQualified": false,
+  "databaseWrites": 0,
+  "format": "yunipals-native-metadata-approval-root-review-v1",
+  "manifestSha256": "fc579afc4169b658df1cd3f8faaaba1fa811b0a1db3999c5deba322870712c3b",
+  "negativeObservations": [
+    {
+      "databaseWrites": 0,
+      "failure": "exact predecessor package.json absent from supplied recovery root",
+      "outputCreated": false,
+      "serviceActions": 0,
+      "stage": "first_root_build_control"
+    },
+    {
+      "passed": true,
+      "stage": "corrected_root_build_control",
+      "usesExactTwoRecoveryRoots": true
+    }
+  ],
+  "onlyMetadataWorkerJsAndMapChanged": true,
+  "predecessorSixOutputBytesReproduced": true,
+  "productionInstalled": false,
+  "productionRuntimeStarted": false,
+  "providerCalls": 0,
+  "quietCheckSeconds": 60,
+  "rootChecks": {
+    "filesystemCompilerReproductionControls": 6,
+    "installerControls": 4,
+    "transformedWorkerControls": 7
+  },
+  "runtimeCadenceQualified": false,
+  "sameWorkerAndPool": true,
+  "serviceActions": 0,
+  "sourceSha256": {
+    "ypal-native-metadata-approval-build-v1.mjs": "2b1ac7823efbd41363ea924fe41171ef70e1c2551296b607723d677a411d2b27",
+    "ypal-native-metadata-approval-build-v1.test.mjs": "7a4263124ab0d3a7b24358b046fb185159686d9e763bb58ce67b1ff78af8b98e",
+    "ypal-native-metadata-approval-install-v1.py": "5fa35ac24e6747b06a648504967c1be6b7f52687ee5f9e3295bcd79c2fe3981a",
+    "ypal-native-metadata-approval-install-v1.test.py": "5ecf0faa28a44f7719710e19b38a6f47ba71aec487a3ef2ccda6cf5cf3f23d0f",
+    "ypal-native-metadata-approval-scheduler-v1.mjs": "a2391b02496d14b25511b19c57951f1bb9837189aee625ff9637d68cf893c90f",
+    "ypal-native-metadata-approval-worker-v1.mjs": "9c8bc423142efd5b6718670e1c5dde51b87316af95786b82aa9b5fcab1eb425b",
+    "ypal-native-metadata-approval-worker-v1.test.mjs": "81225af223eb6392edbaa1ea6919084da06edb456fab853213261f93b0c943a7"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "actualStage": {
+    "candidateInputsCreated": 0,
+    "commit": "6b14c4c9d78631a0a0de7e6e78c751d16f3e451d",
+    "completed": true,
+    "currentReadinessClaimed": false,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "externalExistingOnlyVerified": 6,
+    "format": "root-recovery-frozen-source-stage",
+    "observedAt": "2026-10-25T18:01:47.221545+00:00",
+    "permissionChanges": 0,
+    "providerCalls": 0,
+    "publicFilesCreated": 32,
+    "publicFilesVerified": 279,
+    "resultSha256": "c943b11df0a28db0ea47aa2cbf03937a52bcb6e124b5047c44617f2ef45790e0",
+    "serviceActions": 0
+  },
+  "arenaInverseProductionQualified": false,
+  "completeNativeReturnRequired": true,
+  "currentTargetReadinessQualified": false,
+  "derivedProjectorInstalled": false,
+  "derivedProjectorStarted": false,
+  "featureInverseProductionQualified": false,
+  "format": "yunipals-reviewed-recovery-source-stage-production-v1",
+  "laterConsumerPrefixAndReady0RouteStillRequired": true,
+  "runtimeInputsCreated": false
+}
