@@ -1,0 +1,22 @@
+{
+  "actualProgramEpochAcknowledged": false,
+  "actualSourceRowsVerified": 255,
+  "databaseWrites": 0,
+  "fixedDeploymentFiles": 257,
+  "format": "yunipals-native-metadata-approval-epoch-root-review-v1",
+  "independentFocusedControlsPassed": 26,
+  "operatorSha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+  "preparationSha256": "3f08098ced6b330573fd54fc7a90ba1a3263c4bcde593977baf850b47c84836c",
+  "providerCalls": 0,
+  "reviewedBoundaries": [
+    "same-lock full current forward source and catalog fences",
+    "unchanged original private env boot selector and history",
+    "fresh actor comparison immediately before stop plus fresh/prior owned session termination",
+    "start acknowledgement gap recovered with zero manager calls",
+    "later inverse closed without actual current source and owned catalog input"
+  ],
+  "rootFocusedControlsPassed": 26,
+  "runtimeCadenceQualified": false,
+  "serviceActions": 0,
+  "sourceManifestSha256": "d30975e78bad3bdb80a16c498bd7b069ce557dfdb4328c5628d0101088aa2575"
+}

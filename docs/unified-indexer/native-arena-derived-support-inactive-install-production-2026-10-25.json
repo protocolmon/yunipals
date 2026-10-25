@@ -1,0 +1,180 @@
+{
+  "actualCredentialShapeObservation": {
+    "databaseWrites": 0,
+    "files": [
+      {
+        "file": "native-read.env",
+        "keyNames": [
+          "ARENA_INDEXER_MODE",
+          "ARENA_INDEXER_SOURCE_KIND",
+          "ARENA_INDEXER_RELEASE_ID",
+          "ARENA_INDEXER_DATABASE_URL"
+        ],
+        "nonemptyLineCount": 4,
+        "sha256": "62653f1e628b2830cc8ef1ac7bf2788a3407bfb75b1f4b95e531eff5970a9243",
+        "valuesExported": false
+      },
+      {
+        "file": "public-rollback-writer.env",
+        "keyNames": [
+          "ARENA_PUBLIC_ROLLBACK_DATABASE_URL"
+        ],
+        "nonemptyLineCount": 1,
+        "sha256": "d18d865775edb63503a60d83bbdf9e21752948a9c086875317ac7c2ca87bc6d4",
+        "valuesExported": false
+      },
+      {
+        "file": "public-rollback-reader.env",
+        "keyNames": [
+          "ARENA_PUBLIC_ROLLBACK_DATABASE_URL"
+        ],
+        "nonemptyLineCount": 1,
+        "sha256": "85f290b2086c070474008aeb603e61140b7a9020bbfd82e74823c29e12a771a0",
+        "valuesExported": false
+      }
+    ],
+    "format": "root-native-projector-credential-shape-readonly",
+    "observedAt": "2026-10-25T19:41:53.360648+00:00",
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "actualInstall": {
+    "artifactDigest": "a330c3f1ba2701ba287f0675b0c6c11ca010e85d504d5e8798df574625972f67",
+    "databaseWrites": 0,
+    "files": 3,
+    "format": "yunipals-arena-native-derived-support-install-v1",
+    "installed": true,
+    "providerCalls": 0,
+    "receiptSha256": "e4ab62260389f459d020c7b87b0458f39c6d241a4bf1ce21899d493b90257730",
+    "runtimeSelected": false,
+    "serviceActions": 0
+  },
+  "actualInstalledVerification": {
+    "artifactDigest": "a330c3f1ba2701ba287f0675b0c6c11ca010e85d504d5e8798df574625972f67",
+    "databaseWrites": 0,
+    "files": 3,
+    "format": "yunipals-arena-native-derived-support-install-v1",
+    "installed": true,
+    "providerCalls": 0,
+    "receiptSha256": "e4ab62260389f459d020c7b87b0458f39c6d241a4bf1ce21899d493b90257730",
+    "runtimeSelected": false,
+    "serviceActions": 0
+  },
+  "actualProjectorInput": {
+    "actualReceiptRefs": {
+      "sourceAuthSha256": "ad2c6c8a5252b42931f5a0927af486999b6f366db1d3b716c0b3cda1318249ee",
+      "targetAdmissionSha256": "e50cf78f610e23ebab485b47ba4328cb74dd3031353545582f37b7bf99adc889",
+      "targetAuthSha256": "136cf4552c41131aba5799c274ad0a1599ddac4a6c2068b760f3f69f0bbc0373"
+    },
+    "catalogOrRuntimeReadinessClaimed": false,
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-native-derived-projector-actual-input",
+    "inputSha256": "11efdc0154d6f7aa999319f747a2e2ed283cc0884d82ee533ba2cb81843cc721",
+    "maximumBlocks": 10000000,
+    "maximumEvents": 10000,
+    "observedAt": "2026-10-25T19:37:45.193503+00:00",
+    "ownerInputAndActualAdmissionAuthenticationVerified": true,
+    "pollMilliseconds": 10000,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "supportManifestSha256": "19a9a5737c153192c0723aa73c3d3f4e119f2492cb775ac617a63b0b57bbaf5e"
+  },
+  "actualPublicStage": {
+    "artifactDigest": "a330c3f1ba2701ba287f0675b0c6c11ca010e85d504d5e8798df574625972f67",
+    "commit": "c24d13dad6a56614ea2dc0e9637db61b73c91e3b",
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "format": "root-native-derived-support-public-artifact-stage",
+    "observedAt": "2026-10-25T19:29:55.049780+00:00",
+    "providerCalls": 0,
+    "publicFilesCreated": 4,
+    "publicFilesVerified": 4,
+    "resultSha256": "e98c2cde96c03ee69fe32b480280f0221515abee60e0f7beaa94e2b997b52bb3",
+    "runtimeInstalled": false,
+    "runtimeSelected": false,
+    "serviceActions": 0
+  },
+  "actualReadOnlyReviewDiagnostic": {
+    "completed": false,
+    "databaseWrites": 0,
+    "exceptionClass": "RuntimeError",
+    "format": "root-native-derived-projector-readonly-review-diagnostic",
+    "initialFailureCauseProved": false,
+    "observedAt": "2026-10-25T19:40:18.929752+00:00",
+    "privateTraceSha256": "177d58ad3f31e6a9292eb39d2877d7b7d2c0a8d0915eeb28bbd70bc407207bf2",
+    "providerCalls": 0,
+    "publicProgramFrames": [
+      {
+        "file": "arena-native-derived-projector-v1.py",
+        "function": "review_start",
+        "line": 416
+      },
+      {
+        "file": "arena-native-derived-projector-v1.py",
+        "function": "public_config",
+        "line": 225
+      },
+      {
+        "file": "arena-native-derived-projector-v1.py",
+        "function": "existing_credentials",
+        "line": 177
+      },
+      {
+        "file": "arena-native-derived-projector-v1.py",
+        "function": "need",
+        "line": 59
+      }
+    ],
+    "resultSha256": "fcee1af50c712cce2fe5885cd5862b7627e38e9928d29550d2bbde1562d07890",
+    "runtimeStarted": false,
+    "serviceActions": 0
+  },
+  "actualReadOnlyStartReview": {
+    "completed": false,
+    "databaseWrites": 0,
+    "failureCode": "private_projector_diagnostics_withheld",
+    "format": "root-native-derived-projector-production-review",
+    "inputSha256": "11efdc0154d6f7aa999319f747a2e2ed283cc0884d82ee533ba2cb81843cc721",
+    "observedAt": "2026-10-25T19:38:57.243728+00:00",
+    "providerCalls": 0,
+    "resultSha256": "97e5e12530dc488b0d740a0c9391afc6cc402a6f7a0c0e957a5e1a40a86fabab",
+    "runtimeStarted": false,
+    "serviceActions": 0,
+    "stderrBytes": 0,
+    "stdoutSha256": "0b4dff6e90bb2e45e0e22eb011c1ce79eed110efa2cc15796ba820dbd52b1ab5",
+    "supportManifestSha256": "19a9a5737c153192c0723aa73c3d3f4e119f2492cb775ac617a63b0b57bbaf5e"
+  },
+  "actualReview": {
+    "databaseWrites": 0,
+    "files": 3,
+    "format": "yunipals-arena-native-derived-support-install-v1",
+    "providerCalls": 0,
+    "reviewHash": "0015a749ea1f963c86af2b746b9b385d2cbcd089b8f2d8fb10fee42941abce2f",
+    "serviceActions": 0
+  },
+  "artifactDigest": "a330c3f1ba2701ba287f0675b0c6c11ca010e85d504d5e8798df574625972f67",
+  "currentProjectionQualified": false,
+  "databaseWrites": 0,
+  "format": "yunipals-native-arena-derived-support-inactive-install-production-v1",
+  "knownPreflightIssue": {
+    "acknowledgedNativeCredentialFileKeyCount": 4,
+    "correctionRequiresExplicitOwnerSuccessor": true,
+    "credentialFilesRewritten": false,
+    "credentialValuesExported": false,
+    "reviewedOwnerExpectedKeyCount": 1,
+    "serviceStarted": false
+  },
+  "providerCalls": 0,
+  "publicCommit": "c24d13dad6a56614ea2dc0e9637db61b73c91e3b",
+  "remainingAcceptance": [
+    "prepare and qualify explicit owner successor that reads the acknowledged four-key native credential format",
+    "qualify actual retained Node and dependencies through projector owner",
+    "complete actual current catalog review, start and qualify the restricted projector before Arena business rollback"
+  ],
+  "runtimeDependenciesQualified": false,
+  "runtimeSelected": false,
+  "serviceActions": 0,
+  "workersConstructed": false
+}
