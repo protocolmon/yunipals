@@ -65,7 +65,9 @@ export async function createOwnershipReadViews(
     )
   );
   const identity = manifestDigest({
-    version: nativeBase ? 4 : 3,
+    // Latest reads serve the verified complete prefix after framework catch-up.
+    // This semantic change requires a new identity; existing views are immutable.
+    version: 5,
     releaseId: release.id,
     configs,
     nativeBase
@@ -231,13 +233,16 @@ export async function createOwnershipReadViews(
         available:=least(indexed,verified,required);
         IF available<(v_definition->>'startBlock')::bigint THEN RAISE EXCEPTION 'not_indexed'; END IF;
         boundary:=observation.anchors->available::text;
-        IF boundary IS NULL OR COALESCE(boundary->>'hash','')!~'^0x[0-9a-f]{64}$'
+        IF boundary IS NULL OR boundary->>'number' IS DISTINCT FROM available::text
+          OR COALESCE(boundary->>'hash','')!~'^0x[0-9a-f]{64}$'
           OR COALESCE(boundary->>'timestamp','')!~'^(0|[1-9][0-9]*)$'
           THEN RAISE EXCEPTION 'anchor_unavailable'; END IF;
         RETURN QUERY SELECT v_definition->>'id',selected_collection,observation.chain_id,v_definition->>'address',
           available,boundary->>'hash',(boundary->>'timestamp')::bigint,
           to_timestamp(observation.observed_at_ms::numeric/1000),
-          (runtime->>'heartbeat_at')::bigint,available>=required,${literal(release.id)},${literal(release.manifestHash)},
+          (runtime->>'heartbeat_at')::bigint,
+          CASE WHEN config->'policy'->>'kind'='latest' THEN runtime->>'is_ready' IS NOT DISTINCT FROM '1'
+            ELSE available>=required END,${literal(release.id)},${literal(release.manifestHash)},
           CASE WHEN config->'policy'->>'kind'='depth' THEN 'depth:'||(config->'policy'->>'subsequentBlocks')
             ELSE config->'policy'->>'kind' END;
       EXCEPTION WHEN OTHERS THEN

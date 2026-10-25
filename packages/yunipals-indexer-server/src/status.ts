@@ -14,7 +14,11 @@ export async function readIndexerSourceStatus(
   release: RegisteredRelease,
   sourceId: string,
   policy: ConfirmationPolicy,
-  options: { nowMs?: number; maxObservationAgeMs?: number } = {}
+  options: {
+    nowMs?: number;
+    maxObservationAgeMs?: number;
+    requiredThroughBlock?: bigint;
+  } = {}
 ) {
   const source = release.manifest.sources.find(
     (source) => source.id === sourceId
@@ -59,6 +63,7 @@ export async function readIndexerSourceStatus(
     chainId: source.chainId,
     release,
     coverageStartBlock: BigInt(source.startBlock ?? "0"),
+    frameworkReady: runtime.frameworkReady,
     completeThroughBlock:
       indexed === null || verified === null
         ? null
@@ -89,25 +94,43 @@ export async function readIndexerSourceStatus(
           }
         : null
   };
-  const readiness = evaluateSourceReadiness(source, snapshot, {
+  let readiness = evaluateSourceReadiness(source, snapshot, {
     expectedRelease: release,
     policy,
     nowMs: options.nowMs ?? Date.now(),
-    maxObservationAgeMs: options.maxObservationAgeMs ?? 180000
+    maxObservationAgeMs: options.maxObservationAgeMs ?? 180000,
+    requiredThroughBlock: options.requiredThroughBlock
   });
   const anchor =
     readiness.availableThroughBlock === null
       ? null
       : (status?.anchors[String(readiness.availableThroughBlock)] ?? null);
+  const anchorMissing =
+    readiness.availableThroughBlock !== null &&
+    (!anchor ||
+      anchor.number !== String(readiness.availableThroughBlock) ||
+      !/^(0|[1-9][0-9]*)$/.test(anchor.timestamp));
+  if (anchorMissing) {
+    readiness = {
+      ...readiness,
+      ready: false,
+      reason: "observation_inconsistent",
+      availableThroughBlock: null
+    };
+  }
   return {
     source,
     snapshot,
     readiness,
-    anchor,
+    anchor: anchorMissing ? null : anchor,
     observationRevision: status?.revision ?? null,
     errorCode:
       status?.error_code ??
-      (!branchMatches ? "indexer_witness_unverified" : null)
+      (!branchMatches
+        ? "indexer_witness_unverified"
+        : anchorMissing
+          ? "indexer_anchor_unverified"
+          : null)
   };
 }
 
@@ -116,7 +139,11 @@ export async function indexerSourceStatus(
   release: RegisteredRelease,
   sourceId: string,
   policy: ConfirmationPolicy,
-  options: { nowMs?: number; maxObservationAgeMs?: number } = {}
+  options: {
+    nowMs?: number;
+    maxObservationAgeMs?: number;
+    requiredThroughBlock?: bigint;
+  } = {}
 ) {
   return indexerTransaction(
     pool,

@@ -23,6 +23,7 @@ export type SourceSnapshot = {
   release: IndexerRelease;
   coverageStartBlock: bigint;
   completeThroughBlock: bigint | null;
+  frameworkReady: boolean;
   indexerObservedAtMs: number;
   head: ChainObservation | null;
   finalized: ChainObservation | null;
@@ -139,8 +140,18 @@ export function evaluateSourceReadiness(
   if (source.endBlock !== null && boundary > BigInt(source.endBlock)) {
     boundary = BigInt(source.endBlock);
   }
-  const required = options.requiredThroughBlock ?? boundary;
   const indexed = snapshot.completeThroughBlock;
+  // "latest" serves the complete, verified prefix supplied by the reader.
+  // Framework catch-up must have finished before that prefix is a serving
+  // boundary. Explicit block targets and confirmation policies remain exact.
+  const latestComplete =
+    options.policy.kind === "latest" &&
+    options.requiredThroughBlock === undefined;
+  const required =
+    options.requiredThroughBlock ??
+    (latestComplete && indexed !== null && indexed < boundary
+      ? indexed
+      : boundary);
   if (indexed === null || indexed < BigInt(source.startBlock)) {
     return result("not_indexed", null, required);
   }
@@ -149,7 +160,9 @@ export function evaluateSourceReadiness(
   }
   const available = indexed < boundary ? indexed : boundary;
   return result(
-    available >= required && required >= BigInt(source.startBlock)
+    available >= required &&
+      required >= BigInt(source.startBlock) &&
+      (!latestComplete || snapshot.frameworkReady)
       ? "ready"
       : "catching_up",
     available < BigInt(source.startBlock) ? null : available,

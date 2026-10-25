@@ -31,6 +31,7 @@ const snapshot: SourceSnapshot = {
   release,
   coverageStartBlock: 10n,
   completeThroughBlock: 100n,
+  frameworkReady: true,
   indexerObservedAtMs: 1000,
   head: {
     chainId: 8453,
@@ -54,6 +55,94 @@ const options = {
 };
 
 describe("source-scoped confirmation policies", () => {
+  it("serves the latest complete prefix without requiring the observed head", () => {
+    const value = { ...snapshot, completeThroughBlock: 94n };
+    const latest = { ...options, policy: { kind: "latest" } as const };
+    expect(evaluateSourceReadiness(source, value, latest)).toEqual({
+      ready: true,
+      reason: "ready",
+      availableThroughBlock: 94n,
+      requiredThroughBlock: 94n
+    });
+    expect(
+      evaluateSourceReadiness(
+        source,
+        { ...value, frameworkReady: false },
+        latest
+      )
+    ).toMatchObject({ ready: false, reason: "catching_up" });
+    expect(
+      evaluateSourceReadiness(
+        source,
+        { ...value, completeThroughBlock: null },
+        latest
+      )
+    ).toMatchObject({ ready: false, reason: "not_indexed" });
+  });
+  it("keeps explicit latest block requirements and source end bounds exact", () => {
+    const value = { ...snapshot, completeThroughBlock: 94n };
+    const latest = { ...options, policy: { kind: "latest" } as const };
+    expect(
+      evaluateSourceReadiness(source, value, {
+        ...latest,
+        requiredThroughBlock: 94n
+      })
+    ).toMatchObject({ ready: true, requiredThroughBlock: 94n });
+    expect(
+      evaluateSourceReadiness(source, value, {
+        ...latest,
+        requiredThroughBlock: 95n
+      })
+    ).toMatchObject({
+      ready: false,
+      reason: "catching_up",
+      availableThroughBlock: 94n,
+      requiredThroughBlock: 95n
+    });
+    expect(
+      evaluateSourceReadiness({ ...source, endBlock: "90" }, value, latest)
+    ).toMatchObject({ ready: true, availableThroughBlock: 90n });
+    expect(
+      evaluateSourceReadiness({ ...source, endBlock: "90" }, value, {
+        ...latest,
+        requiredThroughBlock: 91n
+      })
+    ).toMatchObject({ ready: false, reason: "catching_up" });
+  });
+  it("retains latest history, stale observation, branch and halt refusals", () => {
+    const latest = { ...options, policy: { kind: "latest" } as const };
+    for (const [change, reason] of [
+      [{ coverageStartBlock: 11n }, "history_missing"],
+      [{ halted: true }, "halted"],
+      [{ head: null }, "observation_stale"],
+      [
+        { head: { ...snapshot.head!, chainId: 56 } },
+        "observation_inconsistent"
+      ],
+      [{ completeThroughBlock: 101n }, "observation_inconsistent"],
+      [{ indexerObservedAtMs: 1001 }, "observation_stale"]
+    ] as const) {
+      expect(
+        evaluateSourceReadiness(source, { ...snapshot, ...change }, latest)
+      ).toMatchObject({ ready: false, reason });
+    }
+    expect(
+      evaluateSourceReadiness(source, snapshot, { ...latest, nowMs: 181001 })
+    ).toMatchObject({ ready: false, reason: "observation_stale" });
+  });
+  it("does not change depth or finalized catch-up requirements", () => {
+    const value = { ...snapshot, completeThroughBlock: 79n };
+    expect(evaluateSourceReadiness(source, value, options)).toMatchObject({
+      ready: false,
+      requiredThroughBlock: 95n
+    });
+    expect(
+      evaluateSourceReadiness(source, value, {
+        ...options,
+        policy: { kind: "finalized" }
+      })
+    ).toMatchObject({ ready: false, requiredThroughBlock: 80n });
+  });
   it("allows Arena work at exactly five subsequent full blocks without waiting for finalized", () => {
     expect(
       evaluateSourceReadiness(source, snapshot, {

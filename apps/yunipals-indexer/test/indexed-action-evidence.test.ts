@@ -275,6 +275,7 @@ function fixture(
         release: selectedRelease,
         coverageStartBlock: 100n,
         completeThroughBlock: 1000n,
+        frameworkReady: true,
         indexerObservedAtMs: Date.now(),
         halted: false,
         head: {
