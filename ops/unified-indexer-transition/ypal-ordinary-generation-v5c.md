@@ -4,6 +4,14 @@ This successor preserves the V5b generation phase bodies, recovery transaction,
 source and metadata checks, pool limit, disk reserve and backup exclusion window.
 Its new identity paths distinguish its actual execution from unused V5b work.
 
+`ypal-ordinary-generation-phase-v1.py` is the explicit production entry for the
+unchanged V5c `main`. It permits up to480 seconds for a phase's repeated full
+verification, rather than the original CLI wrapper's240 seconds. Arguments,
+phase bodies, individual query/process limits,25-minute capacity supervision,
+disk floors and backup exclusion are unchanged. The entry has its own source
+hash in the root execution journal and does not claim the original CLI wrapper
+executed. It never retries a phase or changes a timer.
+
 The explicit metadata constructor binds
 `ypal-ordinary-publication-query-v2.py`. Only the byte-identical full-publication
 count gets a 60-second read-only statement limit. The original SQL compiler and
