@@ -1,0 +1,63 @@
+{
+  "adoptionReview": {
+    "completed": false,
+    "exitCode": 1,
+    "observedAt": "2026-10-25T12:20:40.810731+00:00",
+    "phase": "review",
+    "report": {
+      "automaticRetryAllowed": false,
+      "completed": false,
+      "fixedCode": "readonly_capsule_inspection_failed",
+      "format": "yunipals-ypal-ordinary-generation-attempt-v1"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "71a7660fa9bc36ed37e16800f274884a595caa8fd66fa84be4db9d64096d572d"
+  },
+  "adoptionReviewInProgress": false,
+  "blocker": "Saved-capsule verifier compares mutable allocated bytes; allocator-only 48KiB FSM/VM growth independently confirmed. Exact row count/hash/tuple bytes and live baseline remain equal.",
+  "format": "yunipals-ordinary-generation-attempt-v1-production",
+  "generationAccepted": false,
+  "generationPublished": false,
+  "generationStarted": false,
+  "independentSourceReviewNoBlockers": true,
+  "inputPreparation": {
+    "completed": true,
+    "databaseWrites": 0,
+    "exitCode": 0,
+    "inputCreated": true,
+    "inputSha256": "1d68856d129d9fe8079591bbe4b2151c199a2638dc7c32bd26e687b120684ffc",
+    "maximumSeconds": 2400,
+    "observedAt": "2026-10-25T12:16:04.523455+00:00",
+    "phase": "prepare-input",
+    "serviceActions": 0,
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "8d11133b4b68461c3a27d7b858c34b8bdf13e714d8797f4e3acca7e6993a84e8"
+  },
+  "liveReadersSwitched": false,
+  "localControlsPassed": 20,
+  "monitorSha256": "9b48b382b16c7fbdbc7d345a76bf727e68ea2ae38c775c48714731c2a0c26b41",
+  "newOperationAdopted": false,
+  "ownerSha256": "6202db1e5124ce81823854ffa09e77410b6495c695b463028bc150bc57b564b3",
+  "precedingBackup": {
+    "exited": "2026-10-25T12:17:51Z",
+    "invocation": "b5530be7c5fa4a23996d564f20cd6591",
+    "observedActiveState": "inactive",
+    "result": "success",
+    "started": "2026-10-25T12:17:34Z",
+    "unit": "yunipals-arena-backup.service"
+  },
+  "reviewRejected": true,
+  "sourceCommit": "2445b30f6f66eaac77ec769395d899359d7206e0",
+  "staging": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "observedAt": "2026-10-25T12:15:25.121571+00:00",
+    "phase": "stage",
+    "publicFilesCreated": 7,
+    "publicFilesVerified": 162,
+    "serviceActions": 0
+  }
+}
