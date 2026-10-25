@@ -1,0 +1,81 @@
+{
+  "format": "yunipals-latest-complete-main-api-installation-production-v1",
+  "installedInactive": true,
+  "stage": {
+    "completed": true,
+    "databaseCalls": 0,
+    "observedAt": "2026-10-25T00:48:59.427940+00:00",
+    "phase": "stage",
+    "runtimeStarted": false,
+    "serviceJobs": 0,
+    "stagedPublicFiles": 5
+  },
+  "review": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:50:01.063542+00:00",
+    "phase": "review",
+    "report": {
+      "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+      "bindingSha256": "e020a9ab694d630d2166b8fa5802642c5e5530cec58f97fc9f76acda31611279",
+      "compiledOutputFiles": 2,
+      "databaseCalls": 0,
+      "dependencyInstalls": 0,
+      "effectiveSourceAndResolutionInputs": 94,
+      "format": "yunipals-ypal-latest-complete-main-api-install-v1",
+      "installed": false,
+      "manifestSha256": "bba6126ae55299eeb885a3ef72a17155398ad4e0c604f582898abd3952b2e6a2",
+      "metafileSha256": "7e254e7d00bf56ee69bf0cae988bc4a724f9dc0628295f1c9d8b04226e0693ba",
+      "olderArtifactsModified": false,
+      "providerRequests": 0,
+      "resultSha256": null,
+      "runtimeStarted": false,
+      "serviceJobs": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "c6e4c89d134cf11d9de2e3c92c08fc79efe3071a928e35aadeaaa4df059f247b"
+  },
+  "install": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:50:38.157996+00:00",
+    "phase": "install",
+    "report": {
+      "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+      "bindingSha256": "e020a9ab694d630d2166b8fa5802642c5e5530cec58f97fc9f76acda31611279",
+      "compiledOutputFiles": 2,
+      "databaseCalls": 0,
+      "dependencyInstalls": 0,
+      "effectiveSourceAndResolutionInputs": 94,
+      "format": "yunipals-ypal-latest-complete-main-api-install-v1",
+      "installed": true,
+      "manifestSha256": "bba6126ae55299eeb885a3ef72a17155398ad4e0c604f582898abd3952b2e6a2",
+      "metafileSha256": "7e254e7d00bf56ee69bf0cae988bc4a724f9dc0628295f1c9d8b04226e0693ba",
+      "olderArtifactsModified": false,
+      "providerRequests": 0,
+      "resultSha256": "c0f4d50b5a3c7addb249f5eae39d50d929c35ea61dddd04c7a3d0c82b94419c0",
+      "runtimeStarted": false,
+      "serviceJobs": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "bdf4f1ca758e0e5314bfc3d5de9d68bf05f9478a0418709b29bf74cfe74abf3d"
+  },
+  "validation": {
+    "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+    "completed": true,
+    "databaseCalls": 0,
+    "installed": true,
+    "observedAt": "2026-10-25T00:52:17.755000+00:00",
+    "phase": "validate",
+    "resultSha256": "c0f4d50b5a3c7addb249f5eae39d50d929c35ea61dddd04c7a3d0c82b94419c0",
+    "runtimeStarted": false,
+    "serviceJobs": 0
+  },
+  "sourceOrReaderServiceChanges": 0,
+  "trafficSwitched": false,
+  "limits": [
+    "The installed artifact is not yet the selected production reader."
+  ]
+}
