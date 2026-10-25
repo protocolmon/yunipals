@@ -181,7 +181,18 @@ export async function runCombinedObserver(
           chainId,
           rpcs.get(chainId)!
         );
-        log({ event: "combined_chain_observation", chainId, result });
+        log({
+          event: "combined_chain_observation",
+          chainId,
+          result,
+          ...(result === "waiting_retained"
+            ? {
+                reason: "provider_lag",
+                retainedLastGoodProof: true,
+                observationTimestampAdvanced: false
+              }
+            : {})
+        });
       } catch {
         log({ event: "combined_chain_observation_failed", chainId });
       }

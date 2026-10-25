@@ -1,0 +1,22 @@
+{
+  "artifactDigest": "427dd3da905ce46f7d61dff7482e554984af5a7c1dacd822e839e75a3def50d6",
+  "artifactManifestSha256": "bdeef60901f5abc1fadbb86678b96d10777219fa5e597b9a45f6ee89c81cf9ea",
+  "changedRuntimeInputs": [
+    "apps/yunipals-indexer/lib/unified/observer.ts",
+    "apps/yunipals-indexer/scripts/unified-observer.ts"
+  ],
+  "checks": {
+    "compilerControls": 5,
+    "entryControls": 18,
+    "genuinePostgresGroups": 18,
+    "indexerTypecheckPassed": true,
+    "installerControls": 4
+  },
+  "format": "yunipals-ordinary-observer-retained-prefix-inert-preparation-v1",
+  "inputs": 34,
+  "lifecycleQualified": false,
+  "productionInstalled": false,
+  "providerRequests": 0,
+  "scope": "inert_artifact_only",
+  "serviceActions": 0
+}

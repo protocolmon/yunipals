@@ -38,7 +38,9 @@ export async function observeIndexerChain(
   chainId: number,
   rpc: EvidenceRpc,
   options: { now?: () => number; maxHeadAgeMs?: number } = {}
-): Promise<"observed" | "waiting" | "superseded" | "halted"> {
+): Promise<
+  "observed" | "waiting" | "waiting_retained" | "superseded" | "halted"
+> {
   const now = options.now ?? Date.now;
   if (
     !Number.isSafeInteger(now()) ||
@@ -88,6 +90,120 @@ export async function observeIndexerChain(
     chain.completeThroughBlock < witness.blockNumber
       ? chain.completeThroughBlock
       : witness.blockNumber;
+  const commitProviderLag = async () => {
+    const previous = read.previous;
+    const maximumAge = Math.min(options.maxHeadAgeMs ?? 180000, 180000);
+    const unsigned = (value: unknown): value is string =>
+      typeof value === "string" && /^(0|[1-9][0-9]*)$/.test(value);
+    const hash = (value: unknown): value is string =>
+      typeof value === "string" &&
+      /^0x[0-9a-f]{64}$/.test(value) &&
+      !/^0x0{64}$/.test(value);
+    const fresh = () =>
+      previous !== null &&
+      unsigned(previous.observed_at_ms) &&
+      BigInt(previous.observed_at_ms) <= BigInt(now()) &&
+      BigInt(now()) - BigInt(previous.observed_at_ms) <= BigInt(maximumAge) &&
+      unsigned(previous.head_timestamp) &&
+      BigInt(previous.head_timestamp) * 1000n <= BigInt(now() + 30000) &&
+      BigInt(now()) - BigInt(previous.head_timestamp) * 1000n <=
+        BigInt(maximumAge);
+    const anchors = Object.entries(previous?.anchors ?? {});
+    const maximumAnchors =
+      1 +
+      release.manifest.sources
+        .filter((source) => source.enabled && source.chainId === chainId)
+        .reduce((count, source) => count + source.policies.length, 0);
+    if (
+      previous &&
+      !previous.halted &&
+      (previous.error_code === null ||
+        previous.error_code === "provider_lag") &&
+      fresh() &&
+      unsigned(previous.head_number) &&
+      hash(previous.head_hash) &&
+      unsigned(previous.witness_number) &&
+      hash(previous.witness_hash) &&
+      BigInt(previous.witness_number) <= BigInt(previous.head_number) &&
+      anchors.length > 0 &&
+      anchors.length <= maximumAnchors &&
+      anchors.every(
+        ([key, value]) =>
+          unsigned(key) &&
+          value !== null &&
+          value.number === key &&
+          hash(value.hash) &&
+          unsigned(value.timestamp) &&
+          BigInt(key) <= BigInt(previous.witness_number!) &&
+          BigInt(value.timestamp) <= BigInt(previous.head_timestamp!)
+      )
+    ) {
+      const retained = await indexerTransaction(pool, async (db) => {
+        const current = await readBoundRuntime(db, release);
+        const coverage = current.chains.find(
+          (chain) => chain.chainId === chainId
+        )?.completeThroughBlock;
+        if (
+          !current.running ||
+          !current.frameworkReady ||
+          now() - current.observedAtMs > 180000 ||
+          current.observedAtMs > now() ||
+          coverage === null ||
+          coverage === undefined ||
+          anchors.some(([height]) => BigInt(height) > coverage) ||
+          !fresh()
+        )
+          return false;
+        // Native block history can be sparse. The native witness authenticates
+        // the branch; the unchanged RPC anchors retain their original witness
+        // association, rather than pretending each has a native block row.
+        const proof = await db.query(
+          `SELECT 1 WHERE EXISTS (SELECT 1 FROM ${sqlIdentifier(release.schema)}.chain_block
+             WHERE chain_id=$1 AND block_number=$2::bigint AND block_hash=$3)
+           AND NOT EXISTS (SELECT 1 FROM jsonb_to_recordset($4::jsonb) AS a(number text,hash text)
+             WHERE NOT EXISTS (SELECT 1 FROM yunipals_indexer_control.chain_anchor c
+               WHERE c.release_id=$5 AND c.chain_id=$1 AND c.block_number=a.number::bigint
+                 AND c.block_hash=a.hash AND c.witness_number=$2::bigint AND c.witness_hash=$3))`,
+          [
+            chainId,
+            previous.witness_number,
+            previous.witness_hash,
+            JSON.stringify(anchors.map(([, value]) => value)),
+            release.id
+          ]
+        );
+        if (proof.rowCount !== 1 || !fresh()) return false;
+        const result = await db.query(
+          `UPDATE yunipals_indexer_control.chain_status SET revision=revision+1,
+             error_code=NULL,checked_at=clock_timestamp()
+           WHERE release_id=$1 AND chain_id=$2 AND revision=$3::bigint AND NOT halted
+             AND (error_code IS NULL OR error_code='provider_lag')
+             AND observed_at_ms=$4::bigint AND witness_number=$5::bigint AND witness_hash=$6
+             AND anchors=$7::jsonb`,
+          [
+            release.id,
+            chainId,
+            revision,
+            previous.observed_at_ms,
+            previous.witness_number,
+            previous.witness_hash,
+            JSON.stringify(previous.anchors)
+          ]
+        );
+        return result.rowCount === 1
+          ? ("waiting_retained" as const)
+          : ("superseded" as const);
+      });
+      if (retained !== false) return retained;
+    }
+    // A lag cycle must not overwrite another unresolved error and then clear
+    // it on the next lag cycle. Only a new full observation can recover it.
+    return commitError(
+      previous?.error_code && previous.error_code !== "provider_lag"
+        ? previous.error_code
+        : "provider_lag"
+    );
+  };
   try {
     if ((await rpc.chainId()) !== chainId)
       return commitError("rpc_chain_mismatch");
@@ -118,7 +234,7 @@ export async function observeIndexerChain(
       read.previous?.head_number !== undefined &&
       head.number < BigInt(read.previous.head_number)
     )
-      return commitError("provider_lag");
+      return commitProviderLag();
     if (
       read.previous?.finalized_number !== null &&
       read.previous?.finalized_number !== undefined &&
@@ -139,12 +255,12 @@ export async function observeIndexerChain(
         read.previous?.finalized_number !== undefined
       ) {
         if (finalized.number < BigInt(read.previous.finalized_number))
-          return commitError("provider_lag");
+          return commitProviderLag();
       }
       cache.set(finalized.number, finalized);
     }
     if (indexed > head.number || witness.blockNumber > head.number)
-      return commitError("provider_lag");
+      return commitProviderLag();
     if ((await blockAt(witness.blockNumber)).hash !== witness.blockHash)
       return commitError("indexer_branch_mismatch");
     const heights = new Set<bigint>([indexed]);
