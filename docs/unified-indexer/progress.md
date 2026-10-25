@@ -2,7 +2,11 @@
 
 Goal started 20 October 2026. The [implementation plan](/root/yunipals/docs/unified-indexer-implementation-plan.md) remains the acceptance contract. The unified source/consumer cutover remains pending.
 
-## Current acceptance — 24 October, 10:38 UTC
+## Current acceptance — 25 October, 04:08 UTC
+
+The native metadata worker is running with zero restarts after actual drain, committed adoption and three successful native approval/probe samples. Its original boot-link inode is restored. Final selection receipt reconciliation remains pending because systemd reload cleared only the ExecStart presentation start-time/PID. The actual process, invocation, private configuration and command remain unchanged. All failed attempts are preserved. Historical provenance stamping, derived generation/cache, reader and worker cutovers, fresh booster scanner retirement, managed Solana adoption, rollback and observation remain incomplete. No approval is currently pending; the approved ongoing1.5M/2M daily Alchemy caps are active. [Current detailed checklist](CHECKLIST.md), [actual metadata progress and diagnostic](metadata-native-worker-progress-production-2026-10-25.json).
+
+## Historical acceptance — 24 October, 10:38 UTC
 
 The restricted reader transport has now passed actual production qualification under postgres111/113 and main-API968/962. Fifteen already-public files were fetched directly from immutable public commitf4e0b82b; no source bytes or private data were sent over SSH. The owner staged eight missing files while retaining five existing public files and their modes/inodes. Before either import, all60,849 dependency nodes (55,283 files and868 links across five roots) matched the accepted inventory. Both frozen peer imports passed, and32 actually loaded PostgreSQL-library files also matched. No application was started and no Pool/Client was constructed. No database/provider connection, service action, role or permission change occurred. The original private-source upload remained unexecuted; its publication/egress concern was resolved through verified public source. This is transport/dependency qualification, not a reader serving switch. [Actual scoped result](reader-peer-runtime-production-2026-10-24.json).
 
