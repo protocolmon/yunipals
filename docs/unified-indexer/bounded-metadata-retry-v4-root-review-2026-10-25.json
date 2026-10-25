@@ -1,0 +1,38 @@
+{
+  "actualProductionQualificationClaimed": false,
+  "callerSha256": "c4d86df5b1228147f9677db49d76932f4d187b67ffd09172a92f553c835a4f92",
+  "databaseWrites": 0,
+  "format": "root-bounded-metadata-current-retry-v4-review",
+  "helperSha256": "33ae8619fe0a43b94745b1a00ae57db166592c83ccf6a997d50cd8c583fdff51",
+  "preparationSha256": "1811de7d530acdcf8e554a656cb641dad0d223164370d0fa07aeac48382c71bd",
+  "providerCalls": 0,
+  "readerManifestSha256": "1c131cf6a0da4613ecf83b3c11028433be0192cd7ee3f99a360ea80268df1b24",
+  "scope": {
+    "allOtherErrorsRemainHardFailures": true,
+    "allRetryTimeIncludedInExistingHeldDeadline": true,
+    "approvalTTLOrRefreshChanged": false,
+    "effectSQLPeersWireInputChanged": false,
+    "fullOriginalCaptureAndImmutableAcknowledgementRequired": true,
+    "historiesSeparateFromStableBinding": true,
+    "maximumAttempts": 3,
+    "maximumCaptureNanoseconds": 90000000000,
+    "metadataActorAndOwner3AcknowledgementChanged": false,
+    "onlyExactClassifiedMetadataReadMayRetry": true,
+    "source6Changed": false,
+    "wholeSessionOrEffectRetriesAllowed": false
+  },
+  "serviceActions": 0,
+  "sourceOnly": true,
+  "stageSha256": "606e34338963606fc3280caeb0879f09d406c5f9570c8cb9369e9baf32670614",
+  "verification": {
+    "diffCheck": "one reviewed trailing-space warning in immutable helper source line 25; exact reviewed source bytes retained",
+    "independentComposedControlsPassed": 11,
+    "independentHelperControlsPassed": 21,
+    "manifestsReproducedIndependently": 3,
+    "ownRowsVerified": 14,
+    "rootComposedControlsPassed": 11,
+    "rootHelperControlsPassed": 21,
+    "secretPatternCount": 0,
+    "stageOriginsVerified": 305
+  }
+}

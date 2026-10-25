@@ -1,0 +1,107 @@
+{
+  "actualMetadataACKIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 8519,
+      "file": "ypal-ordinary-metadata-current-epoch-v3.py",
+      "sha256": "33ae8619fe0a43b94745b1a00ae57db166592c83ccf6a997d50cd8c583fdff51"
+    },
+    {
+      "bytes": 5867,
+      "file": "ypal-ordinary-cache-continuation-authority-v4.py",
+      "sha256": "938b15ee463f7c950828eadeac3e599305d01dbfd8b8ddccd8a974f88b31a240"
+    },
+    {
+      "bytes": 3341,
+      "file": "ypal-ordinary-read-cache-continue-v4.py",
+      "sha256": "c8c98989c6cb6b2e301e07faeeda4d99f38d2ec70277f5217acff9b06e21d952"
+    },
+    {
+      "bytes": 4276,
+      "file": "ypal-ordinary-reader-continue-v4.py",
+      "sha256": "7514129125e50c35152356e5090de88f3a51758f4090a763f74eb7f417c1d6bc"
+    },
+    {
+      "bytes": 3496,
+      "file": "ypal-ordinary-publication-continue-v4.py",
+      "sha256": "c4d86df5b1228147f9677db49d76932f4d187b67ffd09172a92f553c835a4f92"
+    },
+    {
+      "bytes": 3613,
+      "file": "ypal-ordinary-publication-continue-inputs-v4.py",
+      "sha256": "2b17e31f4de3c1b236d475ae367aa02058af9f3eea359dc2c66eb81ef8c4f3b2"
+    },
+    {
+      "bytes": 4452,
+      "file": "ypal-ordinary-publication-continue-manifest-v4.py",
+      "sha256": "ea04d92ca3ba46c5e35102ebd6a8ce1695704d5538f53dbcc43177b6dafe257b"
+    },
+    {
+      "bytes": 1012,
+      "file": "ypal-ordinary-metadata-current-epoch-v3.manifest.json",
+      "sha256": "801d0a1bb33f83dba6645c25babaf9ddae6ba041b9dde967afda171bd4d80bbc"
+    },
+    {
+      "bytes": 2189,
+      "file": "ypal-ordinary-cache-continuation-authority-v4.manifest.json",
+      "sha256": "a6516798d717724fdce8086fe6afeb05888badcbc60199ebc346eb629890f60a"
+    },
+    {
+      "bytes": 36270,
+      "file": "ypal-ordinary-reader-continue-v4.manifest.json",
+      "sha256": "1c131cf6a0da4613ecf83b3c11028433be0192cd7ee3f99a360ea80268df1b24"
+    },
+    {
+      "bytes": 8416,
+      "file": "ypal-ordinary-metadata-current-epoch-v3.test.py",
+      "sha256": "b17ee44a657aa1b27fcced4cf05030bea08d17a8f9d3bac85e59f79053899a67"
+    },
+    {
+      "bytes": 5741,
+      "file": "ypal-ordinary-publication-continue-v4.test.py",
+      "sha256": "9852821629db3857c1e0fb2200e3dfdaa97656c1c30e24810a6a9b8e74de663e"
+    },
+    {
+      "bytes": 6464,
+      "file": "ypal-ordinary-publication-continue-v4.md",
+      "sha256": "2db032a35bd02755adc2836123f5a861f6d7a9c62e70d10870a8c6f6ea211c33"
+    },
+    {
+      "bytes": 71036,
+      "file": "ypal-ordinary-publication-continue-v4.stage.json",
+      "sha256": "606e34338963606fc3280caeb0879f09d406c5f9570c8cb9369e9baf32670614"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-continue-v4-preparation",
+  "frozenCONT3FilesEdited": false,
+  "knownRequiredFollowups": [
+    "fresh whole current and official approval cadence then genuine new baseline",
+    "actual complete held rollback-only qualification with unchanged90/5budget",
+    "root inspection and explicit effect dispatch only after actual qualification",
+    "new reader timing and Session afterLOGIN",
+    "separate explicit inverse producer bridge/source-prefix/ready0/timing qualification"
+  ],
+  "privateInputOrCandidateIncluded": false,
+  "publicStageClosureCount": 305,
+  "publicStageClosureFile": "ypal-ordinary-publication-continue-v4.stage.json",
+  "publicStageClosureSha256": "606e34338963606fc3280caeb0879f09d406c5f9570c8cb9369e9baf32670614",
+  "retainedActualLineage": {
+    "cacheInputSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "historicalMetadataSelectionSha256": "2829182fa96599513f07099118ab0c16b0ceff8d04330537a9c90bd5231e35ba",
+    "originalAbortedXid": "16540148"
+  },
+  "verification": {
+    "actualDBOrServiceAcceptanceInferred": false,
+    "composedControlsPassed": 11,
+    "metadataControlsPassed": 21,
+    "threeActualSourceManifestsByteReproduced": true
+  }
+}
