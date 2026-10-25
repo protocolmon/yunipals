@@ -1,0 +1,78 @@
+{
+  "format": "yunipals-ordinary-generation-recovery-semantic-v1-preparation",
+  "sourceOnly": true,
+  "files": {
+    "ypal-ordinary-generation-recovery-semantic-v1.mjs": {
+      "sha256": "ca20dab6095290c78617a9ded63b21020c5e8aeda2e0de664d6947bbfa5f59ff",
+      "bytes": 18954
+    },
+    "ypal-ordinary-generation-recovery-semantic-v1.test.mjs": {
+      "sha256": "c6a0f7e27378320001e587e089824be86dfe3f59718bf378f7020a017834004f",
+      "bytes": 6063
+    },
+    "ypal-ordinary-generation-recovery-semantic-v1.postgres.test.mjs": {
+      "sha256": "7147764f168b1383b03993baeac43baa366d89a914bffca123e71bc75d6a2928",
+      "bytes": 6736
+    },
+    "ypal-ordinary-generation-recovery-semantic-v1.postgres.results.json": {
+      "sha256": "ff050d24f93c4f33f96b978b508dd1f3aa907978d373aa4611fe3547984af4a0",
+      "bytes": 1831
+    }
+  },
+  "predecessorComponent": {
+    "file": "ypal-ordinary-generation-recovery-v5.mjs",
+    "sha256": "a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df",
+    "immutable": true,
+    "strictFailurePreserved": true
+  },
+  "semantics": {
+    "exactAggregateIdentity": [
+      "count",
+      "sha256",
+      "tuple_bytes"
+    ],
+    "allocatedBytes": "captured-and-current-observation-only",
+    "sameFiveOriginalExports": true,
+    "newDescriptorExport": "recoverySemantics",
+    "aggregatePredicateChanges": 4,
+    "telemetryReturnObjectChanges": 2
+  },
+  "validation": {
+    "sourceAstControls": 3,
+    "genuinePostgresGroups": 20,
+    "actualVacuumAllocationDrift": true,
+    "oldStrictVerifyAndRestoreRefuse": true,
+    "bothTableCountShaTupleMismatchesRefuseInVerifyAndRestore": true,
+    "allOriginalTransactionAndSourceCatalogFunctionsRetained": true
+  },
+  "fixture": {
+    "engine": "PostgreSQL 16.15",
+    "image": "sha256:f1c3376c26f2609ab9f29f71f824103fe2fcd8ee0346485cb6122a4f93df6f94",
+    "container": "yunipals-semantic-recovery-test-20261025",
+    "endpoint": "127.0.0.1:56981",
+    "tmpfsBytes": 2147483648,
+    "memoryLimit": "3g",
+    "sharedMemoryLimit": "256m",
+    "remainingTestDatabases": 0,
+    "remainingTestRoles": 0,
+    "containerActuallyRemoved": true,
+    "sharedDependencyFixtureReadOnly": true,
+    "dependencySchema": "dependency_check",
+    "sharedFixture": "yunipals-unified-indexer-test-20261020",
+    "baseTestSourceSha256": "5600dc8c8c6aefdd63c2aeacb17d098c63fb8085d07de6e63f0e09fd8bb38d12",
+    "worktreeTsFixtureImports": true
+  },
+  "commands": [
+    "/usr/bin/docker --host=unix:///var/run/docker.sock run --detach --name yunipals-semantic-recovery-test-20261025 --network bridge --publish 127.0.0.1:56981:5432 --tmpfs /var/lib/postgresql/data:rw,size=2g --shm-size=256m --memory=3g --env POSTGRES_USER=unified_test --env POSTGRES_DB=postgres --env POSTGRES_HOST_AUTH_METHOD=trust sha256:f1c3376c26f2609ab9f29f71f824103fe2fcd8ee0346485cb6122a4f93df6f94",
+    "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-ordinary-generation-recovery-semantic-v1.test.mjs",
+    "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-ordinary-generation-recovery-semantic-v1.postgres.test.mjs",
+    "/usr/bin/docker --host=unix:///var/run/docker.sock rm --force yunipals-semantic-recovery-test-20261025"
+  ],
+  "productionAcceptanceClaimed": false,
+  "newRootReceiptQualified": false,
+  "databaseProductionQueries": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitActions": 0,
+  "rawRowsExported": false
+}
