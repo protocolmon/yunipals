@@ -1,0 +1,59 @@
+{
+  "acceleratedV5bRunnerExecuted": false,
+  "actualOriginalOwnerAcknowledgement": {
+    "batch": 0,
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T04:59:48.712020+00:00",
+    "phase": "provenance",
+    "report": {
+      "acknowledged": true,
+      "format": "yunipals-ypal-ordinary-metadata-handover-v5",
+      "phase": "provenance",
+      "privateObservationFile": "/var/backups/yunipals-ypal-ordinary-metadata-input-v5-20261025/observations/phase-1792904388640914035-173661.json",
+      "privateObservationSha256": "e9f4ca5ee641d081d694bb32af9b9793f39e5270284c0e5063feb7f637524cd6"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "66b2cad33da86073f735c4e487221c839774a4ce6b9a4a4095abeea1d6313bd0"
+  },
+  "actualReview": {
+    "batch": 0,
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T04:56:13.973916+00:00",
+    "phase": "provenance-review",
+    "report": {
+      "effects": false,
+      "eligibleCoverage": true,
+      "format": "yunipals-ypal-ordinary-metadata-handover-v5",
+      "phase": "provenance",
+      "privateObservationFile": "/var/backups/yunipals-ypal-ordinary-metadata-input-v5-20261025/observations/phase-1792904173906471039-170883.json",
+      "privateObservationSha256": "775a56020b9cd4daa964c3f9c64a6be705dc4dbe0d3bd83b65d2cc210b821030",
+      "reviewHash": "ecee0ee1ce3e6f858f2c18547ce48be8859f3bf1a13bc6d4e4ebc41ff80fd99a"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "a908a313191d43571626ddd8a7cbf1467a36854d1f045a2feb444237f3820bea"
+  },
+  "earlierAcceleratedReviewsRetained": true,
+  "format": "yunipals-original-provenance-first-batch-production-v1",
+  "goalComplete": false,
+  "independentReceiptSummary": {
+    "busy": false,
+    "completeForCurrentPublishedArchiveBase": false,
+    "format": "root-original-provenance-first-batch-actual-v1",
+    "index": 0,
+    "observedAt": "2026-10-25T05:01:05.160847+00:00",
+    "officialChildEpochAlive": false,
+    "officialResult": {
+      "event": "base_metadata_native-provenance",
+      "stamped": 5000
+    },
+    "originalObservedSha256": "7fb229306d5d57ac9da859cd224351006e2fa915cf9c86c4546b9d4bf1e5e765",
+    "originalOfficialResultSha256": "81f9c6d82354536e41b88e4d2117572452f37a3d1d01acb86a81c4c5c67c7b7b",
+    "remainingPublished": 333474,
+    "serviceActions": 0
+  },
+  "totalProgressAttributedOnlyToThisBatch": false
+}
