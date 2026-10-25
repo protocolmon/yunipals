@@ -1,0 +1,109 @@
+{
+  "actualExecution": {
+    "apiQueueSwitched": false,
+    "inverseRun": false,
+    "permissionAdmission": false,
+    "privateInputsCreated": false,
+    "scannerRetired": false
+  },
+  "businessEvent": {
+    "bothNativeSchemasAndCanonicalHashRequired": true,
+    "postEventAllEightParityApiQueueRequired": true,
+    "requiredBeforeTemporaryScannerRetirement": true,
+    "requiredForInitialApiQueueSwitch": false,
+    "signerTransactionsPerformed": 0,
+    "strictlyAfterSwitchBoundary": true
+  },
+  "businessReuse": {
+    "bodySeams": [
+      "newselector_and_drop_paths",
+      "actualinverseAPI_host_client_address",
+      "actualtemporary_session_host_client_address",
+      "sourceExecStart_presentation_removed_after_exact_loaded_argv_and_live_program_checks",
+      "two_boot_moves_use_atomic_noreplace"
+    ],
+    "e506TransactionAndLifecycleBodies": true,
+    "newScope": [
+      "ordinary3bf_current_writer_and_retained_current_callback",
+      "actualV5b143_ancestry_plus71_equivalent_logical_reads",
+      "separate_cache4_XID_authorization_chain",
+      "new_source_independent_reader_acknowledgement_and_inverse",
+      "actual_physical_FRESH8e_source_API41e_queuee2b_identity"
+    ],
+    "reviewed11bAssembler": true
+  },
+  "effects": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "hostActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "externalManifest": {
+    "actualRuntimeAcknowledgementsInvented": false,
+    "builder": "ypal-ordinary-feature-v5-manifest.py",
+    "exactManifestCapturePendingConcreteReaderFile": false,
+    "finiteActualSourceDependenciesOnly": true,
+    "manifestFile": "ypal-ordinary-feature-handover-v5.manifest.json",
+    "manifestSha256": "03fdff7a5209d3d22feedca0ec33c001dfe44265c23900df50f1f3b0a837f798",
+    "noMissingOrFutureHashesAccepted": true,
+    "providerCodeSha256": "387c6a16d5f0c203731212d1a54b618919c0413e4235a37a35510cff584d8cc2",
+    "providerFile": "ypal-ordinary-read-cache-v5.py",
+    "readerCodeSha256": "78a3f0356060b091d52e9ac6fcbe1c5fdf31b44a955aef8fe7cbd5e76a3447d3",
+    "readerFile": "ypal-ordinary-reader-cutover-v5.py",
+    "reviewedReaderManifestSha256": "cc819ba6bd9b2335fdacc3ceaff9d26ee244ba6034669de73e8a13436f87fadb",
+    "reviewedReaderProofSha256": "59ac6a282748a73777aaecae44466f314fc5b283e93275362ad0e8df0388b449"
+  },
+  "files": [
+    {
+      "bytes": 9037,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v5.py",
+      "sha256": "cb21c6f6b6ffa627d24d67922892b7377191063f687253c65940e7a2a9f3e880"
+    },
+    {
+      "bytes": 17194,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-context-v5.py",
+      "sha256": "da2fea0aa36277c1c464ca27ad280b03ba31bfec2730182779ac839638496656"
+    },
+    {
+      "bytes": 2191,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-v5-manifest.py",
+      "sha256": "683f535bb828f953f4640f7e7c26b365671c234d64be54e0af4b58fe90fff929"
+    },
+    {
+      "bytes": 16733,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v5.test.py",
+      "sha256": "4d907211d52f50de489e136ada760c461573f667e342d144bbd1a4f65f76ffa4"
+    },
+    {
+      "bytes": 2321,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v5.postgres.test.mjs",
+      "sha256": "b4655a0d47a660ae0a9696a26fd3159181ef247ab23386c9b8462988b12fee58"
+    },
+    {
+      "bytes": 7472,
+      "path": "docs/unified-indexer/ordinary-feature-handover-v5.md",
+      "sha256": "807db662c610cc146b143ad7af152966d74305a77bbb0e196e64d3d6bb4671a6"
+    },
+    {
+      "bytes": 1642,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v5.manifest.json",
+      "sha256": "03fdff7a5209d3d22feedca0ec33c001dfe44265c23900df50f1f3b0a837f798"
+    }
+  ],
+  "format": "yunipals-ordinary-feature-V5-source-preparation-v1",
+  "journalRoot": "/var/backups/yunipals-ypal-ordinary-feature-handover-v5-20261025",
+  "mainArtifact": {
+    "digest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+    "scope": "coordinated main reader only; feature API and queue binaries unchanged"
+  },
+  "runtimeNamespace": "yunipals-ypal-ordinary-feature-handover-v5",
+  "sourceOnly": true,
+  "tests": {
+    "genuineDisposablePostgresGroups": 11,
+    "passed": true,
+    "productionCalls": 0,
+    "providerCalls": 0,
+    "pythonControls": 38
+  }
+}
