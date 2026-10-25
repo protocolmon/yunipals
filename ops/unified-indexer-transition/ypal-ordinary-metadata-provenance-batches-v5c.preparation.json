@@ -1,0 +1,48 @@
+{
+  "format": "yunipals-ordinary-metadata-provenance-v5c-preparation",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.py",
+      "sha256": "49ee7f792591b456d5e6ef4f7345dca5789b6fa74e993cb652fff5f5220badb0",
+      "bytes": 21079
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.test.py",
+      "sha256": "1ff8b3a554e13f1f30e75776a7eb6023bcbfbb553496730b0d735f91de8dc0ec",
+      "bytes": 11384
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-provenance-input-v5c.py",
+      "sha256": "28b4396b16a7b03d0b3a402a9188bbf918d2078c59d71f63483e9b5580afac8f",
+      "bytes": 9820
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-provenance-input-v5c.test.py",
+      "sha256": "8ee0bd042104824a7f0753243ba0a643d9a5f809d30be92940c17c0180e9f527",
+      "bytes": 7014
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.md",
+      "sha256": "baf8d0570c5e6815d59f756c48bd966d56bb7071ffe73c919afaefc605e12c6a",
+      "bytes": 4705
+    }
+  ],
+  "runtimeBusinessFunctionsASTExact97b6": true,
+  "runnerSuccessorFocusedControls": 9,
+  "inputFactoryFocusedControls": 8,
+  "retained8076ControlsRerun": 23,
+  "guardProducerSha256": "038a9e77ebf19703c50fdc41b2f3786af58fef2ed04fb7c5571cc812160b847e",
+  "selectionReconciliationProducerSha256": "a25fd8a5b23e95eb368f057ac710d873ef09bb436695a9b28d80cf8abf630790",
+  "originalPriorReceiptsRequired": true,
+  "nextIndexDerivedUnderOriginalMetadataLock": true,
+  "actualInputSha256": null,
+  "actualFutureRunReceiptSha256": null,
+  "unused97b6InputOverwritten": false,
+  "original97b6RunClaimed": false,
+  "productionExecutionQualified": false,
+  "productionCallbackDeadlineQualified": false,
+  "serviceActions": 0,
+  "databaseWritesByPreparation": 0,
+  "automaticRetryAllowed": false
+}

@@ -1,0 +1,28 @@
+{
+  "actualQualification": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T05:13:22.440285+00:00",
+    "phase": "qualify",
+    "report": {
+      "activeUnits": 11,
+      "callbackElapsedNanoseconds": 5873274373,
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-ordinary-source-authority-v4",
+      "nativeRelations": 44,
+      "positiveKernelSessions": 4,
+      "productionCallbackDeadlineQualified": false,
+      "providerCalls": 0,
+      "resultSha256": "0993b90aeb82770bc7c72ff6176cf476f5efe3a596ebd25e8ec6b83f15bd6c87",
+      "retiredUnits": 12,
+      "serviceActions": 0,
+      "validated": true
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "33e47e32ffac5cf6e9edd3eda3528f2a52ecbecbd07d9b57d0e9d6508a584525"
+  },
+  "earlierFailuresReclassified": false,
+  "format": "yunipals-actual-source-authority-v4-qualification-v1",
+  "fullPublicationCallbackDeadlineQualified": false
+}
