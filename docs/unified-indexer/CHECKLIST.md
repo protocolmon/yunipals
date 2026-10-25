@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **25 October 2026, 19:15 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
+Updated **25 October 2026, 19:24 UTC**. The collection and YPAL packs are live. The shared-indexer migration is still in progress; no approval is currently pending.
 
 Current verified milestones:
 
@@ -17,8 +17,11 @@ Current verified milestones:
 
 The existing collection APIs passed nine HTTP/response checks at 18:19 UTC, including capped-rarity sorting across all four chains. The fresh pack API is ready and returns one public pack type. A separate live native-metadata sample caught approval age 94.08 seconds exceeding its unchanged 90-second limit while all other gates matched; five seconds later it refreshed and passed. A later sample tied to the actual metadata worker observed approval expiry at 90.11 seconds while all five of its database connections were idle, followed by renewal. Nine kernel captures qualified and four were discarded. The same-worker scheduling fix has passed local controls and independent review; installation and actual production acceptance remain pending. These observations do not prove the historical failure's precise subcondition. [Actual sampling and current HTTP checks](metadata-approval-readiness-production-2026-10-25.json).
 
+- [x] Install and independently verify the reviewed metadata scheduling artifact inactive at 19:24 UTC. The original metadata worker and shared ingestor retain their exact running identities; no runtime activation or cadence acceptance is claimed. [Actual installation](native-metadata-approval-inactive-install-production-2026-10-25.json).
+
 Remaining migration work:
 
+- [ ] Activate the new metadata worker through its reviewed lifecycle change and verify stable refresh cadence with the actual new process identity.
 - [ ] Commit native cache guards and obtain their actual prepared acknowledgement. The actual commit attempt failed its metadata approval check. PostgreSQL confirms transaction 16540148 aborted, its SQL worker is gone and zero new cache reads remain. Server error DETAIL is `base_metadata_approval_pending`; normal-operation observations have isolated a separate approval refresh scheduling defect; its production fix and new transaction qualification remain pending. No commit or prepared acknowledgement is accepted. Earlier preflight refusals remain separate records.
 - [ ] Qualify replacement readers, publish generation 105 and switch the collection APIs/cache/staking workers. Actual previews and serving compatibility checks remain mandatory.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source; verify one genuine later opening or claim and complete eight-table parity before retiring its temporary scanner.

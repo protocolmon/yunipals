@@ -1,0 +1,106 @@
+{
+  "actualInstall": {
+    "artifactDigest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+    "databaseWrites": 0,
+    "format": "yunipals-native-metadata-approval-install-v1",
+    "installed": true,
+    "newMetadataEpochRequired": true,
+    "providerCalls": 0,
+    "resultSha256": "aee652c4789a0a92f5889a0a4a746f73d9ac4e7507352252118c9c257a513e9b",
+    "runtimeCadenceQualified": false,
+    "serviceActions": 0
+  },
+  "actualInstallReview": {
+    "artifactDigest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+    "databaseWrites": 0,
+    "format": "yunipals-native-metadata-approval-install-v1",
+    "newMetadataEpochRequired": true,
+    "providerCalls": 0,
+    "reviewHash": "7cfe6beb97769fb8c2936c47df1b68f0411a176126b85c7242abc913f68687e5",
+    "serviceActions": 0
+  },
+  "actualPreflight": {
+    "actors": [
+      {
+        "ActiveState": "active",
+        "InvocationID": "b7939080dc1f41508f94e0214cce9ca6",
+        "MainPID": "101456",
+        "SubState": "running",
+        "executedProgramSha256": "5c868742926fb5a56583bc25d87a814ce91c9509728c67df0ab507f8f40adc21",
+        "unit": "yunipals-metadata.service"
+      },
+      {
+        "ActiveState": "active",
+        "InvocationID": "2e9302329fa7456587bdf8de09bf7f5b",
+        "MainPID": "3985426",
+        "SubState": "running",
+        "unit": "yunipals-ypal-combined-source.service"
+      }
+    ],
+    "databaseWrites": 0,
+    "format": "root-native-metadata-approval-inactive-install-preflight",
+    "incomingAbsent": true,
+    "installAuditAbsent": true,
+    "observedAt": "2026-10-25T19:20:27.322775+00:00",
+    "predecessorInstallVerified": true,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "targetAbsent": true
+  },
+  "actualPublicStage": {
+    "commit": "66a5a9863b67c9d3caa54768677c82c7abe4fcab",
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "existingPermissionChanges": 0,
+    "format": "root-native-metadata-approval-public-stage",
+    "observedAt": "2026-10-25T19:22:14.945530+00:00",
+    "providerCalls": 0,
+    "publicDirectoriesCreated": 2,
+    "publicFilesCreated": 17,
+    "publicFilesVerified": 21,
+    "resultSha256": "24c27299d339c33ee8e95e8360dc39713ea8a9ace11392661238f59d826fbd86",
+    "runtimeInstalled": false,
+    "runtimeStarted": false,
+    "serviceActions": 0
+  },
+  "artifactDigest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+  "currentMetadataEpochQualified": false,
+  "databaseWrites": 0,
+  "format": "yunipals-native-metadata-approval-inactive-install-production-v1",
+  "independentInstalledVerification": {
+    "actualInstallSha256": "aee652c4789a0a92f5889a0a4a746f73d9ac4e7507352252118c9c257a513e9b",
+    "allEightPayloadFilesAndDependencyLinkVerified": true,
+    "artifactDigest": "7489372f92886018d06718401fb46dca2f97e840f6ae56b7fa6b19e488de1887",
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-native-metadata-approval-installed-independent-verification",
+    "observedAt": "2026-10-25T19:24:07.768005+00:00",
+    "originalActorsUnchanged": [
+      {
+        "ActiveState": "active",
+        "InvocationID": "b7939080dc1f41508f94e0214cce9ca6",
+        "MainPID": "101456",
+        "SubState": "running",
+        "unit": "yunipals-metadata.service"
+      },
+      {
+        "ActiveState": "active",
+        "InvocationID": "2e9302329fa7456587bdf8de09bf7f5b",
+        "MainPID": "3985426",
+        "SubState": "running",
+        "unit": "yunipals-ypal-combined-source.service"
+      }
+    ],
+    "originalNormalizationInstallVerified": true,
+    "providerCalls": 0,
+    "runtimeCadenceQualified": false,
+    "runtimeStarted": false,
+    "serviceActions": 0
+  },
+  "providerCalls": 0,
+  "publicCommit": "66a5a9863b67c9d3caa54768677c82c7abe4fcab",
+  "runtimeCadenceQualified": false,
+  "runtimeStarted": false,
+  "serviceActions": 0
+}
