@@ -1,0 +1,110 @@
+{
+  "actualInputOrProjectionReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "artifact": {
+    "artifactDigest": "a330c3f1ba2701ba287f0675b0c6c11ca010e85d504d5e8798df574625972f67",
+    "facadeSha256": "08905983dc0f5556190d311fd648eecc9ebfea4c958e607902a93ac7a2ad24ba",
+    "localDirectory": "/tmp/arena-native-derived-support-final-v1-20261025",
+    "manifestSha256": "19a9a5737c153192c0723aa73c3d3f4e119f2492cb775ac617a63b0b57bbaf5e"
+  },
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 54709,
+      "file": "arena-native-derived-projector-v1.py",
+      "sha256": "83525842042c1483ba66732f9a006235b940cbff4ae714a66103d69723a1a3ba"
+    },
+    {
+      "bytes": 23649,
+      "file": "arena-native-derived-projector-v1.mjs",
+      "sha256": "8c598c9ae4c6b7b07c2a4ebaf6fc5d2d4ae64c84c5578a2919fee6c579f92a89"
+    },
+    {
+      "bytes": 16470,
+      "file": "arena-native-read-pool-v1.mjs",
+      "sha256": "f04d85aff78b2baadb8cae93bc98588bd0ed3b69da62c2c7d0b8cca9967e2dfa"
+    },
+    {
+      "bytes": 9410,
+      "file": "arena-native-derived-support-build-v1.mjs",
+      "sha256": "54c1802082898283d7033ef61dd440cd98da20449162fcb414cbf6477794f4b1"
+    },
+    {
+      "bytes": 3568,
+      "file": "arena-native-derived-support-install-v1.py",
+      "sha256": "94ae80f4b5bacdb3ca8f3ef831cd6abbe71f40a77deaa344f4953c63e8826ddf"
+    },
+    {
+      "bytes": 16224,
+      "file": "arena-native-derived-support-v1.manifest.json",
+      "sha256": "19a9a5737c153192c0723aa73c3d3f4e119f2492cb775ac617a63b0b57bbaf5e"
+    },
+    {
+      "bytes": 18508,
+      "file": "arena-native-derived-projector-v1.manifest.json",
+      "sha256": "4141ac2dc1aaf49c275aa9cd35965acb441b6d6150a82cab8a466c59b42ca309"
+    },
+    {
+      "bytes": 11896,
+      "file": "arena-native-derived-projector-v1.test.py",
+      "sha256": "0cc256c3d04e471da6f0a300bfe98eb917edeb4738591a967d86fda818cef76a"
+    },
+    {
+      "bytes": 2762,
+      "file": "arena-native-derived-projector-v1.test.mjs",
+      "sha256": "e420fb6de5bca477845564c0521af4645cab483611dd7df17100d1b5a853ef36"
+    },
+    {
+      "bytes": 13267,
+      "file": "arena-native-derived-projector-v1.postgres.test.mjs",
+      "sha256": "198244dc552c99fb736dd2b1dfc0e49d478cfdfed40fb9a7e53971f5a8d2e6f3"
+    },
+    {
+      "bytes": 2035,
+      "file": "arena-native-read-pool-v1.postgres.test.py",
+      "sha256": "5f703d9412612c6207ea70761ae2bfd646c01ad200e6a2c39855f8382ad0afaa"
+    },
+    {
+      "bytes": 10639,
+      "file": "arena-native-read-pool-v1.postgres.test.mjs",
+      "sha256": "b0d2cea5a879edbc001a383df2580306604f18c96b8a6310577b85b8e8d07de8"
+    },
+    {
+      "bytes": 8122,
+      "file": "arena-native-derived-projector-v1.md",
+      "sha256": "8c17581d73b6508e8654b84412db3e8e2915c61d33046aa6c706a4f2ec39c1bb"
+    },
+    {
+      "bytes": 37280,
+      "file": "arena-native-derived-projector-v1.stage.json",
+      "sha256": "3c3979ff1a5dcbe96f26d2fcb5c6333ab3332f151e2cc2636f83e129d2e4a82c"
+    }
+  ],
+  "format": "yunipals-arena-native-derived-projector-v1-preparation",
+  "knownRequiredFollowups": [
+    "root actual install/source/current/catalog/actor/socket/capacity qualification before use",
+    "actual protected input and once-started projection ACK",
+    "business inverse owner separate actual admission/qualification",
+    "separate explicit physical source phase for reader/cache inverse ready0; present latest-complete ready1 remains strict"
+  ],
+  "localFixtureEffects": "only disposable localhost56983 databases/roles and temporary Unix sockets, cleaned after checks",
+  "publicStageClosureCount": 159,
+  "publicStageClosureFile": "arena-native-derived-projector-v1.stage.json",
+  "publicStageClosureSha256": "3c3979ff1a5dcbe96f26d2fcb5c6333ab3332f151e2cc2636f83e129d2e4a82c",
+  "separateExternalPrerequisiteFiles": 6,
+  "verification": {
+    "actualCrossUidSocketRefusalPassed": true,
+    "genuineDualPoolPostgresGroupsPassed": 13,
+    "genuineProjectorPostgresGroupsPassed": 12,
+    "independentReview": "C independently repeated11Python,4Node,12projectorPG,13dualpoolPG/crossUID and reproduced exact final artifact; final exclusive mkdir/chmod delta independently11/11 no findings",
+    "nodeControlsPassed": 4,
+    "pythonControlsPassed": 11,
+    "twoBuildExactOutputEquality": true
+  }
+}
