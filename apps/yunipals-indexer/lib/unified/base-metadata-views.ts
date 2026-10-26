@@ -74,7 +74,7 @@ export async function createNativeBaseMetadataViews(
           WHERE a.release_id=${literal(release.id)};
         IF NOT FOUND OR approval.read_identity IS DISTINCT FROM ${literal(identity)} OR approval.state<>'ready'
           OR approval.frontier IS DISTINCT FROM frontier OR approval.implementation IS DISTINCT FROM ${literal(approvedBaseMetadataImplementation)}
-          OR approval.checked_at<statement_timestamp()-interval '90 seconds' OR approval.checked_at>statement_timestamp()
+          OR approval.checked_at<statement_timestamp()-interval '120 seconds' OR approval.checked_at>statement_timestamp()
           OR approval.checked_block>boundary.block_number OR NOT EXISTS(SELECT 1 FROM ${physical}.chain_block b
             WHERE b.chain_id=8453 AND b.block_number=approval.checked_block AND b.block_hash=approval.checked_hash)
           THEN RAISE EXCEPTION 'base_metadata_approval_pending'; END IF;
