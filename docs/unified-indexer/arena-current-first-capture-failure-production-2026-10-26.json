@@ -1,0 +1,34 @@
+{
+  "actualChildFixedCode": "actual_frozen_observational_wrapper_required",
+  "actualChildInspectionAttempts": 0,
+  "actualPrivateChildStdoutSha256": "437648c5969333d8b8cca66961f163f90572a1584d3ea6d4cfba81d3c7c43eb8",
+  "actualRootResult": {
+    "completed": false,
+    "currentProjectionQualified": false,
+    "databaseWrites": 0,
+    "format": "root-arena-projector-current-actual-capture-v1",
+    "inputSha256": "3e44af7034981783e8c4a644d29ce3d88f9f2f0ccd555c62c4faeabefdd44a3c",
+    "inspectActualReceiptBeforeAnyRetry": true,
+    "observedAt": "2026-10-26T00:18:44.588417+00:00",
+    "processExitCode": 1,
+    "providerCalls": 0,
+    "resultSha256": "90a25cb3412d099dc1a7718e5a81b31b67fe347608cebf042742bd3f01c6a528",
+    "serviceActions": 0,
+    "sourceSha256": "b46387401ca4f992754133e1b95b656f7af5b90575051cc0fef2b4c9a559187c",
+    "stderrBytes": 1344,
+    "stderrSha256": "ef73954c4b7c1dcc620660a0c7a62fb34f7b0b9cf15e5e40c6b516d98377c48f",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualWorkerReadOnlyCheck": {
+    "active": true,
+    "invocation": "7f36dc941e974968b8d3e61b86aecf4d",
+    "mainPID": 1335900,
+    "restarts": 0
+  },
+  "diagnosis": "The source-file hash helper JSON-encoded Buffer values instead of hashing raw bytes.",
+  "failedRecordsPreserved": true,
+  "format": "yunipals-arena-current-first-capture-failure",
+  "newVersionRequiresSeparateCurrentAcceptance": true,
+  "oldOwner3AndCurrent1ACKsAbsent": true,
+  "productionRetryPerformed": false
+}

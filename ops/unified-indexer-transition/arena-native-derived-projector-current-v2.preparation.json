@@ -1,0 +1,104 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "databaseWrites": 0,
+  "existingServiceAndArtifactRetained": true,
+  "externalPrerequisites": 6,
+  "files": [
+    {
+      "bytes": 23125,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v2.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.py",
+      "sha256": "54aff570aaa564aed81a020ac2889dc407ecff9698f4a80b318c3391a5d6e374"
+    },
+    {
+      "bytes": 11013,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v2.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.mjs",
+      "sha256": "5757cbd5a84e6da1cf3a374fb94235990eea4fdd870827c21ac75f40046e3459"
+    },
+    {
+      "bytes": 19333,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v2.manifest.json",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.manifest.json",
+      "sha256": "98ebe19f323a7a54901bfa181a771b5d4ec4bde5afdbdc0017b818c7c58973a4"
+    },
+    {
+      "bytes": 2414,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2-manifest.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2-manifest.py",
+      "sha256": "9ef19d97b15125d1d93a22a622ffd884fd875972d79f02dabecc69690ec92408"
+    },
+    {
+      "bytes": 4155,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.test.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.test.py",
+      "sha256": "8b9ecdf02c44db6145304cbd087eb2d6f865108f801c99049f65c35a91a12903"
+    },
+    {
+      "bytes": 7405,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.test.mjs",
+      "sha256": "f9d7a8cb5289a2a5a97aa5999e56ab161c039193dc2d1e1ab022cab8c8b615d8"
+    },
+    {
+      "bytes": 5904,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.startup.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.startup.test.mjs",
+      "sha256": "07bd640133146209d0e515d65d7d66e944c7a93901980d4990fee37c62537c9d"
+    },
+    {
+      "bytes": 6226,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.classifier.postgres.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.classifier.postgres.test.mjs",
+      "sha256": "32b7054513908a186a3a361c4e8a84a6c2ce079eb983ee070ba4370d9a6602f9"
+    },
+    {
+      "bytes": 5861,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.md",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.md",
+      "sha256": "7c2c42f5c562e549decdff32070c6c454951645def13266119a1ef3eeb3b577f"
+    },
+    {
+      "bytes": 41300,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v2.stage.json",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v2.stage.json",
+      "sha256": "a501733f9675785dd3440fc94d9dd43f961174f0516e26d2630162a7c5f2e5c4"
+    }
+  ],
+  "format": "yunipals-arena-native-derived-projector-current-v2-preparation",
+  "originalOwner3CapturePassedClaimed": false,
+  "previousCurrentCapturePassedClaimed": false,
+  "previousProducerSha256": "b46387401ca4f992754133e1b95b656f7af5b90575051cc0fef2b4c9a559187c",
+  "providerCalls": 0,
+  "publicStageClosureCount": 175,
+  "publicStageClosureFile": "arena-native-derived-projector-current-v2.stage.json",
+  "publicStageClosureSha256": "a501733f9675785dd3440fc94d9dd43f961174f0516e26d2630162a7c5f2e5c4",
+  "serviceActions": 0,
+  "sourceOnly": true,
+  "verification": {
+    "actualRuntimeAcceptanceClaimed": false,
+    "actualStartupFileBuffers": 3,
+    "fixtureSeams": [
+      "startup host/FD authorization",
+      "post-auth startup SQL clients",
+      "native framework status",
+      "schema and role OIDs"
+    ],
+    "nodeGroups": 8,
+    "pythonControls": 11,
+    "realPostgresClassifierGroups": 1,
+    "realPostgresRefusals": 4,
+    "startupGroups": 5
+  }
+}
