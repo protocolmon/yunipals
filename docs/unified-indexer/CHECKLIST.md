@@ -1,14 +1,14 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 07:26 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 07:44 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
 - Shared indexing, six-collection parity and metadata provenance are accepted. Production consumer handover is incomplete.
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
 - The remaining immediate blocker is validation cost: all checks and the final reserve must fit the existing approval lifetime.
-- The second read-only benchmark completed at 07:14 UTC: refresh took 5.67 seconds and prerequisites 105.14 seconds. All 347 process calls, full Source postflight and retained-file checks passed. The two slow generation-verification calls are now positively identified. CPU attribution is partial because its diagnostic cap timed only 10,000 of 21,699 calls; a bounded successor corrects that limit. [Actual result](readonly-refresh-benchmark2-production-2026-10-26.json), [cost and coverage](readonly-refresh-benchmark2-cost-summary-production-2026-10-26.json).
-- The rollback controller is published after independent source review and 17 controls. Its original locks, full checks after each operation and cancellation/error handling are preserved. This is source preparation; actual rollback inputs, timing and effects remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json).
+- The third read-only benchmark completed at 07:36 UTC: prerequisites took 105.02 seconds. All 347 process calls and 21,699 declared CPU-entrypoint calls were observed without drops or bookkeeping errors; full Source postflight and retained-file checks passed. Across the pair, SHA-256 construction cost 11.00 CPU seconds and JSON parsing 7.49 seconds. The five measured entrypoints explain 24.64 of 49.04 parent CPU seconds; other CPU work remains outside those entrypoints. Equivalent computation and SQL-plan improvements are the next work. [Actual result](readonly-refresh-benchmark3-production-2026-10-26.json), [measured breakdown](readonly-refresh-benchmark3-cost-summary-production-2026-10-26.json).
+- The rollback controller is published and staged inactive after independent source review and 17 controls: 411 files verified, five added, 406 existing files/inodes preserved. Original locks, checks after each operation and cancellation/error handling are preserved. Actual rollback inputs, timing and effects remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json), [actual inactive staging](publication-inverse1-source-stage-production-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
 
 Current accepted milestones:
