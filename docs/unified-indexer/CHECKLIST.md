@@ -1,13 +1,14 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 07:44 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 09:58 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
 - Shared indexing, six-collection parity and metadata provenance are accepted. Production consumer handover is incomplete.
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
 - The remaining immediate blocker is validation cost: all checks and the final reserve must fit the existing approval lifetime.
-- The third read-only benchmark completed at 07:36 UTC: prerequisites took 105.02 seconds. All 347 process calls and 21,699 declared CPU-entrypoint calls were observed without drops or bookkeeping errors; full Source postflight and retained-file checks passed. Across the pair, SHA-256 construction cost 11.00 CPU seconds and JSON parsing 7.49 seconds. The five measured entrypoints explain 24.64 of 49.04 parent CPU seconds; other CPU work remains outside those entrypoints. Equivalent computation and SQL-plan improvements are the next work. [Actual result](readonly-refresh-benchmark3-production-2026-10-26.json), [measured breakdown](readonly-refresh-benchmark3-cost-summary-production-2026-10-26.json).
+- The fourth read-only benchmark completed at 09:21 UTC. Prerequisites took 97.74 seconds, compared with 105.02 seconds previously; this still does not fit the existing 90-second approval lifetime plus the five-second finish reserve. Fresh file reads, digest comparisons and full Source postflight passed. Reusing identical hash computations avoided 2.02 GB of repeated hashing during the measured pair. No held qualification, cache commit or reader switch is authorized by this timing result. [Actual result](readonly-refresh-benchmark4-production-2026-10-26.json), [measured breakdown](readonly-refresh-benchmark4-cost-summary-production-2026-10-26.json).
+- The exact publication-query plan and the read-only JIT comparison completed. Both executions returned identical results: JIT on took 19.73 seconds and off took 20.87 seconds, so disabling JIT is not an accepted performance fix. Separate snapshots and cache warm-up prevent a causal comparison. No new database indexes or persistent settings were applied; source-level query/index analysis continues. [Actual plan summary](publication-explain-production-2026-10-26.json), [actual comparison](publication-jit-comparison-production-2026-10-26.json).
 - The rollback controller is published and staged inactive after independent source review and 17 controls: 411 files verified, five added, 406 existing files/inodes preserved. Original locks, checks after each operation and cancellation/error handling are preserved. Actual rollback inputs, timing and effects remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json), [actual inactive staging](publication-inverse1-source-stage-production-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
 

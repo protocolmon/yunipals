@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "root-readonly-sha256-memo-public-source-stage-v1",
+  "newRuntimeFiles": 1,
+  "operatorInvoked": false,
+  "privateInputsCreated": false,
+  "providerCalls": 0,
+  "resultSha256": "f8bbb4a40841a8721bcf4dfe303f5dbce73bd5a8b962183a1d1027a39fcad42d",
+  "retainedFileBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-readonly-sha256-memo-v1.py": "432d52299ad7040c2c587cb6db92b6aba4ff6fffd4d0adad499cfe604b08b9a0"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 1
+}
