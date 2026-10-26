@@ -1,0 +1,57 @@
+{
+  "SSHExecuted": false,
+  "activationPolicyTTLSeconds": 120,
+  "actualCurrentSourceQualified": false,
+  "actualHeldQualificationClaimed": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.mjs",
+      "sha256": "cd14d8dc2cdfaaf0e223d4531f28747519cdd7fb07fcfefad868546eea99687d",
+      "size": 17199
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-driver-v1.mjs",
+      "sha256": "72e2bec6aa91997029d31074d40165fc79dc99f1c8003aab3ab9f3973380a3c7",
+      "size": 13815
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-sql-v1.mjs",
+      "sha256": "464f103743169d55a1cc237b1db397d8e7f19d7869952457ce25f4c8dd6563cb",
+      "size": 5215
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.manifest.json",
+      "sha256": "037072fc91809e25caec68d26036cf8fc28d3ab8b0c501d70b9f2b57f775abba",
+      "size": 824
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.test.mjs",
+      "sha256": "592e6384075f340c7fd37d52162d2d327ba5690baa50beaf919a230f18c1f4c4",
+      "size": 12298
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.postgres.test.mjs",
+      "sha256": "bbbe3c3cd961815485404ed0de0fa0bfa77f7ba87afb643bc159da47600a2491",
+      "size": 7180
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.lifecycle.postgres.test.mjs",
+      "sha256": "f6c6ec38fe07efd4c86370547dcc319d1aae7bf8807fa58236458c15806f2b4e",
+      "size": 13195
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-two-phase-v1.md",
+      "sha256": "72ff7732fc9077ee561169b8fd02a42b532b331a4a9ea6bf3c831e8aa280b434",
+      "size": 5213
+    }
+  ],
+  "format": "yunipals-ordinary-cache-two-phase-v1-preparation",
+  "lifecycleReadinessBooleansAreExplicitIOFixtures": true,
+  "literalACKTailSecondsBothPhases": 5,
+  "preparationNativeReadinessQualified": false,
+  "productionMutationPerformed": false,
+  "realPostgresFenceControlsPassed": 12,
+  "realPostgresLifecycleControlsPassed": 2,
+  "sourceOnly": true,
+  "sourceProtocolControlsPassed": 12
+}
