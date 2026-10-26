@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-reader-binding-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "9fc7ccab54d43ad7f59d44c692d8fca3f5176e7be0ac3f7447f9c325c03a6502",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-native-readiness-reader-binding-v1.manifest.json": "51f2bd37661886970310050c9983114452797fa59db7e29b04bdd1e4dca1c97a",
+    "ypal-native-readiness-reader-binding-v1.py": "bf8d912e799f5a651f40e98539db742b1c997ca5e96c4baa57df191334966525"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 339
+}
