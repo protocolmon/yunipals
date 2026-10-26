@@ -452,6 +452,110 @@ describe("native Islands API preserves deployed routes with release-bound owners
       ).rows[0]
     ).toEqual({ ownership_release_id: release, ownership_read_identity: hash });
   });
+  it("verifies 459 custody tokens across 233 wallets in bounded membership batches", async () => {
+    await custodyFixture();
+    const wallet = (number: number) =>
+      `0x${number.toString(16).padStart(40, "0")}` as `0x${string}`;
+    await query(
+      `UPDATE native_islands_read.transfer_event SET "from"=$1 WHERE id='deposit'`,
+      [wallet(1)]
+    );
+    await query(`INSERT INTO native_islands_read.transfer_event
+      SELECT 'deposit-'||i,collection,chain_id,contract_address,i::text,lifecycle,
+        '0x'||lpad(to_hex(((i-1)%233)+1),40,'0'),"to",block_number,
+        block_timestamp,transaction_hash,transaction_index,log_index
+      FROM native_islands_read.transfer_event CROSS JOIN generate_series(2,459)i
+      WHERE id='deposit'`);
+    const memberships = new Map<string, bigint[]>();
+    for (let token = 1; token <= 459; token++) {
+      const account = wallet(((token - 1) % 233) + 1);
+      memberships.set(account, [
+        ...(memberships.get(account) ?? []),
+        BigInt(token)
+      ]);
+    }
+    const ownerBatches: number[] = [];
+    const membershipBatches: number[] = [];
+    const single = vi.fn(async () => {
+      throw new Error("batched reader must not call single-wallet fallback");
+    });
+    const result = await verifyNativeIslandStaking(
+      pool,
+      "native_islands_read",
+      chain({
+        custodyBalance: async () => 459n,
+        owners: async (tokens, block) => {
+          expect(block).toBe(finalized);
+          ownerBatches.push(tokens.length);
+          return tokens.map(() => islandStakingAddress);
+        },
+        stakedIslands: single,
+        stakedIslandsMany: async (wallets, block) => {
+          expect(block).toBe(finalized);
+          membershipBatches.push(wallets.length);
+          return wallets.map((account) => memberships.get(account)!);
+        }
+      }),
+      { maxTokens: 1000, maxReadCalls: 128 }
+    );
+    expect(result).toMatchObject({
+      custody: 459,
+      verified: 459,
+      unverified: 0,
+      readCalls: 22
+    });
+    expect(ownerBatches).toEqual([...Array<number>(11).fill(40), 19]);
+    expect(membershipBatches).toEqual([40, 40, 40, 40, 40, 33]);
+    expect(single).not.toHaveBeenCalled();
+    expect(
+      (
+        await query(
+          "SELECT count(*)::int AS positions,count(DISTINCT staker)::int AS wallets FROM metadata.island_staking_position"
+        )
+      ).rows[0]
+    ).toEqual({ positions: 459, wallets: 233 });
+  });
+  it("rejects wrong membership batch counts, oversized rows and negative IDs before write publication", async () => {
+    await custodyFixture();
+    const invalid: Array<readonly (readonly bigint[])[]> = [
+      [],
+      [[-1n]],
+      [Array<bigint>(11).fill(1n)],
+      Array<readonly bigint[]>(1),
+      [Array<bigint>(1)]
+    ];
+    for (const rows of invalid) {
+      const connect = vi.fn(() => pool.connect());
+      await expect(
+        verifyNativeIslandStaking(
+          { connect },
+          "native_islands_read",
+          chain({ stakedIslandsMany: async () => rows }),
+          limits
+        )
+      ).rejects.toThrow(/staking_membership_(batch_mismatch|limit)/);
+      expect(connect).toHaveBeenCalledTimes(1);
+      expect(
+        (
+          await query(
+            "SELECT (SELECT count(*)::int FROM metadata.island_staking_position)AS positions,(SELECT count(*)::int FROM metadata.island_staking_scan)AS scans"
+          )
+        ).rows[0]
+      ).toEqual({ positions: 0, scans: 0 });
+    }
+  });
+  it("retains the single-wallet membership fallback", async () => {
+    await custodyFixture();
+    const single = vi.fn(async () => [1n]);
+    const result = await verifyNativeIslandStaking(
+      pool,
+      "native_islands_read",
+      chain({ stakedIslands: single }),
+      limits
+    );
+    expect(single).toHaveBeenCalledExactlyOnceWith(alice, finalized);
+    expect(result).toMatchObject({ verified: 1, readCalls: 6 });
+  });
   it("staking verifier refuses finalized reorg, changed deposit/source, mismatched custody and exhausted logical limits without publication", async () => {
     await custodyFixture();
     for (const reader of [

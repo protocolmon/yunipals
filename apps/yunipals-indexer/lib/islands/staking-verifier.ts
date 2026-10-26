@@ -42,6 +42,10 @@ export type NativeStakingChainReader = {
     wallet: `0x${string}`,
     block: bigint
   ): Promise<readonly bigint[]>;
+  stakedIslandsMany?(
+    wallets: readonly `0x${string}`[],
+    block: bigint
+  ): Promise<readonly (readonly bigint[])[]>;
 };
 export type NativeStakingLimits = { maxTokens: number; maxReadCalls: number };
 type Deposit = {
@@ -183,13 +187,33 @@ export async function verifyNativeIslandStaking(
       throw new Error("staking_owner_mismatch");
   }
   const memberships = new Map<string, Set<string>>();
-  for (const wallet of new Set(proof.deposits.map((row) => row.depositor))) {
-    const ids = await point(() =>
-      chain.stakedIslands(wallet as `0x${string}`, block.number)
-    );
-    if (ids.length > limits.maxTokens || ids.some((token) => token < 0n))
+  const wallets = [
+    ...new Set(proof.deposits.map((row) => row.depositor))
+  ] as `0x${string}`[];
+  const membership = (wallet: string, ids: readonly bigint[]) => {
+    if (!Array.isArray(ids) || ids.length > limits.maxTokens)
       throw new Error("staking_membership_limit");
+    for (const token of ids) {
+      if (typeof token !== "bigint" || token < 0n)
+        throw new Error("staking_membership_limit");
+    }
     memberships.set(wallet, new Set(ids.map(String)));
+  };
+  const readMany = chain.stakedIslandsMany;
+  if (readMany) {
+    for (let offset = 0; offset < wallets.length; offset += 40) {
+      const batch = wallets.slice(offset, offset + 40);
+      const rows = await point(() => readMany.call(chain, batch, block.number));
+      if (!Array.isArray(rows) || rows.length !== batch.length)
+        throw new Error("staking_membership_batch_mismatch");
+      for (let index = 0; index < batch.length; index++)
+        membership(batch[index]!, rows[index]!);
+    }
+  } else {
+    for (const wallet of wallets) {
+      const ids = await point(() => chain.stakedIslands(wallet, block.number));
+      membership(wallet, ids);
+    }
   }
   if (
     (await point(() => chain.blockHash(block.number))).toLowerCase() !==

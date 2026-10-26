@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { encodeFunctionResult, parseAbi } from "viem";
+import { decodeFunctionData, encodeFunctionResult, multicall3Abi, parseAbi, type Hex } from "viem";
+import { mainnet } from "viem/chains";
 import { createStakingSupportAdapter, stakingSupportAbi } from "../lib/islands/staking-support-adapter.js";
 import { islandCollection } from "../lib/constants.js";
 import { islandStakingAddress } from "../lib/islands/staking-read.js";
@@ -10,6 +11,8 @@ const now = 1800000000000;
 const block = 20000000n;
 const custodyAbi = parseAbi(["function ownerOf(uint256) view returns(address)", "function balanceOf(address) view returns(uint256)"]);
 const limits = { maxTokens: 50, maxRpcCalls: 128, maxSeconds: 120, maxResponseBytes: 1048576 };
+const aggregateResult = (results: readonly { success: boolean; returnData: Hex }[]) =>
+  encodeFunctionResult({ abi: multicall3Abi, functionName: "aggregate3", result: results });
 const metrics = () => ({ status: "ready", freeRouting: true, paidFallbackOnFreeFailure: false, sourcePaidFallbackOnFreeFailure: false,
   foregroundPaidFallbackOnFreeFailure: true, orderPaidFallbackOnFreeFailure: true,
   freeRequestTimeoutMs: 3000, freeMinimumIntervalMs: 1000, freeSourceMinimumIntervalMs: 400, maximumConcurrentUpstreamRequests: 8,
@@ -46,22 +49,77 @@ describe("bounded native staking root adapter", () => {
     expect(sent.map((row) => row.body.method)).toEqual(["eth_chainId", "eth_getBlockByNumber", "eth_getBlockByNumber", "eth_call"]);
   });
 
-  it("maps deployed stakedIslandsOf, NFT balanceOf and each ownerOf to bounded individual reads", async () => {
+  it("batches 40 owner and wallet reads through the installed mainnet Multicall3 at one canonical anchor", async () => {
     let operation = "balance";
+    const ids = Array.from({ length: 40 }, (_, index) => BigInt(index + 1));
+    const wallets = ids.map((id) => `0x${id.toString(16).padStart(40, "0")}` as const);
     const { adapter, sent } = fixture({ result: (body) => {
       if (body.method !== "eth_call") return undefined;
       if (operation === "balance") return encodeFunctionResult({ abi: custodyAbi, functionName: "balanceOf", result: 1n });
-      if (operation === "owner") return encodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", result: islandStakingAddress });
+      if (operation === "owner" || operation === "many") return aggregateResult(ids.map((id) => ({ success: true,
+        returnData: operation === "owner" ? encodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", result: islandStakingAddress }) :
+          encodeFunctionResult({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", result: [id] }) })));
       return encodeFunctionResult({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", result: [1n] });
     } });
     await adapter.chain.finalizedBlock();
     expect(await adapter.chain.custodyBalance(block)).toBe(1n);
     operation = "owner";
-    expect(await adapter.chain.owners([1n, 2n], block)).toHaveLength(2);
+    expect((await adapter.chain.owners(ids, block)).map((owner) => owner.toLowerCase())).toEqual(ids.map(() => islandStakingAddress));
     operation = "membership";
     expect(await adapter.chain.stakedIslands(wallet, block)).toEqual([1n]);
+    operation = "many";
+    expect(await adapter.chain.stakedIslandsMany!(wallets, block)).toEqual(ids.map((id) => [id]));
     expect(sent.filter((row) => row.body.method === "eth_call")).toHaveLength(4);
-    expect(sent.slice(-4).map((row) => (row.body.params[0] as { to: string }).to)).toEqual([islandCollection.address, islandCollection.address, islandCollection.address, islandStakingAddress]);
+    expect(adapter.statistics().rpcCalls).toBe(7);
+    expect(sent.slice(-4).map((row) => (row.body.params[0] as { to: string }).to)).toEqual([
+      islandCollection.address, mainnet.contracts.multicall3.address, islandStakingAddress, mainnet.contracts.multicall3.address
+    ]);
+    for (const [offset, abi, functionName, args, target] of [
+      [-3, custodyAbi, "ownerOf", ids, islandCollection.address],
+      [-1, stakingSupportAbi, "stakedIslandsOf", wallets, islandStakingAddress]
+    ] as const) {
+      const request = sent.at(offset)!.body;
+      expect(request.params[1]).toEqual({ blockHash: hash, requireCanonical: true });
+      const aggregate = decodeFunctionData({ abi: multicall3Abi, data: (request.params[0] as { data: Hex }).data });
+      expect(aggregate.functionName).toBe("aggregate3");
+      if (aggregate.functionName !== "aggregate3") throw new Error("aggregate3 required");
+      expect(aggregate.args[0]).toHaveLength(40);
+      for (const [index, entry] of aggregate.args[0].entries()) {
+        expect(entry.target.toLowerCase()).toBe(target);
+        expect(entry.allowFailure).toBe(false);
+        const decoded = decodeFunctionData({ abi, data: entry.callData });
+        expect(decoded.functionName).toBe(functionName);
+        expect(decoded.args?.map((arg) => typeof arg === "string" ? arg.toLowerCase() : arg)).toEqual([args[index]]);
+      }
+    }
+  });
+
+  it("rejects partial, mismatched and malformed multicall results without returning partial owners or retrying", async () => {
+    const good = { success: true, returnData: encodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", result: islandStakingAddress }) };
+    for (const response of [
+      aggregateResult([good, { success: false, returnData: "0x" }]),
+      aggregateResult([good]), aggregateResult([good, good, good]),
+      aggregateResult([good, { success: true, returnData: "0x" }]), "0x"
+    ]) {
+      const { adapter, sent } = fixture({ result: (body) => body.method === "eth_call" ? response : undefined });
+      await adapter.chain.finalizedBlock();
+      await expect(adapter.chain.owners([1n, 2n], block)).rejects.toThrow(/result_invalid/);
+      await expect(adapter.chain.owners([1n], block)).rejects.toThrow("stopped");
+      expect(sent.filter((row) => row.body.method === "eth_call")).toHaveLength(1);
+    }
+  });
+
+  it("rejects invalid wallet batch results and per-wallet membership overflow", async () => {
+    const good = { success: true, returnData: encodeFunctionResult({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", result: [1n] }) };
+    for (const response of [aggregateResult([good]), aggregateResult([good, { success: false, returnData: "0x" }]),
+      aggregateResult([good, { success: true, returnData: "0x" }]),
+      aggregateResult([good, { success: true, returnData: encodeFunctionResult({ abi: stakingSupportAbi,
+        functionName: "stakedIslandsOf", result: Array.from({ length: 51 }, () => 1n) }) }])]) {
+      const { adapter } = fixture({ result: (body) => body.method === "eth_call" ? response : undefined });
+      await adapter.chain.finalizedBlock();
+      await expect(adapter.chain.stakedIslandsMany!([wallet, wallet], block)).rejects.toThrow(/staking_(multicall|membership)_/);
+      await expect(adapter.chain.stakedIslandsMany!([wallet], block)).rejects.toThrow("stopped");
+    }
   });
 
   it("refuses RPC before selecting an anchor and refuses another block", async () => {
@@ -118,16 +176,40 @@ describe("bounded native staking root adapter", () => {
     expect(sent.at(-1)!.body.params[1]).toEqual({ blockHash: hash, requireCanonical: true });
   });
 
-  it("counts actual owner RPCs and refuses oversized responses before parsing", async () => {
+  it("counts each aggregate as one actual RPC and refuses oversized responses before parsing", async () => {
     const limited = fixture({ limits: { maxRpcCalls: 6 }, result: (body) => body.method === "eth_call" ?
-      encodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", result: islandStakingAddress }) : undefined });
+      aggregateResult([{ success: true, returnData: encodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", result: islandStakingAddress }) }]) : undefined });
     await limited.adapter.chain.finalizedBlock();
-    await expect(limited.adapter.chain.owners([1n, 2n, 3n, 4n], block)).rejects.toThrow("rpc_call_limit");
+    for (let i = 0; i < 3; i++) expect(await limited.adapter.chain.owners([1n], block)).toHaveLength(1);
+    await expect(limited.adapter.chain.owners([1n], block)).rejects.toThrow("rpc_call_limit");
     expect(limited.sent).toHaveLength(6);
     const oversized = createStakingSupportAdapter({ ...limits, maxResponseBytes: 1024 }, {
       now: () => now, fetch: (async () => new Response("x".repeat(1025))) as typeof fetch
     });
     await expect(oversized.assertFreeProof()).rejects.toThrow("request_failed");
+  });
+
+  it("rejects unanchored, wrong-block, empty, oversized and invalid batches before an RPC", async () => {
+    for (const [ids, wallets] of [
+      [[], []], [Array.from({ length: 41 }, () => 1n), Array.from({ length: 41 }, () => wallet)],
+      [[-1n], ["0x1234"]], [[2n ** 256n], ["0xZZ00000000000000000000000000000000000000"]]
+    ] as const) {
+      const owners = fixture();
+      await owners.adapter.chain.finalizedBlock();
+      await expect(owners.adapter.chain.owners([...ids], block)).rejects.toThrow("batch_invalid");
+      expect(owners.sent).toHaveLength(3);
+      const members = fixture();
+      await members.adapter.chain.finalizedBlock();
+      await expect(members.adapter.chain.stakedIslandsMany!(wallets as readonly `0x${string}`[], block)).rejects.toThrow("batch_invalid");
+      expect(members.sent).toHaveLength(3);
+    }
+    const unanchored = fixture();
+    await expect(unanchored.adapter.chain.owners([1n], block)).rejects.toThrow("unpinned");
+    expect(unanchored.sent).toHaveLength(0);
+    const wrong = fixture();
+    await wrong.adapter.chain.finalizedBlock();
+    await expect(wrong.adapter.chain.stakedIslandsMany!([wallet], block + 1n)).rejects.toThrow("unpinned");
+    expect(wrong.sent).toHaveLength(3);
   });
 
   it("enforces per-response/request-time/row limits with no network authority beyond the fixed root", async () => {

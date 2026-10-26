@@ -1,4 +1,5 @@
-import { decodeFunctionResult, encodeFunctionData, parseAbi, type Hex } from "viem";
+import { decodeFunctionResult, encodeFunctionData, multicall3Abi, parseAbi, type Address, type Hex } from "viem";
+import { mainnet } from "viem/chains";
 import { islandCollection } from "../constants.js";
 import { islandStakingAddress } from "./staking-read.js";
 import type { NativeStakingChainReader } from "./staking-verifier.js";
@@ -16,6 +17,7 @@ const custodyAbi = parseAbi([
   "function ownerOf(uint256 tokenId) view returns (address)"
 ]);
 const rootEndpoint = "http://127.0.0.1:19201/";
+const multicall3 = mainnet.contracts.multicall3;
 const hashPattern = /^0x[0-9a-f]{64}$/;
 const quantityPattern = /^0x(?:0|[1-9a-f][0-9a-f]*)$/;
 type ObjectValue = Record<string, unknown>;
@@ -132,6 +134,20 @@ export function createStakingSupportAdapter(
     if (typeof result !== "string" || !/^0x(?:[0-9a-f]{2})*$/.test(result)) return fail("staking_call_result_invalid");
     return result as Hex;
   };
+  const aggregate = async (calls: readonly { target: Address; callData: Hex }[], block: bigint) => {
+    if (calls.length < 1 || calls.length > 40 || block < BigInt(multicall3.blockCreated)) return fail("staking_multicall_batch_invalid");
+    const data = await call(multicall3.address, encodeFunctionData({
+      abi: multicall3Abi, functionName: "aggregate3",
+      args: [calls.map((entry) => ({ ...entry, allowFailure: false }))]
+    }), block);
+    try {
+      const results = decodeFunctionResult({ abi: multicall3Abi, functionName: "aggregate3", data });
+      if (results.length !== calls.length || results.some((entry) => !entry.success)) return fail("staking_multicall_result_invalid");
+      return results.map((entry) => entry.returnData);
+    } catch {
+      return fail("staking_multicall_result_invalid");
+    }
+  };
   return {
     chain: {
       contractAddress: islandStakingAddress,
@@ -161,12 +177,14 @@ export function createStakingSupportAdapter(
       custodyBalance: async (block) => decodeFunctionResult({ abi: custodyAbi, functionName: "balanceOf",
         data: await call(islandCollection.address, encodeFunctionData({ abi: custodyAbi, functionName: "balanceOf", args: [islandStakingAddress] }), block) }),
       owners: async (ids, block) => {
-        if (ids.length < 1 || ids.length > 40 || ids.some((id) => id < 0n)) return fail("staking_owner_batch_invalid");
-        const owners: string[] = [];
-        // Bound actual RPCs per token rather than counting one multicall as one.
-        for (const id of ids) owners.push(decodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf",
-          data: await call(islandCollection.address, encodeFunctionData({ abi: custodyAbi, functionName: "ownerOf", args: [id] }), block) }));
-        return owners;
+        if (ids.length < 1 || ids.length > 40 || ids.some((id) => id < 0n || id >= 2n ** 256n)) return fail("staking_owner_batch_invalid");
+        const results = await aggregate(ids.map((id) => ({ target: islandCollection.address,
+          callData: encodeFunctionData({ abi: custodyAbi, functionName: "ownerOf", args: [id] }) })), block);
+        try {
+          return results.map((data) => decodeFunctionResult({ abi: custodyAbi, functionName: "ownerOf", data }));
+        } catch {
+          return fail("staking_owner_result_invalid");
+        }
       },
       stakedIslands: async (wallet, block) => {
         if (!/^0x[0-9a-f]{40}$/.test(wallet)) return fail("staking_wallet_invalid");
@@ -174,6 +192,20 @@ export function createStakingSupportAdapter(
           data: await call(islandStakingAddress, encodeFunctionData({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", args: [wallet] }), block) });
         if (ids.length > limits.maxTokens) return fail("staking_membership_limit");
         return ids;
+      },
+      stakedIslandsMany: async (wallets, block) => {
+        if (wallets.length < 1 || wallets.length > 40 || wallets.some((wallet) => !/^0x[0-9a-f]{40}$/.test(wallet))) return fail("staking_wallet_batch_invalid");
+        const results = await aggregate(wallets.map((wallet) => ({ target: islandStakingAddress,
+          callData: encodeFunctionData({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", args: [wallet] }) })), block);
+        try {
+          return results.map((data) => {
+            const ids = decodeFunctionResult({ abi: stakingSupportAbi, functionName: "stakedIslandsOf", data });
+            if (ids.length > limits.maxTokens) return fail("staking_membership_limit");
+            return ids;
+          });
+        } catch {
+          return fail("staking_membership_result_invalid");
+        }
       }
     },
     assertFreeProof,

@@ -16,9 +16,15 @@ try {
   const result = await runStakingSupportOnce(pool, config, { signal: abort.signal });
   console.log(JSON.stringify({ event: "native_staking_support_completed", ...result }));
   if (!result.complete) process.exitCode = 2;
-} catch {
+} catch (error) {
   // RPC/SQL errors may contain private endpoints or wallet parameters.
-  console.error(JSON.stringify({ event: "native_staking_support_unavailable", operationalWriteMayHaveOccurred: true }));
+  const reason = error instanceof Error && /^staking_[a-z_]{1,100}$/.test(error.message)
+    ? error.message
+    : typeof error === "object" && error !== null && "code" in error &&
+        typeof error.code === "string" && /^[A-Z0-9]{5}$/.test(error.code)
+      ? error.code
+      : "unclassified";
+  console.error(JSON.stringify({ event: "native_staking_support_unavailable", reason, operationalWriteMayHaveOccurred: true }));
   process.exitCode = 1;
 } finally {
   await pool.end();

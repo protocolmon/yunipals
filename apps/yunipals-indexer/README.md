@@ -160,6 +160,20 @@ Systemd supervises the same launcher as `pnpm indexer:start` and restarts it aft
 
 A running process is not a synchronization guarantee. Check Ponder's indexed heads and readiness in its logs, and check successful Solana scans and credit-budget status before relying on application reads. Preserve database volumes, metadata archives and private keys across restarts.
 
+## Staking verification
+
+The staking worker verifies custody and wallet membership against a finalized Ethereum block. It reads indexed deposits and makes bounded contract calls; it does not scan chain logs. Owner and membership checks use batches of up to 40 calls against the same canonical block hash.
+
+Set `ISLANDS_STAKING_MAX_TOKENS` to cover the full custody count (maximum 500), keeping `ISLANDS_STAKING_MAX_RPC_CALLS=128` and `ISLANDS_STAKING_MAX_SECONDS=120`. Run the dedicated worker once and require `complete=true` with no unverified deposits before enabling its five-minute timer. It needs its existing restricted database role, source selectors and local RPC proxy.
+
+Build a standalone worker with the installed dependencies:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer build:staking-support --outdir /absolute/staking-runtime
+```
+
+The output includes a source manifest and requires the `pg` runtime package. Its only command argument is `once`.
+
 ## Local checks
 
 ```sh

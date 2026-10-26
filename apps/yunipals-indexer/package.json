@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "ponder dev",
     "start:indexer": "node ../../scripts/start-indexer.mjs",
+    "build:staking-support": "node scripts/build-staking-support.mjs",
     "start:api": "tsx lib/api/server.ts",
     "start:collector": "tsx lib/api/collector-server.ts",
     "start:metadata": "tsx lib/metadata/worker.ts",

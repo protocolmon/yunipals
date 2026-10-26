@@ -1,0 +1,35 @@
+[Unit]
+Description=Bounded native Ethereum Islands staking point proof on source008
+After=postgresql.service yunipals-market-production-rpc@ethereum.service
+
+[Service]
+Type=exec
+User=yunipals_islands_staking
+Group=yunipals_islands_staking
+SupplementaryGroups=
+WorkingDirectory=/opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer
+ExecStart=/usr/bin/env -i PATH=/opt/node-v24.18.1/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=UTC NODE_OPTIONS=--max-old-space-size=384 DATABASE_URL=postgresql:///yunipals_backfill?host=/var/run/postgresql&port=5432&user=yunipals_islands_staking DATABASE_SCHEMA=unified_ypal_20261023_v1 OWNERSHIP_READ_MODE=unified OWNERSHIP_READ_SCHEMA=yunipals_ownership_4e77f52b_v5 OWNERSHIP_RELEASE_ID=0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3 YUNIPALS_PROJECTION_MODE=generation ISLANDS_STAKING_READ_IDENTITY=0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab ISLANDS_STAKING_BUILD_ID=71e2a7f3b7 ISLANDS_STAKING_SUPPORT_ENABLED=true ISLANDS_STAKING_MAX_TOKENS=500 ISLANDS_STAKING_MAX_RPC_CALLS=128 ISLANDS_STAKING_MAX_SECONDS=120 ISLANDS_STAKING_MAX_RESPONSE_BYTES=1048576 /opt/node-v24.18.1/bin/node --import tsx /opt/yunipals-unified/staking-runtime/b2959fb4bce779c100bfad20466b7b6dac7e4baa124b31558eb8aac8e2cdc099/staking-support.mjs once
+RuntimeMaxSec=240
+TimeoutStartSec=15
+TimeoutStopSec=20
+KillMode=control-group
+Restart=no
+# Exit2 is an honest incomplete membership proof, never ready acceptance.
+SuccessExitStatus=2
+MemoryMax=536870912
+MemorySwapMax=0
+CPUQuota=50%
+TasksMax=32
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=127.0.0.0/8 ::1
+UMask=0077
+StandardOutput=journal
+StandardError=journal
