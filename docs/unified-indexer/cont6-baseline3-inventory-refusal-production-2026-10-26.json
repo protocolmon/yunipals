@@ -1,0 +1,51 @@
+{
+  "automaticRetryAllowed": false,
+  "cacheCommitRequested": false,
+  "completed": false,
+  "constructInvoked": false,
+  "constructReturned": false,
+  "diagnosis": {
+    "cacheNamespaceExists": false,
+    "capture3Exists": false,
+    "constructorBindingInvoked": false,
+    "databaseRehearsalInvoked": false,
+    "generationBindingInvoked": false,
+    "genericGuard": "bounded_readonly_inventory_command_required",
+    "line": 36,
+    "nextAction": "Read-only exact subprocess diagnostic; preserve the guard and do not replay automatically",
+    "path": [
+      "intake.observe_runtime",
+      "runtime.source_sessions",
+      "runtime.kernel_backends",
+      "inventory.peer_fds",
+      "inventory.run"
+    ],
+    "phase": "initial source runtime inventory",
+    "rawSubprocessCauseNotYetKnown": true,
+    "source": "ops/booster-launch/ypal-old-runtime-inventory-v1.py"
+  },
+  "failureType": "RuntimeError",
+  "fixedCode": "bounded_readonly_inventory_command_required",
+  "format": "yunipals-root-cont6-baseline-v3",
+  "metadataCaptureHistory": {
+    "attempts": 1,
+    "captures": 1,
+    "discarded": 0,
+    "instances": 1,
+    "sha256": "48f5d34e559d0e6bcec8e3154a05dae29ec3884b0c64662581d198b2dea4f0e2"
+  },
+  "observedAt": "2026-10-26T16:25:52Z",
+  "outcomeRequiresInspection": false,
+  "proofHashes": {
+    "failedFilesBefore": "9a079dcb56b187b2cafb790a5eb2e03965447dd33769665a47e87179b1535d06",
+    "failureTraceback": "8fdf820a8df223c6f8d08d5ec4f4f2cdeb93729dbdac5192932561f2d9230c51",
+    "oldFilesBefore": "3d045ade87418cfdda6810d658c1daaea4121c12e7301e25663637d260077b27",
+    "ownedInputReuse": "cf41593a58641c1b010cb83cb17e0ae217d7b89811b210ae7cf7a32267dc4cc9"
+  },
+  "readerLOGINRequested": false,
+  "remoteAuditInspectionRequired": true,
+  "resultSha256": "bbf9beeb941a239d8b22fab7ad52ee2ad300c42da1c78928a4a689698082232a",
+  "serviceActionsRequested": 0,
+  "sourceCommit": "d97707c7",
+  "stage": "full-source-preflight"
+}

@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 15:49 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 16:25 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
@@ -10,6 +10,7 @@ Current position:
 - [x] Publish and stage the linked 120-second migration runner, verify all 333 source files, and execute its genuine startup constructor on production. Its configured scope is 120 seconds and its final reserve is five seconds. No Source preflight, cache transaction or traffic switch ran during this check. [Actual runner verification](native-readiness120-production-2026-10-26.json).
 - The fresh run passed full Source preflight under the 120-second policy, then stopped in cache construction at a duplicate policy-adapter binding (`KeyError: module`). The database rehearsal was not invoked; the new cache/authority/capture namespaces are absent. The exact constructor fix and matching rollback work are being prepared. The failed capture and copied input are preserved; no automatic replay. [Actual failure and diagnosis](cont6-baseline-preconstruct-failure-production-2026-10-26.json).
 - The constructor fix passed in the actual second run, along with fresh full Source checks. Construction then stopped in generation105 current validation because its legacy host reaches the old creator comparison without the 120-second policy adapter. The capture contains only its intent; the cache namespace is absent and no SQL rehearsal launched. That nested compatibility path is being corrected. [Actual second-run evidence](cont6-baseline2-pre-sql-failure-production-2026-10-26.json).
+- The generation adapter is published and staged after seven regression controls and independent review. The third run stopped during initial Source runtime inventory, before constructor/generation binding or SQL rehearsal. The failed peer-FD command needs an exact read-only diagnostic; no guard is being weakened or run replayed automatically. [Actual inventory refusal](cont6-baseline3-inventory-refusal-production-2026-10-26.json).
 - The latest complete read-only benchmark took **96.06 seconds** for prerequisites. Further performance experiments are stopped. Timing results do not authorize a cache commit or reader switch.
 - The rollback controller is published and staged inactive after independent source review and 17 controls. Actual coordinated rollback and return remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json), [inactive staging](publication-inverse1-source-stage-production-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
