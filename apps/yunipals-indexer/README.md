@@ -1,145 +1,170 @@
 # Yunipals indexer
 
-This workspace app contains the four-chain collection indexer and its HTTP API.
-It also indexes the Ethereum Islands collection as `ethereum-islands`, with
-separate metadata publication and collection-scoped v2 reads. See the
-[Islands rollout guide](../../docs/islands-indexing.md) for candidate replay,
-full ownership verification, worker setup, read grants and activation.
-The combined Ponder configuration now indexes Ethereum, Base, Polygon, and BNB,
-with native Arena state and shared Base metadata/marketplace event evidence.
-This is the candidate for the [unified indexer migration](../../docs/unified-indexer-implementation-plan.md).
-See [implementation progress](../../docs/unified-indexer/progress.md) for the
-remaining reader/worker migrations and production acceptance gates.
-The [candidate support runbook](../../ops/unified-indexer/README.md) covers
-release registration, shared observations/receipts, the retained finalized
-Base metadata consumer, and opt-in latest native metadata views. Worker startup never adopts a candidate
-release or changes production readers implicitly.
+One managed service runs the Ponder EVM indexer and the Solana snapshot worker. Ponder indexes Ethereum, Base, Polygon and BNB, including the configured collection, Islands, marketplace and Arena sources. Both children start together; a fatal child exit stops the service so its supervisor can restart it.
 
-Production still uses its pinned release and separate `lib/bnb/worker.ts` writer
-against `bnb_indexer`. That worker starts at block 7,579,197 and requires 20
-confirmations by default. Replay the new Ponder configuration into a fresh
-candidate schema; select the new readers and retire old scanners only after
-fixed-boundary parity and rollback rehearsal pass.
+## Setup
 
-The metadata worker supports `METADATA_SOURCE_MODE=legacy-http` and `archive`.
-Archive mode serves published snapshots from PostgreSQL and uses the pinned
-Polkamon packages in `vendor/` for rendering and local rarity calculation. The
-API serves collection, collector, visibility, trait, and leaderboard reads. The
-marketplace API is a separate app and reads the BNB tables and
-`yunipals_read_v4` views. Neither API should use the indexer's write credential.
+Use Node 24, pnpm 9.12 and Bash 4.3 or newer on Linux or macOS (WSL on Windows). On macOS, install a current Bash and put it on PATH. Install PostgreSQL with its client tools before starting. The database and RPC setup below is required once per installation. The Solana database also needs its metadata archive and Exomon manifest; startup preserves these records.
 
-## Local setup
-
-Use Node.js 24.18.1, pnpm 9.12.0, and PostgreSQL 16. Copy `.env.example` into a
-private environment file and supply your own database and RPC URLs. Load it in
-your shell before running commands; pnpm does not load `.env` automatically.
-The combined Ponder configuration requires all four chain RPCs. Optional Arena
-and BNB Seaport sources use only public deployment configuration; Ponder does
-not need application signing/encryption keys. The `unified:sources` package
-script prints the validated manifest and configuration hash without
-RPC/database access or credential values.
+From the repository root:
 
 ```sh
+node --version
+corepack enable
 pnpm install --frozen-lockfile
+cp apps/yunipals-indexer/.env.example apps/yunipals-indexer/.env
+cp ops/unified-indexer/solana.env.example apps/yunipals-indexer/.env.solana
+cp ops/unified-indexer/service.env.example ops/unified-indexer/.env.service
+chmod 600 apps/yunipals-indexer/.env apps/yunipals-indexer/.env.solana
+```
+
+Fill in both private child files and the public service settings. For a new Solana database, install its schema with the database owner before assigning the runtime role:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=.env.solana --import tsx scripts/migrate-solana.ts
+```
+
+The Ponder runtime creates and maintains its own indexed schema. Choose `UNIFIED_PONDER_SCHEMA` before the first start and keep the same source configuration and schema on restart. Use a database role with the required schema permissions. Application APIs, metadata, caches and transaction workers retain their own database roles and private configuration.
+
+## Database and RPC prerequisites
+
+For a new local source database, create a restricted database owner and database. Put its connection in the private Ponder file. Use separate roles for application readers and operational workers.
+
+```sh
+sudo -u postgres createuser --pwprompt --no-superuser --no-createdb --no-createrole indexer
+sudo -u postgres createdb --owner=indexer yunipals
+```
+
+The RPC coordinator uses the marketplace schema in a separate configured coordinator database. Set up its owner connection and deployment (`staging` or `production`) using [the owner env example](../../ops/unified-indexer/rpc-owner.env.example), then apply the repository schema:
+
+```sh
+pnpm --filter @protopals/yunipals-market-api exec node --env-file=/absolute/rpc-owner.env --import tsx src/migrate.ts
+```
+
+For a **new scope**, use the owner-only SQL templates [configure-opensea-budget.sql](../yunipals-market-api/scripts/configure-opensea-budget.sql) and [configure-rpc-compute-budget.sql](../yunipals-market-api/scripts/configure-rpc-compute-budget.sql). Configure a private libpq service called `yunipals-rpc-owner` for that same database. Supply the public scope, coordinator UUID and request limits from the provider account; do not substitute a different scope for each API key. The compute template sets a one-million-CU daily ceiling with a 200,000-CU foreground reserve. Inspect those values against the account allowance before using it. These templates update existing rows, so skip them for an already configured scope.
+
+```sh
+psql 'service=yunipals-rpc-owner' -v ON_ERROR_STOP=1 \
+  -v budget_scope="$RPC_SCOPE" -v coordinator_id="$RPC_COORDINATOR_ID" \
+  -v all_per_hour="$RPC_ALL_PER_HOUR" -v fulfillment_per_minute="$RPC_FULFILLMENT_PER_MINUTE" \
+  -v publication_per_hour="$RPC_PUBLICATION_PER_HOUR" \
+  -f apps/yunipals-market-api/scripts/configure-opensea-budget.sql
+psql 'service=yunipals-rpc-owner' -v ON_ERROR_STOP=1 \
+  -v budget_scope="$RPC_SCOPE" -v budget_enabled=true \
+  -f apps/yunipals-market-api/scripts/configure-rpc-compute-budget.sql
+```
+
+Add the two indexer workloads with explicit operator-chosen limits. The first command inspects current policy and prints `reviewHash`; repeat it with `--apply` and that exact hash. This bootstrap only inserts missing `unified_source` and `unified_evidence` background allocations. It refuses different existing values, never raises global caps, and never resets usage. Both workloads continue sharing the existing global ceiling with other consumers.
+
+```sh
+pnpm --filter @protopals/yunipals-market-api exec node --env-file=/absolute/rpc-owner.env --import tsx \
+  scripts/configure-unified-rpc-allocations.ts --scope "$RPC_SCOPE" \
+  --source-cu "$RPC_SOURCE_DAILY_CU" --evidence-cu "$RPC_EVIDENCE_DAILY_CU"
+# Repeat the same arguments with: --apply 0x<reviewHash>
+```
+
+After finalizing optional Ponder source settings in `.env`, generate the exact source profile:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=.env --import tsx \
+  scripts/unified-rpc-profile.ts --scope "$RPC_SCOPE" --coordinator-id "$RPC_COORDINATOR_ID" \
+  --output "$PWD/ops/unified-indexer/rpc-profile.json"
+```
+
+This prints `profileId` and writes a draft; it does not approve paid requests. Create an absolute policy input JSON file with exactly `{ "profile": <the generated JSON object>, "expiresAt": <UTC ISO timestamp>, "permits": [...] }`. The [policy review command](../yunipals-market-api/scripts/review-unified-rpc-policy.ts) validates the expiry and each explicit replay permit's chain, block range, maximum CU and expiry. Inspect it first, then repeat with the returned `--apply 0x<reviewHash>`:
+
+```sh
+pnpm --filter @protopals/yunipals-market-api exec node --env-file=/absolute/rpc-owner.env --import tsx \
+  scripts/review-unified-rpc-policy.ts --file /absolute/rpc-policy.json
+```
+
+Grant the dedicated proxy role access with [grant-opensea-budget.sql](../yunipals-market-api/scripts/grant-opensea-budget.sql), supplying `market_budget_role` through psql. Build and run one proxy per chain with its own private upstream/budget env plus the [public profile selectors](../../ops/unified-indexer/rpc-consumer.env.example):
+
+```sh
+pnpm --filter @protopals/yunipals-market-api build
+pnpm --filter @protopals/yunipals-market-api exec node --env-file=/absolute/rpc-chain.env dist/rpc-budget-proxy.mjs
+```
+
+Each proxy env needs `MARKET_OPENSEA_BUDGET_DATABASE_URL`, `MARKET_OPENSEA_BUDGET_SCOPE`, `MARKET_OPENSEA_BUDGET_COORDINATOR_ID`, `MARKET_RPC_PROXY_UPSTREAM`, `MARKET_RPC_PROXY_PORT`, `MARKET_RPC_PROXY_UNIFIED_PROFILE_FILE`, `MARKET_RPC_PROXY_UNIFIED_PROFILE_ID` and `MARKET_RPC_PROXY_CHAIN_ID`. Bind the four proxies to `127.0.0.1` on ports 19201/19202/19203/19204 for chains 1/8453/137/56. Keep upstream credentials private. Put the same absolute profile path, returned profile ID and replay permit IDs in Ponder's `.env`, then check them before starting:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=.env --import tsx scripts/unified-rpc-preflight.ts
+```
+
+## Optional application readers
+
+Starting ingestion does not select or authorize application readers. After Ponder has created its schema and is synchronized, the existing source-owner CLI can create control tables, register the actual schema/build and create immutable V5 read views:
+
+```sh
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=/absolute/source-owner.env --import tsx scripts/unified-control.ts migrate
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=/absolute/source-owner.env --import tsx scripts/unified-control.ts register
+pnpm --filter @protopals/yunipals-indexer exec node --env-file=/absolute/source-owner.env --import tsx scripts/unified-ownership-views.ts
+```
+
+The owner file needs `UNIFIED_INDEXER_DATABASE_URL`, the chosen `UNIFIED_INDEXER_SCHEMA`, the actual Ponder `UNIFIED_INDEXER_BUILD_ID`, then the returned `UNIFIED_INDEXER_RELEASE_ID` and a distinct `UNIFIED_INDEXER_READ_SCHEMA`. Registration checks the actual Ponder build; read-view creation does not publish the release or grant reader access.
+
+The [support-worker env](../../ops/unified-indexer/support.env.example) and [grant template](../../ops/unified-indexer/grant-unified-support.sql.example) describe the separate canonical-observation/receipt worker. [Ownership consumer selectors](../../ops/unified-indexer/ownership-consumer.env.example) describe API/metadata read selection. Native Base metadata has explicit `native-adopt` and `native-refresh` commands in [unified-base-metadata.ts](scripts/unified-base-metadata.ts); these require the configured archive/recovery state and source identity, and are not automatic startup actions.
+
+There is currently no general fresh-install CLI that provisions all application roles, metadata archive data, global publication and application-specific grants/selection together. Those inputs must be supplied by the database/application owner before enabling the relevant readers. The available [archive restore command](scripts/backup-metadata-source.ts) accepts `--env-file`, `--release` and `--input`; it requires a real archive backup. An empty Solana schema is not a replacement for that data. The ingestion command remains usable independently of optional application readers once its own database, archive and RPC prerequisites are ready.
+
+## Configuration
+
+| File                                | Contents                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `ops/unified-indexer/.env.service`  | Public paths, child directories, Ponder listener/schema and shutdown grace.                                   |
+| `apps/yunipals-indexer/.env`        | Ponder database connection, RPC endpoints, profile identity, replay allowances and optional source addresses. |
+| `apps/yunipals-indexer/.env.solana` | Solana database connection, Helius key, snapshot interval, missing-asset policy and credit limits.            |
+
+The parent reads only the public service file. Node loads each private file in its own child process. Private file values take precedence over ambient shell credentials because the launcher excludes those credentials from the child environment. Do not put database URLs, provider keys or signer keys in the public service file. The indexer does not need transaction signer keys.
+
+Paths in the public settings file resolve relative to that file; absolute paths are also accepted. Both application directories default to this checkout. Installed deployments can set `YUNIPALS_INDEXER_PONDER_DIRECTORY` and `YUNIPALS_INDEXER_SOLANA_DIRECTORY` explicitly.
+
+Optional Ponder overlay files load after its private base file in this order: `YUNIPALS_INDEXER_PONDER_RUNTIME_ENV_FILE`, `YUNIPALS_INDEXER_PONDER_OVERRIDE_ENV_FILE`, `YUNIPALS_INDEXER_PONDER_REPLAY_ENV_FILE`. Later files override earlier files. Solana receives only its own private file.
+
+RPC policy enforcement stays enabled. Set `UNIFIED_RPC_PROFILE_FILE` and `UNIFIED_RPC_PROFILE_ID` to the profile installed by the budget coordinator and use the four proxy URLs in the example. Historical replay also needs the coordinator's bounded replay allowances. A missing or mismatched profile stops startup. Optional sources must match that profile.
+
+## Start and stop
+
+Run the supported command from the repository root:
+
+```sh
+pnpm indexer:start
+```
+
+To select an installed configuration:
+
+```sh
+pnpm indexer:start --env-file /etc/yunipals-unified/indexer.service.env
+```
+
+Logs stream to the terminal. Press Ctrl+C to stop both children. SIGTERM also drains them. The launcher waits up to `YUNIPALS_INDEXER_SHUTDOWN_GRACE_MS` (default 30000) before terminating remaining processes. Restart by running the same command with the same settings.
+
+There is one ingestion entrypoint. BNB and boosters are included by the combined Ponder configuration; they do not have separate supported start commands.
+
+## System service
+
+Install the repository under `/opt/yunipals-unified/indexer`, install its dependencies and make Node 24 available on the service's PATH. Create a `yunipals-indexer` service account with access to its application files, database, private env files and writable `.ponder` directory.
+
+Copy the public settings to `/etc/yunipals-unified/indexer.service.env`, change the child env paths to absolute paths under `/etc/yunipals-unified/`, and keep those private files readable only by the service account. Install `ops/unified-indexer/yunipals-indexer.service.example` as `/etc/systemd/system/yunipals-indexer.service`. Adjust the Node executable and filesystem paths for the host before enabling it.
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable --now yunipals-indexer.service
+sudo systemctl status yunipals-indexer.service
+sudo journalctl -u yunipals-indexer.service -f
+sudo systemctl restart yunipals-indexer.service
+sudo systemctl stop yunipals-indexer.service
+```
+
+Systemd supervises the same launcher as `pnpm indexer:start` and restarts it after a fatal child exit. `KillMode=control-group` stops the complete service process tree.
+
+A running process is not a synchronization guarantee. Check Ponder's indexed heads and readiness in its logs, and check successful Solana scans and credit-budget status before relying on application reads. Preserve database volumes, metadata archives and private keys across restarts.
+
+## Local checks
+
+```sh
+pnpm test:indexer:service
 pnpm --filter @protopals/yunipals-indexer typecheck
-pnpm test:indexer
-pnpm --filter @protopals/yunipals-indexer bnb:migrate
-pnpm --filter @protopals/yunipals-indexer db:migrate
 ```
 
-`bnb:migrate` creates the BNB source tables. `db:migrate` creates metadata tables
-and combined four-chain read views once Ponder tables exist. For an independent
-BNB-only installation, run `bnb:standalone-views` after `bnb:migrate` instead;
-it refuses to replace existing read views.
-
-The trait/search projection supports `YUNIPALS_PROJECTION_MODE=legacy` (the
-default) and `generation`. Install its additive tables with `projection:migrate`
-after the normal migrations, then stop the old trait worker and run
-`projection:seed` against the current published snapshot. Switch both indexer
-APIs and the marketplace catalog to `generation` before restarting the worker
-in that mode. `projection:rollback` atomically selects the protected previous
-generation if the current one is bad; it rejects a previous generation from an
-obsolete metadata release. Never run the old trait worker after generation
-readers are enabled.
-
-After the normal schema migrations, run `api:proof-indexes` with a schema-owner
-credential to install concurrent covering indexes for publication, mint,
-lifecycle, revision and count reads. It has a 15-minute deadline per index and
-can wait for older snapshots, including backups and projection builds. It
-validates every index and safely resumes its own interrupted concurrent build.
-Run it again after recreating the physical Ponder schema. API readers retain
-read-only credentials.
-
-Run `api:maintenance` as the schema owner to lower the vacuum/analyze threshold
-to 2% on the lifecycle and metadata proof tables and disable vacuum truncation
-on those tables and their TOAST storage. This keeps index-only proof reads useful
-as rows change. It has a one-second lock deadline and can be safely retried.
-If existing visibility maps are sparse, run a cost-limited
-`VACUUM (ANALYZE, TRUNCATE FALSE)` on those tables before measuring performance.
-
-`test:rarity:postgres` requires a disposable loopback PostgreSQL database named
-`yunipals_rarity_test`. It recreates its fixture schemas and checks rarity
-pagination against the original validated reader across missing metadata,
-null scores, stale proofs, visibility, ownership, traits and numeric ties.
-
-Generation builds check free space on the PostgreSQL filesystem before writing.
-`PROJECTION_MIN_FREE_BYTES` defaults to 25 GB and
-`PROJECTION_BACKUP_PEAK_BYTES` defaults to 65 GB until the backup peak has been
-measured and reduced. `PROJECTION_STORAGE_PATH` can identify the database
-filesystem when it is mounted at a different path on the worker host. The
-test-only capacity bypass requires a loopback database named `*_test`.
-
-The metadata source migrations and import, backup, restore, status, and
-reconciliation commands are available under the `metadata:*` scripts in
-`package.json`. Source inventory and import require an explicit `--legacy-root`
-path; no server-specific legacy data path is built in. An archive release must
-be imported, bound, validated, and activated before starting the API or worker
-with `METADATA_SOURCE_MODE=archive`. Set the mode consistently for the API,
-metadata worker, and leaderboard worker. `legacy-http` remains the default.
-
-Run the processes separately with the same database and compatible RPC settings:
-
-```sh
-pnpm --filter @protopals/yunipals-indexer start:indexer
-pnpm --filter @protopals/yunipals-indexer start:bnb
-pnpm --filter @protopals/yunipals-indexer start:metadata
-pnpm --filter @protopals/yunipals-indexer start:leaderboard
-pnpm --filter @protopals/yunipals-indexer start:api
-```
-
-`start:collector` runs the optional collector-only API on loopback. The main API
-also registers collector routes. Keep `API_COLLECTOR_FILTERS_ENABLED=false` until
-its read path is verified against your data. `bnb:status` reports the durable
-BNB cursor. `BNB_END_BLOCK` can cap a replay. The worker stops on a finalized
-cursor hash mismatch and does not treat RPC failures as empty blocks.
-
-The BNB integration fixture requires a **disposable** PostgreSQL database in
-`DATABASE_URL`. It creates and drops two isolated test schemas:
-
-```sh
-pnpm test:bnb-indexer
-```
-
-Do not point this fixture at a database where the test role can alter production
-schemas. The unit suite and typecheck do not require a database.
-
-## Metadata and rarity
-
-The September 18 source snapshot, September 21 metadata retry fix, collector
-API patch, and September 28 running-checkout comparison are recorded in
-[source provenance](SOURCE_PROVENANCE.md). Active production service configuration
-sets `METADATA_SOURCE_MODE=archive` and `RARITY_READ_SOURCE=local`. Its archive
-reader, renderer, publisher, main API changes, and local rarity formula are
-included here with the pinned package archives. `RARITY_READ_SOURCE=metadata`
-uses scores supplied in metadata; `RARITY_READ_SOURCE=local` reads the locally
-recalculated scores, falling back to supplied scores where a calculation is not
-valid. The renderer and scorer have deterministic fixture tests; compare live
-release and response parity before replacing a production process.
-
-Before replacing a running indexer, compare schema and API responses on a
-disposable database, replay BNB
-from the start block or verify the current cursor and table contents, and check
-all four chain and metadata worker checkpoints. This repository change does not
-switch any production process or database.
-
-See the [BNB self-hosting guide](../../docs/self-hosting-bnb.md).
+The service checks use temporary child fixtures and do not contact PostgreSQL, RPC providers or Helius.

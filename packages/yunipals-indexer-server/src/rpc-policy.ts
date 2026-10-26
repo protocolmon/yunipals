@@ -37,6 +37,7 @@ export class UnifiedRpcRangeError extends Error {
 const hash = /^0x[0-9a-f]{64}$/;
 const address = /^0x[0-9a-f]{40}$/i;
 const quantity = /^0x(?:0|[1-9a-f][0-9a-f]*)$/;
+const calldata = /^0x(?:[0-9a-f]{2}){4,4096}$/i;
 const readMethods = new Set([
   "eth_chainId",
   "eth_blockNumber",
@@ -46,7 +47,8 @@ const readMethods = new Set([
   "eth_getTransactionByHash",
   "eth_getTransactionByBlockNumberAndIndex",
   "eth_getTransactionReceipt",
-  "eth_getCode"
+  "eth_getCode",
+  "eth_call"
 ]);
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
@@ -208,6 +210,21 @@ export function validateUnifiedRpcCalls(
             ? "Invalid receipt read."
             : "Invalid transaction hash read."
         );
+    } else if (call.method === "eth_call") {
+      if (params.length !== 2)
+        throw new Error("Invalid contract read arguments.");
+      const request = object(params[0]);
+      exact(request, ["to", "data"]);
+      if (
+        typeof request.to !== "string" ||
+        !address.test(request.to) ||
+        !addresses.has(request.to.toLowerCase())
+      )
+        throw new Error("Contract read outside reviewed sources.");
+      if (typeof request.data !== "string" || !calldata.test(request.data))
+        throw new Error("Invalid contract read calldata.");
+      if (number(params[1]) < addresses.get(request.to.toLowerCase())!)
+        throw new Error("Contract read before deployment.");
     } else if (call.method === "eth_getCode") {
       if (
         params.length !== 2 ||

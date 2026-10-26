@@ -1,0 +1,18 @@
+# Use the same supported entrypoint as pnpm indexer:start.
+[Unit]
+Conflicts=yunipals-bnb.service yunipals-solana.service yunipals-islands-indexer.service yunipals-base-islands-v2.service
+
+[Service]
+User=yunipals-indexer
+Group=yunipals-indexer
+WorkingDirectory=/opt/yunipals-unified/indexer
+Environment=
+EnvironmentFile=
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+UnsetEnvironment=DATABASE_URL DATABASE_PRIVATE_URL HELIUS_API_KEY
+ExecStart=
+ExecStart=/usr/bin/env node /opt/yunipals-unified/indexer/scripts/start-indexer.mjs --env-file=/etc/yunipals-unified/indexer.service.env
+KillMode=control-group
+TimeoutStopSec=120
+StateDirectory=yunipals-unified
+ReadWritePaths=/var/lib/yunipals-unified /opt/yunipals-unified/indexer/apps/yunipals-indexer/.ponder

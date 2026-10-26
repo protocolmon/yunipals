@@ -541,14 +541,17 @@ export class PostgresOpenSeaRequestBudget implements OpenSeaRequestBudget {
 }
 
 export function createOpenSeaRequestBudget(
-  input: NodeJS.ProcessEnv = process.env
+  input: NodeJS.ProcessEnv = process.env,
+  maximumConnections: 1 | 2 = 2
 ) {
+  if (maximumConnections !== 1 && maximumConnections !== 2)
+    throw new Error("Invalid budget connection limit.");
   const { databaseUrl, scope, coordinatorId } =
     readOpenSeaBudgetEnvironment(input);
   const pool = new pg.Pool({
     connectionString: databaseUrl,
     application_name: "yunipals_opensea_budget",
-    max: 2,
+    max: maximumConnections,
     connectionTimeoutMillis: 1000,
     statement_timeout: 1500,
     lock_timeout: 1000,

@@ -2060,7 +2060,7 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
 
 async function main() {
   const environment = readRpcBudgetProxyEnvironment();
-  const coordinator = createOpenSeaRequestBudget();
+  const coordinator = createOpenSeaRequestBudget(process.env, 1);
   const unified = readUnifiedRpcPolicyEnvironment();
   const proxy = createRpcBudgetProxy({
     upstream: environment.upstream,

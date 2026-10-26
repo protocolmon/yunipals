@@ -1,0 +1,30 @@
+[Unit]
+Description=Yunipals shared EVM and Solana indexer
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=yunipals-indexer
+Group=yunipals-indexer
+WorkingDirectory=/opt/yunipals-unified/indexer
+# Node 24 must be on this service PATH, or replace /usr/bin/env node below
+# with the absolute path to the installed Node 24 binary.
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env node /opt/yunipals-unified/indexer/scripts/start-indexer.mjs --env-file=/etc/yunipals-unified/indexer.service.env
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+TimeoutStopSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+UMask=0027
+ProtectSystem=strict
+ProtectHome=true
+StateDirectory=yunipals-unified
+# Provision .ponder before enabling this unit, or symlink it into StateDirectory.
+ReadWritePaths=/var/lib/yunipals-unified
+ReadWritePaths=/opt/yunipals-unified/indexer/apps/yunipals-indexer/.ponder
+
+[Install]
+WantedBy=multi-user.target

@@ -17,10 +17,9 @@ generator and deployment scripts.
   traits and token histories, view collector profiles and rankings, and manage
   your own NFTs. Optional listing and purchase actions use your wallet.
 - [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
-  ownership, metadata, rarity, collector, and leaderboard reads, plus
-  [Ethereum Islands ownership and metadata](docs/islands-indexing.md). Its single BNB
-  worker rebuilds ownership, transfers and burn/recreation history from public
-  chain events.
+  ownership, metadata, rarity, collector, leaderboard and Ethereum Islands reads.
+  One managed service supervises EVM and Solana ingestion. Its README is the
+  setup, startup and systemd guide.
 - [Booster contracts](contracts/boosters/README.md): upgradeable Base pack rules,
   shared monster NFTs, duplicate-free draws and VRF recovery.
 - [Artwork generator](docs/boosters/artwork-runtime/README.md): reference-based
@@ -36,13 +35,12 @@ generator and deployment scripts.
 
 For a local collection demo, use synthetic fixtures without either backend.
 Running this app with live buying or selling requires the marketplace API and,
-for BNB ownership checks, the BNB indexer. OpenSea and on-chain events are the
+for ownership checks, the collection indexer. OpenSea and on-chain events are the
 underlying order sources; the API does not custody NFTs or funds.
 
 The complete four-chain collection view needs the indexer API, RPC endpoints and
-a PostgreSQL database. Its source is included here, with a documented parity
-gate before replacing the running service. For an independent BNB orderbook
-deployment, follow the [self-hosting guide](docs/self-hosting-bnb.md).
+a PostgreSQL database. Follow the [indexer setup guide](apps/yunipals-indexer/README.md)
+for the managed service.
 
 ## Development
 
@@ -87,10 +85,19 @@ ID in Vercel **Project → Settings → Environment Variables**, select Producti
 development without an ID offers browser wallets only. See the web app README
 for the local `.env.local` setup and domain allowlist guidance.
 
-Build the API with `pnpm build:api`; run its bundled entry points with installed
-production dependencies. Apply database migrations separately using a schema-owner
-account, then grant the appropriate runtime permissions. Keep deployments,
-credentials, backups and operational incident records outside source control.
+Start the collection indexer from the repository root with one command:
+
+```sh
+pnpm indexer:start --env-file /etc/yunipals-unified/indexer.service.env
+```
+
+The [indexer setup guide](apps/yunipals-indexer/README.md) covers PostgreSQL,
+separate private child settings, the public service file, health checks and
+systemd. Use the same settings and database when restarting the service.
+
+Build the marketplace API with `pnpm build:api`; run its bundled entry points
+with installed production dependencies. Keep credentials, backups and
+operational incident records outside source control.
 
 ## Optional buying and selling
 
