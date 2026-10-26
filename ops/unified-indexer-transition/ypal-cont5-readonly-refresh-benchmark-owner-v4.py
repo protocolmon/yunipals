@@ -715,7 +715,7 @@ try:
   actual_baseline=document(authority.BASE/'captures'/BASELINE_CAPTURE/'result.json',baseline['sha256'])
   need(all(encoded(baseline[key])==encoded(value)for key,value in actual_baseline.items())and actual_baseline['completed']is True,
    'actual_authority_baseline_receipt_not_rebuilt_or_relabelled_required')
- 
+
   stage='one-readonly-host-refresh-and-prerequisites'
   measured=observe_refresh_and_prerequisites(host)
  # Both original hooks are restored before any driver diagnostic/proof write.

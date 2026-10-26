@@ -20,9 +20,19 @@ def execute(names,scope):
 class Controls(unittest.TestCase):
  def test_closed_default_and_flag_refuse_before_transport(self):
   self.assertIs(m.BENCHMARK_SOURCE_REVIEWED,True)
-  self.assertEqual(sha(P.read_bytes()),'f5bb1c8533cc31c98188c8807754f92c81ac1e10ac14e82a8baed3cbe94070aa')
+  self.assertEqual(sha(P.read_bytes()),'3d2f0b46bd1eb563a07d1b9a4450a56e32d394537a2af4b18b8113ff730df219')
   normalized=P.read_bytes().replace(b'# Root and independent full/delta review and 15 controls passed.\n',b'').replace(b'BENCHMARK_SOURCE_REVIEWED=True',b'BENCHMARK_SOURCE_REVIEWED=False')
+  # Restore exactly the one superseded payload blank-line space as well.
+  anchor=b"\n\n  stage='one-readonly-host-refresh-and-prerequisites'"
+  prior_anchor=b"\n \n  stage='one-readonly-host-refresh-and-prerequisites'"
+  self.assertEqual(normalized.count(anchor),1)
+  normalized=normalized.replace(anchor,prior_anchor,1)
   self.assertEqual(sha(normalized),'4b0b2e8cbe52ba7c6e0b7467fcfa84969af894ce6f94f933daf187aea2f4c2ed')
+  previous=P.read_bytes().replace(anchor,prior_anchor,1)
+  self.assertEqual(sha(previous),'f5bb1c8533cc31c98188c8807754f92c81ac1e10ac14e82a8baed3cbe94070aa')
+  previous_remote=m.REMOTE.replace(anchor.decode(),prior_anchor.decode(),1)
+  self.assertEqual(ast.dump(ast.parse(m.REMOTE),include_attributes=True),ast.dump(ast.parse(previous_remote),include_attributes=True))
+  self.assertEqual(compile(m.REMOTE,'REMOTE4','exec'),compile(previous_remote,'REMOTE4','exec'))
   with patch.object(m.subprocess,'run',side_effect=AssertionError('no SSH')),patch('builtins.print'),patch('sys.argv',[str(P)]):m.main()
   with patch.object(m,'BENCHMARK_SOURCE_REVIEWED',False),patch.object(m.subprocess,'run',side_effect=AssertionError('no SSH')),patch('sys.argv',[str(P),'--run']),self.assertRaisesRegex(RuntimeError,'source_review_required'):m.main()
  def test_all_borrowed_auth_functions_and_entire_baseline_remain_exact(self):
