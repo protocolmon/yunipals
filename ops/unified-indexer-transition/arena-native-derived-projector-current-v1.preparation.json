@@ -1,0 +1,92 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "databaseWrites": 0,
+  "existingServiceAndArtifactRetained": true,
+  "externalPrerequisites": 6,
+  "files": [
+    {
+      "bytes": 36387,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v1.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.py",
+      "sha256": "b46387401ca4f992754133e1b95b656f7af5b90575051cc0fef2b4c9a559187c"
+    },
+    {
+      "bytes": 10989,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v1.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.mjs",
+      "sha256": "4c33f644480a5c2ccf05ecc0a6b2b2a9390f85e46a25ded902c116619b7605f7"
+    },
+    {
+      "bytes": 18979,
+      "deploymentRequired": true,
+      "file": "arena-native-derived-projector-current-v1.manifest.json",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.manifest.json",
+      "sha256": "1afd8c7502e165a679dd1a47c6bc74c14e43f5e852f3ab498a729065124d6cc5"
+    },
+    {
+      "bytes": 2414,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1-manifest.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1-manifest.py",
+      "sha256": "8012cfdd31550f92a7605d30b0351f2c2e5b0bee7033fb35232efc5a41f73ad2"
+    },
+    {
+      "bytes": 11869,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1.test.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.test.py",
+      "sha256": "2b5c43a0fb660b60c2bdeaff308a69da196be0399b28f461ccfc6afaf157c08c"
+    },
+    {
+      "bytes": 7405,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.test.mjs",
+      "sha256": "cb6b84e4066ce0b5aa5ef1a8bd4ac18d4120681284a8d4910ce52cc73589440c"
+    },
+    {
+      "bytes": 6226,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1.classifier.postgres.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.classifier.postgres.test.mjs",
+      "sha256": "ae451e117c1f740b74d00b53d004345d5e94d8ca660d14658523196771783d0f"
+    },
+    {
+      "bytes": 4792,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1.md",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.md",
+      "sha256": "f4c7e17e44a143c370eab7c02337d4a69a70a061e5bdabb9c820bbec4f297cc5"
+    },
+    {
+      "bytes": 40511,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-projector-current-v1.stage.json",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-projector-current-v1.stage.json",
+      "sha256": "1828c78a2d059cc3e5ed7a8886298d616357518124dd372465087db29745218c"
+    }
+  ],
+  "format": "yunipals-arena-native-derived-projector-current-v1-preparation",
+  "originalOwner3CapturePassedClaimed": false,
+  "providerCalls": 0,
+  "publicStageClosureCount": 172,
+  "publicStageClosureFile": "arena-native-derived-projector-current-v1.stage.json",
+  "publicStageClosureSha256": "1828c78a2d059cc3e5ed7a8886298d616357518124dd372465087db29745218c",
+  "serviceActions": 0,
+  "sourceOnly": true,
+  "verification": {
+    "actualRuntimeAcceptanceClaimed": false,
+    "existingFixtureSourceSha256": "198244dc552c99fb736dd2b1dfc0e49d478cfdfed40fb9a7e53971f5a8d2e6f3",
+    "fixtureSeams": [
+      "native framework status",
+      "schema and role OIDs"
+    ],
+    "nodeGroups": 8,
+    "pythonControls": 9,
+    "realPostgresClassifierGroups": 1,
+    "realPostgresRefusals": 4
+  }
+}
