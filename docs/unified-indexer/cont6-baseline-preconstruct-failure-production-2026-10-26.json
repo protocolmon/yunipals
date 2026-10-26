@@ -1,0 +1,51 @@
+{
+  "automaticRetryAllowed": false,
+  "cacheCommitRequested": false,
+  "completed": false,
+  "constructInvoked": false,
+  "constructReturned": false,
+  "diagnosis": {
+    "authorityNamespaceExists": false,
+    "automaticRetryAllowed": false,
+    "cacheNamespaceExists": false,
+    "captureNamespaceExists": false,
+    "cause": "PreparedMetadata tries to bind a Source guard that is already policy-bound",
+    "constructorFrame": {
+      "line": 281,
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-context-v2.py"
+    },
+    "databaseRehearsalInvoked": false,
+    "exception": "KeyError: 'module'",
+    "freshSuccessorAndCaptureRequired": true,
+    "sourceFrame": {
+      "line": 236,
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-context-v2.py"
+    },
+    "trafficSwitched": false
+  },
+  "failureType": "KeyError",
+  "fixedCode": null,
+  "format": "yunipals-root-cont6-baseline-v1",
+  "fullSourcePreflightPassed": true,
+  "metadataCaptureHistory": {
+    "attempts": 2,
+    "captures": 2,
+    "discarded": 0,
+    "instances": 2,
+    "sha256": "289f13f58b1d928d8d360a249b1839f5ff744b436649250fc2b32eee074d387e"
+  },
+  "observedAt": "2026-10-26T14:56:35Z",
+  "outcomeRequiresInspection": false,
+  "proofHashes": {
+    "failureTraceback": "fd9f235c5b3a8f94f0a569606d6bfd8356127c11bb3142fdf0f0d60e9ddcaa68",
+    "inputCopy": "b82f4edeb06e88c524bcd95007e48da2c77177a6b7d9060ed36c59938729f491",
+    "oldFilesBefore": "3d045ade87418cfdda6810d658c1daaea4121c12e7301e25663637d260077b27",
+    "preflight": "7222a5ae442dd93536b94b21cdfedf120a85925aea835d2699227f094bf8a031"
+  },
+  "readerLOGINRequested": false,
+  "remoteAuditInspectionRequired": true,
+  "resultSha256": "36fe1cb6da9abc103c332da49829d33bcb04730a3fe1079e423b0b0f520bc0f0",
+  "serviceActionsRequested": 0,
+  "sourceCommit": "c3cf0f31",
+  "stage": "cache-context"
+}
