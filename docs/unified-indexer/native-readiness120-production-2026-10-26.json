@@ -1,0 +1,115 @@
+{
+  "cacheCommitted": false,
+  "completed": true,
+  "contextCurrent": {
+    "actualCatalogSha256": "6d97731f687e0715ce7c672552c1c1afdaade51b0420b242854aade15a40f5bb",
+    "actualCreatedObjectsCurrent": true,
+    "actualPolicyBodyCurrent": true,
+    "completed": true,
+    "contextManifestSha256": "c02976516442987d2da4999b821842916766cf30c70442fc62b006fc7483f865",
+    "contextProducerSha256": "7b967fd41bbac13827da508fca011a282c7aee6844e7c95b2255e8e492c8af95",
+    "currentRoleGraphQualified": false,
+    "dataIdentitySha256": "c8390475f9783a8a0e673bacc350cff20f8c9412abcb157a1f6d2c261d002e0a",
+    "databaseWrites": 0,
+    "format": "yunipals-native120-context2-production-current-v1",
+    "originalCreatorWholeValidatorPassed": false,
+    "policyRefs": {
+      "manifestSha256": "89b2d78177b5e7356fb65a21ae87f8eac7e6a6c0a59184b68dd202858e99ea53",
+      "producerSha256": "33c6cae5ffe0980376a3ce5a6baa76096e2a619a7869b1b57c5f82de7e941210",
+      "resultSha256": "90ad380f190bf43ab21ccaea15df940cfeeb121d85b96db85eaef35bec9f81f6"
+    },
+    "policyTTLSeconds": 120,
+    "providerCalls": 0,
+    "publicationAuthorityQualified": false,
+    "serviceActions": 0,
+    "sourceActorQualified": false
+  },
+  "contextSourceStage": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "format": "yunipals-root-native120-context2-public-source-stage-v1",
+    "newRuntimeFiles": 2,
+    "operatorInvoked": false,
+    "providerCalls": 0,
+    "resultSha256": "25dd2039fb942f31180e11990e68d62ed6c2710163dc9f3b8f26554e02f9abec",
+    "retainedBytesAndInodesUnchanged": true,
+    "serviceActions": 0,
+    "sourceHashes": {
+      "ypal-native-readiness-context-v2.manifest.json": "c02976516442987d2da4999b821842916766cf30c70442fc62b006fc7483f865",
+      "ypal-native-readiness-context-v2.py": "7b967fd41bbac13827da508fca011a282c7aee6844e7c95b2255e8e492c8af95"
+    },
+    "sourceImported": false,
+    "verifiedExistingPrerequisites": 265
+  },
+  "earlierRefusal": {
+    "beforeOperationDirectory": true,
+    "beforeSQL": true,
+    "producerVersion": 1,
+    "reason": "root-owned sticky lock directory rejected by initial parent guard",
+    "resolvedBy": 2
+  },
+  "format": "yunipals-native-readiness120-production-v1",
+  "functionDDLCount": 1,
+  "grantsChanged": false,
+  "localValidation": {
+    "allPassed": true,
+    "contextControls": 19,
+    "emittedSQLAndMetadataModeTests": 3,
+    "nativePolicyControls": 13
+  },
+  "migrationACKReserveSecondsUnchanged": 5,
+  "nativeCommit": {
+    "completed": true,
+    "policyTTLSeconds": 120,
+    "receiptSha256": "90ad380f190bf43ab21ccaea15df940cfeeb121d85b96db85eaef35bec9f81f6"
+  },
+  "nativeCurrent": {
+    "actualPolicyBodyCurrent": true,
+    "format": "yunipals-native-metadata-readiness-policy-v2",
+    "immutableAcknowledgementOnly": false,
+    "policyTTLSeconds": 120,
+    "receiptSha256": "90ad380f190bf43ab21ccaea15df940cfeeb121d85b96db85eaef35bec9f81f6",
+    "validated": true
+  },
+  "nativeDataWritten": false,
+  "nativeRenewalSecondsUnchanged": 60,
+  "nativeReview": {
+    "format": "yunipals-native-metadata-readiness-policy-v2",
+    "policyTTLSeconds": 120,
+    "reviewHash": "586848300b1fb49340c315048d6c8b84d2a970868d2a2d81a7d91b86854f2c22"
+  },
+  "nativeRollbackRehearsal": {
+    "rehearsed": true
+  },
+  "nativeSourceStage": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "format": "yunipals-root-native120-v2-public-source-stage-v1",
+    "inputSha256": "b4de3534dabf37879319e560ba52bfe4a88d28383292eccc891da0ace24e5a78",
+    "newRuntimeFiles": 2,
+    "operatorInvoked": false,
+    "originalCreatorReceiptSha256": "5acb7de8be040d76458d2a8e2c0792f33df89a9f790e94377c177cd4f75d7337",
+    "providerCalls": 0,
+    "resultSha256": "de7a27f07b63d182406e7874d5c3618a8f0b9096124e68e35118fab919a8d6ca",
+    "retainedBytesAndInodesUnchanged": true,
+    "serviceActions": 0,
+    "sourceHashes": {
+      "ypal-native-metadata-readiness-policy-v2.manifest.json": "89b2d78177b5e7356fb65a21ae87f8eac7e6a6c0a59184b68dd202858e99ea53",
+      "ypal-native-metadata-readiness-policy-v2.py": "33c6cae5ffe0980376a3ce5a6baa76096e2a619a7869b1b57c5f82de7e941210"
+    },
+    "sourceImported": false,
+    "verifiedExistingPrerequisites": 7
+  },
+  "observedAt": "2026-10-26T13:59:12Z",
+  "policyTTLSeconds": 120,
+  "readerTrafficSwitched": false,
+  "servicesChanged": false,
+  "sourceCommits": [
+    "128e32b5",
+    "7142a507",
+    "c439b6cc"
+  ],
+  "wholeMigrationQualified": false
+}
