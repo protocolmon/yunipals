@@ -1,0 +1,17 @@
+{
+  "activationDelta": "SOURCE_REVIEWED False to True only",
+  "closedSourceSha256": "ae2b301af9dd57ceef5b426e5e895af74b0e381839338cf3ba2493ba66b330cb",
+  "databaseWritesRequested": 0,
+  "failedVerificationResultSha256": "50874b6a88be118c4a6f90ba2cb37b62cff538116f619e0c663e85fde39a3dd0",
+  "format": "yunipals-source-kernel-diagnostic-source-root-review-v1",
+  "genericRetryInstalled": false,
+  "genuineSourceKernelAndOriginalMappingBodiesExercised": true,
+  "independentFocusedControlsPassed": 8,
+  "migrationAuthorityGranted": false,
+  "originalExceptionPreserved": true,
+  "reviewedSourceSha256": "a85f4aa4c95e934e127bcb74be3b26dd9af0deef9fab29bffebc078fb371a064",
+  "rootFocusedControlsPassed": 8,
+  "serviceActionsRequested": 0,
+  "sourceOrKernelCodePatched": false,
+  "traceOrProfileInstalled": false
+}
