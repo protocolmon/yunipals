@@ -1,0 +1,16 @@
+{
+  "activationDelta": "RECONCILIATION_SOURCE_REVIEWED False to True only",
+  "allSeventeenOriginalBusinessHelpersUnchanged": true,
+  "classifierFocusedControlsPassedIndependently": 11,
+  "closedProducerSha256": "35d63faf28315a2b56d202b45484295ec15e74e47b8b7f63b24dc058acb10260",
+  "databaseWritesRequested": 0,
+  "format": "yunipals-cont6-failed-cache-reconciliation2-source-review-v1",
+  "independentFocusedControlsPassed": 12,
+  "newRollbackTestRequested": false,
+  "ownExclusiveSecondReconciliationNamespace": true,
+  "priorFailedReconciliationPreserved": true,
+  "productionReconciliationQualified": false,
+  "reviewedProducerSha256": "caea00d91f690822b5f042ec4fbf9547b74961060354f68c931e4f61538b497b",
+  "rootFocusedControlsPassedBeforeActivation": 12,
+  "serviceActionsRequested": 0
+}

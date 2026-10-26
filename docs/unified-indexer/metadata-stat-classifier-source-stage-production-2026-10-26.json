@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-metadata-stat-classifier-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "7523eec46c26b6631ffaf9bbeeb7ea36900a7aaa72d330e5bd1b5912eac702df",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-metadata-peer-stat-churn-classifier-v1.manifest.json": "c27e4fe498bf70561f94bd8a7737c7c9a217965dff8ad7352b6491e8e2f47944",
+    "ypal-metadata-peer-stat-churn-classifier-v1.py": "4d4840a66b9c2cd7dd045f399294c5445232c73dbe58e56e1f46b1b3fcb6e0da"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 3
+}
