@@ -1,14 +1,14 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 07:06 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 07:26 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
 - Shared indexing, six-collection parity and metadata provenance are accepted. Production consumer handover is incomplete.
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
 - The remaining immediate blocker is validation cost: all checks and the final reserve must fit the existing approval lifetime.
-- The read-only benchmark passed: refresh took 5.46 seconds and prerequisites 100.81 seconds, with all 347 process calls observed. Its source postflight and retained-file checks passed. The saved-record breakdown separates 45.59 seconds of parent CPU from observed process waits; a 21.88-second low-CPU interval is consistent with the full publication query using a separate process API. Exact cost attribution is still in progress before an equivalent performance fix. [Measured breakdown](readonly-refresh-cost-attribution-2026-10-26.md).
-- The combined read-only diagnostic package passed independent review and 13 controls; its two helpers passed 13 and eight controls. Publication and inert staging precede the one production measurement. [Prepared package](cont5-readonly-refresh-benchmark2-source-2026-10-26.md).
+- The second read-only benchmark completed at 07:14 UTC: refresh took 5.67 seconds and prerequisites 105.14 seconds. All 347 process calls, full Source postflight and retained-file checks passed. The two slow generation-verification calls are now positively identified. CPU attribution is partial because its diagnostic cap timed only 10,000 of 21,699 calls; a bounded successor corrects that limit. [Actual result](readonly-refresh-benchmark2-production-2026-10-26.json), [cost and coverage](readonly-refresh-benchmark2-cost-summary-production-2026-10-26.json).
+- The rollback controller is published after independent source review and 17 controls. Its original locks, full checks after each operation and cancellation/error handling are preserved. This is source preparation; actual rollback inputs, timing and effects remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
 
 Current accepted milestones:

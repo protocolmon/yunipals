@@ -48,7 +48,24 @@ one-pair ordering, original errors, real harmless subprocess observation,
 restoration, diagnostic idempotence and incomplete coverage. They do not
 establish production measurement completion or migration acceptance.
 
-Production execution is pending. Only after its actual result is recovered and
-coverage checked can the measurements guide an equivalent performance change.
+Root executed the benchmark once; it completed at 07:14:21.676 UTC on
+2026-10-26, actual canonical result
+`a134d69dca724120b37f62a5c9b2edb20fc3559b66bdc40a22cfc33ccc236558`.
+The scalar/hash result and public cost summary are preserved as
+`ypal-cont5-readonly-refresh-benchmark2-result-fixture.json` and
+`ypal-cont5-readonly-benchmark2-cost-summary-fixture.json`.
+All 347 run records had complete coverage and zero dropped/error/foreign-thread
+observations. Calls 87 and 88 matched the exact public generation recovery
+bridge family, taking 10.373911291 and 10.733636604 seconds; stdin phases were
+not classified. The CPU observer saw 21,699 outer calls, timed its first 10,000
+and dropped 11,699 diagnostic records. Its 6.927199944 seconds of measured CPU
+is therefore a capped aggregate prefix across both phases, not the complete
+47.483433611 seconds of parent CPU across the pair. Separately, the prerequisite
+phase used 45.186165821 seconds of parent CPU and took 105.141499468 seconds of
+wall time. Full Source
+postflight and all file bookends passed, with six metadata captures, six
+attempts and no discards. This completed read-only measurement supplies no held
+callback, prepared ACK, timing qualification or commit authority. Any equivalent
+performance change must retain every fresh predicate and original deadline.
 The shared-indexer consumer handover, real held qualification, commit, reader
 switch and coordinated rollback remain incomplete.
