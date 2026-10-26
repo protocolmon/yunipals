@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 01:08 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 01:20 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current accepted milestones:
 
@@ -19,7 +19,9 @@ The failed held-transaction rehearsal is fully reconciled. Its original baseline
 
 The Arena support worker passed its new production verification at 00:43 UTC. Independent current-state validation and both native/target reader connections passed at 00:47 UTC against the same running worker. Arena traffic has not switched. [Actual capture](arena-current2-capture-production-2026-10-26.json), [independent current verification and connections](arena-current2-validation-and-connectors-production-2026-10-26.json).
 
-The fresh cache package is staged: all 323 public files verified, 12 newly installed, with no existing files overwritten or service/permission changes. The fresh rehearsal stopped at 01:03 UTC during the initial metadata process/socket inventory, before cadence sampling or a database transaction. The exact failed command output is not yet available; a separate read-only diagnostic is being prepared. No cache commit, reader switch or service action occurred. [Actual refusal](cont5-baseline-preflight-refusal-production-2026-10-26.json). [Actual source staging](cont5-source-stage-production-2026-10-26.json).
+The fresh cache package is staged: all 323 public files verified, 12 newly installed, with no existing files overwritten or service/permission changes. The fresh rehearsal stopped at 01:03 UTC during the initial metadata process/socket inventory, before cadence sampling or a database transaction. The exact failed command output is not yet available; a separate read-only diagnostic is being prepared. No cache commit, reader switch or service action occurred. [Actual refusal](cont5-baseline-preflight-refusal-production-2026-10-26.json). [Actual source staging](cont5-source-stage-production-2026-10-26.json). The separate current-worker diagnostic subsequently passed all 20 commands in 15.58 seconds, against the same worker. It did not reproduce the earlier failure or qualify the whole migration. A new rehearsal is being prepared with pass-through command diagnostics. [Actual read-only diagnostic](metadata-current-peer-diagnostic-production-2026-10-26.json).
+
+The continuation5 feature/service handover and Reader5 metadata rollback source packages are published and staged on production: 351 public files verified, 26 newly installed and 325 existing files/inodes preserved. No operator, private input, database or service change occurred. [Actual inactive source staging](forward5-metadata-inverse2-stage-production-2026-10-26.json).
 
 Remaining migration work:
 

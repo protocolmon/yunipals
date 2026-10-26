@@ -1,0 +1,22 @@
+{
+  "commit": "74b7aa400b0ba9cb6165f1c057cb99ec59a72881",
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "root-forward5-metadata-inverse2-public-stage-v1",
+  "observedAt": "2026-10-26T01:17:21.874610+00:00",
+  "operatorsInvoked": 0,
+  "permissionChanges": 0,
+  "preparations": {
+    "ypal-native-metadata-approval-inverse-v2.preparation.json": "2eb0c7f564ec22010a63c58d3ced18e6a45bb4604c50c4a7bc79f41dc8d9cfbf",
+    "ypal-ordinary-downstream-continue-v5.preparation.json": "387a1d359fca00234545f8afb4b5bac8f16e12544dfed4da14e929038a451a38"
+  },
+  "productionInputsCreated": 0,
+  "providerCalls": 0,
+  "publicFilesCreated": 26,
+  "publicFilesVerified": 351,
+  "resultSha256": "843b8c3674ff328fa25fcf56dacb476eb623d6354637dd8e0960404ddec79909",
+  "retainedFilesAndInodesPreserved": 325,
+  "runtimeReadinessClaimed": false,
+  "serviceActions": 0
+}
