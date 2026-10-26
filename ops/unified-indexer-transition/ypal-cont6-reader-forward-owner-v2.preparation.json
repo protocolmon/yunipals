@@ -1,0 +1,29 @@
+{
+  "actualSplitActivationOrReaderResultIncluded": false,
+  "focusedControlsPassed": 10,
+  "format": "root-CONT6-reader-forward-v2-preparation",
+  "productionEffectDispatched": false,
+  "reviewFlag": false,
+  "rows": [
+    {
+      "deployment": false,
+      "path": "ops/unified-indexer-transition/ypal-cont6-reader-forward-owner-v2.py",
+      "sha256": "d3b097b983364b750e4465abc586da6f213fefa2aa746083c398c662ca42cc96",
+      "size": 32889
+    },
+    {
+      "deployment": false,
+      "path": "ops/unified-indexer-transition/ypal-cont6-reader-forward-owner-v2.test.py",
+      "sha256": "dabfcbb5018ef95335a8ba8e9ed03c7ed8095167b1fae349344aeb077af54124",
+      "size": 26392
+    },
+    {
+      "deployment": false,
+      "path": "docs/unified-indexer/cont6-reader-forward-v2.md",
+      "sha256": "769ce589c2ff13b815199791f2be0790cf7033cb113ed3223862bd86ba6a2d5d",
+      "size": 4166
+    }
+  ],
+  "skippedControls": 0,
+  "sourceOnly": true
+}
