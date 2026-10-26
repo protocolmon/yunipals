@@ -1,0 +1,58 @@
+{
+  "actualHeldQualificationAccepted": false,
+  "actualRollbackAccepted": false,
+  "actualStageOriginsVerified": 411,
+  "canonicalManifestAnd407ActualFileRowsVerified": true,
+  "format": "root-publication-inverse-source-review-v1",
+  "independentReview": {
+    "all407Source411Origin6PreparationRowsVerified": true,
+    "exactCancellationDeltaReviewed": true,
+    "finalRuntimeSha256": "a24e9ee2665b155ed5bc830a002bca64fac63de5e5bc7c20d65149416951e8b4",
+    "focusedPublicCancellationAndPostflightControlsPassed": true,
+    "fullPrior17ControlsPassed": true
+  },
+  "meaningfulBodyRead": true,
+  "nextRequired": [
+    "publish and inert source staging",
+    "actual forward reader ACK and protected Core input",
+    "actual stop review and actual C2 program inverse",
+    "actual per-boundary timing and controlled effects with journals/current checks"
+  ],
+  "originalReader5InverseResultFabricated": false,
+  "preparationOwnRowsVerified": 6,
+  "priorUnpublishedCandidate": {
+    "finding": "Original dispatcher transition_lock then generation.lock pair was missing from SDK-only candidate. Fixed and tested in current source.",
+    "runtimeSha256": "c8b732c4b14e47818b3cdfaa0aadeca9e0e49bb7d1f54af840c36597a4e3e8fa",
+    "supersededBeforePublication": true
+  },
+  "productionEffectsDispatched": false,
+  "productionInputsCreated": false,
+  "publicationVerdict": "root-and-independent-final-source-review-clear",
+  "reviewedAt": "2026-10-26T07:12:11.882018+00:00",
+  "rootControls": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-publication-inverse-v1.test.py",
+    "elapsedSeconds": 19.007,
+    "failed": 0,
+    "includesActualConstructorBothStages": true,
+    "includesActualCoreFixedAndSupplementalMetadataRefs": true,
+    "includesCancellationAndOriginalExceptionPreservation": true,
+    "includesExclusiveAttemptsAndPureStopReceiptChain": true,
+    "includesNewFullCoreAndOwnedCatalogPostflight": true,
+    "includesOriginalThreeSQLBoundaryBodiesWithExplicitTransportIO": true,
+    "includesOriginalTransitionAndGenerationLockBodiesContentionAndRelease": true,
+    "originalSource6FinishClaimed": false,
+    "passed": 17
+  },
+  "scope": "Distinct inverse controller, separate stop/restore inputs and own receipts, immutable forward Reader5 retained as ancestry. Full source/catalog and actual held guards remain. Local synthetic callback timing is not actual held SQL qualification.",
+  "sourceFiles": {
+    "ypal-ordinary-publication-inverse-v1-manifest.py": "c63a425ee28181dcb08b036d8cd2d7bd3523cd7143dea226b5ffea8ccdb850fe",
+    "ypal-ordinary-publication-inverse-v1.manifest.json": "65907c0686d1bd8e81538ceb2244c797dd185f67f474a1212e859c00f48be613",
+    "ypal-ordinary-publication-inverse-v1.md": "8b829a64e897d4c163974164cfe4f45f54d959a524e0403e9a12bac0054eb089",
+    "ypal-ordinary-publication-inverse-v1.preparation.json": "b70defd0fa89d038e9675e545ed73666f79aa03afb354b92d5c39497b0e25b81",
+    "ypal-ordinary-publication-inverse-v1.py": "a24e9ee2665b155ed5bc830a002bca64fac63de5e5bc7c20d65149416951e8b4",
+    "ypal-ordinary-publication-inverse-v1.stage.json": "7684dc26f38ff2f080895ed4d562ce1831040ac646a41277dc548f2dffbd71b8",
+    "ypal-ordinary-publication-inverse-v1.test.py": "a59132447833148b7da77b5bba7a38596d192ff8a95984641b336de846d5b32a"
+  },
+  "sourceOnly": true,
+  "sourceSupersededBeforeProduction": false
+}

@@ -1,0 +1,19 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "root-readonly-cost-helpers-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "privateInputsCreated": false,
+  "providerCalls": 0,
+  "resultSha256": "4c9022d8d6412aa1b75fad139879104c94e38abdeaea49e912032b6009b5dd50",
+  "retainedFileBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-readonly-run-duration-v2.py": "99b309b0faeefb1aa7a4525639cbfdd9a2fbeb516a406c5fb5e850b926df3646",
+    "ypal-readonly-stdlib-cpu-v1.py": "0429f09a0180d2a7395a419b4efa3a6603be3db9da538607a76ddfc3358589ba"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 4
+}
