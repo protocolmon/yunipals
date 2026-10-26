@@ -1,0 +1,216 @@
+{
+  "actualBenchmarkResultSha256": "27af1b44e25c9133d973ea6debef6b99d5dff40ed5b1ace4865c49cfc69e684d",
+  "actualHeldCallbackQualified": false,
+  "allOriginalFileBytesAndInodesUnchanged": true,
+  "completeRunDurationCoverage": true,
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "root-readonly-refresh-timing-summary-v1",
+  "fullSourcePostflightPassed": true,
+  "longestObservedCalls": [
+    {
+      "call": 87,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1311293,
+      "wallNanoseconds": 9075565325
+    },
+    {
+      "call": 88,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1077432,
+      "wallNanoseconds": 8963450892
+    },
+    {
+      "call": 255,
+      "commandKind": "env",
+      "parentCPUNanoseconds": 905952,
+      "wallNanoseconds": 444424342
+    },
+    {
+      "call": 163,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2518089,
+      "wallNanoseconds": 348231640
+    },
+    {
+      "call": 256,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2657919,
+      "wallNanoseconds": 344585382
+    },
+    {
+      "call": 72,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2976152,
+      "wallNanoseconds": 333152206
+    },
+    {
+      "call": 91,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 3031449,
+      "wallNanoseconds": 323964100
+    },
+    {
+      "call": 162,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1867178,
+      "wallNanoseconds": 323220648
+    },
+    {
+      "call": 1,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2301606,
+      "wallNanoseconds": 322617507
+    },
+    {
+      "call": 327,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2562032,
+      "wallNanoseconds": 302294539
+    },
+    {
+      "call": 234,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2407945,
+      "wallNanoseconds": 236131247
+    },
+    {
+      "call": 204,
+      "commandKind": "systemctl",
+      "parentCPUNanoseconds": 1967637,
+      "wallNanoseconds": 132297383
+    },
+    {
+      "call": 42,
+      "commandKind": "systemctl",
+      "parentCPUNanoseconds": 2187005,
+      "wallNanoseconds": 115302668
+    },
+    {
+      "call": 245,
+      "commandKind": "node",
+      "parentCPUNanoseconds": 973437,
+      "wallNanoseconds": 106126710
+    },
+    {
+      "call": 249,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 841673,
+      "wallNanoseconds": 105386873
+    }
+  ],
+  "observedAt": "2026-10-26T06:20:08.887124+00:00",
+  "phaseTimings": [
+    {
+      "byCommandKind": {
+        "busctl": {
+          "count": 52,
+          "maximumWallNanoseconds": 25738570,
+          "medianWallNanoseconds": 17223861,
+          "p95WallNanoseconds": 23715551,
+          "wallNanoseconds": 899958404
+        },
+        "setpriv": {
+          "count": 15,
+          "maximumWallNanoseconds": 333152206,
+          "medianWallNanoseconds": 75922963,
+          "p95WallNanoseconds": 333152206,
+          "wallNanoseconds": 1640269995
+        },
+        "ss": {
+          "count": 1,
+          "maximumWallNanoseconds": 4960306,
+          "medianWallNanoseconds": 4960306,
+          "p95WallNanoseconds": 4960306,
+          "wallNanoseconds": 4960306
+        },
+        "systemctl": {
+          "count": 4,
+          "maximumWallNanoseconds": 115302668,
+          "medianWallNanoseconds": 87976761,
+          "p95WallNanoseconds": 115302668,
+          "wallNanoseconds": 333683120
+        }
+      },
+      "label": "host-refresh",
+      "observedCommands": {
+        "count": 72,
+        "maximumWallNanoseconds": 333152206,
+        "medianWallNanoseconds": 19834022,
+        "p95WallNanoseconds": 89534531,
+        "wallNanoseconds": 2878871825
+      },
+      "parentCPUNanoseconds": 2177437445,
+      "unattributedWallNanoseconds": 2584919395,
+      "wallNanoseconds": 5463791220
+    },
+    {
+      "byCommandKind": {
+        "busctl": {
+          "count": 173,
+          "maximumWallNanoseconds": 28683976,
+          "medianWallNanoseconds": 14632740,
+          "p95WallNanoseconds": 24066431,
+          "wallNanoseconds": 2698503574
+        },
+        "env": {
+          "count": 1,
+          "maximumWallNanoseconds": 444424342,
+          "medianWallNanoseconds": 444424342,
+          "p95WallNanoseconds": 444424342,
+          "wallNanoseconds": 444424342
+        },
+        "node": {
+          "count": 17,
+          "maximumWallNanoseconds": 106126710,
+          "medianWallNanoseconds": 82907234,
+          "p95WallNanoseconds": 106126710,
+          "wallNanoseconds": 1444241925
+        },
+        "other": {
+          "count": 2,
+          "maximumWallNanoseconds": 25208179,
+          "medianWallNanoseconds": 25208179,
+          "p95WallNanoseconds": 25208179,
+          "wallNanoseconds": 42915061
+        },
+        "setpriv": {
+          "count": 51,
+          "maximumWallNanoseconds": 9075565325,
+          "medianWallNanoseconds": 80759761,
+          "p95WallNanoseconds": 348231640,
+          "wallNanoseconds": 23320713174
+        },
+        "ss": {
+          "count": 5,
+          "maximumWallNanoseconds": 6001617,
+          "medianWallNanoseconds": 5493218,
+          "p95WallNanoseconds": 6001617,
+          "wallNanoseconds": 28072358
+        },
+        "systemctl": {
+          "count": 26,
+          "maximumWallNanoseconds": 132297383,
+          "medianWallNanoseconds": 43974314,
+          "p95WallNanoseconds": 91503686,
+          "wallNanoseconds": 1284089481
+        }
+      },
+      "label": "host-prerequisites",
+      "observedCommands": {
+        "count": 275,
+        "maximumWallNanoseconds": 9075565325,
+        "medianWallNanoseconds": 18529160,
+        "p95WallNanoseconds": 98137233,
+        "wallNanoseconds": 29262959915
+      },
+      "parentCPUNanoseconds": 45591429032,
+      "unattributedWallNanoseconds": 71544564461,
+      "wallNanoseconds": 100807524376
+    }
+  ],
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "timingQualificationClaimed": false,
+  "unattributedTimeIsNotAssumedPythonOrSQLTime": true
+}
