@@ -1,0 +1,21 @@
+{
+  "format": "root-cont5-held7-recovery-and-facade-witness-review-v1",
+  "freshHeldQualificationCompleted": false,
+  "fullHeld7ReconciliationResultSha256": "3cb418c0811d8fb8a03aef8b79b0e2c06fba01c6f74405e0c79044e049d438b8",
+  "goalComplete": false,
+  "productionCacheCommitDispatched": false,
+  "readerSwitchDispatched": false,
+  "reconciliationControlsExecuted": 11,
+  "reconciliationDeltaReadCompletely": true,
+  "reconciliationExecutedSourceSha256": "3598beaba67b32c5109b5ef1587d1d0e64e46f015b2a24d97f1838eeab4c9104",
+  "reconciliationOriginalCatalogReaderColumnACLAndSourceBodiesPreserved": true,
+  "reconciliationReviewedDraftSha256": "ac7f20ca94ecfde03a877cc482edc5ad975704ec0307db81a8fd495eab1b4348",
+  "witnessActualPostFailureExecutionQualified": false,
+  "witnessCompleteSourceRead": true,
+  "witnessControlsExecuted": 9,
+  "witnessExistingPrerequisitePinsVerified": 22,
+  "witnessPreparationRowsVerified": 3,
+  "witnessProductionImported": false,
+  "witnessProductionStageResultSha256": "4c7a7ce907bf83be437c864159ec19ea3ac09478475b9fdbeef3f949e8670231",
+  "witnessSourceSha256": "4e610bb84cb86e526cdee8289ef5677c1de99bb1145d1b5fe891e7458f9da62d"
+}

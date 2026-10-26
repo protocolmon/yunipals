@@ -1,0 +1,14 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "root-held-after-exception-public-source-stage-v2",
+  "newRuntimeFiles": 1,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "4c7a7ce907bf83be437c864159ec19ea3ac09478475b9fdbeef3f949e8670231",
+  "serviceActions": 0,
+  "sourceImported": false,
+  "sourceSha256": "4e610bb84cb86e526cdee8289ef5677c1de99bb1145d1b5fe891e7458f9da62d",
+  "verifiedExistingSourceCount": 22
+}
