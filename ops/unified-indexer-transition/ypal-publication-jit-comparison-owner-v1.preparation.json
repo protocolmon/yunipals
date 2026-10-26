@@ -1,0 +1,29 @@
+{
+  "databaseDispatched": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-publication-jit-comparison-owner-v1.py",
+      "sha256": "e7dad3c234f557ec1ca5fd3fb340588588a141996d55c6f0e1ee35d28e007a6c",
+      "size": 9845
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-publication-jit-comparison-owner-v1.test.py",
+      "sha256": "ee8d9c627e599bd35a39c0b111acef3c0246548997493acb0bd2f8466a17599e",
+      "size": 11836
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-publication-jit-comparison-owner-v1.explain-fixture.json",
+      "sha256": "96401c2f4e88ca2721483cd2986f66cb61dda04e8f132881d4dff6aa1eb33e8f",
+      "size": 3966
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-publication-jit-comparison-owner-v1.md",
+      "sha256": "90acec06ff370635384042008e5b50010c523f14e60dcdc9e7721f5235557082",
+      "size": 4451
+    }
+  ],
+  "format": "root-genuine-publication-jit-comparison-v1-preparation",
+  "gitExecuted": false,
+  "sourceOnly": true,
+  "sshExecuted": false
+}
