@@ -1,0 +1,32 @@
+{
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-prepared-binding-v1.py",
+      "sha256": "77fab87ac98eafe2487627151b0dc7d09ce6083cced00dc8c84ffa1f4089fe2a",
+      "size": 47568
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-prepared-binding-v1.manifest.json",
+      "sha256": "8c775588084c7c5d37b57ac43abe251d3facef29543dd5fea9ce756dfa6118d4",
+      "size": 36288
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-prepared-binding-v1.test.py",
+      "sha256": "10c530113fc877103eb1703704048a15a4da9b3958bf7f775ebf54ddecba13dd",
+      "size": 10728
+    },
+    {
+      "path": "docs/unified-indexer/native-readiness-prepared-binding-v1.md",
+      "sha256": "aefb54c012c1978a4a4af6c9015cb1ab3af5d5a3ffa4c7e897441bb7ab79c58e",
+      "size": 4067
+    }
+  ],
+  "focusedLocalControlsPassed": 5,
+  "format": "yunipals-native-readiness-prepared-binding-v1-preparation",
+  "literalACKTailSeconds": 5,
+  "oldFamily1ConstructorPassed": false,
+  "policyTTLSeconds": 120,
+  "productionEffectsExecuted": false,
+  "sourceManifestFiles": 334,
+  "sourceOnly": true
+}
