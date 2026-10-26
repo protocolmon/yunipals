@@ -1,0 +1,14 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "root-readonly-run-duration-public-source-stage-v1",
+  "newRuntimeFiles": 1,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "11082103c443e0b20a0526a819ad7556c50ecb51c07e9b61b7d869d9b4343a94",
+  "serviceActions": 0,
+  "sourceImported": false,
+  "sourceSha256": "00b35f20a783307f5a83351c34876d0fa2777cea95ae1a817f399704a1be67a4",
+  "verifiedExistingSourceCount": 0
+}

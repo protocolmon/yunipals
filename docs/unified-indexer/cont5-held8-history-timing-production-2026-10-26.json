@@ -1,0 +1,135 @@
+{
+  "actualGateRemainingNanoseconds": 78967413361,
+  "calls": 1629,
+  "captureTimings": [
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": false,
+          "discarded": true,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 14168794476,
+          "partialObservationReused": false
+        },
+        {
+          "attempt": 2,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15876525296,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 1,
+      "epoch": "sessionEpoch",
+      "startedMonotonicNanoseconds": 66419485797749613,
+      "startedRelativeToLateGateNanoseconds": -317839349956
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": false,
+          "discarded": true,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15625569645,
+          "partialObservationReused": false
+        },
+        {
+          "attempt": 2,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15358153951,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 2,
+      "epoch": "sessionEpoch",
+      "startedMonotonicNanoseconds": 66419568184716183,
+      "startedRelativeToLateGateNanoseconds": -235452383386
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15368998331,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 1,
+      "epoch": "cacheEpoch",
+      "startedMonotonicNanoseconds": 66419668804042041,
+      "startedRelativeToLateGateNanoseconds": -134833057528
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15360429676,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 2,
+      "epoch": "cacheEpoch",
+      "startedMonotonicNanoseconds": 66419713731985625,
+      "startedRelativeToLateGateNanoseconds": -89905113944
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 14776908094,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 3,
+      "epoch": "cacheEpoch",
+      "startedMonotonicNanoseconds": 66419853760196674,
+      "startedRelativeToLateGateNanoseconds": 50123097105
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "completed": true,
+          "discarded": false,
+          "effectsRetried": false,
+          "elapsedNanoseconds": 15398686103,
+          "partialObservationReused": false
+        }
+      ],
+      "capture": 4,
+      "epoch": "cacheEpoch",
+      "startedMonotonicNanoseconds": 66419896558840798,
+      "startedRelativeToLateGateNanoseconds": 92921741229
+    }
+  ],
+  "commandCountsByKind": {
+    "busctl": 945,
+    "node": 64,
+    "other": 7,
+    "setpriv": 286,
+    "ss": 24,
+    "systemctl": 303
+  },
+  "commandTimingAvailable": false,
+  "completedHeldCallbackTimingQualified": false,
+  "databaseWrites": 0,
+  "failures": 0,
+  "format": "root-held8-history-timing-readonly-v1",
+  "observedAt": "2026-10-26T05:51:20.267828+00:00",
+  "providerCalls": 0,
+  "rootResultSha256": "28d884331e5dbfe5cf5387c2f3af8e7bdbfcc25cdedd31729a57ded8b281bab7",
+  "serviceActions": 0
+}

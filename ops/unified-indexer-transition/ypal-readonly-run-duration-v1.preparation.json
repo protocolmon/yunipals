@@ -1,0 +1,38 @@
+{
+  "SSHExecuted": false,
+  "actualBenchmarkResultIncluded": false,
+  "benchmarkDriverIncluded": false,
+  "callbackOrQualifierInvoked": false,
+  "codeOrProofCacheIntroduced": false,
+  "databaseWrites": 0,
+  "existingStandardLibraryOnly": true,
+  "files": [
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-readonly-run-duration-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-readonly-run-duration-v1.py",
+      "sha256": "00b35f20a783307f5a83351c34876d0fa2777cea95ae1a817f399704a1be67a4",
+      "size": 7149
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-readonly-run-duration-v1.test.py",
+      "sha256": "4b9607124a1953b9be4ecce18e55928770284980c7621977749e5e0704f5bec9",
+      "size": 11511
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "docs/unified-indexer/readonly-run-duration-v1.md",
+      "sha256": "0effe3324239ea655044a0488dd5dad1620e316b4a3bbaf2b4668938bc381568",
+      "size": 4302
+    }
+  ],
+  "format": "yunipals-readonly-run-duration-v1-preparation",
+  "productionPerformanceClaimed": false,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "sourceControlsPassed": 13,
+  "sourceOnly": true
+}

@@ -1,0 +1,20 @@
+{
+  "SQLTransportChanged": false,
+  "action": "launch",
+  "automaticRetryAllowed": false,
+  "completed": true,
+  "format": "root-CONT5-held8-detached-v1",
+  "intentSha256": "9dc0ff4f4827383be4a8cdd6f0ccc66c84a15ba555291edd12c975613e042d8d",
+  "launchGapRequiresInspection": false,
+  "launchSha256": "6b69623abaaca853cd33ea0d803c58c248207ef77d8cd870db48fa15aadde66d",
+  "newCurrentAuthority": false,
+  "newTimingAuthority": false,
+  "observedAt": "2026-10-26T05:33:23.591495+00:00",
+  "operationCompleted": null,
+  "operationOutcomeInferred": false,
+  "payloadSha256": "7055f88f087af12dc14ff95414238373ab03c6150cd478d5d4efe93cfbc9acc3",
+  "pid": 1721904,
+  "serviceActionsDispatchedByLauncher": 0,
+  "sourceSha256": "cfb94d588e8d2eb0de9e2baf501dba1fa6c93e012ad1aae1dfd02bb47a2a0bb2",
+  "workerEpochQualified": true
+}

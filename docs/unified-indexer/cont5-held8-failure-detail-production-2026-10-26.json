@@ -1,0 +1,290 @@
+{
+  "actualChild": {
+    "actor": {
+      "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+      "pid": 1729461,
+      "startTicks": 6641980364
+    },
+    "mode": "apply",
+    "processGroup": 1729461,
+    "rootParentPid": 1721904
+  },
+  "actualInnerErrorClass": "RuntimeError",
+  "actualInnerErrorFixedCode": "actual_approval_deadline_before_literal_COMMIT_ACK_requires_rollback",
+  "actualOpened": {
+    "backend": {
+      "backendStart": "1792993127942108",
+      "clientAddress": null,
+      "clientPort": -1,
+      "databaseOid": "17584",
+      "pid": 1729509,
+      "roleOid": "10",
+      "xid": "17079057"
+    },
+    "childFileSha256": "2b43df59ac28f45947024d828f2044a533426715368deffffd1a6c105d1b5692",
+    "mode": "apply",
+    "xid": "17079057"
+  },
+  "actualPreparedObservation": {
+    "mode": "apply",
+    "neverProductionPreparedACK": true,
+    "packetSha256": "6b1c44228a1462170eca1899765c035c5e3a394c1d042266152c1b7c9aed6f30",
+    "xid": "17079057"
+  },
+  "captureFiles": [
+    {
+      "bytes": 2282765,
+      "inode": 2722955,
+      "name": "actual-prepared-observation.json",
+      "sha256": "578d82456d5e9165c632d538efeabb762b82163734ced5868f4e861aa534c0ee"
+    },
+    {
+      "bytes": 374,
+      "inode": 2722953,
+      "name": "apply-sql-child.json",
+      "sha256": "2b43df59ac28f45947024d828f2044a533426715368deffffd1a6c105d1b5692"
+    },
+    {
+      "bytes": 448,
+      "inode": 2722954,
+      "name": "apply-sql-opened.json",
+      "sha256": "df30dd1eb6112819db5444c20f8fd12a9e339ab29e535e146e9c26c96c7fd0da"
+    },
+    {
+      "bytes": 8260,
+      "inode": 2722952,
+      "name": "approval-before-launch.json",
+      "sha256": "1405860d4c931302d108c4d978960b88b40ee30910b1ff09d5a93a2b14a85408"
+    },
+    {
+      "bytes": 318,
+      "inode": 2722956,
+      "name": "failure.json",
+      "sha256": "e751856cbb8aecb48c98f20bf1c903ab19faa50d4bc432e295f8563f781e34de"
+    },
+    {
+      "bytes": 22299,
+      "inode": 2722951,
+      "name": "intent.json",
+      "sha256": "61a33d72e12e47fab4b97a9e3dac2d89f779c1fd46f4b4e64268d2c9ade1f2fc"
+    }
+  ],
+  "databaseWrites": 0,
+  "format": "root-held8-failure-detail-v1",
+  "innerTraceFrames": [
+    {
+      "file": "ypal-ordinary-cache-continuation-authority-v5.py",
+      "function": "_qualify_held",
+      "line": 560
+    },
+    {
+      "file": "ypal-ordinary-read-cache-continue-v5.py",
+      "function": "sql_child",
+      "line": 74
+    },
+    {
+      "file": "ypal-ordinary-read-cache-continue-v5.py",
+      "function": "<lambda>",
+      "line": 305
+    },
+    {
+      "file": "ypal-ordinary-read-cache-continue-v5.py",
+      "function": "qualified_sql_child",
+      "line": 140
+    },
+    {
+      "file": "ypal-restored-read-cache-provider-v1.py",
+      "function": "qualified_sql_child",
+      "line": 184
+    },
+    {
+      "file": "ypal-ordinary-cache-continuation-authority-v5.py",
+      "function": "_sql_child",
+      "line": 222
+    },
+    {
+      "file": "ypal-restored-read-cache-provider-v1.py",
+      "function": "check",
+      "line": 183
+    },
+    {
+      "file": "ypal-ordinary-read-cache-continue-v5.py",
+      "function": "guarded",
+      "line": 72
+    },
+    {
+      "file": "ypal-ordinary-cache-continuation-authority-v5.py",
+      "function": "before_literal_ack",
+      "line": 503
+    },
+    {
+      "file": "ypal-ordinary-cache-continuation-authority-v5.py",
+      "function": "check_deadline",
+      "line": 270
+    },
+    {
+      "file": "ypal-ordinary-cache-continuation-authority-v5.py",
+      "function": "need",
+      "line": 53
+    }
+  ],
+  "observedAt": "2026-10-26T05:45:01.868169+00:00",
+  "operationResult": {
+    "LOGINDispatched": false,
+    "SQLParentPopenOrPipeWrapped": false,
+    "SQLParentWrapped": false,
+    "SQLTransportObservationInstalled": false,
+    "afterExceptionWitnessSha256": "8fc957fbd92a2927666e1160b705a46e1a72c6d333e9ce12e7f148994acc0c7a",
+    "afterExceptionWitnessSourceSha256": "4e610bb84cb86e526cdee8289ef5677c1de99bb1145d1b5fe891e7458f9da62d",
+    "approvalClockResetByPreparation": false,
+    "approvalRenewalHelperSha256": "512bfd101b682d5d3277a19b4ede927ce594cd74db1bbfa64a821afe4083b65b",
+    "approvalRenewalSchedulingOnly": true,
+    "approvalRenewalTimingAuthority": false,
+    "automaticRetryAllowed": false,
+    "callerSha256": "a51a1bd6a4fcbfba982535cf642870f08f902e4b5cb7f4b328d01891b5b7f72a",
+    "caughtInnerErrorObserved": true,
+    "completed": false,
+    "currentSubprocessCommandCount": 1629,
+    "currentSubprocessDiagnosticSha256": "6d996896d6f48757956b6c51e34d9a5bf9aed0886cbdb10c8ca0701a0c9d642a",
+    "currentSubprocessFailureCount": 0,
+    "currentSubprocessRunRestored": true,
+    "dependencyDeadlineSecondsUnchanged": 120,
+    "elapsedNanoseconds": 433068776177,
+    "errorClass": "RuntimeError",
+    "exceptionMetadataCaptureCount": 0,
+    "failureCode": "complete_actual_held_callback_then_refused_COMMIT_ACK_required",
+    "format": "root-CONT5-held-rollback-qualification-v6",
+    "heldQualification": null,
+    "historicalCONT4BaselineReusedAsCurrent": false,
+    "liveProfileInstalled": false,
+    "liveTraceInstalled": false,
+    "metadataCaptureAttemptCount": 8,
+    "metadataCaptureCount": 6,
+    "metadataCaptureHistorySha256": "5ca30e8e03f27b238e756785910a261ace0c9836177711f69cb1573a55351d6d",
+    "metadataCurrentProofProducerSha256": "f536ddc6eb003a04817642833846fd2d035b4c74c2aa7477b4f85ce3b548fdc2",
+    "metadataDiscardedCaptureCount": 2,
+    "metadataEpochInstanceCount": 2,
+    "metadataRefsSha256": "7de7b1a24a9360a7eca2db8d36d1934c7a7ac20d46a6f6e1813219a1ebee2021",
+    "observedAt": "2026-10-26T05:40:36.788187+00:00",
+    "originalHeld4FailureRelabelled": false,
+    "originalHeld6FailureRelabelled": false,
+    "originalHeld7FailureRelabelled": false,
+    "outcomeReconciliationRequired": true,
+    "passiveOriginalRunObserverRetained": true,
+    "priorHeld4FailureSha256": "29ecd865d83ccd707dc41957c2e7b513bc66bcc890214b6c66b27125a53a8d90",
+    "priorHeld5FailureSha256": "099a3053d4e8e36dfb6fee888856af16300d3ad89fcbfff29d3ec23db51684fd",
+    "priorHeld6FailureSha256": "c218a2c8a14e0bb8884e4f23aa3a513e890399a9a435f217e4ca28cc633ed372",
+    "priorHeld6ReconciliationSha256": "23cb35fa68f1c728eb0d1c7e0e90238755832d434875002c1b849664f901c75d",
+    "priorHeld7FailureSha256": "ef5fff2e1fed341771ab4c958a6328aed60e4c70f4029184cfd41ec44380676f",
+    "priorHeld7ReconciliationSha256": "3cb418c0811d8fb8a03aef8b79b0e2c06fba01c6f74405e0c79044e049d438b8",
+    "priorQualificationReconciliationSha256": "80f4bfc735defa3d36b6f57ce9a23fcd24c54a2a343e68e014935d153c62d125",
+    "privateDiagnosticSha256": "bbe330d935b9c92328e696d2b9fb43449de36a97b5f83cf66b2b1594bfb609b4",
+    "productionCOMMITQualified": false,
+    "productionPreparedACKCreated": false,
+    "proofHashes": {
+      "actual-prior-aborted": "82a62c2719bcdc34e1ff9f1b813f53c4c9eecc0b5f094064dac409ce303fcef7",
+      "approval-renewal-scheduling": "02cdb4c73a85f2af7544acb52d552f8dda8197e585101f7c90ff3496898db9e3",
+      "authenticated-baseline-archive": "f11904775d05b055c0e427e908f0d85babc6d3168390f9504348c9d037930506",
+      "authenticated-baseline-metadata-histories": "a4ad80228289e4e368e512766e8f5ef76522ff63b87cdeb16a0cf2f1c6459d66",
+      "authenticated-baseline-proof-hashes": "7af72d23efa7774da8c7f39d4bf633924d7036b3fe369fe7ce0c5ed9b52d128b",
+      "authenticated-deliberate-observation-ancestry": "de125ed12c6928de0c39ad8638f06d35dc99874fc5fd9b59f87ca4d4f9301359",
+      "authenticated-held5-failure": "13e3ecbd71e39badc529e2f6ae7fa03a2e035f75bad80101c67fafc387a34c68",
+      "authenticated-held6-reconciliation": "72e8c1d4cc364d5534804813540143e95c3fafe700ab544a92909deb40d40976",
+      "authenticated-held7-reconciliation": "d4dac56ea7bda590865da4fd50e10d0223a4316eda6e4a7429e9ea263bf546f1",
+      "baseline-root-result": "2935d53ffa101664c882d93dce210f08a23a393196be36dcefe9044c9b51a195",
+      "held5-catalog-reconciliation": "b0ca4ee9612255285247a506bff952e5cb99210507d6e6dea8f52494ba7665d7",
+      "new-full-current-prerequisites": "53a2c4864538c924faa48ef7066ebf86b6fdd144516439e812a2694b8c7fbb48",
+      "new-source-preflight": "28016cbed6f4692beb9a3942ddcffb80857488a9e4af9633fdf29a6dd650c762",
+      "untraced-dependency-inspection": "d317438f659bda5367f1b75c45ee54c75268722baf1ec4a432848de6bf085916"
+    },
+    "providerRefreshRequested": false,
+    "qualificationOnly": true,
+    "qualifierInvoked": true,
+    "qualifierReturned": false,
+    "readOnlyDependencyPreparationRequired": true,
+    "readerManifestSha256": "455c09d5f17761892d1d46718bafac3f97c317753d0040d55938794ee6957405",
+    "realCOMMITDispatched": false,
+    "resultSha256": "28d884331e5dbfe5cf5387c2f3af8e7bdbfcc25cdedd31729a57ded8b281bab7",
+    "rootDriverVariant": "held8-native-renewal-after-exception-v2",
+    "rootPhaseObservationSha256": "fcee21ea53887c09f9bdbcee6e07f5edb8ca7bc75d30868d6551d6a353b4fd74",
+    "separateSource6DiagnosticSha256": "b90ea254cd2965ee9b45a82a14d2dc84cb7687c5b7ae53af34ae8b44ef3f5c66",
+    "serviceActionsDispatched": 0,
+    "sourceKernelDiagnosticObservationsPerformed": 0,
+    "sourceKernelLiveTraceInstalled": false,
+    "sourceKernelTracebackCaptureErrorCount": 0,
+    "sourceKernelTracebackFrameCount": 0,
+    "sourceKernelTracebackSha256": "b2f95fbab38704e08b2aed42764287fcf3d97ddd5550f2210dd289c3c883d579",
+    "sourcePolicyChanged": false,
+    "stage": "qualify-held-rollback-only",
+    "supersededUnexecutedDriverSha256": "ffddee6679680466a823340fcd822858f2762b0d94ad5d538c6903f6ccf6ca3e",
+    "transactionOutcomeQualified": false,
+    "transportCountInferredFromMissingObserver": false
+  },
+  "phaseObservation": {
+    "events": [
+      {
+        "elapsedNanoseconds": 4830370573,
+        "label": "session-constructor",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 113902019691,
+        "label": "session-preflight",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 26779961658,
+        "label": "cache-context",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 102597100468,
+        "label": "full-current-prerequisites",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 698039784,
+        "label": "prior-aborted-authority",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 2355355550,
+        "label": "held5-whole-catalog-reconciliation",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 30048537044,
+        "label": "untraced-unprofiled-new-cache-inspect",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 30909894074,
+        "label": "native-approval-renewal-scheduling",
+        "repeated": false,
+        "returned": true
+      },
+      {
+        "elapsedNanoseconds": 118412109423,
+        "label": "qualify-held-rollback-only",
+        "repeated": false,
+        "returned": false
+      }
+    ],
+    "format": "root-CONT5-coarse-phase-observation-v1",
+    "liveProfileInstalled": false,
+    "originalClocksChanged": false,
+    "timingQualificationClaimed": false
+  },
+  "providerCalls": 0,
+  "rootResultSha256": "28d884331e5dbfe5cf5387c2f3af8e7bdbfcc25cdedd31729a57ded8b281bab7",
+  "serviceActions": 0,
+  "witnessActualCacheObjectPreserved": true,
+  "witnessActualFacadeUsed": true
+}
