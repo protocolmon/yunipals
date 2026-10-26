@@ -1,13 +1,13 @@
 # Unified indexer rollout entry points
 
-This directory retains the reviewed production operators and their historical predecessors. The [implementation plan](../../docs/unified-indexer-implementation-plan.md) defines the full objective; the [current checklist](../../docs/unified-indexer/CHECKLIST.md) records actual completion. Preparation, successful local tests and inactive installation do not establish a production cutover.
+This directory retains the reviewed production operators and their historical predecessors. The [indexer setup guide](../../apps/yunipals-indexer/README.md) documents supported configuration and startup; the [current checklist](../../docs/unified-indexer/CHECKLIST.md) records actual completion. Preparation, successful local tests and inactive installation do not establish a production cutover.
 
 Collection and booster packs are already live on the single www app. The shared source is still replaying history; replacement collection readers remain gated on actual native readiness. Production Arena continues running its restored original workers. Its twelve operational migrations are already committed; do not rerun the owner migration or use the obsolete adopter/runtime to perform native cutover.
 
 | Work | Current entry point | Production state |
 | --- | --- | --- |
 | Normal historical replay | [source6-normal-replay-successor-v2.py](source6-normal-replay-successor-v2.py) | Existing live free-only process. Its acknowledged receipt binds that invocation; a timeout observing it is not authority to restart it. |
-| Shared source observation | [unified source runbook](../unified-indexer/README.md) | Current canonical witnesses and feature readiness must be verified after catch-up. Historical checkpoints alone do not qualify a reader switch. |
+| Shared source observation | [indexer setup guide](../../apps/yunipals-indexer/README.md) | Current canonical witnesses and feature readiness must be verified after catch-up. Historical checkpoints alone do not qualify a reader switch. |
 | Metadata, generation, cache, staking and API readers | [consumer-current-handover.md](consumer-current-handover.md) | Ordered production acceptance and switches remain pending. Recognize the already-live booster collector admission. |
 | Booster API and artwork queue handover | [booster-feature-handover-v5.py](booster-feature-handover-v5.py), [current reader sequence](consumer-current-handover.md) | Seven-read production rollback rehearsal passed; committed admission, common-boundary parity, genuine later event and temporary-source retirement remain separate gates. |
 | Final EVM/Solana supervision | [final-supervisor-handover-v2.py](final-supervisor-handover-v2.py) | Exact public artifacts are staged. Shared startup, scheduled Solana publication, restart, coordinated rollback and observation have not passed. |
