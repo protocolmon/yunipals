@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-split-reader-binding-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "b2e619cc6c93616c92d4c9878fbd5c7acaa691b2a297cd8213777957e1f41ed3",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-native-readiness-split-reader-binding-v1.manifest.json": "56a31dc1e609010faf1851841b50ef4c2efaa55efa4c5326ebe46ca77fdf79e3",
+    "ypal-native-readiness-split-reader-binding-v1.py": "50261b46376f091b4d9776c4c0ba7ef4b59ffe977ecd459c6d991f14f396efdc"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 362
+}
