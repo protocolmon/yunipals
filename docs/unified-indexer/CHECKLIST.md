@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 00:05 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 01:08 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current accepted milestones:
 
@@ -17,7 +17,9 @@ Current accepted milestones:
 
 The failed held-transaction rehearsal is fully reconciled. Its original baseline remains accepted as historical evidence. A new baseline and authorization are required before further effects because the corrected current metadata proof has a new producer and actual actor record; the old proof will not be relabelled or its comparisons waived. The new transaction test will retain the underlying callback error privately if it fails. No real cache commit or reader switch has occurred. [Original failed rehearsal](held-cache-qualification-failure-production-2026-10-25.json), [complete recovery and current verification](held-cache-reconciliation-production-2026-10-26.json).
 
-The Arena support worker started at 23:21 UTC and continues advancing without a restart. Its separate current-state capture failed at 23:23. The actual 23:50 diagnostic found the target strictly behind the sampled native boundary, with a fresh 2,170 ms publication; a separately labelled later native snapshot confirmed the saved target boundary was canonical. The worker and socket remained unchanged. A bounded progress-driven observation fix is being implemented; exact current-boundary success and a new acknowledgement are still required. Arena traffic has not switched, the worker has not restarted and the failed original capture has not been repeated. [Actual paired reviews](native-arena-startup-review-pair-production-2026-10-25.json), [actual input](native-arena-projector-v3-input-production-2026-10-25.json), [actual cursor diagnosis](arena-boundary-diagnostic-production-2026-10-25.json).
+The Arena support worker passed its new production verification at 00:43 UTC. Independent current-state validation and both native/target reader connections passed at 00:47 UTC against the same running worker. Arena traffic has not switched. [Actual capture](arena-current2-capture-production-2026-10-26.json), [independent current verification and connections](arena-current2-validation-and-connectors-production-2026-10-26.json).
+
+The fresh cache package is staged: all 323 public files verified, 12 newly installed, with no existing files overwritten or service/permission changes. The fresh rehearsal stopped at 01:03 UTC during the initial metadata process/socket inventory, before cadence sampling or a database transaction. The exact failed command output is not yet available; a separate read-only diagnostic is being prepared. No cache commit, reader switch or service action occurred. [Actual refusal](cont5-baseline-preflight-refusal-production-2026-10-26.json). [Actual source staging](cont5-source-stage-production-2026-10-26.json).
 
 Remaining migration work:
 
@@ -25,7 +27,8 @@ Remaining migration work:
 - [ ] Commit native cache guards and authenticate the prepared acknowledgement returned by that commit. Do not invoke a second prepare-ack save.
 - [ ] Qualify replacement readers, publish generation 105 and switch collection APIs, cache and staking. Verify actual previews and serving compatibility.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source. Require complete eight-table parity and a genuine newer opening or claim before retiring its temporary scanner.
-- [ ] Resolve the running Arena support worker's failed read-only verification, then adopt native Arena workers and managed EVM/Solana supervision.
+- [x] Qualify the running Arena support worker and authenticate both reader connections on production.
+- [ ] Adopt native Arena workers and managed EVM/Solana supervision.
 - [ ] Execute coordinated rollback and return to native readers/workers. Three parallel agents continue the remaining recovery paths and independent review; production dispatch remains with the root agent.
 - [ ] Enable recurring native rarity/leaderboard refresh and verify generation lineage and retention.
 - [ ] Complete a supervised process restart and at least 24 hours of observation, then retire all remaining duplicate scanners and finish handover evidence.
@@ -192,4 +195,4 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next production step:** qualify the Arena progress-driven current observer and construct a fresh cache baseline/authorization using the corrected metadata proof. The failed transaction is fully reconciled, and full current metadata/source verification has passed. Complete a new rollback-only held transaction before any cache commit; preserve the prior accepted baseline, cadence and every failed attempt. Generation 105 is accepted but unpublished; cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
+**Next production step:** diagnose the initial metadata process/socket inventory command failure, then finish a fresh cache baseline/authorization rehearsal using the corrected metadata proof. Arena support verification and both reader connections have passed. The failed transaction is fully reconciled, and full current metadata/source verification has passed. Complete a new rollback-only held transaction before any cache commit; preserve the prior accepted baseline, cadence and every failed attempt. Generation 105 is accepted but unpublished; cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
