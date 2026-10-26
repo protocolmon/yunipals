@@ -1,0 +1,17 @@
+{
+  "actualInverseInputOrAcknowledgementCreated": false,
+  "completed": true,
+  "databaseWrites": 0,
+  "finiteRowsVerified": 329,
+  "format": "root-metadata-inverse2-source-review-v1",
+  "fullFrozenImplementationRead": true,
+  "independentReviewsReceived": 2,
+  "observedAt": "2026-10-26T01:15:06.554097+00:00",
+  "preparationSha256": "2eb0c7f564ec22010a63c58d3ced18e6a45bb4604c50c4a7bc79f41dc8d9cfbf",
+  "rootTestsPassed": 33,
+  "runtimeQualified": false,
+  "serviceChanges": 0,
+  "sourceOnly": true,
+  "sourceSha256": "2910f1376f96d4ced4107b67ca10dbed05b587012c01518b2955b7f2bf9a91ea",
+  "uniqueProductionTargets": 328
+}
