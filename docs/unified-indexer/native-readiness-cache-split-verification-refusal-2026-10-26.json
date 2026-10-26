@@ -1,0 +1,38 @@
+{
+  "action": "verify",
+  "automaticRetryAllowed": false,
+  "captureClassifierSnapshotSha256": "6282109e90a46b2066c1b9e7eab2848c21c8b9b2be5156905069c12842476431",
+  "completed": false,
+  "effectInvoked": false,
+  "errorClass": "RuntimeError",
+  "format": "root-native120-cache-split-phase-v1",
+  "normalizedDiagnostic": {
+    "activationDispatched": false,
+    "diagnosticSha256": "76c1fa9d29c63ed8ed7bedb1234f0f097c36416b67250e943c76dd16c7a7056d",
+    "failedVerificationDirectoryPreserved": true,
+    "fixedCode": "all_required_backends_need_unique_positive_stable_kernel_attribution",
+    "function": "kernel_backends",
+    "guardPreparationStillCommitted": true,
+    "line": 105,
+    "source": "ypal-ordinary-source-authority-v6.py",
+    "verificationProofProduced": false
+  },
+  "oldCachePreparedACKClaimed": false,
+  "phaseReturned": false,
+  "privateHashes": {
+    "accepted-dependency-preauthorization.json": "26d1d7883426516d0762aaeb1959f2924562e4bd48c62afbd174436a0c5a2ff9",
+    "capture-classifier-binding.json": "e31b54f8221f21b247815367e53fbd63af4a15282a32fa13f5458c7eeb880ace",
+    "capture-classifier-snapshot.json": "6282109e90a46b2066c1b9e7eab2848c21c8b9b2be5156905069c12842476431",
+    "constructor-binding.json": "601fee468481a85eaa072b3edb493e16ae19a8ec64839e1caf6abc2076de683e",
+    "failure.json": "76c1fa9d29c63ed8ed7bedb1234f0f097c36416b67250e943c76dd16c7a7056d",
+    "generation-binding.json": "ec1494160e6b5bcdeb9db1ee88a240179574d2b9cbb15bf1f4c9ac146b6dc395",
+    "intent.json": "7f8dae7cf251d75912bbee70519393bd7f7d96c9b52a77ecf96490ec0910948c",
+    "source-preflight.json": "453bb515362174b751a19099631d338126be21b412f449aeb93867eb55aab086",
+    "split-binding.json": "6443d97ee021df3b3aad03831918b39fd79a17f97eb9773038a554c02dcec694"
+  },
+  "resultSha256": "50874b6a88be118c4a6f90ba2cb37b62cff538116f619e0c663e85fde39a3dd0",
+  "rootProducerSha256": "fd4479f0c40f6a9491a60434498072175260a894828f502e969ab534e34b239c",
+  "stage": "verify",
+  "subprocessRunRestored": true,
+  "unknownOutcomeRequiresInspection": false
+}
