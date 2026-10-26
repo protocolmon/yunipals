@@ -1,0 +1,50 @@
+import json,os,subprocess
+from pathlib import Path
+REMOTE=r'''import datetime,hashlib,json,os,pathlib,signal,stat,sys,time,types
+os.umask(0o077)
+A=pathlib.Path('/var/backups/yunipals-root-dependency-preevaluation-timing-20261026-1');A.mkdir(mode=0o700)
+OPS=pathlib.Path('/opt/yunipals-unified/operations/free-replay-20261020')
+def encoded(v):return(json.dumps(v,sort_keys=True,separators=(',',':'))+'\n').encode()
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def save(name,v):
+ raw=encoded(v);fd=os.open(A/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ with os.fdopen(fd,'wb')as f:f.write(raw);f.flush();os.fsync(f.fileno())
+ return sha(raw)
+def load(p,digest):
+ s=p.lstat();assert s.st_uid==s.st_gid==0 and stat.S_ISREG(s.st_mode)and s.st_nlink==1 and not s.st_mode&0o022 and s.st_size<4000000
+ raw=p.read_bytes();assert sha(raw)==digest
+ n=types.ModuleType('dependency_timing_'+p.stem);n.__file__=str(p);exec(compile(raw,str(p),'exec'),n.__dict__);return n
+assert sys.gettrace()is None and sys.getprofile()is None
+helper=load(pathlib.Path('/var/tmp/yunipals-reader-peer-runtime-input-v1-20261024/ypal-reader-peer-runtime-host-v1.py'),'06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76')
+observer=load(OPS/'ypal-ordinary-held-diagnostic-v1.py','7bf19a75010694cf63be776cff4a3db111515eb0442a8568c9c49e883b2df61a')
+profile_module=load(OPS/'ypal-ordinary-call-profile-v1.py','5b3aa246bf10e6e69c70d01ed4742d1817d86a0e9095f243428b4c8e9c901d8a')
+authority=load(OPS/'ypal-ordinary-cache-continuation-authority-v5.py','d95bbcceb812dd7d3acc9e828a78f6125870a021dbfeed952f6c477f48003bef').composition()
+receipt=helper.document(pathlib.Path('/var/backups/yunipals-reader-peer-runtime-host-v1-20261024/qualification-result.json'),'521e0bb514f1f6ba306b82d489f19ea53183dcdd2aa1e76aa65498cc184f1899')
+current,entries=helper.production();assert current==receipt['productionDependencies']
+manifest_path=OPS/'ypal-ordinary-reader-continue-v5.manifest.json';manifest_raw=manifest_path.read_bytes();assert sha(manifest_raw)=='455c09d5f17761892d1d46718bafac3f97c317753d0040d55938794ee6957405'
+manifest=json.loads(manifest_raw);files={str(OPS/name):digest for name,digest in{**manifest['dependencies'],**manifest['files']}.items()if name.endswith('.py')}
+files[str(OPS/'ypal-ordinary-publication-continue-v5.py')]='a51a1bd6a4fcbfba982535cf642870f08f902e4b5cb7f4b328d01891b5b7f72a'
+names={'__init__','current','metadata','refresh','publication_proof','sessions','query','actor','private','inputs','read_operation','prerequisites','invoke','prepared','sql_child','_sql_child','qualified_sql_child','before_literal_ack','fresh_approval','approval_snapshot','original_catalog','stopped','_construct_records','construct_records','_qualify_held','qualify_held','finish','preflight','capture_current','actor_current','accepted_actor','kernel_backends','current_kernel'}
+for name,digest in files.items():assert sha(pathlib.Path(name).read_bytes())==digest
+rows=[]
+for instrumented in [False,True]:
+ trace=observer.CaughtErrorTrace(authority._qualify_held.__code__);profile=profile_module.CallProfile(files,names)
+ started=time.monotonic_ns();cpu=time.process_time_ns();value=None;error=None
+ try:
+  if instrumented:profile.__enter__();trace.__enter__()
+  value=helper.preauthorize_dependencies(entries)
+  assert value==receipt['preEvaluationDependencyProof']
+ except Exception as caught:error=caught
+ finally:
+  if instrumented:trace.__exit__(None,None,None);profile.__exit__(None,None,None)
+ row={'instrumented':instrumented,'completed':error is None,'elapsedNanoseconds':time.monotonic_ns()-started,'cpuNanoseconds':time.process_time_ns()-cpu,'proofSha256':save('proof-'+str(int(instrumented))+'.json',value)if value is not None else None,'errorClass':type(error).__name__ if error else None,'failureFixedCode':str(error)if error and str(error).replace('_','').isalnum()else None,'traceRestored':sys.gettrace()is None,'profileRestored':sys.getprofile()is None,'qualifierInvoked':False,'SQLDispatched':False,'original120SecondDeadlineChanged':False}
+ rows.append(row);save('observation-'+str(int(instrumented))+'.json',row)
+result={'format':'root-dependency-preevaluation-timing-v1','observedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'observations':rows,'sameActualPreauthorizationBody':True,'productionInventoryEntryCount':len(entries),'traceErrorCodeObjectIsGenuineQualifier':True,'databaseWrites':0,'serviceActions':0,'providerCalls':0,'PGModuleEvaluated':False,'sourceOrMetadataQualified':False,'newRetryPolicyQualified':False}
+digest=save('result.json',result);print(json.dumps({**result,'resultSha256':digest},sort_keys=True))
+'''
+os.umask(0o077)
+p=subprocess.run(['ssh','-oBatchMode=yes','-oConnectTimeout=10','-oStrictHostKeyChecking=yes','-oUserKnownHostsFile=/tmp/yunipals-production-known-hosts','root@168.119.172.10','python3 -I -B -'],input=REMOTE,text=True,capture_output=True,timeout=340)
+assert p.returncode==0 and not p.stderr,(p.returncode,p.stderr)
+v=json.loads(p.stdout)
+with Path('/tmp/yunipals-dependency-timing-production-20261026-1.json').open('x')as f:json.dump(v,f,sort_keys=True);f.write('\n')
+print(json.dumps(v,sort_keys=True))

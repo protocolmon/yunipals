@@ -1,0 +1,33 @@
+{
+  "actualLaunchReceiptSha256": "5a1f6391358a4dbef9975a417b5b78307b6b66d0100826ec5fafb5a3c8de086a",
+  "cacheCOMMITDispatched": false,
+  "detachedControllerSha256": "642dc82de1dca163ff538070b113490c2b454b5ec669e6b82da3f222d1968b76",
+  "detachedControlsPassed": 7,
+  "format": "root-held6-and-restored-epoch-source-review-v1",
+  "genuineDependencyControlsPassed": 5,
+  "held6FocusedControlsPassed": 8,
+  "held6OperatorOutcomeKnown": false,
+  "held6OwnerSha256": "57a65391c3935945ddb22cce922181ad1aaf3a03926441ee7fb46b6e074e1a1a",
+  "independentSourceReviews": [
+    "publication_context_v6",
+    "feature_publication_followon",
+    "publication_protocol_windows"
+  ],
+  "initialActualWorkerObservedAt": "2026-10-26T03:59:29.745011+00:00",
+  "initialActualWorkerPID": 1618075,
+  "initialActualWorkerStartTicks": 6641380143,
+  "notes": [
+    "Same genuine cache instance is inspected with no trace/profile before the unchanged qualifier.",
+    "No dependency/SQL approval/commit reserve deadline was changed.",
+    "Actual detached launch is verified separately from any future operator result.",
+    "Restored Epoch factories are pure source/context work; the inverse authority/caller remains required before effects."
+  ],
+  "readerTrafficSwitched": false,
+  "restoredEpochActualSourceHashesVerified": 325,
+  "restoredEpochBridgeSha256": "bc3e585454ee9f2e532ee50ab6dfb7455653afb269b01219f739bb46af2ea1e3",
+  "restoredEpochControlsPassed": 10,
+  "restoredEpochInverseEffectsQualified": false,
+  "restoredEpochManifestSha256": "400ae476ef1dfb8e1e653e2b87523b87ff95e83682a389d6621c759880ec2569",
+  "reviewedAt": "2026-10-26T04:01:57.114468+00:00",
+  "rootFullMeaningfulSourceReadsPassed": true
+}
