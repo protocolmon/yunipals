@@ -1,0 +1,65 @@
+{
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 47583,
+      "file": "ypal-ordinary-cache-inverse-authority-v1.py",
+      "sha256": "569bc5eaca9628329952621a5266077565fe7ea8a56a3983d2e9b6b885d23671"
+    },
+    {
+      "bytes": 35531,
+      "file": "ypal-ordinary-cache-inverse-authority-v1.manifest.json",
+      "sha256": "3e271bb50e083127795234c6635b84e39e79eda99ecf84f39c345092359b62bb"
+    },
+    {
+      "bytes": 22971,
+      "file": "ypal-ordinary-cache-inverse-authority-v1.test.py",
+      "sha256": "f101b6db02cc0728615280d8485a95ee9a5e24370cb112dc76bdd8aea8577460"
+    },
+    {
+      "bytes": 1136,
+      "file": "ypal-ordinary-cache-inverse-authority-v1-manifest.py",
+      "sha256": "dd2fac2c1445840d95c0d3474aa8e0207348b9a36350790fc6b1aad000000a91"
+    },
+    {
+      "bytes": 3819,
+      "file": "ypal-ordinary-cache-inverse-authority-v1.md",
+      "sha256": "0632172a12d2a371c74c55b4b6829be05abd50f5b4a53220ff3c5b3955608c26"
+    },
+    {
+      "bytes": 78070,
+      "file": "ypal-ordinary-cache-inverse-authority-v1.stage.json",
+      "sha256": "ae597e3dbf23d7d3daa0a2a65f8b87fb6406ca9d7d1febdc78a5d67c7c518a77"
+    }
+  ],
+  "format": "ypal-ordinary-cache-inverse-authority-v1-preparation",
+  "frozenReader5OrForwardFilesEdited": false,
+  "inverseEffectsQualified": false,
+  "knownRequiredFollowups": [
+    "actual Reader5 forward ACK and new C2 restored ACK before input rendering",
+    "distinct inverse caller and source/catalog scope with actual Core3 and retained-stop owner",
+    "per-boundary actual-prefix callback timing qualifications and explicit root-reviewed effect attempts"
+  ],
+  "newProductionQualificationClaimed": false,
+  "privateInputOrInverseACKIncluded": false,
+  "publicStageClosureCount": 331,
+  "publicStageClosureFile": "ypal-ordinary-cache-inverse-authority-v1.stage.json",
+  "publicStageClosureSha256": "ae597e3dbf23d7d3daa0a2a65f8b87fb6406ca9d7d1febdc78a5d67c7c518a77",
+  "verification": {
+    "actualCore3FullSourceAndMapperCatalogBodiesExecuted": true,
+    "actualFacadeAndComposedNamespaceDispatchBothExercised": true,
+    "actualProviderAndSealedPublicTransportAndBoundSQLParentLateHookExecuted": true,
+    "actualSourceManifestFiles": 327,
+    "canonicalSourceManifestByteReproduced": true,
+    "coordinatedInverseJournalDateConstantCount": 1,
+    "focusedControlsPassed": 8,
+    "genuineReader5InversePreparedCallbackExecutedWithExplicitPhysicalPrivateIOFixtures": true,
+    "originalC413OneOwnedInverseBackendAttributionExecuted": true
+  }
+}

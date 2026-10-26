@@ -1,0 +1,30 @@
+{
+  "actualGateSha256": "a0445fd1f515dd4856495eed204f3c0f1b7c15c1f4c7434946b2b42c4d30e5ee",
+  "databaseWrites": 0,
+  "format": "root-held7-approval-telemetry-v1",
+  "numbers": [
+    {
+      "path": "/ageNanoseconds",
+      "value": 45498175000
+    },
+    {
+      "path": "/capturedMonotonicNanoseconds",
+      "value": 66417401566204862
+    },
+    {
+      "path": "/remainingNanoseconds",
+      "value": 44389551951
+    },
+    {
+      "path": "/snapshot/atUs",
+      "value": "1792990725380453"
+    },
+    {
+      "path": "/snapshot/checkedUs",
+      "value": "1792990679882278"
+    }
+  ],
+  "observedAt": "2026-10-26T05:03:53.812662+00:00",
+  "providerCalls": 0,
+  "serviceActions": 0
+}

@@ -1,0 +1,47 @@
+{
+  "childEpochGone": true,
+  "currentLogFile": null,
+  "databaseWrites": 0,
+  "failedRootResultSha256": "ef5fff2e1fed341771ab4c958a6328aed60e4c70f4029184cfd41ec44380676f",
+  "format": "root-held7-sql-reconciliation-readonly-v1",
+  "logTailsChecked": [
+    {
+      "file": "postgresql-16-main.log",
+      "inode": 529257,
+      "tailBytes": 428679
+    },
+    {
+      "file": "postgresql-16-yunipals_market_production.log",
+      "inode": 511744,
+      "tailBytes": 131956
+    },
+    {
+      "file": "postgresql-16-yunipals_market_staging.log",
+      "inode": 512082,
+      "tailBytes": 0
+    }
+  ],
+  "observedAt": "2026-10-26T05:03:16.373995+00:00",
+  "openedBackendCount": 0,
+  "ownerAPPBackendCount": 0,
+  "providerCalls": 0,
+  "publicationReadBackendCount": 0,
+  "resultSha256": "977758f00c67b79a9e9119dadd8e7f98b8b0add5aa7042a8fa8078b3d2aad520",
+  "rootEpochGone": true,
+  "scopedPublicationErrors": [
+    {
+      "backendPID": 1685830,
+      "baseMetadataApprovalPending": true,
+      "category": "other_publication_error",
+      "nativeBaseMetadataUnavailable": true,
+      "officialPublicationQuerySignatureMatched": true,
+      "privateEvidenceSha256": "5a42f3797c53448ee99cf0dd0412bb205be8de21cb99812eaf4265b53034e0dd",
+      "timestamp": "2026-10-26 04:59:52.616"
+    }
+  ],
+  "serviceActions": 0,
+  "sqlStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sqlStdoutSha256": "3d0c42610cf3580a8a6f00797a719858326dc2af4d93d5bf71fad33e5b21f1d8",
+  "transactionStatus": "aborted",
+  "wholeCatalogReconciled": false
+}
