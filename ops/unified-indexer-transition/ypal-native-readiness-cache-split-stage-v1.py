@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 os.umask(0o077)
@@ -133,8 +134,13 @@ peer = subprocess.run(['ssh', '-oBatchMode=yes', '-oConnectTimeout=10', '-oStric
                        '-oUserKnownHostsFile=/tmp/yunipals-production-known-hosts', 'root@168.119.172.10', 'python3 -I -B -'],
                       input=REMOTE, capture_output=True, text=True, timeout=110)
 if peer.returncode:
-    Path('/tmp/yunipals-root-cache-split-stage-error-private-20261026.txt').write_text(peer.stdout + peer.stderr)
-    print(json.dumps({'completed': False, 'returncode': peer.returncode, 'diagnosticBytes': len(peer.stdout + peer.stderr)}))
+    diagnostic = (peer.stdout + peer.stderr).encode()
+    fd, name = tempfile.mkstemp(prefix='yunipals-root-cache-split-stage-error-private-', suffix='.txt', dir='/tmp')
+    with os.fdopen(fd, 'wb') as stream:
+        stream.write(diagnostic)
+        stream.flush()
+        os.fsync(stream.fileno())
+    print(json.dumps({'completed': False, 'returncode': peer.returncode, 'diagnosticBytes': len(diagnostic), 'diagnosticSha256': sha(diagnostic), 'diagnosticFile': name}))
     raise SystemExit(peer.returncode)
 value = json.loads(peer.stdout)
 with Path('/tmp/yunipals-cache-split-stage-production-20261026.json').open('x') as stream:

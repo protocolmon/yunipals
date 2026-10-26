@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-metadata-inverse3-dependency-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "caa3922b013e0e6c3fd459bdcb0efe5978cace447c155b900009cef9e7d4e3e9",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-native-metadata-approval-inverse-v3.manifest.json": "d94d2c8ed899f9b4fd3e222adea2d0e660596f130de93fc65462bfa8141f41c6",
+    "ypal-native-metadata-approval-inverse-v3.py": "e0d455c4e9e53f2f0540dd6f26ae74485b645cb31be945931e8a52474f219654"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 341
+}

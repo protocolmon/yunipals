@@ -1,0 +1,21 @@
+{
+  "automaticRetryAllowed": false,
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-cache-split-public-source-and-sidecar-stage-v1",
+  "inputSha256": "30007effaa3c881873714cbfb52932ac78e3f9153e19bb62e0ef119d12880bab",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "reconciliationRootSha256": "85a2f77a7b2fd0b4d72a8694eb5a597577bcb6402ba4a2985b3b9ec30bc72398",
+  "resultSha256": "17df56a379f0fad2a6707365abad78ab10c615c400e78bf192c057710d680969",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-native-readiness-cache-split-v1.manifest.json": "eaf67113785ef0e25914b1497071f1a3a8370c90f80a42e4f6be175b806a232c",
+    "ypal-native-readiness-cache-split-v1.py": "30dfced740a6800af527af8b1ad9d40a480f13eba71151e5a0aa43e378d7d561"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 354
+}

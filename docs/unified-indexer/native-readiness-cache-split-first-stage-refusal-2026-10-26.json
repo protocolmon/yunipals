@@ -1,0 +1,31 @@
+{
+  "completed": false,
+  "databaseWrites": 0,
+  "diagnosticBytes": 604,
+  "diagnosticSha256": "4e3e720d60c39feda57aa143455c7c00e33a2c43655a0daa339c206b9a7beb2e",
+  "errorClass": "FileNotFoundError",
+  "format": "yunipals-cache-split-first-source-stage-refusal-v1",
+  "originalDiagnosticPreserved": true,
+  "readOnlyInventory": {
+    "auditExists": false,
+    "format": "yunipals-split-missing-public-dependencies-v1",
+    "inputExists": false,
+    "mismatched": [],
+    "missing": [
+      {
+        "name": "ypal-native-metadata-approval-inverse-v3.manifest.json",
+        "sha256": "d94d2c8ed899f9b4fd3e222adea2d0e660596f130de93fc65462bfa8141f41c6"
+      },
+      {
+        "name": "ypal-native-metadata-approval-inverse-v3.py",
+        "sha256": "e0d455c4e9e53f2f0540dd6f26ae74485b645cb31be945931e8a52474f219654"
+      }
+    ],
+    "ownerExists": false,
+    "readOnly": true,
+    "verifiedExisting": 352
+  },
+  "runtimeOrInputUploaded": false,
+  "serviceActions": 0,
+  "stage": "verify-retained-public-dependencies-before-any-write"
+}
