@@ -1,0 +1,10 @@
+{
+  "failedRootResultSha256": "ed7a7e0fc22fd509675f76f1ff6daed79b2841779a83a713bbe3411abd1f9a3b",
+  "files": {
+    "apply-sql-child.json": "1088832ad4bd1806eb7e234f61391772bea3722ae1d4628bc96f47668c38ac87",
+    "apply-sql-opened.json": "8d21564b76b772aaefaa07cb6d7f69b77376ba5b48c38364c29b0af94bccd45e",
+    "sql-intent.json": "f79819149ea35a3639ffea9f016fd2c1308a7e251f9dc53e38c987fcb2e6e5d0",
+    "sql-prepared.json": "25982989045e08c897a34a6e1ab315355060d56fd191a093fabfec791fb828cd"
+  },
+  "format": "yunipals-cont6-failed-cache-SQL-file-hash-fixture-v1"
+}
