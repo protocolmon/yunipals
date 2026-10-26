@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 03:04 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 03:12 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current accepted milestones:
 
@@ -33,7 +33,7 @@ At 02:28 UTC the fresh baseline completed: transaction 16933377 genuinely rolled
 
 The held4 run stopped at 02:43 UTC while constructing its fresh cache context. Source preflight passed, but the later Source6 kernel check could not prove unique positive ownership of every required database backend. The qualifier was never invoked and no held SQL capture or cache commit was created. All 1,014 diagnostic commands succeeded. The hard attribution guard remains unchanged. The accepted fresh baseline2935 remains valid evidence; it does not authorize a commit without a successful held qualification. [Actual pre-transaction refusal](cont5-held4-pretransaction-refusal-production-2026-10-26.json).
 
-The separate read-only diagnostic subsequently passed full Source6 preflight and one genuine current check in 62.44 seconds. One kernel capture and both actor maps completed, with matching complete actor/private/route snapshot bookends, zero diagnostic errors and no database or service changes. The earlier failure was not reproduced, so its cause remains unresolved. A distinct held5 attempt is being prepared with authenticated private traceback-frame diagnostics, preserving the accepted baseline and the failed held4 record. No Source policy or retry predicate was relaxed. The next reader timing driver has passed full source review and nine controls, but remains unexecuted until a genuine cache commit and prepared acknowledgement exist. [Actual diagnostic](source6-kernel-diagnostic-production-2026-10-26.json), [source review](source6-diagnostic-reader-qualification-root-review-2026-10-26.json).
+The separate read-only diagnostic subsequently passed full Source6 preflight and one genuine current check in 62.44 seconds. One kernel capture and both actor maps completed, with matching complete actor/private/route snapshot bookends, zero diagnostic errors and no database or service changes. The earlier failure was not reproduced, so its cause remains unresolved. A distinct held5 rollback-only attempt is now running once, after full source review and eight controls, with authenticated private traceback-frame diagnostics. It preserves the accepted baseline and the failed held4 record. No Source policy or retry predicate was relaxed. The next reader timing driver has passed full source review and nine controls, but remains unexecuted until a genuine cache commit and prepared acknowledgement exist. [Actual diagnostic](source6-kernel-diagnostic-production-2026-10-26.json), [source review](source6-diagnostic-reader-qualification-root-review-2026-10-26.json), [held5 source review](cont5-held5-source-root-review-2026-10-26.json).
 
 Remaining migration work:
 
