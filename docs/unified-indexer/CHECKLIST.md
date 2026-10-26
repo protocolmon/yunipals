@@ -1,11 +1,12 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 16:40 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 16:56 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
 - Shared indexing, six-collection parity and metadata provenance are accepted. Production consumer handover is incomplete.
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
+- The fresh rehearsal is **running**. Its full source preflight and constructor binding have passed; it is preparing the cache context. At 16:56 UTC, its new cache and transaction-capture directories were still absent, so no SQL rehearsal had launched yet. This is progress within the run, not completed migration acceptance.
 - [x] Apply the approved **120-second readiness limit** to production after a real rollback rehearsal. The committed function and all original object/OID/body/column identities pass fresh policy-aware verification. The renewal schedule stays at 60 seconds; the final acknowledgement reserve stays at five seconds. No data, grants or services changed. [Actual production verification](native-readiness120-production-2026-10-26.json).
 - [x] Publish and stage the linked 120-second migration runner, verify all 333 source files, and execute its genuine startup constructor on production. Its configured scope is 120 seconds and its final reserve is five seconds. No Source preflight, cache transaction or traffic switch ran during this check. [Actual runner verification](native-readiness120-production-2026-10-26.json).
 - The fresh run passed full Source preflight under the 120-second policy, then stopped in cache construction at a duplicate policy-adapter binding (`KeyError: module`). The database rehearsal was not invoked; the new cache/authority/capture namespaces are absent. The exact constructor fix and matching rollback work are being prepared. The failed capture and copied input are preserved; no automatic replay. [Actual failure and diagnosis](cont6-baseline-preconstruct-failure-production-2026-10-26.json).
