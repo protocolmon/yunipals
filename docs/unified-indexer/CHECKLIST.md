@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 02:24 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 02:33 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current accepted milestones:
 
@@ -27,11 +27,14 @@ The second fresh run passed full current metadata/source verification and all 31
 
 The Arena business inverse/native-return recovery package is also staged inactive: 435 files and six existing prerequisites verified, 36 files added and 399 existing files/inodes preserved. No operator or service action occurred. [Actual source staging](arena-inverse4-return4-source-stage-production-2026-10-26.json).
 
-At 02:22 UTC the full original catalog and all column ACLs passed reconciliation. The exact two-file incomplete preparation was atomically archived under the shared lock, preserving directory/file inodes and the failed capture intent. The fresh unchanged baseline constructor is running in execution session 68599; its final result is not yet available. The archive is recovery evidence, not cache commit or migration acceptance. [Actual recovery milestone](cont5-catalog-archive-milestone-production-2026-10-26.json).
+At 02:22 UTC the full original catalog and all column ACLs passed reconciliation. The exact two-file incomplete preparation was atomically archived under the shared lock, preserving directory/file inodes and the failed capture intent. The fresh unchanged baseline constructor subsequently completed at 02:28 UTC; see the accepted new baseline below. The archive is recovery evidence, not cache commit or migration acceptance. [Actual recovery milestone](cont5-catalog-archive-milestone-production-2026-10-26.json).
+
+At 02:28 UTC the fresh baseline completed: transaction 16933377 genuinely rolled back, complete current metadata/source postflight passed, and the new before/rehearsal/authorization records are accepted. Eight metadata captures completed in ten attempts, with two unstable observations discarded under the unchanged bounded read-only policy. All 1,933 diagnostic commands succeeded and the one observed SQL transport had empty stderr. No cache commit or reader switch occurred. [Actual baseline](cont5-construct-only-baseline-production-2026-10-26.json). The next verifier's complete receipt-authentication section also passed against the real server files, without constructing a Source session or invoking the held qualifier. [Actual read-only preauthentication](cont5-held4-preauth-readonly-production-2026-10-26.json).
 
 Remaining migration work:
 
-- [ ] Construct a fresh baseline and authorization for the corrected current proof, then qualify the complete real transaction/callback path with a new rollback-only test. Preserve the original accepted baseline and failed-test records; the old standalone 77.12-second measurement is not authority for commit.
+- [x] Construct and authenticate a genuinely fresh baseline and authorization for the corrected current proof, retaining every earlier failure and archive.
+- [ ] Qualify the complete real transaction/callback path with a new rollback-only held test. The new baseline is accepted; the old standalone 77.12-second measurement remains historical and confers no commit authority.
 - [ ] Commit native cache guards and authenticate the prepared acknowledgement returned by that commit. Do not invoke a second prepare-ack save.
 - [ ] Qualify replacement readers, publish generation 105 and switch collection APIs, cache and staking. Verify actual previews and serving compatibility.
 - [ ] Switch the fresh YPAL API and artwork queue to the shared source. Require complete eight-table parity and a genuine newer opening or claim before retiring its temporary scanner.
@@ -203,4 +206,4 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
 - [ ] Marketplace receipt history, sales/listings/cancellation parity and marketplace consumer cutover. **Held behind the shared collection reader work.** The receipt worker remains stopped.
 - [ ] Additional exhaustive live reorg stress scenarios, deferred as agreed. Basic native canonical handling and rollback checks remain part of acceptance.
 
-**Next production step:** finish the running unchanged fresh baseline constructor, then qualify the complete held transaction with its actual new receipt. The incomplete two-file preparation has been reconciled and archived; the prior cadence remains historical scheduling evidence only. Arena support verification and both reader connections have passed. The failed transaction is fully reconciled, and full current metadata/source verification has passed. Complete a new rollback-only held transaction before any cache commit; preserve the prior accepted baseline, cadence and every failed attempt. Generation 105 is accepted but unpublished; cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.
+**Next production step:** run the reviewed complete held transaction qualification using the accepted fresh baseline receipt2935d53f. The full baseline and server receipt preauthentication have passed. The incomplete two-file preparation has been reconciled and archived; the prior cadence remains historical scheduling evidence only. Arena support verification and both reader connections have passed. The failed transaction is fully reconciled, and full current metadata/source verification has passed. Complete a new rollback-only held transaction before any cache commit; preserve the prior accepted baseline, cadence and every failed attempt. Generation 105 is accepted but unpublished; cache/API/worker handover, fresh YPAL parity, native Arena, managed EVM/Solana adoption, coordinated rollback, recurring generation and observation remain pending. No user approval is pending. YPAL purchases and wrapping remain live.

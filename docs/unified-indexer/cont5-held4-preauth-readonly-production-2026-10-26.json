@@ -1,0 +1,19 @@
+{
+  "SourceSessionConstructed": false,
+  "authenticatedBaselineProofCount": 8,
+  "baselineRootResultSha256": "2935d53ffa101664c882d93dce210f08a23a393196be36dcefe9044c9b51a195",
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "root-held4-preauth-readonly-v1",
+  "genuineHeldQualifierInvoked": false,
+  "privateProofHashes": {
+    "authenticated-baseline-archive": "f11904775d05b055c0e427e908f0d85babc6d3168390f9504348c9d037930506",
+    "authenticated-baseline-metadata-histories": "a4ad80228289e4e368e512766e8f5ef76522ff63b87cdeb16a0cf2f1c6459d66",
+    "authenticated-baseline-proof-hashes": "7af72d23efa7774da8c7f39d4bf633924d7036b3fe369fe7ce0c5ed9b52d128b",
+    "baseline-root-result": "2935d53ffa101664c882d93dce210f08a23a393196be36dcefe9044c9b51a195"
+  },
+  "resultSha256": "198ab16f5495c8eecae131416b4df069cb9c800a3242a71a479315ff6cfd1a24",
+  "runtimeQualificationClaimed": false,
+  "serviceActions": 0,
+  "sourceDriverSha256": "98636d3beacc9d4ac14a5cdbb4a33c216840cd6424adacd6d008a349c85fe364"
+}
