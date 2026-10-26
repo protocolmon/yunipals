@@ -1,6 +1,6 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 09:58 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 10:32 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
@@ -8,7 +8,7 @@ Current position:
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
 - The remaining immediate blocker is validation cost: all checks and the final reserve must fit the existing approval lifetime.
 - The fourth read-only benchmark completed at 09:21 UTC. Prerequisites took 97.74 seconds, compared with 105.02 seconds previously; this still does not fit the existing 90-second approval lifetime plus the five-second finish reserve. Fresh file reads, digest comparisons and full Source postflight passed. Reusing identical hash computations avoided 2.02 GB of repeated hashing during the measured pair. No held qualification, cache commit or reader switch is authorized by this timing result. [Actual result](readonly-refresh-benchmark4-production-2026-10-26.json), [measured breakdown](readonly-refresh-benchmark4-cost-summary-production-2026-10-26.json).
-- The exact publication-query plan and the read-only JIT comparison completed. Both executions returned identical results: JIT on took 19.73 seconds and off took 20.87 seconds, so disabling JIT is not an accepted performance fix. Separate snapshots and cache warm-up prevent a causal comparison. No new database indexes or persistent settings were applied; source-level query/index analysis continues. [Actual plan summary](publication-explain-production-2026-10-26.json), [actual comparison](publication-jit-comparison-production-2026-10-26.json).
+- The unchanged publication query completed its timed plan in 21.74 seconds. Canonical counting took 20.60 seconds; temporary reads were 66,466 database blocks (about 519 MiB), with severe row-count underestimates on several joins. Both earlier JIT runs passed readiness and returned matching positive canonical/published counts; JIT off was slower. Fresh resource inventory found about 20.43 GiB available RAM, 32/100 database connections and no memory limit on the target PostgreSQL service. A guarded, transaction-local 64 MiB query-memory trial is being prepared; no persistent memory setting, new index or query predicate has changed. [Timed plan](publication-analyze-production-2026-10-26.json), [resource inventory](query-resource-inventory-production-2026-10-26.json), [prior readiness checks](publication-jit-typed-result-summary-production-2026-10-26.json).
 - The rollback controller is published and staged inactive after independent source review and 17 controls: 411 files verified, five added, 406 existing files/inodes preserved. Original locks, checks after each operation and cancellation/error handling are preserved. Actual rollback inputs, timing and effects remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json), [actual inactive staging](publication-inverse1-source-stage-production-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
 
