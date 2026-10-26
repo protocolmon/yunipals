@@ -1,0 +1,100 @@
+{
+  "actualHeldQualificationClaimed": false,
+  "actualMigrationOrLOGINClaimed": false,
+  "actualPolicyInputIncluded": false,
+  "authorityControlsPassed": 9,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v6.py",
+      "sha256": "3062235af98d22a2d357c44d6f1e85160bddc1cf0ef1f51ab620ecf982c33873",
+      "size": 17569
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v6.manifest.json",
+      "sha256": "c43a672f4261f437f829dc32b55b4ed9c903bc60e7420b955c976687dae02651",
+      "size": 2806
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-policy-v1.py",
+      "sha256": "8de587a380c63341cbcbd0fc1d831f3e531e5b88bbdb8775eb1a4c2f7b584479",
+      "size": 40546
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-policy-v1.manifest.json",
+      "sha256": "168564578553273d2eacfe5515f04989bc91deb0dca487934b0e905c77307d3c",
+      "size": 37100
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readiness-family-v1.py",
+      "sha256": "fe24870db3a6adb079c28c57c5ae1cfa77bbf8b3e6b039c967b2fc352811c346",
+      "size": 49513
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readiness-family-v1.manifest.json",
+      "sha256": "007cecccd07233192d654cca359735746cee14497b4b145d5cb7936d8c71abb3",
+      "size": 37594
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v6.py",
+      "sha256": "34d9c17004896b2164b21891502e89198019ffac4764f9d6ff279a31542aab22",
+      "size": 1819
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v6.py",
+      "sha256": "00df5c7aaef17793eba8a1c07ff70a4a8b744c31afcd8a77a2a902a683d9da96",
+      "size": 1809
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v6.manifest.json",
+      "sha256": "524c45b6453c7eee4bfc876a47f1e93df49c59afc8be7a383ee068f177c799ca",
+      "size": 41610
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v6.py",
+      "sha256": "55391a93cabc13393abf449a77bb667e6ab41a853cdd9089af6fa437c2c4532c",
+      "size": 3034
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v6.test.py",
+      "sha256": "61d8d703e3cecae3c39270d57b2b6e0c851c510f41468cad27847ae85688729e",
+      "size": 15900
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v6.integration.test.py",
+      "sha256": "072a163ce32301bc63285717dbc4078b066c2f2138663c648e7c5cb68a4ce5b0",
+      "size": 4324
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readiness-family-v1.test.py",
+      "sha256": "3ad00a655dfab50c1a3d301a3903c7545a01a86c07c2b2d0361b3cf8d165e722",
+      "size": 23457
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readiness-family-v1.integration.test.py",
+      "sha256": "0d310520e00cd90587b1054d4041ef740963972af3dbfb106aee1bbc51ee1c9a",
+      "size": 7766
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v6.stage.json",
+      "sha256": "03ddd706f746710fe16e23154c5d13582c7a9db654ea40ba47e5ecc35f3ccdec",
+      "size": 105497
+    },
+    {
+      "path": "docs/unified-indexer/native-readiness120-family6.md",
+      "sha256": "40ab0e0231afba8598aa49f9e775353d3d85a2cd24fdbd876ba41bfe4dd72b04",
+      "size": 6037
+    }
+  ],
+  "format": "yunipals-native120-family6-source-preparation-v1",
+  "historicalCatalogIntegrationGroupsPassed": 1,
+  "independentFamilyIntegrationControlsPassed": 3,
+  "inverseExplicitlyClosed": true,
+  "literalACKTailSeconds": 5,
+  "mainFamilyIntegrationControlsPassed": 7,
+  "metadataCaptureAttemptsUnchanged": 3,
+  "metadataCaptureWindowSecondsUnchanged": 90,
+  "policyTTLSeconds": 120,
+  "skippedTests": 0,
+  "sourceOnly": true,
+  "stageFiles": 333
+}

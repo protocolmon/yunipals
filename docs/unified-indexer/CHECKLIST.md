@@ -1,13 +1,14 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 13:59 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Updated **26 October 2026, 14:25 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
 
 Current position:
 
 - Shared indexing, six-collection parity and metadata provenance are accepted. Production consumer handover is incomplete.
 - The latest failed transaction is fully reconciled. No real cache commit or reader switch has occurred.
 - [x] Apply the approved **120-second readiness limit** to production after a real rollback rehearsal. The committed function and all original object/OID/body/column identities pass fresh policy-aware verification. The renewal schedule stays at 60 seconds; the final acknowledgement reserve stays at five seconds. No data, grants or services changed. [Actual production verification](native-readiness120-production-2026-10-26.json).
-- The linked migration caller/provider integration is being finalized for a fresh 120-second qualification. No whole migration, real cache commit or reader switch has passed yet.
+- [x] Publish and stage the linked 120-second migration runner, verify all 333 source files, and execute its genuine startup constructor on production. Its configured scope is 120 seconds and its final reserve is five seconds. No Source preflight, cache transaction or traffic switch ran during this check. [Actual runner verification](native-readiness120-production-2026-10-26.json).
+- Next: fresh full Source/cache qualification and a matching policy-aware rollback route before migration effects. The new runner explicitly closes its inverse path. No whole migration, real cache commit or reader switch has passed yet.
 - The latest complete read-only benchmark took **96.06 seconds** for prerequisites. Further performance experiments are stopped. Timing results do not authorize a cache commit or reader switch.
 - The rollback controller is published and staged inactive after independent source review and 17 controls. Actual coordinated rollback and return remain pending. [Source review](publication-inverse-source-root-review-2026-10-26.json), [inactive staging](publication-inverse1-source-stage-production-2026-10-26.json).
 - No approval, credential or funding is waiting from you.
