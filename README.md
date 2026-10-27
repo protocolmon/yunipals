@@ -150,7 +150,7 @@ pins and their small compatibility patches are explained in
 
 Booster packs: see [implementation and rollout](docs/boosters-implementation.md)
 and [contracts](contracts/boosters/README.md). The current Base pack uses 264
-variants, costs 1 PROTO plus VRF/gas, and earns one mint credit every 24 hours
+variants, costs 1 YPAL plus VRF/gas, and earns one mint credit every 24 hours
 after reveal. The [live release evidence](docs/boosters/mainnet-launch/canonical-www-production-2026-10-22.json)
 distinguishes accepted mainnet behavior from remaining elapsed-time and
 unattended-artwork work.

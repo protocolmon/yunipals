@@ -102,8 +102,20 @@ All three card artworks and the glitter mask are published. The
 and [artwork acceptance](first-live-artwork-production.json) record the actual
 checks, including the complete batch replay link.
 
-The first genuine elapsed daily claim remains untested until 24 October 2026,
-21:24:37 UTC. Unseen variant artwork still requires approved operator generation
-and review; the five-second queue is not an unattended image generator.
-Final combined-source parity, API/queue handover and temporary-source retirement
-remain part of the [single-indexer checklist](../../unified-indexer/CHECKLIST.md).
+The first genuine elapsed daily claim was verified on 27 October 2026.
+Original #1 claimed three accrued pulls after three whole days:
+[claim transaction](https://basescan.org/tx/0xa805e7324cd86825a30f89a3273a6fc7dace68eb07bd86f69a1007ae2949e0e3),
+[Chainlink fulfillment and NFT mints](https://basescan.org/tx/0x2cf76783b559b93ea6054ce8fedee57e3b872cc2d9e51682194dac2b650b3784).
+Both receipts succeeded. The fulfillment minted NFTs #4–6 to the claimant in
+canonical Base block 53,153,765; the indexed variants are 190, 36 and 95.
+NFT #4's onchain token URI serves per-NFT metadata with `Birth day: 3` and the
+actual mint timestamp. The original now records four minted variants and three
+committed daily credits.
+
+These newly drawn variants are queued for artwork and currently have no image.
+Unseen artwork still requires approved operator generation and review; the
+five-second queue is not an unattended image generator. The opening polls for
+publication and distinguishes this state from a failed image request.
+
+Combined-source parity, API/queue handover and temporary-source retirement
+completed with the shared-indexer cutover on 27 October 2026.

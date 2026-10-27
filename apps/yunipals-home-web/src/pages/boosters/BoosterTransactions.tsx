@@ -21,6 +21,7 @@ import {
   readBoosterTransactionReceipt,
   type StoredBoosterTransaction
 } from "@/lib/boosters";
+import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
 import { BoosterOpeningShare } from "./BoosterOpeningShare";
@@ -71,9 +72,11 @@ function SubmittedOpening({
       <h2 id={titleId} className="font-display text-2xl">
         {quantity > 1 ? `Your ${quantity} packs` : "Your pack"}
       </h2>
-      <p role="status" className="mt-5 text-muted">
-        {status}
-      </p>
+      <YunipalsLoader
+        className="mt-6"
+        label="Getting your pack ready"
+        detail={status}
+      />
       <p className="mt-4 text-sm text-muted">
         Your transaction is saved. You can close this and return from recent
         pack transactions. Reopening never submits another transaction.

@@ -4,6 +4,8 @@ import { useAccount, usePublicClient } from "wagmi";
 import { Clock3, Layers3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Hex } from "viem";
+import { Select, SelectItem } from "@/components/ui/select";
+import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { environment } from "@/environment";
 import {
   accruedBoosterCredits,
@@ -29,6 +31,9 @@ export function BoosterClaimPacks({
   const { address } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
   const deployment = boosterAddresses();
+  const [selectedOriginals, setSelectedOriginals] = useState<
+    Record<string, string>
+  >({});
   const [pendingPack, setPendingPack] = useState<{
     wallet: string;
     requestId: string;
@@ -65,6 +70,12 @@ export function BoosterClaimPacks({
           original.collection.toLowerCase() === deployment.monsters &&
           original.engine.toLowerCase() === deployment.engine
       ) ?? [];
+  const groups = new Map<string, BoosterOriginal[]>();
+  for (const original of originals) {
+    const members = groups.get(original.pack.id) ?? [];
+    members.push(original);
+    groups.set(original.pack.id, members);
+  }
   const paused = query.data?.pages.some((page) => page.requestsPaused) ?? true;
   if (!query.isPending && !query.error && !originals.length) return null;
   return (
@@ -80,13 +91,12 @@ export function BoosterClaimPacks({
         Your daily packs
       </h2>
       <p className="mt-3 max-w-2xl text-muted">
-        Your originals earn new pulls every day. Saved pulls open together in
-        one pack, up to seven at a time. Your cards appear in Collection.
+        Your originals earn new pulls every day. Choose an original and open up
+        to seven of its saved pulls together in one pack. Your cards appear in
+        Collection.
       </p>
       {query.isPending && (
-        <p role="status" className="mt-5 animate-pulse">
-          Checking your daily packs…
-        </p>
+        <YunipalsLoader className="mt-5" label="Checking your daily packs…" />
       )}
       {query.error && (
         <p role="alert" className="mt-5">
@@ -107,8 +117,24 @@ export function BoosterClaimPacks({
         </p>
       )}
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        {originals.map((original) => {
+        {[...groups].map(([groupId, members]) => {
+          const selectionKey = `${address.toLowerCase()}:${groupId}`;
+          const original =
+            members.find(
+              (item) => item.id === selectedOriginals[selectionKey]
+            ) ??
+            members.find(
+              (item) =>
+                !item.pendingRequest &&
+                clock.data !== undefined &&
+                boosterBatchSize(item, clock.data) > 0
+            ) ??
+            members[0];
           const now = clock.data ?? BigInt(original.revealedAt ?? "0");
+          const totalPulls = members.reduce(
+            (total, item) => total + accruedBoosterCredits(item, now).claimable,
+            0n
+          );
           const { claimable, nextAt } = accruedBoosterCredits(original, now);
           const quantity = Math.min(7, boosterBatchSize(original, now));
           const pendingId = original.pendingRequest?.split(":").at(-1);
@@ -116,7 +142,7 @@ export function BoosterClaimPacks({
           const complete = BigInt(original.remaining) === 0n;
           return (
             <article
-              key={original.id}
+              key={groupId}
               className="flex flex-col gap-5 rounded-card border border-line bg-white p-6 sm:flex-row sm:items-center"
             >
               <img
@@ -129,9 +155,51 @@ export function BoosterClaimPacks({
                 className="mx-auto w-32 shrink-0 drop-shadow-lg sm:mx-0"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-grape">
-                  Daily pack · Original #{original.tokenId}
-                </p>
+                <p className="text-sm font-bold text-grape">Daily pack</p>
+                {members.length > 1 ? (
+                  <div className="mt-3">
+                    <p className="mb-3 text-sm text-muted">
+                      {formatInteger(totalPulls.toString())} pulls saved across{" "}
+                      {members.length} originals
+                    </p>
+                    <label
+                      htmlFor={`daily-original-${original.pack.packTypeId}`}
+                      className="mb-2 block text-sm font-bold"
+                    >
+                      Choose original
+                    </label>
+                    <Select
+                      id={`daily-original-${original.pack.packTypeId}`}
+                      value={original.id}
+                      className="w-full"
+                      onValueChange={(id) =>
+                        setSelectedOriginals((selected) => ({
+                          ...selected,
+                          [selectionKey]: id
+                        }))
+                      }
+                    >
+                      {members.map((item) => {
+                        const available = accruedBoosterCredits(
+                          item,
+                          now
+                        ).claimable;
+                        return (
+                          <SelectItem key={item.id} value={item.id}>
+                            Original #{item.tokenId} ·{" "}
+                            {item.pendingRequest
+                              ? "Reveal pending"
+                              : `${available} saved ${available === 1n ? "pull" : "pulls"}`}
+                          </SelectItem>
+                        );
+                      })}
+                    </Select>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-muted">
+                    Original #{original.tokenId}
+                  </p>
+                )}
                 <h3 className="mt-2 font-display text-xl">
                   {pendingId
                     ? "Your pack is being revealed"

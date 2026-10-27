@@ -1,6 +1,8 @@
 # Yunipals implementation checklist
 
-Updated **26 October 2026, 19:52 UTC**. The collection and YPAL packs are live. The shared-indexer migration remains in progress; no user approval is currently pending.
+Current status **27 October 2026**: the shared-indexer cutover, reader/feature handover, staking schedule and retirement of eight superseded scanners are complete. Marketplace rollout remains postponed. A real three-pull daily claim has also completed; see [the current pack acceptance](../boosters/ypal-fresh-launch-2026-10-23/README.md).
+
+The dated working notes below describe the pre-cutover migration process and retain its historical pending states. They are not the current task list.
 
 **Scope change requested by the user:** skip further rollback tests and prioritize the production cutover. Additional held-transaction rollback qualification, coordinated rollback/return and fallback-switch rehearsals are deferred, not marked as passed. Keep existing backups and recovery files, the real transaction/acknowledgement checks, and checks of the live services after switching. This supersedes older rollback-test prerequisites below.
 

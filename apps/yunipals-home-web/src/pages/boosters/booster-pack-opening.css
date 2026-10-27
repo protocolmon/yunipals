@@ -18,7 +18,7 @@
   backdrop-filter: blur(12px);
 }
 .yunipals-opening-content {
-  --opening-pack-width: clamp(160px, calc((100dvh - 18rem) / 2.85), 440px);
+  --opening-pack-width: clamp(160px, calc((100dvh - 19rem) / 1.6), 400px);
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -45,13 +45,13 @@
   position: relative;
   flex-shrink: 0;
   width: 100%;
-  height: calc(var(--opening-pack-width) * 2.85 + 1rem);
+  height: calc(var(--opening-pack-width) * 1.55 + 1rem);
   /* Raised cards and tear particles stay in the scene below the instructions. */
   overflow: hidden;
   isolation: isolate;
 }
-/* The sealed pack needs only its own height. Reserve the extra space above
-   the mouth only when a card can actually be pulled into that space. */
+/* Every stage shares one compact scene. As the card emerges, the wrapper
+   moves down within it instead of reserving an empty card-height gap. */
 .yunipals-opening-dialog[data-stage="sealed"] .yunipals-opening-viewport,
 .yunipals-opening-dialog[data-stage="opening"] .yunipals-opening-viewport {
   height: calc(var(--opening-pack-width) * 1.55 + 1rem);
@@ -323,7 +323,7 @@
     10% 8.4%,
     0 8.95%
   );
-  animation: yunipals-pack-tear 0.66s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: yunipals-pack-tear 1.5s cubic-bezier(0.45, 0, 0.2, 1) forwards;
 }
 .yunipals-opening-particle {
   position: absolute;
@@ -333,7 +333,7 @@
   width: 0.25rem;
   height: 0.5rem;
   border-radius: 999px;
-  animation: yunipals-pack-particle 0.78s ease-out both;
+  animation: yunipals-pack-particle 1.3s ease-out both;
   pointer-events: none;
 }
 .yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-wrapper {
@@ -386,11 +386,11 @@
 .yunipals-opening-dialog[data-settling="true"] .yunipals-opening-extract-card,
 .yunipals-opening-dialog[data-settling="true"] .yunipals-opening-wrapper,
 .yunipals-opening-dialog[data-settling="true"] .yunipals-opening-body {
-  transition: transform 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .yunipals-opening-dialog[data-settling="true"]
   .yunipals-opening-extract-window {
-  transition: clip-path 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .yunipals-opening-result {
   width: min(350px, 80vw);
@@ -512,4 +512,12 @@
   .yunipals-opening-glint {
     opacity: 0.2;
   }
+}
+
+.yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-shell {
+  transform: translateY(var(--scene-shift));
+}
+.yunipals-opening-dialog[data-stage="extracting"][data-settling="true"]
+  .yunipals-opening-shell {
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }

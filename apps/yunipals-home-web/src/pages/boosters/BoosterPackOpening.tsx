@@ -172,6 +172,43 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     return () => observer.disconnect();
   }, [stage === "results"]);
   useEffect(() => {
+    if (stage === "results") return;
+    const element = dialog.current;
+    const content = element?.querySelector<HTMLElement>(
+      ".yunipals-opening-content"
+    );
+    const header = element?.querySelector<HTMLElement>(
+      ".yunipals-opening-header"
+    );
+    const action = content?.querySelector<HTMLElement>(
+      ":scope > .yunipals-opening-action"
+    );
+    if (!element || !content || !header || !action) return;
+    const fit = () => {
+      const padding = getComputedStyle(content);
+      const actionStyle = getComputedStyle(action);
+      const available =
+        element.clientHeight -
+        header.offsetHeight -
+        action.offsetHeight -
+        parseFloat(padding.paddingTop) -
+        parseFloat(padding.paddingBottom) -
+        parseFloat(actionStyle.marginTop) -
+        16;
+      const width = Math.max(
+        96,
+        Math.min(400, (element.clientWidth - 40) * 0.72, available / 1.55)
+      );
+      content.style.setProperty("--opening-pack-width", `${width}px`);
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    observer.observe(header);
+    observer.observe(action);
+    return () => observer.disconnect();
+  }, [stage === "results"]);
+  useEffect(() => {
     const element = dialog.current;
     if (!element) return;
     element.scrollTop = 0;
@@ -199,17 +236,29 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     setSettling(true);
     if (kind === "swipe") {
       completed.current = true;
-      setMotion((value) => ({ ...value, swipe: distance }));
-      setStage("opening");
-      haptic(18);
-      later("extracting", reduced ? 220 : 720);
+      const start = performance.now();
+      const from = motion.swipe;
+      const tear = (now: number) => {
+        const fraction = reduced ? 1 : Math.min(1, (now - start) / 650);
+        setMotion((value) => ({
+          ...value,
+          swipe: from + (distance - from) * (1 - (1 - fraction) ** 3)
+        }));
+        if (fraction < 1) frame.current = requestAnimationFrame(tear);
+        else {
+          setStage("opening");
+          haptic(18);
+          later("extracting", reduced ? 220 : 1600);
+        }
+      };
+      frame.current = requestAnimationFrame(tear);
     } else {
       setMotion((value) => ({
         ...value,
         [kind]: kind === "draw" ? -completedDraw : completedPull
       }));
       haptic(12);
-      later("results", reduced ? 140 : 560);
+      later("results", reduced ? 140 : 850);
     }
   };
   const reset = (kind: GestureKind, value: number) => {
@@ -353,18 +402,43 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     "--draw-scale": 0.96 + drawProgress * 0.12,
     "--draw-rotate": `${-drawProgress * 2.5}deg`,
     "--pack-offset": `${drawProgress * packDrawOffset}px`,
-    "--peek-distance": `${Math.min(24, packHeight * 0.04)}px`
+    "--peek-distance": `${Math.min(24, packHeight * 0.04)}px`,
+    "--scene-shift": `${Math.max(0, -motion.draw - packHeight * 0.06)}px`
   } as CSSProperties;
   const card = artwork?.image ? (
     <BoosterCardViewer artwork={artwork} interactive={stage === "results"} />
   ) : (
     <div className="yunipals-opening-card-back" role="status">
-      <span className="display text-2xl">YUNIPALS</span>
+      <img
+        src="/images/yunipals-logo.webp"
+        alt=""
+        width={64}
+        height={64}
+        className="mb-4 h-16 w-16"
+      />
+      <span className="display text-2xl">{artwork?.name ?? "YUNIPALS"}</span>
       <p className="mt-3 text-sm">
         {demo
           ? "Sample card preview"
-          : "Your Yunipal is revealed. Its artwork is being prepared."}
+          : monster.error || artworkQuery.error
+            ? "The artwork could not be loaded. Your NFT is safe in Collection."
+            : artwork?.status === "blocked"
+              ? "Artwork needs attention before it can be published. Your NFT is already minted."
+              : artwork?.status === "queued" || artwork?.status === "missing"
+                ? "Your NFT is minted. Its artwork is awaiting generation."
+                : "Loading your card artwork…"}
       </p>
+      {artwork && (
+        <p className="mt-3 text-xs opacity-80">
+          {[
+            artwork.attributes.color,
+            artwork.attributes.horn,
+            artwork.attributes.glitter === "Yes" ? "Glitter" : undefined
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
+      )}
       {(monster.error || artworkQuery.error) && (
         <button
           type="button"

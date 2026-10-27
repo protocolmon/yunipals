@@ -79,3 +79,68 @@ a {
   height: 7.12166%;
   font-size: clamp(8px, 1.25vw, 14px);
 }
+
+/* Yunipals' own little orbit of magic, shared by pack loading states. */
+.yunipals-loader-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  flex-shrink: 0;
+  color: theme("colors.grape");
+}
+.yunipals-loader-mark img {
+  width: 3.5rem;
+  height: 3.5rem;
+  animation: yunipals-loader-breathe 1.8s ease-in-out infinite;
+}
+.yunipals-loader-orbit {
+  position: absolute;
+  inset: 0;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: yunipals-loader-orbit 2.2s linear infinite;
+}
+.yunipals-loader-spark {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 0.35rem);
+  width: 0.7rem;
+  height: 0.7rem;
+  background: currentColor;
+  clip-path: polygon(
+    50% 0,
+    62% 38%,
+    100% 50%,
+    62% 62%,
+    50% 100%,
+    38% 62%,
+    0 50%,
+    38% 38%
+  );
+  transform-origin: 50% 2.5rem;
+  animation: yunipals-loader-orbit 2.2s linear infinite;
+}
+@keyframes yunipals-loader-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes yunipals-loader-breathe {
+  50% {
+    transform: translateY(-3px) scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yunipals-loader-mark * {
+    animation: none;
+  }
+}
+
+[data-state="waiting"] .yunipals-loader-mark * {
+  animation: none;
+}

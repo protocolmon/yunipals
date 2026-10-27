@@ -18,6 +18,7 @@ import {
   boosterQueryKey,
   fetchBoosterRequestMonsters
 } from "@/lib/boosters";
+import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterOpeningShare } from "./BoosterOpeningShare";
@@ -194,17 +195,34 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
           <X aria-hidden="true" size={22} />
         </button>
       </div>
-      <p role="status" className="mt-5 text-muted">
-        {loadingRequests
-          ? "Transaction confirmed. Syncing your pack requests…"
-          : forfeited === entries.length
-            ? "These requests were forfeited because their originals were burned. No cards were minted."
-            : pulls?.length
-              ? `${pulls.length} revealed ${pulls.length === 1 ? "card is" : "cards are"} ready. ${forfeited} ${forfeited === 1 ? "request was" : "requests were"} forfeited because an original was burned.`
+      <YunipalsLoader
+        className="mt-6"
+        state={
+          errored || recovery || forfeited === entries.length
+            ? "waiting"
+            : "loading"
+        }
+        label={
+          errored
+            ? "Your pack is saved"
+            : recovery
+              ? "Your reveal needs one more step"
               : terminal
-                ? "Your Yunipals are minted. Preparing all of your cards…"
-                : `${completed} of ${entries.length} ${entries.length === 1 ? "pack is" : "packs are"} revealed. ${recovery ? "Finish the requests below to continue." : "Waiting for Chainlink randomness. You can close this and return from recent pack transactions."}`}
-      </p>
+                ? "Preparing your cards"
+                : "A little magic is on its way"
+        }
+        detail={
+          loadingRequests
+            ? "Transaction confirmed. Syncing your pack requests…"
+            : forfeited === entries.length
+              ? "These requests were forfeited because their originals were burned. No cards were minted."
+              : pulls?.length
+                ? `${pulls.length} revealed ${pulls.length === 1 ? "card is" : "cards are"} ready. ${forfeited} ${forfeited === 1 ? "request was" : "requests were"} forfeited because an original was burned.`
+                : terminal
+                  ? "Your Yunipals are minted. Preparing all of your cards…"
+                  : `${completed} of ${entries.length} ${entries.length === 1 ? "pack is" : "packs are"} revealed. ${recovery ? "Finish the requests below to continue." : "Waiting for Chainlink randomness. You can close this and return from recent pack transactions."}`
+        }
+      />
       {errored && (
         <p role="alert" className="mt-4 text-sm text-muted">
           Pack details are temporarily unavailable. Your requests remain saved.{" "}

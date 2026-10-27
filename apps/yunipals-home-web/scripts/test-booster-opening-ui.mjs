@@ -49,6 +49,8 @@ const sourcePaths = [
   "src/pages/boosters/BoosterRequestOpening.tsx",
   "src/pages/boosters/BoosterOpeningShare.tsx",
   "src/pages/boosters/BoosterClaimPacks.tsx",
+  "src/components/YunipalsLoader.tsx",
+  "src/globals.css",
   "src/lib/boosterReveal.ts",
   "src/lib/boosters.ts",
   "src/pages/boosters/BoosterPackSection.tsx",
@@ -148,8 +150,8 @@ if(scenario()!=='empty'&&!readStored(owner,engine).length)saveBoosterTransaction
 export const readBoosterTransactions=()=>readStored(owner,engine);
 export const readBoosterTransactionReceipt=(read)=>read();
 export const fetchBoosterMonster=async(collection,tokenId)=>{(window.__openingMonsterFetches??=[]).push(tokenId);return{item:{tokenId,metadataUri:'fixture:'+tokenId,collection,isOriginal:tokenId==='7',owner}}};
-export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name});
-export const fetchBoosterOwner=async()=>{const selected=scenario(),daily=selected.startsWith('daily-'),credits=selected==='daily-ten'?10:selected==='daily-zero'?0:3;return{items:daily?[{id:'8453:'+monsters+':7',tokenId:'7',collection:monsters,engine,owner:selected==='daily-foreign'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-credits*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack}]:[],nextCursor:null,requestsPaused:selected==='daily-paused'}};
+export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name,...(scenario()==='artwork-queued'&&!window.__artworkReady?{status:'queued',image:null}:{}),...(scenario()==='artwork-queued'&&window.__artworkReady?{status:'ready'}:{})});
+export const fetchBoosterOwner=async()=>{const selected=scenario(),daily=selected.startsWith('daily-'),credits=selected==='daily-ten'?10:selected==='daily-zero'?0:3;return{items:daily?(selected==='daily-grouped'?['7','21','99']:['7']).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,engine,owner:selected==='daily-foreign'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-(tokenId==='21'?5:credits)*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack})):[],nextCursor:null,requestsPaused:selected==='daily-paused'}};
 export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:scenario()==='multi-incomplete'&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
 export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[{...fixturePack,id:"fixture-smoke-1",packTypeId:"1",manifestUri:"https://api.example.invalid/boosters/base-mainnet-smoke-v1/manifest.json"},fixturePack]});
 export const client={
@@ -693,6 +695,29 @@ try {
     }
   );
   await run(
+    "Identical daily packs share one entry; selecting an original claims only its saved pulls",
+    async () => {
+      await visit("mode=pack&scenario=daily-grouped");
+      const packs = page.locator("#daily-packs");
+      await packs.getByText("11 pulls saved across 3 originals").waitFor();
+      assert.equal(await packs.locator("article").count(), 1);
+      await packs.getByRole("combobox", { name: "Choose original" }).click();
+      await page
+        .getByRole("option", { name: "Original #21 · 5 saved pulls" })
+        .click();
+      const claim = packs.getByRole("button", {
+        name: "Open daily pack · 5 pulls",
+        exact: true
+      });
+      await claim.waitFor();
+      assert.deepEqual(
+        JSON.parse(await claim.getAttribute("data-fixture-action")),
+        { kind: "claim", packTypeId: "2", originalId: "21", quantity: 5 }
+      );
+      assert.equal(await packs.locator("article").count(), 1);
+    }
+  );
+  await run(
     "Ten accrued credits cap one daily pack at seven and preserve three saved pulls",
     async () => {
       await visit("mode=pack&scenario=daily-ten");
@@ -1107,6 +1132,35 @@ try {
     }
   );
   await run(
+    "Queued artwork is explained honestly and polling replaces it with the published card",
+    async () => {
+      await visit("mode=batch&scenario=artwork-queued");
+      await page.getByRole("button", { name: "Start local opening" }).click();
+      await page.getByRole("button", { name: "Rip open", exact: true }).click();
+      await waitStage("extracting");
+      await page
+        .getByRole("button", { name: "Pull out card", exact: true })
+        .click();
+      await waitStage("results");
+      await page
+        .getByText("Your NFT is minted. Its artwork is awaiting generation.", {
+          exact: true
+        })
+        .waitFor();
+      assert.equal(
+        await page.locator(".yunipals-opening-result .tilt-card").count(),
+        0
+      );
+      await page.evaluate(() => {
+        window.__artworkReady = true;
+      });
+      await page
+        .locator(".yunipals-opening-result .tilt-card")
+        .waitFor({ timeout: 10000 });
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
     "One torn pack pulls nonsequential NFT identities in order without another tear or mint",
     async () => {
       await visit("mode=batch");
@@ -1427,6 +1481,7 @@ try {
     "Submitted hash opens progress before any receipt/API request; confirmation, syncing and VRF are distinct and closing never resubmits",
     async () => {
       await visit("mode=submitted&scenario=submission");
+      await page.locator("dialog .yunipals-loader-mark").waitFor();
       await page
         .getByRole("dialog", { name: "Your 3 packs", exact: true })
         .waitFor();
