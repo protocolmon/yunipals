@@ -232,7 +232,7 @@ def configuration(candidate_sha, staking_build, read=read_public):
         raw = raw.replace(old.encode(), new.encode(), 1)
     files[str(SYSTEM / STAKING)] = raw
     timer = ("[Unit]\nDescription=Refresh native staking point proof\n[Timer]\n"
-             "OnUnitInactiveSec=5min\nUnit=" + STAKING + "\nPersistent=false\n"
+             "OnActiveSec=5min\nOnUnitInactiveSec=5min\nUnit=" + STAKING + "\nPersistent=false\n"
              "[Install]\nWantedBy=timers.target\n").encode()
     files[str(SYSTEM / "yunipals-native-staking-support.timer")] = timer
     return files
