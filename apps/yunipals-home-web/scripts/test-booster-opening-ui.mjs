@@ -25,6 +25,7 @@ const { values } = parseArgs({
     },
     "components-only": { type: "boolean", default: false },
     "layout-only": { type: "boolean", default: false },
+    "claims-only": { type: "boolean", default: false },
     port: { type: "string", default: "5198" }
   }
 });
@@ -49,6 +50,9 @@ const sourcePaths = [
   "src/pages/boosters/BoosterRequestOpening.tsx",
   "src/pages/boosters/BoosterOpeningShare.tsx",
   "src/pages/boosters/BoosterClaimPacks.tsx",
+  "src/pages/boosters/BoosterOriginalThumbnail.tsx",
+  "src/pages/boosters/BoosterOriginalControls.tsx",
+  "src/components/ui/select.tsx",
   "src/components/YunipalsLoader.tsx",
   "src/globals.css",
   "src/lib/boosterReveal.ts",
@@ -150,8 +154,11 @@ if(scenario()!=='empty'&&!readStored(owner,engine).length)saveBoosterTransaction
 export const readBoosterTransactions=()=>readStored(owner,engine);
 export const readBoosterTransactionReceipt=(read)=>read();
 export const fetchBoosterMonster=async(collection,tokenId)=>{(window.__openingMonsterFetches??=[]).push(tokenId);return{item:{tokenId,metadataUri:'fixture:'+tokenId,collection,isOriginal:tokenId==='7',owner}}};
-export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name,...(scenario()==='artwork-queued'&&!window.__artworkReady?{status:'queued',image:null}:{}),...(scenario()==='artwork-queued'&&window.__artworkReady?{status:'ready'}:{})});
-export const fetchBoosterOwner=async()=>{const selected=scenario(),daily=selected.startsWith('daily-'),credits=selected==='daily-ten'?10:selected==='daily-zero'?0:3;return{items:daily?(selected==='daily-grouped'?['7','21','99']:['7']).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,engine,owner:selected==='daily-foreign'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-(tokenId==='21'?5:credits)*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack})):[],nextCursor:null,requestsPaused:selected==='daily-paused'}};
+export const fetchMonsterArtwork=async(uri)=>({...fixtureArtwork,...(scenario().startsWith('daily-')?{image:'/__fixture-card.svg?original='+uri?.slice(8)}:{}),name:uri?.startsWith('fixture:')?'Fixture Yunipal #'+uri.slice(8):fixtureArtwork.name,...(scenario()==='artwork-queued'&&!window.__artworkReady?{status:'queued',image:null}:{}),...(scenario()==='artwork-queued'&&window.__artworkReady?{status:'ready'}:{})});
+const fixtureOriginal=(tokenId)=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,engine,owner:scenario()==='daily-foreign'||tokenId==='999'?'0x9999999999999999999999999999999999999999':owner,revealedAt:String(1792740601-(tokenId==='21'||tokenId==='800'?5:scenario()==='daily-ten'?10:scenario()==='daily-zero'?0:3)*86400),dailyCommitted:'0',minted:'1',remaining:'263',pendingRequest:null,burned:false,pack:fixturePack});
+export const fetchBoosterOriginal=async(_collection,tokenId)=>({item:fixtureOriginal(tokenId)});
+export const fetchBoosterRequest=async()=>({item:{status:'completed'}});
+export const fetchBoosterOwner=async()=>({items:scenario().startsWith('daily-')?(scenario()==='daily-grouped'?['7','21','99']:['7']).map(fixtureOriginal):[],nextCursor:null,requestsPaused:scenario()==='daily-paused'});
 export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:scenario()==='multi-incomplete'&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
 export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[{...fixturePack,id:"fixture-smoke-1",packTypeId:"1",manifestUri:"https://api.example.invalid/boosters/base-mainnet-smoke-v1/manifest.json"},fixturePack]});
 export const client={
@@ -185,21 +192,27 @@ export const client={
 const entry = `
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {MemoryRouter} from 'react-router-dom';
+import {MemoryRouter,Route,Routes} from 'react-router-dom';
 import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
 import {BoosterPackOpening} from '/src/pages/boosters/BoosterPackOpening';
 import {BoosterTransactions} from '/src/pages/boosters/BoosterTransactions';
 import {BoosterPackSection} from '/src/pages/boosters/BoosterPackSection';
-import {fixtureArtwork,boosterAddresses} from '${ids.boosters}';
+import {BoosterOriginalControls} from '/src/pages/boosters/BoosterOriginalControls';
+import {fixtureArtwork,boosterAddresses,fetchBoosterOriginal} from '${ids.boosters}';
 import '/src/globals.css';
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
 window.__refreshBoosters=()=>query.invalidateQueries();
+function OriginalDetailFixture(){
+ const [original,setOriginal]=useState(null);
+ React.useEffect(()=>{fetchBoosterOriginal(boosterAddresses().monsters,'21').then(response=>setOriginal(response.item));},[]);
+ return original?<BoosterOriginalControls original={original}/>:null;
+}
 function Harness(){
  const mode=new URLSearchParams(location.search).get('mode')||(new URLSearchParams(location.search).has('opening')?'transactions':'opening');
  const [open,setOpen]=useState(false),[closed,setClosed]=useState(0);
  const [submitted,setSubmitted]=useState(mode==='submitted'?'0x'+'a'.repeat(64):null);
  return <MemoryRouter initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><main>
-  {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:<BoosterTransactions autoOpenHash={submitted} onOpeningClosed={()=>setSubmitted(null)}/>}
+  {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:mode==='detail'?<Routes><Route path="/boosters" element={<BoosterPackSection/>}/><Route path="*" element={<OriginalDetailFixture/>}/></Routes>:<BoosterTransactions autoOpenHash={submitted} onOpeningClosed={()=>setSubmitted(null)}/>}
  </main></QueryClientProvider></MemoryRouter>;
 }
 createRoot(document.getElementById('root')).render(<Harness/>);`;
@@ -254,7 +267,7 @@ const server = await createServer({
       },
       configureServer(vite) {
         vite.middlewares.use(async (req, res, next) => {
-          if (req.url === "/__fixture-card.svg") {
+          if (req.url?.split("?")[0] === "/__fixture-card.svg") {
             res.setHeader("Content-Type", "image/svg+xml");
             return res.end(
               '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="400" height="600" rx="25" fill="#c4b5fd"/><text x="25" y="300" font-size="30">Fixture Yunidragon</text></svg>'
@@ -335,6 +348,11 @@ async function drag(locator, dx, dy, cancel = false) {
 }
 async function run(name, fn) {
   if (values["layout-only"] && !name.startsWith("Responsive")) return;
+  if (
+    values["claims-only"] &&
+    !/daily pack|daily claim|original's daily pack|Linked original/i.test(name)
+  )
+    return;
   await fn();
   assert.deepEqual(report.browserErrors, []);
   report.checks.push({ name, passed: true });
@@ -701,10 +719,26 @@ try {
       const packs = page.locator("#daily-packs");
       await packs.getByText("11 pulls saved across 3 originals").waitFor();
       assert.equal(await packs.locator("article").count(), 1);
-      await packs.getByRole("combobox", { name: "Choose original" }).click();
-      await page
-        .getByRole("option", { name: "Original #21 · 5 saved pulls" })
-        .click();
+      const selector = packs.getByRole("combobox", { name: "Choose original" });
+      await selector.locator("img").evaluate((img) => img.decode());
+      assert.equal(
+        await selector.locator("img").getAttribute("src"),
+        "/__fixture-card.svg?original=7"
+      );
+      await selector.click();
+      const option = page.getByRole("option", {
+        name: "Original #21 · 5 saved pulls"
+      });
+      await option.locator("img").evaluate((img) => img.decode());
+      assert.equal(
+        await option.locator("img").getAttribute("src"),
+        "/__fixture-card.svg?original=21"
+      );
+      await option.click();
+      assert.equal(
+        await selector.locator("img").getAttribute("src"),
+        "/__fixture-card.svg?original=21"
+      );
       const claim = packs.getByRole("button", {
         name: "Open daily pack · 5 pulls",
         exact: true
@@ -715,6 +749,100 @@ try {
         { kind: "claim", packTypeId: "2", originalId: "21", quantity: 5 }
       );
       assert.equal(await packs.locator("article").count(), 1);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await selector.click();
+      const menu = page.getByRole("listbox");
+      const bounds = await menu.boundingBox();
+      assert(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 391);
+      const last = page.getByRole("option", {
+        name: "Original #99 · 3 saved pulls"
+      });
+      await last
+        .locator('img[src="/__fixture-card.svg?original=99"]')
+        .waitFor();
+      await last.locator("img").evaluate((img) => img.decode());
+      await page.screenshot({
+        path: values.output.replace(/\.json$/, "-original-menu-mobile.png")
+      });
+      await page.keyboard.press("End");
+      await page.waitForFunction(
+        () =>
+          document.activeElement?.textContent === "Original #99 · 3 saved pulls"
+      );
+      await page.keyboard.press("Enter");
+      await selector
+        .getByText("Original #99 · 3 saved pulls", { exact: true })
+        .waitFor();
+      assert.equal(
+        await selector.locator("img").getAttribute("src"),
+        "/__fixture-card.svg?original=99"
+      );
+      await page.setViewportSize({ width: 1100, height: 1000 });
+    }
+  );
+  await run(
+    "Original detail link opens that original's daily pack with its picture selected",
+    async () => {
+      await visit("mode=detail&scenario=daily-grouped");
+      const link = page.getByRole("link", {
+        name: "Open daily pack",
+        exact: true
+      });
+      await link.waitFor();
+      assert.equal(
+        await link.getAttribute("href"),
+        "/boosters?original=21#daily-packs"
+      );
+      await link.click();
+      const selector = page.getByRole("combobox", { name: "Choose original" });
+      await selector
+        .getByText("Original #21 · 5 saved pulls", { exact: true })
+        .waitFor();
+      await selector.locator("img").evaluate((img) => img.decode());
+      assert.equal(
+        await selector.locator("img").getAttribute("src"),
+        "/__fixture-card.svg?original=21"
+      );
+      const claim = page.getByRole("button", {
+        name: "Open daily pack · 5 pulls",
+        exact: true
+      });
+      assert.equal(
+        JSON.parse(await claim.getAttribute("data-fixture-action")).originalId,
+        "21"
+      );
+    }
+  );
+  await run(
+    "Linked original beyond the owner page is selected; foreign originals cannot be claimed",
+    async () => {
+      await visit("mode=pack&scenario=daily-grouped&original=800");
+      const claim = page.getByRole("button", {
+        name: "Open daily pack · 5 pulls",
+        exact: true
+      });
+      await claim.waitFor();
+      assert.equal(
+        JSON.parse(await claim.getAttribute("data-fixture-action")).originalId,
+        "800"
+      );
+      await visit("mode=pack&scenario=daily-grouped&original=999");
+      await page
+        .getByRole("alert")
+        .filter({ hasText: "Original #999 is not in this wallet’s collection" })
+        .waitFor();
+      assert.equal(
+        await page.getByRole("option", { name: /Original #999/ }).count(),
+        0
+      );
+      assert.equal(
+        JSON.parse(
+          await page
+            .locator('#daily-packs button[data-fixture-action*="claim"]')
+            .getAttribute("data-fixture-action")
+        ).originalId,
+        "7"
+      );
     }
   );
   await run(
@@ -1627,6 +1755,9 @@ try {
 } catch (error) {
   report.passed = false;
   report.failure = String(error.stack ?? error);
+  await page.screenshot({
+    path: values.output.replace(/\.json$/, "-failure.png")
+  });
 } finally {
   report.completedAt = new Date().toISOString();
   await writeFile(values.output, JSON.stringify(report, null, 2) + "\n");

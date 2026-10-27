@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useAccount, usePublicClient } from "wagmi";
 import { Clock3, Layers3 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import type { Hex } from "viem";
 import { Select, SelectItem } from "@/components/ui/select";
 import { YunipalsLoader } from "@/components/YunipalsLoader";
@@ -15,11 +15,13 @@ import {
 import {
   boosterAddresses,
   boosterQueryKey,
-  fetchBoosterOwner
+  fetchBoosterOwner,
+  fetchBoosterOriginal
 } from "@/lib/boosters";
 import { formatInteger } from "@/lib/format";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
+import { BoosterOriginalThumbnail } from "./BoosterOriginalThumbnail";
 
 export function BoosterClaimPacks({
   onConfirmed,
@@ -31,9 +33,14 @@ export function BoosterClaimPacks({
   const { address } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
   const deployment = boosterAddresses();
-  const [selectedOriginals, setSelectedOriginals] = useState<
-    Record<string, string>
-  >({});
+  const [search, setSearch] = useSearchParams();
+  const requestedId = search.get("original");
+  const requestedOriginal =
+    requestedId && /^(0|[1-9][0-9]{0,77})$/.test(requestedId)
+      ? requestedId
+      : null;
+  const section = useRef<HTMLElement>(null);
+  const scrolledOriginal = useRef<string | null>(null);
   const [pendingPack, setPendingPack] = useState<{
     wallet: string;
     requestId: string;
@@ -59,17 +66,42 @@ export function BoosterClaimPacks({
       (await client!.getBlock({ blockTag: "latest" })).timestamp,
     refetchInterval: 15000
   });
+  const linked = useQuery({
+    queryKey: [
+      ...boosterQueryKey,
+      "original",
+      deployment?.monsters,
+      requestedOriginal
+    ],
+    enabled: Boolean(address && deployment && requestedOriginal),
+    queryFn: ({ signal }) =>
+      fetchBoosterOriginal(deployment!.monsters, requestedOriginal!, signal),
+    refetchInterval: 10000
+  });
+  const candidates = query.data?.pages.flatMap((page) => page.items) ?? [];
+  // A detail-page link may target an original beyond the first owner page.
+  if (
+    linked.data &&
+    !candidates.some((item) => item.id === linked.data.item.id)
+  )
+    candidates.push(linked.data.item);
+  const originals = candidates.filter(
+    (original) =>
+      !original.burned &&
+      original.owner.toLowerCase() === address?.toLowerCase() &&
+      original.collection.toLowerCase() === deployment?.monsters &&
+      original.engine.toLowerCase() === deployment?.engine
+  );
+  const selectedOriginal = originals.find(
+    (original) => original.tokenId === requestedOriginal
+  );
+  useEffect(() => {
+    const key = selectedOriginal && `${address}:${selectedOriginal.id}`;
+    if (!key || scrolledOriginal.current === key || !section.current) return;
+    scrolledOriginal.current = key;
+    section.current.scrollIntoView({ block: "start" });
+  }, [address, selectedOriginal?.id]);
   if (!address || !deployment) return null;
-  const originals =
-    query.data?.pages
-      .flatMap((page) => page.items)
-      .filter(
-        (original) =>
-          !original.burned &&
-          original.owner.toLowerCase() === address.toLowerCase() &&
-          original.collection.toLowerCase() === deployment.monsters &&
-          original.engine.toLowerCase() === deployment.engine
-      ) ?? [];
   const groups = new Map<string, BoosterOriginal[]>();
   for (const original of originals) {
     const members = groups.get(original.pack.id) ?? [];
@@ -77,9 +109,16 @@ export function BoosterClaimPacks({
     groups.set(original.pack.id, members);
   }
   const paused = query.data?.pages.some((page) => page.requestsPaused) ?? true;
-  if (!query.isPending && !query.error && !originals.length) return null;
+  if (
+    !query.isPending &&
+    !query.error &&
+    !originals.length &&
+    !requestedOriginal
+  )
+    return null;
   return (
     <section
+      ref={section}
       id="daily-packs"
       aria-labelledby="daily-packs-heading"
       className="mt-12 scroll-mt-24 border-t border-line pt-10"
@@ -110,6 +149,29 @@ export function BoosterClaimPacks({
           </button>
         </p>
       )}
+      {requestedOriginal &&
+        !selectedOriginal &&
+        (linked.isPending ? (
+          <YunipalsLoader
+            className="mt-5"
+            label={`Finding original #${requestedOriginal}…`}
+          />
+        ) : (
+          <p role="alert" className="mt-5 text-sm text-muted">
+            {linked.error
+              ? "The linked original could not be loaded. Choose an original below or try again."
+              : `Original #${requestedOriginal} is not in this wallet’s collection. Connect its owner’s wallet or choose one of your originals below.`}
+            {linked.error && (
+              <button
+                type="button"
+                className="ml-2 font-bold underline"
+                onClick={() => void linked.refetch()}
+              >
+                Try again
+              </button>
+            )}
+          </p>
+        ))}
       {clock.error && (
         <p role="alert" className="mt-5">
           Current Base time is unavailable. Claim availability will update when
@@ -118,11 +180,8 @@ export function BoosterClaimPacks({
       )}
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {[...groups].map(([groupId, members]) => {
-          const selectionKey = `${address.toLowerCase()}:${groupId}`;
           const original =
-            members.find(
-              (item) => item.id === selectedOriginals[selectionKey]
-            ) ??
+            members.find((item) => item.tokenId === requestedOriginal) ??
             members.find(
               (item) =>
                 !item.pendingRequest &&
@@ -172,24 +231,41 @@ export function BoosterClaimPacks({
                       id={`daily-original-${original.pack.packTypeId}`}
                       value={original.id}
                       className="w-full"
-                      onValueChange={(id) =>
-                        setSelectedOriginals((selected) => ({
-                          ...selected,
-                          [selectionKey]: id
-                        }))
-                      }
+                      onValueChange={(id) => {
+                        const selected = members.find((item) => item.id === id);
+                        if (!selected) return;
+                        setSearch(
+                          (previous) => {
+                            const next = new URLSearchParams(previous);
+                            next.set("original", selected.tokenId);
+                            return next;
+                          },
+                          { replace: true, preventScrollReset: true }
+                        );
+                      }}
                     >
                       {members.map((item) => {
                         const available = accruedBoosterCredits(
                           item,
                           now
                         ).claimable;
+                        const label = `Original #${item.tokenId} · ${
+                          item.pendingRequest
+                            ? "Reveal pending"
+                            : `${available} saved ${available === 1n ? "pull" : "pulls"}`
+                        }`;
                         return (
-                          <SelectItem key={item.id} value={item.id}>
-                            Original #{item.tokenId} ·{" "}
-                            {item.pendingRequest
-                              ? "Reveal pending"
-                              : `${available} saved ${available === 1n ? "pull" : "pulls"}`}
+                          <SelectItem
+                            key={item.id}
+                            value={item.id}
+                            textValue={label}
+                          >
+                            <span className="flex min-w-0 items-center gap-3 text-left">
+                              <BoosterOriginalThumbnail original={item} />
+                              <span className="min-w-0 whitespace-normal">
+                                {label}
+                              </span>
+                            </span>
                           </SelectItem>
                         );
                       })}
@@ -257,7 +333,8 @@ export function BoosterClaimPacks({
                         disabled={
                           paused ||
                           clock.data === undefined ||
-                          Boolean(clock.error)
+                          Boolean(clock.error) ||
+                          Boolean(requestedOriginal && linked.isPending)
                         }
                         onConfirmed={onConfirmed}
                         onSubmitted={onSubmitted}

@@ -71,12 +71,12 @@ export function BoosterOriginalControls({
               Pending NFTs follow this original’s owner.
             </p>
           )}
-          {own && (
+          {(own || !address) && (
             <Link
-              to="/boosters#daily-packs"
-              className="inline-block font-bold text-grape underline"
+              to={`/boosters?original=${original.tokenId}#daily-packs`}
+              className="inline-block rounded-full bg-ink px-5 py-3 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
             >
-              Open daily packs
+              {address ? "Open daily pack" : "Connect to open daily pack"}
             </Link>
           )}
           {BigInt(original.remaining) === 0n && (
