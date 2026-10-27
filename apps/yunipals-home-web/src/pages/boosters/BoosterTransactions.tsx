@@ -3,7 +3,15 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAccount, usePublicClient } from "wagmi";
 import { parseEventLogs, type Hex } from "viem";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import {
+  ArrowUpRight,
+  ChevronDown,
+  Gift,
+  Layers3,
+  Play,
+  X
+} from "lucide-react";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
   boosterTransactionExpectation,
@@ -36,14 +44,14 @@ type TrackedTransaction = StoredBoosterTransaction & {
 
 function SubmittedOpening({
   hash,
-  quantity,
   status,
+  showRetry,
   onClose,
   onRetry
 }: {
   hash: string;
-  quantity: number;
   status: string;
+  showRetry: boolean;
   onClose: () => void;
   onRetry: () => void;
 }) {
@@ -69,17 +77,26 @@ function SubmittedOpening({
         onClose();
       }}
     >
-      <h2 id={titleId} className="font-display text-2xl">
-        {quantity > 1 ? `Your ${quantity} packs` : "Your pack"}
-      </h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 id={titleId} className="font-display text-2xl">
+          Your pack
+        </h2>
+        <button
+          type="button"
+          aria-label="Close pack"
+          onClick={onClose}
+          className="rounded-full p-2 focus-visible:ring-2 focus-visible:ring-grape"
+        >
+          <X size={22} aria-hidden="true" />
+        </button>
+      </div>
       <YunipalsLoader
         className="mt-6"
         label="Getting your pack ready"
         detail={status}
       />
       <p className="mt-4 text-sm text-muted">
-        Your transaction is saved. You can close this and return from recent
-        pack transactions. Reopening never submits another transaction.
+        Safe to close. Your opening is saved.
       </p>
       <a
         href={`https://basescan.org/tx/${hash}`}
@@ -89,23 +106,17 @@ function SubmittedOpening({
       >
         View transaction
       </a>
-      <BoosterOpeningShare hash={hash} />
-      <div className="mt-5 flex gap-3">
-        <button
-          type="button"
-          className="rounded-full border border-line px-4 py-2 text-sm font-bold"
-          onClick={onRetry}
-        >
-          Refresh status
-        </button>
-        <button
-          type="button"
-          className="rounded-full bg-grape px-4 py-2 text-sm font-bold text-white"
-          onClick={onClose}
-        >
-          Close pack
-        </button>
-      </div>
+      {showRetry && (
+        <div className="mt-5">
+          <button
+            type="button"
+            className="rounded-full border border-line px-4 py-2 text-sm font-bold"
+            onClick={onRetry}
+          >
+            Refresh status
+          </button>
+        </div>
+      )}
     </dialog>,
     document.body
   );
@@ -113,10 +124,12 @@ function SubmittedOpening({
 
 export function BoosterTransactions({
   autoOpenHash = null,
-  onOpeningClosed
+  onOpeningClosed,
+  showHistory = true
 }: {
   autoOpenHash?: Hex | null;
   onOpeningClosed?: () => void;
+  showHistory?: boolean;
 }) {
   const { address } = useAccount();
   const [search, setSearch] = useSearchParams();
@@ -197,7 +210,7 @@ export function BoosterTransactions({
   });
   const refund = useQuery({
     queryKey: [...boosterQueryKey, "refund", address],
-    enabled: Boolean(address && client && deployment),
+    enabled: Boolean(showHistory && address && client && deployment),
     refetchInterval: 15000,
     queryFn: () =>
       client!.readContract({
@@ -209,7 +222,7 @@ export function BoosterTransactions({
   });
   const query = useQuery({
     queryKey: [...boosterQueryKey, "transactions", deployment?.engine, address],
-    enabled: Boolean(address && client && deployment),
+    enabled: Boolean(showHistory && address && client && deployment),
     refetchInterval: 4000,
     queryFn: async (): Promise<TrackedTransaction[]> => {
       if (!address || !client || !deployment) return [];
@@ -305,106 +318,121 @@ export function BoosterTransactions({
     (!address || (!query.data?.length && !refund.data && !query.error))
   )
     return null;
+  const history =
+    query.data?.filter((row) => row.kind === "open" || row.kind === "claim") ??
+    [];
   return (
-    <div
-      className="mt-7 rounded-card border border-line bg-white p-5"
-      aria-live="polite"
-    >
-      <h3 className="font-bold">Recent pack transactions</h3>
-      {query.error && (
-        <p role="alert" className="mt-3 text-sm">
-          Transaction status is temporarily unavailable. Your submitted requests
-          remain onchain.
-        </p>
-      )}
-      {refund.data !== undefined && refund.data > 0n && (
-        <div className="mt-3">
-          <BoosterActionButton action={{ kind: "refund" }}>
-            Withdraw unused ETH
-          </BoosterActionButton>
-        </div>
-      )}
-      <ul className="mt-3 space-y-3">
-        {query.data?.map((row) => {
-          const total = row.requests?.length ?? 0;
-          const terminal =
-            row.status === "Revealed" || row.status === "Partly revealed";
-          const quantity = row.requests?.[0]?.quantity ?? 1;
-          return (
-            <li
-              key={row.hash}
-              className="flex flex-wrap items-center gap-3 text-sm"
-            >
-              <a
-                href={`https://basescan.org/tx/${row.hash}`}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                {row.kind === "approval"
-                  ? "Approval"
-                  : row.kind === "claim"
-                    ? "Daily claim"
-                    : row.kind === "open"
-                      ? total > 1
-                        ? `${total} pack opening`
-                        : "Pack opening"
-                      : "Transaction"}
-              </a>
-              <span>{row.status}</span>
-              {total > 1 && (
-                <span className="text-muted">
-                  {row.completed ?? 0} of {total} packs revealed
-                  {row.forfeited ? ` · ${row.forfeited} forfeited` : ""}
+    <>
+      {showHistory &&
+        (history.length > 0 || query.error || Boolean(refund.data)) && (
+          <details className="group mt-8 rounded-2xl border border-line bg-white/80">
+            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape [&::-webkit-details-marker]:hidden">
+              <Layers3 size={18} className="text-grape" aria-hidden="true" />
+              Your openings
+              {history.length > 0 && (
+                <span className="rounded-full bg-lavender/50 px-2 py-0.5 text-xs text-grape">
+                  {history.length}
                 </span>
               )}
-              {total > 0 && row.status !== "Forfeited" && (
-                <button
-                  type="button"
-                  className="rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape"
-                  onClick={() =>
-                    setOpening({ hash: row.hash, wallet: address! })
-                  }
-                >
-                  {terminal
-                    ? row.kind === "claim"
-                      ? `Open daily pack · ${quantity} pulls`
-                      : total > 1
-                        ? `View ${row.completed} cards`
-                        : "View card"
-                    : "View pack progress"}
-                </button>
-              )}
-              {total > 0 && <BoosterOpeningShare hash={row.hash} />}
-              {row.requests?.length === 1 && row.status === "Revealed" && (
-                <Link
-                  className="font-bold underline"
-                  to={`/monsters/${deployment?.monsters}/${row.requests[0].originalId}`}
-                >
-                  View original
-                </Link>
-              )}
-              {row.requests?.map((created, index) =>
-                row.states?.[index]?.status === 2 ? (
-                  <BoosterActionButton
-                    key={created.requestId}
-                    action={{ kind: "recover", requestId: created.requestId }}
+              <ChevronDown
+                size={18}
+                aria-hidden="true"
+                className="ml-auto text-muted transition group-open:rotate-180"
+              />
+            </summary>
+            {query.error && (
+              <p role="alert" className="px-5 pb-4 text-sm text-muted">
+                Opening history is temporarily unavailable. Your openings are
+                saved.
+              </p>
+            )}
+            {refund.data !== undefined && refund.data > 0n && (
+              <div className="px-5 pb-4">
+                <BoosterActionButton action={{ kind: "refund" }}>
+                  Withdraw unused ETH
+                </BoosterActionButton>
+              </div>
+            )}
+            <ul className="divide-y divide-line border-t border-line px-5">
+              {history.map((row) => {
+                const total = row.requests?.length ?? 0;
+                const ready =
+                  row.status === "Revealed" || row.status === "Partly revealed";
+                const quantity =
+                  row.requests?.reduce(
+                    (sum, request) => sum + request.quantity,
+                    0
+                  ) ??
+                  row.quantity ??
+                  1;
+                const label =
+                  row.kind === "claim" ? "Daily cards" : "Booster opening";
+                const Icon = row.kind === "claim" ? Gift : Layers3;
+                return (
+                  <li
+                    key={row.hash}
+                    className="flex flex-wrap items-center gap-3 py-4 text-sm"
                   >
-                    {total > 1
-                      ? `Finish reveal · pack ${index + 1}`
-                      : "Finish reveal"}
-                  </BoosterActionButton>
-                ) : null
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-lavender/35 text-grape">
+                      <Icon size={20} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold">{label}</p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {quantity} {quantity === 1 ? "card" : "cards"} ·{" "}
+                        {ready ? "Ready" : row.status}
+                      </p>
+                    </div>
+                    {total > 0 && row.status !== "Forfeited" && (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-2 rounded-full bg-lavender/40 px-4 py-2 font-bold text-grape transition hover:bg-lavender/70 focus-visible:ring-2 focus-visible:ring-grape"
+                        onClick={() =>
+                          setOpening({ hash: row.hash, wallet: address! })
+                        }
+                        aria-label={`${ready ? "Replay" : "View"} ${quantity}-card ${label.toLowerCase()}`}
+                      >
+                        <Play size={14} aria-hidden="true" />
+                        {ready ? "Replay" : "View"}
+                      </button>
+                    )}
+                    {total > 0 && (
+                      <BoosterOpeningShare hash={row.hash} compact />
+                    )}
+                    <a
+                      href={`https://basescan.org/tx/${row.hash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="View transaction on BaseScan"
+                      title="View transaction"
+                      className="rounded-full p-2.5 text-muted hover:bg-lavender/40 hover:text-grape focus-visible:ring-2 focus-visible:ring-grape"
+                    >
+                      <ArrowUpRight size={17} aria-hidden="true" />
+                    </a>
+                    {row.requests?.map((created, index) =>
+                      row.states?.[index]?.status === 2 ? (
+                        <BoosterActionButton
+                          key={created.requestId}
+                          action={{
+                            kind: "recover",
+                            requestId: created.requestId
+                          }}
+                        >
+                          Finish reveal{total > 1 ? ` · ${index + 1}` : ""}
+                        </BoosterActionButton>
+                      ) : null
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
+        )}
       {selectedHash && !selected.data?.requests && (
         <SubmittedOpening
           key={selectedHash}
           hash={selectedHash}
-          quantity={stored?.expectedRequestCount ?? 1}
+          showRetry={Boolean(selected.error)}
           status={
             selected.error
               ? "Pack transaction details are temporarily unavailable. No cards can be shown until this transaction is verified."
@@ -424,6 +452,6 @@ export function BoosterTransactions({
           onClose={closeOpening}
         />
       )}
-    </div>
+    </>
   );
 }

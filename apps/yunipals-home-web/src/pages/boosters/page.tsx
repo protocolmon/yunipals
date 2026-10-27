@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 import {
@@ -18,6 +18,18 @@ import { BoosterBirthDetails } from "./BoosterBirthDetails";
 import { BoosterRecentOpenings } from "./BoosterRecentOpenings";
 
 export function BoosterPage() {
+  const [search] = useSearchParams();
+  const original = search.get("original");
+  const deployment = boosterAddresses();
+  if (
+    deployment &&
+    original &&
+    /^(0|[1-9][0-9]{0,77})$/.test(original) &&
+    !search.has("opening")
+  )
+    return (
+      <Navigate replace to={`/monsters/${deployment.monsters}/${original}`} />
+    );
   return (
     <main>
       <BoosterPackSection />
@@ -60,8 +72,11 @@ export function BoosterMonsterPage() {
   });
   return (
     <main className="mx-auto min-h-[65vh] max-w-5xl px-4 py-12">
-      <Link to="/boosters" className="text-sm font-bold underline">
-        Back to booster packs
+      <Link
+        to="/collection?edition=tcg#collection"
+        className="text-sm font-bold underline"
+      >
+        Back to collection
       </Link>
       {!enabled && (
         <p className="mt-5">Booster collection details are unavailable.</p>

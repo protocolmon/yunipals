@@ -109,6 +109,14 @@ The temporary collection-only smoke preset is not the canonical application.
 Generic self-hosted builds remain `pnpm build` (`vite build` into `dist`).
 See [the canonical build guide](../../docs/boosters/mainnet-launch/canonical-www-build-2026-10-22.txt).
 
+Daily cards open from Collection. Connected owners see a gift notification with
+their available originals and a gift badge directly on each eligible original.
+The same action is available on the original's detail page. Claims use a compact
+fee review, then continue automatically into the pack opening. The Packs page
+contains purchases, recent public openings and FAQs; personal opening history
+is collapsed by default. Existing replay links remain valid, and older daily-pack
+links redirect to the relevant original.
+
 ## Optional Mixpanel analytics
 
 Analytics is disabled by default and separate from trading-term acceptance.

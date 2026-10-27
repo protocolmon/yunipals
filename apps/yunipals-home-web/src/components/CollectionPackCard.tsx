@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 
 import { ChainBadge } from "@/components/ui/ChainBadge";
+import { CollectionDailyClaimBadge } from "@/components/CollectionDailyPulls";
 import { packGridTraits } from "@/lib/boosterCollectionGrid";
 import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 
@@ -51,6 +52,7 @@ export function CollectionPackCard({ monster }: { monster: BoosterMonster }) {
           </div>
         </div>
       </Link>
+      <CollectionDailyClaimBadge monster={monster} />
     </article>
   );
 }

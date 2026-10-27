@@ -22,6 +22,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { environment } from "@/environment";
 import { CollectionPackCard } from "@/components/CollectionPackCard";
+import { CollectionDailyPulls } from "@/components/CollectionDailyPulls";
 import { CollectionPackPagination } from "@/components/CollectionPackPagination";
 import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
 import {
@@ -587,6 +588,9 @@ function YunipalsCollectorPage() {
                 )}
               </p>
             </div>
+            {isOwnCollection && environment.boostersEnabled && (
+              <CollectionDailyPulls />
+            )}
             {isOwnCollection && (
               <div
                 className="inline-flex self-start rounded-full border border-line bg-line/30 p-1 sm:self-auto"

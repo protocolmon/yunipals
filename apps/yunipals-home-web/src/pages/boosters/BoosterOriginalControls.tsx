@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, usePublicClient } from "wagmi";
 import {
@@ -7,6 +6,7 @@ import {
 } from "@protopals/yunipals-market-core/boosters";
 import { boosterQueryKey, fetchBoosterRequest } from "@/lib/boosters";
 import { formatInteger } from "@/lib/format";
+import { BoosterDailyClaimButton } from "./BoosterDailyClaimButton";
 
 export function BoosterOriginalControls({
   original
@@ -71,14 +71,7 @@ export function BoosterOriginalControls({
               Pending NFTs follow this original’s owner.
             </p>
           )}
-          {(own || !address) && (
-            <Link
-              to={`/boosters?original=${original.tokenId}#daily-packs`}
-              className="inline-block rounded-full bg-ink px-5 py-3 font-bold text-white focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
-            >
-              {address ? "Open daily pack" : "Connect to open daily pack"}
-            </Link>
-          )}
+          {(own || !address) && <BoosterDailyClaimButton original={original} />}
           {BigInt(original.remaining) === 0n && (
             <p className="font-bold text-success">
               Every variant has been minted.

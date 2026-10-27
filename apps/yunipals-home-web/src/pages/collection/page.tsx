@@ -106,6 +106,7 @@ import {
 } from "@/lib/yunipalsIndexer";
 
 import { CollectionPackCard } from "@/components/CollectionPackCard";
+import { CollectionDailyPulls } from "@/components/CollectionDailyPulls";
 import { CollectionPackPagination } from "@/components/CollectionPackPagination";
 import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
 import {
@@ -947,6 +948,7 @@ function CollectionExplorer() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {environment.boostersEnabled && <CollectionDailyPulls />}
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}

@@ -15,7 +15,6 @@ import { environment } from "@/environment";
 import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
-import { BoosterClaimPacks } from "./BoosterClaimPacks";
 
 export function BoosterPackSection() {
   const { address } = useAccount();
@@ -236,7 +235,6 @@ export function BoosterPackSection() {
             </article>
           ))}
         </div>
-        {deployment && <BoosterClaimPacks onSubmitted={onSubmitted} />}
         {deployment && (
           <BoosterTransactions
             autoOpenHash={

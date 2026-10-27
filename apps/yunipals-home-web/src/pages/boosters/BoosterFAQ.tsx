@@ -11,7 +11,7 @@ const questions = [
   },
   {
     question: "Can I open more than one pack at once?",
-    answer: `Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total ${paymentSymbol} price and randomness fee. Where supported, sign a gas-free approval that’s included in the opening transaction. A separate, reusable approval is also available.`
+    answer: `Use the quantity selector to choose how many packs to buy in one opening transaction. You’ll unwrap one pack with all your cards inside. Each purchased pack gives you a separate original with its own daily mints and collection progress. The review shows the total ${paymentSymbol} price and randomness fee. Where supported, sign a gas-free approval that’s included in the opening transaction.`
   },
   {
     question: "How much does it cost?",
@@ -20,7 +20,7 @@ const questions = [
   {
     question: "Do I have to mint every day?",
     answer:
-      "No. Your first extra mint becomes available 24 hours after your original is revealed. After that, you earn one every 24 hours. Unused mints stack up as a daily pack on this page. Open it like a normal pack: saved mints become multiple pulls, up to seven per opening. Any extra pulls stay saved. Your cards appear in Collection. Daily mints continue until you’ve collected all 264 variants, including your original. There’s no paid speed boost."
+      "No. Your first extra mint becomes available 24 hours after your original is revealed. After that, you earn one every 24 hours. Saved mints appear as a gift badge on your original in Collection. Tap the badge to open up to seven saved cards together in one pack. You can also open them from the original’s detail page. Any extra pulls stay saved. Daily mints continue until you’ve collected all 264 variants, including your original. There’s no paid speed boost."
   },
   {
     question: "Can I get duplicates?",
@@ -40,7 +40,7 @@ const questions = [
   {
     question: "Why is my card image still loading?",
     answer:
-      "Your Yunipal is minted when its reveal completes. Artwork for a new variant may still be in preparation. Its image updates automatically when it’s ready."
+      "All 264 variant artworks are already prepared. After the random draw completes, your cards load automatically. A slow connection can briefly delay the image; it doesn’t affect your NFT."
   },
   {
     question: "Can I use these Yunipals in Arena or the marketplace?",

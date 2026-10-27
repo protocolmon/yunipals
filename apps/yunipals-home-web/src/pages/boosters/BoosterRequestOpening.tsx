@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { useQueries } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { X } from "lucide-react";
-import { Link } from "react-router-dom";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
   combinedBoosterPulls,
@@ -21,7 +20,6 @@ import {
 import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterActionButton } from "./BoosterActionButton";
-import { BoosterOpeningShare } from "./BoosterOpeningShare";
 
 type Props = { onClose: () => void } & (
   | { requestId: string; requests?: never }
@@ -184,7 +182,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
     >
       <div className="flex items-start justify-between gap-4">
         <h2 id={titleId} className="font-display text-2xl">
-          {entries.length > 1 ? `Your ${entries.length} packs` : "Your pack"}
+          Your pack
         </h2>
         <button
           type="button"
@@ -213,14 +211,16 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
         }
         detail={
           loadingRequests
-            ? "Transaction confirmed. Syncing your pack requests…"
+            ? "Finding your cards…"
             : forfeited === entries.length
               ? "These requests were forfeited because their originals were burned. No cards were minted."
               : pulls?.length
                 ? `${pulls.length} revealed ${pulls.length === 1 ? "card is" : "cards are"} ready. ${forfeited} ${forfeited === 1 ? "request was" : "requests were"} forfeited because an original was burned.`
                 : terminal
-                  ? "Your Yunipals are minted. Preparing all of your cards…"
-                  : `${completed} of ${entries.length} ${entries.length === 1 ? "pack is" : "packs are"} revealed. ${recovery ? "Finish the requests below to continue." : "Waiting for Chainlink randomness. You can close this and return from recent pack transactions."}`
+                  ? "Your cards are ready. Loading their artwork…"
+                  : recovery
+                    ? "Finish the reveal below to continue."
+                    : "Waiting for the random draw. Your opening will start automatically."
         }
       />
       {errored && (
@@ -260,19 +260,8 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
         </button>
       )}
       <p className="mt-5 text-sm text-muted">
-        All completed requests open together in one wrapper. Reopening never
-        requests another mint.
+        Safe to close. Your opening is saved.
       </p>
-      {requests?.[0] && (
-        <BoosterOpeningShare hash={requests[0].transactionHash} />
-      )}
-      <Link
-        to="/collection"
-        onClick={onClose}
-        className="mt-5 inline-block font-bold text-grape underline"
-      >
-        View collection
-      </Link>
     </dialog>,
     document.body
   );

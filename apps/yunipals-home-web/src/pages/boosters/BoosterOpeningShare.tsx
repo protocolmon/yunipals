@@ -1,19 +1,45 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Check, Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function BoosterOpeningShare({ hash }: { hash: string }) {
+export function BoosterOpeningShare({
+  hash,
+  compact = false
+}: {
+  hash: string;
+  compact?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   if (!/^0x[0-9a-f]{64}$/i.test(hash)) return null;
   const path = `/boosters?opening=${hash.toLowerCase()}`;
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-      <Link to={path} reloadDocument className="font-bold text-grape underline">
-        Replay opening
-      </Link>
+    <div
+      className={cn(
+        "flex flex-wrap items-center gap-3 text-sm",
+        !compact && "mt-4"
+      )}
+    >
+      {!compact && (
+        <Link
+          to={path}
+          reloadDocument
+          className="font-bold text-grape underline"
+        >
+          Replay opening
+        </Link>
+      )}
       <button
         type="button"
-        className="rounded-full border border-line px-4 py-2 font-bold focus-visible:ring-2 focus-visible:ring-grape"
+        className={cn(
+          "rounded-full font-bold focus-visible:ring-2 focus-visible:ring-grape",
+          compact
+            ? "p-2.5 text-muted hover:bg-lavender/40 hover:text-grape"
+            : "border border-line px-4 py-2"
+        )}
+        aria-label={copied ? "Opening link copied" : "Copy opening link"}
+        title={copied ? "Link copied" : "Copy opening link"}
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(
@@ -26,7 +52,17 @@ export function BoosterOpeningShare({ hash }: { hash: string }) {
           }
         }}
       >
-        {copied ? "Link copied" : "Copy opening link"}
+        {compact ? (
+          copied ? (
+            <Check size={17} aria-hidden="true" />
+          ) : (
+            <Copy size={17} aria-hidden="true" />
+          )
+        ) : copied ? (
+          "Link copied"
+        ) : (
+          "Copy opening link"
+        )}
       </button>
       {copyFailed && (
         <span role="status" className="text-muted">

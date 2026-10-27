@@ -494,7 +494,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
           >
             {demo
               ? "Demo preview — no NFT is minted."
-              : "Your NFT is already revealed on Base. This opening replays its reveal."}
+              : "Your cards are ready. Let’s see who’s inside."}
           </p>
           {totalCards > 1 && (
             <p
