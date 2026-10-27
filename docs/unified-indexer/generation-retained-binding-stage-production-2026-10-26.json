@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-generation-retained-binding-public-source-stage-v1",
+  "newRuntimeFiles": 2,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "de3292d542fd874ec1b078658e943d31549ab0401b16ec68278e8706cc7afec5",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-native-readiness-generation-retained-binding-v1.manifest.json": "5cd33233ba34f0b9aad32cb8a51689f1b6c7a1969e1a2fafb446d332891cd83f",
+    "ypal-native-readiness-generation-retained-binding-v1.py": "065db44b059a036034a27a8ace3dc08402e1bfc0f4ecf1d40bb4c727a53137c5"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 337
+}

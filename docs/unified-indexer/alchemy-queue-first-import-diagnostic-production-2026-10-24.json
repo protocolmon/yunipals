@@ -1,0 +1,85 @@
+{
+  "format": "yunipals-alchemy-first-import-diagnostic-production-v1",
+  "journalAndLogMetadata": {
+    "databaseWrites": 0,
+    "files": {
+      "qualification-intent.json": {
+        "bytes": 305,
+        "exists": true,
+        "sha256": "ce031317622efba637f6db736996f791eaa40546a0be5a777f6fc1ca039dfb95"
+      },
+      "qualification-result.json": {
+        "exists": false
+      },
+      "qualification.stderr": {
+        "assertionActualType": [],
+        "assertionExpectedType": [],
+        "assertionOperators": [
+          "deepStrictEqual"
+        ],
+        "bytes": 642,
+        "diagnosticTokens": [],
+        "errorClasses": [
+          "AssertionError"
+        ],
+        "evalPositions": [
+          "[eval1]:39:58"
+        ],
+        "exists": true,
+        "guardCodes": [],
+        "nodeErrorCodes": [
+          "ERR_ASSERTION"
+        ],
+        "sha256": "072e82f09620e76757be6763a2e036838dba9673ec2161574bf416624240eed4"
+      },
+      "qualification.stdout": {
+        "bytes": 0,
+        "exists": true,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "format": "yunipals-alchemy-inactive-import-diagnostic-v1",
+    "providerCalls": 0,
+    "rawLogsExported": false,
+    "readOnly": true,
+    "serviceActions": 0
+  },
+  "numericCounters": {
+    "counterNumericOccurrences": {
+      "database": [
+        1,
+        0,
+        1,
+        0
+      ],
+      "listen": [
+        0,
+        0,
+        0
+      ],
+      "network": [
+        0,
+        0,
+        0
+      ],
+      "pool": [
+        0,
+        0,
+        0
+      ],
+      "spawn": [
+        0,
+        0,
+        0
+      ]
+    },
+    "databaseWrites": 0,
+    "format": "yunipals-alchemy-import-counter-diagnostic-v1",
+    "providerCalls": 0,
+    "rawLogsExported": false,
+    "serviceActions": 0
+  },
+  "rawLogsExported": false,
+  "runtimeSelected": false,
+  "successorImportExecuted": false
+}

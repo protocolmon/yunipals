@@ -1,0 +1,79 @@
+{
+  "format": "yunipals-arena-modern-production-artifact-acceptance-v1",
+  "checkedAt": "2026-10-23T00:09:11Z",
+  "scope": "Actual production-host build, fresh inactive install, and constructor-only qualification in retained contexts.",
+  "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "sourceFiles": 1796,
+  "runtimeEntries": 60922,
+  "buildProofSha256": "a2b353f788d5d6a15408c3ee9cc3e46d100a9fd6a0c4b90230fd9f53091bc01e",
+  "installResultSha256": "3921ea98422778333a21068aadab016af5e6e4907b8c7b9deef7c73e14d531ad",
+  "constructorOperatorSha256": "527701897b15ccf25c67aa372013f76405308b2b300a565d96271ba15f0a6631",
+  "plan": {
+    "staged": true,
+    "planSha256": "490e5e7620a88a48e34eb4d25ccd93f7a06d9e67c27dd7eed6f293923c7fcf2a",
+    "installResultSha256": "3921ea98422778333a21068aadab016af5e6e4907b8c7b9deef7c73e14d531ad",
+    "constructorInvocations": 0
+  },
+  "api": {
+    "allClosed": true,
+    "completed": true,
+    "mediaQualified": false,
+    "mode": "qualify-api",
+    "poolHash": "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c",
+    "privateInputsUnchanged": true,
+    "qualified": true,
+    "qualifiedContexts": 1,
+    "rawValuesExported": false,
+    "reportSha256": "54cd90c8226bcdf5491895c07886451b02640b890d03fd59c3dc41defa46f70f",
+    "reviewHash": "020a148c6b22c53c70d68722529e5fd8854d42945b631af6974b6cd903e7a1d8",
+    "rpcReadCalls": 1,
+    "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+    "schemaWrites": 0,
+    "scope": "api",
+    "serviceJobs": 0,
+    "sourceSelectionsChanged": 0
+  },
+  "allEight": {
+    "allClosed": true,
+    "completed": true,
+    "mediaQualified": false,
+    "mode": "qualify-all-eight",
+    "poolHash": "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c",
+    "privateInputsUnchanged": true,
+    "qualified": true,
+    "qualifiedContexts": 8,
+    "rawValuesExported": false,
+    "reportSha256": "b7f8a3deac84551182f9fc02b3b9e36557b332d603810e1aa81e7441945b5162",
+    "reviewHash": "dfeb2b707e010d548251c12253a462bbe4d3e1367b97b41bb15a5e715a2d3af6",
+    "rpcReadCalls": 8,
+    "rulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+    "schemaWrites": 0,
+    "scope": "all-eight",
+    "serviceJobs": 0,
+    "sourceSelectionsChanged": 0
+  },
+  "qualificationTransport": {
+    "source": "ops/unified-indexer-transition/arena-modern-qualification-driver-20261023.py",
+    "sha256": "c2742746de8ed60e8c9ba9aaa268a8736963139d6811e359df76cd2f79192eaa"
+  },
+  "unchanged": {
+    "originalServiceActors": 8,
+    "serviceDefinitions": true,
+    "privateInputs": true,
+    "twelveCommittedSchemaMarkers": true,
+    "sourceMode": "legacy",
+    "sourceSelections": 0
+  },
+  "notProvenByThisCheck": [
+    "Dedicated production role authentication and effective grants",
+    "Native source readiness and identity adoption",
+    "Worker startup or API traffic cutover",
+    "Candidate media assembly or external provider execution"
+  ],
+  "privateContextReportsRetainedOnHostOnly": true,
+  "paidAiOrMediaCalls": 0,
+  "totalBoundedBaseReadRpcCalls": 9,
+  "databaseWrites": 0,
+  "sourceSelectionsChanged": 0,
+  "runtimeActivated": false
+}

@@ -1,0 +1,24 @@
+# HELD7 source and durable launcher
+
+This packet preserves the exact reviewed driver and launcher used by Root for one HELD7 attempt. It includes portable source controls and the actual successful HELD6 reconciliation envelope. It creates no input, launches no job and supplies no commit authority.
+
+The public driver is `ops/unified-indexer-transition/ypal-cont5-held-qualification-owner-v5.py`, SHA `8e0cf675f94f64fa408f751494141714b9e784f512e46470c63238d0ab6c41db`. Its root-only source path was `/tmp/yunipals-root-cont5-held-rollback-qualification-20261026-7.py`. The public launcher is `ypal-cont5-held7-detached-owner-v1.py`, SHA `af51e75ed01df39fa54ab7d76b128765c4d2f289f32d9273800bf22d81959a0d`; its root-only source path was `/tmp/yunipals-root-cont5-held7-detached-20261026.py`. These public copies are byte-identical to those sources. Existing sources and journals remain unchanged.
+
+The driver retains the genuine caller5 qualifier, authority qualification validator, full metadata and Source predicates, original SQL parent and callback, 90-second approval lifetime, five-second reserve and 120-second dependency limit. A genuine read-only inspection warms the same cache instance before the qualifier. Global call profiling, live tracing and SQL parent/Popen/pipe wrappers are absent. Coarse phase timestamps and the existing passive original-run diagnostic remain. The `ba7e2570` witness is invoked only after the original outer failure; a witness refusal or refusal-save error cannot replace that original failure.
+
+Before a new capture, the driver requires the actual successful reconciliation `23cb35fa68f1c728eb0d1c7e0e90238755832d434875002c1b849664f901c75d`, its nine private proof nodes, retained failed-HELD6 proof graph, all six accepted baseline files, all five failed capture files and their protected inode/hash frames. The accepted construct-only3 baseline remains `2935d53ffa101664c882d93dce210f08a23a393196be36dcefe9044c9b51a195`. Historical cadence evidence is not reused as current or approval authority. If the qualifier succeeds, the driver authenticates its actual six authority audit files and opened/prepared/callback chain; it creates no substitute legacy observer metrics.
+
+`ypal-cont5-held6-reconciliation-result-fixture.json` is the canonical scalar/hash envelope copied from the existing `docs/unified-indexer/cont5-held6-full-reconciliation-production-2026-10-26.json`. Its `resultSha256` is the digest of the original envelope without that added field; its complete fixture file SHA is `7e6f881f5719fa63f024477d5dea174ba1465263c0d070f1fd5589a3973328eb`. It contains no raw private proof rows, credentials or environment contents. The tests authenticate the public canonical envelope and use explicit private I/O fixtures for its protected proof graph.
+
+The launcher retains the reviewed detached-process engine. It first renders the exact driver payload through that driver's real local gates. One exclusive launch intent owns a regular stdin payload file and private regular stdout/stderr files. A PID/start-ticks/boot and FD witness identifies the worker. Unknown launch outcomes never authorize replay. Read-only inspection and result recovery accept only the actual protected result from the fixed operation audit; worker exit or output cannot imply success. The launcher grants no new current, timing or transaction authority.
+
+Run the portable controls from any working directory:
+
+```sh
+python3 /path/to/repository/ops/unified-indexer-transition/ypal-cont5-held-qualification-owner-v5.test.py
+python3 /path/to/repository/ops/unified-indexer-transition/ypal-cont5-held7-detached-owner-v1.test.py
+```
+
+The driver controls pass 10 tests and the launcher controls pass 8. They read repository source and public fixtures, not `/tmp` production results. Their temporary files are owned test fixtures. Local launcher children execute only a short sleep to test real regular-file FD and process-epoch observations; no HELD7 payload or SSH command executes. Private catalog, metadata, Source, SQL and receipt observations remain explicit fixtures. Source controls do not qualify production rollback.
+
+Root reported one actual launch at 04:53:55 UTC on 2026-10-26, receipt prefix `1bc7ece3`, PID `1677207`, start ticks `6641711122`. The attempt failed at 04:59:53; the actual root result SHA is `ef5fff2e1fed341771ab4c958a6328aed60e4c70f4029184cfd41ec44380676f`. The qualifier phase failed after a reported 77.396 seconds and returned no qualification. The `ba7e2570` witness itself refused with `genuine_complete_CONT5_qualifier_code_and_namespace_required`, so this attempt did not retain its inner error through that witness. The nine witness controls covered local source/namespace fixtures, not this production namespace. No successful HELD7 result or commit successor is included. The actual child/backend/XID and full catalog require a separate reconciliation; no outcome is inferred here.

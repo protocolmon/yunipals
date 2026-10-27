@@ -1,0 +1,34 @@
+{
+  "commit": "b22aa59451d8893da6cccdab3f7c3341ac12b3f7",
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "existingPermissionChanges": 0,
+  "format": "root-publication-inverse1-public-stage-v1",
+  "observedAt": "2026-10-26T07:37:50.264049+00:00",
+  "operatorsInvoked": 0,
+  "productionInputsCreated": 0,
+  "providerCalls": 0,
+  "publicFilesCreated": 5,
+  "publicFilesVerified": 411,
+  "publicationControls": [
+    {
+      "bytes": 98548,
+      "gitBlobSha1": "e0b228567b0fb3919f447939c515e195193390e3",
+      "name": "ypal-ordinary-publication-inverse-v1.stage.json",
+      "repoPath": "ops/unified-indexer-transition/ypal-ordinary-publication-inverse-v1.stage.json",
+      "sha256": "7684dc26f38ff2f080895ed4d562ce1831040ac646a41277dc548f2dffbd71b8"
+    },
+    {
+      "bytes": 3163,
+      "gitBlobSha1": "ea70db96d031fa9a289801a17a8f468e2f4cbd37",
+      "name": "ypal-ordinary-publication-inverse-v1.preparation.json",
+      "repoPath": "ops/unified-indexer-transition/ypal-ordinary-publication-inverse-v1.preparation.json",
+      "sha256": "b70defd0fa89d038e9675e545ed73666f79aa03afb354b92d5c39497b0e25b81"
+    }
+  ],
+  "resultSha256": "15a612ee855f5a0ecccf3321e23e7532af2fa194db138acba82ac0245fe6cb2e",
+  "retainedFilesAndInodesPreserved": 406,
+  "runtimeReadinessClaimed": false,
+  "serviceActions": 0
+}

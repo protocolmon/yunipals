@@ -1,0 +1,38 @@
+{
+  "format": "yunipals-ypal-restored-read-current-context-preparation-v1",
+  "sourceOnly": true,
+  "localControlsPassed": 12,
+  "authorHostActions": 0,
+  "authorProviderCalls": 0,
+  "authorProductionDatabaseActions": 0,
+  "readScope": 143,
+  "sourceProducerSha256": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae",
+  "restoreReceiptSha256": "0ee963f2dd62d2acafa7cc8f9a96a5c95330bd89b16ec9f874eff9e6343029e1",
+  "historicalContextSha256": "f77cb1b93f655f2caa1fedbfd0a6275030320719093d97aa8e607fd7922b30dc",
+  "historicalPlanSha256": "fc79c53da5dc2ce3ccc9ce5c86f69ecfb75f0d25b2836d746f90f29e59ce6e0e",
+  "historicalCatalogSqlSha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991",
+  "actualNew143OrCacheACKInvented": false,
+  "terminalInverseSourceQualified": false,
+  "files": [
+    {
+      "path": "ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+      "bytes": 14593
+    },
+    {
+      "path": "ypal-restored-read-current-context-v1.test.py",
+      "sha256": "4735b85ee2d65308bfb4334571b5c839f640f8bcfc8928400cb2b4ddd0952401",
+      "bytes": 10947
+    },
+    {
+      "path": "ypal-restored-read-current-context-v1.input.json.example",
+      "sha256": "49731f500e5d93eb40c9b595981a865ad2d6d73364305b41e71709bfa3967a51",
+      "bytes": 288
+    },
+    {
+      "path": "ypal-restored-read-current-context-v1.md",
+      "sha256": "046e449b599378d8a4c287b0e90b378df2c78e521e373a61b7b517c599a585f9",
+      "bytes": 4843
+    }
+  ]
+}

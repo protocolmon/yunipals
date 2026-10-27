@@ -1,0 +1,27 @@
+{
+  "authorizationSha256": "22e4e60e050aba6e001439778a9da54e7af0eb9e8f7218e3815494acd7c79e01",
+  "completed": true,
+  "dailySourceCu": 1500000,
+  "dailyTotalCu": 2000000,
+  "exitCode": 0,
+  "foregroundReserveCu": 200000,
+  "format": "yunipals-alchemy-ordinary-financial-production-v1",
+  "observedAt": "2026-10-24T23:19:43.033996+00:00",
+  "phase": "commit",
+  "priorBookingsPreserved": true,
+  "profileExpiryUnchanged": "2026-11-19T18:00:00.000Z",
+  "report": {
+    "committed": true,
+    "phase": "admit",
+    "providerCalls": 0,
+    "receiptSha256": "181cc20ac191a91a5cb32fe203fc287747d8cc8ec1695056b08cbb9301e7829a",
+    "reviewSha256": "82fa7dbb2cef282764ffbbec36addd312b768f444a8b5b75b1b5aa1437914f3b",
+    "serviceActions": 0,
+    "sourceActorQualified": false
+  },
+  "runtimeHandoverCompleted": false,
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutSha256": "6a4757ad582ea4c5f4f48bd0be1033956302d294cbb038113eb575dcd2c7518c",
+  "temporaryCatchupClosed": true
+}

@@ -1,0 +1,280 @@
+{
+  "capture": {
+    "file": "/tmp/yunipals-source-current-health-readonly-20261023.json",
+    "sha256": "22fc839b0ffc15e5336daf4b26770392614cd0409b9e8722705ae9ebc2baca80"
+  },
+  "comparison": {
+    "bnbFetchGaugeAfter": 109997035,
+    "bnbFetchGaugeBefore": 106633083,
+    "bnbFetchGaugeDelta": 3363952,
+    "bnbSyncCompletedBlocksAfter": 102397473,
+    "bnbSyncCompletedBlocksBefore": 95694103,
+    "bnbSyncCompletedBlocksDelta": 6703370,
+    "committedCheckpoints": [
+      {
+        "after": 26249684,
+        "before": 26249684,
+        "chainId": 1,
+        "delta": 0
+      },
+      {
+        "after": 109578145,
+        "before": 101089566,
+        "chainId": 56,
+        "delta": 8488579
+      },
+      {
+        "after": 95990408,
+        "before": 95990408,
+        "chainId": 137,
+        "delta": 0
+      },
+      {
+        "after": 52950938,
+        "before": 52950938,
+        "chainId": 8453,
+        "delta": 0
+      }
+    ],
+    "completedEventsAfter": 27685.0,
+    "completedEventsBefore": 27684.0,
+    "currentCanonicalWitnesses": 0,
+    "frameworkReady": false,
+    "heartbeatAgeSeconds": 4.688,
+    "nativeCoverageInferredFromFetch": false,
+    "observedAt": "2026-10-23T16:57:07.478169+00:00",
+    "priorObservedThrough": "2026-10-23T15:14:23.730791+00:00",
+    "wholeBackfillEtaClaimed": false
+  },
+  "format": "yunipals-production-replay-qualified-health-v1",
+  "interpretation": "The committed BNB checkpoint advanced by 8,488,579 blocks with one additional indexed event. Fetch and historical synchronization counters also advanced. Framework readiness remains false and no current native chain-checkpoint witness exists; committed replay progress does not qualify native consumers for cutover. The main API shallow health and independent launch booster API remain healthy. Source identity, unchanged financial policy, zero restarts and zero OOM events were verified.",
+  "observation": {
+    "actors": {
+      "yunipals-api.service": {
+        "active": true,
+        "cpuUsageNanoseconds": 67601711000,
+        "invocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+        "memoryCurrentBytes": 112377856,
+        "memoryLimitBytes": null,
+        "pid": 1437990,
+        "restarts": 0,
+        "rssBytes": 153931776,
+        "startTicks": 6616203749
+      },
+      "yunipals-booster-api.service": {
+        "active": true,
+        "cpuUsageNanoseconds": 10298687000,
+        "invocation": "7858a3f608874abb935e635abc69c1d4",
+        "memoryCurrentBytes": 52690944,
+        "memoryLimitBytes": 536870912,
+        "pid": 1824982,
+        "restarts": 0,
+        "rssBytes": 97062912,
+        "startTicks": 6618518564
+      },
+      "yunipals-unified-source6-free-v2.service": {
+        "active": true,
+        "cpuUsageNanoseconds": 7113532963000,
+        "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+        "memoryCurrentBytes": 402927616,
+        "memoryLimitBytes": 6442450944,
+        "pid": 716994,
+        "restarts": 0,
+        "rssBytes": 452091904,
+        "startTicks": 6611794751
+      }
+    },
+    "financialExpiresAt": "2026-11-19T18:00:00+00:00",
+    "financialPolicyUnchanged": true,
+    "localBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 2,
+      "indexedBlock": 52992637,
+      "indexedTimestamp": 1792774621,
+      "ready": true,
+      "status": 200
+    },
+    "mainApi": {
+      "healthStatus": "ok",
+      "shallowHealthOnly": true,
+      "status": 200
+    },
+    "native": {
+      "buildId": "bf4939b3ff",
+      "catalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+      "chainStatus": {
+        "checkpointWitnessCounts": [],
+        "statuses": [
+          {
+            "chainId": 1,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 56,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 137,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 8453,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          }
+        ]
+      },
+      "checkpoints": [
+        {
+          "blockTimestamp": 1792690499,
+          "chainId": 1,
+          "completeBlock": 26249684
+        },
+        {
+          "blockTimestamp": 1783869458,
+          "chainId": 56,
+          "completeBlock": 109578145
+        },
+        {
+          "blockTimestamp": 1792690983,
+          "chainId": 137,
+          "completeBlock": 95990408
+        },
+        {
+          "blockTimestamp": 1792691223,
+          "chainId": 8453,
+          "completeBlock": 52950938
+        }
+      ],
+      "completedEvents": 27685.0,
+      "meta": {
+        "build": "bf4939b3ff",
+        "heartbeatAtMs": "1792774618849",
+        "locked": "1",
+        "observedAtMs": "1792774623537",
+        "ready": "0"
+      },
+      "schema": "unified_shadow_20261020_7e7375b0"
+    },
+    "paidAuthority": false,
+    "publicBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 2,
+      "indexedBlock": 52992637,
+      "indexedTimestamp": 1792774621,
+      "ready": true,
+      "status": 200
+    },
+    "resources": {
+      "memoryEvents": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "restarts": 0,
+      "rootFreeBytes": 44966039552,
+      "sourceMemoryBytes": 402923520,
+      "sourceMemoryMaxBytes": 6442450944,
+      "sourceRuntimeMetrics": {
+        "nodejs_external_memory_bytes": 8130688.0,
+        "nodejs_heap_size_total_bytes": 227770368.0,
+        "nodejs_heap_size_used_bytes": 118022032.0,
+        "process_cpu_system_seconds_total": 1190.5280809999997,
+        "process_cpu_user_seconds_total": 5766.596280000001,
+        "process_resident_memory_bytes": 452091904.0
+      }
+    },
+    "rpc": {
+      "base": {
+        "activeUpstreamRequests": 1,
+        "allPaidFallback": false,
+        "chainId": 8453,
+        "evidencePaidCalls": 0,
+        "freeFailures": 14829,
+        "maximumConcurrentUpstreamRequests": 8,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 61,
+        "sourcePaidCalls": 0,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first"
+      },
+      "bnb": {
+        "activeUpstreamRequests": 2,
+        "allPaidFallback": false,
+        "chainId": 56,
+        "evidencePaidCalls": 0,
+        "freeFailures": 322821,
+        "maximumConcurrentUpstreamRequests": 8,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 3968,
+        "sourcePaidCalls": 0,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first"
+      },
+      "ethereum": {
+        "activeUpstreamRequests": 0,
+        "allPaidFallback": false,
+        "chainId": 1,
+        "evidencePaidCalls": 0,
+        "freeFailures": 662,
+        "maximumConcurrentUpstreamRequests": 8,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 404,
+        "sourcePaidCalls": 0,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first"
+      },
+      "polygon": {
+        "activeUpstreamRequests": 0,
+        "allPaidFallback": false,
+        "chainId": 137,
+        "evidencePaidCalls": 0,
+        "freeFailures": 620,
+        "maximumConcurrentUpstreamRequests": 8,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 124,
+        "sourcePaidCalls": 0,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first"
+      }
+    }
+  },
+  "observedAt": "2026-10-23T16:57:07.478169+00:00",
+  "observerActions": {
+    "cutoverOrAdmissionInvoked": false,
+    "databaseWrites": 0,
+    "paidAuthorityRenewed": false,
+    "productionFileWrites": 0,
+    "providerRpcCalls": 0,
+    "receiptWorkerInvoked": false,
+    "serviceActions": 0
+  },
+  "priorEvidence": {
+    "file": "docs/unified-indexer/production-replay-qualified-health-2026-10-23-1514.json",
+    "sha256": "5fae6826693aeccddad32873ea2c7c142100496a8c955d4aab3e110bccc0657e"
+  },
+  "source": {
+    "originalWholeValidationPassed": false,
+    "sourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "sourceRuntime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    }
+  }
+}

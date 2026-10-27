@@ -1,6 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 import { arenaRuntime } from "./runtime";
-import { projectConfirmedArena } from "./projector";
+import { projectFinalizedArena } from "./projector";
 import { ArenaClientTransactions } from "./clientTransactions";
 
 const runtime = await arenaRuntime();
@@ -15,7 +15,7 @@ process.once("SIGINT", () => {
 try {
   while (!stopped) {
     try {
-      const result = await projectConfirmedArena(
+      const result = await projectFinalizedArena(
         runtime.pool,
         runtime.clients.get(8453)!,
         runtime.config.deployment
@@ -27,7 +27,7 @@ try {
         break;
       }
       await transactions.reconcileBatch(runtime.clients.get(8453)!);
-      await setTimeout(result.status === "advanced" ? 1000 : 10_000);
+      await setTimeout(result.status === "advanced" ? 1000 : 30_000);
     } catch {
       console.error("Arena projection unavailable; retrying existing cursor.");
       await setTimeout(30_000);

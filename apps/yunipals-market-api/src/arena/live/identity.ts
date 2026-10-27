@@ -228,6 +228,7 @@ export class ArenaIdentities {
     private readonly deployment: string,
     private readonly profiles: IdentityProfile[],
     private readonly load: (nft: AdmissionRequest) => Promise<unknown>,
+    private readonly context?: (id: string) => Promise<{ incarnation: string }>,
     private readonly resolve?: (
       nft: AdmissionRequest,
       payload: unknown,
@@ -235,20 +236,37 @@ export class ArenaIdentities {
     ) => Promise<IdentityProfile>
   ) {}
 
-  async read(id: string, nft: AdmissionRequest) {
+  private async selected(id: string, expectedIncarnation?: string) {
+    const incarnation = (await this.context?.(id))?.incarnation ?? "legacy";
+    if (
+      expectedIncarnation !== undefined &&
+      incarnation !== expectedIncarnation
+    )
+      throw new ArenaRequestError(
+        409,
+        "The tournament opening changed during NFT preparation."
+      );
+    return incarnation;
+  }
+
+  async read(id: string, nft: AdmissionRequest, expectedIncarnation?: string) {
+    return this.readAt(id, nft, await this.selected(id, expectedIncarnation));
+  }
+  private async readAt(id: string, nft: AdmissionRequest, incarnation: string) {
     const row = (
       await this.pool.query<{
         snapshot: FighterSnapshot;
         snapshot_hash: string;
       }>(
         `SELECT snapshot,snapshot_hash FROM yunipals_arena.fighter_snapshot
-       WHERE deployment=$1 AND tournament_id=$2 AND nft_chain_id=$3 AND collection=$4 AND token_id=$5`,
+       WHERE deployment=$1 AND tournament_id=$2 AND nft_chain_id=$3 AND collection=$4 AND token_id=$5 AND incarnation=$6`,
         [
           this.deployment,
           id,
           nft.nftChainId,
           nft.collection.toLowerCase(),
-          nft.tokenId
+          nft.tokenId,
+          incarnation
         ]
       )
     ).rows[0];
@@ -263,13 +281,19 @@ export class ArenaIdentities {
     return row.snapshot;
   }
 
-  async ensure(id: string, nft: AdmissionRequest, wallet?: string) {
-    const prior = await this.read(id, nft);
+  async ensure(
+    id: string,
+    nft: AdmissionRequest,
+    expectedIncarnation?: string,
+    wallet?: string
+  ) {
+    const incarnation = await this.selected(id, expectedIncarnation);
+    const prior = await this.readAt(id, nft, incarnation);
     if (prior) return prior;
-    const key = `${id}/${nft.nftChainId}/${nft.collection.toLowerCase()}/${nft.tokenId}`;
+    const key = `${id}/${incarnation}/${nft.nftChainId}/${nft.collection.toLowerCase()}/${nft.tokenId}`;
     const pending = this.pending.get(key);
     if (pending) return pending;
-    const work = this.create(id, nft, wallet);
+    const work = this.create(id, nft, incarnation, wallet);
     this.pending.set(key, work);
     try {
       return await work;
@@ -278,7 +302,12 @@ export class ArenaIdentities {
     }
   }
 
-  private async create(id: string, nft: AdmissionRequest, wallet?: string) {
+  private async create(
+    id: string,
+    nft: AdmissionRequest,
+    incarnation: string,
+    wallet?: string
+  ) {
     const payload = await this.load(nft);
     const metadata = identityMetadata(nft, payload);
     const known = this.profiles.some(
@@ -293,11 +322,16 @@ export class ArenaIdentities {
         ? this.profiles
         : [await this.resolve(nft, payload, wallet)];
     const snapshot = compileIdentity(nft, payload, profiles);
+    if (((await this.context?.(id))?.incarnation ?? "legacy") !== incarnation)
+      throw new ArenaRequestError(
+        409,
+        "The tournament opening changed during NFT preparation."
+      );
     // First snapshot wins across processes too. Later metadata or profile changes
     // cannot change the identity players already saw in this tournament.
     await this.pool.query(
-      `INSERT INTO yunipals_arena.fighter_snapshot(deployment,tournament_id,nft_chain_id,collection,token_id,snapshot,snapshot_hash)
-       VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING`,
+      `INSERT INTO yunipals_arena.fighter_snapshot(deployment,tournament_id,nft_chain_id,collection,token_id,snapshot,snapshot_hash,incarnation)
+       VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT DO NOTHING`,
       [
         this.deployment,
         id,
@@ -305,9 +339,10 @@ export class ArenaIdentities {
         nft.collection.toLowerCase(),
         nft.tokenId,
         snapshot,
-        sha256(canonicalJson(snapshot))
+        sha256(canonicalJson(snapshot)),
+        incarnation
       ]
     );
-    return (await this.read(id, nft))!;
+    return (await this.readAt(id, nft, incarnation))!;
   }
 }

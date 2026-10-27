@@ -1,0 +1,156 @@
+[
+  {
+    "label": "registry",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PackRegistry",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "nextTokenId",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "reservedType",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "provenance",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct YunipalMonsters.Provenance)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct YunipalMonsters.Provenance",
+        "numberOfBytes": "160",
+        "members": [
+          {
+            "label": "packTypeId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "originalTokenId",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "variantId",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "traits",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PackRegistry.Traits",
+              "numberOfBytes": "32",
+              "members": [
+                {
+                  "label": "monsterType",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "color",
+                  "slot": "0",
+                  "offset": 4,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "horn",
+                  "slot": "0",
+                  "offset": 8,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "glitter",
+                  "slot": "0",
+                  "offset": 12,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "isOriginal",
+            "slot": "4",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  }
+]

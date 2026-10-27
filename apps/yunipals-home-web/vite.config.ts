@@ -72,7 +72,7 @@ export default defineConfig(({ command, mode }) => {
             includePrivate: true,
             multipleVersions: true,
             output: {
-              file: "dist/THIRD_PARTY_LICENSES.txt",
+              file: process.env.YUNIPALS_LICENSE_OUTPUT || "dist/THIRD_PARTY_LICENSES.txt",
               template: (dependencies) =>
                 [
                   readFileSync(

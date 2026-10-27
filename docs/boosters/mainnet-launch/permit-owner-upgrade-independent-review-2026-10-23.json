@@ -1,0 +1,171 @@
+{
+  "format": "yunipals-permit-owner-package-independent-review-v1",
+  "reviewedAt": "2026-10-23T16:34:49.793454+00:00",
+  "verdict": "pass",
+  "reviewedFiles": [
+    {
+      "path": "scripts/boosters/prepare-permit-engine-upgrade.mjs",
+      "sha256": "f227aedaf8b32d9cb4f84d36625cd2faa6898b2918ea766d31c0a13e9cdc36e7"
+    },
+    {
+      "path": "scripts/boosters/prepare-permit-engine-upgrade.test.mjs",
+      "sha256": "328ce84df1bffc994fcfada8fe1b9ed5d20c315598d2025530bef20f6c4cc965"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermitSetup.ts",
+      "sha256": "324303df8bf29b5b9a22682302a5026aad4ae19c84c9ee3bb31076c424b44c99"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterPermitSetupPage.tsx",
+      "sha256": "17816aa9799d1aec7b52c566a7fae9f19bc92b54139e8c8fbc226ac1a30da708"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermitSetup.test.ts",
+      "sha256": "b14a68d71a2ff2efc9a78d6d7cf1ecfd6ab50b3582595c9806c5c330bbfb17f3"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-permit-setup-ui.mjs",
+      "sha256": "16d4fe281d937e24f19d80a32c83e20a60985ecc747c9ab5c4e99ba80cc5dac2"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/engine-permit-upgrade-v1.json",
+      "sha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc"
+    },
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/upgrade.unsigned.json",
+      "sha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc"
+    },
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/owner-ui-preparation.json",
+      "sha256": "e5ea237f39e91ecfae81123cfdad5b714d74cafe4382f1d52d403054154503e7"
+    }
+  ],
+  "approvedBoundary": {
+    "chainId": 8453,
+    "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+    "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+    "currentImplementation": {
+      "address": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+      "creationCodeKeccak256": "0x8ed4030562e476f672e62f0783cb82432c6f63af5df05c7e11ee9b65ee61890f",
+      "runtimeCodeKeccak256": "0xa5eadd4114e6f37b1189c9729f3ea7a03ef21675ccdf69d8b3da0d6aa522ee7a",
+      "sourceSha256": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d"
+    },
+    "approvedBatchPackageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "batchActivationSha256": "bfcca8966ec90efa9d084663fe759fc473c3a590cb910b4f90097304e8d7011c",
+    "candidateSourceSha256": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8",
+    "compiler": "0.8.30+commit.73712a01",
+    "profile": "permit",
+    "optimizerRuns": 1,
+    "runtimeBytes": 24569,
+    "eip170MarginBytes": 7,
+    "immutableOffsets": [
+      2273,
+      2569
+    ],
+    "maxOpenPacks": 10,
+    "permitVersion": 1,
+    "permitVersionAbiType": "uint256",
+    "oldAbiEntriesPreserved": 75,
+    "newAbiEntries": [
+      "PERMIT_OPEN_VERSION",
+      "openPacksWithPermit"
+    ],
+    "configurationCalldata": "0x",
+    "nonceGuessed": false
+  },
+  "independentValidation": {
+    "builderControls": 9,
+    "ownerHelperControls": 25,
+    "logs": [
+      {
+        "file": "yunipals-permit-builder-independent-tests-20261023.log",
+        "sha256": "ea5c55c34f4c3cb6c329605a3475615504d0ecdf215ba85b10f0df04dbc2f816",
+        "passed": 9,
+        "failed": 0
+      },
+      {
+        "file": "yunipals-permit-owner-independent-helper-tests-20261023.log",
+        "sha256": "ce7d6c51cef8307bef5d06a69196fc89e68bf698dd7db7272b4201a0add18ba7",
+        "passed": 25,
+        "failed": 0
+      }
+    ],
+    "addressPatchedBaselineRuntimeMatch": true,
+    "legacyStorageAndAbiNegativesPassed": true,
+    "packageGenerationDeterministic": true
+  },
+  "inspectedAuthorBrowserEvidence": {
+    "file": "yunipals-booster-permit-owner-browser-20261023.json",
+    "sha256": "a3b6f257a79769af172cc8b559d56bbae451e5b5871817baea9e41665efc2c93",
+    "passed": true,
+    "groups": 15,
+    "checks": [
+      "chain away-and-back during deferred final simulation keeps the cancelled review invalid and enters wallet send zero times",
+      "account away-and-back during deferred final simulation keeps the cancelled review invalid and enters wallet send zero times",
+      "a foreign connected wallet cannot prepare deployment or send an upgrade",
+      "owner connects and reviews exact package, roles, proxy and fee quote without automatic wallet writes",
+      "network change during deferred final simulation invalidates the review and sends zero transactions",
+      "account change during deferred final simulation sends zero transactions",
+      "leaving the owner route during deferred simulation cannot issue a late wallet send",
+      "one explicit deploy signature uses creation bytes and actual receipt address; upgrade is a separate review",
+      "candidate permit-version mismatch blocks the upgrade without another signature",
+      "refresh recovers saved deployment without another signature and wrong manual runtime is rejected",
+      "second explicit signature accepts the matching repriced receipt, persists its actual hash and verifies slot/max10/permit1 with empty initialization",
+      "completed reload has no repeated writes and owner page fits a mobile viewport",
+      "a replaced saved upgrade with different calldata remains blocked until its exact completed receipt is resolved",
+      "a pending deployment receipt stays saved after reload and cannot trigger a duplicate deployment",
+      "confirmed reverted deployment requires explicit receipt resolution before a fresh review and never auto resubmits"
+    ],
+    "syntheticWalletTransactions": 2,
+    "realNetworkProviderCalls": 0
+  },
+  "independentLifecycleRegression": {
+    "fixtureSha256": "d4247a54f4fda216a293f0c41836d3164248dd9a7b8e936f801f82fca7aad51b",
+    "scenario": "During deferred final simulation, switch away from Base, allow the active review to clear, then return to Base before releasing the simulation.",
+    "originalPageSha256": "9e279a0a7ca5bbe2f01872dabe7a4caa13bf4fd239ff5fe3543f886d8f37e23b",
+    "originalSummarySha256": "8db28ee650d090525fe16a47365e28a1ac8efd3222e9c68cb55ef3b8e52a726f",
+    "originalWalletSendAttempts": 1,
+    "correctedPageSha256": "17816aa9799d1aec7b52c566a7fae9f19bc92b54139e8c8fbc226ac1a30da708",
+    "correctedSummarySha256": "b67280f42c4cd13088d9b9fbac1bf770069f6bf65aeeb80b82b3e3f7fe0d8983",
+    "correctedWalletSendAttempts": 0,
+    "reviewClearedBeforeRelease": true,
+    "productionActions": 0
+  },
+  "confirmedSafeguards": [
+    "The fetched public package is raw-SHA-pinned, and the local validator binds exact baseline/candidate source and bytecode hashes, storage shape, profile, immutable spans, capabilities and fixed dependencies.",
+    "Candidate runtime patches only its two compiler __self spans with the actual deployment receipt address and checks full code, UUPS UUID, MAX_OPEN_PACKS10 and PERMIT_OPEN_VERSION1.",
+    "Deploy and upgrade remain two distinct explicit owner reviews. Final active-review identity, expiry, mounted state and current wallet are checked synchronously after the last await and directly before wallet entry.",
+    "Successful deployment and upgrade receipts must match transaction hash, mined block, owner, value, exact creation or upgrade calldata and actual deployed address.",
+    "Pending or ambiguous saved hashes block another submission; repriced hashes are persisted and unrelated replacements remain blocked. Only explicit canonical cancelled/reverted receipt resolution clears an owned pending hash.",
+    "The proxy upgrade uses empty initialization bytes, preserves existing singles/batches and source/storage dependencies, and does not buy or open packs."
+  ],
+  "retainedArtifactsUnchanged": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterBatchSetup.ts",
+      "sha256": "7e44e2d4ad45f30981c276e639ff34b85835524a60595d49b1c7877b3cb5c724"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterBatchSetupPage.tsx",
+      "sha256": "67d3596664f3706b0fc5a7d2fe96aacd9bf465b1408a447d9a6e0848863ed25c"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json",
+      "sha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/monsters-token-metadata-upgrade-v1.json",
+      "sha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966"
+    }
+  ],
+  "unresolvedFindings": [],
+  "limitations": [
+    "The independent review ran offline builder/helper tests and one actual-page browser regression using intercepted synthetic wallet/RPC responses. The full 15-group owner browser run was inspected author evidence, not an additional independent full rerun.",
+    "No production provider, owner wallet, signing key or mainnet transaction was used. Actual installation and post-installation checks remain owner actions.",
+    "Standalone compiler reproduction was inspected as separate author evidence; this review did not rerun the compiler.",
+    "The package tests used the existing retained out-batch and out-permit artifacts. No fresh-checkout bootstrap was executed; their full frozen source/compiler inputs remain public."
+  ],
+  "productEditsByReviewer": 0,
+  "productionActions": 0,
+  "actualSignatures": 0,
+  "actualBroadcasts": 0
+}

@@ -1,0 +1,33 @@
+[Unit]
+Description=Yunipals booster collection and approved artwork API
+After=postgresql.service network.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=yunipals_unified_collector
+Group=yunipals_unified_collector
+WorkingDirectory=/opt/yunipals-unified/booster-api-releases/d0e269b0f3d43cc0cea2bcf53cc3b390357576e8901988942d17ffeb11f5cc4a
+EnvironmentFile=/etc/yunipals-unified/booster-api.env
+ExecStart=/opt/node-v24.18.1/bin/node --max-old-space-size=256 /opt/yunipals-unified/booster-api-releases/d0e269b0f3d43cc0cea2bcf53cc3b390357576e8901988942d17ffeb11f5cc4a/booster-api.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+MemoryMax=536870912
+MemorySwapMax=0
+TasksMax=64
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=127.0.0.0/8 ::1
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

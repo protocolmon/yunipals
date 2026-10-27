@@ -1,0 +1,64 @@
+{
+  "activeWriterPaused": false,
+  "actualResultSha256": "e983de89fdba05ff03b5bd827504245ec1e9752332f3d3eacdd28f2f6cff9eb2",
+  "cacheCoverageQualified": false,
+  "chains": {
+    "1": {
+      "logFragments": 5,
+      "minimumContinuousLogPrefix": 26264320,
+      "olderHoleCount": 0,
+      "safeRawBlock": 26263495
+    },
+    "137": {
+      "logFragments": 3,
+      "minimumContinuousLogPrefix": 96108204,
+      "olderHoleCount": 0,
+      "safeRawBlock": 96101272
+    },
+    "56": {
+      "logFragments": 7,
+      "minimumContinuousLogPrefix": 129524092,
+      "olderHoleCount": 0,
+      "safeRawBlock": 129524066
+    },
+    "8453": {
+      "logFragments": 65,
+      "minimumContinuousLogPrefix": 53034085,
+      "olderHoleCount": 0,
+      "safeRawBlock": 53034085
+    }
+  },
+  "completed": true,
+  "databaseWrites": 0,
+  "financialApplied": false,
+  "financialPeer": {
+    "actualUID111GID113ZeroCapsNNPQualified": true,
+    "allDaysSourceBookedCu": "4547000",
+    "baselineCatalogSha256": "8491a5c861e61876b5d97b346d8f52fce25b6161ba5662c6eb48a7b357b5644c",
+    "databaseWrites": 0,
+    "financialApplied": false,
+    "format": "yunipals-ypal-alchemy-catchup-financial-v1-peer-qualification",
+    "maximumAdditionalBookedCu": "15000000",
+    "originalPolicyAndProfileQualified": true,
+    "providerCalls": 0,
+    "qualified": true,
+    "serviceActions": 0,
+    "sourceActorQualified": false,
+    "transactionReadOnly": true,
+    "xidStatusAvailable": true
+  },
+  "format": "yunipals-alchemy-cache-peer-preflight-v1",
+  "installedPonder": {
+    "acceptedUid": 0,
+    "allFourteenPublicHashesMatch": true,
+    "observedGid": 964,
+    "observedMode": "0640",
+    "rootGidZeroAssumptionRefused": true,
+    "validated": false
+  },
+  "providerCalls": 0,
+  "rawCaptureSha256": "2657063429e1f10eba3d08ff3e0d8d012983bdd010d97abf770b8f9ee76e750e",
+  "restartAccepted": false,
+  "serviceActions": 0,
+  "sourceAndServingEpochsUnchanged": true
+}

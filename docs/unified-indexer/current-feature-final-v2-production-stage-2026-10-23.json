@@ -1,0 +1,57 @@
+{
+  "format": "yunipals-current-feature-final-production-source-stage-v2",
+  "status": "staged-and-readonly-reverified",
+  "verifiedAt": "2026-10-23T14:48:07.496479+00:00",
+  "stager": {
+    "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.py",
+    "sha256": "7bf2ef8969cb4694af40f9ae018c00b29c203685b9bb4930a09bb61cf1cdfc72"
+  },
+  "sourceManifest": {
+    "path": "ops/unified-indexer-transition/current-feature-final-public-stage-v2.files.json",
+    "sha256": "fda31f4b8d8eb03b80a40d9d2e3b0a88e801c4585f3af23410d6a07bb0ad24a9"
+  },
+  "approvedReviewHash": "a6ee32ff74f024a249830bea027d0c9d772c8cbe06d748b73cdd0ce21378326d",
+  "postStageReviewHash": "4e060927ef9bca35392f34b1254dae851024ec420754c6ff6d30baca931152d0",
+  "capturedProductionResultSha256": "a50b85367c62ed687b0d58c5c66f69668e71035f6d693410a73d99bcf5c425a7",
+  "actualStage": {
+    "allHistoricalDependenciesExact": true,
+    "allPayloadFilesPresentAndExact": true,
+    "historicalDependencyCount": 23,
+    "manifestSha256": "fda31f4b8d8eb03b80a40d9d2e3b0a88e801c4585f3af23410d6a07bb0ad24a9",
+    "payloadCount": 21,
+    "postStageReviewHash": "4e060927ef9bca35392f34b1254dae851024ec420754c6ff6d30baca931152d0",
+    "stagerSha256": "7bf2ef8969cb4694af40f9ae018c00b29c203685b9bb4930a09bb61cf1cdfc72"
+  },
+  "currentBindings": {
+    "consumerEntrySha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "featureHandoverSha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "finalSupervisorSha256": "05de84bf089b31d772a13bff05fc3e061987379aad26b0afd4b444bad84268f5",
+    "actualHttpApiBundleSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+    "actualHttpApiUnitSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414"
+  },
+  "earlierPublicFreeze": {
+    "archiveSha256": "5cfdee28df8fd3abf7b794113c81267d10324a74f1eddbf750683a89482edb47",
+    "publicFileCount": 27,
+    "allOriginalPublicFilesStillByteIdentical": true
+  },
+  "productionStageEffects": {
+    "operationalReceiptReads": 0,
+    "runtimeValidationPerformed": false,
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "liveSelectionChanged": false,
+    "runtimeReadinessClaimed": false,
+    "automaticRetry": false
+  },
+  "readOnlyReverification": {
+    "stdoutSha256": "9f801da8ebf1384bfdd1efa36319c66d475e335273e69dd3f9317fa35e28b0a8",
+    "procedure": "Frozen stager.review(sourceDirectory) reproduced exact post-stage hash with all21present and23dependencies. No apply called.",
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "productionFileWrites": 0
+  },
+  "runtimeHandoverPerformed": false,
+  "futureAdmissionOrSelectionReceiptsInferred": false
+}

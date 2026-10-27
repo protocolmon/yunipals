@@ -1,0 +1,21 @@
+{
+  "actualReview": {
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": true,
+    "databaseWrites": 0,
+    "effectActionRequested": false,
+    "elapsedSeconds": 315.512,
+    "format": "root-publication-kernel-v1-cache-review",
+    "observedAt": "2026-10-25T16:53:00.917672+00:00",
+    "reviewHash": "d7106ccac499db4b1394f68469b975a890938efacf81f79511b1fe8b2053d541",
+    "reviewResultSha256": "756b44a267a0d337aa58141ddca565f0acd3148d25b8204afa7193e278641507",
+    "serviceActions": 0
+  },
+  "format": "yunipals-publication-cache-review-production-v1",
+  "generationAcceptanceRetained": true,
+  "nextAction": "actual_rollback_rehearsal",
+  "publicationChanged": false,
+  "rehearsalAccepted": false,
+  "writerDrained": false
+}

@@ -183,11 +183,18 @@ export class ArenaInputCompiler {
   ) {}
 
   async context(id: string) {
-    const state = await this.service.state(id);
+    const context = await this.service.tournamentContext(id),
+      state = context.state;
     const island = verifyContext(state, this.service.contract, this.catalog);
     // Public reads only read saved snapshots. They never fetch metadata or trigger RPCs.
     const roster = await Promise.all(
-      state.seats.map((s) => this.identities.read(id, s))
+      state.seats.map((s) => this.identities.read(id, s, context.incarnation))
+    );
+    await this.service.tournamentContext(
+      id,
+      this.service.pool,
+      false,
+      context.incarnation
     );
     return {
       rules: this.catalog.rules,
@@ -206,9 +213,10 @@ export class ArenaInputCompiler {
 
   async prepare(id: string) {
     await this.service.ready();
-    const state = await this.service.state(id);
+    const context = await this.service.tournamentContext(id),
+      state = context.state;
     const roster = await Promise.all(
-      state.seats.map((s) => this.identities.read(id, s))
+      state.seats.map((s) => this.identities.read(id, s, context.incarnation))
     );
     if (roster.length !== 4 || roster.some((f) => f === null))
       throw new ArenaRequestError(
@@ -217,14 +225,17 @@ export class ArenaInputCompiler {
       );
     // All external work happens before the intake row lock. Recheck seat and draw
     // identity against the locked state before committing the immutable input.
-    return this.service.prepareInput(id, (locked, strategies) =>
-      compileLiveInput(
-        locked,
-        this.service.contract,
-        this.catalog,
-        roster as FighterSnapshot[],
-        strategies
-      )
+    return this.service.prepareInput(
+      id,
+      (locked, strategies) =>
+        compileLiveInput(
+          locked,
+          this.service.contract,
+          this.catalog,
+          roster as FighterSnapshot[],
+          strategies
+        ),
+      context.incarnation
     );
   }
 }

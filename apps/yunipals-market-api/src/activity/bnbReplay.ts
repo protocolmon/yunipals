@@ -14,6 +14,10 @@ import {
 import { readBnbHead, seaportCodeHash } from "@/bnb/protocol";
 import { transaction } from "@/db/pool";
 import { rpcComputeBudgetError } from "@/opensea/rpcComputeBudget";
+import {
+  storeLegacyQualifiedReceipt,
+  type LegacyReceiptSelection
+} from "./legacyReceiptQualification";
 
 const protocol = seaportDeployment.address.toLowerCase();
 const checkpointWhere = "source='chain' AND chain_id=56 AND name='bnb-sales'";
@@ -31,6 +35,7 @@ const maxReceipts = 32;
 const budgetMs = 60000;
 
 type Checkpoint = {
+  reader_mode: string;
   generation: string;
   block_number: string | null;
   block_hash: Hex | null;
@@ -39,6 +44,8 @@ type Checkpoint = {
   first_admission: string | null;
   first_start_time: string | null;
   missing_admission: boolean;
+  legacy_epoch: string | null;
+  legacy_configuration: { policy: string; finality: string } | null;
 };
 type Proof = { sale: ObservedMarketSale; receipt: string; block: string };
 const json = (value: unknown) =>
@@ -97,13 +104,15 @@ export class BnbSaleReplay {
 
   private async checkpoint(): Promise<Checkpoint> {
     const result = await this.pool.query<Checkpoint>(
-      `SELECT generation::text,block_number::text,block_hash,coverage_start::text,replay_from::text,
+      `SELECT reader_mode,generation::text,block_number::text,block_hash,coverage_start::text,replay_from::text,
         (SELECT min(admission_block_number)::text FROM yunipals_market.orders
           WHERE chain_id=56 AND source='yunipals' AND publication_state='accepted') AS first_admission,
         (SELECT min(start_time)::text FROM yunipals_market.orders WHERE chain_id=56 AND source='yunipals'
           AND publication_state='accepted' AND admission_block_number IS NOT NULL) AS first_start_time,
         EXISTS(SELECT 1 FROM yunipals_market.orders WHERE chain_id=56 AND source='yunipals'
-          AND publication_state='accepted' AND admission_block_number IS NULL) AS missing_admission
+          AND publication_state='accepted' AND admission_block_number IS NULL) AS missing_admission,
+        (SELECT l.epoch FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer='bnb-sales') AS legacy_epoch,
+        (SELECT l.configuration FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer='bnb-sales') AS legacy_configuration
       FROM yunipals_market.checkpoint WHERE ${checkpointWhere}`
     );
     if (!result.rows[0]) throw new Error("Missing BNB activity checkpoint.");
@@ -117,8 +126,9 @@ export class BnbSaleReplay {
     return transaction(this.pool, async (db) => {
       const locked = await db.query(
         `SELECT generation FROM yunipals_market.checkpoint WHERE ${checkpointWhere}
-          AND generation=$1 FOR UPDATE`,
-        [observed.generation]
+          AND reader_mode='legacy' AND generation=$1
+          AND (SELECT l.epoch FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer='bnb-sales') IS NOT DISTINCT FROM $2::text FOR UPDATE`,
+        [observed.generation, observed.legacy_epoch]
       );
       if (locked.rowCount !== 1) return false;
       await task(db);
@@ -229,6 +239,16 @@ export class BnbSaleReplay {
     "advanced" | "idle" | "rewound" | "superseded" | "unavailable"
   > {
     const observed = await this.checkpoint();
+    if (observed.reader_mode !== "legacy") return "superseded";
+    if (
+      observed.legacy_epoch &&
+      (!observed.legacy_configuration ||
+        observed.legacy_configuration.policy !== this.confirmationPolicy ||
+        observed.legacy_configuration.finality !== this.finality)
+    )
+      throw new Error(
+        "Legacy BNB sale selection differs from this compatible worker."
+      );
     const started = this.now();
     try {
       const head = await readBnbHead(this.client, this.now, this.finality);
@@ -444,7 +464,14 @@ export class BnbSaleReplay {
       const committed = await this.commit(observed, async (db) => {
         if (this.now() - started > budgetMs)
           throw new Error("Sale commit observation expired.");
-        for (const proof of proofs) await this.store(db, proof);
+        for (const proof of proofs)
+          await this.store(
+            db,
+            proof,
+            observed.legacy_epoch
+              ? { consumer: "bnb-sales", epoch: observed.legacy_epoch }
+              : undefined
+          );
         if (this.now() - started > budgetMs)
           throw new Error("Sale commit observation expired.");
         await db.query(
@@ -490,25 +517,44 @@ export class BnbSaleReplay {
     }
   }
 
-  private async store(db: PoolClient, proof: Proof) {
+  private async store(
+    db: PoolClient,
+    proof: Proof,
+    legacySelection?: LegacyReceiptSelection
+  ) {
     const { sale } = proof;
-    const receipt = await db.query(
-      `INSERT INTO yunipals_market.sale_receipt(chain_id,block_hash,transaction_hash,receipt,block,confirmation_policy)
+    if (legacySelection)
+      await storeLegacyQualifiedReceipt(
+        db,
+        {
+          chainId: 56,
+          blockHash: sale.blockHash,
+          transactionHash: sale.transactionHash,
+          receipt: proof.receipt,
+          block: proof.block,
+          policy: this.confirmationPolicy
+        },
+        legacySelection
+      );
+    else {
+      const receipt = await db.query(
+        `INSERT INTO yunipals_market.sale_receipt(chain_id,block_hash,transaction_hash,receipt,block,confirmation_policy)
         VALUES(56,$1,$2,$3,$4,$5) ON CONFLICT(chain_id,block_hash,transaction_hash) DO UPDATE
           SET receipt=yunipals_market.sale_receipt.receipt
           WHERE yunipals_market.sale_receipt.receipt=EXCLUDED.receipt
             AND yunipals_market.sale_receipt.block=EXCLUDED.block
             AND yunipals_market.sale_receipt.confirmation_policy=EXCLUDED.confirmation_policy RETURNING chain_id`,
-      [
-        sale.blockHash.toLowerCase(),
-        sale.transactionHash.toLowerCase(),
-        proof.receipt,
-        proof.block,
-        this.confirmationPolicy
-      ]
-    );
-    if (receipt.rowCount !== 1)
-      throw new Error("Stored receipt proof conflicts with replay.");
+        [
+          sale.blockHash.toLowerCase(),
+          sale.transactionHash.toLowerCase(),
+          proof.receipt,
+          proof.block,
+          this.confirmationPolicy
+        ]
+      );
+      if (receipt.rowCount !== 1)
+        throw new Error("Stored receipt proof conflicts with replay.");
+    }
     const stored = await db.query(
       `INSERT INTO yunipals_market.sale(chain_id,block_number,block_hash,log_index,transaction_hash,protocol_address,
         order_hash,contract_address,token_id,seller,nft_recipient,observation,canonical,block_timestamp)

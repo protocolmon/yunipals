@@ -1,0 +1,44 @@
+{
+  "format": "yunipals-frozen-runtime-public-source-v1",
+  "purpose": "Byte-identical public source used by existing hash-pinned migration owners; not current application source.",
+  "operatorPinsChanged": false,
+  "currentApplicationFilesChanged": false,
+  "files": [
+    {
+      "originalPath": "apps/yunipals-market-api/src/rpcBudgetProxy.paidPrimary.test.ts",
+      "release": "6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6",
+      "sha256": "de27c6d2c1245121b83f7ae5a6f812b38af323cb21e288c40ac0b6c42fef9c62",
+      "bytes": 16621,
+      "frozenPath": "ops/unified-indexer-transition/frozen-runtime-source/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/src/rpcBudgetProxy.paidPrimary.test.ts",
+      "pinnedBy": "ops/unified-indexer-transition/source6-package-v3.py",
+      "publicReleaseManifestSha256": "905d69f1fddc893e882c1c7695288bed85257e2fe7450b3bdc68db099cb55e38"
+    },
+    {
+      "originalPath": "apps/yunipals-market-api/src/rpcBudgetProxy.test.ts",
+      "release": "6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6",
+      "sha256": "8fa83cbf7079753c7fbfafabfdca06fdf0a90701fe446c3e024f1cdf447ba30e",
+      "bytes": 81709,
+      "frozenPath": "ops/unified-indexer-transition/frozen-runtime-source/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/src/rpcBudgetProxy.test.ts",
+      "pinnedBy": "ops/unified-indexer-transition/source6-package-v3.py",
+      "publicReleaseManifestSha256": "905d69f1fddc893e882c1c7695288bed85257e2fe7450b3bdc68db099cb55e38"
+    },
+    {
+      "originalPath": "apps/yunipals-market-api/src/rpcBudgetProxy.ts",
+      "release": "6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6",
+      "sha256": "0f3731e081401ec41e7bba7ac40c375b71c15834a4019a0b84e521e4ba38fb68",
+      "bytes": 59478,
+      "frozenPath": "ops/unified-indexer-transition/frozen-runtime-source/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/src/rpcBudgetProxy.ts",
+      "pinnedBy": "ops/unified-indexer-transition/source6-package-v3.py",
+      "publicReleaseManifestSha256": "905d69f1fddc893e882c1c7695288bed85257e2fe7450b3bdc68db099cb55e38"
+    },
+    {
+      "originalPath": "packages/yunipals-indexer-server/src/action-evidence.ts",
+      "release": "41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b",
+      "sha256": "1abaea641e2dda87ef9d9ed5f640ea690ee79e6a238cddfb8de82816fbf8794b",
+      "bytes": 20594,
+      "frozenPath": "ops/unified-indexer-transition/frozen-runtime-source/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/packages/yunipals-indexer-server/src/action-evidence.ts",
+      "pinnedBy": "ops/unified-indexer-transition/consumer-action-read-owner-v2.py",
+      "publicReleaseManifestSha256": "6e678bbd24a69202de7084b47901295effc82fa075831cf3cdf97b5e75030801"
+    }
+  ]
+}

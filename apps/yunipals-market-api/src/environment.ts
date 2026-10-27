@@ -14,6 +14,8 @@ import {
   isRpcBudgetProxyUrl
 } from "@/rpcBudgetProxyRegistry";
 
+import { readMarketplaceOwnershipEnvironment } from "@/indexer/ownership";
+
 export type Environment = ReturnType<typeof readEnvironment>;
 
 function liveRpcUrls(
@@ -121,7 +123,10 @@ export function readSaleReplayEnvironment(
     mode,
     rpcUrl: rpcUrl!,
     rpcUrls: rpcUrls!,
-    finality: "confirmations" as const,
+    finality:
+      input.MARKET_DEPLOYMENT === "production"
+        ? ("finalized" as const)
+        : ("confirmations" as const),
     policy,
     maxSeconds: continuous
       ? undefined
@@ -265,7 +270,10 @@ export function readOpenSeaReadEnvironment(
     confirmations: BigInt(
       positiveInteger(input.MARKET_OPENSEA_READ_CONFIRMATIONS, 1, 10000)
     ),
-    finality: "confirmations" as const,
+    finality:
+      input.MARKET_DEPLOYMENT === "production"
+        ? ("finalized" as const)
+        : ("confirmations" as const),
     concurrency: positiveInteger(input.MARKET_OPENSEA_READ_CONCURRENCY, 1, 8),
     maxSeconds:
       input.MARKET_OPENSEA_READ_MAX_SECONDS === undefined
@@ -811,6 +819,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv = process.env) {
     deployment: deployment as "staging" | "production",
     databaseUrl,
     indexerDatabaseUrl,
+    ownershipIndexer: readMarketplaceOwnershipEnvironment(input),
     host,
     port: positiveInteger(input.MARKET_PORT, 9012, 65535),
     poolMax: positiveInteger(input.MARKET_DB_POOL_MAX, 8, 32),

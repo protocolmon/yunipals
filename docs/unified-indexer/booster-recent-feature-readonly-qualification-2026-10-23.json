@@ -1,0 +1,108 @@
+{
+  "format": "yunipals-recent-feature-readonly-qualification-v1",
+  "observedAt": "2026-10-23T12:44:39.970062+00:00",
+  "qualificationProgramSha256": "ffe59338992b01350047f58132f2dc8e8cef9cd7d60c16ca54d3ee5418d07884",
+  "qualifiedPublicSource": {
+    "booster-api-binding-v3.py": "55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309",
+    "consumer-owned-booster-policy-v3.py": "a9c6d98bb831f936426220e6f5d288827c38215b56e55349a126cdffc97ef613",
+    "booster-current-api-checks-v2.py": "1da3a94b5514233396d311b1677291348430c6dd96030ab0ca838ffb59470bdf"
+  },
+  "actual": {
+    "api": {
+      "InvocationID": "7858a3f608874abb935e635abc69c1d4",
+      "MainPID": "1824982",
+      "bundleSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+      "definitionSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+      "environmentSha256": "0c055ac01166d9b4218f498f795d16e2f895d17b60c8b96dd82890415306d400"
+    },
+    "apiContract": {
+      "artworkAssets": [
+        {
+          "cacheControl": "public, max-age=31536000, immutable",
+          "cors": "*",
+          "sha256": "d5dd692207b847d780c9de07bd146b8446c16ac97ee417deb9b6e4fadcf49837"
+        },
+        {
+          "cacheControl": "public, max-age=31536000, immutable",
+          "cors": "*",
+          "sha256": "6e385267a41396363acb60b355ce25b8e4a7529c3d9a50c32cfa6a95021986b6"
+        },
+        {
+          "cacheControl": "public, max-age=31536000, immutable",
+          "cors": "*",
+          "sha256": "650751545197c4e28cd2e1526d9abc088d178c2ba84252d808e762216344bf2a"
+        },
+        {
+          "cacheControl": "public, max-age=31536000, immutable",
+          "cors": "*",
+          "sha256": "bf30a6ee93fe4aef49b3d364e3e1f8a4f6628ba2b62f91bc522f29be320a5d81"
+        }
+      ],
+      "birthMetadataVerified": true,
+      "globalBrowseVerified": true,
+      "publicReady": true,
+      "recent": {
+        "newestRevealedAt": "1792690409",
+        "oldestRevealedAt": "1792690409",
+        "requestCount": 1
+      },
+      "recentOpeningsVerified": true,
+      "requestMonstersVerified": true
+    },
+    "databaseWrites": 0,
+    "grantChanges": 0,
+    "launchReadCount": 10,
+    "launchTableOids": {
+      "_ponder_checkpoint": "74518322",
+      "_ponder_meta": "74518315",
+      "booster_checkpoint": "74518510",
+      "booster_engine_state": "74518480",
+      "booster_event": "74518495",
+      "booster_monster": "74518450",
+      "booster_original": "74518420",
+      "booster_refund": "74518465",
+      "booster_request": "74518435",
+      "booster_type": "74518405"
+    },
+    "nativeReadinessClaimed": false,
+    "oldCurrentFeatureValidatorPassed": false,
+    "passed": true,
+    "providerCalls": 0,
+    "roleOid": "73187672",
+    "rolloutReceiptSha256": "6f2b288741503d2f5d34ee9ba4563d0215b9144b2b6b22cc38f2763378799080",
+    "serviceActions": 0,
+    "sourceSchemaOid": "74518314"
+  },
+  "nativeCatalogObservation": {
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sources": [
+      {
+        "buildId": "6d581272ce",
+        "completeBaseBlock": 52984975,
+        "ready": "1",
+        "schema": "yunipals_boosters_launch_v1"
+      },
+      {
+        "buildId": "bf4939b3ff",
+        "completeBaseBlock": 52950938,
+        "ready": "0",
+        "schema": "unified_shadow_20261020_7e7375b0"
+      }
+    ],
+    "targetReads": {
+      "_ponder_checkpoint": true,
+      "_ponder_meta": true,
+      "booster_checkpoint": false,
+      "booster_engine_state": false,
+      "booster_event": false,
+      "booster_monster": false,
+      "booster_original": false,
+      "booster_refund": false,
+      "booster_request": false,
+      "booster_type": false
+    }
+  },
+  "staged": false
+}

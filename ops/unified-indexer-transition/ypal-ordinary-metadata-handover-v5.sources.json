@@ -1,0 +1,11 @@
+{
+  "format": "yunipals-ypal-ordinary-metadata-handover-v5-sources",
+  "provider": {
+    "file": "ypal-ordinary-consumer-handover-v5.py",
+    "sha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c"
+  },
+  "readAdmission": {
+    "file": "ypal-ordinary-read-admission-v5b.py",
+    "sha256": "a47d4f6b41839d3856244b7d08a92d3a8f56de71b8f566a22122bfb80f5213c3"
+  }
+}

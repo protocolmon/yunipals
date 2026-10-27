@@ -1,0 +1,36 @@
+{
+  "format": "yunipals-arena-admission-local-pg-proof-v1",
+  "date": "2026-10-23",
+  "files": [
+    {
+      "path": "ops/arena-native-admission-20261022/commit-admission.py",
+      "sha256": "a4e9f3393b0262d3057c5a5b2506315e98890025982ec43f9872554e1f2e4b92"
+    },
+    {
+      "path": "ops/arena-native-admission-20261022/commit-admission-test.py",
+      "sha256": "ba3746e31a447fde2c4e4d2bcb34d2607e2f69fd7839186b53337c3fdff1dee4"
+    },
+    {
+      "path": "ops/arena-native-admission-20261022/commit-admission-postgres-test.py",
+      "sha256": "f457c1191f3c2d8a22e0f5a347200cfe2ab3a1d360fecd9a7504d8a69f011262"
+    }
+  ],
+  "passed": true,
+  "localControls": 12,
+  "existingStaticControls": 7,
+  "existingRollbackControls": 6,
+  "postgres": "16.15",
+  "actualInteractivePsqlCommitAcknowledged": true,
+  "restrictedAuthQueryWithoutResetRejected": true,
+  "sessionUserEqualsResetCurrentUser": true,
+  "preparedOidsDurableBeforeCommit": true,
+  "actualSourceReads": 13,
+  "actualExtraUpdateRejected": true,
+  "ownedScramAndLoginPhasesPassed": true,
+  "fixtureOnly": true,
+  "productionActions": 0,
+  "databaseCleanupCompleted": true,
+  "productionCommitMeasured": false,
+  "actualProduction227EdgeRollbackEvidence": "docs/unified-indexer/arena-current-role-production-rollback-rehearsal-2026-10-23.json",
+  "qualification": "Fresh owned synthetic source database/role and real psql; does not claim production COMMIT, eight-role native source-data semantics or TCP credential acceptance."
+}

@@ -1,0 +1,96 @@
+{
+  "format": "yunipals-ypal-fresh-deployment-confirmed-v1",
+  "launchId": "base-ypal-v1",
+  "chainId": 8453,
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "pmon": "0x60edae6E86546428DA423b5FBe0fba46Ca552Fc7",
+  "burnAddress": "0xff2Ba07e6F84D22730eD78D1117735a4B041c6EF",
+  "vrfWrapper": "0xb0407dbe851f8318bd31404A49e658143C982F23",
+  "ypal": "0xCd3709E84fc817b46196FA2D5b7202710AB51346",
+  "registry": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+  "monsters": "0x7D62628806E7eeF76A354C7c48787879e3440b16",
+  "engine": "0xDF4AaA47Fe0e8208b5a33c74898f834B2952189e",
+  "implementations": {
+    "registry": "0xb7c8ed45adf34944421dc46bb1324f109c6755ca",
+    "monsters": "0x77dceb52b40c9cc184b9c43903c1fc6825f7f0ad",
+    "engine": "0x4830118fdaf7926fa6c8e05165df999981570e2a"
+  },
+  "packTypeId": "1",
+  "packageSha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886",
+  "sourceStartBlock": "52995007",
+  "metadataBaseURI": "https://api.yunipals.com/yunipals-indexer/v1/boosters/metadata/0x7d62628806e7eef76a354c7c48787879e3440b16/",
+  "artworkHash": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+  "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+  "receipts": {
+    "ypal": {
+      "transactionHash": "0xc008187df38684b72135c07f275726f560453ba40d984fb600478743de50d82c",
+      "blockNumber": "52994986",
+      "blockHash": "0x0c6b504ade8bd40438f72bd84a329b770780cf74976e4f85c338e94efec4b4e3",
+      "status": "success",
+      "contractAddress": "0xcd3709e84fc817b46196fa2d5b7202710ab51346"
+    },
+    "registryImplementation": {
+      "transactionHash": "0xc832b2703d9a3d6be03fd6ea3d439a1aed1571e4982576b10d23e15cb98e2299",
+      "blockNumber": "52994997",
+      "blockHash": "0x1b3b6c636d996ae26ab9fa07fc17419f6f58275e767b56b899157d115dac201c",
+      "status": "success",
+      "contractAddress": "0xb7c8ed45adf34944421dc46bb1324f109c6755ca"
+    },
+    "registry": {
+      "transactionHash": "0x16548e60230d7d7b8e582f6649f46b0b21529223eaa3d94ecd6c87c2aa7d8a08",
+      "blockNumber": "52995007",
+      "blockHash": "0x4323ae6d84682fba3794e499b6a53037e2002aadea318371b1fb21427abbc6fe",
+      "status": "success",
+      "contractAddress": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3"
+    },
+    "monstersImplementation": {
+      "transactionHash": "0x4b206d37567449eb45dffce41c9afeec50d6d4e1da769b4bda417fae48805227",
+      "blockNumber": "52995020",
+      "blockHash": "0x653e393f5ffdbafdefc8bc9b6214c7e79a8fe3ba115ac4b008d46745ef18d63a",
+      "status": "success",
+      "contractAddress": "0x77dceb52b40c9cc184b9c43903c1fc6825f7f0ad"
+    },
+    "monsters": {
+      "transactionHash": "0xe5f5de1eca24edc7ddacd2d798878e638c59d79d6c226e82870728eda9099f93",
+      "blockNumber": "52995029",
+      "blockHash": "0x4bf780e1292d6aa620c3b5cfc6afc14395a9c2e16817e6d195b629280992b2fe",
+      "status": "success",
+      "contractAddress": "0x7d62628806e7eef76a354c7c48787879e3440b16"
+    },
+    "engineImplementation": {
+      "transactionHash": "0x8b323b9a61964a52ff5176da6fbd3fbfaef786eb41b40174a825cf3eae8fb924",
+      "blockNumber": "52995058",
+      "blockHash": "0x92fedfa26b7917c6f7775bf1ace2a459848807882a2cca88bb15451e70cba3c6",
+      "status": "success",
+      "contractAddress": "0x4830118fdaf7926fa6c8e05165df999981570e2a"
+    },
+    "engine": {
+      "transactionHash": "0x20beec606814670b833cc46bc8ae5da257551b344a1ef07854aab88a23fad45e",
+      "blockNumber": "52995174",
+      "blockHash": "0xfb602bdade0a8bfcd218996cd5a1299a8cda3a3728a87cead04498b699c05927",
+      "status": "success",
+      "contractAddress": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e"
+    },
+    "metadata": {
+      "transactionHash": "0x27bb0daa23e9f1b8503f3eff29a4df3f2cb12e32b45fad3461dc86eb271447fc",
+      "blockNumber": "52995192",
+      "blockHash": "0xd4873b5ad3162b4a48664140b3f0f10a8fa22e4c33d494103853435ed5456326",
+      "status": "success",
+      "contractAddress": null
+    },
+    "configure": {
+      "transactionHash": "0x1297417819eb452fa2fa5c2e5724a7560a47288eca858838d32c9e6d2d9f5d31",
+      "blockNumber": "52995220",
+      "blockHash": "0x33cbe194ede7dc7126399bc7103fff4c0957224a4999a45ad3a860beb88e3eee",
+      "status": "success",
+      "contractAddress": null
+    },
+    "activate": {
+      "transactionHash": "0x3079ae54746d2b07edf883db80ad1c9ec299c8a1e6ade7c6d6339ed5299a920c",
+      "blockNumber": "52995246",
+      "blockHash": "0x4f47e7493f700e7686b9d3a58c67fb409d0cdbe9d55d3df8509fbb20c91d27e8",
+      "status": "success",
+      "contractAddress": null
+    }
+  }
+}

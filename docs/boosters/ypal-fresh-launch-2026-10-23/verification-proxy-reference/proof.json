@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-ypal-proxy-similar-source-byte-equivalence-v1",
+  "referenceAddress": "0x1df5e2f815d047b9fbd909549e21ab24302ed44a",
+  "compilerVersion": "v0.8.30+commit.73712a01",
+  "compilerBinarySha256": "f3e987dc6ecebd4bd350c48edcbc320b46cf9e3109bd3fc3d88f1acaf4c428f7",
+  "inputSha256": "2217847a0b31b07923ba5781ece484576e256aaed37692d1d6145e3d4e795b30",
+  "publicRecordSha256": "591e318177134f9c273cf78b05a65ac9b1e2cd288323b92cd7d7b08d3c28abda",
+  "packageSha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886",
+  "contractIdentifier": "lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol:ERC1967Proxy",
+  "creationBytecodeSha256": "0a62ad1c4328ce841df497d7999e0bc4e63d06045ed2ba13079ca1708d717b70",
+  "runtimeBytecodeSha256": "d73e9f589336b92d2baf6d087a52e1f7b0c124cf1d0f097f165bfa36fb596567",
+  "creationBytes": 628,
+  "runtimeBytes": 89,
+  "creationByteIdentical": true,
+  "runtimeByteIdentical": true,
+  "completeAbiIdentical": true,
+  "actualReferenceSettings": {
+    "remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+      "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+      "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+      "forge-std/=lib/forge-std/src/",
+      "halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/",
+      "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
+      "openzeppelin-contracts/=lib/openzeppelin-contracts/"
+    ],
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "metadata": {
+      "useLiteralContent": false,
+      "bytecodeHash": "none",
+      "appendCBOR": true
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    },
+    "evmVersion": "prague",
+    "viaIR": true
+  },
+  "explorerExactSourceSubmission": "Already Verified",
+  "scope": "Only the three proxy similar-source records; token and implementations still require full exact source match. Actual proxy constructors and targets are independently checked from the fresh deployment receipts and chain state."
+}

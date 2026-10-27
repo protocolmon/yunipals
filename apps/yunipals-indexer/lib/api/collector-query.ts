@@ -2,7 +2,7 @@ import { metadataReadRelation, metadataSearchReadRelation, metadataTraitReadRela
 import { createHash } from "node:crypto";
 import { collectionSlugs, type CollectionSlug } from "../constants.js";
 import type { ResolvedOwner } from "../ens/resolver.js";
-import { bnbSchema, physicalPonderSchema } from "../offchain/sql.js";
+import { ownershipBnbSchema as bnbSchema, ownershipPonderSchema as physicalPonderSchema, ownershipReadConfig } from "../offchain/sql.js";
 import { activeVisibilityPredicate } from "./visibility-query.js";
 import {
   collectorFiltersKey,
@@ -102,7 +102,7 @@ export function collectorQuery(
       : [],
   );
   const config = createHash("sha256")
-    .update(JSON.stringify([1, owners, visibility, query, limit]))
+    .update(JSON.stringify(ownershipReadConfig.releaseId?[1, owners, visibility, query, limit, ownershipReadConfig.releaseId]:[1, owners, visibility, query, limit]))
     .digest("hex");
   let cursor: Cursor | undefined;
   if (request.rawCursor !== null) {

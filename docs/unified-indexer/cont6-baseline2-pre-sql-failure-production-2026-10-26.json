@@ -1,0 +1,53 @@
+{
+  "automaticRetryAllowed": false,
+  "cacheCommitRequested": false,
+  "cacheContextConstructed": true,
+  "completed": false,
+  "constructInvoked": true,
+  "constructReturned": false,
+  "constructorBindingSourceSha256": "77fab87ac98eafe2487627151b0dc7d09ce6083cced00dc8c84ffa1f4089fe2a",
+  "constructorFixPassed": true,
+  "diagnosis": {
+    "automaticRetryAllowed": false,
+    "cacheNamespaceExists": false,
+    "captureFiles": [
+      "intent.json"
+    ],
+    "cause": "Generation candidate current validation reaches the original creator comparison without the owned 120-second policy adapter",
+    "databaseRehearsalLaunched": false,
+    "failedPath": [
+      "Host.prerequisites",
+      "generation3.validate_candidate_database_current",
+      "generation2.static_legacy_host",
+      "common5.metadata_primitives",
+      "creator5.data_current"
+    ],
+    "freshCaptureRequired": true
+  },
+  "failureType": "RuntimeError",
+  "fixedCode": "actual_created_V5_OIDs_owner_body_columns_and_marker_must_stay_exact",
+  "format": "yunipals-root-cont6-baseline-v2",
+  "fullSourcePreflightPassed": true,
+  "metadataCaptureHistory": {
+    "attempts": 2,
+    "captures": 2,
+    "discarded": 0,
+    "instances": 2,
+    "sha256": "8b59d43de41c3b6f502926aa54cbe86e94ab1f519ac4b5e50417e9c5dfef7729"
+  },
+  "observedAt": "2026-10-26T15:49:25Z",
+  "outcomeRequiresInspection": true,
+  "proofHashes": {
+    "constructorBinding": "601fee468481a85eaa072b3edb493e16ae19a8ec64839e1caf6abc2076de683e",
+    "failureTraceback": "626587996ecff00601541c3b7816eb87d9f338f1b2a39fa8a3fde21b8f4f6a0e",
+    "oldFilesBefore": "3d045ade87418cfdda6810d658c1daaea4121c12e7301e25663637d260077b27",
+    "ownedInputReuse": "85d6814419dc5908a6955784f04c2790d2e2ffd0264204064dffa2ab5c668599",
+    "preflight": "40e8dd3d3ac001f58c77d31c5071690eeec9982cd56d3a1971e36604e5254791"
+  },
+  "readerLOGINRequested": false,
+  "remoteAuditInspectionRequired": true,
+  "resultSha256": "41df8baea9c527276d1f0bff4b7ed69cbf88b826b31bcfc367288e99143902b5",
+  "serviceActionsRequested": 0,
+  "sourceCommit": "f7aeedb5",
+  "stage": "construct-records"
+}

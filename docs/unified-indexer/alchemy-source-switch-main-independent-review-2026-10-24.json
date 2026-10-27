@@ -1,0 +1,150 @@
+{
+  "format": "yunipals-alchemy-source-switch-main-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_SOURCE_AND_FOCUSED_CONTROLS",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
+      "sha256": "7e58988ef8aa5e28b0529071f9cbc27127e8285cd3f2b7c021ad426abe80e943",
+      "bytes": 87696
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+      "sha256": "a9e771de08d4355c98d1f5eee1261fbfcdf9acf1ec7a96746f6908145f3d2c48",
+      "bytes": 39343
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.manifest.py",
+      "sha256": "a4291d66e4d42f10940359811e7bd14fb707123e8641f19c2727bcd0ed2d20b6",
+      "bytes": 3759
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.md",
+      "sha256": "e626c0a73cadba378b75f78dc0a3ba207caab1af769ad9ab7c4d92a98c5c4321",
+      "bytes": 14984
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.preparation.json",
+      "sha256": "01d655f966c5baf2aca8113b36e39d62439378bf32226bf426262f7e3d7e9b13",
+      "bytes": 4867
+    }
+  ],
+  "finitePacketSha256": "78229acaaee07307dc4d04a61a14bb8883fb0d2287908fb9285f6934920b9754",
+  "componentBindings": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.py",
+      "sha256": "3a13f1f4e9a7896d9e4535b670bf06786c3fb0d199986356b336cb32565d3d56"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.test.py",
+      "sha256": "84df90b048b61b57078bd4880cc3135f3d2c1ef567048c636f121af758fe66de"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.py",
+      "sha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py",
+      "sha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.py",
+      "sha256": "35f751938c96bcd10e5f36412c8e7f7e0a31129874c2544c49116e85fafc59e4"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.filters.json",
+      "sha256": "394bbecf8d0b7c115bc7b56b085a17fb857d549a36eb336514bbb10bd72f2675"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.py",
+      "sha256": "19710cfe5ab8d5c5e57f8668bb9761beac5080acba17b03da6aa54e3932c4803"
+    }
+  ],
+  "independentValidation": {
+    "mainControlsPassed": 37,
+    "planControlsPassed": 14,
+    "commands": [
+      "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+      "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.test.py"
+    ],
+    "logs": [
+      {
+        "file": "/tmp/yunipals-alchemy-main-independent-final-controls-20261024.log",
+        "sha256": "a8fce709ae552291e03d394cd380b49143e43dc5775fde421395d51536875369"
+      },
+      {
+        "file": "/tmp/yunipals-alchemy-main-final-plan-controls-20261024.log",
+        "sha256": "ca96efe64455e2b08e49978ef4005cb9cd961a7198e7571426b71b05fe0b2724"
+      }
+    ],
+    "unchangedHostOrGenuineDatabaseSuitesRepeated": false
+  },
+  "criticalReview": [
+    "Constructor authenticates exact main/finite components/config/financial preparation and actual import-v2e2ef receipt. Loaded468 dependency subset is rehashed without reusing the obsolete whole inactive-stage validator after owned overlays.",
+    "Actual source5432/native44/cache71e and market15438 budget domains remain distinct. Restart gate receives a READ ONLY source query after owned terminal/official lock wait; genuine configured minima are permitted while continuous official80filter coverage through raw safe prevents hidden replay. Same schema/build/pool5/handlers and retained caches are preserved; no checkpoint rewrite, migration or reindex path is introduced.",
+    "Actual source command preserves env-i and original three Node env-files plus exactly one fourth scoped-permit file. Typed ExecStart, a(ssbt) bindings including actual16384 flags, six namespace backings, private inputs, security, boot and actor are qualified; source-free return restores the original command and mounts.",
+    "BNB alone uses paid_logs_free_blocks while otherthree use paid_primary. Exact10c34 program, original ordered private files plus one final public mode file, full merged environment and allfour epoch CAS remain required.",
+    "Exclusive operation precedes financial COMMIT; separate durable admission link binds actual historical result. Paid starts revalidate current finite financial authority and cache/source/peer facts after durable intent immediately before manager entry. Unknown start/stop outcomes are inspected rather than blindly reissued.",
+    "Close first drains actual paid source/proxy process identities, same-UID escaped paid invocations and PID/text-backend epochs, then qualifies allfour exact original free programs/private inputs/boot/cap0 actors. Bounded healthy FREE work can continue with actual free routing and all paid fallback flags disabled. Financial close and UTC restore use their separate durable SQL/XID ownership chain.",
+    "Owned partial-source failure can close paid finances while recording source restore pending; exact own-process stop inspection does not require heartbeat health. New free start requires current physical/cache/peer/private facts and actual financial closure, with once-only intent and final actor/session proof.",
+    "Current source export separates stable binding from mutable native observations, exports actual standalone sourceKernelActors and explicitly reports canonical/financial authority false. It never labels this standalone actor a managed epoch."
+  ],
+  "findingsClosed": [
+    {
+      "finding": "Repeated or UTC close demanded already-restored FREE proxy units be terminal.",
+      "historicalSourceSha256": "7941598278efd8d7bf2b20db7023d38c276dfdcfd9e13ecdf63c3f6a6b041972",
+      "resolution": "restored_proxy authenticates real stop/free journal chain via frozen stopped_route, current original inputs/security/boots, exact free ACK/full environment, old paid/original process drain and backend epochs. Both stop loops and restore branch accept only that proof without repeating manager calls. Actual paid stop\u2192restore\u2192close\u2192UTC, partial retry and drift controls pass."
+    },
+    {
+      "finding": "PrivateTmp hid the retained /var/tmp import inventory needed by deadline free resume.",
+      "resolution": "Exact fixed inventory BindReadOnlyPaths added while PrivateTmp, capabilities and permissions remain unchanged. Root actual transient qualification proved original device/inode/hash and readonly mount, and collected its own transient."
+    },
+    {
+      "finding": "Full backend object equality could miss a live PID/start tuple because real kernel attribution includes transport while the query projects only identity.",
+      "historicalSourceSha256": "2066c29638f3cc0a48dbc00e412bed58e951d7e37328662548bf621f7f7d8307",
+      "resolution": "Both terminal and already-restored checks use exact(pid,backend_start::text) identity comparison; actual frozen Host+observer mapped transport-bearing tuple regression refuses the same current backend."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "/tmp/yunipals-alchemy-close-restored-proxy-original-reproduction-20261024.json",
+      "sha256": "c6bd41ce85e48e39b461549d98ab4153ccf1081fd98b94a7d537ac87b5429643",
+      "scope": "Independent source-only synthetic reproduction"
+    },
+    {
+      "file": "/tmp/yunipals-alchemy-backend-transport-original-reproduction-20261024.json",
+      "sha256": "60e88c93cdf81db2d2f4efdaad57cd0eab2eea186bca682c71c1e26e38cdeaf6",
+      "scope": "Independent source-only synthetic reproduction"
+    },
+    {
+      "file": "/tmp/yunipals-alchemy-deadline-inventory-qualification-production-20261024.json",
+      "sha256": "e989581ebc50251069ab45ccefdd7b9338b587f3a0079ce2cd6ee67082c1f98d",
+      "scope": "Root separately performed bounded production qualification; not repeated by this reviewer"
+    },
+    {
+      "file": "/tmp/yunipals-alchemy-ponder-four-cap-read-production-20261024.json",
+      "sha256": "443f8d83d9c6b154a364e6bf8d346e40c116e11df63827dad3be91fd2eaf5bfb",
+      "scope": "Root separately performed bounded production qualification; not repeated by this reviewer"
+    },
+    {
+      "file": "/tmp/yunipals-alchemy-typed-hook-shape-production-20261024.json",
+      "sha256": "1703e6aacc6f3627218d79f4532f6757121dfbeab97023337670ef6aeb6be9d8",
+      "scope": "Root separately performed bounded production qualification; not repeated by this reviewer"
+    }
+  ],
+  "limitations": [
+    "Source-only independent review; no actual lifecycle prepare, financial COMMIT, source/proxy startup or deadline execution was performed by this reviewer.",
+    "Root actual host/read-only checks are separately authenticated evidence, not a claim that this main has already been applied.",
+    "Same-boot/private/program/role/actor/static drift and unresolved manager/COMMIT acknowledgements fail closed; this is not a generic recovery framework or automatic renewal.",
+    "Before any actual paid source start the caller still needs actual protected plan/prepared/deadline/admission refs, current cache-prefix proof after owned drain, finite permit/window authority and final source/peer CAS.",
+    "This owner does not confer managed supervisor, reader cutover, parity,24h or financial-spend authority on downstream consumers."
+  ],
+  "productionHostActions": 0,
+  "productionDatabaseCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "productionActivationQualified": false,
+  "financialAuthorityQualified": false,
+  "currentWriterQualified": false
+}

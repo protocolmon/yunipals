@@ -1,0 +1,73 @@
+{
+  "candidateProducerSha256": "869a37bf324575c569c22fe020cc4ad62e9776429e1e5a137078bf5acaa262ca",
+  "dependencies": [
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.py",
+      "sha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-handover-v5.py",
+      "sha256": "9b9184e685d3171beba3bce2f09aa3ddbb9c57f980e5243bd4c9710017f7825f"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-cache-candidates-v1.py",
+      "sha256": "3d42ae007e722edc582a2a8907282869af37d940eeba93f7426d327280a428b3"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-capacity-watch-v1.py",
+      "sha256": "c65a9e9c88b397c98ff21c93bcf0a0782e054b2d6313620820603c6dd7f67ac6"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-generation-runtime-install-v2.py",
+      "sha256": "0c031bdc798b8466ea29624bbfdb253e392830ab2b2f833be4c41d6fb91c5e8f"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-fresh-forward-epoch-v1.py",
+      "sha256": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-generation-v5-preparation",
+  "monitorSha256": "376e75c883793905533e58fff3699fbd0a183201f19c5033f35aa2d77fcc7aa9",
+  "preserved": {
+    "abortFreeBytes": 30000000000,
+    "f81CompiledWorker": true,
+    "maximumMonitorSeconds": 1470,
+    "minimumReserveBytes": 25000000000,
+    "oldNamespacesUnmodified": true,
+    "originalGeneration103": true,
+    "poolMaximum": 4,
+    "serviceRuntimeMaxSeconds": 1500,
+    "sourceNative71e": true
+  },
+  "requiresActualInputs": [
+    "V5b read admission",
+    "V5 metadata execution/operation/selection/provenance",
+    "new V5 selector staged receipt",
+    "original installed generation artifact ACK"
+  ],
+  "runtimeSha256": "c9baba6776fd14270d63c09258d3cea3f2dd18306f21df50fc614ee909e9e9f3",
+  "sourcePhase": "ordinary standalone now; no managed identity inferred",
+  "testSha256": "2fa0b13af2c6ea023f961435c67cf7012f44c326066561b0ae88f32a29054491",
+  "validation": {
+    "actualCapsuleCaptured": false,
+    "candidatePublished": false,
+    "focusedControlsPassed": 7,
+    "generationBuilt": false,
+    "independentFocusedControlsPassed": 7,
+    "independentReviewPending": false,
+    "independentReviewSha256": "04e639000c7012654e9b3f09b399fd7bec7867d75388fa64baf38a921ad26a80",
+    "readersCutOver": false
+  }
+}

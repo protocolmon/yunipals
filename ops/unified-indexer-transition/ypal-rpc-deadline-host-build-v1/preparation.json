@@ -1,0 +1,37 @@
+{
+  "format": "yunipals-rpc-deadline-host-build-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "probe.py",
+      "sha256": "e9e84e7450debf66295279c92ffd67d0a5e8a28a2b3afc3599338c11ce271f90",
+      "bytes": 11427
+    },
+    {
+      "path": "probe.test.py",
+      "sha256": "c710949260630d57f7f7b7bea7f7deb845c12044ab607f843d978a3da7c66323",
+      "bytes": 8183
+    },
+    {
+      "path": "local-build.json",
+      "sha256": "4ad7055868dc2f736a944564f7021a3d9d922da0ec70ac6c3d3507bdff18fd07",
+      "bytes": 3527
+    },
+    {
+      "path": "README.md",
+      "sha256": "e43843241ee3c3fc4ca48c373aa3f0b8de12b7ebab6f9e6ae6ef479275d842b8",
+      "bytes": 3202
+    }
+  ],
+  "independentReviewSha256": "95a3af4f6f40e59dc24c4c028f4515df236076398113486624fb53284679dc3f",
+  "authorControlsPassed": 9,
+  "independentControlsPassed": 9,
+  "currentSourceContextSha256": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae",
+  "factorySha256": "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192",
+  "programSha256": "e644eefeaecd4b970e89320bb8cef5c401180605d742f2018b0fbc6aa2c8820f",
+  "actualHostBuildPerformed": false,
+  "sourceActions": 0,
+  "providerCalls": 0,
+  "databaseWrites": 0,
+  "runningTransportChanged": false
+}

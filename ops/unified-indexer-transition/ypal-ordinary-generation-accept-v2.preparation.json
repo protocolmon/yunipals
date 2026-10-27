@@ -1,0 +1,50 @@
+{
+  "actualEffects": {
+    "buildStarts": 0,
+    "candidateAcceptance": 0,
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "productionAccess": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "bytes": 22026,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v2.py",
+      "sha256": "b6b6eb8c707290c29fbcd6eedf2e13c6c1d5dcc293a3806b0d6ab76bc9ab49fe"
+    },
+    {
+      "bytes": 8084,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v2.test.py",
+      "sha256": "b8c85a1006d4e779b03eafa163304d96b8b16d1ad77a362246d0e58bb6c50a62"
+    },
+    {
+      "bytes": 2581,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v2.md",
+      "sha256": "24a5ff60e0f77b5703ba949ddcff4c4de05a7359575cb9ec8a088f101b27227a"
+    },
+    {
+      "bytes": 17656,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v2.manifest.json",
+      "sha256": "dd2b7f08368e0814a3d68756a732587e3503a3e9371fd95f349b56f594ecea2f"
+    }
+  ],
+  "format": "yunipals-ordinary-generation-accept-v2-preparation",
+  "previousAcceptanceCLIPassed": false,
+  "previousAcceptanceProducerSha256": "1e29585a8c1b09747c061e47e0b2fbf2a984d10949c12f36d847b336f8a5259d",
+  "remainingAcceptance": [
+    "actual_new_complete_Host_readonly_review",
+    "fresh_exact_review_hash_before_new_candidate_acceptance",
+    "actual_candidate_receipt",
+    "newconsumer_source_bindings_and_fresh_complete_callback_timing",
+    "separate_coordinated_publication"
+  ],
+  "runtimeSourceFiles": 168,
+  "sourceOnly": true,
+  "validation": {
+    "actualPinnedRunSignature": "(args, data=None)",
+    "groups": 8,
+    "retainedCommandByteLimit": 2000000,
+    "retainedSubprocessSeconds": 8
+  }
+}

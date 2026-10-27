@@ -1,0 +1,72 @@
+{
+  "format": "yunipals-ypal-managed-indexer-launcher-preparation-v1",
+  "status": "source-only-independently-reviewed-local-lifecycle-tested",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/launcher.mjs",
+      "bytes": 7277,
+      "sha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/launcher.test.mjs",
+      "bytes": 11715,
+      "sha256": "a947e96b21aad3f8f21e295cc59c02152db2cc3c5a02151f9b1461c5cf6b75e6"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/service.public.env",
+      "bytes": 901,
+      "sha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/yunipals-indexer.service.example",
+      "bytes": 2821,
+      "sha256": "16f2f4d84999d8f26cfeb9b30d38c6385d66ce6f6018f8b4343c21d80e6f0f59"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-managed-indexer-v1/README.md",
+      "bytes": 4279,
+      "sha256": "4623bcda07d113befcf65c7369f24eb06add8c73d2169ed5f6f89dc35dd69f50"
+    }
+  ],
+  "node": "24.18.1",
+  "localLifecycleControlsPassed": 12,
+  "localWorkerProgramsAreFixtures": true,
+  "realProductionWorkerImports": 0,
+  "providerCalls": 0,
+  "databaseConnections": 0,
+  "serviceActions": 0,
+  "actualProductionUnitStaged": false,
+  "actualProductionSwitchPerformed": false,
+  "independentReviewPerformed": true,
+  "actualManagedOwnerComplete": false,
+  "unitParserCheck": {
+    "passed": true,
+    "onlyExecStartReplacedWithLocalBinTrue": true,
+    "productionPathsOrMountsQualified": false
+  },
+  "localSyntaxCheckPassed": true,
+  "sourceContext": {
+    "schema": "unified_ypal_20261023_v1",
+    "build": "71e2a7f3b7",
+    "port": 9028,
+    "sourceWorkspaceRetained": true,
+    "sourceFilesOrEnvironmentValuesReadByParent": false
+  },
+  "remaining": [
+    "Actual phase-aware managed handover owner and inverse",
+    "Fresh private child authentication and egress qualification",
+    "Source/reader/native Arena/fresh YPAL gates",
+    "Exclusive source and Solana writer transfer",
+    "Sustained observer dependency and ownership transfer",
+    "Production scheduled publication, restart, backup and 24-hour observation"
+  ],
+  "actualTemporaryYpalSourceInConflictSet": true,
+  "independentReview": {
+    "verdict": "pass-source-only",
+    "realChildProcessControlsPassed": 12,
+    "bindingsPassed": true,
+    "productionCalls": 0,
+    "actualWorkerImports": 0,
+    "reviewSha256": "9ebfc5648d036fc49d48a79d000f7b08fbfd965d5774fb220a201ff80caf9aa3"
+  }
+}

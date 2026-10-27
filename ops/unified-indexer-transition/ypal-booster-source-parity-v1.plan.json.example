@@ -1,0 +1,10 @@
+{
+  "format": "yunipals-ypal-booster-source-parity-plan-v1",
+  "captureId": "initial",
+  "boundary": 53000661,
+  "deployment": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-booster-source-parity-v1/deployment.confirmed.json",
+  "freshProfile": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-rpc-19212/profile.json",
+  "combinedProfile": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-v1/profile.json",
+  "header": null,
+  "output": "/var/backups/yunipals-ypal-booster-source-parity-v1-20261024/captures/initial/result.json"
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "chainId": 8453,
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "deployer": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "wrapper": "0xb0407dbe851f8318bd31404A49e658143C982F23",
+  "proto": "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3",
+  "contracts": {
+    "registry": {
+      "proxy": "0xeaeE2da120a398f21729D50672AC5d1Dd71d7274",
+      "implementation": "0x7b332Ba80CFA8aF55b0852B0175B57f2B9A69ea5",
+      "deploymentBlock": "52848575",
+      "deploymentTransaction": "0x26da2b65779c64d3a9cd7f06b9ce2d63e035d392de1de74bec8506abf0edd5c3",
+      "implementationDeploymentTransaction": "0x92add2ae3db40da0b00ad512244f9acfcacf6aa81ec235f7977e259f15ba4a51"
+    },
+    "monsters": {
+      "proxy": "0x105319be2182018c31FB10B1bE198c3cf238a146",
+      "implementation": "0xDe0f58649B6D272E4b7AFAeE1231F2c83c1599b9",
+      "deploymentBlock": "52848679",
+      "deploymentTransaction": "0xcc44c0111dc74b2892d5a5d50abce371d8bc4882f2fb16a5b8af669cdcadd10f",
+      "implementationDeploymentTransaction": "0x5eca8b8032d607c9ec1d25ac25348ad4ee371549f8ef3ba2fe7681792d30248d"
+    },
+    "engine": {
+      "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+      "implementation": "0x92e2351A83b6c445c94D0b887259D2b940c82a5a",
+      "deploymentBlock": "52848828",
+      "deploymentTransaction": "0x54fd40a6cc155e2e7522f5f937bce6335cb4705f68aaf9c2b7d70f3fad3f62f3",
+      "implementationDeploymentTransaction": "0x1dbd32bf3482d209fb6a30c7c93bfe5f45f127520213be3e7fc0d77d8c90239c"
+    }
+  },
+  "earliestDeploymentBlock": "52848542",
+  "auditedRuntimeCodeAndImplementationSlotsVerified": true,
+  "adminRolesAndDependenciesVerified": true,
+  "auditPackageSha256": "32fae8ad6b15d52c92cdeb7fa18e4452e762ca367a6dd29c427bb65ac3f06756",
+  "sourceVerificationResults": "verification/basescan-results.json",
+  "liveVrfTestCompleted": false,
+  "explorerVerification": {
+    "status": "verified-implementations-and-linked-proxies",
+    "checkedAt": "2026-10-20T10:51:41.503893+00:00",
+    "fullMatchImplementations": 3,
+    "similarMatchProxies": 3,
+    "linkedProxies": 3,
+    "evidence": "verification/published-source-check.json"
+  }
+}

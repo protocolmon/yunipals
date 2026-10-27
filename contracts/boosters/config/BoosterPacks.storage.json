@@ -1,0 +1,326 @@
+[
+  {
+    "label": "wrapper",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IVRFV2PlusWrapper",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "registry",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PackRegistry",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "monsters",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract YunipalMonsters",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "requestsPaused",
+    "slot": "2",
+    "offset": 20,
+    "type": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    }
+  },
+  {
+    "label": "originals",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct BoosterPacks.Original)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct BoosterPacks.Original",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "label": "packTypeId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "pendingRequest",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "revealedAt",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "remaining",
+            "slot": "2",
+            "offset": 8,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "minted",
+            "slot": "2",
+            "offset": 12,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "dailyCommitted",
+            "slot": "2",
+            "offset": 16,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "burned",
+            "slot": "2",
+            "offset": 20,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "requests",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct BoosterPacks.Request)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct BoosterPacks.Request",
+        "numberOfBytes": "192",
+        "members": [
+          {
+            "label": "originalId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "payer",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "paid",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "seed",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "ruleHash",
+            "slot": "4",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "receivedAt",
+            "slot": "5",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "quantity",
+            "slot": "5",
+            "offset": 8,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "executionGas",
+            "slot": "5",
+            "offset": 12,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "status",
+            "slot": "5",
+            "offset": 16,
+            "type": {
+              "encoding": "inplace",
+              "label": "enum BoosterPacks.Status",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "opening",
+            "slot": "5",
+            "offset": 17,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "received",
+            "slot": "5",
+            "offset": 18,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_pools",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => mapping(uint32 => uint32))",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "mapping",
+        "key": {
+          "encoding": "inplace",
+          "label": "uint32",
+          "numberOfBytes": "4"
+        },
+        "label": "mapping(uint32 => uint32)",
+        "numberOfBytes": "32",
+        "value": {
+          "encoding": "inplace",
+          "label": "uint32",
+          "numberOfBytes": "4"
+        }
+      }
+    }
+  },
+  {
+    "label": "refundCredits",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "totalRefundLiability",
+    "slot": "7",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  }
+]

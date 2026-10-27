@@ -1,0 +1,220 @@
+{
+  "aggregateSha256": "5e82530ab959333f75648aa01d51e66935e44c9d514e858685ecb3a1224074c0",
+  "format": "yunipals-alchemy-steady-tail-production-summary-v1",
+  "invoiceProjectionOnly": true,
+  "observation": {
+    "actorsUnchanged": true,
+    "chains": {
+      "base": {
+        "budgetDenialsDelta": 0,
+        "chargedCuNotInMethodCounterDelta": 0,
+        "counterDeltas": {
+          "fallbackBatches": 0,
+          "freeBatches": 253,
+          "freeCalls": 253,
+          "freeCircuitOpenBatches": 0,
+          "freeFailures": 42,
+          "freeOnlyFailures": 0,
+          "freeRateLimitRetries": 0,
+          "overloadedBatches": 0,
+          "paidBatches": 0,
+          "paidCalls": 0,
+          "sourcePacingTimeouts": 0,
+          "sourceQueueCancellations": 0,
+          "sourceQueueTimeouts": 0
+        },
+        "cuPerDayAtObservedRate": 0.0,
+        "grantedCuDelta": 0,
+        "paidCallsByMethod": {
+          "eth_getBlockByNumber": 0,
+          "eth_getLogs": 0
+        },
+        "paidCuByMethod": {
+          "eth_getBlockByNumber": 0,
+          "eth_getLogs": 0
+        },
+        "seconds": 319.137924,
+        "sourceRouting": "paid_primary",
+        "usdPer30DaysAtObservedRate": 0.0,
+        "usedCuDelta": 0
+      },
+      "bnb": {
+        "budgetDenialsDelta": 0,
+        "chargedCuNotInMethodCounterDelta": 0,
+        "counterDeltas": {
+          "fallbackBatches": 0,
+          "freeBatches": 360,
+          "freeCalls": 752,
+          "freeCircuitOpenBatches": 0,
+          "freeFailures": 3,
+          "freeOnlyFailures": 0,
+          "freeRateLimitRetries": 0,
+          "overloadedBatches": 0,
+          "paidBatches": 0,
+          "paidCalls": 0,
+          "sourcePacingTimeouts": 0,
+          "sourceQueueCancellations": 0,
+          "sourceQueueTimeouts": 0
+        },
+        "cuPerDayAtObservedRate": 0.0,
+        "grantedCuDelta": 0,
+        "paidCallsByMethod": {
+          "eth_getLogs": 0
+        },
+        "paidCuByMethod": {
+          "eth_getLogs": 0
+        },
+        "seconds": 319.144912,
+        "sourceRouting": "paid_logs_free_blocks",
+        "usdPer30DaysAtObservedRate": 0.0,
+        "usedCuDelta": 0
+      },
+      "ethereum": {
+        "budgetDenialsDelta": 0,
+        "chargedCuNotInMethodCounterDelta": 0,
+        "counterDeltas": {
+          "fallbackBatches": 0,
+          "freeBatches": 42,
+          "freeCalls": 42,
+          "freeCircuitOpenBatches": 0,
+          "freeFailures": 0,
+          "freeOnlyFailures": 0,
+          "freeRateLimitRetries": 0,
+          "overloadedBatches": 0,
+          "paidBatches": 0,
+          "paidCalls": 0,
+          "sourcePacingTimeouts": 0,
+          "sourceQueueCancellations": 0,
+          "sourceQueueTimeouts": 0
+        },
+        "cuPerDayAtObservedRate": 0.0,
+        "grantedCuDelta": 0,
+        "paidCallsByMethod": {
+          "eth_getBlockByNumber": 0,
+          "eth_getLogs": 0
+        },
+        "paidCuByMethod": {
+          "eth_getBlockByNumber": 0,
+          "eth_getLogs": 0
+        },
+        "seconds": 319.135551,
+        "sourceRouting": "paid_primary",
+        "usdPer30DaysAtObservedRate": 0.0,
+        "usedCuDelta": 0
+      },
+      "polygon": {
+        "budgetDenialsDelta": 0,
+        "chargedCuNotInMethodCounterDelta": 0,
+        "counterDeltas": {
+          "fallbackBatches": 0,
+          "freeBatches": 23,
+          "freeCalls": 23,
+          "freeCircuitOpenBatches": 0,
+          "freeFailures": 2,
+          "freeOnlyFailures": 0,
+          "freeRateLimitRetries": 0,
+          "overloadedBatches": 0,
+          "paidBatches": 22,
+          "paidCalls": 209,
+          "sourcePacingTimeouts": 0,
+          "sourceQueueCancellations": 0,
+          "sourceQueueTimeouts": 0
+        },
+        "cuPerDayAtObservedRate": 1131649.6472703775,
+        "grantedCuDelta": 4000,
+        "paidCallsByMethod": {
+          "eth_getBlockByNumber": 209,
+          "eth_getLogs": 0
+        },
+        "paidCuByMethod": {
+          "eth_getBlockByNumber": 4180,
+          "eth_getLogs": 0
+        },
+        "seconds": 319.137642,
+        "sourceRouting": "paid_primary",
+        "usdPer30DaysAtObservedRate": 17.823481944508444,
+        "usedCuDelta": 4180
+      }
+    },
+    "databaseWrites": 0,
+    "expiryPlan": {
+      "afterSpecificAuthorization": "Use separately acknowledged ordinarydailyallocations andboundedordinarypermits onexistingprofile/routes; preserve200kforegroundreserve andoldbookings; controlledsamebuildsourceenvpermit handover; supersedeonlyownedcatchupclosure afterordinaryACK. No sourcebuildorhistoricalreplaychange.",
+      "underExistingAuthority": "Preserve23:40 ownedclose and23:45 permitexpiry; no settingcancontinuepaidAlchemybeyondthatwindow withoutnewordinaryauthority."
+    },
+    "format": "yunipals-steady-tail-rate-comparison-v1",
+    "from": "2026-10-24T21:29:22.240491+00:00",
+    "interpretation": {
+      "allPaidFallbackBooleanFlagsFalse": true,
+      "callerLevelPaidRetriesSeparatelyObservable": false,
+      "dominantMethod": "Polygon eth_getBlockByNumber numeric blocks209 calls4180CU",
+      "freeEndpointFailedAttempts": 47,
+      "freeRateLimitSweepRetries": 0,
+      "freeRequestsUltimatelyFailed": 0,
+      "freeToPaidFallbackBatches": 0,
+      "paidCUUnaccountedByReturnedMethodCounters": 0,
+      "paidProxyInternalRetryLoop": false,
+      "source25kWouldLastMinutesAtObservedRate": 31.811965909090908,
+      "tagsAndHashOnlyLogsRemainFreeUnderCurrentReplayPolicy": true
+    },
+    "ledger": {
+      "actualExpiry": "2026-10-24T23:45:00Z",
+      "actualPermitSpentDeltaByChain": {
+        "1": 0,
+        "137": 3800,
+        "56": 0,
+        "8453": 0
+      },
+      "actualPermitSpentDeltaCu": 3800,
+      "conservativeBookedAllDaysCu": 4635000,
+      "conservativeBookedDeltaCu": 3000,
+      "from": "2026-10-24 21:29:41.423993+00",
+      "note": "CU grants are booked in1000CU chunks; ledger and proxy time intervals differ by seconds, so grant delta is not invoice usage.",
+      "ownPermitSpentTotalCu": 86120,
+      "permitRateCuPerDay": 1054380.5402407343,
+      "remainingOriginal20MCu": 15365000,
+      "seconds": 311.386627,
+      "through": "2026-10-24 21:34:52.81062+00"
+    },
+    "measuredProjectionRange": {
+      "cuPerDayHigh": 1131649.6472703775,
+      "cuPerDayLow": 1054380.5402407343,
+      "notAConfidenceInterval": true,
+      "usdPer30DaysHigh": 17.823481944508444,
+      "usdPer30DaysLow": 16.606493508791566
+    },
+    "normalForegroundReserveCu": 200000,
+    "normalGlobalDailyCu": 1000000,
+    "normalSourceDailyCu": 25000,
+    "pricingUrl": "https://www.alchemy.com/pricing",
+    "projectedCuPerDay": 1131649.6472703775,
+    "projectedUsdPer30Days": 17.823481944508444,
+    "projectedUsdPerDay": 0.5941160648169482,
+    "projectionIsNotBillOrGuaranteedFutureRate": true,
+    "proposedOrdinaryBudgetNotAuthorizedOrApplied": {
+      "foregroundReserveCu": 200000,
+      "globalDailyCu": 2000000,
+      "globalMaximumUsdPer30Days": 31.5,
+      "original20MWindowNotRenewed": true,
+      "otherBackgroundHeadroomAtSourceCapCu": 300000,
+      "requiresSpecificOngoingAuthorization": true,
+      "sameSourceBuildSchemaCacheAndAlchemyHybridRouting": true,
+      "sameSourceControlledEnvPermitRolloverRestartMayBeRequired": true,
+      "sourceMaximumUsdPer30Days": 23.625,
+      "unifiedSourceDailyCu": 1500000
+    },
+    "providerCalls": 0,
+    "publishedUsdPerMillionCu": 0.525,
+    "seconds": 319.135397,
+    "serviceActions": 0,
+    "sources": {
+      "closeAndExpiry": "ops/unified-indexer-transition/ypal-alchemy-source-completion-v1.py:201",
+      "normalCeilings": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.model.py:296",
+      "pricing": "https://www.alchemy.com/pricing",
+      "pricingDocs": "https://www.alchemy.com/docs/reference/pricing-plans",
+      "proxyCostAndRouting": "ops/unified-indexer-transition/ypal-alchemy-primary-queue-v1/rpc-budget-proxy.mjs:328,447,455,1096,2241,2457"
+    },
+    "through": "2026-10-24T21:34:41.375888+00:00"
+  },
+  "ordinaryAuthorizationGranted": false,
+  "ordinaryPolicyApplied": false
+}

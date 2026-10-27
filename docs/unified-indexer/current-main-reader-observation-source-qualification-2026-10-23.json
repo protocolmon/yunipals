@@ -1,0 +1,366 @@
+{
+  "format": "yunipals-current-main-reader-observation-preparation-v1",
+  "recordedAt": "2026-10-23T15:37:07.944497+00:00",
+  "preparedOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/consumer-current-main-observation-v1.py",
+      "sha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+      "bytes": 12259
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-current-main-observation-v1-test.py",
+      "sha256": "4f25eced4f05ab1866b35a0b394647422706f6f0940ae3e851c22f3aacbdf968",
+      "bytes": 13939
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-current-main-observation-v1.md",
+      "sha256": "be162efdeb4d3db0a761d1c2e23571ba2f79c7e52fd03fa45bcd944528572015",
+      "bytes": 5141
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-retained-selectors-observe-v1.py",
+      "sha256": "066c74a83a2933544b2e204c253e10756bc8cb4e8e9665e63123ddc29b273350",
+      "bytes": 4029
+    }
+  ],
+  "localTests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/consumer-current-main-observation-v1-test.py",
+    "passed": 17
+  },
+  "actualSourceQualification": {
+    "capturedResultSha256": "db115b07d55878ff53ec33e9e775e375daa49d5e522d5610f30e4f9231ef5403",
+    "acknowledged": false,
+    "defaultInstalledEntryQualified": false,
+    "executedViaSealedMemoryOnly": true,
+    "memoryOnlyMissingPublicDependency": {
+      "name": "consumer-retained-selectors-observe-v1.py",
+      "sha256": "066c74a83a2933544b2e204c253e10756bc8cb4e8e9665e63123ddc29b273350"
+    },
+    "result": {
+      "acknowledged": false,
+      "binding": {
+        "acceptedRuntimeFile": "/opt/yunipals-unified/operations/free-replay-20261020/dependency-rebase-range-hints-v5.json",
+        "acceptedRuntimeSha256": "caa2626c651d29e9a2bdb15e16be2e390d39b6c96ba27a6976cd921f991d2717",
+        "collectorAndIslandsExactOriginalObservations": true,
+        "currentMainInputs": {
+          "actualProcessEnvironmentCompared": true,
+          "configuredEnvironmentSha256": "c58108832ad46bee216b11535c048dfea6759966a91e5c73eebf09f6510c3f78",
+          "inlineEnvironmentSha256": "0b7019db2d28b985a1b05eaade8072f123790713824b8572c5ff0fded0793e9a",
+          "orderedPrivateFileHashes": {
+            "/etc/yunipals-indexer/indexer.env": "1351fdee6b57bcac48a2dd86f8dc3874cea7175ddab685d5155577cba7255b0f",
+            "/etc/yunipals-marketplace/production/indexer-rpc.env": "8ff71b2f619c6f77a19276e61a8e994ec983ad7a1dd167ca1aa6c8cacc248677",
+            "/etc/yunipals-metadata-cutover.env": "46594a01e5d8ba16762b6473625dfa74bf6839de66d0cc4275c61ca4ad9eb389"
+          },
+          "process": {
+            "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+            "pid": 1437990,
+            "startTicks": 6616203749
+          }
+        },
+        "currentMainInvocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+        "currentSelectors": {
+          "completed": true,
+          "format": "yunipals-consumer-retained-selectors-v1",
+          "services": [
+            {
+              "actualProcessEnvironmentCompared": true,
+              "boosterArtworkDirectoryPresent": false,
+              "boosterArtworkDirectorySha256": null,
+              "boosterDatabaseSchema": null,
+              "boosterDeploymentConfigured": false,
+              "flags": {
+                "API_BASE_ISLANDS_ENABLED": null,
+                "API_COLLECTOR_FILTERS_ENABLED": null,
+                "API_ISLANDS_ENABLED": null,
+                "API_ISLAND_STAKING_ENABLED": null,
+                "SOLANA_API_ENABLED": "true",
+                "SOLANA_LEGACY_METADATA_ENABLED": "true",
+                "YUNIPALS_READ_CACHE": "1"
+              },
+              "invocationId": "29aaa668db3d4e0cb9ebdddf851324d6",
+              "nonAllowlistedEnvironmentExported": false,
+              "orderedEnvironmentFileSelectors": [
+                "/etc/yunipals-indexer/indexer.env (ignore_errors=no)",
+                "/etc/yunipals-marketplace/production/indexer-rpc.env (ignore_errors=no)",
+                "/etc/yunipals-metadata-cutover.env (ignore_errors=no)"
+              ],
+              "process": {
+                "boot": "d1330112-af72-4b2e-a542-25504553ff5e",
+                "pid": 1437990,
+                "startTicks": 6616203749
+              },
+              "unit": "yunipals-api.service"
+            },
+            {
+              "actualProcessEnvironmentCompared": true,
+              "boosterArtworkDirectoryPresent": false,
+              "boosterArtworkDirectorySha256": null,
+              "boosterDatabaseSchema": null,
+              "boosterDeploymentConfigured": false,
+              "flags": {
+                "API_BASE_ISLANDS_ENABLED": null,
+                "API_COLLECTOR_FILTERS_ENABLED": "true",
+                "API_ISLANDS_ENABLED": null,
+                "API_ISLAND_STAKING_ENABLED": null,
+                "SOLANA_API_ENABLED": null,
+                "SOLANA_LEGACY_METADATA_ENABLED": null,
+                "YUNIPALS_READ_CACHE": null
+              },
+              "invocationId": "2de5e9a8069e4d83af37bdb004ca8e51",
+              "nonAllowlistedEnvironmentExported": false,
+              "orderedEnvironmentFileSelectors": [
+                "/etc/yunipals-indexer/indexer.env (ignore_errors=no)",
+                "/etc/yunipals-marketplace/production/indexer-rpc.env (ignore_errors=no)",
+                "/etc/yunipals-indexer/collector.env (ignore_errors=no)"
+              ],
+              "process": {
+                "boot": "d1330112-af72-4b2e-a542-25504553ff5e",
+                "pid": 1293145,
+                "startTicks": 6411168351
+              },
+              "unit": "yunipals-collector-api.service"
+            },
+            {
+              "actualProcessEnvironmentCompared": true,
+              "boosterArtworkDirectoryPresent": false,
+              "boosterArtworkDirectorySha256": null,
+              "boosterDatabaseSchema": null,
+              "boosterDeploymentConfigured": false,
+              "flags": {
+                "API_BASE_ISLANDS_ENABLED": "true",
+                "API_COLLECTOR_FILTERS_ENABLED": null,
+                "API_ISLANDS_ENABLED": "true",
+                "API_ISLAND_STAKING_ENABLED": "true",
+                "SOLANA_API_ENABLED": null,
+                "SOLANA_LEGACY_METADATA_ENABLED": null,
+                "YUNIPALS_READ_CACHE": null
+              },
+              "invocationId": "2859f1484a6d4d54ae39c854b0e02941",
+              "nonAllowlistedEnvironmentExported": false,
+              "orderedEnvironmentFileSelectors": [
+                "/etc/yunipals-indexer/islands-api.env (ignore_errors=no)"
+              ],
+              "process": {
+                "boot": "d1330112-af72-4b2e-a542-25504553ff5e",
+                "pid": 3115920,
+                "startTicks": 6539378382
+              },
+              "unit": "yunipals-islands-api.service"
+            }
+          ]
+        },
+        "databaseCalls": 0,
+        "format": "yunipals-current-main-reader-observation-v1",
+        "historicalObservationModified": false,
+        "installOrPromotionAuthorized": false,
+        "mainRuntimeEquivalence": {
+          "acceptedProofSha256": "caa2626c651d29e9a2bdb15e16be2e390d39b6c96ba27a6976cd921f991d2717",
+          "afterState": {
+            "ActiveState": "active",
+            "Id": "yunipals-api.service",
+            "InvocationID": "29aaa668db3d4e0cb9ebdddf851324d6",
+            "LoadState": "loaded",
+            "SubState": "running"
+          },
+          "beforeState": {
+            "ActiveState": "active",
+            "Id": "yunipals-api.service",
+            "InvocationID": "06856aa8d51d438ab965849bd288f2c6",
+            "LoadState": "loaded",
+            "SubState": "running"
+          },
+          "definitionsSha256": "d91709bfdb4edc068e7da1445eb858d87b331f0b8b9beb39ffa8d2d2a7d9addd",
+          "execIdentitySha256": "ad38818c8c0d200f5cbcea979c36a4a97c380a47d1111cc4882e2dfb425038f0",
+          "healthy": true,
+          "privateSettingsSha256": "89ba7e6fb1f5d3d501246ab77f82854f3180d4bcb7713d3e150b54693560b641",
+          "result": "success",
+          "runtimeFilesSha256": "4c46d4330ffa466927addcdb8a0152ac0552fb5831a8fe97ec4091bef6662e53",
+          "unit": "yunipals-api.service"
+        },
+        "oldStoredInvocationGateClaimedPassed": false,
+        "operatorSha256": "a57dbbf7d6ecf4e713150c26e930a647b9573caf95602712073bac8ff6d811b3",
+        "originalMainIdentityMismatchExplicit": true,
+        "originalMainInvocation": "61a721b3e677483a9dd4c273decbdee3",
+        "originalSelectorsFile": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-retained-selectors-actual-20261021.json",
+        "originalSelectorsSha256": "3a031e154a911b7b38634518cf872d5b224602cf393e174fb12cd7c5c2d641eb",
+        "privateValuesExported": false,
+        "providerCalls": 0,
+        "serviceActions": 0,
+        "sourceReadinessQualified": false
+      },
+      "reviewHash": "bcb334efe2f10713edcb4b66393c71820c74ddf37fe095f248d4285f851fcdc3"
+    },
+    "sourceQualificationPassed": true,
+    "staged": false
+  },
+  "historicalDefaultQualification": {
+    "attempted": true,
+    "qualified": false,
+    "reason": "public observer helper was never installed; no qualification bypass claimed",
+    "databaseCalls": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "currentNativePrerequisites": {
+    "observedAt": "2026-10-23T15:17:25.611164+00:00",
+    "summarySha256": "4985a40fd1fce655b02a4b938f352058f0ac0138c3a9cd66b2356940ee1b1476",
+    "checks": {
+      "source_native_runtime": {
+        "passed": true,
+        "value": {
+          "buildId": "bf4939b3ff",
+          "frameworkReady": "0",
+          "heartbeatAt": "1792768638555",
+          "locked": "1"
+        }
+      },
+      "native_chain_witnesses": {
+        "passed": true,
+        "value": []
+      },
+      "ownership_sources": {
+        "passed": true,
+        "value": [
+          {
+            "available": false,
+            "collection": "ethereum",
+            "ready": false,
+            "reason": "source_unavailable"
+          },
+          {
+            "available": false,
+            "collection": "base",
+            "ready": false,
+            "reason": "source_unavailable"
+          },
+          {
+            "available": false,
+            "collection": "polygon",
+            "ready": false,
+            "reason": "source_unavailable"
+          },
+          {
+            "available": false,
+            "collection": "bnb",
+            "ready": false,
+            "reason": "source_unavailable"
+          }
+        ]
+      },
+      "native_base_frame_without_approval": {
+        "failureClass": "read_only_SQL_unavailable",
+        "knownReason": "source_unavailable",
+        "passed": false
+      },
+      "legacy_base_cursor": {
+        "passed": true,
+        "value": {
+          "chainId": 8453,
+          "contract": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+          "deploymentBlock": "22224075",
+          "ingestionMode": "rpc",
+          "nextBlock": "52989639",
+          "updatedAt": "2026-10-23T15:17:12.882698+00:00"
+        }
+      },
+      "native_metadata_states": {
+        "passed": true,
+        "value": []
+      },
+      "current_generation": {
+        "passed": true,
+        "value": {
+          "currentId": "103",
+          "readIdentity": null,
+          "releaseId": null,
+          "state": "ready"
+        }
+      },
+      "cache_guard_graph": {
+        "passed": true,
+        "value": {
+          "count": 35,
+          "epochs": 4,
+          "legacy": 12,
+          "native": 0
+        }
+      }
+    },
+    "v4CandidateReceiptSha256": "be0e6ec9f39d9b967a5395a7955496be801a04dc26cf90f3ce7173941e8591a0",
+    "allCheckedStagedCandidateFilesStillExact": true,
+    "allFiveExistingGenerationGuardOperatorsPresent": true,
+    "databaseWrites": 0,
+    "serviceActions": 0,
+    "providerCalls": 0
+  },
+  "currentOriginalWorkerQualification": {
+    "observedAt": "2026-10-23T15:20:12.637065+00:00",
+    "summarySha256": "9ed1c202c0100620694af0761ed8e5c45a913a065ba2ecd09d4490f8639e86b1",
+    "workers": {
+      "yunipals-islands-metadata.service": {
+        "allStaticBaselineChecksMatch": true,
+        "currentInputAndProcessEnvironmentVerified": true,
+        "currentInvocation": "101e3af013974875a1ac073e1d337560",
+        "currentPid": "1438292",
+        "priorInvocation": "b265e23ab9f04f21b5e17b2d25a4e16b",
+        "sameInvocation": false,
+        "staticBaselineChecks": {
+          "configuredEnvironmentSha256": true,
+          "definitions": true,
+          "environmentFileHashes": true,
+          "inlineEnvironmentSha256": true
+        }
+      },
+      "yunipals-leaderboard.service": {
+        "allStaticBaselineChecksMatch": true,
+        "currentInputAndProcessEnvironmentVerified": true,
+        "currentInvocation": "7f7283cd237e4fe09918e5dd401fc5b5",
+        "currentPid": "1438025",
+        "priorInvocation": "08e18fd3e2054aa7973a24d283e19693",
+        "sameInvocation": false,
+        "staticBaselineChecks": {
+          "configuredEnvironmentSha256": true,
+          "definitions": true,
+          "environmentFileHashes": true,
+          "inlineEnvironmentSha256": true
+        }
+      },
+      "yunipals-metadata.service": {
+        "allStaticBaselineChecksMatch": true,
+        "currentInputAndProcessEnvironmentVerified": true,
+        "currentInvocation": "8e564785af54415a9611360e007e36aa",
+        "currentPid": "1438026",
+        "priorInvocation": "7c14cbbca42d499c8b7f713183e2510c",
+        "sameInvocation": false,
+        "staticBaselineChecks": {
+          "configuredEnvironmentSha256": true,
+          "definitions": true,
+          "environmentFileHashes": true,
+          "inlineEnvironmentSha256": true
+        }
+      }
+    },
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "nextExecutableIntegration": {
+    "implemented": false,
+    "requiresExplicitNewConsumerEntry": true,
+    "frozenInstall7Unchanged": true,
+    "afterOwnedPeerReplacementRequiresActualInstalledOtherAndVerifyInstalled": true,
+    "downstreamHandoverPinChangesDeferredForRootScope": true
+  },
+  "productionEffects": {
+    "persistentSourceFilesWritten": 0,
+    "protectedAcknowledgementsWritten": 0,
+    "rolesOrGrantsChanged": 0,
+    "runtimeOrTrafficChanges": 0,
+    "sourceOrProxyRestarts": 0,
+    "databaseMutations": 0,
+    "providerCalls": 0
+  },
+  "privateValuesExported": false,
+  "sourceReadinessOrActualInstallReceiptsInferred": false
+}

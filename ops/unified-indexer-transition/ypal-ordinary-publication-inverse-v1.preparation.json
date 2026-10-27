@@ -1,0 +1,71 @@
+{
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 91231,
+      "file": "ypal-ordinary-publication-inverse-v1.py",
+      "sha256": "a24e9ee2665b155ed5bc830a002bca64fac63de5e5bc7c20d65149416951e8b4"
+    },
+    {
+      "bytes": 44797,
+      "file": "ypal-ordinary-publication-inverse-v1.manifest.json",
+      "sha256": "65907c0686d1bd8e81538ceb2244c797dd185f67f474a1212e859c00f48be613"
+    },
+    {
+      "bytes": 53494,
+      "file": "ypal-ordinary-publication-inverse-v1.test.py",
+      "sha256": "a59132447833148b7da77b5bba7a38596d192ff8a95984641b336de846d5b32a"
+    },
+    {
+      "bytes": 1169,
+      "file": "ypal-ordinary-publication-inverse-v1-manifest.py",
+      "sha256": "c63a425ee28181dcb08b036d8cd2d7bd3523cd7143dea226b5ffea8ccdb850fe"
+    },
+    {
+      "bytes": 7603,
+      "file": "ypal-ordinary-publication-inverse-v1.md",
+      "sha256": "8b829a64e897d4c163974164cfe4f45f54d959a524e0403e9a12bac0054eb089"
+    },
+    {
+      "bytes": 98548,
+      "file": "ypal-ordinary-publication-inverse-v1.stage.json",
+      "sha256": "7684dc26f38ff2f080895ed4d562ce1831040ac646a41277dc548f2dffbd71b8"
+    }
+  ],
+  "format": "ypal-ordinary-publication-inverse-v1-preparation",
+  "frozenReader5OrForwardFilesEdited": false,
+  "inverseEffectsQualified": false,
+  "knownRequiredFollowups": [
+    "actual completed Reader5 ACK and Core3 input before stop-stage input rendering",
+    "actual own workload-stop ACK and completed C2 restored ACK before restore-stage input rendering",
+    "actual per-mode callback measurements and explicit root-reviewed effect attempts",
+    "unknown effect completion requires separate actual journal/XID/catalog review; this packet exposes no automatic completion API"
+  ],
+  "newProductionQualificationClaimed": false,
+  "privateInputOrInverseACKIncluded": false,
+  "publicStageClosureCount": 411,
+  "publicStageClosureFile": "ypal-ordinary-publication-inverse-v1.stage.json",
+  "publicStageClosureSha256": "7684dc26f38ff2f080895ed4d562ce1831040ac646a41277dc548f2dffbd71b8",
+  "verification": {
+    "actualCore3AndMapperCatalogBodiesExecuted": true,
+    "actualCore3PublicAPIAndSupplementalConstructorBothFixedAndNullRoutesExercised": true,
+    "actualHeldSQLQualificationClaimed": false,
+    "actualOriginalRolesCacheCapsuleSequenceExecutedWithExplicitTransportIO": true,
+    "actualSourceManifestFiles": 407,
+    "canonicalSourceManifestByteReproduced": true,
+    "completeNewCoreCatalogPostflightAfterReleasedLocksBeforeOwnCompletedReceipts": true,
+    "focusedControlsPassed": 17,
+    "genuineBothStageProofProviderPhaseHostConstructorsExecutedWithExplicitIO": true,
+    "genuineOriginalPreparedCallbackBodiesExecutedForAllThreeModes": true,
+    "genuineTransitionAndGenerationLockBodiesAndPublicReviewEffectLifecycleExercised": true,
+    "originalExceptionIdentityPreservedAcrossSecondaryPostflightAndDiagnosticStorageRefusals": true,
+    "ownStopDispatcherAndPureACKRoundTripExercised": true,
+    "positiveHeldInverseBackendCoveredByFrozenAuthority8Suite": true
+  }
+}

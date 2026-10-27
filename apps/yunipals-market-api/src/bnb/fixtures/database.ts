@@ -49,6 +49,8 @@ export function createBnbTestDatabase() {
         heartbeat_at=NULL,last_gap_at=NULL,last_error_code=NULL WHERE singleton`);
     await owner.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON
       yunipals_market.activity_block,yunipals_market.sale_receipt TO market_test_runtime;
+      GRANT SELECT ON yunipals_market.marketplace_legacy_selection,yunipals_market.marketplace_source_review TO market_test_runtime;
+      GRANT SELECT,INSERT,UPDATE,DELETE ON yunipals_market.legacy_sale_receipt_qualification TO market_test_runtime;
       GRANT SELECT ON yunipals_market.sale_replay_config,yunipals_market.sale_exclusion TO market_test_runtime`);
     await owner.query(`GRANT SELECT ON yunipals_market.opensea_discovery_scan,yunipals_market.opensea_discovery_page,
       yunipals_market.opensea_discovered_order,yunipals_market.opensea_discovered_state,

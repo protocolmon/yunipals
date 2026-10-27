@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "ypal-alchemy-ordinary-consumer-context-v1.py": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+    "ypal-alchemy-ordinary-runtime-v1.py": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+    "ypal-booster-source-parity-v1.py": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+    "ypal-combined-read-admission-v2.py": "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd",
+    "ypal-feature-handover-v1.py": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "ypal-fresh-forward-epoch-v1.py": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c",
+    "ypal-ordinary-read-admission-v5b.py": "a47d4f6b41839d3856244b7d08a92d3a8f56de71b8f566a22122bfb80f5213c3",
+    "ypal-ordinary-read-cache-v5.py": "387c6a16d5f0c203731212d1a54b618919c0413e4235a37a35510cff584d8cc2",
+    "ypal-ordinary-reader-cutover-v5.py": "78a3f0356060b091d52e9ac6fcbe1c5fdf31b44a955aef8fe7cbd5e76a3447d3",
+    "ypal-ordinary-readview-v5.py": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2",
+    "ypal-restored-feature-context-v1.py": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be",
+    "ypal-restored-feature-handover-v1.py": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035"
+  },
+  "files": {
+    "ypal-ordinary-feature-context-v5.py": "da2fea0aa36277c1c464ca27ad280b03ba31bfec2730182779ac839638496656",
+    "ypal-ordinary-feature-handover-v5.py": "cb21c6f6b6ffa627d24d67922892b7377191063f687253c65940e7a2a9f3e880"
+  },
+  "format": "yunipals-ypal-ordinary-feature-handover-v5-code"
+}

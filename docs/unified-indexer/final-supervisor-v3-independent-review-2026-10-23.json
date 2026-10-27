@@ -1,0 +1,74 @@
+{
+  "format": "yunipals-final-supervisor-v3-independent-review-v1",
+  "reviewedAt": "2026-10-23T11:18:22.473200+00:00",
+  "passed": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v2.py",
+      "sha256": "8ad5845ef641ad74bd4fbead7b01be74e5db4fbf54c8bbe140366267e5c06eab"
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v3.py",
+      "sha256": "9bbef64238130310ff1546770c9b2785f86978e90eb21d5f5289bfb9aa8046f6"
+    },
+    {
+      "path": "ops/unified-indexer-transition/final-supervisor-handover-v3-test.py",
+      "sha256": "4dca4f6c69509b1e7e60e58d6653207a34b3ffae000dab734d8dbadd735e7f0d"
+    },
+    {
+      "path": "ops/unified-indexer-transition/consumer-operational-live-booster-v1.py",
+      "sha256": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-feature-handover-v6.py",
+      "sha256": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/source6-normal-proxy-requalification-v1.py",
+      "sha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658"
+    },
+    {
+      "path": "docs/unified-indexer/final-supervisor-v3-preparation-2026-10-23.json",
+      "sha256": "bf5ea50fedf0ba4560447c7956caaf82aa2f205ae5108dbaaf547ecf53984bf9"
+    }
+  ],
+  "test": {
+    "command": "python3 -I -B ops/unified-indexer-transition/final-supervisor-handover-v3-test.py",
+    "exitCode": 0,
+    "testsPassed": 71
+  },
+  "astComparison": {
+    "baseline": "ops/unified-indexer-transition/final-supervisor-handover-v2.py",
+    "changedFunctions": [
+      "current_source",
+      "feature_inverse"
+    ],
+    "changedConstants": [
+      "EVIDENCE",
+      "SOURCE_BINDINGS",
+      "CONSUMER_OPERATOR_SHA",
+      "FEATURE_HELPER",
+      "FEATURE_HELPER_SHA"
+    ],
+    "addedOrRemovedFunctions": [],
+    "remainingWholeModuleAstIdentical": true
+  },
+  "reviewedBoundaries": [
+    "Exact current consumer producer 7fc0f645 and feature owner 114dd957 match their actual file bytes and the pinned v3 constants; the loaded installer retains its actual v7 result format and current entry producer.",
+    "Only fixed add6d4fb receipt path and exact 8f95600d qualifier bytes admit the separately acknowledged proxy replacement. validate_current checks current original source, static configuration, native identity, four proxy tuples and financial policy. The old whole-runtime validator is neither called nor claimed passed by the new branch.",
+    "The source branch requires the acknowledged e0772a5a original runtime, schema OID/build/catalog, boot link, same boot, infinity operational runtime, more than fifteen minutes financial headroom, free-only policy and no paid authority, source restart, native-caught-up claim or financial renewal.",
+    "Feature inverse loads only exact 114dd957 v6 and calls its authoritative validate_inverse on the protected inverse receipt. The current ten launch reads and prior two native target reads must be preserved; the old nine-read field alone is refused.",
+    "Retained v2 process ownership, start/stop acknowledgement, source/native quiescence, boot-link forward/inverse, selector, Solana ledger and consumer rollback behavior are AST-identical outside the two explicitly changed functions."
+  ],
+  "releaseBlockingFindings": [],
+  "readinessNotEstablished": [
+    "This code review creates no native coverage, actual handover plan, consumer install, feature grant/retirement, source selection or production cutover receipt.",
+    "Actual native catch-up and canonical boundary data plus the already retained live adoption and coordinated rollback gates remain required."
+  ],
+  "productionCalls": 0,
+  "stagingActions": 0,
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "sourceEdits": 0
+}

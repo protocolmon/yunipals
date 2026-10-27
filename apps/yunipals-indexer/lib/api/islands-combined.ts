@@ -5,14 +5,16 @@ import { isAddress } from "viem";
 import {
   islandCollections,
   baseIslandCollection,
+  baseIslandReadSchema,
   type IslandCollectionId
 } from "../islands/collections.js";
 import { islandReadModel } from "../islands/read-model.js";
 import { islandIdentity } from "../islands/queries.js";
 import { canonicalTokenId } from "../islands/metadata.js";
-import { baseIslandsReadiness } from "../islands/base-sync.js";
+import { baseIslandsReadiness } from "../islands/base-readiness.js";
 import { islandsReadiness } from "../islands/readiness.js";
-import { stakingReadiness } from "../islands/staking.js";
+import { stakingReadiness } from "../islands/staking-read.js";
+import { ownershipReadConfig } from "../offchain/sql.js";
 
 type Ready = { ready: boolean; [key: string]: unknown };
 export type CombinedIslandsDependencies = {
@@ -73,12 +75,10 @@ export function registerCombinedIslandsRoutes(
       .map((id) => {
         const definition = islandCollections[id];
         const model = islandReadModel(
-          id === "ethereum-islands"
-            ? ethereumSchema
-            : baseIslandCollection.schemaName,
+          id === "ethereum-islands" ? ethereumSchema : baseIslandReadSchema(),
           definition,
           stakingEnabled(),
-          baseEnabled()
+          baseEnabled() && states["base-islands-v2"].ready
         );
         return `SELECT ${model.columns} FROM ${model.relation} WHERE ${islandIdentity(definition)}`;
       })
@@ -168,6 +168,9 @@ export function registerCombinedIslandsRoutes(
     const scope = createHash("sha256")
       .update(
         JSON.stringify({
+          ...(ownershipReadConfig.releaseId
+            ? { ownershipRelease: ownershipReadConfig.releaseId }
+            : {}),
           sort,
           origin,
           edition,
@@ -246,7 +249,6 @@ export function registerCombinedIslandsRoutes(
       stakingEnabled()
     );
     const stakingNeeded =
-      stakingEnabled() &&
       selected.available.includes("ethereum-islands") &&
       (holding === "staked" || Boolean(owner && holding === "all"));
     return c.json({

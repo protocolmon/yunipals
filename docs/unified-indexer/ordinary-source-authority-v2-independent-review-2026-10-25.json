@@ -1,0 +1,26 @@
+{
+  "format": "yunipals-ordinary-source-authority-v2-independent-review",
+  "verdict": "PASS",
+  "scope": "Narrow immutable successor diff and local tests only; no production execution or callback timing qualification.",
+  "sources": {
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v2.py": "0a3044f4b71631b2ad33f4fd9e50bd8ccfe27a3bb9bc76d586daab2094a5c4fa",
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v2.test.py": "664e41091c743d5281d85c8f6c113a006a580522077f39982ad73bbfec7ed70a"
+  },
+  "unchangedParentSha256": "730d678a46777a8c86ec0d1350ba6bc7d6854614fe381e39e98a9c56bfdce7e1",
+  "independentlyRerun": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-source-authority-v2.test.py",
+    "passed": 14,
+    "failed": 0,
+    "localCapabilityFixture": "The restricted sandbox could not perform setresuid; the complete unchanged suite passed in the authorized local process context, including the real capability-zero peer."
+  },
+  "verified": [
+    "Exact source delta is new format/capture namespace and one state_batch normalization for the two fixed source units only.",
+    "An omitted EnvironmentFiles is accepted only after actual typed systemd Service data has exact a(sb) type and an empty array; there is no default for an absent typed property.",
+    "Nonempty or malformed typed values, missing unrelated fields and omitted EnvironmentFiles on any other unit still refuse. Present values retain the previous strict path.",
+    "All original live actor, file, finance, native readiness, READ, kernel, retirement and current CAS logic remains unchanged; no historical whole-proof success is relabelled."
+  ],
+  "findings": [],
+  "productionActions": 0,
+  "providerCalls": 0,
+  "productionTimingQualified": false
+}

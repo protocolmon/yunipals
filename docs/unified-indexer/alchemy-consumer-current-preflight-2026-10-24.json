@@ -1,0 +1,89 @@
+{
+  "actualAggregate": {
+    "actualNewAdmissionQualified": false,
+    "allColumnAclSha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "arenaNativeLoginCount": 0,
+    "arenaNativeRoleCount": 0,
+    "canonicalCoverageQualified": false,
+    "catalogSha256": "fe30c0dc31d10c2b3934ab08218b20eab0204ad4e4da76d4fe8e7e624a6dcad2",
+    "columnOverlapCount": 0,
+    "completed": true,
+    "currentMissingReadCount": 143,
+    "currentPresentReadCount": 0,
+    "databaseWrites": 0,
+    "format": "yunipals-current-consumer-readonly-preflight-v1",
+    "historicalReadScopeCount": 143,
+    "missingByExistingRole": {
+      "yunipals": 23,
+      "yunipals_islands_staking": 11,
+      "yunipals_unified_api": 28,
+      "yunipals_unified_collector": 26,
+      "yunipals_unified_islands_api": 21,
+      "yunipals_unified_read_cache": 26,
+      "yunipals_unified_support": 8
+    },
+    "nativeIdentitySha256": "5851bd59c51ba5608f79b562c8c935d8a711765664b24a5ab097d36e02d48d7f",
+    "presentByExistingRole": {},
+    "providerCalls": 0,
+    "sameRegisteredNative44": true,
+    "serviceActions": 0,
+    "sourceCompletionSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+    "sourcePID": 3806762,
+    "sourceReadinessQualified": true,
+    "stakingCurrentReadFunctions": [
+      {
+        "bodySha256": "fd1e2fee4454023224cfc4bc9817cec2eabf9383bd00016e70b31d75efcb4268",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "invoker": true,
+        "name": "source_boundary",
+        "oid": "75994965",
+        "owner": "10",
+        "stakingCanExecute": false
+      },
+      {
+        "bodySha256": "beddd1ec8b6356a370e44b5d5b735b6ad8ed3ee72e1d05b8e381ba37c2913298",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "invoker": true,
+        "name": "source_probe",
+        "oid": "75994968",
+        "owner": "10",
+        "stakingCanExecute": false
+      }
+    ],
+    "stakingRole": {
+      "limit": 2,
+      "login": false,
+      "memberships": 0,
+      "oid": "73765879",
+      "sessions": 0
+    }
+  },
+  "actualAggregateSha256": "8160a41aa92482c0450d9c0f802b79546201574e2e0e9fa4732fb716c7c58985",
+  "databaseWrites": 0,
+  "date": "2026-10-24",
+  "executedProgram": {
+    "file": "docs/unified-indexer/alchemy-consumer-current-preflight-2026-10-24.program.py",
+    "sha256": "5261ae1d1628c29b7d79caf81add2d5ef7541cffbb9fc3014d4b5403d4d3f0ba"
+  },
+  "format": "yunipals-alchemy-consumer-current-readonly-preflight-evidence-v1",
+  "grants": 0,
+  "historicalStaticProducerSha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+  "limitations": [
+    "The executed program predates the new intake; sameRegisteredNative44 means native44 identity and immutable receipt ancestry, not a fresh registration/read-marker query.",
+    "This capture is historical evidence of missing reads and role state, not an admission or authorization.",
+    "The paid source current proof is bounded by its actual automatic return and expiry; it cannot qualify the later ordinary writer.",
+    "No canonical coverage or sustained consumer-serving acceptance was captured."
+  ],
+  "loginChanges": 0,
+  "newIntakeExecutedOnHost": false,
+  "providerCalls": 0,
+  "rawCatalogExported": false,
+  "rawHostLogsExported": false,
+  "readScopeProducerSha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+  "serviceActions": 0,
+  "sourceCompletionProducerSha256": "0e147b366ff29194326f09d9a56d5a8d5bca77fe6c83b3ac9584f30dc6dee8f0"
+}

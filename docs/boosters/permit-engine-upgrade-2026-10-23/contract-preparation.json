@@ -1,0 +1,459 @@
+{
+  "format": "yunipals-permit-engine-contract-preparation-v1",
+  "preparedAt": "2026-10-23T15:58:55.773Z",
+  "status": "candidate-only-not-deployed",
+  "candidate": {
+    "sourceSha256": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8",
+    "compiler": "0.8.30+commit.73712a01",
+    "profile": "permit",
+    "optimizer": {
+      "enabled": true,
+      "runs": 1
+    },
+    "evmVersion": "cancun",
+    "viaIR": true,
+    "runtimeBytes": 24569,
+    "eip170Limit": 24576,
+    "runtimeHeadroomBytes": 7,
+    "creationBytes": 24800,
+    "creationCodeKeccak256": "0xf023699aa88555c93441bd0a9cdecd621b1d5387a047ef704e68bf496411189c",
+    "runtimeTemplateKeccak256": "0x9b40d5a6910713f30cbb8c2df1197b2332b77bf98741e1c0e7711fd6a10d49e7",
+    "immutableReferences": {
+      "41209": [
+        {
+          "start": 2273,
+          "length": 32
+        },
+        {
+          "start": 2569,
+          "length": 32
+        }
+      ]
+    },
+    "abiSha256": "bd1bda102292bb453de38337b595216a061c944342651282af884761bdfdc3aa",
+    "artifactSha256": "1e341edc7c5644c5363c39327139ef75a05983c18e48c97a1b88dc649f76ec0a"
+  },
+  "baseline": {
+    "sourceSha256": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d",
+    "runtimeBytes": 24258,
+    "currentImplementation": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+    "creationCodeKeccak256": "0x8ed4030562e476f672e62f0783cb82432c6f63af5df05c7e11ee9b65ee61890f",
+    "runtimeTemplateKeccak256": "0xb46625dbe1ec6a679c820c44d55453364c8debb4e0e257bcafdf50c073d56a8c",
+    "runtimeCodeKeccak256": "0xa5eadd4114e6f37b1189c9729f3ea7a03ef21675ccdf69d8b3da0d6aa522ee7a",
+    "outBatchArtifactSha256": "edc5f515b2e9c2b3912afbc30f570f962dfba9af21f9e351ff4ab1188a18ead1"
+  },
+  "storage": {
+    "applicationFieldsPreserved": 9,
+    "allLayoutRowsPreserved": 10,
+    "originalAndRequestStructsUnchanged": true,
+    "gapStartSlot": 8,
+    "gapSlots": 41,
+    "lastReservedSlot": 48,
+    "storageAdded": false
+  },
+  "abi": {
+    "allExistingEntriesUnchanged": true,
+    "oldEntryCount": 75,
+    "newEntries": [
+      {
+        "type": "function",
+        "name": "PERMIT_OPEN_VERSION",
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ],
+        "stateMutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "openPacksWithPermit",
+        "inputs": [
+          {
+            "name": "packTypeId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "count",
+            "type": "uint32",
+            "internalType": "uint32"
+          },
+          {
+            "name": "maxTotalVrfPrice",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "v",
+            "type": "uint8",
+            "internalType": "uint8"
+          },
+          {
+            "name": "r",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "s",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ],
+        "outputs": [],
+        "stateMutability": "payable"
+      }
+    ],
+    "functionSelectors": [
+      {
+        "signature": "CALLBACK_RESERVE()",
+        "selector": "0xbea9216d"
+      },
+      {
+        "signature": "CONFIG_ROLE()",
+        "selector": "0xa4d19feb"
+      },
+      {
+        "signature": "DEFAULT_ADMIN_ROLE()",
+        "selector": "0xa217fddf"
+      },
+      {
+        "signature": "MAX_OPEN_PACKS()",
+        "selector": "0x3cda41a1"
+      },
+      {
+        "signature": "PAUSER_ROLE()",
+        "selector": "0xe63ab1e9"
+      },
+      {
+        "signature": "PERMIT_OPEN_VERSION()",
+        "selector": "0x7835092d"
+      },
+      {
+        "signature": "UPGRADER_ROLE()",
+        "selector": "0xf72c0d8b"
+      },
+      {
+        "signature": "UPGRADE_INTERFACE_VERSION()",
+        "selector": "0xad3cb1cc"
+      },
+      {
+        "signature": "checkpointBlockHeaders(uint256,bytes[])",
+        "selector": "0x587a2eb6"
+      },
+      {
+        "signature": "checkpointRequestBlock(uint256)",
+        "selector": "0x4d076cb7"
+      },
+      {
+        "signature": "checkpointedBlockhash(uint256)",
+        "selector": "0xadabdeb5"
+      },
+      {
+        "signature": "claim(uint256,uint32,uint256,uint256)",
+        "selector": "0x75dbe8fb"
+      },
+      {
+        "signature": "claimable(uint256)",
+        "selector": "0xd1d58b25"
+      },
+      {
+        "signature": "execute(uint256)",
+        "selector": "0xfe0d94c1"
+      },
+      {
+        "signature": "getOriginal(uint256)",
+        "selector": "0xbc8c778f"
+      },
+      {
+        "signature": "getRequest(uint256)",
+        "selector": "0xc58343ef"
+      },
+      {
+        "signature": "getRoleAdmin(bytes32)",
+        "selector": "0x248a9ca3"
+      },
+      {
+        "signature": "grantRole(bytes32,address)",
+        "selector": "0x2f2ff15d"
+      },
+      {
+        "signature": "hasRole(bytes32,address)",
+        "selector": "0x91d14854"
+      },
+      {
+        "signature": "initialize(address,address,address,address)",
+        "selector": "0xf8c8765e"
+      },
+      {
+        "signature": "monsters()",
+        "selector": "0x084975d5"
+      },
+      {
+        "signature": "onOriginalBurned(uint256)",
+        "selector": "0x0f77bfea"
+      },
+      {
+        "signature": "openPack(uint256,uint256,uint256)",
+        "selector": "0x8fed816f"
+      },
+      {
+        "signature": "openPacks(uint256,uint32,uint256,uint256)",
+        "selector": "0x5a81c8af"
+      },
+      {
+        "signature": "openPacksWithPermit(uint256,uint32,uint256,uint256,uint8,bytes32,bytes32)",
+        "selector": "0x7ff1362d"
+      },
+      {
+        "signature": "originals(uint256)",
+        "selector": "0xac446a2d"
+      },
+      {
+        "signature": "pauseRequests(bool)",
+        "selector": "0x90ffa1f3"
+      },
+      {
+        "signature": "proofContext(uint256)",
+        "selector": "0x7d33d29e"
+      },
+      {
+        "signature": "proxiableUUID()",
+        "selector": "0x52d1902d"
+      },
+      {
+        "signature": "quote(uint256,uint32,uint256)",
+        "selector": "0xc407dbc4"
+      },
+      {
+        "signature": "quoteOpenPacks(uint256,uint32,uint256)",
+        "selector": "0xb40c4f63"
+      },
+      {
+        "signature": "rawFulfillRandomWords(uint256,uint256[])",
+        "selector": "0x1fe543e3"
+      },
+      {
+        "signature": "recover(uint256)",
+        "selector": "0x0ca35682"
+      },
+      {
+        "signature": "refundCredits(address)",
+        "selector": "0x61137e40"
+      },
+      {
+        "signature": "registry()",
+        "selector": "0x7b103999"
+      },
+      {
+        "signature": "renounceRole(bytes32,address)",
+        "selector": "0x36568abe"
+      },
+      {
+        "signature": "requests(uint256)",
+        "selector": "0x81d12c58"
+      },
+      {
+        "signature": "requestsPaused()",
+        "selector": "0xe43b7531"
+      },
+      {
+        "signature": "restoreRandomness(uint256,(uint256[2],uint256[2],uint256,uint256,uint256,address,uint256[2],uint256[2],uint256))",
+        "selector": "0xaa6c0139"
+      },
+      {
+        "signature": "revokeRole(bytes32,address)",
+        "selector": "0xd547741f"
+      },
+      {
+        "signature": "supportsInterface(bytes4)",
+        "selector": "0x01ffc9a7"
+      },
+      {
+        "signature": "totalRefundLiability()",
+        "selector": "0xaa410e76"
+      },
+      {
+        "signature": "upgradeToAndCall(address,bytes)",
+        "selector": "0x4f1ef286"
+      },
+      {
+        "signature": "withdrawRefund(address)",
+        "selector": "0xa16c86f7"
+      },
+      {
+        "signature": "wrapper()",
+        "selector": "0xac210cc7"
+      }
+    ],
+    "selectorCollisions": false
+  },
+  "sourceClosure": {
+    "count": 43,
+    "unrelatedSourcesByteIdentical": true,
+    "newDependency": [
+      {
+        "name": "lib/openzeppelin/token/ERC20/extensions/IERC20Permit.sol",
+        "sha256": "e3e2cd98b7a5b9cba47c4ccec3685fdaf838a00e5d6f188b289907f9a6d0b58f"
+      }
+    ]
+  },
+  "standardInput": {
+    "file": "docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json",
+    "sha256": "4c72f37ef060a68374322f4c9d9753dc3285c38958346a06756f6e4dad97cf85"
+  },
+  "validation": {
+    "suites": [
+      {
+        "suite": "test/AuditInvariant.t.sol:AuditInvariantTest",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/AuditPoC.t.sol:AuditPoCTest",
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/AuditPoC2.t.sol:AuditPoC2Test",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/BoosterMultiPack.t.sol:BoosterMultiPackTest",
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/BoosterPacks.t.sol:BoosterPacksTest",
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/BoosterPermit.t.sol:BoosterPermitTest",
+        "passed": 19,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/BoosterProofRecovery.t.sol:BoosterProofRecoveryTest",
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "test/DeployedStateFork.t.sol:DeployedStateForkTest",
+        "passed": 0,
+        "failed": 0,
+        "skipped": 6
+      },
+      {
+        "suite": "test/ProtoFork.t.sol:ProtoForkTest",
+        "passed": 0,
+        "failed": 0,
+        "skipped": 1
+      },
+      {
+        "suite": "test/YunipalMonstersMetadata.t.sol:YunipalMonstersMetadataTest",
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      }
+    ],
+    "passed": 95,
+    "failed": 0,
+    "skippedNetworkForks": 7,
+    "providerCalls": 0,
+    "transactions": 0,
+    "broadcasts": 0,
+    "deployedStateTestsClaimed": false,
+    "rawTestReport": {
+      "file": "/tmp/yunipals-booster-permit-all-tests-20261023.json",
+      "sha256": "2de1b09e14768a79bb71a17b8f97ae116462ff62fa1afaab890e9f16c1eed349"
+    }
+  },
+  "preservedOldPackages": {
+    "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/upgrade.unsigned.json": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+    "docs/boosters/batch-engine-upgrade-2026-10-23/solc-standard-input.json": "f66676caa22a03b578f154d5adf09d0e4099f001cff308aa1884aa6f8e642e9c"
+  },
+  "files": {
+    "contracts/boosters/src/BoosterPacks.sol": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8",
+    "contracts/boosters/test/BoosterPermit.t.sol": "ae8e426a0f1f76be58b959a30b451420a08fa118607434b57915b62665bd4b9e",
+    "contracts/boosters/foundry.toml": "3d9f808eeb47ca61fdf0a57230637477ae4f1a4548a4dcdec1c0c08f96fdecd1",
+    "contracts/boosters/.gitignore": "76b2f7405c517e7409efbe48f521aebdbfb04c4b09e4a1b0126bcbf2806cfdab",
+    "scripts/boosters/prepare-permit-engine-upgrade.mjs": "f227aedaf8b32d9cb4f84d36625cd2faa6898b2918ea766d31c0a13e9cdc36e7",
+    "scripts/boosters/prepare-permit-engine-upgrade.test.mjs": "328ce84df1bffc994fcfada8fe1b9ed5d20c315598d2025530bef20f6c4cc965",
+    "docs/boosters/permit-engine-upgrade-2026-10-23/upgrade.unsigned.json": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+    "docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json": "4c72f37ef060a68374322f4c9d9753dc3285c38958346a06756f6e4dad97cf85",
+    "docs/boosters/permit-engine-upgrade-2026-10-23/standalone-reproduction.json": "ec5d6dc45d828704ebafcc50678a9cc0954a1b0ab10fe814db8eac220c4b4d7a",
+    "docs/boosters/permit-engine-upgrade-2026-10-23/README.md": "d47b9a1aa0dcf3e26542d03c5320b4e4c4c8f3091e6f2892f7d87ea487223ba4"
+  },
+  "semantics": {
+    "newSelector": {
+      "signature": "openPacksWithPermit(uint256,uint32,uint256,uint256,uint8,bytes32,bytes32)",
+      "selector": "0x7ff1362d"
+    },
+    "capabilityGetter": {
+      "signature": "PERMIT_OPEN_VERSION()",
+      "selector": "0x7835092d"
+    },
+    "permitExactPackTotal": true,
+    "permitOwnerIsMsgSender": true,
+    "permitSpenderIsEngineProxy": true,
+    "permitDeadlineIsPurchaseDeadline": true,
+    "lowLevelPermitEtherValue": "0",
+    "permitFailureToleratedOnlyThroughExistingPaymentEnforcement": true,
+    "allPurchaseEntrypointsNonReentrant": true,
+    "noNewApplicationStorage": true,
+    "existingOpenPackDirectBodyUnchanged": true,
+    "newPermitEntrypointReturnsNoValues": true,
+    "requestIdsAuthoritativeInRequestCreatedEvents": true
+  },
+  "remaining": [
+    "independent unsigned-package and owner-interface review",
+    "fresh chain preflight",
+    "owner-signed implementation deployment and upgrade",
+    "buyer permit flow and genuine mainnet acceptance"
+  ],
+  "standaloneReproduction": {
+    "file": "docs/boosters/permit-engine-upgrade-2026-10-23/standalone-reproduction.json",
+    "sha256": "ec5d6dc45d828704ebafcc50678a9cc0954a1b0ab10fe814db8eac220c4b4d7a",
+    "creationAndRuntimeByteIdentical": true,
+    "allAbiEntriesIdenticalIgnoringOrder": true
+  },
+  "unsignedPackage": {
+    "file": "docs/boosters/permit-engine-upgrade-2026-10-23/upgrade.unsigned.json",
+    "sha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+    "noNonceOrFutureImplementationAssumed": true,
+    "configurationCalldata": "0x"
+  },
+  "builder": {
+    "source": "scripts/boosters/prepare-permit-engine-upgrade.mjs",
+    "sha256": "f227aedaf8b32d9cb4f84d36625cd2faa6898b2918ea766d31c0a13e9cdc36e7",
+    "test": "scripts/boosters/prepare-permit-engine-upgrade.test.mjs",
+    "testSha256": "328ce84df1bffc994fcfada8fe1b9ed5d20c315598d2025530bef20f6c4cc965",
+    "passedControls": 9,
+    "directLog": {
+      "file": "/tmp/yunipals-permit-upgrade-builder-tests-direct-20261023.log",
+      "sha256": "4934f65bc3fbc36f0c83ab57969f949378776a6c2cb3db694df6871b68a13023"
+    }
+  },
+  "independentContractReview": {
+    "file": "docs/boosters/mainnet-launch/permit-engine-independent-review-2026-10-23.json",
+    "sha256": "5efcfe74b92fd33db00ff7b957d7ba600d7d220deb6cb41bb53cccc3b61ee816"
+  }
+}

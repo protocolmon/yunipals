@@ -65,3 +65,12 @@ contracts/arena/broadcast/
 /docs/islands/arena-artwork-production-v2/**/public/images/
 /apps/yunipals-home-web/public/images/arena-*
 /apps/yunipals-home-web/public/videos
+
+# Additional booster runtime exclusions.
+# Private local tournament state and encryption key
+# Locks are local to the assisted artwork controller.
+docs/boosters/artwork-prototype/.generation.lock
+# Runtime queue and process locks; approved content-addressed artwork is retained.
+docs/boosters/artwork-runtime/jobs/
+docs/boosters/artwork-runtime/.generation.lock
+.env*.local

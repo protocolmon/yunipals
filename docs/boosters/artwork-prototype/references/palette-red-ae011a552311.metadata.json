@@ -1,0 +1,100 @@
+{
+  "metadataUrl": "https://meta.polkamon.com/meta?id=1000000017",
+  "metadata": {
+    "animation_url": "https://drive.polychainmonsters.com/ipfs/QmVNrGXbv3GYi2DaLrjFBBkQELcvUmewUbRQm8a1hWavU5",
+    "attributes": [
+      {
+        "trait_type": "Horn",
+        "value": "Wide"
+      },
+      {
+        "trait_type": "Type",
+        "value": "Unichick"
+      },
+      {
+        "trait_type": "Color",
+        "value": "Red"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Booster",
+        "value": 6
+      },
+      {
+        "trait_type": "Glitter",
+        "value": "None"
+      },
+      {
+        "display_type": "date",
+        "trait_type": "Birthday",
+        "value": 1617210165
+      },
+      {
+        "trait_type": "Background",
+        "value": "Grassland"
+      },
+      {
+        "trait_type": "Origin Chain",
+        "value": "Ethereum"
+      },
+      {
+        "trait_type": "First Edition",
+        "value": "Yes"
+      },
+      {
+        "trait_type": "Rarity Points",
+        "value": 6.7708
+      },
+      {
+        "trait_type": "Opening Network",
+        "value": "Ethereum"
+      },
+      {
+        "trait_type": "Last metadata update",
+        "value": 1790031694,
+        "display_type": "date"
+      }
+    ],
+    "background_color": "FFFFFF",
+    "description": "Hectic and fluttering, the Unichick is always on the move, discovering life at the fastest pace. Behind the hyperactive facade is the full presence of timidity and thoughtfulness.",
+    "external_url": "https://polkamon.com/polkamon/T07C05H01B01G00",
+    "id": "1000000017",
+    "type": "unichick",
+    "origin": "GEN1_BOOSTER",
+    "image": "https://drive.polychainmonsters.com/ipfs/QmTSBMBxGKFjqMvvxzbaa9BEyhagAUmyooWMpyPqmpTJLq",
+    "code": "T07C05H01B01G00",
+    "initialProbabilities": {
+      "horn": 0.2,
+      "type": 0.15,
+      "color": 0.2,
+      "glitter": 0.96,
+      "background": 1
+    },
+    "name": "Unichick",
+    "txHash": "0x6049c49ae259fbf2d8a0ce9eba375c37522d0b0cd98a81f9d477c15818baf0d8",
+    "bridged": false,
+    "chain": "eth",
+    "chainGroup": "ETHEREUM",
+    "originChain": "eth",
+    "originChainGroup": "ETHEREUM",
+    "nftContract": "polychainmonsters",
+    "opening_network": "Ethereum",
+    "rarity": 6.7708,
+    "rarityCapped": 6.7708,
+    "boosterId": 6,
+    "gameData": {
+      "sum": 662,
+      "fire": 181,
+      "wind": 124,
+      "earth": 140,
+      "score": 4.166667,
+      "water": 100,
+      "health": 116,
+      "pFactor": 1.619789,
+      "version": "v3"
+    },
+    "address": "0xfb1e6169d4102351c13b579aa3039181b3a51815",
+    "ownerSince": "2021-04-04T18:22:40.000Z",
+    "minted": true
+  }
+}

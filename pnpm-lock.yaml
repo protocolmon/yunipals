@@ -206,6 +206,9 @@ importers:
       '@hono/node-server':
         specifier: 1.19.17
         version: 1.19.17(hono@4.13.8)
+      '@protopals/yunipals-indexer-server':
+        specifier: workspace:*
+        version: link:../../packages/yunipals-indexer-server
       '@protopals/yunipals-market-core':
         specifier: workspace:*
         version: link:../../packages/yunipals-market-core
@@ -234,6 +237,24 @@ importers:
       typescript:
         specifier: 5.7.3
         version: 5.7.3
+
+  packages/yunipals-indexer-client: {}
+
+  packages/yunipals-indexer-server:
+    dependencies:
+      '@protopals/yunipals-indexer-client':
+        specifier: workspace:*
+        version: link:../yunipals-indexer-client
+      '@protopals/yunipals-market-core':
+        specifier: workspace:*
+        version: link:../yunipals-market-core
+    devDependencies:
+      '@types/node':
+        specifier: 22.13.4
+        version: 22.13.4
+      '@types/pg':
+        specifier: 8.11.11
+        version: 8.11.11
 
   packages/yunipals-market-core:
     dependencies:

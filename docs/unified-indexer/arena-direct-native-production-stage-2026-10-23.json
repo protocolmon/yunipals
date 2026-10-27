@@ -1,0 +1,54 @@
+{
+  "format": "yunipals-arena-direct-native-production-stage-v1",
+  "recordedAt": "2026-10-23T01:19:27Z",
+  "host": "yunipals-main",
+  "staged": true,
+  "files": [
+    {
+      "file": "/opt/yunipals-unified/operations/free-replay-20261020/arena-direct-native-cutover-v1.py",
+      "sha256": "983f8baa24a2b82b0dce4e4716c64f9e4f68876db1d809f3a393177b390e81a6",
+      "bytes": 67771,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "created": true
+    },
+    {
+      "file": "/opt/yunipals-unified/operations/free-replay-20261020/arena-direct-native-cutover-v1.mjs",
+      "sha256": "a5efd3ed83c3f2168055b84db4d09973ccb6ccc1d194b70ac39fa26110fd98a9",
+      "bytes": 24567,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "created": true
+    }
+  ],
+  "rootVerification": {
+    "pythonControlsPassed": 26,
+    "nodeControlsPassed": 9,
+    "realPostgresPassed": true,
+    "realCommitBoundaries": 3,
+    "lostCommitAcknowledgementsReconciledByActualXid": 3,
+    "independentContinuationReviewPassed": true,
+    "independentFinalPrivateInputRecheckDeltaPassed": true,
+    "runtimeProvidersAndChainReadsInPostgresTest": "synthetic; real PostgreSQL migrations/adoption/source-selector/XIDs",
+    "realHttpRequests": 0
+  },
+  "productionOperatorsExecuted": 0,
+  "serviceActions": 0,
+  "databaseWrites": 0,
+  "credentialWrites": 0,
+  "sourceSelectionChanges": 0,
+  "providerCalls": 0,
+  "roleAdmissionApplied": false,
+  "nativeCutoverPerformed": false,
+  "actualSourceReadinessClaimed": false,
+  "remaining": [
+    "exact nine-role admission and private credential authentication",
+    "real current canonical source and covered Base floor",
+    "fresh protected actor observation and read-only cutover review",
+    "actual cutover and sustained API/worker acceptance",
+    "separate post-native public-only rollback and coordinated recovery",
+    "24-hour observation and duplicate-scanner retirement"
+  ]
+}

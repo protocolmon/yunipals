@@ -1,0 +1,49 @@
+{
+  "format": "yunipals-real-proto-permit-fork-acceptance-v1",
+  "at": "2026-10-23T16:30:10.466625+00:00",
+  "chainId": 8453,
+  "forkBlock": 52988000,
+  "transport": "https://mainnet.base.org",
+  "test": "contracts/boosters/test/ProtoPermitFork.t.sol",
+  "testSourceSha256": "654c4e9307d84cde3924e51975b781f73cb77b8d29e45395b7143fd543b2ffea",
+  "testResult": "1passed,0failed,0skipped",
+  "logSha256": "a02c8ec2b1206d032ef34148d356174c7a592dfe27d6e2af948d5282a807901a",
+  "command": "FOUNDRY_PROFILE=permit BOOSTER_FORK_RPC_URL=https://mainnet.base.org BOOSTER_FORK_BLOCK=52988000 forge test --match-contract ProtoPermitForkTest -vv",
+  "actualRemoteState": [
+    "BasePROTO",
+    "backingPMON",
+    "Chainlinknativewrapper/coordinator configuration"
+  ],
+  "verifiedInLocalFork": [
+    "Wrap one PMON into one realPROTO with backing.",
+    "An ephemeral local account signs the realPROTO EIP2612 domain/nonce; engine allowance starts at0.",
+    "One external openPacksWithPermit call consumes the actual token permit, burns exactly onePROTO and transfers one backingPMON to burnAddress.",
+    "PROTO nonce increments once and exact allowance is consumed; PMON total supply is unchanged.",
+    "Actual wrapper request and engine RequestCreated log bind the paid fee, request/original and payer.",
+    "An explicit synthetic wrapper callback mints the original to that payer."
+  ],
+  "retained": {
+    "engineSourceSha256": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8",
+    "frozenUnsignedPackageSha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+    "compiledCreationAndRuntimeStillMatchFrozenPackage": true,
+    "sharedIndexerEventAbiSha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba"
+  },
+  "limitations": [
+    "Fresh proxies and a single-variant test catalog exist only in local fork memory. This does not activate or test the deployed proxy upgrade.",
+    "The gas price is fixed at1gwei for this fixture; its wrapper quote is not a current public price.",
+    "Fulfillment is an authenticated synthetic callback, not new mainnet oracle delivery.",
+    "First mainnet permit purchase and its genuine callback remain pending."
+  ],
+  "initialHarnessAttempt": {
+    "passed": false,
+    "cause": "Wrapper lastRequestId was not the engine request identifier. The final test uses the actual engine RequestCreated event.",
+    "productChangesRequired": false
+  },
+  "scope": {
+    "localSyntheticSigningOnly": true,
+    "userWalletSignatures": 0,
+    "mainnetBroadcasts": 0,
+    "remoteDatabaseWrites": 0,
+    "localForkStateChanges": true
+  }
+}

@@ -1,5 +1,13 @@
 import type { Pool } from "pg";
 import { transaction } from "@/db/pool";
+import { migrateArenaIdentities } from "./identitySchema";
+import { migrateArenaDisclosure } from "./disclosureSchema";
+import { migrateArenaDisclosureQueue } from "./disclosureQueueSchema";
+import { migrateArenaTransactions } from "./transactionSchema";
+import { migrateArenaClientTransactions } from "./clientTransactionSchema";
+import { migrateArenaProviders } from "./providerSchema";
+import { migrateArenaMedia } from "./mediaSchema";
+import { migrateArenaSourceSelection } from "./sourceSelectionSchema";
 
 // Independent schema on the existing PostgreSQL cluster. No marketplace tables altered.
 export async function migrateArena(pool: Pool) {
@@ -22,8 +30,6 @@ export async function migrateArena(pool: Pool) {
         PRIMARY KEY(deployment,transaction_hash,log_index)
       );
       CREATE INDEX IF NOT EXISTS arena_event_order ON yunipals_arena.chain_event(deployment,block_number,log_index);
-      CREATE INDEX IF NOT EXISTS arena_wallet_events ON yunipals_arena.chain_event(deployment,lower(args->>'player'),event_name,block_number);
-      CREATE INDEX IF NOT EXISTS arena_tournament_events ON yunipals_arena.chain_event(deployment,(args->>'id'),block_number,log_index);
       CREATE TABLE IF NOT EXISTS yunipals_arena.tournament (
         deployment text NOT NULL REFERENCES yunipals_arena.deployment(id), id numeric(78) NOT NULL,
         state jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now(),
@@ -33,9 +39,6 @@ export async function migrateArena(pool: Pool) {
         deployment text NOT NULL, wallet text NOT NULL, amount numeric(78) NOT NULL CHECK(amount>=0),
         PRIMARY KEY(deployment,wallet)
       );
-      CREATE INDEX IF NOT EXISTS arena_tournament_host ON yunipals_arena.tournament(deployment,(state->>'islandBeneficiary'),id);
-      CREATE INDEX IF NOT EXISTS arena_tournament_island ON yunipals_arena.tournament(deployment,(state->>'islandId'),id);
-      CREATE INDEX IF NOT EXISTS arena_tournament_state ON yunipals_arena.tournament USING gin(state jsonb_path_ops);
       CREATE TABLE IF NOT EXISTS yunipals_arena.challenge (
         id text PRIMARY KEY, deployment text NOT NULL, wallet text NOT NULL, message text NOT NULL,
         expires_at timestamptz NOT NULL, used_at timestamptz
@@ -129,5 +132,13 @@ export async function migrateArena(pool: Pool) {
       CREATE INDEX IF NOT EXISTS arena_identity_queue ON yunipals_arena.identity_job(deployment,state,created_at);
       ALTER TABLE yunipals_arena.identity_job ADD COLUMN IF NOT EXISTS profile_hash text;
     `);
+    await migrateArenaIdentities(db);
+    await migrateArenaDisclosure(db);
+    await migrateArenaDisclosureQueue(db);
+    await migrateArenaTransactions(db);
+    await migrateArenaClientTransactions(db);
+    await migrateArenaProviders(db);
+    await migrateArenaMedia(db);
+    await migrateArenaSourceSelection(db);
   });
 }

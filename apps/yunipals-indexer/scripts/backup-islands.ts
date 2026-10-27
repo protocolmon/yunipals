@@ -32,7 +32,7 @@ try {
       ORDER BY b.content_hash`
   );
   const readiness = await client.query(
-    "SELECT * FROM metadata.chain_readiness WHERE collection IN ('ethereum-islands','base-islands','base-islands-v2')"
+    "SELECT * FROM metadata.chain_readiness WHERE collection='ethereum-islands'"
   );
   await writeFile(
     join(directory, "sources.json"),
@@ -48,27 +48,13 @@ try {
   for (const [name, filters] of [
     ["islands.dump", [`--schema=${schema}`]],
     [
-      "foundation.dump",
-      [
-        "--schema-only",
-        "--table=metadata_source.source_blob",
-        "--table=metadata.chain_readiness"
-      ]
-    ],
-    [
       "publication.dump",
       [
         "--table=metadata_source.island_revision",
         "--table=metadata.island_publication",
-        "--table=metadata.island_verification",
-        "--table=metadata.island_airdrop_origin",
-        "--table=metadata.island_replacement_origin",
-        "--table=metadata.island_staking_scan",
-        "--table=metadata.island_staking_position"
+        "--table=metadata.island_verification"
       ]
-    ],
-    ["base-islands.dump", ["--schema=yunipals_base_islands_v1"]],
-    ["base-islands-v2.dump", ["--schema=yunipals_base_islands_v2"]]
+    ]
   ] as const) {
     const dump = join(directory, name);
     await writeFile(dump, "", { mode: 0o600 });
@@ -103,9 +89,6 @@ try {
   const files: Record<string, string> = {};
   for (const name of [
     "islands.dump",
-    "foundation.dump",
-    "base-islands.dump",
-    "base-islands-v2.dump",
     "publication.dump",
     "sources.json",
     "readiness.json"

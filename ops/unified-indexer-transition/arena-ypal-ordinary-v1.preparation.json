@@ -1,0 +1,122 @@
+{
+  "actualEffects": {
+    "ArenaSelected": false,
+    "credentialActions": 0,
+    "databaseWrites": 0,
+    "hostCalls": 0,
+    "newReceiptInvented": false,
+    "providerCalls": 0,
+    "runtimeInstalled": false,
+    "serviceActions": 0,
+    "sourceChanges": 0,
+    "workersStarted": false
+  },
+  "artifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234",
+  "artifactManifestSha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+  "existingPrerequisites": {
+    "credentialAuthenticationReceipt": {
+      "authenticationReceiptHashPublished": false,
+      "file": "/var/backups/yunipals-arena-ypal-current-credentials-v1-20261024/auth-result.json",
+      "publicCredentialProducerSha256": "0bd21ca83b63aba02d3eb0113704edaac3a4f2dc34148d322db38a356d9f021f",
+      "requiredThroughProtectedPrivatePlan": true
+    },
+    "eightActorAcknowledgementSha256": "d3f1b61c244979dbf8b94281ba0d062e35fbca5ee52a1c92d9b9d97bd52781d4",
+    "mixedNineRoleAdmissionSha256": "620bb80a35dda4852af32e1a8867812133da260c8ac328802bdbd025e7049d97"
+  },
+  "files": [
+    {
+      "bytes": 15633,
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-build-v1.mjs",
+      "sha256": "011ba9d3a3769024b8cee3c321aae263c8c0a023c417f286a2a5011693710e88"
+    },
+    {
+      "bytes": 6618,
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-build-v1.test.mjs",
+      "sha256": "56c87212e8e03aa6b3ec64cad8afd95a551a81d1750467694fa0f8378b30c2d2"
+    },
+    {
+      "bytes": 8455,
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-postgres.test.mjs",
+      "sha256": "91b5445a8b6254ba2dcdc3f2b3f2341224514d8dcaa4ba585ff4ee70f2c65ff0"
+    },
+    {
+      "bytes": 33677,
+      "path": "ops/unified-indexer-transition/arena-ordinary-latest-complete-v1.manifest.json",
+      "sha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf"
+    },
+    {
+      "bytes": 8533,
+      "path": "ops/unified-indexer-transition/arena-ordinary-runtime-v1.py",
+      "sha256": "7889fca5e47734f263eb51c5f2338e4080e17070188876db26bf4cc0080b2dad"
+    },
+    {
+      "bytes": 20544,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.py",
+      "sha256": "60c3dbbfc90a8d7540616278eb51cb329a097a1bab20d0b6e66d9f17f92c1fd0"
+    },
+    {
+      "bytes": 7680,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.source.py",
+      "sha256": "9940e8d3f310f940dab4fbf9753179954d594e484728b0fe37650c475ffb6dd0"
+    },
+    {
+      "bytes": 25313,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.mjs",
+      "sha256": "e7606911c387bc987c3c0d217a7ae9c5a593f7178b07bb180845dccc540cafcf"
+    },
+    {
+      "bytes": 27238,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.test.py",
+      "sha256": "aee62f76c9813bfe69301756646dfd2e9eea79da2e49881274dabe68fa2d0386"
+    },
+    {
+      "bytes": 2241,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.manifest.json",
+      "sha256": "95f430f9d899e550e13b5c11aa634c2c3877d0b0f49694a79c84172aa0867000"
+    },
+    {
+      "bytes": 9645,
+      "path": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.md",
+      "sha256": "60627685abb3a4f8063424b61f97d8d3670814ecd1f448e92a0244ae9fcf33da"
+    }
+  ],
+  "format": "yunipals-arena-ypal-ordinary-source-preparation-v1",
+  "futureActualPrerequisites": [
+    "acknowledged installation of the actual new readiness artifact",
+    "fresh exact protected ordinary source runtime references",
+    "fresh native retained canonical floor",
+    "reviewed source/roles/private/old8 actor and resource proof before handover"
+  ],
+  "scope": {
+    "beforeFeatureRetirement": true,
+    "beforeManagedSourceSwitch": true,
+    "completedConsumerLeafSourceIndependent": true,
+    "contractsChanged": false,
+    "credentialOrGrantCommands": false,
+    "existingBusinessAndUnknownAckBodiesPreserved": true,
+    "initialSourceKind": "ordinary-standalone",
+    "migrationsRerun": 0,
+    "preAdoptionInverseOnly": true
+  },
+  "sourceInventory": {
+    "acceptedSourceFiles": 1796,
+    "buildInputs": 92,
+    "changedExistingInputs": 2,
+    "newDependencyInstalls": 0,
+    "outputs": 16,
+    "ownerReaderFacade": true,
+    "predecessorSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+    "uniqueWorkerBundles": 7,
+    "workerUnits": 8
+  },
+  "status": "source-only-awaiting-independent-review",
+  "validation": {
+    "compiledBusinessBodyReverseComparison": true,
+    "derivedChildSyntaxCheck": true,
+    "exactReadonlyRoleCatalogJitOnlyRegression": true,
+    "genuineLocalPostgresBuiltArenaReaderGroups": 6,
+    "nodeBuildImportRelocationRefusalGroups": 6,
+    "privateAuthenticationHashAndGenuineCredentialBodyControls": true,
+    "pythonLifecycleSourceFilesystemAndUidControls": 46
+  }
+}

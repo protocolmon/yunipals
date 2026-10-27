@@ -1,0 +1,90 @@
+{
+  "format": "yunipals-ypal-wrap-receipt-context-validation-v1",
+  "at": "2026-10-23T21:49:04.374258+00:00",
+  "verdict": "PASS",
+  "sourceSha256": {
+    "src/lib/ypalWrap.ts": "80b7b074ed16e9de04b89483a9c3d5d5790f69edced18dfda58672283e1ba046",
+    "src/lib/ypalWrap.test.ts": "ede7d6a1279d05bc350693f35a397c13e2e2c3933156d6f7ba7334078dde9d00",
+    "src/hooks/useYpalWrap.ts": "7a12d165ab9b5947f3cfe2b1b947608545b467ee067f813a95bdcae6446e3cb0",
+    "src/pages/boosters/BoosterYpalWrap.tsx": "b7b41b57a9e10a27ec17ff24e006635c1a73e690fd83d64f47d4a01f979f61e7",
+    "scripts/test-ypal-wrap-ui.mjs": "7d935d51f6e4e53b00aa634112a4c30c0192c5ba2928d50e8bcff99243e5c418"
+  },
+  "unit": {
+    "checks": 14,
+    "passed": true,
+    "logSha256": "ec4bc29c7950d407bdc4ae9f78a58a1ba6548ababaf38e293d973c9991ed3709",
+    "command": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/ypalWrap.test.ts"
+  },
+  "actualPanelBrowser": {
+    "format": "yunipals-ypal-wrap-ui-acceptance-v1",
+    "observedAt": "2026-10-23T21:48:10.302Z",
+    "fixturesOnly": true,
+    "testFilter": "receipt",
+    "providerCalls": 0,
+    "realTransactions": 0,
+    "realSignatures": 0,
+    "checks": [
+      {
+        "name": "Pending hash survives reload, blocks sends and resolves only its canonical receipt",
+        "passed": true
+      },
+      {
+        "name": "Mined receipt with stale transaction context survives reload and manually recovers without resending",
+        "passed": true
+      },
+      {
+        "name": "Transient receipt context recovers on the third read without another wallet entry",
+        "passed": true
+      }
+    ],
+    "externalRequests": [],
+    "browserErrors": [],
+    "moduleFailures": [],
+    "consoleDiagnostics": [],
+    "screenshots": [],
+    "sourceSha256": {
+      "src/lib/ypalWrap.ts": "80b7b074ed16e9de04b89483a9c3d5d5790f69edced18dfda58672283e1ba046",
+      "src/lib/ypalWrap.test.ts": "ede7d6a1279d05bc350693f35a397c13e2e2c3933156d6f7ba7334078dde9d00",
+      "src/hooks/useYpalWrap.ts": "7a12d165ab9b5947f3cfe2b1b947608545b467ee067f813a95bdcae6446e3cb0",
+      "src/pages/boosters/BoosterYpalWrap.tsx": "b7b41b57a9e10a27ec17ff24e006635c1a73e690fd83d64f47d4a01f979f61e7",
+      "scripts/test-ypal-wrap-ui.mjs": "7d935d51f6e4e53b00aa634112a4c30c0192c5ba2928d50e8bcff99243e5c418"
+    },
+    "passed": true
+  },
+  "actualCapturedReceiptReplay": {
+    "format": "yunipals-ypal-actual-wrap-helper-replay-v1",
+    "passed": true,
+    "transactionHash": "0xdf9d8d3f85e07b5f0a5776143737babb93fe6073f080ff7cab704f319c2f323d",
+    "amountRaw": "30000000000000000000",
+    "kind": "wrap",
+    "status": "success",
+    "blockNumber": "53000517",
+    "capturedPublicRpcProofSha256": "c5ffe0e02736909fb352a8c81b32e9804c15272868f5a0a95a29989796717e8f",
+    "currentHelperSha256": "80b7b074ed16e9de04b89483a9c3d5d5790f69edced18dfda58672283e1ba046",
+    "fixtureMethodReads": 4,
+    "providerRequests": 0,
+    "signatures": 0,
+    "broadcasts": 0,
+    "scope": "Replay already captured actual public receipt/transaction/canonical-header with installed viem formatters through current actual wrapping validator; exact sender/calldata and all1:1 backing/mint/Wrap logs checked."
+  },
+  "reviewed": [
+    "Same expected transaction hash with stale or pending block context remains pending; saved hash is retained through reload.",
+    "Three bounded reads can recover automatically without another wallet entry; manual retry only reads the saved hash.",
+    "Wrong receipt/transaction hash and unchanged sender/chain/to/calldata/backing/mint log guards remain hard failures."
+  ],
+  "limitations": [
+    "Transient inconsistent provider context is a tested scenario and a plausible explanation, not a proven historical cause of the user screenshot.",
+    "Only three affected browser groups were rerun; baseline wallet flows were previously accepted and were not changed.",
+    "Local fixture cold-start failures were isolated by an exclusive optimizer cache, explicit JSX-runtime prebundling and only loopback development WebSocket allowance. No product code changed for those test fixes."
+  ],
+  "providerRequests": 0,
+  "realSignatures": 0,
+  "realTransactions": 0,
+  "productionActions": 0,
+  "fullFrontendTypecheck": {
+    "passed": true,
+    "exitCode": 0,
+    "logBytes": 0
+  },
+  "scopedDiffCheckPassed": true
+}

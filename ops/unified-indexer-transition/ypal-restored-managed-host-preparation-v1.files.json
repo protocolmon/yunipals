@@ -1,0 +1,711 @@
+{
+  "format": "yunipals-restored-managed-host-public-inputs-v1",
+  "publicRepository": "protocolmon/yunipals",
+  "publicCommit": "0c4832b5fdbf3e32d1eb402e5ad1c395ef114087",
+  "files": [
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.actors.py",
+      "target": "arena-ypal-native-v1.actors.py",
+      "sha256": "07eaedc6b3a5616ae2473d386187f72f7bbd56665a0f26483c4edeaf9812ef46",
+      "bytes": 13805,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.adoption.mjs",
+      "target": "arena-ypal-native-v1.adoption.mjs",
+      "sha256": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162",
+      "bytes": 7246,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.catalog.py",
+      "target": "arena-ypal-native-v1.catalog.py",
+      "sha256": "933c3357ae1c231012f24d9235ec6a97fb2e7db2f1a5ce1046adbf9e6cdb1430",
+      "bytes": 9378,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.mjs",
+      "target": "arena-ypal-native-v1.mjs",
+      "sha256": "bbade6fb6e64079046b16ce650ffe495577e9a10f4d9cc2d835f479b8a04eba1",
+      "bytes": 25192,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.proposal.json",
+      "target": "arena-ypal-native-v1.proposal.json",
+      "sha256": "ca56a4be29abe53f5b7a6b3f4c8a13d6a557c1e38fa07521df78e10fd4fe3d80",
+      "bytes": 62979,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v1.source.sql.review",
+      "target": "arena-ypal-native-v1.source.sql.review",
+      "sha256": "a045f16cd35135d6ae60c522f39bbefe50a683d57906482e78597edec9ca1c45",
+      "bytes": 3184,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v2.admission.py",
+      "target": "arena-ypal-native-v2.admission.py",
+      "sha256": "543986e8986b4b44b11b65d247cfcc0b6ebd7a6cf27ef52626f22a6fd650db7e",
+      "bytes": 26406,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v2.context.py",
+      "target": "arena-ypal-native-v2.context.py",
+      "sha256": "b50169a2cd5f4b88454d85046cc48e1a861e07c103d4b39faa3ec98dcb3775bd",
+      "bytes": 7743,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v2.credentials.py",
+      "target": "arena-ypal-native-v2.credentials.py",
+      "sha256": "30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e",
+      "bytes": 27448,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-native-v2.rehearsal.py",
+      "target": "arena-ypal-native-v2.rehearsal.py",
+      "sha256": "ed2c7fee798b343d10dde2904ff7d3a2ac8ebfe97879e8d14e503632a8ac3e1a",
+      "bytes": 2045,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-restored-v1.manifest.json",
+      "target": "arena-ypal-restored-v1.manifest.json",
+      "sha256": "0ded970fe47ea506e855e1e37a6c4dec84526dafb32f88a32299bbb8d763e190",
+      "bytes": 2203,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-restored-v1.py",
+      "target": "arena-ypal-restored-v1.py",
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a",
+      "bytes": 78408,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/arena-ypal-restored-v1.source.py",
+      "target": "arena-ypal-restored-v1.source.py",
+      "sha256": "68d1d2c91abc8e981c8ef19b7f4a2c7edf13bbba14ac3d2f7507da192adaf737",
+      "bytes": 8534,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/consumer-operational-preview-v6.py",
+      "target": "consumer-operational-preview-v6.py",
+      "sha256": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777",
+      "bytes": 27552,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/fixed-boundary-witness-v3.mjs",
+      "target": "fixed-boundary-witness-v3.mjs",
+      "sha256": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c",
+      "bytes": 40411,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/metadata-fixed-parity-v4.py",
+      "target": "metadata-fixed-parity-v4.py",
+      "sha256": "d367701ea44de7cb5fada336d182f5c1a47536cc4221fdd120a048ea9641ee53",
+      "bytes": 19339,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ownership-parity-peer-v2.mjs",
+      "target": "ownership-parity-peer-v2.mjs",
+      "sha256": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920",
+      "bytes": 22729,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
+      "target": "ownership-parity-peer-v4.mjs",
+      "sha256": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+      "bytes": 16200,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/retained-workers-stage-v1.py",
+      "target": "retained-workers-stage-v1.py",
+      "sha256": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416",
+      "bytes": 18427,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.py",
+      "target": "ypal-booster-source-parity-v1.py",
+      "sha256": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+      "bytes": 37847,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-cache-finish-v2.py",
+      "target": "ypal-cache-finish-v2.py",
+      "sha256": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa",
+      "bytes": 28363,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-cache-finish-v3.py",
+      "target": "ypal-cache-finish-v3.py",
+      "sha256": "f072c85e82872a750e7e76dd17349718c7e6574b2e833c9c4d9b80ff9e147374",
+      "bytes": 5241,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.py",
+      "target": "ypal-cache-guard-owner-v1.py",
+      "sha256": "c54f8af6846df7a013fe0b39680806aa623e29d0bde145e62fc47e65107794ba",
+      "bytes": 91954,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "target": "ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+      "bytes": 14898,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.py",
+      "target": "ypal-combined-ordinary-observer-owner-v1.py",
+      "sha256": "f81c2e321304c36c1dc63f26dfecb23ecb1a5a84dc3facabdce06a240300f0f6",
+      "bytes": 40642,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-combined-read-admission-v1.catalog.sql",
+      "target": "ypal-combined-read-admission-v1.catalog.sql",
+      "sha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991",
+      "bytes": 7497,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-combined-read-admission-v2.py",
+      "target": "ypal-combined-read-admission-v2.py",
+      "sha256": "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd",
+      "bytes": 32073,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-feature-handover-v1.py",
+      "target": "ypal-feature-handover-v1.py",
+      "sha256": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+      "bytes": 71415,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-generation-publisher-install-v1.py",
+      "target": "ypal-generation-publisher-install-v1.py",
+      "sha256": "6fd77eac7014eb68b5f605d04a8d432c95866bc55a9f0814bf76ffb24943610c",
+      "bytes": 10270,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "target": "ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+      "bytes": 16971,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-main-api-install-v1.py",
+      "target": "ypal-main-api-install-v1.py",
+      "sha256": "2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633",
+      "bytes": 10165,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-managed-handover-v1.columns.sql",
+      "target": "ypal-managed-handover-v1.columns.sql",
+      "sha256": "2fb66a5b8e2460827a60c5e4f70ffc0f9d16ac165ca79aba1fa04c1033629264",
+      "bytes": 1770,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-managed-handover-v1.py",
+      "target": "ypal-managed-handover-v1.py",
+      "sha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+      "bytes": 94185,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-managed-handover-v1.solana.sql",
+      "target": "ypal-managed-handover-v1.solana.sql",
+      "sha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0",
+      "bytes": 3495,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-proof-v1.py",
+      "target": "ypal-native-cutover-proof-v1.py",
+      "sha256": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946",
+      "bytes": 69908,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-proof-v2.py",
+      "target": "ypal-native-cutover-proof-v2.py",
+      "sha256": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14",
+      "bytes": 30264,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v1.action.sql",
+      "target": "ypal-native-cutover-v1.action.sql",
+      "sha256": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50",
+      "bytes": 2324,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v1.manifest.json",
+      "target": "ypal-native-cutover-v1.manifest.json",
+      "sha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+      "bytes": 2114,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v1.mjs",
+      "target": "ypal-native-cutover-v1.mjs",
+      "sha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+      "bytes": 25467,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v1.py",
+      "target": "ypal-native-cutover-v1.py",
+      "sha256": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+      "bytes": 142111,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v2.manifest.json",
+      "target": "ypal-native-cutover-v2.manifest.json",
+      "sha256": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8",
+      "bytes": 5717,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-cutover-v2.py",
+      "target": "ypal-native-cutover-v2.py",
+      "sha256": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+      "bytes": 12120,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-generation-v1.py",
+      "target": "ypal-native-generation-v1.py",
+      "sha256": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6",
+      "bytes": 38576,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "docs/unified-indexer/ypal-native-inverse-leaf-preparation-2026-10-24.json",
+      "target": "ypal-native-inverse-leaf-preparation-2026-10-24.json",
+      "sha256": "701330912ed7014c4c5578edfbd8c3888946357adce0579f878e028cc56464e1",
+      "bytes": 2589,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.md",
+      "target": "ypal-native-inverse-leaf-v1.md",
+      "sha256": "8e853b9fe0c94bba495a9f7c82180e19284bf179ee25a6100972232669cf1d82",
+      "bytes": 4638,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.py",
+      "target": "ypal-native-inverse-leaf-v1.py",
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28",
+      "bytes": 24313,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.test.py",
+      "target": "ypal-native-inverse-leaf-v1.test.py",
+      "sha256": "8ccb7076328f5ed28af79e60964899016e2319ada7811b597d4371369f2f4943",
+      "bytes": 20960,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-native-reader-probe-v1.mjs",
+      "target": "ypal-native-reader-probe-v1.mjs",
+      "sha256": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f",
+      "bytes": 9333,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.mjs",
+      "target": "ypal-reader-peer-runtime-v1.mjs",
+      "sha256": "6728fcb405de2bf7fc302678dae4aa6184ed51effd22823375d4e0a078792cc1",
+      "bytes": 5568,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.py",
+      "target": "ypal-reader-peer-runtime-v1.py",
+      "sha256": "cc7842d51a6adb242991423b3bfb850452315c37e169107331332d2460dc0ffa",
+      "bytes": 11096,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-cache-peer-runtime-v1.py",
+      "target": "ypal-restored-cache-peer-runtime-v1.py",
+      "sha256": "055ce7679c040de4286a30d71cf132c041878fa858d35cc4cdb81a62167fda6f",
+      "bytes": 3409,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-cache-sql-v1.mjs",
+      "target": "ypal-restored-cache-sql-v1.mjs",
+      "sha256": "118fdf4723320fed6b761ff953878dadc055ccfd62f4cf9da8219ce46e2492ab",
+      "bytes": 5196,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-context-v1.py",
+      "target": "ypal-restored-feature-context-v1.py",
+      "sha256": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be",
+      "bytes": 36071,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.input.json.example",
+      "target": "ypal-restored-feature-handover-v1.input.json.example",
+      "sha256": "6fc73280a064ae617ec23159e16c8be2d63554a4c7c5e193759401c73be57b9c",
+      "bytes": 216,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.manifest.json",
+      "target": "ypal-restored-feature-handover-v1.manifest.json",
+      "sha256": "1f0a56a8a5af846247dcddb58251a173d45aa150040b9f079f9579ab235c2da3",
+      "bytes": 1192,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.md",
+      "target": "ypal-restored-feature-handover-v1.md",
+      "sha256": "010bfd00635dc12ecb9fc2982e6c51fa0d0ac475f14f5dc3e32987f0230681f0",
+      "bytes": 9776,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.postgres.test.mjs",
+      "target": "ypal-restored-feature-handover-v1.postgres.test.mjs",
+      "sha256": "b37065f4ed1deb02513d66bc22263d8b891640baecf49870aa2d7f31de789672",
+      "bytes": 14056,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.preparation.json",
+      "target": "ypal-restored-feature-handover-v1.preparation.json",
+      "sha256": "0e272fbee2c37ebf658afa507965b2f490345d20b751d61e37fb9053912a7a02",
+      "bytes": 5973,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.py",
+      "target": "ypal-restored-feature-handover-v1.py",
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035",
+      "bytes": 6638,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.test.py",
+      "target": "ypal-restored-feature-handover-v1.test.py",
+      "sha256": "ea74686983673838f87ea5ef277eca953bcde2f4c9304aa935e53a37f6bd3edb",
+      "bytes": 20918,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "target": "ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+      "bytes": 40435,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "docs/unified-indexer/ypal-restored-managed-handover-independent-review-2026-10-24.json",
+      "target": "ypal-restored-managed-handover-independent-review-2026-10-24.json",
+      "sha256": "b7905b81ad07ac24ee7ddbd401db4cc34e30af8a493742e0ca0f687f7b99dbd7",
+      "bytes": 5567,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.manifest.json",
+      "target": "ypal-restored-managed-handover-v1.manifest.json",
+      "sha256": "4dcf9b9970afcf0515f0e0e02357ece74a8d706cd5a4fb2430208519677e4ed7",
+      "bytes": 732,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.manifest.schema.json",
+      "target": "ypal-restored-managed-handover-v1.manifest.schema.json",
+      "sha256": "8a551f5ab3a4e88fd34fd7c8cad30c705a40924b1cac149dbcf97eb11570b72f",
+      "bytes": 1584,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.md",
+      "target": "ypal-restored-managed-handover-v1.md",
+      "sha256": "563587b87ba0b219cdb75dfcb118175efbae38f233328613f2b9b4a834d5ff5a",
+      "bytes": 13766,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.py",
+      "target": "ypal-restored-managed-handover-v1.py",
+      "sha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5",
+      "bytes": 63251,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.test.py",
+      "target": "ypal-restored-managed-handover-v1.test.py",
+      "sha256": "57f69aa478a1b64cff984c5319087d78b0ceb63ea89b029284fac0d7296da539",
+      "bytes": 30119,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/launcher.mjs",
+      "target": "ypal-restored-managed-indexer-v1/launcher.mjs",
+      "sha256": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321",
+      "bytes": 7277,
+      "existingOnly": false,
+      "mode": 420
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/service.public.env",
+      "target": "ypal-restored-managed-indexer-v1/service.public.env",
+      "sha256": "0fe3a64a989f61fe5394e9089dc3c3302f6bc7321f901b31b9f22e776952d33a",
+      "bytes": 901,
+      "existingOnly": false,
+      "mode": 420
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-managed-indexer-v1/yunipals-indexer.service.example",
+      "target": "ypal-restored-managed-indexer-v1/yunipals-indexer.service.example",
+      "sha256": "33d47b7f75ee40c40af0b71c18cefe9ebce08f64f877e3051f5f71bb1e009cda",
+      "bytes": 2841,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "docs/unified-indexer/ypal-restored-managed-preparation-2026-10-24.json",
+      "target": "ypal-restored-managed-preparation-2026-10-24.json",
+      "sha256": "3df9e3185fe231bb3da7e411f1d0b564df76a20614bedaaad9db03818b3650f2",
+      "bytes": 5862,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+      "target": "ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+      "bytes": 11874,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+      "target": "ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+      "bytes": 54661,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.py",
+      "target": "ypal-restored-ordinary-observer-v1.py",
+      "sha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3",
+      "bytes": 50697,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.columns.sql",
+      "target": "ypal-restored-read-admission-v1.columns.sql",
+      "sha256": "8efbbf11ba14c0ec645dfa0a9acc1ef64e89fc70315fb8d3b4cb66308162e4bf",
+      "bytes": 775,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.py",
+      "target": "ypal-restored-read-admission-v1.py",
+      "sha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+      "bytes": 28543,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.py",
+      "target": "ypal-restored-read-cache-provider-v1.py",
+      "sha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+      "bytes": 29951,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.py",
+      "target": "ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+      "bytes": 14593,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "docs/unified-indexer/ypal-restored-reader-cache-phase-preparation-2026-10-24.json",
+      "target": "ypal-restored-reader-cache-phase-preparation-2026-10-24.json",
+      "sha256": "b50a0e3249df733c76f2c17a2db44d3548bbf78aa390e706f4f0a849d0e0f2ae",
+      "bytes": 3200,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.md",
+      "target": "ypal-restored-reader-cache-phase-v1.md",
+      "sha256": "6548c8cf2cf56cf7d2c544b0da1b6631322d97eeea519ad20c182b41b369f402",
+      "bytes": 4061,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.py",
+      "target": "ypal-restored-reader-cache-phase-v1.py",
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1",
+      "bytes": 8989,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.test.py",
+      "target": "ypal-restored-reader-cache-phase-v1.test.py",
+      "sha256": "9dba31579665135281559cad15d401dcf0c82a998787178a9fc5b305488f2bd2",
+      "bytes": 14059,
+      "existingOnly": false,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-retained-proxy-current-v3.py",
+      "target": "ypal-retained-proxy-current-v3.py",
+      "sha256": "80519249b13b968c696b5582104990cb6e310a410eeac42fe0f139296ecf99bf",
+      "bytes": 34606,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-rpc-deadline-host-build-v1/probe.py",
+      "target": "ypal-rpc-deadline-host-build-v1/probe.py",
+      "sha256": "e9e84e7450debf66295279c92ffd67d0a5e8a28a2b3afc3599338c11ce271f90",
+      "bytes": 11427,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-rpc-deadline-v1/rpc-preflight.ts",
+      "target": "ypal-rpc-deadline-host-build-v1/rpc-preflight.ts",
+      "sha256": "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192",
+      "bytes": 17385,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-source-restored-current-context-v1.py",
+      "target": "ypal-source-restored-current-context-v1.py",
+      "sha256": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae",
+      "bytes": 10631,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-source-tail-recovery-v2/recover.py",
+      "target": "ypal-source-tail-recovery-v2/recover.py",
+      "sha256": "47ab74673e33c624d368d9e549989d091e1538cfe15565ab56c161917afaa8d7",
+      "bytes": 47675,
+      "existingOnly": true,
+      "mode": 384
+    },
+    {
+      "source": "ops/unified-indexer-transition/ypal-source-tail-restore-v1.py",
+      "target": "ypal-source-tail-restore-v1.py",
+      "sha256": "de4a42360c46a641896d5a03847bca15b8aa48bb9fdf19aa3dc9cfedda7c1d34",
+      "bytes": 13777,
+      "existingOnly": true,
+      "mode": 384
+    }
+  ]
+}

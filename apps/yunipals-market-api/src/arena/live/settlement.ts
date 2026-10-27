@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "@/confirmations";
 import type { Pool } from "pg";
 import {
   encodeFunctionData,
@@ -12,9 +13,10 @@ import {
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { transaction } from "@/db/pool";
 import { canonicalJson, sha256 } from "../draw";
-import { readConfirmedBlock } from "@/confirmations";
 import { json } from "./projection";
 import type { SavedAdjudication } from "./adjudication";
+import type { ArenaIntake } from "./intake";
+import { NativeArenaSettlement } from "./nativeSettlement";
 
 type Intent = {
   deployment: string;
@@ -36,8 +38,16 @@ export class ArenaSettlement {
     private readonly account: LocalAccount,
     private readonly deployment: string,
     private readonly contract: Address,
-    private readonly maxExecutionFeeWei: bigint
+    private readonly maxExecutionFeeWei: bigint,
+    private readonly service?: ArenaIntake
   ) {
+    if (
+      service &&
+      (service.pool !== pool ||
+        service.deployment !== deployment ||
+        service.contract.toLowerCase() !== contract.toLowerCase())
+    )
+      throw new Error("Settlement service deployment differs.");
     if (maxExecutionFeeWei <= 0n || maxExecutionFeeWei > 100_000_000_000_000n)
       throw new Error(
         "Settlement execution gas cap exceeds the permitted envelope."
@@ -45,6 +55,14 @@ export class ArenaSettlement {
   }
 
   async prepare(id: string) {
+    if (this.service?.nativeSource)
+      return new NativeArenaSettlement(
+        this.service,
+        this.client,
+        this.account,
+        this.maxExecutionFeeWei
+      ).prepare(id);
+    await this.assertLegacy();
     return transaction(this.pool, async (db) => {
       // Serialize this dedicated signer across deployments and processes.
       await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
@@ -186,6 +204,14 @@ export class ArenaSettlement {
   }
 
   async advance(id: string) {
+    if (this.service?.nativeSource)
+      return new NativeArenaSettlement(
+        this.service,
+        this.client,
+        this.account,
+        this.maxExecutionFeeWei
+      ).advance(id);
+    await this.assertLegacy();
     const intent = (
       await this.pool.query<Intent>(
         "SELECT * FROM yunipals_arena.transaction_intent WHERE deployment=$1 AND purpose='settle' AND tournament_id=$2",
@@ -260,5 +286,15 @@ export class ArenaSettlement {
       [this.deployment, id]
     );
     return { ...intent, state: "submitted" };
+  }
+  private async assertLegacy() {
+    const row = (
+      await this.pool.query<{ indexer_mode: string }>(
+        "SELECT indexer_mode FROM yunipals_arena.deployment WHERE id=$1",
+        [this.deployment]
+      )
+    ).rows[0];
+    if (row?.indexer_mode !== "legacy")
+      throw new Error("Legacy settlement is fenced by source selection.");
   }
 }

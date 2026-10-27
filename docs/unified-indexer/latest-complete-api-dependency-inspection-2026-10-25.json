@@ -1,0 +1,26 @@
+{
+  "format": "yunipals-v5-api-readiness-dependency-inspection-v1",
+  "compiler": "0.25.12",
+  "applicationImported": false,
+  "servicesStarted": false,
+  "entries": [
+    {
+      "name": "../../../../tmp/yunipals-v5-api-dependency-inspection-20261025/main.js",
+      "entryPoint": "lib/api/server.ts",
+      "readinessInputs": [
+        "../../packages/yunipals-indexer-client/src/readiness.ts",
+        "../../packages/yunipals-indexer-server/src/status.ts"
+      ]
+    },
+    {
+      "name": "../../../../tmp/yunipals-v5-api-dependency-inspection-20261025/collector.js",
+      "entryPoint": "lib/api/collector-server.ts",
+      "readinessInputs": []
+    },
+    {
+      "name": "../../../../tmp/yunipals-v5-api-dependency-inspection-20261025/islands.js",
+      "entryPoint": "lib/api/islands-server.ts",
+      "readinessInputs": []
+    }
+  ]
+}

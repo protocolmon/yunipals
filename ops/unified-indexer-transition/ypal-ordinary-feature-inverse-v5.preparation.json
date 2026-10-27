@@ -1,0 +1,2502 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualInverseQualificationClaimed": false,
+  "databaseWrites": 0,
+  "files": [
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/application-recovery-native-column-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/application-recovery-native-column-v1.py",
+      "sha256": "435770a5a764477cb298140383f7afc39309088d496714b37c242b5257e616a9",
+      "size": 9581
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-config-observer-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-config-observer-v4.py",
+      "sha256": "88f38aba39b9da8e5085135179bf4adfa3b1919eb9814471b30f3dfce11c13ba",
+      "size": 18605
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-config-public-baseline-v1.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-config-public-baseline-v1.json",
+      "sha256": "374bdaeb8c8ee82194491b198abbf11b424c8f146bf512ed2944d018aae4b2fa",
+      "size": 9303
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-modern-runtime-preflight-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-modern-runtime-preflight-v1.py",
+      "sha256": "527701897b15ccf25c67aa372013f76405308b2b300a565d96271ba15f0a6631",
+      "size": 26464
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-operational-role-inventory-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-operational-role-inventory-v1.py",
+      "sha256": "c99cfd2f240721727da66594f0e720f2dfe7f2fed36cfb942d9b147d71b3d785",
+      "size": 20511
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ordinary-latest-complete-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ordinary-latest-complete-v1.manifest.json",
+      "sha256": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+      "size": 33677
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ordinary-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ordinary-runtime-v1.py",
+      "sha256": "7889fca5e47734f263eb51c5f2338e4080e17070188876db26bf4cc0080b2dad",
+      "size": 8533
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-current-admission-v1.proposal.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.proposal.json",
+      "sha256": "0789c643ff3513aec9f8d5cceb95eb15226b60c007e82d80ac37b51d4a538ac4",
+      "size": 80246
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-current-admission-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-current-admission-v1.py",
+      "sha256": "c04d5c42fff6934b89b8d009c947e4230c63555cbe91e5a5a91aa3a0b9281035",
+      "size": 22687
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-current-credentials-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-current-credentials-v1.py",
+      "sha256": "0bd21ca83b63aba02d3eb0113704edaac3a4f2dc34148d322db38a356d9f021f",
+      "size": 5299
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.actors.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.actors.py",
+      "sha256": "07eaedc6b3a5616ae2473d386187f72f7bbd56665a0f26483c4edeaf9812ef46",
+      "size": 13805
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.adoption.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.adoption.mjs",
+      "sha256": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162",
+      "size": 7246
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.catalog.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.catalog.py",
+      "sha256": "933c3357ae1c231012f24d9235ec6a97fb2e7db2f1a5ce1046adbf9e6cdb1430",
+      "size": 9378
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.proposal.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.proposal.json",
+      "sha256": "ca56a4be29abe53f5b7a6b3f4c8a13d6a557c1e38fa07521df78e10fd4fe3d80",
+      "size": 62979
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.rehearsal.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.rehearsal.py",
+      "sha256": "2eb8c84292b8547650e94ead891a8b987e027786e082f6377c8299d38e69edaf",
+      "size": 15363
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v1.source.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v1.source.py",
+      "sha256": "df20acc91c6f16454c28c39e00cc80870a25efaf33f72cd60af40e54c09368e2",
+      "size": 7817
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v2.admission.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v2.admission.py",
+      "sha256": "543986e8986b4b44b11b65d247cfcc0b6ebd7a6cf27ef52626f22a6fd650db7e",
+      "size": 26406
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v2.context.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v2.context.py",
+      "sha256": "b50169a2cd5f4b88454d85046cc48e1a861e07c103d4b39faa3ec98dcb3775bd",
+      "size": 7743
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v2.credentials.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v2.credentials.py",
+      "sha256": "30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e",
+      "size": 27448
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-native-v2.rehearsal.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-native-v2.rehearsal.py",
+      "sha256": "ed2c7fee798b343d10dde2904ff7d3a2ac8ebfe97879e8d14e503632a8ac3e1a",
+      "size": 2045
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-accept-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-accept-v1.manifest.json",
+      "sha256": "8494ce4ba63ca8d0f7be8889ef90ea23395632ac1ca1d032a93d63567cc4f08b",
+      "size": 2807
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-accept-v1.py",
+      "sha256": "b3dce2f8dbfa26dc219101dd29be866aad1d3944f0db6de9915a838555080295",
+      "size": 4930
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-bound-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-bound-v1.manifest.json",
+      "sha256": "bc38a18b86b181624305f0e1d754ee7e6cf3b333368afe1de3daa44a91757dd4",
+      "size": 2580
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-bound-v1.py",
+      "sha256": "1a0ddc4b7f65d92a43953537e0ab55b620d7913c5482b2f7ad6a098c725dc523",
+      "size": 10250
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-continue-v2.py",
+      "sha256": "fb2436608293ded2d66f7bba2003e5359070e5a483676bda3b2b34e45569165e",
+      "size": 5197
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-continue-v4.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-continue-v4.manifest.json",
+      "sha256": "0c8e3050733c5d8e1df0b6ca920591e9fac543f3e19cf25844f26aed41404e63",
+      "size": 3269
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-continue-v4.py",
+      "sha256": "8835b88af456ff314e66f91c1390ba117fed83c100dc96d5807285244eeceaca",
+      "size": 5425
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-continue-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-continue-v5.manifest.json",
+      "sha256": "2c09e448ac45752835104010fd49a265ad31e77df87f6a43e4c249c0e192c8c2",
+      "size": 3389
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-continue-v5.py",
+      "sha256": "0f816d494f5020c2c397f25cb5499a64f1bd6ebffd7a9ac5e9fab034554c5ab6",
+      "size": 5541
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.mjs",
+      "sha256": "e7606911c387bc987c3c0d217a7ae9c5a593f7178b07bb180845dccc540cafcf",
+      "size": 25313
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.py",
+      "sha256": "60c3dbbfc90a8d7540616278eb51cb329a097a1bab20d0b6e66d9f17f92c1fd0",
+      "size": 20544
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-ordinary-v1.source.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-ordinary-v1.source.py",
+      "sha256": "9940e8d3f310f940dab4fbf9753179954d594e484728b0fe37650c475ffb6dd0",
+      "size": 7680
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-restored-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-restored-v1.py",
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a",
+      "size": 78408
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-ypal-source-completion-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/arena-ypal-source-completion-v1.py",
+      "sha256": "2cac6ffdb5b3162b3e6431364974a2ab61a3c33be97cb358c3505a80d8046dc6",
+      "size": 17678
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/booster-api-admit.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/booster-api-admit.py",
+      "sha256": "c62778869948e0a94a190a1edd839d9c982ea3fd4b82cc69c82776f0499fb58e",
+      "size": 12880
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/booster-api-collector-inverse.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/booster-api-collector-inverse.sql",
+      "sha256": "e83ed9a3840166e15f09939ae6f24edc984698b3d651c258ac6ffaa4ec532526",
+      "size": 2674
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/booster-api-collector-rehearsal.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/booster-api-collector-rehearsal.sql",
+      "sha256": "69dfd1ed1bfa2980d32d9f8e113eed2020a0e7dcc3c730ed8ef705e1878ffb42",
+      "size": 5529
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-accepted-staking-acl-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-accepted-staking-acl-v1.py",
+      "sha256": "722f113a253009cb67f0695bdeaaa9e27bde9544e98fb0bad53dc6990b63bd92",
+      "size": 2530
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-action-read-owner-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-action-read-owner-v2.py",
+      "sha256": "7d9f4dd24155862e73ac96a30fe3647d616d0352ef1a1f0f82b033f635d4f71f",
+      "size": 8444
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-api-preview-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-api-preview-v5.py",
+      "sha256": "f03f303c38d64099b22fb61577de35dcfac5691aa424c39d7b62b429e822511c",
+      "size": 32171
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-final-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-final-runtime-v1.py",
+      "sha256": "4dbcff442c7253c3cc2266b4a3578317744e5653f0860392d410ebae21b26b81",
+      "size": 5551
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-proof-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-generation-v4-proof-v1.py",
+      "sha256": "0e438bf1157a0097cdebdd9df4c96d3681995806c4317ee73c35a0f4d119154f",
+      "size": 4688
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-operational-admission-v1.review.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-operational-admission-v1.review.json",
+      "sha256": "ff9426e780ca9c6ed302e1a99a09db08b4bdeb7f453fdc9d0f600dc5a45c4db0",
+      "size": 26946
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-operational-owner-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-operational-owner-v2.py",
+      "sha256": "2612f277cde8db85dd05901069a45a7332954d9134a881a49820dd1f2197535b",
+      "size": 23130
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-operational-owner-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-operational-owner-v6.py",
+      "sha256": "f120fbadfc36170be1c8d29eff15015ab23106042953436faf37474953fce27d",
+      "size": 25339
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-operational-preview-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-operational-preview-v6.py",
+      "sha256": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777",
+      "size": 27552
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-operational-read-plan.review.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-operational-read-plan.review.json",
+      "sha256": "e80beb3acce6cd0de70c0ff2653b5ac095a4b4257dc972e11ee16c5d214a9796",
+      "size": 14925
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-owned-booster-graph-v1.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-owned-booster-graph-v1.json",
+      "sha256": "dd3ca9be25666cb223c157ed942094669884b5145f595d457fe559fdcc834dc0",
+      "size": 5477
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-owned-booster-policy.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-owned-booster-policy.py",
+      "sha256": "54f1b81223a7003261c08c845a1f6614bd7f22ac68160d8d1081974e8d32f859",
+      "size": 5446
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-owned-booster-runtime-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-owned-booster-runtime-v2.py",
+      "sha256": "f8b32d84e552ab6df51836a0e297f26131fb1d2faecb2aba1e4c7bc3bf82945e",
+      "size": 16571
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-retained-read-dependencies-v1.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-retained-read-dependencies-v1.json",
+      "sha256": "bb53caab5bab10e981853ed7061ca2c5cef66164702b4bb71e517d1580ebe6db",
+      "size": 5308
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-runtime-preflight.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-runtime-preflight.py",
+      "sha256": "5a74ac2a26a1beb148d42f232d90ec223499be58b4095809296da7e26d719daa",
+      "size": 22829
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-topic-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-topic-runtime-v1.py",
+      "sha256": "d064012011428d28d56a6e81d7546b1b570b105efdb7b46db268eb5b3ed01cdc",
+      "size": 3245
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-v4-read-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/consumer-v4-read-runtime-v1.py",
+      "sha256": "993da3a0261e6930c91ac46c2ccf4e3d90342cbdf1fbbe84779d1097cb23291b",
+      "size": 6853
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/final-supervisor-inventory-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/solana-acceptance/final-supervisor-inventory-v1.py",
+      "sha256": "ba5727f3774e697800181e0b7a36921db6a328ea5f0e6d95f213f5a1aae44912",
+      "size": 18242
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/fixed-boundary-witness-v3.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/fixed-boundary-witness-v3.mjs",
+      "sha256": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c",
+      "size": 40411
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/fixed-boundary-witness-v5.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/fixed-boundary-witness-v5.mjs",
+      "sha256": "359ebcef8fb6e2342087eb4a7e62811cd1dd10b2ad7353ff682d20112f08c484",
+      "size": 15985
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/marketplace-consumer-stage-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/marketplace-consumer-stage-v1.py",
+      "sha256": "fb08501e2f06c0079f6fb69655341451d2724aec5d7f2b2114ecde9f98785798",
+      "size": 17701
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/marketplace-grants-rehearsal-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/marketplace-grants-rehearsal-v1.py",
+      "sha256": "00cdaae15f98bb1f832f5aa8af91503201d6834e160b1c7eda757cd54446ddf0",
+      "size": 16418
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/metadata-fixed-parity-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/metadata-fixed-parity-v4.py",
+      "sha256": "d367701ea44de7cb5fada336d182f5c1a47536cc4221fdd120a048ea9641ee53",
+      "size": 19339
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/metadata-normalization-runtime-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/metadata-normalization-runtime-install-v1.py",
+      "sha256": "08fa7d4cd522ecfab8140e00ded0fe384ad92ad3f7d5df8b07d96e85d8b4e8ab",
+      "size": 10310
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/metadata-readview-v4-candidates-stage-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/metadata-readview-v4-candidates-stage-v1.py",
+      "sha256": "19b3ab7f987e652f74288d5da681a569258f94d3eccc3207db7a9ec8e23bfb5c",
+      "size": 9763
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/metadata-readview-v4-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/metadata-readview-v4-owner-v1.py",
+      "sha256": "011343704eb3e8a6de8d7002776692f8cb063cabeedf22cfa2084448693ce948",
+      "size": 16150
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/metadata-readview-v4-plan.review.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/metadata-readview-v4-plan.review.json",
+      "sha256": "04e1432517738d21d4a0168f74aa69727c792653d3ec6e84f033741f86cd8d29",
+      "size": 47449
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/native-metadata-publication-column-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/native-metadata-publication-column-v1.py",
+      "sha256": "97dbaa5579d9a3f483bfd020e185946205e015d66acd288206b8267294fcfda8",
+      "size": 13545
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/nonmarket-consumer-runtime-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/nonmarket-consumer-runtime-install-v1.py",
+      "sha256": "506d26bbe9ab66eb5647794c58bd2996cf458b7fc704b51d0210263bc773f93b",
+      "size": 10238
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/nonmarket-retained-candidates-stage-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/nonmarket-retained-candidates-stage-v2.py",
+      "sha256": "1f3e64031d8cc0070f151703e7f37b166dbae95df6d11d98be3e847de6153486",
+      "size": 9173
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-common-grants.review.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-common-grants.review.sql",
+      "sha256": "72541d4e8076ef3468f849b50907d0c4b9f7514924f61728a89619edd16d0e49",
+      "size": 4772
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-parity-peer-v2.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-parity-peer-v2.mjs",
+      "sha256": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920",
+      "size": 22729
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-parity-peer-v4.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
+      "sha256": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+      "size": 16200
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-readview-catalog.review.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-readview-catalog.review.sql",
+      "sha256": "24c4912597b135b8e2890afc410e3235b6e12c19128475d990afb4c2a64b2813",
+      "size": 2800
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-readview-owned-booster-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-readview-owned-booster-v1.py",
+      "sha256": "69f32e008aca3d8ac49c062755f0290eb6f73884c0fdaf0a2b5e066ade3a7a92",
+      "size": 1940
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-readview-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-readview-owner-v1.py",
+      "sha256": "6ccc1b0bf6ab6a1f1cae9575dd350a428dac446c9c0fda72d5833d006bf94b80",
+      "size": 25990
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-readview-plan.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-readview-plan.mjs",
+      "sha256": "656cc449ce5d5a45cc1d81c7836470736f73f5e18dde20524be4805543ffc877",
+      "size": 18273
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ownership-readview-plan.review.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ownership-readview-plan.review.json",
+      "sha256": "1467b1a604aceb45a20ea593b4a04d750876c7a534359cfce25102597ef8fa59",
+      "size": 62100
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/proxy-upgrade.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/proxy-upgrade.py",
+      "sha256": "ea99a90fe4836880a97af185d1c238e53571b2b5ef262ff35a2410d943483965",
+      "size": 23944
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/retained-workers-stage-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/retained-workers-stage-v1.py",
+      "sha256": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416",
+      "size": 18427
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/staking-support-admission-v1.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/staking-support-admission-v1.sql",
+      "sha256": "a571e203b9d4efae66348ecc5cd9504dd180e2830f410c966e78930578b51950",
+      "size": 8997
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/staking-support-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/staking-support-owner-v1.py",
+      "sha256": "6746e569aad240f76ec17de69426a4b34453cab87f5e99515b277093bd99eb6f",
+      "size": 11875
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/staking-support-prerequisite-observe-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/staking-support-prerequisite-observe-v1.py",
+      "sha256": "d80cd71888346ea8f9539324fae3639b410cb378e4a48cbf060e348b1e27e135",
+      "size": 7072
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-catchup-financial-v1.model.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.model.py",
+      "sha256": "703da46a374d7f8fa5617c11153fbff60f7a669593cdedd642d75ad6033d5d14",
+      "size": 23876
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-catchup-financial-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.py",
+      "sha256": "19710cfe5ab8d5c5e57f8668bb9761beac5080acba17b03da6aa54e3932c4803",
+      "size": 34620
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-consumer-current-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-consumer-current-context-v1.py",
+      "sha256": "70faf2514d0240625f0a1eaa84f527be5fb16bcf4391e56e8644bc708ae2d420",
+      "size": 13279
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-controlpid-adapter-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-controlpid-adapter-v1.py",
+      "sha256": "91c992dd50e50722e21f46ccf0fbc06607df8e8e0a69929424cb4cd3d0c6c770",
+      "size": 15220
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "sha256": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+      "size": 14753
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-financial-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-financial-v1.py",
+      "sha256": "89a4bfd327ce52419af20e915fb13d2e5a856d27f51fa6a896838869ad4977d0",
+      "size": 32194
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-plan-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-plan-v1.py",
+      "sha256": "cf7191a578de5ee2390acccb95fb5812253c461ffe178d009660819911f54980",
+      "size": 16979
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-runtime-v1.py",
+      "sha256": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+      "size": 45831
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-primary-current-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py",
+      "sha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215",
+      "size": 33499
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-primary-import-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.py",
+      "sha256": "44d502b19bdae6a484db2da719bae154c9a96480d006d7bb9536f0c4ea36f083",
+      "size": 8199
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-primary-stage-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-primary-stage-v1.py",
+      "sha256": "01da39ab60ba2fc73b5acf8184b0c3bd44a074bf0f9c8f95ffbfecc510b43c73",
+      "size": 24469
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-read-admission-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.py",
+      "sha256": "c2da9d590d75823ec5ecf3038f73da93854e760faadb91bbc71e135f56e0a15a",
+      "size": 19382
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-restart-cache-v1.filters.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.filters.json",
+      "sha256": "394bbecf8d0b7c115bc7b56b085a17fb857d549a36eb336514bbb10bd72f2675",
+      "size": 223767
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-restart-cache-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.py",
+      "sha256": "35f751938c96bcd10e5f36412c8e7f7e0a31129874c2544c49116e85fafc59e4",
+      "size": 12869
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-completion-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-completion-v1.py",
+      "sha256": "0e147b366ff29194326f09d9a56d5a8d5bca77fe6c83b3ac9584f30dc6dee8f0",
+      "size": 21556
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-identity-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-identity-v2.py",
+      "sha256": "01e9bfb127a29edeb6a985702a3d921d706186c8a3680e8c3765bce5f68321c2",
+      "size": 3765
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-switch-v1.host.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.py",
+      "sha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02",
+      "size": 17932
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-switch-v1.plan.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.py",
+      "sha256": "3a13f1f4e9a7896d9e4535b670bf06786c3fb0d199986356b336cb32565d3d56",
+      "size": 11403
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-switch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
+      "sha256": "7ae9a516fe1145f25676ba97e98c92a86123bf8797cf7758537ef7fde855f5a6",
+      "size": 87797
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-switch-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v2.py",
+      "sha256": "440f5b39d803c2332a4531327ec46df2692370a70d543b27eca12ae03865eb0f",
+      "size": 21062
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-booster-source-parity-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-booster-source-parity-v1.py",
+      "sha256": "4f7dbc2c03251fcfd0e91aa13dc64a4463d2d6c54008be3ae742bde90a3214fb",
+      "size": 37847
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-cache-finish-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-cache-finish-v2.py",
+      "sha256": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa",
+      "size": 28363
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-cache-finish-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-cache-finish-v3.py",
+      "sha256": "f072c85e82872a750e7e76dd17349718c7e6574b2e833c9c4d9b80ff9e147374",
+      "size": 5241
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-cache-guard-owner-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.mjs",
+      "sha256": "d44194958061ce06517d41579ec36b8d0f31b166f871d80849eb48093c3f1551",
+      "size": 13600
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-cache-guard-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.py",
+      "sha256": "c54f8af6846df7a013fe0b39680806aa623e29d0bde145e62fc47e65107794ba",
+      "size": 91954
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-cache-guard-transition-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+      "size": 14898
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-ordinary-observer-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-install-v1.py",
+      "sha256": "bf012fab894bee4e28d5f8e492309e492ca32c3d3bedbd97f699c17ed31be738",
+      "size": 10240
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-ordinary-observer-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-ordinary-observer-owner-v1.py",
+      "sha256": "f81c2e321304c36c1dc63f26dfecb23ecb1a5a84dc3facabdce06a240300f0f6",
+      "size": 40642
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-read-admission-v1.catalog.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-read-admission-v1.catalog.sql",
+      "sha256": "cd1b8c49f3682a73c9136fbb4e6146eae437258470fa8943ee54f6630d4ed991",
+      "size": 7497
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-read-admission-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-read-admission-v2.py",
+      "sha256": "c9b54f2c2e82f03b7481bd1c3c11c24443db16530b9824ff2dd6d86a991bf5cd",
+      "size": 32073
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-read-current-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-read-current-context-v1.py",
+      "sha256": "f77cb1b93f655f2caa1fedbfd0a6275030320719093d97aa8e607fd7922b30dc",
+      "size": 19169
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-readview-owner-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-readview-owner-v1.py",
+      "sha256": "2e8e97476d4102de0660bb224995d584b03756a8e717c35d44da229ade63e058",
+      "size": 20461
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-readview-v1.preparation.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-readview-v1.preparation.json",
+      "sha256": "091cdf8618716173216dc64c78ac84ca1ed82c06f0000e9a2fce2b07a2a6af7b",
+      "size": 44248
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-readview-v5-plan.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-readview-v5-plan.mjs",
+      "sha256": "91b48f86211b08ceb251e840f89c52ea3e83452fdce17af19a610ef3cc5ac201",
+      "size": 7192
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-readview-v5.preparation.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-readview-v5.preparation.json",
+      "sha256": "d968a31c4ea5314f4a84f0ccf5e0e9a24ce7bb9ae647d81d37c419b6f5714cb7",
+      "size": 48162
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-release-register-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-release-register-v1.mjs",
+      "sha256": "6dd896530633e5d2a2f932305eb80d1e4b9c63c99b2b967694887a9583f6aaca",
+      "size": 8305
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-release-register-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-release-register-v1.py",
+      "sha256": "c034cca76a101a19aa1a668ff5b91eaa883fda775406ba52e9b6a3ec8993133d",
+      "size": 11321
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-admission-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-rpc-admission-v3.py",
+      "sha256": "55ba89a1b2e3249720a63cb9c740c3655ce83dbf076ae3bf7ab3d9a2409ec862",
+      "size": 48631
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-routes-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-rpc-routes-v1.py",
+      "sha256": "5e5e82df6744e8a6c049b062ef39ae7c68171cf72920e58ce4bdba7877cac4ff",
+      "size": 15689
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-manifest-v1.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-combined-source-manifest-v1.json",
+      "sha256": "a80c527caa8b7696cd9dc351d695a2b9d973c215a05a051669f1aa469dc68bd7",
+      "size": 9240
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-feature-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-feature-handover-v1.py",
+      "sha256": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+      "size": 71415
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-fresh-forward-epoch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-fresh-forward-epoch-v1.py",
+      "sha256": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c",
+      "size": 78387
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-cache-candidates-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-cache-candidates-v1.py",
+      "sha256": "3d42ae007e722edc582a2a8907282869af37d940eeba93f7426d327280a428b3",
+      "size": 14227
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-capacity-watch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-capacity-watch-v1.py",
+      "sha256": "0a0d1cfa850e60850ea3f2f53ffeccacbdc66130e058112443269064f3f4d36a",
+      "size": 10075
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-publisher-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-publisher-install-v1.py",
+      "sha256": "6fd77eac7014eb68b5f605d04a8d432c95866bc55a9f0814bf76ffb24943610c",
+      "size": 10270
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-recovery-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+      "size": 16971
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-runtime-install-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-runtime-install-v2.py",
+      "sha256": "0c031bdc798b8466ea29624bbfdb253e392830ab2b2f833be4c41d6fb91c5e8f",
+      "size": 10303
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-generation-runtime-install-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-generation-runtime-install-v3.py",
+      "sha256": "3baf253bba615e30d0f2ffb1c6a1b76625b7bd5f3cfb0cebbe176a41ee952a9b",
+      "size": 10303
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-latest-complete-main-api-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-latest-complete-main-api-install-v1.py",
+      "sha256": "43d98f0aa8993b408133f24a77bdab50663fa79fb77840c7478db369d7e7be9f",
+      "size": 10224
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-main-api-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-main-api-install-v1.py",
+      "sha256": "2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633",
+      "size": 10165
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-managed-handover-v1.columns.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-managed-handover-v1.columns.sql",
+      "sha256": "2fb66a5b8e2460827a60c5e4f70ffc0f9d16ac165ca79aba1fa04c1033629264",
+      "size": 1770
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-managed-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-managed-handover-v1.py",
+      "sha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+      "size": 94185
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-managed-handover-v1.solana.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-managed-handover-v1.solana.sql",
+      "sha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0",
+      "size": 3495
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-proof-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-proof-v1.py",
+      "sha256": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946",
+      "size": 69908
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-proof-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-proof-v2.py",
+      "sha256": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14",
+      "size": 30264
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v1.action.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v1.action.sql",
+      "sha256": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50",
+      "size": 2324
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v1.manifest.json",
+      "sha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+      "size": 2114
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v1.mjs",
+      "sha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+      "size": 25467
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v1.py",
+      "sha256": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+      "size": 142111
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v2.manifest.json",
+      "sha256": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8",
+      "size": 5717
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-cutover-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-v2.py",
+      "sha256": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+      "size": 12120
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-generation-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-generation-v1.py",
+      "sha256": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6",
+      "size": 38576
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-inverse-leaf-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.py",
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28",
+      "size": 24313
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-current-observer-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-current-observer-v1.manifest.json",
+      "sha256": "cbd018b3dd15b2874a6b6834e76b07538d2ac493831428d6701136de2a41d432",
+      "size": 27829
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-current-observer-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-current-observer-v1.py",
+      "sha256": "17a24566753c1903e1c4be3a0f9d66f24d44cd9aaee30b16ceedb21cceeb2498",
+      "size": 36840
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v1.manifest.json",
+      "sha256": "d30975e78bad3bdb80a16c498bd7b069ce557dfdb4328c5628d0101088aa2575",
+      "size": 27108
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v1.py",
+      "sha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+      "size": 69154
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v2.manifest.json",
+      "sha256": "7d53fd78c48264f41b1c053468b61c806f57e135b90f70dbaa0828cca69fc90e",
+      "size": 27341
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v2.py",
+      "sha256": "5f395d9e4cc68edd88e7b0a7c0d3db2fff80901aa881c373186387285e5a92e3",
+      "size": 32844
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v3.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v3.manifest.json",
+      "sha256": "464c94cd0bea1412573bfdf026fe43e2dc36f0fb04e46e01b7a3ae58e65b391e",
+      "size": 27574
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-epoch-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-epoch-v3.py",
+      "sha256": "62eb7e6b138b83818842b4848e5e9512b4cb3196890ef298dc2513932f2862e1",
+      "size": 33659
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-approval-install-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-approval-install-v1.py",
+      "sha256": "5fa35ac24e6747b06a648504967c1be6b7f52687ee5f9e3295bcd79c2fe3981a",
+      "size": 6836
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-candidates-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-candidates-v1.py",
+      "sha256": "146128b95c9577a555b8c6119f302df62f703425132eeecb34dea10129e74525",
+      "size": 16071
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-metadata-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-handover-v1.py",
+      "sha256": "772a626934399a9ed53bc9a6c1a6b4af688c88b41995268a75246adc878b4ba1",
+      "size": 44399
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-native-reader-probe-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-native-reader-probe-v1.mjs",
+      "sha256": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f",
+      "size": 9333
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-old-runtime-inventory-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/booster-launch/ypal-old-runtime-inventory-v1.py",
+      "sha256": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b",
+      "size": 18969
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-callback-timing-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-callback-timing-v5.py",
+      "sha256": "c32c3885d322d4fbcd4b06998d5969e66d5ea4beb6f818341723353379f43bfb",
+      "size": 9028
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v1.manifest.json",
+      "sha256": "1131a7c181917cef8521475b7181341a15fbc9c09019beb3dff91e7d0cc13c48",
+      "size": 1048
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v1.py",
+      "sha256": "c413474538ad61e21b5d41736b1ca86687c2b4540639a1a760b4993ae2438dd7",
+      "size": 48330
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v2.manifest.json",
+      "sha256": "cd1f95a8db31650e2eb1283819a25ca9f528b5a950d35b19ae757625e3b4ffe6",
+      "size": 1599
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v2.py",
+      "sha256": "6ab6b0ae7e0bff7107cee6c50a709de631e505c1acef101a34ce9ec6290e303f",
+      "size": 5280
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v3.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v3.manifest.json",
+      "sha256": "3c2ae723c55faa505c834a604f13feb3b98f7f193202b017cf761f04bf002263",
+      "size": 1947
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v3.py",
+      "sha256": "0446dea37801f282c97d613ded19f75491925487fddbea5dc25441a1733b5ca7",
+      "size": 5577
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v4.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v4.manifest.json",
+      "sha256": "a6516798d717724fdce8086fe6afeb05888badcbc60199ebc346eb629890f60a",
+      "size": 2189
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v4.py",
+      "sha256": "938b15ee463f7c950828eadeac3e599305d01dbfd8b8ddccd8a974f88b31a240",
+      "size": 5867
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v5.manifest.json",
+      "sha256": "2b19fe520f291ef01bc2133b18e0fe9406c6a67a0eeae55067ee1dc5fa399d78",
+      "size": 2432
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-authority-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-authority-v5.py",
+      "sha256": "d95bbcceb812dd7d3acc9e828a78f6125870a021dbfeed952f6c477f48003bef",
+      "size": 6655
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-continuation-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-continuation-context-v1.py",
+      "sha256": "f0aeed34d9bfc0fe710a82465af253c879d2c118c36ec9ff9232d75318b88449",
+      "size": 6716
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-driver-v5.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-driver-v5.mjs",
+      "sha256": "5e35b8c21a7f378a767740bf45bd86cab39d25c126618d68f3747be745b5784a",
+      "size": 13603
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-finish-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-finish-v6.py",
+      "sha256": "ec9a88b93543a114138b1198b865ef5b31de2d79ef08a6d014b4e938ca51b4a0",
+      "size": 5098
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-peer-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-peer-v6.py",
+      "sha256": "4ddd3b021c31e7a2f663df82bb7e3308c22b5b2f1cec5345979286efcff59e04",
+      "size": 3416
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-sql-v6.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-sql-v6.mjs",
+      "sha256": "a8a4ac308c56fa3bb678b4c7bf74b74a1aa1bc0f923df2f6676237e3ec5d7705",
+      "size": 5205
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-cache-transition-v5.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-cache-transition-v5.mjs",
+      "sha256": "591fce0365e6581644a064470cb830d0ec06c2e135e439cb58dac02d8bc1e8b2",
+      "size": 14898
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-consumer-handover-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-consumer-handover-v5.py",
+      "sha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c",
+      "size": 28505
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-downstream-refs-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-downstream-refs-accept-v1.py",
+      "sha256": "2d2e8b1550332e215564cbeefb12a2fbea42f87ba1d978aab2aa337f212e3ce6",
+      "size": 5559
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-downstream-refs-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-downstream-refs-continue-v2.py",
+      "sha256": "328ef5c05768ec50190bb9fa4a4959611aebf423b229892558dff3fb50028148",
+      "size": 5798
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-downstream-refs-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-downstream-refs-continue-v4.py",
+      "sha256": "9e59c051045dec4664c2cd9f9bb0c27a48a189887cb4fb59b8d6ab9c309c9c5a",
+      "size": 6619
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-downstream-refs-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-downstream-refs-continue-v5.py",
+      "sha256": "bea5d0cd2b99798d49d777797426a350c0bb4e8e2a2d958a3a764fe9a7ae38da",
+      "size": 7316
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-downstream-refs-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-downstream-refs-v1.py",
+      "sha256": "a43d0f79dafb629a7b57be7f67e5c2e0bf5ba2b05bc8dbb370afc30449fe1f4f",
+      "size": 15575
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-accept-v1.py",
+      "sha256": "3ec482f59adafd674116d821abe3ab39db46b1ab21d3ffeeee5892fe390f6984",
+      "size": 4301
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-bound-v1.py",
+      "sha256": "9c025c89b021b7cfd156b4094c030041152f46aa62305d8c80a641f505677118",
+      "size": 7867
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-continue-v2.py",
+      "sha256": "b89660a0e8c9a2d2072a235be5eb2cd6afe3c2f89fa8509b1b21b4506024235a",
+      "size": 6494
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-continue-v4.py",
+      "sha256": "39654643321ac658dfb4e393307b686d132f0d5239abb3db6f47feef2bdafa41",
+      "size": 4841
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-continue-v5.py",
+      "sha256": "62099f9cd61cb2fdbca6e2c19bb1eb20ebd06bee6e070384b64d09ef2e95787a",
+      "size": 4841
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-v5.py",
+      "sha256": "da2fea0aa36277c1c464ca27ad280b03ba31bfec2730182779ac839638496656",
+      "size": 17194
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-context-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-context-v6.py",
+      "sha256": "743645a993e46268c7b50251d0a4867037af814a57747389abca7ab3b305a635",
+      "size": 23204
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-accept-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-accept-v1.manifest.json",
+      "sha256": "431d59f132898c8302854b78dc6cf4fd44a41504e48ce810b1e8d2f6ffaf3b65",
+      "size": 2482
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-accept-v1.py",
+      "sha256": "d5d1614372bcbd0008806f5378c6085c56f95d516608493ee9f318b5cc5856b1",
+      "size": 4032
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-bound-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-bound-v1.manifest.json",
+      "sha256": "dda74ac69d400d22e6a6cace532a9022e4619cd23643cc9d00b4e9de4c11bb47",
+      "size": 2120
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-bound-v1.py",
+      "sha256": "2a6b2c598004a621eb0282daec74b191a118d9d2bf44b1c68db50342b3fe081f",
+      "size": 4475
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v2.manifest.json",
+      "sha256": "10b8b843ace3a38907e265485f61100c30ae4a30bd1aab4e38d6ea2efc2bd30c",
+      "size": 2494
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v2.py",
+      "sha256": "2fd3323ba89d4db6d6493130093e77e2e1f65ba8c03981717b4ea083d01db107",
+      "size": 4056
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v4.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v4.manifest.json",
+      "sha256": "5a5f570c694e8927b311af5172e3a63e5e348becb1a63f82bdfcda40433133fc",
+      "size": 2735
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v4.py",
+      "sha256": "fcd9df30002b2302f44259a9050fe456b4b575268a655f9a6474ec7064e17de9",
+      "size": 3775
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v5.manifest.json",
+      "sha256": "9af8add92b833b10c51ad58e7c740fc87d5b38aa6a28ebad149b3879b24f2f85",
+      "size": 2735
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-continue-v5.py",
+      "sha256": "8d392dfcf5d663a9561f4c0d4f39f2aed56f3013567116116693312320a492c8",
+      "size": 3775
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v5.py",
+      "sha256": "cb21c6f6b6ffa627d24d67922892b7377191063f687253c65940e7a2a9f3e880",
+      "size": 9037
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-handover-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.py",
+      "sha256": "4e66f48d9f24bbac28f09be3223f80a1e9d052442d5f4ba4b056e61efe847312",
+      "size": 9083
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-actors-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-actors-v1.py",
+      "sha256": "3c47d4f9f17d415d3039e939f297c63a29554480a467dc5603a5331da7e49ce2",
+      "size": 3733
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-call-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-call-v1.manifest.json",
+      "sha256": "44d728e05c4f7a6cd19e400790e102987917c7822b21097eb19f0649d75c6259",
+      "size": 26437
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-call-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-call-v1.py",
+      "sha256": "dfe03159dc60015e175403da7caecb2c4a51212d2a2e620daeb207118e51ad4e",
+      "size": 51866
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-call-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-call-v5.manifest.json",
+      "sha256": "51abf20ecc40f6b1b66c85a33c6722a51cd2d034374a8b970fae5525594de84f",
+      "size": 37813
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-call-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-call-v5.py",
+      "sha256": "57760d76ba2d8c2ed85f645f4fcb39a99f9cf5ebf0727bb6c4dac74f9fd8ffc1",
+      "size": 42595
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-call-v5.test.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-call-v5.test.py",
+      "sha256": "6b30ef1f8343ee4c522e2089d2e5a96b87b0872d3661c91f75c11972a5d94000",
+      "size": 15942
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-prefix-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-prefix-v1.py",
+      "sha256": "3741736fef01c793d8d749d34156cf0891efe380a0b402914a5b2614d1a7ceea",
+      "size": 14733
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-prefix-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-prefix-v5.manifest.json",
+      "sha256": "e7321fe8fb795a160cd59aae88acbc77ff1e5f0fd24f1016d0ef96773d014546",
+      "size": 398
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-prefix-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-prefix-v5.py",
+      "sha256": "0e495fe3ca618cd2f12dcecf1badad84fc076ac453d285849a372af0e1113de8",
+      "size": 2987
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-prefix-v5.test.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-prefix-v5.test.py",
+      "sha256": "c7c109a4de256f290cb7063c18cc036b423f9826485e695edef773a34103c0ad",
+      "size": 18743
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-source-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-source-v1.manifest.json",
+      "sha256": "ab82933b80168ab99862b443d7656efdf4dd2d8030d6f737b2599850ec3ddf81",
+      "size": 26206
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-source-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-source-v1.py",
+      "sha256": "f19c67fcef83437c7db856a3b45e06ee416cab7268f79e34447c33d59a55febe",
+      "size": 39205
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-source-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-source-v5.manifest.json",
+      "sha256": "a01d4d5397aaeb67ac89398b5f5690db1a20af0a93772e9f46a8d3ef9584d79f",
+      "size": 37582
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-source-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-source-v5.py",
+      "sha256": "4308e3b5940cc4d687f42d58bfcb1978d39c37b970ed452d90fb673f45b2e2ea",
+      "size": 42903
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-feature-inverse-source-v5.test.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-source-v5.test.py",
+      "sha256": "059b41f3bafea74e3eaef64efb47f0b9b4c7d07bb2e0d9f092cfe44d349713ad",
+      "size": 9950
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-binding-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-binding-v1.py",
+      "sha256": "4a2e27c9943959e76bf26b6639727833ede7ff8224fe1c6d2b8b50e9f7e42758",
+      "size": 3916
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-binding-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-binding-v2.manifest.json",
+      "sha256": "0f5bcd31ead0971f6d3fba26f238f8d7eefbc20f39d2db8a51ca9a356f6aac27",
+      "size": 22237
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-binding-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-binding-v2.py",
+      "sha256": "e8eeb5f9fb883dc7a94227abf21d2cf4899ce913864dcca006720b2c905682dc",
+      "size": 3826
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v1.py",
+      "sha256": "1e29585a8c1b09747c061e47e0b2fbf2a984d10949c12f36d847b336f8a5259d",
+      "size": 33420
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v2.py",
+      "sha256": "b6b6eb8c707290c29fbcd6eedf2e13c6c1d5dcc293a3806b0d6ab76bc9ab49fe",
+      "size": 22026
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-accept-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-accept-v3.py",
+      "sha256": "29c44cdb1e3614eda39601c0e8bff29233f8a39369f01e5acb47530fc88138e3",
+      "size": 24985
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-attempt-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-attempt-v1.py",
+      "sha256": "6202db1e5124ce81823854ffa09e77410b6495c695b463028bc150bc57b564b3",
+      "size": 60417
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-attempt-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-attempt-v2.py",
+      "sha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+      "size": 27969
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-attempt-watch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-attempt-watch-v1.py",
+      "sha256": "9b48b382b16c7fbdbc7d345a76bf727e68ea2ae38c775c48714731c2a0c26b41",
+      "size": 15187
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-attempt-watch-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-attempt-watch-v2.py",
+      "sha256": "47005973bc9ec17cd65f8b3044ef9e4dda438821fd651c289608b0fd2f8a86ae",
+      "size": 3432
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-binding-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-binding-v1.manifest.json",
+      "sha256": "a6d4f0b8669eadcc44a1c880e76996f015e645ef9976b79e418e02e26bd1859b",
+      "size": 21780
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-binding-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-binding-v1.py",
+      "sha256": "acfeda7dc55b5ea7c99a3ef3a11855397c56317cf38a1d792a3e769540c0e962",
+      "size": 15019
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-candidates-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-candidates-v5.py",
+      "sha256": "869a37bf324575c569c22fe020cc4ad62e9776429e1e5a137078bf5acaa262ca",
+      "size": 6977
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-recovery-semantic-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-recovery-semantic-v1.mjs",
+      "sha256": "ca20dab6095290c78617a9ded63b21020c5e8aeda2e0de664d6947bbfa5f59ff",
+      "size": 18954
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-recovery-v5.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-recovery-v5.mjs",
+      "sha256": "a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df",
+      "size": 16974
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-terminal-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-terminal-v1.py",
+      "sha256": "5ac441e3c3b0d3494cd256682f987a60b1d4119d4be6c1db7cb446642bb79613",
+      "size": 8566
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-v5c.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5c.py",
+      "sha256": "ada329e57969155d091d3b5d276de767cb5a09760095a4499090b0589d81b7da",
+      "size": 9477
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-generation-watch-v5c.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-watch-v5c.py",
+      "sha256": "f1ebc76c182d4146de7c006fa2dad5567aa8fb6d0dfe16e807648a2792911885",
+      "size": 10189
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-accept-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-accept-v1.manifest.json",
+      "sha256": "97104caa6f4b9e907e2b46a0f55b5e0eb3e087917f39643ad1e583b0ea2c1e14",
+      "size": 25640
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-accept-v1.py",
+      "sha256": "83f9c88acd2c27b94cfc785595b30baaf2f26d858df772ff5ecc91c72cfcccdc",
+      "size": 28258
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-bound-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-bound-v1.manifest.json",
+      "sha256": "5a5e76e842aab87e76baaa540afd851961ff71cee0e7a54d2ac77b646f8a27be",
+      "size": 23409
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-bound-v1.py",
+      "sha256": "415746545c901bedea9424e8e2330940d68a77cd303958b9551350de30e1717c",
+      "size": 27235
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-continue-v2.py",
+      "sha256": "b0db4b1c1410bc08d57bfc8291fc2f82ddaae0fd6827f37fbfd6abd4b2984e93",
+      "size": 33920
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-continue-v4.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-continue-v4.manifest.json",
+      "sha256": "d147ddf721e41e7e03feb42d42d859a6a299fcfbd639d501ef48964f6d1423f9",
+      "size": 34517
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-continue-v4.py",
+      "sha256": "803997a3fd93e33f3ce143a6a14d1fbaea30bc6613f5d2ece35dd31a8e02a6a2",
+      "size": 36407
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-continue-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-continue-v5.manifest.json",
+      "sha256": "71f6400d4a4d8740c086f9724ffc25a8dce66ae8d1a511c04c465f2186af135d",
+      "size": 38097
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-continue-v5.py",
+      "sha256": "ea8f35245f2e487f4d8259c9f1fa49e8ffbc04f381d706222c82b036a61036fc",
+      "size": 39871
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-handover-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-v3.py",
+      "sha256": "8ca8c1c99c32e31c88c23136bc722c7d8d6c4756e9dd947eddb84ed1ded8ecf3",
+      "size": 47925
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-parent-phase-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-parent-phase-v1.py",
+      "sha256": "317779c460b99873f4408b0e1b4a9c9992a6c2270d33aa66fbec754affc6d16d",
+      "size": 12518
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-managed-runtime-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-managed-runtime-v2.py",
+      "sha256": "1636f8f2d2634845944f3fa32346bdb3fbc285fd3b731a716a513f42cbed5199",
+      "size": 36855
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-effect-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-effect-v1.manifest.json",
+      "sha256": "3e9730067b03934d67c307773eaeb4e453eb440225ad45ae249587337065aa33",
+      "size": 35643
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-effect-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-effect-v1.py",
+      "sha256": "9d79c54f8828f36a120241c61a36e28a4c3423731a87fc8824aaecdf7c9305c7",
+      "size": 39877
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v1.manifest.json",
+      "sha256": "ac005ac44651a31c954426cca6edde676a4e337ab2c926d001538fc784a7ab62",
+      "size": 670
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v1.py",
+      "sha256": "7175b73f0f278a77b92ccabc2bd38258de81197884cc24bcbe30a7abdaa09e0f",
+      "size": 15970
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v2.manifest.json",
+      "sha256": "acfc5b210f00688b17389c3c6d197398c4e865935ddf2c3e43f340d7c74dbb66",
+      "size": 894
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v2.py",
+      "sha256": "3486c4c59e936e32f17694b33edd626f336d37119d67b674a60c65f723d8f98b",
+      "size": 4835
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v3.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v3.manifest.json",
+      "sha256": "801d0a1bb33f83dba6645c25babaf9ddae6ba041b9dde967afda171bd4d80bbc",
+      "size": 1012
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-epoch-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-epoch-v3.py",
+      "sha256": "33ae8619fe0a43b94745b1a00ae57db166592c83ccf6a997d50cd8c583fdff51",
+      "size": 8519
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-observation-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-observation-v1.manifest.json",
+      "sha256": "4f58cbaf4a8ff0d051771c38ceeb37c2a03ded3af53ab795a240e5d2c036ad36",
+      "size": 30276
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-current-observation-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-current-observation-v1.py",
+      "sha256": "f536ddc6eb003a04817642833846fd2d035b4c74c2aa7477b4f85ce3b548fdc2",
+      "size": 35392
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-metadata-handover-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-metadata-handover-v5.py",
+      "sha256": "9b9184e685d3171beba3bce2f09aa3ddbb9c57f980e5243bd4c9710017f7825f",
+      "size": 3761
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-observer-retained-prefix-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-observer-retained-prefix-v1.py",
+      "sha256": "451f1abe40d4bfba0d561e20f64c3e36c1c050ecbbea3415ecf318b00333e32e",
+      "size": 27825
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-postfeature-source-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-postfeature-source-v1.py",
+      "sha256": "50d99faf6d6f0743e4766a0174b73b100e9b429b5ea1d5c9c53f6f7ef5e809ea",
+      "size": 37387
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-postfeature-source-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-postfeature-source-v5.manifest.json",
+      "sha256": "4434f271df040e83e3fa5d692c7bef81a1fcf31057e047d61c0726b7cb935239",
+      "size": 38148
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-postfeature-source-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-postfeature-source-v5.py",
+      "sha256": "a6b6c7312fec21151ea9573b08bae1cbbdb63a95ca648d8b81a633f28f4fa7cd",
+      "size": 41540
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-postfeature-source-v5.test.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-postfeature-source-v5.test.py",
+      "sha256": "29fd2dec53d32c6a27122a7da4b66726124260148773d5c23f5897b1c777479c",
+      "size": 11690
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-accept-v1.py",
+      "sha256": "06212b568ee5298679633e3dfc30f9e47007c5624ff1a1ff441891f8128c6fcb",
+      "size": 2589
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-accept-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-accept-v2.py",
+      "sha256": "7c518d97f1c4f425dce8dee8a4ad3f6f06a37454b0346de177c4cd60b32e56d0",
+      "size": 2884
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-bound-v1.py",
+      "sha256": "667d46ada5895b62fad16e5c42dee033a157bd187fd1a5360f91994bfe64c130",
+      "size": 3992
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-caller-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-caller-v6.py",
+      "sha256": "c7828062bbc7446ea4b00b7e84394d3ef8ce0aa11efeb88b82fddc3cc7c4345a",
+      "size": 29761
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-inputs-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-inputs-v1.py",
+      "sha256": "9fb641bf7cd35aed3032e2d080a77e92b53f58e6692c29b9baff012f4e4e0332",
+      "size": 6421
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-inputs-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-inputs-v2.py",
+      "sha256": "bb89dc2a3e798e7d507a9fa723ba7eb4ec679ffe64c7e83922bfb8d35c697ba7",
+      "size": 3768
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-inputs-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-inputs-v3.py",
+      "sha256": "0d3e1579cb529c2606c861adc1009cfa4217ba3c8b4b3a4081cad878089f5757",
+      "size": 3579
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-inputs-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-inputs-v4.py",
+      "sha256": "2b17e31f4de3c1b236d475ae367aa02058af9f3eea359dc2c66eb81ef8c4f3b2",
+      "size": 3613
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-manifest-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-manifest-v1.py",
+      "sha256": "9be7d281fafd5dfab9fdba1a9c7dff0ee6db4219eb9d4cdaef7d6a57ed7a238c",
+      "size": 3776
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-manifest-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-manifest-v2.py",
+      "sha256": "ca66e80b9880d945bbadaed2bab40de70b0425d5a49f73f00a3c0d01ae19d7e4",
+      "size": 4452
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-manifest-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-manifest-v3.py",
+      "sha256": "561cf8300d8fd48c5874982fb434928241d8a37ee22c96a0251a7057430db257",
+      "size": 4452
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-manifest-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-manifest-v4.py",
+      "sha256": "ea04d92ca3ba46c5e35102ebd6a8ce1695704d5538f53dbcc43177b6dafe257b",
+      "size": 4452
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v1.py",
+      "sha256": "6bf7e33971d3331d84ba843ca4952db3f9024ebcee56fba0ff67a5cecbab0151",
+      "size": 7476
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v2.py",
+      "sha256": "5234d3fae4d7231ad7b966eae133d9132c71ad3098ce463672720c563d9f3aa2",
+      "size": 6853
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v3.py",
+      "sha256": "a4a1269b25aaa336fc101cc51252d7d1c275ccef0be63d84e59a4df1b2a22730",
+      "size": 3462
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-continue-v4.py",
+      "sha256": "c4d86df5b1228147f9677db49d76932f4d187b67ffd09172a92f553c835a4f92",
+      "size": 3496
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-input-render-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-input-render-accept-v1.py",
+      "sha256": "f934344ffa62c336d5dd4a057d05f6a8568139b52452080af02c33849e092705",
+      "size": 6599
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-input-render-accept-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-input-render-accept-v2.py",
+      "sha256": "31ae49e472c2dc03fc84e70fdd8f443094b0959b591542f46a92a74d3f74ba85",
+      "size": 3022
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-input-render-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-input-render-v1.py",
+      "sha256": "edff30e35a7253e2487afb12938f0c93571897c6ec25eff96769a3d405614b31",
+      "size": 19964
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-kernel-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-kernel-v1.py",
+      "sha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+      "size": 4961
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-kernel-v1.stage.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-kernel-v1.stage.json",
+      "sha256": "d527d90edfebd43fae93e6200e58dad1a0f1cc965a31a0f7c39d21ddd3887e5e",
+      "size": 49339
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-observation-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-observation-v1.manifest.json",
+      "sha256": "d6fdd6668f73c1bb19574682cbd72e4167c8c990f4da9b6c5ab88e1427c4bbc1",
+      "size": 35394
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-observation-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-observation-v1.py",
+      "sha256": "f04a6fde624aa5a3805f6f8b4b3f34fa0d03e1e036f4a8237c88b3261f822d4f",
+      "size": 38911
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-protocol-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-protocol-v6.py",
+      "sha256": "543d563bdd2d980c2019a5033c751a61a4d7b99d609f2f060d50f39b0b3af502",
+      "size": 4881
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-publication-query-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-publication-query-v2.py",
+      "sha256": "deeaead42909617877af48b6749ab2704e205624ee979ed55b3df92c9dbd544c",
+      "size": 6304
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-admission-v5b.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-admission-v5b.py",
+      "sha256": "a47d4f6b41839d3856244b7d08a92d3a8f56de71b8f566a22122bfb80f5213c3",
+      "size": 22094
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-accept-v1.py",
+      "sha256": "b2b10b7e107bf3cd89aeb4838bdb08828e511abc2b3ebf453d7bbcf240b9215a",
+      "size": 5452
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-accept-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-accept-v2.py",
+      "sha256": "8be988601c168c37ed5cc9dbbf348e2ad00312cd234786a2d3e00c6f4224a834",
+      "size": 2669
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-bound-v1.py",
+      "sha256": "7c09671036b712700a5bb4bafa83e0c209243dea06103c8c297e8f332af0555f",
+      "size": 6637
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-continue-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v1.py",
+      "sha256": "e4b0a18fc1358a04da6a6a47c8363d193836d23493a28f6c09a1780e3dadc06e",
+      "size": 5326
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v2.py",
+      "sha256": "6155280da8f53e6e3448c024bc3e142a5f69a8d3e1a6a39ae3faa8c1d44d1a34",
+      "size": 5337
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-continue-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v3.py",
+      "sha256": "e64a7787a0991e196222998caebd9773da67b8cf9272dcc778758c8953e77e89",
+      "size": 3307
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v4.py",
+      "sha256": "c8c98989c6cb6b2e301e07faeeda4d99f38d2ec70277f5217acff9b06e21d952",
+      "size": 3341
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-continue-v5.py",
+      "sha256": "30ee6c1935822dc2a000ea9aa874117b3e7f5cd8dee1e2d180f6a5206f85b326",
+      "size": 3336
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-v5.py",
+      "sha256": "387c6a16d5f0c203731212d1a54b618919c0413e4235a37a35510cff584d8cc2",
+      "size": 17530
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-cache-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-cache-v6.py",
+      "sha256": "46bd4b093988f9a85c83d40dcc10a490831d5fefe85f40ccceba93ed511fda8c",
+      "size": 17621
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-read-catalog-v5.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-catalog-v5.sql",
+      "sha256": "8362df110cd3b0d70f9e5969b0619d373885c17ec2f5b8f5921517b71678c7dd",
+      "size": 7748
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-accept-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-accept-v1.py",
+      "sha256": "99c720965851e15a6aaca0bad39d616c0bc3daef3d581a58888d9f0a9a3a9b6e",
+      "size": 3161
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-accept-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-accept-v2.manifest.json",
+      "sha256": "688442913b575d8d68c9e2f07b46f355c57ebe7e2ab79a055d3d8d614774a666",
+      "size": 26502
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-accept-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-accept-v2.py",
+      "sha256": "973cc75929e6ee3c906ac12103933603272cb41fdceec248bea3461b971dbda5",
+      "size": 2762
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-bound-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-bound-v1.manifest.json",
+      "sha256": "bbd19325eded8dd90b2ea8c0e8844b9ad6134fd78416206bb0491978a07f3095",
+      "size": 25115
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-bound-v1.py",
+      "sha256": "7e3783576548c680561a3d44c9b280948520d91acc95a4ac165501a1520caf17",
+      "size": 17923
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v1.manifest.json",
+      "sha256": "2f0834fda702e6bc2a2bbbb49a2502c7d50b7201aae6978f7aeed340a28426de",
+      "size": 28311
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v1.py",
+      "sha256": "5858b50e59ddc1d5ee04e0f8443143d0d6aee78fd927fee4f6d9fbe9b62a747d",
+      "size": 4055
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v2.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v2.manifest.json",
+      "sha256": "8c08dd3285dca10b36012e84807ea932ebfafc119c926989a048e66ff1fed743",
+      "size": 34317
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v2.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v2.py",
+      "sha256": "1d86989516bbcd4823c11f12761a073585437315e0d2e2c9b7f9e7253792f4a7",
+      "size": 9302
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v3.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v3.manifest.json",
+      "sha256": "518d91ec7341543d7a07ba62d92d0b2f583ac52eec240d234b9deeca5f39712d",
+      "size": 35416
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v3.py",
+      "sha256": "a476ee8b8f3e19b4b02ff71df596f2b998896adda1743e65ebc98551582bc89a",
+      "size": 4220
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v4.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v4.manifest.json",
+      "sha256": "1c131cf6a0da4613ecf83b3c11028433be0192cd7ee3f99a360ea80268df1b24",
+      "size": 36270
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v4.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v4.py",
+      "sha256": "7514129125e50c35152356e5090de88f3a51758f4090a763f74eb7f417c1d6bc",
+      "size": 4276
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v5.manifest.json",
+      "sha256": "455c09d5f17761892d1d46718bafac3f97c317753d0040d55938794ee6957405",
+      "size": 39357
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-continue-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-continue-v5.py",
+      "sha256": "c108f1c9c10e9838b05309be28d34afbbb64c369bfe83d5641dc9d09b6762241",
+      "size": 4271
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-cutover-v6.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-cutover-v6.manifest.json",
+      "sha256": "870c6fe395ba30c7f3ed6d405d96bb9fd4cfdee485c871112c26f5f96b7c4200",
+      "size": 9775
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-cutover-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-cutover-v6.py",
+      "sha256": "7601a4f94c6b3dc7b016320944d53dd335e45cbe52838852b0cb4277934831a0",
+      "size": 19754
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-peer-bound-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-peer-bound-v1.py",
+      "sha256": "865f796407aaad784761cdb247a9cf1d4efe99ed3b0f9ea81e7809d37dc0c2b4",
+      "size": 4990
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-peer-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-peer-v6.py",
+      "sha256": "91eacbca363ad3e17ca91b043776518847f303a3b474d4c26237d3c3c8f55cc6",
+      "size": 15160
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-probe-bound-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-probe-bound-v1.mjs",
+      "sha256": "4cf1ae4e07477a2183ec46ef0405d5763a6a81bbe28c953a6a813b7dc88a32fc",
+      "size": 9353
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-probe-v6.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-probe-v6.mjs",
+      "sha256": "5d9f013eaec45299a0b52418d309a9b35d4d1630618297df3595555b840d4e69",
+      "size": 9341
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-proof-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-proof-v6.py",
+      "sha256": "0b4a31b7da89901091c2a68807acb86b5513f99a554c60fdc54809db653069f5",
+      "size": 39149
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-sql-bound-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-sql-bound-v1.mjs",
+      "sha256": "05e8c0a728a90f6ab432d73f4fb1ce51f685495405591d225e82a083fa86c8d9",
+      "size": 25529
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-sql-v6.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-sql-v6.mjs",
+      "sha256": "fc31022549840e324c584c9fd5033fd9348e93cb00b7e308c427433b1f95f019",
+      "size": 25502
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-wire-bound-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-wire-bound-v1.manifest.json",
+      "sha256": "af30ebc298546ec060cdefcc47bb25856a8b05aa654d6f0cdc527990ea806ddf",
+      "size": 1561
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-reader-wire-v6.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-reader-wire-v6.manifest.json",
+      "sha256": "f38f5636bdd5681159eece772e2a981fde910ee26d745712df7b05f05fe879c4",
+      "size": 1534
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-readview-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-readview-v5.py",
+      "sha256": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2",
+      "size": 11559
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-restored-source-prefix-v1.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-restored-source-prefix-v1.manifest.json",
+      "sha256": "7c3f276e8561ba5a7e22968ad312c47f7586ad6bc2d348f5a9522b4d7621ae77",
+      "size": 25859
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-restored-source-prefix-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-restored-source-prefix-v1.py",
+      "sha256": "644d69ea670abca2b19c410aaf5e7d7a22065637f50ea63dde4f79b24d052319",
+      "size": 46525
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-restored-source-prefix-v5.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-restored-source-prefix-v5.manifest.json",
+      "sha256": "1c7c30b47392ac34dec247995921755280c15473b937c852aebbd3499f49eeba",
+      "size": 37112
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-restored-source-prefix-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-restored-source-prefix-v5.py",
+      "sha256": "3d85eb71188c736608c18879c30a2512dc22824b8464337a59bfa2f44e6a0470",
+      "size": 41865
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v5.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v5.py",
+      "sha256": "052f363ca94a74aed1b278079c3e70661c8068328342bba559eecfe3c1939ac0",
+      "size": 44772
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6.manifest.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.manifest.json",
+      "sha256": "80e2b98a8b69542ea438ebe7f8a1bc90144b48ca2238c74bb8f40fb21b5d7452",
+      "size": 761
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.py",
+      "sha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82",
+      "size": 12288
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-reader-peer-runtime-host-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.py",
+      "sha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76",
+      "size": 25647
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-reader-peer-runtime-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.mjs",
+      "sha256": "6728fcb405de2bf7fc302678dae4aa6184ed51effd22823375d4e0a078792cc1",
+      "size": 5568
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-reader-peer-runtime-v1.preparation.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.preparation.json",
+      "sha256": "f1c184ac037df22314a563a008961f835b91a265e1a2bc29910e7d165c501be1",
+      "size": 3516
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-reader-peer-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.py",
+      "sha256": "cc7842d51a6adb242991423b3bfb850452315c37e169107331332d2460dc0ffa",
+      "size": 11096
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-reader-peer-runtime-v1.test.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.test.py",
+      "sha256": "71aacef972af251b765d7e6f40e49c70e857af59b6e9f98d6510c4696fec002d",
+      "size": 10895
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-cache-peer-runtime-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-cache-peer-runtime-v1.py",
+      "sha256": "055ce7679c040de4286a30d71cf132c041878fa858d35cc4cdb81a62167fda6f",
+      "size": 3409
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-cache-sql-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-cache-sql-v1.mjs",
+      "sha256": "118fdf4723320fed6b761ff953878dadc055ccfd62f4cf9da8219ce46e2492ab",
+      "size": 5196
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-feature-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-feature-context-v1.py",
+      "sha256": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be",
+      "size": 36071
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-feature-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-feature-handover-v1.py",
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035",
+      "size": 6638
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-generation-capacity-watch-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-capacity-watch-v1.py",
+      "sha256": "c65a9e9c88b397c98ff21c93bcf0a0782e054b2d6313620820603c6dd7f67ac6",
+      "size": 10104
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-generation-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+      "size": 40435
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-managed-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-managed-handover-v1.py",
+      "sha256": "ea2664fa573ed40a12478a9e9476b4d72828604a341f726a2f7570095b6374b5",
+      "size": 63251
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-metadata-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4",
+      "size": 11874
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-metadata-handover-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3",
+      "size": 54661
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-ordinary-observer-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.py",
+      "sha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3",
+      "size": 50697
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-read-admission-v1.columns.sql",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.columns.sql",
+      "sha256": "8efbbf11ba14c0ec645dfa0a9acc1ef64e89fc70315fb8d3b4cb66308162e4bf",
+      "size": 775
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-read-admission-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-read-admission-v1.py",
+      "sha256": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4",
+      "size": 28543
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-read-cache-provider-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-read-cache-provider-v1.py",
+      "sha256": "2cf7cdf57a51c99acfeca7fa91f0b339b74ee46e0d74b2911ad0290fe5b1f8e9",
+      "size": 29951
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-read-current-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-read-current-context-v1.py",
+      "sha256": "e82a9037e21af0de3e62efcc6008545d1790295809183955d405e4c181cf0932",
+      "size": 14593
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-restored-reader-cache-phase-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.py",
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1",
+      "size": 8989
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-retained-proxy-current-v3.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-retained-proxy-current-v3.py",
+      "sha256": "80519249b13b968c696b5582104990cb6e310a410eeac42fe0f139296ecf99bf",
+      "size": 34606
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-source-restored-current-context-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-source-restored-current-context-v1.py",
+      "sha256": "994231005b15e04cc6e2d57ac73712c71b80791ddc774cdc7ea5966cbbcca4ae",
+      "size": 10631
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-source-tail-restore-v1.py",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-source-tail-restore-v1.py",
+      "sha256": "de4a42360c46a641896d5a03847bca15b8aa48bb9fdf19aa3dc9cfedda7c1d34",
+      "size": 13777
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-v5-witness-official-v1.mjs",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.mjs",
+      "sha256": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc",
+      "size": 18684
+    },
+    {
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-v5-witness-official-v1.sources.json",
+      "deploymentRequired": true,
+      "file": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.sources.json",
+      "sha256": "ba5d4f5f89191f069f01b71becc5d4db540646458638b1ce188d38a4013d2fb3",
+      "size": 2184
+    },
+    {
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-feature-inverse-v5.md",
+      "sha256": "3bc5e6b59716d0cf6fcff87511cd5cb7f77a691f74cbff10a5652700215f93ea",
+      "size": 4261
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-feature-inverse-v5-preparation",
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "sourceOnly": true
+}

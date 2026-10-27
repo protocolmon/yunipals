@@ -1,0 +1,48 @@
+{
+  "authority": {
+    "configurationSecretsReused": true,
+    "migrationsPerformed": 0,
+    "oldWholeValidationClaimed": false,
+    "readinessArtifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234",
+    "rolesRequireSeparateAdmission": true,
+    "sourceKind": "typed-current-epoch"
+  },
+  "files": {
+    "arena-ordinary-latest-complete-v1.manifest.json": "73e260b3ed441ec7cf607d1da9215ae368972b523285ca251f2910adae44a2cf",
+    "arena-ordinary-runtime-v1.py": "7889fca5e47734f263eb51c5f2338e4080e17070188876db26bf4cc0080b2dad",
+    "arena-ypal-current-admission-v1.proposal.json": "0789c643ff3513aec9f8d5cceb95eb15226b60c007e82d80ac37b51d4a538ac4",
+    "arena-ypal-current-credentials-v1.py": "0bd21ca83b63aba02d3eb0113704edaac3a4f2dc34148d322db38a356d9f021f",
+    "arena-ypal-native-v1.adoption.mjs": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162",
+    "arena-ypal-native-v2.context.py": "b50169a2cd5f4b88454d85046cc48e1a861e07c103d4b39faa3ec98dcb3775bd",
+    "arena-ypal-ordinary-accept-v1.py": "b3dce2f8dbfa26dc219101dd29be866aad1d3944f0db6de9915a838555080295",
+    "arena-ypal-ordinary-bound-v1.py": "1a0ddc4b7f65d92a43953537e0ab55b620d7913c5482b2f7ad6a098c725dc523",
+    "arena-ypal-ordinary-continue-v2.py": "fb2436608293ded2d66f7bba2003e5359070e5a483676bda3b2b34e45569165e",
+    "arena-ypal-ordinary-continue-v5.py": "0f816d494f5020c2c397f25cb5499a64f1bd6ebffd7a9ac5e9fab034554c5ab6",
+    "arena-ypal-ordinary-v1.mjs": "e7606911c387bc987c3c0d217a7ae9c5a593f7178b07bb180845dccc540cafcf",
+    "arena-ypal-ordinary-v1.py": "60c3dbbfc90a8d7540616278eb51cb329a097a1bab20d0b6e66d9f17f92c1fd0",
+    "arena-ypal-ordinary-v1.source.py": "9940e8d3f310f940dab4fbf9753179954d594e484728b0fe37650c475ffb6dd0",
+    "arena-ypal-restored-v1.py": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a",
+    "arena-ypal-source-completion-v1.py": "2cac6ffdb5b3162b3e6431364974a2ab61a3c33be97cb358c3505a80d8046dc6",
+    "ypal-fresh-forward-epoch-v1.py": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c",
+    "ypal-ordinary-downstream-refs-accept-v1.py": "2d2e8b1550332e215564cbeefb12a2fbea42f87ba1d978aab2aa337f212e3ce6",
+    "ypal-ordinary-downstream-refs-continue-v2.py": "328ef5c05768ec50190bb9fa4a4959611aebf423b229892558dff3fb50028148",
+    "ypal-ordinary-downstream-refs-continue-v4.py": "9e59c051045dec4664c2cd9f9bb0c27a48a189887cb4fb59b8d6ab9c309c9c5a",
+    "ypal-ordinary-downstream-refs-continue-v5.py": "bea5d0cd2b99798d49d777797426a350c0bb4e8e2a2d958a3a764fe9a7ae38da",
+    "ypal-ordinary-downstream-refs-v1.py": "a43d0f79dafb629a7b57be7f67e5c2e0bf5ba2b05bc8dbb370afc30449fe1f4f"
+  },
+  "format": "yunipals-arena-ypal-ordinary-continue-v5-code",
+  "source": {
+    "abiHash": "0x92fff205c89c168c18abdb66ac1f46329941822e998ceccbaa153a13db183f53",
+    "baseRpc": "http://127.0.0.1:19222/unified",
+    "buildId": "71e2a7f3b7",
+    "deployment": "8453:0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "policy": "latest",
+    "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "startBlock": "52648146",
+    "subsequentBlocks": 0
+  }
+}

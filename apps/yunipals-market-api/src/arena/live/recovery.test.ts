@@ -541,7 +541,7 @@ test("canonical revealed strategies, paid tasks, payout/claim credits and large 
     [f.id, inputHash, resultHash]
   );
   await pool.query(
-    "INSERT INTO yunipals_arena.transaction_intent(deployment,purpose,tournament_id,signer,nonce,raw_transaction,tx_hash,state,receipt) VALUES($1,'release-payouts',1,$2,0,'0x',$3,'confirmed','{\"status\":\"success\"}')",
+    "INSERT INTO yunipals_arena.transaction_intent(deployment,purpose,tournament_id,signer,nonce,raw_transaction,tx_hash,state,receipt) VALUES($1,'release-payouts',1,$2,1,'0x',$3,'confirmed','{\"status\":\"success\"}')",
     [f.id, contract, h("e")]
   );
   const largeToken = (2n ** 200n + 17n).toString();

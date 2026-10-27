@@ -1,0 +1,20 @@
+{
+  "UID970ReadableWithoutImports": true,
+  "actualResultSha256": "56ed49dbfba33b6a96a68412b332d2363dd1f63d556c20588168c10d4d198db0",
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesAndPermissionsUnchanged": true,
+  "format": "yunipals-retained-solana-materialize-v1",
+  "managedActivationQualified": false,
+  "newCredentialsCreated": false,
+  "newPrincipalAdmitted": false,
+  "newTargetGid": 964,
+  "newTargetMode": 416,
+  "privateFileSha256": "eab2a5277fa001670c895fccc35ef2560590005ab87b3cfe233b00d56cc7dd5e",
+  "privateValuesExported": false,
+  "providerCalls": 0,
+  "reviewHash": "f165cc69bde8a324856a2c47c292f3748d6ff0bbc4284a79d6ba5be1319a734e",
+  "serviceActions": 0,
+  "sourceAndServingPeersUnchanged": true,
+  "sourceStageSha256": "35093ff3fee4532b29e017f91451bde8f7fb4deeafeff4f80524e81647dd4a60"
+}

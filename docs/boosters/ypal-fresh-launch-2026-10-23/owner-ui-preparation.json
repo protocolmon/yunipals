@@ -1,0 +1,189 @@
+{
+  "actions": {
+    "broadcasts": 0,
+    "databaseWrites": 0,
+    "productionFileWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "signatures": 0
+  },
+  "behavior": {
+    "accountNetworkAwayBackDismissUnmountZeroWalletEntries": true,
+    "actionCount": 10,
+    "actualReceiptAndCanonicalHeaderChecked": true,
+    "artworkCanonicalSHA256Recomputed": true,
+    "automaticNextSend": false,
+    "configuredPublicTypeId": "1",
+    "currentApprovedArtworkReused": true,
+    "erc1967AndOwnerRolesChecked": true,
+    "exact264VariantCatalog": true,
+    "explicitActions": [
+      "ypal",
+      "registryImplementation",
+      "registry",
+      "monstersImplementation",
+      "monsters",
+      "engineImplementation",
+      "engine",
+      "metadata",
+      "configure",
+      "activate"
+    ],
+    "explicitRevertAndReplacementResolution": true,
+    "fixedYPALBackingBurnOwnerPermitDomainChecked": true,
+    "forcedNonce": false,
+    "freshTypeCount": 0,
+    "immutablePMONAndSelfRuntimePatched": true,
+    "manualMissingConfigurationAndActivationReceiptRecovery": true,
+    "noncePredictions": false,
+    "pendingHashesSurviveReload": true,
+    "perNftMetadataUsesActualCollection": true,
+    "receiptDerivedAddressesOnly": true,
+    "roundedFeeAndExactTooltip": true,
+    "testPackCreated": false
+  },
+  "chainId": 8453,
+  "deploymentExport": {
+    "allTenVerifiedBeforeExport": true,
+    "fields": [
+      "format",
+      "launchId",
+      "chainId",
+      "owner",
+      "pmon",
+      "burnAddress",
+      "vrfWrapper",
+      "ypal",
+      "registry",
+      "monsters",
+      "engine",
+      "implementations",
+      "packTypeId",
+      "packageSha256",
+      "sourceStartBlock",
+      "metadataBaseURI",
+      "artworkHash",
+      "catalogHash",
+      "receipts"
+    ],
+    "format": "yunipals-ypal-fresh-deployment-confirmed-v1",
+    "launchId": "base-ypal-v1",
+    "receiptFields": [
+      "transactionHash",
+      "blockNumber",
+      "blockHash",
+      "status",
+      "contractAddress"
+    ],
+    "sourceStartBlock": "minimum actual registry/monsters/engine proxy deployment receipt block"
+  },
+  "files": {
+    "apps/yunipals-home-web/scripts/test-booster-ypal-setup-ui.mjs": {
+      "bytes": 19156,
+      "sha256": "2ee264d4d6f9de5d899106bb1629a3c241b71c8d5a29e113a20f8cbdbab200fe"
+    },
+    "apps/yunipals-home-web/src/lib/boosterYpalDeployment.test.ts": {
+      "bytes": 17760,
+      "sha256": "970e6bc4e92758e33960ab6fd58ead52fa11e1bad37a29e8cbf1121553f50753"
+    },
+    "apps/yunipals-home-web/src/lib/boosterYpalDeployment.ts": {
+      "bytes": 28933,
+      "sha256": "5ef118a9bb68080087bffad7f875e704bc99ea959ec7e6dbd38ac6ed6f233456"
+    },
+    "apps/yunipals-home-web/src/lib/fixtures/ypal-approved-art-manifest.json": {
+      "bytes": 22818,
+      "sha256": "79e85ccfa753bb81d8115a17e963f3b427e276f5e68b24d0a3ee284d85c3c2bf"
+    },
+    "apps/yunipals-home-web/src/pages/boosters/BoosterYpalSetupPage.tsx": {
+      "bytes": 24696,
+      "sha256": "97f6b8da8f7d7d79672615cbc6f22afa375d8ef6e023a467af055e31c672b27c"
+    }
+  },
+  "format": "yunipals-ypal-fresh-owner-ui-preparation-v1",
+  "limitations": [
+    "Browser transactions and wallets are synthetic; no live deployment or signature was performed.",
+    "The downloaded public deployment manifest is input for the separate backend validator, which independently rechecks actual chain evidence, chronology, code, dependencies and active pack before admitting the fresh source.",
+    "App routing, curated production build, website publication and fresh backend/source activation are owned separately and are not claimed by this preparation."
+  ],
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "package": {
+    "file": "apps/yunipals-home-web/public/boosters/ypal-fresh-launch-v1.json",
+    "sha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886"
+  },
+  "preparedAt": "2026-10-23T17:57:55.880Z",
+  "route": "/boosters/setup/ypal",
+  "status": "prepared-not-deployed",
+  "verification": {
+    "actualPageBrowserGroups": 13,
+    "browser": {
+      "actualProviderCalls": 0,
+      "browserErrors": [],
+      "checks": [
+        {
+          "name": "Ten explicit receipt-derived actions, one public type, no automatic next transaction, correct export",
+          "passed": true
+        },
+        {
+          "name": "scenario=foreign refuses transaction preparation",
+          "passed": true
+        },
+        {
+          "name": "scenario=wrong-chain refuses transaction preparation",
+          "passed": true
+        },
+        {
+          "name": "scenario=bad-domain&through=1 refuses transaction preparation",
+          "passed": true
+        },
+        {
+          "name": "Pending hash survives reload and blocks another deployment",
+          "passed": true
+        },
+        {
+          "name": "A confirmed reverted deployment can be explicitly cleared and reviewed again",
+          "passed": true
+        },
+        {
+          "name": "Repriced replacement retains the actual replacement receipt",
+          "passed": true
+        },
+        {
+          "name": "Manual configure recovery after state advances without local receipt",
+          "passed": true
+        },
+        {
+          "name": "Manual activate recovery after state advances without local receipt",
+          "passed": true
+        },
+        {
+          "name": "Deferred final simulation network invalidates review with zero wallet entries",
+          "passed": true
+        },
+        {
+          "name": "Deferred final simulation account invalidates review with zero wallet entries",
+          "passed": true
+        },
+        {
+          "name": "Deferred final simulation dismiss invalidates review with zero wallet entries",
+          "passed": true
+        },
+        {
+          "name": "Deferred final simulation unmount invalidates review with zero wallet entries",
+          "passed": true
+        }
+      ],
+      "file": "/tmp/yunipals-booster-ypal-owner-browser-20261023.json",
+      "fixturesOnly": true,
+      "realSignatures": 0,
+      "realTransactions": 0,
+      "sha256": "138e601fb2c99b378847aac87327c0e207643b0db306bd5a6b773aefa19472e3",
+      "unexpectedExternalRequests": []
+    },
+    "browserCommand": "/root/.nvm/versions/node/v24.18.1/bin/node scripts/test-booster-ypal-setup-ui.mjs",
+    "focusedHelperControls": 12,
+    "fullFrontendTypecheck": true,
+    "helperCommand": "/root/.nvm/versions/node/v24.18.1/bin/node --import /root/yunipals/apps/yunipals-indexer/node_modules/tsx/dist/loader.mjs src/lib/boosterYpalDeployment.test.ts",
+    "prettierApplied": true,
+    "workingDirectory": "apps/yunipals-home-web"
+  }
+}

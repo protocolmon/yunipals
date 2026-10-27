@@ -1,0 +1,463 @@
+{
+  "actors": {
+    "yunipals-api.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 79573856000,
+      "invocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+      "memoryCurrentBytes": 112177152,
+      "memoryLimitBytes": null,
+      "pid": 1437990,
+      "restarts": 0,
+      "rssBytes": 155942912,
+      "startTicks": 6616203749
+    },
+    "yunipals-booster-api.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 15236357000,
+      "invocation": "7858a3f608874abb935e635abc69c1d4",
+      "memoryCurrentBytes": 55762944,
+      "memoryLimitBytes": 536870912,
+      "pid": 1824982,
+      "restarts": 0,
+      "rssBytes": 97910784,
+      "startTicks": 6618518564
+    },
+    "yunipals-unified-source6-free-v2.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 7860119749000,
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "memoryCurrentBytes": 403439616,
+      "memoryLimitBytes": 6442450944,
+      "pid": 716994,
+      "restarts": 0,
+      "rssBytes": 452640768,
+      "startTicks": 6611794751
+    }
+  },
+  "at": "2026-10-23T19:33:00.290821+00:00",
+  "cachedMetrics": [
+    {
+      "chain": "bnb",
+      "name": "ponder_indexing_timestamp",
+      "value": 1785150786.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_indexing_timestamp",
+      "value": 1792688087.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_indexing_timestamp",
+      "value": 1792688583.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_indexing_timestamp",
+      "value": 1792690409.0
+    },
+    {
+      "chain": "bnb",
+      "name": "ponder_sync_block",
+      "value": 115012056.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_sync_block",
+      "value": 26249684.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_sync_block",
+      "value": 95990408.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_sync_block",
+      "value": 52950938.0
+    },
+    {
+      "chain": "bnb",
+      "name": "ponder_sync_block_timestamp",
+      "value": 1785150786.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_sync_block_timestamp",
+      "value": 1792689851.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_sync_block_timestamp",
+      "value": 1792690868.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_sync_block_timestamp",
+      "value": 1792690399.0
+    },
+    {
+      "chain": "bnb",
+      "name": "ponder_historical_total_blocks",
+      "value": 121593343.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_historical_total_blocks",
+      "value": 14115166.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_historical_total_blocks",
+      "value": 74176191.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_historical_total_blocks",
+      "value": 30726864.0
+    },
+    {
+      "chain": "bnb",
+      "name": "ponder_historical_cached_blocks",
+      "value": 21980602.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_historical_cached_blocks",
+      "value": 14115112.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_historical_cached_blocks",
+      "value": 74176114.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_historical_cached_blocks",
+      "value": 30717444.0
+    },
+    {
+      "chain": "polygon",
+      "name": "ponder_historical_completed_blocks",
+      "value": 77.0
+    },
+    {
+      "chain": "bnb",
+      "name": "ponder_historical_completed_blocks",
+      "value": 112375112.0
+    },
+    {
+      "chain": "mainnet",
+      "name": "ponder_historical_completed_blocks",
+      "value": 54.0
+    },
+    {
+      "chain": "base",
+      "name": "ponder_historical_completed_blocks",
+      "value": 9420.0
+    }
+  ],
+  "comparison": {
+    "cachedFetchAheadOfCommittedBlocks": 2587937,
+    "cachedFetchBnbDelta": 1403249,
+    "classification": "fetch_advanced_native_commit_unchanged",
+    "completedEventsDelta": 0.0,
+    "nativeCommittedBnbDelta": 0,
+    "nativeConsumerHealthyOrStalledNotInferred": true,
+    "priorAt": "2026-10-23T18:52:16.126274+00:00",
+    "priorSnapshotSha256": "258710e1f1de72fd47055446ff0a0fabb7960f7cec3d5b6438fcf188ec15a41a",
+    "receiptWorkerRerun": false
+  },
+  "cutoverOrAdmissionInvoked": false,
+  "databaseWrites": 0,
+  "financial": {
+    "authority": {
+      "activePermits": 0,
+      "profile": true,
+      "profilePermitRows": 2
+    },
+    "paidAuthority": false,
+    "policyChanged": false,
+    "profile": {
+      "enabled": true,
+      "expiresAt": "2026-11-19T18:00:00+00:00",
+      "manifest": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+      "profileId": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+      "scope": "yunipals-opensea"
+    }
+  },
+  "format": "yunipals-replay-native-readiness-observation-v1",
+  "localBooster": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 1,
+    "indexedBlock": 52997309,
+    "indexedTimestamp": 1792783965,
+    "observedAtEpochSeconds": 1792783966,
+    "ready": true,
+    "status": 200
+  },
+  "mainApi": {
+    "healthStatus": "ok",
+    "shallowHealthOnly": true,
+    "status": 200
+  },
+  "native": {
+    "buildId": "bf4939b3ff",
+    "catalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+    "chainStatus": {
+      "checkpointWitnessCounts": [],
+      "statuses": [
+        {
+          "chainId": 1,
+          "errorCode": "indexer_not_ready",
+          "halted": false
+        },
+        {
+          "chainId": 56,
+          "errorCode": "indexer_not_ready",
+          "halted": false
+        },
+        {
+          "chainId": 137,
+          "errorCode": "indexer_not_ready",
+          "halted": false
+        },
+        {
+          "chainId": 8453,
+          "errorCode": "indexer_not_ready",
+          "halted": false
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "blockTimestamp": 1792690499,
+        "chainId": 1,
+        "completeBlock": 26249684
+      },
+      {
+        "blockTimestamp": 1785150786,
+        "chainId": 56,
+        "completeBlock": 112424119
+      },
+      {
+        "blockTimestamp": 1792690983,
+        "chainId": 137,
+        "completeBlock": 95990408
+      },
+      {
+        "blockTimestamp": 1792691223,
+        "chainId": 8453,
+        "completeBlock": 52950938
+      }
+    ],
+    "completedEvents": 27688.0,
+    "meta": {
+      "build": "bf4939b3ff",
+      "heartbeatAtMs": "1792783960606",
+      "locked": "1",
+      "observedAtMs": "1792783965890",
+      "ready": "0"
+    },
+    "schema": "unified_shadow_20261020_7e7375b0"
+  },
+  "observationScope": "bounded original-source/native/cache/OG+old-booster API and separate admitted YPAL proxy health; no actual fresh YPAL source readiness claim",
+  "oldBoosterSource": {
+    "ActiveState": "active",
+    "InvocationID": "87904b963ba14155b256677d30c824ec",
+    "MainPID": "1525164",
+    "NRestarts": "0",
+    "SubState": "running"
+  },
+  "originalWholeValidationPassed": false,
+  "providerCalls": 0,
+  "publicBooster": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 1,
+    "indexedBlock": 52997309,
+    "indexedTimestamp": 1792783965,
+    "observedAtEpochSeconds": 1792783966,
+    "ready": true,
+    "status": 200
+  },
+  "publicOriginalCollection": {
+    "rawRowsExported": false,
+    "responseSha256": "8a38ae2fc2bcbf50e31621d562d6703f562344080d999302a1224f22bc7905cb",
+    "returnedItemCount": 1,
+    "status": 200
+  },
+  "receiptWorkerInvoked": false,
+  "resources": {
+    "memoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "restarts": 0,
+    "rootFreeBytes": 44961927168,
+    "sourceMemoryBytes": 403443712,
+    "sourceMemoryMaxBytes": 6442450944,
+    "sourceRuntimeMetrics": {
+      "nodejs_external_memory_bytes": 8090746.0,
+      "nodejs_heap_size_total_bytes": 186654720.0,
+      "nodejs_heap_size_used_bytes": 97790992.0,
+      "process_cpu_system_seconds_total": 1324.3838339999998,
+      "process_cpu_user_seconds_total": 6362.513100000001,
+      "process_resident_memory_bytes": 452640768.0
+    }
+  },
+  "rpc": {
+    "base": {
+      "activeUpstreamRequests": 1,
+      "allPaidFallback": false,
+      "chainId": 8453,
+      "freeFailures": 17649,
+      "freeRateLimitRetries": 0,
+      "maximumConcurrentUpstreamRequests": 8,
+      "observedHead": 52997309,
+      "profileMatches": true,
+      "queuedSourceRequests": 0,
+      "sourcePacingTimeouts": 61,
+      "sourcePaidFallback": false,
+      "sourceRouting": "free_first",
+      "traffic": {
+        "unified_evidence": {
+          "freeCalls": 80,
+          "paidCalls": 0,
+          "refused": 1
+        },
+        "unified_source": {
+          "freeCalls": 40672,
+          "paidCalls": 0,
+          "refused": 0
+        }
+      }
+    },
+    "bnb": {
+      "activeUpstreamRequests": 0,
+      "allPaidFallback": false,
+      "chainId": 56,
+      "freeFailures": 398671,
+      "freeRateLimitRetries": 0,
+      "maximumConcurrentUpstreamRequests": 8,
+      "observedHead": 129378335,
+      "profileMatches": true,
+      "queuedSourceRequests": 0,
+      "sourcePacingTimeouts": 4844,
+      "sourcePaidFallback": false,
+      "sourceRouting": "free_first",
+      "traffic": {
+        "unified_evidence": {
+          "freeCalls": 0,
+          "paidCalls": 0,
+          "refused": 0
+        },
+        "unified_source": {
+          "freeCalls": 43658,
+          "paidCalls": 0,
+          "refused": 0
+        }
+      }
+    },
+    "ethereum": {
+      "activeUpstreamRequests": 0,
+      "allPaidFallback": false,
+      "chainId": 1,
+      "freeFailures": 830,
+      "freeRateLimitRetries": 1,
+      "maximumConcurrentUpstreamRequests": 8,
+      "observedHead": 26257440,
+      "profileMatches": true,
+      "queuedSourceRequests": 0,
+      "sourcePacingTimeouts": 404,
+      "sourcePaidFallback": false,
+      "sourceRouting": "free_first",
+      "traffic": {
+        "unified_evidence": {
+          "freeCalls": 94,
+          "paidCalls": 0,
+          "refused": 2
+        },
+        "unified_source": {
+          "freeCalls": 0,
+          "paidCalls": 0,
+          "refused": 0
+        }
+      }
+    },
+    "polygon": {
+      "activeUpstreamRequests": 0,
+      "allPaidFallback": false,
+      "chainId": 137,
+      "freeFailures": 788,
+      "freeRateLimitRetries": 0,
+      "maximumConcurrentUpstreamRequests": 8,
+      "observedHead": 96052392,
+      "profileMatches": true,
+      "queuedSourceRequests": 0,
+      "sourcePacingTimeouts": 124,
+      "sourcePaidFallback": false,
+      "sourceRouting": "free_first",
+      "traffic": {
+        "unified_evidence": {
+          "freeCalls": 82,
+          "paidCalls": 0,
+          "refused": 0
+        },
+        "unified_source": {
+          "freeCalls": 0,
+          "paidCalls": 0,
+          "refused": 0
+        }
+      }
+    }
+  },
+  "serviceActions": 0,
+  "sourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+  "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+  "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+  "sourceRuntime": {
+    "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "pid": 716994,
+    "startMonotonicMicroseconds": 66117947533239,
+    "startTicks": 6611794751
+  },
+  "ypalRpc": {
+    "emptyPermits": true,
+    "expiresAt": "2026-11-19T18:00:00.000Z",
+    "freeOnly": true,
+    "httpStatus": 200,
+    "manifestHash": "0x83262c45a53f94ed561c6116fc9efeccf69bd55839e7296f7f5276bc7c89e9ac",
+    "paidAuthority": false,
+    "profileId": "0x25308afec8bf9d4992afb5dbf52675d958ee1c619533e7917ae3fe08dbd29c86",
+    "proxy": {
+      "definitionHashes": {
+        "/etc/systemd/system/yunipals-ypal-base-rpc.service": "37cdf81effaf8c43346dad504af9e36d33f5b0010b8e5f64559ca7a07d893f78"
+      },
+      "invocation": "76e58064c4544d69a2a7b090b1102a01",
+      "pid": 2238064,
+      "startMonotonicMicroseconds": 66210191662347,
+      "startTicks": 6621019164,
+      "unit": "yunipals-ypal-base-rpc.service"
+    },
+    "receiptSha256": "14b54f8aba5179c26cafad5eda647106f1d1d57fe6639278846a4240661b85c7",
+    "traffic": {
+      "unified_evidence": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "unified_source": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "validated": true
+  }
+}

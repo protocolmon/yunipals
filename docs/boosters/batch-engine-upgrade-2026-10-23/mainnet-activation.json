@@ -1,0 +1,19 @@
+{
+  "format": "yunipals-batch-mainnet-activation-v1",
+  "observedAt": "2026-10-23T14:34:37.925Z",
+  "chainId": 8453,
+  "blockNumber": "52988365",
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+  "implementation": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+  "implementationRuntimeKeccak256": "0xa5eadd4114e6f37b1189c9729f3ea7a03ef21675ccdf69d8b3da0d6aa522ee7a",
+  "runtimeMatchesApprovedPackage": true,
+  "maximumPacks": 10,
+  "upgradeComplete": true,
+  "existingDependenciesPreserved": true,
+  "deploymentTransaction": "0x86629a332fff4b512d5f1e94f315a0ec8b4e460525cc7ea0482e6205069783b9",
+  "deploymentBlock": "52988203",
+  "agentSignatures": 0,
+  "agentTransactions": 0,
+  "firstGenuineBatchPurchaseTested": false
+}

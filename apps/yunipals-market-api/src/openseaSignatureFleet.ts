@@ -4,8 +4,10 @@ import { createPool } from "@/db/pool";
 import {
   readEnvironment,
   readOpenSeaProbeEnvironment,
-  readOpenSeaSignatureFleetEnvironment
+  readOpenSeaSignatureFleetEnvironment,
+  type Environment
 } from "@/environment";
+import { withMarketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { OpenSeaClient } from "@/opensea/client";
 import { OpenSeaFulfillmentService } from "@/opensea/fulfillment";
 import { openSeaProjectionObservationMaxAgeMs } from "@/opensea/discoveredReconciliation";
@@ -19,6 +21,12 @@ import { signatureChains } from "@/opensea/signatureSchedule";
 
 async function main() {
   const environment = readEnvironment();
+  return withMarketplaceOwnershipIndexer(environment.ownershipIndexer, () =>
+    run(environment)
+  );
+}
+
+async function run(environment: Environment) {
   const config = readOpenSeaSignatureFleetEnvironment();
   const common = config.chains.ethereum;
   const credential = readOpenSeaProbeEnvironment();

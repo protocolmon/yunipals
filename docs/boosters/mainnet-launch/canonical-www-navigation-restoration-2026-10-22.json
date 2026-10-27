@@ -1,0 +1,39 @@
+{
+  "format": "yunipals-canonical-navigation-restoration-v1",
+  "observedAt": "2026-10-22T21:02:58.976182+00:00",
+  "cause": "Canonical deployment incorrectly used the temporary collection-only launch preset",
+  "sourceBaseline": "2d5cfd4a75d659fe65c442fcb54b759675aff638",
+  "sourceApplication": "apps/yunipals-home-web",
+  "canonicalOrigin": "https://www.yunipals.com",
+  "deployment": "dpl_BDtQwyMwMQsgn2y2Gkda38KwUY6E",
+  "deploymentUrl": "https://yunipals-a3waju8di-devving.vercel.app",
+  "releaseManifestSha256": "064928c1513f6f031f0f59261c834cb58ff084f1a19ed635b0a9cb0b24efe18d",
+  "files": 202,
+  "collectionOnly": false,
+  "changes": [
+    "Restore all original main frontend routes, navigation, collection/browser filters and shared helpers",
+    "Keep additive internal Packs navigation, homepage section, owner collection and monster viewer",
+    "Preserve production marketplace, Exomon, staking/unstaking and analytics settings",
+    "Keep original Arena being-prepared mode because the existing production Arena API URL is unset",
+    "Canonical build always selects full-app mode and includes every original literal public asset"
+  ],
+  "checks": {
+    "typecheck": "PASSED",
+    "collectionUnitTestFiles": 4,
+    "independentMainSourceAndAssetReview": "PASSED",
+    "stagedOriginalReadOnlyChecks": 8,
+    "stagedBoosterReadOnlyChecks": "PASSED",
+    "liveBoosterReadOnlyChecks": "PASSED",
+    "liveOriginalReadOnlyChecks": "PASSED",
+    "mainnetBroadcasts": 0,
+    "liveBoosterReadOnlyChecksEvidenceSha256": "b0142c24bb7376f9cb213357c7e2848e0a2d85e9b49a791482bf2b762a5c94b9",
+    "liveOriginalReadOnlyChecksEvidenceSha256": "5c8f51b9b2610822a20a1fff8899024885311257b03cf91facea308c104f6c5e"
+  },
+  "limitations": [
+    "Original production Arena game API remains unconfigured; no real tournament flow claimed",
+    "Staking API reports no rows and incomplete verification; actual unstake entry was not exercised",
+    "Broader unified-indexer migration remains incomplete"
+  ],
+  "oldDomainRedirect": "Retained, same canonical path/query",
+  "publicSourceBranch": "https://github.com/protocolmon/yunipals/tree/codex/indexer-monorepo"
+}

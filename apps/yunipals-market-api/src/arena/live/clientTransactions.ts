@@ -1,17 +1,13 @@
+import { readConfirmedBlock } from "@/confirmations";
 import type { Pool, PoolClient } from "pg";
 import {
-  decodeEventLog,
-  erc20Abi,
   isAddress,
   TransactionReceiptNotFoundError,
   type Address,
   type Hex,
-  type PublicClient,
-  type TransactionReceipt
+  type PublicClient
 } from "viem";
-import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import {
-  ARENA_ENTRY_FEE,
   ARENA_USDC,
   supportedArenaNft,
   type ArenaTransactionAction,
@@ -19,8 +15,9 @@ import {
 } from "@protopals/yunipals-market-core/arena";
 import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
-import { readConfirmedBlock } from "@/confirmations";
 import { ArenaIntake, ArenaRequestError } from "./intake";
+import { arenaClientReceiptEvidence } from "./clientReceiptEvidence";
+import { NativeArenaClientTransactions } from "./nativeClientTransactions";
 
 type Tracked = {
   hash: Hex;
@@ -46,8 +43,22 @@ export function transactionAction(value: unknown): ArenaTransactionAction {
   if (a.kind === "claim") return { kind: "claim" };
   if (!decimal(a.tournamentId))
     throw new ArenaRequestError(400, "Invalid tournament ID.");
+  if (
+    a.incarnation !== undefined &&
+    (typeof a.incarnation !== "string" ||
+      !/^0x[0-9a-f]{64}$/i.test(a.incarnation))
+  )
+    throw new ArenaRequestError(400, "Invalid tournament opening.");
+  const origin =
+    typeof a.incarnation === "string"
+      ? { incarnation: a.incarnation.toLowerCase() as Hex }
+      : {};
   if (a.kind === "approval")
-    return { kind: "approval", tournamentId: a.tournamentId as string };
+    return {
+      kind: "approval",
+      tournamentId: a.tournamentId as string,
+      ...origin
+    };
   if (
     a.kind === "entry" &&
     typeof a.nftChainId === "number" &&
@@ -61,7 +72,8 @@ export function transactionAction(value: unknown): ArenaTransactionAction {
       tournamentId: a.tournamentId as string,
       nftChainId: a.nftChainId,
       collection: a.collection.toLowerCase() as Address,
-      tokenId: a.tokenId as string
+      tokenId: a.tokenId as string,
+      ...origin
     };
   throw new ArenaRequestError(400, "Invalid transaction action.");
 }
@@ -72,6 +84,11 @@ export class ArenaClientTransactions {
     private readonly service: ArenaIntake,
     private readonly paymentToken: Address = ARENA_USDC
   ) {}
+  private get native() {
+    return this.service.nativeSource
+      ? new NativeArenaClientTransactions(this.service, this.paymentToken)
+      : undefined;
+  }
 
   private async row(hash: Hex) {
     return (
@@ -83,6 +100,8 @@ export class ArenaClientTransactions {
   }
 
   async read(wallet: Address, hash: Hex): Promise<ArenaTransactionStatus> {
+    if (this.native) return this.native.read(wallet, hash);
+    await this.service.assertSourceSelection();
     const row = await this.row(hash);
     if (!row || !same(row.wallet, wallet))
       throw new ArenaRequestError(
@@ -99,6 +118,8 @@ export class ArenaClientTransactions {
   }
 
   async register(wallet: Address, hash: Hex, action: ArenaTransactionAction) {
+    if (this.native) return this.native.register(wallet, hash, action);
+    await this.service.assertSourceSelection();
     const address = wallet.toLowerCase();
     await transaction(this.service.pool, async (db) => {
       await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
@@ -207,6 +228,8 @@ export class ArenaClientTransactions {
   }
 
   async reconcileBatch(client: PublicClient) {
+    if (this.native) return this.native.reconcileBatch(client);
+    await this.service.assertSourceSelection();
     const rows = (
       await this.service.pool.query<Tracked>(
         `SELECT * FROM yunipals_arena.client_transaction
@@ -249,82 +272,6 @@ export class ArenaClientTransactions {
     );
   }
 
-  private evidence(
-    row: Tracked,
-    receipt: TransactionReceipt
-  ): NonNullable<Tracked["result"]> | null {
-    for (const log of receipt.logs) {
-      if (
-        log.removed ||
-        log.logIndex === null ||
-        !Number.isInteger(log.logIndex) ||
-        log.logIndex < 0
-      )
-        continue;
-      try {
-        if (row.action.kind === "approval") {
-          if (!same(log.address, this.paymentToken)) continue;
-          const decoded = decodeEventLog({
-            abi: erc20Abi,
-            data: log.data,
-            topics: log.topics,
-            strict: true
-          });
-          if (
-            decoded.eventName === "Approval" &&
-            same(decoded.args.owner, row.wallet) &&
-            same(decoded.args.spender, this.service.contract) &&
-            decoded.args.value >= ARENA_ENTRY_FEE
-          )
-            return {
-              event: "Approval",
-              amount: decoded.args.value.toString(),
-              blockNumber: receipt.blockNumber.toString(),
-              logIndex: log.logIndex!
-            };
-        } else {
-          if (!same(log.address, this.service.contract)) continue;
-          const decoded = decodeEventLog({
-            abi: arenaAbi,
-            data: log.data,
-            topics: log.topics,
-            strict: true
-          });
-          if (
-            row.action.kind === "entry" &&
-            decoded.eventName === "Entered" &&
-            same(decoded.args.player, row.wallet) &&
-            decoded.args.id.toString() === row.action.tournamentId &&
-            Number(decoded.args.nftChainId) === row.action.nftChainId &&
-            same(decoded.args.collection, row.action.collection) &&
-            decoded.args.tokenId.toString() === row.action.tokenId
-          )
-            return {
-              event: "Entered",
-              seat: decoded.args.seat,
-              blockNumber: receipt.blockNumber.toString(),
-              logIndex: log.logIndex!
-            };
-          if (
-            row.action.kind === "claim" &&
-            decoded.eventName === "Claimed" &&
-            same(decoded.args.player, row.wallet) &&
-            same(decoded.args.recipient, row.wallet)
-          )
-            return {
-              event: "Claimed",
-              amount: decoded.args.amount.toString(),
-              blockNumber: receipt.blockNumber.toString(),
-              logIndex: log.logIndex!
-            };
-        }
-      } catch {
-        /* Other contracts/events never satisfy a tracked action. */
-      }
-    }
-    return null;
-  }
-
   private async reconcile(
     row: Tracked,
     client: PublicClient,
@@ -342,7 +289,12 @@ export class ArenaClientTransactions {
       await this.save(row, "confirming");
       return;
     }
-    const result = this.evidence(row, receipt);
+    const result = arenaClientReceiptEvidence(
+      row,
+      receipt,
+      this.service.contract,
+      this.paymentToken
+    );
     if (receipt.status !== "success" || !result) {
       await this.save(row, "failed");
       return;

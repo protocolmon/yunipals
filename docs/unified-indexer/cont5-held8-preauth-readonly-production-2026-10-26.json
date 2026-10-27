@@ -1,0 +1,16 @@
+{
+  "SQLInvoked": false,
+  "auditDirectoryCreated": false,
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "root-HELD8-preauthentication-readonly-v1",
+  "held6ReconciliationSha256": "23cb35fa68f1c728eb0d1c7e0e90238755832d434875002c1b849664f901c75d",
+  "held7ProofCount": 9,
+  "held7ReconciliationSha256": "3cb418c0811d8fb8a03aef8b79b0e2c06fba01c6f74405e0c79044e049d438b8",
+  "newCurrentOrHeldAuthority": false,
+  "providerCalls": 0,
+  "qualifierInvoked": false,
+  "serviceActions": 0,
+  "sourceSessionConstructed": false,
+  "sourceSha256": "579cec1ddb421f104f5f7ff4c616a46316485a04a983330d86233ff2a8103f6c"
+}

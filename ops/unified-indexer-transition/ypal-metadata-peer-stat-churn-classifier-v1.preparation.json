@@ -1,0 +1,40 @@
+{
+  "captureWindowNanosecondsUnchanged": 90000000000,
+  "databaseWrites": 0,
+  "effectRetryAllowed": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-metadata-peer-stat-churn-classifier-v1.py",
+      "sha256": "4d4840a66b9c2cd7dd045f399294c5445232c73dbe58e56e1f46b1b3fcb6e0da",
+      "size": 10937
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-metadata-peer-stat-churn-classifier-v1.manifest.json",
+      "sha256": "c27e4fe498bf70561f94bd8a7737c7c9a217965dff8ad7352b6491e8e2f47944",
+      "size": 525
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-metadata-peer-stat-churn-classifier-v1.test.py",
+      "sha256": "3fd6e6c6b9c2e4b12fc210befb4425df28bb6991511746495c8810207749dc3d",
+      "size": 10658
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-metadata-peer-stat-churn-classifier-v1.fixture.json",
+      "sha256": "5c0bee8b53e3fbb946bcfbc43e27d205316ecc9ac64109464f04188468a71c74",
+      "size": 1100
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-metadata-peer-stat-churn-classifier-v1.md",
+      "sha256": "6913a59f6e5a356de6811fe68f52909de326101bb89755f4a7d19960b2bf3171",
+      "size": 3789
+    }
+  ],
+  "focusedControlsPassed": 11,
+  "format": "yunipals-metadata-peer-stat-churn-classifier-v1-preparation",
+  "maximumReadCaptureAttemptsUnchanged": 3,
+  "productionCapturePerformed": false,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "skippedControls": 0,
+  "sourceOnly": true
+}

@@ -1,0 +1,30 @@
+{
+  "UID970CapDroppedPrivateReadPassed": true,
+  "databaseWrites": 0,
+  "format": "yunipals-managed-solana-installed-readonly-inspection-v1",
+  "inspectionAggregateSha256": "373a11f1e35902bb0dac2734cf972929b303f24550b3c4f0c27a226cf9f88c86",
+  "managedActivationQualified": false,
+  "managedReceiptSha256": "8c25061e6c07c471483d4b7380bf070fa82d46df9f59205a38069e355d7afc90",
+  "nativeCoverageRequeried": false,
+  "newSolanaFileRoot964Mode0640": true,
+  "passed": true,
+  "providerCalls": 0,
+  "publicFilesVerified": 88,
+  "rawPrivateValuesExported": false,
+  "serviceActions": 0,
+  "servingActors": [
+    {
+      "actorSha256": "27fb7ce484d45a5b888cbc87ca19068528ce798e43e83e78b9b345f593534948",
+      "unit": "yunipals-booster-api.service"
+    },
+    {
+      "actorSha256": "8a574a97a2c09b769beccc39f5b4ef512005a0c9ac1437b1a17a63b544f46284",
+      "unit": "yunipals-booster-ypal-source.service"
+    },
+    {
+      "actorSha256": "34a6bf4355e7d950789737d204d2ee545a26fbbd9362f91d490b3344d73d488d",
+      "unit": "yunipals-ypal-combined-source.service"
+    }
+  ],
+  "solanaReceiptSha256": "56ed49dbfba33b6a96a68412b332d2363dd1f63d556c20588168c10d4d198db0"
+}

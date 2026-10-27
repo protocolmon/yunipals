@@ -1,0 +1,21 @@
+{
+  "format": "yunipals-ypal-restored-managed-handover-v1-sources",
+  "producers": {
+    "readerCachePhase": {
+      "file": "ypal-restored-reader-cache-phase-v1.py",
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1"
+    },
+    "feature": {
+      "file": "ypal-restored-feature-handover-v1.py",
+      "sha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035"
+    },
+    "arena": {
+      "file": "arena-ypal-restored-v1.py",
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a"
+    },
+    "readerInverse": {
+      "file": "ypal-native-inverse-leaf-v1.py",
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+    }
+  }
+}

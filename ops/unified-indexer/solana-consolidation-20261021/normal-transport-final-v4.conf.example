@@ -1,0 +1,9 @@
+# DRAFT successor of v3: retain the proven shared Base source slot and the
+# existing historical adapter. Install one reviewed normal transport, never both.
+[Unit]
+Conflicts=yunipals-unified-source6-free-v2.service yunipals-booster-launch.service
+
+[Service]
+EnvironmentFile=/opt/yunipals-unified/operations/solana-consolidation-final-20261021-v1/ponder-normal-final-v1.public.env
+BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/source6-base-priority/rpc-preflight.ts:/var/lib/yunipals-unified-shadow/20261020-008028af-a/apps/yunipals-indexer/lib/unified/rpc-preflight.ts
+BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/source6-selective-historical-v3:/var/lib/yunipals-unified-shadow/20261020-008028af-a/node_modules/.pnpm/ponder@0.17.5_patch_hash=srrmuiqb5i2rcvch3r4b6lqznm_@opentelemetry+api@1.9.1_@types+node@22.1_tdbbixbrmtn4q2y4g3krukmyfy/node_modules/ponder/dist/esm/sync-historical

@@ -1,0 +1,85 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "externalPrerequisites": 6,
+  "files": [
+    {
+      "bytes": 44467,
+      "file": "arena-ypal-business-inverse-v2.py",
+      "sha256": "904eb1a53b12805b2c333afc3cb161de9cb9d6921b97bdf4afeb19ae4b821073"
+    },
+    {
+      "bytes": 37591,
+      "file": "arena-ypal-business-inverse-v2.manifest.json",
+      "sha256": "b2736a3fe4a5079331394b89d985e424020538113ed982779353e34b8c0d844a"
+    },
+    {
+      "bytes": 2620,
+      "file": "arena-ypal-business-inverse-v2-manifest.py",
+      "sha256": "ae97c50d6c044c0e6d58150f47de91651bd6274deb78c9b8a544b51ca8b93dbe"
+    },
+    {
+      "bytes": 1624,
+      "file": "arena-ypal-business-inverse-child-v2.mjs",
+      "sha256": "a6270a596afc0c9c850f0762238c0724c48bc2512ae612b8c1a86f8a7b68bbde"
+    },
+    {
+      "bytes": 11140,
+      "file": "arena-ypal-business-inverse-v2.test.py",
+      "sha256": "eb034d215f22d56caa46c8a860c991a19b520cc4fabe9680249c7dbcf0b40fc9"
+    },
+    {
+      "bytes": 1905,
+      "file": "arena-ypal-business-inverse-child-v2.test.mjs",
+      "sha256": "4595dc50036ba1dc65ae9f48ca1feb4ebf724b1fc6dd7a62dc61edea299a8903"
+    },
+    {
+      "bytes": 1696,
+      "file": "arena-ypal-business-inverse-v2.postgres.test.mjs",
+      "sha256": "4aeb04dcc213694f3ea61e4b2c181c1b61ca3c7d18216ddf7c4ed663667d9101"
+    },
+    {
+      "bytes": 7831,
+      "file": "arena-ypal-business-inverse-v2.md",
+      "sha256": "4efbdc140793e2b5d5141d759a5158b64d85d49161208f0431b800bacf3218e4"
+    },
+    {
+      "bytes": 78341,
+      "file": "arena-ypal-business-inverse-v2.stage.json",
+      "sha256": "830328ad8919197e0edec3786f134c57c40b59009a863c8229f86a62d500abf0"
+    }
+  ],
+  "format": "yunipals-arena-ypal-business-inverse-v2-preparation",
+  "knownRequiredFollowups": [
+    "root exact source/payload staging and actual projector2 install/start/current qualification",
+    "actual completed CONT3 Arena ACK and owned managed-restored prefix input",
+    "actual target admission/auth/source-private/native8/financial/canonical/current/budget checks",
+    "actual review/prepare/publish and XID/current inverse ACK acceptance",
+    "separate fresh native-return parent/operation after actual feature inverse while ready1; full coordinated rollback remains incomplete"
+  ],
+  "originalOwnerCLIPassedClaimed": false,
+  "publicStageClosureCount": 329,
+  "publicStageClosureFile": "arena-ypal-business-inverse-v2.stage.json",
+  "publicStageClosureSha256": "830328ad8919197e0edec3786f134c57c40b59009a863c8229f86a62d500abf0",
+  "sourceOnly": true,
+  "verification": {
+    "actualPrefix3ControlsPassed": 12,
+    "actualPrefixSkipped": 0,
+    "childControlsPassed": 3,
+    "independentParentSourceReview": "A: no concrete findings, independently25/25 passed",
+    "localFixtureSchemaRemoved": true,
+    "newTransactionBodiesIdentical": true,
+    "parentControlsPassed": 25,
+    "postgresVersion": "16.15",
+    "productionAccess": 0,
+    "realPostgreSQLGroupsPassed": 12,
+    "realSealedAuthorityWireChecked": true
+  }
+}

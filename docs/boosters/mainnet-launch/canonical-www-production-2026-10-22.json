@@ -1,0 +1,51 @@
+{
+  "format": "yunipals-canonical-app-production-v1",
+  "observedAt": "2026-10-22T20:30:01.523549+00:00",
+  "canonicalOrigin": "https://www.yunipals.com",
+  "sourceApplication": "apps/yunipals-home-web",
+  "newDeployment": "dpl_C2oviXV1MNtATNiTZsSAYNNrRBEJ",
+  "newDeploymentUrl": "https://yunipals-gg13eycqf-devving.vercel.app",
+  "priorDeploymentRollback": "dpl_2RKawN7a2Zy8uYWRMCqWJfPKA71Q",
+  "releaseManifestSha256": "d01b4ff53b28b88098c8ad6d654b0df96c7f63469ce90028438d80161066f387",
+  "browser": {
+    "status": "PASSED",
+    "checks": [
+      "Deployed homepage: hero, active public pack #2, and real OG collection/art in order",
+      "Same-app /boosters loads public pack #2; real wallet connection succeeds without signing",
+      "Real mainnet original #1 renders its published card; keyboard tilt and live holo controls work",
+      "390px homepage and internal pack navigation fit without horizontal overflow"
+    ],
+    "errors": [],
+    "badAssets": [],
+    "mainnetBroadcasts": 0
+  },
+  "redirect": {
+    "status": "APPLIED",
+    "operatorSha256": "c98c11543a4b0703fefff0a1bcc3032f77020e90a70f47660d46b0ebfb384bff",
+    "beforeSha256": "59665a6f2fef773f08e162f257c052f02591855a1ec3c1703a619092d1cc9460",
+    "candidateSha256": "0a5a7cc39120837a1cf465a2cebdb581a2b7c37ac2ada9c7023abb8f9d1403dc",
+    "operation": "/var/backups/yunipals-canonical-www-redirect/20261022T202816Z-1792700896249525420",
+    "publicResponses": [
+      {
+        "status": "HTTP/2 308",
+        "location": "https://www.yunipals.com/boosters/setup/standard?from=old%2Fapp&x=1&x=2"
+      },
+      {
+        "status": "HTTP/1.1 308 Permanent Redirect",
+        "location": "https://www.yunipals.com/boosters?from=old%2Fapp&x=1&x=2"
+      }
+    ],
+    "otherHostsAndOriginalBytesPreserved": true
+  },
+  "sourcePublication": {
+    "status": "PUBLISHED",
+    "repository": "https://github.com/protocolmon/yunipals",
+    "branch": "codex/indexer-monorepo",
+    "sourceCommit": "e8145098221ca70fb33ce844916a31a878fee65a",
+    "sourceUrl": "https://github.com/protocolmon/yunipals/tree/e8145098221ca70fb33ce844916a31a878fee65a",
+    "mainBranchMerged": false,
+    "secretScan": "Pinned Gitleaks v8.30.1 passed on reviewed source/pixel closure",
+    "requiredReferenceAssetsIncluded": true
+  },
+  "migration": "Historical replay continues; no source/consumer/database switch in this release"
+}

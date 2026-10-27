@@ -1,0 +1,113 @@
+{
+  "format": "yunipals-ypal-backend-preparation-evidence-v1",
+  "status": "local_preparation_only",
+  "files": [
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.mjs",
+      "sha256": "24bc3a9cb3a987bc007d161a530732f0bc995ade74cd06e537576e4542a3b196",
+      "bytes": 29064
+    },
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.test.mjs",
+      "sha256": "22cc8c8624244238e441c94986fb227d5dedeb9c5073ad4661669750000ee4e0",
+      "bytes": 15720
+    },
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.md",
+      "sha256": "4a2980236dc473a98828ffd75d06cb996aa929320cce78b7728e999c887c7e53",
+      "bytes": 10579
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/backend-approved-artwork-manifest.json",
+      "sha256": "79e85ccfa753bb81d8115a17e963f3b427e276f5e68b24d0a3ee284d85c3c2bf",
+      "bytes": 22818
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "apps/yunipals-home-web/public/boosters/ypal-fresh-launch-v1.json",
+      "sha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886",
+      "bytes": 233001
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterAbi.ts",
+      "sha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba",
+      "bytes": 44016
+    },
+    {
+      "path": "ops/unified-indexer-transition/ponder.boosters.launch.paced.config.ts",
+      "sha256": "a161452bc7748950727ac173f026f5cb9089960a659acf177e1da8375b3dd49b",
+      "bytes": 805
+    },
+    {
+      "path": "ops/unified-indexer-transition/booster-launch-transport.ts",
+      "sha256": "96e227ba7bb1c8e2a1789dcbd0b7d96b8b32965127a9e02ed620e19b2112e9c4",
+      "bytes": 1824
+    },
+    {
+      "path": "apps/yunipals-indexer/artifacts/booster-recent-openings-api-v1/booster-api.mjs",
+      "sha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+      "bytes": 54579
+    },
+    {
+      "path": "apps/yunipals-indexer/artifacts/booster-recent-openings-api-v1/booster-artwork-sync.mjs",
+      "sha256": "e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33",
+      "bytes": 15797
+    }
+  ],
+  "confirmedExport": {
+    "format": "yunipals-ypal-fresh-deployment-confirmed-v1",
+    "launchId": "base-ypal-v1",
+    "requiredSuccessfulActualReceipts": 10,
+    "actualFreshAddressesAvailable": false
+  },
+  "api": {
+    "export": "readConfirmedDeployment(client,unsignedPackage,manifest)",
+    "networkOrSecretLoadingInExport": false,
+    "actualReceiptProvenance": true,
+    "immutableRuntimeAndCurrentStateChecks": true,
+    "canonicalAnchorRechecked": true
+  },
+  "tests": {
+    "command": "node ops/booster-launch/ypal-backend-prepare-v1.test.mjs",
+    "passed": 10,
+    "failed": 0,
+    "logSha256": "45a22fa7487b857d77ea746faa994562cd9ba4912f5f38cd42e09478c04b47ac",
+    "realABIAndBytecode": true,
+    "chainClient": "synthetic_read_only",
+    "localSQLExecuted": false,
+    "browserOrWalletActions": 0
+  },
+  "transition": {
+    "schema": "yunipals_boosters_ypal_v1",
+    "unit": "yunipals-booster-ypal-source.service",
+    "sourceMaximumConnections": 5,
+    "sourceOverlapAllowed": false,
+    "oldSourceStopDisableAndDrainRequired": true,
+    "oldSchemaAndArtworkRetained": true,
+    "combinedSourceAndBNBChanges": 0,
+    "collectorConnectionBudget": 6,
+    "apiPoolMaximum": 2,
+    "queuePoolMaximum": 1,
+    "candidateOnly": true
+  },
+  "production": {
+    "chainQualificationExecuted": false,
+    "hostQualificationExecuted": false,
+    "serviceActions": 0,
+    "databaseWrites": 0,
+    "aclChanges": 0,
+    "privateConfigReads": false,
+    "providerRequests": 0,
+    "gitMutations": 0
+  },
+  "remainingActualGates": [
+    "ten successful owner deployment/configuration/activation receipts and current canonical state",
+    "fresh protected host observation and exact current source/API/queue/OG/BNB identities",
+    "fresh source008 workspace/dependency/Vite sandbox build and owned old-source stop/disable/drain",
+    "fresh native ready/complete durable advances and actual namespace/table OIDs",
+    "exact ten-read rollback rehearsal and separately acknowledged grant application",
+    "owned public configuration/API/queue switch plus fresh-only HTTP and genuine NFT provenance acceptance",
+    "later explicit combined-source manifest replacement, fresh parity and temporary source retirement"
+  ]
+}

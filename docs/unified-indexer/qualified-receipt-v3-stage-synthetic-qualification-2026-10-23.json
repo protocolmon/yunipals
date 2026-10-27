@@ -1,0 +1,93 @@
+{
+  "format": "yunipals-qualified-receipt-v3-stage-synthetic-qualification-v1",
+  "publicSourceStaging": {
+    "staged": true,
+    "stagerSha256": "38a3a2671f1724d3c7e01889f3aa56aca8ce392695d42533a47dc8c1e68020c9",
+    "freshReviewHash": "dfb22527d068c8ed21e5f3c1a6252763855dc9126f37ea4457074865578e58b2",
+    "files": {
+      "source6-qualified-receipt-entry-v3.mjs": {
+        "alreadyPresent": true,
+        "bytes": 761,
+        "sha256": "81745864c296b252526d125142b8ef16c37aeb32498007a5b09e90267832b93b"
+      },
+      "source6-qualified-receipt-probe-v3.mjs": {
+        "alreadyPresent": true,
+        "bytes": 2203,
+        "sha256": "f014900df11adb76f7c8e4f9f900cb45879189170c8f6fb6acb94ad2d2eabbec"
+      },
+      "source6-qualified-receipt-probe-v3.py": {
+        "alreadyPresent": true,
+        "bytes": 2880,
+        "sha256": "f89ced9f929090bc1669daabeaab6c09e801da444b1034f0703c9d4f75d80080"
+      },
+      "source6-qualified-receipts-v3.py": {
+        "alreadyPresent": true,
+        "bytes": 19265,
+        "sha256": "b4c450f2d7d3f2404939dc2e6ddb704b8eb627ac88f0eadbeff8f3763c630e0c"
+      },
+      "support-probe-runner-v6.mjs": {
+        "alreadyPresent": true,
+        "bytes": 13732,
+        "sha256": "019d9dd5bde40d3821273c2be624ebcb6fa53968f7f0748dea8c7ebb763363e4"
+      }
+    },
+    "serviceChanges": 0,
+    "databaseChanges": 0,
+    "providerCalls": 0
+  },
+  "syntheticQualification": {
+    "ack": {
+      "automaticOperatorAcceptance": false,
+      "cleanup": {
+        "removed": true,
+        "sourceRestarted": false,
+        "sourceUnchanged": true,
+        "supportUnchanged": true,
+        "workerStarted": false
+      },
+      "definitionSha256": "deb6a9246344dbe72634021651d966f45dff20f2ac94d8b50d41a232787cf3d9",
+      "format": "yunipals-receipt-v3-probe-gc-reconciled-v1",
+      "invocation": "5fc5e6a4797e49cea159258d8b8d1ce0",
+      "journalSha256": "a3a352185d3bfcdc142a269be6b8b3d4fab809a0a37ef02b7eeb7a4cf06ce517",
+      "managerSuccessAfterNode": true,
+      "managerSuccessMessageId": "7ad2d189f7e94e70a38c781354912448",
+      "nodeResult": {
+        "capabilitiesEmpty": true,
+        "credentialReads": 0,
+        "databaseCalls": 0,
+        "entrySha256": "81745864c296b252526d125142b8ef16c37aeb32498007a5b09e90267832b93b",
+        "format": "yunipals-qualified-receipt-v3-identity-probe-v1",
+        "gid": 963,
+        "groupIds": [
+          963
+        ],
+        "importsVerified": true,
+        "loopSha256": "477376b0a5d8b377a313c248627789af5c0f7d34f569f8ed58e0498bfe0d6691",
+        "noNewPrivileges": true,
+        "providerCalls": 0,
+        "qualified": true,
+        "runnerSha256": "019d9dd5bde40d3821273c2be624ebcb6fa53968f7f0748dea8c7ebb763363e4",
+        "uid": 969,
+        "workerStarted": false
+      },
+      "operatorSha256": "d28d2b0f4b15613593ca766318a867e5316f24e0fe6f14ef6427bf06a4d94b1c",
+      "pid": 1917452,
+      "probeRestarts": 0,
+      "qualified": true,
+      "terminalMetadataClearedByManager": true
+    },
+    "ackSha256": "6b155ff9a4b6efd2d0313b48109fbe8d388b2943a5cddedfeb1efd22396c485b"
+  },
+  "independentReconciliationReviewSha256": "5f1a8daec9ffa7b0b572a33299d3012a567be4cac60e56a3bf333155a71f49bd",
+  "localProbeControls": {
+    "passed": 8,
+    "failed": 0,
+    "testFile": "ops/unified-indexer-transition/receipt-v3-hardened-probe-run-v2.test.py"
+  },
+  "unchangedWorkerLimits": {
+    "rpcCalls": 256,
+    "seconds": 900,
+    "paidAuthority": false
+  },
+  "scope": "Source staging and one synthetic account/import qualification only. Real receipt-run evidence is recorded separately."
+}

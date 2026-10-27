@@ -1,0 +1,197 @@
+{
+  "format": "yunipals-arena-owner-maintenance-runtime-recovery-v1",
+  "recordedAt": "2026-10-22T22:46:13.675856+00:00",
+  "ownerPreflight": {
+    "automaticRetryAllowed": false,
+    "databaseWrites": 0,
+    "format": "yunipals-arena-owner-migration-v11",
+    "privateValuesExported": false,
+    "reviewHash": "d25366f7c8af14c6cf9f2a8bf418da169663ddefa98241b53f31e3808f7073a5",
+    "serviceJobs": 0,
+    "status": "reviewed"
+  },
+  "ownerApplyAcknowledgement": {
+    "automaticRetryAllowed": false,
+    "format": "yunipals-arena-owner-migration-v11",
+    "keyOrProviderConfigChanged": false,
+    "migrationCommitOutcome": "commit_confirmed",
+    "privateValuesExported": false,
+    "remoteBackupTransfers": 0,
+    "resultFile": "/var/backups/yunipals-arena-owner-migration-v11-20261022/result.json",
+    "resultSha256": "84dbb0028be4099cce8322b5f646289d5d095eb14ec3cf03392a559f76a9beae",
+    "resumed": true,
+    "reviewHash": "d25366f7c8af14c6cf9f2a8bf418da169663ddefa98241b53f31e3808f7073a5",
+    "sourceSelectionChanged": false
+  },
+  "schemaPostcheck": {
+    "observedAt": "2026-10-22T22:44:59.649272+00:00",
+    "schemaCommitConfirmed": true,
+    "actualResultSha256": "84dbb0028be4099cce8322b5f646289d5d095eb14ec3cf03392a559f76a9beae",
+    "officialMigrationMarkers": 12,
+    "retainedPayloadEqualityPassed": true,
+    "legacyIdentities": 2,
+    "sourceMode": "legacy",
+    "sourceSelectorCount": 0,
+    "originalApplicationTriggerDependenciesVerified": true,
+    "newInvokerFunctions": 15,
+    "newTriggers": 24,
+    "originalFunctionsAndTriggersUnchanged": true,
+    "privateBackupRetained": true,
+    "privateBackupBytes": 526928,
+    "schemaOrPrivateDataRestored": false,
+    "runtimeAvailabilityRequiresSeparateAcceptance": true
+  },
+  "runtimeAcceptance": {
+    "candidateAccepted": false,
+    "failure": "Local rules manifest differs from ARENA_RULES_HASH.",
+    "allEightWorkersClassifiedBeforeRpc": true,
+    "originalRulesHash": "0x46a4dc89a248047d27c6b02d208c5d2866e843280ef2803294384850edb06c80",
+    "candidateComputedRulesHash": "0x9daa16ed39544b3fa3f41f7638bae79df392515434f270f8cd347682ee059d85",
+    "cause": "Older candidate branch omitted existing production Arena artwork-analysis, collection registry, tie policy and associated API/runtime behavior. The island/profile smoke check did not establish protocol compatibility.",
+    "instantResumedAcknowledgementWasInsufficientForAvailability": true
+  },
+  "restoreHelper": {
+    "repositoryPath": "ops/unified-indexer-transition/arena-runtime-restore-v1.py",
+    "hostPath": "/opt/yunipals-unified/operations/free-replay-20261020/yunipals-arena-runtime-restore-v1-20261022.py",
+    "sha256": "505a4937867abdc623b7d21367bf76a42ecea4a103d374116dbb3181fb60febb"
+  },
+  "runtimeRestoreReview": {
+    "format": "yunipals-arena-runtime-restore-v1",
+    "ownedOverridesVerified": 8,
+    "rawValuesExported": false,
+    "reviewHash": "5d84610fa5411640e8a27b1b200b960a5ea437bd864a90bebe4fbb5fb82bc819",
+    "schemaCommitPreserved": true,
+    "schemaWrites": 0,
+    "serviceJobs": 0,
+    "units": 8
+  },
+  "runtimeRestoreResult": {
+    "automaticRetryAllowed": false,
+    "format": "yunipals-arena-runtime-restore-v1",
+    "privateDataRestores": 0,
+    "restored": true,
+    "resultSha256": "b1102b2b294b98ba98e61d96850a7bb765669ca23b3d4dd5bd06504e501efc33",
+    "schemaWrites": 0,
+    "stableSeconds": 20,
+    "units": 8
+  },
+  "independentPostRestoreWorkerObservation": {
+    "observedAt": "2026-10-22T22:42:26.707018+00:00",
+    "units": {
+      "yunipals-arena-api.service": {
+        "MainPID": "1010704",
+        "Result": "success",
+        "NRestarts": "55",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "9505bd5b4df3486ab7b61dda66d58bbf"
+      },
+      "yunipals-arena-capacity.service": {
+        "MainPID": "1010705",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "5e643cf3ce964cd2b075b327e2a7e215"
+      },
+      "yunipals-arena-control.service": {
+        "MainPID": "1010707",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "16ac3359ed69495e91c4643d48e631cb"
+      },
+      "yunipals-arena-lobby.service": {
+        "MainPID": "1010709",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "a8a32e585e124230b144d415af917b74"
+      },
+      "yunipals-arena-media.service": {
+        "MainPID": "1010717",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "75f56cefd9b04c02bfe0920c0fe80b3d"
+      },
+      "yunipals-arena-projector.service": {
+        "MainPID": "1010723",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "9b8899b656ee4b33a45be330630a7bbe"
+      },
+      "yunipals-arena-referee.service": {
+        "MainPID": "1010724",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "a645b1a5522a420f89bddbeb61661e9d"
+      },
+      "yunipals-arena-settlement.service": {
+        "MainPID": "1010733",
+        "Result": "success",
+        "NRestarts": "20",
+        "ExecMainStatus": "0",
+        "WorkingDirectory": "/srv/yunipals-arena/current/apps/yunipals-market-api",
+        "ActiveState": "active",
+        "SubState": "running",
+        "InvocationID": "9d615f541f504db68e3110aac6eaaa45"
+      }
+    },
+    "allEightActive": true,
+    "sameRestoredInvocations": true,
+    "restoreResultSha256": "b1102b2b294b98ba98e61d96850a7bb765669ca23b3d4dd5bd06504e501efc33",
+    "schemaRestored": false,
+    "privateDataRestored": false
+  },
+  "independentPostRestoreHttp": {
+    "observedAt": "2026-10-22T22:45:22.818636+00:00",
+    "requests": [
+      {
+        "route": "/health",
+        "httpStatus": 200,
+        "json": true,
+        "responseSha256": "4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93"
+      },
+      {
+        "route": "/config",
+        "httpStatus": 200,
+        "json": true,
+        "responseSha256": "db0c32a6b75a1e798f6298c6ed942c4c1435d034e6aed74cb468e54e0c2d5d07"
+      },
+      {
+        "route": "/rules",
+        "httpStatus": 200,
+        "json": true,
+        "responseSha256": "3e4978188cd053353e62ab5adf4e44ca909201668f2b398cde62ec946b1301d9",
+        "retainedProductionRulesHashPresent": true
+      }
+    ],
+    "rawResponseExported": false
+  },
+  "next": "Reconcile the actual modern production protocol and routes with native adapters; require real rules-hash/API parity and sustained startup before runtime-only adoption. Keep the already committed schema; do not repeat owner migration.",
+  "schemaOrPrivateDataRestorePerformed": false,
+  "privateConfigurationOrRecordsExported": false,
+  "sharedSourceSelectionChanged": false
+}

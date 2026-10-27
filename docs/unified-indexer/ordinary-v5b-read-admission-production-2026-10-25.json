@@ -1,0 +1,110 @@
+{
+  "format": "yunipals-ordinary-v5b-read-admission-production-v1",
+  "observedAt": "2026-10-25T00:58:33.998868+00:00",
+  "admitted": true,
+  "readEdgeCount": 71,
+  "baselineReadEdgeCountPreserved": 143,
+  "newRoles": 0,
+  "loginChanges": 0,
+  "nativeRegrants": 0,
+  "newDml": 0,
+  "serviceActions": 0,
+  "sourceKind": "ordinary standalone",
+  "review": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:53:05.663591+00:00",
+    "phase": "review",
+    "report": {
+      "baselineReadEdgeCount": 143,
+      "contextInputSha256": "8a5ca47b3879bee1fc451e40e2dac9085fa655bf36cc3c8d4d961790a20eb4e1",
+      "format": "yunipals-ypal-ordinary-read-admission-v5b",
+      "loginChanges": 0,
+      "newDml": 0,
+      "planSha256": "6c96ede2c1a6d5e088f40d061be217d18d250e0933a5e91c4d514ab963e32517",
+      "privateResultSha256": "fbf55b526c22e583563e573e2817de6d11f76b92d1b8d637abf6d45f7af9b5c6",
+      "providerCalls": 0,
+      "rawCatalogExported": false,
+      "readEdgeCount": 71,
+      "reviewHash": "a7d1ac9116882eeafe0bc401c315811e839deedcf5f989cdeeb377bb658d5cb2",
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "4487e796ebc09b8728fd51f58c5a5d0f436f5fce00ae807e44a8147695a73573"
+  },
+  "rollbackRehearsal": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:55:01.197821+00:00",
+    "phase": "rehearse",
+    "report": {
+      "format": "yunipals-ypal-ordinary-read-admission-v5b",
+      "privateResultSha256": "04d59079cf5f7ca1c75436a624e8ca764b433b9b56697fcb6acc5eddc8fcdd32",
+      "providerCalls": 0,
+      "rawCatalogExported": false,
+      "rehearsed": true,
+      "reviewHash": "a7d1ac9116882eeafe0bc401c315811e839deedcf5f989cdeeb377bb658d5cb2"
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "eea19b16c04eaf6477df5d582d0514c43ada2178f7e3c830ac7ed765448a9f42"
+  },
+  "singleCommit": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:57:32.697480+00:00",
+    "phase": "commit",
+    "readResultSha256": "fcebbe8dea9a71c474a8f355b61fb325885c578f64d81af6786637650d152e12",
+    "report": {
+      "admitted": true,
+      "baselineReadEdgeCount": 143,
+      "commitOutcome": "commit_confirmed",
+      "contextInputSha256": "8a5ca47b3879bee1fc451e40e2dac9085fa655bf36cc3c8d4d961790a20eb4e1",
+      "format": "yunipals-ypal-ordinary-read-admission-v5b",
+      "loginChanges": 0,
+      "nativeRegrants": 0,
+      "newDml": 0,
+      "planSha256": "6c96ede2c1a6d5e088f40d061be217d18d250e0933a5e91c4d514ab963e32517",
+      "privateResultSha256": "47e84cb990be90901c6779e8323e475325d362e2fb343622ed3001bd26d49667",
+      "providerCalls": 0,
+      "rawCatalogExported": false,
+      "readEdgeCount": 71,
+      "receiptSha256": "fcebbe8dea9a71c474a8f355b61fb325885c578f64d81af6786637650d152e12",
+      "reviewHash": "a7d1ac9116882eeafe0bc401c315811e839deedcf5f989cdeeb377bb658d5cb2",
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "99d77da013660b890a3c00fffa5c870d4db2d257d72b5eb5b483e3fcacba0345"
+  },
+  "currentValidation": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:58:33.998868+00:00",
+    "phase": "validate",
+    "readResultSha256": "fcebbe8dea9a71c474a8f355b61fb325885c578f64d81af6786637650d152e12",
+    "report": {
+      "contextInputSha256": "8a5ca47b3879bee1fc451e40e2dac9085fa655bf36cc3c8d4d961790a20eb4e1",
+      "format": "yunipals-ypal-ordinary-read-admission-v5b",
+      "planSha256": "6c96ede2c1a6d5e088f40d061be217d18d250e0933a5e91c4d514ab963e32517",
+      "privateResultSha256": "8d1990fdece9b014990e9ca51eafb909a145321a5595a2e503a5791dd70f9ce2",
+      "providerCalls": 0,
+      "rawCatalogExported": false,
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "f4948bdef15cf0fd972be2597e727492b0ce78dfd49e9a1e16ed659beab99850"
+  },
+  "currentFullCatalogAndColumnsValidated": true,
+  "priorFailedV5PreflightPreserved": {
+    "producerSha256": "adadc7f8a92f8bebc89c5824eed963b863c9f1293bf9e05b0f533ca0b4a903f7",
+    "effectsBeforeFailure": 0,
+    "failure": "5a1 catalog bridge expected operatorSha256 while actual c2da catalog-only reference returns producerSha256",
+    "correction": "New V5b producer directly authenticates the genuine c2da output; original producer is unchanged."
+  },
+  "limits": [
+    "No metadata adoption, reader traffic switch or managed source epoch is established by this permission admission."
+  ]
+}

@@ -11,15 +11,27 @@ import { ArenaMedia, mediaFolder, offlineMediaTool } from "./media";
 import { ArenaMediaApi, within, type MediaRequest } from "./mediaApi";
 import { arenaMediaRead } from "./mediaRead";
 import { publishedPayoutFilm } from "./payout";
+import type { NativeArenaProvider } from "./nativeProvider";
+import { mediaIncarnation } from "./mediaPaths";
+import { NativeArenaMedia } from "./nativeMedia";
 
 export async function verifyMediaLifecycle(
   pool: Pool,
   cipher: StrategyCipher,
   root: string,
   deployment: string,
-  afterPublication?: (storage: string) => Promise<void>
+  afterPublication?: (storage: string) => Promise<void>,
+  options: { guard?: NativeArenaProvider; storage?: string } = {}
 ) {
-  const storage = await mkdtemp("/tmp/yunipals-media-test-");
+  const storage =
+    options.storage ?? (await mkdtemp("/tmp/yunipals-media-test-"));
+  const context = options.guard
+    ? await options.guard.service.tournamentContext("1")
+    : undefined;
+  const incarnation = context?.incarnation;
+  const suffix = context
+    ? mediaIncarnation(deployment, "1", context)
+    : undefined;
   const requests = new Map<string, { taskType: string; duration?: number }>();
   let creates = 0,
     polls = 0,
@@ -116,12 +128,39 @@ export async function verifyMediaLifecycle(
     }
     return new Response(String(url).endsWith(".png") ? png : mp4);
   }) as typeof fetch;
-  const api = new ArenaMediaApi(pool, "fixture-no-live-key", fetcher);
-  const worker = () => new ArenaMedia(pool, cipher, api, root, storage);
-  const published = arenaMediaRead(pool, deployment, storage);
+  const api = new ArenaMediaApi(
+    pool,
+    "fixture-no-live-key",
+    fetcher,
+    options.guard,
+    storage
+  );
+  const media = () => new ArenaMedia(pool, cipher, api, root, storage);
+  const worker = () => ({
+    step: (dep: string, id: string) => media().step(dep, id, incarnation)
+  });
+  const artifact = async (name: string, range?: string) => {
+    const status = await published.status("1");
+    return published.artifact("1", name, range, {
+      incarnation,
+      publication:
+        "publication" in status ? (status.publication ?? undefined) : undefined
+    });
+  };
+  const reserve = (id: string, asset: string, request: MediaRequest) =>
+    api.reserve(deployment, id, asset, request, incarnation);
+  const published = arenaMediaRead(
+    pool,
+    deployment,
+    storage,
+    options.guard?.service
+  );
   try {
     assert.equal((await published.status("1")).state, "waiting");
-    await assert.rejects(published.artifact("1", "film.mp4"), /not found/);
+    await assert.rejects(
+      published.artifact("1", "film.mp4"),
+      /not found|Select a published/
+    );
     const request: MediaRequest = {
       kind: "image",
       prompt: "fixture",
@@ -131,16 +170,27 @@ export async function verifyMediaLifecycle(
       }))
     };
     await assert.rejects(
-      api.reserve(deployment, "999", "SF1/image", request),
-      /settled result/
+      reserve("999", "SF1/image", request),
+      /settled result|origin|unavailable|disclosure|not found/
     );
+    if (context)
+      await pool.query(
+        `INSERT INTO yunipals_arena.media_job(deployment,tournament_id,incarnation,input_hash,outcome_hash)
+        VALUES($1,1,$2,$3,$4) ON CONFLICT DO NOTHING`,
+        [
+          deployment,
+          incarnation,
+          context.state.inputHash,
+          context.state.resultHash
+        ]
+      );
     await pool.query(
-      "INSERT INTO yunipals_arena.provider_task(deployment,tournament_id,kind,asset,request_id,request,reserved_microusd) VALUES($1,1,'test','budget',$2,'{}',900000)",
-      [deployment, randomUUID()]
+      "INSERT INTO yunipals_arena.provider_task(deployment,tournament_id,incarnation,kind,asset,request_id,request,reserved_microusd) VALUES($1,1,$3,'test','budget',$2,'{}',900000)",
+      [deployment, randomUUID(), incarnation ?? "legacy"]
     );
     try {
       await assert.rejects(
-        api.reserve(deployment, "1", "SF1/image", request),
+        reserve("1", "SF1/image", request),
         /budget exhausted/
       );
     } finally {
@@ -159,11 +209,11 @@ export async function verifyMediaLifecycle(
     ).rows[0]!;
     assert.equal(task.state, "uncertain");
     await Promise.all([
-      api.reserve(deployment, "1", "SF1/image", task.request),
-      api.reserve(deployment, "1", "SF1/image", task.request)
+      reserve("1", "SF1/image", task.request),
+      reserve("1", "SF1/image", task.request)
     ]);
     await assert.rejects(
-      api.reserve(deployment, "1", "SF1/image", {
+      reserve("1", "SF1/image", {
         ...task.request,
         prompt: "Changed after purchase"
       }),
@@ -179,17 +229,10 @@ export async function verifyMediaLifecycle(
     assert.equal(creates, 9);
     assert.equal(polls, 1);
     assert.equal(downloads, 10);
-    const filmResponse = await published.artifact(
-      "1",
-      "film.mp4",
-      "bytes=0-31"
-    );
+    const filmResponse = await artifact("film.mp4", "bytes=0-31");
     assert.equal(filmResponse.status, 206);
     assert.equal((await filmResponse.arrayBuffer()).byteLength, 32);
-    assert.equal(
-      (await published.artifact("1", "film.mp4", "bytes=-0")).status,
-      416
-    );
+    assert.equal((await artifact("film.mp4", "bytes=-0")).status, 416);
     await assert.rejects(
       published.artifact("1", "../../reference-lock.json"),
       /not found/
@@ -199,7 +242,7 @@ export async function verifyMediaLifecycle(
       /not found/
     );
     await assert.rejects(within(storage, "../outside"), /Invalid media path/);
-    const folder = mediaFolder(storage, deployment, "1");
+    const folder = mediaFolder(storage, deployment, "1", suffix);
     // Recreate a missing policy sidecar after a crash without re-editing or buying footage.
     const receipt = JSON.parse(
       await readFile(join(folder, "public/film.json"), "utf8")
@@ -219,38 +262,69 @@ export async function verifyMediaLifecycle(
     assert.equal(costs.total, "1600000");
     assert.equal(costs.tasks, 10);
     assert.equal(
-      await publishedPayoutFilm(pool, deployment, "1", storage),
+      await publishedPayoutFilm(pool, deployment, "1", storage, context),
       `0x${receipt.sha256}`
     );
-    await pool.query(
-      "UPDATE yunipals_arena.media_job SET state='needs-attention' WHERE deployment=$1 AND tournament_id=1",
-      [deployment]
-    );
-    await assert.rejects(
-      publishedPayoutFilm(pool, deployment, "1", storage),
-      /completed published film/
-    );
-    await pool.query(
-      "UPDATE yunipals_arena.media_job SET state='ready' WHERE deployment=$1 AND tournament_id=1",
-      [deployment]
-    );
+    if (!context) {
+      await pool.query(
+        "UPDATE yunipals_arena.media_job SET state='needs-attention' WHERE deployment=$1 AND tournament_id=1",
+        [deployment]
+      );
+      await assert.rejects(
+        publishedPayoutFilm(pool, deployment, "1", storage, context),
+        /completed published film/
+      );
+      await pool.query(
+        "UPDATE yunipals_arena.media_job SET state='ready' WHERE deployment=$1 AND tournament_id=1",
+        [deployment]
+      );
+    }
     const film = join(
-      mediaFolder(join(storage, "published"), deployment, "1"),
+      mediaFolder(join(storage, "published"), deployment, "1", suffix),
       "film.mp4"
     );
     await rename(film, film + ".saved");
     try {
       await assert.rejects(
-        publishedPayoutFilm(pool, deployment, "1", storage),
+        publishedPayoutFilm(pool, deployment, "1", storage, context),
         /ENOENT/
       );
       await writeFile(film, "corrupted footage");
       await assert.rejects(
-        publishedPayoutFilm(pool, deployment, "1", storage),
-        /checksum differs/
+        publishedPayoutFilm(pool, deployment, "1", storage, context),
+        /checksum differs|differs from its manifest/
       );
     } finally {
       await rename(film + ".saved", film);
+    }
+    if (context) {
+      await rm(film);
+      assert.equal((await worker().step(deployment, "1")).state, "ready");
+      assert.equal(creates, 9);
+      assert.equal(filmResponse.headers.get("Cache-Control"), "no-store");
+      await assert.rejects(
+        published.artifact("1", "film.mp4"),
+        /Select a published/
+      );
+      const scheduler = new NativeArenaMedia(
+        options.guard!.service,
+        api,
+        media()
+      );
+      assert.equal((await scheduler.tick()).state, "ready");
+      assert.equal((await scheduler.tick()).state, "waiting");
+      assert.equal(creates, 9);
+      const status = await published.status("1");
+      await assert.rejects(
+        published.artifact("1", "film.mp4", undefined, {
+          incarnation: "0x" + "f".repeat(64),
+          publication:
+            "publication" in status
+              ? (status.publication ?? undefined)
+              : undefined
+        }),
+        /not found/
+      );
     }
     await afterPublication?.(storage);
     const report = {
@@ -286,11 +360,16 @@ export async function verifyMediaLifecycle(
       }
     };
     await writeFile(
-      join(root, "docs/arena/media-worker-verification-v1.json"),
+      join(
+        root,
+        context
+          ? "docs/unified-indexer/native-arena-media-2026-10-20.json"
+          : "docs/arena/media-worker-verification-v1.json"
+      ),
       JSON.stringify(report, null, 2) + "\n"
     );
     return report;
   } finally {
-    await rm(storage, { recursive: true, force: true });
+    if (!options.storage) await rm(storage, { recursive: true, force: true });
   }
 }

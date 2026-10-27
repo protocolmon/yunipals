@@ -1,0 +1,31 @@
+{
+  "actualFutureResultSha256": null,
+  "agentProductionEffects": {
+    "databaseWrites": 0,
+    "privatePasswordFilesWritten": 0,
+    "providerCalls": 0,
+    "serviceChanges": 0
+  },
+  "consumerInterface": "validate_current(actualResultSha256)",
+  "files": {
+    "docs/boosters/ypal-fresh-launch-2026-10-23/rpc-default-review-diagnosis.json": "5d8aa7a09c41c5c2aa12af8c0b52ab46e4217057988eebe6f521cfa7a6d7caee",
+    "ops/booster-launch/ypal-rpc-admission-v2.md": "282a83ab6af2c3abbae1a03e76e702c7187c4822e289b40497cfa5e572caab60",
+    "ops/booster-launch/ypal-rpc-admission-v2.py": "45cfa08ba3a2de5de775053081b954dbb5a5e732871e8db1b80fa0b16fe5591e",
+    "ops/booster-launch/ypal-rpc-admission-v2.test.py": "33f63e56da6b63b5d9f1b021239467d51c57b884bda0de692333b728698fa31e"
+  },
+  "fixedRetainedOwner": {
+    "file": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-rpc-admission-v1.py",
+    "sha256": "d9e0cafdfcb817f7835d3856b920013a51b967defa17f239f76ee0416329093e"
+  },
+  "format": "yunipals-ypal-rpc-admission-v2-preparation-v1",
+  "preparedAt": "2026-10-23T19:21:33.553757+00:00",
+  "retainedPublicPreparationSha256": "e3f0db358819b0e2320541b43544cb39fcbf70afc223db7917adfcf7f8c8284e",
+  "status": "prepared_not_production_executed",
+  "validation": {
+    "actualReadOnlyDiagnosticPassed": true,
+    "focusedCases": 6,
+    "logSha256": "8e83c9e30711d3808140522c0a784c32a4a16bd2d9a482bfdc79f43bb50d7c5e",
+    "passed": true,
+    "productionReviewHashExported": false
+  }
+}

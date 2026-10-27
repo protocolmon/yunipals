@@ -1,0 +1,224 @@
+{
+  "format": "arena-live-compat-validation-publication-v1",
+  "files": [
+    {
+      "path": "docs/unified-indexer/arena-live-compat-local-validation-2026-10-22.json",
+      "sha256": "763dd38c4041e778661c77b61a0819f01e2d58cb7632a04c04c82bdb0232e885",
+      "bytes": 20023
+    },
+    {
+      "path": "docs/unified-indexer/arena-live-compat-overlay-manifest-2026-10-22.json",
+      "sha256": "b38ef061d48ee824b317b995a75084d5e1d667e1f06a21c6e37a225634cedaaf",
+      "bytes": 350927
+    },
+    {
+      "path": "docs/unified-indexer/arena-live-compat-source-inventory-2026-10-22.json",
+      "sha256": "2cf3dace91cc6b3df8e440dabe8bab57db4774ba9c048d663cb43a7f7839b8eb",
+      "bytes": 869784
+    },
+    {
+      "path": "docs/unified-indexer/arena-native-read-models-sql-proof-2026-10-22.json",
+      "sha256": "e040fa5f2cfbded09b20561c2c62c88d78ae89d1d9f11677d82b0cb26ce56c65",
+      "bytes": 4186
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/README.md",
+      "sha256": "1ad4c32f50abc925011cc39198e606e172444bee2bfd203f09fb06eebc14fbc2",
+      "bytes": 1683
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/artwork-funding.test.ts",
+      "sha256": "a794d2aa6caba01247230b5c12690c0a937b414077057b4e4b9651f1deebe502",
+      "bytes": 11098
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/catalog-config.test.ts",
+      "sha256": "02a976577e09ed37b78916157c6e9b8c051100fb18da16244ca7205c85ba80ae",
+      "bytes": 4490
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/fixtures.ts",
+      "sha256": "356d3ac0c89eb47f929b1ae02311e2bfcc72a8f8d4357fabd80ed1921316a076",
+      "bytes": 1646
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/native-guards.test.ts",
+      "sha256": "a488499aa98dd6803853885aee4910e5047b3dcb44ab565f8bfe75bfc4c78bd2",
+      "bytes": 10163
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/native-history.test.ts",
+      "sha256": "7a6a05977d9b1ed31fdb75aa3e73508284cb74e3af6d028631723a2a3ad3f434",
+      "bytes": 8180
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/public-api.test.ts",
+      "sha256": "d0cb8aefddf4307148c357a2bc8c53692dd83a4ac12caa062c700a40a23f4690",
+      "bytes": 12494
+    },
+    {
+      "path": "ops/arena-live-compat-acceptance/run.ts",
+      "sha256": "1c6d3872168b942588c9c5a5d10017133c3f9fb60ae640a9f3fef101c9346dee",
+      "bytes": 316
+    }
+  ],
+  "logs": [
+    {
+      "path": "/tmp/yunipals-arena-live-compat-config.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-config.test-20261022.log",
+      "sha256": "1623967685998449f95b55cc99deeb2bdbcabed612b9bc879548c58ab897173a",
+      "bytes": 195
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-ongoing.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-ongoing.test-20261022.log",
+      "sha256": "5ee8dfeb2228284181005f692baa35971213122171f4f308796606ad295a5526",
+      "bytes": 525
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-storage.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-storage.test-20261022.log",
+      "sha256": "644ae002cdd79a552786e0296b5a907b2c0011373b1580bd6d1551c22c0912b3",
+      "bytes": 650
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-productionLive.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-productionLive.test-20261022.log",
+      "sha256": "1042b0a88b3641ce9d609ef18c097bab59adac602f34f5d89ea0d21b10f86018",
+      "bytes": 2685
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-productionInput.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-productionInput.test-20261022.log",
+      "sha256": "cc2fab597dc0b9245b593cae4314f12b01039ec244bfcde64063bfa8e4fa5554",
+      "bytes": 446
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-recovery.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-recovery.test-20261022.log",
+      "sha256": "36a5621df650330479ccc3a05848b2f3daa67db32dbbe87209502f956ecdf8e7",
+      "bytes": 874
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-live.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-live.test-20261022.log",
+      "sha256": "c66c857daf372c59623e1ce324f58a023ec90b89510d8ca94972295236fef3d4",
+      "bytes": 1961
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-input.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-input.test-20261022.log",
+      "sha256": "055b70b7c1ea98a82efa1aa79859a683d1623a02f4cf267810180440bdf35524",
+      "bytes": 446
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeIntake.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeIntake.test-20261022.log",
+      "sha256": "58b4705e2ad6c6242d41e0f2f7fe4d8fe393a6cae9723aa0d40ac7cb504570c0",
+      "bytes": 938
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeTransactions.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeTransactions.test-20261022.log",
+      "sha256": "805631a38c10ad61142edda511195e1fb6fab33b5c9a80e3e853c1a96634e981",
+      "bytes": 1053
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeReferee.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeReferee.test-20261022.log",
+      "sha256": "77334e6770e2c66c743baf45a82895cb0a9a260ce1349cda96ee6d02a5d87f63",
+      "bytes": 1173
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeMedia.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeMedia.test-20261022.log",
+      "sha256": "eb04e27bf9e3ab5257a1c8174ff2f0324736e8e9c8ed19122194460ffb68cd2d",
+      "bytes": 1024
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeClientTransactions.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeClientTransactions.test-20261022.log",
+      "sha256": "5c67c2f9c5c8b0e54aecafd757feee2810c07bc77c373d18fb2a2fe22b76e3e1",
+      "bytes": 992
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-tournamentIdentity.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-tournamentIdentity.test-20261022.log",
+      "sha256": "6ca1ed86a07b8be33225a6efa049fe224cd2009002ef6f28f73c484a136031e3",
+      "bytes": 230
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-selectedSourceRuntime.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-selectedSourceRuntime.test-20261022.log",
+      "sha256": "278c1fa85c703749785f64633a03dce9851e9897a755115d57aefb1b20c2db3d",
+      "bytes": 802
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeSource.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeSource.test-20261022.log",
+      "sha256": "b0d393422fbcf573ca21b869fa97ad971d0856ba299c17c27c76ab46855adc92",
+      "bytes": 418
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-nativeAction.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-nativeAction.test-20261022.log",
+      "sha256": "450247d01a96f61de697012e61113e55a3df87d99a0da4038c3cbad7895984fd",
+      "bytes": 525
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-transport.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-transport.test-20261022.log",
+      "sha256": "7179b8f410d49b57e8822b755e507343ed67b2187de204db813e4fc19f7802f2",
+      "bytes": 281
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-clientTransactionSchema.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-clientTransactionSchema.test-20261022.log",
+      "sha256": "3ced33662f9891e5de8c42f6df9bee9246498877fa9a33a6511898546be9847e",
+      "bytes": 237
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-rollback.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-rollback.test-20261022.log",
+      "sha256": "a351cca380d2070a24bfc4aa4c1be8ad8ce4e2d44eac572bbd49554d05ef1e31",
+      "bytes": 769
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-privateFile.test-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-privateFile.test-20261022.log",
+      "sha256": "2d9cd32e93a382305888c19d9c44ddabe517f65f65d1f80a1b0a701f5333f4b0",
+      "bytes": 4192
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-independent-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-independent-20261022.log",
+      "sha256": "83b284318cbde77509f99423e96801612e4022a02238adc02751aa11a43fd0a5",
+      "bytes": 2435
+    },
+    {
+      "path": "/tmp/yunipals-native-read-models-postgres-final-20261022.log",
+      "archivePath": "evidence/yunipals-native-read-models-postgres-final-20261022.log",
+      "sha256": "9c70bb4bff8554349050fff39c6b9ee294df79bb2aadbcc4c9c75c4cafbb1057",
+      "bytes": 729
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-typecheck-final-20261022.log",
+      "archivePath": "evidence/yunipals-arena-live-compat-typecheck-final-20261022.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-build-final-proof-20261022.json",
+      "archivePath": "evidence/yunipals-arena-live-compat-build-final-proof-20261022.json",
+      "sha256": "934befe1f4bbc52b3c819d64b99c603d55461f94b773898e77723dadf70bc085",
+      "bytes": 6829
+    },
+    {
+      "path": "/tmp/yunipals-arena-live-compat-catalog-final-20261022.json",
+      "archivePath": "evidence/yunipals-arena-live-compat-catalog-final-20261022.json",
+      "sha256": "2683257acea31438d849983181349b305c26d7f7c1076891f2b624e51b766496",
+      "bytes": 10209
+    }
+  ],
+  "scope": "Public source tests and synthetic localverification only; no private config/dependencies/database exports."
+}

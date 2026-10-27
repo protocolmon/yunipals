@@ -1,0 +1,22 @@
+{
+  "acceptedBaselineRootResultSha256": "2935d53ffa101664c882d93dce210f08a23a393196be36dcefe9044c9b51a195",
+  "automaticRetryAllowed": false,
+  "format": "yunipals-cont5-held5-source-root-review-v1",
+  "held5DispatchedOnce": true,
+  "held5OutcomeObserved": false,
+  "independentReview": "publication_protocol_windows",
+  "originalHeldApprovalSeconds": 90,
+  "originalHeldReserveSeconds": 5,
+  "ownerSha256": "99c439b2c53a38a65950f61a937ac7413d907cb1de452fe900a7a0ca90c2f855",
+  "portableControlsPassed": 8,
+  "predecessorOwnerSha256": "98636d3beacc9d4ac14a5cdbb4a33c216840cd6424adacd6d008a349c85fe364",
+  "priorFailedHeld4ResultSha256": "29ecd865d83ccd707dc41957c2e7b513bc66bcc890214b6c66b27125a53a8d90",
+  "priorHeldFailureCauseProven": false,
+  "productionCacheCOMMITDispatched": false,
+  "proofScope": "source review and deliberate once-only dispatch; no held5 success or commit authority claimed",
+  "readerTrafficSwitched": false,
+  "reviewedAt": "2026-10-26T03:13:29.074753+00:00",
+  "rootFullDeltaReadPassed": true,
+  "separatePositiveDiagnosticResultSha256": "b90ea254cd2965ee9b45a82a14d2dc84cb7687c5b7ae53af34ae8b44ef3f5c66",
+  "sourcePolicyChanged": false
+}

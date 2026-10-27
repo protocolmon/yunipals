@@ -1,5 +1,3 @@
-import { readFileSync, realpathSync, statSync } from "node:fs";
-import { dirname } from "node:path";
 import {
   createPublicClient,
   http,
@@ -13,31 +11,14 @@ import { base, bsc, mainnet, polygon } from "viem/chains";
 import { rpcBudgetProxyUrl } from "@/rpcBudgetProxyRegistry";
 import { arenaTransport } from "./transport";
 import { arenaOpenaiFundingMode } from "./funding";
+import { readPrivateFile } from "./privateFile";
+
+export { readPrivateFile } from "./privateFile";
 
 function required(env: NodeJS.ProcessEnv, key: string) {
   const value = env[key]?.trim();
   if (!value) throw new Error(`Missing ${key}.`);
   return value;
-}
-export function readPrivateFile(path: string) {
-  const stat = statSync(path);
-  // systemd presents LoadCredential files as root-owned 0440 inside a
-  // per-service, read-only 0550 credential directory. This exception must never
-  // accept a group-readable ordinary file or a caller-selected directory.
-  const directory = process.env.CREDENTIALS_DIRECTORY;
-  const systemdCredential =
-    directory !== undefined &&
-    /^\/run\/credentials\/yunipals-arena-[a-z0-9-]+\.service$/.test(
-      directory
-    ) &&
-    stat.uid === 0 &&
-    (stat.mode & 0o777) === 0o440 &&
-    dirname(realpathSync(path)) === realpathSync(directory) &&
-    statSync(directory).uid === 0 &&
-    (statSync(directory).mode & 0o777) === 0o550;
-  if (!stat.isFile() || ((stat.mode & 0o077) !== 0 && !systemdCredential))
-    throw new Error("Arena secret files must have owner-only permissions.");
-  return readFileSync(path, "utf8").trim();
 }
 export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   const contract = required(env, "ARENA_CONTRACT");

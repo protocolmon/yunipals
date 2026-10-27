@@ -1,0 +1,31 @@
+{
+  "format": "yunipals-ypal-combined-source-render-v1",
+  "baseSourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+  "candidateSourceDigest": "02e217b73809bf22aed75a35407a2c175c16f49a7eab91c674be86de28507984",
+  "candidateSourceRows": 1730,
+  "changedSourcePaths": [
+    "apps/yunipals-indexer/lib/boosters/config.ts",
+    "apps/yunipals-indexer/lib/unified/rpc-preflight.ts",
+    "apps/yunipals-indexer/ponder.config.ts"
+  ],
+  "fileHashes": {
+    "ponder.config.ts": "c4ff1ec83c766aa90286b5d73fd22b457135baa6e5880b4b52c4f8d06eca53a4",
+    "booster-config.ts": "01180f821236a693ecda5d7e697adefce59d42a50faf5837b8cddbf44bd4a13d",
+    "rpc-preflight.ts": "15d2157d5fd126d1d63383186b037d14b767314c2bf9552ee379cfffa869ca91",
+    "combined.public.env": "2c90fd857ad082e960d26672043db11be1ee4326e83076cabdf4373b90a07411"
+  },
+  "unit": "yunipals-ypal-combined-source.service",
+  "schema": "unified_ypal_20261023_v1",
+  "area": "/var/lib/yunipals-unified-ypal/combined-v1-source008",
+  "project": "/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer",
+  "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+  "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+  "profileFile": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-v1/profile.json",
+  "databasePoolMax": 5,
+  "baseSourceConcurrency": 1,
+  "paidAuthority": false,
+  "replayPermits": [],
+  "productionRegistered": false,
+  "productionStarted": false,
+  "nativeCheckpointCopied": false
+}

@@ -1,0 +1,103 @@
+{
+  "format": "yunipals-ypal-native-cutover-source-preparation-v1",
+  "sourceOnly": true,
+  "runtimeManifestSha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+  "publicationFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.py",
+      "bytes": 142111,
+      "sha256": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.mjs",
+      "bytes": 25467,
+      "sha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-proof-v1.py",
+      "bytes": 69908,
+      "sha256": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-finish-v2.py",
+      "bytes": 28363,
+      "sha256": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.action.sql",
+      "bytes": 2324,
+      "sha256": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-reader-probe-v1.mjs",
+      "bytes": 9333,
+      "sha256": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.manifest.json",
+      "bytes": 2114,
+      "sha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.test.py",
+      "bytes": 45348,
+      "sha256": "9fa87de1041e15c5e8f7485d0f7e19f832a6d3584a6e9e744d3c15e75f907c69"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1-postgres.test.mjs",
+      "bytes": 30352,
+      "sha256": "45d131bf63b2b944086ab87f70726bf72b0f22ea6ba3ab90c0e9aefedf3cb68e"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-reader-probe-v1.test.mjs",
+      "bytes": 3813,
+      "sha256": "bb9f42abc9132e2632cb7c87dd160ce1e7e72367e4b774177f1b73b62c7d2880"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-reader-probe-v1-postgres.test.mjs",
+      "bytes": 6574,
+      "sha256": "89006ced34b1079e5baa0ac0c6229ba0a60d05f264849cad03a9bd0e9bde2837"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.md",
+      "bytes": 13109,
+      "sha256": "49149f695fac0099eed77e72776ffe8ba0e51e52433584f7f02bc0786dcccd5c"
+    }
+  ],
+  "publicationFileCountExcludingThisPreparation": 12,
+  "frozenPublicationChildSha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+  "dependencyPinsVerified": 14,
+  "tests": {
+    "pythonFocusedControls": 31,
+    "actionDTOControls": 4,
+    "actualDisposablePostgresSelectorAndColumnACLGroups": 5,
+    "publicationChildActualDisposablePostgresGroups": 10,
+    "publicationChildUnchangedSinceIndependentPGPass": true,
+    "actualProductionPeerExecutionQualified": false,
+    "actualProductionDBOrProviderTestsPerformed": false
+  },
+  "protocol": {
+    "onePersistentRetainedBusinessRoleClient": true,
+    "globalCommitAfterDurablePreparedAcknowledgement": true,
+    "maximumExplicitReaderWindowSeconds": 600,
+    "automaticSQLOrStartStopRetryAllowed": false,
+    "fourCacheReadsHaveSeparateAdmission": true,
+    "twoExistingReaderLOGINBitsNeedSeparateReviewedAuthorization": true,
+    "collectorLOGINRetainedTrue": true,
+    "fullCacheCatalogAndColumnACLsRequired": true,
+    "fullSixCanonicalWitnessRequired": true,
+    "sustainedObserverRequired": true,
+    "sourceTerminalInverseHasNoForwardReadinessAuthority": true,
+    "fullServingInverseIncludesMetadataRPCAndLegacyHTTP": true,
+    "alreadyTerminalBackendsRequirePositiveOtherLiveKernelPeers": true,
+    "phaseLeafClaimsSourceObserverFinancialOrFullGlobalRoleAuthority": false
+  },
+  "limitations": [
+    "No actual143 admission, metadata adoption/provenance, unpublished generation candidate, cache preparation, canonical witness, sustained observer activation or two-reader LOGIN admission is fabricated by this package.",
+    "No production peer launch, SQL, service transition, publication, serving inverse or cache acceptance was executed for this preparation.",
+    "Current source readiness and canonical acceptance remain separate from immutable captured data parity.",
+    "Recurring generation remains stopped until separate supervised lineage/24-hour policy; this initial-candidate capsule does not authenticate later published descendants.",
+    "Final managed EVM/Solana, fresh YPAL feature retirement and Arena acceptance remain separate owners."
+  ],
+  "privateEvidencePublished": false
+}

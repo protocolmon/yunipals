@@ -4,7 +4,8 @@ import { transaction } from "@/db/pool";
 import { canonicalJson, sha256 } from "../draw";
 import type { AdmissionRequest } from "./admission";
 import { identityMetadata, type IdentityProfile } from "./identity";
-import { ArenaRequestError } from "./intake";
+import { ArenaIntake, ArenaRequestError } from "./intake";
+import { withArenaSourceLease } from "./sourceSelection";
 import type { ArenaOpenaiFundingMode } from "./funding";
 
 export const IDENTITY_MODEL = "gpt-4.1-mini-2025-04-14";
@@ -90,7 +91,9 @@ export class ArenaIdentityAnalysis {
   constructor(
     private readonly pool: Pool,
     private readonly deployment: string,
-    private readonly fundingMode: ArenaOpenaiFundingMode = "capped"
+    private readonly fundingMode: ArenaOpenaiFundingMode = "capped",
+    private readonly service?: ArenaIntake,
+    private readonly checkFunding?: () => Promise<unknown>
   ) {}
 
   async status(key: string) {
@@ -192,6 +195,25 @@ export class ArenaIdentityAnalysis {
     allowanceUntil: number,
     fetcher: typeof fetch = fetch
   ) {
+    const run = async () => {
+      if (this.service) await this.service.ready();
+      return this.stepSelected(
+        apiKey,
+        allowanceMicrousd,
+        allowanceUntil,
+        fetcher
+      );
+    };
+    return this.service?.nativeSource
+      ? withArenaSourceLease(this.service, run)
+      : run();
+  }
+  private async stepSelected(
+    apiKey: string,
+    allowanceMicrousd: number,
+    allowanceUntil: number,
+    fetcher: typeof fetch
+  ) {
     const ongoing = this.fundingMode === "ongoing";
     if (
       !apiKey.trim() ||
@@ -260,6 +282,23 @@ export class ArenaIdentityAnalysis {
       );
       return "failed";
     }
+    let futureReferees = 0;
+    if (this.service?.nativeSource) {
+      await this.checkFunding?.();
+      const work = await this.service.nativeSource.work?.();
+      if (!work || work.ids.length >= 100)
+        throw new Error("Native artwork funding coverage is unavailable.");
+      for (const id of work.ids) {
+        const context = await this.service.tournamentContext(id);
+        if (!["open", "strategies", "resolving"].includes(context.state.phase))
+          continue;
+        const exists = await this.pool.query(
+          `SELECT 1 FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='referee'`,
+          [this.deployment, id, context.incarnation]
+        );
+        if (!exists.rowCount) futureReferees++;
+      }
+    }
     const claimed = await transaction(this.pool, async (db) => {
       await db.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
         `arena/identity/${this.deployment}`
@@ -284,13 +323,21 @@ export class ArenaIdentityAnalysis {
           `SELECT coalesce(c.snapshot->>'openaiFundingMode','capped') AS mode, ((c.snapshot->>'openaiBudgetMicrousd')::numeric
           - coalesce((SELECT sum(coalesce(actual_microusd,reserved_microusd)) FROM yunipals_arena.provider_task
               WHERE deployment=$1 AND kind='referee'),0)
-          - 700000*(SELECT count(*) FROM yunipals_arena.tournament t WHERE deployment=$1
+          - 700000*${
+            this.service?.nativeSource
+              ? "$3::numeric"
+              : `(SELECT count(*) FROM yunipals_arena.tournament t WHERE deployment=$1
               AND state->>'phase' IN ('open','strategies','resolving')
-              AND NOT EXISTS(SELECT 1 FROM yunipals_arena.provider_task p WHERE p.deployment=t.deployment AND p.tournament_id=t.id AND kind='referee'))
+              AND NOT EXISTS(SELECT 1 FROM yunipals_arena.provider_task p WHERE p.deployment=t.deployment AND p.tournament_id=t.id AND p.incarnation='legacy' AND kind='referee'))`
+          }
           - $2::numeric)::text AS available
          FROM yunipals_arena.capacity c WHERE deployment=$1 AND checked_at>now()-interval '6 minutes'
           AND (snapshot->>'openaiFundingMode'='ongoing' OR (snapshot->>'openaiBudgetExpiresAt')::numeric>extract(epoch FROM now())*1000)`,
-          [this.deployment, spent.total]
+          [
+            this.deployment,
+            spent.total,
+            ...(this.service?.nativeSource ? [futureReferees] : [])
+          ]
         )
       ).rows[0];
       if (

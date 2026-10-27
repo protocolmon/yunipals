@@ -1,0 +1,397 @@
+{
+  "capture": {
+    "file": "/tmp/yunipals-replay-readiness-1512-20261023.json",
+    "sha256": "6817859d125bdb7bf54859f30da82ed8c389502e22a6261bfdae75c137c6a042"
+  },
+  "comparison": {
+    "baseCommittedAfter": 52950938,
+    "baseCommittedBefore": 52950938,
+    "bnbCommittedAfter": 101089566,
+    "bnbCommittedBefore": 101089566,
+    "bnbCommittedDelta": 0,
+    "bnbFetchGaugeAfter": 106633083,
+    "bnbFetchGaugeBefore": 105230212,
+    "bnbFetchGaugeDelta": 1402871,
+    "bnbSyncCompletedBlocksAfter": 95694103,
+    "bnbSyncCompletedBlocksBefore": 92855978,
+    "bnbSyncCompletedBlocksDelta": 2838125,
+    "completedEventsAfter": 27684.0,
+    "completedEventsBefore": 27684.0,
+    "currentCanonicalWitnesses": 0,
+    "frameworkReady": false,
+    "heartbeatAgeSeconds": 1.517,
+    "nativeCoverageInferredFromFetch": false,
+    "observedAt": "2026-10-23T15:14:23.730791+00:00",
+    "priorObservedThrough": "2026-10-23T14:30:35.419337+00:00",
+    "wholeBackfillEtaClaimed": false
+  },
+  "format": "yunipals-production-replay-qualified-health-v1",
+  "interpretation": "Historical cache/fetch counters advanced while native event coverage stayed at the last committed event. The prior sparse-range diagnosis remains separate evidence; this snapshot does not assert new canonical coverage or source readiness. All four current source statuses remain indexer_not_ready and no current block witness exists. Live launch API health remains separate and ready.",
+  "nextReadinessIndependentAction": "Update the current handover operator map to the actually staged e283 consumer entry, v7 booster owner and v4 supervisor. Preserve raw9a as an underlying historical dependency and retain all native-ready, actual receipt, owner admission and fixed-boundary gates.",
+  "observation": {
+    "at": "2026-10-23T15:14:23.730791+00:00",
+    "cachedMetrics": [
+      {
+        "chain": "bnb",
+        "name": "ponder_indexing_timestamp",
+        "value": 1780046506.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_indexing_timestamp",
+        "value": 1792688087.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_indexing_timestamp",
+        "value": 1792688583.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_indexing_timestamp",
+        "value": 1792690409.0
+      },
+      {
+        "chain": "bnb",
+        "name": "ponder_sync_block",
+        "value": 106633083.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_sync_block",
+        "value": 26249684.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_sync_block",
+        "value": 95990408.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_sync_block",
+        "value": 52950938.0
+      },
+      {
+        "chain": "bnb",
+        "name": "ponder_sync_block_timestamp",
+        "value": 1780046506.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_sync_block_timestamp",
+        "value": 1792689851.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_sync_block_timestamp",
+        "value": 1792690868.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_sync_block_timestamp",
+        "value": 1792690399.0
+      },
+      {
+        "chain": "bnb",
+        "name": "ponder_historical_total_blocks",
+        "value": 121593343.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_historical_total_blocks",
+        "value": 14115166.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_historical_total_blocks",
+        "value": 74176191.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_historical_total_blocks",
+        "value": 30726864.0
+      },
+      {
+        "chain": "bnb",
+        "name": "ponder_historical_cached_blocks",
+        "value": 21980602.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_historical_cached_blocks",
+        "value": 14115112.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_historical_cached_blocks",
+        "value": 74176114.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_historical_cached_blocks",
+        "value": 30717444.0
+      },
+      {
+        "chain": "polygon",
+        "name": "ponder_historical_completed_blocks",
+        "value": 77.0
+      },
+      {
+        "chain": "bnb",
+        "name": "ponder_historical_completed_blocks",
+        "value": 95694103.0
+      },
+      {
+        "chain": "mainnet",
+        "name": "ponder_historical_completed_blocks",
+        "value": 54.0
+      },
+      {
+        "chain": "base",
+        "name": "ponder_historical_completed_blocks",
+        "value": 9420.0
+      }
+    ],
+    "databaseWrites": 0,
+    "financial": {
+      "authority": {
+        "activePermits": 0,
+        "profile": true,
+        "profilePermitRows": 2
+      },
+      "paidAuthority": false,
+      "policyChanged": false,
+      "profile": {
+        "enabled": true,
+        "expiresAt": "2026-11-19T18:00:00+00:00",
+        "manifest": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+        "profileId": "0xd059909e4c1f24cdfff8de08d7c0c63e4d27507343f6de357232ddba657fc728",
+        "scope": "yunipals-opensea"
+      }
+    },
+    "format": "yunipals-replay-native-readiness-observation-v1",
+    "localBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 3,
+      "indexedBlock": 52989555,
+      "indexedTimestamp": 1792768457,
+      "ready": true,
+      "status": 200
+    },
+    "native": {
+      "buildId": "bf4939b3ff",
+      "catalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+      "chainStatus": {
+        "checkpointWitnessCounts": [],
+        "statuses": [
+          {
+            "chainId": 1,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 56,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 137,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          },
+          {
+            "chainId": 8453,
+            "errorCode": "indexer_not_ready",
+            "halted": false
+          }
+        ]
+      },
+      "checkpoints": [
+        {
+          "blockTimestamp": 1792690499,
+          "chainId": 1,
+          "completeBlock": 26249684
+        },
+        {
+          "blockTimestamp": 1780046506,
+          "chainId": 56,
+          "completeBlock": 101089566
+        },
+        {
+          "blockTimestamp": 1792690983,
+          "chainId": 137,
+          "completeBlock": 95990408
+        },
+        {
+          "blockTimestamp": 1792691223,
+          "chainId": 8453,
+          "completeBlock": 52950938
+        }
+      ],
+      "completedEvents": 27684.0,
+      "meta": {
+        "build": "bf4939b3ff",
+        "heartbeatAtMs": "1792768458550",
+        "locked": "1",
+        "observedAtMs": "1792768460067",
+        "ready": "0"
+      },
+      "schema": "unified_shadow_20261020_7e7375b0"
+    },
+    "originalWholeValidationPassed": false,
+    "providerCalls": 0,
+    "publicBooster": {
+      "buildId": "6d581272ce",
+      "errorCode": null,
+      "indexedAgeSeconds": 3,
+      "indexedBlock": 52989555,
+      "indexedTimestamp": 1792768457,
+      "ready": true,
+      "status": 200
+    },
+    "receiptWorkerInvoked": false,
+    "resources": {
+      "memoryEvents": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "restarts": 0,
+      "rootFreeBytes": 45141651456,
+      "sourceMemoryBytes": 403169280,
+      "sourceMemoryMaxBytes": 6442450944
+    },
+    "rpc": {
+      "base": {
+        "activeUpstreamRequests": 0,
+        "allPaidFallback": false,
+        "chainId": 8453,
+        "freeFailures": 12453,
+        "freeRateLimitRetries": 0,
+        "maximumConcurrentUpstreamRequests": 8,
+        "observedHead": 52989556,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 61,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first",
+        "traffic": {
+          "unified_evidence": {
+            "freeCalls": 78,
+            "paidCalls": 0,
+            "refused": 0
+          },
+          "unified_source": {
+            "freeCalls": 27785,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      },
+      "bnb": {
+        "activeUpstreamRequests": 1,
+        "allPaidFallback": false,
+        "chainId": 56,
+        "freeFailures": 272854,
+        "freeRateLimitRetries": 0,
+        "maximumConcurrentUpstreamRequests": 8,
+        "observedHead": 129343949,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 3398,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first",
+        "traffic": {
+          "unified_evidence": {
+            "freeCalls": 0,
+            "paidCalls": 0,
+            "refused": 0
+          },
+          "unified_source": {
+            "freeCalls": 30124,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      },
+      "ethereum": {
+        "activeUpstreamRequests": 0,
+        "allPaidFallback": false,
+        "chainId": 1,
+        "freeFailures": 524,
+        "freeRateLimitRetries": 1,
+        "maximumConcurrentUpstreamRequests": 8,
+        "observedHead": 26256152,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 403,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first",
+        "traffic": {
+          "unified_evidence": {
+            "freeCalls": 94,
+            "paidCalls": 0,
+            "refused": 2
+          },
+          "unified_source": {
+            "freeCalls": 0,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      },
+      "polygon": {
+        "activeUpstreamRequests": 0,
+        "allPaidFallback": false,
+        "chainId": 137,
+        "freeFailures": 527,
+        "freeRateLimitRetries": 0,
+        "maximumConcurrentUpstreamRequests": 8,
+        "observedHead": 96042052,
+        "profileMatches": true,
+        "queuedSourceRequests": 0,
+        "sourcePacingTimeouts": 124,
+        "sourcePaidFallback": false,
+        "sourceRouting": "free_first",
+        "traffic": {
+          "unified_evidence": {
+            "freeCalls": 82,
+            "paidCalls": 0,
+            "refused": 0
+          },
+          "unified_source": {
+            "freeCalls": 0,
+            "paidCalls": 0,
+            "refused": 0
+          }
+        }
+      }
+    },
+    "serviceActions": 0,
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "sourceRuntime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    }
+  },
+  "observedAt": "2026-10-23T15:14:23.730791+00:00",
+  "observerActions": {
+    "databaseWrites": 0,
+    "paidAuthorityRenewed": false,
+    "productionFileWrites": 0,
+    "providerRpcCalls": 0,
+    "serviceActions": 0
+  },
+  "priorEvidence": {
+    "file": "docs/unified-indexer/production-replay-sparse-range-diagnosis-2026-10-23-1430.json",
+    "sha256": "3f71231b85767404fb5d79ee2c2aa196860d7923521203da6fa919342f490ea8"
+  },
+  "receiptWorkerInvoked": false
+}

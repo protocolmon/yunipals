@@ -1,0 +1,65 @@
+{
+  "actualInputOrReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "existingUpstreamBytesNotDuplicated": true,
+  "files": [
+    {
+      "bytes": 10856,
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-native-derived-boundary-diagnostic-v1.py",
+      "deploymentRequired": true,
+      "file": "arena-native-derived-boundary-diagnostic-v1.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-boundary-diagnostic-v1.py",
+      "sha256": "b3e9186de3fc3fbf8085c4c927b633d86684a5194ded947c8cc52884569a4453"
+    },
+    {
+      "bytes": 8025,
+      "deploymentPath": "/opt/yunipals-unified/operations/free-replay-20261020/arena-native-derived-boundary-diagnostic-v1.mjs",
+      "deploymentRequired": true,
+      "file": "arena-native-derived-boundary-diagnostic-v1.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-boundary-diagnostic-v1.mjs",
+      "sha256": "6a97f5c6cc37bd4790ef0f9b15438652fc7ba3580de5aad0af4faa16fcadbed7"
+    },
+    {
+      "bytes": 6743,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-boundary-diagnostic-v1.test.py",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-boundary-diagnostic-v1.test.py",
+      "sha256": "f83a2c0a6268e8765be1118f7720e06c9545032ed36c6e73e0d1ab8d7ea18222"
+    },
+    {
+      "bytes": 6291,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-boundary-diagnostic-v1.test.mjs",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-boundary-diagnostic-v1.test.mjs",
+      "sha256": "89842e73d00ac0dc83e6315da151065874d7c25e198d85c3c5f26324220dc751"
+    },
+    {
+      "bytes": 2713,
+      "deploymentRequired": false,
+      "file": "arena-native-derived-boundary-diagnostic-v1.md",
+      "repositoryPath": "ops/unified-indexer-transition/arena-native-derived-boundary-diagnostic-v1.md",
+      "sha256": "bfb26da7b687fb55d30a85075689f9e080510698cab5e9830d05eee3372af52a"
+    }
+  ],
+  "format": "yunipals-root-native-derived-boundary-diagnostic-v1-preparation",
+  "sourceOnly": true,
+  "upstream": {
+    "ownerSha256": "ecf16bd928226d0ec1ad7dd894deffa0a481101f211f16324dfe000bb5284536",
+    "projectorSha256": "37c17e1bdaf22bfecd930ff97da8e6eb7b8337f57469cb16d487e0f6c77be319",
+    "sourceManifestSha256": "18148bc422d0ec31a3759be81f17d28e222bb8accb66f65167f77318daa5ea93",
+    "supportManifestSha256": "b038bff5a579d08fbd0ebcce4765029d52465f50c854b033b9191c4ecabf1443",
+    "supportSha256": "08905983dc0f5556190d311fd648eecc9ebfea4c958e607902a93ac7a2ad24ba"
+  },
+  "verification": {
+    "independentReview": "no concrete findings within source/local fixture scope",
+    "nodeGroups": 8,
+    "pythonControls": 6
+  }
+}

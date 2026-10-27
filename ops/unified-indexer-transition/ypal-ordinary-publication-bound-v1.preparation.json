@@ -1,0 +1,148 @@
+{
+  "actualAcknowledgementFile": "ypal-ordinary-reader-bound-v1.py",
+  "actualCandidateReceiptInvented": false,
+  "actualGenerationOwner": {
+    "file": "ypal-ordinary-generation-attempt-v2.py",
+    "monitorSha256": "47005973bc9ec17cd65f8b3044ef9e4dda438821fd651c289608b0fd2f8a86ae",
+    "sha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+    "sourceDependencyCount": 164
+  },
+  "cacheSQLAndPeerUnchanged": true,
+  "callbackTimingQualifiedByThisWork": false,
+  "dataIdentityPreserved": true,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "externalBoundFeatureHookImplemented": true,
+  "featureLeafContract": {
+    "actualBoundReaderAncestryRequired": true,
+    "circularSourcePins": false,
+    "contextFile": "ypal-ordinary-feature-context-bound-v1.py",
+    "fiveActualRefsRequired": true,
+    "ownerFile": "ypal-ordinary-feature-handover-bound-v1.py",
+    "sourceOrWholeValidatorAuthorityConferred": false
+  },
+  "files": [
+    {
+      "bytes": 15019,
+      "file": "ypal-ordinary-generation-binding-v1.py",
+      "sha256": "acfeda7dc55b5ea7c99a3ef3a11855397c56317cf38a1d792a3e769540c0e962"
+    },
+    {
+      "bytes": 6637,
+      "file": "ypal-ordinary-read-cache-bound-v1.py",
+      "sha256": "7c09671036b712700a5bb4bafa83e0c209243dea06103c8c297e8f332af0555f"
+    },
+    {
+      "bytes": 17923,
+      "file": "ypal-ordinary-reader-bound-v1.py",
+      "sha256": "7e3783576548c680561a3d44c9b280948520d91acc95a4ac165501a1520caf17"
+    },
+    {
+      "bytes": 3992,
+      "file": "ypal-ordinary-publication-bound-v1.py",
+      "sha256": "667d46ada5895b62fad16e5c42dee033a157bd187fd1a5360f91994bfe64c130"
+    },
+    {
+      "bytes": 3267,
+      "file": "ypal-ordinary-publication-bound-manifest-v1.py",
+      "sha256": "e3e1ef3448939f5aa5662740fc4ec1ae9fd2891d91469c80b7baf1eaf848a1cb"
+    },
+    {
+      "bytes": 3245,
+      "file": "ypal-ordinary-reader-recovery-wire-v1.py",
+      "sha256": "e0875ba44e766792ab06525fb53e15d3979d0dc753501987631afe055fc6dfc8"
+    },
+    {
+      "bytes": 25529,
+      "file": "ypal-ordinary-reader-sql-bound-v1.mjs",
+      "sha256": "05e8c0a728a90f6ab432d73f4fb1ce51f685495405591d225e82a083fa86c8d9"
+    },
+    {
+      "bytes": 9353,
+      "file": "ypal-ordinary-reader-probe-bound-v1.mjs",
+      "sha256": "4cf1ae4e07477a2183ec46ef0405d5763a6a81bbe28c953a6a813b7dc88a32fc"
+    },
+    {
+      "bytes": 1561,
+      "file": "ypal-ordinary-reader-wire-bound-v1.manifest.json",
+      "sha256": "af30ebc298546ec060cdefcc47bb25856a8b05aa654d6f0cdc527990ea806ddf"
+    },
+    {
+      "bytes": 4990,
+      "file": "ypal-ordinary-reader-peer-bound-v1.py",
+      "sha256": "865f796407aaad784761cdb247a9cf1d4efe99ed3b0f9ea81e7809d37dc0c2b4"
+    },
+    {
+      "bytes": 1742,
+      "file": "ypal-ordinary-reader-peer-bound-v1.test.py",
+      "sha256": "38d55acfe1740c9d0bb10f981e990c10731348f1766f9acdb68a615392371690"
+    },
+    {
+      "bytes": 33988,
+      "file": "ypal-ordinary-publication-bound-v1.test.py",
+      "sha256": "cbad8ccc982751072ad7cd3fdbc5898e911fc0bb83ef46923ba17e5f10f482b7"
+    },
+    {
+      "bytes": 8082,
+      "file": "ypal-ordinary-publication-bound-v1.md",
+      "sha256": "fb25a905039e4a2009591133a395e58f1a6d34072900d02ed05c15dcbd0b6590"
+    },
+    {
+      "bytes": 21780,
+      "file": "ypal-ordinary-generation-binding-v1.manifest.json",
+      "sha256": "a6d4f0b8669eadcc44a1c880e76996f015e645ef9976b79e418e02e26bd1859b"
+    },
+    {
+      "bytes": 25115,
+      "file": "ypal-ordinary-reader-bound-v1.manifest.json",
+      "sha256": "bbd19325eded8dd90b2ea8c0e8844b9ad6134fd78416206bb0491978a07f3095"
+    },
+    {
+      "bytes": 27546,
+      "file": "ypal-ordinary-publication-bound-v1.stage.json",
+      "sha256": "cfec2660debc99716008434c37c3b94730cc20e1d62a06faf63648a20c7ded28"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-bound-v1-source-preparation",
+  "frozenFeatureRouteAccepted": false,
+  "frozenV6SourcesUnchanged": true,
+  "originalFailedWorkerRetried": false,
+  "productionNewPeerQualifiedByThisWork": false,
+  "productionStillRequired": [
+    "actual_V2_attempt_and_candidate_acceptance",
+    "actual_bound_inputs_and_source_staging",
+    "actual_new_reader_peer_qualification",
+    "actual_current_context_mode_callback_timing",
+    "separately_reviewed_publication_steps",
+    "genuine_feature_handover_and_actual_five_receipt_refs"
+  ],
+  "publicStageClosureFile": "ypal-ordinary-publication-bound-v1.stage.json",
+  "publicStageClosureSha256": "cfec2660debc99716008434c37c3b94730cc20e1d62a06faf63648a20c7ded28",
+  "readerInverseDispatchOpen": false,
+  "recoveryComponent": {
+    "allFourCountShaTupleChecksPreserved": true,
+    "allocationIsObservationOnly": true,
+    "file": "ypal-ordinary-generation-recovery-semantic-v1.mjs",
+    "originalStrictVerifierSuccessClaimed": false,
+    "sha256": "ca20dab6095290c78617a9ded63b21020c5e8aeda2e0de664d6947bbfa5f59ff"
+  },
+  "retainedCapsuleCopiedOrRelabelled": false,
+  "sourceOnly": true,
+  "tests": {
+    "FDUsesSyntheticFilesAndDeniedTransports": true,
+    "actualThinFeatureEnvelopeUnderSyntheticImmutableACK": true,
+    "boundSourceControls": 17,
+    "independentBoundReview": "no-concrete-correctness-findings",
+    "numericLocalUIDs": [
+      111,
+      967
+    ],
+    "restrictedPeerFDControls": 12,
+    "sourceOrSyntheticOnly": true
+  }
+}

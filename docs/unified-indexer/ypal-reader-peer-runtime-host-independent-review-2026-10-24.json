@@ -1,0 +1,55 @@
+{
+  "databaseConnections": 0,
+  "format": "ypal-reader-peer-runtime-host-independent-review-v1",
+  "hostCalls": 0,
+  "independentTestsFailed": 0,
+  "independentTestsPassed": 11,
+  "limitations": [
+    "No production staging/qualification or actual60918-node runtime-tree rehash performed by reviewer",
+    "Local host-owner suite uses explicit synthetic runtime/UID-map fixtures; prior transport twelve-control cross-UID review remains separately pinned",
+    "Qualification is public dependency transport/readability only; no source readiness, real action/API, grants, coordinator integration or cutover authority",
+    "Full tree preauthorization has120s deadline; actual host duration/readability must still pass before dependency evaluation"
+  ],
+  "observedAt": "2026-10-24T10:45:45.831049+00:00",
+  "productionActions": 0,
+  "providerRequests": 0,
+  "resolvedFinding": {
+    "correction": "all accepted dependency-tree file bytes/modes/link targets and extra/missing nodes now authenticated before first qualification subprocess",
+    "finding": "transitive pg code previously evaluated before accepted-inventory hash check",
+    "fixedSameLengthMutationReproduction": {
+      "markerExists": false,
+      "moduleSubprocessEntries": 0,
+      "refusedBeforeEvaluation": true
+    },
+    "historicalProducerSha256": "1139dfc8d3650f6533a17ef46a44d556f105a57ff6e9334a3581cd6f9df78727",
+    "originalSyntheticUID111Reproduction": {
+      "changedTransitiveEvaluated": true,
+      "laterInventoryRefused": true,
+      "productionActions": 0,
+      "realPgImported": false
+    }
+  },
+  "reviewedFiles": [
+    {
+      "bytes": 25647,
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.py",
+      "sha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76"
+    },
+    {
+      "bytes": 9960,
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.test.py",
+      "sha256": "5fbdbd9fd58293b33dac74bfd3231ca40ee812eab5450677dd4e2d6263bd24aa"
+    }
+  ],
+  "scope": [
+    "exact thirteen fixed public payload files with exclusive new root600 creation",
+    "existing root600/644 files compare-only with exact inode/mode retention",
+    "fixed protected parents, no symlink/file-path escape or overwrite",
+    "accepted installed artifact, full dependency-tree preauthorization before either qualification child",
+    "exact existing OS peers, isolated frozen transport imports, no Pool/Client construction or app startup",
+    "private root700 audit/root600 logs, bounded known child commands, no automatic repeat"
+  ],
+  "sourceEdits": 0,
+  "testCommand": "python3 -I -B ops/unified-indexer-transition/ypal-reader-peer-runtime-host-v1.test.py -v",
+  "verdict": "pass"
+}

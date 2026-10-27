@@ -1,0 +1,132 @@
+{
+  "actualCompletion": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T09:58:57.092702+00:00",
+    "phase": "complete",
+    "report": {
+      "allPublishedCanonical": true,
+      "canonicalRows": 440194,
+      "completed": true,
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-ordinary-provenance-finish-v1",
+      "observedReceiptSha256": "6d8998f33db107a278097aff8b419cb0bea684151b2e73f7b72fc20a48906c1b",
+      "officialCommandResent": false,
+      "operatorSha256": "497d640eb0b36c6ce073c1f67da9772b1545934de210ad2f376519493ebd5e69",
+      "originalPhaseCliAcknowledgementClaimed": false,
+      "originalResultSha256": "c552b820c31a9814945a828b7207f74d351da75b3c8c047c539c5b1841a382f1",
+      "publishedRows": 440194,
+      "resultSha256": "2a297cba154b07e8a95138ed0395103abb22bc971463644034be5f09c8a135e4",
+      "serviceActions": 0,
+      "verificationElapsedSeconds": 20.778948187828064
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "bfa808e01f2fb023783bceb101912fa395a447966566b51f414c70badf531dc4"
+  },
+  "completionReview": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T09:56:03.281569+00:00",
+    "phase": "review",
+    "report": {
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-ordinary-provenance-finish-v1",
+      "officialCommandResent": false,
+      "reviewSha256": "147102a44d3861491da4897800cfe9fb4e414469d1cd0ac54ebbccb340428945",
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "7dba60ba74b796a67b6937f284a8d506cd5bd1e76031e4b8cd5c5ccdddb90f05"
+  },
+  "earlierCompletionAttempts": {
+    "v1Review": {
+      "effects": false,
+      "passed": false,
+      "reason": "standalone_method_compilation_differed_from_actual_class_compilation"
+    },
+    "v2ReadOnlyAttempt": {
+      "cause": "generic_peer_failure_without_retained_database_stderr; not_reclassified",
+      "observedSuccessSaved": false,
+      "passed": false
+    },
+    "v2Review": {
+      "passed": true
+    }
+  },
+  "exactOperatorQueryComparison": {
+    "completed": true,
+    "databaseWrites": 0,
+    "elapsedSeconds": 21.46694201976061,
+    "exceptionType": null,
+    "exitCode": 0,
+    "lockTimeout": false,
+    "missingRelation": false,
+    "observedAt": "2026-10-25T09:51:29.806287+00:00",
+    "permissionDenied": false,
+    "proof": {
+      "canonicalRows": 440194,
+      "probe": true,
+      "publishedRows": 440194
+    },
+    "queryBytes": 3558,
+    "querySha256": "c2cce90adcf317aac802226d6e8d203b109bc5e68337d721057f72e8d9603272",
+    "readOnlyError": false,
+    "serviceActions": 0,
+    "statementTimeout": false,
+    "stderrBytes": 0,
+    "syntaxError": false
+  },
+  "firstBoundedComparison": {
+    "databaseWrites": 0,
+    "elapsedSeconds": 37.73372393101454,
+    "exitCode": 0,
+    "format": "root-bounded-original-publication-proof-v1",
+    "observedAt": "2026-10-25T09:17:25.341185+00:00",
+    "originalCommandResent": false,
+    "proof": {
+      "allPublishedCanonical": true,
+      "canonicalRows": 440194,
+      "probe": true,
+      "publishedRows": 440194
+    },
+    "querySha256": "ef943dfbcbfec74d281d6e663bb2ff561d278316870abec1f592135c91cc6540",
+    "serviceActions": 0,
+    "statementTimeout": false
+  },
+  "foregroundRowsAttributedToOriginalBatches0And1": 10000,
+  "format": "yunipals-native-metadata-provenance-completion-production-v1",
+  "generationStarted": false,
+  "goalComplete": false,
+  "nativeBackgroundWorkerContributedToCompletion": true,
+  "observedAt": "2026-10-25T09:58:57.092702+00:00",
+  "originalFailedPhaseReclassified": false,
+  "originalMetadataCommandResent": false,
+  "originalProvenanceObservedFile": "provenance-2-observed.json",
+  "originalProvenanceObservedSha256": "6d8998f33db107a278097aff8b419cb0bea684151b2e73f7b72fc20a48906c1b",
+  "originalTimeout": {
+    "databaseWrites": 0,
+    "error": true,
+    "exitCode": 3,
+    "lockTimeout": false,
+    "missingRelation": false,
+    "observedAt": "2026-10-25T09:14:28.457162+00:00",
+    "permissionDenied": false,
+    "querySha256": "ef943dfbcbfec74d281d6e663bb2ff561d278316870abec1f592135c91cc6540",
+    "serviceActions": 0,
+    "statementTimeout": true,
+    "stderrBytes": 53,
+    "stdoutBytes": 0,
+    "syntaxError": false
+  },
+  "readerOrTrafficSwitchPerformed": false,
+  "remainingPublishedWithoutProvenance": 0,
+  "validation": {
+    "completionControls": 5,
+    "finishControls": 3,
+    "generationControls": 8,
+    "queryControls": 5,
+    "sourceGuardControls": 27
+  }
+}

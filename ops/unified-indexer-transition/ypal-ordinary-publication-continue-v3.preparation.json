@@ -1,0 +1,114 @@
+{
+  "actualMetadataACKIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 4835,
+      "file": "ypal-ordinary-metadata-current-epoch-v2.py",
+      "sha256": "3486c4c59e936e32f17694b33edd626f336d37119d67b674a60c65f723d8f98b"
+    },
+    {
+      "bytes": 5577,
+      "file": "ypal-ordinary-cache-continuation-authority-v3.py",
+      "sha256": "0446dea37801f282c97d613ded19f75491925487fddbea5dc25441a1733b5ca7"
+    },
+    {
+      "bytes": 3307,
+      "file": "ypal-ordinary-read-cache-continue-v3.py",
+      "sha256": "e64a7787a0991e196222998caebd9773da67b8cf9272dcc778758c8953e77e89"
+    },
+    {
+      "bytes": 4220,
+      "file": "ypal-ordinary-reader-continue-v3.py",
+      "sha256": "a476ee8b8f3e19b4b02ff71df596f2b998896adda1743e65ebc98551582bc89a"
+    },
+    {
+      "bytes": 3462,
+      "file": "ypal-ordinary-publication-continue-v3.py",
+      "sha256": "a4a1269b25aaa336fc101cc51252d7d1c275ccef0be63d84e59a4df1b2a22730"
+    },
+    {
+      "bytes": 3579,
+      "file": "ypal-ordinary-publication-continue-inputs-v3.py",
+      "sha256": "0d3e1579cb529c2606c861adc1009cfa4217ba3c8b4b3a4081cad878089f5757"
+    },
+    {
+      "bytes": 4452,
+      "file": "ypal-ordinary-publication-continue-manifest-v3.py",
+      "sha256": "561cf8300d8fd48c5874982fb434928241d8a37ee22c96a0251a7057430db257"
+    },
+    {
+      "bytes": 894,
+      "file": "ypal-ordinary-metadata-current-epoch-v2.manifest.json",
+      "sha256": "acfc5b210f00688b17389c3c6d197398c4e865935ddf2c3e43f340d7c74dbb66"
+    },
+    {
+      "bytes": 1947,
+      "file": "ypal-ordinary-cache-continuation-authority-v3.manifest.json",
+      "sha256": "3c2ae723c55faa505c834a604f13feb3b98f7f193202b017cf761f04bf002263"
+    },
+    {
+      "bytes": 35416,
+      "file": "ypal-ordinary-reader-continue-v3.manifest.json",
+      "sha256": "518d91ec7341543d7a07ba62d92d0b2f583ac52eec240d234b9deeca5f39712d"
+    },
+    {
+      "bytes": 2051,
+      "file": "ypal-ordinary-metadata-current-epoch-v2.test.py",
+      "sha256": "ca67405ca87789369d46db6f4b6af43be826f2d2fa0a4991383f32f82c6bc6e5"
+    },
+    {
+      "bytes": 4005,
+      "file": "ypal-ordinary-publication-continue-v3.test.py",
+      "sha256": "664077d61a12c00ac9619add211b501fa83e2439d5aae369b9f624601a082ea6"
+    },
+    {
+      "bytes": 6085,
+      "file": "ypal-ordinary-publication-continue-v3.md",
+      "sha256": "abbf589278557cfc412a1b4ee5a400aee26036f364110008fbf3437d99240149"
+    },
+    {
+      "bytes": 67707,
+      "file": "ypal-ordinary-publication-continue-v3.stage.json",
+      "sha256": "cdd3d804f92a0366d24c92aa828425a2b14714570742c865bcbee3cf2d1e0cf1"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-continue-v3-preparation",
+  "frozenCONT2FilesEdited": false,
+  "knownRequiredFollowups": [
+    "actual Owner3 accepted upgrade ACK and current actor",
+    "actual normal native approval cadence observation preserving90 seconds",
+    "actual new baseline plus full held rollback-only qualification with measuredremaining90 and5second reserve",
+    "root explicit accepted effect invocation only after actualqualification and inspection",
+    "new reader mode callbacks and fresh Session afterLOGIN",
+    "separate full inverse source-prefix/ready0/caller qualification and completeArena inverse/native return"
+  ],
+  "owner": {
+    "file": "ypal-native-metadata-approval-epoch-v3.py",
+    "manifestSha256": "464c94cd0bea1412573bfdf026fe43e2dc36f0fb04e46e01b7a3ae58e65b391e",
+    "sha256": "62eb7e6b138b83818842b4848e5e9512b4cb3196890ef298dc2513932f2862e1"
+  },
+  "privateInputOrCandidateIncluded": false,
+  "publicStageClosureCount": 292,
+  "publicStageClosureFile": "ypal-ordinary-publication-continue-v3.stage.json",
+  "publicStageClosureSha256": "cdd3d804f92a0366d24c92aa828425a2b14714570742c865bcbee3cf2d1e0cf1",
+  "retainedActualLineage": {
+    "cacheInputSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "historicalMetadataSelectionSha256": "2829182fa96599513f07099118ab0c16b0ceff8d04330537a9c90bd5231e35ba",
+    "originalAbortedXid": "16540148"
+  },
+  "verification": {
+    "actualDBOrServiceAcceptanceInferred": false,
+    "composedControlsPassed": 10,
+    "independentReview": "C independently reran12+10 final actualOwner3 controls, reproduced3 manifests and found no concrete runtime/source findings",
+    "metadataControlsPassed": 12,
+    "threeActualSourceManifestsByteReproduced": true
+  }
+}

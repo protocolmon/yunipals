@@ -1,0 +1,24 @@
+{
+  "actualProgramEpochAcknowledged": false,
+  "actualSourceRowsVerified": 259,
+  "allOtherStableReviewAuthorizationPredicatesRetained": true,
+  "completeObservedReviewRetainedInOperation": true,
+  "databaseWrites": 0,
+  "fixedDeploymentTargets": 263,
+  "format": "yunipals-native-metadata-approval-epoch-v3-root-review",
+  "freshAndPriorOwnedSessionTerminationRequired": true,
+  "freshPositiveOwnedKernelRequiredAtEveryReviewAndFinalStop": true,
+  "independentFocusedControlsPassed": 36,
+  "operatorSha256": "62eb7e6b138b83818842b4848e5e9512b4cb3196890ef298dc2513932f2862e1",
+  "originalPublishedOperatorsAndFailedAttemptsUnchanged": true,
+  "preparationSha256": "6c04b7f7200307fb075d5a982c858b503b056f1c192bf294c278295cd3043a3c",
+  "providerCalls": 0,
+  "reviewExcludedFields": [
+    "sessions.owned",
+    "sessions.otherPeers"
+  ],
+  "rootFocusedControlsPassed": 36,
+  "runtimeCadenceQualified": false,
+  "serviceActions": 0,
+  "sourceManifestSha256": "464c94cd0bea1412573bfdf026fe43e2dc36f0fb04e46e01b7a3ae58e65b391e"
+}

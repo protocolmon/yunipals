@@ -1,0 +1,12 @@
+{
+  "name": "@protopals/yunipals-indexer-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./sources": "./src/sources.ts",
+    "./readiness": "./src/readiness.ts",
+    "./ponder": "./src/ponder.ts",
+    "./events": "./src/events.ts"
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "actualRecords": {
+    "boundedObserverDiagnostic": {
+      "databaseWrites": 0,
+      "elapsedSeconds": 0.963,
+      "failure": {
+        "commandExitCode": 1,
+        "exceptionClass": "RuntimeError",
+        "failedPidWasInitialRoleBackend": true,
+        "fixedCode": "bounded_readonly_inventory_command_required",
+        "freshRows": 5,
+        "freshRowsSha256": "aae4455a50d82bc8e4097045ce8726fe3085f6e27b9229960474b6155afcf5be",
+        "initialBackendEpochGone": true,
+        "initialProcEpochObserved": false,
+        "initialRows": 6,
+        "initialRowsSha256": "010f4dbee214a6756e04ad941ffea7643d8ae07b59469a951aded0eb9b7fe877",
+        "privateProofFile": "/var/backups/yunipals-root-kernel-fd-diagnostic-20261025/failure.private.json",
+        "procMissingOrEpochChanged": true,
+        "stderrBytes": 584,
+        "stderrFileNotFound": true,
+        "stderrPermissionError": false,
+        "stderrSha256": "9889441d1d7ea41c84fb4ebfd082164d5bd31e424f50a0ae639112f98ad7340d"
+      },
+      "format": "root-kernel-fd-diagnostic-v1",
+      "fullCacheReviewRepeated": false,
+      "observedAt": "2026-10-25T16:23:35.047760+00:00",
+      "observerSha256": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b",
+      "providerCalls": 0,
+      "resultSha256": "85af511a17e9f597dfcb8fa3e4bfaf20222793d0a76393cf48a7495653cb4aa0",
+      "sampleRowsChanged": false,
+      "samples": 1,
+      "samplesSha256": "e0e985c88f9d126c6d7b5dcc339b77ae4b6d48879557e2ca4b6928c07fe1a15b",
+      "serviceActions": 0,
+      "sourceAuthorityQualified": false
+    },
+    "exactErrorAndConnectionCheck": {
+      "actualFailedProcLeaf": "stat",
+      "databaseWrites": 0,
+      "failedBackendEpochAbsentFromFreshRows": true,
+      "failedPidMatchedInitialRoleRow": true,
+      "failedPidStatPath": "/proc/<initial-role-backend>/stat",
+      "format": "root-kernel-fd-detail-v1",
+      "fullCacheReviewRepeated": false,
+      "observationConnection": {
+        "nativeRoleExists": true,
+        "observationBackendInNativeRole": false,
+        "observationRoleMatchesNativeRole": false
+      },
+      "observedAt": "2026-10-25T16:27:13.014822+00:00",
+      "originalInitialProcEpochObserved": false,
+      "postFailureProcMissing": true,
+      "privateProofSha256": "4537137df095f27022a4a1e9161d742e91602a3f9917205b96fce0db4c32d4f1",
+      "serviceActions": 0,
+      "sourceAuthorityQualified": false,
+      "stderrFileNotFound": true,
+      "stderrPermissionError": false
+    },
+    "failedCacheReview": {
+      "automaticRetryAllowed": false,
+      "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+      "callerReviewDispatched": true,
+      "callerSha256": "7c518d97f1c4f425dce8dee8a4ad3f6f06a37454b0346de177c4cd60b32e56d0",
+      "completed": false,
+      "elapsedSeconds": 304.286,
+      "exceptionClass": "RuntimeError",
+      "fixedCode": "bounded_readonly_inventory_command_required",
+      "format": "root-publication-accept-v2-cache-review",
+      "observedAt": "2026-10-25T16:16:11.373762+00:00",
+      "sourceFrames": [
+        {
+          "file": "<stdin>",
+          "function": "<module>",
+          "line": 34
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "execute_cache",
+          "line": 67
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "execute_cache",
+          "line": 410
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "attempt",
+          "line": 391
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "attempt",
+          "line": 381
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "run",
+          "line": 409
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "review",
+          "line": 527
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "prerequisites",
+          "line": 416
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "metadata_current",
+          "line": 246
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "invoke",
+          "line": 179
+        },
+        {
+          "file": "ypal-ordinary-metadata-handover-v5.py",
+          "function": "metadata",
+          "line": 576
+        },
+        {
+          "file": "ypal-ordinary-metadata-handover-v5.py",
+          "function": "operation",
+          "line": 235
+        },
+        {
+          "file": "ypal-ordinary-metadata-handover-v5.py",
+          "function": "refresh",
+          "line": 107
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "<lambda>",
+          "line": 242
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "refresh",
+          "line": 1
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "refresh",
+          "line": 232
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "current_reads",
+          "line": 131
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "runtime",
+          "line": 98
+        },
+        {
+          "file": "ypal-ordinary-read-cache-accept-v2.py",
+          "function": "source_current",
+          "line": 90
+        },
+        {
+          "file": "ypal-ordinary-publication-accept-v2.py",
+          "function": "current",
+          "line": 121
+        },
+        {
+          "file": "ypal-ordinary-source-authority-v5.py",
+          "function": "observed",
+          "line": 113
+        },
+        {
+          "file": "ypal-ordinary-source-authority-v5.py",
+          "function": "current",
+          "line": 533
+        },
+        {
+          "file": "ypal-ordinary-source-authority-v5.py",
+          "function": "current_kernel",
+          "line": 446
+        },
+        {
+          "file": "ypal-ordinary-source-authority-v5.py",
+          "function": "kernel_backends",
+          "line": 90
+        },
+        {
+          "file": "ypal-old-runtime-inventory-v1.py",
+          "function": "peer_fds",
+          "line": 83
+        },
+        {
+          "file": "ypal-old-runtime-inventory-v1.py",
+          "function": "run",
+          "line": 36
+        },
+        {
+          "file": "ypal-old-runtime-inventory-v1.py",
+          "function": "need",
+          "line": 28
+        }
+      ],
+      "stage": "cache-review"
+    }
+  },
+  "candidateSha256": "f130e6bc5725e5b79acce67f9d7de067182e7cc3758fae35aa8ef8ab6064a9aa",
+  "exactObserverStatFileNotFoundReproduced": true,
+  "format": "yunipals-publication-cache-kernel-diagnostic-production-v1",
+  "generationAcceptanceRetained": true,
+  "originalUnderlyingStderrRetained": false,
+  "publicationChanged": false,
+  "sourceAuthorityQualifiedByDiagnostic": false,
+  "writerDrained": false
+}

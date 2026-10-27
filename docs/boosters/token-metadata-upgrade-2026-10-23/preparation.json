@@ -1,0 +1,77 @@
+{
+  "format": "yunipals-monsters-token-metadata-preparation-v1",
+  "status": "prepared-not-deployed",
+  "chainId": 8453,
+  "compiler": "0.8.30+commit.73712a01",
+  "files": [
+    {
+      "path": "contracts/boosters/src/YunipalMonsters.sol",
+      "sha256": "7f236d640944651791add72096fb8371024c1579dce48fe0e0aa605575720ac5",
+      "bytes": 7524
+    },
+    {
+      "path": "contracts/boosters/test/YunipalMonstersMetadata.t.sol",
+      "sha256": "f82cb6797867faed8521e6ad47cd3466fc4aedb85b0ad4c302e6ae0e1e5fae24",
+      "bytes": 12608
+    },
+    {
+      "path": "contracts/boosters/test/fixtures/YunipalMonsters.deployed-baseline.json",
+      "sha256": "10686b6f3317490054737ed3e47ffecc626551b3da2ca428abd13ade37e2f3a0",
+      "bytes": 52134
+    },
+    {
+      "path": "scripts/boosters/prepare-token-metadata-upgrade.mjs",
+      "sha256": "a1a011ec99cf768f37e5df4eb7472a8ba1dd1185e79bc76d5e7227f4de6d1aed",
+      "bytes": 14920
+    },
+    {
+      "path": "scripts/boosters/prepare-token-metadata-upgrade.test.mjs",
+      "sha256": "f6db971851d61a602db673f4cd68b6a72c0150e02ce40c37a1636232a5aeeacc",
+      "bytes": 4632
+    },
+    {
+      "path": "docs/boosters/token-metadata-upgrade-2026-10-23/upgrade.unsigned.json",
+      "sha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+      "bytes": 90415
+    },
+    {
+      "path": "docs/boosters/token-metadata-upgrade-2026-10-23/solc-standard-input.json",
+      "sha256": "54426ac3681174aef6037530fe23aa08286b7f1213f2a5bbc00d754171c83f52",
+      "bytes": 201051
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/monsters-token-metadata-upgrade-v1.json",
+      "sha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966",
+      "bytes": 90415
+    }
+  ],
+  "validation": {
+    "focusedDeployedLegacyProxyTests": 8,
+    "fullLocalFoundryPassed": 62,
+    "forkTestsSkipped": 7,
+    "storageCompatibilityContracts": 3,
+    "offlinePackageControls": 5,
+    "standaloneSolcCreationByteIdentical": true,
+    "standaloneSolcRuntimeTemplateByteIdentical": true,
+    "standaloneCompilerSources": 31,
+    "logs": [
+      {
+        "path": "/tmp/yunipals-monsters-metadata-foundry-20261023.log",
+        "sha256": "0586fb3acce23b9d57c0e38ac60f746c3b64d5b3b3fd27ad136e98a1c422211b"
+      },
+      {
+        "path": "/tmp/yunipals-token-metadata-package-tests-20261023.log",
+        "sha256": "717f0d5cd155a55b500a586090e37ec85161b164648ead805c8228ebbe2ea4c5"
+      }
+    ]
+  },
+  "limitations": {
+    "liveNonceKnown": false,
+    "gasEstimated": false,
+    "currentOnchainRolesRechecked": false,
+    "currentOnchainImplementationRechecked": false,
+    "metadataEndpointVerifiedByThisPreparation": false,
+    "independentAuditPerformed": false
+  },
+  "productionActionsPerformed": 0
+}

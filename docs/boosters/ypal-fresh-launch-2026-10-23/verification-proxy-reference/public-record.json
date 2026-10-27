@@ -1,0 +1,11 @@
+{
+  "ContractName": "ERC1967Proxy",
+  "CompilerVersion": "v0.8.30+commit.73712a01",
+  "OptimizationUsed": "1",
+  "Runs": "200",
+  "Proxy": "1",
+  "Implementation": "0x3cc00cd6debe16861d037b029fad88478fae5d5b",
+  "SimilarMatch": "",
+  "ABI": "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_data\",\"type\":\"bytes\"}],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"}],\"name\":\"AddressEmptyCode\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"ERC1967InvalidImplementation\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ERC1967NonPayable\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"FailedCall\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"}]",
+  "ConstructorArguments": "000000000000000000000000c8f7498b1cc8892723d098e82307ad30feb7f7ec00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000084f8c8765e000000000000000000000000c2fef0d861da20170970cf98217df723e977a4dd000000000000000000000000c2fef0d861da20170970cf98217df723e977a4dd000000000000000000000000c2fef0d861da20170970cf98217df723e977a4dd000000000000000000000000c2fef0d861da20170970cf98217df723e977a4dd00000000000000000000000000000000000000000000000000000000"
+}

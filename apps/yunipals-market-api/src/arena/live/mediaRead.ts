@@ -3,29 +3,75 @@ import { stat } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { join } from "node:path";
 import type { Pool } from "pg";
-import { mediaFolder } from "./media";
-import { ArenaRequestError } from "./intake";
+import { mediaFolder } from "./mediaPaths";
+import { ArenaIntake, ArenaRequestError } from "./intake";
+import { assertProviderMode } from "./nativeProvider";
+import {
+  nativeMediaPublication,
+  requireNativePublication,
+  verifyPublicationFile,
+  publishedMediaTypes as files
+} from "./mediaPublication";
 
-const files: Record<string, string> = {
-  "film.mp4": "video/mp4",
-  "native-sfx.mp4": "video/mp4",
-  "SF1.png": "image/png",
-  "SF2.png": "image/png",
-  "FINAL.png": "image/png",
-  "input.json": "application/json",
-  "outcome.json": "application/json",
-  "prompts.json": "application/json",
-  "film.json": "application/json",
-  "receipts.json": "application/json",
-  "media-policy.json": "application/json",
-  "credits.txt": "text/plain; charset=utf-8"
-};
+export type MediaSelector = { incarnation?: string; publication?: string };
 export function arenaMediaRead(
   pool: Pool,
   deployment: string,
-  storage: string
+  storage: string,
+  native?: ArenaIntake
 ) {
+  if (native && (!native.nativeSource || native.deployment !== deployment))
+    throw new Error("Native media reader requires matching native state.");
+  const selected = () => assertProviderMode(pool, deployment, !!native);
   const status = async (id: string) => {
+    await selected();
+    if (native) {
+      const context = await native.tournamentContext(id);
+      const current = await nativeMediaPublication(native, storage, id);
+      if (current) {
+        for (const [name, proof] of Object.entries(current.manifest.files))
+          await verifyPublicationFile(current.folder, name, proof);
+        await requireNativePublication(native, storage, id, {
+          incarnation: current.context.incarnation,
+          publication: current.publicationHash
+        });
+        return {
+          state: "ready",
+          incarnation: current.context.incarnation,
+          publication: current.publicationHash,
+          filmSha256: current.manifest.filmSha256,
+          payoutsReleased: !!current.context.state.videoHash
+        };
+      }
+      const row = (
+        await pool.query<{ state: string }>(
+          `SELECT state FROM yunipals_arena.media_job WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3
+            AND input_hash=$4 AND outcome_hash=$5`,
+          [
+            deployment,
+            id,
+            context.incarnation,
+            context.state.inputHash,
+            context.state.resultHash
+          ]
+        )
+      ).rows[0];
+      await native.ready();
+      const fresh = await native.tournamentContext(id);
+      if (
+        fresh.incarnation !== context.incarnation ||
+        fresh.state.inputHash !== context.state.inputHash ||
+        fresh.state.resultHash !== context.state.resultHash
+      )
+        throw new ArenaRequestError(503, "Arena video state is updating.");
+      return {
+        state: row?.state === "ready" ? "waiting" : (row?.state ?? "waiting"),
+        incarnation: context.incarnation,
+        publication: null,
+        filmSha256: null,
+        payoutsReleased: !!fresh.state.videoHash
+      };
+    }
     const row = (
       await pool.query<{
         state: string;
@@ -34,7 +80,7 @@ export function arenaMediaRead(
       }>(
         `SELECT m.state,m.film_sha256,t.state->>'videoHash' AS video_hash FROM yunipals_arena.media_job m
        JOIN yunipals_arena.tournament t ON t.deployment=m.deployment AND t.id=m.tournament_id
-       WHERE m.deployment=$1 AND m.tournament_id=$2 AND t.state->>'phase'='settled'`,
+       WHERE m.deployment=$1 AND m.tournament_id=$2 AND m.incarnation='legacy' AND t.state->>'phase'='settled'`,
         [deployment, id]
       )
     ).rows[0];
@@ -44,13 +90,42 @@ export function arenaMediaRead(
       payoutsReleased: !!row?.video_hash
     };
   };
-  const artifact = async (id: string, name: string, range?: string) => {
-    if (!Object.hasOwn(files, name) || (await status(id)).state !== "ready")
+  const artifact = async (
+    id: string,
+    name: string,
+    range?: string,
+    selector: MediaSelector = {}
+  ) => {
+    await selected();
+    if (!Object.hasOwn(files, name))
       throw new ArenaRequestError(404, "Published video artifact not found.");
-    const path = join(
-      mediaFolder(join(storage, "published"), deployment, id),
-      name
-    );
+    let path: string;
+    if (native) {
+      if (!selector.incarnation || !selector.publication)
+        throw new ArenaRequestError(
+          400,
+          "Select a published Arena video first."
+        );
+      const current = await requireNativePublication(
+        native,
+        storage,
+        id,
+        selector
+      );
+      path = await verifyPublicationFile(
+        current.folder,
+        name,
+        current.manifest.files[name]!
+      );
+      await requireNativePublication(native, storage, id, selector);
+    } else {
+      if ((await status(id)).state !== "ready")
+        throw new ArenaRequestError(404, "Published video artifact not found.");
+      path = join(
+        mediaFolder(join(storage, "published"), deployment, id),
+        name
+      );
+    }
     const { size } = await stat(path);
     let start = 0,
       end = size - 1;
@@ -84,7 +159,7 @@ export function arenaMediaRead(
       "Content-Type": files[name]!,
       "Content-Length": String(end - start + 1),
       "Accept-Ranges": "bytes",
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": native ? "no-store" : "public, max-age=3600",
       "X-Content-Type-Options": "nosniff"
     };
     if (range) headers["Content-Range"] = `bytes ${start}-${end}/${size}`;

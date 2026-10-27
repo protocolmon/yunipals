@@ -1,0 +1,63 @@
+{
+  "actualReceiptValuesIncluded": false,
+  "databaseWrites": 0,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-managed-runtime-v1.py",
+      "sha256": "bdaa7a51ed190757567eef4913953a83d7016735f0ae4ebb35599cbcb3b23a63"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-managed-runtime-v1.test.py",
+      "sha256": "063e8eada6621abb8d505239a2fce00f3b83ce4dab6b12e2650da0b96df10ec0"
+    },
+    {
+      "path": "docs/unified-indexer/ordinary-managed-runtime-v1.md",
+      "sha256": "8c8e4b721843cde200bd684514bcb2fe79bc833274dd7d2591fdf26ae69eabdf"
+    }
+  ],
+  "format": "yunipals-ordinary-managed-runtime-v1-preparation",
+  "hostActions": 0,
+  "localValidation": {
+    "liveHostQualified": false,
+    "nodeControlsPassed": 6,
+    "pythonControlsPassed": 17,
+    "realChildProcesses": true,
+    "realFilesystemControls": true
+  },
+  "managedEpochQualified": false,
+  "providerCalls": 0,
+  "remainingAcceptance": [
+    "actual_legacy_retirement_and_restart_authority",
+    "actual_coordinated_consumer_handover",
+    "actual_managed_installation_and_start",
+    "normal_scheduled_Solana_publication",
+    "supervised_restart",
+    "same_boot_managed_current_ACK"
+  ],
+  "runtimeSelected": false,
+  "serviceActions": 0,
+  "sourceOnly": true,
+  "sources": {
+    "code": {
+      "ypal-alchemy-ordinary-consumer-context-v1.py": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+      "ypal-alchemy-ordinary-financial-v1.py": "89a4bfd327ce52419af20e915fb13d2e5a856d27f51fa6a896838869ad4977d0",
+      "ypal-alchemy-ordinary-observer-v1.py": "2a84e16a31df3d5266d0ff3992753d01c6849b3755d173a6e29f2f1cdeebab93",
+      "ypal-alchemy-ordinary-runtime-v1.py": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+      "ypal-alchemy-source-switch-v1.host.py": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02",
+      "ypal-managed-handover-v1.py": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea"
+    },
+    "format": "yunipals-ordinary-managed-runtime-v1-sources",
+    "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+    "operator": {
+      "file": "ypal-ordinary-managed-runtime-v1.py",
+      "sha256": "bdaa7a51ed190757567eef4913953a83d7016735f0ae4ebb35599cbcb3b23a63"
+    },
+    "publicRuntime": {
+      "core.mjs": "d3e849e2f05a7c33c7164d649c6f1db28f6a70202b3308dada3989be634bc321",
+      "launcher.mjs": "a4278c446a989aad7edcea4385dbf0031ed02ec1be117222195275aba7be5bfe",
+      "service.public.env": "ea24aab003f1970e29f7a54d291665096c982efe3d4bc69e876b67edb91aacc2",
+      "yunipals-indexer.service.example": "92adf17c97251ecf42e0f8b8b9d85a79f41b1d99e40462738aba2876d9ae3864"
+    },
+    "retainedSolanaSqlSha256": "2fe15a226fb8f92fc5dada1e7551e9f722fbc72ae1d791aa4a642b55223d02f0"
+  }
+}

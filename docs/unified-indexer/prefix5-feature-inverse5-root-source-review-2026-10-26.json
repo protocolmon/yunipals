@@ -1,0 +1,33 @@
+{
+  "actualRuntimeQualificationClaimed": false,
+  "adapterSourcesAndDocsRead": true,
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "root-prefix5-feature-inverse5-source-review-v1",
+  "independentSourceAndFiniteReviewReceived": true,
+  "observedAt": "2026-10-26T01:30:23.175530+00:00",
+  "packets": {
+    "ypal-ordinary-feature-inverse-v5.preparation.json": {
+      "rowsVerified": 356,
+      "sha256": "3681ad49c776035e3d8012efcb51eaf3f1caa7c4497f57acae466138706d2389",
+      "uniqueProductionTargets": 355
+    },
+    "ypal-ordinary-restored-source-prefix-v5.preparation.json": {
+      "rowsVerified": 344,
+      "sha256": "3e424c40f3ef1afceea744427ccaf1b1e7a0460f4a5d02717769b63467ddea7c",
+      "uniqueProductionTargets": 343
+    }
+  },
+  "rootTests": {
+    "failures": 0,
+    "featureCaller": 13,
+    "featurePhase": 11,
+    "featureSource": 8,
+    "postFeature": 11,
+    "restoredPrefix": 12,
+    "skipped": 0
+  },
+  "runtimeInputsOrAcknowledgementsCreated": false,
+  "serviceChanges": 0,
+  "sourceOnly": true
+}

@@ -1,0 +1,27 @@
+[Unit]
+Description=Queue artwork for observed Yunipal booster variants
+After=postgresql.service yunipals-booster-launch.service
+
+[Service]
+Type=oneshot
+User=yunipals_unified_collector
+Group=yunipals_unified_collector
+WorkingDirectory=/opt/yunipals-unified/booster-api-releases/e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33
+EnvironmentFile=/etc/yunipals-unified/booster-api.env
+Environment=BOOSTER_ARTWORK_CATALOGS=base-mainnet-smoke-v1,base-mainnet-standard-v1
+ExecStart=/opt/node-v24.18.1/bin/node --max-old-space-size=128 /opt/yunipals-unified/booster-api-releases/e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33/booster-artwork-sync.mjs --once
+TimeoutStartSec=20
+TimeoutStopSec=10
+MemoryMax=268435456
+MemorySwapMax=0
+TasksMax=32
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/var/lib/yunipals-booster-artwork/jobs
+UMask=0022

@@ -100,9 +100,14 @@ transaction. Read their configuration requirements before running them.
 
 ## Hosting
 
-Use this directory as the project root, `vite build` as the build command and
-`dist` as the output directory. `vercel.json` supplies client-side route rewrites.
-Provide the two public service URLs in the hosting environment and deploy `main`.
+Use this directory as the Vercel project root. The checked-in `vercel.json` runs
+`pnpm build:www --mode vercel-cloud`, producing the complete existing app with
+booster packs added. The build preserves production service URLs and the
+Arena, leaderboard, Islands/staking and Exomon feature settings. It packages
+only the approved static assets in `.vercel/output` with SPA routes.
+The temporary collection-only smoke preset is not the canonical application.
+Generic self-hosted builds remain `pnpm build` (`vite build` into `dist`).
+See [the canonical build guide](../../docs/boosters/mainnet-launch/canonical-www-build-2026-10-22.txt).
 
 ## Optional Mixpanel analytics
 

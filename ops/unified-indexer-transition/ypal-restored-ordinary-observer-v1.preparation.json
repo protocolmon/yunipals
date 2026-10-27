@@ -1,0 +1,41 @@
+{
+  "format": "yunipals-ypal-restored-ordinary-observer-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.py",
+      "bytes": 50697,
+      "sha256": "62d37dcd63ac6b5ba5f4462290fc389c4f0e7f6e1b5709795cecf5f55f62bfc3"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.test.py",
+      "bytes": 12682,
+      "sha256": "a51da283770164891c9350c52f62c494ca0a0679f9a14610daaa58defdb75caf"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.service.example",
+      "bytes": 1815,
+      "sha256": "0f1334d356a2cce76cae585fb60ff920e9d55eb2d8b13c4c0a56c4c4036b9126"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-ordinary-observer-v1.md",
+      "bytes": 5218,
+      "sha256": "9c290a2e18259dcdf3a6ef131f2fdb76e560be6ae989212601a06b5355593fb6"
+    }
+  ],
+  "localControls": 32,
+  "independentControls": 32,
+  "originalArtifactDigest": "8c713a57dde009540564619e45de8b487af77787faf4f07a916d340d710a8753",
+  "initialActualRestoredREADRequired": true,
+  "logicalDatasetScopeAfterActivation": true,
+  "currentWriterQualificationByObserver": false,
+  "pureRecordedAcknowledgementNoRuntimeGuard": true,
+  "unitCanOutliveManagedWriterTransition": true,
+  "oldOwnerAndReceiptsUnchanged": true,
+  "productionObserverStarted": false,
+  "actualFutureAcknowledgementSupplied": false,
+  "productionQueries": 0,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

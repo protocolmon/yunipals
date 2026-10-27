@@ -16,3 +16,20 @@ export const indexedTokenHiddenSql = `EXISTS(SELECT 1 FROM metadata.token_visibi
             AND change."from"<>change."to"
             AND (change.block_number,change.transaction_index,change.log_index)
               > (v.anchor_block,v.anchor_transaction_index,v.anchor_log_index)))`;
+
+/** Runtime-selected history relation, after ownershipSqlContext validated it. */
+export function indexedTokenHiddenSqlFor(
+  alias = "t",
+  transferRelation = "yunipals_read_v4.transfer_event"
+) {
+  if (
+    !/^[a-z][a-z0-9_]*$/.test(alias) ||
+    !/^(?:[a-z_][a-z0-9_]*|"[a-z_][a-z0-9_]*")\.transfer_event$/.test(
+      transferRelation
+    )
+  )
+    throw new Error("Invalid ownership visibility SQL scope.");
+  return indexedTokenHiddenSql
+    .replaceAll("yunipals_read_v4.transfer_event", transferRelation)
+    .replaceAll("t.", `${alias}.`);
+}

@@ -1,0 +1,94 @@
+{
+  "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f",
+  "artifactManifestSha256": "bba6126ae55299eeb885a3ef72a17155398ad4e0c604f582898abd3952b2e6a2",
+  "changesComparedWithAcceptedPriorConsumer": [
+    "packages/yunipals-indexer-client/src/readiness.ts",
+    "packages/yunipals-indexer-server/src/status.ts"
+  ],
+  "compiler": {
+    "esbuild": "0.25.12",
+    "files": [
+      {
+        "bytes": 88706,
+        "role": "javascript",
+        "sha256": "0d1241812c443111d39475dfc66836003e9ef8b87e54d990dd67df29d20010e1"
+      },
+      {
+        "bytes": 1490,
+        "role": "package",
+        "sha256": "cb7d5b1fe478f8cbaae566a86031b6fdf5f7d444354f35d1cb3cba9adf6d2935"
+      },
+      {
+        "bytes": 10358936,
+        "role": "native",
+        "sha256": "bab29b2ca7a9e89b67cf720b77b2d743f9f31f5cf0d5bd74ee8c8de30ced7014"
+      }
+    ],
+    "node": "24.18.1",
+    "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a"
+  },
+  "date": "2026-10-25",
+  "effects": {
+    "dependencyInstalls": 0,
+    "gitActions": 0,
+    "productionQueries": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-build-v1.mjs",
+      "sha256": "2542be97ea63e0f0bab5716a78646f9c9802a806cacaf95b118b5da004364d24"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-build-v1.test.mjs",
+      "sha256": "9b4e4df7c1c86936d3cca786a90da3c37924d2adbbef4b3e874b1c8e3aac8fda"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-latest-complete-main-api-postgres.test.mjs",
+      "sha256": "fc0113d38d82f87d60862e54aecb5b9742a13c3c7b5b92fdb13cde1668249262"
+    }
+  ],
+  "findings": [],
+  "format": "yunipals-latest-complete-main-api-independent-review-v1",
+  "limitations": [
+    "Runtime dependencies on production target are not qualified by this build.",
+    "No installer, service switch, credential/role changes, production requests or provider calls were performed.",
+    "Synthetic HTTP tests do not constitute actual production collection/feature/canonical acceptance."
+  ],
+  "outputs": [
+    {
+      "bytes": 832763,
+      "path": "dist/main-api.mjs.map",
+      "sha256": "2e444a19eae0ba1086ffb09150992b3a15a1772a00d4ffa5d92703c3d45432b1"
+    },
+    {
+      "bytes": 414209,
+      "path": "dist/main-api.mjs",
+      "sha256": "08acd504d7802a22619a7aa7a5f79cc8eecfb25c068611c7321a319508b5f04c"
+    }
+  ],
+  "predecessorConsumerManifestSha256": "986a288dcebe5e7ce910b36d83f97178ce7c47336a0e9910e0d013e3ff3e347a",
+  "reviewed": [
+    "all transitive inputs and baseline substitutions are hashed against acknowledged manifests",
+    "two repeated builds and fresh relocated tree produce identical bytes",
+    "all sourcemap embedded sources match reviewed input hashes",
+    "ABI/event/action-evidence predecessor fixes and external dependency declarations preserved",
+    "actual relocated API import and malformed request refuse without network/database connection",
+    "built HTTP latest status accepts framework-ready verified prefix below current head",
+    "framework-ready false still refuses latest readiness",
+    "canonical action evidence remains valid without global framework ready",
+    "negative read selection, stale runtime, invalid ABI/args/projection/inclusion still refuse",
+    "real application SQL is read-only under SELECT-only fixture role"
+  ],
+  "scope": "source_build_compiler_closure_and_actual_synthetic_HTTP_only",
+  "tests": {
+    "buildImportRelocationRefusalGroups": 5,
+    "database": "unique synthetic local PG16 database and SELECT-only application role",
+    "genuineDisposablePostgresHttpGroups": 10,
+    "node": "24.18.1",
+    "postgresTestRequiresTsxImportForSourceIdentityModule": true
+  },
+  "transitiveInputs": 94,
+  "verdict": "PASS"
+}

@@ -1,0 +1,25 @@
+{
+  "actualDiagnosticResultSha256": "b90ea254cd2965ee9b45a82a14d2dc84cb7687c5b7ae53af34ae8b44ef3f5c66",
+  "agentIndependentReviews": [
+    "feature_publication_followon",
+    "publication_protocol_windows"
+  ],
+  "cacheCommitExecuted": false,
+  "diagnosticControlsPassed": 11,
+  "diagnosticOwnerSha256": "cddac6cbe4e6985608402cc3aa727f119943a161210e011bd7fe0c62737265df",
+  "format": "yunipals-root-source6-diagnostic-and-reader-qualification-source-review-v1",
+  "newReaderTrafficSwitched": false,
+  "newRetryPolicyAuthorized": false,
+  "notes": [
+    "Diagnostic actual complete Source6 preflight/current passed, unchanged source policy and full actor/private/route snapshot bookends.",
+    "No failed kernel frame exists from this successful diagnostic; the earlier held4 cause remains unknown.",
+    "Reader timing owner remains gated on a genuinely successful commit result and all actual server proof files."
+  ],
+  "originalHeldFailureReproduced": false,
+  "originalHeldFailureResolved": false,
+  "readerControlsPassed": 9,
+  "readerQualificationExecuted": false,
+  "readerQualificationOwnerSha256": "fd6d00b8ae122e8e0efb1e85e8b79ef4b0d46c6bab913b9342c4068103e34ffb",
+  "reviewedAt": "2026-10-26T03:04:00Z",
+  "rootFullReadsPassed": true
+}

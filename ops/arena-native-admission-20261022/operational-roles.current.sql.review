@@ -1,0 +1,227 @@
+-- REVIEWED PROPOSAL ONLY. No database action was performed to render this file.
+-- The official twelve migrations are ALREADY committed. Never rerun migration.
+-- Bind owner-v11/restore-v1 receipt and fresh catalog before execution.
+-- Creates only fresh NOLOGIN roles; no passwords, LOGIN or service changes.
+BEGIN;
+SET LOCAL lock_timeout='2s';
+SET LOCAL statement_timeout='15s';
+SELECT pg_advisory_xact_lock(hashtext('yunipals_arena/migration'));
+DO $arena_roles$
+BEGIN
+  IF current_database()<>'yunipals_arena' OR current_setting('port')<>'15438'
+    OR (SELECT oid FROM pg_roles WHERE rolname='yunipals_arena_owner') IS DISTINCT FROM 2303667::oid
+    OR (SELECT datdba FROM pg_database WHERE datname=current_database()) IS DISTINCT FROM 2303667::oid
+    OR (SELECT nspowner FROM pg_namespace WHERE nspname='yunipals_arena') IS DISTINCT FROM 2303667::oid
+  THEN RAISE EXCEPTION 'fixed_arena_owner_target_changed'; END IF;
+  IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname=ANY(ARRAY['yunipals_arena_native_api','yunipals_arena_native_disclosure','yunipals_arena_native_client','yunipals_arena_native_referee','yunipals_arena_native_media','yunipals_arena_native_execution_lobby','yunipals_arena_native_execution_referee','yunipals_arena_native_capacity'])) THEN RAISE EXCEPTION 'fresh_arena_role_name_already_present'; END IF;
+  IF EXISTS(SELECT 1 FROM (VALUES ('yunipals_arena.adjudication',2303795),('yunipals_arena.admission',2303766),('yunipals_arena.capacity',2303809),('yunipals_arena.chain_event',2303679),('yunipals_arena.challenge',2303713),('yunipals_arena.client_transaction',2336176),('yunipals_arena.credit',2303705),('yunipals_arena.deployment',2303671),('yunipals_arena.fighter_snapshot',2303741),('yunipals_arena.frozen_input',2303754),('yunipals_arena.identity_job',2336194),('yunipals_arena.media_job',2303821),('yunipals_arena.provider_task',2303773),('yunipals_arena.session',2303720),('yunipals_arena.submission',2303727),('yunipals_arena.tournament',2303692),('yunipals_arena.transaction_intent',2303785)) expected(name,oid) LEFT JOIN pg_class c ON c.oid=expected.oid AND c.oid=to_regclass(expected.name) WHERE c.oid IS NULL OR c.relkind<>'r' OR c.relowner<>2303667) THEN RAISE EXCEPTION 'retained_arena_relation_identity_changed'; END IF;
+  IF EXISTS((SELECT version,checksum FROM (VALUES (1,'93eb88af5705ceefebdb9d26797385cbae53e718576821fe45bed5ea5207ec35'),(2,'c52b30e51b0184a1bf5856870e11cb2da173f04555c30390b6215654850123e8'),(3,'ce82df321d9eac792584a85dea81561c40f96b473364854381cc823a72ae5c93'),(4,'97283c0b017211c394767932a734d4a5b767a346edfe64ea25325a7ad6570e79'),(5,'2333131e81efbcff88a7c17eebebb923353236a07032de64447d81ccf7ba5c45'),(6,'eda0ea54c682f2f3c92e87ed6cd1289cc558ea224408bf73681f051263b42590'),(7,'d8266d8f7948d1a8d977f6146e06c74f83bca0bb5f5f72149183f73e25c08b00'),(8,'0f5b0066c27deda1c0c3ceb94f78d99d07ac1460f343da920946d0c512e840ba'),(9,'90e16206b04144bd06db867bf794ed96083a947743a17bfc6f89bb87135c2f27'),(10,'645378e8698a5d09806b1c4ff1cc84bf58cf78764104049e6a573dfd57538862'),(11,'8e24e92ebfb27d60e79954e9a468764a206031ca9dc3b666ea9ade586ad268f9'),(12,'ac3064c12b2f94fecda8fa37f556017456c159fdd4dfb38edbbf53ef420826dc')) expected(version,checksum) EXCEPT SELECT version,checksum FROM yunipals_arena.operational_migration) UNION ALL (SELECT version,checksum FROM yunipals_arena.operational_migration EXCEPT SELECT version,checksum FROM (VALUES (1,'93eb88af5705ceefebdb9d26797385cbae53e718576821fe45bed5ea5207ec35'),(2,'c52b30e51b0184a1bf5856870e11cb2da173f04555c30390b6215654850123e8'),(3,'ce82df321d9eac792584a85dea81561c40f96b473364854381cc823a72ae5c93'),(4,'97283c0b017211c394767932a734d4a5b767a346edfe64ea25325a7ad6570e79'),(5,'2333131e81efbcff88a7c17eebebb923353236a07032de64447d81ccf7ba5c45'),(6,'eda0ea54c682f2f3c92e87ed6cd1289cc558ea224408bf73681f051263b42590'),(7,'d8266d8f7948d1a8d977f6146e06c74f83bca0bb5f5f72149183f73e25c08b00'),(8,'0f5b0066c27deda1c0c3ceb94f78d99d07ac1460f343da920946d0c512e840ba'),(9,'90e16206b04144bd06db867bf794ed96083a947743a17bfc6f89bb87135c2f27'),(10,'645378e8698a5d09806b1c4ff1cc84bf58cf78764104049e6a573dfd57538862'),(11,'8e24e92ebfb27d60e79954e9a468764a206031ca9dc3b666ea9ade586ad268f9'),(12,'ac3064c12b2f94fecda8fa37f556017456c159fdd4dfb38edbbf53ef420826dc')) expected(version,checksum))) THEN RAISE EXCEPTION 'official_arena_migration_set_changed'; END IF;
+END $arena_roles$;
+-- Current production-only guards, observed with a fixed READ ONLY inventory.
+DO $current_arena_catalog$
+BEGIN
+ IF (SELECT oid FROM pg_database WHERE datname=current_database()) IS DISTINCT FROM 2303669::oid
+ OR (SELECT oid FROM pg_namespace WHERE nspname='yunipals_arena') IS DISTINCT FROM 2303670::oid
+ THEN RAISE EXCEPTION 'current_operational_database_or_schema_identity_changed'; END IF;
+ IF EXISTS((SELECT name,oid FROM (VALUES ('yunipals_arena.adjudication',2303795),('yunipals_arena.admission',2303766),('yunipals_arena.capacity',2303809),('yunipals_arena.chain_event',2303679),('yunipals_arena.challenge',2303713),('yunipals_arena.client_receipt_history',3330595),('yunipals_arena.client_transaction',2336176),('yunipals_arena.credit',2303705),('yunipals_arena.deployment',2303671),('yunipals_arena.fighter_snapshot',2303741),('yunipals_arena.frozen_input',2303754),('yunipals_arena.identity_job',2336194),('yunipals_arena.media_job',2303821),('yunipals_arena.media_publication',3330638),('yunipals_arena.opening_action_observation',3330554),('yunipals_arena.operational_migration',3330410),('yunipals_arena.provider_action_evidence',3330618),('yunipals_arena.provider_task',2303773),('yunipals_arena.session',2303720),('yunipals_arena.source_operational_cursor',3330672),('yunipals_arena.source_selection',3330687),('yunipals_arena.source_switch_history',3330705),('yunipals_arena.submission',2303727),('yunipals_arena.tournament',2303692),('yunipals_arena.tournament_identity',3330420),('yunipals_arena.transaction_intent',2303785),('yunipals_arena.transaction_receipt_history',3330537))e(name,oid)
+ EXCEPT SELECT n.nspname||'.'||c.relname,c.oid::integer FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='yunipals_arena' AND c.relkind IN('r','p','v','m','f','S'))
+ UNION ALL(SELECT n.nspname||'.'||c.relname,c.oid::integer FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='yunipals_arena' AND c.relkind IN('r','p','v','m','f','S')
+ EXCEPT SELECT name,oid FROM (VALUES ('yunipals_arena.adjudication',2303795),('yunipals_arena.admission',2303766),('yunipals_arena.capacity',2303809),('yunipals_arena.chain_event',2303679),('yunipals_arena.challenge',2303713),('yunipals_arena.client_receipt_history',3330595),('yunipals_arena.client_transaction',2336176),('yunipals_arena.credit',2303705),('yunipals_arena.deployment',2303671),('yunipals_arena.fighter_snapshot',2303741),('yunipals_arena.frozen_input',2303754),('yunipals_arena.identity_job',2336194),('yunipals_arena.media_job',2303821),('yunipals_arena.media_publication',3330638),('yunipals_arena.opening_action_observation',3330554),('yunipals_arena.operational_migration',3330410),('yunipals_arena.provider_action_evidence',3330618),('yunipals_arena.provider_task',2303773),('yunipals_arena.session',2303720),('yunipals_arena.source_operational_cursor',3330672),('yunipals_arena.source_selection',3330687),('yunipals_arena.source_switch_history',3330705),('yunipals_arena.submission',2303727),('yunipals_arena.tournament',2303692),('yunipals_arena.tournament_identity',3330420),('yunipals_arena.transaction_intent',2303785),('yunipals_arena.transaction_receipt_history',3330537))e(name,oid)))
+ THEN RAISE EXCEPTION 'current_exact_27_relation_graph_changed'; END IF;
+ IF EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='yunipals_arena' AND(c.relowner<>2303667 OR c.relrowsecurity))
+ THEN RAISE EXCEPTION 'current_operational_owner_or_rls_changed'; END IF;
+ IF EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace CROSS JOIN LATERAL aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner)))a WHERE n.nspname='yunipals_arena'AND a.grantee=0 AND a.privilege_type='EXECUTE')
+ THEN RAISE EXCEPTION 'current_trigger_function_public_execute_changed'; END IF;
+END $current_arena_catalog$;
+CREATE ROLE "yunipals_arena_native_api" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_disclosure" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 4;
+CREATE ROLE "yunipals_arena_native_client" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_referee" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_media" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_execution_lobby" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_execution_referee" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+CREATE ROLE "yunipals_arena_native_capacity" NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 8;
+SET LOCAL ROLE yunipals_arena_owner;
+GRANT CONNECT ON DATABASE yunipals_arena TO "yunipals_arena_native_api","yunipals_arena_native_disclosure","yunipals_arena_native_client","yunipals_arena_native_referee","yunipals_arena_native_media","yunipals_arena_native_execution_lobby","yunipals_arena_native_execution_referee","yunipals_arena_native_capacity";
+-- api: server.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.adjudication TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.admission TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.challenge TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.client_transaction TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.fighter_snapshot TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.media_publication TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.session TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.submission TO "yunipals_arena_native_api";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.admission TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.challenge TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.client_transaction TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.fighter_snapshot TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.session TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.submission TO "yunipals_arena_native_api";
+GRANT INSERT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_api";
+GRANT DELETE ON TABLE yunipals_arena.session TO "yunipals_arena_native_api";
+GRANT UPDATE (used_at) ON TABLE yunipals_arena.challenge TO "yunipals_arena_native_api";
+GRANT UPDATE (next_check_at,state,tracking_until) ON TABLE yunipals_arena.client_transaction TO "yunipals_arena_native_api";
+GRANT UPDATE (halt_reason,halted) ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_api";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_api";
+GRANT UPDATE (cipher_context) ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_api";
+-- disclosure: nativeDisclosureWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.submission TO "yunipals_arena_native_disclosure";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_disclosure";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_disclosure";
+GRANT INSERT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_disclosure";
+GRANT UPDATE (halt_reason) ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_disclosure";
+GRANT UPDATE (native_check_at,native_check_lease,revealed_at,revealed_block_hash,revealed_event_id) ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_disclosure";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_disclosure";
+GRANT UPDATE (cipher_context) ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_disclosure";
+-- client_tracker: nativeClientWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.client_receipt_history TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.client_transaction TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_client";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_client";
+GRANT INSERT ON TABLE yunipals_arena.client_receipt_history TO "yunipals_arena_native_client";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_client";
+GRANT UPDATE (canonical,checked_at,finalized) ON TABLE yunipals_arena.client_receipt_history TO "yunipals_arena_native_client";
+GRANT UPDATE (checked_at,indexed_through_block,next_check_at,proof_event_id,receipt_block_hash,receipt_block_number,receipt_finalized,result,state,verified_release_id) ON TABLE yunipals_arena.client_transaction TO "yunipals_arena_native_client";
+GRANT UPDATE (halt_reason,halted) ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_client";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_client";
+-- referee_provider: nativeRefereeWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.adjudication TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_referee";
+GRANT INSERT ON TABLE yunipals_arena.adjudication TO "yunipals_arena_native_referee";
+GRANT INSERT ON TABLE yunipals_arena.provider_action_evidence TO "yunipals_arena_native_referee";
+GRANT INSERT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_referee";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_referee";
+GRANT UPDATE (actual_microusd,error_code,native_check_at,native_check_lease,provider_id,response,state,updated_at) ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_referee";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_referee";
+-- media_provider: nativeMediaWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.adjudication TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.media_publication TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_media";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_media";
+GRANT INSERT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_media";
+GRANT INSERT ON TABLE yunipals_arena.media_publication TO "yunipals_arena_native_media";
+GRANT INSERT ON TABLE yunipals_arena.provider_action_evidence TO "yunipals_arena_native_media";
+GRANT INSERT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_media";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_media";
+GRANT UPDATE (detail,film_sha256,input_hash,native_check_at,native_check_lease,outcome_hash,publication_hash,state,updated_at) ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_media";
+GRANT UPDATE (actual_microusd,error_code,native_check_at,native_check_lease,response,state,updated_at) ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_media";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_media";
+-- execution_lobby: nativeExecutionWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.provider_task TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_lobby";
+GRANT INSERT ON TABLE yunipals_arena.opening_action_observation TO "yunipals_arena_native_execution_lobby";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_lobby";
+GRANT INSERT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_lobby";
+GRANT INSERT ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_lobby";
+GRANT INSERT ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_lobby";
+GRANT UPDATE (halt_reason,halted) ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_execution_lobby";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_lobby";
+GRANT UPDATE (cipher_context) ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_lobby";
+GRANT UPDATE (checked_at,receipt,receipt_finalized,state) ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_lobby";
+GRANT UPDATE (canonical,checked_at,finalized) ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_lobby";
+-- execution_referee: nativeExecutionWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.adjudication TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.fighter_snapshot TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.media_job TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.media_publication TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.submission TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_referee";
+GRANT SELECT ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_referee";
+GRANT INSERT ON TABLE yunipals_arena.frozen_input TO "yunipals_arena_native_execution_referee";
+GRANT INSERT ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_referee";
+GRANT INSERT ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_referee";
+GRANT INSERT ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_referee";
+GRANT INSERT ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_referee";
+GRANT UPDATE (halt_reason,halted) ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_execution_referee";
+GRANT UPDATE (indexed_block,observed_at,source_id) ON TABLE yunipals_arena.source_operational_cursor TO "yunipals_arena_native_execution_referee";
+GRANT UPDATE (cipher_context) ON TABLE yunipals_arena.tournament_identity TO "yunipals_arena_native_execution_referee";
+GRANT UPDATE (checked_at,receipt,receipt_finalized,state) ON TABLE yunipals_arena.transaction_intent TO "yunipals_arena_native_execution_referee";
+GRANT UPDATE (canonical,checked_at,finalized) ON TABLE yunipals_arena.transaction_receipt_history TO "yunipals_arena_native_execution_referee";
+-- capacity_sampler: capacityWorker.ts
+GRANT USAGE ON SCHEMA yunipals_arena TO "yunipals_arena_native_capacity";
+GRANT SELECT ON TABLE yunipals_arena.deployment TO "yunipals_arena_native_capacity";
+GRANT SELECT ON TABLE yunipals_arena.operational_migration TO "yunipals_arena_native_capacity";
+GRANT SELECT ON TABLE yunipals_arena.source_selection TO "yunipals_arena_native_capacity";
+GRANT INSERT ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_capacity";
+GRANT DELETE ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_capacity";
+GRANT UPDATE (checked_at,snapshot) ON TABLE yunipals_arena.capacity TO "yunipals_arena_native_capacity";
+-- Exact current-runtime seven-statement delta (13 actual PG16 role groups).
+GRANT SELECT, INSERT ON TABLE yunipals_arena.identity_job
+  TO "yunipals_arena_native_api";
+GRANT SELECT, UPDATE (state, updated_at, artwork, reserved_microusd, profile,
+  provider_id, usage, profile_hash) ON TABLE yunipals_arena.identity_job
+  TO "yunipals_arena_native_referee";
+GRANT SELECT ON TABLE yunipals_arena.identity_job
+  TO "yunipals_arena_native_execution_lobby";
+GRANT SELECT ON TABLE yunipals_arena.identity_job
+  TO "yunipals_arena_native_media";
+
+-- PostgreSQL checks both the ON CONFLICT key and excluded values. The three
+-- column reads below were individually measured; the sampler gains no prompt,
+-- identity, provider-task, signed-intent or public-projection access.
+GRANT SELECT (deployment, snapshot, checked_at) ON TABLE yunipals_arena.capacity
+  TO "yunipals_arena_native_capacity";
+GRANT SELECT (deployment, state, updated_at) ON TABLE yunipals_arena.media_job
+  TO "yunipals_arena_native_capacity";
+
+-- The historical media role already SELECTs capacity. Publication deletes its
+-- stale deployment cache inside the same transaction as the publication record.
+GRANT DELETE ON TABLE yunipals_arena.capacity
+  TO "yunipals_arena_native_media";
+
+RESET ROLE;
+COMMIT;

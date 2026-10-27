@@ -1,0 +1,178 @@
+{
+  "actors": {
+    "yunipals-api.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 69276890000,
+      "invocation": "29aaa668db3d4e0cb9ebdddf851324d6",
+      "memoryCurrentBytes": 112312320,
+      "memoryLimitBytes": null,
+      "pid": 1437990,
+      "restarts": 0,
+      "rssBytes": 154202112,
+      "startTicks": 6616203749
+    },
+    "yunipals-booster-api.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 10452102000,
+      "invocation": "7858a3f608874abb935e635abc69c1d4",
+      "memoryCurrentBytes": 52699136,
+      "memoryLimitBytes": 536870912,
+      "pid": 1824982,
+      "restarts": 0,
+      "rssBytes": 97062912,
+      "startTicks": 6618518564
+    },
+    "yunipals-unified-source6-free-v2.service": {
+      "active": true,
+      "cpuUsageNanoseconds": 7209389160000,
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "memoryCurrentBytes": 402718720,
+      "memoryLimitBytes": 6442450944,
+      "pid": 716994,
+      "restarts": 0,
+      "rssBytes": 451751936,
+      "startTicks": 6611794751
+    }
+  },
+  "boosterLocal": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 3,
+    "indexedBlock": 52993204,
+    "indexedTimestamp": 1792775755,
+    "ready": true,
+    "status": 200
+  },
+  "boosterPublic": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 3,
+    "indexedBlock": 52993204,
+    "indexedTimestamp": 1792775755,
+    "ready": true,
+    "status": 200
+  },
+  "capture": {
+    "file": "/tmp/yunipals-current-replay-qualified-health-20261023T171543Z.json",
+    "sha256": "c9c725f7422730772ce5dc8f084c46d264222198317e35fc715c3a4ef8169e98"
+  },
+  "classification": "Same authoritative qualified source process is running with advancing fetch and historical-sync counters; native committed checkpoint/events did not change during this interval. Framework readiness and native witnesses remain absent, so native adoption/reader switch remains gated. No stall or whole-backfill ETA is inferred from this single bounded observation.",
+  "financialPolicyUnchanged": true,
+  "format": "yunipals-replay-qualified-health-comparison-v1",
+  "identity": {
+    "originalWholeValidationPassed": false,
+    "sourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+    "sourceQualificationReceiptSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+    "sourceQualifierSha256": "8f95600ddb4bc788be223e35559dba147bf9b219e5243698da84dd95cdc04658",
+    "sourceRuntime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    }
+  },
+  "mainApi": {
+    "healthStatus": "ok",
+    "shallowHealthOnly": true,
+    "status": 200
+  },
+  "native": {
+    "bnbFetchAfter": 110177776,
+    "bnbFetchBefore": 109997035,
+    "bnbFetchDelta": 180741,
+    "bnbHistoricalSyncAfter": 103593526,
+    "bnbHistoricalSyncBefore": 102397473,
+    "bnbHistoricalSyncDelta": 1196053,
+    "buildId": "bf4939b3ff",
+    "catalogSha256": "d9f3d0988229ad954cc8d4e1f34878c5882c4026b024a25885bd45dd30564b76",
+    "checkpoints": [
+      {
+        "after": 26249684,
+        "before": 26249684,
+        "chainId": 1,
+        "delta": 0
+      },
+      {
+        "after": 109578145,
+        "before": 109578145,
+        "chainId": 56,
+        "delta": 0
+      },
+      {
+        "after": 95990408,
+        "before": 95990408,
+        "chainId": 137,
+        "delta": 0
+      },
+      {
+        "after": 52950938,
+        "before": 52950938,
+        "chainId": 8453,
+        "delta": 0
+      }
+    ],
+    "completedEvents": 27685.0,
+    "currentWitnesses": 0,
+    "frameworkReady": false,
+    "heartbeatAgeSeconds": 8.129,
+    "locked": true,
+    "schema": "unified_shadow_20261020_7e7375b0",
+    "statuses": [
+      {
+        "chainId": 1,
+        "errorCode": "indexer_not_ready",
+        "halted": false
+      },
+      {
+        "chainId": 56,
+        "errorCode": "indexer_not_ready",
+        "halted": false
+      },
+      {
+        "chainId": 137,
+        "errorCode": "indexer_not_ready",
+        "halted": false
+      },
+      {
+        "chainId": 8453,
+        "errorCode": "indexer_not_ready",
+        "halted": false
+      }
+    ]
+  },
+  "observedAt": "2026-10-23T17:16:02.092281+00:00",
+  "observerActions": {
+    "cutoverOrAdmissionInvoked": false,
+    "databaseWrites": 0,
+    "productionFileWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "paidCallsObserved": 0,
+  "priorEvidence": {
+    "file": "/root/yunipals/docs/unified-indexer/production-replay-qualified-health-2026-10-23-1657.json",
+    "sha256": "7a75dbc33a8f4d003682cd24626faaa217a13d93f4b8828aea195250b7ef853e"
+  },
+  "resources": {
+    "memoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "restarts": 0,
+    "rootFreeBytes": 45063524352,
+    "sourceMemoryBytes": 402718720,
+    "sourceMemoryMaxBytes": 6442450944,
+    "sourceRuntimeMetrics": {
+      "nodejs_external_memory_bytes": 8093693.0,
+      "nodejs_heap_size_total_bytes": 133775360.0,
+      "nodejs_heap_size_used_bytes": 100097064.0,
+      "process_cpu_system_seconds_total": 1206.5118899999998,
+      "process_cpu_user_seconds_total": 5844.439461000001,
+      "process_resident_memory_bytes": 451751936.0
+    }
+  }
+}

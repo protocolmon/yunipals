@@ -7,6 +7,7 @@ import { islandsMigrations } from "../lib/islands/schema.js";
 import { baseIslandsMigrations } from "../lib/islands/base-schema.js";
 import {
   baseIslandCollection as collection,
+  legacyBaseIslandCollection,
   replacementSnapshotSha256,
   replacementDistributionRoot
 } from "../lib/islands/collections.js";
@@ -289,9 +290,15 @@ describe("Base Islands indexing, publication and combined browsing", () => {
     await query(
       `INSERT INTO yunipals_base_islands_v1.transfer_event SELECT * FROM ${schema}.transfer_event`
     );
-    await query(`UPDATE yunipals_base_islands_v1.transfer_event SET "to"=$1`, [
-      bob
-    ]);
+    await query(
+      `UPDATE yunipals_base_islands_v1.transfer_event SET "to"=$1,collection=$2,chain_id=$3,contract_address=$4`,
+      [
+        bob,
+        legacyBaseIslandCollection.slug,
+        legacyBaseIslandCollection.chainId,
+        legacyBaseIslandCollection.address
+      ]
+    );
     await query(`UPDATE metadata.island_airdrop_origin SET recipient=$1`, [
       bob
     ]);

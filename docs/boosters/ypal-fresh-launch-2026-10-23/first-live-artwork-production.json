@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-23T21:56:13.140541+00:00",
+  "archiveSha256": "87d2c9bb1d96f4b6230ca807e12a9421a6e5e1201d74d3038b948155fd904e7b",
+  "catalog": "base-mainnet-standard-v1",
+  "installerSha256": "237cb0b96934cc4b7de0c404b5d30386fb96399c834173eee92935b28d478f98",
+  "checks": [
+    {
+      "variantId": 171,
+      "status": 200,
+      "metadataFileSha256": "f8a4221ecf57289808141457281f35520882d2942d0e53bba2e35f5639a9166b",
+      "httpSerializedMetadataSha256": "563616595381714f901ba7ab694a49bfec6094051cb516972dd335719d05f323",
+      "metadataObjectsEqual": true,
+      "artworkSha256": "46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482",
+      "holo": true,
+      "assets": [
+        {
+          "sha256": "46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482",
+          "bytes": 2491802,
+          "status": 200
+        },
+        {
+          "sha256": "721088a2ed2730a5f910e3a9ce8b4cfb737d0c78e9e84327310d1f286edb5901",
+          "bytes": 2605,
+          "status": 200
+        },
+        {
+          "sha256": "1e94060bc8fd80b337e441697b35a2c4a210440e598888764226dc9baa314d69",
+          "bytes": 2769,
+          "status": 200
+        },
+        {
+          "sha256": "8237306519715cc679e59d00666ef07f5d414799de0102637b92b3e08ba7ccea",
+          "bytes": 1690,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "variantId": 178,
+      "status": 200,
+      "metadataFileSha256": "9d004f28a5a208c4925b5214f5b2f8499b244c892bb97cf0725d027b86f3df6a",
+      "httpSerializedMetadataSha256": "fcddb02747a698f04e64840cb9667bec74fed756dba515919036492d5c186f3e",
+      "metadataObjectsEqual": true,
+      "artworkSha256": "9aa19bcb0b9f13d53941780c77e1e03014226b3d7d03a03203a7bf9ea616d734",
+      "holo": false,
+      "assets": [
+        {
+          "sha256": "9aa19bcb0b9f13d53941780c77e1e03014226b3d7d03a03203a7bf9ea616d734",
+          "bytes": 2069094,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "variantId": 244,
+      "status": 200,
+      "metadataFileSha256": "ceb90e9c12474d3a3d7f2ad9d60fe083838c76c28bdaf723de923678fa9b0139",
+      "httpSerializedMetadataSha256": "8bdc8d8093b5845ef89f03822d837599976623c8aa59b32f91f20fda1542b6db",
+      "metadataObjectsEqual": true,
+      "artworkSha256": "97295929f1d013c2309f70e917bd39daeae06df3ca6b1b28bf61851c9d6eeb3c",
+      "holo": false,
+      "assets": [
+        {
+          "sha256": "97295929f1d013c2309f70e917bd39daeae06df3ca6b1b28bf61851c9d6eeb3c",
+          "bytes": 2077471,
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

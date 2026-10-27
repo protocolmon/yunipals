@@ -1,0 +1,180 @@
+{
+  "actions": {
+    "databaseWrites": 0,
+    "gitMutations": 0,
+    "hostCalls": 0,
+    "permissionChanges": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "authority": {
+    "containerOrPm2PoliciesQualified": false,
+    "installedProgramProvenanceQualified": false,
+    "legacyScannersRetired": false,
+    "productionSingleIngestorAccepted": false,
+    "requiresIndependentRuntimeManifestReceipts": true,
+    "runtimeManifestOrManagedEpochReplaced": false,
+    "scannerRetirementAccepted": false,
+    "sourceActorQualified": false,
+    "unmatchedCronPoliciesQualified": false
+  },
+  "format": "yunipals-scanner-inventory-gate-preparation-v1",
+  "hostContract": {
+    "base": "/var/backups/yunipals-scanner-inventory-v1-20261024",
+    "captureFormat": "yunipals-scanner-inventory-gate-v1-host-capture",
+    "defaultStatic": true,
+    "directCollectorShellRequiresExactLiteralInvocation": true,
+    "embeddedSubstitutedExtraCommandsRefuse": true,
+    "exclusiveNamedCaptures": true,
+    "gid": 0,
+    "host": "yunipals-main",
+    "planFormat": "yunipals-scanner-inventory-gate-v1-host-plan",
+    "rawArgvConfigAndProcessFramesRemainRootPrivate": true,
+    "rawMode": "0700 directory / 0600 result",
+    "readOnlyManagerVerbs": [
+      "list-units",
+      "list-unit-files",
+      "show"
+    ],
+    "samePathChangedScriptNeverConfersRuntimeAuthority": true,
+    "stdout": "unit names, counts, hashes and explicit scope flags only",
+    "twoExactBootManagerFileSnapshots": true,
+    "uid": 0,
+    "unknownServiceTimerCronRestartProcessFramesRefuse": true
+  },
+  "lexicalFingerprintValuesAndDetectionScopeUnchanged": true,
+  "lexicalMatchField": "matchSha256",
+  "limitations": [
+    "Only detected literal discovery and activation syntax in exact source roots is inventoried, not complete call-graph or indirect/obfuscated-loop correctness.",
+    "Source paths/hashes do not prove absence of hidden cursor loops or actual legacy retirement.",
+    "Installed executable/script/bundle/dependency bytes require independent actual runtime-manifest receipts before retirement acceptance.",
+    "No actual host inventory, private plan, source epoch, role/session/readiness or single-ingestor acceptance exists from this preparation.",
+    "Container/PM2/unmatched scheduler policies remain unqualified; retired-phase presence refuses pending a separately reviewed extension.",
+    "Future new/changed detected source or deployment paths require explicit category/function-evidence review and a new reviewed manifest pin; no automatic rebaseline."
+  ],
+  "previousSourceValidation": {
+    "operatorSha256": "0d4144f970d72878c1163eb31c8ad414407bef58532510bb0532e1de90dd653f",
+    "validation": {
+      "actualDatabaseOrProviderPerformed": false,
+      "actualHostCaptureOrServiceCommandPerformed": false,
+      "command": "python3 -I -B ops/unified-indexer-transition/scanner-inventory-gate-v1.test.py",
+      "independentlyRerunByRoot": true,
+      "localControlsPassed": 25,
+      "outputSha256": "0caef5040793ab1b0f43493f440ee7133d6ac20cbf0d1b9fd36f3dfb1616ada9",
+      "sourceCommand": "python3 -I -B ops/unified-indexer-transition/scanner-inventory-gate-v1.py --repository /root/yunipals",
+      "sourceResult": {
+        "candidateFiles": 786,
+        "classCounts": {
+          "bounded-market-admission": 3,
+          "bounded-operator-test": 228,
+          "deployment-review": 528,
+          "legacy-recurring-retire": 43,
+          "non-scanning-consumer": 3,
+          "shared-ponder": 9,
+          "shared-solana": 10,
+          "transport-proxy": 12
+        },
+        "databaseWrites": 0,
+        "filesExamined": 2891,
+        "format": "yunipals-scanner-inventory-gate-v1-repository-result",
+        "hostCaptured": false,
+        "inventorySha256": "e622b0c34427b8f62fc6d06f70e5b21ec1573c124bf73d84cf6c48de3890553b",
+        "legacyScannersRetired": false,
+        "productionSingleIngestorAccepted": false,
+        "providerCalls": 0,
+        "serviceActions": 0,
+        "validated": true
+      },
+      "sourceResultSha256": "734db2763258a5ec0be8207b764f03e99b5adc8b08b47af6389b828fa4816695"
+    }
+  },
+  "publicationFiles": [
+    {
+      "bytes": 28486,
+      "path": "ops/unified-indexer-transition/scanner-inventory-gate-v1.py",
+      "sha256": "ff68ce210195aafa4e9d175bc327e783ecd66fbe2240bc3307e26dea83bc23cb"
+    },
+    {
+      "bytes": 21612,
+      "path": "ops/unified-indexer-transition/scanner-inventory-gate-v1.test.py",
+      "sha256": "80a0c5bd91fee9981c2b52465674fea1136825fc3d6172a0af94843a46340885"
+    },
+    {
+      "bytes": 816043,
+      "path": "ops/unified-indexer-transition/scanner-inventory-gate-v1.repository.json",
+      "sha256": "24824a9faa43cc8bb28c84774be2c1205c2bb047f3a03a8fa47d56dbe56d2d01"
+    },
+    {
+      "bytes": 12524,
+      "path": "ops/unified-indexer-transition/scanner-inventory-gate-v1.md",
+      "sha256": "aa5251a08adcbbec5eb27fcb8ba2acddc7d59a6dd72f5ec04fa7457ca533ed14"
+    }
+  ],
+  "repositoryScope": {
+    "allUnrelatedSourceBytePinned": false,
+    "candidateFiles": 786,
+    "classCounts": {
+      "bounded-market-admission": 3,
+      "bounded-operator-test": 228,
+      "deployment-review": 528,
+      "legacy-recurring-retire": 43,
+      "non-scanning-consumer": 3,
+      "shared-ponder": 9,
+      "shared-solana": 10,
+      "transport-proxy": 12
+    },
+    "detectedUnknownChangedOrRemovedEntrypointsRefuse": true,
+    "externalSourceTargetBytesRead": false,
+    "generatedDataEvidenceAndArchiveTreesExcluded": true,
+    "generatedExclusionsBeforeNestedDirectoryRefusal": true,
+    "inventorySha256": "e622b0c34427b8f62fc6d06f70e5b21ec1573c124bf73d84cf6c48de3890553b",
+    "manifestSha256": "24824a9faa43cc8bb28c84774be2c1205c2bb047f3a03a8fa47d56dbe56d2d01",
+    "mixedFunctionScopesExplicit": true,
+    "repositoryAndDeclaredSourceRootsLstatQualified": true,
+    "rootFiles": [
+      "package.json"
+    ],
+    "roots": [
+      "apps",
+      "packages",
+      "scripts",
+      "ops",
+      ".github"
+    ],
+    "syntacticAndIndirectLoopLimitationsExplicit": true
+  },
+  "sourceOnly": true,
+  "validation": {
+    "actualDatabaseOrProviderPerformed": false,
+    "actualHostCaptureOrServiceCommandPerformed": false,
+    "command": "python3 -I -B ops/unified-indexer-transition/scanner-inventory-gate-v1.test.py",
+    "independentlyRerunByRoot": true,
+    "localControlsPassed": 25,
+    "outputSha256": "0caef5040793ab1b0f43493f440ee7133d6ac20cbf0d1b9fd36f3dfb1616ada9",
+    "sourceCommand": "python3 -I -B ops/unified-indexer-transition/scanner-inventory-gate-v1.py --repository /root/yunipals",
+    "sourceResult": {
+      "candidateFiles": 786,
+      "classCounts": {
+        "bounded-market-admission": 3,
+        "bounded-operator-test": 228,
+        "deployment-review": 528,
+        "legacy-recurring-retire": 43,
+        "non-scanning-consumer": 3,
+        "shared-ponder": 9,
+        "shared-solana": 10,
+        "transport-proxy": 12
+      },
+      "databaseWrites": 0,
+      "filesExamined": 2891,
+      "format": "yunipals-scanner-inventory-gate-v1-repository-result",
+      "hostCaptured": false,
+      "inventorySha256": "e622b0c34427b8f62fc6d06f70e5b21ec1573c124bf73d84cf6c48de3890553b",
+      "legacyScannersRetired": false,
+      "productionSingleIngestorAccepted": false,
+      "providerCalls": 0,
+      "serviceActions": 0,
+      "validated": true
+    },
+    "sourceResultSha256": "734db2763258a5ec0be8207b764f03e99b5adc8b08b47af6389b828fa4816695"
+  }
+}

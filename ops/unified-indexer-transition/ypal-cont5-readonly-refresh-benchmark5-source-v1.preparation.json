@@ -1,0 +1,140 @@
+{
+  "ASTCostHelperSha256": "e0b04e6a2cf4505d0bb4545568629fd103e748dc1d24adec2ab4d80eabd1223d",
+  "CPU1Or2ObserverInstalled": false,
+  "SSHExecutedByPreparation": false,
+  "activationDelta": "One Root review comment and False-to-True review flag only.",
+  "actualASTCostCoverageClaimed": false,
+  "actualHeldCallbackQualified": false,
+  "actualMeasurement5SuccessClaimed": false,
+  "actualRecoveryResultSha256": "3acb03de0673bc48df2760f08c38d3a4ffe6c55b2f80aebb0e64e8616fd837eb",
+  "callbackOrQualifierDispatchedByPreparation": false,
+  "dependencyScope": "Selected direct repository dependencies; complete authenticated CONT5 graph and separately reviewed runtime helper staging remain required.",
+  "deploymentRequested": false,
+  "files": [
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "docs/unified-indexer/cont5-readonly-refresh-benchmark5-source-2026-10-26.md",
+      "sha256": "cefe41159fd589e7f222ddbfec2f1f5daf811d981c7524631ab8890ecce7fff7",
+      "size": 7941
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/retained-workers-stage-v1.py",
+      "sha256": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416",
+      "size": 18427
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-construct3-result-fixture.json",
+      "sha256": "dfd88675a2e843db57e36d5905dbb2a27b96fee81a5713097f19c4d9f8106901",
+      "size": 3513
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-held8-failure-detail-fixture.json",
+      "sha256": "ace825271b93f3aa38d3c02763ed0b6c41d8e162fd6782e24a752962716bb257",
+      "size": 9904
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-held8-reconciliation-result-fixture.json",
+      "sha256": "b9765d13f72a6256772b02dc72d22a4e6749dc2d082171cf1418f861815540d7",
+      "size": 3036
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-readonly-refresh-benchmark-owner-v4.py",
+      "sha256": "3d2f0b46bd1eb563a07d1b9a4450a56e32d394537a2af4b18b8113ff730df219",
+      "size": 86040
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-readonly-refresh-benchmark-owner-v5.py",
+      "sha256": "d95c423de1da2ed9d3cbe499a226e696cf204bc09e0b44ab3e21d5a66cecba88",
+      "size": 91493
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-readonly-refresh-benchmark-owner-v5.test.py",
+      "sha256": "13b74b8475917dca9cc38c9a27eaa4dd422e7376dab68690b0e26801fb6eca31",
+      "size": 26201
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-cont5-readonly-refresh-benchmark-result-fixture.json",
+      "sha256": "f8f21e0c5b26e13cc40eac291ed2a00787830c0d1980ff7eaccbec34b62b48f8",
+      "size": 3077
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-ordinary-generation-v5c.py",
+      "sha256": "ada329e57969155d091d3b5d276de767cb5a09760095a4499090b0589d81b7da",
+      "size": 9477
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-readonly-ast-cost-v1.py",
+      "sha256": "e0b04e6a2cf4505d0bb4545568629fd103e748dc1d24adec2ab4d80eabd1223d",
+      "size": 7566
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-readonly-run-duration-v1.py",
+      "sha256": "00b35f20a783307f5a83351c34876d0fa2777cea95ae1a817f399704a1be67a4",
+      "size": 7149
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-readonly-run-duration-v2.py",
+      "sha256": "99b309b0faeefb1aa7a4525639cbfdd9a2fbeb516a406c5fb5e850b926df3646",
+      "size": 5720
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-readonly-sha256-memo-v3.py",
+      "sha256": "3fc715603dcd200ca08f58a882de51379bf4edf7ccba9a482c6246a9e1716dad",
+      "size": 10797
+    },
+    {
+      "deploymentPath": null,
+      "deploymentRequired": false,
+      "file": "ops/unified-indexer-transition/ypal-restored-generation-v1.py",
+      "sha256": "48cc2e291e24816d6de9f668dfcb6a0bee891526865d3f42c99f4e99ac201946",
+      "size": 40435
+    }
+  ],
+  "format": "root-CONT5-readonly-refresh-benchmark5-public-source-v1",
+  "globalCompileJSONProfileOrApplicationHooksInstalled": false,
+  "newCommitAuthority": false,
+  "newHeldSuccessAuthority": false,
+  "payloadExecutedByPreparation": false,
+  "priorBenchmarkDiagnosticReferenceOnly": true,
+  "priorBenchmarkResultSha256": "27af1b44e25c9133d973ea6debef6b99d5dff40ed5b1ace4865c49cfc69e684d",
+  "productionPerformanceImprovementClaimed": false,
+  "pureSHAHelperSha256": "3fc715603dcd200ca08f58a882de51379bf4edf7ccba9a482c6246a9e1716dad",
+  "reviewedClosedSourceSha256": "d331fa9185f9ea333eaddf9448c16e8b6c428854c0bbdc45fa14144e81c35528",
+  "reviewedSourceActivated": true,
+  "runtimeExecuted": false,
+  "runtimeSourceIdentities": {
+    "/tmp/yunipals-root-cont5-readonly-refresh-benchmark-20261026-5.py": "d95c423de1da2ed9d3cbe499a226e696cf204bc09e0b44ab3e21d5a66cecba88"
+  },
+  "signatureEngineAdopted": false,
+  "sourceActorCatalogReadinessProofsReused": false,
+  "sourceControlsPassed": 19,
+  "sourceOnly": true,
+  "timingQualificationClaimed": false
+}

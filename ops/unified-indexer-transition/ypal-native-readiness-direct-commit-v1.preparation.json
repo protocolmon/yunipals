@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-direct-commit-v1.py",
+      "sha256": "f9d6c7e9fbd39fe7e922ec132a41069024e63c79f18b946d9ce2eda51f682ecb",
+      "size": 54630
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-direct-commit-v1.manifest.json",
+      "sha256": "29a6a2cca203bd613372456368310b1a67bbe8d58222b45c522e0f3c8944c735",
+      "size": 36764
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-readiness-direct-commit-v1.test.py",
+      "sha256": "f9d6a9d036571d515aadb0ab56b851543204eb6886f4fdbbe4b1ae31e1ce6d63",
+      "size": 11509
+    },
+    {
+      "path": "docs/unified-indexer/native-readiness-direct-commit-v1.md",
+      "sha256": "d24e80901f92b0f02760469aa370481fdd7625437d40ae018478dc036265970f",
+      "size": 2357
+    }
+  ],
+  "focusedLocalControlsPassed": 7,
+  "format": "yunipals-native-readiness-direct-commit-v1-preparation",
+  "heldQualificationPerformed": false,
+  "heldTestWaived": true,
+  "literalACKTailSeconds": 5,
+  "measuredTimingUsed": false,
+  "policyTTLSeconds": 120,
+  "productionEffectsExecuted": false,
+  "sourceManifestFiles": 338,
+  "sourceOnly": true
+}

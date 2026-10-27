@@ -1,8 +1,9 @@
 import { sqlIdentifier } from "../offchain/sql.js";
 import { islandColumns, islandTokenRelation } from "./queries.js";
-import { stakingColumns, stakingRelation } from "./staking.js";
+import { stakingColumns, stakingRelation } from "./staking-read.js";
 import {
   baseIslandCollection,
+  baseIslandReadSchema,
   legacyBaseIslandCollection,
   ethereumIslandCollection,
   type IslandCollection
@@ -22,13 +23,19 @@ export function islandReadModel(
       : baseIslandCollection;
   if (airdrop)
     relation += ` LEFT JOIN metadata.island_airdrop_origin origin ON origin.token_id=t.token_id
-    LEFT JOIN ${sqlIdentifier(legacyBaseIslandCollection.schemaName)}.transfer_event base_mint
-      ON base_mint.token_id=origin.token_id AND base_mint."to"=origin.recipient
-      AND base_mint."from"='0x0000000000000000000000000000000000000000'
+    LEFT JOIN LATERAL (SELECT mint.* FROM ${sqlIdentifier(legacyBaseIslandCollection.schemaName)}.transfer_event mint
+      WHERE mint.collection='${legacyBaseIslandCollection.slug}' AND mint.chain_id=${legacyBaseIslandCollection.chainId}
+      AND mint.contract_address='${legacyBaseIslandCollection.address}'
+      AND mint.token_id=origin.token_id AND mint."to"=origin.recipient
+      AND mint."from"='0x0000000000000000000000000000000000000000'
+      ORDER BY mint.block_number,mint.transaction_index,mint.log_index LIMIT 1) base_mint ON true
     LEFT JOIN metadata.island_replacement_origin replacement ON replacement.token_id=t.token_id
-    LEFT JOIN ${sqlIdentifier(baseIslandCollection.schemaName)}.transfer_event replacement_mint
-      ON replacement_mint.token_id=replacement.token_id AND replacement_mint."to"=replacement.recipient
-      AND replacement_mint."from"='0x0000000000000000000000000000000000000000'`;
+    LEFT JOIN LATERAL (SELECT mint.* FROM ${sqlIdentifier(baseIslandReadSchema())}.transfer_event mint
+      WHERE mint.collection='${baseIslandCollection.slug}' AND mint.chain_id=${baseIslandCollection.chainId}
+      AND mint.contract_address='${baseIslandCollection.address}'
+      AND mint.token_id=replacement.token_id AND mint."to"=replacement.recipient
+      AND mint."from"='0x0000000000000000000000000000000000000000'
+      ORDER BY mint.block_number,mint.transaction_index,mint.log_index LIMIT 1) replacement_mint ON true`;
   const counterpartSql = airdrop
     ? `CASE WHEN base_mint.id IS NOT NULL AND replacement_mint.id IS NOT NULL THEN jsonb_build_object(
     'collectionId','${counterpart.slug}','chain','${counterpart.chain}','chainId',${counterpart.chainId},

@@ -1,0 +1,79 @@
+{
+  "format": "yunipals-ypal-wrap-ui-preparation-v1",
+  "observedAt": "2026-10-23T19:13:30.635609+00:00",
+  "sourceOnly": true,
+  "deployment": {
+    "manifestFile": "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json",
+    "manifestSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+    "chainId": 8453,
+    "ypal": "0xCd3709E84fc817b46196FA2D5b7202710AB51346",
+    "pmon": "0x60edae6E86546428DA423b5FBe0fba46Ca552Fc7",
+    "runtimeKeccak256": "0x5c97ed71236ebd6588fb3fd42229ba6855105027611590f2d30da4c6ca40f858"
+  },
+  "files": {
+    "apps/yunipals-home-web/src/lib/ypalWrap.ts": "9ccab65ac2a8498872b8a1eaebdb26d8d6b5b0cc5b433110b6039df8ed4fdc4f",
+    "apps/yunipals-home-web/src/lib/ypalWrap.test.ts": "ab98c0ed5ecc03f83a3d1da8af7a8bdc38cb655dc88e3f1ad6a8a45fbc5eedb0",
+    "apps/yunipals-home-web/src/hooks/useYpalWrap.ts": "701380f588de01cae29e5f8939b388365ffa5401588c97cf2ba70c1332b51786",
+    "apps/yunipals-home-web/src/pages/boosters/BoosterYpalWrap.tsx": "b7b41b57a9e10a27ec17ff24e006635c1a73e690fd83d64f47d4a01f979f61e7",
+    "apps/yunipals-home-web/scripts/test-ypal-wrap-ui.mjs": "34264c9a37c83e4c6deb067ac6f78e896ae3b4241bb7c05806648707d6e9c8ea"
+  },
+  "verification": {
+    "helperControls": 11,
+    "actualComponentBrowserGroups": 14,
+    "frontendTypecheckPassed": true,
+    "prettierPassed": true,
+    "browserReportSha256": "7b304df94f5d1468d8bd815d189962317287af4ee73c8c1fb1f9e37bf9994b6f",
+    "helperLogSha256": "48b226bfed5576e867c3b6251032ccc7ced04f11684795df933745942b42956e",
+    "typecheckLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "checks": [
+      "Inactive deployment renders no panel and performs no wallet or RPC reads",
+      "Exact PMON approval and 1:1 wrapping are two separately reviewed sends",
+      "Existing sufficient allowance wraps directly with one send",
+      "Zero, too many decimals and insufficient PMON cannot prepare",
+      "Wrong deployed runtime fails closed",
+      "Pending hash survives reload, blocks sends and resolves only its canonical receipt",
+      "Canonical repriced receipt resolves without another automatic send",
+      "Canonical cancel receipt resolves without another automatic send",
+      "Canonical revert receipt resolves without another automatic send",
+      "Deferred final network invalidation makes zero wallet-entry attempts",
+      "Deferred final account invalidation makes zero wallet-entry attempts",
+      "Deferred final dismiss invalidation makes zero wallet-entry attempts",
+      "Deferred final unmount invalidation makes zero wallet-entry attempts",
+      "Deferred final provider-network invalidation makes zero wallet-entry attempts"
+    ],
+    "browserErrors": [],
+    "externalRequests": [],
+    "screenshots": {
+      "yunipals-ypal-wrap-desktop-20261023.png": "c370766ad78b821dc2b627567cff86cd5f3533bab99a9a4fef9a46162ff09f5b",
+      "yunipals-ypal-wrap-mobile-review-20261023.png": "0437c1addc25a81c1807148b4a225219c30569a8f7df63f5819a2ab27db0f043"
+    },
+    "actualAppCssLoaded": true,
+    "mobileHorizontalOverflow": false,
+    "feeLabel": "Estimated network fee",
+    "screenshotsVisuallyReviewed": true
+  },
+  "behavior": {
+    "pendingDeploymentNoUiOrRpc": true,
+    "exactApprovalThenSeparateWrap": true,
+    "existingAllowanceDirectWrap": true,
+    "decimalPlaces": 18,
+    "oneToOne": true,
+    "nativeValueWei": "0",
+    "reviewLifetimeSeconds": 120,
+    "receiptRequiresBackingAndMint": true,
+    "awayBackAndUnmountWalletEntryAttempts": 0
+  },
+  "limits": {
+    "backendAcceptanceRequiredBeforeActivation": true,
+    "sharedFrontendWiringOwnedByParent": true,
+    "liveWrappingOrSigningPerformed": false,
+    "unwrapUiIncluded": false,
+    "independentReview": "pending"
+  },
+  "actions": {
+    "realTransactions": 0,
+    "realSignatures": 0,
+    "providerCalls": 0,
+    "productionWrites": 0
+  }
+}

@@ -2,6 +2,7 @@ import type { Pool } from "pg";
 import { getAddress, type Address, type Hex } from "viem";
 
 import { BnbOrderError, type BnbAsset } from "@/bnb/orders";
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { indexedTokenHiddenSql } from "@/reads/visibility";
 
 export type IndexedBnbAsset = {
@@ -17,6 +18,36 @@ export async function readIndexedBnbAsset(
   pool: Pool,
   asset: BnbAsset
 ): Promise<IndexedBnbAsset> {
+  const shared = marketplaceOwnershipIndexer();
+  if (shared) {
+    try {
+      const result = await shared.token(pool, {
+        ...asset,
+        chain: "bnb",
+        chainId: 56
+      });
+      if (!result) throw new BnbOrderError("asset_not_indexed", 503);
+      const { token, hidden, checkpoint } = result;
+      return {
+        owner: getAddress(token.owner),
+        lifecycle: token.lifecycle,
+        hidden,
+        burned: token.burned,
+        lastTransfer: {
+          blockNumber: BigInt(token.last_transfer_block),
+          transactionHash: token.last_transaction_hash as Hex
+        },
+        checkpoint: {
+          number: checkpoint.number,
+          hash: checkpoint.hash as Hex,
+          updatedAt: new Date(checkpoint.heartbeatAt)
+        }
+      };
+    } catch (error) {
+      if (error instanceof BnbOrderError) throw error;
+      throw new BnbOrderError("indexer_unavailable", 503);
+    }
+  }
   const result = await pool.query<{
     owner: string;
     lifecycle: number;

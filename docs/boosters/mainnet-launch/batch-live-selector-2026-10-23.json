@@ -1,0 +1,30 @@
+{
+  "format": "yunipals-live-ten-pack-selector-v1",
+  "at": "2026-10-23T14:42:19.322Z",
+  "origin": "https://www.yunipals.com",
+  "checks": [
+    "Live proxy capability enables plus button with maximum10",
+    "Selecting3 packs updates totalprice to3PROTO",
+    "Ten-pack upper bound and decrement behave correctly"
+  ],
+  "errors": [],
+  "walletConnections": 0,
+  "transactions": 0,
+  "readRpcRequests": 2,
+  "blockedMethods": [
+    "non-RPC POST"
+  ],
+  "rpcResponses": [
+    {
+      "status": 200,
+      "errorCode": null,
+      "resultLength": 66
+    },
+    {
+      "status": 200,
+      "errorCode": null,
+      "resultLength": 450
+    }
+  ],
+  "passed": true
+}

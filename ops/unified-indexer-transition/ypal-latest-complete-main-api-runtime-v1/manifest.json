@@ -1,0 +1,824 @@
+{
+  "format": "yunipals-ypal-latest-complete-main-api-runtime-v1",
+  "predecessorSourceDigest": "41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b",
+  "predecessorManifestSha256": "6e678bbd24a69202de7084b47901295effc82fa075831cf3cdf97b5e75030801",
+  "scope": "main_api_latest_complete_readiness_only",
+  "apiOnly": true,
+  "automaticExecution": false,
+  "marketplaceReceiptBehaviorChanged": false,
+  "predecessorConsumerArtifact": "40e35c622534b9030622759116cf3b85361ad914211a76a7fd47ee06b60968f9",
+  "installedConsumerRuntimeUnmodified": true,
+  "publicApprovalTtlChanged": false,
+  "nativeWritePrivilegesAdded": false,
+  "predecessorConsumerManifestSha256": "986a288dcebe5e7ce910b36d83f97178ce7c47336a0e9910e0d013e3ff3e347a",
+  "compiler": {
+    "node": "24.18.1",
+    "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+    "esbuild": "0.25.12",
+    "files": [
+      {
+        "role": "javascript",
+        "bytes": 88706,
+        "sha256": "0d1241812c443111d39475dfc66836003e9ef8b87e54d990dd67df29d20010e1"
+      },
+      {
+        "role": "package",
+        "bytes": 1490,
+        "sha256": "cb7d5b1fe478f8cbaae566a86031b6fdf5f7d444354f35d1cb3cba9adf6d2935"
+      },
+      {
+        "role": "native",
+        "bytes": 10358936,
+        "sha256": "bab29b2ca7a9e89b67cf720b77b2d743f9f31f5cf0d5bd74ee8c8de30ced7014"
+      }
+    ]
+  },
+  "configuration": {
+    "entryPoints": {
+      "main-api": "lib/api/server.ts"
+    },
+    "outdir": "dist",
+    "outExtension": {
+      ".js": ".mjs"
+    },
+    "bundle": true,
+    "platform": "node",
+    "format": "esm",
+    "target": "node24",
+    "external": [
+      "@hono/node-server",
+      "drizzle-orm",
+      "hono",
+      "pg",
+      "ponder",
+      "tslib",
+      "tsx",
+      "viem",
+      "zod",
+      "@polkamon/util-essentials",
+      "@polkamon/web3-util-core",
+      "@polkamon/web3-util-pmons"
+    ],
+    "banner": {
+      "js": "import { createRequire as __runtimeCreateRequire } from \"node:module\"; const require = __runtimeCreateRequire(import.meta.url);"
+    },
+    "sourcemap": true,
+    "metafile": true,
+    "write": false
+  },
+  "builderSha256": "2542be97ea63e0f0bab5716a78646f9c9802a806cacaf95b118b5da004364d24",
+  "predecessorInputSubstitutions": [
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "packages/yunipals-market-core/package.json",
+      "sha256": "9570b4333acf2407f819cb66923d59ec1aeb7b3475b46527a34d52d101a16617",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "apps/yunipals-indexer/package.json",
+      "sha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-openapi.ts",
+      "sha256": "6461925aee7c911de00b76e7cbfa8cd526222cffee71ad689e82c06bf6c8f176",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-routes.ts",
+      "sha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/leaderboard/refresh.ts",
+      "sha256": "17ac61e71a8b3666a3aea5cefbc23eb22a26bc2bc89eeb8ffcbb35a8b1848b73",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "sha256": "5762994995aee7dcf0d80197a2784054d7acb49f83d32b7ad01ff69d0995396a",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosters.ts",
+      "sha256": "5d6dc7ad01e1770837840f8b71ab740cbf9bc06e210f3f8500c5234e0df4fd1e",
+      "purpose": "preserve_acknowledged_consumer_behavior"
+    }
+  ],
+  "externalImports": [
+    "@hono/node-server",
+    "@polkamon/web3-util-core/src/lib/ids/nfb.js",
+    "@polkamon/web3-util-pmons/src/lib/attributeRepository/transforming/AttributeTransforming.js",
+    "@polkamon/web3-util-pmons/src/lib/attributeRepository/transforming/PublicAttributeTransforming.js",
+    "@polkamon/web3-util-pmons/src/lib/legacy/chain.js",
+    "@polkamon/web3-util-pmons/src/lib/rarity/rarity.js",
+    "@polkamon/web3-util-pmons/src/lib/type/rainbowType.js",
+    "hono",
+    "hono/body-limit",
+    "hono/cors",
+    "node:async_hooks",
+    "node:crypto",
+    "node:fs/promises",
+    "node:module",
+    "node:path",
+    "node:url",
+    "pg",
+    "viem",
+    "viem/chains",
+    "viem/ens",
+    "zod"
+  ],
+  "metafileSha256": "7e254e7d00bf56ee69bf0cae988bc4a724f9dc0628295f1c9d8b04226e0693ba",
+  "requiredWorkingDirectory": "/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer",
+  "commandMapping": [
+    {
+      "source": "apps/yunipals-indexer/lib/api/server.ts",
+      "artifact": "dist/main-api.mjs",
+      "nodeArguments": [],
+      "preserveCallerArguments": false
+    }
+  ],
+  "inputs": [
+    {
+      "path": "apps/yunipals-indexer/lib/api/action-evidence-routes.ts",
+      "bytes": 2692,
+      "sha256": "1f0ef948242879fb6b7fc64f77092bffb0183d1282023fbabb7e6ebf22c0b451",
+      "predecessorSha256": "1f0ef948242879fb6b7fc64f77092bffb0183d1282023fbabb7e6ebf22c0b451",
+      "previousConsumerSha256": "1f0ef948242879fb6b7fc64f77092bffb0183d1282023fbabb7e6ebf22c0b451"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-openapi.ts",
+      "bytes": 3320,
+      "sha256": "6461925aee7c911de00b76e7cbfa8cd526222cffee71ad689e82c06bf6c8f176",
+      "predecessorSha256": "6461925aee7c911de00b76e7cbfa8cd526222cffee71ad689e82c06bf6c8f176",
+      "previousConsumerSha256": "6461925aee7c911de00b76e7cbfa8cd526222cffee71ad689e82c06bf6c8f176"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-routes.ts",
+      "bytes": 8824,
+      "sha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981",
+      "predecessorSha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981",
+      "previousConsumerSha256": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/cached-exact-count.ts",
+      "bytes": 1868,
+      "sha256": "eca188177efde48347ccaf7beaef5448829bf4f8afa009c3a175ab3d0cd96b90",
+      "predecessorSha256": "eca188177efde48347ccaf7beaef5448829bf4f8afa009c3a175ab3d0cd96b90",
+      "previousConsumerSha256": "eca188177efde48347ccaf7beaef5448829bf4f8afa009c3a175ab3d0cd96b90"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/chains.ts",
+      "bytes": 771,
+      "sha256": "e194e72456e4fa16d7531f1c2febe6e49f8cb91877ff070fa925d8c00eda5ed2",
+      "predecessorSha256": "e194e72456e4fa16d7531f1c2febe6e49f8cb91877ff070fa925d8c00eda5ed2",
+      "previousConsumerSha256": "e194e72456e4fa16d7531f1c2febe6e49f8cb91877ff070fa925d8c00eda5ed2"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-filters.ts",
+      "bytes": 5430,
+      "sha256": "d9f1733e0fdac3a4756a3c1f9de2c960c012fddae2dce371e97ea22bf859005a",
+      "predecessorSha256": "d9f1733e0fdac3a4756a3c1f9de2c960c012fddae2dce371e97ea22bf859005a",
+      "previousConsumerSha256": "d9f1733e0fdac3a4756a3c1f9de2c960c012fddae2dce371e97ea22bf859005a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-query.ts",
+      "bytes": 11221,
+      "sha256": "948ec652f10728a00360cbce569fb0d56a78a40d94cbe47470bdd73aa69b3af5",
+      "predecessorSha256": "948ec652f10728a00360cbce569fb0d56a78a40d94cbe47470bdd73aa69b3af5",
+      "previousConsumerSha256": "948ec652f10728a00360cbce569fb0d56a78a40d94cbe47470bdd73aa69b3af5"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-routes.ts",
+      "bytes": 4163,
+      "sha256": "d74ba11e23ab5c2fa18b94c67a03520fbfb0fa2468ac6b5f1a0a890145fc355e",
+      "predecessorSha256": "d74ba11e23ab5c2fa18b94c67a03520fbfb0fa2468ac6b5f1a0a890145fc355e",
+      "previousConsumerSha256": "d74ba11e23ab5c2fa18b94c67a03520fbfb0fa2468ac6b5f1a0a890145fc355e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/exact-count-cache.ts",
+      "bytes": 1298,
+      "sha256": "40139a8e354ae6b3333d5f11203034e5a367cd71c0358fd699e81b0faf051d4d",
+      "predecessorSha256": "40139a8e354ae6b3333d5f11203034e5a367cd71c0358fd699e81b0faf051d4d",
+      "previousConsumerSha256": "40139a8e354ae6b3333d5f11203034e5a367cd71c0358fd699e81b0faf051d4d"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/indexer-status.ts",
+      "bytes": 3975,
+      "sha256": "ad35afedb45b620b582d32a17e0f9efe382db9387d8c16726fdf46543ef1de4c",
+      "predecessorSha256": "ad35afedb45b620b582d32a17e0f9efe382db9387d8c16726fdf46543ef1de4c",
+      "previousConsumerSha256": "ad35afedb45b620b582d32a17e0f9efe382db9387d8c16726fdf46543ef1de4c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/islands-openapi.ts",
+      "bytes": 5323,
+      "sha256": "e765dc32673aa9727c5224f317619b1203dde8b776cfd7c5b6a0b53c830b3347",
+      "predecessorSha256": "e765dc32673aa9727c5224f317619b1203dde8b776cfd7c5b6a0b53c830b3347",
+      "previousConsumerSha256": "e765dc32673aa9727c5224f317619b1203dde8b776cfd7c5b6a0b53c830b3347"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/islands-routes.ts",
+      "bytes": 15850,
+      "sha256": "e646f0cea8a6d2420a1c3d5ceb27bf73fda448caee772ad5ddbcf7834b50e283",
+      "predecessorSha256": "e646f0cea8a6d2420a1c3d5ceb27bf73fda448caee772ad5ddbcf7834b50e283",
+      "previousConsumerSha256": "e646f0cea8a6d2420a1c3d5ceb27bf73fda448caee772ad5ddbcf7834b50e283"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/legacy-metadata.ts",
+      "bytes": 6815,
+      "sha256": "b23921813b874ab984feffca0c6d5b98ff4c815f280d0554586442b11289a135",
+      "predecessorSha256": "b23921813b874ab984feffca0c6d5b98ff4c815f280d0554586442b11289a135",
+      "previousConsumerSha256": "b23921813b874ab984feffca0c6d5b98ff4c815f280d0554586442b11289a135"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/openapi.ts",
+      "bytes": 24212,
+      "sha256": "6e2964e6d35f63e1ecc458559af4171ef7ef6a79392899d9bf5e8a175c80103a",
+      "predecessorSha256": "6e2964e6d35f63e1ecc458559af4171ef7ef6a79392899d9bf5e8a175c80103a",
+      "previousConsumerSha256": "6e2964e6d35f63e1ecc458559af4171ef7ef6a79392899d9bf5e8a175c80103a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/rarity-page-query.ts",
+      "bytes": 6803,
+      "sha256": "c0353fb6f1093132f70bbcc3cacc1e7b6f80b522e22933d1569c5630b5df0d87",
+      "predecessorSha256": "c0353fb6f1093132f70bbcc3cacc1e7b6f80b522e22933d1569c5630b5df0d87",
+      "previousConsumerSha256": "c0353fb6f1093132f70bbcc3cacc1e7b6f80b522e22933d1569c5630b5df0d87"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/server.ts",
+      "bytes": 71015,
+      "sha256": "d70ab36ffe147bbd96f08cc57d2f8d01706ee2181dea070776b19caeecd80db1",
+      "predecessorSha256": "d70ab36ffe147bbd96f08cc57d2f8d01706ee2181dea070776b19caeecd80db1",
+      "previousConsumerSha256": "d70ab36ffe147bbd96f08cc57d2f8d01706ee2181dea070776b19caeecd80db1"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/trait-count-query.ts",
+      "bytes": 2202,
+      "sha256": "d07087d525d34cecc4c8e5d346e358f425603974e0ba21320561b49525843c82",
+      "predecessorSha256": "d07087d525d34cecc4c8e5d346e358f425603974e0ba21320561b49525843c82",
+      "previousConsumerSha256": "d07087d525d34cecc4c8e5d346e358f425603974e0ba21320561b49525843c82"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/visibility-query.ts",
+      "bytes": 1529,
+      "sha256": "04717dc4cbe1d58e7a27582cf8be2b52de2657d899d0a2540a5defb721380e0e",
+      "predecessorSha256": "04717dc4cbe1d58e7a27582cf8be2b52de2657d899d0a2540a5defb721380e0e",
+      "previousConsumerSha256": "04717dc4cbe1d58e7a27582cf8be2b52de2657d899d0a2540a5defb721380e0e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/visibility.ts",
+      "bytes": 2270,
+      "sha256": "8d78d6d3d2f786588cfd59fcb736703ebaa83a318d971860152b147240d5496b",
+      "predecessorSha256": "8d78d6d3d2f786588cfd59fcb736703ebaa83a318d971860152b147240d5496b",
+      "previousConsumerSha256": "8d78d6d3d2f786588cfd59fcb736703ebaa83a318d971860152b147240d5496b"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/boosters/artwork.ts",
+      "bytes": 8209,
+      "sha256": "be9cbab4aa7e82893adc1a14c929f893bb9e0367010395ed1b44734db954cf7d",
+      "predecessorSha256": "be9cbab4aa7e82893adc1a14c929f893bb9e0367010395ed1b44734db954cf7d",
+      "previousConsumerSha256": "be9cbab4aa7e82893adc1a14c929f893bb9e0367010395ed1b44734db954cf7d"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/boosters/config.ts",
+      "bytes": 2183,
+      "sha256": "eba43d7cb6df3bab3d4e4627523fc0984a602a4996159e1ebb6f3a08e8a34e01",
+      "predecessorSha256": "eba43d7cb6df3bab3d4e4627523fc0984a602a4996159e1ebb6f3a08e8a34e01",
+      "previousConsumerSha256": "eba43d7cb6df3bab3d4e4627523fc0984a602a4996159e1ebb6f3a08e8a34e01"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/constants.ts",
+      "bytes": 2996,
+      "sha256": "31d4c01cb192d54085e26d18f7d7323c82ef54168f98b9c4c916610fe13e8e7a",
+      "predecessorSha256": "31d4c01cb192d54085e26d18f7d7323c82ef54168f98b9c4c916610fe13e8e7a",
+      "previousConsumerSha256": "31d4c01cb192d54085e26d18f7d7323c82ef54168f98b9c4c916610fe13e8e7a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ens/resolver.ts",
+      "bytes": 3805,
+      "sha256": "f65d679ba7933ae6a95de656168cd08b7acf176a740f1628726ec21bd5b280b9",
+      "predecessorSha256": "f65d679ba7933ae6a95de656168cd08b7acf176a740f1628726ec21bd5b280b9",
+      "previousConsumerSha256": "f65d679ba7933ae6a95de656168cd08b7acf176a740f1628726ec21bd5b280b9"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/base-readiness.ts",
+      "bytes": 1444,
+      "sha256": "90823c2f4118cab4a0082f42201233a233aeed94ad0cedff709ad1c51e53fe1c",
+      "predecessorSha256": "90823c2f4118cab4a0082f42201233a233aeed94ad0cedff709ad1c51e53fe1c",
+      "previousConsumerSha256": "90823c2f4118cab4a0082f42201233a233aeed94ad0cedff709ad1c51e53fe1c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/collections.ts",
+      "bytes": 2634,
+      "sha256": "3432c440996fe29bfb32e1ddbbf20d1a563dab88f2c57468cebfcacd67a68b5f",
+      "predecessorSha256": "3432c440996fe29bfb32e1ddbbf20d1a563dab88f2c57468cebfcacd67a68b5f",
+      "previousConsumerSha256": "3432c440996fe29bfb32e1ddbbf20d1a563dab88f2c57468cebfcacd67a68b5f"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/metadata.ts",
+      "bytes": 3894,
+      "sha256": "80dad7159358dab8da9fabddfce2d043688d491f6e2e05fbf888e34157cc0109",
+      "predecessorSha256": "80dad7159358dab8da9fabddfce2d043688d491f6e2e05fbf888e34157cc0109",
+      "previousConsumerSha256": "80dad7159358dab8da9fabddfce2d043688d491f6e2e05fbf888e34157cc0109"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/queries.ts",
+      "bytes": 3204,
+      "sha256": "98c28ecb0125abf4530383527cdf13569aca1a38a8ec706089b59a4c876e060e",
+      "predecessorSha256": "98c28ecb0125abf4530383527cdf13569aca1a38a8ec706089b59a4c876e060e",
+      "previousConsumerSha256": "98c28ecb0125abf4530383527cdf13569aca1a38a8ec706089b59a4c876e060e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/read-model.ts",
+      "bytes": 3678,
+      "sha256": "aa4dd51aeea61d3562dd6824283170c99daa56e995345146e661dfc6b091097c",
+      "predecessorSha256": "aa4dd51aeea61d3562dd6824283170c99daa56e995345146e661dfc6b091097c",
+      "previousConsumerSha256": "aa4dd51aeea61d3562dd6824283170c99daa56e995345146e661dfc6b091097c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/readiness.ts",
+      "bytes": 3170,
+      "sha256": "39694a792a43ce24b96133fa6eb0de2da1a8aa7f2154b26f4565614d135d1338",
+      "predecessorSha256": "39694a792a43ce24b96133fa6eb0de2da1a8aa7f2154b26f4565614d135d1338",
+      "previousConsumerSha256": "39694a792a43ce24b96133fa6eb0de2da1a8aa7f2154b26f4565614d135d1338"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/staking-read.ts",
+      "bytes": 4055,
+      "sha256": "ed4ad53b6a19430cbb3c172cbc249ea867cfdd1ef37733dcaf220b54b8dcf1b1",
+      "predecessorSha256": "ed4ad53b6a19430cbb3c172cbc249ea867cfdd1ef37733dcaf220b54b8dcf1b1",
+      "previousConsumerSha256": "ed4ad53b6a19430cbb3c172cbc249ea867cfdd1ef37733dcaf220b54b8dcf1b1"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/leaderboard/refresh.ts",
+      "bytes": 15218,
+      "sha256": "17ac61e71a8b3666a3aea5cefbc23eb22a26bc2bc89eeb8ffcbb35a8b1848b73",
+      "predecessorSha256": "17ac61e71a8b3666a3aea5cefbc23eb22a26bc2bc89eeb8ffcbb35a8b1848b73",
+      "previousConsumerSha256": "17ac61e71a8b3666a3aea5cefbc23eb22a26bc2bc89eeb8ffcbb35a8b1848b73"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/base-abi.ts",
+      "bytes": 648,
+      "sha256": "51d3b976323b59057e9b0f97b22e163aa71edf45f32e907681ecc9bda760be46",
+      "predecessorSha256": "51d3b976323b59057e9b0f97b22e163aa71edf45f32e907681ecc9bda760be46",
+      "previousConsumerSha256": "51d3b976323b59057e9b0f97b22e163aa71edf45f32e907681ecc9bda760be46"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/base-mode.ts",
+      "bytes": 1419,
+      "sha256": "6fe2cb1847a587bd9d046d4f506ad6de1f22cd56cf3adb4211faf8330eccefc4",
+      "predecessorSha256": "6fe2cb1847a587bd9d046d4f506ad6de1f22cd56cf3adb4211faf8330eccefc4",
+      "previousConsumerSha256": "6fe2cb1847a587bd9d046d4f506ad6de1f22cd56cf3adb4211faf8330eccefc4"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/chain-readiness.ts",
+      "bytes": 2294,
+      "sha256": "bac3809856cd19deb936b3226eb27550f40196904b551c81f7cd2df18046e81c",
+      "predecessorSha256": "bac3809856cd19deb936b3226eb27550f40196904b551c81f7cd2df18046e81c",
+      "previousConsumerSha256": "bac3809856cd19deb936b3226eb27550f40196904b551c81f7cd2df18046e81c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/projection-mode.ts",
+      "bytes": 315,
+      "sha256": "b64bbbd5f7b13f466a0bb5d61f6b55d2d487b598e2431bebe1a3b72990b5dc1e",
+      "predecessorSha256": "b64bbbd5f7b13f466a0bb5d61f6b55d2d487b598e2431bebe1a3b72990b5dc1e",
+      "previousConsumerSha256": "b64bbbd5f7b13f466a0bb5d61f6b55d2d487b598e2431bebe1a3b72990b5dc1e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/projection-refresh.ts",
+      "bytes": 17898,
+      "sha256": "5762994995aee7dcf0d80197a2784054d7acb49f83d32b7ad01ff69d0995396a",
+      "predecessorSha256": "5762994995aee7dcf0d80197a2784054d7acb49f83d32b7ad01ff69d0995396a",
+      "previousConsumerSha256": "5762994995aee7dcf0d80197a2784054d7acb49f83d32b7ad01ff69d0995396a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/publication.ts",
+      "bytes": 3915,
+      "sha256": "e23603244cd40eeff087e48ba792fdb40aa471e4cd57fdd436ae5f0549ca582e",
+      "predecessorSha256": "e23603244cd40eeff087e48ba792fdb40aa471e4cd57fdd436ae5f0549ca582e",
+      "previousConsumerSha256": "e23603244cd40eeff087e48ba792fdb40aa471e4cd57fdd436ae5f0549ca582e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-cache.ts",
+      "bytes": 11767,
+      "sha256": "9668ace2d6e33a0c5813326d2ddf17cff23bebfaea309765e5f08add988e5b39",
+      "predecessorSha256": "9668ace2d6e33a0c5813326d2ddf17cff23bebfaea309765e5f08add988e5b39",
+      "previousConsumerSha256": "9668ace2d6e33a0c5813326d2ddf17cff23bebfaea309765e5f08add988e5b39"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-source.ts",
+      "bytes": 14058,
+      "sha256": "1c80f8ca18c609c8a47e164730aa5409ea2a9a65c2697bac4498c2ab1ba63208",
+      "predecessorSha256": "1c80f8ca18c609c8a47e164730aa5409ea2a9a65c2697bac4498c2ab1ba63208",
+      "previousConsumerSha256": "1c80f8ca18c609c8a47e164730aa5409ea2a9a65c2697bac4498c2ab1ba63208"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/render/legacy.cjs",
+      "bytes": 934,
+      "sha256": "045eac5986073402b2082e527305237e5e5aeaca4193626b302797a5fe92d706",
+      "predecessorSha256": "045eac5986073402b2082e527305237e5e5aeaca4193626b302797a5fe92d706",
+      "previousConsumerSha256": "045eac5986073402b2082e527305237e5e5aeaca4193626b302797a5fe92d706"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/render/origins.ts",
+      "bytes": 2043,
+      "sha256": "ba6d3672e1a0497fe8d1839615b54227f258856187d41a49fda6a0cf74ca25aa",
+      "predecessorSha256": "ba6d3672e1a0497fe8d1839615b54227f258856187d41a49fda6a0cf74ca25aa",
+      "previousConsumerSha256": "ba6d3672e1a0497fe8d1839615b54227f258856187d41a49fda6a0cf74ca25aa"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/render/snapshot.ts",
+      "bytes": 5206,
+      "sha256": "c3e8b207755e79255a132a781e54acf08cc13179a20ffb1b7ebbeec6cd9ed605",
+      "predecessorSha256": "c3e8b207755e79255a132a781e54acf08cc13179a20ffb1b7ebbeec6cd9ed605",
+      "previousConsumerSha256": "c3e8b207755e79255a132a781e54acf08cc13179a20ffb1b7ebbeec6cd9ed605"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/resolve.ts",
+      "bytes": 12055,
+      "sha256": "1804694446c33722499ac81b750092d04e601a3a9d519f337f26e25b1adc747d",
+      "predecessorSha256": "1804694446c33722499ac81b750092d04e601a3a9d519f337f26e25b1adc747d",
+      "previousConsumerSha256": "1804694446c33722499ac81b750092d04e601a3a9d519f337f26e25b1adc747d"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/archive.ts",
+      "bytes": 5700,
+      "sha256": "5260ec684e177486181890667418f83acaff85fee704f317e2560f899fa36bb5",
+      "predecessorSha256": "5260ec684e177486181890667418f83acaff85fee704f317e2560f899fa36bb5",
+      "previousConsumerSha256": "5260ec684e177486181890667418f83acaff85fee704f317e2560f899fa36bb5"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/base-events.ts",
+      "bytes": 6833,
+      "sha256": "a800dbd5d8578238b30fcf8f982e87d6d03dc862b62db75c8b9049fb7d133c39",
+      "predecessorSha256": "a800dbd5d8578238b30fcf8f982e87d6d03dc862b62db75c8b9049fb7d133c39",
+      "previousConsumerSha256": "a800dbd5d8578238b30fcf8f982e87d6d03dc862b62db75c8b9049fb7d133c39"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/bindings.ts",
+      "bytes": 10935,
+      "sha256": "d615eb5dc8a4f00d3cf852d09a8c79283e40e920e1110d88654088e481190dd3",
+      "predecessorSha256": "d615eb5dc8a4f00d3cf852d09a8c79283e40e920e1110d88654088e481190dd3",
+      "previousConsumerSha256": "d615eb5dc8a4f00d3cf852d09a8c79283e40e920e1110d88654088e481190dd3"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/canonical.ts",
+      "bytes": 1438,
+      "sha256": "dd21d236e478925c161768f93ed299ebfdd20747ac2908cc276ec336b0b93168",
+      "predecessorSha256": "dd21d236e478925c161768f93ed299ebfdd20747ac2908cc276ec336b0b93168",
+      "previousConsumerSha256": "dd21d236e478925c161768f93ed299ebfdd20747ac2908cc276ec336b0b93168"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/ejson.ts",
+      "bytes": 1583,
+      "sha256": "d40875ebf1b329a0280d6f46a6ba6128f740f952da8f47c4a14bc9b2a3ac7f6b",
+      "predecessorSha256": "d40875ebf1b329a0280d6f46a6ba6128f740f952da8f47c4a14bc9b2a3ac7f6b",
+      "previousConsumerSha256": "d40875ebf1b329a0280d6f46a6ba6128f740f952da8f47c4a14bc9b2a3ac7f6b"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/read.ts",
+      "bytes": 4924,
+      "sha256": "02d0b87a815cb3ffbc05b6bf8e90bbd13434692754cf5905bcf3b42b5c9d2c80",
+      "predecessorSha256": "02d0b87a815cb3ffbc05b6bf8e90bbd13434692754cf5905bcf3b42b5c9d2c80",
+      "previousConsumerSha256": "02d0b87a815cb3ffbc05b6bf8e90bbd13434692754cf5905bcf3b42b5c9d2c80"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/source/supplemental.ts",
+      "bytes": 5806,
+      "sha256": "bdfbcfc86411445d52f23883f554665d10bb36836234d2baec3f279400a044ba",
+      "predecessorSha256": "bdfbcfc86411445d52f23883f554665d10bb36836234d2baec3f279400a044ba",
+      "previousConsumerSha256": "bdfbcfc86411445d52f23883f554665d10bb36836234d2baec3f279400a044ba"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/status.ts",
+      "bytes": 3597,
+      "sha256": "fb3ac62b146ad452a152e72877e3eb77b1722069d2dce33a4c4c164ca4c14967",
+      "predecessorSha256": "fb3ac62b146ad452a152e72877e3eb77b1722069d2dce33a4c4c164ca4c14967",
+      "previousConsumerSha256": "fb3ac62b146ad452a152e72877e3eb77b1722069d2dce33a4c4c164ca4c14967"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/offchain/db.ts",
+      "bytes": 2159,
+      "sha256": "dabd32c5782fe07d7367795dd58437d00ac3e063ea60b158429698ab03d44390",
+      "predecessorSha256": "dabd32c5782fe07d7367795dd58437d00ac3e063ea60b158429698ab03d44390",
+      "previousConsumerSha256": "dabd32c5782fe07d7367795dd58437d00ac3e063ea60b158429698ab03d44390"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/offchain/read-snapshot.ts",
+      "bytes": 4431,
+      "sha256": "22fe3dc97144e49b123ee17bb662a6a6387d420ccdcab877eb46f4132b269f53",
+      "predecessorSha256": "22fe3dc97144e49b123ee17bb662a6a6387d420ccdcab877eb46f4132b269f53",
+      "previousConsumerSha256": "22fe3dc97144e49b123ee17bb662a6a6387d420ccdcab877eb46f4132b269f53"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/offchain/sql.ts",
+      "bytes": 1776,
+      "sha256": "251f41c2c6f818b52e195713cfb5957281f50cda588f976d103bc108d3095510",
+      "predecessorSha256": "251f41c2c6f818b52e195713cfb5957281f50cda588f976d103bc108d3095510",
+      "previousConsumerSha256": "251f41c2c6f818b52e195713cfb5957281f50cda588f976d103bc108d3095510"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/derived-snapshot.ts",
+      "bytes": 1872,
+      "sha256": "4f2b79acdb3f37e8c3bcbcd50a2e2c17de1aac24116c7ecee79f089be829e8ac",
+      "predecessorSha256": "4f2b79acdb3f37e8c3bcbcd50a2e2c17de1aac24116c7ecee79f089be829e8ac",
+      "previousConsumerSha256": "4f2b79acdb3f37e8c3bcbcd50a2e2c17de1aac24116c7ecee79f089be829e8ac"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/projection-proof.ts",
+      "bytes": 677,
+      "sha256": "d42b4405fcd7daff620f7c016304e9cd95c7b44d5d05ea715b2601cff49767bd",
+      "predecessorSha256": "d42b4405fcd7daff620f7c016304e9cd95c7b44d5d05ea715b2601cff49767bd",
+      "previousConsumerSha256": "d42b4405fcd7daff620f7c016304e9cd95c7b44d5d05ea715b2601cff49767bd"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/read-mode.ts",
+      "bytes": 1530,
+      "sha256": "de6f87fcdaa9af5b526f3e221c0efa8c98b3218f8373c702d287117baae68f05",
+      "predecessorSha256": "de6f87fcdaa9af5b526f3e221c0efa8c98b3218f8373c702d287117baae68f05",
+      "previousConsumerSha256": "de6f87fcdaa9af5b526f3e221c0efa8c98b3218f8373c702d287117baae68f05"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/readiness.ts",
+      "bytes": 6276,
+      "sha256": "bc99f986bb4db425d862901ffadc0cc5b6f09cefedc4724cd199a7560401fe5a",
+      "predecessorSha256": "bc99f986bb4db425d862901ffadc0cc5b6f09cefedc4724cd199a7560401fe5a",
+      "previousConsumerSha256": "bc99f986bb4db425d862901ffadc0cc5b6f09cefedc4724cd199a7560401fe5a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/request-snapshot.ts",
+      "bytes": 147,
+      "sha256": "2632b4f1b291d0776180a7ee3cc68d1b30b1f8e2784b6418ed06ab1869a6cb73",
+      "predecessorSha256": "2632b4f1b291d0776180a7ee3cc68d1b30b1f8e2784b6418ed06ab1869a6cb73",
+      "previousConsumerSha256": "2632b4f1b291d0776180a7ee3cc68d1b30b1f8e2784b6418ed06ab1869a6cb73"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/rarity/calculate.ts",
+      "bytes": 3155,
+      "sha256": "725b2a34305f0a3d960c4491d99de4412783a14ece582de42067a6283224f413",
+      "predecessorSha256": "725b2a34305f0a3d960c4491d99de4412783a14ece582de42067a6283224f413",
+      "previousConsumerSha256": "725b2a34305f0a3d960c4491d99de4412783a14ece582de42067a6283224f413"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/rarity/legacy.cjs",
+      "bytes": 408,
+      "sha256": "1ae02993a70fcfb11e22e7fd923f8c8c34f65e544bb9a533f02f096bae3cd34b",
+      "predecessorSha256": "1ae02993a70fcfb11e22e7fd923f8c8c34f65e544bb9a533f02f096bae3cd34b",
+      "previousConsumerSha256": "1ae02993a70fcfb11e22e7fd923f8c8c34f65e544bb9a533f02f096bae3cd34b"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/rarity/read-source.ts",
+      "bytes": 1394,
+      "sha256": "06ae12148cd327975254d3742c6272b934701fcb73f1e3d4e4774ea3ad4caff8",
+      "predecessorSha256": "06ae12148cd327975254d3742c6272b934701fcb73f1e3d4e4774ea3ad4caff8",
+      "previousConsumerSha256": "06ae12148cd327975254d3742c6272b934701fcb73f1e3d4e4774ea3ad4caff8"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/solana/api.ts",
+      "bytes": 23930,
+      "sha256": "d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31",
+      "predecessorSha256": "d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31",
+      "previousConsumerSha256": "d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/solana/das.ts",
+      "bytes": 6302,
+      "sha256": "dceee1ebbad6be1f3e1a0b83420a6b4468301692f7395e80c058b643f7e9e4b9",
+      "predecessorSha256": "dceee1ebbad6be1f3e1a0b83420a6b4468301692f7395e80c058b643f7e9e4b9",
+      "previousConsumerSha256": "dceee1ebbad6be1f3e1a0b83420a6b4468301692f7395e80c058b643f7e9e4b9"
+    },
+    {
+      "path": "apps/yunipals-indexer/package.json",
+      "bytes": 8221,
+      "sha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b",
+      "predecessorSha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b",
+      "previousConsumerSha256": "bd4e6ad829f418c9ebc43350861b075e2352e59a348a829baba4f8fee624134b"
+    },
+    {
+      "path": "apps/yunipals-indexer/tsconfig.json",
+      "bytes": 417,
+      "sha256": "a6602b4e1c29bb4fbe20a7e37246b4ca8f8745793a0cf74481e5e84dc659c371",
+      "predecessorSha256": "a6602b4e1c29bb4fbe20a7e37246b4ca8f8745793a0cf74481e5e84dc659c371",
+      "previousConsumerSha256": "a6602b4e1c29bb4fbe20a7e37246b4ca8f8745793a0cf74481e5e84dc659c371"
+    },
+    {
+      "path": "apps/yunipals-market-api/package.json",
+      "bytes": 2882,
+      "sha256": "fc7fb879764842fc63b7692fd1d515a0dccf7927412a3a90b3cfb60d76d109dd",
+      "predecessorSha256": "fc7fb879764842fc63b7692fd1d515a0dccf7927412a3a90b3cfb60d76d109dd",
+      "previousConsumerSha256": "fc7fb879764842fc63b7692fd1d515a0dccf7927412a3a90b3cfb60d76d109dd"
+    },
+    {
+      "path": "package.json",
+      "bytes": 5042,
+      "sha256": "8d97fa0dcc5b77e599c70b9799086c9bd69fe1187bbd68e7ff8569ff6b54ed11",
+      "predecessorSha256": "8d97fa0dcc5b77e599c70b9799086c9bd69fe1187bbd68e7ff8569ff6b54ed11",
+      "previousConsumerSha256": "8d97fa0dcc5b77e599c70b9799086c9bd69fe1187bbd68e7ff8569ff6b54ed11"
+    },
+    {
+      "path": "packages/yunipals-indexer-client/package.json",
+      "bytes": 279,
+      "sha256": "9f58bf51d5b3743bf615b69693882cd9be8ab4e129bc6d8321e302e946fbac96",
+      "predecessorSha256": "9f58bf51d5b3743bf615b69693882cd9be8ab4e129bc6d8321e302e946fbac96",
+      "previousConsumerSha256": "9f58bf51d5b3743bf615b69693882cd9be8ab4e129bc6d8321e302e946fbac96"
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/ponder.ts",
+      "bytes": 2400,
+      "sha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+      "predecessorSha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+      "previousConsumerSha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba"
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/readiness.ts",
+      "bytes": 5274,
+      "sha256": "06b4f87fa9d1446b32d157d215ab45701152552b1b730d84561f8bce244b6aab",
+      "predecessorSha256": "c23e9c2e763d3173582de8211a6bc72236654d87457cd548d445e107e457cff8",
+      "previousConsumerSha256": "c23e9c2e763d3173582de8211a6bc72236654d87457cd548d445e107e457cff8"
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/sources.ts",
+      "bytes": 5002,
+      "sha256": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+      "predecessorSha256": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+      "previousConsumerSha256": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/package.json",
+      "bytes": 638,
+      "sha256": "a83f279e128ae3fe9174d1f8f92801ed4af38e9d93b64192d0f848bc7325f17c",
+      "predecessorSha256": "a83f279e128ae3fe9174d1f8f92801ed4af38e9d93b64192d0f848bc7325f17c",
+      "previousConsumerSha256": "a83f279e128ae3fe9174d1f8f92801ed4af38e9d93b64192d0f848bc7325f17c"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/action-evidence.ts",
+      "bytes": 21158,
+      "sha256": "39ea4712e6a3d1de5a82974439d3bcdb80f4e7f60ad10d6b770a91cd0f75c0fd",
+      "predecessorSha256": "1abaea641e2dda87ef9d9ed5f640ea690ee79e6a238cddfb8de82816fbf8794b",
+      "previousConsumerSha256": "39ea4712e6a3d1de5a82974439d3bcdb80f4e7f60ad10d6b770a91cd0f75c0fd"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/chain-status.ts",
+      "bytes": 1174,
+      "sha256": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3",
+      "predecessorSha256": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3",
+      "previousConsumerSha256": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/database.ts",
+      "bytes": 801,
+      "sha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+      "predecessorSha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+      "previousConsumerSha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/event-topics.ts",
+      "bytes": 671,
+      "sha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a",
+      "predecessorSha256": null,
+      "previousConsumerSha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/identity.ts",
+      "bytes": 1190,
+      "sha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+      "predecessorSha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+      "previousConsumerSha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/ponder-reader.ts",
+      "bytes": 3352,
+      "sha256": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a",
+      "predecessorSha256": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a",
+      "previousConsumerSha256": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/releases.ts",
+      "bytes": 3106,
+      "sha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+      "predecessorSha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+      "previousConsumerSha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/status.ts",
+      "bytes": 4783,
+      "sha256": "e3a46cc4add4678d73723ec3d885d825ae4a95bc93d47506c80832bb6d5d460d",
+      "predecessorSha256": "7abfdd6a8dddecfd9030e62ebf77f4570db6e45f669bce69fdb813c82c190c4a",
+      "previousConsumerSha256": "7abfdd6a8dddecfd9030e62ebf77f4570db6e45f669bce69fdb813c82c190c4a"
+    },
+    {
+      "path": "packages/yunipals-market-core/package.json",
+      "bytes": 1855,
+      "sha256": "9570b4333acf2407f819cb66923d59ec1aeb7b3475b46527a34d52d101a16617",
+      "predecessorSha256": "9570b4333acf2407f819cb66923d59ec1aeb7b3475b46527a34d52d101a16617",
+      "previousConsumerSha256": "9570b4333acf2407f819cb66923d59ec1aeb7b3475b46527a34d52d101a16617"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterAbi.ts",
+      "bytes": 44016,
+      "sha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba",
+      "predecessorSha256": "61049528cc583b2d4948a688e1c7a67c07bfd48a37785c5f11a4f22f54ed5850",
+      "previousConsumerSha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterCatalog.ts",
+      "bytes": 2381,
+      "sha256": "824de198b26ee622cc29edeaa1e924ee9acb48e0e02091965c224fb010d99789",
+      "predecessorSha256": "824de198b26ee622cc29edeaa1e924ee9acb48e0e02091965c224fb010d99789",
+      "previousConsumerSha256": "824de198b26ee622cc29edeaa1e924ee9acb48e0e02091965c224fb010d99789"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterSourceAbi.e8145098.ts",
+      "bytes": 40023,
+      "sha256": "996dec2b07b985763b6e80960b7e36930b5c7976eb9d012ccdee0b7b5493b4fa",
+      "predecessorSha256": null,
+      "previousConsumerSha256": "996dec2b07b985763b6e80960b7e36930b5c7976eb9d012ccdee0b7b5493b4fa"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterSourceAbi.ts",
+      "bytes": 1853,
+      "sha256": "6e8b457fd73d1667dca35cfc48d46bd095b06352d488554cb78160db58103925",
+      "predecessorSha256": null,
+      "previousConsumerSha256": "6e8b457fd73d1667dca35cfc48d46bd095b06352d488554cb78160db58103925"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosters.ts",
+      "bytes": 3135,
+      "sha256": "5d6dc7ad01e1770837840f8b71ab740cbf9bc06e210f3f8500c5234e0df4fd1e",
+      "predecessorSha256": "5d6dc7ad01e1770837840f8b71ab740cbf9bc06e210f3f8500c5234e0df4fd1e",
+      "previousConsumerSha256": "5d6dc7ad01e1770837840f8b71ab740cbf9bc06e210f3f8500c5234e0df4fd1e"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/indexedAction.ts",
+      "bytes": 8278,
+      "sha256": "14a7548a982d6d1ab6a3a941f44f5e8a4b53e233d7cee79156d05e03ef78ced4",
+      "predecessorSha256": "ae1d9be3b392c530b1e799c2b34eaeca20ce7daeff5bceeb0c11f8de37435cc6",
+      "previousConsumerSha256": "14a7548a982d6d1ab6a3a941f44f5e8a4b53e233d7cee79156d05e03ef78ced4"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/receiptEvidence.ts",
+      "bytes": 5562,
+      "sha256": "47917efd7f78cffab79e186bed0f5f5179b767e8483f4b78ba1d4e53e9acfb4f",
+      "predecessorSha256": "47917efd7f78cffab79e186bed0f5f5179b767e8483f4b78ba1d4e53e9acfb4f",
+      "previousConsumerSha256": "47917efd7f78cffab79e186bed0f5f5179b767e8483f4b78ba1d4e53e9acfb4f"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/registry.ts",
+      "bytes": 2327,
+      "sha256": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9",
+      "predecessorSha256": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9",
+      "previousConsumerSha256": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/seaportEvents.ts",
+      "bytes": 1236,
+      "sha256": "90b4d4e56f8f8ccc4c1f558da150c2373e4453b61db7b4dfb6ed819a0fd20bdd",
+      "predecessorSha256": "90b4d4e56f8f8ccc4c1f558da150c2373e4453b61db7b4dfb6ed819a0fd20bdd",
+      "previousConsumerSha256": "90b4d4e56f8f8ccc4c1f558da150c2373e4453b61db7b4dfb6ed819a0fd20bdd"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/seaportRuntime.ts",
+      "bytes": 511,
+      "sha256": "e63b03d743c238f708a94492e9a1fd52de1973eaa079d2f5deb1523be58a49cb",
+      "predecessorSha256": "e63b03d743c238f708a94492e9a1fd52de1973eaa079d2f5deb1523be58a49cb",
+      "previousConsumerSha256": "e63b03d743c238f708a94492e9a1fd52de1973eaa079d2f5deb1523be58a49cb"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 325459,
+      "sha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd",
+      "predecessorSha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd",
+      "previousConsumerSha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "bytes": 41,
+      "sha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed",
+      "predecessorSha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed",
+      "previousConsumerSha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed"
+    }
+  ],
+  "files": [
+    {
+      "path": "dist/main-api.mjs.map",
+      "bytes": 832763,
+      "sha256": "2e444a19eae0ba1086ffb09150992b3a15a1772a00d4ffa5d92703c3d45432b1"
+    },
+    {
+      "path": "dist/main-api.mjs",
+      "bytes": 414209,
+      "sha256": "08acd504d7802a22619a7aa7a5f79cc8eecfb25c068611c7321a319508b5f04c"
+    }
+  ],
+  "requiredRuntimeDependencyTarget": "/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer/node_modules",
+  "runtimeDependencyTargetVerifiedHere": false,
+  "installationRequiresAcknowledgedPredecessorRuntimeVerification": true,
+  "repeatedBuildByteIdentical": true,
+  "nodeModulesInstalled": false,
+  "serviceJobs": 0,
+  "artifactDigest": "f2fa474602b2df9012b9ce05561445a2247b16bb76808d8c3d6ca1d14b378d9f"
+}

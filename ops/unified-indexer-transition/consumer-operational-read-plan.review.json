@@ -1,0 +1,451 @@
+{
+  "commonOwnershipGraph": {
+    "changed": false,
+    "existingInvokerFunctions": 2,
+    "existingRelations": 19
+  },
+  "cutoverEligible": false,
+  "databaseConnections": 0,
+  "format": "yunipals-consumer-operational-read-proposal-v1",
+  "futureSeparateAuthority": {
+    "islandsStaking": {
+      "enabledInPreview": false,
+      "relations": [
+        "metadata.island_staking_scan",
+        "metadata.island_staking_position"
+      ],
+      "requiresFreshPointVerification": true,
+      "sourceScannerIntroduced": false
+    },
+    "mainSignedVisibility": {
+      "previewWritesAllowed": false,
+      "reason": "Retain legitimate production signed visibility flow after separate write admission; preview always readonly and sends no signing/write requests.",
+      "relations": {
+        "metadata.token_visibility": [
+          "SELECT",
+          "INSERT",
+          "UPDATE",
+          "DELETE"
+        ],
+        "metadata.wallet_visibility_nonce": [
+          "SELECT",
+          "INSERT",
+          "UPDATE"
+        ]
+      },
+      "role": "yunipals_unified_api"
+    },
+    "readCacheWorker": {
+      "ownerProvisioning": "Official read-cache table/trigger installation is separate; consumer never owns/alters source tables or installs triggers.",
+      "privileges": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ],
+      "relations": [
+        "metadata_projection.read_member",
+        "metadata_projection.read_set"
+      ],
+      "role": "yunipals_unified_read_cache",
+      "sourceDmlOrTriggerInstallAllowed": false,
+      "started": false,
+      "truncateRequired": false,
+      "updateRequired": false
+    }
+  },
+  "groups": [
+    {
+      "applied": false,
+      "condition": "always for the selected routes",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "minimum-negative-source-preview",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata.chain_readiness"
+      ],
+      "roles": [
+        "yunipals_unified_api",
+        "yunipals_unified_collector",
+        "yunipals_unified_islands_api"
+      ],
+      "schemas": [
+        "metadata"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "always for the selected routes",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "selected-main-and-collector-get-reads",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata.chain_readiness",
+        "metadata.publication_runtime",
+        "metadata.token_metadata",
+        "metadata.token_publication",
+        "metadata.token_visibility",
+        "metadata_projection.active",
+        "metadata_projection.generation",
+        "metadata_projection.revision",
+        "metadata_projection.search",
+        "metadata_source.archive_release"
+      ],
+      "roles": [
+        "yunipals_unified_api",
+        "yunipals_unified_collector"
+      ],
+      "schemas": [
+        "metadata",
+        "metadata_projection",
+        "metadata_source"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "BASE_METADATA_INGESTION=native, as selected by frozen9ee main/collector/cache matrix",
+      "functions": [
+        "yunipals_ownership_35cdcb32_v3.base_metadata_frame(boolean)",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_probe()"
+      ],
+      "loginEnabled": false,
+      "name": "native-base-read-extension",
+      "privileges": {
+        "function": [
+          "EXECUTE"
+        ],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata_source.chain_metadata_scan",
+        "metadata_source.native_base_metadata_state",
+        "unified_shadow_20261020_7e7375b0.canonical_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_scan"
+      ],
+      "roles": [
+        "yunipals_unified_api",
+        "yunipals_unified_collector",
+        "yunipals_unified_read_cache"
+      ],
+      "schemas": [
+        "metadata_source",
+        "unified_shadow_20261020_7e7375b0",
+        "yunipals_ownership_35cdcb32_v3"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "always for the selected routes",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "selected-islands-get-reads",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata.chain_readiness",
+        "metadata.island_publication",
+        "metadata.island_verification",
+        "metadata_source.island_revision"
+      ],
+      "roles": [
+        "yunipals_unified_islands_api"
+      ],
+      "schemas": [
+        "metadata",
+        "metadata_source"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "Base Islands enabled and its shared source ready; historical legacy transfer table is read-only mint provenance",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "islands-cross-collection-provenance",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata.island_airdrop_origin",
+        "metadata.island_replacement_origin",
+        "yunipals_base_islands_v1.transfer_event"
+      ],
+      "roles": [
+        "yunipals_unified_islands_api"
+      ],
+      "schemas": [
+        "metadata",
+        "yunipals_base_islands_v1"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "retained YUNIPALS_READ_CACHE=1; actual effective flag is not inspected by this local plan",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "main-optional-read-cache",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata_projection.read_epoch",
+        "metadata_projection.read_guard",
+        "metadata_projection.read_member",
+        "metadata_projection.read_set",
+        "yunipals_indexer_control.chain_anchor"
+      ],
+      "roles": [
+        "yunipals_unified_api"
+      ],
+      "schemas": [
+        "metadata_projection",
+        "yunipals_indexer_control"
+      ],
+      "writes": []
+    },
+    {
+      "applied": false,
+      "condition": "future separate worker admission; no worker starts in API preview",
+      "functions": [],
+      "loginEnabled": false,
+      "name": "read-cache-worker-read-extension",
+      "privileges": {
+        "function": [],
+        "relation": [
+          "SELECT"
+        ],
+        "schema": [
+          "USAGE"
+        ]
+      },
+      "relations": [
+        "metadata.publication_runtime",
+        "metadata.token_metadata",
+        "metadata.token_publication",
+        "metadata_projection.active",
+        "metadata_projection.generation",
+        "metadata_projection.read_epoch",
+        "metadata_projection.read_guard",
+        "metadata_projection.read_member",
+        "metadata_projection.read_set",
+        "metadata_projection.revision",
+        "metadata_projection.search",
+        "metadata_source.archive_release",
+        "yunipals_indexer_control.chain_anchor"
+      ],
+      "roles": [
+        "yunipals_unified_read_cache"
+      ],
+      "schemas": [
+        "metadata",
+        "metadata_projection",
+        "metadata_source",
+        "yunipals_indexer_control"
+      ],
+      "writes": []
+    }
+  ],
+  "loginAdmissionAccepted": false,
+  "notNeededForSelectedGetSql": [
+    "metadata_projection.trait",
+    "leaderboard.wallet_stats",
+    "metadata_source.source_record",
+    "metadata_source.source_blob",
+    "metadata_source.asset_binding",
+    "metadata.wallet_visibility_nonce"
+  ],
+  "operationalGrantsApplied": false,
+  "physicalSchema": "unified_shadow_20261020_7e7375b0",
+  "productionActions": 0,
+  "proposalSha256": "bb05071d5abdda236e57599de209211bde7f995a619d7f9d3d3480bada6a5db5",
+  "providerCalls": 0,
+  "qualifications": [
+    "Static exact frozen source dependency proposal, not a production catalog/ACL or data-readiness observation.",
+    "USAGE/SELECT/INVOKER EXECUTE only in read groups; no LOGIN, owner, membership, CREATE, default grant or SECURITY DEFINER execution authority proposed.",
+    "Native Base functions execute as caller; direct canonical_event and approval-state SELECT are required, not covered by common ownership19.",
+    "Read-cache SQL checks canonical chain_anchor plus physical chain_block; the former needs its separate read grant.",
+    "A ready generation must carry the selected ownership release/read identity; old generation/cache/provenance rows are not requalified by grants.",
+    "Native Base approval is a separately refreshed90-second operational proof. Grants do not approve stale metadata.",
+    "Current source history/readiness, deployment of operational migrations, least-privilege fresh catalog admission and route parity remain false/unverified.",
+    "No Solana graph, rows, provider, API or production call is made by this proposal generator."
+  ],
+  "readIdentity": "0xe7119a18273d9a98cc1dcb0bbcad4928e9de72dbd42735b4fbad61a706de3fcc",
+  "readSchema": "yunipals_ownership_35cdcb32_v3",
+  "releaseId": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+  "reviewOnly": true,
+  "schemaPresenceOnlyForReady": [
+    "metadata.publication_job",
+    "metadata.token_publication",
+    "metadata.publication_runtime",
+    "metadata.projection_revision",
+    "metadata.derived_snapshot",
+    "metadata.chain_readiness",
+    "metadata_source.render_revision",
+    "metadata_source.lifecycle_binding",
+    "metadata_source.chain_metadata_scan"
+  ],
+  "solanaQueries": 0,
+  "sourceAcceptanceVerified": false,
+  "sourceDigest": "9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d",
+  "sourceManifestSha256": "5e06ff4b9d86859814f1fd1d2b24d1db38278eec75a7c2cefcdd3689103f27e0",
+  "sourcePins": [
+    {
+      "path": "apps/yunipals-indexer/lib/api/server.ts",
+      "sha256": "3851d609821e03d0f3b87b1d6ac6be6d034cf7d5b5a559112a33e4f7bdb43e04"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-server.ts",
+      "sha256": "e7a3b67e3033e5685691505297760edbc4735fd16863599966a4d505e7b09b76"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-routes.ts",
+      "sha256": "d74ba11e23ab5c2fa18b94c67a03520fbfb0fa2468ac6b5f1a0a890145fc355e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/collector-query.ts",
+      "sha256": "948ec652f10728a00360cbce569fb0d56a78a40d94cbe47470bdd73aa69b3af5"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/islands-app.ts",
+      "sha256": "2ab6ece65a82bf9b36fdc8c7e6341bc4361f71bfa21f4bc214459c47a0183e3d"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/islands-routes.ts",
+      "sha256": "e646f0cea8a6d2420a1c3d5ceb27bf73fda448caee772ad5ddbcf7834b50e283"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/islands-combined.ts",
+      "sha256": "7bd00db66a425c2fb5611071048b6cc47c44089b1f5b8eb04a1c17e8c8f35b26"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/visibility-query.ts",
+      "sha256": "04717dc4cbe1d58e7a27582cf8be2b52de2657d899d0a2540a5defb721380e0e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/chain-readiness.ts",
+      "sha256": "bac3809856cd19deb936b3226eb27550f40196904b551c81f7cd2df18046e81c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/status.ts",
+      "sha256": "fb3ac62b146ad452a152e72877e3eb77b1722069d2dce33a4c4c164ca4c14967"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-source.ts",
+      "sha256": "1c80f8ca18c609c8a47e164730aa5409ea2a9a65c2697bac4498c2ab1ba63208"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/publication.ts",
+      "sha256": "e23603244cd40eeff087e48ba792fdb40aa471e4cd57fdd436ae5f0549ca582e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/publication-schema.ts",
+      "sha256": "3447dae86e4e3722f13473c76a28bce03da8b237c75cb792b193a33222aed61a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/base-mode.ts",
+      "sha256": "6fe2cb1847a587bd9d046d4f506ad6de1f22cd56cf3adb4211faf8330eccefc4"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/native-base-schema.ts",
+      "sha256": "9104e7a1e58e987370d4fb45c870269b274cd6ce5db21d2567ff0461b4f9d6ca"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-cache.ts",
+      "sha256": "9668ace2d6e33a0c5813326d2ddf17cff23bebfaea309765e5f08add988e5b39"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-cache-worker.ts",
+      "sha256": "89b4bcc13fbcf795320819a1565176f897a994cc9fcd54f72b1d8500df9ba9ae"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/metadata/read-cache-schema.ts",
+      "sha256": "1de7856e5fc9253dbc08d6db0b0408516252030d353bcc4409ecdb20a0922757"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/readiness.ts",
+      "sha256": "39694a792a43ce24b96133fa6eb0de2da1a8aa7f2154b26f4565614d135d1338"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/base-readiness.ts",
+      "sha256": "90823c2f4118cab4a0082f42201233a233aeed94ad0cedff709ad1c51e53fe1c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/read-model.ts",
+      "sha256": "aa4dd51aeea61d3562dd6824283170c99daa56e995345146e661dfc6b091097c"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/queries.ts",
+      "sha256": "98c28ecb0125abf4530383527cdf13569aca1a38a8ec706089b59a4c876e060e"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/staking-read.ts",
+      "sha256": "ed4ad53b6a19430cbb3c172cbc249ea867cfdd1ef37733dcaf220b54b8dcf1b1"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/islands/collections.ts",
+      "sha256": "3432c440996fe29bfb32e1ddbbf20d1a563dab88f2c57468cebfcacd67a68b5f"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/projection-proof.ts",
+      "sha256": "d42b4405fcd7daff620f7c016304e9cd95c7b44d5d05ea715b2601cff49767bd"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/derived-snapshot.ts",
+      "sha256": "4f2b79acdb3f37e8c3bcbcd50a2e2c17de1aac24116c7ecee79f089be829e8ac"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/ownership/readiness.ts",
+      "sha256": "bc99f986bb4db425d862901ffadc0cc5b6f09cefedc4724cd199a7560401fe5a"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/unified/base-metadata-views.ts",
+      "sha256": "5e54722ce2a3fbd4aedf9dfd92d7b76dadf5d8357c62c55400cee7eaf9950654"
+    }
+  ]
+}

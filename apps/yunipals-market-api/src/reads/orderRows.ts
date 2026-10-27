@@ -1,3 +1,5 @@
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
+import { marketplaceOwnershipSqlRelations } from "@/indexer/ownershipSql";
 import { indexedTokenHiddenSql } from "@/reads/visibility";
 
 const bnbTokenHiddenSql = indexedTokenHiddenSql.replaceAll("t.", "bt.");
@@ -110,3 +112,29 @@ export const marketOrderRowsSql = `(${openSeaRowsSql}
     AND EXISTS (SELECT 1 FROM yunipals_market.bnb_discovery_cursor mode
       WHERE mode.singleton AND mode.mode='live')
 )`;
+
+/** Preserve provider provenance while selecting the pinned ownership relation. */
+export function marketOrderRowsStatementSql() {
+  const source = marketplaceOwnershipSqlRelations();
+  const bound =
+    source.mode === "unified"
+      ? `(NOT EXISTS(SELECT 1 FROM yunipals_market.bnb_discovery_cursor selected WHERE selected.singleton AND selected.reader_mode='unified') OR EXISTS(
+    SELECT 1 FROM yunipals_market.bnb_discovery_cursor selected JOIN yunipals_market.shared_indexer_consumer registered ON registered.consumer='bnb-discovery'
+    WHERE selected.singleton AND selected.reader_mode='unified' AND selected.last_error_code IS NULL
+      AND selected.target_block IS NOT NULL AND selected.next_block>selected.target_block
+      AND registered.release_id='${marketplaceOwnershipIndexer()!.releaseId}' AND registered.source_id='marketplace:bnb:seaport'
+      AND registered.confirmation_policy='{"kind":"finalized"}'::jsonb AND registered.cursor->'completed' IS NOT NULL
+      AND registered.cursor->'completed'<>'null'::jsonb AND registered.cursor->'target'='null'::jsonb AND registered.cursor->'after'='null'::jsonb))`
+      : "true";
+  return marketOrderRowsSql
+    .replace(
+      "WHEN o.signature IS NOT NULL AND",
+      `WHEN (o.chain_id<>56 OR ${bound}) AND o.signature IS NOT NULL AND`
+    )
+    .replaceAll(
+      `WHEN NOT ${bnbAssetEligibleSql}`,
+      `WHEN NOT (${bnbAssetEligibleSql} AND ${bound})`
+    )
+    .replaceAll("yunipals_read_v4.token", source.tokenRelation)
+    .replaceAll("yunipals_read_v4.transfer_event", source.transferRelation);
+}

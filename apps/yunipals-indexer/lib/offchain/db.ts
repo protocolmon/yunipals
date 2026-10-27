@@ -1,9 +1,23 @@
 import pg from "pg";
+import { requestSnapshotPool } from "../ownership/request-snapshot.js";
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error("DATABASE_URL is required");
 
-export const pool = new pg.Pool({ connectionString: databaseUrl, max: 12 });
+const offchainPoolMaximum = (value: string | undefined) => {
+  if (value === undefined) return 12;
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 1 || parsed > 12)
+    throw new Error(
+      "OFFCHAIN_DB_POOL_MAX must be a positive integer at most 12"
+    );
+  return parsed;
+};
+
+export const pool = new pg.Pool({
+  connectionString: databaseUrl,
+  max: offchainPoolMaximum(process.env.OFFCHAIN_DB_POOL_MAX)
+});
 
 const positiveNumber = (value: string | undefined, fallback: number) => {
   const parsed = Number(value);
@@ -18,18 +32,33 @@ const positiveNumber = (value: string | undefined, fallback: number) => {
 // Set this at connection startup so page and count reads on every API client
 // avoid that cost. Preserve other URL/PGOPTIONS settings, including read-only.
 const apiDatabaseUrl = new URL(databaseUrl);
-const apiStartupOptions = apiDatabaseUrl.searchParams.get("options") ?? process.env.PGOPTIONS ?? "";
-apiDatabaseUrl.searchParams.set("options", `${apiStartupOptions} -c jit=off`.trim());
+const apiStartupOptions =
+  apiDatabaseUrl.searchParams.get("options") ?? process.env.PGOPTIONS ?? "";
+apiDatabaseUrl.searchParams.set(
+  "options",
+  `${apiStartupOptions} -c jit=off`.trim()
+);
 
-export const apiPool = new pg.Pool({
-  connectionString: apiDatabaseUrl.toString(),
-  application_name: "yunipals_api",
-  max: positiveNumber(process.env.API_DB_POOL_MAX, 12),
-  connectionTimeoutMillis: positiveNumber(process.env.API_DB_ACQUIRE_TIMEOUT_MS, 1_000),
-  statement_timeout: positiveNumber(process.env.API_DB_STATEMENT_TIMEOUT_MS, 10_000),
-  lock_timeout: positiveNumber(process.env.API_DB_LOCK_TIMEOUT_MS, 2_000),
-  idle_in_transaction_session_timeout: positiveNumber(process.env.API_DB_IDLE_TRANSACTION_TIMEOUT_MS, 10_000)
-});
+export const apiPool = requestSnapshotPool(
+  new pg.Pool({
+    connectionString: apiDatabaseUrl.toString(),
+    application_name: "yunipals_api",
+    max: positiveNumber(process.env.API_DB_POOL_MAX, 12),
+    connectionTimeoutMillis: positiveNumber(
+      process.env.API_DB_ACQUIRE_TIMEOUT_MS,
+      1_000
+    ),
+    statement_timeout: positiveNumber(
+      process.env.API_DB_STATEMENT_TIMEOUT_MS,
+      10_000
+    ),
+    lock_timeout: positiveNumber(process.env.API_DB_LOCK_TIMEOUT_MS, 2_000),
+    idle_in_transaction_session_timeout: positiveNumber(
+      process.env.API_DB_IDLE_TRANSACTION_TIMEOUT_MS,
+      10_000
+    )
+  })
+);
 
 apiPool.on("error", (error) => console.error("API database pool error", error));
 

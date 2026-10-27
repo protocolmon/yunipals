@@ -1,0 +1,37 @@
+{
+  "format": "yunipals-ordinary-metadata-provenance-v5c-independent-review",
+  "verdict": "PASS",
+  "scope": "Narrow source successor, fresh input factory and local synthetic receipt/real-filesystem controls. No host, production bulk run or duration qualification.",
+  "sources": {
+    "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.py": "49ee7f792591b456d5e6ef4f7345dca5789b6fa74e993cb652fff5f5220badb0",
+    "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.test.py": "1ff8b3a554e13f1f30e75776a7eb6023bcbfbb553496730b0d735f91de8dc0ec",
+    "ops/unified-indexer-transition/ypal-ordinary-provenance-input-v5c.py": "28b4396b16a7b03d0b3a402a9188bbf918d2078c59d71f63483e9b5580afac8f",
+    "ops/unified-indexer-transition/ypal-ordinary-provenance-input-v5c.test.py": "8ee0bd042104824a7f0753243ba0a643d9a5f809d30be92940c17c0180e9f527"
+  },
+  "independentlyRerun": [
+    {
+      "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5c.test.py",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-provenance-input-v5c.test.py",
+      "passed": 8,
+      "failed": 0
+    }
+  ],
+  "verified": [
+    "Every runner function/class AST equals the accepted V5b body. New producer/input paths and literal V4 guard binding are explicit; only the outer exception handler additionally forwards an authenticated fixed-domain private audit reference and safe code.",
+    "The outer handler never prints private exception frames or audit contents, refuses foreign paths, and preserves the original failure if audit-reference verification fails.",
+    "The input factory acquires the genuine existing metadata transition lock and derives the next index from contiguous original acknowledged receipts using the runner prior() implementation. Every later attempt prefix must be absent.",
+    "All prior official child epochs must be gone. The last original acknowledgement must be positive, incomplete and nonbusy, and its selected receipt must match the explicit new reconciliation producer. No prior failed runner is reclassified as successful.",
+    "A changed contiguous prefix after review invalidates the input hash before writes. The factory uses a new private namespace and exclusive durable files, rechecks original prior hashes and absence of future attempts after intent, and never overwrites old inputs or acknowledgements.",
+    "The N0/N1 fixture derives firstIndex two and caps remaining index capacity to 126; actual index selection remains derived at locked capture, never hard-coded.",
+    "Batch size, original 128-index bound, dispatch reserve, source/metadata/index checks, unknown-effect refusal and original business execution remain unchanged. The factory itself claims no current source or metadata authority."
+  ],
+  "findings": [],
+  "productionActions": 0,
+  "providerCalls": 0,
+  "productionBulkQualified": false,
+  "productionTimingQualified": false
+}

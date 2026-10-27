@@ -1,0 +1,114 @@
+{
+  "actualSelectorsFile": "/opt/yunipals-unified/operations/free-replay-20261020/consumer-retained-selectors-actual-20261021.json",
+  "actualSelectorsSha256": "3a031e154a911b7b38634518cf872d5b224602cf393e174fb12cd7c5c2d641eb",
+  "boosterReadsAdded": false,
+  "boosterReason": "actual_deployment_unconfigured_no_artwork",
+  "format": "yunipals-consumer-retained-read-dependencies-v1",
+  "groups": [
+    {
+      "functions": [],
+      "relations": [
+        "leaderboard.wallet_stats",
+        "metadata.derived_snapshot",
+        "metadata.ens_identity",
+        "metadata.publication_job",
+        "metadata.wallet_visibility_nonce",
+        "metadata_projection.facet",
+        "metadata_projection.facet_status",
+        "metadata_projection.trait",
+        "metadata_source.asset_binding",
+        "metadata_source.lifecycle_binding",
+        "metadata_source.lookup_alias",
+        "metadata_source.source_blob",
+        "metadata_source.source_record",
+        "solana_indexer.asset_metadata",
+        "solana_indexer.manifest",
+        "solana_indexer.manifest_asset",
+        "solana_indexer.observed_change",
+        "solana_indexer.rpc_usage",
+        "solana_indexer.scan_run",
+        "solana_indexer.sync_state",
+        "solana_indexer.token",
+        "solana_indexer.wallet_stats"
+      ],
+      "role": "yunipals_unified_api",
+      "schemas": [
+        "leaderboard",
+        "solana_indexer"
+      ]
+    },
+    {
+      "functions": [],
+      "relations": [
+        "metadata_projection.trait"
+      ],
+      "role": "yunipals_unified_collector",
+      "schemas": []
+    },
+    {
+      "functions": [],
+      "relations": [
+        "metadata.island_staking_position",
+        "metadata.island_staking_scan"
+      ],
+      "role": "yunipals_unified_islands_api",
+      "schemas": []
+    }
+  ],
+  "legacyMainIslandsReadsAdded": false,
+  "loginEnabled": false,
+  "manifestSha256": "5e06ff4b9d86859814f1fd1d2b24d1db38278eec75a7c2cefcdd3689103f27e0",
+  "retainedFlags": {
+    "yunipals-api.service": {
+      "API_BASE_ISLANDS_ENABLED": null,
+      "API_COLLECTOR_FILTERS_ENABLED": null,
+      "API_ISLANDS_ENABLED": null,
+      "API_ISLAND_STAKING_ENABLED": null,
+      "SOLANA_API_ENABLED": "true",
+      "SOLANA_LEGACY_METADATA_ENABLED": "true",
+      "YUNIPALS_READ_CACHE": "1"
+    },
+    "yunipals-collector-api.service": {
+      "API_BASE_ISLANDS_ENABLED": null,
+      "API_COLLECTOR_FILTERS_ENABLED": "true",
+      "API_ISLANDS_ENABLED": null,
+      "API_ISLAND_STAKING_ENABLED": null,
+      "SOLANA_API_ENABLED": null,
+      "SOLANA_LEGACY_METADATA_ENABLED": null,
+      "YUNIPALS_READ_CACHE": null
+    },
+    "yunipals-islands-api.service": {
+      "API_BASE_ISLANDS_ENABLED": "true",
+      "API_COLLECTOR_FILTERS_ENABLED": null,
+      "API_ISLANDS_ENABLED": "true",
+      "API_ISLAND_STAKING_ENABLED": "true",
+      "SOLANA_API_ENABLED": null,
+      "SOLANA_LEGACY_METADATA_ENABLED": null,
+      "YUNIPALS_READ_CACHE": null
+    }
+  },
+  "sourceDigest": "9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d",
+  "sourcePins": {
+    "apps/yunipals-indexer/lib/api/booster-routes.ts": "ed05bf109edfd00c59119723c94b3c50db924f6eeca2ba377accf0b6b30b5981",
+    "apps/yunipals-indexer/lib/api/collector-filters.ts": "d9f1733e0fdac3a4756a3c1f9de2c960c012fddae2dce371e97ea22bf859005a",
+    "apps/yunipals-indexer/lib/api/collector-query.ts": "948ec652f10728a00360cbce569fb0d56a78a40d94cbe47470bdd73aa69b3af5",
+    "apps/yunipals-indexer/lib/api/collector-routes.ts": "d74ba11e23ab5c2fa18b94c67a03520fbfb0fa2468ac6b5f1a0a890145fc355e",
+    "apps/yunipals-indexer/lib/api/collector-server.ts": "e7a3b67e3033e5685691505297760edbc4735fd16863599966a4d505e7b09b76",
+    "apps/yunipals-indexer/lib/api/islands-app.ts": "2ab6ece65a82bf9b36fdc8c7e6341bc4361f71bfa21f4bc214459c47a0183e3d",
+    "apps/yunipals-indexer/lib/api/islands-routes.ts": "e646f0cea8a6d2420a1c3d5ceb27bf73fda448caee772ad5ddbcf7834b50e283",
+    "apps/yunipals-indexer/lib/api/legacy-metadata.ts": "b23921813b874ab984feffca0c6d5b98ff4c815f280d0554586442b11289a135",
+    "apps/yunipals-indexer/lib/api/server.ts": "3851d609821e03d0f3b87b1d6ac6be6d034cf7d5b5a559112a33e4f7bdb43e04",
+    "apps/yunipals-indexer/lib/islands/staking-read.ts": "ed4ad53b6a19430cbb3c172cbc249ea867cfdd1ef37733dcaf220b54b8dcf1b1",
+    "apps/yunipals-indexer/lib/metadata/read-source.ts": "1c80f8ca18c609c8a47e164730aa5409ea2a9a65c2697bac4498c2ab1ba63208",
+    "apps/yunipals-indexer/lib/metadata/resolve.ts": "1804694446c33722499ac81b750092d04e601a3a9d519f337f26e25b1adc747d",
+    "apps/yunipals-indexer/lib/metadata/source/bindings.ts": "d615eb5dc8a4f00d3cf852d09a8c79283e40e920e1110d88654088e481190dd3",
+    "apps/yunipals-indexer/lib/metadata/source/read.ts": "02d0b87a815cb3ffbc05b6bf8e90bbd13434692754cf5905bcf3b42b5c9d2c80",
+    "apps/yunipals-indexer/lib/metadata/status.ts": "fb3ac62b146ad452a152e72877e3eb77b1722069d2dce33a4c4c164ca4c14967",
+    "apps/yunipals-indexer/lib/ownership/derived-snapshot.ts": "4f2b79acdb3f37e8c3bcbcd50a2e2c17de1aac24116c7ecee79f089be829e8ac",
+    "apps/yunipals-indexer/lib/solana/api.ts": "d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31"
+  },
+  "sourceSelectionChanged": false,
+  "stakingHandoverRequiresActualNativeProof": true,
+  "stakingMustRemainEnabled": true,
+  "writesAdded": false
+}

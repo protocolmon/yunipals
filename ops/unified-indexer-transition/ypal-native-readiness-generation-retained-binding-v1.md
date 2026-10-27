@@ -1,0 +1,11 @@
+# Native 120 retained-generation validation
+
+This distinct source component is needed by the forward Reader's existing retained-generation terminal check. It performs no rollback test or effect. Default execution is inert.
+
+`generation(owner, policy)` first uses the frozen `b774481b` generation-current adapter. It authenticates that adapter's actual current-wrapper and policy closure, then takes its exact policy-aware `prepared_attempt` function. A fresh complete original acceptance namespace supplies `validate_retained_current`; only its `prepared_attempt` global is replaced with that same function. The full original accepted candidate, static Host, Common/Creator, capsule, worker, private, terminal and database predicates remain dispatched. No frozen function or receipt is modified.
+
+The retained validator returns its original object unchanged. In particular, its exact seventeen-key terminal contract receives no observer field. The immutable candidate producer and operation fields remain the original ancestry. The separate `generation_retained_binding` descriptor records this component's own producer/manifest, the frozen current adapter, policy binding, unchanged-result/predicate flags and original 120/5 criteria. A new explicit Reader binding authenticates that descriptor in its own identity/timing scope; the component itself grants no timing, full Source, Reader, publication, inverse or commit authority.
+
+The static constructor's acknowledged native 120 function amendment is supplied by Context2. Other OIDs, bodies, owner, columns, marker, private inputs and generation state remain strict. There is no current-fact reuse, extra retry, clock reset, policy change, profiler, database mutation, service action or provider call.
+
+Four offline controls pass. They authenticate all 338 source entries; execute the actual attempt Host through the shared static Common/Creator constructor; run the complete retained dispatcher and retained capsule/terminal predicates with explicit private/worker/SQL I/O fixtures; execute the real terminal declaration with its exact key set; prove returned-object identity; and retain policy-drift refusal and the original exception object. These controls confer no production acceptance. Independent C source review and four-control rerun found no issue.

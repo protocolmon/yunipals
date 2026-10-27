@@ -10,6 +10,7 @@ import {
   Filter,
   Loader2,
   Search,
+  Sparkles,
   Users,
   X
 } from "lucide-react";
@@ -103,6 +104,22 @@ import {
   type IndexedChain,
   type TokenAttribute
 } from "@/lib/yunipalsIndexer";
+
+import { CollectionPackCard } from "@/components/CollectionPackCard";
+import { CollectionPackPagination } from "@/components/CollectionPackPagination";
+import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
+import {
+  readSavedCollectionFilters,
+  resolveCollectionQuery,
+  saveCollectionFilters,
+  type CollectionEdition
+} from "@/lib/collectionEdition";
+import {
+  collectionGridIdentity,
+  mergeCollectionGrid,
+  packGridFilters,
+  tcgCollectionFacets
+} from "@/lib/boosterCollectionGrid";
 
 import { CollectionTabs } from "./CollectionTabs";
 import { IslandDetail } from "./islands/IslandDetail";
@@ -477,10 +494,40 @@ function CollectionExplorer() {
   const { requestTradingConsent } = useTradingConsent();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const filters = useMemo(
-    () => parseCollectionFilters(searchParams),
-    [searchParams]
+  const [savedFilters, setSavedFilters] = useState(readSavedCollectionFilters);
+  const collectionQuery = useMemo(
+    () => resolveCollectionQuery(searchParams, savedFilters),
+    [searchParams, savedFilters]
   );
+  const edition: CollectionEdition =
+    collectionQuery.get("edition") === "tcg" ? "tcg" : "og";
+  const isTcg = edition === "tcg";
+  const filters = useMemo(() => {
+    const parsed = parseCollectionFilters(collectionQuery);
+    if (!isTcg) return parsed;
+    return {
+      ...clearCollectionFilters(parsed),
+      sort: "token-id-asc" as const,
+      traits: Object.fromEntries(
+        tcgCollectionFacets.items.flatMap((facet) => {
+          if (facet.kind !== "categorical") return [];
+          const selected = (parsed.traits[facet.traitType] ?? []).filter(
+            (value) => facet.values.some((choice) => choice.value === value)
+          );
+          return selected.length ? [[facet.traitType, selected]] : [];
+        })
+      )
+    };
+  }, [collectionQuery, isTcg]);
+  const canonicalQuery = serializeCollectionFilters(filters);
+  canonicalQuery.set("edition", edition);
+  const canonicalSearch = canonicalQuery.toString();
+  useEffect(() => {
+    saveCollectionFilters(canonicalSearch);
+    setSavedFilters(canonicalSearch);
+    if (searchParams.toString() !== canonicalSearch)
+      setSearchParams(canonicalSearch, { replace: true });
+  }, [canonicalSearch, searchParams, setSearchParams]);
   const filtersKey = collectionFiltersKey(filters);
   const currencyLabel =
     filters.chains.length === 1 && isIndexedChain(filters.chains[0])
@@ -514,10 +561,10 @@ function CollectionExplorer() {
   const { address } = useAccount();
   const queries = useQueryClient();
   const { capabilities } = useMarketplace(null);
-  const withSolana = includesSolana(filters);
+  const withSolana = !isTcg && includesSolana(filters);
   const catalog = useMarketCatalog(
     toEvmCollectionFilters(filters),
-    !withSolana
+    !isTcg && !withSolana
   );
   const marketFiltered = hasMarketFilters(filters);
   const useLegacy =
@@ -539,22 +586,33 @@ function CollectionExplorer() {
         filter: nextFilters.sort !== filters.sort ? "sort" : "filters"
       });
       setSelectedTrade(null);
-      setSearchParams(
-        serializeCollectionFilters(
-          updateCollectionChains(filters, nextFilters)
-        ),
-        {
-          replace: true
-        }
+      const next = serializeCollectionFilters(
+        updateCollectionChains(filters, nextFilters)
       );
+      next.set("edition", edition);
+      setSearchParams(next, { replace: true });
     },
-    [setSearchParams, filters]
+    [setSearchParams, filters, edition]
+  );
+  const setEdition = useCallback(
+    (nextEdition: CollectionEdition) => {
+      if (nextEdition === edition) return;
+      const next = serializeCollectionFilters({
+        ...clearCollectionFilters(filters),
+        sort: nextEdition === "og" ? "rarity-capped-desc" : "token-id-asc"
+      });
+      next.set("edition", nextEdition);
+      setSelectedTrade(null);
+      setSearchParams(next, { replace: false });
+    },
+    [edition, filters, setSearchParams]
   );
   const closeMobileFilters = useCallback(() => setMobileFiltersOpen(false), []);
 
   usePageMetadata(presentation.pageTitle, presentation.pageDescription);
 
   const facetsQuery = useQuery({
+    enabled: !isTcg,
     queryKey: [
       "collection",
       collectionBrowserCacheVersion,
@@ -565,7 +623,7 @@ function CollectionExplorer() {
     staleTime: 60_000
   });
   const legacyTokensQuery = useInfiniteQuery({
-    enabled: useLegacy && !marketFiltered,
+    enabled: !isTcg && useLegacy && !marketFiltered,
     queryKey: [
       "collection",
       collectionBrowserCacheVersion,
@@ -596,6 +654,7 @@ function CollectionExplorer() {
     [catalogItems]
   );
   const tokens = useMemo(() => {
+    if (isTcg) return [];
     const seen = new Set<string>();
     const rows = useLegacy
       ? (legacyTokensQuery.data?.pages.flatMap((page) => page.items) ?? [])
@@ -606,25 +665,45 @@ function CollectionExplorer() {
       seen.add(identity);
       return true;
     });
-  }, [useLegacy, legacyTokensQuery.data, catalogItems]);
+  }, [isTcg, useLegacy, legacyTokensQuery.data, catalogItems]);
+  const packFilters = useMemo(() => packGridFilters(filters), [filters]);
+  const packCards = useBoosterCollectionCards(packFilters, undefined, isTcg);
+  const gridItems = useMemo(
+    () => mergeCollectionGrid(tokens, packCards.items),
+    [tokens, packCards.items]
+  );
   const tokensQuery = useLegacy ? legacyTokensQuery : catalog.query;
-  const totalMatches = tokensQuery.data?.pages[0]?.total;
-  const catalogPage = !useLegacy ? catalog.query.data?.pages[0] : undefined;
+  const totalMatches = !isTcg ? tokensQuery.data?.pages[0]?.total : undefined;
+  const catalogPage =
+    !isTcg && !useLegacy ? catalog.query.data?.pages[0] : undefined;
   const incompleteEmptyResults =
+    !isTcg &&
     marketFiltered &&
     catalogPage !== undefined &&
     catalogPage.listingCompleteness !== "complete" &&
     tokens.length === 0;
-  const catalogError =
-    (withSolana && marketFiltered
-      ? "Select an EVM chain to use sale and price filters. Exomon browsing is read-only."
-      : null) ||
-    catalog.validationError ||
-    (marketFiltered && !catalog.configured
-      ? "Sale and price filters are not available yet. Clear those filters to browse the collection."
-      : null);
+  const catalogError = isTcg
+    ? null
+    : (withSolana && marketFiltered
+        ? "Select an EVM chain to use sale and price filters. Exomon browsing is read-only."
+        : null) ||
+      catalog.validationError ||
+      (marketFiltered && !catalog.configured
+        ? "Sale and price filters are not available yet. Clear those filters to browse the collection."
+        : null);
+  const gridLoading = isTcg
+    ? packCards.enabled && packCards.query.isPending
+    : tokensQuery.isLoading;
+  const gridError = isTcg
+    ? packCards.enabled && packCards.query.isError
+    : tokensQuery.isError;
+  const visibleFacets = isTcg ? tcgCollectionFacets : facetsQuery.data;
   function refreshCatalog() {
     setSelectedTrade(null);
+    if (isTcg) {
+      if (packCards.enabled) void packCards.query.refetch();
+      return;
+    }
     void queries.resetQueries({ queryKey: catalog.queryKey, exact: true });
     if (useLegacy)
       void queries.resetQueries({
@@ -637,6 +716,7 @@ function CollectionExplorer() {
         exact: true
       });
     void capabilities.refetch();
+    if (packCards.enabled) void packCards.query.refetch();
   }
 
   function submitLookup(event: FormEvent<HTMLFormElement>) {
@@ -741,6 +821,26 @@ function CollectionExplorer() {
               <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/70 sm:text-lg">
                 {presentation.description}
               </p>
+              {environment.boostersEnabled && (
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <Link
+                    to="/boosters"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-grape px-6 py-3 text-sm font-bold text-white shadow-cta transition hover:bg-grape/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
+                  >
+                    <Sparkles aria-hidden="true" size={17} />
+                    Open booster packs
+                  </Link>
+                  <Link
+                    to={{
+                      search: searchParams.toString(),
+                      hash: "#collection"
+                    }}
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-grape/20 bg-white px-6 py-3 text-sm font-bold text-grape transition hover:bg-lavender/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
+                  >
+                    Browse collection
+                  </Link>
+                </div>
+              )}
               {selectedChain === "solana" && (
                 <Link
                   to="/leaderboard?chain=solana"
@@ -813,27 +913,36 @@ function CollectionExplorer() {
                 tabIndex={-1}
                 className="display mt-2 text-3xl text-ink sm:text-4xl"
               >
-                {selectedChain === "solana"
-                  ? "Exomon collection"
-                  : activeFilterCount > 0
-                    ? "Filtered collection"
-                    : "All active Yunipals"}
+                {isTcg
+                  ? "Yunipals TCG collection"
+                  : selectedChain === "solana"
+                    ? "Exomon collection"
+                    : activeFilterCount > 0
+                      ? "Filtered collection"
+                      : "All active Yunipals"}
               </h2>
               <p
                 className="mt-2 text-sm font-medium text-muted"
                 aria-live="polite"
               >
-                {incompleteEmptyResults
-                  ? "Listings temporarily unavailable"
-                  : totalMatches !== undefined
-                    ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "Yunipals"}`
-                    : "Loading collection…"}
+                {isTcg
+                  ? gridLoading
+                    ? "Loading TCG cards…"
+                    : gridError
+                      ? "TCG cards temporarily unavailable"
+                      : `${formatInteger(gridItems.length)} TCG card${gridItems.length === 1 ? "" : "s"}${packCards.query.hasNextPage ? " loaded" : ""}`
+                  : incompleteEmptyResults
+                    ? "Listings temporarily unavailable"
+                    : totalMatches !== undefined
+                      ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "OG Yunipals"}`
+                      : "Loading collection…"}
                 {catalogPage &&
                   !incompleteEmptyResults &&
                   filters.sale === "listed" &&
                   ` · ${formatInteger(catalogPage.verifiedListedTotal)} ${catalogPage.listingCompleteness === "complete" ? "for sale" : "verified listings"}`}
-                {tokens.length > 0 &&
-                  ` · ${formatInteger(tokens.length)} loaded`}
+                {!isTcg &&
+                  gridItems.length > 0 &&
+                  ` · ${formatInteger(gridItems.length)} loaded`}
               </p>
             </div>
 
@@ -851,49 +960,55 @@ function CollectionExplorer() {
                   </span>
                 )}
               </button>
-              <label htmlFor="collection-sort" className="sr-only">
-                Sort collection
-              </label>
-              <Select
-                id="collection-sort"
-                value={filters.sort}
-                onValueChange={(value) => {
-                  const sort = value as CollectionSort;
-                  setFilters({
-                    ...filters,
-                    sort,
-                    ...(isPriceSort(sort)
-                      ? {
-                          sale: "listed",
-                          currency: priceCurrencyForFilters(filters)
-                        }
-                      : {})
-                  });
-                }}
-                className="rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    disabled={
-                      isPriceSort(option.value) &&
-                      (!catalog.configured || !selectedChain || withSolana)
-                    }
+              {!isTcg && (
+                <>
+                  <label htmlFor="collection-sort" className="sr-only">
+                    Sort collection
+                  </label>
+                  <Select
+                    id="collection-sort"
+                    value={filters.sort}
+                    onValueChange={(value) => {
+                      const sort = value as CollectionSort;
+                      setFilters({
+                        ...filters,
+                        sort,
+                        ...(isPriceSort(sort)
+                          ? {
+                              sale: "listed",
+                              currency: priceCurrencyForFilters(filters)
+                            }
+                          : {})
+                      });
+                    }}
+                    className="rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
                   >
-                    {environment.exomonEnabled &&
-                    option.value.startsWith("token-id-")
-                      ? `Token ID / mint: ${option.value.endsWith("desc") ? "descending" : "ascending"}`
-                      : option.label}
-                  </SelectItem>
-                ))}
-              </Select>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={
+                          isPriceSort(option.value) &&
+                          (!catalog.configured || !selectedChain || withSolana)
+                        }
+                      >
+                        {environment.exomonEnabled &&
+                        option.value.startsWith("token-id-")
+                          ? `Token ID / mint: ${option.value.endsWith("desc") ? "descending" : "ascending"}`
+                          : option.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </>
+              )}
             </div>
           </div>
 
-          <div className="mt-6 lg:hidden">
-            <ChainFilter filters={filters} onChange={setFilters} />
-          </div>
+          {!isTcg && (
+            <div className="mt-6 lg:hidden">
+              <ChainFilter filters={filters} onChange={setFilters} />
+            </div>
+          )}
 
           {activeFilterCount > 0 && (
             <div
@@ -997,20 +1112,25 @@ function CollectionExplorer() {
           <div className="mt-7 grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain rounded-card shadow-card lg:block">
               <CollectionFilterPanel
+                edition={edition}
+                onEditionChange={setEdition}
                 marketEnabled={
-                  !withSolana && (catalog.configured || marketFiltered)
+                  !isTcg &&
+                  !withSolana &&
+                  (catalog.configured || marketFiltered)
                 }
                 filters={filters}
-                facets={facetsQuery.data}
-                facetsLoading={facetsQuery.isLoading}
-                facetsError={facetsQuery.isError}
+                facets={visibleFacets}
+                facetsLoading={!isTcg && facetsQuery.isLoading}
+                facetsError={!isTcg && facetsQuery.isError}
                 onChange={setFilters}
                 onRetryFacets={() => void facetsQuery.refetch()}
               />
             </aside>
 
             <div className="min-w-0">
-              {catalog.configured &&
+              {!isTcg &&
+                catalog.configured &&
                 !withSolana &&
                 !incompleteEmptyResults &&
                 (useLegacy ||
@@ -1037,7 +1157,15 @@ function CollectionExplorer() {
                     )}
                   </div>
                 )}
-              {catalogError ? (
+              {gridItems.length > 0 && (catalogError || gridError) && (
+                <p role="alert" className="mb-4 text-sm text-muted">
+                  {catalogError ??
+                    (isTcg
+                      ? "Some TCG cards could not be refreshed."
+                      : "Some original collection results could not be loaded.")}
+                </p>
+              )}
+              {catalogError && gridItems.length === 0 ? (
                 <div
                   role="alert"
                   className="rounded-card border border-line bg-white p-6 text-sm"
@@ -1051,9 +1179,9 @@ function CollectionExplorer() {
                     Clear sale and price filters
                   </button>
                 </div>
-              ) : tokensQuery.isLoading ? (
+              ) : gridLoading && gridItems.length === 0 ? (
                 <TokenGridSkeleton count={12} />
-              ) : tokensQuery.isError && tokens.length === 0 ? (
+              ) : gridError && gridItems.length === 0 ? (
                 <div role="alert" className="space-y-3">
                   {marketFiltered && (
                     <p className="text-sm text-muted">
@@ -1063,7 +1191,7 @@ function CollectionExplorer() {
                   )}
                   <QueryError onRetry={refreshCatalog} />
                 </div>
-              ) : tokens.length === 0 ? (
+              ) : gridItems.length === 0 ? (
                 <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
                   <Users
                     aria-hidden="true"
@@ -1073,12 +1201,16 @@ function CollectionExplorer() {
                   <p className="mt-3 font-bold text-ink">
                     {incompleteEmptyResults
                       ? "Listings are temporarily unavailable."
-                      : "No Yunipals match this combination."}
+                      : isTcg && packCards.query.hasNextPage
+                        ? "No matches in the loaded cards yet."
+                        : "No Yunipals match this combination."}
                   </p>
                   <p className="mt-1 text-sm text-muted">
                     {incompleteEmptyResults
                       ? "Please try again shortly. Your filters are still applied."
-                      : "Try another chain, remove a trait, or widen the rarity range."}
+                      : isTcg
+                        ? "Remove a trait filter to explore more TCG cards."
+                        : "Try another chain, remove a trait, or widen the rarity range."}
                   </p>
                   <button
                     type="button"
@@ -1094,48 +1226,66 @@ function CollectionExplorer() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-                  {tokens.map((token, index) => (
-                    <TokenCard
-                      key={collectionTokenKey(token)}
-                      token={token}
-                      eager={index < 6}
-                      market={
-                        catalog.configured &&
-                        !withSolana &&
-                        token.chain !== "solana" && (
-                          <CatalogCardMarket
+                  {gridItems.map((item, index) =>
+                    item.kind === "pack" ? (
+                      <CollectionPackCard
+                        key={collectionGridIdentity(item)}
+                        monster={item.monster}
+                      />
+                    ) : (
+                      (() => {
+                        const token = item.token;
+                        return (
+                          <TokenCard
+                            key={collectionGridIdentity(item)}
+                            token={token}
+                            eager={index < 6}
                             market={
-                              useLegacy
-                                ? { status: "unknown", listings: [] }
-                                : (marketByAsset.get(
-                                    marketplaceAssetKey(token)
-                                  ) ?? { status: "unknown", listings: [] })
-                            }
-                            account={address}
-                            canBuy={
-                              Boolean(
-                                capabilities.data?.[token.chain]?.read &&
-                                  capabilities.data?.[token.chain]?.buy
-                              ) && !capabilities.isError
-                            }
-                            onBuy={(order, trigger) =>
-                              requestTradingConsent(() =>
-                                setSelectedTrade({
-                                  order,
-                                  trigger,
-                                  name: token.name || "Yunipal"
-                                })
+                              catalog.configured &&
+                              !withSolana &&
+                              token.chain !== "solana" && (
+                                <CatalogCardMarket
+                                  market={
+                                    useLegacy
+                                      ? { status: "unknown", listings: [] }
+                                      : (marketByAsset.get(
+                                          marketplaceAssetKey(token)
+                                        ) ?? {
+                                          status: "unknown",
+                                          listings: []
+                                        })
+                                  }
+                                  account={address}
+                                  canBuy={
+                                    Boolean(
+                                      capabilities.data?.[token.chain]?.read &&
+                                        capabilities.data?.[token.chain]?.buy
+                                    ) && !capabilities.isError
+                                  }
+                                  onBuy={(order, trigger) =>
+                                    requestTradingConsent(() =>
+                                      setSelectedTrade({
+                                        order,
+                                        trigger,
+                                        name: token.name || "Yunipal"
+                                      })
+                                    )
+                                  }
+                                />
                               )
                             }
                           />
-                        )
-                      }
-                    />
-                  ))}
+                        );
+                      })()
+                    )
+                  )}
                 </div>
               )}
 
-              {!useLegacy &&
+              <CollectionPackPagination cards={packCards} />
+
+              {!isTcg &&
+                !useLegacy &&
                 catalog.query.isRefetchError &&
                 tokens.length > 0 && (
                   <p role="alert" className="mt-5 text-sm text-muted">
@@ -1143,7 +1293,7 @@ function CollectionExplorer() {
                     from the last successful check.
                   </p>
                 )}
-              {tokensQuery.isFetchNextPageError && (
+              {!isTcg && tokensQuery.isFetchNextPageError && (
                 <div
                   role="alert"
                   className="mt-5 rounded-card border border-line p-4 text-sm"
@@ -1161,7 +1311,7 @@ function CollectionExplorer() {
                   </button>
                 </div>
               )}
-              {!catalogError && tokensQuery.hasNextPage && (
+              {!isTcg && !catalogError && tokensQuery.hasNextPage && (
                 <div className="mt-9 text-center">
                   <button
                     type="button"
@@ -1201,12 +1351,16 @@ function CollectionExplorer() {
         />
       )}
       <MobileFilterDrawer
-        marketEnabled={!withSolana && (catalog.configured || marketFiltered)}
+        edition={edition}
+        onEditionChange={setEdition}
+        marketEnabled={
+          !isTcg && !withSolana && (catalog.configured || marketFiltered)
+        }
         open={mobileFiltersOpen}
         filters={filters}
-        facets={facetsQuery.data}
-        facetsLoading={facetsQuery.isLoading}
-        facetsError={facetsQuery.isError}
+        facets={visibleFacets}
+        facetsLoading={!isTcg && facetsQuery.isLoading}
+        facetsError={!isTcg && facetsQuery.isError}
         onClose={closeMobileFilters}
         onApply={(nextFilters) => {
           setFilters(nextFilters);

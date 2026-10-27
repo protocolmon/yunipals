@@ -1,0 +1,101 @@
+{
+  "format": "yunipals-ypal-verified-source-provenance-v1",
+  "preparedAt": "2026-10-23T17:46:22.239435+00:00",
+  "chainId": 8453,
+  "verifiedContract": "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3",
+  "sourcePage": "https://basescan.org/address/0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3#code",
+  "suppliedVerifiedRecordSha256": "18d04eda6f455668924e121458c90df29f9321697cf747da5289b3993b95690e",
+  "verifiedInputSha256": "1f565f11b12e80a78b420472ed3f2da5d254797c35aa741b668e389b1f4c3382",
+  "verifiedMetadataRecordSha256": "e556492856e082e1e545507d1d636fded00b81e9e050a5c82ba34f1d3cad066d",
+  "originalSourceKeys": [
+    "@openzeppelin/contracts/interfaces/IERC1363.sol",
+    "@openzeppelin/contracts/interfaces/IERC165.sol",
+    "@openzeppelin/contracts/interfaces/IERC20.sol",
+    "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+    "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+    "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+    "contracts/PROTO.sol",
+    "solady/src/auth/Ownable.sol",
+    "solady/src/tokens/ERC20.sol",
+    "solady/src/utils/ReentrancyGuard.sol"
+  ],
+  "files": [
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b"
+    },
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/interfaces/IERC165.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368"
+    },
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/interfaces/IERC20.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1"
+    },
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c"
+    },
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "sha256": "ac1fd9fa99b194a8db8dfa9ae8e3ff44feaa8f16668241fd2b66ae8b47d7c082"
+    },
+    {
+      "compilerSourceKey": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "path": "contracts/ypal/verified-source/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca"
+    },
+    {
+      "compilerSourceKey": "contracts/PROTO.sol",
+      "path": "contracts/ypal/verified-source/contracts/PROTO.sol",
+      "sha256": "c1a0bd4d99b63ee2bbd1da2bcb5dd407d2f4918dbe24236de3879d2d4e3cab8b"
+    },
+    {
+      "compilerSourceKey": "solady/src/auth/Ownable.sol",
+      "path": "contracts/ypal/verified-source/solady/src/auth/Ownable.sol",
+      "sha256": "a74625ee15f4872b773cd4730c9b578db57455eb1005ea35f120b5e01e49f753"
+    },
+    {
+      "compilerSourceKey": "solady/src/tokens/ERC20.sol",
+      "path": "contracts/ypal/verified-source/solady/src/tokens/ERC20.sol",
+      "sha256": "0b96ce470f2ab3facccaa56c7aa9dd244dffb967ac9331f0747b5ad1c68f203d"
+    },
+    {
+      "compilerSourceKey": "solady/src/utils/ReentrancyGuard.sol",
+      "path": "contracts/ypal/verified-source/solady/src/utils/ReentrancyGuard.sol",
+      "sha256": "aeeda18221419e3409255c6505e0eb78fe13e3bd8329663cfa56a0316a970eaf"
+    }
+  ],
+  "license": "MIT; original SPDX and dependency source contents preserved",
+  "candidate": {
+    "path": "contracts/ypal/src/YPAL.sol",
+    "sha256": "a416138f3045d1109d66d7ffb64e1c64327ca77d96fb8231031facb11eb39394",
+    "allowedChanges": [
+      "Contract identifier PROTO to YPAL",
+      "Documentation branding PROTO/Protopals to YPAL/Yunipals",
+      "name() literal PROTO to Yunipals",
+      "symbol() literal PROTO to YPAL"
+    ],
+    "behavioralSourceChanges": 0,
+    "constructorUnchanged": true,
+    "dependenciesChanged": 0
+  },
+  "intendedConstructor": {
+    "pmon": "0x60edae6E86546428DA423b5FBe0fba46Ca552Fc7",
+    "burnAddress": "0xff2Ba07e6F84D22730eD78D1117735a4B041c6EF",
+    "creator": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+    "initialSupply": "0",
+    "initialLocked": false
+  },
+  "publicLiveBaseline": {
+    "blockNumber": 52993724,
+    "sourceFile": "/tmp/yunipals-proto-live-wrapper-config-20261023.json",
+    "sha256": "507b99b4d5e4db83d2d438ac2abde12f4d38f46509d20279bf4f6806a148edc2"
+  },
+  "broadcasts": 0
+}

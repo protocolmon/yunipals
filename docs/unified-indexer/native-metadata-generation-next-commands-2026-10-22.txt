@@ -1,0 +1,107 @@
+Native metadata and generation — existing commands, 22 October 2026
+
+Current decision: WAIT FOR THE NORMAL REPLAY. Preserve the functioning old
+metadata, leaderboard, cache workers and their invalidation guards. No database,
+service, storage or provider mutation was made during this read-only review.
+
+The observed failure is expected historical gating, not a discovered config bug.
+At 19:33 UTC native source build bf4939b3ff was locked/running with a fresh
+heartbeat, but frameworkReady=0. Its chain_checkpoint table was empty and all
+four observation rows had error_code=indexer_not_ready, with no heads/anchors.
+The ordinary checkpoint block handlers start at latest; the existing observer
+refuses to publish a canonical observation without the real per-chain witness.
+Base's complete native block 52,950,938 also lagged the moving legacy cursor.
+The observed legacy next_block was 52,954,097 at 19:32 UTC.
+
+Adoption itself is Base-scoped; it does not contain an all-chain percentage or
+BNB-completion rule. It can execute when the actual Base source frame covers the
+frozen legacy cursor and canonical point checks pass. The current global normal
+historical pass has not reached those latest witness blocks, so that is not
+currently possible. No synthetic witness or cursor adjustment is appropriate.
+The generation command separately checks availability of all four sources.
+
+Already staged and actually hash-checked:
+- v4 candidates result SHA be0e6ec9f39d9b967a5395a7955496be801a04dc26cf90f3ce7173941e8591a0
+- native-recovery.sh SHA 526046f1e272a3801491212c0a5bb0c45ae5996050be16927e710b0275f5315b
+- private native-recovery.env SHA bba7312f878d828df49d23b1bb8c5245fe196f477cd9cf8e05a953af01599cb0
+- Both Node and CLI load that same unchanged private file; its contents stay on
+  host. The wrapper uses corrected cf333946.../dist/unified-base-metadata.mjs.
+- generation readiness SHA 8ce978ef00619eb2bc1130bd49db3cfd352eb5d75a012af707de9e64b221a3dc
+- generation monitor SHA 9882debdf6fcf824a0c34572191aee9a18f7f40223a60cc4b339eb0771cfd748
+- generation unit example SHA c8ed82d0d819e6fc1dfc62ead62795433cae3c7b34b1be95eee8ecd395fb59a3
+- guard transition SHA 00e308486aa958e8fe30e53fe5d5164a7e3c4f7c81ec9a27b8976cce84f0b689
+
+Once replay has actual witnesses and fresh canonical/source acceptance:
+
+1. Recapture the exact owned legacy metadata invocation and ordered private
+   inputs against its retained stage. Drain its Base scanner/publication writers
+   and prove the old cgroup and associated sessions are finished. Then execute
+   the already staged wrapper:
+
+/var/backups/yunipals-metadata-readview-v4-candidates-v1-20261022/native-recovery.sh native-adopt
+
+This is the official real adoption transaction, not a dry run. It compares every
+legacy/native decoded tuple through the captured exclusive cursor in 16 bounded
+partitions inside one repeatable-read transaction, then makes the canonical
+chain/hash/implementation point checks. Only after success does it fence the
+legacy mode and record native approval; legacy events/cursor remain for rollback.
+The existing normalized 440,194-event fixed comparison is historical data evidence,
+not a substitute for this current cursor/canonical adoption.
+
+2. Use the same wrapper for bounded provenance and approval refresh:
+
+/var/backups/yunipals-metadata-readview-v4-candidates-v1-20261022/native-recovery.sh native-provenance
+
+Each invocation first refreshes native approval, then stamps at most 5,000 proven
+old publication records. Inspect actual results between invocations. A zero batch
+does not establish full publication readiness; unmatched jobs require the normal
+native archive publication flow. The separate existing refresh command is:
+
+/var/backups/yunipals-metadata-readview-v4-candidates-v1-20261022/native-recovery.sh native-refresh
+
+Select the preserved corrected v4 metadata candidate through its controlled
+writer handover; the ordinary native worker maintains approval on its existing
+two-second loop. Approval is deliberately short-lived, so a one-off adoption
+receipt cannot replace actual current metadata readiness.
+
+3. Before any generation write, run the existing read-only official preflight
+   with the exact unit's cwd and environment-file precedence:
+
+cd /opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer
+/usr/bin/env -i PATH=/opt/node-v24.18.1/bin:/usr/sbin:/usr/bin:/sbin:/bin LANG=C.UTF-8 TZ=UTC /opt/node-v24.18.1/bin/node --env-file=/opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-inline.env --env-file=/etc/yunipals-indexer/indexer.env --env-file=/etc/yunipals-marketplace/production/indexer-rpc.env --env-file=/etc/yunipals-metadata-cutover.env --env-file=/opt/yunipals-ops/query-capacity.env --env-file=/var/backups/yunipals-metadata-readview-v4-candidates-v1-20261022/yunipals-leaderboard.selectors.env --env-file=/opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-capacity.env --import tsx /opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-readiness.mjs
+
+It checks all-four ownership availability, chain/native metadata readiness,
+actual v4 identity and build capacity in a read-only transaction. It would
+currently return ready:false. No provider access is needed for this preflight.
+
+4. Only after readiness passes, drain the exact old leaderboard writer. Compare
+   its original unit/env hashes and prove cgroup/session drain. Confirm the
+   generation unit is absent, current capacity and a full 25-minute no-backup
+   window. Then use the already documented official one-shot:
+
+install -m 0644 /opt/yunipals-unified/operations/free-replay-20261020/consumer-generation-v4-refresh.service.example /run/systemd/system/yunipals-generation-v4-refresh.service
+systemctl daemon-reload
+systemctl start yunipals-generation-v4-refresh.service
+
+The existing monitor preserves 25GB reserve, aborts below 30GB, checks backup
+schedules and owns cancellation of only this attempt's exact backend/application
+identity. Keep the live 35GB backup-overlap setting unchanged; only this measured
+no-overlap one-shot uses its existing 0 overlap override. After success require
+real current-generation publication with the fixed v4 release/read identity;
+do not relabel old generation 103. Do not automatically repeat a failed attempt.
+
+5. The existing guard transition library has genuine rollback/apply/inverse
+   paths and is independent of historical row completeness for its DDL. However,
+   committing now would detach old-source invalidation while old readers/writers
+   remain live. Keep the 35-row old graph intact until the coordinated handover.
+   Use the existing actual rollback review only if its exact captured before
+   catalog still matches; current epochs may advance, unrelated ACL drift may
+   not be ignored. The old exclusive rehearsal capture is not an overwriteable
+   run directory. The apply must keep its finite SELECT delta and actual inverse
+   receipt, then cache admission must build a genuinely fresh v4 cache.
+
+Current accepted generation 103 has no ownership release/read identity. Current
+35 guard mappings include 12 old ownership-source edges and zero native edges.
+These are concrete pending executions. Public staging/read-only checks can run
+while replay advances; they do not make these transitions complete. Capacity and
+marketplace-history acknowledgement are separate tasks already handled by root.

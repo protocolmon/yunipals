@@ -1,0 +1,18 @@
+{
+  "activationProducerSha256": "fd4479f0c40f6a9491a60434498072175260a894828f502e969ab534e34b239c",
+  "actualCompletedActivationRequired": true,
+  "automaticEffectRetryAllowed": false,
+  "effectDispatchEnabled": false,
+  "effectReserveSeconds": 70,
+  "format": "yunipals-root-reader-forward2-source-review-v1",
+  "fourOriginalBusinessActionBodiesRetained": true,
+  "independentFocusedControlsPassed": 10,
+  "oldFailedCacheCommitAcceptedAsSuccess": false,
+  "originalExceptionAndUnknownOutcomePreserved": true,
+  "productionReaderAdmissionQualified": false,
+  "rootFocusedControlsPassed": 10,
+  "savedPreparedAndAcceptReturnHashShapesDistinguished": true,
+  "sourceReviewedForPublication": true,
+  "sourceSha256": "d3b097b983364b750e4465abc586da6f213fefa2aa746083c398c662ca42cc96",
+  "timingScopeSeconds": 240
+}

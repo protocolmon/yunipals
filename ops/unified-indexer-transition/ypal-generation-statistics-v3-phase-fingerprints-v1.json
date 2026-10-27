@@ -1,0 +1,409 @@
+{
+  "format": "yunipals-generation-statistics-v3-phase-fingerprints-v1",
+  "artifactSha256": "a39b937dbe2278478ccbecb16af362707e9b8160092488c15e513a28e5a2878a",
+  "artifactManifestSha256": "4ec5e6012b38bcad0a20816fd71c6eb54bd8137a4e477a396ce1149812109442",
+  "preparationSha256": "3d6c7e5246eb9f46af05697638319b66c11a873cfe9086a00f71059c0abffabb",
+  "generatorSha256": "7594b525d3897dcefda8f5218991d38463c966fb8a9060584953fb2b884c6491",
+  "profile": {
+    "ownershipMode": "unified",
+    "metadataMode": "archive",
+    "baseMetadataIngestion": "native",
+    "sourceRelease": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "physicalSchema": "unified_ypal_20261023_v1",
+    "readSchema": "yunipals_ownership_4e77f52b_v5",
+    "publish": false,
+    "rarityReadSourcesEnumerated": [
+      "metadata",
+      "local"
+    ]
+  },
+  "activityTextSetting": "1kB",
+  "activityTextMaximumBytes": 1023,
+  "sourceScopeCount": 15,
+  "sqlTextIncluded": false,
+  "fingerprints": [
+    {
+      "phase": "capture-inputs-do-block",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 7792,
+      "fullQuerySha256": "74d2f32dc994c3d7563fce1dab20594dd7a817b4bfeb875ae2dd102cccef6018",
+      "activityQueryBytesAt1kB": 1023,
+      "activityQuerySha256At1kB": "a7b469c9c7d9f930297ddd21beb78e0ee85bfb2d037d1b87e1eedcea65876f03"
+    },
+    {
+      "phase": "capture-source-snapshot-proof",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 591,
+      "fullQuerySha256": "f8a65a4cc3012a51cc4182ecd68fa056d8ef3007222e711ad2576e71d8079222",
+      "activityQueryBytesAt1kB": 591,
+      "activityQuerySha256At1kB": "f8a65a4cc3012a51cc4182ecd68fa056d8ef3007222e711ad2576e71d8079222"
+    },
+    {
+      "phase": "capacity-data-directory",
+      "condition": "PROJECTION_STORAGE_PATH-unset",
+      "fullQueryBytes": 53,
+      "fullQuerySha256": "2f3a1e2090e5907ac705d31b2e6ec375151dcbbb3372c8393b649dbbd7b619d2",
+      "activityQueryBytesAt1kB": 53,
+      "activityQuerySha256At1kB": "2f3a1e2090e5907ac705d31b2e6ec375151dcbbb3372c8393b649dbbd7b619d2"
+    },
+    {
+      "phase": "capacity-projection-size",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 191,
+      "fullQuerySha256": "5bd177ac25120a9b117c7af0bca2982aa2ee4b5d30013dd9ee44999e948e65c7",
+      "activityQueryBytesAt1kB": 191,
+      "activityQuerySha256At1kB": "5bd177ac25120a9b117c7af0bca2982aa2ee4b5d30013dd9ee44999e948e65c7"
+    },
+    {
+      "phase": "capacity-native-snapshot-size",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 127,
+      "fullQuerySha256": "06490d79492ae410bad1b4e43b8ccc4fbd5117fe8d6c4af65f9e247220a4bd5e",
+      "activityQueryBytesAt1kB": 127,
+      "activityQuerySha256At1kB": "06490d79492ae410bad1b4e43b8ccc4fbd5117fe8d6c4af65f9e247220a4bd5e"
+    },
+    {
+      "phase": "cleanup-begin",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 5,
+      "fullQuerySha256": "a8402858d4f1e1d27afee976520485ebb4b96a5387355b823f0d0b8079729032",
+      "activityQueryBytesAt1kB": 5,
+      "activityQuerySha256At1kB": "a8402858d4f1e1d27afee976520485ebb4b96a5387355b823f0d0b8079729032"
+    },
+    {
+      "phase": "cleanup-lock-timeout",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 30,
+      "fullQuerySha256": "21710a42e5514042e34d5212e957cded44fbca3a012fcbb1438f9cfb9c515311",
+      "activityQueryBytesAt1kB": 30,
+      "activityQuerySha256At1kB": "21710a42e5514042e34d5212e957cded44fbca3a012fcbb1438f9cfb9c515311"
+    },
+    {
+      "phase": "cleanup-lock-active",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 76,
+      "fullQuerySha256": "75bdc8992de2f8ba449403737c9f24e84c6b9fa68e7c75e6ce90ec20b468929d",
+      "activityQueryBytesAt1kB": 76,
+      "activityQuerySha256At1kB": "75bdc8992de2f8ba449403737c9f24e84c6b9fa68e7c75e6ce90ec20b468929d"
+    },
+    {
+      "phase": "cleanup-retire-eligible-generations",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 525,
+      "fullQuerySha256": "3363cfce136aa24c42e2da71028567909a1ca3322a26bbddbaf7087855ca9656",
+      "activityQueryBytesAt1kB": 525,
+      "activityQuerySha256At1kB": "3363cfce136aa24c42e2da71028567909a1ca3322a26bbddbaf7087855ca9656"
+    },
+    {
+      "phase": "cleanup-commit",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 6,
+      "fullQuerySha256": "79663c1d3b43ceaf9ee728e501c64b57ae2e4d6cb36ff5c65eddcda1de27342f",
+      "activityQueryBytesAt1kB": 6,
+      "activityQuerySha256At1kB": "79663c1d3b43ceaf9ee728e501c64b57ae2e4d6cb36ff5c65eddcda1de27342f"
+    },
+    {
+      "phase": "cleanup-rollback",
+      "condition": "cleanup-error-path",
+      "fullQueryBytes": 8,
+      "fullQuerySha256": "587fa628a9fe4642ac0e22825a97e81d388af674f7251a9fb699f96901dcb710",
+      "activityQueryBytesAt1kB": 8,
+      "activityQuerySha256At1kB": "587fa628a9fe4642ac0e22825a97e81d388af674f7251a9fb699f96901dcb710"
+    },
+    {
+      "phase": "cleanup-delete-trait",
+      "condition": "eligible-retired-generation",
+      "fullQueryBytes": 153,
+      "fullQuerySha256": "015dc252049fb091a725628eb1f63383b7cf35605e520d315db0cdcda65bddf4",
+      "activityQueryBytesAt1kB": 153,
+      "activityQuerySha256At1kB": "015dc252049fb091a725628eb1f63383b7cf35605e520d315db0cdcda65bddf4"
+    },
+    {
+      "phase": "cleanup-delete-search",
+      "condition": "eligible-retired-generation",
+      "fullQueryBytes": 155,
+      "fullQuerySha256": "0a44f18818e9f8b83f6ff9085af1b61a46c9543227503b631998dc2efbb73351",
+      "activityQueryBytesAt1kB": 155,
+      "activityQuerySha256At1kB": "0a44f18818e9f8b83f6ff9085af1b61a46c9543227503b631998dc2efbb73351"
+    },
+    {
+      "phase": "cleanup-delete-revision",
+      "condition": "eligible-retired-generation",
+      "fullQueryBytes": 159,
+      "fullQuerySha256": "93583b396d798ccbd4a4970576e0b73c8c1ce44e87242dda54e888ecd94b5f71",
+      "activityQueryBytesAt1kB": 159,
+      "activityQuerySha256At1kB": "93583b396d798ccbd4a4970576e0b73c8c1ce44e87242dda54e888ecd94b5f71"
+    },
+    {
+      "phase": "cleanup-delete-facet",
+      "condition": "eligible-retired-generation",
+      "fullQueryBytes": 153,
+      "fullQuerySha256": "863fb7bb646f057baee4ec924bc631184db62f1fb40fbb41d49de245029f9043",
+      "activityQueryBytesAt1kB": 153,
+      "activityQuerySha256At1kB": "863fb7bb646f057baee4ec924bc631184db62f1fb40fbb41d49de245029f9043"
+    },
+    {
+      "phase": "cleanup-delete-facet_status",
+      "condition": "eligible-retired-generation",
+      "fullQueryBytes": 167,
+      "fullQuerySha256": "cb1da8a60e7aa0c030b12c376c023887da6f9beff1aaa9398f154753ff694651",
+      "activityQueryBytesAt1kB": 167,
+      "activityQuerySha256At1kB": "cb1da8a60e7aa0c030b12c376c023887da6f9beff1aaa9398f154753ff694651"
+    },
+    {
+      "phase": "candidate-ownership-identity",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 209,
+      "fullQuerySha256": "38ab72cb502e48b9db5555a5c01e18d69f2d5fb00756b2539ab5ccf8163f29cc",
+      "activityQueryBytesAt1kB": 209,
+      "activityQuerySha256At1kB": "38ab72cb502e48b9db5555a5c01e18d69f2d5fb00756b2539ab5ccf8163f29cc"
+    },
+    {
+      "phase": "lock-trait-refresh",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 59,
+      "fullQuerySha256": "05ae064721876da54039870ed709186ca026d3d2611df566987a054b754a5521",
+      "activityQueryBytesAt1kB": 59,
+      "activityQuerySha256At1kB": "05ae064721876da54039870ed709186ca026d3d2611df566987a054b754a5521"
+    },
+    {
+      "phase": "lock-chain-recovery-shared",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 67,
+      "fullQuerySha256": "d54e54ea91ade1921c31f15a96b36411fda6a811a9ecc83ac0f23000ab9b46d8",
+      "activityQueryBytesAt1kB": 67,
+      "activityQuerySha256At1kB": "d54e54ea91ade1921c31f15a96b36411fda6a811a9ecc83ac0f23000ab9b46d8"
+    },
+    {
+      "phase": "candidate-begin-repeatable-read",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 37,
+      "fullQuerySha256": "18a7aad3272b174288beb283fe2c0932abe851d0000345a24fe3fab0e68f1b21",
+      "activityQueryBytesAt1kB": 37,
+      "activityQuerySha256At1kB": "18a7aad3272b174288beb283fe2c0932abe851d0000345a24fe3fab0e68f1b21"
+    },
+    {
+      "phase": "candidate-work-mem-64MB",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 27,
+      "fullQuerySha256": "584adc7c4ae8094c06f8aa4545b5d292f537e66ba14e9809d285ef3a9785fe35",
+      "activityQueryBytesAt1kB": 27,
+      "activityQuerySha256At1kB": "584adc7c4ae8094c06f8aa4545b5d292f537e66ba14e9809d285ef3a9785fe35"
+    },
+    {
+      "phase": "candidate-lock-active-archive-release",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 85,
+      "fullQuerySha256": "d191984cba29db2e8a2e1e5a25a454476b9ce06c3452729f8b86f88d31744cc3",
+      "activityQueryBytesAt1kB": 85,
+      "activityQuerySha256At1kB": "d191984cba29db2e8a2e1e5a25a454476b9ce06c3452729f8b86f88d31744cc3"
+    },
+    {
+      "phase": "candidate-create-building-generation",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 132,
+      "fullQuerySha256": "3f1386332b223176a1aa49d9f0ad4a15656e1798e2576244d34c5d6fb1cc6460",
+      "activityQueryBytesAt1kB": 132,
+      "activityQuerySha256At1kB": "3f1386332b223176a1aa49d9f0ad4a15656e1798e2576244d34c5d6fb1cc6460"
+    },
+    {
+      "phase": "candidate-record-ownership-identity",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 104,
+      "fullQuerySha256": "f09deaf4b742dc0ce3c9b619864d4f2f98f6ae5bf3cd2284d203246882250969",
+      "activityQueryBytesAt1kB": 104,
+      "activityQuerySha256At1kB": "f09deaf4b742dc0ce3c9b619864d4f2f98f6ae5bf3cd2284d203246882250969"
+    },
+    {
+      "phase": "candidate-read-predecessor",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 65,
+      "fullQuerySha256": "ef5fd82273d5fa82ca719daf53c1a270b50ca2bce9386a7fb93fec3c6610fdb0",
+      "activityQueryBytesAt1kB": 65,
+      "activityQuerySha256At1kB": "ef5fd82273d5fa82ca719daf53c1a270b50ca2bce9386a7fb93fec3c6610fdb0"
+    },
+    {
+      "phase": "candidate-record-source-snapshot",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 74,
+      "fullQuerySha256": "cc095ccd15826b706acd0751780cb059897585c651151b77748fd25b04796249",
+      "activityQueryBytesAt1kB": 74,
+      "activityQuerySha256At1kB": "cc095ccd15826b706acd0751780cb059897585c651151b77748fd25b04796249"
+    },
+    {
+      "phase": "candidate-search-rarity-metadata",
+      "condition": "RARITY_READ_SOURCE=metadata-or-unset",
+      "fullQueryBytes": 971,
+      "fullQuerySha256": "89273d4a4aec1068f33a2ef67856ec0be6f0ae11b5da5d6643f9ee1bb6912a77",
+      "activityQueryBytesAt1kB": 971,
+      "activityQuerySha256At1kB": "89273d4a4aec1068f33a2ef67856ec0be6f0ae11b5da5d6643f9ee1bb6912a77"
+    },
+    {
+      "phase": "candidate-trait",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 583,
+      "fullQuerySha256": "b40728cb3677b582917d576aa8281ed6b57e42ea8e667b2e82e41eec7fec545b",
+      "activityQueryBytesAt1kB": 583,
+      "activityQuerySha256At1kB": "b40728cb3677b582917d576aa8281ed6b57e42ea8e667b2e82e41eec7fec545b"
+    },
+    {
+      "phase": "candidate-revision",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 247,
+      "fullQuerySha256": "35dbdd31646f0e2798b5fcca44a39050c5ffb6e3aafb9adc2e7909d9a6c72bac",
+      "activityQueryBytesAt1kB": 247,
+      "activityQuerySha256At1kB": "35dbdd31646f0e2798b5fcca44a39050c5ffb6e3aafb9adc2e7909d9a6c72bac"
+    },
+    {
+      "phase": "candidate-analyze-trait-statistics",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 33,
+      "fullQuerySha256": "c071e7919007a55c92a5c6b1d6c6cd1a5899f7143dd3154c1de6e9277e46d682",
+      "activityQueryBytesAt1kB": 33,
+      "activityQuerySha256At1kB": "c071e7919007a55c92a5c6b1d6c6cd1a5899f7143dd3154c1de6e9277e46d682"
+    },
+    {
+      "phase": "candidate-work-mem-256MB",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 28,
+      "fullQuerySha256": "f75d84ea63f9a2f660572f67fc3244ea7f804d66268f51856e4695fc9f7d480b",
+      "activityQueryBytesAt1kB": 28,
+      "activityQuerySha256At1kB": "f75d84ea63f9a2f660572f67fc3244ea7f804d66268f51856e4695fc9f7d480b"
+    },
+    {
+      "phase": "candidate-facet",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 1862,
+      "fullQuerySha256": "9e7c84c91ce1fe6725a0bc3ed754cbe68864dadfba9763db19b6013b198b48a4",
+      "activityQueryBytesAt1kB": 1023,
+      "activityQuerySha256At1kB": "1bd700db5f79fb3af8a5520f2d69528f0a09339d6a5c285043b3836ea6443c5e"
+    },
+    {
+      "phase": "candidate-facet-status",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 953,
+      "fullQuerySha256": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03",
+      "activityQueryBytesAt1kB": 953,
+      "activityQuerySha256At1kB": "dd93cb874783aa0493eaddd307b961ff62a007f866b9b4b29d7297c92bad2f03"
+    },
+    {
+      "phase": "candidate-commit",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 6,
+      "fullQuerySha256": "79663c1d3b43ceaf9ee728e501c64b57ae2e4d6cb36ff5c65eddcda1de27342f",
+      "activityQueryBytesAt1kB": 6,
+      "activityQuerySha256At1kB": "79663c1d3b43ceaf9ee728e501c64b57ae2e4d6cb36ff5c65eddcda1de27342f"
+    },
+    {
+      "phase": "candidate-vacuum-analyze",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 128,
+      "fullQuerySha256": "a5329167bc262871ae611f213917d0583908ed57014af7503438223284a87529",
+      "activityQueryBytesAt1kB": 128,
+      "activityQuerySha256At1kB": "a5329167bc262871ae611f213917d0583908ed57014af7503438223284a87529"
+    },
+    {
+      "phase": "candidate-mark-ready",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 134,
+      "fullQuerySha256": "f350935801816122e79e2a395651b74dad2616a695a4acafe4e6700a8f5bb8bd",
+      "activityQueryBytesAt1kB": 134,
+      "activityQuerySha256At1kB": "f350935801816122e79e2a395651b74dad2616a695a4acafe4e6700a8f5bb8bd"
+    },
+    {
+      "phase": "candidate-rollback",
+      "condition": "candidate-error-before-commit",
+      "fullQueryBytes": 8,
+      "fullQuerySha256": "587fa628a9fe4642ac0e22825a97e81d388af674f7251a9fb699f96901dcb710",
+      "activityQueryBytesAt1kB": 8,
+      "activityQuerySha256At1kB": "587fa628a9fe4642ac0e22825a97e81d388af674f7251a9fb699f96901dcb710"
+    },
+    {
+      "phase": "candidate-mark-failed-after-commit",
+      "condition": "candidate-error-after-commit-before-ready",
+      "fullQueryBytes": 113,
+      "fullQuerySha256": "e15139d42691eb7273b49c54955165015338dce89b1b232fb9da076a9240be8a",
+      "activityQueryBytesAt1kB": 113,
+      "activityQuerySha256At1kB": "e15139d42691eb7273b49c54955165015338dce89b1b232fb9da076a9240be8a"
+    },
+    {
+      "phase": "unlock-chain-recovery-shared",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 69,
+      "fullQuerySha256": "9ee4b7a1c4b8057b0ced88f6f7b08db531ca0d728476efc6e094c0e05007a0a7",
+      "activityQueryBytesAt1kB": 69,
+      "activityQuerySha256At1kB": "9ee4b7a1c4b8057b0ced88f6f7b08db531ca0d728476efc6e094c0e05007a0a7"
+    },
+    {
+      "phase": "unlock-trait-refresh",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 61,
+      "fullQuerySha256": "02bd3f7abe6d2055bcefc53320a285278adffd21009076945755a5e3a84ac6ec",
+      "activityQueryBytesAt1kB": 61,
+      "activityQuerySha256At1kB": "02bd3f7abe6d2055bcefc53320a285278adffd21009076945755a5e3a84ac6ec"
+    },
+    {
+      "phase": "candidate-search-rarity-local",
+      "condition": "RARITY_READ_SOURCE=local",
+      "fullQueryBytes": 1418,
+      "fullQuerySha256": "f4a99bcd553b210177df34214809453bc876b0693e4720e1c7822dc4cbb01d98",
+      "activityQueryBytesAt1kB": 1023,
+      "activityQuerySha256At1kB": "9d313fa2fa60e6fb383b41381de863125f83a5e94b12345580a3d823665bd85c"
+    },
+    {
+      "phase": "validation-counts-and-revisions",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 776,
+      "fullQuerySha256": "11522b398e6a9731fd70a00af48f91a1a0effbfa46f91c0d83d96aaf62c61be1",
+      "activityQueryBytesAt1kB": 776,
+      "activityQuerySha256At1kB": "11522b398e6a9731fd70a00af48f91a1a0effbfa46f91c0d83d96aaf62c61be1"
+    },
+    {
+      "phase": "validation-collection-coverage",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 125,
+      "fullQuerySha256": "d197a8fbf811aa89b09fa2b24a4157080345b9210bc950d949a53340f96911ba",
+      "activityQueryBytesAt1kB": 125,
+      "activityQuerySha256At1kB": "d197a8fbf811aa89b09fa2b24a4157080345b9210bc950d949a53340f96911ba"
+    },
+    {
+      "phase": "validation-source-snapshot",
+      "condition": "native-unpublished-profile",
+      "fullQueryBytes": 95,
+      "fullQuerySha256": "5db5893a8e021156f5fd7cd2d49d93abb3058cbf4e63f30d18a865643c14ce79",
+      "activityQueryBytesAt1kB": 95,
+      "activityQuerySha256At1kB": "5db5893a8e021156f5fd7cd2d49d93abb3058cbf4e63f30d18a865643c14ce79"
+    }
+  ],
+  "ambiguousActivityHashes": [
+    {
+      "activityQuerySha256At1kB": "79663c1d3b43ceaf9ee728e501c64b57ae2e4d6cb36ff5c65eddcda1de27342f",
+      "phases": [
+        "cleanup-commit",
+        "candidate-commit"
+      ]
+    },
+    {
+      "activityQuerySha256At1kB": "587fa628a9fe4642ac0e22825a97e81d388af674f7251a9fb699f96901dcb710",
+      "phases": [
+        "cleanup-rollback",
+        "candidate-rollback"
+      ]
+    }
+  ],
+  "limitations": [
+    "Match only the exact worker APP and verified 1kB activity setting; activity text is a sampled current or most-recent statement, not a completion receipt.",
+    "The capture DO hash identifies the outer capture block; its internal copy, guard, index and temporary ANALYZE substatements cannot be distinguished from that activity hash.",
+    "SQL bind values including generation IDs and timestamps are not interpolated into the activity query text; no future generation ID is asserted.",
+    "Metadata and local rarity search variants are enumerated; this map does not assert the worker's actual rarity environment.",
+    "Cleanup BEGIN/COMMIT/ROLLBACK may share hashes with build transaction statements; use the ambiguity groups and observed sequence, not a unique phase claim.",
+    "Unpublished native preparation returns before publishGeneration and the publication-retry branch; those unreachable queries and leaderboard-only capacity SQL are excluded.",
+    "Other profiles or SQL changed outside this exact authenticated artifact are unsupported; an unknown hash is not attributed."
+  ],
+  "statementCompletionClaimed": false,
+  "generationSuccessClaimed": false,
+  "databaseConnections": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

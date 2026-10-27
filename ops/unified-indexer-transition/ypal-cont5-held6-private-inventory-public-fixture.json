@@ -1,0 +1,70 @@
+{
+  "actualChild": {
+    "actor": {
+      "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+      "pid": 1626122,
+      "startTicks": 6641418829
+    },
+    "mode": "apply",
+    "processGroup": 1626122,
+    "rootParentPid": 1618075
+  },
+  "actualOpened": {
+    "backend": {
+      "backendStart": "1792987512690227",
+      "clientAddress": null,
+      "clientPort": -1,
+      "databaseOid": "17584",
+      "pid": 1626186,
+      "roleOid": "10",
+      "xid": "17009625"
+    },
+    "childFileSha256": "f0f760fe788b5fdabd36fb9864e977902424e03e3ba2fb45ad6a8e4f9704f739",
+    "mode": "apply",
+    "xid": "17009625"
+  },
+  "captureFiles": [
+    {
+      "bytes": 374,
+      "inode": 2722855,
+      "name": "apply-sql-child.json",
+      "sha256": "f0f760fe788b5fdabd36fb9864e977902424e03e3ba2fb45ad6a8e4f9704f739"
+    },
+    {
+      "bytes": 448,
+      "inode": 2722856,
+      "name": "apply-sql-opened.json",
+      "sha256": "86a7eae882bc556b7dce9df97a1b5592c75692da5fed1fd223fe331617ca15c6"
+    },
+    {
+      "bytes": 8258,
+      "inode": 2722854,
+      "name": "approval-before-launch.json",
+      "sha256": "023a5b89bc770e3310c979caef59a677be119e581660c01b345d3a391a05ada3"
+    },
+    {
+      "bytes": 318,
+      "inode": 2722857,
+      "name": "failure.json",
+      "sha256": "e751856cbb8aecb48c98f20bf1c903ab19faa50d4bc432e295f8563f781e34de"
+    },
+    {
+      "bytes": 22299,
+      "inode": 2722853,
+      "name": "intent.json",
+      "sha256": "61a33d72e12e47fab4b97a9e3dac2d89f779c1fd46f4b4e64268d2c9ade1f2fc"
+    }
+  ],
+  "innerErrorFixedCode": "bounded_readonly_full_publication_query_failed",
+  "transports": [
+    {
+      "capturedBytes": 0,
+      "complete": true,
+      "observedBytes": 0,
+      "pid": 1626122,
+      "returncode": -9,
+      "stderrClosed": true,
+      "truncatedOrAtCap": false
+    }
+  ]
+}

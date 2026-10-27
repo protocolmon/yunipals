@@ -18,8 +18,15 @@ import {
 } from "./catalog";
 import { ArenaInputCompiler } from "./input";
 import { ArenaIdentityAnalysis } from "./identityAnalysis";
+import { transaction } from "@/db/pool";
+import { arenaNativeConfiguration } from "./nativeSource";
+import { arenaTransactionMigration } from "./transactionSchema";
+import { selectedArenaRuntimeSource } from "./selectedSourceRuntime";
 
-export async function arenaRuntime() {
+export async function arenaRuntime(options: { native?: boolean } = {}) {
+  const native = arenaNativeConfiguration();
+  if (native.mode === "unified" && !options.native)
+    throw new Error("This Arena entrypoint has not enabled native consumers.");
   const config = arenaConfig();
   const root = process.env.ARENA_REPOSITORY_ROOT;
   if (!root) throw new Error("ARENA_REPOSITORY_ROOT is required.");
@@ -125,59 +132,116 @@ export async function arenaRuntime() {
     lock_timeout: 2000,
     idle_in_transaction_session_timeout: 15000
   });
-  const service = new ArenaIntake(
-    pool,
-    config.deployment.id,
-    config.deployment.contract,
-    config.origin,
-    new StrategyCipher(config.encryptionKey),
-    {
-      message: (input) => base.verifyMessage(input),
-      strategy: (input) => base.verifyTypedData(input)
+  const sourcePool =
+    native.mode === "unified"
+      ? new pg.Pool({
+          connectionString: native.databaseUrl,
+          application_name: "arena_native_source",
+          max: 4,
+          connectionTimeoutMillis: 2000,
+          statement_timeout: 5000,
+          lock_timeout: 2000,
+          idle_in_transaction_session_timeout: 15000,
+          options: "-c default_transaction_read_only=on"
+        })
+      : undefined;
+  try {
+    const { nativeSource, binding } = await selectedArenaRuntimeSource({
+      pool,
+      sourcePool,
+      native,
+      deployment: config.deployment,
+      base
+    });
+    const service = new ArenaIntake(
+      pool,
+      config.deployment.id,
+      config.deployment.contract,
+      config.origin,
+      new StrategyCipher(config.encryptionKey),
+      {
+        message: (input) => base.verifyMessage(input),
+        strategy: (input) => base.verifyTypedData(input)
+      },
+      nativeSource,
+      binding
+    );
+    const selected = (
+      await pool.query("SELECT 1 FROM yunipals_arena.deployment WHERE id=$1", [
+        config.deployment.id
+      ])
+    ).rowCount;
+    // Existing deployments must match even when an old entrypoint would query
+    // operational tables directly. A fresh legacy projector may still bootstrap
+    // its absent row; native adoption is always explicit.
+    if (selected || nativeSource) await service.assertSourceSelection();
+    if (nativeSource) {
+      const migration = (
+        await pool.query<{ checksum: string }>(
+          "SELECT checksum FROM yunipals_arena.operational_migration WHERE version=$1",
+          [arenaTransactionMigration.version]
+        )
+      ).rows[0];
+      if (migration?.checksum !== arenaTransactionMigration.checksum)
+        throw new Error(
+          "Native Arena execution schema does not match this runtime."
+        );
     }
-  );
-  const identityAnalysis = new ArenaIdentityAnalysis(
-    pool,
-    config.deployment.id,
-    config.openaiFundingMode
-  );
-  const identities = new ArenaIdentities(
-    pool,
-    config.deployment.id,
-    loadIdentityProfiles(root),
-    indexerMetadata(fetch, config.indexerUrl),
-    (nft, payload, wallet) => identityAnalysis.resolve(nft, payload, wallet)
-  );
-  const compiler = new ArenaInputCompiler(service, catalog, identities);
-  const capacity = new ArenaCapacity(pool, config.deployment.id);
-  const admit = signer
-    ? createAdmission(service, signer, clients, (id, nft, wallet) =>
-        identities.ensure(id, nft, wallet)
-      )
-    : undefined;
-  return {
-    capacity,
-    config,
-    clients,
-    pool,
-    service,
-    identities,
-    identityAnalysis,
-    compiler,
-    catalog,
-    admit: admit
-      ? async (...args: Parameters<typeof admit>) => {
-          if (
-            config.launchMode === "pilot" &&
-            !config.pilotWallets.includes(args[1].toLowerCase())
-          )
-            throw new ArenaRequestError(
-              403,
-              "Paid entry is limited to the controlled pilot wallets while launch checks are completed."
-            );
-          await capacity.check(false);
-          return admit(...args);
-        }
-      : undefined
-  };
+    const capacity = new ArenaCapacity(pool, config.deployment.id, service);
+    const identityAnalysis = new ArenaIdentityAnalysis(
+      pool,
+      config.deployment.id,
+      config.openaiFundingMode,
+      service,
+      () => capacity.check(false)
+    );
+    const identities = new ArenaIdentities(
+      pool,
+      config.deployment.id,
+      loadIdentityProfiles(root),
+      indexerMetadata(fetch, config.indexerUrl),
+      nativeSource
+        ? (id) =>
+            transaction(pool, (db) => service.tournamentContext(id, db, true))
+        : undefined,
+      (nft, payload, wallet) => identityAnalysis.resolve(nft, payload, wallet)
+    );
+    const compiler = new ArenaInputCompiler(service, catalog, identities);
+    const admit = signer
+      ? createAdmission(service, signer, clients, (id, nft, wallet) =>
+          identities.ensure(id, nft, nft.incarnation, wallet)
+        )
+      : undefined;
+    return {
+      close: async () => {
+        await Promise.all([pool.end(), sourcePool?.end()]);
+      },
+      capacity,
+      config,
+      clients,
+      pool,
+      service,
+      identities,
+      identityAnalysis,
+      compiler,
+      catalog,
+      admit: admit
+        ? async (...args: Parameters<typeof admit>) => {
+            if (
+              config.launchMode === "pilot" &&
+              !config.pilotWallets.includes(args[1].toLowerCase())
+            )
+              throw new ArenaRequestError(
+                403,
+                "Paid entry is limited to the controlled pilot wallets while launch checks are completed."
+              );
+            await capacity.check(false);
+            return admit(...args);
+          }
+        : undefined
+    };
+  } catch (error) {
+    await Promise.all([pool.end(), sourcePool?.end()]);
+    throw error;
+  }
 }

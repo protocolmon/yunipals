@@ -1,0 +1,22 @@
+{
+  "format": "yunipals-ypal-default-www-build-verification-v1",
+  "changedFile": "apps/yunipals-home-web/scripts/boosters/build-www.mjs",
+  "sourceSha256": "399cdc492a10f5810355e5e76b0f24c44123ea1172286dd5d44dbfb9582a9f94",
+  "commandUsesConfirmedFlag": false,
+  "actualDefaultBuildPassed": true,
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "comparisonToStagedRelease": {
+    "files": 213,
+    "changedFiles": [
+      "RELEASE-MANIFEST.json"
+    ],
+    "manifestFieldsChanged": [
+      "builtAt"
+    ],
+    "stagedManifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+    "defaultManifestSha256": "e66ec41842b47dd5fcf0cad3e7e406a71a636aa340dcf0c10008af03776f0837",
+    "identicalNonManifestFiles": 212
+  },
+  "canonicalDeploymentToPromote": "https://yunipals-fpxxed02z-devving.vercel.app",
+  "newLocalBuildDeployed": false
+}

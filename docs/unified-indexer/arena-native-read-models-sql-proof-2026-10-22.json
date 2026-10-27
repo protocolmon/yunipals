@@ -1,0 +1,58 @@
+{
+  "format": "yunipals-arena-native-read-models-sql-proof-v1",
+  "recordedAt": "2026-10-22T23:07:50.363516+00:00",
+  "scope": "Isolated compatibility worktree only; new canonical public read adapter and its real local PostgreSQL tests.",
+  "files": [
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeReadModels.ts",
+      "bytes": 19377,
+      "sha256": "5324abff6637a53e88d3a7c89d41a5fa80eac81d504a781880ede4503577082e"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeReadModels.test.ts",
+      "bytes": 19828,
+      "sha256": "e0e4466d98feb93eb9137fb29552c4522aaff18f149191bb1348e27068ceabf8"
+    }
+  ],
+  "implemented": [
+    "All five modern browsing methods use the selected shared native or verified rollback browse interface, never operational public tournament, chain_event or credit projections.",
+    "Source selection is checked before, inside one repeatable-read read-only private transaction with the shared source fence, and after; a second fixed-anchor canonical browse must agree before returning.",
+    "Opaque keyset cursors bind deployment, source release, source identity, selected epoch/kind/identity, filter and canonical block/hash anchor. Changed or expired canonical witnesses fail closed.",
+    "Private submitted-seat markers require canonical roster wallet, seat, incarnation and, after freeze, the matching canonical strategy commitment.",
+    "Fighter display requires the canonical NFT/chain/incarnation and a verified saved snapshot checksum.",
+    "Video-ready display requires the matching canonical input/result/incarnation, actual frozen-event ID/hash, revealed input, valid adjudication and validated immutable publication.",
+    "Island totals and page rows share one canonical browse snapshot; wallet summaries and reward ledger retain distinct credits, payouts, refunds and aggregate withdrawals."
+  ],
+  "validation": {
+    "apiTypecheck": {
+      "command": "node apps/yunipals-market-api/node_modules/typescript/bin/tsc --noEmit -p apps/yunipals-market-api/tsconfig.json",
+      "exitCode": 0
+    },
+    "realPostgres": {
+      "version": "16.15",
+      "database": "isolated synthetic arena_readmodels_20261022 on loopback56967",
+      "passed": 5,
+      "failed": 0,
+      "log": "/tmp/yunipals-native-read-models-postgres-final-20261022.log",
+      "logSha256": "9c70bb4bff8554349050fff39c6b9ee294df79bb2aadbcc4c9c75c4cafbb1057",
+      "command": "node --import tsx src/arena/live/nativeReadModels.test.ts from apps/yunipals-market-api",
+      "cases": [
+        "Real native browse SQL/runtime/checkpoint/source manifest, keyset pages, wallet totals, reward ledger, timeline and island history ignore contradictory legacy rows.",
+        "Correct private wallet/NFT joins and checksum validation; valid same-ID canonical reopening cannot inherit old private submissions or fighter snapshots.",
+        "Matching canonical freeze/publication enables video-ready; changed freeze witness disables it; mismatched post-freeze private commitments do not appear submitted.",
+        "Changed cursor anchors, stale source readiness and partially indexed native writes refuse without fallback.",
+        "Canonical source/ABI evidence corruption and operational source-mode changes refuse without fallback."
+      ]
+    },
+    "formatting": "Both new files formatted with the retained local Prettier; no dependency changes."
+  },
+  "limits": [
+    "The local fixture runs actual shared readArenaBrowse and readBoundRuntime SQL against native-shaped PostgreSQL relations and actual migrated operational private tables. Its source-status frame is deliberately injected and tested as ready/stale; it does not run Ponder synchronization or claim live-chain acceptance.",
+    "The summary ready flag validates the immutable publication identity and canonical data bindings; file availability/content checks remain the existing media status/artifact reader responsibility.",
+    "No production deployment, migration, provider call, wallet transaction or Git operation was performed."
+  ],
+  "productionDatabaseCalls": 0,
+  "providerCalls": 0,
+  "gitMutation": false,
+  "existingFileOwnershipOverlap": false
+}

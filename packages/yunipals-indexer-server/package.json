@@ -1,0 +1,23 @@
+{
+  "name": "@protopals/yunipals-indexer-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./readers": "./src/readers.ts",
+    "./identity": "./src/identity.ts",
+    "./database": "./src/database.ts",
+    "./ownership": "./src/ownership.ts",
+    "./arena": "./src/arena.ts",
+    "./marketplace": "./src/marketplace.ts",
+    "./action-evidence": "./src/action-evidence.ts"
+  },
+  "dependencies": {
+    "@protopals/yunipals-indexer-client": "workspace:*",
+    "@protopals/yunipals-market-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.4",
+    "@types/pg": "8.11.11"
+  }
+}

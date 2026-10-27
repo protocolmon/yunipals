@@ -1,0 +1,158 @@
+{
+  "actualInput": {
+    "actualInput": {
+      "format": "yunipals-native-metadata-approval-epoch-v1-input",
+      "metadataInputSha256": "bc618a8559a94d4a34d5a6da91c98d2241161f2edd91e540857a5089e5bbe306",
+      "metadataOperationSha256": "8aa248a21585cfffd2dc936968f214a2b007b3460f866e2d1346c1432d42a70d",
+      "metadataSelectedSha256": "2829182fa96599513f07099118ab0c16b0ceff8d04330537a9c90bd5231e35ba",
+      "newInstallSha256": "aee652c4789a0a92f5889a0a4a746f73d9ac4e7507352252118c9c257a513e9b"
+    },
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-native-metadata-epoch-actual-input",
+    "inputSha256": "7407928516d3ed4fcd09650ab48f8bd7d6d47e881ada49f542a9a438de9f2509",
+    "manifestSha256": "d30975e78bad3bdb80a16c498bd7b069ce557dfdb4328c5628d0101088aa2575",
+    "observedAt": "2026-10-25T19:50:21.558022+00:00",
+    "operatorSha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+    "providerCalls": 0,
+    "runtimeStarted": false,
+    "serviceActions": 0
+  },
+  "actualNoEffectAndReviewBindingDiagnostic": {
+    "changedPaths": [
+      "sessions.otherPeers"
+    ],
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-native-metadata-review-binding-readonly-diff",
+    "historicalFailedReviewSpecificDifferenceProved": false,
+    "noUpgradeOperationOrOverlayCreated": true,
+    "observedAt": "2026-10-25T20:01:52.857069+00:00",
+    "otherPeerCounts": [
+      7,
+      6
+    ],
+    "ownedBackendCounts": [
+      1,
+      1
+    ],
+    "providerCalls": 0,
+    "resultSha256": "8cd24d06b0c108148082ba24e961fa8f6a2aa4925dd14c183f688b9b8540a7fe",
+    "reviewHashes": [
+      "f5e8ee36acf7e74f7a5c7f30417eb6d461f93756993442de0dc1c7c8ba755ecf",
+      "93a7eff003144c95282e3f1340bdc8cfa67f05e45c65b3fa204e3f9dbddcfff4"
+    ],
+    "sameOriginalMetadataActor": {
+      "ActiveState": "active",
+      "InvocationID": "b7939080dc1f41508f94e0214cce9ca6",
+      "MainPID": "101456",
+      "NRestarts": "0"
+    },
+    "serviceActions": 0,
+    "topFieldHashes": {
+      "actor": [
+        "6a6a94cf7b073f3198b8635d21de30cfbc448530a1986372f8adce727a7ca34c",
+        "6a6a94cf7b073f3198b8635d21de30cfbc448530a1986372f8adce727a7ca34c"
+      ],
+      "boot": [
+        "ba42eddcfe76438db3ad833750fde918b09c65b410b6e2bb0b7078bea211ed01",
+        "ba42eddcfe76438db3ad833750fde918b09c65b410b6e2bb0b7078bea211ed01"
+      ],
+      "config": [
+        "7407928516d3ed4fcd09650ab48f8bd7d6d47e881ada49f542a9a438de9f2509",
+        "7407928516d3ed4fcd09650ab48f8bd7d6d47e881ada49f542a9a438de9f2509"
+      ],
+      "overlaySha256": [
+        "f0988f841f4af4512ffa20877f819ac4e42ce6690e2cc94b5d78cfff78e2bd92",
+        "f0988f841f4af4512ffa20877f819ac4e42ce6690e2cc94b5d78cfff78e2bd92"
+      ],
+      "scan": [
+        "8fa3e339f6f9e55937f98ee39b647bf6f1304275f571eb3464d576ea5d149ef3",
+        "8fa3e339f6f9e55937f98ee39b647bf6f1304275f571eb3464d576ea5d149ef3"
+      ],
+      "sessions": [
+        "06a559488d7a908e4f21a7a0129e437b3dc6b5e8b011e3183f75ab6ffadb9c63",
+        "b67cb956e34dfe129b2a4668b5a03b72a1a1eff86cd50b0dc899a67f00ed24ec"
+      ],
+      "source": [
+        "57921e67c874f5c9ce4c6cd27e000abf9484ca4496b26d8fe5a9f0dffb4602b9",
+        "57921e67c874f5c9ce4c6cd27e000abf9484ca4496b26d8fe5a9f0dffb4602b9"
+      ],
+      "state": [
+        "376b3a0c9c178f4dffbd274f2d238895b9cd50320c1255ddba591e08a95e5628",
+        "376b3a0c9c178f4dffbd274f2d238895b9cd50320c1255ddba591e08a95e5628"
+      ]
+    }
+  },
+  "actualReview": {
+    "completed": true,
+    "format": "root-native-metadata-epoch-review",
+    "inputSha256": "7407928516d3ed4fcd09650ab48f8bd7d6d47e881ada49f542a9a438de9f2509",
+    "manifestSha256": "d30975e78bad3bdb80a16c498bd7b069ce557dfdb4328c5628d0101088aa2575",
+    "observedAt": "2026-10-25T19:53:01.576167+00:00",
+    "operatorSha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+    "outcomeReconciliationRequired": false,
+    "ownerResult": {
+      "databaseWrites": 0,
+      "format": "yunipals-native-metadata-approval-epoch-v1",
+      "providerCalls": 0,
+      "reviewHash": "2a6dd32354f8a4b2cddd769442544919824c1b5281f98844e70895c81315e364",
+      "serviceActions": 0
+    },
+    "processExitCode": 0,
+    "resultSha256": "24babd1907f903091230dabe69c2b8094f41b194cc3b13af8ac0af18639821c9",
+    "runtimeCadenceQualified": false,
+    "startedAt": "2026-10-25T19:51:16.194240+00:00",
+    "stderrBytes": 0,
+    "stdoutSha256": "3dea1fc28ac5e1bafecdfe1739fde610b59e123a9e8288419c4a9d7b42c36324"
+  },
+  "actualSourceStage": {
+    "candidateInputsCreated": 0,
+    "commit": "e3ef6e61b6c36fcd237b0ace2a58b935fa06491e",
+    "completed": true,
+    "currentReadinessClaimed": false,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "externalExistingOnlyVerified": 0,
+    "format": "root-metadata-epoch-frozen-source-stage",
+    "observedAt": "2026-10-25T19:49:08.851675+00:00",
+    "permissionChanges": 0,
+    "providerCalls": 0,
+    "publicFilesCreated": 3,
+    "publicFilesVerified": 257,
+    "resultSha256": "248410ecc30b18dd41948f5786d7d4f8c9c6490e51e5c0d0470fd09bd386649a",
+    "serviceActions": 0
+  },
+  "actualUpgradeAttempt": {
+    "completed": false,
+    "failureCode": "same_fresh_actual_metadata_upgrade_review_required",
+    "format": "root-native-metadata-epoch-upgrade",
+    "inputSha256": "7407928516d3ed4fcd09650ab48f8bd7d6d47e881ada49f542a9a438de9f2509",
+    "manifestSha256": "d30975e78bad3bdb80a16c498bd7b069ce557dfdb4328c5628d0101088aa2575",
+    "observedAt": "2026-10-25T19:54:51.782367+00:00",
+    "operatorSha256": "68759ef0f1d5909e50b06620e79ab41aa13faa350333cca1b9632bda6252cf25",
+    "outcomeReconciliationRequired": true,
+    "processExitCode": 1,
+    "resultSha256": "179cff026b3288e8d9134cf1ff2fcde25df42ac9d69074bda6af4208b191ea57",
+    "runtimeCadenceQualified": false,
+    "startedAt": "2026-10-25T19:53:29.605464+00:00",
+    "stderrBytes": 1104,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "diagnosticLimits": {
+    "laterPairedFullReviewsDifferedOnlyInUnrelatedPeers": true,
+    "newUpgradeRequiresExplicitSuccessor": true,
+    "originalProgramAndFailedAttemptUnchanged": true,
+    "preciseHistoricalFailedPairDifferenceProved": false,
+    "sameActualOwnedBackendProofInPairedReview": true
+  },
+  "format": "yunipals-native-metadata-epoch-first-activation-production-v1",
+  "newProgramEpochAcknowledged": false,
+  "newProgramStarted": false,
+  "operatorDatabaseWrites": 0,
+  "operatorServiceActions": 0,
+  "originalAttemptOutcomeReconciled": true,
+  "originalSelectedActorStillRunning": true,
+  "publicCommit": "e3ef6e61b6c36fcd237b0ace2a58b935fa06491e",
+  "runtimeCadenceQualified": false
+}

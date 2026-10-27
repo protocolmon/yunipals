@@ -1,0 +1,27 @@
+{
+  "acknowledgedActorSha256": "c08aefe776726ecbe763a9100b754170c0a43cf8a79bcc0e881abc67e70140da",
+  "actualActorSha256": "f0426e3fb3085f978839297e4a181a411cb7d8887b868c031ed75cc8eaa46056",
+  "cacheReconciliationQualified": false,
+  "changedFields": [
+    "pid",
+    "start_time"
+  ],
+  "completed": true,
+  "currentActorQualified": true,
+  "databaseWrites": 0,
+  "effectsRetried": false,
+  "format": "root-metadata-current-observer-actual-acceptance-v1",
+  "invocation": "eeccbac374de412ca9781e00a1126ba7",
+  "observedAt": "2026-10-25T23:43:52.776669+00:00",
+  "observerProducerSha256": "17a24566753c1903e1c4be3a0f9d66f24d44cd9aaee30b16ceedb21cceeb2498",
+  "originalOwner3CurrentPassed": false,
+  "pid": 1180697,
+  "presentationChanged": true,
+  "providerCalls": 0,
+  "rawProofSha256": "5f496036a664f498844db9f9314aa1a56e40231bab6ec80de0559433ff57484a",
+  "restarts": "0",
+  "resultSha256": "aa7a226e45721da44f79de3ffc8701357c54a743e4f030ef1b91dc3f2e236899",
+  "serviceActions": 0,
+  "upgradeReceiptSha256": "18da893e8e39725b125e9a2eeb89ffc8b5d1b7e7e7f9674364d6b265b6c6d343",
+  "wholeMetadataApprovalQualified": false
+}

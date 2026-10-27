@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-23T10:31:37.589Z",
+  "origin": "https://www.yunipals.com",
+  "checks": [
+    "exact promoted release manifest",
+    "real pack NFT1 is inside the normal global collection grid; separate section absent",
+    "real owner profile shows NFT1 in its holdings grid without a separate gallery",
+    "real NFT detail displays Birth day0 and actual mint time",
+    "public owner route loads exact approved package; disconnected wallet cannot submit; mobile fits",
+    "packs retain FAQ and omit NFT gallery"
+  ],
+  "api": [
+    {
+      "path": "/yunipals-indexer/v1/boosters/monsters",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/owners/0xb3883cd96d72b08b8226452305a28d65974a3727/booster-monsters",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/monsters/0x105319be2182018c31fb10b1be198c3cf238a146/1",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/metadata/0x105319be2182018c31fb10b1be198c3cf238a146/1.json",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "walletConnections": 0,
+  "transactions": 0,
+  "passed": true,
+  "birthDate": "2026-10-22T17:33:29.000Z"
+}

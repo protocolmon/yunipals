@@ -28,7 +28,6 @@ process.once("SIGINT", () => {
 });
 while (!stopped) {
   try {
-    // Only this provider worker has the OpenAI credential. Admission polls the DB.
     await runtime.identityAnalysis.step(
       key,
       Number(process.env.ARENA_IDENTITY_ALLOWANCE_MICROUSD ?? "0"),

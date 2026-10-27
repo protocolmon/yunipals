@@ -1,0 +1,149 @@
+HISTORICAL FIRST SUCCESSOR. Current production reader entry/version selection is
+consumer-current-handover.md. This note retains the original v1 scope and local
+evidence; its versioned commands/status are not the final production recipe.
+
+Owned booster reader: consumer handover successor, 22 October 2026
+
+STATUS
+
+Implemented and locally qualified. Not staged or executed on production. No
+production ACL mutation, service action, reader switch, provider call or dashboard
+change was made by this work. These files add no gate to the running booster
+feature. They replace the incompatible historical handover operators only when
+the later full consumer migration is ready.
+
+SUCCESSOR FILES
+
+consumer-operational-owner-v5.py replaces owner-v4 for finite retained-feature
+ACL admission/inverse. It records actual collector LOGIN=true in before/after;
+only historical receipt comparisons upgrade the separately verified baseline.
+The exact source/reader graph is checked before and after the ACL transaction.
+
+consumer-operational-preview-v5.py replaces preview-v4. It binds roleLoginBefore,
+performs no collector ALTER ROLE, starts only the existing bounded preview unit,
+and retains the original complete candidate verifier and positive route tests.
+It stops/drains only that candidate, preserving feature API/queue sessions. A
+failed route test still writes a failure receipt and restores the prior LOGIN.
+
+consumer-operational-install-v6.py replaces install-v5. It recognizes the exact
+live feature admission separately from any final collector install receipt. Its
+new final collector candidate is registered only after the full existing verifier
+passes. Inverse stops/drains that candidate, restores the recorded prior LOGIN
+(true for collector), and restores only its owned selector files and original
+service. It neither disables the feature role nor revokes its nine reads.
+
+ownership-readview-owned-booster-v1.py adapts the unchanged historical ownership
+validator as used by the new owner. It excludes only namespace OID74518314 from
+the old source otherPublicReads query after proving the exact source graph. It
+retains the canonical/cache/control ACL fingerprints and all other unexpected-
+read checks. Complete historical noLogin postchecks use a comparison copy only;
+returned evidence reports the real collector noLogin=false. This adapter does
+not make the old ownership apply command safe to rerun: historical creation and
+mutation commands remain historical records.
+
+consumer-owned-booster-runtime-v1.py collects protected read-only observations;
+consumer-owned-booster-policy.py remains pure. The runtime loads the original
+c627... admission operator by hash and the exact committed result receipt
+0fa89a0a8ee6cd5a2ca721dd21e6a3480c0b4df43abfaed21fde252281515f08.
+It verifies the original feature API static unit/env/bundle, the queue's
+unit/timer/env/bundle, locked Unix967/961, capability-free owned processes/cgroups,
+and bounded application sessions. The queue invocation may legitimately change
+on its five-second schedule. An owned API restart can renew only its PID,
+InvocationID and main-start timestamp while all other original fields/files,
+locked identity and cgroup stay exact. The observed fresh identity is bound into
+the successor review/apply/inverse and rechecked during observation. A restart
+after review requires a fresh review. Changing the source namespace, reader
+rights, static API binding or queue inputs does not silently become authorized.
+
+consumer-owned-booster-graph-v1.json freezes source schema74518314, owner73004621,
+build6d581272ce and all44 native table OIDs. Exactly nine are readable by the
+collector: _ponder_meta, _ponder_checkpoint, booster_checkpoint,
+booster_engine_state, booster_type, booster_original, booster_request,
+booster_monster and booster_refund. No booster_event journal read, write or
+grant option is accepted. Existing finite retained and v4 read-view grants are
+checked separately by their original exact catalog/definition validators.
+
+SEQUENCING AND CAPACITY
+
+Use owner-v5 / preview-v5 / install-v6 together; do not feed a new preview receipt
+to an old installer or force the role back to NOLOGIN to satisfy an old helper.
+The new pins form an acyclic dependency chain. The JSON evidence beside this
+runbook records every actual source hash.
+
+Keep the existing coordination order: admit/review finite ACLs, qualify all
+positive retained-route previews, then perform sequential final installs. Main
+write slices still need a successful new main preview with the same action-read
+receipt and real full-receipt BNB fixture. Cache install retains the actual v4
+generation/native-guard/freshness checks and its bounded worker wait. No BNB,
+generation or marketplace requirement has been added to the booster API.
+
+Collector uses max2 feature API + max1 artwork queue + max2 candidate API + one
+bounded peer probe = the existing role limit6. The peer probe completes before
+steady-state observation/ACL execution; it is not a permanent application-name
+exception. Only the two fixed feature application names are excepted from the
+old zero-session ACL guard. Candidate sessions must still be absent for those
+ACL transactions. A final admitted collector can coexist with subsequent final
+consumer installs through its exact new install receipt, unit/invocation, input
+hashes and process proof. Never overlap collector preview and final candidate.
+Keep the existing global PostgreSQL reserve/capacity check too.
+
+The collector entrypoint's accepted routes use the two-slot apiPool; the other
+offchain pool is lazy and unused on these routes. Requalify that property for
+the exact pinned final artifact. Starting to use a two-slot worker pool would
+exceed this allocation and is refused; do not raise the role limit.
+
+The new operational ACL/preview phases deliberately precede final collector
+installation. Do not use them as general maintenance commands after unrelated
+reader admissions. A change to the separately owned static feature inputs needs
+a new acknowledged baseline/successor; a stale receipt cannot authorize it.
+
+LOCAL QUALIFICATION
+
+python3 ops/unified-indexer-transition/consumer-owned-booster-policy-test.py
+  8 controls, exact frozen admission validator and synthetic receipt bytes.
+
+python3 ops/unified-indexer-transition/consumer-owned-booster-successor-test.py
+  12 controls: exact44 graph/9 reads, foreign namespace/OID/write/LOGIN rejection,
+  guard observation binding, historical comparison-only normalization, source
+  ACL exception, actual failed preview cleanup and final inverse over temporary
+  files, owned API restart/static-file/cgroup/UID checks, fresh API identity CAS,
+  and all new/historical dependency pins. Lifecycle service calls are
+  controlled fakes; this is not production systemd or final HTTP acceptance.
+
+/root/.nvm/versions/node/v24.18.1/bin/node \
+  ops/unified-indexer-transition/consumer-owned-booster-successor-postgres-test.mjs
+  8 scenario groups against the named disposable local PostgreSQL16 container.
+  It creates/drops a unique database and roles; freezes their actual OIDs;
+  executes the actual generated graph/ACL SQL with only fixture identities
+  adapted; opens real feature/candidate sessions; verifies ACL rollback, commit
+  and inverse preserve LOGIN=true and nine reads; refuses unexpected source
+  reads/LOGIN and unowned sessions; proves actual role limit6 refuses slot7.
+
+Existing unchanged regression suites also pass:
+  consumer-operational-v4-test.py:9
+  consumer-cache-bootstrap-v5-test.py:7
+
+REMAINING ACTUAL GATES
+
+1. Parent-owned combined source must recover/catch up; fixed-boundary data and
+   canonical qualification, native cache guards, v4 generation and positive
+   final HTTP routes remain real migration work. Local controls claim none of
+   those gates complete.
+2. Review/stage this exact successor set, then run read-only protected host
+   preflight and rollback rehearsal against actual catalog/process ownership.
+   It must see current healthy feature API/queue/source, expected old ACL
+   receipts and no foreign collector process/session. No such production
+   successor preflight/rehearsal was run during this task.
+3. Run the existing full retained feature previews and each final install/inverse
+   with fresh reviews and real candidate process/HTTP/capacity evidence. The
+   exact native schema/44 OIDs and static API inputs are intentionally frozen
+   to the current owned temporary source. This does not switch boosters
+   into the combined source or retire the temporary service.
+4. A separate parent-owned temporary-to-combined handover must qualify
+   booster-source-parity.py, preserve API/queue publication and newly indexed
+   event behavior, and create an explicit retirement receipt before final
+   unified retirement. These successors cannot authorize source retirement;
+   their current live-source check correctly refuses an unacknowledged stop.
+
+Mainnet pack activation/purchase/VRF smoke signatures remain an independent
+owner-wallet step. Nothing in these local migration controls claims they ran.

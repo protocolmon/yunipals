@@ -1,0 +1,320 @@
+--- a/ops/unified-indexer-transition/arena-owner-migration-v9.py
++++ b/ops/unified-indexer-transition/arena-owner-migration-v9.py
+@@ -8,9 +8,9 @@
+ import argparse,contextlib,ctypes,fcntl,grp,hashlib,json,os,pwd,re,select,shlex,shutil,signal,socket,stat,subprocess,time,types
+ from pathlib import Path
+ 
+-FORMAT='yunipals-arena-owner-migration-v2'
++FORMAT='yunipals-arena-owner-migration-v9'
+ OPS=Path('/opt/yunipals-unified/operations/free-replay-20261020')
+-BASE=Path('/var/backups/yunipals-arena-owner-migration-v2-20261021')
++BASE=Path('/var/backups/yunipals-arena-owner-migration-v9-20261022')
+ ROOT=Path('/opt/yunipals-unified/releases/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d')
+ SOURCE=ROOT.name
+ ARTIFACT=Path('/var/tmp/yunipals-runtime-3c8776b9-20261021')
+@@ -36,6 +36,13 @@
+ PRODUCTIVE_UNITS=('yunipals-paid-productive-controller-v5-20261021-prod2.service','yunipals-unified-paid-productive-v7-20261021-prod2.service')
+ PRODUCTIVE_CURRENT={'yunipals-paid-productive-controller-v6-20261021-prod3.service':'9bf04a796cf54eb0ae61bbd7f66ec243','yunipals-unified-paid-productive-v8-20261021-prod3.service':'2dce868db86948e9ad7d8935ae85243d'}
+ PRODUCTIVE_UNITS=(*PRODUCTIVE_UNITS,*PRODUCTIVE_CURRENT)
++NORMAL_HELPER_SHA='c8c06c03d4bb929f0171876939bb0887254a08f135e4c25a31fbaa238ae166fb'
++NORMAL_BASE=Path('/var/backups/yunipals-source6-normal-replay-successor-20261022')
++NORMAL_RECEIPT_SHA='0000000000000000000000000000000000000000000000000000000000000000'  # Bound only by the exact acknowledged normal/free runtime in launcher-v7.
++TERMINAL_PROOF=Path('/var/backups/yunipals-arena-normal-adoption-v4-20261022/normal-proof.json')
++TERMINAL_PROOF_SHA='60adfe8cc817ea5b7ebf66bfa98e4f70652000675c424c53f6862e3db9f73638'
++RENEWAL_CONTROLLERS=tuple('yunipals-paid-replay-renewal-v'+str(v)+'-controller.service'for v in [4,5,6,7])
++PRODUCTIVE_UNITS=(*PRODUCTIVE_UNITS,*RENEWAL_CONTROLLERS)
+ DROPIN='zzzz-arena-compatible-legacy-20261021.conf'
+ ENV={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','TZ':'UTC'}
+ PHASE='initial'
+@@ -110,11 +117,11 @@
+     fd=os.open(SOURCE_LEASE,os.O_RDONLY|os.O_NOFOLLOW)
+     try:
+         s=os.fstat(fd);p=SOURCE_LEASE.lstat()
+-        if(not stat.S_ISREG(s.st_mode)or s.st_uid!=0 or s.st_mode&0o077 or s.st_nlink!=1 or
++        if(not stat.S_ISREG(s.st_mode)or s.st_uid!=0 or s.st_mode&0o022 or s.st_nlink!=1 or
+             (s.st_dev,s.st_ino)!=(p.st_dev,p.st_ino)):fail('existing_exact_source_lease_required')
+         try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+         except BlockingIOError:fail('productive_replay_must_close_before_arena_maintenance')
+-        yield
++        yield fd
+     finally:os.close(fd)
+ 
+ def private_snapshot_sql():
+@@ -407,12 +414,65 @@
+     helper.terminal(q,live,native,journal,record)
+     return {'verified':True,'completionSha256':sha(encoded(refs)),'controllerResultSha256':refs['controllerResult']['sha256']}
+ 
+-def productive_is_quiet():
++def normal_source_for_arena(lease_fd):
++    # The current free-only validator, not an obsolete parent's live PID, owns
++    # source identity. Retain the already authenticated historical terminal
++    # actors separately; that old proof never supplies the current source.
++    if os.geteuid()!=0:fail('root_private_normal_source_reader_required')
++    if NORMAL_RECEIPT_SHA=='0'*64:fail('actual_normal_source_runtime_receipt_pending')
++    lease=os.fstat(lease_fd);named=SOURCE_LEASE.lstat()
++    if(not stat.S_ISREG(lease.st_mode)or lease.st_uid!=0 or lease.st_nlink!=1 or lease.st_mode&0o022 or
++       (lease.st_dev,lease.st_ino)!=(named.st_dev,named.st_ino)):fail('same_open_source_lease_required')
++    try:fcntl.flock(lease_fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
++    except BlockingIOError:fail('paid_replay_must_close_before_normal_source_validation')
++    path=OPS/'source6-normal-replay-successor-v2.py'
++    for item in [*path.parents,path]:
++        st=item.lstat()
++        if stat.S_ISLNK(st.st_mode)or st.st_uid!=0 or st.st_mode&0o022:fail('protected_normal_source_reader_required')
++    m=load(path,NORMAL_HELPER_SHA,'arena_current_normal_free_source_reader')
++    if m.BASE!=NORMAL_BASE:fail('exact_normal_free_runtime_path_required')
++    r,b,s=m.modules();value=m.validate(r,b,s,NORMAL_RECEIPT_SHA)
++    raw=s.protected(NORMAL_BASE/'runtime.json')
++    if sha(raw)!=NORMAL_RECEIPT_SHA:fail('exact_acknowledged_normal_free_receipt_required')
++    receipt=json.loads(raw)
++    if(value.get('format')!='yunipals-source6-normal-free-successor'or value.get('validated')is not True or
++       value.get('runtimeReceiptSha256')!=NORMAL_RECEIPT_SHA or value.get('runtime')!=receipt.get('runtime')or
++       value.get('normalOperationalRuntime')!='infinity'or value.get('freeOnly')is not True or
++       value.get('paidAuthority')is not False or value.get('financialWindowRenewed')is not False or
++       value.get('financialExpiresAt')!='2026-11-19T18:00:00+00:00'or
++       receipt.get('freeOnly')is not True or receipt.get('paidAuthority')is not False or
++       receipt.get('publicSelectionChanges')!=0 or receipt.get('baseSourceConcurrency')!=1 or
++       receipt.get('heapMiB')!=4096 or receipt.get('memoryMaxBytes')!=6442450944):
++        fail('exact_unselected_normal_free_runtime_required')
++    terminal_raw=s.protected(TERMINAL_PROOF)
++    if sha(terminal_raw)!=TERMINAL_PROOF_SHA:fail('exact_prior_terminal_proof_required')
++    terminal=json.loads(terminal_raw);completion=productive_completed_controller()
++    if(terminal.get('format')!='yunipals-arena-bnb-transaction-source-v1'or terminal.get('verified')is not True or
++       len(terminal.get('actors',{}))!=1 or not set(terminal['actors'])<=set(RENEWAL_CONTROLLERS)or
++       terminal.get('priorProductiveCompletion')!=completion):fail('authenticated_prior_terminal_actors_required')
++    actual=value['runtime']
++    if s.UNIT!='yunipals-unified-source6-free-v2.service':fail('exact_live_normal_source_required')
++    configuration={key:receipt[key]for key in ['dropSha256','normalDropFile','bootLink','baseSourceConcurrency','heapMiB','memoryMaxBytes']}
++    return {'format':'yunipals-arena-normal-free-source-v1','verified':True,'normalOperatorSha256':NORMAL_HELPER_SHA,
++        'normalRuntimeReceiptSha256':NORMAL_RECEIPT_SHA,'normalConfigurationSha256':sha(encoded(configuration)),
++        'terminalEvidenceSha256':TERMINAL_PROOF_SHA,'controllerResultSha256':terminal['controllerResultSha256'],
++        'cleanupReceiptSha256':terminal['cleanupReceiptSha256'],'financialHandoffSha256':terminal['financialHandoffSha256'],
++        'actors':terminal['actors'],'normalSource':{'unit':s.UNIT,'invocation':actual['invocation'],
++            'process':{key:actual[key]for key in ['pid','startTicks']},'definitionSha256':sha(s.protected(s.ORIGINAL))},
++        'bootId':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
++        'sourceLeaseIdentity':{'dev':lease.st_dev,'ino':lease.st_ino},'priorProductiveCompletion':completion,
++        'freeOnly':True,'paidAuthority':False,'financialWindowRenewed':False,'financialExpiresAt':value['financialExpiresAt'],
++        'providerRequests':0,'serviceJobs':0,'sourceSelectionChanged':False,
++        'normalSourceMustRemainRunning':True,'nativeReadinessClaimed':False}
++
++def productive_is_quiet(lease_fd):
++    normal=normal_source_for_arena(lease_fd)
+     # Both known replay generations remain fenced. PID0 alone is insufficient
+     # if a separately supervised native child or descendant is still running.
+     states={unit:stopped(unit)for unit in PRODUCTIVE_UNITS}
+     if any(s['MainPID']!='0'or s['ActiveState']not in{'inactive','failed'}or s['SubState']not in{'dead','failed'}for s in states.values()):fail('productive_controller_and_native_must_both_be_stopped')
+     for unit,state in states.items():
++        if unit in normal['actors']and state['InvocationID']not in {'',normal['actors'][unit]['invocation']}:fail('foreign_terminal_renewal_controller_refused')
+         if state['LoadState']=='loaded':
+             if unit in PRODUCTIVE_CURRENT and state['InvocationID']!=PRODUCTIVE_CURRENT[unit]:
+                 if unit!='yunipals-paid-productive-controller-v6-20261021-prod3.service'or state['InvocationID']!=''or(state['ActiveState'],state['SubState'],state['Result'],state['ExecMainStatus'])!=('inactive','dead','success','0'):fail('exact_current_productive_invocation_required')
+@@ -553,8 +613,8 @@
+     if os.geteuid()!=0 or socket.gethostname()!='yunipals-main':fail('fixed_root_host_required')
+     o=observer();v=load(OPS/'proxy-upgrade.py',VERIFIER_SHA,'owner_existing_unit_verifier',o)
+     raw,_=o.read(args.plan,100000);plan=json.loads(raw)
+-    with existing_source_lease():
+-        productive_is_quiet()
++    with existing_source_lease() as lease_fd:
++        productive_is_quiet(lease_fd)
+         result=apply(plan,args.apply,o,v)if args.apply else review(plan,o,v)
+     public={k:value for k,value in result.items()if k in{'format','reviewHash','migrationCommitOutcome','resumed','remoteBackupTransfers','sourceSelectionChanged','keyOrProviderConfigChanged','resultFile','resultSha256'}}
+     public.update(privateValuesExported=False,automaticRetryAllowed=False)
+--- a/ops/unified-indexer-transition/arena-legacy-origin-adopt-v9.mjs
++++ b/ops/unified-indexer-transition/arena-legacy-origin-adopt-v9.mjs
+@@ -18,12 +18,16 @@
+ import { hostname, userInfo } from "node:os";
+ import { spawnSync } from "node:child_process";
+ 
+-export const FORMAT = "yunipals-arena-legacy-origin-adopt-v2";
++export const FORMAT = "yunipals-arena-legacy-origin-adopt-v9";
+ export const PRODUCTIVE_UNITS = Object.freeze([
+   "yunipals-paid-productive-controller-v5-20261021-prod2.service",
+   "yunipals-unified-paid-productive-v7-20261021-prod2.service",
+   "yunipals-paid-productive-controller-v6-20261021-prod3.service",
+-  "yunipals-unified-paid-productive-v8-20261021-prod3.service"
++  "yunipals-unified-paid-productive-v8-20261021-prod3.service",
++  "yunipals-paid-replay-renewal-v4-controller.service",
++  "yunipals-paid-replay-renewal-v5-controller.service",
++  "yunipals-paid-replay-renewal-v6-controller.service",
++  "yunipals-paid-replay-renewal-v7-controller.service"
+ ]);
+ const PRODUCTIVE_CURRENT = Object.freeze({
+   "yunipals-paid-productive-controller-v6-20261021-prod3.service":
+@@ -142,36 +146,11 @@
+   return true;
+ }
+ 
+-function completedProductiveController() {
+-  const source =
+-    "/opt/yunipals-unified/operations/free-replay-20261020/arena-owner-migration-v2.py";
+-  const pin =
+-    "70ca16836b8df7f71683ae7999be83bb97186c063133a15b2f6b8d58f074ef65";
+-  demand(
+-    hash(readPublic(source, 200000)) === pin,
+-    "pinned_completed_controller_reader_required"
+-  );
+-  const code =
+-    "import hashlib,json,sys,types;from pathlib import Path;p=Path(sys.argv[1]);raw=p.read_bytes();assert len(raw)<=200000 and hashlib.sha256(raw).hexdigest()==sys.argv[2];m=types.ModuleType('arena_terminal_reader');m.__file__=str(p);exec(compile(raw,str(p),'exec'),m.__dict__);print(json.dumps(m.productive_completed_controller(),sort_keys=True))";
+-  const result = spawnSync(
+-    "/usr/bin/python3",
+-    ["-I", "-S", "-B", "-c", code, source, pin],
+-    {
+-      env: {
+-        PATH: "/usr/sbin:/usr/bin:/sbin:/bin",
+-        LANG: "C.UTF-8",
+-        TZ: "UTC"
+-      },
+-      encoding: "utf8",
+-      timeout: 45000,
+-      maxBuffer: 16384
+-    }
+-  );
+-  demand(
+-    result.status === 0 && !result.error && !result.stderr,
+-    "actual_completed_controller_lineage_required"
+-  );
+-  const receipt = JSON.parse(result.stdout);
++function completedProductiveController(proof) {
++  // The unchanged root-side reader runs before UID drop; postgres receives
++  // only its exact pinned result through the inherited private descriptor.
++  const receipt = proof.priorProductiveCompletion;
++
+   demand(
+     Object.keys(receipt).sort().join() ===
+       "completionSha256,controllerResultSha256,verified" &&
+@@ -181,6 +160,81 @@
+     "actual_completed_controller_receipt_required"
+   );
+   return true;
++}
++
++
++const NORMAL_PROOF_SHA =
++  "0000000000000000000000000000000000000000000000000000000000000000"; // PENDING actual root-produced terminal proof FD5.
++function inheritedNormalSourceProof(lease) {
++  const before = fstatSync(5);
++  demand(before.isFile() && before.uid === 0 && before.nlink === 1 &&
++    !(before.mode & 0o077) && before.size > 0 && before.size <= 16384,
++    "root_private_bounded_renewal_proof_descriptor_required");
++  const info = readFileSync("/proc/self/fdinfo/5", "utf8");
++  const flags = /^flags:\s+([0-7]+)$/m.exec(info);
++  demand(flags && (parseInt(flags[1], 8) & 3) === 0,
++    "readonly_renewal_proof_descriptor_required");
++  const raw = Buffer.alloc(before.size);
++  demand(readSync(5, raw, 0, raw.length, 0) === raw.length &&
++    hash(raw) === NORMAL_PROOF_SHA,
++    "exact_actual_renewal_terminal_proof_required");
++  const after = fstatSync(5);
++  demand(["dev", "ino", "size", "mtimeMs", "ctimeMs"].every((k) => before[k] === after[k]),
++    "renewal_proof_descriptor_changed");
++  const proof = JSON.parse(raw.toString("utf8"));
++  demand(proof.format === "yunipals-arena-normal-free-source-v1" && proof.verified === true &&
++    proof.normalOperatorSha256 === "c8c06c03d4bb929f0171876939bb0887254a08f135e4c25a31fbaa238ae166fb" &&
++    proof.normalRuntimeReceiptSha256 === "e0772a5a895626690ca5bb221ab653bf5c88f4caa3ca0ebeb189985d6cda157f" &&
++    proof.terminalEvidenceSha256 === "60adfe8cc817ea5b7ebf66bfa98e4f70652000675c424c53f6862e3db9f73638" &&
++    /^[0-9a-f]{64}$/.test(proof.normalConfigurationSha256) &&
++    /^[0-9a-f]{64}$/.test(proof.controllerResultSha256) &&
++    proof.freeOnly === true && proof.paidAuthority === false && proof.financialWindowRenewed === false &&
++    proof.financialExpiresAt === "2026-11-19T18:00:00+00:00" && proof.nativeReadinessClaimed === false &&
++    equal(proof.sourceLeaseIdentity, {dev: lease.dev, ino: lease.ino}) &&
++    Object.keys(proof.actors).length === 1 && PRODUCTIVE_UNITS.slice(4).includes(Object.keys(proof.actors)[0]) &&
++    proof.normalSourceMustRemainRunning === true && proof.sourceSelectionChanged === false,
++    "actual_root_normal_free_proof_and_same_source_lease_required");
++  for (const unit of Object.keys(proof.actors)) {
++    const actor = proof.actors[unit];
++    demand(/^[0-9a-f]{32}$/.test(actor.invocation) &&
++      /^[0-9a-f]{64}$/.test(actor.definitionSha256) &&
++      hash(readPublic(`/etc/systemd/system/${unit}`, 50000)) === actor.definitionSha256,
++      "exact_renewal_terminal_unit_definition_required");
++  }
++  verifyNormalSource(proof);
++  return proof;
++}
++
++function verifyNormalSource(proof) {
++  const actor = proof.normalSource;
++  demand(actor?.unit === "yunipals-unified-source6-free-v2.service" &&
++    /^[0-9a-f]{32}$/.test(actor.invocation) &&
++    /^[0-9a-f]{64}$/.test(actor.definitionSha256) &&
++    Number.isSafeInteger(actor.process?.pid) && actor.process.pid > 1 &&
++    Number.isSafeInteger(actor.process?.startTicks) && actor.process.startTicks > 0,
++    "exact_current_normal_source_proof_required");
++  const capture = () => {
++    const child = spawnSync("/usr/bin/systemctl", ["show", "--all", actor.unit,
++      ...["Id", "InvocationID", "LoadState", "MainPID", "ActiveState", "SubState", "Slice", "ControlGroup"].map((k) => `--property=${k}`)],
++      {env: {PATH: "/usr/bin:/bin"}, encoding: "utf8", timeout: 5000, maxBuffer: 4096});
++    demand(child.status === 0 && !child.error && !child.stderr, "bounded_normal_source_metadata_required");
++    const rows = child.stdout.trim().split("\n").map((r) => r.split("="));
++    demand(rows.length === 8 && Object.keys(Object.fromEntries(rows)).length === 8, "complete_normal_source_metadata_required");
++    return Object.fromEntries(rows);
++  };
++  const before = capture();
++  demand(before.Id === actor.unit && before.LoadState === "loaded" &&
++    before.ActiveState === "active" && before.SubState === "running" &&
++    before.InvocationID === actor.invocation && before.MainPID === String(actor.process.pid) &&
++    before.Slice === "system.slice" && before.ControlGroup === `/system.slice/${actor.unit}` &&
++    hash(readPublic(`/etc/systemd/system/${actor.unit}`, 50000)) === actor.definitionSha256 &&
++    readFileSync("/proc/sys/kernel/random/boot_id", "utf8").trim() === proof.bootId,
++    "same_live_normal_source_required_before_adoption");
++  const raw = readFileSync(`/proc/${actor.process.pid}/stat`, "utf8");
++  const fields = raw.slice(raw.lastIndexOf(")") + 2).trim().split(/\s+/);
++  demand(fields.length >= 20 && /^\d+$/.test(fields[19]) &&
++    BigInt(fields[19]) === BigInt(actor.process.startTicks) && equal(capture(), before),
++    "normal_source_process_lifetime_changed");
+ }
+ 
+ function productiveCgroupEmpty(unit) {
+@@ -607,7 +661,7 @@
+       named.isFile() &&
+       lease.uid === 0 &&
+       lease.nlink === 1 &&
+-      !(lease.mode & 0o077) &&
++      !(lease.mode & 0o022) &&
+       lease.dev === named.dev &&
+       lease.ino === named.ino,
+     "existing_exact_source_lease_descriptor_required"
+@@ -625,6 +679,7 @@
+       hold.stderr.length === 0,
+     "productive_replay_must_close_before_adoption"
+   );
++  const renewalTerminal = inheritedNormalSourceProof(lease);
+   for (const unit of PRODUCTIVE_UNITS) {
+     const capture = () => {
+       const child = spawnSync(
+@@ -667,6 +722,10 @@
+       return Object.fromEntries(rows);
+     };
+     const state = capture();
++    if (renewalTerminal.actors[unit]) {
++      demand(["", renewalTerminal.actors[unit].invocation].includes(state.InvocationID),
++        "foreign_renewal_terminal_invocation_refused");
++    }
+     const completed =
+       unit === PRODUCTIVE_UNITS[2] &&
+       state.LoadState === "loaded" &&
+@@ -676,7 +735,7 @@
+       state.SubState === "dead" &&
+       state.Result === "success" &&
+       state.ExecMainStatus === "0"
+-        ? completedProductiveController()
++        ? completedProductiveController(renewalTerminal)
+         : false;
+     verifyProductiveTerminal(
+       unit,
+@@ -717,6 +776,7 @@
+       ),
+       seal = await privateSeal(db);
+     reviewed.privateSeal = seal;
++    verifyNormalSource(renewalTerminal);
+     const binding = {
+       format: FORMAT,
+       operatorSha256: hash(readPublic(resolve(process.argv[1]), 100_000)),
+@@ -725,7 +785,8 @@
+       owner: reviewed.target,
+       identities: reviewed.identities,
+       origins: reviewed.origins,
+-      privateSeal: seal
++      privateSeal: seal,
++      normalSourceProofSha256: NORMAL_PROOF_SHA
+     };
+     const reviewHash = digest(binding);
+     await db.query("ROLLBACK");

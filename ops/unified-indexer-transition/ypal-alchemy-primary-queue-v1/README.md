@@ -1,0 +1,9 @@
+# Queued Alchemy primary routing preparation
+
+The paid-primary source mode previously admitted permit and compute usage before acquiring an upstream slot. The new code shares the existing bounded paid-logs queue with paid-primary mode: waiting or cancelled source requests reach no paid admission. Every dispatched request still requires the unchanged profile/address/range/permit and per-method compute-budget checks. Free, legacy and foreground modes retain their behavior.
+
+The application TS source has the same one-condition change. The deployable artifact is derived from the exact accepted pool-one111657-byte artifact8afd0184, replacing one fixed sourceRequest condition. All other compiled bytes, dependencies and the source-map URL remain identical. The source map is not rebuilt and is not claimed to describe the new compiled condition. `prepare.mjs` proves exact preimage/candidate hashes and byte equality on both sides of the single seam. No earlier published artifact is modified.
+
+Eight focused real-loopback HTTP groups pass, including existing queue concurrency/priority/bounds/budget-denial behavior and new paid-primary cancellation and missing/out-of-range permit cases. A separate test imports this actual compiled artifact and proves only dispatched requests are admitted/charged. Typecheck and syntax checks pass. Both HTTP tests use explicit fake provider responses, no external network or database. Initial sandbox listen failures are not test passes; the bounded loopback reruns passed.
+
+This packet changes no production route, permit, budget, source process or public service. Actual financial admission, retained dependency/runtime staging, four-proxy/source ownership and bounded-close/UTC recovery are separate prerequisites. Existing de4/1521 free receipts cannot qualify a new paid epoch.

@@ -1,0 +1,11 @@
+{
+  "files": {
+    "ypal-alchemy-ordinary-consumer-context-v1.py": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+    "ypal-alchemy-ordinary-runtime-v1.py": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+    "ypal-alchemy-source-switch-v1.host.py": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02",
+    "ypal-old-runtime-inventory-v1.py": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b",
+    "ypal-ordinary-source-authority-v5.py": "052f363ca94a74aed1b278079c3e70661c8068328342bba559eecfe3c1939ac0",
+    "ypal-ordinary-source-authority-v6.py": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82"
+  },
+  "format": "yunipals-ypal-ordinary-source-authority-v6-source"
+}

@@ -1,0 +1,107 @@
+{
+  "completed": true,
+  "context": {
+    "candidateArtifactSha256": "8afd0184d8e51d920a303ecfa729354189f240b0164d5d62655fb172818cc69c",
+    "candidateRuntimeImportYetQualified": false,
+    "databaseQueries": 0,
+    "existingArtifact": {
+      "bytes": 111657,
+      "file": "/opt/yunipals-unified/operations/free-replay-20261020/source6-selective-source-proxy-v6/rpc-budget-proxy.mjs",
+      "sha256": "d8e58d18f7f88bb8b13d4f2d85d562ddd71f7ffc2c96b913410d5a656202f5c8"
+    },
+    "existingContextLink": {
+      "device": 2049,
+      "file": "/opt/yunipals-unified/operations/free-replay-20261020/source6-selective-source-proxy-v6/node_modules",
+      "gid": 0,
+      "inode": 2504089,
+      "target": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules",
+      "uid": 0
+    },
+    "format": "yunipals-combined-rpc-pool-one-runtime-context-readonly-v1",
+    "observedAt": "2026-10-23T22:53:32.135233+00:00",
+    "packageLinks": {
+      "pg": {
+        "device": 2049,
+        "gid": 0,
+        "inode": 1415554,
+        "target": "../../../node_modules/.pnpm/pg@8.23.0/node_modules/pg",
+        "uid": 0
+      },
+      "viem": {
+        "device": 2049,
+        "gid": 0,
+        "inode": 1415557,
+        "target": "../../../node_modules/.pnpm/viem@2.38.0_bufferutil@4.1.0_typescript@5.7.3_utf-8-validate@5.0.10_zod@4.6.5/node_modules/viem",
+        "uid": 0
+      }
+    },
+    "productionWrites": 0,
+    "proposedOwnedLink": {
+      "createOnlyIfAbsent": true,
+      "file": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/node_modules",
+      "futureInodeClaimed": false,
+      "recordActualLinkInodeRequired": true,
+      "removeOnlyExactRecordedLinkOnInverse": true,
+      "target": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules"
+    },
+    "providerRequests": 0,
+    "resolvedEsmImports": {
+      "pg": {
+        "file": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/node_modules/.pnpm/pg@8.23.0/node_modules/pg/esm/index.mjs",
+        "sha256": "5ef4d06556eeb775987759c2c09229dca2139421ee40e819b566612db2b4a8dc"
+      },
+      "viem": {
+        "file": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/node_modules/.pnpm/viem@2.38.0_bufferutil@4.1.0_typescript@5.7.3_utf-8-validate@5.0.10_zod@4.6.5/node_modules/viem/_esm/index.js",
+        "sha256": "ef21c6b781a763af96a5503e7ed9288108d6ba229db16210fd4ad40b718db6ec"
+      }
+    },
+    "retainedPins": {
+      "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules/pg/lib/index.js": "3fad6e6d3d976edbabe0cbc9e1d39f4340bcb719bbbb186a0d3a24f3dbd4a94c",
+      "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules/pg/package.json": "e42dd36cba6e9dd8dbb6f773a2f7be8a8c3c273e18b155e42e75961a4cb8bc28",
+      "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules/viem/package.json": "16b801dd5bfceb81ed9efb05c342a3675a865d0ce33446e54fb6e6c907045183",
+      "/var/tmp/yunipals-runtime-6e112a0c-20261021/runtime-supplement.inventory.json": "dbc145f11d13c61ce45b2bcf3c557bd90431bda7ce4a6dbe62136a24db84ab58"
+    },
+    "serviceActions": 0,
+    "targetDirectory": {
+      "device": 2049,
+      "file": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules",
+      "gid": 0,
+      "inode": 1430272,
+      "mode": "0755",
+      "uid": 0
+    }
+  },
+  "databaseWrites": 0,
+  "dependencyLink": {
+    "identity": {
+      "st_dev": 2049,
+      "st_gid": 0,
+      "st_ino": 2719690,
+      "st_mode": 41471,
+      "st_size": 133,
+      "st_uid": 0
+    },
+    "path": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/node_modules",
+    "target": "/opt/yunipals-unified/releases/6e112a0cebc3f1717001a971bef608724fa66bda7803f843992833d1a703b2c6/apps/yunipals-market-api/node_modules"
+  },
+  "existingArtifactUnchanged": true,
+  "files": {
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/README.md": "d315f0e5f1d501c334f3ac177020965e489054172eaf8bf5f5c38890acba4bd3",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/artifact.json": "241435d823d3c34003a3511de2386efa69e1a6b25ae61eccc9433bb07a5e25fc",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/prepare.mjs": "e0cadecbc95273fd38f9229b8ee60004ff7e9538d68390cd692c9e2055600f92",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/prepare.test.mjs": "eb0dbea4083f79367f3bcb00dc08e0138a606d46b43f9ed6f81a897637ac4567",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-pool-one-v1/rpc-budget-proxy.mjs": "8afd0184d8e51d920a303ecfa729354189f240b0164d5d62655fb172818cc69c"
+  },
+  "format": "yunipals-combined-rpc-pool-one-production-stage-v1",
+  "protectedResultSha256": "302757381870bbe92e07754deb25fa62d2ccfe972d8ad84bde24ed208516757d",
+  "providerCalls": 0,
+  "roleOrBudgetChanges": 0,
+  "runtimeImport": {
+    "actualInstalledModuleImport": true,
+    "databaseQueries": 0,
+    "networkAttempts": 0,
+    "serviceStarted": false
+  },
+  "selectedForProduction": false,
+  "servicesStarted": 0
+}

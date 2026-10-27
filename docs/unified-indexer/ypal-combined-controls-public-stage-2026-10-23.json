@@ -1,0 +1,11 @@
+{
+  "format": "yunipals-combined-controls-public-stage-v1",
+  "files": {
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/inactive-build.plan.json": "ad60dfc787f29facb485cea4ac2d4a4f65058867415241e796816d620a393bd0",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/run-inactive-build.py": "b7339076c0755184b4854f5e69aa3636e03622a59edbdb1cf4bcd26f902d136a",
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-admission-v1.py": "02eddae174a3178b59938f991509ce01b088724254064364e80c868377a4e09a"
+  },
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

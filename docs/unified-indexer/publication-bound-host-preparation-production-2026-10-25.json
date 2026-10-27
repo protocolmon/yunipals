@@ -1,0 +1,49 @@
+{
+  "actualWholeCallbackTimingQualified": false,
+  "cacheOrReaderSwitched": false,
+  "existingFrozenV6FilesModified": false,
+  "featureSwitched": false,
+  "format": "yunipals-publication-bound-host-preparation-v1",
+  "generationBindingSha256": "a6d4f0b8669eadcc44a1c880e76996f015e645ef9976b79e418e02e26bd1859b",
+  "genuineGenerationCandidateAccepted": false,
+  "localValidation": {
+    "boundSourceControls": 17,
+    "independentReviewNoFindings": true,
+    "restrictedFdControls": 12
+  },
+  "privateCacheInputCreated": false,
+  "qualification": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T12:55:47.085983+00:00",
+    "phase": "qualify",
+    "report": {
+      "databaseConnections": 0,
+      "format": "yunipals-ordinary-reader-peer-bound-v1",
+      "peers": 2,
+      "permissionChanges": 0,
+      "providerCalls": 0,
+      "publicFiles": 12,
+      "qualificationSha256": "64780e463bd07cf59c659c9d30ea7341b84fd02301bfbd96a9749f4510b93792",
+      "qualified": true,
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "0f64fb004e7de4a77f8248a3ffc865a0e09c32ad91b730295540285ab5115799"
+  },
+  "readerSourceManifestSha256": "bbd19325eded8dd90b2ea8c0e8844b9ad6134fd78416206bb0491978a07f3095",
+  "sourceCommit": "d531ae06b2af181e569174fc10cdbbf82721cef4",
+  "staging": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "observedAt": "2026-10-25T12:54:17.226612+00:00",
+    "permissionChanges": 0,
+    "phase": "stage",
+    "providerCalls": 0,
+    "publicFilesCreated": 10,
+    "publicFilesVerified": 199,
+    "serviceActions": 0
+  }
+}

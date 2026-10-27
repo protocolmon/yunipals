@@ -1,0 +1,438 @@
+{
+  "acceptedCommonResultSha256": "c14efdc12e5fd13d548f25aa6a4ce712e6041bf85d5bfa7bcda68a0cbfdc6d52",
+  "acceptedDiagnosticResultSha256": "7e9681e297449a970659c857caecf6172bd0a9cd22b93acec870e923c4b0d8b5",
+  "acceptedSevenColumnResultSha256": "b48b71ceb4503ca1c51aef399eb63412570b69412be4f33e946fae0817fcab2b",
+  "applyImplemented": false,
+  "conditionalMainCacheReads": {
+    "condition": "fresh retained effective YUNIPALS_READ_CACHE=1; otherwise omit this whole slice",
+    "forward": [
+      "GRANT SELECT ON TABLE \"metadata_projection\".\"read_epoch\",\"metadata_projection\".\"read_guard\",\"metadata_projection\".\"read_member\",\"metadata_projection\".\"read_set\",\"yunipals_indexer_control\".\"chain_anchor\" TO \"yunipals_unified_api\";"
+    ],
+    "functions": [],
+    "relations": [
+      "metadata_projection.read_epoch",
+      "metadata_projection.read_guard",
+      "metadata_projection.read_member",
+      "metadata_projection.read_set",
+      "yunipals_indexer_control.chain_anchor"
+    ],
+    "role": "yunipals_unified_api",
+    "rollback": [
+      "REVOKE SELECT ON TABLE \"metadata_projection\".\"read_epoch\",\"metadata_projection\".\"read_guard\",\"metadata_projection\".\"read_member\",\"metadata_projection\".\"read_set\",\"yunipals_indexer_control\".\"chain_anchor\" FROM \"yunipals_unified_api\";"
+    ],
+    "schemas": []
+  },
+  "consumerServingAccepted": false,
+  "databaseConnections": 0,
+  "existingAuthoritiesUnchanged": [
+    "common19_read_relations",
+    "common2_invoker_functions",
+    "minimum_chain_readiness",
+    "diagnostic_four_grants"
+  ],
+  "format": "yunipals-consumer-operational-admission-scope-v1",
+  "hostActions": 0,
+  "inputs": {
+    "docs/unified-indexer/ownership-consumer-preparation-v2-2026-10-21.json": "30e8781c3d3f2c1b82b9b7724974ac530e05be3eddcbaa35ac7a9936987a13b2",
+    "docs/unified-indexer/production-diagnostic-read-grants-applied-2026-10-21.json": "c15454f4bd1f9d23a446824e0103fb96e1415ca0ff21ae9aadcdfcc26b6db153",
+    "docs/unified-indexer/production-ownership-readview-preparation-2026-10-21.json": "70758f29edec653074d02fcdce5a6d37fccf761d80f5ff1fb07a852ccd5e97a3",
+    "ops/unified-indexer-transition/consumer-operational-read-plan.review.json": "e80beb3acce6cd0de70c0ff2653b5ac095a4b4257dc972e11ee16c5d214a9796",
+    "ops/unified-indexer-transition/ownership-readview-plan.review.json": "1467b1a604aceb45a20ea593b4a04d750876c7a534359cfce25102597ef8fa59"
+  },
+  "notGranted": [
+    "schema CREATE",
+    "source or control DML",
+    "selector or generation writes",
+    "SECURITY DEFINER EXECUTE",
+    "sequences",
+    "role memberships",
+    "TRUNCATE",
+    "TRIGGER",
+    "REFERENCES",
+    "WITH GRANT OPTION"
+  ],
+  "permanentLoginAdmission": "one exact existing role at a time after current peer/OS/code/files/capacity/selected-readiness/positive-preview proof",
+  "permanentSupervisorInstalled": false,
+  "readView": {
+    "buildId": "bf4939b3ff",
+    "consumerSourceDigest": "9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d",
+    "expectedDdlSha256": "93e0d6b4303efb06bc08f2a84301474ff02718021c1be79958c9610b5391c14b",
+    "identity": "0xe7119a18273d9a98cc1dcb0bbcad4928e9de72dbd42735b4fbad61a706de3fcc",
+    "ingestionSourceDigest": "008028af9defac0f22ba6094f5aefcf91165e27fca8134e595b57e2637851b78",
+    "manifestHash": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+    "nativeMetadataViewsCreatedButNotGranted": true,
+    "ownerCliSha256": "6332482b24b04dd7e02f350ecb8658f8538ed515501be803f943ef6d86be31cf",
+    "releaseId": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+    "schema": "yunipals_ownership_35cdcb32_v3",
+    "sourceManifestSha256": "5e06ff4b9d86859814f1fd1d2b24d1db38278eec75a7c2cefcdd3689103f27e0"
+  },
+  "remainingReads": [
+    {
+      "forward": [
+        "GRANT SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata\".\"token_visibility\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" TO \"yunipals_unified_api\";",
+        "GRANT EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean) TO \"yunipals_unified_api\";"
+      ],
+      "functions": [
+        "yunipals_ownership_35cdcb32_v3.base_metadata_frame(boolean)"
+      ],
+      "oid": 73187671,
+      "relations": [
+        "metadata.publication_runtime",
+        "metadata.token_metadata",
+        "metadata.token_publication",
+        "metadata.token_visibility",
+        "metadata_projection.revision",
+        "metadata_projection.search",
+        "metadata_source.chain_metadata_scan",
+        "metadata_source.native_base_metadata_state",
+        "unified_shadow_20261020_7e7375b0.canonical_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_scan"
+      ],
+      "role": "yunipals_unified_api",
+      "rollback": [
+        "REVOKE SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata\".\"token_visibility\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" FROM \"yunipals_unified_api\";",
+        "REVOKE EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean) FROM \"yunipals_unified_api\";"
+      ],
+      "schemas": []
+    },
+    {
+      "forward": [
+        "GRANT SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata\".\"token_visibility\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" TO \"yunipals_unified_collector\";",
+        "GRANT EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean) TO \"yunipals_unified_collector\";"
+      ],
+      "functions": [
+        "yunipals_ownership_35cdcb32_v3.base_metadata_frame(boolean)"
+      ],
+      "oid": 73187672,
+      "relations": [
+        "metadata.publication_runtime",
+        "metadata.token_metadata",
+        "metadata.token_publication",
+        "metadata.token_visibility",
+        "metadata_projection.revision",
+        "metadata_projection.search",
+        "metadata_source.chain_metadata_scan",
+        "metadata_source.native_base_metadata_state",
+        "unified_shadow_20261020_7e7375b0.canonical_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_scan"
+      ],
+      "role": "yunipals_unified_collector",
+      "rollback": [
+        "REVOKE SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata\".\"token_visibility\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" FROM \"yunipals_unified_collector\";",
+        "REVOKE EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean) FROM \"yunipals_unified_collector\";"
+      ],
+      "schemas": []
+    },
+    {
+      "forward": [
+        "GRANT USAGE ON SCHEMA \"metadata\",\"metadata_projection\",\"metadata_source\" TO \"yunipals_unified_read_cache\";",
+        "GRANT SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata_projection\".\"active\",\"metadata_projection\".\"generation\",\"metadata_projection\".\"read_epoch\",\"metadata_projection\".\"read_guard\",\"metadata_projection\".\"read_member\",\"metadata_projection\".\"read_set\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"archive_release\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_indexer_control\".\"chain_anchor\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" TO \"yunipals_unified_read_cache\";",
+        "GRANT EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean),\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_probe\"() TO \"yunipals_unified_read_cache\";"
+      ],
+      "functions": [
+        "yunipals_ownership_35cdcb32_v3.base_metadata_frame(boolean)",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_probe()"
+      ],
+      "oid": 73187673,
+      "relations": [
+        "metadata.publication_runtime",
+        "metadata.token_metadata",
+        "metadata.token_publication",
+        "metadata_projection.active",
+        "metadata_projection.generation",
+        "metadata_projection.read_epoch",
+        "metadata_projection.read_guard",
+        "metadata_projection.read_member",
+        "metadata_projection.read_set",
+        "metadata_projection.revision",
+        "metadata_projection.search",
+        "metadata_source.archive_release",
+        "metadata_source.chain_metadata_scan",
+        "metadata_source.native_base_metadata_state",
+        "unified_shadow_20261020_7e7375b0.canonical_event",
+        "yunipals_indexer_control.chain_anchor",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_event",
+        "yunipals_ownership_35cdcb32_v3.base_metadata_scan"
+      ],
+      "role": "yunipals_unified_read_cache",
+      "rollback": [
+        "REVOKE USAGE ON SCHEMA \"metadata\",\"metadata_projection\",\"metadata_source\" FROM \"yunipals_unified_read_cache\";",
+        "REVOKE SELECT ON TABLE \"metadata\".\"publication_runtime\",\"metadata\".\"token_metadata\",\"metadata\".\"token_publication\",\"metadata_projection\".\"active\",\"metadata_projection\".\"generation\",\"metadata_projection\".\"read_epoch\",\"metadata_projection\".\"read_guard\",\"metadata_projection\".\"read_member\",\"metadata_projection\".\"read_set\",\"metadata_projection\".\"revision\",\"metadata_projection\".\"search\",\"metadata_source\".\"archive_release\",\"metadata_source\".\"chain_metadata_scan\",\"metadata_source\".\"native_base_metadata_state\",\"unified_shadow_20261020_7e7375b0\".\"canonical_event\",\"yunipals_indexer_control\".\"chain_anchor\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_event\",\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_scan\" FROM \"yunipals_unified_read_cache\";",
+        "REVOKE EXECUTE ON FUNCTION \"yunipals_ownership_35cdcb32_v3\".\"base_metadata_frame\"(boolean),\"yunipals_ownership_35cdcb32_v3\".\"base_metadata_probe\"() FROM \"yunipals_unified_read_cache\";"
+      ],
+      "schemas": [
+        "metadata",
+        "metadata_projection",
+        "metadata_source"
+      ]
+    },
+    {
+      "forward": [
+        "GRANT USAGE ON SCHEMA \"metadata_source\",\"yunipals_base_islands_v1\" TO \"yunipals_unified_islands_api\";",
+        "GRANT SELECT ON TABLE \"metadata\".\"island_airdrop_origin\",\"metadata\".\"island_publication\",\"metadata\".\"island_replacement_origin\",\"metadata_source\".\"island_revision\",\"yunipals_base_islands_v1\".\"transfer_event\" TO \"yunipals_unified_islands_api\";"
+      ],
+      "functions": [],
+      "oid": 73187674,
+      "relations": [
+        "metadata.island_airdrop_origin",
+        "metadata.island_publication",
+        "metadata.island_replacement_origin",
+        "metadata_source.island_revision",
+        "yunipals_base_islands_v1.transfer_event"
+      ],
+      "role": "yunipals_unified_islands_api",
+      "rollback": [
+        "REVOKE USAGE ON SCHEMA \"metadata_source\",\"yunipals_base_islands_v1\" FROM \"yunipals_unified_islands_api\";",
+        "REVOKE SELECT ON TABLE \"metadata\".\"island_airdrop_origin\",\"metadata\".\"island_publication\",\"metadata\".\"island_replacement_origin\",\"metadata_source\".\"island_revision\",\"yunipals_base_islands_v1\".\"transfer_event\" FROM \"yunipals_unified_islands_api\";"
+      ],
+      "schemas": [
+        "metadata_source",
+        "yunipals_base_islands_v1"
+      ]
+    }
+  ],
+  "reviewOnly": true,
+  "roleOids": {
+    "yunipals_unified_api": 73187671,
+    "yunipals_unified_collector": 73187672,
+    "yunipals_unified_islands_api": 73187674,
+    "yunipals_unified_read_cache": 73187673
+  },
+  "rollBackRequires": "exact acknowledged ACL/unit/login after-state, owned candidate stopped/drained, zero selected-role sessions; restore only owned deltas and complete original unit files/private selector order; preserve all operational rows",
+  "separateWrites": [
+    {
+      "forward": [
+        "GRANT INSERT,UPDATE,DELETE ON TABLE \"metadata\".\"token_visibility\" TO \"yunipals_unified_api\";",
+        "GRANT SELECT,INSERT,UPDATE ON TABLE \"metadata\".\"wallet_visibility_nonce\" TO \"yunipals_unified_api\";"
+      ],
+      "phase": "main_signed_visibility",
+      "relations": [
+        {
+          "name": "metadata.token_visibility",
+          "privileges": [
+            "INSERT",
+            "UPDATE",
+            "DELETE"
+          ]
+        },
+        {
+          "name": "metadata.wallet_visibility_nonce",
+          "privileges": [
+            "SELECT",
+            "INSERT",
+            "UPDATE"
+          ]
+        }
+      ],
+      "role": "yunipals_unified_api",
+      "rollback": [
+        "REVOKE INSERT,UPDATE,DELETE ON TABLE \"metadata\".\"token_visibility\" FROM \"yunipals_unified_api\";",
+        "REVOKE SELECT,INSERT,UPDATE ON TABLE \"metadata\".\"wallet_visibility_nonce\" FROM \"yunipals_unified_api\";"
+      ]
+    },
+    {
+      "forward": [
+        "GRANT INSERT,DELETE ON TABLE \"metadata_projection\".\"read_member\" TO \"yunipals_unified_read_cache\";",
+        "GRANT INSERT,DELETE ON TABLE \"metadata_projection\".\"read_set\" TO \"yunipals_unified_read_cache\";"
+      ],
+      "phase": "read_cache_worker",
+      "relations": [
+        {
+          "name": "metadata_projection.read_member",
+          "privileges": [
+            "INSERT",
+            "DELETE"
+          ]
+        },
+        {
+          "name": "metadata_projection.read_set",
+          "privileges": [
+            "INSERT",
+            "DELETE"
+          ]
+        }
+      ],
+      "role": "yunipals_unified_read_cache",
+      "rollback": [
+        "REVOKE INSERT,DELETE ON TABLE \"metadata_projection\".\"read_member\" FROM \"yunipals_unified_read_cache\";",
+        "REVOKE INSERT,DELETE ON TABLE \"metadata_projection\".\"read_set\" FROM \"yunipals_unified_read_cache\";"
+      ]
+    }
+  ],
+  "sourceSelectionChanged": false,
+  "stakingEnabled": false,
+  "units": [
+    {
+      "connectionLimit": 6,
+      "databaseOverlayContent": "DATABASE_URL=postgresql:///yunipals_backfill?host=%2Fvar%2Frun%2Fpostgresql&port=5432&user=yunipals_unified_api\n",
+      "dropIn": "/etc/systemd/system/yunipals-api.service.d/zzzzzzzzzzzzzzzzzzzz-unified-consumer.conf",
+      "dropInTemplate": "[Service]\nUser=yunipals_unified_api\nGroup=yunipals_unified_api\nSupplementaryGroups=\nWorkingDirectory=/opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer\nEnvironmentFile=\nEnvironmentFile=/etc/yunipals-indexer/indexer.env\nEnvironmentFile=/etc/yunipals-marketplace/production/indexer-rpc.env\nEnvironmentFile=/etc/yunipals-metadata-cutover.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-api.database.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-api.ownership.env\nExecStart=\nExecStart=/opt/node-v24.18.1/bin/node --import tsx /opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer/lib/api/server.ts\n",
+      "entrypoint": "apps/yunipals-indexer/lib/api/server.ts",
+      "entrypointSha256": "3851d609821e03d0f3b87b1d6ac6be6d034cf7d5b5a559112a33e4f7bdb43e04",
+      "freshActualEnvironmentOrderRequired": true,
+      "hbaChangeProposed": false,
+      "loginRollbackStatement": "ALTER ROLE \"yunipals_unified_api\" NOLOGIN;",
+      "loginStatement": "ALTER ROLE \"yunipals_unified_api\" LOGIN;",
+      "maximumPools": 2,
+      "passwordChanged": false,
+      "poolMaximumPerPool": 2,
+      "port": {
+        "evidence": "loopback listener observed in checksum-pinned public socket snapshot; environment values uninspected",
+        "key": "API_PORT",
+        "value": 9011
+      },
+      "privateDatabaseOverlay": "/etc/yunipals-unified/consumers/yunipals-api.database.env",
+      "publicSelectorOverlay": "/etc/yunipals-unified/consumers/yunipals-api.ownership.env",
+      "publicSelectors": {
+        "API_DB_POOL_MAX": "2",
+        "API_PORT": "9011",
+        "BASE_METADATA_INGESTION": "native",
+        "DATABASE_SCHEMA": "unified_shadow_20261020_7e7375b0",
+        "METADATA_SOURCE_MODE": "archive",
+        "OFFCHAIN_DB_POOL_MAX": "2",
+        "OWNERSHIP_READ_MODE": "unified",
+        "OWNERSHIP_READ_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "OWNERSHIP_RELEASE_ID": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+        "READ_DATABASE_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "YUNIPALS_PROJECTION_MODE": "generation"
+      },
+      "recordedEnvironmentFiles": [
+        "/etc/yunipals-indexer/indexer.env",
+        "/etc/yunipals-marketplace/production/indexer-rpc.env",
+        "/etc/yunipals-metadata-cutover.env"
+      ],
+      "restoreOriginalDefinitionAndAllDropIns": true,
+      "role": "yunipals_unified_api",
+      "roleOid": 73187671,
+      "supplementaryGroups": [],
+      "unit": "yunipals-api.service"
+    },
+    {
+      "connectionLimit": 6,
+      "databaseOverlayContent": "DATABASE_URL=postgresql:///yunipals_backfill?host=%2Fvar%2Frun%2Fpostgresql&port=5432&user=yunipals_unified_collector\n",
+      "dropIn": "/etc/systemd/system/yunipals-collector-api.service.d/zzzzzzzzzzzzzzzzzzzz-unified-consumer.conf",
+      "dropInTemplate": "[Service]\nUser=yunipals_unified_collector\nGroup=yunipals_unified_collector\nSupplementaryGroups=\nWorkingDirectory=/opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer\nEnvironmentFile=\nEnvironmentFile=/etc/yunipals-indexer/indexer.env\nEnvironmentFile=/etc/yunipals-marketplace/production/indexer-rpc.env\nEnvironmentFile=/etc/yunipals-indexer/collector.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-collector-api.database.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-collector-api.ownership.env\nExecStart=\nExecStart=/opt/node-v24.18.1/bin/node --import tsx /opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer/lib/api/collector-server.ts\n",
+      "entrypoint": "apps/yunipals-indexer/lib/api/collector-server.ts",
+      "entrypointSha256": "e7a3b67e3033e5685691505297760edbc4735fd16863599966a4d505e7b09b76",
+      "freshActualEnvironmentOrderRequired": true,
+      "hbaChangeProposed": false,
+      "loginRollbackStatement": "ALTER ROLE \"yunipals_unified_collector\" NOLOGIN;",
+      "loginStatement": "ALTER ROLE \"yunipals_unified_collector\" LOGIN;",
+      "maximumPools": 2,
+      "passwordChanged": false,
+      "poolMaximumPerPool": 2,
+      "port": {
+        "evidence": "loopback listener observed in checksum-pinned public socket snapshot; environment values uninspected",
+        "key": "COLLECTOR_API_PORT",
+        "value": 9012
+      },
+      "privateDatabaseOverlay": "/etc/yunipals-unified/consumers/yunipals-collector-api.database.env",
+      "publicSelectorOverlay": "/etc/yunipals-unified/consumers/yunipals-collector-api.ownership.env",
+      "publicSelectors": {
+        "API_DB_POOL_MAX": "2",
+        "BASE_METADATA_INGESTION": "native",
+        "COLLECTOR_API_PORT": "9012",
+        "DATABASE_SCHEMA": "unified_shadow_20261020_7e7375b0",
+        "METADATA_SOURCE_MODE": "archive",
+        "OFFCHAIN_DB_POOL_MAX": "2",
+        "OWNERSHIP_READ_MODE": "unified",
+        "OWNERSHIP_READ_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "OWNERSHIP_RELEASE_ID": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+        "READ_DATABASE_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "YUNIPALS_PROJECTION_MODE": "generation"
+      },
+      "recordedEnvironmentFiles": [
+        "/etc/yunipals-indexer/indexer.env",
+        "/etc/yunipals-marketplace/production/indexer-rpc.env",
+        "/etc/yunipals-indexer/collector.env"
+      ],
+      "restoreOriginalDefinitionAndAllDropIns": true,
+      "role": "yunipals_unified_collector",
+      "roleOid": 73187672,
+      "supplementaryGroups": [],
+      "unit": "yunipals-collector-api.service"
+    },
+    {
+      "connectionLimit": 6,
+      "databaseOverlayContent": "DATABASE_URL=postgresql:///yunipals_backfill?host=%2Fvar%2Frun%2Fpostgresql&port=5432&user=yunipals_unified_read_cache\n",
+      "dropIn": "/etc/systemd/system/yunipals-read-cache.service.d/zzzzzzzzzzzzzzzzzzzz-unified-consumer.conf",
+      "dropInTemplate": "[Service]\nUser=yunipals_unified_read_cache\nGroup=yunipals_unified_read_cache\nSupplementaryGroups=\nWorkingDirectory=/opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer\nEnvironmentFile=\nEnvironmentFile=/etc/yunipals-indexer/read-cache.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-read-cache.database.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-read-cache.ownership.env\nExecStart=\nExecStart=/opt/node-v24.18.1/bin/node --import tsx /opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer/lib/metadata/read-cache-worker.ts\n",
+      "entrypoint": "apps/yunipals-indexer/lib/metadata/read-cache-worker.ts",
+      "entrypointSha256": "89b4bcc13fbcf795320819a1565176f897a994cc9fcd54f72b1d8500df9ba9ae",
+      "freshActualEnvironmentOrderRequired": true,
+      "hbaChangeProposed": false,
+      "loginRollbackStatement": "ALTER ROLE \"yunipals_unified_read_cache\" NOLOGIN;",
+      "loginStatement": "ALTER ROLE \"yunipals_unified_read_cache\" LOGIN;",
+      "maximumPools": 2,
+      "passwordChanged": false,
+      "poolMaximumPerPool": 2,
+      "port": null,
+      "privateDatabaseOverlay": "/etc/yunipals-unified/consumers/yunipals-read-cache.database.env",
+      "publicSelectorOverlay": "/etc/yunipals-unified/consumers/yunipals-read-cache.ownership.env",
+      "publicSelectors": {
+        "API_DB_POOL_MAX": "2",
+        "BASE_METADATA_INGESTION": "native",
+        "DATABASE_SCHEMA": "unified_shadow_20261020_7e7375b0",
+        "METADATA_SOURCE_MODE": "archive",
+        "OFFCHAIN_DB_POOL_MAX": "2",
+        "OWNERSHIP_READ_MODE": "unified",
+        "OWNERSHIP_READ_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "OWNERSHIP_RELEASE_ID": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+        "READ_DATABASE_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "YUNIPALS_PROJECTION_MODE": "generation"
+      },
+      "recordedEnvironmentFiles": [
+        "/etc/yunipals-indexer/read-cache.env"
+      ],
+      "restoreOriginalDefinitionAndAllDropIns": true,
+      "role": "yunipals_unified_read_cache",
+      "roleOid": 73187673,
+      "supplementaryGroups": [],
+      "unit": "yunipals-read-cache.service"
+    },
+    {
+      "connectionLimit": 6,
+      "databaseOverlayContent": "DATABASE_URL=postgresql:///yunipals_backfill?host=%2Fvar%2Frun%2Fpostgresql&port=5432&user=yunipals_unified_islands_api\n",
+      "dropIn": "/etc/systemd/system/yunipals-islands-api.service.d/zzzzzzzzzzzzzzzzzzzz-unified-consumer.conf",
+      "dropInTemplate": "[Service]\nUser=yunipals_unified_islands_api\nGroup=yunipals_unified_islands_api\nSupplementaryGroups=\nWorkingDirectory=/opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer\nEnvironmentFile=\nEnvironmentFile=/etc/yunipals-indexer/islands-api.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-islands-api.database.env\nEnvironmentFile=/etc/yunipals-unified/consumers/yunipals-islands-api.ownership.env\nExecStart=\nExecStart=/opt/node-v24.18.1/bin/node --import tsx /opt/yunipals-unified/releases/9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d/apps/yunipals-indexer/lib/api/islands-server.ts\n",
+      "entrypoint": "apps/yunipals-indexer/lib/api/islands-server.ts",
+      "entrypointSha256": "fc0115fdb3a8dc9b4adffa809691b1db5888d94325a7421416f2a84e69c3b58d",
+      "freshActualEnvironmentOrderRequired": true,
+      "hbaChangeProposed": false,
+      "loginRollbackStatement": "ALTER ROLE \"yunipals_unified_islands_api\" NOLOGIN;",
+      "loginStatement": "ALTER ROLE \"yunipals_unified_islands_api\" LOGIN;",
+      "maximumPools": 2,
+      "passwordChanged": false,
+      "poolMaximumPerPool": 2,
+      "port": {
+        "evidence": "loopback listener observed in checksum-pinned public socket snapshot; environment values uninspected",
+        "key": "API_PORT",
+        "value": 9015
+      },
+      "privateDatabaseOverlay": "/etc/yunipals-unified/consumers/yunipals-islands-api.database.env",
+      "publicSelectorOverlay": "/etc/yunipals-unified/consumers/yunipals-islands-api.ownership.env",
+      "publicSelectors": {
+        "API_DB_POOL_MAX": "2",
+        "API_PORT": "9015",
+        "DATABASE_SCHEMA": "unified_shadow_20261020_7e7375b0",
+        "METADATA_SOURCE_MODE": "archive",
+        "OFFCHAIN_DB_POOL_MAX": "2",
+        "OWNERSHIP_READ_MODE": "unified",
+        "OWNERSHIP_READ_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "OWNERSHIP_RELEASE_ID": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+        "READ_DATABASE_SCHEMA": "yunipals_ownership_35cdcb32_v3",
+        "YUNIPALS_PROJECTION_MODE": "generation"
+      },
+      "recordedEnvironmentFiles": [
+        "/etc/yunipals-indexer/islands-api.env"
+      ],
+      "restoreOriginalDefinitionAndAllDropIns": true,
+      "role": "yunipals_unified_islands_api",
+      "roleOid": 73187674,
+      "supplementaryGroups": [],
+      "unit": "yunipals-islands-api.service"
+    }
+  ]
+}

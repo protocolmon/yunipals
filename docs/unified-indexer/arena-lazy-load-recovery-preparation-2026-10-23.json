@@ -1,0 +1,78 @@
+{
+  "format": "yunipals-arena-lazy-load-recovery-preparation-v1",
+  "preparedAt": "2026-10-23T21:51:41.533595+00:00",
+  "sourceOnly": true,
+  "productionDeployed": false,
+  "sourceSha256": {
+    "apps/yunipals-home-web/src/main.tsx": "9630c5f49becc67fa1b61eb1dbb3d5fb3d9c00ca0c49d312435acccd6563d3a2",
+    "apps/yunipals-home-web/src/lib/lazyLoadRecovery.ts": "2958ab3dfdb8789a7d23e440d2e2f7975566ef648f45de409e0209c5fb70cf4f",
+    "apps/yunipals-home-web/src/components/AppErrorBoundary.tsx": "f634b49172feb5abeefb723a5b0cffa0ee3b1fbe90cb7bca08ddaa545686c80a",
+    "apps/yunipals-home-web/src/lib/lazyLoadRecovery.test.ts": "3d4ab3a2a8e1031ea38744d1955e72ad2cc648f26378da6dd5e37523626d5c6c",
+    "apps/yunipals-home-web/scripts/test-app-error-recovery-ui.mjs": "ca9e2482353ef3ba15f4bb551603e7489e2394cbb28d3f5550eaac673ffa6cf4"
+  },
+  "diagnosis": {
+    "userSpecificCauseConfirmed": false,
+    "currentProductionAnonymousArenaRendered": true,
+    "currentProductionConnectedB388ArenaRendered": true,
+    "connectedWalletIsReadOnlySyntheticFixture": true,
+    "upstreamRpcPostsBlocked": true,
+    "apexRedirectPreservesPathAndQuery": {
+      "status": 308,
+      "location": "https://www.yunipals.com/arena?probe=readonly"
+    },
+    "reproducedFailure": {
+      "oldReleaseManifestSha256": "c0f78225033d81758f52244dfc05879aed7af2818a4efa9e74cf41ddb10a501b",
+      "currentReleaseManifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+      "oldChunk": "/assets/LiveArenaPage-KLUjoQv6.js",
+      "oldChunkHttpStatus": 404,
+      "currentChunk": "/assets/LiveArenaPage-SyVSPAeT.js",
+      "currentChunkHttpStatus": 200,
+      "oldCachedAppRootCharactersAfterNavigation": 0,
+      "error": "Failed to fetch dynamically imported module"
+    }
+  },
+  "recovery": {
+    "onlyRecognizedVitePreloadErrorsAutomaticallyReload": true,
+    "maximumAutomaticReloadsPerTab": 1,
+    "reloadMarkerPersistedBeforeNavigation": true,
+    "activeModalBlocksAutomaticReload": true,
+    "storageFailureBlocksAutomaticReload": true,
+    "genuineReactExceptionsRemainVisibleAndReported": true,
+    "ordinaryRenderExceptionAutomaticallyReloads": false,
+    "routeQueryAndHashPreserved": true,
+    "pendingTransactionStoresNotCleared": true,
+    "automaticWalletOrFinancialActions": 0,
+    "appRoutesChanged": false
+  },
+  "verification": {
+    "focusedUnitControlsPassed": 6,
+    "realReactBrowserGroupsPassed": 3,
+    "frontendTypecheckPassed": true,
+    "prettierPassed": true,
+    "actualOldChunkRecoveryAutomaticReloads": 1,
+    "actualRecoveredArenaRendered": true,
+    "evidence": [
+      {
+        "file": "/tmp/yunipals-arena-stale-chunk-repro-20261023.json",
+        "sha256": "cb7fc11ffdacacfcf9adf9881fb2f9280779994d4606190b8ab30b89c5c2ef8b"
+      },
+      {
+        "file": "/tmp/yunipals-arena-connected-readonly-20261023.json",
+        "sha256": "4157b509a93e36c14da37ae0d40727c775db52a8ad1e79ea04f6fc685ad448e3"
+      },
+      {
+        "file": "/tmp/yunipals-arena-stale-chunk-recovery-20261023.json",
+        "sha256": "c88183446488d01eb78248115c12d14bdc0b9f0b2eddcba1ed72532f4ce487b2"
+      },
+      {
+        "file": "/tmp/yunipals-app-error-recovery-ui-20261023.json",
+        "sha256": "f957cb2834b0d5042283227160e53abef336a905a4c3d2c86a8a03034754de27"
+      }
+    ]
+  },
+  "limitations": [
+    "The user-specific browser exception was not available; a concrete stale-release failure was reproduced independently.",
+    "An already open tab running old JavaScript must load the new release before it gains the recovery listener.",
+    "Connected production rendering used a synthetic read-only account provider; all upstream POST/RPC and financial methods were blocked."
+  ]
+}

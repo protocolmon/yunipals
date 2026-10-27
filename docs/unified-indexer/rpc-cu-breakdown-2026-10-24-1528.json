@@ -1,0 +1,69 @@
+{
+  "format": "yunipals-rpc-method-cu-estimate-v1",
+  "sampleStart": "2026-10-24T14:00:25.009621+00:00",
+  "sampleEnd": "2026-10-24T15:28:28.583857+00:00",
+  "sampleMinutes": 88.06,
+  "requests": 15079,
+  "estimatedCu": 423700,
+  "byMethod": [
+    {
+      "method": "eth_getBlockByNumber",
+      "requests": 12026,
+      "estimatedCu": 240520,
+      "sharePercent": 56.8
+    },
+    {
+      "method": "eth_getLogs",
+      "requests": 3053,
+      "estimatedCu": 183180,
+      "sharePercent": 43.2
+    }
+  ],
+  "byChain": [
+    {
+      "chain": "bnb",
+      "estimatedCu": 390860,
+      "sharePercent": 92.2
+    },
+    {
+      "chain": "polygon",
+      "estimatedCu": 32840,
+      "sharePercent": 7.8
+    }
+  ],
+  "rows": [
+    {
+      "chain": "bnb",
+      "method": "eth_getBlockByNumber",
+      "requests": 10807,
+      "configuredCuPerRequest": 20,
+      "estimatedAlchemyCu": 216140
+    },
+    {
+      "chain": "polygon",
+      "method": "eth_getBlockByNumber",
+      "requests": 1219,
+      "configuredCuPerRequest": 20,
+      "estimatedAlchemyCu": 24380
+    },
+    {
+      "chain": "bnb",
+      "method": "eth_getLogs",
+      "requests": 2912,
+      "configuredCuPerRequest": 60,
+      "estimatedAlchemyCu": 174720
+    },
+    {
+      "chain": "polygon",
+      "method": "eth_getLogs",
+      "requests": 141,
+      "configuredCuPerRequest": 60,
+      "estimatedAlchemyCu": 8460
+    }
+  ],
+  "configuredModel": "alchemy-2026-09-08",
+  "actualAlchemyInvoice": false,
+  "currentSourcePaidCalls": 0,
+  "steadyStateEstimateQualified": false,
+  "caveat": "These historical replay counters include retries on public providers. They estimate equivalent configured Alchemy CU, not an invoice or steady-state normal usage."
+}

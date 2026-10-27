@@ -1,0 +1,62 @@
+{
+  "format": "yunipals-combined-rpc-production-admission-summary-v1",
+  "recordedAt": "2026-10-23T23:00:59.865529+00:00",
+  "operatorSha256": "55ba89a1b2e3249720a63cb9c740c3655ce83dbf076ae3bf7ab3d9a2409ec862",
+  "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+  "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+  "expiresAt": "2026-11-19T18:00:00.000Z",
+  "reviewHash": "65a359968254dfdb52371040407894ead9ea94c7181eff60f7de6d1b67a46252",
+  "actualReadOnlyReviewPassed": true,
+  "actualRollbackRehearsalPassed": true,
+  "rollbackCatalogUnchanged": true,
+  "admitted": true,
+  "protectedAdmittedPath": "/var/backups/yunipals-ypal-combined-rpc-admission-v3-20261023/admitted.json",
+  "protectedAdmittedSha256": "b47cd2411c3e10c8b0538761d88b26e0aa14b78b3aa7510a2c314fd1ab581430",
+  "officialAcknowledgement": [
+    {
+      "applied": false,
+      "event": "unified_rpc_policy_review",
+      "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+      "permits": [],
+      "policy": {
+        "allocations": [
+          {
+            "dailyCu": "5000",
+            "priority": "background",
+            "workload": "unified_evidence"
+          },
+          {
+            "dailyCu": "25000",
+            "priority": "background",
+            "workload": "unified_source"
+          }
+        ],
+        "coordinator_id": "faf1bb8c-4306-4c43-b55e-6ac5fa038567",
+        "daily_cu": "1000000",
+        "enabled": true,
+        "foreground_reserve_cu": "200000"
+      },
+      "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+      "reviewHash": "0x02411510bb80116b764844362249ad6660d1cdf702cd151b46ee98f60b02a060"
+    },
+    {
+      "event": "unified_rpc_policy_approved",
+      "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+      "reviewHash": "0x02411510bb80116b764844362249ad6660d1cdf702cd151b46ee98f60b02a060"
+    }
+  ],
+  "retainedProfilesSha256": "6a0e6cdbbc4e741a041abfcb3f5402ccb607049cdc903943db9e598fb96dc31c",
+  "budgetSha256": "62fe2938aea6a2428ddf9e308c8cd54123c23b38d9792b71966d7d138bda25c9",
+  "newPermits": 0,
+  "paidAuthority": false,
+  "budgetUnchanged": true,
+  "serviceActions": 0,
+  "providerCalls": 0,
+  "newRoutesStarted": false,
+  "combinedSourceStarted": false,
+  "priorReadOnlyDiagnostics": [
+    "V1 refused the actual absent-unit omitted ExecStart property before effects. V2 preserves loaded-unit strictness and permits only the exact absent fixed units.",
+    "V2 then refused Node-loaded source keys absent from kernel environ. V3 requires matching present values only for the exact acknowledged source; pinned argv/files/native state remain required. RPC/API checks remain strict."
+  ],
+  "controlsPassed": 27
+}

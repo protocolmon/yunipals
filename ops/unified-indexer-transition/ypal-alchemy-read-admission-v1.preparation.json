@@ -1,0 +1,70 @@
+{
+  "actualInputs": {
+    "ArenaAdmissionACKInvented": false,
+    "ArenaAdmissionACKRequired": true,
+    "committed": false,
+    "credentialACKsRequiredBySelectedPhase": true,
+    "newREADPlanCaptured": false,
+    "rehearsed": false
+  },
+  "authority": {
+    "catalogLeafQualifiesCurrentWriter": false,
+    "historicalWholeContextPassed": false,
+    "laterOrdinaryWriterNeedsSeparateProof": true,
+    "pureAcknowledgementHasDBCalls": false
+  },
+  "bodyReuse": {
+    "identityConstantsChanged": 6,
+    "recordedTransactionXIDClaimed": false,
+    "transactionDeltaColumnAndUnknownAckBodiesRetained": true
+  },
+  "currentAdmissionABI": {
+    "actualResultSHAInvented": false,
+    "originalOperational8ResultSha256": "ec196512185ad685998c118d4dc92803c885532fb2ed65095eec6484ab0f15af",
+    "originalParentFalselyClaimedComplete": false,
+    "producerFile": "arena-ypal-source-completion-v1.py",
+    "producerSha256": "2cac6ffdb5b3162b3e6431364974a2ab61a3c33be97cb358c3505a80d8046dc6",
+    "resultRequiredFromCaller": true
+  },
+  "date": "2026-10-24",
+  "files": [
+    {
+      "bytes": 19382,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.py",
+      "sha256": "c2da9d590d75823ec5ecf3038f73da93854e760faadb91bbc71e135f56e0a15a"
+    },
+    {
+      "bytes": 12905,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.test.py",
+      "sha256": "0f3a7f4e6c6f5422c67883829d8981858731ee514ffee64891139affbd2c3e7c"
+    },
+    {
+      "bytes": 4642,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.md",
+      "sha256": "7256048df5bf50ae48c245d4831e633fd7eb8eab7c6dc164f7e845554f14215c"
+    }
+  ],
+  "fixedDependencies": {
+    "currentArenaAdmission": "2cac6ffdb5b3162b3e6431364974a2ab61a3c33be97cb358c3505a80d8046dc6",
+    "currentArenaCredentials": "0bd21ca83b63aba02d3eb0113704edaac3a4f2dc34148d322db38a356d9f021f",
+    "currentIntake": "70faf2514d0240625f0a1eaa84f527be5fb16bcf4391e56e8644bc708ae2d420",
+    "historicalReadAdmission": "91b0993d9ad604fc3a63d4e4f36817636af44121a9ab6346fdaf609fb42876e4"
+  },
+  "format": "yunipals-alchemy-read-admission-preparation-v1",
+  "historicalReviewScope": "Prior a75/e00 reviews are preserved historical evidence only; refreshed binding requires a new review.",
+  "scope": {
+    "cacheReads": 0,
+    "existingRoles": 7,
+    "loginChanges": 0,
+    "newRoles": 0,
+    "providerCalls": 0,
+    "readEdges": 143,
+    "serviceActions": 0,
+    "sourceAndBudgetMutations": 0
+  },
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-read-admission-v1.test.py",
+    "focusedControls": 9,
+    "privateLogSha256": "7ded06592c5b1c273f046a31362aef1b3e9b0e84b2534c704244c55841e9a2d5"
+  }
+}

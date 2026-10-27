@@ -1,0 +1,38 @@
+{
+  "format": "yunipals-alchemy-source-plan-independent-review-v1",
+  "date": "2026-10-24",
+  "verdict": "PASS_PURE_COMPONENT_ONLY",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.py",
+      "bytes": 10206,
+      "sha256": "81fc8cbfb7b1d53eda5b915b88ff3905bfeec5d102748c50eb7811d07141a7c9"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.plan.test.py",
+      "bytes": 8558,
+      "sha256": "c7553029aa8396666f28d1a77bf69a74cee3c12671e46602ce3d0fcd714bf805"
+    }
+  ],
+  "focusedControlsPassed": 12,
+  "controlsLogSha256": "301fe988539a63ff66581254407d32c932e576a1c8494087e2c776db500f2abf",
+  "criticalPaths": [
+    "Original20M total authority and additional15M exact four-chain allocation retained; normal10M and automatic renewal forbidden.",
+    "Exact finite same-day permit window, at least one hour, maximum8h and UTC-minus900s shutdown margin enforced.",
+    "Source public overlay appends exactly four scoped permit identifiers; proxy overlay selects paid-primary only with last ordered EnvironmentFile.",
+    "Source drop changes only three explicit read-only code binds; original writable namespace mounts/pool5 remain outside this renderer and must be requalified by lifecycle.",
+    "Deadline oneshots use actual TimeoutStart900/Stop90, NoNewPrivileges and bounded root capabilities permitting UID/GID/cap dropping in peers; ProtectHome read-only permits retained private paths.",
+    "Exclusive no-follow/no-overwrite writes preserve original wire bytes and fsync; exact inode/hash no-replace moves fsync both parents."
+  ],
+  "limitations": [
+    "Pure renderer/filesystem component only; no actual lifecycle startup, role/financial admission, current source/proxy or production sandbox qualification accepted.",
+    "Actual lifecycle must revalidate full unit/security and complete ordered environment after overlays, verify exact pool5/code/timeout bytes and prohibit foreign later drop-ins.",
+    "No positive paid-start-lost-ACK terminal proof is supplied by these pure helpers."
+  ],
+  "sourceLifecycleQualified": false,
+  "financialAuthorityQualified": false,
+  "hostQualified": false,
+  "providerCalls": 0,
+  "databaseWrites": 0,
+  "serviceActions": 0
+}

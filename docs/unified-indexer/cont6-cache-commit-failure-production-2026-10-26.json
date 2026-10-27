@@ -1,0 +1,43 @@
+{
+  "approvalSchedulingSha256": "d8058b407b9ff0579f8c7e110b9f3d53a0ce7847aa0b6b4b880d82796e8303c7",
+  "automaticRetryAllowed": false,
+  "cacheCommitRequested": true,
+  "commandCapture": {
+    "commands": 2234,
+    "diagnosticSha256": "2e40af94d2f5108d199678166454da8a5c872a4f650fbbc03ac4aeb022c86465",
+    "extraRetryIntroduced": false,
+    "failures": 0,
+    "rawPrivatePublicPeerFailures": 0,
+    "sha256": "f85dcd4da686813f8f3fed234987209eb917265d3152e270b4f2cdb39f5dbf20",
+    "subprocessRunRestored": true
+  },
+  "commitInvoked": true,
+  "commitReturned": false,
+  "completed": false,
+  "diagnosis": "The real cache commit was attempted once. The full prepared callback saved an observation, then the original launch-bound readiness deadline refused the literal COMMIT acknowledgement. The prepared observation is not a committed transaction or PreparedACK. No reader LOGIN or service switch was requested; no automatic retry occurred.",
+  "failureType": "RuntimeError",
+  "fixedCode": "actual_approval_deadline_before_literal_COMMIT_ACK_requires_rollback",
+  "format": "yunipals-root-cont6-cache-commit-v1",
+  "heldQualificationPerformed": false,
+  "heldTestWaived": true,
+  "measuredTimingUsed": false,
+  "observedAt": "2026-10-26T17:46:30Z",
+  "privateHashes": {
+    "approval-renewal-scheduling.json": "d8058b407b9ff0579f8c7e110b9f3d53a0ce7847aa0b6b4b880d82796e8303c7",
+    "authenticated-baseline4.json": "f936ee9935a272e6eb0017f109f4d5de5c5b13245828b2fa8ff6bcfc926a5277",
+    "constructor-binding.json": "601fee468481a85eaa072b3edb493e16ae19a8ec64839e1caf6abc2076de683e",
+    "direct-commit-binding.json": "6c47d163adb8d14efefe763376f8c944ea1105e790b9243569d893af3fc60545",
+    "failure-traceback.json": "bb33d58f99871d30836469f980bf5578b9c6f37f52d4610471e302efbd7b6cdf",
+    "generation-binding.json": "ec1494160e6b5bcdeb9db1ee88a240179574d2b9cbb15bf1f4c9ac146b6dc395",
+    "intent.json": "951bdeb9b16ec474f33689b36cbfe57d6b89d1ba5136a3b29797e8e0cb3dda36",
+    "preflight.json": "7b0c795aa32cabae5463dece87fbf58ef754c2efaf872b64c6c932ccd10c1f38",
+    "sdk-lock-source.json": "b8b9c37f8496e908ef4ac2492d88d38555e3b8954b584a8b153f3a8ebf21eb3e",
+    "subprocess-command-summaries.json": "f85dcd4da686813f8f3fed234987209eb917265d3152e270b4f2cdb39f5dbf20"
+  },
+  "readerLOGINRequested": false,
+  "resultSha256": "ed7a7e0fc22fd509675f76f1ff6daed79b2841779a83a713bbe3411abd1f9a3b",
+  "sourceCommit": "711f441b",
+  "stage": "one-real-cache-commit",
+  "transactionOutcomeQualified": false,
+  "unknownOutcomeRequiresInspection": true
+}

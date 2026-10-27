@@ -1,0 +1,152 @@
+{
+  "databaseWrites": 0,
+  "defaultAclCount": 0,
+  "format": "yunipals-arena-ypal-catalog-bounded-summary-v1",
+  "functions": [
+    {
+      "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+      "bodySha256": "8bdcb2cf60ce35520f39e353e643049dfb27f9f1683a4fb78ed24f9c253a83d1",
+      "configEntryCount": 0,
+      "language": "plpgsql",
+      "leakproof": false,
+      "name": "live_query",
+      "oid": 75963762,
+      "otherAclEntries": 0,
+      "ownerExecute": true,
+      "ownerOid": 73004621,
+      "publicExecute": true,
+      "result": "trigger",
+      "schema": "unified_ypal_20261023_v1",
+      "securityDefiner": false,
+      "signature": ""
+    },
+    {
+      "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+      "bodySha256": "a39d78d0fe89c21403b576b82428a5c3274b1ee784d810394b02a10edec4da8b",
+      "configEntryCount": 0,
+      "language": "plpgsql",
+      "leakproof": false,
+      "name": "live_query_notify",
+      "oid": 75963763,
+      "otherAclEntries": 0,
+      "ownerExecute": true,
+      "ownerOid": 73004621,
+      "publicExecute": true,
+      "result": "trigger",
+      "schema": "unified_ypal_20261023_v1",
+      "securityDefiner": false,
+      "signature": ""
+    }
+  ],
+  "providerCalls": 0,
+  "rawCatalogExported": false,
+  "relations": [
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "yunipals_indexer_control.release",
+      "oid": 73011103,
+      "ownerOid": 10,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "yunipals_indexer_control.chain_status",
+      "oid": 73011132,
+      "ownerOid": 10,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "yunipals_indexer_control.transaction_evidence",
+      "oid": 73011148,
+      "ownerOid": 10,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "yunipals_indexer_control.chain_anchor",
+      "oid": 73011156,
+      "ownerOid": 10,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1._ponder_meta",
+      "oid": 75963411,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1._ponder_checkpoint",
+      "oid": 75963418,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.chain_checkpoint",
+      "oid": 75963621,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.chain_block",
+      "oid": 75963636,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.indexer_source",
+      "oid": 75963651,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.canonical_event",
+      "oid": 75963666,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.transaction_candidate",
+      "oid": 75963681,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.arena_tournament",
+      "oid": 75963696,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    },
+    {
+      "forceRowSecurity": false,
+      "kind": "r",
+      "name": "unified_ypal_20261023_v1.arena_credit",
+      "oid": 75963726,
+      "ownerOid": 73004621,
+      "rowSecurity": false
+    }
+  ],
+  "resultSha256": "938a9821e266b79c5963f0f66ffc52a9a301bc908d8a870744feeed9272a4083",
+  "serviceChanges": 0,
+  "sourceRoleCount": 0
+}

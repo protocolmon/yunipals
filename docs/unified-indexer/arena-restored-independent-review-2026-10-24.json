@@ -1,0 +1,57 @@
+{
+  "format": "yunipals-arena-ypal-restored-independent-review-v1",
+  "verdict": "PASS",
+  "sourceOnly": true,
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.py",
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a",
+      "bytes": 78408
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.source.py",
+      "sha256": "68d1d2c91abc8e981c8ef19b7f4a2c7edf13bbba14ac3d2f7507da192adaf737",
+      "bytes": 8534
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.test.py",
+      "sha256": "f89b730234ee41670826e07cd3b0d3e598c4612f264e95a6222c5ca43414283a",
+      "bytes": 10588
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.manifest.json",
+      "sha256": "0ded970fe47ea506e855e1e37a6c4dec84526dafb32f88a32299bbb8d763e190",
+      "bytes": 2203
+    }
+  ],
+  "exactManifestFilesVerified": 12,
+  "controls": {
+    "passed": 39,
+    "failed": 0,
+    "command": "python3 -I -B ops/unified-indexer-transition/arena-ypal-restored-v1.test.py",
+    "outputSha256": "a418c1ec9c179be59e7cc70552b6f522d79227dcc4081032ff6cf6bf59ce65d0",
+    "localEscalation": "Required only for synthetic numeric cross-UID sealed-file import; no production connections or actions."
+  },
+  "scope": [
+    "Restored native44/static nine Arena object identity via pinned fbb; active e82 source and explicit fbb active-or-terminal inverse remain separate.",
+    "Pinned805/1521/57f independently requalifies all nine routes, full catalog/budget/empty permits/expiry before and after source qualification; no c96 composite or financial renewal.",
+    "Owner changes exactly four shared function seams (validate_manifest, Host.normal, validate_phase_leaf, main) plus fresh identity constants; operational/adoption/private-ledger/continuation/inverse bodies remain identical to frozen92b owner.",
+    "Current actor acknowledgement remains pure ancestry in constructors and phase leaf; only forward review/stop checks demand the actual acknowledged eight current actors.",
+    "Actual v2 admission/SCRAM/credential verifier and immutable proposal remain required; constructor/phase verification uses scoped current owned/PUBLIC catalog facts rather than obsolete whole source validation.",
+    "Latest-complete source policy with subsequentBlocks0, canonical floor, native adoption/selector/epoch, eight sealed-input workers and exact runtime/private/proxy gates remain unchanged.",
+    "Pre-adoption inverse remains active-or-terminal source only and refuses committed adoption/native-start effects; after adoption only explicit owned forward/reconciliation can continue.",
+    "Source-independent phase leaf authenticates current selected ledger/actors/runtime/roles and explicit owned ACL edges without source/financial/current-canonical authority."
+  ],
+  "findings": [],
+  "limitations": [
+    "Actual admission/credentials, current source/native/canonical readiness and host acceptance were not executed or inferred from these local controls.",
+    "No repeated unchanged PG/native migration matrices; no migrations, grant, role creation, credential reads, service action or chain/provider call.",
+    "Later managed source composition must supply its own current source/financial/canonical proof; this active initial source context is the acknowledged restored pool5 epoch only."
+  ],
+  "productionQueries": 0,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "sourceEdits": 0,
+  "gitActions": 0
+}

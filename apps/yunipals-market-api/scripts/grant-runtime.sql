@@ -15,4 +15,7 @@ GRANT INSERT,UPDATE,DELETE ON
   yunipals_market.opensea_maker_signature,
   yunipals_market.bnb_discovery_cursor, yunipals_market.bnb_discovered_order
   TO :"market_runtime_role";
+GRANT UPDATE(cursor,generation,updated_at) ON yunipals_market.shared_indexer_consumer TO :"market_runtime_role";
+GRANT INSERT,UPDATE ON yunipals_market.sale_receipt_qualification TO :"market_runtime_role";
+GRANT INSERT,UPDATE ON yunipals_market.legacy_sale_receipt_qualification TO :"market_runtime_role";
 COMMIT;

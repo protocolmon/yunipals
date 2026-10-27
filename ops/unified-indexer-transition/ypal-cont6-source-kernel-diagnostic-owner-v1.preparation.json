@@ -1,0 +1,30 @@
+{
+  "effectDispatched": false,
+  "focusedControlsPassed": 8,
+  "format": "root-CONT6-source-kernel-prefix-diagnostic-v1-preparation",
+  "productionResultIncluded": false,
+  "rows": [
+    {
+      "deployment": false,
+      "path": "ops/unified-indexer-transition/ypal-cont6-source-kernel-diagnostic-owner-v1.py",
+      "sha256": "a85f4aa4c95e934e127bcb74be3b26dd9af0deef9fab29bffebc078fb371a064",
+      "size": 57363
+    },
+    {
+      "deployment": false,
+      "path": "ops/unified-indexer-transition/ypal-cont6-source-kernel-diagnostic-owner-v1.test.py",
+      "sha256": "de7c84e47f16cd4f2ab2b8259ea4ac2cf1281901fa26323dbd0f602244fdffcf",
+      "size": 12797
+    },
+    {
+      "deployment": false,
+      "path": "docs/unified-indexer/cont6-source-kernel-prefix-diagnostic-v1.md",
+      "sha256": "762e350995131bda1a70cf6bce1b2ae042cc61f1f118fd128d4bdcc3f801e918",
+      "size": 3313
+    }
+  ],
+  "runtimeSourceCount": 355,
+  "skippedControls": 0,
+  "sourceOnly": true,
+  "sourceReviewed": true
+}

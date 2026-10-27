@@ -30,7 +30,12 @@
     "test:analytics": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/analytics/client.test.ts",
     "test:analytics:ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-analytics-ui.mjs",
     "test:select:ui": "node scripts/test-select-ui.mjs",
-    "test:select": "node --experimental-strip-types --test src/components/ui/select.test.ts"
+    "test:select": "node --experimental-strip-types --test src/components/ui/select.test.ts",
+    "test:racing": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/racing/*.test.ts",
+    "test:racing:ui": "node scripts/test-racing-ui.mjs",
+    "build:www": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/boosters/build-www.mjs",
+    "test:boosters": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/boosters.test.ts",
+    "test:boosters:ui": "node --experimental-strip-types scripts/test-boosters-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

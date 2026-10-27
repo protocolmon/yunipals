@@ -1,9 +1,10 @@
+import { stampDerivedSnapshot } from "../ownership/derived-snapshot.js";
 import { statfs } from "node:fs/promises";
 import type { PoolClient } from "pg";
 
 import { collectionSlugs } from "../constants.js";
 import { pool } from "../offchain/db.js";
-import { ponderSchema } from "../offchain/sql.js";
+import { physicalPonderSchema, ponderSchema } from "../offchain/sql.js";
 import {
   localRarityJoin,
   rarityPointsCappedSql,
@@ -12,6 +13,21 @@ import {
 import { assertChainReady } from "./chain-readiness.js";
 import { metadataSourceMode } from "./publication.js";
 import { metadataScanReadRelation } from "./read-source.js";
+import {
+  ownershipReadIdentity,
+  assertOwnershipAvailable
+} from "../ownership/readiness.js";
+import { generationOwnershipProof } from "../ownership/projection-proof.js";
+import {
+  captureProjectionInputs,
+  nativeProjectionSnapshotEnabled,
+  preservedProjectionGenerations,
+  projectionPublicationSourcePredicate,
+  projectionSourceSnapshot,
+  type ProjectionSourceSnapshot
+} from "./projection-snapshot.js";
+import { retainProjectionAnchors } from "./projection-anchors.js";
+export { retainProjectionAnchors } from "./projection-anchors.js";
 
 const scopes = Array.from(
   { length: (1 << collectionSlugs.length) - 1 },
@@ -20,41 +36,94 @@ const scopes = Array.from(
     return chains.length === collectionSlugs.length ? "all" : chains.join("+");
   }
 );
-const payloadTables = ["trait", "search", "revision", "facet", "facet_status"] as const;
+const payloadTables = [
+  "trait",
+  "search",
+  "revision",
+  "facet",
+  "facet_status"
+] as const;
 const archiveMode = metadataSourceMode() === "archive";
 
 function bytes(value: string | undefined, fallback: number) {
   if (value === undefined) return fallback;
   const number = Number(value);
-  if (!Number.isSafeInteger(number) || number < 0) throw new Error("Invalid projection capacity setting");
+  if (!Number.isSafeInteger(number) || number < 0)
+    throw new Error("Invalid projection capacity setting");
   return number;
 }
 
-export async function assertProjectionBuildCapacity(client: PoolClient) {
+export async function assertProjectionBuildCapacity(
+  client: PoolClient,
+  phase: "generation" | "leaderboard" = "generation"
+) {
   if (process.env.PROJECTION_TEST_BYPASS_CAPACITY === "1") {
     const url = new URL(process.env.DATABASE_URL ?? "");
-    if (!["127.0.0.1", "localhost", "::1"].includes(url.hostname) ||
-      !url.pathname.endsWith("_test")) throw new Error("Capacity bypass requires an isolated local test database");
+    if (
+      !["127.0.0.1", "localhost", "::1"].includes(url.hostname) ||
+      !url.pathname.endsWith("_test")
+    )
+      throw new Error(
+        "Capacity bypass requires an isolated local test database"
+      );
     return;
   }
-  const storagePath = process.env.PROJECTION_STORAGE_PATH ?? (await client.query<{ directory: string }>(
-    "SELECT current_setting('data_directory') AS directory"
-  )).rows[0]!.directory;
+  const storagePath =
+    process.env.PROJECTION_STORAGE_PATH ??
+    (
+      await client.query<{ directory: string }>(
+        "SELECT current_setting('data_directory') AS directory"
+      )
+    ).rows[0]!.directory;
   const disk = await statfs(storagePath);
   const free = Number(disk.bavail) * Number(disk.bsize);
   const size = await client.query<{ estimated: string }>(`
     SELECT sum(pg_total_relation_size(relation))::text AS estimated
     FROM unnest(ARRAY['metadata.token_search','metadata.token_trait','metadata.projection_revision']::regclass[]) relation`);
-  const nextGeneration = Math.max(8e9, Math.ceil(Number(size.rows[0]?.estimated ?? 0) * 1.5));
-  const required = bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9)
-    + bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9)
-    + nextGeneration;
+  const nextGeneration =
+    phase === "generation"
+      ? Math.max(8e9, Math.ceil(Number(size.rows[0]?.estimated ?? 0) * 1.5))
+      : Math.ceil(
+          Number(
+            (
+              await client.query<{ bytes: string }>(
+                "SELECT pg_total_relation_size('leaderboard.wallet_stats')::text AS bytes"
+              )
+            ).rows[0]!.bytes
+          ) * 1.5
+        );
+  // The private inputs coexist with the candidate until its build commits.
+  // Include heap/TOAST and compact-token/index headroom; do not borrow the
+  // ordinary backup or free-space reserve for the snapshot.
+  const snapshotInputs = nativeProjectionSnapshotEnabled()
+    ? Math.ceil(
+        Number(
+          (
+            await client.query<{ bytes: string }>(
+              `SELECT (pg_table_size('metadata.token_metadata')+
+          pg_table_size('${physicalPonderSchema}.token')*2)::text AS bytes`
+            )
+          ).rows[0]!.bytes
+        ) * 1.5
+      )
+    : 0;
+  const required =
+    bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9) +
+    bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9) +
+    nextGeneration +
+    snapshotInputs;
   if (free < required) {
-    throw new Error(`projection_capacity_insufficient: free=${free} required=${required}`);
+    throw new Error(
+      `projection_capacity_insufficient: free=${free} required=${required}`
+    );
   }
 }
 
-export async function validateGeneration(client: PoolClient, id: string, insertedSearch: number) {
+export async function validateGeneration(
+  client: PoolClient,
+  id: string,
+  insertedSearch: number
+) {
   const counts = await client.query<{
     search_count: string;
     revision_count: string;
@@ -62,7 +131,8 @@ export async function validateGeneration(client: PoolClient, id: string, inserte
     facet_count: string;
     scope_count: string;
     missing_revision: boolean;
-  }>(`SELECT
+  }>(
+    `SELECT
     (SELECT count(*) FROM metadata_projection.search WHERE generation_id=$1) AS search_count,
     (SELECT count(*) FROM metadata_projection.revision WHERE generation_id=$1) AS revision_count,
     (SELECT count(*) FROM metadata_projection.trait WHERE generation_id=$1) AS trait_count,
@@ -70,50 +140,192 @@ export async function validateGeneration(client: PoolClient, id: string, inserte
     (SELECT count(*) FROM metadata_projection.facet_status WHERE generation_id=$1) AS scope_count,
     EXISTS(SELECT 1 FROM metadata_projection.search s LEFT JOIN metadata_projection.revision r
       ON r.generation_id=s.generation_id AND r.collection=s.collection AND r.token_id=s.token_id
-      AND r.lifecycle=s.lifecycle WHERE s.generation_id=$1 AND r.token_id IS NULL) AS missing_revision`, [id]);
+      AND r.lifecycle=s.lifecycle WHERE s.generation_id=$1 AND r.token_id IS NULL) AS missing_revision`,
+    [id]
+  );
   const row = counts.rows[0]!;
-  if (Number(row.search_count) === 0 || Number(row.search_count) !== insertedSearch ||
+  if (
+    Number(row.search_count) === 0 ||
+    Number(row.search_count) !== insertedSearch ||
     Number(row.scope_count) !== scopes.length ||
-    (archiveMode && (row.search_count !== row.revision_count || row.missing_revision))) {
+    (archiveMode &&
+      (row.search_count !== row.revision_count || row.missing_revision))
+  ) {
     throw new Error(`projection_validation_failed: ${JSON.stringify(row)}`);
   }
-  const coverage = await client.query<{ collection: string; count: string }>(`
+  const coverage = await client.query<{ collection: string; count: string }>(
+    `
     SELECT collection,count(*)::text AS count FROM metadata_projection.search
-    WHERE generation_id=$1 GROUP BY collection`, [id]);
-  if (coverage.rows.some((row) => !collectionSlugs.includes(row.collection as (typeof collectionSlugs)[number]))) {
+    WHERE generation_id=$1 GROUP BY collection`,
+    [id]
+  );
+  if (
+    coverage.rows.some(
+      (row) =>
+        !collectionSlugs.includes(
+          row.collection as (typeof collectionSlugs)[number]
+        )
+    )
+  ) {
     throw new Error("projection_invalid_collection");
   }
-  return { ...row, collections: coverage.rows };
+  const captured = (
+    await client.query<{ snapshot: unknown }>(
+      "SELECT validation->'sourceSnapshot' AS snapshot FROM metadata_projection.generation WHERE id=$1",
+      [id]
+    )
+  ).rows[0]?.snapshot;
+  const sourceSnapshot = nativeProjectionSnapshotEnabled()
+    ? projectionSourceSnapshot(captured)
+    : undefined;
+  return {
+    ...row,
+    collections: coverage.rows,
+    ...(sourceSnapshot ? { sourceSnapshot } : {})
+  };
 }
 
-export async function publishGeneration(client: PoolClient, id: string, release: string | null, predecessor: string | null) {
+/** Publication boundary for a caller-owned READ COMMITTED transaction. The
+ * caller may stage private derived data first, then invoke this fresh canonical
+ * CAS immediately before its own COMMIT. Failures require caller rollback. */
+export async function publishGenerationInTransaction(
+  client: PoolClient,
+  id: string,
+  release: string | null,
+  predecessor: string | null,
+  additionalSourceSnapshot?: ProjectionSourceSnapshot
+) {
+  // PostgreSQL rejects SAVEPOINT outside a transaction before any business write.
+  await client.query("SAVEPOINT yunipals_generation_publication");
+  if (
+    nativeProjectionSnapshotEnabled() &&
+    (
+      await client.query<{ isolation: string }>(
+        "SELECT current_setting('transaction_isolation') AS isolation"
+      )
+    ).rows[0]?.isolation !== "read committed"
+  )
+    throw new Error("projection_publication_requires_read_committed");
+  await client.query("SET LOCAL lock_timeout='500ms'");
+  await client.query("SET LOCAL statement_timeout='2s'");
+  const active = await client.query<{ current_id: string | null }>(
+    "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
+  );
+  if (active.rows[0]?.current_id !== predecessor)
+    throw new Error("projection_predecessor_changed");
+  const candidate = await client.query<{
+    state: string;
+    metadata_release_id: string | null;
+    format_version: number;
+    source_mode: string;
+    validated: boolean;
+    source_snapshot: unknown;
+  }>(
+    `SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated,
+      validation->'sourceSnapshot' AS source_snapshot FROM metadata_projection.generation g
+      WHERE id=$1 AND ${generationOwnershipProof("g")}`,
+    [id]
+  );
+  if (
+    candidate.rows[0]?.state !== "ready" ||
+    candidate.rows[0].metadata_release_id !== release ||
+    candidate.rows[0].format_version !== 1 ||
+    candidate.rows[0].source_mode !== (archiveMode ? "archive" : "legacy") ||
+    !candidate.rows[0].validated
+  ) {
+    throw new Error("projection_candidate_not_ready");
+  }
+  if (archiveMode) {
+    const currentRelease = await client.query<{ release_id: string }>(
+      "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
+    );
+    if (currentRelease.rows[0]?.release_id !== release)
+      throw new Error("projection_source_release_changed");
+  }
+  const sourceSnapshot = nativeProjectionSnapshotEnabled()
+    ? projectionSourceSnapshot(candidate.rows[0]!.source_snapshot)
+    : null;
+  if (
+    sourceSnapshot &&
+    (sourceSnapshot.metadataReleaseId !== release ||
+      sourceSnapshot.predecessor !== predecessor)
+  )
+    throw new Error("projection_snapshot_binding_changed");
+  const additional =
+    additionalSourceSnapshot === undefined
+      ? null
+      : projectionSourceSnapshot(additionalSourceSnapshot);
+  if (
+    additional &&
+    (!sourceSnapshot ||
+      additional.releaseId !== sourceSnapshot.releaseId ||
+      additional.readIdentity !== sourceSnapshot.readIdentity ||
+      additional.manifestHash !== sourceSnapshot.manifestHash ||
+      additional.metadataReleaseId !== release ||
+      additional.predecessor !== predecessor ||
+      additional.baseMetadataFrontier !== sourceSnapshot.baseMetadataFrontier)
+  )
+    throw new Error("projection_additional_snapshot_binding_changed");
+  const publication = await client.query(
+    `UPDATE metadata_projection.active
+    SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton
+      AND current_id IS NOT DISTINCT FROM $3::bigint
+      AND EXISTS(SELECT 1 FROM metadata_projection.generation g WHERE g.id=$1 AND g.state='ready'
+        AND g.metadata_release_id IS NOT DISTINCT FROM $2::text AND g.format_version=1
+        AND g.source_mode='${archiveMode ? "archive" : "legacy"}' AND g.validation IS NOT NULL
+        AND ${generationOwnershipProof("g")}
+        ${sourceSnapshot ? "AND g.validation->'sourceSnapshot'=$4::jsonb" : ""})
+      ${archiveMode ? "AND EXISTS(SELECT 1 FROM metadata_source.archive_release WHERE state='active' AND release_id=$2)" : ""}
+      ${sourceSnapshot ? `AND ${projectionPublicationSourcePredicate("$4")}` : ""}
+      ${additional ? `AND ${projectionPublicationSourcePredicate("$5")}` : ""}
+    RETURNING current_id`,
+    sourceSnapshot
+      ? [
+          id,
+          release,
+          predecessor,
+          JSON.stringify(sourceSnapshot),
+          ...(additional ? [JSON.stringify(additional)] : [])
+        ]
+      : [id, release, predecessor]
+  );
+  if (publication.rowCount !== 1)
+    throw new Error("projection_publication_source_changed");
+  await client.query(
+    "UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1",
+    [id]
+  );
+  if (sourceSnapshot) {
+    // Stamp exactly the identity accepted by the pointer statement, rather
+    // than sampling a potentially newer marker in a separate statement.
+    await client.query(
+      `INSERT INTO metadata.derived_snapshot
+      (name,metadata_release_id,ownership_release_id,ownership_read_identity) VALUES('traits',$1,$2,$3)
+      ON CONFLICT(name)DO UPDATE SET metadata_release_id=EXCLUDED.metadata_release_id,
+        ownership_release_id=EXCLUDED.ownership_release_id,ownership_read_identity=EXCLUDED.ownership_read_identity,updated_at=now()`,
+      [release, sourceSnapshot.releaseId, sourceSnapshot.readIdentity]
+    );
+  } else await stampDerivedSnapshot(client, "traits", release);
+  await client.query("RELEASE SAVEPOINT yunipals_generation_publication");
+  return active.rows[0]?.current_id ?? null;
+}
+
+export async function publishGeneration(
+  client: PoolClient,
+  id: string,
+  release: string | null,
+  predecessor: string | null
+) {
   await client.query("BEGIN");
   try {
-    await client.query("SET LOCAL lock_timeout='500ms'");
-    await client.query("SET LOCAL statement_timeout='2s'");
-    const active = await client.query<{ current_id: string | null }>(
-      "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE");
-    if (active.rows[0]?.current_id !== predecessor) throw new Error("projection_predecessor_changed");
-    const candidate = await client.query<{ state: string; metadata_release_id: string | null; format_version: number; source_mode: string; validated: boolean }>(
-      "SELECT state,metadata_release_id,format_version,source_mode,validation IS NOT NULL AS validated FROM metadata_projection.generation WHERE id=$1", [id]);
-    if (candidate.rows[0]?.state !== "ready" || candidate.rows[0].metadata_release_id !== release ||
-      candidate.rows[0].format_version !== 1 || candidate.rows[0].source_mode !== (archiveMode ? "archive" : "legacy") ||
-      !candidate.rows[0].validated) {
-      throw new Error("projection_candidate_not_ready");
-    }
-    if (archiveMode) {
-      const currentRelease = await client.query<{ release_id: string }>(
-        "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE");
-      if (currentRelease.rows[0]?.release_id !== release) throw new Error("projection_source_release_changed");
-    }
-    await client.query(`UPDATE metadata_projection.active
-      SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton`, [id]);
-    await client.query("UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1", [id]);
-    if (archiveMode) await client.query(`INSERT INTO metadata.derived_snapshot(name,metadata_release_id)
-      VALUES('traits',$1) ON CONFLICT(name) DO UPDATE
-      SET metadata_release_id=EXCLUDED.metadata_release_id,updated_at=now()`, [release]);
+    const previous = await publishGenerationInTransaction(
+      client,
+      id,
+      release,
+      predecessor
+    );
     await client.query("COMMIT");
-    return active.rows[0]?.current_id ?? null;
+    return previous;
   } catch (error) {
     await client.query("ROLLBACK").catch(() => undefined);
     // A lost commit response is ambiguous. The caller checks the pointer.
@@ -122,19 +334,26 @@ export async function publishGeneration(client: PoolClient, id: string, release:
 }
 
 async function cleanupGenerations(client: PoolClient) {
+  const preserved = preservedProjectionGenerations();
   await client.query("BEGIN");
   let retired: string[];
   try {
     await client.query("SET LOCAL lock_timeout='500ms'");
-    await client.query("SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE");
-    const rows = await client.query<{ id: string }>(`
+    await client.query(
+      "SELECT current_id FROM metadata_projection.active WHERE singleton FOR UPDATE"
+    );
+    const rows = await client.query<{ id: string }>(
+      `
       UPDATE metadata_projection.generation g SET state='retired',retired_at=now()
       WHERE state IN ('ready','failed','building')
         AND started_at < now()-interval '15 minutes'
         AND (published_at IS NULL OR published_at < now()-interval '15 minutes')
         AND id NOT IN (SELECT current_id FROM metadata_projection.active WHERE current_id IS NOT NULL
           UNION SELECT previous_id FROM metadata_projection.active WHERE previous_id IS NOT NULL)
-      RETURNING id`);
+        AND NOT(id=ANY($1::bigint[]))
+      RETURNING id`,
+      [preserved]
+    );
     retired = rows.rows.map((row) => row.id);
     await client.query("COMMIT");
   } catch (error) {
@@ -144,9 +363,12 @@ async function cleanupGenerations(client: PoolClient) {
   for (const id of retired) {
     for (const table of payloadTables) {
       while (true) {
-        const result = await client.query(`DELETE FROM metadata_projection.${table}
+        const result = await client.query(
+          `DELETE FROM metadata_projection.${table}
           WHERE ctid IN (SELECT ctid FROM metadata_projection.${table}
-            WHERE generation_id=$1 LIMIT 10000)`, [id]);
+            WHERE generation_id=$1 LIMIT 10000)`,
+          [id]
+        );
         if ((result.rowCount ?? 0) < 10000) break;
       }
     }
@@ -154,58 +376,111 @@ async function cleanupGenerations(client: PoolClient) {
 }
 
 /** Build into stable tables; readers never see the candidate until the pointer commits. */
-export async function refreshProjectionGeneration() {
+export async function refreshProjectionGeneration(
+  options: { publish?: boolean } = {}
+) {
+  if (options.publish === false && !nativeProjectionSnapshotEnabled())
+    throw new Error("Unpublished preparation requires native generation mode");
   const client = await pool.connect();
   const updatedAt = new Date();
   let id: string | undefined;
   let committed = false;
   let insertedSearch = 0;
   try {
-    await client.query("SELECT pg_advisory_lock(hashtext('yunipals:trait-refresh'))");
-    if (archiveMode) await client.query("SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))");
+    await client.query(
+      "SELECT pg_advisory_lock(hashtext('yunipals:trait-refresh'))"
+    );
+    if (archiveMode)
+      await client.query(
+        "SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))"
+      );
     await cleanupGenerations(client);
     await assertProjectionBuildCapacity(client);
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
     // Large generation inserts and facets spill heavily at PostgreSQL's 4 MB default.
     await client.query("SET LOCAL work_mem = '64MB'");
-    if (archiveMode) await assertChainReady(client, collectionSlugs);
+    const input = await captureProjectionInputs(client);
+    if (!input) {
+      await assertOwnershipAvailable(client, collectionSlugs);
+      if (archiveMode) await assertChainReady(client, collectionSlugs);
+    }
+    const metadataInput = input?.metadataRelation ?? metadataScanReadRelation;
+    const tokenInput = input?.tokenRelation ?? `${ponderSchema}.token`;
     const release = archiveMode
-      ? (await client.query<{ release_id: string }>(
-          "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
-        )).rows[0]?.release_id ?? null
+      ? ((
+          await client.query<{ release_id: string }>(
+            "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
+          )
+        ).rows[0]?.release_id ?? null)
       : null;
     if (archiveMode && !release) throw new Error("archive_unavailable");
-    const created = await client.query<{ id: string }>(`
+    const created = await client.query<{ id: string }>(
+      `
       INSERT INTO metadata_projection.generation(source_mode,metadata_release_id,state)
-      VALUES($1,$2,'building') RETURNING id`, [archiveMode ? "archive" : "legacy", release]);
+      VALUES($1,$2,'building') RETURNING id`,
+      [archiveMode ? "archive" : "legacy", release]
+    );
     id = created.rows[0]!.id;
-    const predecessor = (await client.query<{ current_id: string | null }>(
-      "SELECT current_id FROM metadata_projection.active WHERE singleton"
-    )).rows[0]?.current_id ?? null;
-    const searchInsert = await client.query(`INSERT INTO metadata_projection.search
+    const ownership = await ownershipReadIdentity(client);
+    if (ownership)
+      await client.query(
+        `UPDATE metadata_projection.generation SET ownership_release_id=$2,ownership_read_identity=$3 WHERE id=$1`,
+        [id, ownership.release_id, ownership.identity]
+      );
+    const predecessor =
+      (
+        await client.query<{ current_id: string | null }>(
+          "SELECT current_id FROM metadata_projection.active WHERE singleton"
+        )
+      ).rows[0]?.current_id ?? null;
+    if (input) {
+      if (
+        input.proof.metadataReleaseId !== release ||
+        input.proof.predecessor !== predecessor
+      )
+        throw new Error("projection_input_context_changed");
+      await client.query(
+        "UPDATE metadata_projection.generation SET validation=$2::jsonb WHERE id=$1",
+        [id, JSON.stringify({ sourceSnapshot: input.proof })]
+      );
+    }
+    const searchInsert = await client.query(
+      `INSERT INTO metadata_projection.search
       (generation_id,collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped,updated_at)
       SELECT $1::bigint,m.collection,m.token_id,m.lifecycle,(m.document IS NOT NULL),
         ${rarityPointsSql},${rarityPointsCappedSql},$2
-      FROM ${metadataScanReadRelation} m ${localRarityJoin}
+      FROM ${metadataInput} m ${localRarityJoin}
       LEFT JOIN LATERAL (SELECT a->>'value' AS value
         FROM jsonb_array_elements(COALESCE(m.attributes,'[]')) a
-        WHERE a->>'trait_type'='Rarity Points' LIMIT 1) rp ON true`, [id, updatedAt]);
+        WHERE a->>'trait_type'='Rarity Points' LIMIT 1) rp ON true`,
+      [id, updatedAt]
+    );
     insertedSearch = searchInsert.rowCount ?? 0;
-    await client.query(`INSERT INTO metadata_projection.trait
+    await client.query(
+      `INSERT INTO metadata_projection.trait
       (generation_id,collection,token_id,lifecycle,trait_type,value,value_numeric)
       SELECT DISTINCT $1::bigint,m.collection,m.token_id,m.lifecycle,a->>'trait_type',a->>'value',
         CASE WHEN a->>'value' ~ '^-?[0-9]+(\\.[0-9]+)?$' THEN (a->>'value')::numeric END
-      FROM ${metadataScanReadRelation} m
+      FROM ${metadataInput} m
       CROSS JOIN LATERAL jsonb_array_elements(COALESCE(m.attributes,'[]')) a
       WHERE m.document IS NOT NULL AND a ? 'trait_type' AND a ? 'value'
-        AND a->>'trait_type' IS NOT NULL AND a->>'value' IS NOT NULL`, [id]);
-    if (archiveMode) await client.query(`INSERT INTO metadata_projection.revision
+        AND a->>'trait_type' IS NOT NULL AND a->>'value' IS NOT NULL`,
+      [id]
+    );
+    if (archiveMode)
+      await client.query(
+        `INSERT INTO metadata_projection.revision
       (generation_id,collection,token_id,lifecycle,metadata_content_hash)
       SELECT $1::bigint,m.collection,m.token_id,m.lifecycle,m.content_hash
-      FROM ${metadataScanReadRelation} m`, [id]);
+      FROM ${metadataInput} m`,
+        [id]
+      );
+    // Include the new generation in statistics before planning its facet joins.
+    await client.query("ANALYZE metadata_projection.trait");
     // This limit is local to the build transaction; the facet sort runs once for all scopes.
     await client.query("SET LOCAL work_mem = '256MB'");
-    await client.query(`INSERT INTO metadata_projection.facet
+    await client.query(
+      `INSERT INTO metadata_projection.facet
       (generation_id,scope,trait_type,kind,min_value,max_value,values,updated_at)
       WITH per_collection AS MATERIALIZED (
         SELECT f.collection,f.trait_type,f.value,count(*)::int AS trait_count,
@@ -213,7 +488,7 @@ export async function refreshProjectionGeneration() {
           bool_and(f.value_numeric IS NOT NULL) AS numeric_value
         FROM metadata_projection.trait f
         WHERE f.generation_id=$1 AND EXISTS (
-          SELECT 1 FROM ${ponderSchema}.token t
+          SELECT 1 FROM ${tokenInput} t
           WHERE t.collection=f.collection AND t.token_id::numeric=f.token_id
             AND t.lifecycle=f.lifecycle AND NOT t.burned
         )
@@ -237,13 +512,16 @@ export async function refreshProjectionGeneration() {
         CASE WHEN s.is_numeric THEN s.min_value END,
         CASE WHEN s.is_numeric THEN s.max_value END,
         CASE WHEN s.is_numeric THEN NULL ELSE s.values END,$3
-      FROM type_stats s`, [id, scopes, updatedAt]);
-    await client.query(`INSERT INTO metadata_projection.facet_status
+      FROM type_stats s`,
+      [id, scopes, updatedAt]
+    );
+    await client.query(
+      `INSERT INTO metadata_projection.facet_status
       (generation_id,scope,singleton,available,missing,updated_at)
       WITH per_collection AS MATERIALIZED (
         SELECT t.collection,count(*) FILTER(WHERE s.metadata_available)::int AS available,
           count(*) FILTER(WHERE NOT COALESCE(s.metadata_available,false))::int AS missing
-        FROM ${ponderSchema}.token t LEFT JOIN metadata_projection.search s
+        FROM ${tokenInput} t LEFT JOIN metadata_projection.search s
           ON s.generation_id=$1 AND s.collection=t.collection
             AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
         WHERE NOT t.burned AND t.collection IN ('ethereum','base','polygon','bnb') GROUP BY t.collection
@@ -251,16 +529,38 @@ export async function refreshProjectionGeneration() {
       SELECT $1::bigint,scope.scope,true,sum(c.available)::int,sum(c.missing)::int,$3
       FROM unnest($2::text[]) AS scope(scope) CROSS JOIN per_collection c
       WHERE scope.scope='all' OR c.collection=ANY(string_to_array(scope.scope,'+'))
-      GROUP BY scope.scope`, [id, scopes, updatedAt]);
+      GROUP BY scope.scope`,
+      [id, scopes, updatedAt]
+    );
     await client.query("COMMIT");
     committed = true;
     // Newly inserted pages become all-visible only after vacuum. The exact
     // search/revision correspondence check is much faster with that map set.
-    await client.query("VACUUM (ANALYZE, TRUNCATE FALSE, PARALLEL 0) metadata_projection.search, metadata_projection.trait, metadata_projection.revision");
+    await client.query(
+      "VACUUM (ANALYZE, TRUNCATE FALSE, PARALLEL 0) metadata_projection.search, metadata_projection.trait, metadata_projection.revision"
+    );
     const validation = await validateGeneration(client, id, insertedSearch);
-    await client.query(`UPDATE metadata_projection.generation
+    await client.query(
+      `UPDATE metadata_projection.generation
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
-      [id, JSON.stringify(validation)]);
+      [id, JSON.stringify(validation)]
+    );
+    if (nativeProjectionSnapshotEnabled())
+      await retainProjectionAnchors(
+        client,
+        projectionSourceSnapshot(validation.sourceSnapshot)
+      );
+    if (options.publish === false) {
+      // Reader ownership identities share the active pointer and derived
+      // stamps. Preparation must leave them untouched until coordinated cutover.
+      return {
+        updatedAt,
+        generationId: id,
+        prepared: true as const,
+        predecessor,
+        validation
+      };
+    }
     const publicationStarted = performance.now();
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
@@ -268,17 +568,23 @@ export async function refreshProjectionGeneration() {
         break;
       } catch (error) {
         const pointer = await pool.query<{ current_id: string | null }>(
-          "SELECT current_id FROM metadata_projection.active WHERE singleton");
+          "SELECT current_id FROM metadata_projection.active WHERE singleton"
+        );
         if (pointer.rows[0]?.current_id === id) break;
-        const code = typeof error === "object" && error !== null && "code" in error
-          ? String(error.code) : "";
+        const code =
+          typeof error === "object" && error !== null && "code" in error
+            ? String(error.code)
+            : "";
         if (attempt === 2 || !["55P03", "57014"].includes(code)) throw error;
-        await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+        await new Promise((resolve) =>
+          setTimeout(resolve, 150 * (attempt + 1))
+        );
       }
     }
     console.info("Projection generation published", {
       generationId: id,
-      publicationDurationMs: Math.round((performance.now() - publicationStarted) * 10) / 10
+      publicationDurationMs:
+        Math.round((performance.now() - publicationStarted) * 10) / 10
     });
     try {
       await cleanupGenerations(client);
@@ -288,13 +594,30 @@ export async function refreshProjectionGeneration() {
     return { updatedAt, generationId: id };
   } catch (error) {
     if (!committed) await client.query("ROLLBACK").catch(() => undefined);
-    if (committed && id) await client.query(`UPDATE metadata_projection.generation
+    if (committed && id)
+      await client
+        .query(
+          `UPDATE metadata_projection.generation
       SET state='failed',failure_reason=$2 WHERE id=$1 AND state='building'`,
-      [id, error instanceof Error ? error.message.slice(0, 1000) : String(error).slice(0, 1000)]).catch(() => undefined);
+          [
+            id,
+            error instanceof Error
+              ? error.message.slice(0, 1000)
+              : String(error).slice(0, 1000)
+          ]
+        )
+        .catch(() => undefined);
     throw error;
   } finally {
-    if (archiveMode) await client.query("SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))").catch(() => undefined);
-    await client.query("SELECT pg_advisory_unlock(hashtext('yunipals:trait-refresh'))").catch(() => undefined);
+    if (archiveMode)
+      await client
+        .query(
+          "SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))"
+        )
+        .catch(() => undefined);
+    await client
+      .query("SELECT pg_advisory_unlock(hashtext('yunipals:trait-refresh'))")
+      .catch(() => undefined);
     client.release();
   }
 }

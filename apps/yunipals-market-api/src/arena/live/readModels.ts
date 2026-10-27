@@ -15,6 +15,7 @@ import { transaction } from "@/db/pool";
 import { canonicalJson, sha256 } from "../draw";
 import { ARENA_ISLANDS } from "./catalog";
 import { ArenaIntake, ArenaRequestError } from "./intake";
+import { NativeArenaReadModels } from "./nativeReadModels";
 
 type Filter = {
   wallet?: Address;
@@ -41,7 +42,12 @@ function validId(value: unknown): value is string {
 
 /** Bounded browsing reads only confirmed projections; no RPCs or inference. */
 export class ArenaReadModels {
-  constructor(private readonly service: ArenaIntake) {}
+  private readonly native?: NativeArenaReadModels;
+  constructor(private readonly service: ArenaIntake) {
+    this.native = service.nativeSource
+      ? new NativeArenaReadModels(service)
+      : undefined;
+  }
   private cursor(filter: unknown, id: string) {
     return Buffer.from(
       JSON.stringify({
@@ -81,10 +87,13 @@ export class ArenaReadModels {
     return limit ?? 24;
   }
   private async snapshot<T>(read: (db: PoolClient) => Promise<T>) {
-    return transaction(this.service.pool, async (db) => {
+    const result = await transaction(this.service.pool, async (db) => {
       await db.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+      await this.service.assertSourceSelection(db);
       return read(db);
     });
+    await this.service.assertSourceSelection();
+    return result;
   }
   private filter(input: Filter) {
     const filter = {
@@ -111,6 +120,7 @@ export class ArenaReadModels {
     input: Filter = {},
     page: Page = {}
   ): Promise<ArenaHistoryPage> {
+    if (this.native) return this.native.tournaments(input, page);
     const filter = this.filter(input),
       limit = this.limit(page.limit),
       boundary = this.boundary(filter, page.cursor);
@@ -197,6 +207,7 @@ export class ArenaReadModels {
     });
   }
   async wallet(wallet: Address): Promise<ArenaWalletSummary> {
+    if (this.native) return this.native.wallet(wallet);
     const address = wallet.toLowerCase();
     return this.snapshot(async (db) => {
       const state = (
@@ -280,22 +291,26 @@ export class ArenaReadModels {
     });
   }
   async island(tokenId: string, page: Page = {}): Promise<ArenaIslandHistory> {
+    if (this.native) return this.native.island(tokenId, page);
     if (!validId(tokenId))
       throw new ArenaRequestError(400, "Invalid island ID.");
     const history = await this.tournaments({ islandId: tokenId }, page);
-    const totals = (
-      await this.service.pool.query<{
-        hosted: string;
-        released: string;
-        pending: string;
-      }>(
-        `SELECT count(*)::text AS hosted,
+    const totals = await this.snapshot(
+      async (db) =>
+        (
+          await db.query<{
+            hosted: string;
+            released: string;
+            pending: string;
+          }>(
+            `SELECT count(*)::text AS hosted,
         (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*400000)::text AS released,
         (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*400000)::text AS pending
        FROM yunipals_arena.tournament WHERE deployment=$1 AND state->>'islandId'=$2`,
-        [this.service.deployment, tokenId]
-      )
-    ).rows[0]!;
+            [this.service.deployment, tokenId]
+          )
+        ).rows[0]!
+    );
     return {
       ...history,
       chainId: 8453,
@@ -307,19 +322,24 @@ export class ArenaReadModels {
     };
   }
   async timeline(id: string) {
+    if (this.native) return this.native.timeline(id);
     await this.service.state(id);
-    return (
-      await this.service.pool.query<{
-        event_name: string;
-        transaction_hash: Hex;
-        block_number: string;
-        log_index: number;
-      }>(
-        `SELECT event_name,transaction_hash,block_number::text,log_index FROM yunipals_arena.chain_event
+    const events = await this.snapshot(
+      async (db) =>
+        (
+          await db.query<{
+            event_name: string;
+            transaction_hash: Hex;
+            block_number: string;
+            log_index: number;
+          }>(
+            `SELECT event_name,transaction_hash,block_number::text,log_index FROM yunipals_arena.chain_event
        WHERE deployment=$1 AND args->>'id'=$2 ORDER BY block_number,log_index LIMIT 100`,
-        [this.service.deployment, id]
-      )
-    ).rows.map((e) => ({
+            [this.service.deployment, id]
+          )
+        ).rows
+    );
+    return events.map((e) => ({
       event: e.event_name,
       transactionHash: e.transaction_hash,
       blockNumber: e.block_number,
@@ -327,31 +347,35 @@ export class ArenaReadModels {
     }));
   }
   async rewards(wallet: Address, page: Page = {}): Promise<ArenaRewardsPage> {
+    if (this.native) return this.native.rewards(wallet, page);
     // Read the immutable event ledger. Credits and wallet withdrawals stay distinct;
     // Claimed is aggregate and cannot truthfully be assigned to one tournament.
     const limit = this.limit(page.limit),
       filter = { wallet: lower(wallet), kind: "rewards" };
     const boundary = this.boundary(filter, page.cursor);
-    const rows = (
-      await this.service.pool.query<{
-        n: string;
-        event_name: string;
-        args: Record<string, string>;
-        transaction_hash: Hex;
-        block_number: string;
-        log_index: number;
-        state: ArenaTournament | null;
-      }>(
-        `WITH records AS (SELECT (e.block_number::numeric*4294967296+e.log_index+1)::text AS n,e.event_name,e.args,e.transaction_hash,e.block_number::text,e.log_index,t.state
+    const rows = await this.snapshot(
+      async (db) =>
+        (
+          await db.query<{
+            n: string;
+            event_name: string;
+            args: Record<string, string>;
+            transaction_hash: Hex;
+            block_number: string;
+            log_index: number;
+            state: ArenaTournament | null;
+          }>(
+            `WITH records AS (SELECT (e.block_number::numeric*4294967296+e.log_index+1)::text AS n,e.event_name,e.args,e.transaction_hash,e.block_number::text,e.log_index,t.state
        FROM yunipals_arena.chain_event e LEFT JOIN yunipals_arena.tournament t ON t.deployment=e.deployment AND t.id=(e.args->>'id')::numeric
        WHERE e.deployment=$1 AND e.event_name IN ('PayoutsReleased','TournamentExpired','Claimed')
         AND ((e.event_name='Claimed' AND lower(e.args->>'player')=$2)
           OR (e.event_name<>'Claimed' AND (t.state->>'islandBeneficiary'=$2 OR t.state->>'treasury'=$2
             OR EXISTS(SELECT 1 FROM jsonb_array_elements(t.state->'seats') s WHERE s->>'player'=$2)))))
        SELECT * FROM records WHERE ($3::numeric IS NULL OR n::numeric<$3) ORDER BY n::numeric DESC LIMIT $4`,
-        [this.service.deployment, lower(wallet), boundary, limit + 1]
-      )
-    ).rows;
+            [this.service.deployment, lower(wallet), boundary, limit + 1]
+          )
+        ).rows
+    );
     const items: ArenaRewardRecord[] = [];
     for (const row of rows.slice(0, limit)) {
       const add = (

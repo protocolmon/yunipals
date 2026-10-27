@@ -1,0 +1,15 @@
+{
+  "actualFutureReceiptEmitted": false,
+  "actualNewMetadataEpochClaimed": false,
+  "actualRuntimeAccepted": false,
+  "databaseWrites": 0,
+  "fixedDeploymentTargets": 290,
+  "format": "yunipals-continuation-forward-root-review-v2",
+  "independentDownstreamControlsPassed": 7,
+  "independentFeatureControlsPassed": 8,
+  "preparationSha256": "197966eaf73b5f6bbeb5742a3067c819280d3bf6e1517fb4946400337ef87f81",
+  "providerCalls": 0,
+  "rootDownstreamControlsPassed": 7,
+  "rootFeatureControlsPassed": 8,
+  "serviceActions": 0
+}

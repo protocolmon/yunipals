@@ -1,0 +1,32 @@
+{
+  "activeUpstreamRequests": 0,
+  "cachedObservedRPCHeads": {
+    "1": "26262459",
+    "137": "96092658",
+    "56": "129512656",
+    "8453": "53027506"
+  },
+  "canonicalCoverageQualified": false,
+  "databaseBlockingPids": [],
+  "fetchPositionsAreNativeCheckpoints": false,
+  "fetchedThrough": {
+    "base": 53023366,
+    "bnb": 129493153,
+    "mainnet": 26262050,
+    "polygon": 96086897
+  },
+  "format": "yunipals-restored-source-fetch-observation-v1",
+  "liveHeadQueriedByThisCheck": false,
+  "observedAt": "2026-10-24T12:28:20.396138+00:00",
+  "observedWriterSessionCount": 5,
+  "ownerDatabaseWrites": 0,
+  "providerCalls": 0,
+  "queuedSourceRequests": 0,
+  "rawDatabaseActivityExported": false,
+  "readerMigrationQualified": false,
+  "sourceActions": 0,
+  "sourceInvocation": "2069ffe9ed0d4621a7cfe40cb98dcbf4",
+  "sourcePaidCalls": 0,
+  "sourcePid": 3111295,
+  "syncQueryQueueSize": 15
+}

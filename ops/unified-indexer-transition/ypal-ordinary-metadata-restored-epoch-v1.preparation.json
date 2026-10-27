@@ -1,0 +1,59 @@
+{
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 50814,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1.py",
+      "sha256": "bc3e585454ee9f2e532ee50ab6dfb7455653afb269b01219f739bb46af2ea1e3"
+    },
+    {
+      "bytes": 35294,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1.manifest.json",
+      "sha256": "400ae476ef1dfb8e1e653e2b87523b87ff95e83682a389d6621c759880ec2569"
+    },
+    {
+      "bytes": 22447,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1.test.py",
+      "sha256": "b4d3e8eb9cac50fb8302f7c5a973fa80cf7338885357453f23c6f266df7a8588"
+    },
+    {
+      "bytes": 1119,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1-manifest.py",
+      "sha256": "a5c398aca86507b5567a54e399dc07d70d24a28db799b53ba42ce7d4259c75f2"
+    },
+    {
+      "bytes": 3650,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1.md",
+      "sha256": "07da7cdcb730f6fc2c007b7abacef9ddd0480b0946a93c9587efd0344ef4a092"
+    },
+    {
+      "bytes": 77959,
+      "file": "ypal-ordinary-metadata-restored-epoch-v1.stage.json",
+      "sha256": "b68f44f5b2208095ca121c3766fcd28a39b2a1a8f327cff5a07f9011636c23ac"
+    }
+  ],
+  "format": "ypal-ordinary-metadata-restored-epoch-v1-preparation",
+  "frozenReader5OrForwardFilesEdited": false,
+  "inverseEffectsQualified": false,
+  "knownRequiredFollowups": [
+    "actual C2 restore ACK before current restored proof",
+    "full actor/catalog/source prefix and separately qualified inverse caller",
+    "explicit inverse authority binding forward reconciliation through authenticated upgradeRefs; no forward gate waiver"
+  ],
+  "newProductionQualificationClaimed": false,
+  "privateInputOrInverseACKIncluded": false,
+  "publicStageClosureCount": 331,
+  "publicStageClosureFile": "ypal-ordinary-metadata-restored-epoch-v1.stage.json",
+  "publicStageClosureSha256": "b68f44f5b2208095ca121c3766fcd28a39b2a1a8f327cff5a07f9011636c23ac",
+  "verification": {
+    "actualSourceManifestFiles": 325,
+    "canonicalSourceManifestByteReproduced": true,
+    "focusedControlsPassed": 10
+  }
+}

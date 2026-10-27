@@ -1,0 +1,116 @@
+{
+  "format": "yunipals-alchemy-restart-cache-v1-preparation",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.py",
+      "bytes": 12869,
+      "sha256": "35f751938c96bcd10e5f36412c8e7f7e0a31129874c2544c49116e85fafc59e4"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.filters.json",
+      "bytes": 223767,
+      "sha256": "394bbecf8d0b7c115bc7b56b085a17fb857d549a36eb336514bbb10bd72f2675"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.prepare.mjs",
+      "bytes": 6484,
+      "sha256": "7dceca05409ae11460674cab4a12155998634852843381a33a6ab9952d2341af"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.test.py",
+      "bytes": 8864,
+      "sha256": "2c00e45f7b9b49be2985cbe5be0a01584a57b1a2046baeea6afe30b9e000e202"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.ponder.test.mjs",
+      "bytes": 11646,
+      "sha256": "906d836e3641b18ff5f7506e9109c0046c937503044e1b966e46da0c43ff20b2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-restart-cache-v1.md",
+      "bytes": 8530,
+      "sha256": "4b94e1e533e7dd92afa1bfc47a57103397a7ca79f5b658dcd44afc7a7a9ca235"
+    }
+  ],
+  "validation": {
+    "pythonControlsPassed": 12,
+    "genuinePonderPostgresGroupsPassed": 7,
+    "genuinePrefixEquivalenceCases": 200,
+    "actualOfficialCompilerFragments": 84,
+    "realSqlMatrixRows": 80,
+    "logs": [
+      {
+        "path": "/tmp/yunipals-alchemy-restart-cache-controls-20261024.log",
+        "sha256": "6e0330017bfaee78956b7d20766fa9f65ca3d928869dc1abb516cd5b6f9425f8"
+      },
+      {
+        "path": "/tmp/yunipals-alchemy-restart-cache-ponder-controls-20261024.log",
+        "sha256": "5fbfc41f6e4c7538fd0463d28b558da85cccc604d5b04e1227f8072d1ac68663"
+      },
+      {
+        "path": "/tmp/yunipals-alchemy-restart-filter-preparation-final-20261024.log",
+        "sha256": "309295393cc6650f05d0bd428b69d66a867f490ede9917db732ecdb43860614c"
+      }
+    ],
+    "disposablePostgresCleanup": true,
+    "initialSandboxSubprocessTimeoutNotCounted": true,
+    "metadataCorrectionControls": {
+      "passed": 12,
+      "log": "/tmp/yunipals-alchemy-restart-cache-python-controls-20261024.log",
+      "sha256": "6e0330017bfaee78956b7d20766fa9f65ca3d928869dc1abb516cd5b6f9425f8",
+      "initialSandboxChownEINVALNotCounted": true,
+      "localFixtureApprovedEscalation": true,
+      "unchangedSqlPonderPostgresRepeated": false
+    }
+  },
+  "interface": "validate_restart_capture(query, plan, native)",
+  "profileId": "0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff",
+  "schema": "unified_ypal_20261023_v1",
+  "buildId": "71e2a7f3b7",
+  "configuredMinimumBlocks": {
+    "1": 12134519,
+    "8453": 22224075,
+    "137": 21814218,
+    "56": 7579197
+  },
+  "coverageScope": "All80 applicable log-filter continuous prefixes through raw native safe block, exact official adjacent-ID union. Four latest block callbacks explicitly dynamic; older callbacks not asserted covered.",
+  "actualHostCapturePerformed": false,
+  "sourceActorQualified": false,
+  "currentWriterQualified": false,
+  "canonicalReadinessQualified": false,
+  "financialAuthorityQualified": false,
+  "productionDatabaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "prerequisites": [
+    "Explicit revised financial plan admitting the genuine configured start diagnostics, unchanged original monetary/time authority.",
+    "Existing scoped READ ONLY source query and current actual native44/cache identity.",
+    "Owned source/kernel/session drain, official0-unlocked or25s expired lock and caller current canonical/latest-head proof.",
+    "Lifecycle final source/writer/financial/peer CAS and actual proof stored in its durable start intent."
+  ],
+  "sourceDatabasePortCorrection": {
+    "databaseOid": "17584",
+    "database": "yunipals_backfill",
+    "port": 5432,
+    "actualReadOnlyQueryProducerSha256": "55ba89a1b2e3249720a63cb9c740c3655ce83dbf076ae3bf7ab3d9a2409ec862",
+    "fixtureExecutesActualSourceQueryArgv": true,
+    "financial15438Rejected": true,
+    "historicalUnpublishedGateSha256": "4b5fe374bc17199c0af98e675cb888c521cc8fcfe79da4e9a2806387e3360383"
+  },
+  "actualRuntimeMetadataCorrection": {
+    "historicalInactiveGateSha256": "a79248e1aa896d9488d7a2aacb25cdafd8fcda333adb62e40d6919084166cd10",
+    "metadataEvidenceSha256": "d0c54bf29d4f80b3fe6ad91cf385cbe80fb67b5614b13af80c4fdc15ad29dbdf",
+    "fourCapReadEvidenceSha256": "443f8d83d9c6b154a364e6bf8d346e40c116e11df63827dad3be91fd2eaf5bfb",
+    "uid": 0,
+    "gid": 964,
+    "mode": "0640",
+    "nlink": 1,
+    "actual14HashesMatch": true,
+    "actualFourCapRootReadAll14": true,
+    "producer": "root separate read-only production observations",
+    "newPermissionsOrCapabilities": false,
+    "statAndHashCasUnchanged": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "format": "yunipals-alchemy-source-switch-host-independent-review-v1",
+  "verdict": "PASS",
+  "scope": "source and twelve local synthetic/kernel-join/actual-method controls only",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.py",
+      "sha256": "69ab246815917e61883f9be57dbc950645a87856f4b298d05f6968e8a1943579"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.test.py",
+      "sha256": "aad04fd22e81c4fe104f6f245ee128c560c2508ada4355b44549b0c63257ca99"
+    }
+  ],
+  "controlsPassed": 12,
+  "findingsResolved": [
+    "NRestarts>0 is permitted only for explicit stop inspection, including within the original start window.",
+    "Actual socket peer startTicks must match the authenticated actor before positive backend mapping.",
+    "Exact owned source stop inspection does not depend on DB availability or native heartbeat."
+  ],
+  "callerRequirements": [
+    "Authenticate immutable operation/publication/start/boot records and all current primitive inputs.",
+    "Immediately CAS actor after durable intent before manager calls.",
+    "Handle terminal/failed/escaped process and unknown manager acknowledgement explicitly.",
+    "Complete current source/proxy/serving/financial proof at the lifecycle boundary."
+  ],
+  "wholeLifecycleQualified": false,
+  "productionHostQualified": false,
+  "databaseWrites": 0,
+  "productionCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

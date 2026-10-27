@@ -1,0 +1,541 @@
+{
+  "actualBenchmarkResultSha256": "27af1b44e25c9133d973ea6debef6b99d5dff40ed5b1ace4865c49cfc69e684d",
+  "actualHeldCallbackQualified": false,
+  "allOriginalFileBytesAndInodesUnchanged": true,
+  "completeRunDurationCoverage": true,
+  "completed": true,
+  "databaseWrites": 0,
+  "format": "root-readonly-refresh-timing-gaps-v1",
+  "fullSourcePostflightPassed": true,
+  "gapIntervalsIncludeObserverBookkeeping": true,
+  "largestUnattributedCPUIntervals": [
+    {
+      "followingCall": 329,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 5462503489,
+      "phase": "host-prerequisites",
+      "previousCall": 328,
+      "wallNanoseconds": 5737120976
+    },
+    {
+      "followingCall": 74,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 4685972197,
+      "phase": "host-prerequisites",
+      "previousCall": 73,
+      "wallNanoseconds": 4965458838
+    },
+    {
+      "followingCall": 236,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 4570176759,
+      "phase": "host-prerequisites",
+      "previousCall": 235,
+      "wallNanoseconds": 4853566639
+    },
+    {
+      "followingCall": 73,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2240857289,
+      "phase": "host-prerequisites",
+      "previousCall": null,
+      "wallNanoseconds": 2417645012
+    },
+    {
+      "followingCall": 328,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2201063421,
+      "phase": "host-prerequisites",
+      "previousCall": 327,
+      "wallNanoseconds": 2354068926
+    },
+    {
+      "followingCall": 235,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2169833352,
+      "phase": "host-prerequisites",
+      "previousCall": 234,
+      "wallNanoseconds": 2366657716
+    },
+    {
+      "followingCall": 163,
+      "followingCommandKind": "setpriv",
+      "parentCPUNanoseconds": 1524391382,
+      "phase": "host-prerequisites",
+      "previousCall": 162,
+      "wallNanoseconds": 1524694881
+    },
+    {
+      "followingCall": 246,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1426748431,
+      "phase": "host-prerequisites",
+      "previousCall": 245,
+      "wallNanoseconds": 1427076907
+    },
+    {
+      "followingCall": 238,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1402053927,
+      "phase": "host-prerequisites",
+      "previousCall": 237,
+      "wallNanoseconds": 1402154495
+    },
+    {
+      "followingCall": 339,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1329859046,
+      "phase": "host-prerequisites",
+      "previousCall": 338,
+      "wallNanoseconds": 1330124615
+    },
+    {
+      "followingCall": 331,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1320786467,
+      "phase": "host-prerequisites",
+      "previousCall": 330,
+      "wallNanoseconds": 1321371461
+    },
+    {
+      "followingCall": 239,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1247038777,
+      "phase": "host-prerequisites",
+      "previousCall": 238,
+      "wallNanoseconds": 1247126585
+    },
+    {
+      "followingCall": 332,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1226220589,
+      "phase": "host-prerequisites",
+      "previousCall": 331,
+      "wallNanoseconds": 1226485561
+    },
+    {
+      "followingCall": 245,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1210635428,
+      "phase": "host-prerequisites",
+      "previousCall": 244,
+      "wallNanoseconds": 1210823131
+    },
+    {
+      "followingCall": 330,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1198847244,
+      "phase": "host-prerequisites",
+      "previousCall": 329,
+      "wallNanoseconds": 1199019537
+    },
+    {
+      "followingCall": 237,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1198826053,
+      "phase": "host-prerequisites",
+      "previousCall": 236,
+      "wallNanoseconds": 1199052987
+    },
+    {
+      "followingCall": 75,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1190378055,
+      "phase": "host-prerequisites",
+      "previousCall": 74,
+      "wallNanoseconds": 1190431421
+    },
+    {
+      "followingCall": 338,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1025586005,
+      "phase": "host-prerequisites",
+      "previousCall": 337,
+      "wallNanoseconds": 1025989954
+    },
+    {
+      "followingCall": 161,
+      "followingCommandKind": "systemctl",
+      "parentCPUNanoseconds": 576588315,
+      "phase": "host-prerequisites",
+      "previousCall": 160,
+      "wallNanoseconds": 576621841
+    },
+    {
+      "followingCall": 71,
+      "followingCommandKind": "systemctl",
+      "parentCPUNanoseconds": 541701512,
+      "phase": "host-refresh",
+      "previousCall": 70,
+      "wallNanoseconds": 541803136
+    }
+  ],
+  "largestUnattributedWallIntervals": [
+    {
+      "followingCall": 256,
+      "followingCommandKind": "setpriv",
+      "parentCPUNanoseconds": 314161442,
+      "phase": "host-prerequisites",
+      "previousCall": 255,
+      "wallNanoseconds": 21875942569
+    },
+    {
+      "followingCall": 329,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 5462503489,
+      "phase": "host-prerequisites",
+      "previousCall": 328,
+      "wallNanoseconds": 5737120976
+    },
+    {
+      "followingCall": 74,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 4685972197,
+      "phase": "host-prerequisites",
+      "previousCall": 73,
+      "wallNanoseconds": 4965458838
+    },
+    {
+      "followingCall": 236,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 4570176759,
+      "phase": "host-prerequisites",
+      "previousCall": 235,
+      "wallNanoseconds": 4853566639
+    },
+    {
+      "followingCall": 73,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2240857289,
+      "phase": "host-prerequisites",
+      "previousCall": null,
+      "wallNanoseconds": 2417645012
+    },
+    {
+      "followingCall": 235,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2169833352,
+      "phase": "host-prerequisites",
+      "previousCall": 234,
+      "wallNanoseconds": 2366657716
+    },
+    {
+      "followingCall": 328,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 2201063421,
+      "phase": "host-prerequisites",
+      "previousCall": 327,
+      "wallNanoseconds": 2354068926
+    },
+    {
+      "followingCall": 163,
+      "followingCommandKind": "setpriv",
+      "parentCPUNanoseconds": 1524391382,
+      "phase": "host-prerequisites",
+      "previousCall": 162,
+      "wallNanoseconds": 1524694881
+    },
+    {
+      "followingCall": 246,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1426748431,
+      "phase": "host-prerequisites",
+      "previousCall": 245,
+      "wallNanoseconds": 1427076907
+    },
+    {
+      "followingCall": 238,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1402053927,
+      "phase": "host-prerequisites",
+      "previousCall": 237,
+      "wallNanoseconds": 1402154495
+    },
+    {
+      "followingCall": 339,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1329859046,
+      "phase": "host-prerequisites",
+      "previousCall": 338,
+      "wallNanoseconds": 1330124615
+    },
+    {
+      "followingCall": 331,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1320786467,
+      "phase": "host-prerequisites",
+      "previousCall": 330,
+      "wallNanoseconds": 1321371461
+    },
+    {
+      "followingCall": 239,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1247038777,
+      "phase": "host-prerequisites",
+      "previousCall": 238,
+      "wallNanoseconds": 1247126585
+    },
+    {
+      "followingCall": 332,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1226220589,
+      "phase": "host-prerequisites",
+      "previousCall": 331,
+      "wallNanoseconds": 1226485561
+    },
+    {
+      "followingCall": 245,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1210635428,
+      "phase": "host-prerequisites",
+      "previousCall": 244,
+      "wallNanoseconds": 1210823131
+    },
+    {
+      "followingCall": 237,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1198826053,
+      "phase": "host-prerequisites",
+      "previousCall": 236,
+      "wallNanoseconds": 1199052987
+    },
+    {
+      "followingCall": 330,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1198847244,
+      "phase": "host-prerequisites",
+      "previousCall": 329,
+      "wallNanoseconds": 1199019537
+    },
+    {
+      "followingCall": 75,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1190378055,
+      "phase": "host-prerequisites",
+      "previousCall": 74,
+      "wallNanoseconds": 1190431421
+    },
+    {
+      "followingCall": 338,
+      "followingCommandKind": "node",
+      "parentCPUNanoseconds": 1025586005,
+      "phase": "host-prerequisites",
+      "previousCall": 337,
+      "wallNanoseconds": 1025989954
+    },
+    {
+      "followingCall": 255,
+      "followingCommandKind": "env",
+      "parentCPUNanoseconds": 216590070,
+      "phase": "host-prerequisites",
+      "previousCall": 254,
+      "wallNanoseconds": 1022834816
+    }
+  ],
+  "longestObservedCalls": [
+    {
+      "call": 87,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1311293,
+      "wallNanoseconds": 9075565325
+    },
+    {
+      "call": 88,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1077432,
+      "wallNanoseconds": 8963450892
+    },
+    {
+      "call": 255,
+      "commandKind": "env",
+      "parentCPUNanoseconds": 905952,
+      "wallNanoseconds": 444424342
+    },
+    {
+      "call": 163,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2518089,
+      "wallNanoseconds": 348231640
+    },
+    {
+      "call": 256,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2657919,
+      "wallNanoseconds": 344585382
+    },
+    {
+      "call": 72,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2976152,
+      "wallNanoseconds": 333152206
+    },
+    {
+      "call": 91,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 3031449,
+      "wallNanoseconds": 323964100
+    },
+    {
+      "call": 162,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1867178,
+      "wallNanoseconds": 323220648
+    },
+    {
+      "call": 1,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2301606,
+      "wallNanoseconds": 322617507
+    },
+    {
+      "call": 327,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2562032,
+      "wallNanoseconds": 302294539
+    },
+    {
+      "call": 234,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 2407945,
+      "wallNanoseconds": 236131247
+    },
+    {
+      "call": 204,
+      "commandKind": "systemctl",
+      "parentCPUNanoseconds": 1967637,
+      "wallNanoseconds": 132297383
+    },
+    {
+      "call": 42,
+      "commandKind": "systemctl",
+      "parentCPUNanoseconds": 2187005,
+      "wallNanoseconds": 115302668
+    },
+    {
+      "call": 245,
+      "commandKind": "node",
+      "parentCPUNanoseconds": 973437,
+      "wallNanoseconds": 106126710
+    },
+    {
+      "call": 249,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 841673,
+      "wallNanoseconds": 105386873
+    }
+  ],
+  "observedAt": "2026-10-26T06:33:17.212148+00:00",
+  "phaseTimings": [
+    {
+      "byCommandKind": {
+        "busctl": {
+          "count": 52,
+          "maximumWallNanoseconds": 25738570,
+          "medianWallNanoseconds": 17223861,
+          "p95WallNanoseconds": 23715551,
+          "wallNanoseconds": 899958404
+        },
+        "setpriv": {
+          "count": 15,
+          "maximumWallNanoseconds": 333152206,
+          "medianWallNanoseconds": 75922963,
+          "p95WallNanoseconds": 333152206,
+          "wallNanoseconds": 1640269995
+        },
+        "ss": {
+          "count": 1,
+          "maximumWallNanoseconds": 4960306,
+          "medianWallNanoseconds": 4960306,
+          "p95WallNanoseconds": 4960306,
+          "wallNanoseconds": 4960306
+        },
+        "systemctl": {
+          "count": 4,
+          "maximumWallNanoseconds": 115302668,
+          "medianWallNanoseconds": 87976761,
+          "p95WallNanoseconds": 115302668,
+          "wallNanoseconds": 333683120
+        }
+      },
+      "label": "host-refresh",
+      "observedCommands": {
+        "count": 72,
+        "maximumWallNanoseconds": 333152206,
+        "medianWallNanoseconds": 19834022,
+        "p95WallNanoseconds": 89534531,
+        "wallNanoseconds": 2878871825
+      },
+      "parentCPUNanoseconds": 2177437445,
+      "unattributedWallNanoseconds": 2584919395,
+      "wallNanoseconds": 5463791220
+    },
+    {
+      "byCommandKind": {
+        "busctl": {
+          "count": 173,
+          "maximumWallNanoseconds": 28683976,
+          "medianWallNanoseconds": 14632740,
+          "p95WallNanoseconds": 24066431,
+          "wallNanoseconds": 2698503574
+        },
+        "env": {
+          "count": 1,
+          "maximumWallNanoseconds": 444424342,
+          "medianWallNanoseconds": 444424342,
+          "p95WallNanoseconds": 444424342,
+          "wallNanoseconds": 444424342
+        },
+        "node": {
+          "count": 17,
+          "maximumWallNanoseconds": 106126710,
+          "medianWallNanoseconds": 82907234,
+          "p95WallNanoseconds": 106126710,
+          "wallNanoseconds": 1444241925
+        },
+        "other": {
+          "count": 2,
+          "maximumWallNanoseconds": 25208179,
+          "medianWallNanoseconds": 25208179,
+          "p95WallNanoseconds": 25208179,
+          "wallNanoseconds": 42915061
+        },
+        "setpriv": {
+          "count": 51,
+          "maximumWallNanoseconds": 9075565325,
+          "medianWallNanoseconds": 80759761,
+          "p95WallNanoseconds": 348231640,
+          "wallNanoseconds": 23320713174
+        },
+        "ss": {
+          "count": 5,
+          "maximumWallNanoseconds": 6001617,
+          "medianWallNanoseconds": 5493218,
+          "p95WallNanoseconds": 6001617,
+          "wallNanoseconds": 28072358
+        },
+        "systemctl": {
+          "count": 26,
+          "maximumWallNanoseconds": 132297383,
+          "medianWallNanoseconds": 43974314,
+          "p95WallNanoseconds": 91503686,
+          "wallNanoseconds": 1284089481
+        }
+      },
+      "label": "host-prerequisites",
+      "observedCommands": {
+        "count": 275,
+        "maximumWallNanoseconds": 9075565325,
+        "medianWallNanoseconds": 18529160,
+        "p95WallNanoseconds": 98137233,
+        "wallNanoseconds": 29262959915
+      },
+      "parentCPUNanoseconds": 45591429032,
+      "unattributedWallNanoseconds": 71544564461,
+      "wallNanoseconds": 100807524376
+    }
+  ],
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "timingQualificationClaimed": false,
+  "unattributedTimeIsNotAssumedPythonOrSQLTime": true
+}

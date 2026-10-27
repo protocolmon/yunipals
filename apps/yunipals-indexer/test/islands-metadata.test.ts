@@ -102,6 +102,12 @@ describe("Islands collection identity and metadata", () => {
   });
   it("bounds metadata URLs to the collection's HTTPS endpoint", () => {
     expect(islandMetadataUri(uri)).toBe(uri);
+    const revealedUri =
+      "https://islands-meta.yunipals.com/v1/island-meta/grassland/1";
+    expect(islandMetadataUri(revealedUri)).toBe(revealedUri);
+    expect(islandMetadataUri(revealedUri.replace("/1", "/1001"))).toBe(
+      revealedUri.replace("/1", "/1001")
+    );
     for (const invalid of [
       uri.replace("https:", "http:"),
       uri.replace("meta.polychainmonsters.com", "localhost"),
@@ -110,6 +116,21 @@ describe("Islands collection identity and metadata", () => {
       uri.replace("10000000", "01"),
       uri.replace("grassland", "unknown"),
       uri.replace("https://", "https://user:password@")
+    ])
+      expect(() => islandMetadataUri(invalid)).toThrow();
+    for (const invalid of [
+      revealedUri.replace(
+        "islands-meta.yunipals.com",
+        "islands-meta.yunipals.com.example.org"
+      ),
+      revealedUri.replace("islands-meta.yunipals.com", "other.yunipals.com"),
+      revealedUri + ".json",
+      revealedUri + "?id=2",
+      revealedUri.replace("/grassland/1", "/grassland/01"),
+      revealedUri.replace(
+        "/v1/island-meta/grassland/1",
+        "/islands/v2/metadata/1.json"
+      )
     ])
       expect(() => islandMetadataUri(invalid)).toThrow();
   });
@@ -146,6 +167,16 @@ describe("Islands collection identity and metadata", () => {
       islandRevision(
         job,
         { ...evidence, uri: uri.replace("10000000", "1") },
+        raw
+      ).revisionHash
+    ).not.toBe(first.revisionHash);
+    expect(
+      islandRevision(
+        job,
+        {
+          ...evidence,
+          uri: "https://islands-meta.yunipals.com/v1/island-meta/grassland/1"
+        },
         raw
       ).revisionHash
     ).not.toBe(first.revisionHash);

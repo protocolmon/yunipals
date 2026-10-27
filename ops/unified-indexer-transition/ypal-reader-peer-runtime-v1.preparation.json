@@ -1,0 +1,99 @@
+{
+  "format": "yunipals-reader-peer-runtime-preparation-v1",
+  "status": "source-only-local-qualified",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.py",
+      "sha256": "cc7842d51a6adb242991423b3bfb850452315c37e169107331332d2460dc0ffa",
+      "bytes": 11096
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.mjs",
+      "sha256": "6728fcb405de2bf7fc302678dae4aa6184ed51effd22823375d4e0a078792cc1",
+      "bytes": 5568
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.test.py",
+      "sha256": "71aacef972af251b765d7e6f40e49c70e857af59b6e9f98d6510c4696fec002d",
+      "bytes": 10895
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-reader-peer-runtime-v1.md",
+      "sha256": "b62d716da3283368a84fa89f93fea032baf866e9820a1acc94013af994f45abb",
+      "bytes": 5870
+    }
+  ],
+  "publicDependencies": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.mjs",
+      "sha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-reader-probe-v1.mjs",
+      "sha256": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.manifest.json",
+      "sha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v3.mjs",
+      "sha256": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
+      "sha256": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v2.mjs",
+      "sha256": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920"
+    }
+  ],
+  "verification": {
+    "localControls": 12,
+    "actualNumericCrossUidFixtures": [
+      {
+        "uid": 111,
+        "gid": 113
+      },
+      {
+        "uid": 967,
+        "gid": 961,
+        "syntheticApiPeer": true
+      }
+    ],
+    "frozenModulesImported": 7,
+    "testLogSha256": "9c25a0e44b3bea0b629272d0ede249edf5e7c5aa1962bfef8d643df02d6efadd",
+    "localProofSha256": "75e54c94cc9dc1b4ba849b5ba0ad4b89fdcd7bea241e8b4e1dbc68889b63e7d9",
+    "syntaxChecksPassed": true
+  },
+  "transport": {
+    "mechanism": "sealed-public-memfds-and-fixed-url-hooks",
+    "fileCount": 8,
+    "descriptorCount": 9,
+    "originalLogicalUrlsPreserved": true,
+    "unknownOperationsPathsRefused": true,
+    "privateInputsInherited": false,
+    "filesystemPermissionChanges": 0
+  },
+  "limits": {
+    "hostQualificationPerformed": false,
+    "installedDependenciesQualified": false,
+    "actualApplicationActionQualified": false,
+    "frozenCoordinatorModified": false,
+    "coordinatorIntegrated": false,
+    "sourceRuntimeQualified": false,
+    "databaseConnections": 0,
+    "providerRequests": 0,
+    "serviceActions": 0,
+    "requiresExplicitCoordinatorSuccessor": true
+  }
+}

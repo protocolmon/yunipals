@@ -1,0 +1,390 @@
+{
+  "bnbProxy": {
+    "after": {
+      "activeUpstreamRequests": 1,
+      "chainId": 56,
+      "counters": {
+        "freeFailures": 251765,
+        "freeOnlyFailures": 26622,
+        "freePacingWaitMs": 79887633,
+        "freeRateLimitRetries": 0,
+        "freeRateLimitWaitMs": 0,
+        "overloadedBatches": 3131,
+        "sourcePacingTimeouts": 3131,
+        "sourceQueueTimeouts": 0
+      },
+      "evidenceTraffic": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeProfileMatches": true,
+      "observedHead": "129338094",
+      "queuedSourceRequests": 0,
+      "sourceTraffic": {
+        "freeCalls": 27812,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "before": {
+      "activeUpstreamRequests": 0,
+      "chainId": 56,
+      "counters": {
+        "freeFailures": 250432,
+        "freeOnlyFailures": 26481,
+        "freePacingWaitMs": 79396714,
+        "freeRateLimitRetries": 0,
+        "freeRateLimitWaitMs": 0,
+        "overloadedBatches": 3110,
+        "sourcePacingTimeouts": 3110,
+        "sourceQueueTimeouts": 0
+      },
+      "evidenceTraffic": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "freeProfileMatches": true,
+      "observedHead": "129337791",
+      "queuedSourceRequests": 0,
+      "sourceTraffic": {
+        "freeCalls": 27658,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "counterDeltas": {
+      "freeFailures": 1333,
+      "freeOnlyFailures": 141,
+      "freePacingWaitMs": 490919,
+      "freeRateLimitRetries": 0,
+      "freeRateLimitWaitMs": 0,
+      "overloadedBatches": 21,
+      "sourcePacingTimeouts": 21,
+      "sourceQueueTimeouts": 0
+    },
+    "sourceSuccessfulFreeCallsDelta": 154
+  },
+  "elapsedSeconds": 160.394253,
+  "evidence": [
+    {
+      "file": "/tmp/yunipals-replay-wait-diagnosis-20261023-0.json",
+      "sha256": "e98f55acdd50b7631e77f1d756fc76a0e28ee9950b40f1907fe340c37e459c27"
+    },
+    {
+      "file": "/tmp/yunipals-replay-wait-diagnosis-20261023-1.json",
+      "sha256": "a9be4d3d2d6e894da0af0799ed6b4991e081672a0c897ec887fea0d177422525"
+    },
+    {
+      "file": "/tmp/yunipals-replay-wait-diagnosis-20261023.py",
+      "sha256": "63ac24b852c46dedfa065554bb20b8533fb31021ccfec8f30f80cff231c44e69"
+    },
+    {
+      "file": "/tmp/yunipals-native-current-health-detail-20261023-1326.json",
+      "sha256": "1fd26ab93bdde46921a4adae4233bfdd72e65b04c39e5ddbb9241d2c8f9f043c"
+    }
+  ],
+  "format": "yunipals-production-replay-sparse-range-diagnosis-v1",
+  "interpretation": {
+    "assessment": "Evidence supports active backfill through a sparse event range, with the native event checkpoint retaining the last relevant event block. No current database-blocked or heap-stalled processing was observed.",
+    "cacheCoverageIsNotNativeReadiness": true,
+    "explanation": "The pinned Ponder historical runtime advances its sync gauge to an empty interval end, retaining the last relevant block timestamp until a later relevant block or final boundary. All three current BNB log fragments cover the observed gap and indexed relevant-event tables contain no rows in the inspected gap.",
+    "runtimeSource": {
+      "emptyRangeGaugeLogicLine": 1383,
+      "file": "/root/yunipals/apps/yunipals-indexer/node_modules/ponder/src/runtime/historical.ts",
+      "ponderVersion": "0.17.5",
+      "sha256": "b0f4461bcefe39cd691e92a956abdce33dfef3228e498d0ec3f7009b0256a10c"
+    },
+    "safeImmediatePerformanceCorrection": "No source restart, concurrency change, cache reset or policy change is justified by these samples. Existing free-provider failures and pacing timeouts remain material, but successful free calls and durable cache intervals are advancing.",
+    "wholeBackfillEtaClaimed": false
+  },
+  "native": {
+    "after": [
+      {
+        "blockTimestamp": 1792690499,
+        "chainId": 1,
+        "completeBlock": 26249684
+      },
+      {
+        "blockTimestamp": 1780046506,
+        "chainId": 56,
+        "completeBlock": 101089566
+      },
+      {
+        "blockTimestamp": 1792690983,
+        "chainId": 137,
+        "completeBlock": 95990408
+      },
+      {
+        "blockTimestamp": 1792691223,
+        "chainId": 8453,
+        "completeBlock": 52950938
+      }
+    ],
+    "before": [
+      {
+        "blockTimestamp": 1792690499,
+        "chainId": 1,
+        "completeBlock": 26249684
+      },
+      {
+        "blockTimestamp": 1780046506,
+        "chainId": 56,
+        "completeBlock": 101089566
+      },
+      {
+        "blockTimestamp": 1792690983,
+        "chainId": 137,
+        "completeBlock": 95990408
+      },
+      {
+        "blockTimestamp": 1792691223,
+        "chainId": 8453,
+        "completeBlock": 52950938
+      }
+    ],
+    "completedEventsAfter": 27684.0,
+    "completedEventsBefore": 27684.0,
+    "currentLastCommitSearch": {
+      "completed": false,
+      "fixedCode": "bounded_journal_read_timeout",
+      "rawMessagesExported": false
+    },
+    "frameworkReady": false,
+    "handlerCallsAfter": 27684.0,
+    "handlerCallsBefore": 27684.0,
+    "heartbeatAgeSeconds": 0.581,
+    "lastPreviouslyObservedAppliedCommit": {
+      "completed": true,
+      "rawMessagesExported": false,
+      "rows": [
+        {
+          "atMicroseconds": 1792758441286160,
+          "blockRange": [
+            101089274,
+            101090763
+          ],
+          "categories": [
+            "nativeRangeCommitted"
+          ],
+          "chain": "bnb",
+          "event_count": 6
+        }
+      ]
+    },
+    "latestCurrentCommitTimeClaimed": false
+  },
+  "observedFrom": "2026-10-23T14:27:55.025084+00:00",
+  "observedThrough": "2026-10-23T14:30:35.419337+00:00",
+  "observerActions": {
+    "databaseWrites": 0,
+    "grants": 0,
+    "paidAuthorityRenewed": false,
+    "providerRpcCalls": 0,
+    "serviceActions": 0
+  },
+  "originalWholeValidationPassed": false,
+  "postgres": {
+    "firstAt": "2026-10-23T14:28:14.380714+00:00",
+    "lastAt": "2026-10-23T14:30:38.650412+00:00",
+    "lastSessions": [
+      {
+        "applicationName": "unified_shadow_20261020_7e7375b0_internal",
+        "applicationNameMd5": "1dfdb0e4529b68c4e9a8ce5d6296376a",
+        "backendAgeSeconds": 30507,
+        "pid": 1437447,
+        "queryAgeSeconds": 0,
+        "queryClass": "update",
+        "queryMd5": "1b45d8fda9d34feed18c78bb7252d9a5",
+        "state": "idle",
+        "stateAgeSeconds": 0,
+        "waitEvent": "ClientRead",
+        "waitEventType": "Client",
+        "xactAgeSeconds": null
+      },
+      {
+        "applicationName": "yunipals_boosters_launch_v1_internal",
+        "applicationNameMd5": "532cfd664a1aca1c352cf96c34e20eea",
+        "backendAgeSeconds": 25378,
+        "pid": 1525243,
+        "queryAgeSeconds": 6,
+        "queryClass": "update",
+        "queryMd5": "439d3c4f8019fc3673431a7b0d1f6d53",
+        "state": "idle",
+        "stateAgeSeconds": 6,
+        "waitEvent": "ClientRead",
+        "waitEventType": "Client",
+        "xactAgeSeconds": null
+      },
+      {
+        "applicationName": "yunipals_boosters_launch_v1_user",
+        "applicationNameMd5": "fb6bdf540376c21b014ed04e8c7094ba",
+        "backendAgeSeconds": 25330,
+        "pid": 1526150,
+        "queryAgeSeconds": 0,
+        "queryClass": "transaction_end",
+        "queryMd5": "fffca4d67ea0a788813031b8bbc3b329",
+        "state": "idle",
+        "stateAgeSeconds": 0,
+        "waitEvent": "ClientRead",
+        "waitEventType": "Client",
+        "xactAgeSeconds": null
+      },
+      {
+        "applicationName": "ponder_sync",
+        "applicationNameMd5": "fd80d6aecaad1b9b1e8abcdad44dcb05",
+        "backendAgeSeconds": 257,
+        "pid": 1945333,
+        "queryAgeSeconds": 13,
+        "queryClass": "transaction_begin",
+        "queryMd5": "8d589afa4dfaeeed85fff5aa78e5ff6a",
+        "state": "idle in transaction",
+        "stateAgeSeconds": 13,
+        "waitEvent": "ClientRead",
+        "waitEventType": "Client",
+        "xactAgeSeconds": 13
+      },
+      {
+        "applicationName": "ponder_sync",
+        "applicationNameMd5": "fd80d6aecaad1b9b1e8abcdad44dcb05",
+        "backendAgeSeconds": 31,
+        "pid": 1949317,
+        "queryAgeSeconds": 16,
+        "queryClass": "transaction_begin",
+        "queryMd5": "8d589afa4dfaeeed85fff5aa78e5ff6a",
+        "state": "idle in transaction",
+        "stateAgeSeconds": 16,
+        "waitEvent": "ClientRead",
+        "waitEventType": "Client",
+        "xactAgeSeconds": 16
+      }
+    ],
+    "longestObservedTransactionSeconds": 16,
+    "observedWaitClasses": [
+      "Client"
+    ],
+    "rawQueryTextExported": false
+  },
+  "recentJournal": {
+    "emptySearchExitCodeOneMeansNoMatchingRows": true,
+    "fixedErrorPatternSearch": {
+      "completed": false,
+      "returncode": 1,
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rawMessagesExported": 0,
+    "tailFixedCategories": [],
+    "tailRowCount": 120
+  },
+  "resources": {
+    "after": {
+      "clockTicksPerSecond": 100,
+      "io": {
+        "rchar": 405730931,
+        "read_bytes": 217088,
+        "syscr": 1258641,
+        "syscw": 1340344,
+        "wchar": 432928504,
+        "write_bytes": 4096
+      },
+      "memoryEvents": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "rootFreeBytes": 44986363904,
+      "sourceMemoryBytes": 402927616,
+      "sourceMemoryMaxBytes": 6442450944,
+      "systemCpuTicks": 106306,
+      "userCpuTicks": 522796
+    },
+    "before": {
+      "clockTicksPerSecond": 100,
+      "io": {
+        "rchar": 405621912,
+        "read_bytes": 217088,
+        "syscr": 1258025,
+        "syscw": 1339494,
+        "wchar": 432124118,
+        "write_bytes": 4096
+      },
+      "memoryEvents": {
+        "high": 0,
+        "low": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_group_kill": 0,
+        "oom_kill": 0
+      },
+      "rootFreeBytes": 44996304896,
+      "sourceMemoryBytes": 402579456,
+      "sourceMemoryMaxBytes": 6442450944,
+      "systemCpuTicks": 106104,
+      "userCpuTicks": 521862
+    },
+    "observedCpuSeconds": 11.36
+  },
+  "sourceQualificationSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+  "sourceRuntime": {
+    "ActiveState": "active",
+    "InvocationID": "c3463c9a2e1240e8890e318ba1360cf4",
+    "MainPID": "716994",
+    "NRestarts": "0"
+  },
+  "syncCache": {
+    "bnbFetchGaugeAfter": 105230212,
+    "bnbFetchGaugeBefore": 104732425,
+    "bnbFetchGaugeDelta": 497787,
+    "bnbIntervalMetadata": {
+      "boundedAtRows": 128,
+      "chainId": 56,
+      "fragments": [
+        {
+          "containsCompleteCheckpoint": true,
+          "containsFetchedGauge": true,
+          "coversCheckpointToPriorFetch": true,
+          "fragmentMd5": "8e8421907fb874c9c36559726464b594",
+          "kind": "log",
+          "rangeMaximumExclusive": "105230213",
+          "rangeMinimum": "7579197"
+        },
+        {
+          "containsCompleteCheckpoint": true,
+          "containsFetchedGauge": true,
+          "coversCheckpointToPriorFetch": true,
+          "fragmentMd5": "45ecc7f74b68b57b1a9284ceeae97335",
+          "kind": "log",
+          "rangeMaximumExclusive": "105230213",
+          "rangeMinimum": "7579197"
+        },
+        {
+          "containsCompleteCheckpoint": true,
+          "containsFetchedGauge": true,
+          "coversCheckpointToPriorFetch": true,
+          "fragmentMd5": "c978255c75d618cd3ad6bb20c17dda44",
+          "kind": "log",
+          "rangeMaximumExclusive": "105230213",
+          "rangeMinimum": "7579197"
+        }
+      ],
+      "totalFragments": 3
+    },
+    "extractBuildDurationDeltaMs": 0.26316700875759125,
+    "indexedCacheLookup": {
+      "firstRelevantHeaderBothSamples": null,
+      "firstRelevantLogBothSamples": null,
+      "fromBlockExclusive": 101089566,
+      "throughBlockInclusive": 105000000
+    },
+    "nativeCoverageInferredFromFetchGauge": false,
+    "observedFetchBlocksPerSecond": 3103.52,
+    "sourceIndexerCacheQueryCountDelta": 0.0,
+    "syncCompletedBlocksAfter": 92855978,
+    "syncCompletedBlocksBefore": 92622327
+  }
+}

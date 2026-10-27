@@ -1,0 +1,66 @@
+{
+  "actualQualification": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T04:32:45.677753+00:00",
+    "phase": "qualify",
+    "report": {
+      "activeUnits": 11,
+      "callbackElapsedNanoseconds": 6115131604,
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-ordinary-source-authority-v3",
+      "nativeRelations": 44,
+      "positiveKernelSessions": 5,
+      "productionCallbackDeadlineQualified": false,
+      "providerCalls": 0,
+      "resultSha256": "edc4f83dd5c8e0604341d362ce6d18f2798169fed0953fcfbe3b735b4592bd55",
+      "retiredUnits": 12,
+      "serviceActions": 0,
+      "validated": true
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "5039f87c69ecd592c8c20e1a890176be740cba6a825b36e4d184f3c38e8ef0cd"
+  },
+  "earlierFailureReclassified": false,
+  "earlierRefusal": {
+    "completed": false,
+    "exitCode": 1,
+    "observedAt": "2026-10-25T04:26:09.416616+00:00",
+    "phase": "qualify",
+    "report": {
+      "automaticRetryAllowed": false,
+      "fixedCode": "all_required_backends_need_unique_positive_stable_kernel_attribution",
+      "format": "yunipals-ypal-ordinary-source-authority-v3",
+      "privateFailureSha256": "8216db0efade28f55d48c44199f2888b1b072ecae4623d0d47439663855dd3dc",
+      "validated": false
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "7100be99cd4e8610b576e7d7b1a13aec4a7c5591455e6c7e527497736c333a1e"
+  },
+  "format": "yunipals-actual-source-authority-v3-qualification-v1",
+  "fullPublicationCallbackDeadlineQualified": false,
+  "laterSeparateKernelDiagnostic": {
+    "databaseWrites": 0,
+    "fixedCode": null,
+    "observedAt": "2026-10-25T04:28:51.079877+00:00",
+    "privateObservationSha256": "f10893f978d70b13e30b970f6926e35e64b9fdda6fc6454d2609e6b4626e83ef",
+    "sameActorStates": true,
+    "serviceActions": 0,
+    "summaries": [
+      {
+        "allRowsMapped": true,
+        "backendCount": 5,
+        "mappedCounts": {
+          "yunipals-booster-ypal-source.service": 2,
+          "yunipals-ypal-combined-source.service": 3
+        },
+        "mappedUnique": true,
+        "rowsStable": true,
+        "unmappedCount": 0
+      }
+    ]
+  },
+  "originalFailureCauseConfirmed": false
+}

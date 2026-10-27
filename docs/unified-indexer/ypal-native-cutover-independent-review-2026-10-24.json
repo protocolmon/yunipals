@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-ypal-coordinated-reader-independent-review-v1",
+  "verdict": "source-review-passed-with-explicit-runtime-prerequisites",
+  "productionQualified": false,
+  "preparationFile": "docs/unified-indexer/ypal-native-cutover-preparation-2026-10-24.json",
+  "preparationSha256": "434566a038322ada66418d9fed139a4e7f9ed51777d0d645d87a7b00dfc3bf8b",
+  "runtimeManifestSha256": "efca68cf0194b26f611166c9e2e9db8caa8a4247329e02effba2c06a9cbc8168",
+  "filesVerified": 13,
+  "dependencyPinsVerified": 14,
+  "criticalProducers": {
+    "root": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+    "proof": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946",
+    "cache": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa",
+    "unchangedPublicationChild": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7"
+  },
+  "rootReportedValidation": {
+    "pythonControls": 31,
+    "actionDTOControls": 4,
+    "genuineReaderPostgresGroups": 5,
+    "unchangedChildEarlierGenuinePostgresGroups": 10
+  },
+  "testsRepeatedByReviewer": false,
+  "repeatReason": "Existing source-bound root runs cover unchanged paths; no additional finding justified repeating them.",
+  "reviewedCriticalPaths": [
+    "finite external manifest and historical dependency bytes",
+    "one held business-role PG client and kernel peer authorization before SQL",
+    "durable prepared XID/packet before sole global COMMIT",
+    "explicit two existing LOGIN-bit authorization and exact whole role graph",
+    "full cache relation and column ACL preservation plus PUBLIC/effective-column negatives",
+    "private selector order actual kernel environment capability and compiler ownership",
+    "exact owned reader/preview boot/file inodes and original backend subset drains",
+    "unknown SQL/start/stop/reload ACK refuses resend and has explicit reconciliation",
+    "source-terminal inverse-only predicate never grants forward readiness",
+    "exact owned cache4/twoLOGIN/capsule inverse with original143 retained",
+    "metadata RPC-mode writer recovery before legacy readers/cache serve",
+    "real positive legacy/native HTTP routes and bounded BNB full-receipt action proof",
+    "later phase leaves explicitly exclude current source financial observer or global role authority"
+  ],
+  "findings": [],
+  "runtimePrerequisites": [
+    "Genuine NEW143/current-RPC/source context must be composed through explicit new producer references. Old acknowledged_source_binding/retained_namespace cannot be treated as passed after actual proxy/source changes.",
+    "Actual Arena13 source admission precedes NEW143/cache/current-catalog and feature catalogBefore captures; historical plans/rehearsals remain immutable.",
+    "Actual restricted peers must be able to execute/read the fixed public ENTRY/probe/manifest/dependency closure. UID111 SQL child and the main-UID action probe directly read OPS paths, so root0600-only staging cannot qualify those executions. No actual production peer success was inferred.",
+    "Actual143/cache/adoption/unpublished candidate/metadata/canonical witness/sustained observer/twoLOGIN acknowledgements and fresh official current readiness remain required. Local tests are not those receipts.",
+    "If pool8 recovery is actually used, a separately acknowledged predecessor/config/source epoch must replace the original c96/pool5 context explicitly."
+  ],
+  "sourceEditsByReviewer": 0,
+  "hostCallsByReviewer": 0,
+  "providerCallsByReviewer": 0,
+  "productionDatabaseActionsByReviewer": 0,
+  "gitActionsByReviewer": 0,
+  "fullGoalAccepted": false
+}

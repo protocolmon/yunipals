@@ -1,0 +1,28 @@
+{
+  "actualRuntimeAccepted": false,
+  "controls": 9,
+  "correctedFinding": "Frozen reader/cache phase acceptance loads the historical feature owner. The fresh feature must be qualified explicitly when its eight collector reads are present.",
+  "correction": "A new bounded namespace/context invokes the exact existing reader/cache acceptance functions with the actual new feature predicate. Frozen source/global objects remain unchanged.",
+  "covered": [
+    "Exact new feature producer/context/receipt triple",
+    "Actual reused role-slice checks accept exactly eight owner-granted collector reads",
+    "Missing, changed or grantable eighth edges refuse",
+    "PUBLIC/foreign column authority and NOLOGIN refuse",
+    "Historical feature owner and foreign acknowledgement refuse",
+    "Both actual reused reader and cache entrypoints execute through the new predicate without invoking the old loader"
+  ],
+  "exitCode": 0,
+  "format": "yunipals-restored-reader-cache-phase-independent-review-v1",
+  "independentlyRerun": true,
+  "knownLimits": [
+    "Runtime observations are local fixtures",
+    "Current writer, source readiness, financial policy and full global role graph remain separate caller responsibilities",
+    "First native generation acceptance does not qualify later recurring generations or24-hour operation"
+  ],
+  "oldProducerGlobalsChanged": false,
+  "operatorSha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1",
+  "productionActions": 0,
+  "reviewedAt": "2026-10-24T13:51:29.411205+00:00",
+  "sourceOnly": true,
+  "testSha256": "9dba31579665135281559cad15d401dcf0c82a998787178a9fc5b305488f2bd2"
+}

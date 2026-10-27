@@ -1,0 +1,10 @@
+{
+  "format": "yunipals-ypal-combined-read-current-context-v1-input",
+  "rpcReceiptSha256": "152178ab94fd1b4c974d392633a201eaf04da412ce1295e29842e9cdeb35722b",
+  "arenaAdmission": {
+    "receiptSha256": null,
+    "phase": "admitted",
+    "setupSha256": null,
+    "authSha256": null
+  }
+}

@@ -6,17 +6,21 @@ import {
   ethereumIslandCollection,
   type IslandCollection
 } from "../islands/collections.js";
-import { baseIslandsReadiness } from "../islands/base-sync.js";
+import { baseIslandsReadiness } from "../islands/base-readiness.js";
 import { islandReadModel } from "../islands/read-model.js";
 import { canonicalTokenId } from "../islands/metadata.js";
 import { islandsReadiness } from "../islands/readiness.js";
 import { islandIdentity } from "../islands/queries.js";
-import { sqlIdentifier } from "../offchain/sql.js";
 import {
-  stakingColumns,
-  stakingReadiness,
-  stakingRelation
-} from "../islands/staking.js";
+  sqlIdentifier,
+  ownershipReadConfig,
+  unifiedOwnershipReads
+} from "../offchain/sql.js";
+import {
+  assertOwnershipAvailable,
+  unifiedOwnershipStatus
+} from "../ownership/readiness.js";
+import { stakingReadiness } from "../islands/staking-read.js";
 
 export type IslandsRouteDependencies = {
   pool: Pick<Pool, "query">;
@@ -65,6 +69,10 @@ export function registerIslandsRoutes(
     origin: collection.origin
   };
   const schema = sqlIdentifier(schemaName);
+  if (unifiedOwnershipReads && schemaName !== ownershipReadConfig.readSchema)
+    throw new Error(
+      "Unified Islands routes require the selected logical schema."
+    );
   const enabled =
     dependencies.enabled ?? (() => process.env.API_ISLANDS_ENABLED === "true");
   const checkReadiness =
@@ -79,16 +87,16 @@ export function registerIslandsRoutes(
     (() =>
       collection.slug === "ethereum-islands" &&
       process.env.API_ISLAND_STAKING_ENABLED === "true");
-  const model = () =>
-    islandReadModel(
-      schemaName,
-      collection,
-      stakingEnabled(),
+  const model = async () => {
+    let airdrop =
       dependencies.airdropEnabled?.() ??
-        process.env.API_BASE_ISLANDS_ENABLED === "true"
-    );
-  const relation = () => model().relation;
-  const columns = () => model().columns;
+      process.env.API_BASE_ISLANDS_ENABLED === "true";
+    if (airdrop && unifiedOwnershipReads) {
+      const source = await unifiedOwnershipStatus(pool, ["base-islands-v2"]);
+      airdrop = source?.ready === true;
+    }
+    return islandReadModel(schemaName, collection, stakingEnabled(), airdrop);
+  };
   const stakingStatus = () =>
     collection.slug === "base-islands-v2"
       ? Promise.resolve({
@@ -111,6 +119,8 @@ export function registerIslandsRoutes(
     })
   );
   router.use("*", async (c, next) => {
+    if (unifiedOwnershipReads)
+      c.header("X-Indexer-Release", ownershipReadConfig.releaseId!);
     if (!enabled())
       return c.json(
         {
@@ -119,6 +129,8 @@ export function registerIslandsRoutes(
         },
         503
       );
+    if (unifiedOwnershipReads)
+      await assertOwnershipAvailable(pool, [collection.slug]);
     const readiness = await checkReadiness();
     if (!readiness.ready)
       return c.json(
@@ -178,6 +190,9 @@ export function registerIslandsRoutes(
       .update(
         JSON.stringify({
           collectionId: collection.slug,
+          ...(ownershipReadConfig.releaseId
+            ? { ownershipRelease: ownershipReadConfig.releaseId }
+            : {}),
           sort,
           burned,
           edition,
@@ -223,10 +238,11 @@ export function registerIslandsRoutes(
       );
     }
     params.push(limit + 1);
+    const selectedModel = await model();
     const result = await pool.query<
       Record<string, unknown> & { tokenId: string }
     >(
-      `SELECT ${columns()} FROM ${relation()}
+      `SELECT ${selectedModel.columns} FROM ${selectedModel.relation}
         WHERE ${conditions.join(" AND ")} ORDER BY t.token_id::numeric ${ascending ? "ASC" : "DESC"} LIMIT $${params.length}`,
       params
     );
@@ -234,7 +250,7 @@ export function registerIslandsRoutes(
     const staking = await stakingStatus();
     const total = (
       await pool.query<{ total: number }>(
-        `SELECT count(*)::int AS total FROM ${relation()} WHERE ${countConditions.join(" AND ")}`,
+        `SELECT count(*)::int AS total FROM ${selectedModel.relation} WHERE ${countConditions.join(" AND ")}`,
         countParams
       )
     ).rows[0]!.total;
@@ -276,8 +292,9 @@ export function registerIslandsRoutes(
     const tokenId = c.req.param("tokenId");
     if (!canonicalTokenId(tokenId))
       return c.json({ error: "invalid_token_id" }, 400);
+    const selectedModel = await model();
     const result = await pool.query(
-      `SELECT ${columns()} FROM ${relation()}
+      `SELECT ${selectedModel.columns} FROM ${selectedModel.relation}
       WHERE ${islandIdentity(collection)} AND t.token_id=$1`,
       [tokenId]
     );
@@ -326,6 +343,7 @@ export function registerIslandsRoutes(
           Buffer.from(rawCursor, "base64url").toString()
         ) as {
           collectionId: string;
+          ownershipRelease?: string;
           tokenId: string;
           blockNumber: string;
           transactionIndex: number;
@@ -333,6 +351,7 @@ export function registerIslandsRoutes(
         };
         if (
           value.collectionId !== collection.slug ||
+          (value.ownershipRelease ?? null) !== ownershipReadConfig.releaseId ||
           value.tokenId !== tokenId ||
           !canonicalTokenId(value.blockNumber) ||
           !Number.isInteger(value.transactionIndex) ||
@@ -360,7 +379,8 @@ export function registerIslandsRoutes(
         token_id AS "tokenId",lifecycle,"from","to",block_number::text AS "blockNumber",
         block_timestamp::text AS "blockTimestamp",transaction_hash AS "transactionHash",
         transaction_index AS "transactionIndex",log_index AS "logIndex"
-        FROM ${schema}.transfer_event WHERE collection=$1 AND token_id=$2 ${after}
+        FROM ${schema}.transfer_event WHERE collection=$1 AND token_id=$2
+        AND chain_id=${collection.chainId} AND contract_address='${collection.address}' ${after}
         ORDER BY block_number,transaction_index,log_index LIMIT $${params.length}`,
       params
     );
@@ -373,6 +393,9 @@ export function registerIslandsRoutes(
         result.rows.length > limit && last
           ? encodeCursor({
               collectionId: collection.slug,
+              ...(ownershipReadConfig.releaseId
+                ? { ownershipRelease: ownershipReadConfig.releaseId }
+                : {}),
               tokenId,
               blockNumber: last.blockNumber,
               transactionIndex: last.transactionIndex,
@@ -382,6 +405,7 @@ export function registerIslandsRoutes(
     });
   });
   router.get("/stats", async (c) => {
+    const selectedModel = await model();
     const result = await pool.query(`SELECT count(*)::int AS "knownTokens",
       count(*) FILTER(WHERE NOT t.burned)::int AS "activeSupply",
       count(*) FILTER(WHERE t.burned)::int AS "burnedTokens",
@@ -389,7 +413,7 @@ export function registerIslandsRoutes(
       count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric<=${collection.genesisLimit})::int AS genesis,
       count(*) FILTER(WHERE NOT t.burned AND t.token_id::numeric>${collection.genesisLimit})::int AS personal,
       count(*) FILTER(WHERE NOT t.burned AND p.status='published' AND r.revision_hash IS NOT NULL)::int AS "metadataAvailable"
-      FROM ${relation()} WHERE ${islandIdentity(collection)}`);
+      FROM ${selectedModel.relation} WHERE ${islandIdentity(collection)}`);
     return c.json({ ...descriptor, ...result.rows[0] });
   });
   app.route(root, router);

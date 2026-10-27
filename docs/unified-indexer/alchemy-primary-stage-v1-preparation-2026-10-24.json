@@ -1,0 +1,46 @@
+{
+  "format": "yunipals-alchemy-primary-stage-v1-preparation",
+  "sourceOnly": true,
+  "hostStagePerformed": false,
+  "hostImportQualified": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-stage-v1.py",
+      "bytes": 24469,
+      "sha256": "01da39ab60ba2fc73b5acf8184b0c3bd44a074bf0f9c8f95ffbfecc510b43c73"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-stage-v1.test.py",
+      "bytes": 11001,
+      "sha256": "9ca65009d8c0adb8af190c213f9fe0b81e5662eef0b206a8d168018ea6cfc43f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-stage-v1.md",
+      "bytes": 7000,
+      "sha256": "f74f0dd1e32cf8c009550fa58bb39790583ddb0963b086ac4f8d9d8a2234ce63"
+    }
+  ],
+  "publicCandidateCommit": "99df016621c50839059237a634d8b727a2e82bd7",
+  "candidateArtifactSha256": "10c34c878d5a617fe31d4fffd6a8b020610b39b988de1cf2aac0cb11e7ac59d8",
+  "preimageArtifactSha256": "8afd0184d8e51d920a303ecfa729354189f240b0164d5d62655fb172818cc69c",
+  "localControlsPassed": 12,
+  "controlsLogSha256": "54ea34cf1a3cdead5807e7ca1be11d53474c86a27cf0afd64ecad6025dc33555",
+  "localScope": [
+    "Actual five frozen public bytes copied through real exclusive/write/fsync logic; old preimage unchanged.",
+    "No overwrite, stale review, extra incoming code, foreign inode, partial ACK and symlink/hardlink refusal.",
+    "Actual Node24 UID111/GID113 empty-kernel-groups/cap0/NNP import guard fixture succeeds with all effect counters zero.",
+    "Same-length changed transitive CJS refuses before /tmp sentinel evaluation; unknown transitive module, Pool construction and server listen refuse.",
+    "Default review CLI releases aggregate hashes/counts only."
+  ],
+  "initialSandboxUidFailure": "Initial setresuid EINVAL before Node was not counted. Local cross-UID rerun used authorized escalation.",
+  "productionAccount": "Derived only from pwd.getpwnam(yunipals-market-prod-rpc); local fixture UID is not a production identity claim.",
+  "dependencyScope": "Pinned accepted runtime inventory authorizes each actually loaded file before evaluation. Unused dependency tree is not rehashed or claimed current.",
+  "runtimeSelected": false,
+  "sourceLifecycleQualified": false,
+  "financialAuthorityQualified": false,
+  "databaseConnections": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "existingPermissionChanges": 0,
+  "privateLoadedDependencySubset": "Actual loadedDependencies path/digest pairs bounded below2MB are retained only in root-private observation/result, checked against accepted inventory and freshly rehashed after import. Future owner can rehash this actual subset without invoking old inactive actor/target-directory scope."
+}

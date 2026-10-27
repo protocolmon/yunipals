@@ -1,0 +1,11 @@
+{
+  "format": "yunipals-ypal-restored-metadata-handover-v1-sources",
+  "provider": {
+    "file": "ypal-restored-read-cache-provider-v1.py",
+    "sha256": null
+  },
+  "readAdmission": {
+    "file": "ypal-restored-read-admission-v1.py",
+    "sha256": null
+  }
+}

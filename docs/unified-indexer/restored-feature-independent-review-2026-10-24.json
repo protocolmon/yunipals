@@ -1,0 +1,38 @@
+{
+  "actualRegression": "Real four-table GRANT/REVOKE to the same collector reproduces the old mismatch, qualifies the exact restored catalog and rejects an extra table read or foreign column grant.",
+  "actualRuntimeAccepted": false,
+  "contextSha256": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be",
+  "correctedFinding": "The feature inverse baseline contains four collector cache reads which the later reader inverse deliberately removes. A strict equality with the earlier baseline prevented completed coordinated recovery.",
+  "correction": [
+    "Operational feature inverse retains its original143-plus-cache4 authority",
+    "Optional explicit completed-reader inverse references authenticate the actual d5db result/operation/full143 graph and all-grantee columns",
+    "Expected post-reader collector catalog is the authenticated cache BEFORE catalog, with its exact four-OID/grantor delta independently validated",
+    "The temporary source/API/boot/private/heartbeat and positive owned sessions remain rechecked; no old combined actor is qualified"
+  ],
+  "format": "yunipals-restored-feature-independent-review-v1",
+  "knownLimits": [
+    "Local runtime/receipt/HTTP observations are explicit fixtures",
+    "The database fixture proves actual relevant SQL/ACL transitions, not a production143 admission",
+    "Actual canonical parity, source/API handover, reader recovery and scanner retirement remain pending"
+  ],
+  "manifestSha256": "1f0a56a8a5af846247dcddb58251a173d45aa150040b9f079f9579ab235c2da3",
+  "operatorSha256": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035",
+  "originalProducersChanged": false,
+  "postgresGroups": {
+    "count": 11,
+    "database": "disposable local PostgreSQL16.15",
+    "exitCode": 0,
+    "expectedNegativeCasesRejected": true,
+    "independentlyRerun": true,
+    "logSha256": "f273bae31954be2396101c434ab83143c4e069d5a182c46e1c913339a776d4b1"
+  },
+  "productionActions": 0,
+  "pythonControls": {
+    "count": 42,
+    "exitCode": 0,
+    "independentlyRerun": true,
+    "logSha256": "864b3f3aa3a7185c525722c9423c882b7bb5c8e13782d9d206e3c091daaad971"
+  },
+  "reviewedAt": "2026-10-24T13:51:29.411205+00:00",
+  "sourceOnly": true
+}

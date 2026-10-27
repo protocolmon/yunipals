@@ -1,0 +1,41 @@
+{
+  "format": "yunipals-v5-witness-official-closure-v1",
+  "buildOnly": true,
+  "producerSha256": "491b1d31eece7324dcff43cae1bdfc23a6cf7f928f3163f48731b14e2992af58",
+  "compilerVersion": "0.25.12",
+  "sourcePlanSha256": "d968a31c4ea5314f4a84f0ccf5e0e9a24ce7bb9ae647d81d37c419b6f5714cb7",
+  "readSchema": "yunipals_ownership_4e77f52b_v5",
+  "readIdentity": "0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab",
+  "sourcePins": {
+    "ops/unified-indexer-transition/ypal-v5-witness-official-v1.entry.ts": "62725db2394eb3603ab42ee10a1ed8d143807b0f182c19fb4359ddabbecbc410",
+    "packages/yunipals-indexer-client/src/ponder.ts": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+    "packages/yunipals-indexer-client/src/readiness.ts": "06b4f87fa9d1446b32d157d215ab45701152552b1b730d84561f8bce244b6aab",
+    "packages/yunipals-indexer-client/src/sources.ts": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+    "packages/yunipals-indexer-server/src/chain-status.ts": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3",
+    "packages/yunipals-indexer-server/src/database.ts": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+    "packages/yunipals-indexer-server/src/identity.ts": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+    "packages/yunipals-indexer-server/src/ponder-reader.ts": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a",
+    "packages/yunipals-indexer-server/src/releases.ts": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+    "packages/yunipals-indexer-server/src/status.ts": "e3a46cc4add4678d73723ec3d885d825ae4a95bc93d47506c80832bb6d5d460d"
+  },
+  "exports": [
+    "loadIndexerRelease",
+    "readBoundRuntime",
+    "readIndexerSourceStatus"
+  ],
+  "runtimeImports": [
+    {
+      "path": "node:crypto",
+      "kind": "import-statement",
+      "external": true
+    }
+  ],
+  "artifact": {
+    "file": "ypal-v5-witness-official-v1.mjs",
+    "sha256": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc",
+    "bytes": 18684
+  },
+  "repeatBuildEqual": true,
+  "databaseQueries": 0,
+  "providerRequests": 0
+}

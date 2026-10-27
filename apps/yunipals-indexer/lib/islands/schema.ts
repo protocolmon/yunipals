@@ -1,5 +1,3 @@
-import { stakingMigrations } from "./staking.js";
-
 // Append these after existing migrations. Islands publications use immutable
 // JSON sources rather than the monster renderer or its active archive release.
 export const islandsMigrations = [
@@ -56,6 +54,5 @@ export const islandsMigrations = [
   )`,
   `INSERT INTO metadata.chain_readiness(collection,state,reason)
     VALUES('ethereum-islands','rebuilding','ownership_verification_pending')
-    ON CONFLICT(collection) DO NOTHING`,
-  ...stakingMigrations
+    ON CONFLICT(collection) DO NOTHING`
 ] as const;

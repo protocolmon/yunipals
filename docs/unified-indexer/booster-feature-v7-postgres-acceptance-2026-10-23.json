@@ -1,0 +1,29 @@
+{
+  "format": "yunipals-booster-v7-local-postgres-acceptance-v1",
+  "fixture": "existing disposable PostgreSQL16.15 at127.0.0.1:56967",
+  "testSha256": "127757ad3e3411087734599d4323fe0a4e3b529497232da3439e94189e55fc52",
+  "sourceHelperSha256": "2016dfee252975f2498c7e2866f3ab858233841adcbd7f75957ebf602abfc949",
+  "result": {
+    "passed": true,
+    "checks": [
+      "actual_8_SELECT_rollback_restores_full_88_table_catalog",
+      "commit_adds_only_eight_reads_preserving_prior_two_old_ten_and_LOGIN",
+      "exact_owned_inverse_restores_all_prior_ACLs",
+      "repeat_before_catalog_CAS_refuses_adoption",
+      "unexpected_LOGIN_refused_in_actual_transaction",
+      "old_source_write_and_missing_event_read_rejected",
+      "actual_unique_event_in_both_sources_and_native_header",
+      "duplicates_wrong_header_and_pre_switch_event_refused",
+      "actual_same_snapshot_global_request_and_birth_journal_SQL",
+      "owner_birth_timestamp_request_status_and_foreign_registry_drift_detected",
+      "semantic_equal_but_noncanonical_birth_JSON_text_is_not_parity",
+      "recent_feed_complete_batch_and_first_log_cover_at_same_boundary",
+      "recent_cover_order_partial_quantity_and_future_timestamp_drift_detected",
+      "parity_SQL_verbatim_matches_actual_API_helper_query_and_source_hash"
+    ],
+    "productionCalls": 0,
+    "providerCalls": 0
+  },
+  "scratchDatabaseAndRoleDisposed": true,
+  "productionActions": 0
+}

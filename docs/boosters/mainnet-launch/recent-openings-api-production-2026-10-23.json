@@ -1,0 +1,58 @@
+{
+  "format": "yunipals-recent-openings-api-production-v1",
+  "receiptPath": "/var/backups/yunipals-booster-recent-openings-api-v1-20261023/result.json",
+  "receiptSha256": "6f2b288741503d2f5d34ee9ba4563d0215b9144b2b6b22cc38f2763378799080",
+  "operatorSha256": "1b2dc71b35d77a77c6934201a8c4dd8323dd1b4a674ff1af292126d519987281",
+  "inputArchiveSha256": "440a9a147b908cdcc29d01e2497ae7ceffc4379bd19b69d087419983eafe5c71",
+  "publicEndpoint": "https://api.yunipals.com/yunipals-indexer/v1/boosters/recent-openings?limit=12",
+  "result": {
+    "api": {
+      "invocation": "7858a3f608874abb935e635abc69c1d4",
+      "pid": 1824982,
+      "restarts": 0,
+      "startTicks": 6618518564
+    },
+    "completed": true,
+    "databaseWrites": 0,
+    "environmentFilesRead": false,
+    "format": "yunipals-booster-recent-openings-api-rollout-v1",
+    "futureConsumerBindingRequiresThisReceipt": true,
+    "grantChanges": 0,
+    "independentActorsUnchanged": true,
+    "newBundleSha256": "41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73",
+    "operationSha256": "565dbbd3f0f89fd6c22ac2e9d706643e87db3737ada63f0dc7b17dcc264e7abf",
+    "publicEnvironment": "BOOSTER_ARTWORK_CATALOGS=base-mainnet-smoke-v1,base-mainnet-standard-v1",
+    "readiness": {
+      "birthDay": 0,
+      "birthMetadataStatus": 200,
+      "birthMetadataVerified": true,
+      "birthTokenId": "1",
+      "existingRequestId": "95398210973416432093304839780870626144645280554838792215361305546672924156888",
+      "globalBrowseStatus": 200,
+      "globalBrowseVerified": true,
+      "indexedBlock": "52984580",
+      "page": {
+        "knownTokenId": "1",
+        "nextCursor": null,
+        "pageRows": 1
+      },
+      "ready": true,
+      "recentOpenings": {
+        "newestRevealedAt": "1792690409",
+        "oldestRevealedAt": "1792690409",
+        "requestCount": 1
+      },
+      "recentOpeningsStatus": 200,
+      "recentOpeningsVerified": true,
+      "requestMonstersStatus": 200,
+      "requestMonstersVerified": true,
+      "sharedMetadataSha256": "2dc4fe8be2d14969780fbef59d62f85cf9ef90eebb95ee0668706c93bd3850cc",
+      "sharedVariantId": 73
+    },
+    "schemaChanges": 0,
+    "serviceRestarted": "yunipals-booster-api.service",
+    "state": "active",
+    "unitSha256": "5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414",
+    "upstreamProviderCalls": 0
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "active": true,
+  "coverage": [
+    {
+      "chainId": 1,
+      "chainName": "mainnet",
+      "completeThroughBlock": "26262394",
+      "frameworkFinalizedThroughBlock": "26262394",
+      "recoveryThroughBlock": "26262394"
+    },
+    {
+      "chainId": 56,
+      "chainName": "bnb",
+      "completeThroughBlock": "129505061",
+      "frameworkFinalizedThroughBlock": "129505061",
+      "recoveryThroughBlock": "129505061"
+    },
+    {
+      "chainId": 137,
+      "chainName": "polygon",
+      "completeThroughBlock": "96092458",
+      "frameworkFinalizedThroughBlock": "96092458",
+      "recoveryThroughBlock": "96092458"
+    },
+    {
+      "chainId": 8453,
+      "chainName": "base",
+      "completeThroughBlock": "53027476",
+      "frameworkFinalizedThroughBlock": "53027476",
+      "recoveryThroughBlock": "53027476"
+    }
+  ],
+  "format": "yunipals-restored-source-progress-v2",
+  "frameworkReady": 0,
+  "heartbeatAgeMilliseconds": 8706,
+  "native44IdentitiesMatchRestore": true,
+  "observedAt": "2026-10-24T15:04:32.433378+00:00",
+  "ownerDatabaseWrites": 0,
+  "packIndexedTimestamp": "1792854269",
+  "packReady": true,
+  "providerCalls": 0,
+  "sourceActions": 0,
+  "sourceInvocation": "2069ffe9ed0d4621a7cfe40cb98dcbf4",
+  "sourcePid": 3111295
+}

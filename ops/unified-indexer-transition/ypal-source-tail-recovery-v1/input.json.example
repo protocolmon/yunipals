@@ -1,0 +1,7 @@
+{
+  "format": "yunipals-source-tail-recovery-v1-input",
+  "rpcReceiptSha256": "152178ab94fd1b4c974d392633a201eaf04da412ce1295e29842e9cdeb35722b",
+  "offlineBuildSha256": "6a2aae03f46f2ae09f4689e69c14a5ddaadb19d401dc71fbc3235966a6df0eaa",
+  "hostBuildReceiptSha256": null,
+  "preflightReceiptSha256": null
+}

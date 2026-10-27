@@ -10,9 +10,14 @@ import type { MarketChainAvailability } from "@protopals/yunipals-market-core/ma
 import type { MarketplaceChain } from "@protopals/yunipals-market-core/registry";
 import { collectionFiltersKey } from "@protopals/yunipals-market-core/collectionFilters";
 
+import { marketplaceOwnershipIndexer } from "@/indexer/ownership";
 import { BnbOrderError } from "@/bnb/orders";
 import { readOrderSources } from "@/reads/orders";
-import { indexedTokenHiddenSql } from "@/reads/visibility";
+import {
+  marketplaceOwnershipSqlContext,
+  marketplaceOwnershipSqlRelations
+} from "@/indexer/ownershipSql";
+import { indexedTokenHiddenSqlFor } from "@/reads/visibility";
 import { snapshotLimits } from "@/reads/snapshots";
 import { CatalogLeaseQueue } from "@/reads/catalogLease";
 import { annotateRead } from "@/reads/diagnostics";
@@ -57,6 +62,10 @@ type Generation = {
   secret: Buffer;
   fingerprint: string;
   sources: CatalogSources;
+  ownershipReleaseId?: string;
+  ownershipAnchors?: Partial<
+    Record<MarketplaceChain, { number: string; hash: string }>
+  >;
   queries: Map<
     string,
     {
@@ -293,12 +302,23 @@ export class CatalogService {
   }
   async assertIndexerReady() {
     if (!this.options.indexerKeepers) return;
+    const source = await marketplaceOwnershipSqlContext(
+      this.options.indexerKeepers
+    );
+    const required =
+      source.mode === "unified"
+        ? [source.tokenRelation, source.transferRelation]
+        : [
+            "yunipals_indexer_v3.token",
+            "bnb_indexer.token",
+            "yunipals_read_v4.token",
+            "yunipals_read_v4.transfer_event"
+          ];
     const result = await this.options.indexerKeepers.query<{ ready: boolean }>(
       `SELECT bool_and(to_regclass(name) IS NOT NULL
         AND has_table_privilege(current_user,to_regclass(name),'SELECT')
         AND NOT has_table_privilege(current_user,to_regclass(name),'INSERT,UPDATE,DELETE,TRUNCATE')) AS ready
-      FROM unnest(ARRAY['yunipals_indexer_v3.token','bnb_indexer.token','yunipals_read_v4.token',
-        'yunipals_read_v4.transfer_event','metadata.token_metadata','metadata.token_search',
+      FROM unnest(ARRAY[${required.map((relation) => `'${relation}'`).join(",")},'metadata.token_metadata','metadata.token_search',
         'metadata.token_visibility','metadata.market_catalog_trait'
         ${this.projectionGenerationMode ? ",'metadata_projection.active','metadata_projection.generation','metadata_projection.search'" : ""}]) name`
     );
@@ -413,6 +433,9 @@ export class CatalogService {
             await follower.query(`SET TRANSACTION SNAPSHOT '${snapshot}'`);
           }
         }
+        const ownership = await marketplaceOwnershipSqlContext(
+          indexers[0] ?? client
+        );
         const projection = this.projectionGenerationMode
           ? (
               await (indexers[0] ?? client).query<{
@@ -436,6 +459,8 @@ export class CatalogService {
           client,
           indexers: indexers.map((indexer) => ({ client: indexer, active: 0 })),
           sources,
+          ownershipReleaseId: ownership.releaseId,
+          ownershipAnchors: ownership.anchors,
           markets,
           slots: markets.map((market, i) => ({
             client: market,
@@ -553,12 +578,37 @@ export class CatalogService {
     return pending;
   }
   private async currentAssets(generation: Generation, items: CatalogRow[]) {
-    if (!items.length) return;
+    const indexer = marketplaceOwnershipIndexer();
+    if (generation.ownershipReleaseId !== indexer?.releaseId) {
+      this.invalidate(generation);
+      throw new BnbOrderError("snapshot_refresh_required", 409);
+    }
+    if (indexer && generation.ownershipAnchors) {
+      try {
+        for (const [chain, anchor] of Object.entries(
+          generation.ownershipAnchors
+        ))
+          await indexer.assertCheckpoint(chain, {
+            number: BigInt(anchor!.number),
+            hash: anchor!.hash
+          });
+      } catch {
+        this.invalidate(generation, "failed");
+        throw new BnbOrderError("catalog_indexer_unavailable", 503);
+      }
+    }
+    if (!items.length) {
+      if (indexer) await marketplaceOwnershipSqlContext(this.pool);
+      return;
+    }
+    const source = await marketplaceOwnershipSqlContext(this.pool, [
+      ...new Set(items.map(({ token }) => token.chain))
+    ]);
     const changed = await this.pool.query<{ changed: boolean }>(
       `SELECT EXISTS(
       SELECT 1 FROM jsonb_to_recordset($1::jsonb) AS a(chain text,token_id text,owner text,lifecycle integer)
-      LEFT JOIN yunipals_read_v4.token t ON t.collection=a.chain AND t.token_id=a.token_id
-      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSql}) AS changed`,
+      LEFT JOIN ${source.tokenRelation} t ON t.collection=a.chain AND t.token_id=a.token_id
+      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSqlFor("t", source.transferRelation)}) AS changed`,
       [
         JSON.stringify(
           items.map(({ token }) => ({

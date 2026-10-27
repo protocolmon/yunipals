@@ -1,0 +1,85 @@
+{
+  "format": "yunipals-ypal-alchemy-catchup-financial-source-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.py",
+      "sha256": "19710cfe5ab8d5c5e57f8668bb9761beac5080acba17b03da6aa54e3932c4803",
+      "bytes": 34620
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.model.py",
+      "sha256": "703da46a374d7f8fa5617c11153fbff60f7a669593cdedd642d75ad6033d5d14",
+      "bytes": 23876
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.test.py",
+      "sha256": "6b4a929db030c4720651f236627e032ba6d1c2cb81fa880b8077272090706457",
+      "bytes": 13949
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.owner.test.py",
+      "sha256": "b579f005718573dbcebd091a31a9c9c268a15a851660d7e64fd8014e2f04ed50",
+      "bytes": 14241
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.postgres.test.mjs",
+      "sha256": "2f229aaacdb6042f3384839344d537e7b4db55ff88b6e82abff625b97f4c612c",
+      "bytes": 13385
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.sources.schema.json",
+      "sha256": "8c1be8c38db51bbd4d4f54a82fbd51ac2446fd5eee96ef658e701d00849fa2c8",
+      "bytes": 1172
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-catchup-financial-v1.md",
+      "sha256": "b101e1bac6d90a610262a877fdd5805352d0001db92d4ca88ace5ae25d94c757",
+      "bytes": 11490
+    }
+  ],
+  "validation": {
+    "modelControls": 17,
+    "ownerFilesystemProtocolControls": 22,
+    "genuineDisposablePostgreSQL16Groups": 12,
+    "disposableCleanup": true
+  },
+  "runtimeDependencies": {
+    "fixedProtectedFilePrimitivesSha256": "f5d34eabe593302c33c4a2247fd19526aae94b066c9863178918e3c2186040ea",
+    "profileFileSha256": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b",
+    "officialCheckpointDecoderSha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+    "separatelyReviewedCloseLeafSha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215"
+  },
+  "scope": {
+    "originalAllowanceCu": "20000000",
+    "maximumAdditionalCu": "15000000",
+    "maximumWindowSeconds": 28800,
+    "utcDrainGuardSeconds": 900,
+    "automaticRenewal": false,
+    "normalDaily10MApproved": false,
+    "cacheCoverageQualified": false,
+    "sourceAuthorityQualified": false,
+    "productionPeerQualified": false,
+    "financialAdmissionOccurred": false,
+    "productionWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "permissionFromBlockPolicy": "minimum_actual_enabled_source_start_in_pinned_profile",
+    "actualAllFilterCacheContinuityBeforePaidStartRequired": true
+  },
+  "limitations": [
+    "Actual protected sources/range inputs and installed deadlines are separately reviewed future prerequisites, not invented receipts.",
+    "Actual UID111 peer qualification, fresh baseline/ROLLBACK rehearsal and authorized COMMIT remain separate production operations.",
+    "The sync observation is a Ponder fetch gauge; the lifecycle must separately prove cache coverage.",
+    "Same-OS-boot scope. Unknown transactions are inspected once; aborted or missing-intent attempts require a separately reviewed recovery operation.",
+    "Detailed actual receipts and private catalogs are not part of this public packet."
+  ],
+  "supersededBeforePublication": {
+    "priorPacketSha256": "aa9cbe06cd9844ee5187f1940892d2f7d9720a5efe85a1c8a4d74b9214346cb0",
+    "priorOwnerSha256": "3e7964fc7e713e403893eae1da3aae9eb574c3abd7d97bf1c506e608e5d53c3c",
+    "priorModelSha256": "fc89e462d809dee1bc68a07de46608ef300c53384cc730b122ac9b4156671cd1",
+    "priorDraftExecuted": false,
+    "financialPreparationOrAdmissionExisted": false,
+    "revision": "Permit starts derive from pinned-profile enabled configured minima; native-tail-gap diagnostic, all CU/time bounds and mandatory real cache gate retained."
+  }
+}

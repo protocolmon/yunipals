@@ -1,0 +1,25 @@
+{
+  "id": "lavender-crisp-v1",
+  "selectedBy": "user",
+  "selectedAt": "2026-10-19T14:36:04.323433+00:00",
+  "styles": {
+    "No": {
+      "runId": "yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01",
+      "path": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision.png",
+      "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a"
+    },
+    "Yes": {
+      "runId": "yunidragon-blue-spiral-glitter-yes-clarity-7532766767-a01",
+      "path": "runs/yunidragon-blue-spiral-glitter-yes-clarity-7532766767-a01/clarity.png",
+      "sha256": "b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d"
+    }
+  },
+  "rules": [
+    "Official logo and lavender/grape frame",
+    "Crisp dimensional monster, clean face and contours",
+    "Sparse body glints only for glitter variants",
+    "Holographic finish concentrated in the background",
+    "Golden spiral or faceted diamond forehead horn",
+    "Blend viewer finish with calibrated subject and star masks"
+  ]
+}

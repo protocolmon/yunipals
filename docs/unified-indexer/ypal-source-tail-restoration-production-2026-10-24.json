@@ -1,0 +1,198 @@
+{
+  "format": "yunipals-source-tail-restoration-production-v1",
+  "observedAt": "2026-10-24T10:20:09.367929+00:00",
+  "actualRestoration": {
+    "operator": "ops/unified-indexer-transition/ypal-source-tail-restore-v1.py",
+    "operatorSha256": "de4a42360c46a641896d5a03847bca15b8aa48bb9fdf19aa3dc9cfedda7c1d34",
+    "receiptSha256": "0ee963f2dd62d2acafa7cc8f9a96a5c95330bd89b16ec9f874eff9e6343029e1",
+    "independentlyRevalidated": true,
+    "sourcePid": 3111295,
+    "sourceInvocation": "2069ffe9ed0d4621a7cfe40cb98dcbf4",
+    "poolMaximum": 5,
+    "configurationSha256": "c4ff1ec83c766aa90286b5d73fd22b457135baa6e5880b4b52c4f8d06eca53a4",
+    "allSixOriginalMountsQualified": true,
+    "sameNative44TableIdentities": true,
+    "safeRecoveryFloorsPreserved": true,
+    "newHeartbeatAndKernelOwnedBackendVerified": true,
+    "sourceStarts": 1,
+    "oldSourceAcknowledgementRelabelled": false,
+    "priorFailedInverseClaimedSuccessful": false
+  },
+  "failedPoolEightAttempt": {
+    "inactiveHostBuildPassed": true,
+    "boundedOfficialPreflightPassed": true,
+    "installationGuardRefusedMissingWritableMounts": true,
+    "changedSourceEverStarted": false,
+    "originalConfigurationRestored": true,
+    "oldFailureReceiptsPreserved": true,
+    "inverseOrderOnlyComparisonRefused": true,
+    "separateRestorationProducerUsed": true
+  },
+  "observations": [
+    {
+      "observedAt": "2026-10-24T09:59:00.316482+00:00",
+      "coverage": [
+        {
+          "chainId": 1,
+          "chainName": "mainnet",
+          "completeThroughBlock": "26261650",
+          "frameworkFinalizedThroughBlock": "26261650",
+          "recoveryThroughBlock": "26261650"
+        },
+        {
+          "chainId": 56,
+          "chainName": "bnb",
+          "completeThroughBlock": "129409867",
+          "frameworkFinalizedThroughBlock": "129409867",
+          "recoveryThroughBlock": "129409867"
+        },
+        {
+          "chainId": 137,
+          "chainName": "polygon",
+          "completeThroughBlock": "96086494",
+          "frameworkFinalizedThroughBlock": "96086494",
+          "recoveryThroughBlock": "96086494"
+        },
+        {
+          "chainId": 8453,
+          "chainName": "base",
+          "completeThroughBlock": "53004666",
+          "frameworkFinalizedThroughBlock": "53004666",
+          "recoveryThroughBlock": "53004666"
+        }
+      ],
+      "frameworkReady": false,
+      "heartbeatAgeMilliseconds": 6621,
+      "packReady": true
+    },
+    {
+      "observedAt": "2026-10-24T10:18:58.307248+00:00",
+      "coverage": [
+        {
+          "chainId": 1,
+          "chainName": "mainnet",
+          "completeThroughBlock": "26261650",
+          "frameworkFinalizedThroughBlock": "26261650",
+          "recoveryThroughBlock": "26261650"
+        },
+        {
+          "chainId": 56,
+          "chainName": "bnb",
+          "completeThroughBlock": "129409867",
+          "frameworkFinalizedThroughBlock": "129409867",
+          "recoveryThroughBlock": "129409867"
+        },
+        {
+          "chainId": 137,
+          "chainName": "polygon",
+          "completeThroughBlock": "96086494",
+          "frameworkFinalizedThroughBlock": "96086494",
+          "recoveryThroughBlock": "96086494"
+        },
+        {
+          "chainId": 8453,
+          "chainName": "base",
+          "completeThroughBlock": "53004666",
+          "frameworkFinalizedThroughBlock": "53004666",
+          "recoveryThroughBlock": "53004666"
+        }
+      ],
+      "frameworkReady": false,
+      "heartbeatAgeMilliseconds": 4871,
+      "packReady": true
+    }
+  ],
+  "fetchObservations": [
+    {
+      "observedAt": "2026-10-24T10:07:06.814743+00:00",
+      "heads": {
+        "bnb": 129411142,
+        "polygon": 96086494,
+        "mainnet": 26261650,
+        "base": 53006695
+      },
+      "committedCoverageClaimed": false
+    },
+    {
+      "observedAt": "2026-10-24T10:20:09.367929+00:00",
+      "heads": {
+        "bnb": 129412833,
+        "polygon": 96086494,
+        "mainnet": 26261650,
+        "base": 53008360
+      },
+      "committedCoverageClaimed": false
+    }
+  ],
+  "latestSyncWait": {
+    "transactionAgeSeconds": 5,
+    "blockingBackends": 0,
+    "queryQueueSize": 7,
+    "rawQueryExported": false
+  },
+  "proxyState": [
+    {
+      "chainId": 1,
+      "queuedSourceRequests": 0,
+      "activeUpstreamRequests": 0,
+      "sourceTraffic": {
+        "freeCalls": 51,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "sourceRouting": "free_first"
+    },
+    {
+      "chainId": 8453,
+      "queuedSourceRequests": 0,
+      "activeUpstreamRequests": 1,
+      "sourceTraffic": {
+        "freeCalls": 6499,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "sourceRouting": "free_first"
+    },
+    {
+      "chainId": 137,
+      "queuedSourceRequests": 0,
+      "activeUpstreamRequests": 0,
+      "sourceTraffic": {
+        "freeCalls": 43,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "sourceRouting": "free_first"
+    },
+    {
+      "chainId": 56,
+      "queuedSourceRequests": 0,
+      "activeUpstreamRequests": 0,
+      "sourceTraffic": {
+        "freeCalls": 1040,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "sourceRouting": "free_first"
+    }
+  ],
+  "timeoutFinding": {
+    "exactFrozenTransportOfflineReproductionPassed": true,
+    "requestHeaderAndBodyStallsReproduced": true,
+    "productionCauseEstablished": false,
+    "fixDeployed": false
+  },
+  "qualificationLimits": {
+    "sourceRestorationQualified": true,
+    "frameworkReadinessQualified": false,
+    "canonicalCoverageQualified": false,
+    "readerMigrationQualified": false,
+    "fullGoalComplete": false
+  },
+  "statusCheckEffects": {
+    "providerCalls": 0,
+    "databaseWrites": 0,
+    "serviceActions": 0
+  },
+  "fullPrivateReportsExported": false
+}

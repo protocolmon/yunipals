@@ -1,0 +1,478 @@
+{
+  "format": "yunipals-fresh-ypal-built-ui-fixture-acceptance-v1",
+  "observedAt": "2026-10-23T19:25:40.494Z",
+  "release": "/tmp/yunipals-collection-booster-live-www-1792783059763",
+  "manifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+  "confirmedSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "productionReadyClaimed": false,
+  "apiFixtures": true,
+  "capabilityReadFixtures": true,
+  "upstreamRpcDispatches": 0,
+  "upstreamNonGetDispatches": 0,
+  "walletEntries": 0,
+  "checks": [
+    {
+      "name": "Fresh actual configured pack, disconnected GetYPAL and all main menus",
+      "passed": true
+    },
+    {
+      "name": "Only exact synthetic fresh-engine capability reads enable ten originals and matching YPAL total",
+      "passed": true
+    },
+    {
+      "name": "Ten actual FAQs explain fresh YPAL price/wrapping",
+      "passed": true
+    },
+    {
+      "name": "Desktop one wrapper actually extracts three approved standard cards81,80,83",
+      "passed": true
+    },
+    {
+      "name": "OG collection and capped rarity filters remain functional beside fresh TCG",
+      "passed": true
+    },
+    {
+      "name": "Mobile pack/wrap panels and three-card demo fit without overflow",
+      "passed": true
+    },
+    {
+      "name": "Blocked capability reads truthfully fall back to one pack",
+      "passed": true
+    }
+  ],
+  "mockedApi": [
+    {
+      "path": "/boosters/types",
+      "fixture": true
+    },
+    {
+      "path": "/boosters/recent-openings",
+      "fixture": true
+    },
+    {
+      "path": "/boosters/types",
+      "fixture": true
+    },
+    {
+      "path": "/boosters/recent-openings",
+      "fixture": true
+    },
+    {
+      "path": "/boosters/types",
+      "fixture": true
+    },
+    {
+      "path": "/boosters/recent-openings",
+      "fixture": true
+    }
+  ],
+  "mockedRpc": [
+    {
+      "method": "eth_getStorageAt",
+      "to": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "fixture": true,
+      "multicall": false
+    },
+    {
+      "method": "eth_call",
+      "to": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "fixture": true,
+      "multicall": true
+    },
+    {
+      "method": "eth_getStorageAt",
+      "to": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "fixture": true,
+      "multicall": false
+    },
+    {
+      "method": "eth_call",
+      "to": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "fixture": true,
+      "multicall": true
+    }
+  ],
+  "blocked": [
+    {
+      "kind": "non-get",
+      "method": "HEAD"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {}
+      ]
+    },
+    {
+      "kind": "external-get",
+      "type": "fetch"
+    },
+    {
+      "kind": "non-get",
+      "method": "HEAD"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {}
+      ]
+    },
+    {
+      "kind": "external-get",
+      "type": "fetch"
+    },
+    {
+      "kind": "non-get",
+      "method": "HEAD"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {}
+      ]
+    },
+    {
+      "kind": "external-get",
+      "type": "fetch"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "non-get",
+      "method": "HEAD"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {}
+      ]
+    },
+    {
+      "kind": "external-get",
+      "type": "fetch"
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    },
+    {
+      "kind": "rpc-or-post",
+      "method": "POST",
+      "rpc": [
+        {
+          "method": "eth_getStorageAt"
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "badAssets": [],
+  "artworkMetadata": [
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/81.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/80.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/83.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/81.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/80.json",
+      "status": 200
+    },
+    {
+      "path": "/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/83.json",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "/tmp/yunipals-fresh-ypal-wired-desktop-20261023.png",
+    "/tmp/yunipals-fresh-ypal-wired-mobile-20261023.png"
+  ],
+  "passed": true
+}

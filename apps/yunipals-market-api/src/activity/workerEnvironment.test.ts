@@ -25,7 +25,7 @@ test("sale worker configuration pins chain/policy and bounds execution without p
     live.MARKET_SALE_RPC,
     "https://backup.example/"
   ]);
-  assert.equal(production.finality, "confirmations");
+  assert.equal(production.finality, "finalized");
   const delegatedProduction = readSaleReplayEnvironment({
     ...live,
     MARKET_DEPLOYMENT: "production",
@@ -34,7 +34,7 @@ test("sale worker configuration pins chain/policy and bounds execution without p
   assert.deepEqual(delegatedProduction.rpcUrls, [
     rpcBudgetProxyUrl("ethereum", "production")
   ]);
-  assert.equal(delegatedProduction.finality, "confirmations");
+  assert.equal(delegatedProduction.finality, "finalized");
   assert.equal(
     readSaleReplayEnvironment({ ...live, MARKET_SALE_CONTINUOUS: "1" })
       .maxSeconds,

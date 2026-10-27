@@ -14,6 +14,18 @@ import {
 import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
 import { digest, StrategyCipher } from "./crypto";
+import type {
+  NativeArenaSource,
+  NativeArenaObservation,
+  NativeArenaTournament
+} from "./nativeSource";
+import { registerTournamentIdentity } from "./tournamentIdentity";
+import type { NativeArenaActionObservation } from "./nativeAction";
+import {
+  assertArenaSourceBinding,
+  sourceLeaseKey,
+  type ArenaSourceBinding
+} from "./sourceSelection";
 
 export class ArenaRequestError extends Error {
   constructor(
@@ -36,6 +48,15 @@ export type StrategySubmission = {
   text: string;
   salt: Hex;
   signature: Hex;
+  incarnation?: string;
+};
+export type ArenaTournamentContext = {
+  state: ArenaTournament;
+  incarnation: string;
+  cipherContext: string;
+  observation:
+    | (NativeArenaObservation & { tournament: NativeArenaTournament })
+    | null;
 };
 export type StrategyApproval = {
   domain: ReturnType<typeof arenaDomain>;
@@ -61,15 +82,54 @@ export class ArenaIntake {
     readonly contract: Address,
     readonly origin: string,
     private readonly cipher: StrategyCipher,
-    private readonly verify: ArenaSignatureVerifier
-  ) {}
+    private readonly verify: ArenaSignatureVerifier,
+    readonly nativeSource?: Pick<NativeArenaSource, "read"> &
+      Partial<
+        Pick<
+          NativeArenaSource,
+          "credit" | "list" | "work" | "transaction" | "browse"
+        >
+      >,
+    readonly sourceSelection?: ArenaSourceBinding
+  ) {
+    if (nativeSource && deployment !== `8453:${contract.toLowerCase()}`)
+      throw new Error("Native Arena deployment identity mismatch.");
+  }
+
+  get indexerMode() {
+    return this.nativeSource ? ("unified" as const) : ("legacy" as const);
+  }
+  async assertSourceSelection(db: Queryable = this.pool) {
+    // An operational transaction holds the shared source fence through commit.
+    if (db !== this.pool)
+      await db.query("SELECT pg_advisory_xact_lock_shared(hashtext($1))", [
+        sourceLeaseKey(this.deployment)
+      ]);
+    const row = (
+      await db.query<{ indexer_mode: string }>(
+        "SELECT indexer_mode FROM yunipals_arena.deployment WHERE id=$1",
+        [this.deployment]
+      )
+    ).rows[0];
+    if (!row || row.indexer_mode !== this.indexerMode)
+      throw new ArenaRequestError(503, "Arena source selection is not ready.");
+    try {
+      await assertArenaSourceBinding(db, this.deployment, this.sourceSelection);
+    } catch {
+      throw new ArenaRequestError(
+        503,
+        "Arena source epoch changed. Please try again shortly."
+      );
+    }
+  }
 
   async ready(db: Queryable = this.pool) {
+    await this.assertSourceSelection(db);
     const row = (
       await db.query<{ ready: boolean }>(
-        `SELECT NOT halted AND finalized_at > now()-interval '3 minutes' AS ready
+        `SELECT NOT halted AND indexer_mode=$2 AND ($2='unified' OR finalized_at > now()-interval '3 minutes') AS ready
       FROM yunipals_arena.deployment WHERE id=$1`,
-        [this.deployment]
+        [this.deployment, this.indexerMode]
       )
     ).rows[0];
     if (!row?.ready)
@@ -77,13 +137,24 @@ export class ArenaIntake {
         503,
         "Tournament synchronization is catching up. Please try again shortly."
       );
+    if (this.nativeSource) {
+      const observed = await this.nativeSource.read("0");
+      if (db !== this.pool)
+        await db.query(
+          `INSERT INTO yunipals_arena.source_operational_cursor(deployment,indexed_block,source_id)
+          VALUES($1,$2,$3) ON CONFLICT(deployment) DO UPDATE SET indexed_block=EXCLUDED.indexed_block,
+          source_id=EXCLUDED.source_id,observed_at=now()
+          WHERE source_operational_cursor.indexed_block<=EXCLUDED.indexed_block`,
+          [this.deployment, observed.indexedThroughBlock, observed.releaseId]
+        );
+    }
   }
 
   async challenge(wallet: Address) {
     const id = randomUUID();
     const nonce = randomBytes(24).toString("hex");
     const expires = new Date(Date.now() + 300_000);
-    const message = `${new URL(this.origin).host} wants you to sign in with your Ethereum account:\n${wallet}\n\nVerify ownership of this wallet for Yunipals Arena. This costs no gas and does not authorize a payment.\n\nURI: ${this.origin}/arena\nVersion: 1\nChain ID: 8453\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}\nExpiration Time: ${expires.toISOString()}\nRequest ID: ${id}\nResources:\n- urn:yunipals:arena:${this.deployment}`;
+    const message = `${new URL(this.origin).host} wants you to sign in with your Ethereum account:\n${wallet}\n\nSign in to Yunipals Arena. This does not authorize a payment.\n\nURI: ${this.origin}/arena\nVersion: 1\nChain ID: 8453\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}\nExpiration Time: ${expires.toISOString()}\nRequest ID: ${id}\nResources:\n- urn:yunipals:arena:${this.deployment}`;
     await this.pool.query(
       "INSERT INTO yunipals_arena.challenge(id,deployment,wallet,message,expires_at) VALUES($1,$2,$3,$4,$5)",
       [id, this.deployment, wallet.toLowerCase(), message, expires]
@@ -129,7 +200,7 @@ export class ArenaIntake {
 
   async wallet(token: string | undefined) {
     if (!token || !/^[0-9a-f]{64}$/.test(token))
-      throw new ArenaRequestError(401, "Confirm wallet ownership to continue.");
+      throw new ArenaRequestError(401, "Sign in with your wallet first.");
     const session = (
       await this.pool.query<{ wallet: Address }>(
         "SELECT wallet FROM yunipals_arena.session WHERE token_hash=$1 AND deployment=$2 AND expires_at>now()",
@@ -139,26 +210,106 @@ export class ArenaIntake {
     if (!session)
       throw new ArenaRequestError(
         401,
-        "Wallet verification expired. Please retry the action."
+        "Wallet session expired. Please sign in again."
       );
     return session.wallet;
   }
 
-  private context(id: string, seat: number) {
-    return `${this.deployment}/${id}/seat/${seat}`;
-  }
-  async state(
+  async tournamentContext(
     id: string,
     db: Queryable = this.pool,
-    lock = false
-  ): Promise<ArenaTournament> {
+    lock = false,
+    expectedIncarnation?: string
+  ): Promise<ArenaTournamentContext> {
+    await this.assertSourceSelection(db);
+    if (this.nativeSource) {
+      const observed = await this.nativeSource.read(id),
+        t = observed.tournament;
+      if (!t) throw new ArenaRequestError(404, "Tournament not found.");
+      if (
+        t.deployment !== this.deployment ||
+        t.id !== id ||
+        t.state.id !== id ||
+        (expectedIncarnation && expectedIncarnation !== t.incarnation)
+      )
+        throw new ArenaRequestError(
+          409,
+          "The tournament opening changed. Refresh before trying again."
+        );
+      const observation = { ...observed, tournament: t };
+      const stored = lock
+        ? await registerTournamentIdentity(db, observation)
+        : (
+            await db.query<{ cipher_context: string }>(
+              "SELECT cipher_context FROM yunipals_arena.tournament_identity WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+              [this.deployment, id, t.incarnation]
+            )
+          ).rows[0];
+      return {
+        state: t.state,
+        incarnation: t.incarnation,
+        cipherContext:
+          stored?.cipher_context ?? `${this.deployment}/${id}/${t.incarnation}`,
+        observation
+      };
+    }
     const result = await db.query<{ state: ArenaTournament }>(
       `SELECT state FROM yunipals_arena.tournament WHERE deployment=$1 AND id=$2${lock ? " FOR UPDATE" : ""}`,
       [this.deployment, id]
     );
     if (!result.rows[0])
       throw new ArenaRequestError(404, "Tournament not found.");
-    return result.rows[0].state;
+    return {
+      state: result.rows[0].state,
+      incarnation: "legacy",
+      cipherContext: `${this.deployment}/${id}`,
+      observation: null
+    };
+  }
+  async state(
+    id: string,
+    db: Queryable = this.pool,
+    lock = false
+  ): Promise<ArenaTournament> {
+    return (await this.tournamentContext(id, db, lock)).state;
+  }
+  async balance(wallet: string) {
+    await this.assertSourceSelection();
+    if (this.nativeSource) {
+      if (!this.nativeSource.credit)
+        throw new ArenaRequestError(
+          503,
+          "Arena balance indexing is not ready."
+        );
+      return (await this.nativeSource.credit(wallet)).amount;
+    }
+    return (
+      (
+        await this.pool.query<{ amount: string }>(
+          "SELECT amount FROM yunipals_arena.credit WHERE deployment=$1 AND wallet=$2",
+          [this.deployment, wallet.toLowerCase()]
+        )
+      ).rows[0]?.amount ?? "0"
+    );
+  }
+  async listIds(wallet?: string) {
+    await this.assertSourceSelection();
+    if (this.nativeSource) {
+      if (!this.nativeSource.list)
+        throw new ArenaRequestError(
+          503,
+          "Arena tournament indexing is not ready."
+        );
+      return (await this.nativeSource.list(wallet)).ids;
+    }
+    return (
+      await this.pool.query<{ id: string }>(
+        `SELECT id::text FROM yunipals_arena.tournament WHERE deployment=$1
+      ${wallet ? "AND (state->>'islandBeneficiary'=$2 OR EXISTS(SELECT 1 FROM jsonb_array_elements(state->'seats') seat WHERE seat->>'player'=$2))" : ""}
+      ORDER BY id DESC LIMIT 30`,
+        wallet ? [this.deployment, wallet.toLowerCase()] : [this.deployment]
+      )
+    ).rows.map((row) => row.id);
   }
 
   async submit(id: string, wallet: Address, input: StrategySubmission) {
@@ -179,7 +330,17 @@ export class ArenaIntake {
         "Provide a non-empty strategy within the character limit and a 32-byte salt."
       );
     }
-    const state = await this.state(id);
+    const prior = await this.tournamentContext(id),
+      state = prior.state;
+    if (
+      this.nativeSource &&
+      input.incarnation !== undefined &&
+      input.incarnation !== prior.incarnation
+    )
+      throw new ArenaRequestError(
+        409,
+        "The tournament opening changed. Refresh before trying again."
+      );
     const seat = state.seats[input.seat];
     if (!seat || seat.player.toLowerCase() !== wallet.toLowerCase())
       throw new ArenaRequestError(403, "This seat belongs to another wallet.");
@@ -198,18 +359,29 @@ export class ArenaIntake {
       );
     return transaction(this.pool, async (db) => {
       await this.ready(db);
-      const current = await this.state(id, db, true);
+      const context = await this.tournamentContext(
+          id,
+          db,
+          true,
+          prior.incarnation
+        ),
+        current = context.state;
       if (
         current.seats[input.seat]?.player.toLowerCase() !== wallet.toLowerCase()
       )
         throw new ArenaRequestError(409, "The tournament seat changed.");
       const existing = (
-        await db.query<{ commitment: Hex }>(
-          "SELECT commitment FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND seat=$3",
-          [this.deployment, id, input.seat]
+        await db.query<{ commitment: Hex; wallet: string }>(
+          "SELECT commitment,wallet FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND seat=$3 AND incarnation=$4",
+          [this.deployment, id, input.seat, context.incarnation]
         )
       ).rows[0];
       if (existing) {
+        if (existing.wallet.toLowerCase() !== wallet.toLowerCase())
+          throw new ArenaRequestError(
+            409,
+            "This seat changed and needs reconciliation."
+          );
         if (existing.commitment !== commitment)
           throw new ArenaRequestError(
             409,
@@ -218,6 +390,28 @@ export class ArenaIntake {
         return { seat: input.seat, commitment, locked: true };
       }
       if (
+        this.nativeSource &&
+        (
+          await db.query(
+            `SELECT 1 FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2
+        AND seat=$3 AND incarnation<>$4 AND wallet=$5 AND (signature=$6 OR commitment=$7) LIMIT 1`,
+            [
+              this.deployment,
+              id,
+              input.seat,
+              context.incarnation,
+              wallet.toLowerCase(),
+              input.signature,
+              commitment
+            ]
+          )
+        ).rowCount
+      )
+        throw new ArenaRequestError(
+          409,
+          "Sign a fresh strategy for this tournament opening."
+        );
+      if (
         current.phase !== "strategies" ||
         current.deadline * 1000 <= Date.now()
       )
@@ -225,12 +419,15 @@ export class ArenaIntake {
           409,
           "The strategy submission deadline has passed."
         );
-      const ciphertext = this.cipher.seal(this.context(id, input.seat), {
-        text,
-        salt: input.salt
-      });
+      const ciphertext = this.cipher.seal(
+        `${context.cipherContext}/seat/${input.seat}`,
+        {
+          text,
+          salt: input.salt
+        }
+      );
       await db.query(
-        "INSERT INTO yunipals_arena.submission(deployment,tournament_id,seat,wallet,commitment,signature,ciphertext) VALUES($1,$2,$3,$4,$5,$6,$7)",
+        "INSERT INTO yunipals_arena.submission(deployment,tournament_id,seat,wallet,commitment,signature,ciphertext,incarnation) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
         [
           this.deployment,
           id,
@@ -238,7 +435,8 @@ export class ArenaIntake {
           wallet.toLowerCase(),
           commitment,
           input.signature,
-          ciphertext
+          ciphertext,
+          context.incarnation
         ]
       );
       return { seat: input.seat, commitment, locked: true };
@@ -246,20 +444,33 @@ export class ArenaIntake {
   }
 
   async ownStrategy(id: string, wallet: Address, seat: number) {
-    const state = await this.state(id);
-    if (state.seats[seat]?.player.toLowerCase() !== wallet.toLowerCase())
+    await this.ready();
+    const context = await this.tournamentContext(id);
+    if (
+      context.state.seats[seat]?.player.toLowerCase() !== wallet.toLowerCase()
+    )
       throw new ArenaRequestError(403, "This seat belongs to another wallet.");
     const row = (
       await this.pool.query<Submission & { created_at: Date }>(
-        `SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND seat=$3 AND wallet=$4`,
-        [this.deployment, id, seat, wallet.toLowerCase()]
+        `SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2
+        AND seat=$3 AND wallet=$4 AND incarnation=$5`,
+        [this.deployment, id, seat, wallet.toLowerCase(), context.incarnation]
       )
     ).rows[0];
     if (!row) return { seat, locked: false as const };
     const value = this.cipher.open<{ text: string; salt: Hex }>(
-      this.context(id, seat),
+      `${context.cipherContext}/seat/${seat}`,
       row.ciphertext
     );
+    const current = await this.tournamentContext(id);
+    if (
+      current.incarnation !== context.incarnation ||
+      current.state.seats[seat]?.player.toLowerCase() !== wallet.toLowerCase()
+    )
+      throw new ArenaRequestError(
+        409,
+        "The tournament opening changed. Refresh before trying again."
+      );
     return {
       seat,
       locked: true as const,
@@ -275,11 +486,18 @@ export class ArenaIntake {
     build: (
       state: ArenaTournament,
       strategies: NonNullable<ArenaPublicTournament["strategies"]>
-    ) => unknown
+    ) => unknown,
+    expectedIncarnation?: string
   ) {
     return transaction(this.pool, async (db) => {
       await this.ready(db);
-      const state = await this.state(id, db, true);
+      const context = await this.tournamentContext(
+          id,
+          db,
+          true,
+          expectedIncarnation
+        ),
+        state = context.state;
       if (
         state.phase !== "strategies" ||
         (state.deadline + ARENA_RESOLUTION_SECONDS) * 1000 <= Date.now()
@@ -287,8 +505,8 @@ export class ArenaIntake {
         throw new ArenaRequestError(409, "Tournament is not ready to freeze.");
       const rows = (
         await db.query<Submission>(
-          "SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 ORDER BY seat",
-          [this.deployment, id]
+          "SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 ORDER BY seat",
+          [this.deployment, id, context.incarnation]
         )
       ).rows;
       if (state.seats.length !== 4)
@@ -298,13 +516,18 @@ export class ArenaIntake {
         );
       const strategies = state.seats.map((seat) => {
         const row = rows.find((r) => r.seat === seat.seat);
+        if (row && row.wallet.toLowerCase() !== seat.player.toLowerCase())
+          throw new ArenaRequestError(
+            409,
+            "The roster changed and needs reconciliation."
+          );
         if (row)
           return {
             seat: row.seat,
             commitment: row.commitment,
             signature: row.signature,
             ...this.cipher.open<{ text: string; salt: Hex }>(
-              this.context(id, row.seat),
+              `${context.cipherContext}/seat/${row.seat}`,
               row.ciphertext
             ),
             source: "player" as const
@@ -329,21 +552,22 @@ export class ArenaIntake {
       const input = build(state, strategies);
       const inputHash = `0x${digest(canonicalJson(input))}` as Hex;
       await db.query(
-        "INSERT INTO yunipals_arena.frozen_input(deployment,tournament_id,input_hash,ciphertext) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING",
+        "INSERT INTO yunipals_arena.frozen_input(deployment,tournament_id,input_hash,ciphertext,incarnation) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING",
         [
           this.deployment,
           id,
           inputHash,
-          this.cipher.seal(`${this.deployment}/${id}/input`, {
+          this.cipher.seal(`${context.cipherContext}/input`, {
             input,
             strategies
-          })
+          }),
+          context.incarnation
         ]
       );
       const saved = (
         await db.query<{ input_hash: Hex }>(
-          "SELECT input_hash FROM yunipals_arena.frozen_input WHERE deployment=$1 AND tournament_id=$2",
-          [this.deployment, id]
+          "SELECT input_hash FROM yunipals_arena.frozen_input WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+          [this.deployment, id, context.incarnation]
         )
       ).rows[0]!;
       if (saved.input_hash !== inputHash)
@@ -355,53 +579,223 @@ export class ArenaIntake {
         inputHash,
         commitments: strategies.map((s) => s.commitment),
         signatures: strategies.map((s) => s.signature),
-        automaticStrategyMask
+        automaticStrategyMask,
+        ...(this.nativeSource
+          ? { incarnation: context.incarnation as Hex }
+          : {})
       };
+    });
+  }
+
+  /** Private InputFrozen handling is application work. The native reader
+   * supplies public evidence; the caller supplies bounded canonical RPC checks.
+   */
+  async reconcileInputFrozen(
+    id: string,
+    verifyAction: (observed: NativeArenaActionObservation) => Promise<void>
+  ) {
+    if (!this.nativeSource)
+      throw new Error("Native Arena disclosure requires its selected source.");
+    await this.ready();
+    const initial = await this.tournamentContext(id),
+      observed = initial.observation!;
+    const freeze = observed.tournament.inputFrozen;
+    if (
+      !freeze ||
+      !["resolving", "settled"].includes(initial.state.phase) ||
+      !initial.state.inputHash
+    )
+      return false;
+    if (
+      (
+        await this.pool.query(
+          `SELECT 1 FROM yunipals_arena.frozen_input WHERE deployment=$1 AND tournament_id=$2
+      AND incarnation=$3 AND input_hash=$4 AND revealed_at IS NOT NULL AND revealed_event_id=$5 AND revealed_block_hash=$6`,
+          [
+            this.deployment,
+            id,
+            initial.incarnation,
+            initial.state.inputHash,
+            freeze.id,
+            freeze.blockHash
+          ]
+        )
+      ).rowCount
+    )
+      return true;
+    // No operational transaction spans external point reads.
+    await verifyAction(observed);
+    return transaction(this.pool, async (db) => {
+      await db.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+      await this.ready(db);
+      const current = await this.tournamentContext(
+          id,
+          db,
+          true,
+          initial.incarnation
+        ),
+        state = current.state;
+      const proof = current.observation!.tournament.inputFrozen;
+      if (
+        !proof ||
+        proof.id !== freeze.id ||
+        proof.blockHash !== freeze.blockHash ||
+        state.inputHash !== initial.state.inputHash ||
+        !["resolving", "settled"].includes(state.phase) ||
+        canonicalJson(state.seats) !== canonicalJson(initial.state.seats) ||
+        canonicalJson(state.commitments) !==
+          canonicalJson(initial.state.commitments)
+      )
+        throw new ArenaRequestError(
+          409,
+          "The canonical frozen input changed during verification."
+        );
+      const saved = (
+        await db.query<{ ciphertext: string }>(
+          `SELECT ciphertext FROM yunipals_arena.frozen_input
+        WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND input_hash=$4 FOR UPDATE`,
+          [this.deployment, id, current.incarnation, state.inputHash]
+        )
+      ).rows[0];
+      if (!saved || state.seats.length !== 4 || !state.commitments)
+        return false;
+      const submissions = (
+        await db.query<Submission>(
+          "SELECT * FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+          [this.deployment, id, current.incarnation]
+        )
+      ).rows;
+      const mask = state.automaticStrategyMask ?? 0;
+      const matches = state.seats.every((seat) => {
+        const row = submissions.find((row) => row.seat === seat.seat);
+        if (!(mask & (1 << seat.seat)))
+          return (
+            row?.wallet.toLowerCase() === seat.player.toLowerCase() &&
+            row?.commitment === state.commitments![seat.seat]
+          );
+        return (
+          !row &&
+          state.randomWord !== null &&
+          automaticStrategy(
+            this.contract,
+            BigInt(id),
+            seat.seat,
+            state.rulesHash,
+            BigInt(state.randomWord)
+          ).commitment === state.commitments![seat.seat]
+        );
+      });
+      if (!matches) return false;
+      const bundle = this.cipher.open<{
+        input: unknown;
+        strategies: NonNullable<ArenaPublicTournament["strategies"]>;
+      }>(`${current.cipherContext}/input`, saved.ciphertext);
+      if (
+        `0x${digest(canonicalJson(bundle.input))}` !== state.inputHash ||
+        !Array.isArray(bundle.strategies) ||
+        bundle.strategies.length !== 4 ||
+        !bundle.strategies.every((strategy, seat) => {
+          if (
+            strategy.seat !== seat ||
+            strategy.commitment !== state.commitments![seat]
+          )
+            return false;
+          if (mask & (1 << seat)) {
+            if (state.randomWord === null) return false;
+            const automatic = automaticStrategy(
+              this.contract,
+              BigInt(id),
+              seat,
+              state.rulesHash,
+              BigInt(state.randomWord)
+            );
+            return (
+              strategy.source === "automatic" &&
+              strategy.text === automatic.text &&
+              strategy.salt === automatic.salt &&
+              strategy.signature === automatic.signature
+            );
+          }
+          return (
+            strategy.source !== "automatic" &&
+            strategyCommitment(
+              this.contract,
+              BigInt(id),
+              seat,
+              strategy.text,
+              strategy.salt
+            ) === strategy.commitment
+          );
+        })
+      )
+        throw new Error("Prepared Arena input and commitments disagree.");
+      await db.query(
+        `UPDATE yunipals_arena.frozen_input SET revealed_at=COALESCE(revealed_at,now()),revealed_event_id=$5,revealed_block_hash=$6
+        WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND input_hash=$4`,
+        [
+          this.deployment,
+          id,
+          current.incarnation,
+          state.inputHash,
+          proof.id,
+          proof.blockHash
+        ]
+      );
+      return true;
     });
   }
 
   async publicView(id: string): Promise<ArenaPublicTournament> {
     // One DB snapshot prevents a reveal/state race between reads.
-    return transaction(this.pool, async (db) => {
+    const view = await transaction(this.pool, async (db) => {
       await db.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
-      const state = await this.state(id, db);
-      const seats = await db.query<{ seat: number }>(
-        "SELECT seat FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 ORDER BY seat",
-        [this.deployment, id]
+      const context = await this.tournamentContext(id, db),
+        state = context.state;
+      const seats = await db.query<{ seat: number; wallet: string }>(
+        "SELECT seat,wallet FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 ORDER BY seat",
+        [this.deployment, id, context.incarnation]
       );
       const frozen = (
         await db.query<{ ciphertext: string }>(
-          "SELECT ciphertext FROM yunipals_arena.frozen_input WHERE deployment=$1 AND tournament_id=$2 AND revealed_at IS NOT NULL AND input_hash=$3",
-          [this.deployment, id, state.inputHash]
+          `SELECT ciphertext FROM yunipals_arena.frozen_input WHERE deployment=$1 AND tournament_id=$2 AND revealed_at IS NOT NULL AND input_hash=$3
+            AND incarnation=$4 ${this.nativeSource ? "AND revealed_event_id=$5 AND revealed_block_hash=$6" : ""}`,
+          [
+            this.deployment,
+            id,
+            state.inputHash,
+            context.incarnation,
+            ...(this.nativeSource
+              ? [
+                  context.observation?.tournament.inputFrozen?.id ?? null,
+                  context.observation?.tournament.inputFrozen?.blockHash ?? null
+                ]
+              : [])
+          ]
         )
       ).rows[0];
       const strategies = frozen
         ? this.cipher.open<{
             strategies: NonNullable<ArenaPublicTournament["strategies"]>;
-          }>(`${this.deployment}/${id}/input`, frozen.ciphertext).strategies
+          }>(`${context.cipherContext}/input`, frozen.ciphertext).strategies
         : null;
-      const projection = (
-        await db.query<{
-          cursor: string | null;
-          ready: boolean;
-          finalized_at: Date | null;
-        }>(
-          `SELECT cursor::text,NOT halted AND finalized_at>now()-interval '3 minutes' AS ready,finalized_at
-         FROM yunipals_arena.deployment WHERE id=$1`,
-          [this.deployment]
-        )
-      ).rows[0];
       return {
         ...state,
-        serverTime: Math.floor(Date.now() / 1000),
-        projection: {
-          throughBlock: projection?.cursor ?? null,
-          ready: projection?.ready === true,
-          checkedAt: projection?.finalized_at?.toISOString() ?? null
-        },
-        submittedSeats: seats.rows.map((s) => s.seat),
-        strategies
+        submittedSeats: seats.rows
+          .filter(
+            (s) =>
+              state.seats[s.seat]?.player.toLowerCase() ===
+              s.wallet.toLowerCase()
+          )
+          .map((s) => s.seat),
+        strategies,
+        ...(this.nativeSource
+          ? { incarnation: context.incarnation as Hex }
+          : {})
       };
     });
+    // The RR snapshot may have been captured before waiting for its source
+    // lease. Validate the selected epoch again after that snapshot commits.
+    await this.assertSourceSelection();
+    return view;
   }
 }

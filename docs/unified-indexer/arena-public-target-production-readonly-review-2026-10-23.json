@@ -1,0 +1,26 @@
+{
+  "actualReadOnlyReview": {
+    "at": "2026-10-23T01:43:20.224333+00:00",
+    "credentialWrites": 0,
+    "databaseWrites": 0,
+    "format": "yunipals-arena-public-target-readonly-review-summary-v1",
+    "newCredentialPathsAbsent": true,
+    "newDatabaseAbsent": true,
+    "newRolesAbsent": true,
+    "operationalDatabaseOid": 2303669,
+    "operatorSha256": "c0b36e15808e6ec60e0386f8d7535748b56b0964369841321840000eac44acec",
+    "reviewFile": "/var/backups/yunipals-arena-public-rollback-review-20261023/readonly-review-0.json",
+    "reviewFileSha256": "bcb3772c8696928213d42986ed21c60d184906b216089c605ca14043856d48ee",
+    "reviewHash": "f6af977fd767624586a06948e26076c94079581eefc701d16424a98a87bf23ad",
+    "serviceActions": 0,
+    "sourceDatabaseOid": 17584,
+    "sourceSelectionChanges": 0
+  },
+  "admission": "not_executed_auto_review_rejected_before_execution",
+  "existingNineRoleApprovalIsSeparate": true,
+  "productionCredentialReceipt": null,
+  "productionTargetReceipt": null,
+  "reason": "Persistent production role/database/table/ACL boundary needs explicit separate approval.",
+  "syntheticScannerQualification": "in_preparation",
+  "targetAndCredentialApprovalQuestionPending": true
+}

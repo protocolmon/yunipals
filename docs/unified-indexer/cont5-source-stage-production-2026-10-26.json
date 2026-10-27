@@ -1,0 +1,17 @@
+{
+  "candidateInputsCreated": 0,
+  "commit": "2130e2b4cba5383b04215a7ed0b86022d0e792be",
+  "completed": true,
+  "currentReadinessClaimed": false,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "externalExistingOnlyVerified": 0,
+  "format": "root-cont5-source-stage",
+  "observedAt": "2026-10-26T00:57:24.693833+00:00",
+  "permissionChanges": 0,
+  "providerCalls": 0,
+  "publicFilesCreated": 12,
+  "publicFilesVerified": 323,
+  "resultSha256": "1c1c2cde47a59709836e61fd19a3113dce9d2e2c471ae03f6b45b18a7418d138",
+  "serviceActions": 0
+}

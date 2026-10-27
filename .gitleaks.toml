@@ -41,3 +41,1690 @@ condition = "AND"
 regexTarget = "match"
 paths = ['''(^|/)ops/base-islands(?:-v2)?/stage-api\.py$''']
 regexes = ['''islands-api\.env','--property=NoNewPrivileges=true''']
+
+[[rules.allowlists]]
+description = "Public Base PROTO contract address in pack configuration and fixtures"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  '''(^|/)apps/yunipals-home-web/public/boosters/mainnet-(smoke|standard)-setup\.json$''',
+  '''(^|/)apps/yunipals-home-web/src/lib/boosterSetup\.test\.ts$''',
+  '''(^|/)apps/yunipals-home-web/scripts/test-booster-opening-ui\.mjs$''',
+  '''(^|/)apps/yunipals-indexer/scripts/test-boosters-ponder\.mjs$''',
+  '''(^|/)contracts/boosters/config/base-standard-v1\.draft\.json$''',
+  '''(^|/)docs/boosters/mainnet-smoke/pack\.draft\.json$'''
+]
+regexes = ['''(?i)^0xe5a54a517cde8ed48a336b173044b1138aa2c1a3$''']
+
+# Exact public migration identifiers and owner hash bindings (19 findings).
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v5\\.py$"]
+regexes = [
+  "^c62778869948e0a94a190a1edd839d9c982ea3fd4b82cc69c82776f0499fb58e$",
+  "^f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\.py$"]
+regexes = [
+  "^0c055ac01166d9b4218f498f795d16e2f895d17b60c8b96dd82890415306d400$",
+  "^d0e269b0f3d43cc0cea2bcf53cc3b390357576e8901988942d17ffeb11f5cc4a$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SHA-256 owner bindings"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/consumer\\-retained\\-read\\-dependencies\\-v1\\.json$"]
+regexes = [
+  "^d89d887c49cbab9487b18b6df3116c437915518bd685603832a70385f568ef31$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SQL schema identifiers"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/metadata\\-readview\\-v4\\-grants\\.review\\.sql$"]
+regexes = [
+  "^yunipals_ownership_35cdcb32_v3$",
+  "^yunipals_ownership_35cdcb32_v4$",
+]
+
+[[rules.allowlists]]
+description = "Public migration SQL schema identifiers"
+condition = "AND"
+regexTarget = "secret"
+paths = ["(^|/)ops/unified\\-indexer\\-transition/ownership\\-common\\-grants\\.review\\.sql$"]
+regexes = [
+  "^unified_shadow_20261020_7e7375b0$",
+  "^yunipals_ownership_35cdcb32_v3$",
+]
+
+[[rules.allowlists]]
+description = "Exact public completed Arena build and review digests"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-owner-migration-v11\.py$''']
+regexes = [
+  "^203073f7f2e7018b3030501dc7374825b0cd1978260cb7f780ec59171a7f036e$",
+  "^4782a418113b72a5fb4d7428d6a3c99c480b0d394a1a10d3883106e914988dfa$"
+]
+
+[[rules.allowlists]]
+description = "Exact public Arena build and reviewed-function AST digests in tests"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-owner-migration-v11-test\.py$''']
+regexes = [
+  "^203073f7f2e7018b3030501dc7374825b0cd1978260cb7f780ec59171a7f036e$",
+  "^4782a418113b72a5fb4d7428d6a3c99c480b0d394a1a10d3883106e914988dfa$",
+  "^7a22688e7638589d6d35fa358539cd747fa95b95bbff7d932d432ae2728efd51$",
+  "^e6a3b33e53365ad4f4f2cb2a890d1baf8b6eb36269c1c362212e31733765e230$"
+]
+
+[[rules.allowlists]]
+description = "Exact public generated Arena API unit digest in completed build evidence"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)docs/unified-indexer/arena-credential-build-success-v2-2026-10-22\.json$''']
+regexes = ["^e8338ee2c84933d745ab306f0f5bf7d76d1fe0901e531b32b4eae87d2b1782b1$"]
+
+[[rules.allowlists]]
+description = "Exact public Base USDC contract in the Arena deployment manifest"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/|!)docs/arena/public-deployment\.json$''']
+regexes = ['''^0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913$''']
+
+[[rules.allowlists]]
+description = "Exact public source digest of the retained credential package helper"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-modern-package-v1\.py$''']
+regexes = ['''^b5022fdd7a3b1b29d57681f872f7c014f70a21e165440d6ea37d221b6e8e0ff3$''']
+
+[[rules.allowlists]]
+description = "Exact public generated Arena API unit digest in the modern build proof"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)docs/unified-indexer/arena-modern-completed-build-proof-2026-10-23\.json$''']
+regexes = ['''^5a60dec85c9a77241b377d60cd9c888236a74450adb8567dcc834f9d0593157a$''']
+
+[[rules.allowlists]]
+description = "Exact public retained Arena API service file digest in the admission proposal"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/arena-native-admission-20261022/proposal\.current\.json$''']
+regexes = ['''^963eef06c381e36fd3709ff52fd1f15eb2d4f77c463d9f96dfb87c6cf28dc27b$''']
+
+[[rules.allowlists]]
+description = "Exact public credential-owner source digest in the direct native cutover"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)ops/unified-indexer-transition/arena-direct-native-cutover-v1\.py$''']
+regexes = ['''^ed295fe81712a37f781cc97134d1202c43213fb34dc07be54896b06b530a6f0c$''']
+
+# Exact public source, build and receipt digests and deployed token addresses.
+# These are immutable public identifiers, never credential values.
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+]
+regexes = ["^06aacedf7e815e4168f0d501db4db87c40add0d99c5ae1956ce96a2d5ca54b7d$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-ordinary\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-alchemy\\-read\\-admission\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-alchemy\\-read\\-admission\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^0bd21ca83b63aba02d3eb0113704edaac3a4f2dc34148d322db38a356d9f021f$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\-v3\\.py$",
+]
+regexes = ["^0c055ac01166d9b4218f498f795d16e2f895d17b60c8b96dd82890415306d400$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/reader\\-cutover\\-production\\.json$",
+]
+regexes = ["^0c84aa2ae2da37af38043e287d98bd3af73fc1b5cb455cda623dbdda55d97e53$"]
+
+[[rules.allowlists]]
+description = "Verified public deployed token address"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)apps/yunipals\\-home\\-web/src/lib/ypalWrap\\.ts$",
+]
+regexes = ["^0xCd3709E84fc817b46196FA2D5b7202710AB51346$"]
+
+[[rules.allowlists]]
+description = "Verified public deployed token address"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)scripts/boosters/read\\-permit\\-engine\\-preflight\\.mjs$",
+]
+regexes = ["^0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3$"]
+
+[[rules.allowlists]]
+description = "Verified public deployed token address"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/frontend\\-stage\\-independent\\-readonly\\-acceptance\\.json$",
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/frontend\\-www\\-independent\\-readonly\\-acceptance\\.json$",
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/reader\\-public\\-api\\-acceptance\\.json$",
+]
+regexes = ["^0xcd3709e84fc817b46196fa2d5b7202710ab51346$"]
+
+[[rules.allowlists]]
+description = "Verified public deployed token address"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)apps/yunipals\\-home\\-web/scripts/test\\-booster\\-purchase\\-ui\\.mjs$",
+  "(^|/)apps/yunipals\\-home\\-web/src/lib/boosterPermit\\.test\\.ts$",
+]
+regexes = ["^0xe5a54a517cde8ed48a336b173044b1138aa2c1a3$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/native\\-arena\\-derived\\-support\\-inactive\\-install\\-production\\-2026\\-10\\-25\\.json$",
+]
+regexes = ["^136cf4552c41131aba5799c274ad0a1599ddac4a6c2068b760f3f69f0bbc0373$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^1b2dc71b35d77a77c6934201a8c4dd8323dd1b4a674ff1af292126d519987281$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-handover\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-readonly\\-qualification\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v7\\.py$",
+]
+regexes = ["^1da3a94b5514233396d311b1677291348430c6dd96030ab0ca838ffb59470bdf$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-cutover\\-proof\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-cutover\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-cutover\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-cutover\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-cutover\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/arena\\-current\\-credentials\\-independent\\-review\\-2026\\-10\\-24\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-current\\-credentials\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-restored\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-combined\\-read\\-current\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^30a28e1037131ae94a00fc6b6ac527c80f42fcff34c42536d64ed06ba1d3187e$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/www\\-production\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-ypal\\-consumer\\-dependency\\-audit\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-feature\\-handover\\-v1\\.py$",
+]
+regexes = ["^30fabaf05eb34e9b39c513457abf178996deeab72941bc9df9850e5c4ab423a3$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+]
+regexes = ["^35baf55b6057b8d18769454b12f1383dcbb86309d552fe9418378400e00d6080$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/reader\\-cutover\\-production\\.json$",
+]
+regexes = ["^3c3415ae88ccaeedba0540fbfbfeba009fc6045f297771ceb868ba0a90b5ae00$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/reader\\-cutover\\-preparation\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-source\\-v2\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-stage\\-v2\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-v2\\-production\\-stage\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/final\\-supervisor\\-v4\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/booster\\-launch/ypal\\-backend\\-owner\\-v1\\.py$",
+  "(^|/)ops/booster\\-launch/ypal\\-reader\\-cutover\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-current\\-main\\-observation\\-stage\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-operational\\-live\\-booster\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\-v3\\.py$",
+]
+regexes = ["^41fe9b9cb87edaa5689ed611cd2c99b299215be7c8fb6262b560660854657c73$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-cutover\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-cutover\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^43d98f0aa8993b408133f24a77bdab50663fa79fb77840c7478db369d7e7be9f$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-handover\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v6\\.py$",
+]
+regexes = ["^4ce2f6216ee3774ad89ca5ed53bae9db606d292354715497c0eb00df74f3e909$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)scripts/boosters/verify_ypal_basescan\\.py$",
+]
+regexes = ["^552a820d5864ff960582576def8d4e1413b44b02f60788caf6268fec2a63ca4d$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-handover\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-readonly\\-qualification\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/booster\\-v7\\-native\\-admission\\-sequencing\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v7\\.py$",
+]
+regexes = ["^55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^585ec0d8e512a9a9a18d213586f741e7c340ff080845e5df8d5022ac3b0a9d69$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/booster\\-recent\\-feature\\-handover\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v6\\.py$",
+]
+regexes = ["^591c117583e9d0568340dfe6f0390c8ddb7bcd984efbcb41afea35b645ab13bf$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/api\\-boot\\-production\\.json$",
+  "(^|/)docs/boosters/ypal\\-fresh\\-launch\\-2026\\-10\\-23/reader\\-cutover\\-preparation\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-source\\-v2\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-stage\\-v2\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-v2\\-production\\-stage\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-ypal\\-consumer\\-dependency\\-audit\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/final\\-supervisor\\-v4\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/booster\\-launch/ypal\\-reader\\-cutover\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-current\\-main\\-observation\\-stage\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-operational\\-live\\-booster\\-v2\\.py$",
+]
+regexes = ["^5ae76b4b54b359dc63cd9b990b227a32e4c984255308e1cd90982fa7de146414$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^68920537efb764aeb22329e1a8e14eeb2abb755c1355980255601ec0b686d0f5$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-v1\\.manifest\\.json$",
+]
+regexes = ["^6fb7e4708671e3213991ef96a6cc4096ff9195579fb12506ef1811a415338e8f$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-managed\\-handover\\-v1\\.py$",
+]
+regexes = ["^8a4f6acc3b0b8225ab780c83b1842bc1d4f56facf606f4f37d9d37fa202a1076$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/cont6\\-failed\\-cache\\-reconciliation2\\-production\\-2026\\-10\\-26\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-failed\\-cache\\-reconciliation\\-owner\\-v2\\-prior\\-failure\\.fixture\\.json$",
+]
+regexes = ["^8e7adb8e7da257715a96d425a6df953914be982b1b571ac0334c872ec2e194e1$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^8ed775ded0270eded81e0ccc82da19be4846eeadf8a2aa50eea5f177a210d7c5$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-current\\-admission\\-v1\\.proposal\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-v1\\.proposal\\.json$",
+]
+regexes = ["^963eef06c381e36fd3709ff52fd1f15eb2d4f77c463d9f96dfb87c6cf28dc27b$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/arena\\-current\\-role\\-auth\\-production\\-2026\\-10\\-24\\.json$",
+]
+regexes = ["^99e533afd9180841bd078be993eec763cf07474a4eb88c84e6a82fd9d97e4c52$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-baseline\\-owner\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-baseline\\-owner\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-baseline\\-owner\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-baseline\\-owner\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-cache\\-commit\\-owner\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-cont6\\-reader\\-forward\\-owner\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-phase\\-owner\\-v1\\.py$",
+]
+regexes = ["^a468a1ebbb4bf3fe40b5506dfdc7959602b38b91ad051a4dd0674af2fc45cb6c$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/native\\-arena\\-derived\\-support\\-inactive\\-install\\-production\\-2026\\-10\\-25\\.json$",
+]
+regexes = ["^ad2c6c8a5252b42931f5a0927af486999b6f366db1d3b716c0b3cda1318249ee$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/unified\\-indexer/booster\\-current\\-feature\\-readonly\\-qualification\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-source\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-operational\\-live\\-booster\\-v1\\.py$",
+]
+regexes = ["^b160e4e6c18a9bfae20bf1780d356eeca41350550c31e63bbb9c7a6d78582ec4$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/normal\\-grid\\-www\\-production\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/booster\\-current\\-feature\\-readonly\\-qualification\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/unified\\-indexer/current\\-feature\\-final\\-public\\-source\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-operational\\-live\\-booster\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/consumer\\-owned\\-booster\\-policy\\-v2\\.py$",
+]
+regexes = ["^b624dc518556756399a26e691bd1d53d319bd46d20134f9d6e1356dae3d96088$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/current\\-feature\\-final\\-public\\-stage\\-v1\\.files\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/current\\-feature\\-final\\-public\\-stage\\-v2\\.files\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^c62778869948e0a94a190a1edd839d9c982ea3fd4b82cc69c82776f0499fb58e$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^c8517815b5bfb5e87ce6f722c737770bdfebebfb29a00028463171741f9af007$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-api\\-preparation\\-2026\\-10\\-23\\.json$",
+  "(^|/)docs/boosters/mainnet\\-launch/recent\\-openings\\-independent\\-review\\-2026\\-10\\-23\\.json$",
+]
+regexes = ["^d083c8ecee6775089566c25ef180f7bcca887febb4bef55ceb02754ac6795949$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-direct\\-native\\-cutover\\-v2\\.py$",
+]
+regexes = ["^ed295fe81712a37f781cc97134d1202c43213fb34dc07be54896b06b530a6f0c$"]
+
+[[rules.allowlists]]
+description = "Verified public Git source digest"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-current\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-native\\-derived\\-projector\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-business\\-inverse\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/arena\\-ypal\\-native\\-return\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-current\\-observer\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-epoch\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-metadata\\-approval\\-inverse\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-cache\\-split\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-context\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-direct\\-commit\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-generation\\-retained\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-prepared\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-reader\\-generation\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-native\\-readiness\\-split\\-reader\\-binding\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-finish\\-retained\\-stop\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-cache\\-inverse\\-authority\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-inverse\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-consumer\\-prefix\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-call\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-feature\\-inverse\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-binding\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-accept\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.preparation\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-attempt\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-generation\\-binding\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-accept\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-bound\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-managed\\-handover\\-continue\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-effect\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-current\\-policy\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-metadata\\-restored\\-epoch\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-postfeature\\-source\\-v5\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-accept\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-bound\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-inputs\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v2\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v3\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v4\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-continue\\-v5\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-inverse\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-kernel\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-publication\\-observation\\-v1\\.stage\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-accept\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-bound\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-reader\\-continue\\-v6\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-readiness\\-family\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v1\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v2\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v3\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v4\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.manifest\\.json$",
+  "(^|/)ops/unified\\-indexer\\-transition/ypal\\-ordinary\\-restored\\-source\\-prefix\\-v5\\.py$",
+]
+regexes = ["^f03f303c38d64099b22fb61577de35dcfac5691aa424c39d7b62b429e822511c$"]
+
+[[rules.allowlists]]
+description = "Verified public build or receipt SHA-256"
+condition = "AND"
+regexTarget = "secret"
+paths = [
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v6\\.py$",
+  "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v7\\.py$",
+]
+regexes = ["^f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e$"]

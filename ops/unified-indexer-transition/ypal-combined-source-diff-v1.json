@@ -1,0 +1,122 @@
+{
+  "format": "yunipals-ypal-combined-source-diff-v1",
+  "proposalOnly": true,
+  "replacements": [
+    {
+      "id": "boosters:boosterengine",
+      "deploymentReceipt": {
+        "transactionHash": "0x20beec606814670b833cc46bc8ae5da257551b344a1ef07854aab88a23fad45e",
+        "blockNumber": "52995174",
+        "blockHash": "0xfb602bdade0a8bfcd218996cd5a1299a8cda3a3728a87cead04498b699c05927",
+        "status": "success",
+        "contractAddress": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e"
+      },
+      "before": {
+        "address": "0x455fabad0ac8ff1ea4df70ca07aa56a272cb2609",
+        "startBlock": "52848542"
+      },
+      "after": {
+        "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+        "startBlock": "52995174"
+      },
+      "unchangedAbiHash": "0x4127c2493eff266363adae3bb24fcf53038b7da4d72af5f517600e2a7920635d",
+      "unchangedEvents": [
+        "BlockhashCheckpointed",
+        "Initialized",
+        "OriginalRevealed",
+        "PaymentBurned",
+        "ProofContextRecorded",
+        "RandomnessReceived",
+        "RandomnessRestored",
+        "RecoveryRequired",
+        "RefundCredited",
+        "RefundReturned",
+        "RefundWithdrawn",
+        "RequestCompleted",
+        "RequestCreated",
+        "RequestForfeited",
+        "RequestsPaused",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "Upgraded"
+      ]
+    },
+    {
+      "id": "boosters:boostermonsters",
+      "deploymentReceipt": {
+        "transactionHash": "0xe5f5de1eca24edc7ddacd2d798878e638c59d79d6c226e82870728eda9099f93",
+        "blockNumber": "52995029",
+        "blockHash": "0x4bf780e1292d6aa620c3b5cfc6afc14395a9c2e16817e6d195b629280992b2fe",
+        "status": "success",
+        "contractAddress": "0x7d62628806e7eef76a354c7c48787879e3440b16"
+      },
+      "before": {
+        "address": "0x105319be2182018c31fb10b1be198c3cf238a146",
+        "startBlock": "52848542"
+      },
+      "after": {
+        "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+        "startBlock": "52995029"
+      },
+      "unchangedAbiHash": "0x680148b00be6884d25a426041f93861ac175dfe3535224636c46cdcb3daa3a94",
+      "unchangedEvents": [
+        "Approval",
+        "ApprovalForAll",
+        "Initialized",
+        "MonsterMinted",
+        "OriginalBurned",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer",
+        "Upgraded"
+      ]
+    },
+    {
+      "id": "boosters:boosterregistry",
+      "deploymentReceipt": {
+        "transactionHash": "0x16548e60230d7d7b8e582f6649f46b0b21529223eaa3d94ecd6c87c2aa7d8a08",
+        "blockNumber": "52995007",
+        "blockHash": "0x4323ae6d84682fba3794e499b6a53037e2002aadea318371b1fb21427abbc6fe",
+        "status": "success",
+        "contractAddress": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3"
+      },
+      "before": {
+        "address": "0xeaee2da120a398f21729d50672ac5d1dd71d7274",
+        "startBlock": "52848542"
+      },
+      "after": {
+        "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+        "startBlock": "52995007"
+      },
+      "unchangedAbiHash": "0xadfe0b475fd8d3f48aa768e359b6112834f3048a297263baaa01db4fbea8a79d",
+      "unchangedEvents": [
+        "Initialized",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "SalesPaused",
+        "TypeActivated",
+        "TypeConfigured",
+        "Upgraded"
+      ]
+    }
+  ],
+  "unchangedSources": [
+    "arena:8453:0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+    "islands:base:v2",
+    "islands:ethereum",
+    "marketplace:bnb:seaport",
+    "metadata:base",
+    "ownership:base",
+    "ownership:bnb",
+    "ownership:ethereum",
+    "ownership:polygon"
+  ],
+  "manifestSourceCount": 12,
+  "currentSourceChanged": false,
+  "nativeBuildId": null,
+  "futureNamespace": null,
+  "currentBnbCheckpointTransferred": false
+}

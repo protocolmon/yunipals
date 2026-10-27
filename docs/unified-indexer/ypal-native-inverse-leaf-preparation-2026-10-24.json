@@ -1,0 +1,57 @@
+{
+  "format": "yunipals-ypal-native-inverse-leaf-preparation-v1",
+  "sourceOnly": true,
+  "publicationFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.py",
+      "bytes": 24313,
+      "sha256": "d5dbc3923b3256328f8bb4f3d5fef3c641a64b843d761696629039b4bb4b5e28"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.test.py",
+      "bytes": 20960,
+      "sha256": "8ccb7076328f5ed28af79e60964899016e2319ada7811b597d4371369f2f4943"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.md",
+      "bytes": 4638,
+      "sha256": "8e853b9fe0c94bba495a9f7c82180e19284bf179ee25a6100972232669cf1d82"
+    }
+  ],
+  "coordinatorClosure": {
+    "ypal-native-cutover-v2.py": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+    "ypal-native-cutover-proof-v2.py": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14",
+    "ypal-native-cutover-v2.manifest.json": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8"
+  },
+  "api": "validate_inverse_leaf(result_sha, manifest_sha)",
+  "validation": {
+    "localControlsPassed": 13,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-native-inverse-leaf-v1.test.py",
+    "outputSha256": "2ceeacfac66ad072b0d60a3ade213cca1ff53edf9dcd82be60c4198f6a51bf88",
+    "protectedFilesystemAndReusedMethods": true,
+    "actualHostOrPostgresAcceptance": false
+  },
+  "authority": {
+    "completedInverseRecordsAndCurrentServingRequired": true,
+    "full143AndAllGranteeColumnGraph": true,
+    "cache4AndTwoLOGINReversed": true,
+    "global103CapsuleAggregatesCurrent": true,
+    "currentRecoveredReaderCacheMetadataActors": true,
+    "stableBindingSeparateFromCursorAndHTTPObservation": true,
+    "callsActive994OrFbbSourcePredicate": false,
+    "callsObserverCurrentActorValidator": false,
+    "executesInverseOrSQLOrManagerActions": false,
+    "sourceActorQualified": false,
+    "currentWriterQualified": false,
+    "financialAuthorityQualified": false,
+    "currentReadinessQualified": false
+  },
+  "actualCompletedInverseReceiptExists": false,
+  "hostExecutionPerformed": false,
+  "futureAcknowledgementsFabricated": false,
+  "limitations": [
+    "The exact actual completed inverse, new143/cache/metadata/generation and observer receipts remain independent prerequisites.",
+    "Caller must qualify current writer/source/financial/canonical/readiness around the returned stable binding.",
+    "All local SQL/service observations are explicit fixtures, not claimed production acceptance."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "actualEffects": {
+    "credentialActions": 0,
+    "databaseWrites": 0,
+    "productionAccess": 0,
+    "providerCalls": 0,
+    "runtimeSourceTransitions": 0,
+    "serviceActions": 0
+  },
+  "dependencyScope": "new_producer_and_exact_five_direct_prerequisites_original_transitive_authentication_preserved",
+  "files": [
+    {
+      "bytes": 18969,
+      "path": "ops/booster-launch/ypal-old-runtime-inventory-v1.py",
+      "sha256": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-old-runtime-inventory-v1.py"
+    },
+    {
+      "bytes": 14753,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "sha256": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-consumer-context-v1.py"
+    },
+    {
+      "bytes": 45831,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-runtime-v1.py",
+      "sha256": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-ordinary-runtime-v1.py"
+    },
+    {
+      "bytes": 17932,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.host.py",
+      "sha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-alchemy-source-switch-v1.host.py"
+    },
+    {
+      "bytes": 44772,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v5.py",
+      "sha256": "052f363ca94a74aed1b278079c3e70661c8068328342bba559eecfe3c1939ac0",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v5.py"
+    },
+    {
+      "bytes": 1906,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6-manifest.py",
+      "sha256": "70e7c6bfcd90239cfcea236bcd12f6624e0e8bdbc3a4a516c8efab5858dc154d",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6-manifest.py"
+    },
+    {
+      "bytes": 761,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.manifest.json",
+      "sha256": "80e2b98a8b69542ea438ebe7f8a1bc90144b48ca2238c74bb8f40fb21b5d7452",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6.manifest.json"
+    },
+    {
+      "bytes": 5252,
+      "deploymentRequired": false,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.md",
+      "sha256": "bb12d4f093cd05c95efab5227c94efeebfc8fec3c2511d1b0e93f5d6def087c2"
+    },
+    {
+      "bytes": 12288,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.py",
+      "sha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6.py"
+    },
+    {
+      "bytes": 11795,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-source-authority-v6.test.py",
+      "sha256": "d3614b0607c1c4e866f2b4653dcaf0dc64c011bc9a0e35bb7531d718f2be02c1",
+      "target": "/opt/yunipals-unified/operations/free-replay-20261020/ypal-ordinary-source-authority-v6.test.py"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-source-authority-v6-preparation",
+  "productionDiagnostic": {
+    "exactMissingInitialStat": true,
+    "initialProcessEpochObserved": false,
+    "observationConnectionInNativeRole": false,
+    "observedAt": "2026-10-25T16:27:13.014822+00:00",
+    "oldBackendEpochAbsentFromFreshRows": true,
+    "oldProcessAbsent": true,
+    "privateProofSha256": "4537137df095f27022a4a1e9161d742e91602a3f9917205b96fce0db4c32d4f1",
+    "sourceAuthorityQualified": false
+  },
+  "remainingAcceptance": [
+    "root_actual_new_readonly_source_qualification",
+    "new_caller_binding_and_real_complete_callback_timing",
+    "root_review_of_actual_new_cache_review_result"
+  ],
+  "runtimeSourcesFrozen": true,
+  "sourceManifestSha256": "80e2b98a8b69542ea438ebe7f8a1bc90144b48ca2238c74bb8f40fb21b5d7452",
+  "sourceOnly": true,
+  "sourceSha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82",
+  "validation": {
+    "actualCallerTimingQualified": false,
+    "actualSourceQualificationPassed": false,
+    "focusedControls": 14,
+    "independentReview": "no_findings_14_controls_independently_rerun",
+    "realLocalExitedProcessStatProbe": true,
+    "realLocalUid111FDProbe": true,
+    "retainedAuthorityBodiesBytecodeAndConstantsEqual": true,
+    "sandboxUidMapping": "isolated_authorized_escalated_fixture_passed"
+  }
+}

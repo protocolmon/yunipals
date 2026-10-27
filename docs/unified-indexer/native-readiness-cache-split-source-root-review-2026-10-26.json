@@ -1,0 +1,24 @@
+{
+  "activationNativeReadinessTTLSeconds": 120,
+  "actualFailureReconciliationSha256": "85a2f77a7b2fd0b4d72a8694eb5a597577bcb6402ba4a2985b3b9ec30bc72398",
+  "format": "yunipals-native-readiness-cache-split-source-root-review-v1",
+  "freshActivatedConsumerConstructorCovered": true,
+  "fullOriginalCurrentREADAndTransportBodiesRetained": true,
+  "independentFocusedControlsPassedPerReviewer": [
+    9,
+    9
+  ],
+  "independentFullSourceReviews": 2,
+  "literalAcknowledgementTailSeconds": 5,
+  "manifestSha256": "eaf67113785ef0e25914b1497071f1a3a8370c90f80a42e4f6be175b806a232c",
+  "operatorSha256": "30dfced740a6800af527af8b1ad9d40a480f13eba71151e5a0aa43e378d7d561",
+  "ownPreparedReceiptNeverOldCacheSuccess": true,
+  "preparedAndBothPhaseAndVerificationBindingsMustMatch": true,
+  "productionDatabaseWrites": 0,
+  "productionServiceActions": 0,
+  "productionSourceQualified": false,
+  "rollbackTestRequested": false,
+  "rootFocusedControlsPassed": 9,
+  "rootFocusedControlsSeconds": 26.003,
+  "sourceReviewOnly": true
+}

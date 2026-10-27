@@ -1,0 +1,365 @@
+{
+  "version": 1,
+  "ponderVersion": "0.17.5",
+  "ordering": "multichain",
+  "coverage": "ponder-live-blocks-v1",
+  "sources": [
+    {
+      "id": "arena:8453:0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+      "feature": "arena",
+      "chainId": 8453,
+      "contractName": "YunipalsArena",
+      "address": "0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+      "startBlock": "52648146",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x92fff205c89c168c18abdb66ac1f46329941822e998ceccbaa153a13db183f53",
+      "events": [
+        "AutomaticStrategiesAssigned",
+        "Claimed",
+        "EIP712DomainChanged",
+        "Entered",
+        "EntryPauseChanged",
+        "InputFrozen",
+        "IslandRequested",
+        "IslandSelected",
+        "JoinWindowStarted",
+        "LobbyOperatorChanged",
+        "OwnershipTransferStarted",
+        "OwnershipTransferred",
+        "PayoutsReleased",
+        "RandomnessReceived",
+        "ResultSettled",
+        "StrategiesOpened",
+        "TournamentExpired",
+        "TournamentOpened",
+        "TournamentTreasuryAssigned",
+        "TreasuryChanged"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "depth",
+          "subsequentBlocks": 5
+        }
+      ]
+    },
+    {
+      "id": "boosters:boosterengine",
+      "feature": "boosters",
+      "chainId": 8453,
+      "contractName": "BoosterEngine",
+      "address": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "startBlock": "52995174",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x4127c2493eff266363adae3bb24fcf53038b7da4d72af5f517600e2a7920635d",
+      "events": [
+        "BlockhashCheckpointed",
+        "Initialized",
+        "OriginalRevealed",
+        "PaymentBurned",
+        "ProofContextRecorded",
+        "RandomnessReceived",
+        "RandomnessRestored",
+        "RecoveryRequired",
+        "RefundCredited",
+        "RefundReturned",
+        "RefundWithdrawn",
+        "RequestCompleted",
+        "RequestCreated",
+        "RequestForfeited",
+        "RequestsPaused",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "Upgraded"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "boosters:boostermonsters",
+      "feature": "boosters",
+      "chainId": 8453,
+      "contractName": "BoosterMonsters",
+      "address": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "startBlock": "52995029",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x680148b00be6884d25a426041f93861ac175dfe3535224636c46cdcb3daa3a94",
+      "events": [
+        "Approval",
+        "ApprovalForAll",
+        "Initialized",
+        "MonsterMinted",
+        "OriginalBurned",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer",
+        "Upgraded"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "boosters:boosterregistry",
+      "feature": "boosters",
+      "chainId": 8453,
+      "contractName": "BoosterRegistry",
+      "address": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+      "startBlock": "52995007",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0xadfe0b475fd8d3f48aa768e359b6112834f3048a297263baaa01db4fbea8a79d",
+      "events": [
+        "Initialized",
+        "RoleAdminChanged",
+        "RoleGranted",
+        "RoleRevoked",
+        "SalesPaused",
+        "TypeActivated",
+        "TypeConfigured",
+        "Upgraded"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "islands:base:v2",
+      "feature": "islands",
+      "chainId": 8453,
+      "contractName": "YunipalsBaseIslandsV2",
+      "address": "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+      "startBlock": "52587956",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x58c22e8a90029c0e7f4ab34e087c186992c654895c8ffd660223e454bd8515ee",
+      "events": [
+        "AirdropFinalized",
+        "OwnershipTransferred",
+        "Transfer"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        },
+        {
+          "kind": "depth",
+          "subsequentBlocks": 3
+        }
+      ]
+    },
+    {
+      "id": "islands:ethereum",
+      "feature": "islands",
+      "chainId": 1,
+      "contractName": "YunipalsIslands",
+      "address": "0xa22e2f53ca787414dc0643c399f92234949e2305",
+      "startBlock": "14570451",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0xaa77af20a85176a77f383173594ca6af93f3c43a79a0f1c4a76cb291516bc9f7",
+      "events": [
+        "OwnershipTransferred",
+        "Transfer"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "marketplace:bnb:seaport",
+      "feature": "marketplace",
+      "chainId": 56,
+      "contractName": "BnbSeaport",
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "startBlock": "123769700",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x0d0d496e160c6ee92bd60e6dd058e922742a99cc7ca48003b25ddbbdad5ba693",
+      "events": [
+        "CounterIncremented",
+        "OrderCancelled",
+        "OrderFulfilled",
+        "OrderValidated"
+      ],
+      "receiptRequirement": "full",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "metadata:base",
+      "feature": "base-metadata",
+      "chainId": 8453,
+      "contractName": "YunipalsBaseMetadata",
+      "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+      "startBlock": "22224075",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x10ed1bdc491b581039c80bfe1a53832615bda607560c998ad5202542cf9a4259",
+      "events": [
+        "Mint",
+        "Update"
+      ],
+      "receiptRequirement": "none",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ]
+    },
+    {
+      "id": "ownership:base",
+      "feature": "ownership",
+      "chainId": 8453,
+      "contractName": "YunipalsBase",
+      "address": "0x98433df878e8c898cb907345c3a7756e5f72240f",
+      "startBlock": "22224075",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x4fd7fc34d0a288da0680ded8e7c941bd66b2020563493f389e47da1617154545",
+      "events": [
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer"
+      ],
+      "receiptRequirement": "full",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ],
+      "receiptStartBlock": "22224075"
+    },
+    {
+      "id": "ownership:bnb",
+      "feature": "ownership",
+      "chainId": 56,
+      "contractName": "YunipalsBnb",
+      "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+      "startBlock": "7579197",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x4fd7fc34d0a288da0680ded8e7c941bd66b2020563493f389e47da1617154545",
+      "events": [
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer"
+      ],
+      "receiptRequirement": "full",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        },
+        {
+          "kind": "depth",
+          "subsequentBlocks": 20
+        }
+      ],
+      "receiptStartBlock": "122080975"
+    },
+    {
+      "id": "ownership:ethereum",
+      "feature": "ownership",
+      "chainId": 1,
+      "contractName": "YunipalsEthereum",
+      "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+      "startBlock": "12134519",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x4fd7fc34d0a288da0680ded8e7c941bd66b2020563493f389e47da1617154545",
+      "events": [
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer"
+      ],
+      "receiptRequirement": "full",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ],
+      "receiptStartBlock": "19442152"
+    },
+    {
+      "id": "ownership:polygon",
+      "feature": "ownership",
+      "chainId": 137,
+      "contractName": "YunipalsPolygon",
+      "address": "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
+      "startBlock": "21814218",
+      "endBlock": null,
+      "enabled": true,
+      "abiHash": "0x4fd7fc34d0a288da0680ded8e7c941bd66b2020563493f389e47da1617154545",
+      "events": [
+        "RoleGranted",
+        "RoleRevoked",
+        "Transfer"
+      ],
+      "receiptRequirement": "full",
+      "policies": [
+        {
+          "kind": "latest"
+        },
+        {
+          "kind": "finalized"
+        }
+      ],
+      "receiptStartBlock": "54889689"
+    }
+  ]
+}

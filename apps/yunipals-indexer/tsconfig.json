@@ -6,8 +6,19 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "resolveJsonModule": true
   },
-  "include": ["ponder.config.ts", "ponder.schema.ts", "ponder-env.d.ts", "src", "lib", "scripts", "test"]
+  "include": [
+    "ponder.config.ts",
+    "ponder.schema.ts",
+    "ponder-env.d.ts",
+    "src",
+    "lib",
+    "scripts",
+    "test",
+    "ponder.boosters.config.ts"
+  ]
 }

@@ -1,0 +1,55 @@
+{
+  "HostConstructorInvoked": false,
+  "actualProductionPlanIncluded": false,
+  "defaultInert": true,
+  "effectsByThisSourceWork": {
+    "databaseActions": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "explainAnalyzeRequested": false,
+  "files": [
+    {
+      "bytes": 15845,
+      "file": "ypal-publication-explain-owner-v1.py",
+      "sha256": "eaee00ac1f5a09d7c2b76082220563c882ea4269798113e2ebe0237831bab3e4"
+    },
+    {
+      "bytes": 15398,
+      "file": "ypal-publication-explain-owner-v1.test.py",
+      "sha256": "1e4b613bdbee0f2b4edef0e7e4266457d88cc63274f3bb23d7c72e5a16254cb4"
+    },
+    {
+      "bytes": 5977,
+      "file": "ypal-publication-explain-owner-v1.md",
+      "sha256": "d473fdfbad4852037a88a7f3e1ae3baf21eb5867b47c064e95f4686f7964aa19"
+    }
+  ],
+  "focusedControlsPassed": 14,
+  "format": "ypal-publication-explain-owner-v1-preparation",
+  "freshProductionQueryHashesInvented": false,
+  "newSourceOrCurrentOrHeldAuthority": false,
+  "noNewProofGraph": true,
+  "postgresTransportMocked": true,
+  "realOfficialCompilerExecutedWithExplicitPublicSelectorFixture": true,
+  "requiredExistingOpsFiles": {
+    "ypal-ordinary-publication-query-v2.py": "deeaead42909617877af48b6749ab2704e205624ee979ed55b3df92c9dbd544c",
+    "ypal-restored-metadata-handover-v1.py": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3"
+  },
+  "runtimePolicy": {
+    "automaticRetryAllowed": false,
+    "compilerTimeoutSeconds": 20,
+    "databaseOid": "17584",
+    "idleTransactionTimeoutMs": 72000,
+    "jitChanged": false,
+    "lockTimeoutMs": 1000,
+    "peerParentTimeoutSeconds": 80,
+    "readOnly": true,
+    "rootDiagnosticBoundSeconds": 140,
+    "statementTimeoutMs": 60000,
+    "workMemChanged": false
+  },
+  "skippedControls": 0
+}

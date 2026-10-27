@@ -1,0 +1,112 @@
+{
+  "businessGate": {
+    "acceptedEventNames": [
+      "RequestCreated",
+      "RequestCompleted"
+    ],
+    "actualApiAndScheduledQueueCoverageRequired": true,
+    "completeEventRowPayloadEqualityExactlyOnceBothSchemasRequired": true,
+    "freshPostEventFullEightTableParityRequired": true,
+    "genuinePostSwitchBusinessEventObservedByThisWork": false,
+    "inheritedCanonicalAndNativeGateRetained": true,
+    "requiredBeforeScannerRetirement": true,
+    "stricterThanFrozenPredecessor": true,
+    "strictlyAfterSwitchBoundaryRequired": true,
+    "testPacksOrSyntheticBusinessEventsPerformed": false
+  },
+  "codeClosure": {
+    "circularHashDependency": false,
+    "featureManifestSha256": "1df245406c7356481f918791732c9a3ec4f3bcea9b9f4535574e391a2a5d6e58",
+    "finiteActualDependenciesOnly": true,
+    "futureHashesOrAcknowledgementsInvented": false,
+    "readerManifestSha256": "870c6fe395ba30c7f3ed6d405d96bb9fd4cfdee485c871112c26f5f96b7c4200"
+  },
+  "files": [
+    {
+      "bytes": 9083,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.py",
+      "sha256": "4e66f48d9f24bbac28f09be3223f80a1e9d052442d5f4ba4b056e61efe847312"
+    },
+    {
+      "bytes": 23204,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-context-v6.py",
+      "sha256": "743645a993e46268c7b50251d0a4867037af814a57747389abca7ab3b305a635"
+    },
+    {
+      "bytes": 2191,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-v6-manifest.py",
+      "sha256": "6f20493a4613e55e6e3fd7765230c1d7cd37dbe0394684576c9b35dee84259bc"
+    },
+    {
+      "bytes": 1642,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.manifest.json",
+      "sha256": "1df245406c7356481f918791732c9a3ec4f3bcea9b9f4535574e391a2a5d6e58"
+    },
+    {
+      "bytes": 24337,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.test.py",
+      "sha256": "64f5055b4529eb92e471ce744d1b6e840f4ba56f0dcfa75719def8e5a2d59519"
+    },
+    {
+      "bytes": 2605,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.postgres.test.mjs",
+      "sha256": "4ab5b189f420ca51b8a7bbcf4eb8780a6ff80484c3b75d4f565c4681bf1b41ce"
+    },
+    {
+      "bytes": 5776,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-feature-handover-v6.business-event.postgres.test.mjs",
+      "sha256": "ba4f5ad55c0a744f465d0d94344068730e4c28544ad0b795234aa9604a24e2b7"
+    },
+    {
+      "bytes": 11670,
+      "path": "docs/unified-indexer/ordinary-feature-handover-v6.md",
+      "sha256": "f69f36660024f1ca58d796ddb9159038a0d7543f1506540f431f646b0f7834f1"
+    }
+  ],
+  "format": "yunipals-ordinary-feature-V6-source-preparation-v1",
+  "historicalSourcePreservation": {
+    "ypal-ordinary-feature-context-v5.py": "da2fea0aa36277c1c464ca27ad280b03ba31bfec2730182779ac839638496656",
+    "ypal-ordinary-feature-handover-v5.py": "cb21c6f6b6ffa627d24d67922892b7377191063f687253c65940e7a2a9f3e880"
+  },
+  "inputFile": "/var/backups/yunipals-ypal-ordinary-feature-input-v6-20261025/config.json",
+  "journalRoot": "/var/backups/yunipals-ypal-ordinary-feature-handover-v6-20261025",
+  "leafInterface": {
+    "externalFeatureRefs": [
+      "resultSha256",
+      "manifestSha256",
+      "inputSha256",
+      "producerSha256",
+      "contextSha256"
+    ],
+    "futureManagedEvmSolanaAuthorityProvided": false,
+    "immutableReaderAcknowledgementOnly": true,
+    "oldWholeValidatorRelabelled": false,
+    "readerLeafRecursion": false
+  },
+  "productionEffects": {
+    "apiQueueSwitched": false,
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "managedRuntimeAdopted": false,
+    "permissionAdmission": false,
+    "privateInputsCreated": false,
+    "providerCalls": 0,
+    "scannerRetired": false,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "runtimeNamespace": "yunipals-ypal-ordinary-feature-handover-v6",
+  "sourceOnly": true,
+  "tests": {
+    "fixtureRowsAreGenuineBusinessEvidence": false,
+    "localFixtureMounts": 0,
+    "localFixturePort": "127.0.0.1:56967",
+    "newBusinessEventPostgresGroups": 7,
+    "passed": true,
+    "postgres": "postgres:16.15",
+    "productionCalls": 0,
+    "providerCalls": 0,
+    "pythonControls": 43,
+    "retainedPostgresGroups": 11
+  }
+}

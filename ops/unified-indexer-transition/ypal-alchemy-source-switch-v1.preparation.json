@@ -1,0 +1,116 @@
+{
+  "format": "yunipals-alchemy-source-switch-v1-source-preparation",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.py",
+      "sha256": "7ae9a516fe1145f25676ba97e98c92a86123bf8797cf7758537ef7fde855f5a6",
+      "bytes": 87797
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.test.py",
+      "sha256": "7e4e805f0bf453a4f73cd0e4d948416542f915c87f90203614cd9bcf6dc9a906",
+      "bytes": 43781
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.manifest.py",
+      "sha256": "a4291d66e4d42f10940359811e7bd14fb707123e8641f19c2727bcd0ed2d20b6",
+      "bytes": 3759
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-source-switch-v1.md",
+      "sha256": "0bac79211b32c43c7ba283bfc8fef48cc5a8fc9211c236e9da03398366ab7401",
+      "bytes": 15486
+    }
+  ],
+  "validation": {
+    "focusedOwnerFilesystemProtocolControls": 39,
+    "actualManagerOrProviderInvocationsInTests": 0,
+    "syntheticPeersExplicit": true
+  },
+  "fixedPublicComponents": {
+    "plan": {
+      "file": "ypal-alchemy-source-switch-v1.plan.py",
+      "sha256": "3a13f1f4e9a7896d9e4535b670bf06786c3fb0d199986356b336cb32565d3d56"
+    },
+    "host": {
+      "file": "ypal-alchemy-source-switch-v1.host.py",
+      "sha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02"
+    },
+    "leaf": {
+      "file": "ypal-alchemy-primary-current-v1.py",
+      "sha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215"
+    },
+    "financial": {
+      "file": "ypal-alchemy-catchup-financial-v1.py",
+      "sha256": "19710cfe5ab8d5c5e57f8668bb9761beac5080acba17b03da6aa54e3932c4803"
+    }
+  },
+  "actualExternalQualificationReference": {
+    "file": "/var/backups/yunipals-alchemy-primary-import-v2-20261024/qualification-result.json",
+    "sha256": "e2ef0d552fea4a0bedd6efe91cd3b23148ae53c6b396593c6dfd5c5615762334",
+    "operatorFile": "ypal-alchemy-primary-import-v2.py",
+    "operatorSha256": "44d502b19bdae6a484db2da719bae154c9a96480d006d7bb9536f0c4ea36f083",
+    "format": "yunipals-alchemy-primary-import-v2"
+  },
+  "cacheGate": {
+    "file": "ypal-alchemy-restart-cache-v1.py",
+    "sha256": "35f751938c96bcd10e5f36412c8e7f7e0a31129874c2544c49116e85fafc59e4",
+    "filtersFile": "ypal-alchemy-restart-cache-v1.filters.json",
+    "filtersSha256": "394bbecf8d0b7c115bc7b56b085a17fb857d549a36eb336514bbb10bd72f2675"
+  },
+  "policy": {
+    "originalAllowanceCu": "20000000",
+    "maximumAdditionalCu": "15000000",
+    "maximumWindowSeconds": 28800,
+    "utcGuardSeconds": 900,
+    "automaticRenewal": false,
+    "normalDaily10MApproved": false,
+    "chainRouting": {
+      "ethereum": "paid_primary",
+      "base": "paid_primary",
+      "polygon": "paid_primary",
+      "bnb": "paid_logs_free_blocks"
+    },
+    "cacheContinuityThroughNativeSafeMandatory": true,
+    "sourceNamespaceOrCheckpointReset": false
+  },
+  "implemented": {
+    "exclusivePreCommitOperation": true,
+    "fourActualDeadlinesBeforeFinancialCommit": true,
+    "separateFinancialAdmissionLink": true,
+    "actualOwnedEpochAndHeartbeatFloor": true,
+    "positiveKernelSessions": true,
+    "noResendUnknownManagerOrSQL": true,
+    "explicitConfigurationOnlyReloadCompletion": true,
+    "neverPaidPreparedStoppedPaidStoppedQuietModes": true,
+    "financialClosureWithHonestSourceRestorePending": true,
+    "currentPeerPreservationAroundFreeRestart": true,
+    "sourceCurrentAndOwnedTerminalExports": true,
+    "currentScopeUsesNoObsoleteWholeRuntime": true,
+    "retainedOriginalEpochUsesCap0BackingMetadataPeer": true,
+    "ownedProxyFullMergedEnvironmentProof": true,
+    "acknowledgedFreeProxyPreservedDuringRepeatedClose": true,
+    "backendDrainUsesExactPidAndBackendStart": true,
+    "sixFieldIdentitiesUseActualFileMetadataNotFiveFieldSdk": true,
+    "legacyParentPreservationUsesMetadataFrameWithoutEnvironmentPeer": true
+  },
+  "production": {
+    "ownerExecuted": false,
+    "runtimeContextQualified": false,
+    "financialAdmitted": false,
+    "sourceOrProxySelected": false,
+    "sourceAuthorityQualified": false,
+    "currentCanonicalCoverageQualified": false,
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "limitations": [
+    "The complete production input/review/prepare/deadlines/financial admission and actor proofs are separate real host phases, not future invented ACKs.",
+    "Same OS boot. An existing start/stop intent is inspected, never automatically reissued; unresolved prefixes remain honest blockers.",
+    "Current peer frames preserve observations only; later actual writer/permission/retirement authority is supplied independently.",
+    "Financial close may complete with source restoration pending; no full source result is emitted until actual database/kernel/cache/heartbeat proof.",
+    "Pre-operation pure-filesystem preparation failures need explicit reviewed cleanup, not an automatic overwrite or retry."
+  ]
+}

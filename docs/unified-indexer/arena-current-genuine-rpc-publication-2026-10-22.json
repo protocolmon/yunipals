@@ -1,0 +1,96 @@
+{
+  "archive": {
+    "bytes": 55287,
+    "path": "/tmp/yunipals-arena-current-genuine-rpc-combined-acceptance-20261022.tar.gz",
+    "sha256": "cc1ea539fac73cfc11cd827eaa05d232801dc132f59b2285f459a96ebebbc2e3"
+  },
+  "files": [
+    {
+      "bytes": 11954,
+      "path": "apps/yunipals-indexer/scripts/fixtures/arena-rpc-postgres-current-live-local.mjs",
+      "sha256": "1bee80f00a02059391baa1930d1650c6c240ac566bba575aed3e8ee32e5d0674"
+    },
+    {
+      "bytes": 11345,
+      "path": "apps/yunipals-indexer/scripts/fixtures/arena-rpc-postgres-current-local.mjs",
+      "sha256": "473cbab99dac6ded36b46aac4edf7ba2e965163c3cea47aed812888a0195eba7"
+    },
+    {
+      "bytes": 8196,
+      "path": "apps/yunipals-indexer/scripts/fixtures/unified-rpc-project-current-local.mjs",
+      "sha256": "4316e82ea7329c5f06c3337e662384a30e594494bc54f2b9dd29763c8cf06bca"
+    },
+    {
+      "bytes": 35996,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-genuine-rpc-local.mjs",
+      "sha256": "14d04efe4fa0be8d0362b5dc569562f35b125a9336fff03da42f7d1c9aeb026a"
+    },
+    {
+      "bytes": 37224,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-genuine-rpc-local.mjs",
+      "sha256": "25b59f3989437f449a2dd576a9fc7e77900032e01c88f404e10d3ef29a920f0d"
+    },
+    {
+      "bytes": 30468,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-live-reorg-local.mjs",
+      "sha256": "e57be2afcf9a0ed9c1b3a915c3f61e875ab2d64bd678e9889a96e83de08e6e64"
+    },
+    {
+      "bytes": 37220,
+      "path": "apps/yunipals-market-api/scripts/native-arena-current-selected-v2-genuine-rpc-local.mjs",
+      "sha256": "18b5562579146bca89ee5a2cbd29a337540f3fffe6ea28fd1e2427fb1b467572"
+    },
+    {
+      "bytes": 1936,
+      "path": "ops/arena-current-genuine-rpc/README-live.md",
+      "sha256": "970dc9e9b7d7bcfdb9e5476ce6fb759c72ce452b35aa31f91d3d6e9ff0454a6a"
+    },
+    {
+      "bytes": 2615,
+      "path": "ops/arena-current-genuine-rpc/README.md",
+      "sha256": "9ed5d4ae11e62ff7a15a1a7a5c14449278f266524b33c6ba44329da4ac7288ec"
+    },
+    {
+      "bytes": 1872,
+      "path": "ops/arena-current-genuine-rpc/cleanup-check.mjs",
+      "sha256": "f275aaada71210dfe310a5f85a10754bcfd3238389fc8186ba76052f88862c7e"
+    },
+    {
+      "bytes": 2485,
+      "path": "ops/arena-current-genuine-rpc/prepare-live.py",
+      "sha256": "97355c793b6e522c8f21e2a457521d1a0d8dcb1b1777cc54e7ef6e1c40cad05b"
+    },
+    {
+      "bytes": 5954,
+      "path": "ops/arena-current-genuine-rpc/prepare.py",
+      "sha256": "1eafe4cf06d36b14a1c264e029c6bd8d877f6b2cfcdba05cacde02fe569ac99c"
+    },
+    {
+      "bytes": 6709,
+      "path": "ops/arena-current-genuine-rpc/run-live.py",
+      "sha256": "e420358fe0953d15fe73c42d9414ede23581cc0ecc477c5b8cb5d1d6a2faafac"
+    },
+    {
+      "bytes": 6713,
+      "path": "ops/arena-current-genuine-rpc/run-selected-v2.py",
+      "sha256": "e6b078466322c76268d766d47477416b195c24dad6d75ef908236799733df5a5"
+    },
+    {
+      "bytes": 6710,
+      "path": "ops/arena-current-genuine-rpc/run-selected.py",
+      "sha256": "00f6b392b179e05e473f06e336d60de4c66edae8182dfca7522ea7470cdd06d6"
+    },
+    {
+      "bytes": 6701,
+      "path": "ops/arena-current-genuine-rpc/run.py",
+      "sha256": "c0dfda0db42f8f28f76e94d9fb294ad4292b6346f14a5f166ac6a44089f3ab98"
+    },
+    {
+      "bytes": 23810,
+      "path": "docs/unified-indexer/arena-current-genuine-rpc-combined-acceptance-2026-10-22.json",
+      "sha256": "15516535df88adbfd18e082106ea68cca18fc710193ec0109a5d61af52fdd3dc"
+    }
+  ],
+  "format": "arena-current-genuine-rpc-publication-v1",
+  "frozen": true
+}

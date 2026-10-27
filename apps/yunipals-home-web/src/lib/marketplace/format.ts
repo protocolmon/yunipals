@@ -1,6 +1,7 @@
 import { formatUnits } from "viem";
 
 import type { MarketOrder } from "@/lib/marketplace/marketApi";
+import { formatRoundedAmount } from "@/lib/format";
 
 export function formatMarketAmount(
   value: string,
@@ -15,12 +16,9 @@ export function formatMarketCardAmount(
   value: string,
   order: Pick<MarketOrder, "currency">
 ) {
-  const amount = BigInt(value);
-  const magnitude = amount < 0n ? -amount : amount;
-  const discardedDigits = Math.max(0, magnitude.toString().length - 3);
-  const step = 10n ** BigInt(discardedDigits);
-  const roundedMagnitude = ((magnitude + step / 2n) / step) * step;
-  const rounded = amount < 0n ? -roundedMagnitude : roundedMagnitude;
-  const prefix = rounded === amount ? "" : "≈ ";
-  return `${prefix}${formatMarketAmount(rounded.toString(), order)}`;
+  return formatRoundedAmount(
+    BigInt(value),
+    order.currency.decimals,
+    order.currency.symbol
+  );
 }

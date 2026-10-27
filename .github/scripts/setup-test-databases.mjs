@@ -61,7 +61,7 @@ try {
       "yunipals_bnb_test",
       "yunipals_rarity_test",
       "yunipals_ponder_dependency_test",
-      "exomon_test_ci"
+      "exomon_test_unified"
     ]) {
       const result = await client.query(
         "SELECT 1 FROM pg_database WHERE datname=$1",

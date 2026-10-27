@@ -105,25 +105,43 @@ export class ArenaAdjudicator {
     ) => Promise<ValidationReport>
   ) {}
 
-  async step(deployment: string, id: string, budgetMicrousd = 1_600_000) {
+  async step(
+    deployment: string,
+    id: string,
+    budgetMicrousd = 1_600_000,
+    expectedIncarnation?: string
+  ) {
+    await this.api.selected(deployment);
+    const native = this.api.native;
+    const origin = native
+      ? await native.check(id, "referee", expectedIncarnation)
+      : null;
+    const incarnation = origin?.context.incarnation ?? "legacy";
     const prior = await this.pool.query<SavedAdjudication>(
-      "SELECT * FROM yunipals_arena.adjudication WHERE deployment=$1 AND tournament_id=$2",
-      [deployment, id]
+      "SELECT * FROM yunipals_arena.adjudication WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+      [deployment, id, incarnation]
     );
-    if (prior.rows[0]) return prior.rows[0];
-    const row = (
-      await this.pool.query<{ input_hash: string; ciphertext: string }>(
-        `SELECT f.input_hash,f.ciphertext FROM yunipals_arena.frozen_input f
+    if (prior.rows[0]) {
+      if (origin && prior.rows[0].input_hash !== origin.proof.inputHash)
+        throw new Error("Saved adjudication has a different native input.");
+      return prior.rows[0];
+    }
+    const row = origin
+      ? { input_hash: origin.proof.inputHash, ciphertext: origin.ciphertext }
+      : (
+          await this.pool.query<{ input_hash: string; ciphertext: string }>(
+            `SELECT f.input_hash,f.ciphertext FROM yunipals_arena.frozen_input f
        JOIN yunipals_arena.tournament t ON t.deployment=f.deployment AND t.id=f.tournament_id
        WHERE f.deployment=$1 AND f.tournament_id=$2 AND f.revealed_at IS NOT NULL
+       AND f.incarnation='legacy'
        AND t.state->>'phase'='resolving' AND t.state->>'inputHash'=f.input_hash`,
-        [deployment, id]
-      )
-    ).rows[0];
+            [deployment, id]
+          )
+        ).rows[0];
     if (!row)
       throw new Error("Adjudication requires the confirmed revealed input.");
     const { input } = this.cipher.open<{ input: RefereeInput }>(
-      `${deployment}/${id}/input`,
+      `${origin?.context.cipherContext ?? `${deployment}/${id}`}/input`,
       row.ciphertext
     );
     if (`0x${sha256(canonicalJson(input))}` !== row.input_hash)
@@ -166,8 +184,14 @@ export class ArenaAdjudicator {
       baseline,
       this.schema
     );
-    await this.api.reserve(deployment, id, request, budgetMicrousd);
-    const task = await this.api.step(deployment, id);
+    await this.api.reserve(
+      deployment,
+      id,
+      request,
+      budgetMicrousd,
+      incarnation
+    );
+    const task = await this.api.step(deployment, id, incarnation);
     if (task.state !== "completed" || !task.response)
       return { state: task.state };
     const candidate = refereeCandidate(task.response);
@@ -190,10 +214,16 @@ export class ArenaAdjudicator {
       )
         throw new Error("Validated winners do not match the paid seats.");
     }
+    const accepted = origin ? await native!.refresh(origin, "referee") : null;
     return transaction(this.pool, async (db) => {
+      if (accepted)
+        native!.same(
+          accepted,
+          await native!.check(id, "referee", incarnation, db)
+        );
       await db.query(
-        `INSERT INTO yunipals_arena.adjudication(deployment,tournament_id,input_hash,outcome_hash,candidate,validation,state,winners)
-         VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT DO NOTHING`,
+        `INSERT INTO yunipals_arena.adjudication(deployment,tournament_id,input_hash,outcome_hash,candidate,validation,state,winners,incarnation)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO NOTHING`,
         [
           deployment,
           id,
@@ -202,13 +232,14 @@ export class ArenaAdjudicator {
           JSON.stringify(candidate),
           JSON.stringify(validation),
           validation.valid ? "valid" : "invalid",
-          winners ? JSON.stringify(winners) : null
+          winners ? JSON.stringify(winners) : null,
+          incarnation
         ]
       );
       const saved = (
         await db.query<SavedAdjudication>(
-          "SELECT * FROM yunipals_arena.adjudication WHERE deployment=$1 AND tournament_id=$2",
-          [deployment, id]
+          "SELECT * FROM yunipals_arena.adjudication WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+          [deployment, id, incarnation]
         )
       ).rows[0]!;
       if (

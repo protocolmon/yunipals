@@ -1,0 +1,50 @@
+{
+  "format": "yunipals-restored-managed-host-preparation-v2-independent-review-v1",
+  "verdict": "PASS",
+  "scope": "Source-only bounded inactive staging; no production adoption, retirement or service action.",
+  "sourcePacketSha256": "8f127cfb79690d8aa439a92e7db9139a5ba5534e52beb17f8d7d9faa7a868201",
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-host-preparation-v2.py",
+      "bytes": 14018,
+      "sha256": "da720c27ebde1400662c1723fa2fe770e4d006f42d4975e59777c2f06e1a36a3"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-host-preparation-v2.test.py",
+      "bytes": 10385,
+      "sha256": "0fe5652ba2dc3bbb362565f7c1a4b443b6dd3fe21113ebeb840a2b9be3e8f550"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-managed-host-preparation-v2.md",
+      "bytes": 5819,
+      "sha256": "2ca84d70501b9fef62ef325e104e31fdb174e189a9a4925ac88f192a81b37a8a"
+    },
+    {
+      "path": "docs/unified-indexer/ypal-restored-managed-host-preparation-v2-2026-10-24.json",
+      "bytes": 2650,
+      "sha256": "283e80c4006b96e85eab7c0af16ea9cdaee1fbd6a46505534768eefddac1690a"
+    }
+  ],
+  "verification": {
+    "rootCommand": "python3 -B ops/unified-indexer-transition/ypal-restored-managed-host-preparation-v2.test.py",
+    "rootGroupsPassed": 10,
+    "rootOutputSha256": "c6a5e62cfcf1348fcf4805dfef7e24d9bffeb7f0b8ab0d03f1d30e653afb5803"
+  },
+  "reviewedBoundaries": [
+    "Immutable75d namespace derivation changes only format/audit BASE and the one explicit parent preservation capture seam.",
+    "Fixed886 packet plus original efdd diagnostic and3720 input hashes bind actual legacy actor, activation, four definitions, two typed ordered environment files and program/config fingerprints.",
+    "All other inactive staging/preflight bodies remain bytecode-identical, including exact88-file plan, pinned public commit, proxy/TLS defaults, bounded fetches, exclusive publication and retained inode/mode checks.",
+    "Read-only legacy preservation grants no installed application closure, managed/current-writer, retirement, source-readiness or financial authority.",
+    "Published v1 and managed ea266 remain unchanged; the later managed owner still requires the legacy parent terminal.",
+    "Actual review then stage must use their real review hash; partial or unknown staging grants no automatic retry."
+  ],
+  "productionActionsByThisReview": {
+    "hostCalls": 0,
+    "databaseWrites": 0,
+    "serviceActions": 0,
+    "providerCalls": 0
+  },
+  "actualHostPreparationCompleted": false,
+  "managedActivationQualified": false,
+  "goalComplete": false
+}

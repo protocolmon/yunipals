@@ -1,0 +1,84 @@
+{
+  "format": "yunipals-reader-peer-runtime-production-v1",
+  "actualHostQualified": true,
+  "producerSha256": "06eb5f166dbbc746336d93933f35c2aca5ac9d9ff3750af03690d79a39caad76",
+  "publicSourceCommit": "f4e0b82bc5405473ae9498078b413958eaf456bc",
+  "publicFilesFetched": 15,
+  "sourceFileBytesSentOverSSH": 0,
+  "privatePayloadTransferred": false,
+  "actualReadonlyReviewSha256": "e05f5dde65576afc5d49ca089e1879c5c2ce8c0c49728cf72b38d20963bac552",
+  "actualReadonlyReviewHash": "4cf783c70530ff9f16978999c03516e6d7683a8fd498eec5783e8464ed3d3840",
+  "actualStageReceiptSha256": "6efd1d9d5ee083e71fe3b99ac3aff6238c9b96b5a0da5ae3e2d961bf71a25107",
+  "actualQualificationReceiptSha256": "521e0bb514f1f6ba306b82d489f19ea53183dcdd2aa1e76aa65498cc184f1899",
+  "stage": {
+    "existingPermissionChanges": 0,
+    "format": "yunipals-reader-peer-runtime-host-v1",
+    "newPublicFiles": 8,
+    "publicFiles": 13,
+    "stageResultSha256": "6efd1d9d5ee083e71fe3b99ac3aff6238c9b96b5a0da5ae3e2d961bf71a25107",
+    "staged": true
+  },
+  "qualification": {
+    "applicationStarted": false,
+    "coordinatorIntegrated": false,
+    "databaseConnections": 0,
+    "existingPermissionChanges": 0,
+    "format": "yunipals-reader-peer-runtime-host-v1",
+    "loadedPgDependencies": {
+      "databaseConnections": 0,
+      "inventoryMatched": true,
+      "loadedFileGraphSha256": "b0771ea612bfa2266ced690021f5c1a6332ef8aab75351b039453056ee98b5f4",
+      "loadedFiles": 32,
+      "poolConstructed": false,
+      "transportAttempts": 0
+    },
+    "peerCount": 2,
+    "peers": {
+      "postgres": {
+        "gid": 113,
+        "uid": 111
+      },
+      "yunipals_unified_api": {
+        "gid": 962,
+        "uid": 968
+      }
+    },
+    "poolConstructed": false,
+    "preEvaluationDependencyProof": {
+      "allDependencyTreesMatchedBeforeEvaluation": true,
+      "databaseConnections": 0,
+      "dependencyFiles": 55283,
+      "dependencyLinks": 868,
+      "dependencyNodes": 60849,
+      "dependencyRoots": 5,
+      "inventoryDependencyGraphSha256": "896c6e27b0b2bb60783713546e6401c2a86e859f9e257500de19abebf6023e15",
+      "moduleEvaluationPerformed": false,
+      "providerCalls": 0
+    },
+    "productionDependencies": {
+      "externalEntries": 16,
+      "fullDependencyTreeRehashed": false,
+      "inventorySha256": "f2bce24072a068d2ac14b2418e89ef1a8332a8db4c28c0103bc305e8b1a0a3b7",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "publicFilesSha256": "15c17b53abe260ac234bf28c6616ba4fdee20a58c9a66fb91d344773bdd0d2f2",
+      "publicFilesVerified": 22,
+      "sourceInstallSha256": "0093abc56f8942b552a601d2eea925af04ebb834f01dd57ea596deaa8ee2ca42"
+    },
+    "providerCalls": 0,
+    "publicFiles": 13,
+    "qualificationResultSha256": "521e0bb514f1f6ba306b82d489f19ea53183dcdd2aa1e76aa65498cc184f1899",
+    "qualified": true,
+    "serviceActions": 0
+  },
+  "authorityLimits": {
+    "publicModuleTransportQualified": true,
+    "actualRestrictedUidMappingQualified": true,
+    "coordinatorIntegrated": false,
+    "sourceCoverageQualified": false,
+    "canonicalReadinessQualified": false,
+    "readerRolesAdmitted": false,
+    "servingTrafficSwitched": false
+  },
+  "priorRejectedPrivateUploadExecuted": false,
+  "fullPrivateLogsExported": false
+}

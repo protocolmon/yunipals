@@ -1,0 +1,61 @@
+{
+  "format": "yunipals-arena-ypal-restored-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.py",
+      "bytes": 78408,
+      "sha256": "cd4c11b5f0127f5b852aa14b72334da5efad77c26625abf4d4c9ae9c3783a91a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.source.py",
+      "bytes": 8534,
+      "sha256": "68d1d2c91abc8e981c8ef19b7f4a2c7edf13bbba14ac3d2f7507da192adaf737"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.test.py",
+      "bytes": 10588,
+      "sha256": "f89b730234ee41670826e07cd3b0d3e598c4612f264e95a6222c5ca43414283a"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.manifest.json",
+      "bytes": 2203,
+      "sha256": "0ded970fe47ea506e855e1e37a6c4dec84526dafb32f88a32299bbb8d763e190"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-restored-v1.md",
+      "bytes": 5112,
+      "sha256": "abdcf1daf0f53c10d7106b09abe4fea41ced71661e4e7b70ead08c8b08176416"
+    }
+  ],
+  "historicalOwner": {
+    "path": "ops/unified-indexer-transition/arena-ypal-native-v2.py",
+    "bytes": 77709,
+    "sha256": "92b043b5a69d8cf8e62085f9c17545e8fb0a2ff2658916b8c62a2aa85216f04e"
+  },
+  "commonFunctionChanges": [
+    "validate_manifest",
+    "Host.normal",
+    "validate_phase_leaf",
+    "main"
+  ],
+  "identityConstantsChanged": [
+    "FORMAT",
+    "BASE",
+    "MANIFEST",
+    "SOURCE_CONTEXT"
+  ],
+  "historicalOperationalAndPrivateSQLBodiesUnchanged": true,
+  "rootLocalControlsPassed": 39,
+  "independentLocalControlsPassed": 39,
+  "manifestEntriesAuthenticated": 12,
+  "canonicalCoverageQualified": false,
+  "roleAdmissionQualified": false,
+  "credentialsConfiguredByThisOwner": false,
+  "nativeWorkersStarted": false,
+  "productionQueries": 0,
+  "productionWrites": 0,
+  "providerRequests": 0,
+  "serviceChanges": 0,
+  "migrationInvocations": 0
+}

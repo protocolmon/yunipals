@@ -3,7 +3,8 @@ import { assertRecoveryRuntimeEnvironment } from "../scripts/metadata/recovery.j
 
 describe("recovery runtime connection guard", () => {
   const selected = {
-    DATABASE_URL: "postgresql://localhost/metadata_archive_test_recovery_example",
+    DATABASE_URL:
+      "postgresql://localhost/metadata_archive_test_recovery_example",
     DATABASE_SCHEMA: "recovery_chain",
     READ_DATABASE_SCHEMA: "recovery_read",
     METADATA_SOURCE_MODE: "archive",
@@ -11,14 +12,45 @@ describe("recovery runtime connection guard", () => {
   };
 
   it("accepts the same recovery configuration in the CLI and runtime", () => {
-    expect(() => assertRecoveryRuntimeEnvironment(selected, { ...selected })).not.toThrow();
+    expect(() =>
+      assertRecoveryRuntimeEnvironment(selected, { ...selected })
+    ).not.toThrow();
   });
 
   it("rejects a different database or schema without disclosing connection values", () => {
-    const otherUrl = "postgresql://private-user:private-password@localhost/live";
-    expect(() => assertRecoveryRuntimeEnvironment(selected, { ...selected, DATABASE_URL: otherUrl }))
-      .toThrow("Recovery runtime environment mismatch: DATABASE_URL");
-    expect(() => assertRecoveryRuntimeEnvironment(selected, { ...selected, READ_DATABASE_SCHEMA: "live_read" }))
-      .toThrow("Recovery runtime environment mismatch: READ_DATABASE_SCHEMA");
+    const otherUrl =
+      "postgresql://private-user:private-password@localhost/live";
+    expect(() =>
+      assertRecoveryRuntimeEnvironment(selected, {
+        ...selected,
+        DATABASE_URL: otherUrl
+      })
+    ).toThrow("Recovery runtime environment mismatch: DATABASE_URL");
+    expect(() =>
+      assertRecoveryRuntimeEnvironment(selected, {
+        ...selected,
+        READ_DATABASE_SCHEMA: "live_read"
+      })
+    ).toThrow("Recovery runtime environment mismatch: READ_DATABASE_SCHEMA");
+  });
+
+  it("rejects mismatched ownership releases and metadata ingestion modes", () => {
+    for (const key of [
+      "OWNERSHIP_READ_MODE",
+      "OWNERSHIP_READ_SCHEMA",
+      "OWNERSHIP_RELEASE_ID",
+      "BNB_CONFIRMATIONS",
+      "YUNIPALS_PROJECTION_MODE",
+      "BASE_METADATA_INGESTION",
+      "UNIFIED_INDEXER_DATABASE_URL",
+      "UNIFIED_INDEXER_RELEASE_ID"
+    ]) {
+      expect(() =>
+        assertRecoveryRuntimeEnvironment(selected, {
+          ...selected,
+          [key]: "different"
+        })
+      ).toThrow(`Recovery runtime environment mismatch: ${key}`);
+    }
   });
 });

@@ -1,0 +1,61 @@
+{
+  "format": "yunipals-variant171-calibrated-holo-mask-proof-v1",
+  "at": "2026-10-23T21:47:22.422274+00:00",
+  "variantId": 171,
+  "traits": {
+    "type": "Yuniaqua",
+    "color": "Yellow",
+    "horn": "Diamond",
+    "glitter": "Yes"
+  },
+  "image": {
+    "path": "/root/yunipals/docs/boosters/artwork-prototype/runs/yuniaqua-yellow-diamond-glitter-yes-8bc1f30011-a01/card.png",
+    "sha256": "46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482",
+    "unchanged": true
+  },
+  "mapping": {
+    "path": "/root/yunipals/docs/boosters/artwork-runtime/masks/46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482.json",
+    "sha256": "c27e32081bb317a1156eeaf13d3790eddd870f694bb8e8c4d6b3d2c357b13a14",
+    "numericSvgParts": 9,
+    "backgroundStarCount": 28,
+    "registeredUsing": "art_runtime register-masks"
+  },
+  "checks": {
+    "foregroundLandmarks": {
+      "hornTip": true,
+      "hornMiddle": true,
+      "hornBase": true,
+      "leftFinTip": true,
+      "leftFinMiddle": true,
+      "leftFinLower": true,
+      "rightFinTip": true,
+      "rightFinMiddle": true,
+      "rightFinLower": true,
+      "leftMane": true,
+      "neck": true,
+      "rightMane": true,
+      "chest": true,
+      "rump": true,
+      "frontFarFoot": true,
+      "frontNearFoot": true,
+      "hindFarFoot": true,
+      "hindNearFoot": true,
+      "tailMiddle": true,
+      "tailTip": true
+    },
+    "starCentersAllInBackground": true,
+    "starCount": 28
+  },
+  "visualReview": {
+    "exactImageViewed": true,
+    "publisherEquivalentSeparatePathUnionOverlayViewed": true,
+    "hornFinsManeBodyFeetTailCovered": true,
+    "backgroundOnlyStarCenters": true,
+    "overlay": "/tmp/yunipals-171-mask-overlay-final-20261023.png",
+    "overlaySha256": "0a6c89c5172e738322df70209c0dd1c766d426e7e71ba485309902f86ac360c9"
+  },
+  "imageGenerationCalls": 0,
+  "rasterEdits": 0,
+  "publications": 0,
+  "productionActions": 0
+}

@@ -1,0 +1,74 @@
+{
+  "actualInputsRequired": [
+    "actual V5b admission result/plan/context",
+    "actual candidate input and staged candidate result",
+    "actual metadata execution input"
+  ],
+  "claims": {
+    "grantEffects": 0,
+    "historicalBodiesMutated": false,
+    "newNativeBuild": false,
+    "newPrivateCredentials": false,
+    "oldRestoredCurrentValidatorPassed": false,
+    "readersCutOver": false,
+    "sameNative71e": true
+  },
+  "dependencies": [
+    {
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-consumer-context-v1.py",
+      "sha256": "5a1f4629899bed7ad498c84f016afa75cacbaf67663974d94c65453a84787986"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-alchemy-ordinary-runtime-v1.py",
+      "sha256": "3bf5811a6bc6163ede96e18ce57e9b0b45583889c15a639b79291d8c3be31be5"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-fresh-forward-epoch-v1.py",
+      "sha256": "0d6d97ad9bb2ac258380586344e194c6c64a83e8c480cfa9aed600cb292ca81c"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-metadata-handover-v1.py",
+      "sha256": "cf7799dbbfc68bf1fba4633651df2b32aa5a89d61e1991754bc890017a82bbf3"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-restored-metadata-context-v1.py",
+      "sha256": "fbb0c43433a943fdf10a85c8eb25e1cb9a30a34eec7d36f20826a16dfe86c8f4"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-native-metadata-candidates-v1.py",
+      "sha256": "146128b95c9577a555b8c6119f302df62f703425132eeecb34dea10129e74525"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-native-cutover-proof-v1.py",
+      "sha256": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-readview-v5.py",
+      "sha256": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2"
+    },
+    {
+      "file": "ops/unified-indexer-transition/ypal-ordinary-read-admission-v5b.py",
+      "sha256": "a47d4f6b41839d3856244b7d08a92d3a8f56de71b8f566a22122bfb80f5213c3"
+    },
+    {
+      "file": "ops/unified-indexer-transition/retained-workers-stage-v1.py",
+      "sha256": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416"
+    },
+    {
+      "file": "ops/unified-indexer-transition/metadata-normalization-runtime-install-v1.py",
+      "sha256": "08fa7d4cd522ecfab8140e00ded0fe384ad92ad3f7d5df8b07d96e85d8b4e8ab"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-metadata-handover-v5-preparation",
+  "ownerSha256": "9b9184e685d3171beba3bce2f09aa3ddbb9c57f980e5243bd4c9710017f7825f",
+  "runtimeSha256": "dc0e4a9bc5f4cfbc895c0a8a734c5f11692d3ee33a2f1389fc1b231313bb6e6c",
+  "sourcePrerequisite": "actual ordinary3bf standalone epoch initially; caller-owned explicit current source phase later",
+  "sourcesSha256": "c9bb9850172433aa12db19ca7be92a27ef86e4ec4e4578c54fbaa1eb9f48f4a9",
+  "testSha256": "b2947a6d2028e28fbc472c1ce5dc248d1e681fad3565eb745a5516a096bc2eaa",
+  "validation": {
+    "focusedControlsPassed": 9,
+    "independentFocusedControlsPassed": 9,
+    "metadataAdoptionOrSelection": false,
+    "productionCandidateStage": false
+  }
+}

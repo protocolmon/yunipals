@@ -1,0 +1,123 @@
+{
+  "format": "yunipals-permit-buyer-frontend-independent-review-v1",
+  "reviewedAt": "2026-10-23T16:22:12.482982+00:00",
+  "verdict": "passed",
+  "openConcreteFindings": 0,
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-home-web/src/hooks/useBoosterActions.ts",
+      "sha256": "c8fc27c50f5316b2f72bd3c10955a614a1df520d7c5e5708d8e3b3e3e82d689c"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.ts",
+      "sha256": "94ac4636b35c08f7685653c05b29cb159e246f0e95ab7dee82fe838b7575fa0f"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.test.ts",
+      "sha256": "8aeb66bffb0570b1ba0bf1fd07622515e4eefa9bc7a3820839572212407314d7"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.ts",
+      "sha256": "c176ed66c34b88084150e439fec40ab3a5c2cdd35ae69106ac1fc6e56bce4cd1"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.test.ts",
+      "sha256": "6763a40af96183a670e6112b53852ac1a5db71df86c157231857a76988d29d81"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-purchase-ui.mjs",
+      "sha256": "4f8505fd6bc0ec6bcf0c629135b82181ef303182cd0662db01670edbb9c2a452"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx",
+      "sha256": "a5ab4092456ed4ce05e0a8db17973c34b5a3eb6f1de14d9b9097a68e7dae2ea1"
+    }
+  ],
+  "independentValidation": {
+    "helperControlsPassed": 7,
+    "revealReceiptControlsPassed": 12,
+    "actualComponentBrowserGroupsPassed": 16,
+    "additionalAdversarialProbe": {
+      "case": "purchase deadline expires after final simulation begins but before wallet send",
+      "result": {
+        "walletSendAttempts": 0,
+        "recordedTransactions": 0,
+        "signatures": 1
+      },
+      "frozenHarnessSha256": "4f8505fd6bc0ec6bcf0c629135b82181ef303182cd0662db01670edbb9c2a452"
+    },
+    "browserErrors": [],
+    "evidence": [
+      {
+        "file": "/tmp/yunipals-permit-buyer-independent-helper-20261023.log",
+        "sha256": "d44b99b214be4c9ee44dadf81c90203214069431729add1c1538caa23ccbf10e"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-independent-reveal-20261023.log",
+        "sha256": "31cea087aec120dc0be279fe8ca404d2eb2c03a78efeb62c1b3d55683b89c490"
+      },
+      {
+        "file": "/tmp/yunipals-booster-permit-purchase-independent-ui-fixed-20261023.json",
+        "sha256": "b46c90118ce60539ac2af8c21baa7fe7ccafa22965cdf1714cf3ae7e0b0d4080"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-independent-ui-fixed-20261023.mjs",
+        "sha256": "e0d4e7b6de94b082e7fc4586a8426ef9751aa32fc728fa4f3ecff9b297dfb41e"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-independent-ui-fixed-20261023.log",
+        "sha256": "7def06c3dd962ee4c4314672bbbb12b40bc243f430975fcabcde4b1b9eac81d3"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-independent-expiry-finding-20261023.json",
+        "sha256": "14bcc44c696dabfa763a4b945e38804b991d9bff5eccedf55fe6f1cc4f26fca0"
+      }
+    ]
+  },
+  "reviewedSafeguards": [
+    "Capability getter and independently verified EIP-712 domain gate permit use; known previous engines keep the separately reviewed approval flow.",
+    "Permit binds the current owner, configured engine spender, token, exact aggregate price, nonce, Base chain and immutable purchase deadline; recovered signer must match the owner.",
+    "Unsigned review makes no unapproved opening simulation and no transaction. First explicit confirmation signs only, then simulates and estimates the complete signed call; second explicit confirmation sends one engine transaction.",
+    "Fresh registry, price, supply, token balance, ETH balance, VRF ceiling, nonce and domain checks precede signing and send. A consumed permit is accepted only with sufficient exact-price allowance.",
+    "Latest wallet, account and chain are checked across awaits, with a synchronous expiry/review/wallet fence immediately before send. Double clicks are serialized.",
+    "Permit signature and calldata stay in memory; persisted receipt tracking contains only transaction identity and request expectations, including replacement tracking.",
+    "Actual transaction calldata and exact request receipts retain batch grouping/count checks; only successful chain receipts confirm. Pending or reverted transactions do not claim a reveal.",
+    "Unsupported or rejected permits never send an automatic fallback approval; separate approval is an explicit fresh review."
+  ],
+  "correctedFinding": {
+    "severity": "P2",
+    "status": "fixed_and_independently_reproduced",
+    "originalHookSha256": "9ef3d38e239509db6234361fd045ec09cae3d40ea2d4730f3bee0484e43af632",
+    "problem": "Expiry during the awaited final preflight could reach wallet.sendTransaction after the initial expiry check, causing an avoidable deadline-reverted transaction.",
+    "correction": "The final synchronous expiry, exact review and current wallet/account/chain fence runs after the last awaited preflight and immediately before wallet entry.",
+    "originalWalletSendAttempts": 1,
+    "finalWalletSendAttempts": 0,
+    "authorAdditionalRegression": "Expiry during final getAddresses preflight also refuses before wallet entry."
+  },
+  "relatedEvidence": [
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/buyer-frontend-validation.json",
+      "sha256": "db86647ea8ebc9d1e927fcbadf2cd0695000be506a863e9ad2ea5b2ad44fddee"
+    },
+    {
+      "path": "docs/boosters/mainnet-launch/permit-engine-independent-review-2026-10-23.json",
+      "sha256": "5efcfe74b92fd33db00ff7b957d7ba600d7d220deb6cb41bb53cccc3b61ee816"
+    },
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/upgrade.unsigned.json",
+      "sha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc"
+    }
+  ],
+  "actions": {
+    "productEdits": 0,
+    "productionActions": 0,
+    "realProviderCalls": 0,
+    "realWalletSignatures": 0,
+    "realTransactions": 0
+  },
+  "limits": [
+    "The independent browser executes the real hook, Button and receipt code using synthetic local signing keys and mocked RPC/wallets. It does not establish mainnet permit acceptance.",
+    "The contract, unsigned package and owner activation have their own separate reviews and deployment gates. This verdict covers the finite buyer source files above.",
+    "The browser runner uses a separate Vite cache/output and preserves the author report; its extra test expires the purchase during the final simulation and counts attempts at wallet entry."
+  ]
+}

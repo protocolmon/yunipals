@@ -29,19 +29,12 @@ import { ArenaIntake } from "./intake";
 import { projectEvent, type ArenaEvent } from "./projection";
 import { migrateArena } from "./schema";
 import { ArenaClientTransactions } from "./clientTransactions";
-import { ArenaReadModels } from "./readModels";
-import { arenaHealth } from "./health";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { ARENA_USDC } from "@protopals/yunipals-market-core/arena";
 import { ArenaSettlement } from "./settlement";
 import { createArenaApp } from "./http";
 import { ArenaIdentities, loadIdentityProfiles } from "./identity";
-import {
-  ArenaIdentityAnalysis,
-  PreparingIdentity,
-  IDENTITY_MODEL
-} from "./identityAnalysis";
-import { projectConfirmedArena } from "./projector";
+import { projectFinalizedArena } from "./projector";
 import {
   ArenaRefereeApi,
   refereeCandidate,
@@ -74,7 +67,6 @@ after(async () => {
   for (const id of deployments) {
     await transaction(pool, async (db) => {
       for (const table of [
-        "identity_job",
         "client_transaction",
         "capacity",
         "media_job",
@@ -254,211 +246,6 @@ test("wallet challenge is single-use, domain-bound and sessions store only a has
   assert.ok(!JSON.stringify(rows.rows).includes(result.value.token));
 });
 
-test("general artwork checks bind visible wings, reuse cached bytes and stop on ambiguity or uncertain paid POST", async () => {
-  const f = await fixture();
-  const analysis = new ArenaIdentityAnalysis(pool, f.deployment);
-  await pool.query(
-    "INSERT INTO yunipals_arena.capacity(deployment,snapshot,checked_at) VALUES($1,$2,now())",
-    [
-      f.deployment,
-      {
-        openaiBudgetMicrousd: 2000000,
-        openaiBudgetExpiresAt: Date.now() + 60000
-      }
-    ]
-  );
-  const nft = {
-    nftChainId: 1,
-    collection: "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d" as Address,
-    tokenId: "1000000999"
-  };
-  const payload = (cid: string) => ({
-    token: {
-      chain: "ethereum",
-      chain_id: 1,
-      contract_address: nft.collection,
-      token_id: nft.tokenId,
-      image: `https://drive.polychainmonsters.com/ipfs/${cid}`,
-      attributes: [
-        { trait_type: "Type", value: "Unidragon" },
-        { trait_type: "Color", value: "Blue" },
-        { trait_type: "Horn", value: "Spiral" }
-      ]
-    }
-  });
-  let calls = 0,
-    wings = "absent";
-  const fake = (async (url, options) => {
-    if (String(url).startsWith("https://drive.polychainmonsters.com/ipfs/")) {
-      assert.equal(options?.redirect, "error");
-      return new Response(
-        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0])
-      );
-    }
-    assert.equal(String(url), "https://api.openai.com/v1/responses");
-    calls++;
-    const request = JSON.parse(String(options?.body));
-    assert.equal(request.model, IDENTITY_MODEL);
-    assert.deepEqual(request.tools, []);
-    assert.equal(request.store, false);
-    assert.ok(
-      request.input[0].content[1].image_url.startsWith("data:image/png;base64,")
-    );
-    return new Response(
-      JSON.stringify({
-        id: `resp_anatomy${calls}`,
-        status: "completed",
-        usage: { input_tokens: 2000, output_tokens: 70 },
-        output: [
-          {
-            type: "message",
-            content: [
-              {
-                type: "output_text",
-                text: JSON.stringify({
-                  singleSubject: true,
-                  wings,
-                  description:
-                    "Blue unicorn-like dragon with a spiral horn and a curved tail."
-                })
-              }
-            ]
-          }
-        ]
-      })
-    );
-  }) as typeof fetch;
-  const until = Date.now() + 60000;
-  const enqueue = async (cid: string) => {
-    let key = "";
-    await assert.rejects(
-      analysis.resolve(nft, payload(cid), accounts[0]!.address),
-      (e) => {
-        assert.ok(e instanceof PreparingIdentity);
-        key = e.key;
-        return true;
-      }
-    );
-    assert.equal((await analysis.status(key)).state, "preparing");
-    return key;
-  };
-  const first = await enqueue("QmGroundDragon");
-  assert.equal(await analysis.step("test-only", 0, until, fake), "disabled");
-  assert.equal(calls, 0);
-  assert.equal(await analysis.step("test-only", 20000, until, fake), "ready");
-  const ground = await analysis.resolve(nft, payload("QmGroundDragon"));
-  assert.equal(
-    ground.locomotion,
-    "ground",
-    "A dragon name never implies flight"
-  );
-  assert.equal((await analysis.status(first)).state, "ready");
-  const restarted = new ArenaIdentityAnalysis(pool, f.deployment);
-  assert.deepEqual(
-    await restarted.resolve(nft, payload("QmGroundDragon")),
-    ground
-  );
-  assert.equal(calls, 1);
-  wings = "present";
-  await enqueue("QmWingedDragon");
-  assert.equal(
-    await analysis.step("test-only", 20000, until, fake),
-    "idle",
-    "Lifetime allowance cannot be reused"
-  );
-  assert.equal(await analysis.step("test-only", 40000, until, fake), "ready");
-  assert.equal(
-    (await analysis.resolve(nft, payload("QmWingedDragon"))).locomotion,
-    "flight"
-  );
-  wings = "uncertain";
-  const uncertainWings = await enqueue("QmAmbiguousDragon");
-  assert.equal(await analysis.step("test-only", 60000, until, fake), "review");
-  assert.equal((await analysis.status(uncertainWings)).state, "attention");
-  await assert.rejects(
-    analysis.resolve(nft, payload("QmAmbiguousDragon")),
-    /before entry/
-  );
-  await enqueue("QmTimeoutDragon");
-  const timeout = (async (url, options) => {
-    if (String(url).startsWith("https://api.openai.com/")) {
-      calls++;
-      throw new Error("Connection lost after POST");
-    }
-    return fake(url, options);
-  }) as typeof fetch;
-  assert.equal(
-    await analysis.step("test-only", 80000, until, timeout),
-    "uncertain"
-  );
-  assert.equal(await analysis.step("test-only", 100000, until, fake), "idle");
-  assert.equal(calls, 4, "Timeout never causes another paid candidate");
-  await pool.query(
-    "UPDATE yunipals_arena.identity_job SET profile=jsonb_set(profile,'{locomotion}','\"flight\"') WHERE deployment=$1 AND key=$2",
-    [f.deployment, first]
-  );
-  await assert.rejects(
-    analysis.resolve(nft, payload("QmGroundDragon")),
-    /checksum mismatch/
-  );
-});
-
-test("only the entering wallet can read its locked strategy receipt before collective reveal", async () => {
-  const f = await fixture();
-  const input = await f.submission(0);
-  assert.deepEqual(await f.service.ownStrategy("1", accounts[0]!.address, 0), {
-    seat: 0,
-    locked: false
-  });
-  await f.service.submit("1", accounts[0]!.address, input);
-  const receipt = await f.service.ownStrategy("1", accounts[0]!.address, 0);
-  assert.equal(receipt.locked, true);
-  assert.equal("text" in receipt ? receipt.text : null, input.text);
-  assert.equal(
-    "commitment" in receipt ? receipt.commitment : null,
-    strategyCommitment(contract, 1n, 0, input.text, input.salt)
-  );
-  await assert.rejects(
-    f.service.ownStrategy("1", accounts[1]!.address, 0),
-    /another wallet/
-  );
-  assert.equal((await f.service.publicView("1")).strategies, null);
-});
-
-test("operational health detects stale indexing, uncertain work and overdue deadlines using database reads only", async () => {
-  const f = await fixture();
-  assert.equal(
-    (await arenaHealth(pool, f.deployment, false)).status,
-    "healthy"
-  );
-  await pool.query(
-    "UPDATE yunipals_arena.deployment SET finalized_at=now()-interval '5 minutes',halted=true WHERE id=$1",
-    [f.deployment]
-  );
-  await pool.query(
-    "UPDATE yunipals_arena.tournament SET state=jsonb_set(state,'{deadline}',to_jsonb((extract(epoch FROM now())-3600)::bigint)) WHERE deployment=$1",
-    [f.deployment]
-  );
-  await pool.query(
-    "INSERT INTO yunipals_arena.provider_task(deployment,tournament_id,kind,asset,request_id,state,request,reserved_microusd) VALUES($1,1,'referee','candidate-1',$2,'uncertain','{}',700000)",
-    [f.deployment, randomUUID()]
-  );
-  const health = await arenaHealth(pool, f.deployment, true);
-  assert.equal(health.status, "needs-attention");
-  const codes = health.issues.map((i) => i.code);
-  for (const code of [
-    "indexer-stale",
-    "confirmed-history-halted",
-    "capacity-stale",
-    "operating-funds-or-storage-low",
-    "strategies-transition-overdue",
-    "referee-job-uncertain"
-  ])
-    assert.ok(codes.includes(code));
-  assert.equal(health.externalRequests, 0);
-  assert.ok(!JSON.stringify(health).includes("Secret strategy"));
-});
-
 test("all four simultaneous submissions remain private until the exact input is confirmed", async () => {
   const { service, deployment, submission, emit } = await fixture();
   const inputs = await Promise.all(
@@ -530,105 +317,6 @@ test("incorrect input or commitments never reveals four stored prompts", async (
     deadline: Math.floor(Date.now() / 1000) + 3600
   });
   assert.equal((await service.publicView("1")).strategies, null);
-});
-
-test("history separates credited rewards, pending allocations and aggregate withdrawals; pagination is stable", async () => {
-  const f = await fixture(),
-    reads = new ArenaReadModels(f.service);
-  const winner = accounts[0]!.address,
-    host = accounts[1]!.address;
-  await f.emit("InputFrozen", {
-    id: 1,
-    inputHash: hash("c"),
-    strategyCommitments: [hash("a"), hash("b"), hash("c"), hash("d")],
-    deadline: Math.floor(Date.now() / 1000) + 86400
-  });
-  await f.emit("ResultSettled", {
-    id: 1,
-    resultHash: hash("f"),
-    semifinalOneWinner: 0,
-    semifinalTwoWinner: 2,
-    champion: 0
-  });
-  const pending = await reads.wallet(winner);
-  assert.equal(pending.available, "0");
-  assert.equal(pending.pending, "7600000");
-  assert.equal(pending.winnings, "0");
-  const before = await reads.island("17");
-  assert.equal(before.releasedRewards, "0");
-  assert.equal(before.pendingRewards, "400000");
-  const released = await f.emit("PayoutsReleased", {
-    id: 1,
-    videoHash: hash("e")
-  });
-  await transaction(pool, (db) => projectEvent(db, f.deployment, released));
-  const credited = await reads.wallet(winner);
-  assert.equal(credited.available, "7600000");
-  assert.equal(credited.winnings, "6000000");
-  assert.equal(credited.operationsRewards, "1600000");
-  assert.equal(credited.pending, "0");
-  assert.equal((await reads.wallet(host)).hostingRewards, "400000");
-  const credits = await reads.rewards(winner);
-  assert.deepEqual(credits.items.map((r) => r.kind).sort(), [
-    "operations",
-    "winner"
-  ]);
-  assert.equal(new Set(credits.items.map((r) => r.id)).size, 2);
-  await f.emit("Claimed", {
-    player: winner,
-    recipient: accounts[2]!.address,
-    amount: "7600000"
-  });
-  const withdrawn = await reads.wallet(winner);
-  assert.equal(withdrawn.available, "0");
-  assert.equal(withdrawn.withdrawals, "7600000");
-  const records = await reads.rewards(winner, { limit: 1 });
-  assert.equal(records.items[0]?.kind, "withdrawal");
-  assert.equal(records.items[0]?.tournamentId, null);
-  assert.equal(records.items[0]?.recipient, accounts[2]!.address);
-  assert.ok(records.nextCursor);
-  const older = await reads.rewards(winner, {
-    limit: 1,
-    cursor: records.nextCursor!
-  });
-  assert.deepEqual(older.items.map((r) => r.kind).sort(), [
-    "operations",
-    "winner"
-  ]);
-  const island = await reads.island("17");
-  assert.equal(island.releasedRewards, "400000");
-  assert.equal(island.items[0]?.islandBeneficiary, host.toLowerCase());
-  assert.equal(
-    (await reads.tournaments({ wallet: accounts[2]!.address, role: "host" }))
-      .items.length,
-    0
-  );
-  await f.emit("TournamentOpened", {
-    id: 2,
-    rulesHash: hash("c"),
-    poolHash: hash("d"),
-    deadline: 0
-  });
-  const page = await reads.tournaments({}, { limit: 1 });
-  assert.equal(page.items[0]?.id, "2");
-  await f.emit("TournamentOpened", {
-    id: 3,
-    rulesHash: hash("c"),
-    poolHash: hash("d"),
-    deadline: 0
-  });
-  const next = await reads.tournaments(
-    {},
-    { limit: 1, cursor: page.nextCursor! }
-  );
-  assert.deepEqual(
-    next.items.map((t) => t.id),
-    ["1"]
-  );
-  await assert.rejects(
-    reads.tournaments({ status: "active" }, { cursor: page.nextCursor! }),
-    /cursor/
-  );
 });
 
 test("receipt and cursor alone cannot complete entry: exact indexed effect is required", async () => {
@@ -1011,92 +699,13 @@ test("HTTP rejects cross-origin writes and never sends private submissions or se
   assert.ok(!(await publicResponse.text()).includes(input.text));
 });
 
-test("connected wallets can browse indexed rewards without authentication; private actions still require proof", async () => {
-  const { service, submission, deployment } = await fixture();
-  const app = createArenaApp(service, {
-    entriesEnabled: true,
-    admit: async () => ({})
-  });
-  const wallet = accounts[0]!.address;
-  const input = await submission(0);
-  await service.submit("1", wallet, input);
-  const reads = new ArenaReadModels(service);
-  const publicSummary = await app.request(`/wallets/${wallet}/summary`);
-  assert.equal(publicSummary.status, 200);
-  assert.equal(publicSummary.headers.get("cache-control"), "no-store");
-  assert.deepEqual(
-    await publicSummary.json(),
-    await reads.wallet(wallet.toLowerCase() as Address)
-  );
-  const publicRewards = await app.request(
-    `/wallets/${wallet}/rewards?limit=12`
-  );
-  assert.equal(publicRewards.status, 200);
-  assert.deepEqual(
-    await publicRewards.json(),
-    await reads.rewards(wallet.toLowerCase() as Address, { limit: 12 })
-  );
-  for (const suffix of ["summary", "rewards"]) {
-    assert.equal(
-      (await app.request(`/wallets/not-an-address/${suffix}`)).status,
-      400
-    );
-    const response = await app.request(
-      `/wallets/${accounts[1]!.address}/${suffix}`
-    );
-    assert.equal(response.status, 200);
-    assert.ok(!(await response.text()).includes(input.text));
-  }
-  assert.equal(
-    (await app.request(`/wallets/${wallet}/rewards?limit=999`)).status,
-    400
-  );
-  assert.equal(
-    (await app.request(`/wallets/${wallet}/rewards?cursor=invalid`)).status,
-    400
-  );
-  for (const path of [
-    "/me",
-    "/tournaments/1/strategies/0/receipt",
-    `/transactions/${hash("a")}`
-  ])
-    assert.equal((await app.request(path)).status, 401);
-  for (const path of [
-    "/tournaments/1/admission",
-    "/tournaments/1/strategies",
-    "/transactions"
-  ])
-    assert.equal(
-      (
-        await app.request(path, {
-          method: "POST",
-          headers: {
-            Origin: "https://www.yunipals.com",
-            "Content-Type": "application/json"
-          },
-          body: "{}"
-        })
-      ).status,
-      401
-    );
-  assert.equal(
-    (
-      await pool.query(
-        "SELECT count(*)::int AS count FROM yunipals_arena.challenge WHERE deployment=$1",
-        [deployment]
-      )
-    ).rows[0].count,
-    0
-  );
-});
-
-test("projector uses local confirmations, bounds log reads and fences changed canonical history", async () => {
+test("projector bounds log reads, resumes checkpoints and halts on changed confirmed history", async () => {
   const { deployment } = await fixture();
   let changed = false,
     logCalls = 0;
   const rpc = {
-    getBlock: async (options: { blockNumber?: bigint; blockTag?: string }) => ({
-      number: options.blockNumber ?? 303n,
+    getBlock: async (args: { blockNumber?: bigint }) => ({
+      number: args.blockNumber ?? 303n,
       timestamp: BigInt(Math.floor(Date.now() / 1000)),
       hash: changed ? hash("b") : hash("a")
     }),
@@ -1108,21 +717,21 @@ test("projector uses local confirmations, bounds log reads and fences changed ca
   } as unknown as PublicClient;
   const config = { id: deployment, contract, startBlock: 1n };
   assert.equal(
-    (await projectConfirmedArena(pool, rpc, config)).status,
+    (await projectFinalizedArena(pool, rpc, config)).status,
     "advanced"
   );
   assert.equal(
-    (await projectConfirmedArena(pool, rpc, config)).status,
+    (await projectFinalizedArena(pool, rpc, config)).status,
     "caught-up"
   );
   assert.equal(logCalls, 1);
   changed = true;
   assert.equal(
-    (await projectConfirmedArena(pool, rpc, config)).status,
+    (await projectFinalizedArena(pool, rpc, config)).status,
     "halted"
   );
   assert.equal(
-    (await projectConfirmedArena(pool, rpc, config)).status,
+    (await projectFinalizedArena(pool, rpc, config)).status,
     "halted"
   );
   assert.equal(logCalls, 1);
@@ -1356,79 +965,4 @@ test("real combat validation locks one API candidate and maps fighter IDs to pai
       assert.equal(broadcasts, 2);
     }
   }
-});
-
-test("battle review exposes the exact settled referee request and validation without unrelated provider fields", async () => {
-  const f = await fixture();
-  const app = createArenaApp(f.service, { entriesEnabled: false });
-  const validation = {
-    valid: true,
-    errors: [],
-    matches: [
-      {
-        id: "SF1",
-        health: { left: 30, right: 15 },
-        energy: { left: 65, right: 75 }
-      }
-    ]
-  };
-  await pool.query(
-    "INSERT INTO yunipals_arena.adjudication(deployment,tournament_id,input_hash,outcome_hash,candidate,validation,state,winners) VALUES($1,1,$2,$3,$4,$5,'valid',$6)",
-    [
-      f.deployment,
-      hash("e"),
-      hash("f"),
-      { matches: [] },
-      validation,
-      JSON.stringify([0, 2, 0])
-    ]
-  );
-  await pool.query(
-    "INSERT INTO yunipals_arena.provider_task(deployment,tournament_id,kind,asset,request_id,state,request,reserved_microusd) VALUES($1,1,'referee','candidate-1',$2,'completed',$3,700000)",
-    [
-      f.deployment,
-      randomUUID(),
-      {
-        model: "saved-model",
-        instructions: "Exact system instructions",
-        input: "Exact frozen provider input",
-        reasoning: { effort: "xhigh" },
-        max_output_tokens: 32000,
-        unrelatedPrivateField: "must-not-be-published"
-      }
-    ]
-  );
-  assert.equal((await app.request("/tournaments/1/result")).status, 404);
-  await f.emit("InputFrozen", {
-    id: 1,
-    inputHash: hash("e"),
-    strategyCommitments: [hash("a"), hash("b"), hash("c"), hash("d")],
-    deadline: Math.floor(Date.now() / 1000) + 86400
-  });
-  assert.equal((await app.request("/tournaments/1/result")).status, 404);
-  await f.emit("ResultSettled", {
-    id: 1,
-    resultHash: hash("f"),
-    semifinalOneWinner: 0,
-    semifinalTwoWinner: 2,
-    champion: 0
-  });
-  const response = await app.request("/tournaments/1/result");
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get("cache-control"), "no-store");
-  const value = await response.json();
-  assert.deepEqual(value.validation, validation);
-  assert.deepEqual(value.referee, {
-    model: "saved-model",
-    instructions: "Exact system instructions",
-    input: "Exact frozen provider input",
-    reasoningEffort: "xhigh",
-    maxOutputTokens: 32000
-  });
-  assert.ok(!JSON.stringify(value).includes("must-not-be-published"));
-  await pool.query(
-    "UPDATE yunipals_arena.adjudication SET input_hash=$2 WHERE deployment=$1",
-    [f.deployment, hash("a")]
-  );
-  assert.equal((await app.request("/tournaments/1/result")).status, 404);
 });

@@ -1,0 +1,47 @@
+[Unit]
+Description=Unified Yunipals YPAL EVM and Solana ingestion
+After=network-online.target postgresql.service yunipals-combined-rpc@ethereum.service yunipals-combined-rpc@base.service yunipals-combined-rpc@polygon.service yunipals-combined-rpc@bnb.service
+Wants=network-online.target
+Conflicts=yunipals-ypal-combined-source.service yunipals-unified-source6-free-v2.service yunipals-solana.service yunipals-booster-ypal-source.service yunipals-booster-launch.service yunipals-bnb.service yunipals-islands-indexer.service yunipals-base-islands-v2.service
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=yunipals_unified_shadow
+Group=yunipals_unified_shadow
+WorkingDirectory=/
+Environment=
+EnvironmentFile=
+EnvironmentFile=/opt/yunipals-unified/operations/free-replay-20261020/ypal-managed-indexer-v1/service.public.env
+UnsetEnvironment=DATABASE_URL DATABASE_PRIVATE_URL HELIUS_API_KEY
+ExecStart=/opt/node-v24.18.1/bin/node /opt/yunipals-unified/operations/free-replay-20261020/ypal-managed-indexer-v1/launcher.mjs
+Restart=on-failure
+RestartPreventExitStatus=75
+RestartSec=10
+RuntimeMaxSec=infinity
+TimeoutStopSec=60
+KillMode=control-group
+MemoryMax=6442450944
+MemorySwapMax=0
+TasksMax=128
+LimitCORE=0
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+ReadWritePaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache
+BindPaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.ponder:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/.ponder /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.vite-temp:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/node_modules/.vite-temp /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/ponder-env.d.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder-env.d.ts
+BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/ponder.config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder.config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/booster-config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/boosters/config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/rpc-preflight.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/unified/rpc-preflight.ts
+UMask=0077
+# The existing reviewed literal-IP Helius egress must be attached by the owner.
+# This template alone deliberately permits loopback only.
+
+[Install]
+WantedBy=multi-user.target

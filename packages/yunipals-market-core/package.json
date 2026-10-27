@@ -21,7 +21,12 @@
     "./catalogToken": "./src/catalogToken.ts",
     "./marketAvailability": "./src/marketAvailability.ts",
     "./settledSale": "./src/settledSale.ts",
+    "./receiptEvidence": "./src/receiptEvidence.ts",
+    "./indexedAction": "./src/indexedAction.ts",
+    "./bnbProcessing": "./src/bnbProcessing.ts",
+    "./collectionAbi": "./src/collectionAbi.ts",
     "./seaportEvents": "./src/seaportEvents.ts",
+    "./seaportRuntime": "./src/seaportRuntime.ts",
     "./bnbDiscovery": "./src/bnbDiscovery.ts",
     "./activity": "./src/activity.ts",
     "./openseaOrder": "./src/openseaOrder.ts",
@@ -31,6 +36,9 @@
     "./openseaFulfillment": "./src/openseaFulfillment.ts",
     "./arena": "./src/arena.ts",
     "./arenaAbi": "./src/arenaAbi.ts",
+    "./boosters": "./src/boosters.ts",
+    "./boosterAbi": "./src/boosterAbi.ts",
+    "./boosterCatalog": "./src/boosterCatalog.ts",
     "./arenaViews": "./src/arenaViews.ts"
   },
   "peerDependencies": {

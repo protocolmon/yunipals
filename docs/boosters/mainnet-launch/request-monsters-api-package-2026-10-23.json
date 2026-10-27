@@ -1,0 +1,73 @@
+{
+  "format": "yunipals-booster-request-monsters-public-files-v1",
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-routes.ts",
+      "bytes": 13228,
+      "sha256": "ef84039a17746b4a75ed032106092313cf37479043e0ff23c95d12ddb916839d"
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/api/booster-openapi.ts",
+      "bytes": 4669,
+      "sha256": "86d09c146928bb0bad9b757687fb5c0e186c01bb7658b80bed5eb5de3b72e9be"
+    },
+    {
+      "path": "apps/yunipals-indexer/test/booster-request-monsters.test.ts",
+      "bytes": 10200,
+      "sha256": "67148897a1e8422b3bd1bb943154299a30662e3b6134ef6d6897f24c7dcd5c10"
+    },
+    {
+      "path": "ops/booster-launch/rollout-request-monsters-api-v1.py",
+      "bytes": 17641,
+      "sha256": "a60f03d31c0b7e227d83d92b6fdb2b50f4a510cef38dc92271fb215757d86003"
+    },
+    {
+      "path": "ops/booster-launch/rollout-request-monsters-api-v1-test.py",
+      "bytes": 10382,
+      "sha256": "24e4d9e4c34256468b4bc6697b64dd37a204aa484d685082c605eaf5a52d826e"
+    },
+    {
+      "path": "ops/booster-launch/rollout-request-monsters-api-v1.md",
+      "bytes": 3871,
+      "sha256": "b63912e1ef66ec13df58b35d8173790b10a21c74fb69790d7a0f9c61f0ccbf73"
+    }
+  ],
+  "frozenBuildArtifacts": [
+    {
+      "path": "apps/yunipals-indexer/artifacts/booster-api/booster-api.mjs",
+      "bytes": 31329,
+      "sha256": "8ec7c082de7cbf232923493be6c548f02a4a7a24612807b5845360431c65095c"
+    },
+    {
+      "path": "apps/yunipals-indexer/artifacts/booster-api/booster-artwork-sync.mjs",
+      "bytes": 15797,
+      "sha256": "e2b150124335827d6466d284043050f192066e9fedd782416259c1823cd85e33"
+    },
+    {
+      "path": "apps/yunipals-indexer/artifacts/booster-api/manifest.json",
+      "bytes": 2506,
+      "sha256": "88243717d99d80fdce3f34d453a6e4b1bc2b9e8541381f14ea4c4449b67303df"
+    }
+  ],
+  "canonicalBuildScript": {
+    "path": "apps/yunipals-indexer/scripts/build-booster-api.mjs",
+    "sha256": "b34936c1efc80aa6d36e8a0940cb4740652186b72a176f0ea2b5cf1668dbd123"
+  },
+  "validation": {
+    "apiTestsPassed": 27,
+    "realPgliteRouteCasesPassed": 22,
+    "ownerFilesystemControlsPassed": 9,
+    "indexerTypecheckExitCode": 0,
+    "canonicalBuildPassed": true,
+    "artifactSecretPatternScanPassed": true
+  },
+  "agentProductionMutations": {
+    "serviceActions": 0,
+    "databaseWrites": 0,
+    "upstreamProviderCalls": 0
+  },
+  "actualReadonlyLiveApiProof": {
+    "file": "/tmp/yunipals-booster-api-existing-request-readonly-20261023.json",
+    "sha256": "bac5e45bbd0d0d549e7429e1cc409a9aaf576e6ce198c62fc6fa729c791b9769"
+  }
+}

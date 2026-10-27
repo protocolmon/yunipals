@@ -18,7 +18,35 @@ import { TermsPage } from "@/pages/legal/TermsPage";
 import { OrderRecoveryPage } from "@/pages/orders/RecoveryPage";
 import { OrdersPage } from "@/pages/orders/OrdersPage";
 import { ActivityPage } from "@/pages/orders/ActivityPage";
+import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
+import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const BoosterBatchSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterBatchSetupPage").then((module) => ({
+    default: module.BoosterBatchSetupPage
+  }))
+);
+const BoosterPermitSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterPermitSetupPage").then((module) => ({
+    default: module.BoosterPermitSetupPage
+  }))
+);
+const BoosterMetadataSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterMetadataSetupPage").then((module) => ({
+    default: module.BoosterMetadataSetupPage
+  }))
+);
+const BoosterYpalSetupPage = lazy(() =>
+  import("@/pages/boosters/BoosterYpalSetupPage").then((module) => ({
+    default: module.BoosterYpalSetupPage
+  }))
+);
+const YpalWrapPage = lazy(() =>
+  import("@/pages/wrap/page").then((module) => ({
+    default: module.YpalWrapPage
+  }))
+);
+const freshYpalLaunch = environment.boosterLaunchId === "base-ypal-v1";
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -133,6 +161,66 @@ function AppContent() {
       >
         <Routes>
           <Route path="/" element={<CollectionPage />} />
+          <Route path="/boosters" element={<BoosterPage />} />
+          <Route path="/wrap" element={<YpalWrapPage />} />
+          <Route
+            path="/boosters/setup/ypal"
+            element={<BoosterYpalSetupPage />}
+          />
+          <Route
+            path="/boosters/setup"
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterSetupPage key="smoke" />
+              )
+            }
+          />
+          <Route
+            path="/boosters/setup/standard"
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterSetupPage key="standard" kind="standard" />
+              )
+            }
+          />
+          <Route
+            path="/boosters/setup/batch"
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterBatchSetupPage />
+              )
+            }
+          />
+          <Route
+            path="/boosters/setup/permit"
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterPermitSetupPage />
+              )
+            }
+          />
+          <Route
+            path="/boosters/setup/metadata"
+            element={
+              freshYpalLaunch ? (
+                <Navigate to="/boosters/setup/ypal" replace />
+              ) : (
+                <BoosterMetadataSetupPage />
+              )
+            }
+          />
+          <Route
+            path="/monsters/:collection/:tokenId"
+            element={<BoosterMonsterPage />}
+          />
           <Route path="/arena" element={<LiveArenaPage />} />
           <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />
           <Route

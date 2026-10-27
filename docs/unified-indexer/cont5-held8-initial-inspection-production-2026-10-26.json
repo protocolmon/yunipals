@@ -1,0 +1,73 @@
+{
+  "SQLTransportChanged": false,
+  "action": "inspect",
+  "actualProtectedResultOnly": true,
+  "automaticRetryAllowed": false,
+  "completed": true,
+  "currentOrSQLOutcomeRequalified": false,
+  "format": "root-CONT5-held8-detached-v1",
+  "intentSha256": "9dc0ff4f4827383be4a8cdd6f0ccc66c84a15ba555291edd12c975613e042d8d",
+  "launchReceiptPresent": true,
+  "newCurrentAuthority": false,
+  "newTimingAuthority": false,
+  "observedAt": "2026-10-26T05:33:52.341176+00:00",
+  "operationCompleted": null,
+  "operationResult": null,
+  "payloadSha256": "7055f88f087af12dc14ff95414238373ab03c6150cd478d5d4efe93cfbc9acc3",
+  "sameWorkerEpochAlive": true,
+  "serviceActionsDispatchedByLauncher": 0,
+  "sourceSha256": "cfb94d588e8d2eb0de9e2baf501dba1fa6c93e012ad1aae1dfd02bb47a2a0bb2",
+  "unknownOutcomeRequiresInspection": true,
+  "workerObservation": {
+    "actualKernelEpochQualified": true,
+    "argv": [
+      "/usr/bin/python3",
+      "-I",
+      "-B",
+      "-"
+    ],
+    "bootId": "d1330112-af72-4b2e-a542-25504553ff5e",
+    "commandSha256": "8173f12697cd8e304a05228b0e0b99d4c15bb3d273c895aea17864a915c68097",
+    "cwd": "/root",
+    "descriptors": {
+      "0": {
+        "file": "/var/backups/yunipals-root-cont5-held8-detached-20261026-1/payload.py",
+        "identity": {
+          "st_dev": 2049,
+          "st_gid": 0,
+          "st_ino": 2722923,
+          "st_mode": 33152,
+          "st_nlink": 1,
+          "st_uid": 0
+        }
+      },
+      "1": {
+        "file": "/var/backups/yunipals-root-cont5-held8-detached-20261026-1/worker-stdout.private",
+        "identity": {
+          "st_dev": 2049,
+          "st_gid": 0,
+          "st_ino": 2722933,
+          "st_mode": 33152,
+          "st_nlink": 1,
+          "st_uid": 0
+        }
+      },
+      "2": {
+        "file": "/var/backups/yunipals-root-cont5-held8-detached-20261026-1/worker-stderr.private",
+        "identity": {
+          "st_dev": 2049,
+          "st_gid": 0,
+          "st_ino": 2722934,
+          "st_mode": 33152,
+          "st_nlink": 1,
+          "st_uid": 0
+        }
+      }
+    },
+    "executable": "/usr/bin/python3.12",
+    "pid": 1721904,
+    "startTicks": 6641947974,
+    "state": "R"
+  },
+  "workerObservationErrorClass": null
+}

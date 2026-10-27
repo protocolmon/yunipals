@@ -1,0 +1,33 @@
+{
+  "format": "yunipals-ordinary-source-authority-v4-independent-review",
+  "verdict": "PASS",
+  "scope": "Future source-only successor and local synthetic inventory controls, including a real capability-zero local peer. No active V3 replacement, production failure classification or callback timing qualification.",
+  "sources": {
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v4.py": "ef281eaede36100a2c9502dd29673fc740d969e092f3e765512531b82b58647c",
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v4.test.py": "78c3d9e716e389826c9b9a76ffd181e71a943a430c0212f283d0afce8fc6134d"
+  },
+  "pinnedKernelTemplateSha256": "3b73d2f804c2c64f212c6b11eb3f108087a54af580baecb35ddffa2033dd4e02",
+  "independentlyRerun": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-source-authority-v4.test.py",
+    "passed": 18,
+    "failed": 0,
+    "sourceHashesStableBeforeAndAfter": true
+  },
+  "verified": [
+    "The actual pinned kernel function is compiled with one explicit final-guard seam. Duplicate backend attribution and incomplete/unmapped attribution remain hard failures before the final query.",
+    "The original final SQL query executes once after positive complete attribution. Final rows require bounded unique positive PIDs, bounded backend epoch strings and valid SQL address/port types and ranges; malformed results never become retryable churn.",
+    "Only a separate typed exception for differing valid final rows permits a new read-only observation, with at most three attempts. Inventory, mapping, malformed-row, actor or private/static drift errors are never retried.",
+    "After every classified churn event, the complete live actor, source, routes, private files, mounts and boot snapshot must equal both the initial call frame and acknowledged expected frame. The surrounding native/financial/input/positive-session/final-CAS checks remain unchanged.",
+    "Attempt diagnostics are observations outside the stable authority result. No SQL write, service action, caller action or unknown effect is resent.",
+    "Prior active-version failure remains unclassified; this review makes no claim that it was caused by final-query churn or that future callback timing fits a production deadline."
+  ],
+  "closedFindings": [
+    "The first draft did not validate final clientAddress/clientPort fields before labelling a change retryable; strict typed/address/port validation and genuine-function negative fixtures now cover this."
+  ],
+  "findings": [],
+  "productionActions": 0,
+  "providerCalls": 0,
+  "activeV3Changed": false,
+  "priorProductionFailureClassified": false,
+  "productionTimingQualified": false
+}

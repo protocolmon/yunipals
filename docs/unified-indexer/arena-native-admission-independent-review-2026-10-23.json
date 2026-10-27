@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-23T00:26:29.525199+00:00",
+  "checks": [
+    "Exact227 operational/13 source direct and effective edges, grantors, OIDs, schema identities, negative attributes/membership/owner/function checks.",
+    "Password state and LOGIN are phase-validated independently; only protected expected LOGIN graph changes, current ACL/OIDs never normalized.",
+    "Private in-transaction catalog/OIDs and commit-intent are fsynced before COMMIT; exact psql ACK and fresh postcatalog required.",
+    "Two DB boundaries retained separately; source failure cannot erase the acknowledged operational boundary or claim atomic success.",
+    "Reconciliation requires exact owned prepared OIDs/ACLs, matching durable intent and terminal original backend, and issues no role SQL.",
+    "Credential verifier interface and receipt shape match the prepared credential owner.",
+    "Frozen310b SQL already ends RESET ROLE before COMMIT; raw[:-8] retains it before the pg_authid catalog. Earlier concern was withdrawn after exact-tail check."
+  ],
+  "filesEditedByReviewer": [],
+  "format": "arena-native-admission-independent-review-v1",
+  "localControls": {
+    "command": "python3 -B ops/arena-native-admission-20261022/commit-admission-test.py",
+    "passed": 12
+  },
+  "outcome": "no_current_functional_blocker_found",
+  "productionCalls": 0,
+  "reviewedFiles": [
+    {
+      "path": "ops/arena-native-admission-20261022/commit-admission.py",
+      "sha256": "a4e9f3393b0262d3057c5a5b2506315e98890025982ec43f9872554e1f2e4b92"
+    },
+    {
+      "path": "ops/arena-native-admission-20261022/commit-admission-test.py",
+      "sha256": "ba3746e31a447fde2c4e4d2bcb34d2607e2f69fd7839186b53337c3fdff1dee4"
+    },
+    {
+      "path": "ops/arena-native-admission-20261022/operational-roles.current.sql.review",
+      "sha256": "310b817daf1ee7254e54d21a783334638d3ef58aee3c430dd10f4991a704d9b3"
+    },
+    {
+      "path": "ops/arena-native-admission-20261022/source-reader.current.sql.review",
+      "sha256": "8e98f0303073f64fbcc11648c81825af521f151e9903dd44c28619346520dd4f"
+    }
+  ],
+  "scope": "Independent read-only code review and existing local subprocess/filesystem controls. No production calls, admission commit, or actual nine-role production authentication performed by reviewer."
+}

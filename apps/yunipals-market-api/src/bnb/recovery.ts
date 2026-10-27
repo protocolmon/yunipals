@@ -7,12 +7,14 @@ import {
   encodeSeaportOrder
 } from "@protopals/yunipals-market-core/seaportWire";
 import { address, record } from "@protopals/yunipals-market-core/validation";
+import type { BnbOrderProcessing } from "@protopals/yunipals-market-core/bnbProcessing";
 
 import {
   BnbOrderError,
   type bnbOrderSummary,
   type OrderStatus
 } from "@/bnb/orders";
+import { readDiscoveredBnbOrderPoint } from "@/indexer/bnbOrderProcessing";
 
 const protocol = seaportDeployment.address.toLowerCase();
 
@@ -71,23 +73,21 @@ export class BnbRecoveryService {
     private readonly now: () => number = Date.now
   ) {}
 
-  async accepted(hash: Hex) {
+  async accepted(hash: Hex): Promise<{
+    schemaVersion: 1;
+    persisted: true;
+    order: ReturnType<typeof bnbOrderSummary>;
+    processing?: BnbOrderProcessing;
+  }> {
     bnbOrderIdentity("bnb", protocol, hash);
     const live = await this.pool.query<{ mode: string }>(
       "SELECT mode FROM yunipals_market.bnb_discovery_cursor WHERE singleton"
     );
     if (live.rows[0]?.mode === "live") {
-      const found = await this.pool.query<{
-        summary: ReturnType<typeof bnbOrderSummary>;
-        state: OrderStatus;
-        state_observed_at: Date | null;
-      }>(
-        `SELECT summary,state,state_observed_at
-         FROM yunipals_market.bnb_discovered_order
-         WHERE protocol_address=$1 AND order_hash=$2 AND bound_lifecycle IS NOT NULL`,
-        [protocol, hash.toLowerCase()]
-      );
-      const row = found.rows[0];
+      const point = await readDiscoveredBnbOrderPoint(this.pool, hash, {
+        now: this.now
+      });
+      const row = point.row;
       if (!row?.summary) throw new BnbOrderError("order_not_found", 404);
       const fresh =
         row.state_observed_at &&
@@ -96,6 +96,7 @@ export class BnbRecoveryService {
       return {
         schemaVersion: 1 as const,
         persisted: true as const,
+        ...(point.processing ? { processing: point.processing } : {}),
         order: {
           ...row.summary,
           status: fresh ? row.state : ("unavailable" as const)

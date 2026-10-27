@@ -1,0 +1,32 @@
+{
+  "format": "yunipals-ordinary-source-authority-v3-independent-review",
+  "verdict": "PASS",
+  "scope": "Narrow source successor review and local controls. Supplied private aggregate cgroup evidence was compared without host calls; no production timing qualification.",
+  "sources": {
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v3.py": "cbd538859f99db723c1a9edccd504ab72f547247a6987828d2a653aa3f72a0ad",
+    "ops/unified-indexer-transition/ypal-ordinary-source-authority-v3.test.py": "038bbd65ece2bbb0dc58ea00306b3f22d01dfce6f5f6d9450fd7835c4b432ab5"
+  },
+  "unchangedParentSha256": "0a3044f4b71631b2ad33f4fd9e50bd8ccfe27a3bb9bc76d586daab2094a5c4fa",
+  "independentlyRerun": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-source-authority-v3.test.py",
+    "passed": 15,
+    "failed": 0,
+    "actualLocalCapabilityZeroPeer": true
+  },
+  "additionalControls": {
+    "fixedMapMatchesSuppliedPrivateTypedManagerKernelObservations": 11,
+    "kernelMembershipPositive": true,
+    "foreignKernelMembershipRefused": true,
+    "duplicatePidObservationRefused": true
+  },
+  "verified": [
+    "Only the explicit fixed units in three known systemd cgroup families are accepted; literal escaped slice names are preserved and unknown units/paths refuse.",
+    "Initial source, temporary source, new proxy and retained proxy cgroups must equal their actual authenticated actor acknowledgements.",
+    "Every captured PID retains same-UID privilege/environment/argv/start-time checks and additionally reports its current kernel cgroup. All PID memberships must match the fixed unit ControlGroup; duplicate PID observations refuse.",
+    "Existing repeated source snapshots, final CAS, native readiness, financial, READ, private-file and retirement checks remain unchanged. Earlier immutable producers are not edited."
+  ],
+  "findings": [],
+  "productionActions": 0,
+  "providerCalls": 0,
+  "productionTimingQualified": false
+}

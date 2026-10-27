@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-23T21:01:04.530820+00:00",
+  "checks": [
+    {
+      "path": "/v1/boosters/types",
+      "status": 200,
+      "ready": true,
+      "buildId": "8e88ea2e00",
+      "enabled": true,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "count": 1,
+      "pack": {
+        "id": "8453:0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3:1",
+        "packTypeId": "1",
+        "registry": "0x39a766a2a5ab6421929bcdc317b7b31f97d8e7e3",
+        "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+        "paymentToken": "0xcd3709e84fc817b46196fa2d5b7202710ab51346",
+        "price": "1000000000000000000",
+        "intervalSeconds": "86400",
+        "mintsPerInterval": 1,
+        "totalVariants": "264",
+        "maxBatch": 7,
+        "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+        "ruleHash": "0x59576bcccee63132dd3385fe914f1a88f8f3d75657c114aefc12fbbc82381e7e",
+        "manifestUri": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/manifest.json",
+        "metadataBaseUri": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art/base-mainnet-standard-v1/",
+        "salesPaused": false,
+        "openings": "0"
+      }
+    },
+    {
+      "path": "/v1/boosters/monsters?limit=24",
+      "status": 200,
+      "ready": true,
+      "buildId": "8e88ea2e00",
+      "enabled": true,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "count": 0
+    },
+    {
+      "path": "/v1/boosters/recent-openings?limit=12",
+      "status": 200,
+      "ready": true,
+      "buildId": "8e88ea2e00",
+      "enabled": true,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "count": 0
+    },
+    {
+      "path": "/v1/boosters/art/base-mainnet-standard-v1/81.json",
+      "status": 200,
+      "ready": true,
+      "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d.png"
+    }
+  ]
+}

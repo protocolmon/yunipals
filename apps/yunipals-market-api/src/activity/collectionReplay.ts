@@ -16,6 +16,13 @@ import {
 } from "@protopals/yunipals-market-core/settledSale";
 
 import { transaction } from "@/db/pool";
+import {
+  storeCollectionReceipt,
+  storeCollectionSale,
+  wakeSaleOrderProjection,
+  wakeReorgedSaleOrders,
+  type CollectionSaleProof
+} from "./collectionSaleProjection";
 import { assertOpenSeaRuntimeCode, readOpenSeaHead } from "@/opensea/chain";
 import { isRpcResponseLimitError } from "@/opensea/readRpc";
 import { rpcComputeBudgetError } from "@/opensea/rpcComputeBudget";
@@ -32,6 +39,7 @@ const json = (value: unknown) =>
     typeof item === "bigint" ? item.toString() : item
   );
 type Checkpoint = {
+  reader_mode: string;
   generation: string;
   block_number: string | null;
   block_hash: Hex | null;
@@ -40,15 +48,13 @@ type Checkpoint = {
   start_block: string;
   confirmations: number;
   policy: string;
-};
-type Proof = {
-  receipt: string;
-  block: string;
-  blockNumber: bigint;
-  blockHash: Hex;
-  transactionHash: Hex;
-  logIndex: number;
-  sale: ObservedMarketSale | null;
+  legacy_epoch: string | null;
+  legacy_configuration: {
+    policy: string;
+    startBlock: string;
+    confirmations: number;
+    finality: string;
+  } | null;
 };
 
 /** Receipt-backed collection replay; no provider credentials or admitted orders. */
@@ -77,9 +83,13 @@ export class CollectionSaleReplay {
 
   private async checkpoint() {
     const result = await this.pool.query<Checkpoint>(
-      `SELECT c.generation::text,c.block_number::text,c.block_hash,c.coverage_start::text,c.replay_from::text,
-        p.start_block::text,p.confirmations,p.policy FROM yunipals_market.checkpoint c
-        JOIN yunipals_market.sale_replay_config p USING(chain_id) WHERE ${this.where.replace("chain_id=", "c.chain_id=")}`
+      `SELECT c.reader_mode,c.generation::text,c.block_number::text,c.block_hash,c.coverage_start::text,c.replay_from::text,
+        p.start_block::text,p.confirmations,p.policy,
+        (SELECT l.epoch FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer=$1) AS legacy_epoch,
+        (SELECT l.configuration FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer=$1) AS legacy_configuration
+        FROM yunipals_market.checkpoint c
+        JOIN yunipals_market.sale_replay_config p USING(chain_id) WHERE ${this.where.replace("chain_id=", "c.chain_id=")}`,
+      [`collection-sales:${this.chain}`]
     );
     return result.rows[0];
   }
@@ -93,13 +103,17 @@ export class CollectionSaleReplay {
       const lock = await db.query(
         `SELECT c.generation FROM yunipals_market.checkpoint c
           JOIN yunipals_market.sale_replay_config p USING(chain_id)
-          WHERE ${this.where.replace("chain_id=", "c.chain_id=")} AND c.generation=$1
-          AND p.start_block=$2 AND p.confirmations=$3 AND p.policy=$4 FOR UPDATE OF c`,
+          WHERE ${this.where.replace("chain_id=", "c.chain_id=")} AND c.reader_mode='legacy' AND c.generation=$1
+          AND p.start_block=$2 AND p.confirmations=$3 AND p.policy=$4
+          AND (SELECT l.epoch FROM yunipals_market.marketplace_legacy_selection l WHERE l.consumer=$5) IS NOT DISTINCT FROM $6::text
+          FOR UPDATE OF c`,
         [
           observed.generation,
           observed.start_block,
           observed.confirmations,
-          observed.policy
+          observed.policy,
+          `collection-sales:${this.chain}`,
+          observed.legacy_epoch
         ]
       );
       if (lock.rowCount !== 1) return false;
@@ -142,7 +156,7 @@ export class CollectionSaleReplay {
     )
       throw new Error("Canonical branch changed during rewind.");
     return this.commit(observed, async (db) => {
-      await this.wakeReorgedOrderProjections(db, retained?.number ?? null);
+      await wakeReorgedSaleOrders(db, this.chainId, retained?.number ?? null);
       for (const table of ["sale", "sale_exclusion"]) {
         await db.query(
           `UPDATE yunipals_market.${table} SET canonical=false WHERE chain_id=$1 AND canonical
@@ -177,8 +191,25 @@ export class CollectionSaleReplay {
     "advanced" | "idle" | "rewound" | "superseded" | "unavailable"
   > {
     const observed = await this.checkpoint();
+    if (observed?.reader_mode !== "legacy") return "superseded";
+    if (observed.confirmations < 1)
+      throw new Error(
+        "Latest-block sale replay requires the shared indexer consumer."
+      );
     if (this.expectedPolicy && observed?.policy !== this.expectedPolicy)
       throw new Error("Sale replay configuration does not match this worker.");
+    if (
+      observed.legacy_epoch &&
+      (!observed.legacy_configuration ||
+        observed.legacy_configuration.policy !== observed.policy ||
+        observed.legacy_configuration.startBlock !== observed.start_block ||
+        observed.legacy_configuration.confirmations !==
+          observed.confirmations ||
+        observed.legacy_configuration.finality !== this.finality)
+    )
+      throw new Error(
+        "Legacy sale selection differs from this compatible worker."
+      );
     if (!observed) return "unavailable";
     const started = this.now();
     const depth = BigInt(observed.confirmations);
@@ -263,7 +294,7 @@ export class CollectionSaleReplay {
         "SELECT 1 FROM yunipals_market.sale_receipt WHERE chain_id=$1 AND confirmation_policy<>$2 LIMIT 1",
         [this.chainId, observed.policy]
       );
-      if (policies.rowCount)
+      if (policies.rowCount && !observed.legacy_epoch)
         throw new Error("Existing receipt confirmation policy differs.");
       const from = cursor === null ? BigInt(observed.start_block) : cursor + 1n;
       if (from > confirmed) {
@@ -363,7 +394,7 @@ export class CollectionSaleReplay {
         (start && start.timestamp > BigInt(Math.floor(this.now() / 1000)))
       )
         throw new Error("Confirmed history is ahead of the observation clock.");
-      const proofs: Proof[] = [];
+      const proofs: CollectionSaleProof[] = [];
       const receipts = new Map<
         Hex,
         Awaited<ReturnType<PublicClient["getTransactionReceipt"]>>
@@ -524,11 +555,23 @@ export class CollectionSaleReplay {
           // above. Verify/retain the large JSON proof once inside this atomic
           // transaction, including on replay when an existing proof must match.
           if (!storedReceipts.has(proof.transactionHash)) {
-            await this.storeReceipt(db, proof, observed.policy);
+            await storeCollectionReceipt(
+              db,
+              this.chainId,
+              proof,
+              observed.policy,
+              observed.legacy_epoch
+                ? {
+                    consumer: `collection-sales:${this.chain}`,
+                    epoch: observed.legacy_epoch
+                  }
+                : undefined
+            );
             storedReceipts.add(proof.transactionHash);
           }
-          await this.store(db, proof);
-          if (proof.sale) await this.wakeOrderProjection(db, proof.sale);
+          await storeCollectionSale(db, this.chainId, proof);
+          if (proof.sale)
+            await wakeSaleOrderProjection(db, this.chainId, proof.sale);
         }
         await db.query(
           `INSERT INTO yunipals_market.activity_block(chain_id,block_number,block_hash) VALUES($1,$2,$3)
@@ -603,94 +646,5 @@ export class CollectionSaleReplay {
         caughtUp
       ]
     );
-  }
-  private async storeReceipt(db: PoolClient, proof: Proof, policy: string) {
-    const result = await db.query(
-      `INSERT INTO yunipals_market.sale_receipt(chain_id,block_hash,transaction_hash,receipt,block,confirmation_policy)
-      VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(chain_id,block_hash,transaction_hash) DO UPDATE SET receipt=yunipals_market.sale_receipt.receipt
-      WHERE yunipals_market.sale_receipt.receipt=EXCLUDED.receipt AND yunipals_market.sale_receipt.block=EXCLUDED.block
-        AND yunipals_market.sale_receipt.confirmation_policy=EXCLUDED.confirmation_policy RETURNING chain_id`,
-      [
-        this.chainId,
-        proof.blockHash.toLowerCase(),
-        proof.transactionHash.toLowerCase(),
-        proof.receipt,
-        proof.block,
-        policy
-      ]
-    );
-    if (result.rowCount !== 1)
-      throw new Error("Retained receipt conflicts with replay.");
-  }
-  private async store(db: PoolClient, proof: Proof) {
-    if (!proof.sale) {
-      const excluded = await db.query(
-        `INSERT INTO yunipals_market.sale_exclusion(chain_id,block_number,block_hash,log_index,transaction_hash,reason,canonical)
-        VALUES($1,$2,$3,$4,$5,'unsupported_collection_sale',true) ON CONFLICT(chain_id,block_hash,log_index) DO UPDATE SET canonical=true
-        WHERE yunipals_market.sale_exclusion.block_number=EXCLUDED.block_number
-          AND yunipals_market.sale_exclusion.transaction_hash=EXCLUDED.transaction_hash
-          AND yunipals_market.sale_exclusion.reason=EXCLUDED.reason RETURNING chain_id`,
-        [
-          this.chainId,
-          proof.blockNumber.toString(),
-          proof.blockHash.toLowerCase(),
-          proof.logIndex,
-          proof.transactionHash.toLowerCase()
-        ]
-      );
-      if (excluded.rowCount !== 1)
-        throw new Error("Retained exclusion conflicts with replay.");
-      return;
-    }
-    const sale = proof.sale;
-    const saved = await db.query(
-      `INSERT INTO yunipals_market.sale(chain_id,block_number,block_hash,log_index,transaction_hash,protocol_address,
-      order_hash,contract_address,token_id,seller,nft_recipient,observation,canonical,block_timestamp)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,true,to_timestamp($13))
-      ON CONFLICT(chain_id,block_hash,log_index) DO UPDATE SET canonical=true WHERE yunipals_market.sale.observation=EXCLUDED.observation RETURNING chain_id`,
-      [
-        this.chainId,
-        sale.blockNumber,
-        sale.blockHash.toLowerCase(),
-        sale.fulfillmentLogIndex,
-        sale.transactionHash.toLowerCase(),
-        protocol,
-        sale.orderHash.toLowerCase(),
-        sale.asset.contractAddress.toLowerCase(),
-        sale.asset.tokenId,
-        sale.seller.toLowerCase(),
-        sale.nftRecipient.toLowerCase(),
-        json(sale),
-        sale.blockTimestamp
-      ]
-    );
-    if (saved.rowCount !== 1)
-      throw new Error("Retained sale conflicts with replay.");
-  }
-
-  private async wakeOrderProjection(db: PoolClient, sale: ObservedMarketSale) {
-    for (const table of ["orders", "opensea_discovered_state"])
-      await db.query(
-        `UPDATE yunipals_market.${table} SET next_reconcile_at=least(next_reconcile_at,clock_timestamp())
-        WHERE chain_id=$1 AND protocol_address=$2 AND order_hash=$3`,
-        [this.chainId, protocol, sale.orderHash.toLowerCase()]
-      );
-  }
-
-  private async wakeReorgedOrderProjections(
-    db: PoolClient,
-    retained: bigint | null
-  ) {
-    for (const table of ["orders", "opensea_discovered_state"])
-      await db.query(
-        `UPDATE yunipals_market.${table} projection
-        SET next_reconcile_at=least(projection.next_reconcile_at,clock_timestamp())
-        FROM (SELECT DISTINCT order_hash FROM yunipals_market.sale
-          WHERE chain_id=$1 AND protocol_address=$2 AND canonical
-            AND ($3::numeric IS NULL OR block_number>$3::numeric)) affected
-        WHERE projection.chain_id=$1 AND projection.protocol_address=$2
-          AND projection.order_hash=affected.order_hash`,
-        [this.chainId, protocol, retained?.toString() ?? null]
-      );
   }
 }

@@ -1,0 +1,22 @@
+{
+  "CIndependentRealPostgresClassifierGroups": 1,
+  "CIndependentRealSQLRefusals": 4,
+  "actualFileBuffersTested": 3,
+  "completeRetainedPythonBodiesUnchanged": true,
+  "docInputPathCorrectionReviewed": true,
+  "externalExistingOnlyVerified": 6,
+  "failedCurrent1Preserved": true,
+  "findings": [],
+  "finiteOwnRowsVerified": 10,
+  "format": "yunipals-arena-projector-current2-root-review-v1",
+  "independentNodeGroupsPassed": 8,
+  "independentPythonControlsPassed": 11,
+  "independentStartupControlsPassed": 5,
+  "manifestSha256": "98ebe19f323a7a54901bfa181a771b5d4ec4bde5afdbdc0017b818c7c58973a4",
+  "nodeByteReversalProvesOnlyVersionAndBufferFix": true,
+  "nodeSha256": "5757cbd5a84e6da1cf3a374fb94235990eea4fdd870827c21ac75f40046e3459",
+  "producerSha256": "54aff570aaa564aed81a020ac2889dc407ecff9698f4a80b318c3391a5d6e374",
+  "productionCurrentQualified": false,
+  "runtimeOriginsVerified": 175,
+  "sourceManifestByteReproduced": true
+}

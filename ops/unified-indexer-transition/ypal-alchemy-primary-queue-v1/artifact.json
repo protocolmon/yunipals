@@ -1,0 +1,22 @@
+{
+  "format": "yunipals-alchemy-primary-queue-artifact-v1",
+  "preimage": {
+    "sha256": "8afd0184d8e51d920a303ecfa729354189f240b0164d5d62655fb172818cc69c",
+    "bytes": 111657,
+    "source": "ops/unified-indexer-transition/ypal-combined-rpc-pool-one-v1/rpc-budget-proxy.mjs"
+  },
+  "artifact": {
+    "sha256": "10c34c878d5a617fe31d4fffd6a8b020610b39b988de1cf2aac0cb11e7ac59d8",
+    "bytes": 111687,
+    "file": "rpc-budget-proxy.mjs"
+  },
+  "anchor": "const sourceRequest = unifiedSourcePaidLogs && unifiedWorkload === \"unified_source\" ? new AbortController() : void 0;",
+  "replacement": "const sourceRequest = (unifiedSourcePaidPrimary || unifiedSourcePaidLogs) && unifiedWorkload === \"unified_source\" ? new AbortController() : void 0;",
+  "allOtherCompiledBytesIdentical": true,
+  "sourceMapURLUnchanged": true,
+  "sourceMapRebuilt": false,
+  "productionSelected": false,
+  "databaseCalls": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

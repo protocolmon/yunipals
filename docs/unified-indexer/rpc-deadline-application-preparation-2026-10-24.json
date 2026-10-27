@@ -1,0 +1,46 @@
+{
+  "format": "yunipals-rpc-deadline-application-preparation-v1",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "apps/yunipals-indexer/lib/unified/rpc-call-deadline.ts",
+      "sha256": "9264749681650377590b8e87e452fe648277a01e830497ca25c31ea8beda0a36",
+      "bytes": 3183
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/unified/rpc-preflight.ts",
+      "sha256": "92015241a42c95c4c73c140dda9be65255cd74742b8641ef01c5de86aa2b87bc",
+      "bytes": 12425
+    },
+    {
+      "path": "apps/yunipals-indexer/test/unified-rpc-deadline.test.ts",
+      "sha256": "9998b57e274eca66d2f8c1c5aa21b3e0920ccc94992e764d754c0c18634ed8c5",
+      "bytes": 9167
+    }
+  ],
+  "baselineGenericSourceSha256": "68a0d4fd0442ecb464574434e1e349f1e4caf1c4ab2f0a70352f8b5f26afe833",
+  "standaloneCombinedSourceSha256": "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192",
+  "sameHelperAST": true,
+  "genericProductionEndpointsPreserved": true,
+  "genericConcurrencyPreserved": true,
+  "validation": {
+    "genericIntegrationControls": 6,
+    "existingPreflightControls": 10,
+    "fullIndexerTypeScriptNoEmit": true,
+    "databaseCalls": 0,
+    "providerCalls": 0
+  },
+  "scope": {
+    "frozenCombinedPayloadEdited": false,
+    "frozenRecoveryPacketsEdited": false,
+    "installedSourceEdited": false,
+    "profileChanges": 0,
+    "budgetChanges": 0,
+    "serviceActions": 0
+  },
+  "limitations": [
+    "No ordinary build or production adoption performed",
+    "No current throughput improvement claimed",
+    "A future ordinary release must carry its own new source/build/runtime proof; old installed inventory is not relabelled"
+  ]
+}

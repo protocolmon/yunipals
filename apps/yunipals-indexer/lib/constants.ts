@@ -62,6 +62,22 @@ export const indexedCollections = {
   base: { ...collections.base, chain: "base" },
   polygon: { ...collections.polygon, chain: "polygon" },
   bnb: { ...collections.bnb, chain: "bnb" },
-  "ethereum-islands": islandCollection
+  "ethereum-islands": islandCollection,
+  "base-islands-v2": {
+    slug: "base-islands-v2",
+    chain: "base",
+    ...indexedChains.base,
+    address: "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
+    deploymentBlock: 52_587_956,
+    name: "Grassland Archipelago",
+    genesisLimit: 1_000
+  }
 } as const;
 export type CollectionId = keyof typeof indexedCollections;
+export const baseIslandCollection = indexedCollections["base-islands-v2"];
+export const baseIslandOwnershipPolicy = { kind: "latest" } as const;
+// Keep the old boundary available for fixed-boundary migration comparisons.
+export const baseIslandLegacyOwnershipPolicy = {
+  kind: "depth",
+  subsequentBlocks: 3
+} as const;

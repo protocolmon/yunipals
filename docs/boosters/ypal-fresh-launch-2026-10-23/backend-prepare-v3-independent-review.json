@@ -1,0 +1,42 @@
+{
+  "blockingFindings": [],
+  "executed": {
+    "cases": 4,
+    "command": "python3 -I -B ops/booster-launch/ypal-backend-prepare-owner-v3-test.py",
+    "passed": true
+  },
+  "files": {
+    "ops/booster-launch/ypal-backend-owner-v1.py": "a1033872bb5c8a5c434ec5bfae4f3d99629c3e2b417de2e1d76e0fa48623aba1",
+    "ops/booster-launch/ypal-backend-prepare-owner-v2.py": "118ed515b420a77862f14463e1dde047c6b8929286652fca61ffa09e65f75a62",
+    "ops/booster-launch/ypal-backend-prepare-owner-v3-test.py": "a8d429145c993d5c73b64c52521bd82cfef98a58d2fd765addb1181e7f2ae36b",
+    "ops/booster-launch/ypal-backend-prepare-owner-v3.py": "73a6de8dfe347cc3951fd53202013130f6f0ca9ff84f92c54999d03e7807daa0",
+    "ops/booster-launch/ypal-old-runtime-inventory-v1.py": "7034021dd679f1f6739e2a3591da9b9507e555382f86cbfc3de22f52829d4c3b"
+  },
+  "format": "yunipals-ypal-backend-prepare-v3-independent-review-v1",
+  "limits": {
+    "actualOfflineProbeReviewed": false,
+    "databaseWrites": 0,
+    "liveCutoverAccepted": false,
+    "productionFilesChanged": 0,
+    "sourceOrProviderActions": 0
+  },
+  "liveDrainContract": "A later live owner must use freshly captured complete raw socket-attributed old/combined backend tuples, not these normalized preparation-hash inputs.",
+  "priorObservedCause": {
+    "file": "docs/boosters/ypal-fresh-launch-2026-10-23/backend-prepare-v2-prewrite-diagnosis.json",
+    "sha256": "376ec03fb90dac7ebf30065634c11991856e57d80e6378c373d095f50b1890b4"
+  },
+  "reviewedAt": "2026-10-23T19:49:43.650317+00:00",
+  "reviewedDelta": {
+    "actualV3ProducerBound": true,
+    "additionalStaticHashExclusion": [
+      "source.sessionAttribution.oldBackends"
+    ],
+    "allOtherSourceActorRoleSchemaAndPrivateFieldsRetained": true,
+    "freshCompleteKernelAttributionRequired": true,
+    "noAgeOrApplicationNameInference": true,
+    "noSharedRoleZeroSessionAssumption": true,
+    "rawCaptureNotMutated": true,
+    "samePrepareOnlyPhases": true
+  },
+  "verdict": "pass_for_inactive_preparation_only"
+}

@@ -1,0 +1,153 @@
+{
+  "format": "yunipals-permit-owner-ui-preparation-v1",
+  "preparedAt": "2026-10-23T16:21:37.946154+00:00",
+  "preparedOnly": true,
+  "testedRoute": "/boosters/setup/permit",
+  "files": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermitSetup.ts",
+      "sha256": "324303df8bf29b5b9a22682302a5026aad4ae19c84c9ee3bb31076c424b44c99",
+      "bytes": 14518
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterPermitSetupPage.tsx",
+      "sha256": "17816aa9799d1aec7b52c566a7fae9f19bc92b54139e8c8fbc226ac1a30da708",
+      "bytes": 29547
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermitSetup.test.ts",
+      "sha256": "b14a68d71a2ff2efc9a78d6d7cf1ecfd6ab50b3582595c9806c5c330bbfb17f3",
+      "bytes": 12084
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-permit-setup-ui.mjs",
+      "sha256": "16d4fe281d937e24f19d80a32c83e20a60985ecc747c9ab5c4e99ba80cc5dac2",
+      "bytes": 27661
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/engine-permit-upgrade-v1.json",
+      "sha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+      "bytes": 197064
+    }
+  ],
+  "unsignedPackageSha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+  "exactCopyOfFrozenAuthorPackage": true,
+  "currentImplementationBaseline": {
+    "address": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+    "runtimeCodeKeccak256": "0xa5eadd4114e6f37b1189c9729f3ea7a03ef21675ccdf69d8b3da0d6aa522ee7a",
+    "sourceSha256": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d"
+  },
+  "candidate": {
+    "sourceSha256": "6006e9a0ce44302ee14ebbdb43d49ed07746a0766278885c5958783a6085cfd8",
+    "profile": "permit",
+    "runtimeBytes": 24569,
+    "maxOpenPacks": 10,
+    "permitVersionReturnType": "uint256",
+    "permitVersion": 1,
+    "initializationCalldata": "0x",
+    "nonceSupplied": false
+  },
+  "unitTests": {
+    "command": "/root/.nvm/versions/node/v24.18.1/bin/node --import /root/yunipals/apps/yunipals-indexer/node_modules/tsx/dist/loader.mjs src/lib/boosterPermitSetup.test.ts",
+    "workingDirectory": "apps/yunipals-home-web",
+    "passed": 25,
+    "failed": 0,
+    "stdoutSha256": "749eb3d56a9f54e6153ab2816c0ff0d95be2c4cd0c7c74feadfdd6d3d575274a"
+  },
+  "typecheck": {
+    "command": "node node_modules/typescript/bin/tsc --noEmit",
+    "passed": true,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "formatting": {
+    "prettierCheckPassed": true,
+    "files": 4
+  },
+  "browserAcceptance": {
+    "command": "node scripts/test-booster-permit-setup-ui.mjs --url http://127.0.0.1:5205 --playwright /tmp/yunipals-foundry/node_modules/playwright-core/index.mjs --chromium /root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
+    "capturedReportSha256": "a3b6f257a79769af172cc8b559d56bbae451e5b5871817baea9e41665efc2c93",
+    "format": "yunipals-booster-permit-owner-browser-v1",
+    "passed": true,
+    "packageSha256": "ee7eb521a91a761192a915c64bd50ff16d03143c78ecd44452cecc87bc912afc",
+    "checks": [
+      "chain away-and-back during deferred final simulation keeps the cancelled review invalid and enters wallet send zero times",
+      "account away-and-back during deferred final simulation keeps the cancelled review invalid and enters wallet send zero times",
+      "a foreign connected wallet cannot prepare deployment or send an upgrade",
+      "owner connects and reviews exact package, roles, proxy and fee quote without automatic wallet writes",
+      "network change during deferred final simulation invalidates the review and sends zero transactions",
+      "account change during deferred final simulation sends zero transactions",
+      "leaving the owner route during deferred simulation cannot issue a late wallet send",
+      "one explicit deploy signature uses creation bytes and actual receipt address; upgrade is a separate review",
+      "candidate permit-version mismatch blocks the upgrade without another signature",
+      "refresh recovers saved deployment without another signature and wrong manual runtime is rejected",
+      "second explicit signature accepts the matching repriced receipt, persists its actual hash and verifies slot/max10/permit1 with empty initialization",
+      "completed reload has no repeated writes and owner page fits a mobile viewport",
+      "a replaced saved upgrade with different calldata remains blocked until its exact completed receipt is resolved",
+      "a pending deployment receipt stays saved after reload and cannot trigger a duplicate deployment",
+      "confirmed reverted deployment requires explicit receipt resolution before a fresh review and never auto resubmits"
+    ],
+    "syntheticWalletTransactions": 2,
+    "realNetworkProviderCalls": 0,
+    "blockedUnrelatedRequests": 9,
+    "productionActions": 0
+  },
+  "securityAndLifecycle": [
+    "Package raw bytes are SHA256-pinned; schema binds exact candidate creation/runtime hashes, source/profile/storage/immutable offsets and EBA/a5e/bd3 activation baseline.",
+    "Candidate and installed proxy both require MAX_OPEN_PACKS10 and uint256 PERMIT_OPEN_VERSION1; exact address-patched UUPS runtime and ERC1967 slot are verified.",
+    "Each deploy/upgrade has a fresh fee/gas simulation and explicit separate review. Owner/account/chain are rechecked after asynchronous simulation and immediately before send; leaving the route blocks late sends.",
+    "Receipts bind requested hash and matching mined block, owner, creation/upgrade calldata, value and actual deployed address. Matching repriced hashes are persisted; unrelated replacement data is refused.",
+    "Pending or ambiguous saved hashes block fresh submissions; only explicit canonical reverted/cancelled receipt resolution clears them. Confirmed addresses are reverified after refresh.",
+    "Returning to the original account/network cannot resurrect a cancelled captured review; the final send requires the exact still-active review object."
+  ],
+  "retainedFilesUnchanged": [
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterBatchSetup.ts",
+      "sha256": "7e44e2d4ad45f30981c276e639ff34b85835524a60595d49b1c7877b3cb5c724"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterBatchSetupPage.tsx",
+      "sha256": "67d3596664f3706b0fc5a7d2fe96aacd9bf465b1408a447d9a6e0848863ed25c"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/engine-batch-upgrade-v1.json",
+      "sha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/monsters-token-metadata-upgrade-v1.json",
+      "sha256": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966"
+    }
+  ],
+  "filesOwnedElsewhereUnmodifiedByThisTask": [
+    "App.tsx route",
+    "buyer Button/hooks/permit workflow",
+    "curated build manifest"
+  ],
+  "runtimeLimitations": [
+    "All wallet/RPC responses in browser acceptance are synthetic; external requests are intercepted or blocked. No actual owner signature, transaction or onchain upgrade was performed.",
+    "This preparation does not publish the frontend. Root owns deployment and the real owner controls any later two-step upgrade."
+  ],
+  "productionActions": 0,
+  "realProviderRequests": 0,
+  "actualSignatures": 0,
+  "actualBroadcasts": 0,
+  "resolvedIndependentFinding": {
+    "severity": "P2",
+    "priorPageSha256": "9e279a0a7ca5bbe2f01872dabe7a4caa13bf4fd239ff5fe3543f886d8f37e23b",
+    "priorPreparationSha256": "8b88488ac726b66846b4047859c27cef8ef7a951b1d4d5632063d988e342fce8",
+    "originalReproduction": {
+      "format": "yunipals-permit-owner-stale-review-probe-v1",
+      "reviewClearedBeforeRelease": true,
+      "walletSendAttempts": 1,
+      "realNetworkProviderCalls": 0,
+      "productionActions": 0
+    },
+    "originalReproductionSha256": "8db28ee650d090525fe16a47365e28a1ac8efd3222e9c68cb55ef3b8e52a726f",
+    "fix": "Synchronous active-review ref invalidation on observed wallet/account/chain changes and dismiss/unmount. Exact captured-review identity, expiry and latest wallet are asserted after the final await immediately before send with no await gap.",
+    "regressions": [
+      "chain away-and-back before releasing final simulation: injected wallet send entries0",
+      "account away-and-back before releasing final simulation: injected wallet send entries0"
+    ],
+    "prior13GroupsRetained": true,
+    "finalBrowserGroups": 15
+  }
+}

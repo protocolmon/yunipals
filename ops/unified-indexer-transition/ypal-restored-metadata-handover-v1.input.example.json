@@ -1,0 +1,9 @@
+{
+  "format": "yunipals-ypal-restored-metadata-handover-v1-input",
+  "sourcesSha256": null,
+  "readConfig": {
+    "admissionSha256": null,
+    "readPlanSha256": null,
+    "readContextInputSha256": null
+  }
+}

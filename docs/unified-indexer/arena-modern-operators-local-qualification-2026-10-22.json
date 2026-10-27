@@ -1,0 +1,66 @@
+{
+  "format": "yunipals-arena-modern-operators-local-qualification-v1",
+  "at": "2026-10-22T23:37:21.720744+00:00",
+  "sourcePublicationCommit": "438bc23",
+  "candidateSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "candidateSourceFiles": 1796,
+  "builderControlsPassed": 19,
+  "installerControlsPassed": 8,
+  "constructorControlsPassed": 22,
+  "restrictedRolePostgresGroupsPassed": 13,
+  "productionPublicAssetsQualified": 903,
+  "builderSha256": "d00836a798cf9a1ddd24ba3558b0752d9082bbdbddd56bf43833faba9b81cd21",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-package-v1.py",
+      "sha256": "d00836a798cf9a1ddd24ba3558b0752d9082bbdbddd56bf43833faba9b81cd21",
+      "bytes": 46612
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-package-v1-test.py",
+      "sha256": "0f59aa5547fbbf1d3175f8e46c019a4c31cc51704a7ae515c40baedd7cf3c851",
+      "bytes": 20952
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-package-v1.md",
+      "sha256": "cc0e677e48b400524517ac1db19e85afe0fb566dcdea257fd44432964282ab7a",
+      "bytes": 11408
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-install-v1.py",
+      "sha256": "2efc41a9e166ce2674776251d4292529f3693370e4f9d9f4de742cd32f507872",
+      "bytes": 12576
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-install-v1-test.py",
+      "sha256": "46ac6e5f25ce2444547247969922682c335f7a4e9030313b0eabb47702d10e3c",
+      "bytes": 6481
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-install-v1.md",
+      "sha256": "dee2da885fb43cd02a3867d3b19d73ff57e428a358281d77c7ee645b30ffa93d",
+      "bytes": 1559
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-runtime-preflight-v1.py",
+      "sha256": "527701897b15ccf25c67aa372013f76405308b2b300a565d96271ba15f0a6631",
+      "bytes": 26464
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-runtime-preflight-v1-test.py",
+      "sha256": "23d3dbfbc0de5837cf14916813141dd24088a768d981101f57c938e9e2f4e228",
+      "bytes": 25814
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-runtime-preflight-v1.md",
+      "sha256": "736bbc1303aa5e5c51c4829349112edb811c98d7669e5303cb00bc2b0fabb59d",
+      "bytes": 6809
+    }
+  ],
+  "productionBuildStarted": false,
+  "installed": false,
+  "productionConstructorQualified": false,
+  "productionRolesChanged": false,
+  "sourceSelectionChanged": false,
+  "scope": "Local operator qualification and independently recorded read-only public asset verification; actual offline build, installation, credential-context qualification and native adoption remain pending."
+}

@@ -1,0 +1,54 @@
+{
+  "format": "yunipals-booster-artwork-readonly-inventory-v1",
+  "at": "2026-10-23T21:00:55.432403+00:00",
+  "catalog": "base-mainnet-standard-v1",
+  "catalogHash": "0x63813f1a231eca352a31d873ebb987ab2dc6a0625ece3fcf8cfc706fd6aa8733",
+  "artworkCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+  "variantCapacity": 264,
+  "approvedCount": 8,
+  "approvedVariantIds": [
+    80,
+    81,
+    82,
+    83,
+    120,
+    149,
+    206,
+    259
+  ],
+  "unpublishedCount": 256,
+  "httpExamples": {
+    "approved": {
+      "artworkStatus": "ready",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "hasImage": true,
+      "metadataSha256": "59721a7c001de2648909287199d7b65d8b1e3d2dd4fd93d251fc7391458c578a",
+      "retryAfter": null,
+      "status": 200,
+      "variantId": 80
+    },
+    "unpublished": {
+      "artworkStatus": "missing",
+      "cacheControl": "no-store",
+      "hasImage": false,
+      "metadataSha256": "50dabb0a313a8c76fe75a4b2134a819e610059eb87a446fcd59f913f081c060a",
+      "retryAfter": "5",
+      "status": 202,
+      "variantId": 0
+    }
+  },
+  "queuedJobCounts": {},
+  "knownBoosterArtworkUnits": [
+    "yunipals-booster-artwork-queue.service",
+    "yunipals-booster-artwork-queue.timer"
+  ],
+  "databaseWrites": 0,
+  "serviceActions": 0,
+  "generationInvoked": false,
+  "privateValuesExported": false,
+  "providerCredentialsUsed": false,
+  "scope": "known owned booster artwork pipeline; no unrelated cron/service audit",
+  "automaticGenerationConfigured": false,
+  "queuePurpose": "Synchronize indexed mint requests into artwork jobs; this queue does not generate images.",
+  "unpublishedVariantBehavior": "Returns HTTP202 with artwork missing until assisted generation, approval and immutable publication are complete."
+}

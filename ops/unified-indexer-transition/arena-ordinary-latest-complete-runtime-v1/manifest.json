@@ -1,0 +1,801 @@
+{
+  "format": "yunipals-arena-ordinary-latest-complete-artifact-v1",
+  "builderSha256": "011ba9d3a3769024b8cee3c321aae263c8c0a023c417f286a2a5011693710e88",
+  "predecessorSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "predecessorSourceManifestSha256": "fe6a122bd9dbac6614ff2126db2010a4f73bc54921f8dc40109a9c850ee3eb3e",
+  "scope": "eight_Arena_workers_and_owner_reader_latest_complete_only",
+  "uniqueWorkerEntries": 7,
+  "nativeWorkerUnits": 8,
+  "ownerReaderFacade": "dist/arena-owner-reader.mjs",
+  "inputs": [
+    {
+      "path": "apps/yunipals-market-api/package.json",
+      "bytes": 2882,
+      "sha256": "fc7fb879764842fc63b7692fd1d515a0dccf7927412a3a90b3cfb60d76d109dd",
+      "predecessorSha256": "fc7fb879764842fc63b7692fd1d515a0dccf7927412a3a90b3cfb60d76d109dd",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/scripts/build.mjs",
+      "bytes": 2659,
+      "sha256": "e25c3246bd91a376d40f8f39c22e2fc80a5a0f59158f61fde655699a32694c6a",
+      "predecessorSha256": "e25c3246bd91a376d40f8f39c22e2fc80a5a0f59158f61fde655699a32694c6a",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/catalog.ts",
+      "bytes": 3080,
+      "sha256": "de4c0e2dfcf6fc1cc4468dc8452d344f2eff1a530981bcd0ad16108a1c2012d2",
+      "predecessorSha256": "de4c0e2dfcf6fc1cc4468dc8452d344f2eff1a530981bcd0ad16108a1c2012d2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/draw.ts",
+      "bytes": 2355,
+      "sha256": "80cbf29213244d5353bbeba4a7d1910fb0a92595f8308fe94e1b73da59aad49f",
+      "predecessorSha256": "80cbf29213244d5353bbeba4a7d1910fb0a92595f8308fe94e1b73da59aad49f",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/adjudication.ts",
+      "bytes": 8787,
+      "sha256": "993e4c0fb99448162182d4745b5f41591bcb248bbce023722999c8a348ce2a4d",
+      "predecessorSha256": "993e4c0fb99448162182d4745b5f41591bcb248bbce023722999c8a348ce2a4d",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/admission.ts",
+      "bytes": 6030,
+      "sha256": "1fe13c3d9ad0c63a536471cfa0154306f0993e90aa70274c3133366c604b39ac",
+      "predecessorSha256": "1fe13c3d9ad0c63a536471cfa0154306f0993e90aa70274c3133366c604b39ac",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/capacity.ts",
+      "bytes": 12340,
+      "sha256": "752864ec1a13116f0ae6201a45387c285f0391faf64bb29c1fe4963fe28c0482",
+      "predecessorSha256": "752864ec1a13116f0ae6201a45387c285f0391faf64bb29c1fe4963fe28c0482",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/capacityWorker.ts",
+      "bytes": 6251,
+      "sha256": "d47fdb714b2dc90ce6e1a9685785385311b1935f6bfc392469c675383d668738",
+      "predecessorSha256": "d47fdb714b2dc90ce6e1a9685785385311b1935f6bfc392469c675383d668738",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/catalog.ts",
+      "bytes": 4641,
+      "sha256": "c400b2f45e7c823accb24d5daaa62109bd6c964151a48f49f3e487d6a273803b",
+      "predecessorSha256": "c400b2f45e7c823accb24d5daaa62109bd6c964151a48f49f3e487d6a273803b",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientReceiptEvidence.ts",
+      "bytes": 3304,
+      "sha256": "498f19d4acba8624d6cf50d2e9214e1c92f83f3ead61ecafc9de41ab5ffead04",
+      "predecessorSha256": "498f19d4acba8624d6cf50d2e9214e1c92f83f3ead61ecafc9de41ab5ffead04",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientTransactions.ts",
+      "bytes": 12925,
+      "sha256": "b4eb8a269c856ff09fc359bc9db4a9e3c5bad142962a3f639728ec189a47ff57",
+      "predecessorSha256": "b4eb8a269c856ff09fc359bc9db4a9e3c5bad142962a3f639728ec189a47ff57",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientTransactionSchema.ts",
+      "bytes": 4702,
+      "sha256": "fcfe4dea30df2ee6f60dc34b98f39c3ef5b766d97f1b521aaec0384a5677fb44",
+      "predecessorSha256": "fcfe4dea30df2ee6f60dc34b98f39c3ef5b766d97f1b521aaec0384a5677fb44",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/config.ts",
+      "bytes": 4463,
+      "sha256": "06777ec7658db00ab359d1469a5f5840e23370829fc8931b0cbf5f66e94b2a1a",
+      "predecessorSha256": "06777ec7658db00ab359d1469a5f5840e23370829fc8931b0cbf5f66e94b2a1a",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/crypto.ts",
+      "bytes": 1278,
+      "sha256": "2e6f629abec579befea65d03920931bcc5e33dc8871e196178b047dea08eb5a2",
+      "predecessorSha256": "2e6f629abec579befea65d03920931bcc5e33dc8871e196178b047dea08eb5a2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/funding.ts",
+      "bytes": 508,
+      "sha256": "9fa56bae8be980bbea60267d4c989b1480e21ea7994c424124ea51a26a8c72e2",
+      "predecessorSha256": "9fa56bae8be980bbea60267d4c989b1480e21ea7994c424124ea51a26a8c72e2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/http.ts",
+      "bytes": 15547,
+      "sha256": "15cd1ba444486d6e0bfcafdae9f4ab917a23a5e62756d9e38220d466c588cf05",
+      "predecessorSha256": "15cd1ba444486d6e0bfcafdae9f4ab917a23a5e62756d9e38220d466c588cf05",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identity.ts",
+      "bytes": 11082,
+      "sha256": "01b3b7ca164b4f7ae4879ca38010a8b7abbab103ce414fe5380c648a7a37674c",
+      "predecessorSha256": "01b3b7ca164b4f7ae4879ca38010a8b7abbab103ce414fe5380c648a7a37674c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identityAnalysis.ts",
+      "bytes": 17143,
+      "sha256": "a6a424b7eafb8c81fc7e50e3802bd01feada30d3c0e0d3e6c475ec2d0ace798a",
+      "predecessorSha256": "a6a424b7eafb8c81fc7e50e3802bd01feada30d3c0e0d3e6c475ec2d0ace798a",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identitySchema.ts",
+      "bytes": 7841,
+      "sha256": "6d6281fa13786043626facf514a0a3326f6027b541507e172bbfed46c3fa4bb4",
+      "predecessorSha256": "6d6281fa13786043626facf514a0a3326f6027b541507e172bbfed46c3fa4bb4",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/input.ts",
+      "bytes": 7143,
+      "sha256": "c05f950d5187921ab4fe2def830dc6c4e6b31f07b8a276ee5ceb59c58417de29",
+      "predecessorSha256": "c05f950d5187921ab4fe2def830dc6c4e6b31f07b8a276ee5ceb59c58417de29",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/intake.ts",
+      "bytes": 27881,
+      "sha256": "a07a93abfb883294124fc8ac4371b1bb29f88265cdef5e9366e9fa1caf8cd7f8",
+      "predecessorSha256": "a07a93abfb883294124fc8ac4371b1bb29f88265cdef5e9366e9fa1caf8cd7f8",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/media.ts",
+      "bytes": 18971,
+      "sha256": "79779d373175827d345dd23524ddde6d48d28e5b7bbda36c7c302a1454367337",
+      "predecessorSha256": "79779d373175827d345dd23524ddde6d48d28e5b7bbda36c7c302a1454367337",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaAdoption.ts",
+      "bytes": 15358,
+      "sha256": "71380a40ea3d348646e3d41abf18e71ce47c880b2ead5cf5b723cfa99d4d69cb",
+      "predecessorSha256": "71380a40ea3d348646e3d41abf18e71ce47c880b2ead5cf5b723cfa99d4d69cb",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaApi.ts",
+      "bytes": 18855,
+      "sha256": "637fc848ea2c1c2d46aa9b5d7f5ba3ec0236b2ff9c405445cac543604ce30844",
+      "predecessorSha256": "637fc848ea2c1c2d46aa9b5d7f5ba3ec0236b2ff9c405445cac543604ce30844",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaPaths.ts",
+      "bytes": 2005,
+      "sha256": "c729bf098fbce3d29f4811223385cb90aa9490bee158ef15608e33c9089c227f",
+      "predecessorSha256": "c729bf098fbce3d29f4811223385cb90aa9490bee158ef15608e33c9089c227f",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+      "bytes": 11168,
+      "sha256": "ccb4df57849e5ee38c1cfbea8ed42c4bf96c77f994d0a9e58d67520597966aa2",
+      "predecessorSha256": "ccb4df57849e5ee38c1cfbea8ed42c4bf96c77f994d0a9e58d67520597966aa2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaRead.ts",
+      "bytes": 5909,
+      "sha256": "f691be947e003c078287738eba28ff1536c1ab20ba46f8fddfccd70eb64c3c8c",
+      "predecessorSha256": "f691be947e003c078287738eba28ff1536c1ab20ba46f8fddfccd70eb64c3c8c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaSchema.ts",
+      "bytes": 6023,
+      "sha256": "7fe87baa830f75d99135f278824890e0beee04ce1a72b9e23b8fbde71d3131f9",
+      "predecessorSha256": "7fe87baa830f75d99135f278824890e0beee04ce1a72b9e23b8fbde71d3131f9",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeAction.ts",
+      "bytes": 3472,
+      "sha256": "5ea13e25b41a3f505dff9383983350284482e7f820e597fe888531eda9f7473d",
+      "predecessorSha256": "5ea13e25b41a3f505dff9383983350284482e7f820e597fe888531eda9f7473d",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientAdoption.ts",
+      "bytes": 3443,
+      "sha256": "0bb0e9e96dfb676dfa3179a87659c937f423750c22709602808abb118378ef6c",
+      "predecessorSha256": "0bb0e9e96dfb676dfa3179a87659c937f423750c22709602808abb118378ef6c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientTransactions.ts",
+      "bytes": 20802,
+      "sha256": "e2e71dc21cf4c99658a7c4e6f45b44de19be5626e2910c58c415d888f01c598c",
+      "predecessorSha256": "e2e71dc21cf4c99658a7c4e6f45b44de19be5626e2910c58c415d888f01c598c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientWorker.ts",
+      "bytes": 2229,
+      "sha256": "7872ae943cb87c2b8ad99034bb28a7c1712a1f9cec37b77330e1133ee78c17b2",
+      "predecessorSha256": "7872ae943cb87c2b8ad99034bb28a7c1712a1f9cec37b77330e1133ee78c17b2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeControl.ts",
+      "bytes": 7655,
+      "sha256": "a95d40b26c40d0b5baee2421336290a73f65cb1eba8bce93422fe164acbafca9",
+      "predecessorSha256": "a95d40b26c40d0b5baee2421336290a73f65cb1eba8bce93422fe164acbafca9",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeDisclosure.ts",
+      "bytes": 2902,
+      "sha256": "883823e30e6507e3838eacf8c63129445e382141df22225b50fcb5a1693c68a2",
+      "predecessorSha256": "883823e30e6507e3838eacf8c63129445e382141df22225b50fcb5a1693c68a2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeDisclosureWorker.ts",
+      "bytes": 3185,
+      "sha256": "d10e6d0ee01e6f1211842ee79e93534e7895a70ff0ca5fc846e817f501a8b1af",
+      "predecessorSha256": "d10e6d0ee01e6f1211842ee79e93534e7895a70ff0ca5fc846e817f501a8b1af",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeExecution.ts",
+      "bytes": 5804,
+      "sha256": "bb49c4859417b0a301de8f2312434942a32949dccfb8e2f050b289da0e06c3c8",
+      "predecessorSha256": "bb49c4859417b0a301de8f2312434942a32949dccfb8e2f050b289da0e06c3c8",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeExecutionWorker.ts",
+      "bytes": 3178,
+      "sha256": "b71842f677437a6b2dca09770f7e366ca114d585c13850f47d5bbf7dc668549f",
+      "predecessorSha256": "b71842f677437a6b2dca09770f7e366ca114d585c13850f47d5bbf7dc668549f",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeMedia.ts",
+      "bytes": 5727,
+      "sha256": "be869c7dc339d2fb0b114fad889d86c06f8334d63bb0e579213d443bc2a430e6",
+      "predecessorSha256": "be869c7dc339d2fb0b114fad889d86c06f8334d63bb0e579213d443bc2a430e6",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeMediaWorker.ts",
+      "bytes": 2696,
+      "sha256": "0d3c08e1f390990c2b3e4646e4589ce164f8cc7fd258596c6485515a2bc085f2",
+      "predecessorSha256": "0d3c08e1f390990c2b3e4646e4589ce164f8cc7fd258596c6485515a2bc085f2",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeProvider.ts",
+      "bytes": 6222,
+      "sha256": "fd8569ad25dd821d715a9c7e36c32aed43b2d52d1b92be3771a9c0152970f88d",
+      "predecessorSha256": "fd8569ad25dd821d715a9c7e36c32aed43b2d52d1b92be3771a9c0152970f88d",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeReadModels.ts",
+      "bytes": 19377,
+      "sha256": "5324abff6637a53e88d3a7c89d41a5fa80eac81d504a781880ede4503577082e",
+      "predecessorSha256": "5324abff6637a53e88d3a7c89d41a5fa80eac81d504a781880ede4503577082e",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeReferee.ts",
+      "bytes": 4472,
+      "sha256": "70bc672e28d3391db3c19eae34f2a1c742cbb8498458cd7e66e00da31332031c",
+      "predecessorSha256": "70bc672e28d3391db3c19eae34f2a1c742cbb8498458cd7e66e00da31332031c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeRefereeWorker.ts",
+      "bytes": 2992,
+      "sha256": "d51ee5d80b26922c802e2eaaaa731150fe56e64647f10c763d2c8aa7d71c7800",
+      "predecessorSha256": "d51ee5d80b26922c802e2eaaaa731150fe56e64647f10c763d2c8aa7d71c7800",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeSettlement.ts",
+      "bytes": 4001,
+      "sha256": "faa434f1f56ebf3585389de1a63c85f817ce65859c6eb69c4ed053384cb20db7",
+      "predecessorSha256": "faa434f1f56ebf3585389de1a63c85f817ce65859c6eb69c4ed053384cb20db7",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+      "bytes": 7055,
+      "sha256": "9bc95c658c883fb498fb45213938dfcb06eb43645d3df0c5b30287c87ac5a43c",
+      "predecessorSha256": "9bc95c658c883fb498fb45213938dfcb06eb43645d3df0c5b30287c87ac5a43c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeTransactions.ts",
+      "bytes": 23030,
+      "sha256": "cff451ff4f64fabb8bf2d7a286695588cf7d11c7744085f396459352d38d9199",
+      "predecessorSha256": "cff451ff4f64fabb8bf2d7a286695588cf7d11c7744085f396459352d38d9199",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/ordinaryLatestCompleteFacade.ts",
+      "bytes": 336,
+      "sha256": "d4791ab597c0048746f6b3cda1ab2d4351cac0c0921c06b7330a91c231ac156d",
+      "predecessorSha256": null,
+      "newFacade": true
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/payout.ts",
+      "bytes": 4204,
+      "sha256": "a72f6122018d2ece80c97509b685e3011e6e331bcf5d4bbc54ea1a596ce0ebc8",
+      "predecessorSha256": "a72f6122018d2ece80c97509b685e3011e6e331bcf5d4bbc54ea1a596ce0ebc8",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/privateFile.ts",
+      "bytes": 5740,
+      "sha256": "0e89988993ceda801201803f454ea6d1dd12b90d669368d509e476b568465750",
+      "predecessorSha256": "0e89988993ceda801201803f454ea6d1dd12b90d669368d509e476b568465750",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/projection.ts",
+      "bytes": 8107,
+      "sha256": "c42794e369ea260cb2b722ce90fb111ef922c895819a25ac6fde527efc58ef73",
+      "predecessorSha256": "c42794e369ea260cb2b722ce90fb111ef922c895819a25ac6fde527efc58ef73",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/providerSchema.ts",
+      "bytes": 4601,
+      "sha256": "3d9695e3a653c91a6f341274bdb87af624eecf80398cc61c58b5d47713da9ee4",
+      "predecessorSha256": "3d9695e3a653c91a6f341274bdb87af624eecf80398cc61c58b5d47713da9ee4",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/readModels.ts",
+      "bytes": 15718,
+      "sha256": "9dda12be508f6490d9c3c75b0f1ba83886cd26b7c422b662b5e5f03812a830f0",
+      "predecessorSha256": "9dda12be508f6490d9c3c75b0f1ba83886cd26b7c422b662b5e5f03812a830f0",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/refereeApi.ts",
+      "bytes": 11360,
+      "sha256": "91944ac2c9e6178c3b89083604db36dd91b5b0e6cddc4df6cd618e0de2eae8f9",
+      "predecessorSha256": "91944ac2c9e6178c3b89083604db36dd91b5b0e6cddc4df6cd618e0de2eae8f9",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+      "bytes": 24167,
+      "sha256": "5ee1a6bdc1e1894c49be58a364e68a4af99c06ad80a0c98dbfd4d81eb949130c",
+      "predecessorSha256": "5ee1a6bdc1e1894c49be58a364e68a4af99c06ad80a0c98dbfd4d81eb949130c",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/runtime.ts",
+      "bytes": 7974,
+      "sha256": "be3c9406630c1fa840a08db6b1154d213043863f8f04987ca636941c1cd6396d",
+      "predecessorSha256": "be3c9406630c1fa840a08db6b1154d213043863f8f04987ca636941c1cd6396d",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/selectedSourceRuntime.ts",
+      "bytes": 4006,
+      "sha256": "ab74db559a375b03fac80890252630390cd40659d38aab7df2ecb2c2cb7d8c4f",
+      "predecessorSha256": "ab74db559a375b03fac80890252630390cd40659d38aab7df2ecb2c2cb7d8c4f",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/server.ts",
+      "bytes": 1778,
+      "sha256": "b7f29b39cc9d4dcf1a66d60249bf1af02949cd147b192183a0258f275a00ad9d",
+      "predecessorSha256": "b7f29b39cc9d4dcf1a66d60249bf1af02949cd147b192183a0258f275a00ad9d",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSelection.ts",
+      "bytes": 2184,
+      "sha256": "d984b721f6bb73406c19954e11e9ff12bfca876e65b09a9159ade11e61ee2a7e",
+      "predecessorSha256": "d984b721f6bb73406c19954e11e9ff12bfca876e65b09a9159ade11e61ee2a7e",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSelectionSchema.ts",
+      "bytes": 10865,
+      "sha256": "dd1dd33069213f8e413f71d4ddd39a877c66b6a853ff56ba05d701e48eb4bf9e",
+      "predecessorSha256": "dd1dd33069213f8e413f71d4ddd39a877c66b6a853ff56ba05d701e48eb4bf9e",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSwitch.ts",
+      "bytes": 11201,
+      "sha256": "e3ec93ecee47c0ce8ad368939c25df25105a8a5b925ea0ecede78b49a4f3ff4f",
+      "predecessorSha256": "e3ec93ecee47c0ce8ad368939c25df25105a8a5b925ea0ecede78b49a4f3ff4f",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/storage.ts",
+      "bytes": 3034,
+      "sha256": "350efa874e24d81a4dca02f182f953d9cdde4c1ffa287159c66a3bdd8fedd2c6",
+      "predecessorSha256": "350efa874e24d81a4dca02f182f953d9cdde4c1ffa287159c66a3bdd8fedd2c6",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/tournamentIdentity.ts",
+      "bytes": 5830,
+      "sha256": "2299e89ff46de3e41b83fcc4ef8e8f79c7b61f3e77f87ea95d567a3ef07df5b6",
+      "predecessorSha256": "2299e89ff46de3e41b83fcc4ef8e8f79c7b61f3e77f87ea95d567a3ef07df5b6",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/transactionSchema.ts",
+      "bytes": 5841,
+      "sha256": "e5b7074bdcb2b1f0479984a01704287993784112b8ac5034e436f9fc8143ef37",
+      "predecessorSha256": "e5b7074bdcb2b1f0479984a01704287993784112b8ac5034e436f9fc8143ef37",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/transport.ts",
+      "bytes": 1038,
+      "sha256": "9e412485a57af523ba7fa84ff0a326522f20320a4e0c2afee24f1273c35a3c53",
+      "predecessorSha256": "9e412485a57af523ba7fa84ff0a326522f20320a4e0c2afee24f1273c35a3c53",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/confirmations.ts",
+      "bytes": 1182,
+      "sha256": "11abd8f5c165762af9aa1d987609ba0ff3f8af318e3d847634f290f873bc3b77",
+      "predecessorSha256": "11abd8f5c165762af9aa1d987609ba0ff3f8af318e3d847634f290f873bc3b77",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/db/pool.ts",
+      "bytes": 1887,
+      "sha256": "13c390239c5f7da89a0c6c837f866ed00068f4be89ca63d7ba120639a16de0a9",
+      "predecessorSha256": "13c390239c5f7da89a0c6c837f866ed00068f4be89ca63d7ba120639a16de0a9",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/src/rpcBudgetProxyRegistry.ts",
+      "bytes": 2853,
+      "sha256": "aeeab285d36ade995761bcccd3dc179324ed2a611d4c7713fb826df01ca143da",
+      "predecessorSha256": "aeeab285d36ade995761bcccd3dc179324ed2a611d4c7713fb826df01ca143da",
+      "newFacade": false
+    },
+    {
+      "path": "apps/yunipals-market-api/tsconfig.json",
+      "bytes": 328,
+      "sha256": "48593300d851b41b432a5138ccf1bd901c206ce53836f4b2322ef335683c4d9a",
+      "predecessorSha256": "48593300d851b41b432a5138ccf1bd901c206ce53836f4b2322ef335683c4d9a",
+      "newFacade": false
+    },
+    {
+      "path": "package.json",
+      "bytes": 5042,
+      "sha256": "8d97fa0dcc5b77e599c70b9799086c9bd69fe1187bbd68e7ff8569ff6b54ed11",
+      "predecessorSha256": "8d97fa0dcc5b77e599c70b9799086c9bd69fe1187bbd68e7ff8569ff6b54ed11",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-client/package.json",
+      "bytes": 279,
+      "sha256": "9f58bf51d5b3743bf615b69693882cd9be8ab4e129bc6d8321e302e946fbac96",
+      "predecessorSha256": "9f58bf51d5b3743bf615b69693882cd9be8ab4e129bc6d8321e302e946fbac96",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/events.ts",
+      "bytes": 2159,
+      "sha256": "8e2a9c39ffa4fd6f3a5fa0e149d168bb1e61578e509332c52cc53d047f45fe1d",
+      "predecessorSha256": "8e2a9c39ffa4fd6f3a5fa0e149d168bb1e61578e509332c52cc53d047f45fe1d",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/ponder.ts",
+      "bytes": 2400,
+      "sha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+      "predecessorSha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/readiness.ts",
+      "bytes": 5274,
+      "sha256": "06b4f87fa9d1446b32d157d215ab45701152552b1b730d84561f8bce244b6aab",
+      "predecessorSha256": "c23e9c2e763d3173582de8211a6bc72236654d87457cd548d445e107e457cff8",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-client/src/sources.ts",
+      "bytes": 5002,
+      "sha256": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+      "predecessorSha256": "05e1ad7cdf5da6fbf7615294bf94552ac291032aadb911be65ea5d6506544b1c",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/package.json",
+      "bytes": 638,
+      "sha256": "a83f279e128ae3fe9174d1f8f92801ed4af38e9d93b64192d0f848bc7325f17c",
+      "predecessorSha256": "a83f279e128ae3fe9174d1f8f92801ed4af38e9d93b64192d0f848bc7325f17c",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/arena.ts",
+      "bytes": 37581,
+      "sha256": "2522f0fba0ccc8f25c420c41c49fe97798b5cffb3d0b9a2b734adb5ad782aafb",
+      "predecessorSha256": "2522f0fba0ccc8f25c420c41c49fe97798b5cffb3d0b9a2b734adb5ad782aafb",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/chain-status.ts",
+      "bytes": 1174,
+      "sha256": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3",
+      "predecessorSha256": "94fbd7d957e80072dcdc2c31bdf406105fc91bbd6418a1d9bcd5bd253b3a1ca3",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/database.ts",
+      "bytes": 801,
+      "sha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+      "predecessorSha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/event-topics.ts",
+      "bytes": 671,
+      "sha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a",
+      "predecessorSha256": "a430efe9b80bded34cdbc8cc115d6c4e7f197d6991b20743e5519427f938960a",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/identity.ts",
+      "bytes": 1190,
+      "sha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+      "predecessorSha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/paging.ts",
+      "bytes": 13032,
+      "sha256": "929067b18f023b98575f69cf1fa83c837ffff7f5c66b63447829e3d1ca4cd211",
+      "predecessorSha256": "929067b18f023b98575f69cf1fa83c837ffff7f5c66b63447829e3d1ca4cd211",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/ponder-reader.ts",
+      "bytes": 3352,
+      "sha256": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a",
+      "predecessorSha256": "cec123e750017b46a099dbbe2f7b155e330273c87a4757b1e4b07aed33405c4a",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/readers.ts",
+      "bytes": 2481,
+      "sha256": "4f61612dcd6dca1ee8607f0e7538d0bccfadf1a6565fe69c7391e0229ef0fd00",
+      "predecessorSha256": "4f61612dcd6dca1ee8607f0e7538d0bccfadf1a6565fe69c7391e0229ef0fd00",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/releases.ts",
+      "bytes": 3106,
+      "sha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+      "predecessorSha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/rpc-policy.ts",
+      "bytes": 11692,
+      "sha256": "96d0f1acec449aa0db4848e8fd7d5bad404a26703ced5a46b6bad65383ec70d7",
+      "predecessorSha256": "96d0f1acec449aa0db4848e8fd7d5bad404a26703ced5a46b6bad65383ec70d7",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/status.ts",
+      "bytes": 4783,
+      "sha256": "e3a46cc4add4678d73723ec3d885d825ae4a95bc93d47506c80832bb6d5d460d",
+      "predecessorSha256": "7abfdd6a8dddecfd9030e62ebf77f4570db6e45f669bce69fdb813c82c190c4a",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-market-core/package.json",
+      "bytes": 1898,
+      "sha256": "b1bc93463a390d8f8b81f7987457c9449353277ec79216b2d2bb796e62542e73",
+      "predecessorSha256": "b1bc93463a390d8f8b81f7987457c9449353277ec79216b2d2bb796e62542e73",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-market-core/src/arena.ts",
+      "bytes": 6714,
+      "sha256": "4a340d2e82135b85d8239e448aac3bc9f850b3f5738865b56791e44767ba71d9",
+      "predecessorSha256": "4a340d2e82135b85d8239e448aac3bc9f850b3f5738865b56791e44767ba71d9",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-market-core/src/arenaAbi.ts",
+      "bytes": 35430,
+      "sha256": "b6d8ebfe8078ac8ada02416818c97d7468b75e072f1abf38a34f4dff70a6bc04",
+      "predecessorSha256": "b6d8ebfe8078ac8ada02416818c97d7468b75e072f1abf38a34f4dff70a6bc04",
+      "newFacade": false
+    },
+    {
+      "path": "packages/yunipals-market-core/src/registry.ts",
+      "bytes": 2327,
+      "sha256": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9",
+      "predecessorSha256": "abd125f3b26653691bc149a9b77af7e34a569bb1476318cb17a0babc4291d4c9",
+      "newFacade": false
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 325459,
+      "sha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd",
+      "predecessorSha256": "a03c5b4e979ba96b2d641ac454149f7114fedcf77b178df65603fa80543424dd",
+      "newFacade": false
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "bytes": 41,
+      "sha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed",
+      "predecessorSha256": "7b7754bc7d237d1b8593b8cc94f1997ba735a80b0695a6dc6c63ef87749869ed",
+      "newFacade": false
+    }
+  ],
+  "files": [
+    {
+      "path": "dist/arena-server.mjs.map",
+      "bytes": 675708,
+      "sha256": "20f4e953ab066452d6bfdfd0fe1c7c629b8be4fb3634ed5816e754417bb0b4f6"
+    },
+    {
+      "path": "dist/arena-server.mjs",
+      "bytes": 336897,
+      "sha256": "5df353a011e6e7e1ae76bbb18ff378dac78e797ca34228b2372e9b0f204bc255"
+    },
+    {
+      "path": "dist/arena-native-disclosure.mjs.map",
+      "bytes": 358548,
+      "sha256": "08f3c812f0b025f237257cba2ce70f3dcbe2dcc7de46175b628dbd9f65c3b412"
+    },
+    {
+      "path": "dist/arena-native-disclosure.mjs",
+      "bytes": 184467,
+      "sha256": "33ca44a98cc84d206d449095abb1f174f9be1eb61fdf873c4c6dd165c49f0cf2"
+    },
+    {
+      "path": "dist/arena-native-client.mjs.map",
+      "bytes": 544034,
+      "sha256": "f39d0b1e25851cfa75de039be6cfd52c0d6a63767903208dc82a1c4987cc0e9d"
+    },
+    {
+      "path": "dist/arena-native-client.mjs",
+      "bytes": 281812,
+      "sha256": "340c2eec04ae8fdef45132538de080108783ef4238540033dc924bb02ce59e7e"
+    },
+    {
+      "path": "dist/arena-native-referee.mjs.map",
+      "bytes": 520742,
+      "sha256": "cb569a12c6d21fe9fb076ef07bdd82a0ef0e9c55005f083cae0a00bc2f8c5eba"
+    },
+    {
+      "path": "dist/arena-native-referee.mjs",
+      "bytes": 274227,
+      "sha256": "e732ad7c3c71c23dd11a9f719170b375c90cb4491770acb31fa4e71ade723644"
+    },
+    {
+      "path": "dist/arena-native-media.mjs.map",
+      "bytes": 572236,
+      "sha256": "6aaac6c2ea2d67369d6eebace116032bb7ad7b224a3902cf7d616996c7a8939b"
+    },
+    {
+      "path": "dist/arena-native-media.mjs",
+      "bytes": 303756,
+      "sha256": "62bf36da0d6fe9ccdc9479b328d85cff717cc7fc590f35cc560d4d6573fc6ad7"
+    },
+    {
+      "path": "dist/arena-native-execution.mjs.map",
+      "bytes": 583628,
+      "sha256": "41d5543b64ac6c0aa72832967ae2830fbad1830ffbfcdc3d99efaa59c670e7c2"
+    },
+    {
+      "path": "dist/arena-native-execution.mjs",
+      "bytes": 287995,
+      "sha256": "029ace28e3408fc12e24436a444189b2e2c9274fcc598b878aec5176e52d28eb"
+    },
+    {
+      "path": "dist/arena-capacity.mjs.map",
+      "bytes": 498664,
+      "sha256": "5e655ca534b619095005d2dc5b5bfec99e4cbc112c8cb4cc92be92dea9d45b37"
+    },
+    {
+      "path": "dist/arena-capacity.mjs",
+      "bytes": 251464,
+      "sha256": "41a070b16b5bd5941cc86d41daddd54b71782435d0ecacefad84abda563c10e4"
+    },
+    {
+      "path": "dist/arena-owner-reader.mjs.map",
+      "bytes": 350855,
+      "sha256": "8fc8315f4e64aa74498fd1331a90f3fc7a1ef27f32512d90e8b996127d14752a"
+    },
+    {
+      "path": "dist/arena-owner-reader.mjs",
+      "bytes": 137481,
+      "sha256": "7707bcb8520cb01e0be809c6b84930c766290bc82c7f4b86078d4f2dd5de7f77"
+    }
+  ],
+  "compilerFiles": [
+    {
+      "role": "javascript",
+      "bytes": 88706,
+      "sha256": "0d1241812c443111d39475dfc66836003e9ef8b87e54d990dd67df29d20010e1"
+    },
+    {
+      "role": "package",
+      "bytes": 1490,
+      "sha256": "cb7d5b1fe478f8cbaae566a86031b6fdf5f7d444354f35d1cb3cba9adf6d2935"
+    },
+    {
+      "role": "native",
+      "bytes": 10358936,
+      "sha256": "bab29b2ca7a9e89b67cf720b77b2d743f9f31f5cf0d5bd74ee8c8de30ced7014"
+    }
+  ],
+  "nodeVersion": "24.18.1",
+  "buildConfiguration": {
+    "entryPoints": {
+      "arena-server": "apps/yunipals-market-api/src/arena/live/server.ts",
+      "arena-native-disclosure": "apps/yunipals-market-api/src/arena/live/nativeDisclosureWorker.ts",
+      "arena-native-client": "apps/yunipals-market-api/src/arena/live/nativeClientWorker.ts",
+      "arena-native-referee": "apps/yunipals-market-api/src/arena/live/nativeRefereeWorker.ts",
+      "arena-native-media": "apps/yunipals-market-api/src/arena/live/nativeMediaWorker.ts",
+      "arena-native-execution": "apps/yunipals-market-api/src/arena/live/nativeExecutionWorker.ts",
+      "arena-capacity": "apps/yunipals-market-api/src/arena/live/capacityWorker.ts",
+      "arena-owner-reader": "apps/yunipals-market-api/src/arena/live/ordinaryLatestCompleteFacade.ts"
+    },
+    "outdir": "dist",
+    "outExtension": {
+      ".js": ".mjs"
+    },
+    "bundle": true,
+    "platform": "node",
+    "format": "esm",
+    "target": "node24",
+    "external": [
+      "@hono/node-server",
+      "hono",
+      "pg",
+      "viem"
+    ],
+    "sourcemap": true,
+    "metafile": true,
+    "write": false
+  },
+  "dependencyDeclarations": {
+    "@hono/node-server": "1.19.17",
+    "hono": "4.13.8",
+    "pg": "8.23.0",
+    "@protopals/yunipals-market-core": "workspace:*",
+    "@protopals/yunipals-indexer-server": "workspace:*",
+    "viem": "2.38.0"
+  },
+  "dependencyRuntimeSource": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "businessBodiesChanged": false,
+  "contractsChanged": false,
+  "migrationsPerformed": 0,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "servicesChanged": 0,
+  "artifactDigest": "e6bc1f61d64fa85700a2b83cf2cd16daaef4a8d4897f93800cdf773cc6cac234"
+}

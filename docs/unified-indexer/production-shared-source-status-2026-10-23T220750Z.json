@@ -1,0 +1,147 @@
+{
+  "format": "yunipals-current-shared-source-bounded-status-v1",
+  "observedAt": "2026-10-23T22:07:50.586387+00:00",
+  "scope": "Read-only status of the retained old-manifest shared source; not readiness of the future YPAL combined build.",
+  "bnb": {
+    "committedBlock": 119730093,
+    "fixedStart": 7579200,
+    "fixedTarget": 129172539,
+    "fixedRangePercent": 92.2344,
+    "frameworkReady": false,
+    "healthHttpStatus": 200,
+    "readyHttpStatus": 503
+  },
+  "native": {
+    "checkpoints": [
+      {
+        "chainId": 1,
+        "finalizedCompleteBlock": 26249684,
+        "latestCompleteBlock": 26249684,
+        "safeCompleteBlock": 26249684
+      },
+      {
+        "chainId": 56,
+        "finalizedCompleteBlock": 119730093,
+        "latestCompleteBlock": 119730093,
+        "safeCompleteBlock": 119730093
+      },
+      {
+        "chainId": 137,
+        "finalizedCompleteBlock": 95990408,
+        "latestCompleteBlock": 95990408,
+        "safeCompleteBlock": 95990408
+      },
+      {
+        "chainId": 8453,
+        "finalizedCompleteBlock": 52950938,
+        "latestCompleteBlock": 52950938,
+        "safeCompleteBlock": 52950938
+      }
+    ],
+    "identity": {
+      "buildId": "bf4939b3ff",
+      "manifestHash": "0x153b9572dafa3b706a5a31a3f2530180639ac2b81abf1d7b15f4c095ef84a029",
+      "releaseId": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+      "schema": "unified_shadow_20261020_7e7375b0"
+    },
+    "meta": {
+      "build": "bf4939b3ff",
+      "heartbeatAtMs": "1792793263185",
+      "locked": "1",
+      "ready": "0",
+      "version": "6"
+    },
+    "observedAt": "2026-10-23T22:07:50.379519+00:00",
+    "readOnly": true,
+    "status": [
+      {
+        "chainId": 1,
+        "errorCode": "indexer_not_ready",
+        "halted": false,
+        "witnessNumber": null
+      },
+      {
+        "chainId": 56,
+        "errorCode": "indexer_not_ready",
+        "halted": false,
+        "witnessNumber": null
+      },
+      {
+        "chainId": 137,
+        "errorCode": "indexer_not_ready",
+        "halted": false,
+        "witnessNumber": null
+      },
+      {
+        "chainId": 8453,
+        "errorCode": "indexer_not_ready",
+        "halted": false,
+        "witnessNumber": null
+      }
+    ],
+    "witnessCounts": []
+  },
+  "sourceRuntime": {
+    "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "pid": 716994,
+    "startMonotonicMicroseconds": 66117947533239,
+    "startTicks": 6611794751
+  },
+  "resources": {
+    "memoryCurrentBytes": 403030016,
+    "memoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "memoryLimitBytes": 6442450944,
+    "rootFreeBytes": 44817428480,
+    "runtimeMetrics": {
+      "nodejs_external_memory_bytes": 8252406.0,
+      "nodejs_heap_size_total_bytes": 244400128.0,
+      "nodejs_heap_size_used_bytes": 103872352.0,
+      "process_cpu_system_seconds_total": 1461.8652129999996,
+      "process_cpu_user_seconds_total": 6986.109081000001,
+      "process_resident_memory_bytes": 451801088.0
+    }
+  },
+  "freshYpal": {
+    "identitiesUnchanged": true,
+    "rpc": {
+      "allPaidFallback": false,
+      "httpStatus": 200,
+      "sourcePaidFallback": false,
+      "sourceRouting": "free_first",
+      "traffic": {
+        "unified_evidence": {
+          "freeCalls": 68,
+          "paidCalls": 0,
+          "refused": 0
+        },
+        "unified_source": {
+          "freeCalls": 3784,
+          "paidCalls": 0,
+          "refused": 0
+        }
+      }
+    },
+    "sourceAndProxyObserved": true
+  },
+  "limits": [
+    "The fixed historical percentage is BNB committed coverage, not overall project completion or canonical-head readiness.",
+    "The sampled sync-block metric is below the durable checkpoint; it is not a certified fetched upper bound.",
+    "The future YPAL combined build needs a new namespace and native handler replay using the retained physical ponder_sync cache."
+  ],
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "policyChanges": 0,
+  "rawRowsExported": 0,
+  "input": {
+    "path": "/tmp/yunipals-bnb-fresh-status-20261023.json",
+    "sha256": "8269df9fef7c0222e2ae86faf2a9fa736ae7320a8003f1e4c34f2b8944d3b952"
+  }
+}

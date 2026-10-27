@@ -8,6 +8,7 @@ import type { ArenaTournament } from "@protopals/yunipals-market-core/arena";
 import { readConfirmedBlock } from "@/confirmations";
 import type { ArenaDeployment } from "./projector";
 import { json, projectEvent } from "./projection";
+import { sourceLeaseKey } from "./sourceSelection";
 
 const tables = [
   "deployment",
@@ -104,6 +105,10 @@ async function snapshot(db: PoolClient, deployment: string) {
 }
 function requireHalted(source: Snapshot, deployment: ArenaDeployment) {
   const row = source.deployment[0];
+  if (row?.indexer_mode !== "legacy")
+    throw new Error(
+      "Legacy recovery cannot rewrite a native Arena deployment."
+    );
   if (!row || row.halted !== true)
     throw new Error(
       "Recovery requires an already halted deployment; healthy indexing is never rewound."
@@ -118,6 +123,9 @@ function requireHalted(source: Snapshot, deployment: ArenaDeployment) {
   return row;
 }
 async function lock(db: PoolClient, deployment: string, exclusive: boolean) {
+  await db.query("SELECT pg_advisory_xact_lock_shared(hashtext($1))", [
+    sourceLeaseKey(deployment)
+  ]);
   const held = (
     await db.query<{ held: boolean }>(
       "SELECT pg_try_advisory_xact_lock(hashtext($1)) AS held",

@@ -1,0 +1,40 @@
+{
+  "actualStageResultSha256": "8e3ab987d429fb4bee90a664ab305725efd435d0ac67373a186d8316660ffec4",
+  "allTrueDatabaseNetworkListenerSpawnGuardsUnchanged": true,
+  "classificationOnly": true,
+  "databaseConnections": 0,
+  "files": [
+    {
+      "bytes": 8199,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.py",
+      "sha256": "44d502b19bdae6a484db2da719bae154c9a96480d006d7bb9536f0c4ea36f083"
+    },
+    {
+      "bytes": 5494,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.test.py",
+      "sha256": "47bd617dd44e23207ce303c8bb264079a57dda4a1df916c8271881a5483e34a9"
+    },
+    {
+      "bytes": 3046,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-import-v2.md",
+      "sha256": "97303565e8a40931d3b9a41cf95247502fef1fd0babe882d3072f69579a4f9a3"
+    }
+  ],
+  "financialAuthorityQualified": false,
+  "fixtureCorrectedToActualPinnedPgExportPattern": true,
+  "focusedControlsPassed": 9,
+  "format": "yunipals-alchemy-primary-import-v2-preparation",
+  "initialSyntheticGetterOnlyFixturesFailed": 2,
+  "localActualNodePgInteropReproduced": true,
+  "nativeGetterStillThrowsBeforeAddon": true,
+  "originalFailedIntentSha256": "ce031317622efba637f6db736996f791eaa40546a0be5a777f6fc1ca039dfb95",
+  "originalFailedQualificationPreserved": true,
+  "originalFailedStderrSha256": "072e82f09620e76757be6763a2e036838dba9673ec2161574bf416624240eed4",
+  "parentGuardSha256": "1825e6c6cff0641c6e31d192aaecc6e11b9906378f0a94f4f53c4d8e2923c986",
+  "parentStagerSha256": "01da39ab60ba2fc73b5acf8184b0c3bd44a074bf0f9c8f95ffbfecc510b43c73",
+  "productionSuccessorImportExecuted": false,
+  "providerCalls": 0,
+  "runtimeSelected": false,
+  "serviceActions": 0,
+  "sourceOnly": true
+}

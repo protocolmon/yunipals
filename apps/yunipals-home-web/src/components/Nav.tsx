@@ -1,4 +1,4 @@
-import { Menu, Search, Swords, X } from "lucide-react";
+import { ScanSearch, Menu, Search, X } from "lucide-react";
 import { FormEvent, useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -11,6 +11,10 @@ import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
 const navigation = [
   { label: "Collection", to: "/" },
+  ...(environment.boostersEnabled ||
+  environment.boosterLaunchId === "base-ypal-v1"
+    ? [{ label: "Packs", to: "/boosters" }]
+    : []),
   { label: "Leaderboard", to: "/leaderboard" },
   { label: "Arena", to: "/arena" }
 ];
@@ -173,11 +177,11 @@ export function Nav() {
             </Link>
           ))}
           <span
-            title="Battles are coming soon"
+            title="Grading is coming soon"
             className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-line whitespace-nowrap bg-line/25 px-3 py-2 text-sm font-semibold text-muted"
           >
-            <Swords aria-hidden="true" size={14} />
-            Battles
+            <ScanSearch aria-hidden="true" size={14} />
+            Grading
           </span>
         </nav>
 
@@ -254,8 +258,9 @@ export function Nav() {
                 {item.label}
               </Link>
             ))}
-            <div className="rounded-2xl bg-line/30 px-4 py-3 font-semibold text-muted">
-              Battles · Coming soon
+            <div className="flex items-center gap-2 rounded-2xl bg-line/30 px-4 py-3 font-semibold text-muted">
+              <ScanSearch aria-hidden="true" size={16} />
+              Grading · Coming soon
             </div>
             <div className="mt-2 border-t border-line pt-4">
               <CollectorSearch onNavigate={() => setMobileMenuOpen(false)} />

@@ -1,0 +1,73 @@
+{
+  "format": "yunipals-metadata-fixed-parity-v4-source-preparation",
+  "status": "production-fixed-boundary-data-comparison-complete",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/metadata-fixed-parity-v4.py",
+      "bytes": 19339,
+      "sha256": "d367701ea44de7cb5fada336d182f5c1a47536cc4221fdd120a048ea9641ee53"
+    },
+    {
+      "path": "ops/unified-indexer-transition/metadata-fixed-parity-v4.test.py",
+      "bytes": 9395,
+      "sha256": "1c91a2e95e4d2752a7efb89673676f0aa5ee6139fd2b4d5df6ca70157f2e2369"
+    },
+    {
+      "path": "ops/unified-indexer-transition/metadata-fixed-parity-v4.plan.json.example",
+      "bytes": 140,
+      "sha256": "18677c915fcbc063f37e5e61028f3cac764f18cf32f7839a1e4cfb187c2720fa"
+    },
+    {
+      "path": "ops/unified-indexer-transition/metadata-fixed-parity-v4.md",
+      "bytes": 4903,
+      "sha256": "45342ee83a47b10bf72a360617ab21550dc8b9e0ce9836e102a0f2ec791e030a"
+    }
+  ],
+  "frozenV3Sha256": "99cca36142bf8c26de017800649227eb0d77d1109a82cf657df95c2dcb64eabe",
+  "frozenV3Unmodified": true,
+  "boundary": 52870977,
+  "partitions": 16,
+  "sameReadOnlySnapshot": true,
+  "normalizedSQLUnchangedExceptNamespace": true,
+  "originalNormalizedSqlSha256": "522af3ea6c7a15dc11d5c70b0eeeda23fb8eb520cb8228c0aa54c918570389f3",
+  "newNormalizedSqlSha256": "26cebb6fac570a747e987558676616adcde77ce08d459cf5dc338d4211d441c7",
+  "executionSqlSha256": "4991840a20ed7cb93a5f5dc2a3e9b55e81eaab9d99a9f82fbbe52a7efac8033b",
+  "context": {
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "readSchema": "yunipals_ownership_4e77f52b_v4",
+    "readSchemaOid": "75994954",
+    "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67"
+  },
+  "validation": {
+    "syntheticControls": 10,
+    "productionComparisonPerformed": true,
+    "providerCalls": 0,
+    "serviceJobs": 0,
+    "SQLWrites": 0,
+    "realDescendantTimeoutControl": true,
+    "independentPrivateReportContextAndDigestsVerified": true,
+    "comparisonBackendDrained": true
+  },
+  "reportPath": "/var/backups/yunipals-metadata-fixed-parity-v4-20261024/result.json",
+  "reportPrivateOnHost": true,
+  "stdoutAggregateOnly": true,
+  "canonicalAcceptanceClaimed": false,
+  "sourceSelectionAuthorized": false,
+  "processGroupTerminationOnTimeout": true,
+  "applicationName": "yunipals_metadata_fixed_parity_v4",
+  "dataAcceptance": {
+    "legacyRows": 440194,
+    "nativeRows": 440194,
+    "missingLegacy": 0,
+    "missingNative": 0,
+    "changedPayloads": 0,
+    "exactDataParity": true,
+    "canonicalAcceptance": false,
+    "sourceSelected": false,
+    "detailedReportPublished": false
+  }
+}

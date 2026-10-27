@@ -1,0 +1,36 @@
+{
+  "format": "yunipals-arena-public-rollback-v2-preparation-v1",
+  "status": "prepared-not-staged",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v2.py",
+      "sha256": "272b827c55b2db7a8a85fbb581602d07302e2d0daa03b2f3820692c5350b18fa"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v2-test.py",
+      "sha256": "8da42548bd0fb781afeae217fd1438502f3a44ba8fe63391ac23f09efb1f03ca"
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-public-rollback-v2.md",
+      "sha256": "61a1b963f9a40012ceb304e96a2a4b7891d2d097955f61eeb7501dcdd386050b"
+    }
+  ],
+  "pythonControlsPassed": 44,
+  "unchangedChildControlsPassed": 35,
+  "allOtherRecoveryMethodsAstIdentical": true,
+  "financialOnlyMainSourceRequired": false,
+  "liveSourceQualificationCalledForFinancialAuthority": false,
+  "originalWholeValidationPassed": false,
+  "newPaidAllowance": false,
+  "evidence": [
+    {
+      "path": "/tmp/yunipals-arena-modern-public-rollback-v2-tests-20261023.log",
+      "sha256": "d252a5b35432bc67f4798ec3ff852330c7240db288e8d714d2d80777d81a0bd5"
+    },
+    {
+      "path": "/tmp/yunipals-arena-modern-public-rollback-v2-child-controls-20261023.log",
+      "sha256": "ccda6f1a6fc117d663c14cd84ad97e8bd6f1a74fc817e3c08132656e2c41a448"
+    }
+  ],
+  "productionActions": 0
+}

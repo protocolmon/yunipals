@@ -1,0 +1,105 @@
+{
+  "actualCandidateReceiptInvented": false,
+  "actualGenerationAcceptanceProducer": {
+    "file": "ypal-ordinary-generation-accept-v2.py",
+    "sha256": "b6b6eb8c707290c29fbcd6eedf2e13c6c1d5dcc293a3806b0d6ab76bc9ab49fe"
+  },
+  "callbackTimingQualifiedByThisWork": false,
+  "effectsByThisSourceWork": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 3916,
+      "file": "ypal-ordinary-generation-accept-binding-v1.py",
+      "sha256": "4a2e27c9943959e76bf26b6639727833ede7ff8224fe1c6d2b8b50e9f7e42758"
+    },
+    {
+      "bytes": 5452,
+      "file": "ypal-ordinary-read-cache-accept-v1.py",
+      "sha256": "b2b10b7e107bf3cd89aeb4838bdb08828e511abc2b3ebf453d7bbcf240b9215a"
+    },
+    {
+      "bytes": 3161,
+      "file": "ypal-ordinary-reader-accept-v1.py",
+      "sha256": "99c720965851e15a6aaca0bad39d616c0bc3daef3d581a58888d9f0a9a3a9b6e"
+    },
+    {
+      "bytes": 2589,
+      "file": "ypal-ordinary-publication-accept-v1.py",
+      "sha256": "06212b568ee5298679633e3dfc30f9e47007c5624ff1a1ff441891f8128c6fcb"
+    },
+    {
+      "bytes": 3536,
+      "file": "ypal-ordinary-publication-accept-manifest-v1.py",
+      "sha256": "3dfb9392ae78e88b181d8c5e0177772d2a42c0ed8e65c6bcf91b55d19be0c870"
+    },
+    {
+      "bytes": 6599,
+      "file": "ypal-ordinary-publication-input-render-accept-v1.py",
+      "sha256": "f934344ffa62c336d5dd4a057d05f6a8568139b52452080af02c33849e092705"
+    },
+    {
+      "bytes": 17226,
+      "file": "ypal-ordinary-publication-accept-v1.test.py",
+      "sha256": "f61623c7abe6bde02c495f49a93b374f52db14e5f30f54ca016d173d7e3894ca"
+    },
+    {
+      "bytes": 9939,
+      "file": "ypal-ordinary-publication-accept-v1.md",
+      "sha256": "8d957b7b15bc5baad8ed3ac80868d8908c93e842dd2cd72aeb2f201d964fd67c"
+    },
+    {
+      "bytes": 22124,
+      "file": "ypal-ordinary-generation-accept-binding-v1.manifest.json",
+      "sha256": "3ff3808d4c824509eba0111d3a8d64f33d4fb2fe7da45459bb17d634ff127bf0"
+    },
+    {
+      "bytes": 25932,
+      "file": "ypal-ordinary-reader-accept-v1.manifest.json",
+      "sha256": "b28fb02092d8b70e442ca9bc9a57526363195fb3b7d106b0f9090c6f2ec53742"
+    },
+    {
+      "bytes": 23742,
+      "file": "ypal-ordinary-publication-accept-v1.stage.json",
+      "sha256": "b451fcb0405e193a3123a4e187ba044889ae0e27cdcac9ef7eb841cd1daaba56"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-accept-v1-preparation",
+  "independentReview": {
+    "featureAgent": "prior wholegraph no concrete findings; V2 delta requested",
+    "productionAcceptanceClaimed": false,
+    "protocolAgent": "final V2 delta no findings;9/9 + exact manifests"
+  },
+  "newSchemaInvented": false,
+  "originalAttemptCandidateCLIPassed": false,
+  "originalBuildOperationFile": "/var/backups/yunipals-ypal-ordinary-generation-attempt-v2-20261025/operation.json",
+  "originalBuildProducerSha256": "4f0a3e35683444f68b089c4122f513998415f6fea4f1b61ce0d8cee68a0c1753",
+  "originalStrictTerminalInvocationGatePassed": false,
+  "previousAcceptanceCLIPassed": false,
+  "previousAcceptanceProducerSha256": "1e29585a8c1b09747c061e47e0b2fbf2a984d10949c12f36d847b336f8a5259d",
+  "productionStillRequired": [
+    "actual accepted candidate receipt from new journal-backed owner",
+    "root-only exclusive renderer input write after exit0",
+    "actual current source/cache/catalog/private qualification",
+    "fresh complete cache callback timing and independent before/after LOGIN reader timings",
+    "explicit new downstream acknowledgement successors",
+    "separately qualified full inverse source and held-SQL caller route"
+  ],
+  "publicStageClosureFile": "ypal-ordinary-publication-accept-v1.stage.json",
+  "publicStageClosureSha256": "b451fcb0405e193a3123a4e187ba044889ae0e27cdcac9ef7eb841cd1daaba56",
+  "publishedDownstreamSuccessClaimed": false,
+  "readerInverseDispatchOpen": false,
+  "runtimeIndependentReviewPending": false,
+  "sourceControlEvidence": {
+    "actualComposedModules": true,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-publication-accept-v1.test.py",
+    "passed": 9,
+    "syntheticReceiptsAreProductionEvidence": false
+  },
+  "sqlWirePeerQuerySourceGuardUnchanged": true
+}

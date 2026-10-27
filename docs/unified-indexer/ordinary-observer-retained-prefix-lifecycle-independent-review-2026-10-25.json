@@ -1,0 +1,36 @@
+{
+  "format": "yunipals-ordinary-observer-retained-prefix-lifecycle-independent-review-v1",
+  "reviewedAtDate": "2026-10-25",
+  "verdict": "PASS",
+  "scope": "Frozen observer lifecycle source and local controls only",
+  "files": {
+    "ops/unified-indexer-transition/ypal-ordinary-observer-retained-prefix-v1.py": "451f1abe40d4bfba0d561e20f64c3e36c1c050ecbbea3415ecf318b00333e32e",
+    "ops/unified-indexer-transition/ypal-ordinary-observer-retained-prefix-v1.test.py": "7c47dae37ffe9d75014652f520ebf38987f4a018e7d63476ecd9cfbd00eb5d15",
+    "ops/unified-indexer-transition/ypal-ordinary-observer-retained-prefix-v1.md": "3c5ee8d8a7f4a789f7a9645eccdd63095f7ad9f49b6e864fe6b7509166cf5bbe"
+  },
+  "validation": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-observer-retained-prefix-v1.test.py",
+    "independentlyPassedControls": 17,
+    "exitCode": 0,
+    "criticalSourceReadCompleted": true,
+    "frozenProcessAndLoadedUnitBodiesInspected": true
+  },
+  "reviewedProperties": [
+    "The predecessor result remains immutable ancestry; the transition initially requires its genuine current epoch and the independently qualified ordinary source.",
+    "The new namespace changes only the explicit owned entry drop, command and start-journal seams in the frozen loaded-unit and process checks. Original unit, boot link, hardening, zero capabilities, exact argv/environment and single-process cgroup checks remain enforced.",
+    "Durable stop and start intents precede manager actions. Lost forward or inverse start acknowledgements are observed without another start; an unresolved stop is not resent.",
+    "Partial inverse checks terminal state, empty cgroup, recorded invocation/start time and disappearance of known PIDs. It removes only its authenticated drop and owned empty directory, then restores the original command under a new explicit start intent and receipt.",
+    "Recorded activation authentication is separate from current observer qualification. Ongoing current validation qualifies the observer, registered native dataset, finite support role and free evidence lanes without requiring the initial writer epoch to remain active.",
+    "Both new and restored receipts bind releaseId to the preserved registered data identity and authenticate the apply/start/predecessor chains while withholding source, writer, canonical coverage, reader selection and financial authority."
+  ],
+  "concreteBlockingFindings": [],
+  "limits": [
+    "This verdict does not qualify a production installation, transition, receipt, control status or canonical coverage.",
+    "The provider-lag algorithm and artifact build/install tests are separate reviewed components; they were not rerun as part of this bounded lifecycle review.",
+    "Unknown filesystem prefixes or process epochs outside the recorded ownership chain remain refusals; this review does not authorize adopting or repairing them."
+  ],
+  "hostActions": 0,
+  "productionDatabaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0
+}

@@ -1,0 +1,90 @@
+{
+  "format": "yunipals-arena-public-rollback-target-preparation-v1",
+  "date": "2026-10-23",
+  "status": "local_preparation_passed_not_production_admitted",
+  "unitControls": 12,
+  "unitExitCode": 0,
+  "postgres": {
+    "image": "postgres:16.15",
+    "loopbackPort": 56967,
+    "exitCode": 0,
+    "actualTables": 4,
+    "privateTables": 0,
+    "functions": 0,
+    "initiallyEmpty": true,
+    "realAcknowledgedBoundaries": 4,
+    "unknownCreateAckPreservedWithoutRetry": true,
+    "actualCommitAckLossReconciledByXid": true,
+    "readerWritesDenied": true,
+    "writerEventUpdateDeleteTruncateCreateDenied": true,
+    "actualExtraGrantRejected": true,
+    "actualDefaultAclRejected": true,
+    "actualForeignDatabaseGrantRejected": true,
+    "ambientOtherDatabasePublicAuthorityDisclosed": true,
+    "ownedPasswordLoginMetadataPhasesValidated": true,
+    "separateCredentialOwnerAndTwoRealTcpIdentitiesPassed": true,
+    "actualScramDriftRejected": true,
+    "tcpClientFixture": "existing node-pg because executor has no host psql"
+  },
+  "fixtureScope": {
+    "ownedDatabaseAndThreeRolesProvenAbsentBeforeTests": true,
+    "cleanupCompleted": true,
+    "operationalDatabaseAccess": false,
+    "providerRequests": 0,
+    "productionActions": 0,
+    "serviceActions": 0
+  },
+  "productionAdmissionExists": false,
+  "productionCredentialsExist": false,
+  "productionReady": false,
+  "remainingGates": [
+    "independent package review",
+    "separate target admission authorization",
+    "actual current production review/acknowledged target creation",
+    "separately reviewed password/LOGIN/TCP phases",
+    "official public projector catch-up and fixed-boundary parity",
+    "official source switch and compatible runtime acceptance"
+  ],
+  "sourceFiles": [
+    {
+      "path": "ops/arena-public-rollback-target-20261023/README.md",
+      "sha256": "063d1fccb21904dc2a7d71b2582e061e692a73fdabcb1942c1de00ce262cdae3",
+      "bytes": 11824
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/admit-target.py",
+      "sha256": "c0b36e15808e6ec60e0386f8d7535748b56b0964369841321840000eac44acec",
+      "bytes": 32744
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/credentials.py",
+      "sha256": "35baf55b6057b8d18769454b12f1383dcbb86309d552fe9418378400e00d6080",
+      "bytes": 21050
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/postgres-test.py",
+      "sha256": "9a9cb4d606b9a6a4b42c375252a4a3ccfb7560beeef7ed560017ead25da0fb36",
+      "bytes": 15757
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/proposal.json",
+      "sha256": "8c8a15d44cee4d333dd595a372d1bd3aab7bb465c5ff202c1b2f5382cd1a20e1",
+      "bytes": 2891
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/roles.sql",
+      "sha256": "d6688cc1c06825a943e34219d834eb1c174c3259cc03e31b26d2e510178bcdbe",
+      "bytes": 707
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/schema.sql",
+      "sha256": "e816069e282575727e9ff1be28d7fe49323d6b8282e4843268375eec4873ee36",
+      "bytes": 2475
+    },
+    {
+      "path": "ops/arena-public-rollback-target-20261023/test.py",
+      "sha256": "71a232b896cb29b9d1258fcbb5187498cc4c489a8af271ed8b47316f86fdd643",
+      "bytes": 9016
+    }
+  ]
+}

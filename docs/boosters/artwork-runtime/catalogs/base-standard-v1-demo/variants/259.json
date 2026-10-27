@@ -1,0 +1,40 @@
+{
+  "name": "Yunifairy",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "http://127.0.0.1:9019/v1/boosters/art-assets/51c691c2453ee5795b65f675468528a1057f6a1bbfa9a92f05ea3a5b2a4735a9.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunifairy"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Purple"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 259,
+    "artworkSha256": "51c691c2453ee5795b65f675468528a1057f6a1bbfa9a92f05ea3a5b2a4735a9",
+    "catalogCommitment": "0x6f1631255da979f15916ed85a8f3809ac5350a253466f535b9baf77923cf773f",
+    "holo": {
+      "foreground": "http://127.0.0.1:9019/v1/boosters/art-assets/64d426134380a602603422b151792a42a9d32e02f8b9482d0ed6508378233eea.svg",
+      "background": "http://127.0.0.1:9019/v1/boosters/art-assets/f29cb8719e1e40bc3555b763d52f9734fde8b0003122b62ed56c8828e9c7a016.svg",
+      "stars": "http://127.0.0.1:9019/v1/boosters/art-assets/89d296f17598b779d7b122a4051d5458a121168172832ad2103e54415c2a670a.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunifairy-purple-diamond-glitter-yes-5af07cc72b-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v3-lavender-crisp"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "automaticRetryAllowed": false,
+  "commandsObserved": 24,
+  "completed": true,
+  "databaseWrites": 0,
+  "diagnosticOnly": true,
+  "elapsedNanoseconds": 82096527383,
+  "failedCommands": [],
+  "format": "root-source6-postflight-inventory-diagnostic-v1",
+  "fullCallerOrMetadataQualified": false,
+  "genuineFinishReturned": true,
+  "instrumentedObserverCount": 7,
+  "observedAt": "2026-10-25T21:55:25.339449+00:00",
+  "phase": "one-genuine-source6-finish",
+  "productionAcceptanceClaimed": false,
+  "proofHashes": {
+    "after-frame": "68482d6d6d8d39dae4015447621787c4e4dbcdb320b3eccd6629f4e18079c112",
+    "before-frame": "68482d6d6d8d39dae4015447621787c4e4dbcdb320b3eccd6629f4e18079c112",
+    "finish": "8a9fde0ca8e79cfdfcd8695ea29ecda25cb6a9a256068f5858ce38fbceed5f02",
+    "preflight": "c7f864bf68ed04b9db11bd4b0f762a9982e0421678eb84b66ef94a0d8bcbe643"
+  },
+  "providerCalls": 0,
+  "resultSha256": "3adbc9bbaa1585c1052ebb8fbf51936afac0cb19eb415894d72871b4f9f88b4b",
+  "serviceActions": 0,
+  "sourcePolicyChanged": false
+}

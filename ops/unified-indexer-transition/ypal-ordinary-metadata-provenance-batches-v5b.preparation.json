@@ -1,0 +1,44 @@
+{
+  "format": "yunipals-ordinary-metadata-provenance-batches-v5b-preparation",
+  "sourceOnly": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5b.py",
+      "sha256": "97b6c6bb03b9f58fbccdb63f35bc6a447b08e7ba211c13996834d3ba6bed25cf",
+      "bytes": 20081
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5b.test.py",
+      "sha256": "278c051780c1181fcf03152fbbef1a351bd5555004180dccb3d38bb99c0ce12e",
+      "bytes": 8321
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5b.md",
+      "sha256": "d4f80d57f228a02ba296d7be3b844215571acd04b0273d193e025762ab6668b6",
+      "bytes": 7083
+    }
+  ],
+  "newFocusedControls": 6,
+  "historicalFrozen8076Controls": 23,
+  "historicalRunnerSha256": "8076f82a275d8ab146dee427482f66029e1d44bec36b309eb16afb9d5d524f18",
+  "allFunctionsExceptSelectionASTExact8076": true,
+  "newAuthoritySha256": "cbd538859f99db723c1a9edccd504ab72f547247a6987828d2a653aa3f72a0ad",
+  "selectionReconciliationProducerSha256": "a25fd8a5b23e95eb368f057ac710d873ef09bb436695a9b28d80cf8abf630790",
+  "actualSelectedReceiptSha256": null,
+  "actualSelectionCompletionSha256": null,
+  "actualRunnerInputSha256": null,
+  "firstProductionProposal": {
+    "firstIndex": 0,
+    "maxBatches": 1,
+    "maxSeconds": 900
+  },
+  "originalMaximumRowsPerBatch": 5000,
+  "originalIndexLimit": 128,
+  "originalIndexOid": "77273352",
+  "productionExecutionQualified": false,
+  "productionTimingQualified": false,
+  "old8076FilesChanged": false,
+  "serviceActions": 0,
+  "automaticRetryAllowed": false,
+  "historicalFrozen8076ControlsRerunAfterFinalGuardPin": 23
+}

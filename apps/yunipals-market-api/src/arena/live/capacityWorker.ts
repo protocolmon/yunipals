@@ -5,6 +5,7 @@ import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { runwareCreditMicrousd } from "./capacity";
 import { boundedBody } from "./mediaApi";
 import { arenaRuntime } from "./runtime";
+import { arenaNativeConfiguration } from "./nativeSource";
 import { arenaOpenaiFundingMode } from "./funding";
 import {
   arenaMediaStorageBudget,
@@ -35,7 +36,9 @@ if (
   throw new Error(
     "Capacity worker requires Runware access, storage and valid OpenAI funding configuration."
   );
-const runtime = await arenaRuntime(),
+const runtime = await arenaRuntime({
+    native: arenaNativeConfiguration().mode === "unified"
+  }),
   base = runtime.clients.get(8453)!;
 let stopped = false;
 process.once("SIGTERM", () => {

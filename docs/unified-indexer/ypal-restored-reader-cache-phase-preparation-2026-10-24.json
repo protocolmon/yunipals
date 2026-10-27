@@ -1,0 +1,69 @@
+{
+  "format": "yunipals-ypal-restored-reader-cache-phase-preparation-v1",
+  "sourceOnly": true,
+  "publicationFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.py",
+      "bytes": 8989,
+      "sha256": "287438e26dfe75be24502cc547481a6bbeda3f1264b79ff2e0d994d068d093f1"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.test.py",
+      "bytes": 14059,
+      "sha256": "9dba31579665135281559cad15d401dcf0c82a998787178a9fc5b305488f2bd2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.md",
+      "bytes": 4061,
+      "sha256": "6548c8cf2cf56cf7d2c544b0da1b6631322d97eeea519ad20c182b41b369f402"
+    }
+  ],
+  "directPublicDependencies": {
+    "ypal-native-cutover-v2.py": "3e133cada3a015baccab82aa58d558e731c75942c88211f19672cb408f922003",
+    "ypal-native-cutover-proof-v2.py": "cf4b55e5230bc22c721da74d5978e1cda977e0d2fa128a62606f3e41d7df8c14",
+    "ypal-cache-finish-v3.py": "f072c85e82872a750e7e76dd17349718c7e6574b2e833c9c4d9b80ff9e147374",
+    "ypal-native-cutover-v2.manifest.json": "15998fac4a84cbaa65ca51bf8f2ec7bcd6ebe22ea4666a0efbf89286d735f0b8",
+    "ypal-restored-feature-handover-v1.py": "11b2a886b8fe773f3fd9855a2b883efe26ec7841f6f149d3b681b67d5678b035",
+    "ypal-restored-feature-context-v1.py": "3eae0ed86f861182d0a3b1e2c936b492f4377e0597464c8f0fb480c415ef36be",
+    "ypal-restored-feature-handover-v1.manifest.json": "1f0a56a8a5af846247dcddb58251a173d45aa150040b9f079f9579ab235c2da3"
+  },
+  "api": [
+    "validate_reader_leaf(result_sha, manifest_sha, feature_refs)",
+    "validate_cache_leaf(result_sha, manifest_sha, feature_refs)"
+  ],
+  "featureRefs": [
+    "retirementSha256",
+    "manifestSha256",
+    "inputSha256"
+  ],
+  "validation": {
+    "localControlsPassed": 9,
+    "rootIndependentControlsPassed": 9,
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-restored-reader-cache-phase-v1.test.py",
+    "outputSha256": "7446b0a6ab3a5e507f720e506d632ce65bb935966e17dd96be71c9d2275811df",
+    "actualReusedReaderAndCacheEntrypointsExecuted": true,
+    "historicalLoaderForbiddenInFixture": true,
+    "hostOrPostgresAcceptance": false
+  },
+  "authority": {
+    "exactNewFeaturePredicate": true,
+    "wholeFrozenReaderAndCacheAcceptance": true,
+    "fourOwnedRoleSlicesAndExactEightDelta": true,
+    "allGranteeColumnACLs": true,
+    "currentMetadataReadersCacheGuardAndServingGatesRetained": true,
+    "frozenGlobalsModified": false,
+    "sourceActorQualified": false,
+    "currentWriterQualified": false,
+    "financialAuthorityQualified": false,
+    "fullGlobalRoleGraphQualified": false,
+    "historicalFeatureOwnerAccepted": false,
+    "executesCutoverInverseSQLOrServices": false
+  },
+  "actualCompletionAcknowledgementsFabricated": false,
+  "hostActionsPerformed": false,
+  "limitations": [
+    "Actual143/cache/metadata/generation/observer/reader/feature acknowledgements remain separate prerequisites.",
+    "The managed caller independently qualifies current writer, source, financial/free-only policy, readiness and full global catalog.",
+    "All external runtime facts in local tests are explicit fixtures."
+  ]
+}

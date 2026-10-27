@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { getTableName } from "drizzle-orm";
+import { indexedCollections } from "../lib/constants.ts";
 
 // Compile through Ponder's actual Vite loader and exercise the registered
 // callbacks without a running RPC or database. The PostgreSQL suite covers
@@ -10,7 +11,7 @@ const isolated = process.argv.includes("--isolated");
 if (isolated) process.env.PONDER_ISLANDS_ONLY = "true";
 else delete process.env.PONDER_ISLANDS_ONLY;
 delete process.env.DATABASE_PRIVATE_URL;
-for (const id of [1, 8453, 137])
+for (const id of [1, 8453, 137, 56])
   process.env[`PONDER_RPC_URL_${id}`] = "http://127.0.0.1:1";
 const entry = import.meta.resolve("ponder");
 const internal = (path) => import(new URL(path, entry));
@@ -96,6 +97,10 @@ try {
         onConflictDoUpdate: async (update) => {
           const key = keyOf(table, row);
           state.set(key, { ...row, ...update });
+        },
+        onConflictDoNothing: async () => {
+          const key = keyOf(table, row);
+          if (!state.has(key)) state.set(key, structuredClone(row));
         }
       })
     }),
@@ -112,17 +117,22 @@ try {
   const zero = "0x0000000000000000000000000000000000000000";
   const hash = `0x${"11".repeat(32)}`;
   const transfer = async (contract, from, to, number, logIndex) => {
+    const definition =
+      indexedCollections[
+        contract === "YunipalsIslands" ? "ethereum-islands" : "ethereum"
+      ];
+    const blockNumber = BigInt(definition.deploymentBlock + number - 1);
     const handler = handlers.find(
       (handler) => handler.name === `${contract}:Transfer`
     );
     assert.ok(handler);
     await handler.fn({
-      context: { db },
+      context: { db, chain: { id: definition.chainId } },
       event: {
         args: { from, to, tokenId: 1n },
-        block: { number: BigInt(number), timestamp: BigInt(number * 10) },
+        block: { number: blockNumber, timestamp: BigInt(number * 10), hash },
         transaction: { hash, transactionIndex: 0 },
-        log: { logIndex }
+        log: { logIndex, address: definition.address, data: "0x", topics: [] }
       }
     });
   };
@@ -152,14 +162,17 @@ try {
         lifecycle: 1
       })
     ).burnedAtBlock,
-    3n
+    BigInt(indexedCollections["ethereum-islands"].deploymentBlock + 2)
   );
   state.clear();
   for (const [key, row] of beforeTransfer) state.set(key, row);
   await transfer("YunipalsIslands", other, owner, 2, 1);
   assert.equal(state.get(islandKey).owner, owner);
   assert.equal(state.get(islandKey).burned, false);
-  assert.equal(state.get(islandKey).mintBlock, 1n);
+  assert.equal(
+    state.get(islandKey).mintBlock,
+    BigInt(indexedCollections["ethereum-islands"].deploymentBlock)
+  );
   if (!isolated) assert.equal(state.get(monsterKey).owner, owner);
   console.log(
     JSON.stringify({

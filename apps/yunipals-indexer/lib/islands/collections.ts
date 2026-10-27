@@ -1,4 +1,8 @@
-import { islandCollection } from "../constants.js";
+import {
+  islandCollection,
+  baseIslandCollection as registeredBaseIslandCollection
+} from "../constants.js";
+import { ownershipReadConfig, unifiedOwnershipReads } from "../offchain/sql.js";
 
 export const legacyBaseIslandCollection = {
   slug: "base-islands",
@@ -15,12 +19,14 @@ export const legacyBaseIslandCollection = {
 
 export const baseIslandCollection = {
   ...legacyBaseIslandCollection,
-  slug: "base-islands-v2",
-  address: "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168",
-  deploymentBlock: 52_587_956,
+  ...registeredBaseIslandCollection,
   metadataMode: "token",
   schemaName: "yunipals_base_islands_v2"
 } as const;
+export const baseIslandReadSchema = () =>
+  unifiedOwnershipReads
+    ? ownershipReadConfig.readSchema
+    : baseIslandCollection.schemaName;
 export const baseIslandMetadataUri =
   "https://islands-meta.yunipals.com/v2/base-islands/";
 export const replacementSnapshotSha256 =

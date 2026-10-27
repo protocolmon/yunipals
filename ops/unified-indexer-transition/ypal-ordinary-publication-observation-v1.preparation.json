@@ -1,0 +1,72 @@
+{
+  "effectsBySourceWork": {
+    "Git": 0,
+    "SSH": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0
+  },
+  "files": [
+    {
+      "bytes": 35392,
+      "file": "ypal-ordinary-metadata-current-observation-v1.py",
+      "sha256": "f536ddc6eb003a04817642833846fd2d035b4c74c2aa7477b4f85ce3b548fdc2"
+    },
+    {
+      "bytes": 38911,
+      "file": "ypal-ordinary-publication-observation-v1.py",
+      "sha256": "f04a6fde624aa5a3805f6f8b4b3f34fa0d03e1e036f4a8237c88b3261f822d4f"
+    },
+    {
+      "bytes": 30276,
+      "file": "ypal-ordinary-metadata-current-observation-v1.manifest.json",
+      "sha256": "4f58cbaf4a8ff0d051771c38ceeb37c2a03ded3af53ab795a240e5d2c036ad36"
+    },
+    {
+      "bytes": 35394,
+      "file": "ypal-ordinary-publication-observation-v1.manifest.json",
+      "sha256": "d6fdd6668f73c1bb19574682cbd72e4167c8c990f4da9b6c5ab88e1427c4bbc1"
+    },
+    {
+      "bytes": 7818,
+      "file": "ypal-ordinary-metadata-current-observation-v1.test.py",
+      "sha256": "35a65951ff762718d3fef8d106e93976f2f3d8009031102744427e78ad107ea4"
+    },
+    {
+      "bytes": 8020,
+      "file": "ypal-ordinary-publication-observation-v1.test.py",
+      "sha256": "3c09719504e0eb35a3f0a8f5d52d73d5ce20d1727fe20726db35fe79a9c650d2"
+    },
+    {
+      "bytes": 3319,
+      "file": "ypal-ordinary-publication-observation-v1.md",
+      "sha256": "6c5afc0caaa87686b0ca2e39a42ce966ac697b88ff35f8f8fb22f6a4dd6ca0de"
+    },
+    {
+      "bytes": 72697,
+      "file": "ypal-ordinary-publication-observation-v1.stage.json",
+      "sha256": "c150e3d4741c957c83d95288b328e1da8dc67bd622bd8d71f0b90c510b86e22e"
+    }
+  ],
+  "format": "yunipals-ypal-ordinary-publication-observation-v1-preparation",
+  "frozenCONT4OrOwner3FilesEdited": false,
+  "privateInputOrReceiptIncluded": false,
+  "productionAcceptanceClaimed": false,
+  "publicStageClosureCount": 311,
+  "publicStageClosureFile": "ypal-ordinary-publication-observation-v1.stage.json",
+  "publicStageClosureSha256": "c150e3d4741c957c83d95288b328e1da8dc67bd622bd8d71f0b90c510b86e22e",
+  "scope": {
+    "acceptedBaselineReplayed": false,
+    "actualRawCurrentActorReturned": true,
+    "effectDispatchClosed": true,
+    "inverseClosed": true,
+    "qualificationDispatchClosed": true,
+    "rawAcknowledgedActorReplaced": false,
+    "readOnly": true
+  },
+  "verification": {
+    "callerControlsPassed": 5,
+    "independentReview": "C reran13+5 and found no concrete runtime finding",
+    "metadataControlsPassed": 13
+  }
+}

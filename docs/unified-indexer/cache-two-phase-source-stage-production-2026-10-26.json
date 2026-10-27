@@ -1,0 +1,20 @@
+{
+  "completed": true,
+  "databaseWrites": 0,
+  "existingFilesOverwritten": 0,
+  "format": "yunipals-root-cache-two-phase-public-source-stage-v1",
+  "newRuntimeFiles": 4,
+  "operatorInvoked": false,
+  "providerCalls": 0,
+  "resultSha256": "2b8bbe31fd3a68f2ae5575932880f60604a47ac31eb7d5b1e959db6f5022a916",
+  "retainedBytesAndInodesUnchanged": true,
+  "serviceActions": 0,
+  "sourceHashes": {
+    "ypal-ordinary-cache-two-phase-driver-v1.mjs": "72e2bec6aa91997029d31074d40165fc79dc99f1c8003aab3ab9f3973380a3c7",
+    "ypal-ordinary-cache-two-phase-sql-v1.mjs": "464f103743169d55a1cc237b1db397d8e7f19d7869952457ce25f4c8dd6563cb",
+    "ypal-ordinary-cache-two-phase-v1.manifest.json": "037072fc91809e25caec68d26036cf8fc28d3ab8b0c501d70b9f2b57f775abba",
+    "ypal-ordinary-cache-two-phase-v1.mjs": "cd14d8dc2cdfaaf0e223d4531f28747519cdd7fb07fcfefad868546eea99687d"
+  },
+  "sourceImported": false,
+  "verifiedExistingPrerequisites": 4
+}

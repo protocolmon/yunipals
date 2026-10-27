@@ -1,0 +1,38 @@
+# Dormant serving example. Only the exact admission owner may install and
+# acknowledge its own boot link; the artifact installer performs no activation.
+[Unit]
+Description=Yunipals ordinary combined-source observations
+Requisite=yunipals-ypal-combined-source.service
+After=yunipals-ypal-combined-source.service
+BindsTo=yunipals-ypal-combined-source.service
+PartOf=yunipals-ypal-combined-source.service
+JobTimeoutSec=30
+[Service]
+Type=exec
+User=yunipals_unified_support
+Group=yunipals_unified_support
+WorkingDirectory=/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer
+ExecStart=/usr/bin/env -i PATH=/opt/node-v24.18.1/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=UTC NODE_OPTIONS=--max-old-space-size=384 UNIFIED_INDEXER_RELEASE_ID=0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3 UNIFIED_RPC_POLICY_REQUIRED=true UNIFIED_RPC_FREE_ONLY=true UNIFIED_RPC_PROFILE_FILE=/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-rpc-v1/profile.json UNIFIED_RPC_PROFILE_ID=0xebc51f361d9eb029d93f6f3f0ff2be78be8b7330ab7daff9a43deca1ae99aaff PONDER_RPC_URL_1=http://127.0.0.1:19221/unified PONDER_RPC_URL_8453=http://127.0.0.1:19222/unified PONDER_RPC_URL_137=http://127.0.0.1:19223/unified PONDER_RPC_URL_56=http://127.0.0.1:19224/unified /opt/node-v24.18.1/bin/node /opt/yunipals-unified/nonmarket-consumer-releases/8c713a57dde009540564619e45de8b487af77787faf4f07a916d340d710a8753/dist/unified-observer.mjs worker
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+MemoryMax=768M
+CPUQuota=50%
+RuntimeMaxSec=infinity
+TimeoutStartSec=90
+TimeoutStopSec=45
+KillMode=control-group
+Restart=no
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,37 @@
+{
+  "childEpochGone": true,
+  "currentLogFile": null,
+  "databaseWrites": 0,
+  "failedRootResultSha256": "28d884331e5dbfe5cf5387c2f3af8e7bdbfcc25cdedd31729a57ded8b281bab7",
+  "format": "root-held8-sql-reconciliation-readonly-v1",
+  "logTailsChecked": [
+    {
+      "file": "postgresql-16-main.log",
+      "inode": 529257,
+      "tailBytes": 462282
+    },
+    {
+      "file": "postgresql-16-yunipals_market_production.log",
+      "inode": 511744,
+      "tailBytes": 135340
+    },
+    {
+      "file": "postgresql-16-yunipals_market_staging.log",
+      "inode": 512082,
+      "tailBytes": 0
+    }
+  ],
+  "observedAt": "2026-10-26T05:47:39.984012+00:00",
+  "openedBackendCount": 0,
+  "ownerAPPBackendCount": 0,
+  "providerCalls": 0,
+  "publicationReadBackendCount": 0,
+  "resultSha256": "d00c46a5098b17909de6aac910bbb5c13763be99f964aaf32016b4f4db49136c",
+  "rootEpochGone": true,
+  "scopedPublicationErrors": [],
+  "serviceActions": 0,
+  "sqlStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sqlStdoutSha256": "3d0c42610cf3580a8a6f00797a719858326dc2af4d93d5bf71fad33e5b21f1d8",
+  "transactionStatus": "aborted",
+  "wholeCatalogReconciled": false
+}

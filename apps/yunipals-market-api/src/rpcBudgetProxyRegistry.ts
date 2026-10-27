@@ -1,4 +1,5 @@
 import type { MarketplaceChain } from "@protopals/yunipals-market-core/registry";
+import { unifiedRpcPath } from "../../../packages/yunipals-indexer-server/src/rpc-policy";
 
 export const rpcBudgetProxyPorts: Readonly<Record<MarketplaceChain, number>> = {
   ethereum: 19101,
@@ -82,6 +83,30 @@ export function isProductionRpcBudgetProxyUrl(
       url.pathname === "/" &&
       !url.username &&
       !url.password &&
+      !url.search &&
+      !url.hash
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function unifiedRpcBudgetProxyUrl(
+  chain: MarketplaceChain,
+  deployment: "staging" | "production" = "production"
+) {
+  return `${rpcBudgetProxyUrl(chain, deployment)}${unifiedRpcPath}`;
+}
+
+export function isProductionUnifiedRpcBudgetProxyUrl(
+  value: string,
+  chain?: MarketplaceChain
+) {
+  try {
+    const url = new URL(value);
+    return (
+      url.pathname === unifiedRpcPath &&
+      isProductionRpcBudgetProxyUrl(new URL("/", url).href, chain) &&
       !url.search &&
       !url.hash
     );

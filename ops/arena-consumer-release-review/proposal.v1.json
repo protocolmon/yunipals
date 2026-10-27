@@ -1,0 +1,1628 @@
+{
+  "format": "yunipals-arena-consumer-release-proposal-v1",
+  "status": "review_only_not_built_packaged_deployed_or_granted",
+  "baseConsumer": {
+    "sourceDigest": "9ee6beaf38d614f68d42550803366e2b6d981425f0e14e07d12510eb0d1b724d",
+    "manifestSha256": "5e06ff4b9d86859814f1fd1d2b24d1db38278eec75a7c2cefcdd3689103f27e0",
+    "localVerifiedReference": "/tmp/yunipals-unified-release-t5c5idvw/unpacked",
+    "allHistorical80SourcesMatchBaseManifest": true
+  },
+  "historicalRoleProposal": {
+    "path": "ops/arena-native-role-review/capabilities.v1.json",
+    "sha256": "9bd85a36a402571bf71b7ab81de360a8a6a6b2ffef5bc77431046e433a1e0527",
+    "bytes": 45851
+  },
+  "historicalInertGrantText": {
+    "path": "ops/arena-native-role-review/grant-proposal.sql.txt",
+    "sha256": "b5e69cbae17bc07cf109e458c62344647b8d9bb6ad0049caa6352483a70cfb57",
+    "bytes": 15234
+  },
+  "acceptedCurrentConfigBaseline": {
+    "path": "docs/unified-indexer/production-arena-configuration-baseline-2026-10-21.json",
+    "sha256": "03d58a235b1e82915c44b9c6ecf1cdab491a84bfb213f6e5a3bccf8b044d7688",
+    "bytes": 11530
+  },
+  "sourcePatch": [
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/runtime.ts",
+      "sha256": "a90e0e4b4d66c63cc6ee1e286802b3b3dc8fd72f0e18399e7ab2674b7a61f3ea",
+      "bytes": 7217,
+      "beforeSha256": "48ad39caa5e48ff47ad6be03abcc2bb6d02a730b4b5047fd4df34bb549ace28b",
+      "beforeBytes": 10626,
+      "operation": "replace"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeDisclosureWorker.ts",
+      "sha256": "d10e6d0ee01e6f1211842ee79e93534e7895a70ff0ca5fc846e817f501a8b1af",
+      "bytes": 3185,
+      "beforeSha256": "cd783efe71464802865bbff214ffabac2241c553d778d32a218ae4d375259fed",
+      "beforeBytes": 3016,
+      "operation": "replace"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/selectedSourceRuntime.ts",
+      "sha256": "ab74db559a375b03fac80890252630390cd40659d38aab7df2ecb2c2cb7d8c4f",
+      "bytes": 4006,
+      "beforeSha256": null,
+      "beforeBytes": null,
+      "operation": "add"
+    }
+  ],
+  "sourceClosure": [
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/adjudication.ts",
+      "sha256": "993e4c0fb99448162182d4745b5f41591bcb248bbce023722999c8a348ce2a4d",
+      "bytes": 8787,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/admission.ts",
+      "sha256": "069a79ebb971019f5a9af9a7c639d3abc7e777d8c174b54cd26846fee52a4a3a",
+      "bytes": 5989,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/capacity.ts",
+      "sha256": "d384471070ce15a75fc56c350a57b490b9a7d7ab105df682ec2e04ef6b8d7323",
+      "bytes": 9895,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/capacityWorker.ts",
+      "sha256": "eddf977f62a68b1dbcaa592fe3b52162aaf6076f1d76b572cdb3e57987a37336",
+      "bytes": 4782,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/catalog.ts",
+      "sha256": "40a18dc6eff37099d7da5757a5ef1a3b00194fae24470998eedcaa25ce1fafbe",
+      "bytes": 3845,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientReceiptEvidence.ts",
+      "sha256": "498f19d4acba8624d6cf50d2e9214e1c92f83f3ead61ecafc9de41ab5ffead04",
+      "bytes": 3304,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientTransactionSchema.ts",
+      "sha256": "fcfe4dea30df2ee6f60dc34b98f39c3ef5b766d97f1b521aaec0384a5677fb44",
+      "bytes": 4702,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/clientTransactions.ts",
+      "sha256": "3dfaeaa8d03425867d3e1051a3aa427554b9cab02f21633771a693437d944288",
+      "bytes": 12881,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/config.ts",
+      "sha256": "8fe82d6e6c4cc310dcaf5a6ac48ecccc6a303fe6aaac5a0b95b02b3d25c1da4f",
+      "bytes": 3713,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/control.ts",
+      "sha256": "8b11f4fd634d139c44830af9347715499d72877c69d9562f62aa037ee316fdcf",
+      "bytes": 15492,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/controlWorker.ts",
+      "sha256": "ee6d247ebee92f482cf4b35f9b70ae3584dd3b021324b9792d54be966557ff64",
+      "bytes": 3700,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/crypto.ts",
+      "sha256": "2e6f629abec579befea65d03920931bcc5e33dc8871e196178b047dea08eb5a2",
+      "bytes": 1278,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/disclosureQueueSchema.ts",
+      "sha256": "a4c790830e5abd7cd6c29edc17e084305921989fe42cff8cb6149bea12f231f5",
+      "bytes": 1197,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/disclosureSchema.ts",
+      "sha256": "94939d6cfdd0bd4920c7d914dad51bfa8c44996f305590866ec57d625763cdd1",
+      "bytes": 1109,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/http.ts",
+      "sha256": "36c69ab8a48468e5f15cd001e5b0ff283e369548c1f072b667299bbf9a6eb567",
+      "bytes": 10953,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identity.ts",
+      "sha256": "b43f82e893caaa321957eed71639ca524ae05d70d345809749620bc6e71ef09e",
+      "bytes": 9479,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/identitySchema.ts",
+      "sha256": "6d6281fa13786043626facf514a0a3326f6027b541507e172bbfed46c3fa4bb4",
+      "bytes": 7841,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/input.ts",
+      "sha256": "c05f950d5187921ab4fe2def830dc6c4e6b31f07b8a276ee5ceb59c58417de29",
+      "bytes": 7143,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/inspect.ts",
+      "sha256": "e4337d15f9efd9cb8c65c5e4570fc6d0f3207c54abcd31e49d34f9cd98bb953a",
+      "bytes": 1830,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/intake.ts",
+      "sha256": "0099d0b443f57ca9ff9b0f21bd7c0a82c701f72d078097d7bbcd027eef116b89",
+      "bytes": 26499,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/lobbyWorker.ts",
+      "sha256": "926cb2fdad855ea2be98eeb2ecd9b6a6ad1d23d190c68ef52147b3b7eb46dcbd",
+      "bytes": 2075,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/media.ts",
+      "sha256": "9326223d16329afe8bcbf8ffdc3ed2192966ddf4ad8e23dc81047b9638ec97f7",
+      "bytes": 17748,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaAdoption.ts",
+      "sha256": "71380a40ea3d348646e3d41abf18e71ce47c880b2ead5cf5b723cfa99d4d69cb",
+      "bytes": 15358,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaAdoptionCli.ts",
+      "sha256": "fc366a7623fcde2826b4eff4c935d0890bfad72c707a6e1f51273008aa415264",
+      "bytes": 3021,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaApi.ts",
+      "sha256": "637fc848ea2c1c2d46aa9b5d7f5ba3ec0236b2ff9c405445cac543604ce30844",
+      "bytes": 18855,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaPaths.ts",
+      "sha256": "c729bf098fbce3d29f4811223385cb90aa9490bee158ef15608e33c9089c227f",
+      "bytes": 2005,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaPublication.ts",
+      "sha256": "4f19fff883fb2cbc7b4571bcc752f0c00546b97348878926a36d2e2c20504ccc",
+      "bytes": 10947,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaRead.ts",
+      "sha256": "f691be947e003c078287738eba28ff1536c1ab20ba46f8fddfccd70eb64c3c8c",
+      "bytes": 5909,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaSchema.ts",
+      "sha256": "7fe87baa830f75d99135f278824890e0beee04ce1a72b9e23b8fbde71d3131f9",
+      "bytes": 6023,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaVerification.ts",
+      "sha256": "4949cfa67f231bf0d135dda5e3da61735b34cd4dbf904a1ac3d9a31b51631b22",
+      "bytes": 12642,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/mediaWorker.ts",
+      "sha256": "951b3578cc6a2bbcde18d6260b0d26e4932584e5dad569e51c6627e8dfc3f72a",
+      "bytes": 2586,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/migrate.ts",
+      "sha256": "b0c9fbb81bef539a847337a69c98e7991f97cfeb6053609c67eb724dec426502",
+      "bytes": 364,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeAction.ts",
+      "sha256": "5ea13e25b41a3f505dff9383983350284482e7f820e597fe888531eda9f7473d",
+      "bytes": 3472,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientAdoption.ts",
+      "sha256": "0bb0e9e96dfb676dfa3179a87659c937f423750c22709602808abb118378ef6c",
+      "bytes": 3443,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientTransactions.ts",
+      "sha256": "e2e71dc21cf4c99658a7c4e6f45b44de19be5626e2910c58c415d888f01c598c",
+      "bytes": 20802,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeClientWorker.ts",
+      "sha256": "7872ae943cb87c2b8ad99034bb28a7c1712a1f9cec37b77330e1133ee78c17b2",
+      "bytes": 2229,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeControl.ts",
+      "sha256": "a95d40b26c40d0b5baee2421336290a73f65cb1eba8bce93422fe164acbafca9",
+      "bytes": 7655,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeDisclosure.ts",
+      "sha256": "883823e30e6507e3838eacf8c63129445e382141df22225b50fcb5a1693c68a2",
+      "bytes": 2902,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeDisclosureWorker.ts",
+      "sha256": "d10e6d0ee01e6f1211842ee79e93534e7895a70ff0ca5fc846e817f501a8b1af",
+      "bytes": 3185,
+      "basis": "three_file_patch"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeExecution.ts",
+      "sha256": "bb49c4859417b0a301de8f2312434942a32949dccfb8e2f050b289da0e06c3c8",
+      "bytes": 5804,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeExecutionWorker.ts",
+      "sha256": "b71842f677437a6b2dca09770f7e366ca114d585c13850f47d5bbf7dc668549f",
+      "bytes": 3178,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeInspect.ts",
+      "sha256": "dc7628e8774c198bfb9c713993cc4293fe095d665e49793128459df1fe2f021c",
+      "bytes": 1454,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeMedia.ts",
+      "sha256": "be869c7dc339d2fb0b114fad889d86c06f8334d63bb0e579213d443bc2a430e6",
+      "bytes": 5727,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeMediaWorker.ts",
+      "sha256": "0d3c08e1f390990c2b3e4646e4589ce164f8cc7fd258596c6485515a2bc085f2",
+      "bytes": 2696,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeProvider.ts",
+      "sha256": "fd8569ad25dd821d715a9c7e36c32aed43b2d52d1b92be3771a9c0152970f88d",
+      "bytes": 6222,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeReferee.ts",
+      "sha256": "70bc672e28d3391db3c19eae34f2a1c742cbb8498458cd7e66e00da31332031c",
+      "bytes": 4472,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeRefereeWorker.ts",
+      "sha256": "89dfe6cdb0fb3ca8267933d5f941dedca0b022d352d17123be1a5cf1034bc139",
+      "bytes": 2778,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeSettlement.ts",
+      "sha256": "faa434f1f56ebf3585389de1a63c85f817ce65859c6eb69c4ed053384cb20db7",
+      "bytes": 4001,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeSource.ts",
+      "sha256": "5a9e210dbe836008da8876f367ca182dbb2f70c248ef0f84fc9cdbfc7cf2babc",
+      "bytes": 6812,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/nativeTransactions.ts",
+      "sha256": "cff451ff4f64fabb8bf2d7a286695588cf7d11c7744085f396459352d38d9199",
+      "bytes": 23030,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/payout.ts",
+      "sha256": "a72f6122018d2ece80c97509b685e3011e6e331bcf5d4bbc54ea1a596ce0ebc8",
+      "bytes": 4204,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/projection.ts",
+      "sha256": "c42794e369ea260cb2b722ce90fb111ef922c895819a25ac6fde527efc58ef73",
+      "bytes": 8107,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/projector.ts",
+      "sha256": "f33313860553b33770308a9f25cae8bb3d1f48c45e81f1e6949f6e27b819856f",
+      "bytes": 4334,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/projectorWorker.ts",
+      "sha256": "7d3e7349171f0faf6fa6a7243d4a21cb48f9b896b1f04c6d2836e3303fd6937b",
+      "bytes": 1118,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/providerSchema.ts",
+      "sha256": "3d9695e3a653c91a6f341274bdb87af624eecf80398cc61c58b5d47713da9ee4",
+      "bytes": 4601,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/refereeApi.ts",
+      "sha256": "91944ac2c9e6178c3b89083604db36dd91b5b0e6cddc4df6cd618e0de2eae8f9",
+      "bytes": 11360,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/refereeWorker.ts",
+      "sha256": "779570c42c60957e5b9f56e8c37ce3bc8be28d50ab31514b68d05f344657916b",
+      "bytes": 2525,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/rollbackSource.ts",
+      "sha256": "a79e38b66c2bb34a4b7fedce282dca84c77701e89502cf6768073caab03226cd",
+      "bytes": 14874,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/runtime.ts",
+      "sha256": "a90e0e4b4d66c63cc6ee1e286802b3b3dc8fd72f0e18399e7ab2674b7a61f3ea",
+      "bytes": 7217,
+      "basis": "three_file_patch"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/schema.ts",
+      "sha256": "92fcf0912983252e0565d9a7c55cfc5a983ab43861eaddfe2f7484ab8de31f49",
+      "bytes": 7909,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/server.ts",
+      "sha256": "804081c7eca9cc27c190c64096c0f50da0a7c7698fca261ca07e7b643e10286f",
+      "bytes": 1575,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/settlement.ts",
+      "sha256": "f6d1250fe243e825bba6a9a5d456f9188b2148c2ddea67d110dce3b679813382",
+      "bytes": 10828,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/settlementWorker.ts",
+      "sha256": "52ea366594448d5ec8c66ccf8c58fddb0fe234e0fef1049c7bc5a841628b7530",
+      "bytes": 2454,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSelection.ts",
+      "sha256": "d984b721f6bb73406c19954e11e9ff12bfca876e65b09a9159ade11e61ee2a7e",
+      "bytes": 2184,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSelectionSchema.ts",
+      "sha256": "dd1dd33069213f8e413f71d4ddd39a877c66b6a853ff56ba05d701e48eb4bf9e",
+      "bytes": 10865,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSwitch.ts",
+      "sha256": "e3ec93ecee47c0ce8ad368939c25df25105a8a5b925ea0ecede78b49a4f3ff4f",
+      "bytes": 11201,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/sourceSwitchCli.ts",
+      "sha256": "69baad7ad4c815db879566db735fa6de96485205aa4da1e842d554f271660bb7",
+      "bytes": 5921,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/tournamentIdentity.ts",
+      "sha256": "2299e89ff46de3e41b83fcc4ef8e8f79c7b61f3e77f87ea95d567a3ef07df5b6",
+      "bytes": 5830,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/transactionSchema.ts",
+      "sha256": "e5b7074bdcb2b1f0479984a01704287993784112b8ac5034e436f9fc8143ef37",
+      "bytes": 5841,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/transport.ts",
+      "sha256": "9e412485a57af523ba7fa84ff0a326522f20320a4e0c2afee24f1273c35a3c53",
+      "bytes": 1038,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "ops/unified-indexer/grant-arena-native-source.sql.example",
+      "sha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "bytes": 889,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/db/pool.ts",
+      "sha256": "13c390239c5f7da89a0c6c837f866ed00068f4be89ca63d7ba120639a16de0a9",
+      "bytes": 1887,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/scripts/native-arena-anvil.mjs",
+      "sha256": "ae702bb83d69017ad0b81adf4243ea5b0d9a4e87bdcf096220dc609e69b0257f",
+      "bytes": 27637,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-indexer/scripts/test-unified-rpc-sync.mjs",
+      "sha256": "4fb0c9b082a680405c36026b41c80c57559abb9018ca8d54019f685c47819d7d",
+      "bytes": 35688,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/arena.ts",
+      "sha256": "3c104b588ab19988a6c554764cdd6220a3c87d703db2e904ba9b0f8a4d5604c2",
+      "bytes": 20918,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/readers.ts",
+      "sha256": "4f61612dcd6dca1ee8607f0e7538d0bccfadf1a6565fe69c7391e0229ef0fd00",
+      "bytes": 2481,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/releases.ts",
+      "sha256": "98d35c8ac5831ff4b4397579259ae5201caa0f662a23f8fb9ba65a76f4f464c6",
+      "bytes": 3106,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/paging.ts",
+      "sha256": "432fcb0631a8aba38dd8cee40dbae1eae721c0c8a60e6456a8d14d79f60a127e",
+      "bytes": 12958,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/database.ts",
+      "sha256": "3ff91209b43d755a9010a8ff8f6a2c99b4698c7eba57787353791d1a0299aa1b",
+      "bytes": 801,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "packages/yunipals-indexer-server/src/identity.ts",
+      "sha256": "1ec0dab250ec8b93e93dd1f864bc6257dfada2520d3fcac94e7c8697703224ae",
+      "bytes": 1190,
+      "basis": "unchanged_9ee_and_historical_actor008"
+    },
+    {
+      "path": "apps/yunipals-market-api/src/arena/live/selectedSourceRuntime.ts",
+      "sha256": "ab74db559a375b03fac80890252630390cd40659d38aab7df2ecb2c2cb7d8c4f",
+      "bytes": 4006,
+      "basis": "three_file_patch"
+    }
+  ],
+  "callsiteDelta": {
+    "runtime": "extract existing source/epoch selection into shared helper; all prior key/provider/catalog/runtime behavior remains in runtime.ts",
+    "disclosure": "use shared selected source and pass exact binding into ArenaIntake; native and reviewed legacy_rollback use same source fence",
+    "helper": "source/migration9-12/floor/endpoint/database-identity checks only; no key/signer/provider/catalog loader",
+    "additionalOperationalGrantsRequiredByThisExtraction": [],
+    "existingOperationalReadsReused": [
+      "yunipals_arena.source_selection",
+      "yunipals_arena.operational_migration"
+    ],
+    "functionsOrSchemaChanged": false
+  },
+  "sourceReadGrant": {
+    "template": {
+      "path": "ops/unified-indexer/grant-arena-native-source.sql.example",
+      "sha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "bytes": 889
+    },
+    "connection": {
+      "separateCredential": true,
+      "readOnlySession": true,
+      "grantTemplate": "ops/unified-indexer/grant-arena-native-source.sql.example",
+      "physicalRelations": [
+        "_ponder_meta",
+        "_ponder_checkpoint",
+        "indexer_source",
+        "chain_checkpoint",
+        "chain_block",
+        "canonical_event",
+        "transaction_candidate",
+        "arena_tournament",
+        "arena_credit"
+      ],
+      "controlRelations": [
+        "release",
+        "chain_status",
+        "chain_anchor",
+        "transaction_evidence"
+      ],
+      "privileges": [
+        "USAGE",
+        "SELECT"
+      ],
+      "operationalPrivateGrants": []
+    },
+    "applyStatus": "not_applied",
+    "sourceRoleOid": null
+  },
+  "sharedRequiredPublicSelectors": {
+    "ARENA_INDEXER_MODE": "unified",
+    "ARENA_INDEXER_SOURCE_KIND": "unified",
+    "ARENA_INDEXER_RELEASE_ID": "0x35cdcb326c319a7732240185ca8d450734b41046d65017742f69385a0741f39c",
+    "ARENA_CONTRACT": "0xebd141b6ae36f74fe70b9139b262ee9771b72aca",
+    "ARENA_DEPLOYMENT_BLOCK": "52648146",
+    "ARENA_ENTRIES_ENABLED": "false",
+    "ARENA_NEW_LOBBIES_ENABLED": "false"
+  },
+  "workers": [
+    {
+      "id": "api",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/server.ts",
+      "unit": "yunipals-arena-native-api.service",
+      "bundleRelative": "dist/arena-server.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-api.service"
+      ],
+      "currentReferenceRuntimeSha256": "edce92ee846d6f5771542cec8793dde46efb6914e3cf4e12add86c52af2b1221",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-api.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "admission.key",
+          "source": "/etc/yunipals-arena/admission.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "%d/admission.key",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": null,
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": false,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_api",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "adjudication",
+          "admission",
+          "capacity",
+          "challenge",
+          "client_transaction",
+          "deployment",
+          "fighter_snapshot",
+          "frozen_input",
+          "media_job",
+          "media_publication",
+          "operational_migration",
+          "provider_task",
+          "session",
+          "source_operational_cursor",
+          "source_selection",
+          "submission",
+          "tournament_identity"
+        ],
+        "insert": [
+          "admission",
+          "challenge",
+          "client_transaction",
+          "fighter_snapshot",
+          "session",
+          "source_operational_cursor",
+          "submission",
+          "tournament_identity"
+        ],
+        "update": {
+          "challenge": [
+            "used_at"
+          ],
+          "client_transaction": [
+            "next_check_at",
+            "state",
+            "tracking_until"
+          ],
+          "deployment": [
+            "halt_reason",
+            "halted"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ],
+          "tournament_identity": [
+            "cipher_context"
+          ]
+        },
+        "delete": [
+          "session"
+        ],
+        "execute": []
+      },
+      "operationalGraphSha256": "0f9e55eb0bbbf7297f80d857c3b170bfad62383e0407e62b4aa2d8b38510d3c7",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "server.ts:createArenaApp",
+        "http.ts:routes",
+        "intake.ts:challenge/authenticate/submit/publicView",
+        "admission.ts:createAdmission",
+        "identity.ts:ensure/read",
+        "nativeClientTransactions.ts:register/read",
+        "input.ts:context",
+        "capacity.ts:check/nativeRows",
+        "mediaRead.ts:arenaMediaRead",
+        "mediaPublication.ts:requireNativePublication",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": true,
+        "paidProviderCalls": false,
+        "signsAdmissionPermits": "only_when_entries_enabled_and_signer_explicit",
+        "signsTransactions": false,
+        "broadcasts": false,
+        "filesystem": "read published media; reviewed catalog/profile files",
+        "metadataHttp": "admission identity creation only; bounded indexer endpoint",
+        "rpc": "startup settings + admission signature/ownership/canonical point checks; HTTP transaction status uses native evidence"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "disclosure",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeDisclosureWorker.ts",
+      "unit": "yunipals-arena-native-disclosure.service",
+      "bundleRelative": "dist/arena-native-disclosure.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-projector.service"
+      ],
+      "currentReferenceRuntimeSha256": "f926fae06551039bf69484d178e3f76b969f95958efe1d1b3a2df13589f4c11d",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-disclosure.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": null,
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": false,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_disclosure",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "deployment",
+          "frozen_input",
+          "operational_migration",
+          "source_operational_cursor",
+          "source_selection",
+          "submission",
+          "tournament_identity"
+        ],
+        "insert": [
+          "source_operational_cursor",
+          "tournament_identity"
+        ],
+        "update": {
+          "deployment": [
+            "halt_reason"
+          ],
+          "frozen_input": [
+            "native_check_at",
+            "native_check_lease",
+            "revealed_at",
+            "revealed_block_hash",
+            "revealed_event_id"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ],
+          "tournament_identity": [
+            "cipher_context"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "703347d4ad30d6606db496cd730a881d9abcae2c8202406f08a55d7c4e267643",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeDisclosureWorker.ts:run",
+        "nativeDisclosure.ts:tick",
+        "intake.ts:ready/reconcileInputFrozen/tournamentContext",
+        "tournamentIdentity.ts:registerTournamentIdentity",
+        "nativeDisclosureWorker.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": true,
+        "paidProviderCalls": false,
+        "signsTransactions": false,
+        "broadcasts": false,
+        "rpc": "canonical Base point checks",
+        "filesystem": "encryption-key read only; does not use shared runtime signer loader"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "client_tracker",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeClientWorker.ts",
+      "unit": "yunipals-arena-native-client.service",
+      "bundleRelative": "dist/arena-native-client.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-projector.service"
+      ],
+      "currentReferenceRuntimeSha256": "f926fae06551039bf69484d178e3f76b969f95958efe1d1b3a2df13589f4c11d",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-client.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": null,
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": false,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_client",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "client_receipt_history",
+          "client_transaction",
+          "deployment",
+          "operational_migration",
+          "source_operational_cursor",
+          "source_selection"
+        ],
+        "insert": [
+          "client_receipt_history",
+          "source_operational_cursor"
+        ],
+        "update": {
+          "client_receipt_history": [
+            "canonical",
+            "checked_at",
+            "finalized"
+          ],
+          "client_transaction": [
+            "checked_at",
+            "indexed_through_block",
+            "next_check_at",
+            "proof_event_id",
+            "receipt_block_hash",
+            "receipt_block_number",
+            "receipt_finalized",
+            "result",
+            "state",
+            "verified_release_id"
+          ],
+          "deployment": [
+            "halt_reason",
+            "halted"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "5949ea2d69f34b8d8315cfe2750fcd7141db7dec63b9e3a5d94a5d750d2470da",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeClientWorker.ts:run(no --adopt-legacy)",
+        "nativeClientTransactions.ts:reconcileBatch/reconcile/lost/save",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": false,
+        "loadsEncryptionKeyAtStartup": true,
+        "paidProviderCalls": false,
+        "signsTransactions": false,
+        "broadcasts": false,
+        "rpc": "up to eight due user hashes per pass; canonical receipt/finality point reads"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "referee_provider",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeRefereeWorker.ts",
+      "unit": "yunipals-arena-native-referee.service",
+      "bundleRelative": "dist/arena-native-referee.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-referee.service"
+      ],
+      "currentReferenceRuntimeSha256": "6bb063487447768cbfe22b7f515163d9c5543d034c67545f986c3a2c829ac297",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/arena.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-referee.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": "OPENAI_API_KEY",
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": true,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_referee",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "adjudication",
+          "capacity",
+          "deployment",
+          "frozen_input",
+          "media_job",
+          "operational_migration",
+          "provider_task",
+          "source_operational_cursor",
+          "source_selection",
+          "tournament_identity"
+        ],
+        "insert": [
+          "adjudication",
+          "provider_action_evidence",
+          "provider_task",
+          "source_operational_cursor"
+        ],
+        "update": {
+          "provider_task": [
+            "actual_microusd",
+            "error_code",
+            "native_check_at",
+            "native_check_lease",
+            "provider_id",
+            "response",
+            "state",
+            "updated_at"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "ed051567739917c1be922ba33a7e3c0cd0fd819a54a5ceec33eb0f30639b0d3f",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeRefereeWorker.ts:run",
+        "nativeReferee.ts:tick/reconcile",
+        "refereeApi.ts:reserve/step",
+        "nativeProvider.ts:authorize/claim/check",
+        "adjudication.ts:step",
+        "capacity.ts:check/nativeRows",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": true,
+        "paidProviderCalls": "OpenAI Responses submit/retrieve",
+        "signsTransactions": false,
+        "broadcasts": false,
+        "filesystem": "reviewed schema/validator; validator child process",
+        "providerDuplicateBoundary": "saved request/provider UUID, uncertainty retained; no automatic resubmit of ambiguous submissions"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "media_provider",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeMediaWorker.ts",
+      "unit": "yunipals-arena-native-media.service",
+      "bundleRelative": "dist/arena-native-media.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-media.service"
+      ],
+      "currentReferenceRuntimeSha256": "4b89c4e15d2bab1f9b4a94f669ad51085ad0b3addbfbe526abc66eec2fa20ddc",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-media.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": "RUNWARE_API_KEY",
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": true,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_media",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "adjudication",
+          "capacity",
+          "deployment",
+          "frozen_input",
+          "media_job",
+          "media_publication",
+          "operational_migration",
+          "provider_task",
+          "source_operational_cursor",
+          "source_selection",
+          "tournament_identity"
+        ],
+        "insert": [
+          "media_job",
+          "media_publication",
+          "provider_action_evidence",
+          "provider_task",
+          "source_operational_cursor"
+        ],
+        "update": {
+          "media_job": [
+            "detail",
+            "film_sha256",
+            "input_hash",
+            "native_check_at",
+            "native_check_lease",
+            "outcome_hash",
+            "publication_hash",
+            "state",
+            "updated_at"
+          ],
+          "provider_task": [
+            "actual_microusd",
+            "error_code",
+            "native_check_at",
+            "native_check_lease",
+            "response",
+            "state",
+            "updated_at"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "dcccc4bab0c82059d1f38eda71b094dbbaa888229c543456a08ec61903e504c7",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeMediaWorker.ts:run",
+        "nativeMedia.ts:tick/reconcile",
+        "mediaApi.ts:reserve/step",
+        "nativeProvider.ts:authorize/claim/check",
+        "media.ts:step",
+        "mediaPublication.ts:commitMediaPublication",
+        "mediaPaths.ts:savedMediaFolder",
+        "capacity.ts:check/nativeRows",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": true,
+        "paidProviderCalls": "Runware submit/retrieve + bounded asset download",
+        "signsTransactions": false,
+        "broadcasts": false,
+        "filesystem": "writes confined origin/provider and published folders; real media CLI/ffmpeg children",
+        "providerDuplicateBoundary": "saved UUIDs and file hashes retained across retrieval/publication"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "execution_lobby",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeExecutionWorker.ts",
+      "unit": "yunipals-arena-native-execution@lobby.service",
+      "bundleRelative": "dist/arena-native-execution.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-lobby.service"
+      ],
+      "currentReferenceRuntimeSha256": "c6f3960e69d7593d8d2e8a9ae41fc5c8f7304c2e817a88d6e3bff523e7f39423",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-execution-lobby.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "execution.key",
+          "source": "/etc/yunipals-arena/operator.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_ROLE": "lobby",
+        "ARENA_EXECUTION_KEY_FILE": "%d/execution.key"
+      },
+      "providerKeyName": null,
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": false,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_execution_lobby",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "capacity",
+          "deployment",
+          "media_job",
+          "operational_migration",
+          "provider_task",
+          "source_operational_cursor",
+          "source_selection",
+          "tournament_identity",
+          "transaction_intent",
+          "transaction_receipt_history"
+        ],
+        "insert": [
+          "opening_action_observation",
+          "source_operational_cursor",
+          "tournament_identity",
+          "transaction_intent",
+          "transaction_receipt_history"
+        ],
+        "update": {
+          "deployment": [
+            "halt_reason",
+            "halted"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ],
+          "tournament_identity": [
+            "cipher_context"
+          ],
+          "transaction_intent": [
+            "checked_at",
+            "receipt",
+            "receipt_finalized",
+            "state"
+          ],
+          "transaction_receipt_history": [
+            "canonical",
+            "checked_at",
+            "finalized"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "e1ec92a9e9cd8c31ca6ed663e58ff3ee1eb9f326e8d056b59b413bff93838bee",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeExecutionWorker.ts:run(role=lobby)",
+        "nativeExecution.ts:tick",
+        "nativeTransactions.ts:prepare/advance",
+        "tournamentIdentity.ts:registerTournamentIdentity",
+        "nativeControl.ts:open-lobby",
+        "capacity.ts:check/nativeRows",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": false,
+        "loadsEncryptionKeyAtStartup": true,
+        "paidProviderCalls": false,
+        "signsTransactions": true,
+        "broadcasts": "Base signed raw transaction only; explicit broadcast endpoint, read proxy never broadcasts",
+        "signerRole": "lobby",
+        "feeCaps": "explicit control cap",
+        "filesystem": "reviewed catalog"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "execution_referee",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/nativeExecutionWorker.ts",
+      "unit": "yunipals-arena-native-execution@referee.service",
+      "bundleRelative": "dist/arena-native-execution.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-control.service",
+        "yunipals-arena-settlement.service"
+      ],
+      "currentReferenceRuntimeSha256": "7bcd2c0b583c82537de95cb809c6afb318484879d2556b11e2132a9b99b479ac",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-execution-referee.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "execution.key",
+          "source": "/etc/yunipals-arena/referee.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_ROLE": "referee",
+        "ARENA_EXECUTION_KEY_FILE": "%d/execution.key"
+      },
+      "providerKeyName": null,
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": false,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_execution_referee",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "adjudication",
+          "deployment",
+          "fighter_snapshot",
+          "frozen_input",
+          "media_job",
+          "media_publication",
+          "operational_migration",
+          "source_operational_cursor",
+          "source_selection",
+          "submission",
+          "tournament_identity",
+          "transaction_intent",
+          "transaction_receipt_history"
+        ],
+        "insert": [
+          "frozen_input",
+          "source_operational_cursor",
+          "tournament_identity",
+          "transaction_intent",
+          "transaction_receipt_history"
+        ],
+        "update": {
+          "deployment": [
+            "halt_reason",
+            "halted"
+          ],
+          "source_operational_cursor": [
+            "indexed_block",
+            "observed_at",
+            "source_id"
+          ],
+          "tournament_identity": [
+            "cipher_context"
+          ],
+          "transaction_intent": [
+            "checked_at",
+            "receipt",
+            "receipt_finalized",
+            "state"
+          ],
+          "transaction_receipt_history": [
+            "canonical",
+            "checked_at",
+            "finalized"
+          ]
+        },
+        "delete": [],
+        "execute": []
+      },
+      "operationalGraphSha256": "238ab0d9635d4e04b1cd7a38afe6f0d8eead7f125e177fcc99dccc19b904d30a",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "nativeExecutionWorker.ts:run(role=referee)",
+        "nativeExecution.ts:tick",
+        "nativeTransactions.ts:prepare/advance",
+        "tournamentIdentity.ts:registerTournamentIdentity",
+        "nativeControl.ts:finalize-island/freeze-input/expire/release-payouts",
+        "nativeSettlement.ts:settle",
+        "input.ts:prepare",
+        "payout.ts:publishedPayoutFilm",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": true,
+        "loadsEncryptionKeyAtStartup": true,
+        "paidProviderCalls": false,
+        "signsTransactions": true,
+        "broadcasts": "Base signed raw transaction only; explicit broadcast endpoint, read proxy never broadcasts",
+        "signerRole": "referee",
+        "feeCaps": "explicit control cap + separate settlement cap",
+        "filesystem": "published-media read only for payout release"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    },
+    {
+      "id": "capacity_sampler",
+      "entrypoint": "apps/yunipals-market-api/src/arena/live/capacityWorker.ts",
+      "unit": "yunipals-arena-native-capacity.service",
+      "bundleRelative": "dist/arena-capacity.mjs",
+      "nodePath": "/opt/node-v24.18.1/bin/node",
+      "nodeSha256": "f3432a45b03b2da0d270095fdd8813dc34cbea73f5fc8b18c7a384b7cf9b333a",
+      "workingDirectoryRelative": "apps/yunipals-market-api",
+      "artifactRoot": null,
+      "artifactRootMustBeExactReviewedImmutableRelease": true,
+      "retainedOsUser": "yunipals-arena",
+      "retainedOsGroup": "yunipals-arena",
+      "observedCurrentUid": 971,
+      "osUserMigrationProposed": false,
+      "currentReferenceUnits": [
+        "yunipals-arena-capacity.service"
+      ],
+      "currentReferenceRuntimeSha256": "29a79fc6f442e6349b02efc429453acaafe99c8dfefdb316edf53d728840c7eb",
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-capacity.env"
+      ],
+      "requiredLoadCredentials": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "execAssignments": {
+        "ARENA_ENCRYPTION_KEY_FILE": "%d/strategy-encryption.key",
+        "ARENA_ADMISSION_KEY_FILE": "",
+        "ARENA_ENTRIES_ENABLED": "false",
+        "ARENA_NEW_LOBBIES_ENABLED": "false",
+        "ARENA_EXECUTION_KEY_FILE": ""
+      },
+      "providerKeyName": "RUNWARE_API_KEY",
+      "providerKeyExpectedOnlyFromRetainedConfiguredInputs": true,
+      "providerCallsDuringPreparation": 0,
+      "signOrBroadcastDuringPreparation": false,
+      "operationalRoleProposal": "yunipals_arena_native_capacity",
+      "operationalRoleOid": null,
+      "roleExistenceAndNegativePrivilegesVerified": false,
+      "operationalDatabaseUrlFromFinalPrivateOverlay": true,
+      "currentConfiguredOperationalRoleSha256": "b6888e9d624f239c9cd73735a7b552e0c8e835bc3fc88bb445c80976a2c8ff27",
+      "sourceRoleProposal": "arena_native_reader",
+      "sourceRoleOid": null,
+      "sourceUrlSelector": "ARENA_INDEXER_DATABASE_URL",
+      "sourceUrlFrom": "/etc/yunipals-arena/native-read.env",
+      "sourceSessionReadOnly": true,
+      "sourceGrantTemplateSha256": "502b1c5924bf3c0337ed4812de541a6f261b6e80c4d81ed8ab2d54aa44b97996",
+      "operationalGraph": {
+        "schemaUsage": [
+          "yunipals_arena"
+        ],
+        "select": [
+          "deployment",
+          "operational_migration",
+          "source_selection"
+        ],
+        "insert": [
+          "capacity"
+        ],
+        "update": {
+          "capacity": [
+            "checked_at",
+            "snapshot"
+          ]
+        },
+        "delete": [
+          "capacity"
+        ],
+        "execute": []
+      },
+      "operationalGraphSha256": "f546540c4dad8369e50b29b02f65cadf03198e61d69f35bdc0defdecf6aef77d",
+      "operationalGraphUnchangedFromHistoricalProposal": true,
+      "callPaths": [
+        "capacityWorker.ts:loop",
+        "capacity.ts:save",
+        "intake.ts:ready(pool)",
+        "runtime.ts:selectedArenaRuntimeSource",
+        "selectedSourceRuntime.ts:selectedArenaRuntimeSource"
+      ],
+      "hazards": {
+        "decryptsPrivateInput": false,
+        "loadsEncryptionKeyAtStartup": true,
+        "paidProviderCalls": "Runware accountManagement getDetails only; existing account key",
+        "signsTransactions": false,
+        "broadcasts": false,
+        "rpc": "Base contract/VRF quote, account balances and gas price point reads",
+        "filesystem": "statfs(media root); no media write"
+      },
+      "runtimeActionsAuthorizedByProposal": false
+    }
+  ],
+  "templateCorrectionsRequired": [
+    {
+      "role": "execution_lobby",
+      "existingTemplate": "ops/unified-indexer/yunipals-arena-native-execution@.service.example",
+      "instanceSubstitutionWouldSelect": "/etc/yunipals-arena/lobby.key",
+      "reviewedRequiredSource": "/etc/yunipals-arena/operator.key",
+      "loadedCredentialId": "execution.key",
+      "copyOrReplacementKeyRequired": false
+    }
+  ],
+  "retentionLimits": {
+    "currentConfigurationMilestoneAccepted": true,
+    "arenaConfigLeafPendingPostDeployment": true,
+    "keyMaterialByteDigestsExported": false,
+    "currentSourceLoadedEqualityOnly": true,
+    "deployedRefereeSourceMissing": true,
+    "deployedCompiledPolicyEquivalent": false,
+    "runningProviderEnvironmentEquivalent": false,
+    "osCrossRoleIsolationClaimed": false,
+    "actualOperationalRoleRightsAccepted": false
+  },
+  "readOnlyApiScope": "source connection and collection APIs are read-only; Arena HTTP operational auth/submission/admission/watermark DML is explicitly restricted by its own graph",
+  "remainingBeforeProductionUse": [
+    "review/build/package exactly base9ee+three source files with native bundles and dependency closure; no package created by this proposal",
+    "choose exact fresh or verified existing nonowner DB role OIDs and apply reviewed finite grants; do not reuse unknown existing identities",
+    "verify actual operational migration markers and explicit owner adoption/private-work retention without startup migration",
+    "verify canonical current source/readiness and source/operational connection separation using existing helpers",
+    "render exact immutable-root native unit definitions and final private selectors, preserving current key/provider inputs and reviewed fee/budget settings",
+    "perform postdeployment current-config/read-only source/ordinary-role checks and existing guarded owner source-switch protocol; entries/newlobbies remain disabled until approved"
+  ],
+  "deferredReorgWork": "additional complex ownership lifecycle \u00d7 live rollback matrix deferred after rollout at user direction; completed proofs retained",
+  "actions": {
+    "hostCalls": 0,
+    "databaseCalls": 0,
+    "providerCalls": 0,
+    "signingCalls": 0,
+    "builds": 0,
+    "packagesCreated": 0,
+    "servicesStarted": 0,
+    "rolesCreatedOrAltered": 0,
+    "grantsApplied": false,
+    "source6OrActor008Changed": false,
+    "sourceSelectionChanged": false
+  }
+}

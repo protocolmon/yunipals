@@ -1,0 +1,40 @@
+{
+  "action": "prepare-guards",
+  "automaticRetryAllowed": false,
+  "businessResultSha256": "623490c9fe1aeb295e858f4fd57e418f126d4b6a4b588d08a39dc22042e00287",
+  "captureClassifierRefs": {
+    "manifestSha256": "c27e4fe498bf70561f94bd8a7737c7c9a217965dff8ad7352b6491e8e2f47944",
+    "producerSha256": "4d4840a66b9c2cd7dd045f399294c5445232c73dbe58e56e1f46b1b3fcb6e0da"
+  },
+  "captureClassifierSnapshotSha256": "193a5d6afcef34bca6070dbe4f965ec812c5a6a164c7113904db5e42420011ad",
+  "completed": true,
+  "customerREADsActivated": false,
+  "format": "root-native120-cache-split-phase-v1",
+  "heldQualificationPerformed": false,
+  "inputSha256": "30007effaa3c881873714cbfb52932ac78e3f9153e19bb62e0ef119d12880bab",
+  "manifestSha256": "eaf67113785ef0e25914b1497071f1a3a8370c90f80a42e4f6be175b806a232c",
+  "oldC54WholeValidatorPassed": false,
+  "oldCachePreparedACKClaimed": false,
+  "operatorSha256": "30dfced740a6800af527af8b1ad9d40a480f13eba71151e5a0aa43e378d7d561",
+  "phaseCommitted": true,
+  "preparedACKCreated": false,
+  "privateHashes": {
+    "accepted-dependency-preauthorization.json": "26d1d7883426516d0762aaeb1959f2924562e4bd48c62afbd174436a0c5a2ff9",
+    "business-return.json": "623490c9fe1aeb295e858f4fd57e418f126d4b6a4b588d08a39dc22042e00287",
+    "capture-classifier-binding.json": "e31b54f8221f21b247815367e53fbd63af4a15282a32fa13f5458c7eeb880ace",
+    "capture-classifier-snapshot.json": "193a5d6afcef34bca6070dbe4f965ec812c5a6a164c7113904db5e42420011ad",
+    "constructor-binding.json": "601fee468481a85eaa072b3edb493e16ae19a8ec64839e1caf6abc2076de683e",
+    "generation-binding.json": "ec1494160e6b5bcdeb9db1ee88a240179574d2b9cbb15bf1f4c9ac146b6dc395",
+    "intent.json": "0886a86180b0980057f350fe488f9f1f9a2723e95b6b02db6de775a570712820",
+    "source-postflight.json": "991147808cb141b56274b2bb28c4fb57bac58b1097b8a8a7da35834ac8302bad",
+    "source-preflight.json": "586dad9e8f769fc0c7a063db75b88cfe73be6ecc2ad4398f082d16e9023c9de2",
+    "split-binding.json": "6443d97ee021df3b3aad03831918b39fd79a17f97eb9773038a554c02dcec694"
+  },
+  "readerLOGINRequested": false,
+  "resultSha256": "ba23898265b45d7958fd65ebe0ec87cc74f6c3b93f5a7936dd3953b029b21687",
+  "rootProducerSha256": "fd4479f0c40f6a9491a60434498072175260a894828f502e969ab534e34b239c",
+  "serviceActionsRequested": 0,
+  "sourcePostflightPassed": true,
+  "subprocessRunRestored": true,
+  "workerStartRequested": false
+}

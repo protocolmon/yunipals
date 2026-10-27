@@ -1,0 +1,93 @@
+{
+  "format": "yunipals-combined-source-live-product-public-smoke-v1",
+  "observedAt": "2026-10-23T23:21:14.811Z",
+  "transitionReceiptSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+  "newCombinedIdentityReportedByOwner": {
+    "pid": 2472127,
+    "invocation": "9d9fb09dc91a41b4889639576ce7348d",
+    "buildId": "71e2a7f3b7",
+    "schemaOid": "75963410"
+  },
+  "productReaderStillUsesAcceptedFreshYpalSchema": true,
+  "api": {
+    "types": {
+      "path": "/v1/boosters/types",
+      "status": 200,
+      "sha256": "f99838554dc6d0a4feceb1495ab9e0581b900d3f6da33d315ff37fc44ca0211b",
+      "ready": true,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "buildId": "8e88ea2e00",
+      "indexedBlock": "53004161",
+      "typeCount": 1
+    },
+    "recent": {
+      "path": "/v1/boosters/recent-openings?limit=1",
+      "status": 200,
+      "sha256": "df39ba28baebe3ed20f11031481ab0071627c36302b17742e5e3eb48f82a5102",
+      "ready": true,
+      "engine": "0xdf4aaa47fe0e8208b5a33c74898f834b2952189e",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "itemCount": 1,
+      "quantity": 1,
+      "coverTokenId": "1"
+    },
+    "metadata": {
+      "path": "/v1/boosters/metadata/0x7d62628806e7eef76a354c7c48787879e3440b16/1.json",
+      "status": 200,
+      "sha256": "43b3e3408329c6e501c18ea158a88312a0df36f4dd66cd1a562ce720fd8c87c2",
+      "tokenId": "1",
+      "collection": "0x7d62628806e7eef76a354c7c48787879e3440b16",
+      "birthDayPresent": true,
+      "bornPresent": true,
+      "imageFromNftMetadata": true
+    },
+    "image": {
+      "attempted": true,
+      "path": "/yunipals-indexer/v1/boosters/art-assets/46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482.png",
+      "status": 200,
+      "bytes": 2491802,
+      "sha256": "46955128e0778eb58e069a17cbcf5a757cf0eb5f4615755d8641dbe19ef14482",
+      "png": true,
+      "contentType": "image/png",
+      "contentAddressMatches": true
+    },
+    "og": {
+      "path": "/v1/tokens?chain=base&limit=1",
+      "status": 200,
+      "sha256": "36d9e5a300ba72684e4f1696a046f48cce297f66f963b263a7911c6682d22f86",
+      "itemCount": 1,
+      "responseKeys": [
+        "chain",
+        "chains",
+        "items",
+        "nextCursor",
+        "total"
+      ]
+    }
+  },
+  "pages": [
+    {
+      "path": "/boosters",
+      "status": 200,
+      "getYpalRendered": true,
+      "packsRendered": true,
+      "fallback": false
+    },
+    {
+      "path": "/arena",
+      "status": 200,
+      "arenaRendered": true,
+      "fallback": false
+    }
+  ],
+  "pageErrors": [],
+  "badSameOriginAssets": [],
+  "blockedNonGetRequests": 14,
+  "blockedExternalRequests": 4,
+  "nonGetRequestsDispatched": 0,
+  "walletEntries": 0,
+  "providerRpcDispatched": 0,
+  "mutations": 0,
+  "passed": true
+}

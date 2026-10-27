@@ -1,0 +1,29 @@
+{
+  "completed": true,
+  "exitCode": 0,
+  "format": "yunipals-current-read143-production-v1",
+  "newLoginPermissions": 0,
+  "observedAt": "2026-10-24T23:07:55.214032+00:00",
+  "phase": "commit",
+  "readResultSha256": "9ae4507e7b4ca8b4e7c414013f43cb4abd3986b26f003d5e8af9c207172ba14c",
+  "readerOrTrafficSwitch": false,
+  "report": {
+    "admitted": true,
+    "commitOutcome": "commit_confirmed",
+    "contextInputSha256": "7c95dd7f8ed704c193422e8098699211a50e70a3f3744e12f46091a7b748b555",
+    "format": "yunipals-ypal-alchemy-read-admission-v1",
+    "loginChanges": 0,
+    "newDml": 0,
+    "planSha256": "2f8b29c93dcb42e5771d901efa8e03e763b157c04a8f2bec7229a820b7ed5ec0",
+    "privateResultSha256": "794762efb8c3af4d0365debb6627f8860dec4be4dc9326c9cc792222b06a37f1",
+    "providerCalls": 0,
+    "rawCatalogExported": false,
+    "readEdgeCount": 143,
+    "reviewHash": "8b2296f83adfeffa61994f9b43268e5e42c4335ac4ccbef2b38a827a53d65098",
+    "serviceActions": 0
+  },
+  "rollbackRehearsalPassed": true,
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutSha256": "1bcdc4c1f264edb6fccda445a20fbd1bc043c99e67f2a914d94341ef821d6ad0"
+}

@@ -1,0 +1,12 @@
+{
+  "format": "yunipals-combined-rpc-public-stage-v1",
+  "files": {
+    "profile.json": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b",
+    "approval.json": "79b047cec82b5108eb79f56588c62b3bc2857b3c863dceb7d2239a14e87e5da5",
+    "official.mjs": "8cc6083f82420f4a9dd075f1b26dd9dfdfe42dd55c232415607ece884de4057b"
+  },
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "privateFilesCopied": 0
+}

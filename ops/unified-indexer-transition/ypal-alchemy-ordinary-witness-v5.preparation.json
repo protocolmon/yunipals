@@ -1,0 +1,119 @@
+{
+  "actualRuntimeInputs": {
+    "observerResultSha256": "81c899831cf5f1fab1c5acd86448d6b44b11189b5db88e47c4fe579e85e0c088",
+    "ordinaryInputSha256": "16877730af574fb10e69759cbbfdfa093ab8d5a7bc90e0e91c98f25a35ca34cc",
+    "ordinaryResultSha256": "e352a81b4c706c46e2fb3239e37159388540946da99ab09cec24cbdad23040d8"
+  },
+  "actualV5": {
+    "producerFile": "ypal-ordinary-readview-v5.py",
+    "producerSha256": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2",
+    "readIdentity": "0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab",
+    "readSchema": "yunipals_ownership_4e77f52b_v5",
+    "resultFile": "/var/backups/yunipals-ypal-ordinary-readview-v5-20261025/created.json",
+    "resultSha256": "5acb7de8be040d76458d2a8e2c0792f33df89a9f790e94377c177cd4f75d7337",
+    "schemaOid": "77370532"
+  },
+  "actualWitnessCaptured": false,
+  "commands": [
+    "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/fixed-boundary-witness-v5.test.mjs",
+    "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v5.test.py"
+  ],
+  "effects": {
+    "databaseQueries": 0,
+    "gitActions": 0,
+    "productionActions": 0,
+    "providerRequests": 0
+  },
+  "files": [
+    {
+      "bytes": 205,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.entry.ts",
+      "sha256": "62725db2394eb3603ab42ee10a1ed8d143807b0f182c19fb4359ddabbecbc410"
+    },
+    {
+      "bytes": 3312,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.build.mjs",
+      "sha256": "491b1d31eece7324dcff43cae1bdfc23a6cf7f928f3163f48731b14e2992af58"
+    },
+    {
+      "bytes": 18684,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.mjs",
+      "sha256": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc"
+    },
+    {
+      "bytes": 2184,
+      "path": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.sources.json",
+      "sha256": "ba5d4f5f89191f069f01b71becc5d4db540646458638b1ce188d38a4013d2fb3"
+    },
+    {
+      "bytes": 15985,
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v5.mjs",
+      "sha256": "359ebcef8fb6e2342087eb4a7e62811cd1dd10b2ad7353ff682d20112f08c484"
+    },
+    {
+      "bytes": 12196,
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v5.test.mjs",
+      "sha256": "01084e92eeaa9f50de58569b9cdb104e1dbdedb2d1158b5273910faf24f3fd1b"
+    },
+    {
+      "bytes": 7768,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v5.py",
+      "sha256": "6a188b53065b80809a6a573d64ed05b02a8df98c0432ae0610ca3aaae2621980"
+    },
+    {
+      "bytes": 6224,
+      "path": "ops/unified-indexer-transition/ypal-alchemy-ordinary-witness-v5.test.py",
+      "sha256": "b4240b71e8d9dc08ae9381e15b8d955260373843655ef24a8386965c9b49495f"
+    }
+  ],
+  "format": "yunipals-ordinary-V5-witness-source-preparation-v1",
+  "newCaptureRoot": "/var/backups/yunipals-ypal-ordinary-v5-fixed-boundary-witness-v1-20261025",
+  "officialSourceDescriptor": "ops/unified-indexer-transition/ypal-v5-witness-official-v1.sources.json",
+  "protocol": {
+    "contextHttpGetAttemptsMeasuredSeparately": true,
+    "currentReadinessConferred": false,
+    "database": "bounded_repeatable_read_read_only",
+    "historicalParityRelabelled": false,
+    "maximumContextHttpGetAttemptsPerFrame": 512,
+    "metadataReadinessConferred": false,
+    "permitHeaders": 0,
+    "retries": 0,
+    "tsxLoaderUsed": false,
+    "witnessHttpCalls": 12,
+    "witnessRpcCalls": 21
+  },
+  "reuse": {
+    "frozenModuleGlobalsChanged": false,
+    "newExplicitAdapters": [
+      "real_V5_creator_data_current_before_after",
+      "separate_authenticated_retained_runtime_plan",
+      "new_official_readonly_program_closure"
+    ],
+    "newLexicalSnapshotPins": true,
+    "pythonNamespaceBodySeams": [
+      "direct_pinned_Node_without_TSX",
+      "new_V5_child_report_format"
+    ],
+    "unchangedJavaScriptBodies": [
+      "databaseWitnessSnapshot",
+      "canonicalWitnesses",
+      "qualifyAcceptance",
+      "validateCacheLayout"
+    ]
+  },
+  "runbook": "docs/unified-indexer/ordinary-v5-fixed-boundary-witness-v1.md",
+  "runtimeStagingFiles": [
+    "fixed-boundary-witness-v5.mjs",
+    "ypal-v5-witness-official-v1.mjs",
+    "ypal-v5-witness-official-v1.sources.json",
+    "ypal-alchemy-ordinary-witness-v5.py"
+  ],
+  "sourceOnly": true,
+  "tests": {
+    "deterministicOfficialBuilds": 2,
+    "node": 6,
+    "officialSourceClosure": 10,
+    "python": 6,
+    "runtimeImports": ["node:crypto"]
+  }
+}

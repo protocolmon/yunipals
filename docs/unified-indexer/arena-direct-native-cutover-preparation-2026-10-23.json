@@ -1,0 +1,72 @@
+{
+  "format": "yunipals-arena-direct-native-cutover-preparation-v1",
+  "preparedAt": "2026-10-23T01:18:04.957956+00:00",
+  "status": "locally_verified_not_activated",
+  "files": {
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1.py": "983f8baa24a2b82b0dce4e4716c64f9e4f68876db1d809f3a393177b390e81a6",
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1.mjs": "a5efd3ed83c3f2168055b84db4d09973ccb6ccc1d194b70ac39fa26110fd98a9",
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1-test.py": "41529c4aa583470fb61e918caf345a06ee3b6400eb5207750ad1aad3d31da07f",
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1-test.mjs": "0b943600e91683d415ebbe4995fb7682ce6c0a331304a23c101bd55460bb12c9",
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1-postgres-test.mjs": "09d2bd5f97488551ba69af9b882fb3cb484764ca833c3f3ca048d94ce66362ec",
+    "ops/unified-indexer-transition/arena-direct-native-cutover-v1.md": "4a1e3eb35dde053bfbdece0573b46f785d3bad422ee2a096f9c3674482ffe33a"
+  },
+  "tests": {
+    "python": {
+      "passed": true,
+      "controls": 26,
+      "realCrossUidMemfd": true,
+      "retainedPrivateInputsChangedDuringStabilityRefused": true,
+      "logSha256": "d4c8015e1972732a4796d2906a08cad0dfcc98ac54430ba088bbfb24773a48bd"
+    },
+    "node": {
+      "passed": true,
+      "controls": 9,
+      "logSha256": "6e07f7dffba57dd774fa64b4280f6b783adb7641ef22e51ea797413d7a3c2124"
+    },
+    "postgres": {
+      "receiptSha256": "80733f9ab7e686680056968da14a79dc4c6ccdd02a9374430224c9b3152df295",
+      "format": "yunipals-arena-direct-native-local-postgres-v1",
+      "passed": true,
+      "postgres": "16.15",
+      "migrations": 12,
+      "realCommitBoundaries": 3,
+      "onlineReviewCanonicalFloorProven": true,
+      "preCommitFailureRolledBack": true,
+      "lostAcknowledgementsReconciledByActualXid": 3,
+      "abortedSelectorForwardPublication": true,
+      "actualInProgressXidRefused": true,
+      "adoptedOrigins": 2,
+      "ciphertextsAadProviderUuidSignedBytesPreserved": true,
+      "sourceSwitchHistoryRows": 1,
+      "mutableRecoveryAllowedWithRetainedLedger": true,
+      "metadataFixtureOverrideOnly": [
+        "database",
+        "port",
+        "owner"
+      ],
+      "httpRequests": 0,
+      "productionActions": 0
+    }
+  },
+  "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "buildProofSha256": "a2b353f788d5d6a15408c3ee9cc3e46d100a9fd6a0c4b90230fd9f53091bc01e",
+  "installResultSha256": "3921ea98422778333a21068aadab016af5e6e4907b8c7b9deef7c73e14d531ad",
+  "constructorAllEightSha256": "b7f8a3deac84551182f9fc02b3b9e36557b332d603810e1aa81e7441945b5162",
+  "productionActions": 0,
+  "productionMigrations": 0,
+  "productionServicesChanged": 0,
+  "futureReceiptPinsInvented": false,
+  "actualPlanInputsStillRequired": [
+    "protected completed role-auth receipt with exact admission/setup results",
+    "fresh covered canonical Base floor and opening/action/film evidence",
+    "current retained actor observation"
+  ],
+  "recoveryScope": {
+    "preAdoptionInverse": true,
+    "explicitOwnedForwardContinuation": true,
+    "unknownOrInProgressTransactionRefused": true,
+    "postNativeIsolatedPublicRollbackIncluded": false,
+    "lostOriginalInverseStartAcknowledgementRequiresInspection": true
+  },
+  "productionReadinessClaimed": false
+}

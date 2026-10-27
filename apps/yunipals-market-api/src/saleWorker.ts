@@ -3,6 +3,11 @@ import { createPublicClient } from "viem";
 import { marketplaceChains } from "@protopals/yunipals-market-core/registry";
 
 import { CollectionSaleReplay } from "@/activity/collectionReplay";
+import { SharedCollectionSaleReplay } from "@/activity/sharedCollectionReplay";
+import {
+  openSharedConsumer,
+  readSharedConsumerEnvironment
+} from "@/indexer/consumerEnvironment";
 import { createPool } from "@/db/pool";
 import { assertReady } from "@/db/readiness";
 import { readEnvironment, readSaleReplayEnvironment } from "@/environment";
@@ -15,6 +20,10 @@ let failureStage = "configuration";
 async function main() {
   const environment = readEnvironment();
   const config = readSaleReplayEnvironment();
+  const source = readSharedConsumerEnvironment(
+    process.env,
+    "MARKET_SALE_INDEXER"
+  );
   const pool = createPool(environment);
   const coordinator =
     config.mode === "live" ? createOpenSeaRequestBudget() : undefined;
@@ -51,6 +60,7 @@ async function main() {
     unavailable: 0,
     budgetDeferred: 0
   };
+  let shared: Awaited<ReturnType<typeof openSharedConsumer>>;
   const log = (status: string, fields: object = {}) =>
     console.log(
       JSON.stringify({
@@ -58,6 +68,7 @@ async function main() {
         status,
         chain: config.chain,
         mode: config.mode,
+        readerMode: source.mode,
         policy: config.policy,
         ...fields
       })
@@ -65,6 +76,7 @@ async function main() {
   try {
     failureStage = "database-readiness";
     await assertReady(pool, environment.deployment);
+    shared = await openSharedConsumer(source);
     failureStage = "rpc-chain-identity";
     const client = createPublicClient({
       cacheTime: 0,
@@ -96,14 +108,47 @@ async function main() {
       )
         throw new Error("Sale replay requires a verified Anvil fork.");
     }
-    const replay = new CollectionSaleReplay(
-      pool,
-      client,
-      config.chain,
-      Date.now,
-      config.policy,
-      config.finality
-    );
+    const settings = shared
+      ? await pool.query<{
+          start_block: string;
+          confirmations: number;
+          policy: string;
+        }>(
+          "SELECT start_block::text,confirmations,policy FROM yunipals_market.sale_replay_config WHERE chain_id=$1",
+          [marketplaceChains[config.chain].chainId]
+        )
+      : null;
+    if (
+      shared &&
+      (!settings?.rows[0] || settings.rows[0].policy !== config.policy)
+    )
+      throw new Error(
+        "Shared sale worker requires the exact owner-configured policy."
+      );
+    const replay = shared
+      ? new SharedCollectionSaleReplay(pool, shared.reader, client, {
+          chain: config.chain,
+          startBlock: settings!.rows[0]!.start_block,
+          confirmations: settings!.rows[0]!.confirmations,
+          policy: config.policy,
+          confirmationPolicy:
+            config.chain === "base"
+              ? { kind: "latest" }
+              : config.finality === "finalized"
+                ? { kind: "finalized" }
+                : {
+                    kind: "depth",
+                    subsequentBlocks: settings!.rows[0]!.confirmations
+                  }
+        })
+      : new CollectionSaleReplay(
+          pool,
+          client,
+          config.chain,
+          Date.now,
+          config.policy,
+          config.finality
+        );
     failureStage = "replay-loop";
     log("started", {
       deployment: environment.deployment,
@@ -141,7 +186,9 @@ async function main() {
             ? 250
             : status === "unavailable"
               ? 30000
-              : 180000,
+              : shared
+                ? 5000
+                : 180000,
           undefined,
           { signal: abort.signal }
         );
@@ -154,6 +201,7 @@ async function main() {
     stop();
     if (limit) clearTimeout(limit);
     log("rpc-report", { rpc: rpc.snapshot(), results: report });
+    await shared?.pool.end();
     await pool.end();
     await coordinator?.close();
     if (deadline) clearTimeout(deadline);

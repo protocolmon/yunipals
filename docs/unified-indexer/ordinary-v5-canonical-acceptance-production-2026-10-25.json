@@ -1,0 +1,53 @@
+{
+  "format": "yunipals-ordinary-v5-canonical-acceptance-production-v1",
+  "observedAt": "2026-10-25T00:49:43.257936+00:00",
+  "qualified": true,
+  "scope": "six EVM collection ownership sources; canonical and fixed-boundary equality",
+  "capture": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T00:49:43.257936+00:00",
+    "phase": "capture",
+    "report": {
+      "captureId": "v5-confirmed-health",
+      "completed": true,
+      "contextHttpCountScope": "python-context-urllib-attempts",
+      "contextHttpGetAttempts": {
+        "capture": 32,
+        "review": 32
+      },
+      "contextHttpNonGetAttempts": 0,
+      "databaseWrites": 0,
+      "format": "yunipals-ypal-alchemy-ordinary-witness-v5",
+      "oldFailedWitnessPreserved": true,
+      "permitHeaders": 0,
+      "qualified": true,
+      "reviewHash": "fa52341fa04ce1590fedb19f801a2450838e88a779c75ced740966e290b2b132",
+      "serviceActions": 0,
+      "sourceBeforeAfterReady": true,
+      "witnessHttpCalls": 12,
+      "witnessQualified": true,
+      "witnessRpcCalls": 21,
+      "witnessSha256": "13487b0ad78916d037e8b1ee5629b8e1a003fd711f6f6d586a4f6a21dcff4cf9"
+    },
+    "resultSha256": "04be4a993187a3aebd6c1fffef0769cb685eda6481cfe0a4385a25cded8ecc24",
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "51e17ae632da51c8cf8e50c214fa87b3ac2d000b4850be05c83bddc3086f93a2"
+  },
+  "earlierFailuresPreserved": {
+    "V4Witness": "cb2fac1dfeaa6ed8e8eca4c23378a026e33628138779eba2f804759b13ec3931",
+    "firstV5Preflight": "actual_same_build_live_Ponder_heartbeat_required"
+  },
+  "sourceRevalidationBeforeNewCapture": {
+    "sameSourcePID": 3985426,
+    "sourceRestarts": 0,
+    "heartbeatAgeMs": 8063,
+    "sameObserverPID": 3948391,
+    "observerRestarts": 0
+  },
+  "limits": [
+    "Does not establish metadata adoption, API traffic selection, booster feature cutover or managed Solana acceptance.",
+    "Missing hashes in four historical legacy baselines remain missing; no fabricated historical hash is claimed."
+  ]
+}

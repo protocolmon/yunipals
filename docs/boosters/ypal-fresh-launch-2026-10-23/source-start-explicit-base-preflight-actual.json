@@ -1,0 +1,30 @@
+{
+  "actualSourceOrReaderStart": false,
+  "at": "2026-10-23T20:30:52.096841+00:00",
+  "controllerQualified": false,
+  "controllerSourceSha256": "eef6040deb5240c2f0ea43229882ca01921981f2c1a9224ef4b55da350a87b05",
+  "controllerStaged": false,
+  "databaseWrites": 0,
+  "format": "yunipals-ypal-explicit-base-preflight-actual-v2",
+  "logicalHttpRequests": {
+    "GET /unified/preflight": 2,
+    "POST /unified eth_chainId": 1,
+    "total": 3
+  },
+  "paidAuthority": false,
+  "passed": true,
+  "privateEnvironmentLoaded": false,
+  "proof": {
+    "allChainDefaultPreflight": false,
+    "chainId": 8453,
+    "paidAuthority": false,
+    "passed": true,
+    "profileId": "0x25308afec8bf9d4992afb5dbf52675d958ee1c619533e7917ae3fe08dbd29c86"
+  },
+  "requestCountsEstablishedBy": "successful exact pinned preflight68a control flow, no mock responses",
+  "serviceActions": 0,
+  "tsxCacheDisabled": true,
+  "upstreamReadOnlyRPCMethod": "eth_chainId",
+  "viemEntrySha256": "ea32975364e9f2d599b10639d81985ec6a3ed87f6942fe0cb73b1bf738959057",
+  "viemEntryStable": true
+}

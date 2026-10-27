@@ -1,0 +1,117 @@
+{
+  "actualBenchmarkResultSha256": "a134d69dca724120b37f62a5c9b2edb20fc3559b66bdc40a22cfc33ccc236558",
+  "actualHeldCallbackQualified": false,
+  "allOriginalFileBytesAndInodesUnchanged": true,
+  "bridgePhaseClassified": false,
+  "compileObserved": false,
+  "completeDeclaredStdlibCoverage": false,
+  "completeRunDurationCoverage": true,
+  "completedReadOnlyBenchmark": true,
+  "databaseWrites": 0,
+  "exactPublicGenerationBridgeFamilyCalls": [
+    {
+      "call": 87,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1772499,
+      "publicCommandFamily": "generation-recovery-read-bridge",
+      "wallNanoseconds": 10373911291
+    },
+    {
+      "call": 88,
+      "commandKind": "setpriv",
+      "parentCPUNanoseconds": 1731513,
+      "publicCommandFamily": "generation-recovery-read-bridge",
+      "wallNanoseconds": 10733636604
+    }
+  ],
+  "format": "root-readonly-benchmark2-cost-summary-v1",
+  "fullSourcePostflightPassed": true,
+  "observedAt": "2026-10-26T07:15:35.769545+00:00",
+  "observedStdlibPrefixCPUNanoseconds": 6927199944,
+  "observerOverheadsIncluded": true,
+  "phaseTimings": [
+    {
+      "label": "host-refresh",
+      "observedRunCount": 72,
+      "observedRunWallNanoseconds": 2993105045,
+      "parentCPUNanoseconds": 2297267790,
+      "wallNanoseconds": 5667720603
+    },
+    {
+      "label": "host-prerequisites",
+      "observedRunCount": 275,
+      "observedRunWallNanoseconds": 32882439116,
+      "parentCPUNanoseconds": 45186165821,
+      "wallNanoseconds": 105141499468
+    }
+  ],
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "stdlibMeasuredPrefix": [
+    {
+      "foreignThreadCallsNotTimed": 0,
+      "label": "ast.parse",
+      "maximumParentCPUNanoseconds": 35271520,
+      "maximumWallNanoseconds": 35269045,
+      "nestedCallsNotSeparatelyTimed": 0,
+      "parentCPUNanoseconds": 604830273,
+      "raisedCalls": 0,
+      "returnedCalls": 245,
+      "timedOuterCalls": 245,
+      "wallNanoseconds": 604779526
+    },
+    {
+      "foreignThreadCallsNotTimed": 0,
+      "label": "copy.deepcopy",
+      "maximumParentCPUNanoseconds": 90226087,
+      "maximumWallNanoseconds": 90259028,
+      "nestedCallsNotSeparatelyTimed": 0,
+      "parentCPUNanoseconds": 1341884679,
+      "raisedCalls": 0,
+      "returnedCalls": 3899,
+      "timedOuterCalls": 3899,
+      "wallNanoseconds": 1341999984
+    },
+    {
+      "foreignThreadCallsNotTimed": 0,
+      "label": "json.loads",
+      "maximumParentCPUNanoseconds": 214021168,
+      "maximumWallNanoseconds": 214104780,
+      "nestedCallsNotSeparatelyTimed": 0,
+      "parentCPUNanoseconds": 1856751060,
+      "raisedCalls": 0,
+      "returnedCalls": 652,
+      "timedOuterCalls": 652,
+      "wallNanoseconds": 1856882871
+    },
+    {
+      "foreignThreadCallsNotTimed": 0,
+      "label": "json.dumps",
+      "maximumParentCPUNanoseconds": 33332691,
+      "maximumWallNanoseconds": 33352236,
+      "nestedCallsNotSeparatelyTimed": 0,
+      "parentCPUNanoseconds": 852136967,
+      "raisedCalls": 0,
+      "returnedCalls": 543,
+      "timedOuterCalls": 543,
+      "wallNanoseconds": 852237549
+    },
+    {
+      "foreignThreadCallsNotTimed": 0,
+      "label": "hashlib.sha256-construction",
+      "maximumParentCPUNanoseconds": 531436391,
+      "maximumWallNanoseconds": 531530200,
+      "nestedCallsNotSeparatelyTimed": 0,
+      "parentCPUNanoseconds": 2271596965,
+      "raisedCalls": 0,
+      "returnedCalls": 4661,
+      "timedOuterCalls": 4661,
+      "wallNanoseconds": 2274841810
+    }
+  ],
+  "stdlibOuterCallsDropped": 11699,
+  "stdlibOuterCallsObserved": 21699,
+  "stdlibOuterCallsTimed": 10000,
+  "stdlibPrefixOnly": true,
+  "timingQualificationClaimed": false
+}

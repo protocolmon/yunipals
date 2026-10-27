@@ -1,0 +1,24 @@
+{
+  "completed": true,
+  "credentialsRead": false,
+  "databaseWrites": 0,
+  "format": "yunipals-ordinary-managed-inactive-stage-production-v1",
+  "managedInstalled": false,
+  "observedAt": "2026-10-25T00:27:58.762635+00:00",
+  "providerCalls": 0,
+  "publicReadability": {
+    "databaseWrites": 0,
+    "files": 4,
+    "format": "yunipals-ordinary-managed-runtime-v1-public-readability",
+    "gid": 964,
+    "providerCalls": 0,
+    "publicRuntimeSha256": "0a76d1af9de3c4c922662569d401988a0c0914290ce6e1bb156dcddf3e1060aa",
+    "qualified": true,
+    "serviceActions": 0,
+    "sourceActorQualified": false,
+    "uid": 970
+  },
+  "resultSha256": "aee7827fcb96f63aa26315fe5f44ef746a9740dab327a81ce3262b0b89e3bc19",
+  "serviceActions": 0,
+  "stagedPublicFiles": 6
+}

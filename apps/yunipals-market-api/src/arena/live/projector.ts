@@ -44,8 +44,11 @@ export async function projectConfirmedArena(
         halted: boolean;
         start_block: string;
         contract: string;
+        indexer_mode: string;
       }>("SELECT * FROM yunipals_arena.deployment WHERE id=$1", [deployment.id])
     ).rows[0]!;
+    if (saved.indexer_mode !== "legacy")
+      throw new Error("Legacy Arena projection is fenced by native indexing.");
     if (
       saved.contract !== deployment.contract.toLowerCase() ||
       BigInt(saved.start_block) !== deployment.startBlock
@@ -126,3 +129,6 @@ export async function projectConfirmedArena(
     db.release();
   }
 }
+
+/** Retained entrypoint name; the legacy operational policy is Base depth 3. */
+export const projectFinalizedArena = projectConfirmedArena;

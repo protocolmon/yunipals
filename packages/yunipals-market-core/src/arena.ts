@@ -182,11 +182,12 @@ export type ArenaTransactionAction =
   | {
       kind: "entry";
       tournamentId: string;
+      incarnation?: Hex;
       nftChainId: number;
       collection: Address;
       tokenId: string;
     }
-  | { kind: "approval"; tournamentId: string }
+  | { kind: "approval"; tournamentId: string; incarnation?: Hex }
   | { kind: "claim" };
 export type ArenaTransactionStatus = {
   hash: Hex;
@@ -197,8 +198,12 @@ export type ArenaTransactionStatus = {
     | "indexing"
     | "indexed"
     | "failed"
-    | "delayed";
+    | "delayed"
+    | "reorged";
   indexedThroughBlock: string | null;
+  finalized?: boolean;
+  receiptBlockHash?: Hex | null;
+  trackingExpiresAt?: string;
   result: {
     event: "Entered" | "Claimed" | "Approval";
     blockNumber: string;
@@ -229,6 +234,7 @@ export type ArenaTournament = {
 };
 
 export type ArenaPublicTournament = ArenaTournament & {
+  incarnation?: Hex;
   serverTime?: number;
   projection?: {
     throughBlock: string | null;

@@ -1,0 +1,41 @@
+{
+  "format": "yunipals-ypal-managed-handover-v1-input",
+  "sourceReceiptSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+  "maximumColdStartSeconds": 180,
+  "retireOldActivations": true,
+  "solanaAuthSha256": null,
+  "proxyReceiptSha256": null,
+  "solanaEgress": { "file": null, "sha256": null },
+  "authorization": { "file": null, "sha256": null },
+  "readers": { "resultSha256": null, "sourceManifestSha256": null },
+  "cache": { "resultSha256": null, "sourceManifestSha256": null },
+  "feature": { "result_sha": null, "manifest_sha": null, "input_sha": null },
+  "arena": { "result_sha": null, "manifest_sha": null, "continuation": null },
+  "observer": {
+    "resultSha256": null,
+    "readAdmissionSha256": null,
+    "installSha256": null,
+    "definitionHashes": null,
+    "argv": null,
+    "cwd": null
+  },
+  "privateAndCodeInputs": {
+    "/var/lib/yunipals-unified-shadow/20261020-008028af-a/launch.env": null,
+    "/opt/yunipals-unified/operations/free-replay-20261020/source6-free-runtime-v2.env": null,
+    "/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/combined.public.env": null,
+    "/etc/yunipals-unified/solana.env": null,
+    "/etc/yunipals-indexer/indexer.env": null,
+    "/etc/yunipals-indexer/solana.env": null
+  },
+  "writers": {
+    "yunipals-ypal-combined-source.service": null,
+    "yunipals-solana.service": null,
+    "yunipals-indexer.service": null,
+    "yunipals-unified-source6-free-v2.service": null,
+    "yunipals-booster-ypal-source.service": null,
+    "yunipals-booster-launch.service": null,
+    "yunipals-bnb.service": null,
+    "yunipals-islands-indexer.service": null,
+    "yunipals-base-islands-v2.service": null
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "format": "yunipals-qualified-receipt-first-attempt-readonly-observation-v1",
+  "preparedAt": "2026-10-23T11:33:03.905282+00:00",
+  "beforeAt": "2026-10-23T11:28:31.755174+00:00",
+  "afterAt": "2026-10-23T11:32:06.924737+00:00",
+  "sourceRuntime": {
+    "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+    "pid": 716994,
+    "startMonotonicMicroseconds": 66117947533239,
+    "startTicks": 6611794751
+  },
+  "sourceQualificationSha256": "add6d4fbeaacb500bdd8f61dcf0d57e66a85ec7e0f4451ef71beba1b103fd49d",
+  "originalWholeValidationPassed": false,
+  "workerAfter": {
+    "ActiveState": "failed",
+    "InvocationID": "d4c52a1889ed45b8aa99493f2ee41b33",
+    "MainPID": "0",
+    "NRestarts": "0",
+    "SubState": "failed"
+  },
+  "monitorStarted": false,
+  "monitorNotStartedReason": "worker_already_terminal_failed_with_zero_main_pid",
+  "twoMinuteCoexistenceClaimed": false,
+  "receiptCounts": [
+    {
+      "chainId": 1,
+      "evidenceBefore": 87,
+      "evidenceAfter": 87,
+      "jobDelta": 0,
+      "attemptDelta": 0,
+      "activeLeasesAfter": 0,
+      "evidenceDelta": 0
+    },
+    {
+      "chainId": 56,
+      "evidenceBefore": 0,
+      "evidenceAfter": 0,
+      "jobDelta": 0,
+      "attemptDelta": 0,
+      "activeLeasesAfter": 0,
+      "evidenceDelta": 0
+    },
+    {
+      "chainId": 137,
+      "evidenceBefore": 288,
+      "evidenceAfter": 288,
+      "jobDelta": 0,
+      "attemptDelta": 0,
+      "activeLeasesAfter": 0,
+      "evidenceDelta": 0
+    },
+    {
+      "chainId": 8453,
+      "evidenceBefore": 562,
+      "evidenceAfter": 562,
+      "jobDelta": 0,
+      "attemptDelta": 0,
+      "activeLeasesAfter": 0,
+      "evidenceDelta": 0
+    }
+  ],
+  "rpcCounterDeltas": {
+    "base": {
+      "unified_source": {
+        "freeCalls": 197,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "unified_evidence": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "bnb": {
+      "unified_source": {
+        "freeCalls": 198,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "unified_evidence": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "ethereum": {
+      "unified_source": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "unified_evidence": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    },
+    "polygon": {
+      "unified_source": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      },
+      "unified_evidence": {
+        "freeCalls": 0,
+        "paidCalls": 0,
+        "refused": 0
+      }
+    }
+  },
+  "receiptDiscoveryUnchanged": true,
+  "localBoosterAfter": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 1,
+    "indexedBlock": 52982889,
+    "indexedTimestamp": 1792755125,
+    "ready": true,
+    "status": 200
+  },
+  "publicBoosterAfter": {
+    "buildId": "6d581272ce",
+    "errorCode": null,
+    "indexedAgeSeconds": 1,
+    "indexedBlock": 52982889,
+    "indexedTimestamp": 1792755125,
+    "ready": true,
+    "status": 200
+  },
+  "boosterCheckpointAdvance": 108,
+  "rootFreeBytesAfter": 45164552192,
+  "sourceMemoryBytesAfter": 403087360,
+  "captureFiles": [
+    {
+      "path": "/tmp/yunipals-qualified-receipt-baseline-20261023.jsonl",
+      "sha256": "fc5ec4ae5dc4ef365edb8c79e38f0b0e6f716c53fc0bcd2f81ee000d5a84138c"
+    },
+    {
+      "path": "/tmp/yunipals-qualified-receipt-after-attempt-20261023.json",
+      "sha256": "d0e6a1ca5e921ea9e0c9c21fd38e622125f1c0ca4893fac88f7e8493fe58c7af"
+    }
+  ],
+  "observedReceiptProviderCalls": 0,
+  "receiptHistoryCompleteClaimed": false,
+  "productionActionsByReviewer": 0,
+  "databaseWritesByReviewer": 0,
+  "providerCallsByReviewer": 0,
+  "sourceEdits": 0
+}

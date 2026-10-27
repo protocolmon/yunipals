@@ -1,6 +1,12 @@
 import type { Pool } from "pg";
 import { islandCollection, ZERO_ADDRESS } from "../constants.js";
-import { sqlIdentifier } from "../offchain/sql.js";
+import {
+  sqlIdentifier,
+  unifiedOwnershipReads,
+  ownershipReadConfig,
+  ownershipIslandsSchemaName
+} from "../offchain/sql.js";
+import { unifiedOwnershipStatus } from "../ownership/readiness.js";
 import { canonicalTokenId } from "./metadata.js";
 import { ethereumCheckpointBlock } from "./readiness.js";
 import { islandIdentityPredicate, islandTokenRelation } from "./queries.js";
@@ -19,7 +25,10 @@ export async function verifyIslandsOwnership(
   chain: IslandChainReader,
   activate = false
 ) {
-  const schema = sqlIdentifier(schemaName);
+  const readSchemaName = unifiedOwnershipReads
+    ? ownershipIslandsSchemaName
+    : schemaName;
+  const schema = sqlIdentifier(readSchemaName);
   const block = await chain.finalizedBlock();
   if (block.number < BigInt(islandCollection.deploymentBlock))
     throw new Error("islands_not_deployed");
@@ -54,20 +63,54 @@ export async function verifyIslandsOwnership(
     await client.query(
       `BEGIN ISOLATION LEVEL REPEATABLE READ${activate ? "" : " READ ONLY"}`
     );
-    const checkpoint = (
-      await client.query<{ latest_checkpoint: string }>(
-        `SELECT latest_checkpoint FROM ${schema}._ponder_checkpoint WHERE chain_id=1`
+    let indexedBlock: bigint | null;
+    let indexingReady: boolean;
+    if (unifiedOwnershipReads) {
+      const source = (await unifiedOwnershipStatus(client, [
+        islandCollection.slug
+      ]))!;
+      const release = (
+        await client.query<{ build_id: string; physical_schema: string }>(
+          "SELECT build_id,physical_schema FROM yunipals_indexer_control.release WHERE id=$1",
+          [ownershipReadConfig.releaseId]
+        )
+      ).rows[0];
+      if (
+        source.identity.physical_schema !== schemaName ||
+        release?.physical_schema !== schemaName
       )
-    ).rows[0]?.latest_checkpoint;
-    const indexedBlock = ethereumCheckpointBlock(checkpoint);
-    const indexing = (
-      await client.query<{ ready: string; buildId: string }>(
-        `SELECT value->>'is_ready' AS ready,value->>'build_id' AS "buildId" FROM ${schema}._ponder_meta WHERE key='app'`
-      )
-    ).rows[0];
-    buildId = indexing?.buildId;
+        throw new Error("islands_verification_source_mismatch");
+      const checkpoint = source.collections[0];
+      buildId = release.build_id;
+      indexingReady = source.ready && checkpoint?.available === true;
+      indexedBlock = checkpoint?.block_number
+        ? BigInt(checkpoint.block_number)
+        : null;
+      const canonical = (
+        await client.query<{ block_hash: string }>(
+          `SELECT block_hash FROM ${sqlIdentifier(schemaName)}.chain_block WHERE chain_id=1 AND block_number=$1`,
+          [block.number.toString()]
+        )
+      ).rows;
+      if (canonical.length !== 1 || canonical[0]!.block_hash !== block.hash)
+        throw new Error("islands_verification_source_hash_mismatch");
+    } else {
+      const checkpoint = (
+        await client.query<{ latest_checkpoint: string }>(
+          `SELECT latest_checkpoint FROM ${schema}._ponder_checkpoint WHERE chain_id=1`
+        )
+      ).rows[0]?.latest_checkpoint;
+      indexedBlock = ethereumCheckpointBlock(checkpoint);
+      const indexing = (
+        await client.query<{ ready: string; buildId: string }>(
+          `SELECT value->>'is_ready' AS ready,value->>'build_id' AS "buildId" FROM ${schema}._ponder_meta WHERE key='app'`
+        )
+      ).rows[0];
+      buildId = indexing?.buildId;
+      indexingReady = indexing?.ready === "1";
+    }
     if (
-      indexing?.ready !== "1" ||
+      !indexingReady ||
       !buildId ||
       indexedBlock === null ||
       indexedBlock < block.number
@@ -136,7 +179,7 @@ export async function verifyIslandsOwnership(
     if (invalidMint !== 0) throw new Error("islands_mint_state_inconsistent");
     const metadata = (
       await client.query<{ tokenId: string }>(
-        `SELECT t.token_id AS "tokenId" FROM ${islandTokenRelation(schemaName)}
+        `SELECT t.token_id AS "tokenId" FROM ${islandTokenRelation(readSchemaName)}
         WHERE ${islandIdentityPredicate} AND p.status='published' AND r.revision_hash IS NOT NULL
           AND t.token_id=ANY($1::text[])`,
         [[...expected.keys()]]
@@ -189,7 +232,7 @@ export async function verifyIslandsOwnership(
     block: {
       number: block.number.toString(),
       hash: block.hash,
-      finality: "confirmations"
+      finality: "finalized"
     },
     activeSupply: expected.size,
     ownersMatched: expected.size,

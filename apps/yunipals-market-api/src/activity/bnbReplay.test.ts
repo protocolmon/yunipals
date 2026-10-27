@@ -15,6 +15,7 @@ import { seaportEventAbi } from "@protopals/yunipals-market-core/seaportEvents";
 import { seaportDeployment } from "@protopals/yunipals-market-core/registry";
 
 import { BnbSaleReplay } from "@/activity/bnbReplay";
+import { selectLegacyMarketplaceConsumer } from "@/indexer/consumerRollback";
 import { createBnbTestDatabase } from "@/bnb/fixtures/database";
 import { buyer, code, now, seller, timestamp } from "@/bnb/fixtures/admission";
 
@@ -238,9 +239,8 @@ async function fixture(side: "listing" | "offer" = "listing") {
     client,
     receipt,
     ranges,
-    replay: (
-      options: ConstructorParameters<typeof BnbSaleReplay>[3] = {}
-    ) => new BnbSaleReplay(db.runtime, client, () => now, options)
+    replay: (options: ConstructorParameters<typeof BnbSaleReplay>[3] = {}) =>
+      new BnbSaleReplay(db.runtime, client, () => now, options)
   };
 }
 const checkpoint = async () =>
@@ -255,6 +255,99 @@ const sales = async () =>
       "SELECT observation,canonical FROM yunipals_market.sale WHERE chain_id=56 ORDER BY block_hash"
     )
   ).rows;
+
+test("reviewed BNB rollback retains admitted orders and requires fresh epoch-qualified receipts", async () => {
+  const f = await fixture();
+  const consumer = "bnb-sales";
+  const hash = `0x${"89".repeat(32)}`;
+  try {
+    assert.equal(await f.replay().tick(), "advanced");
+    const original = (
+      await db.owner.query(
+        "SELECT to_jsonb(r) AS value FROM yunipals_market.sale_receipt r WHERE chain_id=56"
+      )
+    ).rows;
+    const orders = (
+      await db.owner.query(
+        "SELECT count(*) FROM yunipals_market.orders WHERE chain_id=56"
+      )
+    ).rows[0].count;
+    await db.owner.query(
+      `INSERT INTO yunipals_market.shared_indexer_consumer
+      (consumer,chain_id,release_id,source_id,confirmation_policy,configuration_hash)
+      VALUES($1,56,$2,'ownership:bnb','{"kind":"depth","subsequentBlocks":20}',$2)`,
+      [consumer, hash]
+    );
+    await db.owner.query(
+      `UPDATE yunipals_market.checkpoint SET reader_mode='unified' WHERE ${where}`
+    );
+    const config = { kind: "bnb-sales", deployment: "staging" } as const;
+    const review = await selectLegacyMarketplaceConsumer(db.owner, config);
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.owner, {
+        kind: "bnb-sales",
+        deployment: "production"
+      }),
+      /deployment differs/
+    );
+    await selectLegacyMarketplaceConsumer(db.owner, config, review.reviewHash);
+    assert.equal((await checkpoint()).block_number, null);
+    assert.equal((await checkpoint()).reader_mode, "legacy");
+    assert.ok((await sales()).every((row) => !row.canonical));
+    assert.equal(
+      (
+        await db.owner.query(
+          "SELECT count(*) FROM yunipals_market.orders WHERE chain_id=56"
+        )
+      ).rows[0].count,
+      orders
+    );
+    await assert.rejects(
+      f.replay({ confirmationPolicy: "wrong-legacy-policy" }).tick(),
+      /selection differs/
+    );
+    assert.equal(await f.replay().tick(), "advanced");
+    assert.deepEqual(
+      (
+        await db.owner.query(
+          "SELECT to_jsonb(r) AS value FROM yunipals_market.sale_receipt r WHERE chain_id=56"
+        )
+      ).rows,
+      original
+    );
+    assert.equal(
+      (
+        await db.owner.query(
+          "SELECT count(*) FROM yunipals_market.legacy_sale_receipt_qualification WHERE chain_id=56 AND epoch=$1",
+          [review.reviewHash]
+        )
+      ).rows[0].count,
+      "1"
+    );
+    assert.ok((await sales()).every((row) => row.canonical));
+    await assert.rejects(
+      selectLegacyMarketplaceConsumer(db.owner, config, review.reviewHash),
+      /currently selected/
+    );
+  } finally {
+    await db.owner.query(
+      "DELETE FROM yunipals_market.legacy_sale_receipt_qualification WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.marketplace_legacy_selection WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.sale_receipt_qualification WHERE consumer=$1",
+      [consumer]
+    );
+    await db.owner.query(
+      "DELETE FROM yunipals_market.shared_indexer_consumer WHERE consumer=$1",
+      [consumer]
+    );
+  }
+});
 
 test("native and WBNB receipt proof commits atomically and resumes without duplicate sales", async () => {
   for (const side of ["listing", "offer"] as const) {

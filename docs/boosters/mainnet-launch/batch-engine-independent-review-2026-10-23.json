@@ -1,0 +1,42 @@
+{
+  "format": "yunipals-batch-engine-independent-review-v1",
+  "observedAt": "2026-10-23T13:18:51.632627+00:00",
+  "reviewer": "root-independent-of-contract-author",
+  "filesSha256": {
+    "contracts/boosters/src/BoosterPacks.sol": "bd3ce4e82ac079c52bc666912178e7057cbe7e187a77a5f2cf86f7e64597250d",
+    "contracts/boosters/foundry.toml": "89e269d6e48180f04188a688beb5fff7c04300ea3b3f76ec265aa61ad68ccf6c",
+    "contracts/boosters/test/BoosterMultiPack.t.sol": "5a884e6e4755b4da012e1507dfc1b509b22e0ca4a38d4cc1caede562a1faa1a8",
+    "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.json": "8da9b7aed33a518e222add0f0fedda49a3e7471168fc3d7165c6b482f388eeb6",
+    "contracts/boosters/test/fixtures/BoosterPacks.pre-batch.immutable-references.json": "12ef0eeb4c9c168abc5b99c05e4ef2545a8341e13e9bf30475548899eda1c83c"
+  },
+  "checks": [
+    "Explicit msg.value total budget is consumed once across requests; each actual wrapper price reduces remaining budget",
+    "One aggregate PROTO transfer/burn checked against both balance and total supply; existing per-request burn events preserved",
+    "One aggregate refund, bounded external callback, existing backed credit liability fallback",
+    "Count is capped at10; all token, reservation, wrapper and proof writes revert atomically on a later failure",
+    "Independent originals, VRF responses, reveal clocks, daily rights and recovery remain per request",
+    "All10 complete storage layout rows recursively equal the frozen audited baseline; inherited proof/admin source unchanged",
+    "Every previous public ABI entry retained; three engine functions added"
+  ],
+  "tests": {
+    "command": "FOUNDRY_PROFILE=batch forge test --match-contract BoosterMultiPackTest -vv",
+    "passed": 14,
+    "failed": 0,
+    "fuzzRuns": 256,
+    "populatedLegacyProxyUpgradePassed": true,
+    "tenPackLocalMockGas": 3744042
+  },
+  "runtimeBytes": 24258,
+  "eip170Limit": 24576,
+  "headroomBytes": 318,
+  "compiler": {
+    "version": "0.8.30",
+    "viaIR": true,
+    "optimizerRuns": 1,
+    "profile": "batch",
+    "defaultHistoricalOptimizerRuns": 200
+  },
+  "realTransactions": 0,
+  "mainnetBatchTestPerformed": false,
+  "passed": true
+}

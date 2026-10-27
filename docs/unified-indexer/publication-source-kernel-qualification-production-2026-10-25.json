@@ -1,0 +1,66 @@
+{
+  "actualRecords": {
+    "callerStage": {
+      "candidateInputsCreated": 0,
+      "commit": "a0c6d379bbcc229cc0f3727893f3b96cc867888a",
+      "completed": true,
+      "currentReadinessClaimed": false,
+      "databaseWrites": 0,
+      "existingFilesOverwritten": 0,
+      "format": "root-publication-kernel-v1-source-stage",
+      "observedAt": "2026-10-25T16:47:01.405866+00:00",
+      "permissionChanges": 0,
+      "providerCalls": 0,
+      "publicFilesCreated": 1,
+      "publicFilesVerified": 218,
+      "resultSha256": "4cc6e27b2b31f2be53d13651bdaeac680b650c69db97015c5bd9d033e3e143b9",
+      "serviceActions": 0
+    },
+    "observerStage": {
+      "completed": true,
+      "databaseWrites": 0,
+      "existingFilesOverwritten": 0,
+      "format": "root-source-authority-v6-phase",
+      "observedAt": "2026-10-25T16:38:35.857350+00:00",
+      "phase": "stage",
+      "providerCalls": 0,
+      "publicFilesCreated": 4,
+      "publicFilesVerified": 9,
+      "serviceActions": 0,
+      "sourceAuthorityQualified": false,
+      "sourceSha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82"
+    },
+    "sourceAndReadQualification": {
+      "completed": true,
+      "elapsedSeconds": 90.911,
+      "exitCode": 0,
+      "format": "root-source-authority-v6-phase",
+      "observedAt": "2026-10-25T16:41:55.918147+00:00",
+      "phase": "qualify",
+      "report": {
+        "activeUnits": 11,
+        "callbackElapsedNanoseconds": 6228181516,
+        "databaseWrites": 0,
+        "format": "yunipals-ypal-ordinary-source-authority-v6",
+        "nativeRelations": 44,
+        "positiveKernelSessions": 6,
+        "productionCallbackDeadlineQualified": false,
+        "providerCalls": 0,
+        "resultSha256": "259788bbad3bc963a1997b2fc018bfbf0b76f4e74d723787b1717dfd7e130d8c",
+        "retiredUnits": 12,
+        "serviceActions": 0,
+        "validated": true
+      },
+      "sourceSha256": "36832c82b1e0ee26664630c18bf7496ef26eea596ae68bb878e54ba61b6d7e82",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "8808003d05a2a4372d4e70f3852be462d7d7cdc65b3e1967aa42f6e86c278bdf"
+    }
+  },
+  "cacheInputSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+  "format": "yunipals-publication-source-kernel-qualification-production-v1",
+  "fullCacheReviewAccepted": false,
+  "generationAcceptanceRetained": true,
+  "publicationChanged": false,
+  "writerDrained": false
+}

@@ -1,0 +1,28 @@
+{
+  "format": "yunipals-og-tcg-collection-filter-production-v1",
+  "observedAt": "2026-10-23T11:23:17.818Z",
+  "origin": "https://www.yunipals.com",
+  "deployment": "https://yunipals-7ni4a9p9z-devving.vercel.app",
+  "deploymentId": "dpl_DnABqTaNDriVh8Z2Mh7QXv1a2e8w",
+  "sourceCommit": "e02b1109",
+  "manifestSha256": "edfb0f3ff765f5dd1bfe9cf309008b5f6f87ced422e25503fa51cb788c5a4fe5",
+  "publicBrowser": {
+    "at": "2026-10-23T11:23:17.818Z",
+    "checks": [
+      "exact promoted release manifest",
+      "new visitor defaults OG, query+storage match, OG grid has no TCG requests/cards",
+      "TCG is exclusive and has only Type/Color/Horn/Glitter filters",
+      "full trait selection and TCG survive reload and bare collection visits",
+      "explicit shared OG query overrides saved TCG and traits",
+      "back and forward restore the actual edition",
+      "same-route Collection navigation remembers latest selection",
+      "mobile drawer toggles, applies traits, stores query and fits viewport",
+      "blocked local storage preserves explicit TCG links and OG default"
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "walletConnections": 0,
+  "transactions": 0,
+  "indexerProcessesRestarted": 0
+}

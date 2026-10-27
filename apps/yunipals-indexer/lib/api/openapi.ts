@@ -1,3 +1,4 @@
+import { boosterOpenApiPaths } from "./booster-openapi.js";
 import { islandsOpenApiPaths } from "./islands-openapi.js";
 
 export const openApiDocument = {
@@ -21,6 +22,7 @@ export const openApiDocument = {
     { name: "Leaderboards" }
   ],
   paths: {
+    ...boosterOpenApiPaths,
     ...islandsOpenApiPaths,
     "/v1/indexing-status": {
       get:{tags:["Operations"],summary:"Read explicit chain recovery readiness",

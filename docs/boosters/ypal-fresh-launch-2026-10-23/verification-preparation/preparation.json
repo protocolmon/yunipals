@@ -1,0 +1,122 @@
+{
+  "format": "yunipals-ypal-basescan-preparation-v1",
+  "preparedAt": "2026-10-23T18:44:39.083191+00:00",
+  "status": "ready-for-review-no-explorer-submission",
+  "files": [
+    {
+      "path": "scripts/boosters/verify_ypal_basescan.py",
+      "bytes": 21814,
+      "sha256": "1c491156e3c244457848482e84385d3677ac806dfae1cb20c5178ca6f22faca6"
+    },
+    {
+      "path": "scripts/boosters/verify_ypal_basescan.test.py",
+      "bytes": 18576,
+      "sha256": "7e8bc76f48d5d2804e5dc19d7008429782e9e66385f6b5539721d770cb765e5e"
+    },
+    {
+      "path": "scripts/boosters/verify_ypal_basescan_chain.mjs",
+      "bytes": 6721,
+      "sha256": "814cb23c5c8e62851bfdefd01ef611799d2a3493d08692c5c27670792ed6b309"
+    },
+    {
+      "path": "scripts/boosters/verify_ypal_basescan_chain.test.mjs",
+      "bytes": 6253,
+      "sha256": "b14083e1321efdd73ca54e8127de4cd4132dfdd0c804793f1614144f5fd5c455"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/verification-preparation/README.md",
+      "bytes": 6063,
+      "sha256": "8ac41e4d31e9a74ee5698aa375b91578261a802c4e381e452c9fff86c3a1dc0e"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/verification-preparation/compiler-proof.json",
+      "bytes": 123895,
+      "sha256": "9ede068cb5ba59d75ff9337ae6c4467176f4c9036647546fa816f4e78e47ecd0"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/verification-preparation/proxy-solc-standard-input.json",
+      "bytes": 25228,
+      "sha256": "4b599d8684c32750eb0b4d3200962bc54a28c6674a7be074cd47da071c476896"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/verification-preparation/verification-package.prepared.json",
+      "bytes": 9853,
+      "sha256": "a40ed5f2b54ee7ee03dffd5c35e95d6a4d2aeccb64d4fc4b5ffbe1798167edf7"
+    }
+  ],
+  "retainedDependencies": [
+    {
+      "path": "scripts/boosters/verify_basescan.py",
+      "sha256": "552a820d5864ff960582576def8d4e1413b44b02f60788caf6268fec2a63ca4d"
+    },
+    {
+      "path": "ops/booster-launch/ypal-backend-prepare-v1.mjs",
+      "sha256": "94b78e09d3e5d845229a4ea8afdc481cd17b744e1b6bd9f070cb3fe9aa09a371"
+    },
+    {
+      "path": "apps/yunipals-home-web/public/boosters/ypal-fresh-launch-v1.json",
+      "sha256": "12bad482e7f34aa0dcc51033ee115b177bac4874181b4b522513adf2a3944886"
+    },
+    {
+      "path": "packages/yunipals-market-core/src/boosterAbi.ts",
+      "sha256": "580b38c39dc3e76f92762195f4b6862123775f13d95d092b3fafa39d73adc0ba"
+    },
+    {
+      "path": "contracts/ypal/evidence/ypal-standard-input.json",
+      "sha256": "e14be2f25575a982175698eefb92bc211041f6e6b4782ad414a2f069255dd139"
+    },
+    {
+      "path": "docs/boosters/permit-engine-upgrade-2026-10-23/solc-standard-input.json",
+      "sha256": "4c72f37ef060a68374322f4c9d9753dc3285c38958346a06756f6e4dad97cf85"
+    },
+    {
+      "path": "docs/boosters/ypal-fresh-launch-2026-10-23/deployment.confirmed.json",
+      "sha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c"
+    }
+  ],
+  "actualOfflinePlanSha256": "e33fbe5b07cf6a79a5d77b0e5738d93516fc5ab5c179571236b258c1daba943a",
+  "contractCount": 7,
+  "proxyCount": 3,
+  "validation": {
+    "pythonControlsPassed": 17,
+    "bridgeControlsPassed": 6,
+    "actualViemHttpSerializationTestedWithSyntheticFetch": true,
+    "allFiveStandaloneArtifactsMatchReviewedPackage": true,
+    "proxyRuns1And200ByteIdentical": true,
+    "syntaxAndWhitespacePassed": true,
+    "logs": [
+      {
+        "file": "/tmp/yunipals-ypal-verifier-python-tests-final-20261023.log",
+        "sha256": "43db95bd9c1f095a231e3a132fd93fc29dac3a4d64191e1c9e780db640856a54"
+      },
+      {
+        "file": "/tmp/yunipals-ypal-verifier-bridge-tests-20261023.log",
+        "sha256": "7ead5fce4ddc9378680cb2e7dba334f32af0297e3d1867414b2badebd8c2ca39"
+      }
+    ]
+  },
+  "policy": {
+    "defaultOffline": true,
+    "explicitSubmitRequiresExactPlanSha256": true,
+    "freshChainQualificationBeforeKeyLoadAndAtCompletion": true,
+    "fixedReadonlyRpc": "https://mainnet.base.org",
+    "rpcCapPerQualification": 128,
+    "maximumSecondsPerQualification": 180,
+    "indexingFinancialProfileUsed": false,
+    "profileChanges": 0,
+    "newKeysCreated": false,
+    "existingCredentialLoaderReused": true,
+    "secretValuesExported": false
+  },
+  "actionsPerformed": {
+    "explorerCalls": 0,
+    "providerCalls": 0,
+    "transactionsSent": 0,
+    "productionChanges": 0
+  },
+  "notClaimed": [
+    "Fresh contracts are not claimed explorer-verified by this preparation.",
+    "The prepared actual plan is static and explicitly chainQualified:false until the operator runs fresh qualification.",
+    "Source/RPC-profile/reader admission and live pack activation are separate operations."
+  ]
+}

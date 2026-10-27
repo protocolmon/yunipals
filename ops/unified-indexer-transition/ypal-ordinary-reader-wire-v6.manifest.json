@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "fixed-boundary-witness-v3.mjs": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c",
+    "fixed-boundary-witness-v5.mjs": "359ebcef8fb6e2342087eb4a7e62811cd1dd10b2ad7353ff682d20112f08c484",
+    "ownership-parity-peer-v2.mjs": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920",
+    "ownership-parity-peer-v4.mjs": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+    "ypal-ordinary-cache-transition-v5.mjs": "591fce0365e6581644a064470cb830d0ec06c2e135e439cb58dac02d8bc1e8b2",
+    "ypal-ordinary-generation-recovery-v5.mjs": "a19482296a09123fdc63df1cebc9d7a0f1747083faecc669f6b2836ed6fb66df",
+    "ypal-ordinary-readview-v5.py": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2",
+    "ypal-v5-witness-official-v1.mjs": "347782b2c992f47d084f92bf45389a352b85ecc7d8a6f163968d2bc6a20d4cdc",
+    "ypal-v5-witness-official-v1.sources.json": "ba5d4f5f89191f069f01b71becc5d4db540646458638b1ce188d38a4013d2fb3"
+  },
+  "files": {
+    "ypal-native-cutover-v1.action.sql": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50",
+    "ypal-ordinary-reader-probe-v6.mjs": "5d9f013eaec45299a0b52418d309a9b35d4d1630618297df3595555b840d4e69",
+    "ypal-ordinary-reader-sql-v6.mjs": "fc31022549840e324c584c9fd5033fd9348e93cb00b7e308c427433b1f95f019"
+  },
+  "format": "yunipals-ypal-ordinary-reader-wire-v6",
+  "readIdentity": "0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab",
+  "readSchema": "yunipals_ownership_4e77f52b_v5"
+}

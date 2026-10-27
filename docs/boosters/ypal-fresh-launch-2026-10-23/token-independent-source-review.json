@@ -1,0 +1,56 @@
+{
+  "format": "yunipals-ypal-token-independent-source-review-v1",
+  "reviewedAt": "2026-10-23T18:05:54.000785+00:00",
+  "verifiedOriginal": {
+    "chainId": 8453,
+    "address": "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3",
+    "sourceCodeSha256": "efd3731c1449c34bee33cae3f27808120465a7d2fc01e28a8cc5a8c0f54cb1e1",
+    "proxy": "0",
+    "similarMatch": "",
+    "sourceFiles": 10
+  },
+  "review": {
+    "allVerifiedDependencyAndBaselineSourcesByteExact": true,
+    "candidateCodeDiffOnlyContractNameAndTokenNameSymbol": true,
+    "mitLicenseRetained": true,
+    "originalCompilerVersion": "v0.8.28+commit.7893614a",
+    "originalCompilerSettingsRetained": true,
+    "completeAbiEntries": 69,
+    "ownershipStillDirectCreator": true,
+    "initialSupply": "0",
+    "noNewPremintOrAdminCapability": true,
+    "constructorBackingAndBurnInputsMatchLiveReference": true
+  },
+  "liveReference": {
+    "at": "2026-10-23T17:33:16.413Z",
+    "chainId": 8453,
+    "blockNumber": 52993724,
+    "address": "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3",
+    "values": {
+      "name": "PROTO",
+      "symbol": "PROTO",
+      "decimals": 18,
+      "pmon": "0x60edae6E86546428DA423b5FBe0fba46Ca552Fc7",
+      "burnAddress": "0xff2Ba07e6F84D22730eD78D1117735a4B041c6EF",
+      "isLocked": false,
+      "owner": "0xB34634Bff4FBD90B8C26B69EbddBc83F354684bB",
+      "DOMAIN_SEPARATOR": "0xe91965bea6cc8b0ca88ad7161ff3907843394ca5f1ceda6062f41b6582fcb2c7"
+    },
+    "transactions": 0
+  },
+  "candidateSourceSha256": "a416138f3045d1109d66d7ffb64e1c64327ca77d96fb8231031facb11eb39394",
+  "deploymentArtifactSha256": "fab7be912152379a9a51a5e82532547db46df2a4ae98603ff6a530d94840baa3",
+  "testEvidence": {
+    "file": "contracts/ypal/evidence/validation.json",
+    "sha256": "0b629e4ded3efc3fd8084e914acb24b4cd40a4b0d9698b74bee5f47098b7497c",
+    "localTestsPassed": 13,
+    "differentialFuzzRuns": 256,
+    "artifactControlsPassed": 4,
+    "localRealPmonForkCasesPassed": 2
+  },
+  "limitations": [
+    "This source review and local fork evidence do not prove a new mainnet deployment or a genuine oracle fulfillment.",
+    "Creator ownership requires direct deployment by the approved wallet; the owner page verifies the actual creator transaction and initialized owner."
+  ],
+  "newMainnetBroadcasts": 0
+}

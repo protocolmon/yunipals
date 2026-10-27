@@ -1,0 +1,14 @@
+{
+  "actualResultSha256": "cc93244807846b903989e31767d1b31d648ae111daa72e41a4b9df0b1efaa6da",
+  "earlierHeld5FailureExclusivelyAttributedToInstrumentation": false,
+  "executedSourceSha256": "92b4f1a3d6714703be5787db1082f6e574da991f20343271d00eb503d2fd08a5",
+  "format": "root-dependency-preevaluation-timing-source-review-v1",
+  "independentFullReadAndCompile": "publication_protocol_windows",
+  "observedAt": "2026-10-26T03:42:25.718747+00:00",
+  "plannedPreparation": "genuine readonly inspect using same cache namespace, before diagnostic trace/profile installation; retain all original code/dependency/approval predicates",
+  "resultScope": "actual static dependency-tree verification only; no PG module, SQL, current Source proof or held-transaction qualification",
+  "rootFullReadAndCompilePassed": true,
+  "sameActualProofSha256": "9c9eb6664135e58742af01674efbddcf0c01f639fe88c556a40f9f27eb17acbf",
+  "sameOriginal120SecondDeadline": true,
+  "wallTimeMultiplierWithObservers": 3.9940037014081473
+}

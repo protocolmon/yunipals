@@ -1,0 +1,515 @@
+.yunipals-opening-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  overflow-y: auto;
+  background: #101626f5;
+  color: white;
+}
+.yunipals-opening-dialog::backdrop {
+  background: #101626cc;
+  backdrop-filter: blur(12px);
+}
+.yunipals-opening-content {
+  --opening-pack-width: clamp(160px, calc((100dvh - 18rem) / 2.85), 440px);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.25rem 1.5rem;
+  background: radial-gradient(55% 48% at 50% 47%, #a78bfa57, transparent 72%);
+}
+.yunipals-opening-header {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: min(100%, 32rem);
+  text-align: center;
+}
+.yunipals-opening-instructions {
+  margin-top: 1rem;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffffcc;
+}
+.yunipals-opening-viewport {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: calc(var(--opening-pack-width) * 2.85 + 1rem);
+  /* Raised cards and tear particles stay in the scene below the instructions. */
+  overflow: hidden;
+  isolation: isolate;
+}
+/* The sealed pack needs only its own height. Reserve the extra space above
+   the mouth only when a card can actually be pulled into that space. */
+.yunipals-opening-dialog[data-stage="sealed"] .yunipals-opening-viewport,
+.yunipals-opening-dialog[data-stage="opening"] .yunipals-opening-viewport {
+  height: calc(var(--opening-pack-width) * 1.55 + 1rem);
+}
+.yunipals-opening-close {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid #ffffff50;
+  background: #101626a0;
+}
+.yunipals-opening-action {
+  border: 1px solid #ffffff70;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.yunipals-opening-action:hover,
+.yunipals-opening-close:hover {
+  background: #ffffff20;
+}
+.yunipals-opening-dialog button:focus-visible,
+.yunipals-opening-dialog a:focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: 4px;
+}
+.yunipals-opening-dialog button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.yunipals-opening-shell {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: min(var(--opening-pack-width), 72vw);
+  aspect-ratio: 2 / 3;
+  perspective: 1000px;
+  isolation: isolate;
+}
+.yunipals-opening-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  transform-style: preserve-3d;
+}
+.yunipals-opening-dialog[data-stage="sealed"] .yunipals-opening-wrapper {
+  transform: rotate(var(--pack-rotate)) scale(var(--pack-scale));
+}
+.yunipals-opening-dialog[data-stage="sealed"][data-dragging="false"]
+  .yunipals-opening-shell {
+  animation:
+    yunipals-pack-glow 2.65s ease-in-out infinite,
+    yunipals-pack-float 2.8s ease-in-out infinite;
+}
+.yunipals-opening-dialog[data-dragging="true"] .yunipals-opening-shell {
+  animation: yunipals-pack-drag-glow 0.58s ease-in-out infinite alternate;
+}
+.yunipals-opening-wrapper img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.yunipals-opening-body {
+  z-index: 20;
+  clip-path: polygon(
+    0 8.95%,
+    10% 8.4%,
+    20% 9%,
+    30% 8.35%,
+    39% 8.9%,
+    48% 8.3%,
+    57% 9.05%,
+    66% 8.4%,
+    75% 8.95%,
+    84% 8.35%,
+    92% 9%,
+    100% 8.4%,
+    100% 100%,
+    0 100%
+  );
+  filter: drop-shadow(0 22px 24px #0000007a);
+  transition: opacity 0.55s ease-out;
+}
+.yunipals-opening-attached,
+.yunipals-opening-curl {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.yunipals-opening-attached {
+  z-index: 30;
+  clip-path: polygon(
+    var(--rip-edge) 0,
+    100% 0,
+    100% 8.7%,
+    var(--rip-edge) 8.7%
+  );
+}
+.yunipals-opening-curl {
+  z-index: 32;
+  clip-path: polygon(0 0, var(--rip-edge) 0, var(--rip-edge) 8.7%, 0 8.7%);
+  transform: var(--curl-transform);
+  transform-origin: var(--curl-origin);
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 15px 8px #a78bfa99);
+}
+.yunipals-opening-foil,
+.yunipals-opening-glint,
+.yunipals-opening-curl-highlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask: var(--pack-image) center / 100% 100% no-repeat;
+  -webkit-mask: var(--pack-image) center / 100% 100% no-repeat;
+}
+.yunipals-opening-foil {
+  z-index: 34;
+  background: repeating-linear-gradient(
+    118deg,
+    transparent 0%,
+    #22d3ee1a 8%,
+    #ffffff94 13%,
+    #f472b647 18%,
+    #a78bfa6b 24%,
+    transparent 33%
+  );
+  background-size: 260% 260%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.36;
+  animation: yunipals-pack-foil 3.2s ease-in-out infinite;
+}
+.yunipals-opening-glint {
+  z-index: 35;
+  background: linear-gradient(
+    108deg,
+    transparent 25%,
+    #ffffff0d 36%,
+    #ffffffe6 45%,
+    #67e8f966 50%,
+    transparent 61%
+  );
+  background-size: 240% 100%;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  animation: yunipals-pack-glint 2.45s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+.yunipals-opening-curl-highlight {
+  background: linear-gradient(
+    to bottom,
+    #fffffff2,
+    #67e8f9b3 38%,
+    #a78bfa38 76%,
+    transparent
+  );
+  mix-blend-mode: screen;
+  opacity: 0.72;
+}
+.yunipals-opening-dialog[data-dragging="true"] .yunipals-opening-foil {
+  animation-duration: 0.72s;
+  opacity: 0.72;
+}
+.yunipals-opening-dialog[data-dragging="true"] .yunipals-opening-glint {
+  animation-play-state: paused;
+  opacity: 0.28;
+}
+.yunipals-opening-seam,
+.yunipals-opening-seam-progress {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 8.55%;
+  height: 1px;
+  z-index: 40;
+  background: #ffffff40;
+  box-shadow: 0 0 8px #ffffffa6;
+  pointer-events: none;
+}
+.yunipals-opening-seam-progress {
+  top: 8.4%;
+  height: 2px;
+  z-index: 41;
+  transform-origin: left;
+  transform: scaleX(var(--rip-progress));
+  opacity: calc(0.15 + var(--rip-progress) * 0.85);
+  background: linear-gradient(to right, #a5f3fc, white, #f5d0fe);
+  box-shadow: 0 0 16px #67e8f9f2;
+}
+.yunipals-opening-tab {
+  position: absolute;
+  left: 3.5%;
+  top: 5.5%;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 1.75rem;
+  border-radius: 0.375rem 999px 999px 0.375rem;
+  border: 1px solid #ffffffb3;
+  background: #ffffffe6;
+  color: #101626;
+  box-shadow: 0 0 18px #fffffff2;
+  transform: translateX(var(--rip-x));
+  pointer-events: none;
+}
+.yunipals-opening-rip-hit,
+.yunipals-opening-card-hit,
+.yunipals-opening-pack-hit {
+  position: absolute;
+  z-index: 50;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  touch-action: none;
+}
+.yunipals-opening-rip-hit {
+  left: 2%;
+  right: 2%;
+  top: 1.5%;
+  height: 16%;
+  cursor: ew-resize;
+}
+.yunipals-opening-card-hit {
+  left: 8%;
+  right: 8%;
+  top: 0.5%;
+  height: 14%;
+  cursor: grab;
+}
+.yunipals-opening-pack-hit {
+  left: 3%;
+  right: 3%;
+  top: 15%;
+  bottom: 2%;
+  cursor: grab;
+}
+.yunipals-opening-rip-hit:active,
+.yunipals-opening-card-hit:active,
+.yunipals-opening-pack-hit:active {
+  cursor: grabbing;
+}
+.yunipals-opening-torn-top {
+  z-index: 30;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 8.4%,
+    92% 9%,
+    84% 8.35%,
+    75% 8.95%,
+    66% 8.4%,
+    57% 9.05%,
+    48% 8.3%,
+    39% 8.9%,
+    30% 8.35%,
+    20% 9%,
+    10% 8.4%,
+    0 8.95%
+  );
+  animation: yunipals-pack-tear 0.66s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.yunipals-opening-particle {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  z-index: 40;
+  width: 0.25rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  animation: yunipals-pack-particle 0.78s ease-out both;
+  pointer-events: none;
+}
+.yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-wrapper {
+  transform: translateY(var(--pack-offset));
+}
+.yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-body {
+  transform: translateY(var(--pull-y));
+}
+.yunipals-opening-extract-window {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  /* This fixed shell-coordinate mask ends at the moving wrapper mouth.
+     It also prevents the PNG's transparent side margins exposing the card. */
+  clip-path: inset(
+    -150% -30% calc(91.7% - var(--pack-offset) - var(--pull-y)) -30%
+  );
+  pointer-events: none;
+}
+.yunipals-opening-dialog[data-stage="opening"]
+  .yunipals-opening-extract-window {
+  visibility: hidden;
+}
+.yunipals-opening-extract-card {
+  position: absolute;
+  left: 9%;
+  top: 10%;
+  width: 82%;
+  z-index: 15;
+  transform: translateY(var(--draw-y)) rotate(var(--draw-rotate))
+    scale(var(--draw-scale));
+  transform-origin: top center;
+  pointer-events: none;
+}
+.yunipals-opening-card-peek {
+  transform: translateY(calc(-1 * var(--peek-distance)));
+}
+.yunipals-opening-dialog[data-stage="extracting"] .yunipals-opening-card-peek {
+  animation: yunipals-card-peek 0.9s cubic-bezier(0.45, 0, 0.25, 1) both;
+}
+.yunipals-opening-extract-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.yunipals-opening-extract-controls button {
+  pointer-events: auto;
+}
+.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-extract-card,
+.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-wrapper,
+.yunipals-opening-dialog[data-settling="true"] .yunipals-opening-body {
+  transition: transform 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.yunipals-opening-dialog[data-settling="true"]
+  .yunipals-opening-extract-window {
+  transition: clip-path 0.56s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.yunipals-opening-result {
+  width: min(350px, 80vw);
+  margin-top: 2rem;
+}
+.yunipals-opening-card-back {
+  min-height: 100%;
+  aspect-ratio: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  border: 2px solid #ffffff60;
+  background: linear-gradient(135deg, #5b21b6, #a78bfa, #6d28d9);
+  box-shadow: 0 20px 35px #0006;
+}
+@keyframes yunipals-pack-tear {
+  to {
+    transform: translate(96px, -88px) rotate(18deg) rotateX(-48deg) scale(1.03);
+    opacity: 0;
+  }
+}
+@keyframes yunipals-card-peek {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-1 * var(--peek-distance)));
+  }
+}
+@keyframes yunipals-pack-particle {
+  from {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--particle-x), var(--particle-y))
+      rotate(var(--particle-rotate)) scale(0.35);
+    opacity: 0;
+  }
+}
+@keyframes yunipals-pack-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes yunipals-pack-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 15px 18px #22d3ee2e) drop-shadow(0 0 8px #f472b629);
+  }
+  42% {
+    filter: drop-shadow(-6px 18px 24px #a78bfa6b)
+      drop-shadow(5px 0 12px #22d3ee4d);
+  }
+  55% {
+    filter: drop-shadow(4px 19px 27px #f472b657)
+      drop-shadow(-4px 0 11px #ffffff3d);
+  }
+}
+@keyframes yunipals-pack-drag-glow {
+  from {
+    filter: drop-shadow(0 18px 24px #67e8f97a) drop-shadow(0 0 12px #ffffff4d);
+  }
+  to {
+    filter: drop-shadow(0 23px 34px #a78bfabf) drop-shadow(0 0 22px #ffffff8f);
+  }
+}
+@keyframes yunipals-pack-foil {
+  0%,
+  100% {
+    background-position: 100% 0;
+    opacity: 0.24;
+  }
+  46% {
+    background-position: 5% 95%;
+    opacity: 0.54;
+  }
+  58% {
+    background-position: 20% 76%;
+    opacity: 0.3;
+  }
+}
+@keyframes yunipals-pack-glint {
+  0%,
+  18% {
+    background-position: 140% 0;
+    opacity: 0;
+  }
+  38% {
+    opacity: 0.85;
+  }
+  68%,
+  100% {
+    background-position: -130% 0;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .yunipals-opening-dialog *,
+  .yunipals-opening-dialog *::before,
+  .yunipals-opening-dialog *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .yunipals-opening-torn-top {
+    opacity: 0;
+  }
+  .yunipals-opening-foil {
+    opacity: 0.28;
+  }
+  .yunipals-opening-glint {
+    opacity: 0.2;
+  }
+}

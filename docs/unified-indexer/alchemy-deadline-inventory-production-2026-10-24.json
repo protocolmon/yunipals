@@ -1,0 +1,19 @@
+{
+  "completed": true,
+  "financialApplied": false,
+  "format": "yunipals-alchemy-actual-deadline-inventory-qualification-v1",
+  "ownTransientCollected": true,
+  "productionServiceActions": 0,
+  "qualification": {
+    "actualPrivateTmp": true,
+    "databaseWrites": 0,
+    "effectiveAndBoundingCaps": "0x1e0",
+    "exactOriginalInventoryInode": true,
+    "inventoryEntries": 60918,
+    "inventoryReadOnlyBind": true,
+    "inventorySha256": "dbc145f11d13c61ce45b2bcf3c557bd90431bda7ce4a6dbe62136a24db84ab58",
+    "noNewPrivileges": true,
+    "providerCalls": 0
+  },
+  "sourceAndServingEpochsUnchanged": true
+}

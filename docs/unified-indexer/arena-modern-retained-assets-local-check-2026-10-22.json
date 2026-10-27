@@ -1,0 +1,13 @@
+{
+  "format": "yunipals-arena-retained-public-island-images-check-v1",
+  "checkedAt": "2026-10-22T23:12:18.132470+00:00",
+  "root": "/root/yunipals",
+  "images": 898,
+  "bytes": 1850310821,
+  "allMatchMetadataSha256": true,
+  "sourceInventorySha256": "2cf3dace91cc6b3df8e440dabe8bab57db4774ba9c048d663cb43a7f7839b8eb",
+  "elapsedSeconds": 2.433,
+  "networkCalls": 0,
+  "productionChanges": false,
+  "scope": "Existing local public island images only; this does not prove production asset attachment or film rendering."
+}

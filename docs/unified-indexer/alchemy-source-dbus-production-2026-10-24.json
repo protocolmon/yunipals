@@ -1,0 +1,122 @@
+{
+  "databaseWrites": 0,
+  "format": "yunipals-source-actual-dbus-shapes-v1",
+  "privateValuesExported": false,
+  "properties": {
+    "BindPaths": {
+      "fieldTypes": [
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ],
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ],
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ]
+      ],
+      "ignoreErrors": [
+        false,
+        false,
+        false
+      ],
+      "literalFlags": [
+        16384,
+        16384,
+        16384
+      ],
+      "rowLengths": [
+        4,
+        4,
+        4
+      ],
+      "rows": 3,
+      "type": "a(ssbt)"
+    },
+    "BindReadOnlyPaths": {
+      "fieldTypes": [
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ],
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ],
+        [
+          "str",
+          "str",
+          "bool",
+          "int"
+        ]
+      ],
+      "ignoreErrors": [
+        false,
+        false,
+        false
+      ],
+      "literalFlags": [
+        16384,
+        16384,
+        16384
+      ],
+      "rowLengths": [
+        4,
+        4,
+        4
+      ],
+      "rows": 3,
+      "type": "a(ssbt)"
+    },
+    "EnvironmentFiles": {
+      "optionalFlags": [],
+      "rowLengths": [],
+      "rows": 0,
+      "type": "a(sb)"
+    },
+    "ExecStart": {
+      "argumentVectorDigests": [
+        "600e9252bdb00a7e5512bb702e072dd34602cf21e1b792d274aecbeb7265fa3e"
+      ],
+      "fieldTypes": [
+        [
+          "str",
+          "list",
+          "bool",
+          "int",
+          "int",
+          "int",
+          "int",
+          "int",
+          "int",
+          "int"
+        ]
+      ],
+      "nodeEnvFiles": [
+        3
+      ],
+      "rowLengths": [
+        10
+      ],
+      "rows": 1,
+      "type": "a(sasbttttuii)",
+      "usesEnvClean": true
+    }
+  },
+  "providerCalls": 0,
+  "rawArgumentsOrPathsExported": false,
+  "serviceActions": 0
+}

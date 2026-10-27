@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-25",
+  "effects": {
+    "databaseWrites": 0,
+    "gitActions": 0,
+    "hostActions": 0,
+    "productionQueries": 0,
+    "providerCalls": 0,
+    "serviceActions": 0
+  },
+  "files": [
+    {
+      "bytes": 43966,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-v1.py",
+      "sha256": "24cc64863bad4ae647029053be98e7112281cddfcb54285535b62e3ee476db0b"
+    },
+    {
+      "bytes": 24196,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-v1.test.py",
+      "sha256": "a084e663a2c467a3b69943cd889ac0fa407c852cde2b95afe9b0db56d0a64422"
+    },
+    {
+      "bytes": 7435,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-managed-handover-v1.md",
+      "sha256": "fdc676b2e8a607e92612471592cf0f9086c2a33312822168ffd44764e9d3bb91"
+    }
+  ],
+  "findings": [],
+  "findingsClosed": [
+    {
+      "issue": "copied SQL inet cast includes /32 or /128 incompatible with frozen real TCP mapper",
+      "resolution": "two exact new-namespace host(client_addr) seams; genuine mapper positive/negative regression"
+    },
+    {
+      "issue": "empty cgroup and drained saved sessions alone did not prove all known old PID/start epochs gone",
+      "resolution": "recorded process epoch guard before stop/finish ACK and failed managed parent inverse; real live-PID refusal regression"
+    },
+    {
+      "issue": "check-then-rename could overwrite racing foreign destination",
+      "resolution": "atomic renameat2 RENAME_NOREPLACE at finite owned moves/file publication/boot publication; real racing target preserves both files"
+    },
+    {
+      "issue": "restored_current did not repeat own heartbeat freshness gate",
+      "resolution": "current validates actual original or inverse start-clock/previous-HB floor; stale-HB negative"
+    },
+    {
+      "issue": "legacy Solana typed settings initially only captured rather than authenticated against retained stage",
+      "resolution": "exact original no-newline typed-properties digest and activity-independent input check"
+    }
+  ],
+  "format": "yunipals-ordinary-managed-lifecycle-independent-review-v1",
+  "limitations": [
+    "No production review/stage/stop/install/start/inverse or service command was executed by the reviewer.",
+    "Actual production dependency shapes, available actors, privileges and private inputs remain preflight requirements.",
+    "Any separately active legacy writer must satisfy the explicit initial terminal prerequisite before this owner can proceed; this review supplies no separate legacy retirement authority.",
+    "Consumer, canonical, scheduled Solana publication and supervised restart acceptance remain explicitly false.",
+    "The previously reviewed launcher/foundation remains a separate exact dependency; this is not a full migration completion claim."
+  ],
+  "packetSha256": "b437c9a224a436bdbbaf6e4e3bc86359f4dab1a977b7cafc6b9b0dea32689fa6",
+  "reviewScope": [
+    "new once-only EVM/Solana lifecycle with exact retained observer and separate financial authority",
+    "finite authenticated f5 primitive extraction; old constructors/full inverse excluded",
+    "actual bdaa foundation begin/finish/current and advanced own heartbeat ACK",
+    "same build/native44/shared cache and exact three RW plus three RO mounts",
+    "old boot and definition inodes retained/restored; typed legacy Solana configuration bound to actual retained stage",
+    "positive per-actor SQL ownership; dedicated native role drains; shared Solana role residual ownership",
+    "durable intent and final actor CAS before manager effects",
+    "lost stop/start/reload ACK read-only completion paths without resends",
+    "partial managed child tree/failed parent and partial-install inverse recovery",
+    "new restored standalone epoch and ongoing heartbeat floor without relabeling old standalone receipt"
+  ],
+  "sourceOnly": true,
+  "tests": {
+    "command": "python3 -I -B ops/unified-indexer-transition/ypal-ordinary-managed-handover-v1.test.py",
+    "independentlyRerunFocusedPython": 29,
+    "passed": true
+  },
+  "verdict": "PASS"
+}

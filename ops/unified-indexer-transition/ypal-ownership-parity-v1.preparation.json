@@ -1,0 +1,158 @@
+{
+  "format": "yunipals-ypal-ownership-parity-v1-source-preparation",
+  "status": "production-full-six-collection-data-parity-independently-accepted",
+  "sourceFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v4.mjs",
+      "bytes": 16200,
+      "sha256": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v4.test.mjs",
+      "bytes": 14433,
+      "sha256": "b6f7b60c8570b74f12a0202705f8261122e06e8b531437dcb18362b59dccd0ee"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v4-postgres.test.mjs",
+      "bytes": 2937,
+      "sha256": "e6aad4d69aa849fdde29a97bf4c9a587f14296c85265caed4cf5ee249764abf0"
+    },
+    {
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v3.mjs",
+      "bytes": 40411,
+      "sha256": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c"
+    },
+    {
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v3.test.mjs",
+      "bytes": 10561,
+      "sha256": "fe62a7b93b64b3203f0b5b4700e0e9e126c11b060c0008a151104ea8ae9e8771"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v4.plan.json.example",
+      "bytes": 639,
+      "sha256": "c415a50612a7396290c527c825f10514be55135686cdf8e6ea43861d1ec43e5f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/fixed-boundary-witness-v3.plan.json.example",
+      "bytes": 645,
+      "sha256": "f3e24d1ec23bd35a851fa714dc87a9efd14c21ecf4779ba1424bc32c5541fb49"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ownership-parity-v1.md",
+      "bytes": 10352,
+      "sha256": "b771e2d8cc912a915cf5583c980c67e0157523a08fceeb0382b6845033532ed8"
+    }
+  ],
+  "unchangedDependencies": [
+    {
+      "path": "ops/unified-indexer-transition/ownership-parity-peer-v2.mjs",
+      "bytes": 22729,
+      "sha256": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920"
+    },
+    {
+      "path": "ops/marketplace-acceptance/fixed-boundary-witness-v2.mjs",
+      "bytes": 38046,
+      "sha256": "1251562ffb2be958a40b003c8bfe7c004c2f0ff4fff5942a5c708e5ac6b4adb8"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-rpc-profile-v1.json",
+      "bytes": 10287,
+      "sha256": "c77235fd2729cf2676cd0e038c33fa33014f87e1ef12c0f2ab3f3b35be45631b"
+    },
+    {
+      "path": "ops/unified-indexer/ownership-parity.test.mjs",
+      "bytes": 10381,
+      "sha256": "b338476203b31ffd42087f8d52318f5e9a0731bb87087faa20955359c1976660"
+    }
+  ],
+  "sourceRelease": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+  "build": "71e2a7f3b7",
+  "readIdentity": "0xcac869bf65116323b9e1e8e539d999964ad740ab1e4194be0a335ce624c5ea67",
+  "allSixRequired": true,
+  "subsetOption": false,
+  "nfbPolicyChanged": false,
+  "normalizedQueriesChanged": false,
+  "canonicalQualificationFunctionsChanged": false,
+  "witnessHttpDependencies": [
+    "four /unified/preflight GETs",
+    "eight /unified POST batches"
+  ],
+  "mainOrCollectorHttpDependency": false,
+  "canonicalWitnessRpcCalls": 21,
+  "canonicalWitnessHttpCalls": 12,
+  "permitHeaders": 0,
+  "retries": 0,
+  "originalFixtureCasesViaGenuineLocalPostgres": 4,
+  "genuinePostgresScope": "Unchanged peer-v2 all-six transfer/burn/remint normalized queries. New production-only OID/peer preflight uses deterministic adapters in tests.",
+  "productionCapturePerformed": true,
+  "productionReadinessClaimed": false,
+  "providerRequestsPerformed": 0,
+  "actualFutureReceiptInvented": false,
+  "suppliedCheckpointComparison": {
+    "isFreshObservation": false,
+    "bnbCompleteSupplied": "124776371",
+    "bnbFixedBoundary": "128816538",
+    "deficit": "4040167"
+  },
+  "proposedPrivateParityPath": "/var/backups/yunipals-ypal-ownership-parity-v1-20261024/parity.json",
+  "proposedPrivateWitnessPath": "/var/backups/yunipals-ypal-fixed-boundary-witness-v3-20261024/result.json",
+  "privateRuntimeInputs": [
+    {
+      "description": "Protected immutable all-six legacy ownership baseline, supplied separately on-host; never part of public source/test archive",
+      "sha256": "69f91e57c10171dd7b8ab2424236dd22c07e913b27b0376fdc579bde0d549540",
+      "requiredByProductionCapture": true,
+      "requiredByDefaultPublicTests": false
+    }
+  ],
+  "defaultPublicTests": {
+    "passed": 9,
+    "explicitPrivateSkips": 5,
+    "privateFixtureRequired": false,
+    "syntheticBaselineAcceptedByProductionGate": false
+  },
+  "explicitPrivateOptInTests": {
+    "passed": 14,
+    "skipped": 0,
+    "environmentSelector": "YPAL_PARITY_PRIVATE_BASELINE",
+    "requiresExactProtectedBaselineSha256": true,
+    "protectedBytesPublished": false
+  },
+  "testFixtureCorrection": {
+    "productionProgramBytesChanged": false,
+    "productionBaselineGateChanged": false,
+    "publicTestsLoadUntrackedProductionBaseline": false
+  },
+  "productionPreflightPerformed": true,
+  "productionStaticReviewPerformed": true,
+  "productionPreflight": {
+    "eligible": true,
+    "allSixCollectionsChecked": true,
+    "coveredCollectionBoundaries": 6,
+    "bnbCompleteThrough": "129408606",
+    "bnbFixedBoundary": "128816538",
+    "bnbDeficit": "0",
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "fullDatasetScanPerformed": true,
+    "parityReportCreated": true,
+    "sourceReadinessQualified": false,
+    "canonicalWitnessQualified": false,
+    "detailedReportsPublished": false
+  },
+  "productionCapture": {
+    "privateReportSha256": "b04ff03dadbc8fa8f167fdec862b071ee4dc6e89268bed84a5260c77c2290aa4",
+    "allSixCollections": true,
+    "exactDataParity": true,
+    "independentAllDatasetsAndBucketsEqual": true,
+    "pureReceiptValidatorPassed": true,
+    "allBoundaryHashesMatch": false,
+    "missingHistoricalHashes": 4,
+    "sourceReadinessQualified": false,
+    "canonicalWitnessQualified": false,
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "rawReportExported": false
+  }
+}

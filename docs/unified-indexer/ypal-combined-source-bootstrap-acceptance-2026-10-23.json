@@ -1,0 +1,342 @@
+{
+  "format": "yunipals-ypal-combined-source-bootstrap-acceptance-v1",
+  "preparedAt": "2026-10-23T23:24:39.054830+00:00",
+  "completed": true,
+  "scope": "Actual owned source/bootstrap/preservation plus two bounded current native observations; no caught-up claim",
+  "source": {
+    "unit": "yunipals-ypal-combined-source.service",
+    "invocation": "9d9fb09dc91a41b4889639576ce7348d",
+    "pid": 2472127,
+    "startTicks": 6622410657,
+    "buildId": "71e2a7f3b7",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "sourceDigest": "02e217b73809bf22aed75a35407a2c175c16f49a7eab91c674be86de28507984",
+    "ownerSha256": "3a70a1167f7e8ffcc73689bc8f0b668319ad1801801c4b403fc791998a7686f6",
+    "operationSha256": "a80ce9cca2da0dd5e40958db16e65f46e82ea859e861cfb110407e4bf93b9336",
+    "protectedResultPath": "/var/backups/yunipals-ypal-combined-source-start-v1-20261023/result.json",
+    "protectedResultSha256": "c96d558ec3923984b3323064de9bc57a8d0223b094a38cee3bf99daed61d6909",
+    "memoryMaxBytes": 6442450944,
+    "poolMax": 5,
+    "restarts": 0
+  },
+  "preservation": {
+    "old716994Terminal": true,
+    "oldBootDisabled": true,
+    "sameRetainedOldBootInode": true,
+    "oldBootInode": 131541,
+    "originalNativeSchemaAndCheckpointsNotRegressed": true,
+    "originalSourceAndPrivateInputHashesUnchanged": true,
+    "liveYpalSourceApiQueueAndAllNineRoutesPreserved": true,
+    "newBoot": {
+      "identity": {
+        "st_dev": 2049,
+        "st_gid": 0,
+        "st_ino": 2719748,
+        "st_mode": 41471,
+        "st_uid": 0
+      },
+      "path": "/etc/systemd/system/multi-user.target.wants/yunipals-ypal-combined-source.service",
+      "target": "/etc/systemd/system/yunipals-ypal-combined-source.service"
+    },
+    "newBootEnabled": true,
+    "nativeIdentity": {
+      "completed": true,
+      "databaseWrites": 0,
+      "exact44NativeTableOidsAndOwnersMatchAck": true,
+      "oldBootInode": 131541,
+      "providerCalls": 0,
+      "sameRetainedOldBootInode": true,
+      "schemaOid": "75963410",
+      "serviceChanges": 0,
+      "tableIdentitySha256": "14cbe220706eb17a94fd645e5560b2f5f361c69f39f76c09489459659b969213"
+    },
+    "obsoleteOldCompositeValidatorsCalledAfterDrain": false,
+    "nativeCheckpointsCopiedOrRelabelled": false
+  },
+  "checkpointAdapter": {
+    "actualAdapterExecuted": true,
+    "midBlockRoundedDown": true,
+    "path": "/var/lib/yunipals-booster-launch/20261022-source008/packages/yunipals-indexer-client/src/ponder.ts",
+    "sha256": "850f53b560c45a7bb3641d90277bdda723e1abdb0fc8a29ce38ec5530f3409ba",
+    "notes": "Executed actual completePonderBlock/ponderChainCoverage; mid-block or setup boundaries round down; raw checkpoint tails are not labelled complete."
+  },
+  "samples": [
+    {
+      "observedAt": "2026-10-23T23:21:43.147106+00:00",
+      "native": {
+        "buildId": "71e2a7f3b7",
+        "coverage": [
+          {
+            "chainId": 1,
+            "chainName": "mainnet",
+            "completeThroughBlock": "26258496",
+            "frameworkFinalizedThroughBlock": "26258496",
+            "latestBlockTimestamp": "1792796651",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "26258496"
+          },
+          {
+            "chainId": 56,
+            "chainName": "bnb",
+            "completeThroughBlock": "9962072",
+            "frameworkFinalizedThroughBlock": "9962072",
+            "latestBlockTimestamp": "1628762309",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "9962072"
+          },
+          {
+            "chainId": 137,
+            "chainName": "polygon",
+            "completeThroughBlock": "96061180",
+            "frameworkFinalizedThroughBlock": "96061180",
+            "latestBlockTimestamp": "1792797141",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "96061180"
+          },
+          {
+            "chainId": 8453,
+            "chainName": "base",
+            "completeThroughBlock": "22282614",
+            "frameworkFinalizedThroughBlock": "22282614",
+            "latestBlockTimestamp": "1731354575",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "22282614"
+          }
+        ],
+        "frameworkReady": false,
+        "heartbeatAgeMs": 768,
+        "locked": true,
+        "schemaOid": "75963410",
+        "tables": 44
+      },
+      "sameAcknowledgedActor": true,
+      "resources": {
+        "memoryAvailableBytes": 21941248000,
+        "memoryCurrentBytes": 1524543488,
+        "memoryEvents": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "memoryMaxBytes": 6442450944,
+        "rootAvailableBytes": 44247240704
+      },
+      "packApi": {
+        "buildId": "8e88ea2e00",
+        "httpStatus": 200,
+        "indexedAgeSeconds": 2,
+        "indexedTimestamp": "1792797701",
+        "ready": true
+      },
+      "completedEventsTotal": 221170.0,
+      "metricSamplesOnly": {
+        "ponder_sync_block": {
+          "1": 26258496.0,
+          "56": 122196638.0,
+          "137": 96061180.0,
+          "8453": 52953101.0
+        },
+        "ponder_historical_total_blocks": {
+          "1": 14123978.0,
+          "56": 121829189.0,
+          "137": 74246963.0,
+          "8453": 30779942.0
+        },
+        "ponder_historical_cached_blocks": {
+          "1": 14123952.0,
+          "56": 114615171.0,
+          "137": 74246782.0,
+          "8453": 30726864.0
+        },
+        "ponder_historical_completed_blocks": {
+          "1": 26.0,
+          "56": 2271.0,
+          "137": 181.0,
+          "8453": 2163.0
+        },
+        "rpcErrorAttempts": [
+          {
+            "chain": "mainnet",
+            "method": "eth_getLogs",
+            "count": 2.0
+          },
+          {
+            "chain": "bnb",
+            "method": "eth_getLogs",
+            "count": 8.0
+          }
+        ]
+      },
+      "cachedGaugeIsNotCertifiedGlobalCoverageOrHead": true
+    },
+    {
+      "observedAt": "2026-10-23T23:22:32.730344+00:00",
+      "native": {
+        "buildId": "71e2a7f3b7",
+        "coverage": [
+          {
+            "chainId": 1,
+            "chainName": "mainnet",
+            "completeThroughBlock": "26258496",
+            "frameworkFinalizedThroughBlock": "26258496",
+            "latestBlockTimestamp": "1792796651",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "26258496"
+          },
+          {
+            "chainId": 56,
+            "chainName": "bnb",
+            "completeThroughBlock": "10010371",
+            "frameworkFinalizedThroughBlock": "10010371",
+            "latestBlockTimestamp": "1628909879",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "10010371"
+          },
+          {
+            "chainId": 137,
+            "chainName": "polygon",
+            "completeThroughBlock": "96061180",
+            "frameworkFinalizedThroughBlock": "96061180",
+            "latestBlockTimestamp": "1792797141",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "96061180"
+          },
+          {
+            "chainId": 8453,
+            "chainName": "base",
+            "completeThroughBlock": "22282675",
+            "frameworkFinalizedThroughBlock": "22282675",
+            "latestBlockTimestamp": "1731354697",
+            "latestIsWholeBlock": true,
+            "recoveryThroughBlock": "22282675"
+          }
+        ],
+        "frameworkReady": false,
+        "heartbeatAgeMs": 285,
+        "locked": true,
+        "schemaOid": "75963410",
+        "tables": 44
+      },
+      "sameAcknowledgedActor": true,
+      "resources": {
+        "memoryAvailableBytes": 21491970048,
+        "memoryCurrentBytes": 1527939072,
+        "memoryEvents": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "memoryMaxBytes": 6442450944,
+        "rootAvailableBytes": 44184236032
+      },
+      "packApi": {
+        "buildId": "8e88ea2e00",
+        "httpStatus": 200,
+        "indexedAgeSeconds": 3,
+        "indexedTimestamp": "1792797749",
+        "ready": true
+      },
+      "completedEventsTotal": 252344.0,
+      "metricSamplesOnly": {
+        "ponder_sync_block": {
+          "1": 26258496.0,
+          "56": 122198581.0,
+          "137": 96061180.0,
+          "8453": 52954984.0
+        },
+        "ponder_historical_total_blocks": {
+          "1": 14123978.0,
+          "56": 121829189.0,
+          "137": 74246963.0,
+          "8453": 30779942.0
+        },
+        "ponder_historical_cached_blocks": {
+          "1": 14123952.0,
+          "56": 114615171.0,
+          "137": 74246782.0,
+          "8453": 30726864.0
+        },
+        "ponder_historical_completed_blocks": {
+          "1": 26.0,
+          "56": 4214.0,
+          "137": 181.0,
+          "8453": 4046.0
+        },
+        "rpcErrorAttempts": [
+          {
+            "chain": "mainnet",
+            "method": "eth_getLogs",
+            "count": 2.0
+          },
+          {
+            "chain": "bnb",
+            "method": "eth_getLogs",
+            "count": 10.0
+          }
+        ]
+      },
+      "cachedGaugeIsNotCertifiedGlobalCoverageOrHead": true
+    }
+  ],
+  "observedProgress": {
+    "seconds": 49.583238,
+    "completeBlocksAdvancedByChain": {
+      "1": 0,
+      "56": 48299,
+      "137": 0,
+      "8453": 61
+    },
+    "completedEventsDelta": 31174,
+    "bnbObservedCompleteBlockRatePerSecond": 974.0993518817791,
+    "completedEventsRatePerSecond": 628.7205365651997,
+    "rateScope": "Only this dense cached-handler window; no uniform or full-catchup ETA",
+    "nativeHandlerReplayAdvancing": true
+  },
+  "cacheAndHeadInterpretation": {
+    "rawPonderSyncDatabaseRetained": true,
+    "cachedHistoricalBlocksArePonderMetricSamples": true,
+    "perFilterCertifiedIntervalsRequeriedForThisReceipt": false,
+    "cachedGaugesAreNotGlobalFetchedBounds": true,
+    "freshExternalHeadQueried": false,
+    "headLagUnavailableWithoutFreshWitness": true,
+    "baseStandaloneFreshReadinessDoesNotProveNewCombinedCoverage": true
+  },
+  "readiness": {
+    "newFrameworkReady": false,
+    "newNativeCoverageAccepted": false,
+    "livePackApiReady": true,
+    "lastPackApiIndexedAgeSeconds": 3,
+    "consumerWorkerSelectionsChanged": false,
+    "releaseRegistrationSeparate": true
+  },
+  "evidenceFiles": [
+    {
+      "path": "/tmp/yunipals-combined-source-first-acceptance-20261023.py",
+      "sha256": "e39b1c2ff53a312720cdfbba8f826fc011717cd7f2961f02c567846ac94bb07d"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-first-acceptance-20261023.json",
+      "sha256": "2fc59e88e979849dae9155dc7f89a7ce7c46101a3172c731fac31fe1e0500f07"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-second-acceptance-20261023.json",
+      "sha256": "9aae9e40fdb137547c323e2eb66f302a42310e6c3f4edf19cb4ac116c4b8a202"
+    },
+    {
+      "path": "/tmp/yunipals-combined-source-native-identities-20261023.json",
+      "sha256": "dab881202bb2a1e7795e22797536e9df35867da2addf762f6d9465cf55fbfadd"
+    }
+  ],
+  "nextAcceptance": "Register the actual release separately; then observe committed replay and canonical witnesses/parity before native reader/worker handover. Keep standalone YPAL serving live packs.",
+  "productionServiceChangesByObserver": 0,
+  "providerRpcRequestsByObserver": 0,
+  "databaseWritesByObserver": 0,
+  "privateValuesOrOwnershipRowsExported": false
+}

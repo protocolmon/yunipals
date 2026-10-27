@@ -1,22 +1,29 @@
 # Yunipals
 
-A collection explorer and collector toolkit for Yunipals NFTs on Ethereum,
-Base, Polygon and BNB Chain, plus read-only Exomon browsing on Solana. Browse
-tokens, traits, ownership and collector rankings. The EVM collections also show
-transfer history and support optional wallet-based collection management,
-buying and selling. Exomon shows observed ownership changes, not a complete
-transfer history.
+A collection explorer and collector toolkit for Yunipals NFTs on
+Ethereum, Base, Polygon and BNB Chain. Browse tokens and traits, follow ownership
+and transfer history, compare rarity and collector rankings, and manage your own
+collection. Buying and selling are optional features within the web app.
+
+The canonical application is **https://www.yunipals.com**. Collection browsing,
+collector profiles and booster packs share `apps/yunipals-home-web`; old
+`app.yunipals.com` links redirect to the corresponding main-site route. This
+repository contains the frontend, booster contracts, indexing/API code, artwork
+generator and deployment scripts.
 
 ## Projects
 
-- [Web app](apps/yunipals-home-web/README.md): browse EVM collections and
-  Exomon, inspect traits, view collector profiles and rankings, and manage EVM
-  NFTs. Optional EVM listing and purchase actions use your wallet.
-- [Collection indexer](apps/yunipals-indexer/README.md): serves EVM and Solana
-  ownership, metadata, rarity, collector, and leaderboard reads, including
-  [Ethereum Islands](docs/islands-indexing.md). Its BNB worker rebuilds ownership
-  and lifecycle history from public chain events; its Solana worker publishes
-  current Exomon snapshots from bounded Helius DAS batches.
+- [Web app](apps/yunipals-home-web/README.md): browse the collection, inspect
+  traits and token histories, view collector profiles and rankings, and manage
+  your own NFTs. Optional listing and purchase actions use your wallet.
+- [Collection indexer](apps/yunipals-indexer/README.md): serves four-chain
+  ownership, metadata, rarity, collector, leaderboard and Ethereum Islands reads.
+  One managed service supervises EVM and Solana ingestion. Its README is the
+  setup, startup and systemd guide.
+- [Booster contracts](contracts/boosters/README.md): upgradeable Base pack rules,
+  shared monster NFTs, duplicate-free draws and VRF recovery.
+- [Artwork generator](docs/boosters/artwork-runtime/README.md): reference-based
+  card recipes, review and content-addressed publication, with a durable queue.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,
   order encoding and validation shared by the web app and API.
 - [Marketplace API and workers](apps/yunipals-market-api/README.md): supports
@@ -28,15 +35,12 @@ transfer history.
 
 For a local collection demo, use synthetic fixtures without either backend.
 Running this app with live buying or selling requires the marketplace API and,
-for BNB ownership checks, the BNB indexer. OpenSea and on-chain events are the
+for ownership checks, the collection indexer. OpenSea and on-chain events are the
 underlying order sources; the API does not custody NFTs or funds.
 
-The complete EVM collection view needs the indexer API, RPC endpoints and a
-PostgreSQL database. Live Exomon reads additionally need an active imported
-metadata release, an Exomon mint manifest and a published Solana snapshot. The
-Solana worker alone uses the Helius key; browser reads do not call Helius. For
-an independent BNB orderbook deployment, follow the
-[self-hosting guide](docs/self-hosting-bnb.md).
+The complete four-chain collection view needs the indexer API, RPC endpoints and
+a PostgreSQL database. Follow the [indexer setup guide](apps/yunipals-indexer/README.md)
+for the managed service.
 
 ## Development
 
@@ -55,25 +59,23 @@ pnpm build
 Copy the relevant app's `.env.example` to `.env.local` for Vite or export the
 API variables in your shell. Frontend variables are public build-time values;
 never put provider keys or database credentials in a `VITE_` variable.
-`test:web` includes the Solana and Islands tests. The complete `pnpm test`
-also runs fixture, marketplace API and Solana PostgreSQL integration tests;
-these need disposable databases described in the relevant app READMEs.
+The API test suite needs the isolated database described in its README.
 GitHub CI covers typechecks, tests, builds, PostgreSQL integration, and secret
 scanning. See the [CI guide](docs/ci.md) for check names and local reproduction.
 
 For a populated local UI without an indexer, database, provider keys or wallet
 project, run `pnpm dev:fixtures` and open `http://127.0.0.1:5177`.
-It provides synthetic EVM and Exomon tokens, filters, pagination, token details,
-collector profiles and rankings. Wallet connections and trading are disabled.
-See the [fixture guide](apps/yunipals-home-web/scripts/fixtures/README.md).
+It provides 48 synthetic tokens, filters, pagination, token details, collector
+profiles and rankings. Wallet connections and trading are disabled. See the
+[fixture guide](apps/yunipals-home-web/scripts/fixtures/README.md).
 
 ## Deployment
 
-The web project root is `apps/yunipals-home-web`, with build command `vite build`
-and output directory `dist`. Use the project's configured production branch.
-SPA routes are configured in `vercel.json`. Set `VITE_YUNIPALS_MARKETPLACE_URL`
-in the deployment provider before building; production Vercel builds fail if it
-is missing.
+The web project root is `apps/yunipals-home-web`. The checked-in Vercel config
+runs `pnpm build:www --mode vercel-cloud` to produce the curated collection and
+booster app with SPA routing. See the [canonical build guide](docs/boosters/mainnet-launch/canonical-www-build-2026-10-22.txt).
+Generic self-hosted builds remain `pnpm build`, with output in `dist`;
+marketplace-enabled production builds require `VITE_YUNIPALS_MARKETPLACE_URL`.
 Configure `VITE_YUNIPALS_INDEXER_URL` for your own metadata indexer. Set
 `VITE_SELF_HOSTED=1` to make a build reject missing URLs or Yunipals service
 domains; see the [self-hosting guide](docs/self-hosting-bnb.md).
@@ -83,20 +85,19 @@ ID in Vercel **Project → Settings → Environment Variables**, select Producti
 development without an ID offers browser wallets only. See the web app README
 for the local `.env.local` setup and domain allowlist guidance.
 
-Set `VITE_EXOMON_ENABLED=true` to include Exomon routes and navigation in a
-frontend deployment. Set `VITE_YUNIPALS_INDEXER_URL` to the public indexer API
-that serves fresh Solana snapshots. This flag is embedded at build time, so
-changing it requires a new deployment. Keep `HELIUS_API_KEY` only in the
-indexer worker's private environment. See the
-[Exomon indexer runbook](apps/yunipals-indexer/docs/exomon-solana-rollout.md)
-for the worker schedule, credit caps and health checks.
-Follow the [frontend and source release guide](docs/exomon-frontend-release.md)
-when reviewing and deploying this branch.
+Start the collection indexer from the repository root with one command:
 
-Build the API with `pnpm build:api`; run its bundled entry points with installed
-production dependencies. Apply database migrations separately using a schema-owner
-account, then grant the appropriate runtime permissions. Keep deployments,
-credentials, backups and operational incident records outside source control.
+```sh
+pnpm indexer:start --env-file /etc/yunipals-unified/indexer.service.env
+```
+
+The [indexer setup guide](apps/yunipals-indexer/README.md) covers PostgreSQL,
+separate private child settings, the public service file, health checks and
+systemd. Use the same settings and database when restarting the service.
+
+Build the marketplace API with `pnpm build:api`; run its bundled entry points
+with installed production dependencies. Keep credentials, backups and
+operational incident records outside source control.
 
 ## Optional buying and selling
 
@@ -147,8 +148,9 @@ Keep it with the generated JavaScript when redistributing a build. Dependency
 pins and their small compatibility patches are explained in
 [patches/README.md](patches/README.md).
 
-## Arena
-
-The four-player Base battle tournament is implemented in this monorepo. See
-[the Arena source guide](docs/arena/README.md) for rules, architecture, local tests,
-public deployment data and checksum-verified island artwork setup.
+Booster packs: see [implementation and rollout](docs/boosters-implementation.md)
+and [contracts](contracts/boosters/README.md). The current Base pack uses 264
+variants, costs 1 PROTO plus VRF/gas, and earns one mint credit every 24 hours
+after reveal. The [live release evidence](docs/boosters/mainnet-launch/canonical-www-production-2026-10-22.json)
+distinguishes accepted mainnet behavior from remaining elapsed-time and
+unattended-artwork work.

@@ -1,3 +1,5 @@
+import { formatUnits } from "viem";
+
 export function formatInteger(value: number | string) {
   const numeric = typeof value === "number" ? value : Number(value);
   return Number.isFinite(numeric)
@@ -15,6 +17,22 @@ export function formatDecimal(
   return Number.isFinite(numeric)
     ? new Intl.NumberFormat("en-US", { maximumFractionDigits }).format(numeric)
     : String(value);
+}
+
+// Display only. Keep submitted base units unchanged while showing three
+// significant digits, including for fees smaller than a fixed decimal place.
+export function formatRoundedAmount(
+  amount: bigint,
+  decimals: number,
+  symbol: string
+) {
+  const magnitude = amount < 0n ? -amount : amount;
+  const discardedDigits = Math.max(0, magnitude.toString().length - 3);
+  const step = 10n ** BigInt(discardedDigits);
+  const roundedMagnitude = ((magnitude + step / 2n) / step) * step;
+  const rounded = amount < 0n ? -roundedMagnitude : roundedMagnitude;
+  const prefix = rounded === amount ? "" : "≈ ";
+  return `${prefix}${formatUnits(rounded, decimals)} ${symbol}`;
 }
 
 export function shortAddress(address: string) {

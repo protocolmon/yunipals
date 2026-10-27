@@ -1,0 +1,49 @@
+{
+  "databaseWritesByThisReview": 0,
+  "format": "root-cont5-recovery-source-review-v1",
+  "goalComplete": false,
+  "knownLimits": [
+    "Post-error witness ba7e refused the actual facade; successor is required.",
+    "Observer-free held7 did not complete or qualify a commit.",
+    "Inverse authority is source preparation; its separate caller/timing/actual production qualification remains required.",
+    "The cache-finish and consumer-prefix packages have no actual completed inputs or acknowledgements yet."
+  ],
+  "newInverseEffectQualified": false,
+  "observedAt": "2026-10-26T05:12:00+00:00",
+  "productionCacheCommitDispatched": false,
+  "productionEvidence": {
+    "held6FullReconciliation": "23cb35fa68f1c728eb0d1c7e0e90238755832d434875002c1b849664f901c75d",
+    "held7AbortedSQLState": "977758f00c67b79a9e9119dadd8e7f98b8b0add5aa7042a8fa8078b3d2aad520",
+    "held7Failed": "ef5fff2e1fed341771ab4c958a6328aed60e4c70f4029184cfd41ec44380676f",
+    "held7WholeCatalogReconciliation": "running; result not yet accepted"
+  },
+  "readerSwitchDispatched": false,
+  "rootReview": {
+    "cacheFinishPreparationRowsVerified": 329,
+    "completeMeaningfulBodiesRead": [
+      "ypal-ordinary-cache-finish-retained-stop-v1.py",
+      "ypal-ordinary-consumer-inverse-prefix-v3.py",
+      "ypal-ordinary-consumer-prefix-source-v3.py",
+      "ypal-ordinary-cache-inverse-authority-v1.py"
+    ],
+    "consumerPreparationRowsVerified": 409,
+    "consumerStageOriginsVerified": 404,
+    "held7PacketRowsVerified": 14,
+    "inversePreparationRowsVerified": 6,
+    "inverseStageOriginsVerified": 331,
+    "portableControlsExecuted": {
+      "held6Reconciliation": 11,
+      "held7Driver": 10,
+      "held7Launcher": 8
+    },
+    "postExceptionWitnessPreparationRowsVerified": 3,
+    "runtimeHashes": {
+      "cacheFinish": "1f84ba20dddbaa8d44a7d248f4b44ec165574d8fb1b7205ef7ab1d3c108c2343",
+      "consumerSource": "7eb8cd25a2ae267f7b7dff530c94c37f73108318dc8e68520cc7d741366fbc5f",
+      "inverseAuthority": "569bc5eaca9628329952621a5266077565fe7ea8a56a3983d2e9b6b885d23671",
+      "mapper": "6184c37bef4058232528ca8de4bbfda2ef8aa144a12b65714ebbf2740ae99f00"
+    },
+    "secretPatternFindings": 0
+  },
+  "serviceActionsByThisReview": 0
+}

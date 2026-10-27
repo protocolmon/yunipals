@@ -1,0 +1,44 @@
+{
+  "format": "yunipals-monsters-token-metadata-independent-review-v1",
+  "reviewedAt": "2026-10-23T09:35:05.678743+00:00",
+  "status": "pass_offline_only",
+  "files": {
+    "contracts/boosters/src/YunipalMonsters.sol": "7f236d640944651791add72096fb8371024c1579dce48fe0e0aa605575720ac5",
+    "contracts/boosters/test/YunipalMonstersMetadata.t.sol": "f82cb6797867faed8521e6ad47cd3466fc4aedb85b0ad4c302e6ae0e1e5fae24",
+    "contracts/boosters/test/fixtures/YunipalMonsters.deployed-baseline.json": "10686b6f3317490054737ed3e47ffecc626551b3da2ca428abd13ade37e2f3a0",
+    "scripts/boosters/prepare-token-metadata-upgrade.mjs": "a1a011ec99cf768f37e5df4eb7472a8ba1dd1185e79bc76d5e7227f4de6d1aed",
+    "scripts/boosters/prepare-token-metadata-upgrade.test.mjs": "f6db971851d61a602db673f4cd68b6a72c0150e02ce40c37a1636232a5aeeacc",
+    "apps/yunipals-home-web/public/boosters/monsters-token-metadata-upgrade-v1.json": "e59f7ce628c8a3ed42e432a7340f495abcb2eebf3f12a4aec0cc5420363fc966"
+  },
+  "tests": {
+    "focusedMetadata": 8,
+    "allOrdinaryBoosters": 62,
+    "ordinarySuites": 6,
+    "failed": 0,
+    "builderControls": 5,
+    "forkPathsExcluded": "test/*Fork.t.sol",
+    "forgeLogSha256": "c81472aa66f859b15bee5c9eae80a84dc32dcf1f6796e801b5e8ec97e72818ee"
+  },
+  "commands": [
+    "/tmp/yunipals-foundry/node_modules/@foundry-rs/forge-linux-amd64/bin/forge test --offline --use /root/.local/share/svm/0.8.30/solc-0.8.30 --match-path test/YunipalMonstersMetadata.t.sol",
+    "/tmp/yunipals-foundry/node_modules/@foundry-rs/forge-linux-amd64/bin/forge test --offline --use /root/.local/share/svm/0.8.30/solc-0.8.30 --no-match-path test/*Fork.t.sol",
+    "/root/.nvm/versions/node/v24.18.1/bin/node scripts/boosters/prepare-token-metadata-upgrade.test.mjs"
+  ],
+  "storage": {
+    "existingFieldsAndNestedTypesPreserved": 4,
+    "newStringSlot": 4,
+    "remainingGapSlots": "5..49",
+    "originalGapEndPreserved": true,
+    "storageInspectionSha256": "297397695b6e4f79da957645ef58887bf225042d7bc7eaea8a78783e40d2a153"
+  },
+  "baseline": {
+    "exactCommittedImplementationCreationPayload": true,
+    "deploymentPlanSha256": "208dffc05cf20c046c356239acc70361912b052a5b4b5ddb1648506848b3b954"
+  },
+  "resolvedFinding": "Unsigned readiness probe confused variant73 with token73; fixed to actual originalNFT1 with original1/day0 expectations.",
+  "currentChainStateProven": false,
+  "rpcRequests": 0,
+  "privateCredentialsUsed": false,
+  "broadcasts": 0,
+  "productionActions": 0
+}

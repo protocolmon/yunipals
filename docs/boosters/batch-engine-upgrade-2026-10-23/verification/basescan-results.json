@@ -1,0 +1,29 @@
+{
+  "format": "yunipals-batch-engine-basescan-verification-v1",
+  "chainId": 8453,
+  "implementation": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+  "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+  "sourceInputSha256": "f66676caa22a03b578f154d5adf09d0e4099f001cff308aa1884aa6f8e642e9c",
+  "approvedPackageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+  "mainnetTransactionsSent": false,
+  "sourceGuid": "dvm1zqcmmwh9gmi4ku63retk3fbvyeuxdt8hszjzu5qhnf6ktf",
+  "source": {
+    "fullSourceMatch": true,
+    "sourceFiles": 42,
+    "sourceInputSha256": "f66676caa22a03b578f154d5adf09d0e4099f001cff308aa1884aa6f8e642e9c",
+    "compilerVersion": "v0.8.30+commit.73712a01",
+    "optimizerRuns": 1,
+    "evmVersion": "cancun",
+    "viaIR": true,
+    "constructorArguments": "",
+    "explorerOmittedEmptyLibraries": true,
+    "fullAbiMatch": true,
+    "abiSha256": "42a9a3a6dcdf7c43ccfb134451e03c0b16c6bb1d46a3c0afbc98666cd918868a",
+    "verificationLevel": "full"
+  },
+  "implementationUrl": "https://basescan.org/address/0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471#code",
+  "status": "implementation-fully-verified-and-proxy-linked",
+  "proxyImplementation": "0xeba9D4dEB6914Ab67A820Ea27C2fC3F43812E471",
+  "proxyUrl": "https://basescan.org/address/0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609#readProxyContract",
+  "checkedAt": "2026-10-23T14:42:37.370570+00:00"
+}

@@ -1,0 +1,93 @@
+{
+  "format": "yunipals-recent-openings-public-source-scan-v1",
+  "sourceFiles": 21,
+  "findings": 14,
+  "classified": [
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 9,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/lib/api/booster-openapi.ts"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 11,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/scripts/build-booster-api.mjs"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 12,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/scripts/test-booster-recent-api-bundle.mjs"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 13,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1.py"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 14,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1-test.py"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 15,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1.md"
+    },
+    {
+      "document": "recent-openings-api-preparation-2026-10-23.json",
+      "line": 21,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "booster-api.mjs"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 10,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/lib/api/booster-openapi.ts"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 12,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/scripts/build-booster-api.mjs"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 13,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "apps/yunipals-indexer/scripts/test-booster-recent-api-bundle.mjs"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 14,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1.py"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 15,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1-test.py"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 16,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "ops/booster-launch/rollout-recent-openings-api-v1.md"
+    },
+    {
+      "document": "recent-openings-independent-review-2026-10-23.json",
+      "line": 21,
+      "classification": "verified SHA-256 of public source or compiled artifact",
+      "referencedFile": "booster-api.mjs"
+    }
+  ],
+  "credentialValuesFound": 0,
+  "broadAllowlistAdded": false
+}

@@ -60,7 +60,12 @@ export function createArenaApp(
     identityStatus?: (key: string) => Promise<unknown>;
     media?: {
       status: (id: string) => Promise<unknown>;
-      artifact: (id: string, name: string, range?: string) => Promise<Response>;
+      artifact: (
+        id: string,
+        name: string,
+        range?: string,
+        selector?: { incarnation?: string; publication?: string }
+      ) => Promise<Response>;
     };
   }
 ) {
@@ -114,7 +119,13 @@ export function createArenaApp(
   });
   app.get("/health", async (c) => {
     await service.ready();
-    return c.json({ ok: true });
+    return c.json({
+      ok: true,
+      indexerMode: service.indexerMode,
+      sourceKind: service.sourceSelection?.kind ?? service.indexerMode,
+      sourceEpoch: service.sourceSelection?.epoch ?? null,
+      sourceId: service.sourceSelection?.sourceId ?? null
+    });
   });
   app.get("/config", (c) =>
     c.json({
@@ -127,7 +138,11 @@ export function createArenaApp(
       entryMode: options.entriesEnabled
         ? (options.launchMode ?? "pilot")
         : "closed",
-      confirmationPolicy: "base-depth-3-v1"
+      indexerMode: service.indexerMode,
+      sourceKind: service.sourceSelection?.kind ?? service.indexerMode,
+      sourceEpoch: service.sourceSelection?.epoch ?? null,
+      confirmationPolicy:
+        service.indexerMode === "unified" ? "latest" : "base-depth-3-v1"
     })
   );
   app.get("/rules", (c) => {
@@ -170,13 +185,7 @@ export function createArenaApp(
   });
   app.get("/me", async (c) => {
     const wallet = await service.wallet(getCookie(c, cookie));
-    const credit =
-      (
-        await service.pool.query<{ amount: string }>(
-          "SELECT amount FROM yunipals_arena.credit WHERE deployment=$1 AND wallet=$2",
-          [service.deployment, wallet]
-        )
-      ).rows[0]?.amount ?? "0";
+    const credit = await service.balance(wallet);
     return c.json({ wallet, claimable: credit });
   });
   app.post("/transactions", async (c) => {
@@ -217,7 +226,7 @@ export function createArenaApp(
       )
     );
   });
-  // These views contain only finalized on-chain records. Browsing them needs
+  // These views contain only the selected canonical on-chain records. Browsing them needs
   // an address, not a session; private strategies and writes stay authenticated.
   app.get("/wallets/:wallet/summary", async (c) => {
     const wallet = c.req.param("wallet");
@@ -290,13 +299,24 @@ export function createArenaApp(
   app.get("/tournaments/:id/artifacts/:name", async (c) => {
     if (!options.media)
       throw new ArenaRequestError(404, "Published video artifact not found.");
+    const incarnation = c.req.query("origin"),
+      publication = c.req.query("publication");
+    if (
+      [incarnation, publication].some(
+        (value) => value !== undefined && !/^0x[0-9a-f]{64}$/.test(value)
+      )
+    )
+      throw new ArenaRequestError(400, "Invalid Arena video selection.");
     return options.media.artifact(
       id(c.req.param("id")),
       c.req.param("name"),
-      c.req.header("Range")
+      c.req.header("Range"),
+      { incarnation, publication }
     );
   });
   app.get("/tournaments/:id/result", async (c) => {
+    const selectedId = id(c.req.param("id")),
+      context = await service.tournamentContext(selectedId);
     const row = (
       await service.pool.query<{
         candidate: unknown;
@@ -311,19 +331,25 @@ export function createArenaApp(
           max_output_tokens?: number;
         } | null;
       }>(
-        `SELECT a.candidate,a.outcome_hash,a.input_hash,a.validation,p.request AS referee_request
-       FROM yunipals_arena.adjudication a
-       JOIN yunipals_arena.tournament t ON t.deployment=a.deployment AND t.id=a.tournament_id
+        `SELECT a.candidate,a.outcome_hash,a.input_hash,a.validation,p.request AS referee_request FROM yunipals_arena.adjudication a
        LEFT JOIN yunipals_arena.provider_task p ON p.deployment=a.deployment AND p.tournament_id=a.tournament_id
-         AND p.kind='referee' AND p.asset='candidate-1' AND p.state='completed'
-       WHERE a.deployment=$1 AND a.tournament_id=$2 AND t.state->>'phase'='settled'
-         AND a.state='valid' AND t.state->>'resultHash'=a.outcome_hash AND t.state->>'inputHash'=a.input_hash`,
-        [service.deployment, id(c.req.param("id"))]
+         AND p.incarnation=a.incarnation AND p.kind='referee' AND p.asset='candidate-1' AND p.state='completed'
+       WHERE a.deployment=$1 AND a.tournament_id=$2 AND a.incarnation=$3 AND $4='settled'
+         AND a.state='valid' AND a.outcome_hash=$5 AND a.input_hash=$6`,
+        [
+          service.deployment,
+          selectedId,
+          context.incarnation,
+          context.state.phase,
+          context.state.resultHash,
+          context.state.inputHash
+        ]
       )
     ).rows[0];
     if (!row)
       throw new ArenaRequestError(404, "The result has not been settled yet.");
     return c.json({
+      incarnation: context.incarnation,
       outcome: row.candidate,
       outcomeHash: row.outcome_hash,
       inputHash: row.input_hash,
@@ -355,7 +381,10 @@ export function createArenaApp(
       await options.admit(id(c.req.param("id")), wallet, {
         nftChainId: body.nftChainId,
         collection: body.collection,
-        tokenId: body.tokenId
+        tokenId: body.tokenId,
+        ...(typeof body.incarnation === "string"
+          ? { incarnation: body.incarnation }
+          : {})
       })
     );
   });
@@ -383,7 +412,10 @@ export function createArenaApp(
         seat: body.seat,
         text: body.text,
         salt: hex(body.salt),
-        signature: hex(body.signature)
+        signature: hex(body.signature),
+        ...(typeof body.incarnation === "string"
+          ? { incarnation: body.incarnation }
+          : {})
       })
     );
   });

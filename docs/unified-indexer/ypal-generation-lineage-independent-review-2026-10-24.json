@@ -1,0 +1,150 @@
+{
+  "format": "yunipals-ypal-generation-lineage-independent-review-v1",
+  "verdict": "PASS",
+  "scope": "Source-only component/ledger review and local isolated controls; no activation or production acceptance.",
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-v1.mjs",
+      "sha256": "b3841f214cfb6f058bfcaca007ee0b0099d6b8940c881faf1f142baa7a833655",
+      "bytes": 12825
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-cycle-v1.mjs",
+      "sha256": "e89b68afee0a2c52b9d8a6c692ba4ec1d1e5a5a45c33fb01f375031ce6821a72",
+      "bytes": 9803
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-ledger-v1.mjs",
+      "sha256": "c1a107b1dd236503c63304461a097a18318d9669abf7853ac797cf828059923d",
+      "bytes": 11702
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-recovery-build-v1.mjs",
+      "sha256": "96b6adb8ce72677746aefaf6c459ba151495ecf8fe35e4c0d0a4c7bc95d02a45",
+      "bytes": 3659
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-recovery-v1.mjs",
+      "sha256": "9761243c16c3ed775393e7aeddcc4c688b05ae5db132628a41ef07057f056926",
+      "bytes": 17615
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-v1.test.mjs",
+      "sha256": "b96a3ccfbdbe340d6090c5292fb1d25db88f2d889c6efe3609419a2dfb8a4ca5",
+      "bytes": 9550
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-v1.postgres.test.mjs",
+      "sha256": "844237167c0cd7b33dc2ce62111b9f0ba61a6d35c5734ddf491dfcd5ca627b46",
+      "bytes": 33342
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-lineage-v1.md",
+      "sha256": "e87c1e39b1bc8d79fcf61a91aafcc2c3f80b5f337af561fa373ff4b562e61ca8",
+      "bytes": 8968
+    },
+    {
+      "path": "docs/unified-indexer/ypal-generation-lineage-v1-preparation-2026-10-24.json",
+      "sha256": "684b82e02f3bc4f48a9e3d40c9f8999b762aec165c9bd04081d356231b7d99e0",
+      "bytes": 3415
+    }
+  ],
+  "sourcePacketSha256": "d7c63382b154e1dd17567773db9eaab333721ed6bfe6ea160e99dc4b361c965c",
+  "unchangedRuntimeDependencies": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-native-cutover-v1.mjs",
+      "bytes": 25467,
+      "sha256": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-generation-recovery-v1.mjs",
+      "bytes": 16971,
+      "sha256": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-transition-v1.mjs",
+      "bytes": 14898,
+      "sha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2"
+    }
+  ],
+  "verification": {
+    "filesystem": {
+      "command": "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-generation-lineage-v1.test.mjs",
+      "groupsPassed": 9,
+      "exitCode": 0,
+      "outputSha256": "0e49ac0d368b2a1e6a9b682788a4869e021f458d95ece3d310a69889e7b38055"
+    },
+    "derivation": {
+      "command": "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-generation-lineage-recovery-build-v1.mjs",
+      "byteEqual": true,
+      "exitCode": 0,
+      "outputSha256": "a06a208594a92779f3dac67094e04932a50416cee96481d4f143db7cbf4be3ae"
+    },
+    "postgres": {
+      "command": "/root/.nvm/versions/node/v24.18.1/bin/node --import tsx ../../ops/unified-indexer-transition/ypal-generation-lineage-v1.postgres.test.mjs",
+      "cwd": "apps/yunipals-indexer",
+      "groupsPassed": 16,
+      "exitCode": 0,
+      "outputSha256": "3acc30c6724b969d8372d23d9fc743eb37b4d5fa8e74eef299134cd6acaea80f",
+      "freshRandomSyntheticDatabaseCreatedAndDropped": true,
+      "existingDisposableLocalFixtureOnly": true,
+      "actualNativeDDLAndOfficialSource": true,
+      "initialSandboxTcpRefusalBeforeDatabaseCreation": true,
+      "scopedEscalatedLocalRunPassed": true
+    },
+    "frozenF81PreparationProof": {
+      "artifactDigest": "f81cdb76ae45794599c723085aebd2b9c5e377975dc16d2e1461236229d4b952",
+      "preparationMapSha256": "a3ab4315411d0621940cb0e6716f1a93bcb4a4010f836efda65f29fef8de44cd",
+      "embeddedProjectionSourceSha256": "91c2f88b015d8d451f971b76f369fee60acc54d6f6d4d4c133c243285a22f424",
+      "preparationFunctionThroughEOFByteEqual": true,
+      "preparationFunctionThroughEOFSha256": "ef222bf3b29e3feeb1681b7c7d789c609f60908e21e7879424cb264bcd9e56cc",
+      "currentPublisherSourceMatchesAccepted2bManifest": true
+    }
+  },
+  "criticalPathsReviewed": [
+    "Immutable root and sequential exact producer/operation/predecessor/receipt/XID lineage, finite768-cycle bound and exact generation snapshots.",
+    "Exclusive fsynced0700/0600 ledger phases, complete prefix order, actual wire JSON hash domains and semantic built/private/prepared/result links; unknown prefixes cannot be skipped or automatically retried.",
+    "Original103/prior/archive aggregate matches exact capsule hash domain on every inspection; G0/current/previous row hashes remain ready while only eligible intermediate state/retired_at cleanup is accepted.",
+    "Current wallet rows, both complete derived stamps and pointer/generation aggregate match the acknowledged head before another build.",
+    "One official unpublished prepare followed by frozen950b one-client atomic pointer/wallet/two-stamp publication with2b libraries; no sequential ordinary-worker fallback.",
+    "Stable admitted authority/expiry across phases and cheap expiry fence after durable prepared ACK before the official final CAS/COMMIT.",
+    "Archive rotation refuses forward and descendant inverse without relabeling historical metadata frontiers current.",
+    "Lost publication ACK requires committed actual XID plus exact prepared global tuple; reconciliation performs no new build/publication/receipt write.",
+    "Reproducibly derived new capsule inverse retains owner-only privacy/aggregates, exact external binding/guard and source-head CAS, row locks, complete original103/prior wallet/stamp restoration and monotonic read epochs.",
+    "No component creates a production Pool, starts a worker, mutates services/roles or claims source/current-reader/24-hour authority."
+  ],
+  "reviewFindingsClosed": [
+    "Canonical capsule receipt digest now checked explicitly.",
+    "Prepared fsync cannot carry the final commit acknowledgement past admitted expiry.",
+    "Ongoing inspection validates actual original103 and prior capsule anchors, not only selector IDs.",
+    "Foreign same-pointer wallet or complete derived-stamp changes refuse before the next owned build."
+  ],
+  "remainingPrerequisites": [
+    "Actual protected coordinated publication/capsule/current-source/143-reader/cache/metadata/rehearsal/capacity/private-input receipts must be authenticated by a distinct reviewed activation owner.",
+    "Exact f81 preserve-ID environment and only unpublished prepare plus2b atomic publication must be enforced before any actual build; arbitrary callbacks are not production authority.",
+    "A descendant-aware reader/cache/managed acceptance and inverse path must consume this new lineage; frozen first-generation-only leaves cannot be relabeled current.",
+    "Read-only reconciliation returns a candidate only; the actual execution owner must independently qualify and exclusively acknowledge it. Unknown prefixes/status never authorize automatic resend.",
+    "Unavailable historical pg_xact_status deliberately refuses a finite epoch; perpetual transaction-status history is not assumed.",
+    "Actual sustained cadence/archive stability/HTTP and24-hour refresh remain unexecuted and unqualified."
+  ],
+  "authority": {
+    "workerActivationQualified": false,
+    "sourceActorQualified": false,
+    "currentReaderServingQualified": false,
+    "roleAuthorityQualified": false,
+    "financialAuthorityQualified": false,
+    "actualRollbackRehearsalQualified": false,
+    "sustainableOrdinaryRefreshQualified": false,
+    "twentyFourHourRefreshQualified": false,
+    "goalComplete": false
+  },
+  "actions": {
+    "productionHostCalls": 0,
+    "productionDatabaseQueries": 0,
+    "providerCalls": 0,
+    "serviceActions": 0,
+    "roleActions": 0,
+    "gitMutations": 0,
+    "componentSourceEditsByReviewer": 0
+  }
+}

@@ -1,3 +1,4 @@
+import { readConfirmedBlock } from "@/confirmations";
 import {
   encodeFunctionData,
   decodeFunctionData,
@@ -11,13 +12,13 @@ import {
 } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { transaction } from "@/db/pool";
-import { readConfirmedBlock } from "@/confirmations";
 import { ArenaIntake } from "./intake";
 import { ArenaInputCompiler } from "./input";
 import { json } from "./projection";
 import type { ArenaCapacity } from "./capacity";
 import { publishedPayoutFilm } from "./payout";
 import { ARENA_RESOLUTION_SECONDS } from "@protopals/yunipals-market-core/arena";
+import { NativeArenaControl } from "./nativeControl";
 
 export type ControlPurpose =
   | "finalize-island"
@@ -62,6 +63,17 @@ export class ArenaControl {
   }
 
   async prepare(purpose: ControlPurpose, id: string) {
+    if (this.service.nativeSource)
+      return new NativeArenaControl(
+        this.service,
+        this.compiler,
+        this.client,
+        this.account,
+        this.maxExecutionFeeWei,
+        this.capacity,
+        this.mediaStorage
+      ).prepare(purpose, id);
+    await this.service.assertSourceSelection();
     const prior = await this.saved(purpose, id);
     if (prior) return prior;
     await this.service.ready();
@@ -310,6 +322,17 @@ export class ArenaControl {
   }
 
   async advance(purpose: ControlPurpose, id: string) {
+    if (this.service.nativeSource)
+      return new NativeArenaControl(
+        this.service,
+        this.compiler,
+        this.client,
+        this.account,
+        this.maxExecutionFeeWei,
+        this.capacity,
+        this.mediaStorage
+      ).advance(purpose, id);
+    await this.service.assertSourceSelection();
     const intent = await this.saved(purpose, id);
     if (!intent) throw new Error("Control transaction must be prepared first.");
     if (["confirmed", "reverted", "uncertain"].includes(intent.state))

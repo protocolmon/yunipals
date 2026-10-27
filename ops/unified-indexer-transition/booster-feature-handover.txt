@@ -1,0 +1,235 @@
+Booster feature source handover and owned retirement
+22 October 2026
+
+Operator: booster-feature-handover.py
+SHA256: cc9f80670824c10f60c65aadb43f012485b2bff32d0bab068951e863305dff79
+
+Implemented and locally qualified, not executed or staged on production by this
+agent. It performs no chain RPC or image-provider call. The running feature and
+normal combined replay were not changed. The code retains normal Ponder source
+008 and existing API/artwork queue protocols. No new scanner/reducer is added.
+
+The owner has separate explicit phases. No parity report alone claims a switch,
+and no stopped PID alone claims retirement. All receipt files are root-owned
+private immutable files under:
+  /var/backups/yunipals-booster-feature-handover-20261022/
+
+Production phase execution remains a real outstanding gate. The owner requires
+root on yunipals-main and the existing consumer transition lock. Its dependencies
+are frozen by hash. The current immutable consumer version set is owner-v6,
+preview-v6 and install-v7; the new timer-state successor was separately qualified
+by an actual read-only production preflight. Historical staged helpers remain
+unchanged.
+
+1. EXACT SEVEN SELECT ADDITIONS
+
+Target namespace unified_shadow_20261020_7e7375b0 is OID73004622, owner73004621.
+Collector73187672 already has USAGE without CREATE and reads _ponder_meta73032449
+and _ponder_checkpoint73032456. Only these seven SELECT additions are prepared:
+  booster_type73032539, booster_original73032554, booster_request73032569,
+  booster_monster73032584, booster_refund73032599, booster_engine_state73032614,
+  booster_checkpoint73032644.
+
+The live passwordless collector LOGIN=true/NOINHERIT/limit6 and all negative role
+flags are frozen. Both namespaces' whole relation ACLs are bound before/after;
+all44 old source identities and exactly nine old reads remain unchanged. No
+source schema, role flag, schema privilege, write or grant option is added.
+
+Explicit rehearsal (transient transaction ends ROLLBACK):
+  python3 /opt/yunipals-unified/operations/free-replay-20261020/booster-feature-handover.py rehearse-grants
+
+It writes the exact SQL and actual rollback review. Rehearsal may precede final
+consumer installs. COMMIT must follow all four actual install-v7 admissions:
+  python3 <operator> commit-grants --apply <actual grants reviewHash> \
+    --artifact-file <actual pinned artifact> --artifact-sha <actual artifact SHA>
+
+The operator verifies those four real admissions before issuing any COMMIT.
+This ordering preserves the existing consumer Guard, which correctly rejects
+unowned added feature reads while consumer installation is still underway.
+
+A lost successful SQL acknowledgement can be reconciled from the exact complete
+after catalog; --resume records that acknowledgement without repeating the SQL.
+A partial or foreign graph is refused. Already-existing reads cannot be adopted.
+The two prior target reads and all nine old source reads survive the inverse.
+
+2. SWITCH ONLY THE FEATURE READER/QUEUE
+
+First complete all four real install-v7 consumer admissions. The owner verifies
+their protected result/review files, exact current units/invocations/inputs,
+complete existing process verifier and peer identities. A missing collector
+final admission cannot be replaced by its feature-only admission receipt.
+
+Obtain a fresh external Base header, then the parent-owned complete report from
+booster-source-parity.py. The owner revalidates and recomputes full parity at that
+same witnessed boundary, including native complete checkpoints, eight tables,
+event history and empty newer-event tails. Witness freshness is checked again
+immediately before the first switch service action. A same-boot partial action
+then uses its exact owned journal for reconciliation; an expired initial witness
+does not force a repeated successful action. The later retirement always needs
+a separately fresh post-event witness and complete parity. It uses actual normal native progress;
+there is no dependency on an old bounded replay cutoff.
+
+Read-only review:
+  python3 <operator> switch --parity-file <protected actual report.json> \
+    --parity-sha <actual report SHA> --artifact-file <actual pinned artifact> \
+    --artifact-sha <actual artifact SHA>
+
+Execution adds --apply <fresh reviewHash>. Only the shared env line
+  BOOSTER_DATABASE_SCHEMA=yunipals_boosters_launch_v1
+becomes
+  BOOSTER_DATABASE_SCHEMA=unified_shadow_20261020_7e7375b0
+All other bytes must be identical to original env SHA0c055ac0...5306d400.
+
+The owner stops the exact queue timer, drains/stops only the exact queue and API
+units, atomically changes the env, then starts the API and proves local/public
+target native readiness. It runs the exact queue once, proves its trusted
+structured completion, then restores its existing five-second enabled timer.
+Collector's other two-slot consumer and unrelated roles are never stopped or
+logged out. Six-slot reader capacity and role limit are retained.
+
+Both source processes remain alive. switch-result.json explicitly records
+oldSourceRetired=false. The proof includes positive public collection reads and
+unchanged immutable approved manifest/149 metadata/content-addressed image bytes.
+An unpublished/generated image is never relabelled approved by this operator.
+
+3. POST-SWITCH EVENT, THEN RETIRE THE TEMPORARY SOURCE
+
+Supply an actual protected event identity with exactly:
+  blockNumber, blockHash, transactionHash, logIndex
+It must be strictly newer than switchBoundary. It must match exactly one native
+booster_event in BOTH sources, the combined canonical chain_block hash, and a
+complete native Base checkpoint covering the event. No synthetic event, RPC
+response insertion or empty observation can satisfy it.
+
+Obtain a NEW full parity report whose boundary covers that event. The owner
+requires both sources still ready/live and exact parity. Read-only review:
+  python3 <operator> retire --parity-file <protected post-event report.json> \
+    --parity-sha <actual SHA> --event-file <protected event.json> \
+    --event-sha <actual event file SHA>
+
+Execution adds --apply <fresh reviewHash>. It stops/disables only the exact
+owned yunipals-booster-launch.service, proves terminal PID0/empty cgroup/no job,
+and checks incoming activation dependencies and enablement symlinks are absent.
+It never disables another activation actor to make the check pass. Old schema,
+data, nine reads, source unit and source008 code remain available for rollback.
+
+The final retirement-result.json format is:
+  yunipals-booster-source-retirement-v1
+  parity: initial report SHA/boundary/headerHash, boundary<=switchBoundary
+  postSwitchParity: newer report SHA/boundary/headerHash, boundary>=freshEvent
+  readerHandover: actual switch receipt SHA, target schema, current API invocation,
+    queueEnabled=true, publicReady=true, switchBoundary
+  freshEvent: real native event identity
+  source: exact unit, recorded prior invocation, terminal=true, pid0, enabled=false
+  activationPathsAbsent=true, oldSchemaPreserved=true
+It additionally records fresh public/artwork and scheduled queue success proofs.
+
+4. OWNED INVERSE, BEFORE THE FOUR CONSUMER INVERSES
+
+The final coordinator first owns stopping the shared and combined services.
+This feature owner independently requires:
+  yunipals-indexer.service terminal/PID0/no job/empty cgroup;
+  yunipals-unified-source6-free-v2.service terminal/PID0/no job/empty cgroup;
+  combined native app unlocked; TCP127.0.0.1:9024 explicitly refused.
+It never stops those services itself. This check occurs before any inverse
+service action, so an active combined source cannot be overlooked before revival.
+
+Read-only inverse review: python3 <operator> inverse
+Execution: python3 <operator> inverse --apply <fresh inverse reviewHash>
+
+The owner restores original source boot enablement and starts only that source,
+proves its original native build/schema/catch-up, restores the exact original
+feature env/API/queue, and revokes ONLY its seven SELECT additions. The original
+two target reads, old nine reads, LOGIN=true and all data remain intact.
+
+The inverse receipt format yunipals-booster-feature-inverse-v1 links actual
+switch and retirement receipt SHAs, original env SHA, current API identity and
+static file hashes, enabled/successful queue, exact source identity/inputs,
+seven-read before catalog SHA and current public readiness.
+
+Read-only final coordinator integration:
+  validate_inverse(path, pin)
+from the pinned operator, where path must be exactly the protected
+  /var/backups/yunipals-booster-feature-handover-20261022/inverse-result.json
+
+It returns validated=true, exact inverseReceiptSha256/operatorSha256, current
+apiInvocation/apiIdentity, source proof and sharedCombinedQuiet. It does not
+execute any service command or write. The final coordinator must also bind this
+proof into its own fresh review/CAS and require the four consumer inverses.
+
+The source proof requires the complete UID970 inventory to equal its exact owned
+cgroup, one pinned Node and at most one direct pinned esbuild child. Real
+read-only production inventory showed that esbuild0.25.12 child is necessary:
+  executable SHA bab29b2ca7a9e89b67cf720b77b2d743f9f31f5cf0d5bd74ee8c8de30ced7014
+  argv SHA a38a748520fd6061e87e09bc1e78cf63f8ab08a73d9b8d24f468f24a083d6ac6
+Its exact resolved path, --service=0.25.12 --ping args and direct main PID parent
+are frozen; every ancestor/file was observed root-owned, nonwritable and without
+symlinks. No arbitrary same-UID helper is accepted. Native build must be6d581272ce,
+schema74518314, locked/ready/current, with source-role sessions<=5. API/queue
+static files and original env/reader graph are checked independently. Both
+actual source processes have the observed inheritable mask0000000000200100,
+whose SHA is f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e,
+and bounding mask000001ffffffffff. Those exact hashes are preserved; permitted,
+effective and ambient masks remain zero, with NoNewPrivs1. An unexpected mask
+or identity is refused. Original source env hashes are checked before any
+inverse service action, as well as during final runtime validation.
+
+RECOVERY AND LIMITS
+
+Each action has a private intent and acknowledgement. `reconcile` is read-only;
+it reports hashes, current fixed unit states and missing acknowledgements, never
+repeats a command. `--resume --apply <recorded reviewHash>` can adopt a completed
+action only through its exact observation. A lost API start ACK is bound by
+fixed unit/env/process/cgroup plus start monotonic time after the owned intent.
+Queue PID/invocation/start fields may be cleared by systemd GC: completion then
+requires a trusted same-boot structured journal event from UID967/GID961/pinned
+Node in the exact unit after the intent, skipped=false and sufficient coverage.
+Every stop command first rechecks the exact owned static definition and current
+invocation/PID/start identity, twice, before recording command issuance. A
+replacement fails without issuing stop. A terminal API/source with no command
+marker cannot be adopted from blank systemd GC metadata. Only the exact queue
+run may be adopted from a trusted natural completion, without issuing a stop.
+Stopped actors can use empty invocation only with recorded prior ownership,
+unchanged static files, terminal PID0/no job/empty cgroup and drained own pool.
+Cross-boot partial action adoption is refused.
+
+If the intended action did not actually complete, the owner does not repeat an
+uncertain start/SQL automatically. Reconcile and use the explicit owned inverse
+or a separately reviewed recovery. An unrelated restart/static-file change is
+not permission to disable guards. Genuine future external event/header evidence
+and actual final consumer admissions cannot be manufactured by this helper.
+
+LOCAL QUALIFICATION
+
+  python3 ops/unified-indexer-transition/booster-feature-handover.test.py
+  15 controls, including real protected Host/dependency imports and queue_live
+  calls against runtime-v2, exact observed source capability policy, command
+  identity races and four-install commit order; full actual Owner state machine over temporary files
+  and controlled lifecycle I/O: seven-read SQL acknowledgement loss, API start
+  ACK loss without a repeated start, queue/stopped-service GC, initial/post-event
+  parity order, real event query validation, pre-revival quiet fence, complete
+  inverse and passive inverse reconciliation, native/env/argv checks, exact
+  esbuild child, cross-boot refusal and dependency pins.
+
+  node ops/unified-indexer-transition/booster-feature-handover.postgres-test.mjs
+  8 actual disposable PostgreSQL16 groups: exact seven-read rollback/commit/
+  inverse across88 native tables, preserved LOGIN/old9/prior2, before-graph CAS,
+  unexpected LOGIN/write/read rejection, actual native event/header query and
+  duplicate/header/pre-switch rejection. The fixture creates/drops only its
+  unique local database/role. No production/provider calls in these tests.
+
+An actual read-only production run of the exact Host.request and availability
+methods also passed: local native ready plus public types/owner collection and
+approved cached manifest/149 metadata/PNG all HTTP200, with expected CORS,
+immutable cache policy and frozen artwork bytes. No raw journal or ownership
+rows were exported. Proof is saved in the preparation evidence. This qualifies
+those HTTP methods; protected staged Host/dependency and actual SQL rehearsal
+qualification remain distinct production steps.
+
+These controls do not claim actual production seven-grant rehearsal, switch,
+post-switch new-event proof, source retirement or inverse has occurred. Actual
+protected host process/HTTP/receipt qualification remains required before any
+production execution. The combined source must catch up first; all four real
+consumer installs, fresh parity and owner-signed smoke activity remain their
+own required evidence. Current feature operation has not been made dependent
+on this future handover.

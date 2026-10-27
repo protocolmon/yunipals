@@ -1,0 +1,102 @@
+{
+  "format": "yunipals-latest-complete-readiness-independent-review-v1",
+  "status": "source_accepted_production_application_pending",
+  "reviewedAt": "2026-10-25T00:16:00Z",
+  "files": [
+    {
+      "bytes": 5274,
+      "path": "packages/yunipals-indexer-client/src/readiness.ts",
+      "sha256": "06b4f87fa9d1446b32d157d215ab45701152552b1b730d84561f8bce244b6aab"
+    },
+    {
+      "bytes": 4783,
+      "path": "packages/yunipals-indexer-server/src/status.ts",
+      "sha256": "e3a46cc4add4678d73723ec3d885d825ae4a95bc93d47506c80832bb6d5d460d"
+    },
+    {
+      "bytes": 15696,
+      "path": "apps/yunipals-indexer/lib/unified/ownership-views.ts",
+      "sha256": "b8b987716bee0c44983030cbd446a843d0a88171c73611bf212129f9e5797770"
+    },
+    {
+      "bytes": 8563,
+      "path": "apps/yunipals-indexer/test/unified-readiness.test.ts",
+      "sha256": "a33000034a6aeb65bc7f03960666184a968ae6e732b9230b73b832e7289b30f1"
+    },
+    {
+      "bytes": 29461,
+      "path": "apps/yunipals-indexer/test/indexed-action-evidence.test.ts",
+      "sha256": "b2fd0e00c8697c6601759c4357cd15c1ac90735d5de2231ad5b82235a99051a7"
+    },
+    {
+      "bytes": 14962,
+      "path": "apps/yunipals-indexer/scripts/test-latest-complete-readiness.mjs",
+      "sha256": "80cc716b66c5d63e0ca051e28e674403e0184c132c1dfe4e4f280aa54797844b"
+    },
+    {
+      "bytes": 7192,
+      "path": "ops/unified-indexer-transition/ypal-combined-readview-v5-plan.mjs",
+      "sha256": "91b48f86211b08ceb251e840f89c52ea3e83452fdce17af19a610ef3cc5ac201"
+    },
+    {
+      "bytes": 48162,
+      "path": "ops/unified-indexer-transition/ypal-combined-readview-v5.preparation.json",
+      "sha256": "d968a31c4ea5314f4a84f0ccf5e0e9a24ce7bb9ae647d81d37c419b6f5714cb7"
+    },
+    {
+      "bytes": 11559,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readview-v5.py",
+      "sha256": "1e08f4f09ed8774fe75e8d94b5a0286f010a62b2fc80b2dd4fffe75fcb8feda2"
+    },
+    {
+      "bytes": 9223,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-readview-v5.test.py",
+      "sha256": "35c12a722d62689e81d9a3ff572d7efabcc7056cac9ec7cb40aae3bd1086533d"
+    }
+  ],
+  "scope": {
+    "depthAndFinalized": "unchanged",
+    "explicitRequiredBlock": "unchanged exact comparison",
+    "frameworkReadyRequired": true,
+    "historyStaleHaltAndBranchRefusalsPreserved": true,
+    "latestDefault": "framework-ready complete canonical prefix; observed head is not the serving target",
+    "missingExactAnchorRefuses": true,
+    "newIdentityVersion": 5,
+    "oldReadIdentityMutated": false
+  },
+  "realPostgres": {
+    "event": "latest_complete_readiness_postgres_verified",
+    "checks": [
+      "actual_observer_verified_prefix_ready_below_live_head_in_TS_and_SQL",
+      "explicit_fixed_boundary_and_depth_finalized_remain_exact",
+      "framework_catchup_required_before_latest_serving",
+      "version5_identity_cannot_relabel_or_rewrite_existing_read_schema",
+      "native_metadata_V4_identity_preserved_and_distinct_V5_four_INVOKER_functions_created",
+      "exact_recorded_six_collection_V5_plan_executes_19_statements_in_real_PG",
+      "orphaned_native_witness_refuses_TS_and_SQL",
+      "provider_lag_halt_and_stale_observation_still_refuse",
+      "absent_exact_anchor_cannot_become_ready",
+      "native_SELECT_only_reader_and_INVOKER_functions_no_write_authority"
+    ],
+    "passed": 10,
+    "providerCalls": 0
+  },
+  "tests": {
+    "unitAndActionPassed": 37,
+    "existingOptionalSkip": 1,
+    "creatorControlsPassed": 6,
+    "finiteSecretScanFiles": 10,
+    "finiteSecretScanResult": "PASS"
+  },
+  "effectLimits": {
+    "productionActions": 0,
+    "sourceRestart": false,
+    "fullReindex": false,
+    "oldV4ObjectsModified": false
+  },
+  "remaining": [
+    "Actual owner-only V5 schema creation and equivalent reads",
+    "Fresh canonical witness",
+    "Affected consumer build, adoption and response acceptance"
+  ]
+}

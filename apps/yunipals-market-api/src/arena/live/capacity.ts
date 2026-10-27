@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import { transaction } from "@/db/pool";
-import { ArenaRequestError } from "./intake";
+import { ArenaIntake, ArenaRequestError } from "./intake";
 import type { ArenaOpenaiFundingMode } from "./funding";
 import { ARENA_MEDIA_TOURNAMENT_RESERVED_BYTES } from "./storage";
 
@@ -25,6 +25,16 @@ const wei = (value: unknown) =>
   typeof value === "string" &&
   /^(0|[1-9][0-9]*)$/.test(value) &&
   BigInt(value) < 2n ** 256n;
+
+type CapacityTournament = {
+  id: string;
+  phase: string;
+  seats: number;
+  referee: boolean;
+  media: boolean;
+  active: boolean;
+  mediaReserved?: string;
+};
 
 export function runwareCreditMicrousd(payload: unknown, taskUUID: string) {
   const data = (payload as { data?: unknown[] } | null)?.data;
@@ -94,8 +104,12 @@ export function validateCapacity(value: CapacitySnapshot) {
 export class ArenaCapacity {
   constructor(
     private readonly pool: Pool,
-    private readonly deployment: string
+    private readonly deployment: string,
+    private readonly service?: ArenaIntake
   ) {}
+  get indexerMode() {
+    return this.service?.indexerMode ?? "legacy";
+  }
   async save(value: CapacitySnapshot, observedAfter?: string) {
     validateCapacity(value);
     await transaction(this.pool, async (db) => {
@@ -148,23 +162,25 @@ export class ArenaCapacity {
       return unavailable(
         "New entries are paused while operating funds or storage are replenished."
       );
-    const rows = (
-      await this.pool.query<{
-        id: string;
-        phase: string;
-        seats: number;
-        referee: boolean;
-        media: boolean;
-        active: boolean;
-      }>(
-        `SELECT t.id::text,t.state->>'phase' AS phase,jsonb_array_length(t.state->'seats') AS seats,
+    const rows: CapacityTournament[] = this.service?.nativeSource
+      ? await this.nativeRows()
+      : (
+          await this.pool.query<{
+            id: string;
+            phase: string;
+            seats: number;
+            referee: boolean;
+            media: boolean;
+            active: boolean;
+          }>(
+            `SELECT t.id::text,t.state->>'phase' AS phase,jsonb_array_length(t.state->'seats') AS seats,
        EXISTS(SELECT 1 FROM yunipals_arena.provider_task p WHERE p.deployment=t.deployment AND p.tournament_id=t.id AND kind='referee') AS referee,
        EXISTS(SELECT 1 FROM yunipals_arena.media_job m WHERE m.deployment=t.deployment AND m.tournament_id=t.id AND m.state='ready') AS media,
        (t.state->>'phase' IN ('open','strategies','resolving')) AS active
        FROM yunipals_arena.tournament t WHERE t.deployment=$1`,
-        [this.deployment]
-      )
-    ).rows;
+            [this.deployment]
+          )
+        ).rows;
     const active = rows.filter(
       (r) => r.active || (r.phase === "settled" && !r.media)
     );
@@ -223,15 +239,25 @@ export class ArenaCapacity {
       );
     // Every unsettled or not-yet-published tournament requires up to $0.90 media.
     // Subtract only tasks already issued for those same tournaments, not old films.
-    const reserved = (
-      await this.pool.query<{ amount: string }>(
-        `SELECT coalesce(sum(p.reserved_microusd),0)::text AS amount FROM yunipals_arena.provider_task p
+    const reserved = this.service?.nativeSource
+      ? {
+          amount: rows
+            .filter((r) => r.active || (r.phase === "settled" && !r.media))
+            .reduce(
+              (total, row) => total + BigInt(row.mediaReserved ?? "0"),
+              0n
+            )
+            .toString()
+        }
+      : (
+          await this.pool.query<{ amount: string }>(
+            `SELECT coalesce(sum(p.reserved_microusd),0)::text AS amount FROM yunipals_arena.provider_task p
        JOIN yunipals_arena.tournament t ON t.deployment=p.deployment AND t.id=p.tournament_id
        WHERE p.deployment=$1 AND p.kind='media' AND t.state->>'phase'<>'expired'
        AND NOT EXISTS(SELECT 1 FROM yunipals_arena.media_job m WHERE m.deployment=p.deployment AND m.tournament_id=p.tournament_id AND m.state='ready')`,
-        [this.deployment]
-      )
-    ).rows[0]!;
+            [this.deployment]
+          )
+        ).rows[0]!;
     const remainingMedia =
       BigInt(active.length + Number(newLobby)) * 900000n -
       BigInt(reserved.amount);
@@ -257,5 +283,50 @@ export class ArenaCapacity {
         "New entries are paused while island-draw funds are replenished."
       );
     return { ready: true as const };
+  }
+
+  private async nativeRows() {
+    const service = this.service!;
+    await service.ready();
+    const source = service.nativeSource!;
+    if (!source.work)
+      throw new ArenaRequestError(
+        503,
+        "Native Arena work coverage is unavailable."
+      );
+    const work = await source.work();
+    if (work.ids.length >= 100)
+      throw new ArenaRequestError(
+        503,
+        "Native Arena work requires reconciliation before admission."
+      );
+    const rows = [];
+    for (const id of work.ids) {
+      const context = await service.tournamentContext(id);
+      const saved = (
+        await this.pool.query<{
+          referee: boolean;
+          media: boolean;
+          reserved: string;
+        }>(
+          `SELECT EXISTS(SELECT 1 FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='referee') AS referee,
+          EXISTS(SELECT 1 FROM yunipals_arena.media_job WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND state='ready') AS media,
+          (SELECT coalesce(sum(reserved_microusd),0)::text FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media') AS reserved`,
+          [this.deployment, id, context.incarnation]
+        )
+      ).rows[0]!;
+      rows.push({
+        id,
+        phase: context.state.phase,
+        seats: context.state.seats.length,
+        referee: saved.referee,
+        media: saved.media,
+        active: ["open", "strategies", "resolving"].includes(
+          context.state.phase
+        ),
+        mediaReserved: saved.reserved
+      });
+    }
+    return rows;
   }
 }

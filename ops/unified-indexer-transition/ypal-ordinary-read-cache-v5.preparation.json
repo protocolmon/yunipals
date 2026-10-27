@@ -1,0 +1,79 @@
+{
+  "actualAncestry": {
+    "V5CreatorReceiptSha256": "5acb7de8be040d76458d2a8e2c0792f33df89a9f790e94377c177cd4f75d7337",
+    "V5bLogicalReadsReceiptSha256": "fcebbe8dea9a71c474a8f355b61fb325885c578f64d81af6786637650d152e12",
+    "read143ReceiptSha256": "9ae4507e7b4ca8b4e7c414013f43cb4abd3986b26f003d5e8af9c207172ba14c"
+  },
+  "actualCachePreparation": false,
+  "actualCacheReadAdmission": false,
+  "actualReaderCutover": false,
+  "actualWorkerActivation": false,
+  "additionalCacheReadCount": 4,
+  "files": [
+    {
+      "bytes": 17530,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-read-cache-v5.py",
+      "sha256": "387c6a16d5f0c203731212d1a54b618919c0413e4235a37a35510cff584d8cc2"
+    },
+    {
+      "bytes": 11817,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-read-cache-v5.test.py",
+      "sha256": "0bd457b9104f50eabf0663192e7bd8ca0bdba9af91847f5d3254ab8c0b521acc"
+    },
+    {
+      "bytes": 19888,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-v5.postgres.test.mjs",
+      "sha256": "2d0b75cc09dc14fd3eaebaf9a0c5319a6cdf828c3c6c553ca7d48ba6d5c0adba"
+    },
+    {
+      "bytes": 5200,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-sql-v5.mjs",
+      "sha256": "de3d4e597b45781b98c2874c74630effe4787cb35822bb73e8bc1076d11a658f"
+    },
+    {
+      "bytes": 13603,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-driver-v5.mjs",
+      "sha256": "5e35b8c21a7f378a767740bf45bd86cab39d25c126618d68f3747be745b5784a"
+    },
+    {
+      "bytes": 3416,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-cache-peer-v5.py",
+      "sha256": "de96ead72265718132002263c4bceb9ec6530beb5fff2817da68594d53bbccc8"
+    },
+    {
+      "bytes": 7748,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-read-catalog-v5.sql",
+      "sha256": "8362df110cd3b0d70f9e5969b0619d373885c17ec2f5b8f5921517b71678c7dd"
+    },
+    {
+      "bytes": 15160,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-reader-peer-v5.py",
+      "sha256": "ac44d60d89e1a72fea5363b3168006ba72423d50c9bcf89f8013f47f68409e82"
+    },
+    {
+      "bytes": 3262,
+      "path": "ops/unified-indexer-transition/ypal-ordinary-read-cache-v5.md",
+      "sha256": "ec2a301fe6bef1309ccb2052c07af952002d3e776ce60ad3b09d69a3bc7b3880"
+    }
+  ],
+  "format": "yunipals-ordinary-read-cache-v5-source-preparation",
+  "frozenHistoricalFilesChanged": false,
+  "installedDependencyPreauthorizationScope": "once_per_CLI_invocation_before_first_evaluation_on_retained_immutable_runtime",
+  "loginChanges": 0,
+  "nativeRegrantCount": 0,
+  "requiredActualInputs": [
+    "selectedNativeMetadata",
+    "completeNativeProvenance",
+    "V5bGenerationCandidate",
+    "selectorCandidate",
+    "cacheInput"
+  ],
+  "sameTransactionAllGranteeColumnProof": true,
+  "sourceIndependentCompletedReaderAuthoritySeparate": true,
+  "validation": {
+    "genuineDisposablePostgresGroups": 11,
+    "productionActions": 0,
+    "providerRequests": 0,
+    "pythonControls": 8
+  }
+}

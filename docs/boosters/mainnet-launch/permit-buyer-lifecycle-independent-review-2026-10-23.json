@@ -1,0 +1,118 @@
+{
+  "format": "yunipals-permit-buyer-lifecycle-independent-review-v1",
+  "reviewedAt": "2026-10-23T16:53:55.958580+00:00",
+  "verdict": "passed",
+  "openConcreteFindings": 0,
+  "sourceFiles": [
+    {
+      "path": "apps/yunipals-home-web/src/hooks/useBoosterActions.ts",
+      "sha256": "e69598a653349ce781fee67da9e38c5cc82987e48bfadce0b26f522e2a136bfa"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.ts",
+      "sha256": "94ac4636b35c08f7685653c05b29cb159e246f0e95ab7dee82fe838b7575fa0f"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterPermit.test.ts",
+      "sha256": "8aeb66bffb0570b1ba0bf1fd07622515e4eefa9bc7a3820839572212407314d7"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.ts",
+      "sha256": "c176ed66c34b88084150e439fec40ab3a5c2cdd35ae69106ac1fc6e56bce4cd1"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/lib/boosterReveal.test.ts",
+      "sha256": "6763a40af96183a670e6112b53852ac1a5db71df86c157231857a76988d29d81"
+    },
+    {
+      "path": "apps/yunipals-home-web/scripts/test-booster-purchase-ui.mjs",
+      "sha256": "70dfdb38e2cb64a35c87847047ec2defadeba82545669e6562d185aff55a0ce3"
+    },
+    {
+      "path": "apps/yunipals-home-web/src/pages/boosters/BoosterActionButton.tsx",
+      "sha256": "a5ab4092456ed4ce05e0a8db17973c34b5a3eb6f1de14d9b9097a68e7dae2ea1"
+    }
+  ],
+  "historicalIndependentReview": {
+    "path": "docs/boosters/mainnet-launch/permit-buyer-frontend-independent-review-2026-10-23.json",
+    "sha256": "c9f084ed4eb9cd8bf17966bd0ac1d851a3b5a80eeeb006c750ee4fd778376e62",
+    "preservedUnchanged": true,
+    "scope": "Independent 7 helper and 12 reveal controls plus 16 browser groups and corrected final-expiry probe on the earlier c8fc hook. This new review supplies the subsequent lifecycle correction."
+  },
+  "correctedLifecycleFinding": {
+    "severity": "P2",
+    "originalHookSha256": "c8fc27c50f5316b2f72bd3c10955a614a1df520d7c5e5708d8e3b3e3e82d689c",
+    "originalWalletSendAttemptsAfterUnmount": 1,
+    "finalHookSha256": "e69598a653349ce781fee67da9e38c5cc82987e48bfadce0b26f522e2a136bfa",
+    "finalWalletSendAttemptsAfterUnmount": 0,
+    "probe": {
+      "case": "React root unmounted while second-confirm final getAddresses is pending, before wallet entry",
+      "harnessSha256": "70dfdb38e2cb64a35c87847047ec2defadeba82545669e6562d185aff55a0ce3",
+      "result": {
+        "rootEmpty": true,
+        "preflightWalletChecks": 2,
+        "walletSendAttempts": 0,
+        "recordedTransactions": 0,
+        "signatures": 1
+      }
+    },
+    "status": "fixed_and_independently_reproduced"
+  },
+  "implementationReviewed": [
+    "Effect cleanup sets activePage=false, clears the current review reference, and invalidates the preparation generation without introducing a transaction or cleanup-side wallet call.",
+    "checkedWallet refuses an inactive component both before and after its awaited account/chain checks.",
+    "The final synchronous send fence requires activePage, the same review object, unexpired quote and the same latest wallet/account/Base chain, with no intervening await before wallet.sendTransaction.",
+    "The expiry fence and all exact-price, domain, nonce/allowance, balance, simulation, receipt-count and replacement protections from the preceding independent review remain in the final source."
+  ],
+  "validation": {
+    "independentAdditionalScenarioExecuted": true,
+    "independentAdditionalScenarioCount": 1,
+    "independentAdditionalScenarioPassed": true,
+    "authorCurrentValidFlowReportIndependentlyInspected": {
+      "file": "/tmp/yunipals-booster-permit-purchase-ui-20261023.json",
+      "sha256": "1f5149c1cf2f28d82a1622977b45fbe5ae77363772c074c1f2afa42c4d407737",
+      "groupsPassed": 17,
+      "errors": 0,
+      "sourceBoundValidationPath": "docs/boosters/permit-engine-upgrade-2026-10-23/buyer-frontend-validation.json",
+      "sourceBoundValidationSha256": "9920a3e81ab7e0c0befb44e7c70acb72081169b7ae547d447d3bd2d004e4106b"
+    },
+    "unchangedHelperAndReceiptTestSourcesMatchPriorIndependentRuns": true,
+    "currentAuthorFrontendTypecheckPassed": true,
+    "currentDiffCheckPassed": true,
+    "evidence": [
+      {
+        "file": "/tmp/yunipals-permit-buyer-unmount-finding-20261023.json",
+        "sha256": "4e2f4b9032b74dcb865d86082d860e3ee39d0cdd130a1207666c011f73047f25"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-unmount-probe-20261023.json",
+        "sha256": "5d817336e1513559964904d3a2e28c6da7c5e428f4aec10c6912b8bdf269904a"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-unmount-probe-fixed-20261023.json",
+        "sha256": "bf052787467ba62a2a0fefe476dd59e3a1041109b5a630848ebb9d98a614ebbd"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-unmount-probe-fixed-20261023.mjs",
+        "sha256": "b3bc94d406c9ea6f6dd8e7e0a2538045627f575637de656c9e97abb2f2b8fc35"
+      },
+      {
+        "file": "/tmp/yunipals-permit-buyer-unmount-probe-fixed-20261023.log",
+        "sha256": "0ed8da48af30ec7e7b4c0d843f11f3d59fcfd7d61696c142302be981560bc401"
+      }
+    ]
+  },
+  "actions": {
+    "productEdits": 0,
+    "productionActions": 0,
+    "realProviderCalls": 0,
+    "realWalletSignatures": 0,
+    "realTransactions": 0
+  },
+  "limitations": [
+    "The new independent test is the original bounded reproduction against the fixed real component with a synthetic wallet and deferred preflight; it does not contact mainnet or a production wallet.",
+    "The final 17-group normal-flow report was source/hash-verified and inspected, not independently rerun in this lifecycle-only follow-up. The earlier 16 groups and unchanged helper/receipt tests were independently executed in the historical review.",
+    "This guard prevents initiating a future wallet request after component unmount. It does not cancel an already-invoked wallet RPC.",
+    "Contract activation, owner deployment and live-chain permit acceptance remain separate gates."
+  ]
+}

@@ -1,6 +1,11 @@
 import type { PoolClient } from "pg";
-import { bnbSchema, physicalPonderSchema } from "../offchain/sql.js";
+import {
+  bnbSchema,
+  physicalPonderSchema,
+  unifiedOwnershipReads
+} from "../offchain/sql.js";
 import { collectionSlugs } from "../constants.js";
+import { nativeBaseMetadataReads } from "./base-mode.js";
 
 export const readCacheSchemaStatements = [
   `CREATE TABLE IF NOT EXISTS metadata_projection.read_epoch (
@@ -13,6 +18,9 @@ export const readCacheSchemaStatements = [
     collection text NOT NULL, revision bigint NOT NULL, guard_count integer NOT NULL,
     source_mode text NOT NULL, completed_at timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY(generation_id,collection))`,
+  `ALTER TABLE metadata_projection.read_set ADD COLUMN IF NOT EXISTS ownership_release_id text,
+    ADD COLUMN IF NOT EXISTS ownership_read_identity text, ADD COLUMN IF NOT EXISTS ownership_boundary bigint,
+    ADD COLUMN IF NOT EXISTS ownership_boundary_hash text, ADD COLUMN IF NOT EXISTS ownership_policy text`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.read_member (
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     collection text NOT NULL, token_id numeric NOT NULL, lifecycle integer NOT NULL,
@@ -26,6 +34,9 @@ export const readCacheSchemaStatements = [
     INCLUDE(lifecycle) WHERE NOT has_search`,
   `CREATE INDEX IF NOT EXISTS read_member_available_idx
     ON metadata_projection.read_member(generation_id,collection,metadata_available,token_id,lifecycle)`,
+  `CREATE INDEX IF NOT EXISTS read_member_search_proof_idx
+    ON metadata_projection.read_member(generation_id,collection,token_id,lifecycle)
+    WHERE has_search`,
   `CREATE OR REPLACE FUNCTION metadata_projection.read_cache_dirty()
     RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
     SET search_path=pg_catalog,metadata_projection AS $$
@@ -38,6 +49,26 @@ export const readCacheSchemaStatements = [
         RETURN NULL;
       END IF;
       IF TG_OP='UPDATE' THEN
+        IF kind='native_base_approval' THEN
+          IF (OLD.read_identity,OLD.state,OLD.frontier,OLD.implementation,OLD.error_code)
+            IS NOT DISTINCT FROM (NEW.read_identity,NEW.state,NEW.frontier,NEW.implementation,NEW.error_code) THEN RETURN NULL; END IF;
+        END IF;
+        IF kind='base' AND TG_TABLE_SCHEMA='metadata_source'
+          AND TG_TABLE_NAME='chain_metadata_scan' THEN
+          -- Only the scan identity and eligibility cursor affect publication
+          -- proofs. Target/head hashes and timestamps are monitoring state.
+          IF (OLD.name,OLD.chain_id,OLD.contract_address)
+            IS NOT DISTINCT FROM (NEW.name,NEW.chain_id,NEW.contract_address) THEN
+            IF OLD.next_block IS NOT DISTINCT FROM NEW.next_block THEN RETURN NULL; END IF;
+            -- Moving either direction changes proofs only if an event crosses
+            -- the exclusive next_block boundary. Event writes have their own guard.
+            IF NOT EXISTS(SELECT 1 FROM metadata_source.chain_metadata_event event
+              WHERE event.chain_id=NEW.chain_id AND event.contract_address=NEW.contract_address
+                AND event.block_number>=LEAST(OLD.next_block,NEW.next_block)
+                AND event.block_number<GREATEST(OLD.next_block,NEW.next_block))
+              THEN RETURN NULL; END IF;
+          END IF;
+        END IF;
         IF kind='token' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle)
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle) THEN RETURN NULL; END IF; END IF;
         IF kind='document' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle,OLD.document,OLD.content_hash,OLD.fetch_status)
@@ -47,12 +78,17 @@ export const readCacheSchemaStatements = [
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.mint_block,NEW.mint_transaction_hash)
           THEN RETURN NULL; END IF; END IF;
         IF kind='publication' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle,OLD.source_kind,OLD.release_id,
-          OLD.publication_status,OLD.publication_content_hash,OLD.mint_transaction_hash,OLD.mint_log_index,OLD.chain_event_key)
+          OLD.publication_status,OLD.publication_content_hash,OLD.mint_transaction_hash,OLD.mint_log_index,OLD.chain_event_key,OLD.chain_event_block_hash)
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.source_kind,NEW.release_id,
-          NEW.publication_status,NEW.publication_content_hash,NEW.mint_transaction_hash,NEW.mint_log_index,NEW.chain_event_key)
+          NEW.publication_status,NEW.publication_content_hash,NEW.mint_transaction_hash,NEW.mint_log_index,NEW.chain_event_key,NEW.chain_event_block_hash)
           THEN RETURN NULL; END IF; END IF;
         IF kind='runtime' THEN IF OLD.base_error IS NOT DISTINCT FROM NEW.base_error THEN RETURN NULL; END IF; END IF;
         IF OLD IS NOT DISTINCT FROM NEW THEN RETURN NULL; END IF;
+      END IF;
+      IF kind='native_base_event' THEN
+        IF TG_OP='INSERT' AND NEW.source_id<>'metadata:base' THEN RETURN NULL; END IF;
+        IF TG_OP='DELETE' AND OLD.source_id<>'metadata:base' THEN RETURN NULL; END IF;
+        IF TG_OP='UPDATE' AND OLD.source_id<>'metadata:base' AND NEW.source_id<>'metadata:base' THEN RETURN NULL; END IF;
       END IF;
       IF kind='mint' THEN
         IF TG_OP='INSERT' AND NEW."from"<>'0x0000000000000000000000000000000000000000' THEN RETURN NULL; END IF;
@@ -62,7 +98,7 @@ export const readCacheSchemaStatements = [
       END IF;
       IF kind='release' THEN
         UPDATE metadata_projection.read_epoch SET revision=revision+1;
-      ELSIF kind IN('base','runtime') THEN
+      ELSIF kind IN('base','runtime','native_base_event','native_base_approval') THEN
         UPDATE metadata_projection.read_epoch SET revision=revision+1 WHERE collection='base';
       ELSE
         IF TG_OP<>'INSERT' THEN old_collection:=OLD.collection; END IF;
@@ -114,8 +150,15 @@ export async function installReadCache(db: Pick<PoolClient, "query">) {
     ["metadata_source.archive_release", "release"]
   ];
   const definitions = new Map<string, { kind: string; chains: string[] }>();
+  await db.query(
+    "DELETE FROM metadata_projection.read_guard WHERE collection=ANY($1::text[])",
+    [collectionSlugs]
+  );
   for (const collection of collectionSlugs) {
-    const schema = collection === "bnb" ? bnbSchema : physicalPonderSchema;
+    const schema =
+      collection === "bnb" && !unifiedOwnershipReads
+        ? bnbSchema
+        : physicalPonderSchema;
     const sources = [
       ...common,
       [`${schema}.token`, "token"],
@@ -123,8 +166,21 @@ export async function installReadCache(db: Pick<PoolClient, "query">) {
       [`${schema}.transfer_event`, "mint"],
       ...(collection === "base"
         ? [
-            ["metadata_source.chain_metadata_event", "base"],
-            ["metadata_source.chain_metadata_scan", "base"],
+            ...(nativeBaseMetadataReads()
+              ? [
+                  [
+                    `${physicalPonderSchema}.canonical_event`,
+                    "native_base_event"
+                  ],
+                  [
+                    "metadata_source.native_base_metadata_state",
+                    "native_base_approval"
+                  ]
+                ]
+              : [
+                  ["metadata_source.chain_metadata_event", "base"],
+                  ["metadata_source.chain_metadata_scan", "base"]
+                ]),
             ["metadata.publication_runtime", "runtime"]
           ]
         : [])

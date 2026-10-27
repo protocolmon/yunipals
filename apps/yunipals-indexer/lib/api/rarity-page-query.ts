@@ -84,9 +84,9 @@ export function rarityPageQueries(query: RarityPageQuery) {
     if (!query.selective) {
       for (let i = 0; i < filters.length; i++)
         filters[i] = filters[i]!.replaceAll(
-          "t.token_id::numeric",
+          /\bt\.token_id::numeric\b/g,
           "s.token_id"
-        ).replaceAll("t.collection", "s.collection");
+        ).replaceAll(/\bt\.collection\b/g, "s.collection");
       filters.push("s.collection=ANY($1::text[])");
       if (query.cursor?.rarity !== undefined && query.cursor.rarity !== null)
         filters.push(

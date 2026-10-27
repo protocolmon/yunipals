@@ -1,0 +1,71 @@
+{
+  "format": "yunipals-combined-source-tail-public-diagnostic-v1",
+  "nativeObservedAt": "2026-10-24T06:45:57.883217+00:00",
+  "sameAcknowledgedSourceActor": true,
+  "schemaOid": "75963410",
+  "buildId": "71e2a7f3b7",
+  "coverage": [
+    {
+      "chainId": 1,
+      "chainName": "mainnet",
+      "completeThroughBlock": "26259185",
+      "frameworkFinalizedThroughBlock": "26259185",
+      "recoveryThroughBlock": "26259185"
+    },
+    {
+      "chainId": 56,
+      "chainName": "bnb",
+      "completeThroughBlock": "129409074",
+      "frameworkFinalizedThroughBlock": "129409074",
+      "recoveryThroughBlock": "129409074"
+    },
+    {
+      "chainId": 137,
+      "chainName": "polygon",
+      "completeThroughBlock": "96061869",
+      "frameworkFinalizedThroughBlock": "96061869",
+      "recoveryThroughBlock": "96061869"
+    },
+    {
+      "chainId": 8453,
+      "chainName": "base",
+      "completeThroughBlock": "53004666",
+      "frameworkFinalizedThroughBlock": "53004666",
+      "recoveryThroughBlock": "53004666"
+    }
+  ],
+  "frameworkReady": false,
+  "packApi": {
+    "buildId": "8e88ea2e00",
+    "httpStatus": 200,
+    "indexedTimestamp": "1792824355",
+    "ready": true
+  },
+  "fullSixDataParityAlreadyAccepted": true,
+  "heldSyncTransaction": {
+    "positiveKernelMappingToCombinedSource": true,
+    "state": "idle in transaction",
+    "lastStatementKind": "begin",
+    "transactionAgeSecondsAtObservation": 2728,
+    "postgresBlockingBackends": 0
+  },
+  "retainedProxyRestarts": {
+    "count": 5,
+    "sameUnitAndPrivateFileHashes": true,
+    "sameFixedKernelProgramIdentities": true,
+    "changedFields": [
+      "pid",
+      "startTicks",
+      "invocation",
+      "fullRuntimeEnvironmentHash"
+    ],
+    "newCompleteSemanticAcknowledgementPending": true
+  },
+  "historicalWholePreservationGatePassed": false,
+  "currentCanonicalOrReaderAcceptanceQualified": false,
+  "rootRecoveryOrTuningExecuted": false,
+  "providerCallsByDiagnostics": 0,
+  "databaseWritesByDiagnostics": 0,
+  "serviceChangesByDiagnostics": 0,
+  "rawQueriesPrivateConfigurationOrRuntimeSnapshotsPublished": false
+}

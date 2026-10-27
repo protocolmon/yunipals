@@ -1,0 +1,85 @@
+{
+  "format": "yunipals-rpc-deadline-independent-review-v1",
+  "verdict": "pass",
+  "sourceOnly": true,
+  "reviewedFiles": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-v1/rpc-preflight.ts",
+      "sha256": "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192",
+      "bytes": 17385
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-v1/rpc-deadline.test.mjs",
+      "sha256": "e0640848344c27698ba0da7a395d998936791ac96160ce904068a7efa681d5a5",
+      "bytes": 18622
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-v1/README.md",
+      "sha256": "4575b95dff068f76b9850f0359a99f7211f191cf303ce4f20825829838988826",
+      "bytes": 7025
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-v1/preparation.json",
+      "sha256": "0e1e0b9840778c0b9cdb48a5a2131663c6a577fd026f136ef59a9897ab63f3e8",
+      "bytes": 1565
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/unified/rpc-call-deadline.ts",
+      "sha256": "9264749681650377590b8e87e452fe648277a01e830497ca25c31ea8beda0a36",
+      "bytes": 3183
+    },
+    {
+      "path": "apps/yunipals-indexer/lib/unified/rpc-preflight.ts",
+      "sha256": "92015241a42c95c4c73c140dda9be65255cd74742b8641ef01c5de86aa2b87bc",
+      "bytes": 12425
+    },
+    {
+      "path": "apps/yunipals-indexer/test/unified-rpc-deadline.test.ts",
+      "sha256": "9998b57e274eca66d2f8c1c5aa21b3e0920ccc94992e764d754c0c18634ed8c5",
+      "bytes": 9167
+    },
+    {
+      "path": "docs/unified-indexer/rpc-deadline-application-preparation-2026-10-24.json",
+      "sha256": "e8a639767e30566e16b3eb594bcb775317be9ee8b791ee8ae44d5e5fb51ddb1a",
+      "bytes": 1639
+    }
+  ],
+  "rootChecks": {
+    "standaloneRuntimeAndASTControlsPassed": 16,
+    "genericAndExistingPreflightControlsPassed": 16,
+    "actualHeaderAndBodyStallsCovered": true,
+    "actualViemStreamingSizeCapWithNonterminatingCancelCovered": true,
+    "batchingAndPolicyHeaderIsolationPreserved": true,
+    "callerCancellationAndBaseFIFOReleaseVerified": true,
+    "sameGenericAndCombinedHelperAST": true
+  },
+  "authorFullIndexerTypecheckPassed": true,
+  "localPonderBuild": {
+    "format": "yunipals-rpc-deadline-pool5-offline-v1",
+    "buildId": "71e2a7f3b7",
+    "configHash": "0f394941a10f8ad3407029be841ea82a20633b3323f03d95dcfff613c063377d",
+    "schemaHash": "f4522b6a4b90a56ed63468a70b9a03941d184d3f22f592afdb672952d22957f6",
+    "indexingHash": "8fdfce8c688a96a995023887e62ae028128c0db59d78f93025d2de63938e5af3",
+    "effectivePoolMax": 5,
+    "interceptedFixtureRequests": 12,
+    "realProviderRequests": 0,
+    "socketAttempts": 0,
+    "databaseCalls": 0,
+    "candidateTransportSha256": "690b6dda7357390ae4d6bb063b30776cdd6da3a8beefa54d4d60b0092f392192"
+  },
+  "offlineBuildProgram": {
+    "path": "ops/unified-indexer-transition/ypal-rpc-deadline-offline-build-v1.mjs",
+    "sha256": "e644eefeaecd4b970e89320bb8cef5c401180605d742f2018b0fbc6aa2c8820f",
+    "isolatedFixtureRootRequired": true
+  },
+  "limits": {
+    "productionBuildQualified": false,
+    "runningSourceChanged": false,
+    "sourceActions": 0,
+    "databaseWrites": 0,
+    "providerRequests": 0,
+    "currentLagCauseEstablished": false,
+    "throughputImprovementEstablished": false,
+    "oldRuntimeProofsRelabelled": false
+  }
+}

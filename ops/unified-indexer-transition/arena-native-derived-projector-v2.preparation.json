@@ -1,0 +1,97 @@
+{
+  "actualInputOrProjectionReceiptIncluded": false,
+  "actualProductionQualificationClaimed": false,
+  "artifact": {
+    "artifactDigest": "8b94c5c50da8adc1673e7d3971a374e8fef54c7c4f98323b8bd49ce72b542a99",
+    "facadeSha256": "08905983dc0f5556190d311fd648eecc9ebfea4c958e607902a93ac7a2ad24ba",
+    "localDirectory": "/tmp/arena-native-derived-support-credentials-v2-20261025",
+    "manifestSha256": "b038bff5a579d08fbd0ebcce4765029d52465f50c854b033b9191c4ecabf1443"
+  },
+  "effectsByThisSourceWork": {
+    "gitActions": 0,
+    "productionDatabaseWrites": 0,
+    "productionServiceActions": 0,
+    "providerCalls": 0,
+    "sshActions": 0
+  },
+  "files": [
+    {
+      "bytes": 24127,
+      "file": "arena-native-derived-projector-v2.py",
+      "sha256": "c1d07cad212bf204882b0680cb074803cfa5e139129db369aebb141a5a20a4db"
+    },
+    {
+      "bytes": 928,
+      "file": "arena-native-derived-credentials-v2.mjs",
+      "sha256": "06aacedf7e815e4168f0d501db4db87c40add0d99c5ae1956ce96a2d5ca54b7d"
+    },
+    {
+      "bytes": 4194,
+      "file": "arena-native-derived-support-build-v2.mjs",
+      "sha256": "b11c0f5c7163d55bd7e395cea8ae53f34cda2df73353a33df61c0d5a26d1a263"
+    },
+    {
+      "bytes": 3194,
+      "file": "arena-native-derived-support-install-v2.py",
+      "sha256": "66f593bf6c5daecae8458b235939c2748a46bb3857295734b22b4a040ec0eb8e"
+    },
+    {
+      "bytes": 16927,
+      "file": "arena-native-derived-support-v2.manifest.json",
+      "sha256": "b038bff5a579d08fbd0ebcce4765029d52465f50c854b033b9191c4ecabf1443"
+    },
+    {
+      "bytes": 18175,
+      "file": "arena-native-derived-projector-v2.manifest.json",
+      "sha256": "11c769f791261e18787d7c44fcb4c0cb3551e692bdf27dcd6074d38c08ce3d7b"
+    },
+    {
+      "bytes": 1713,
+      "file": "arena-native-derived-projector-v2-manifest.py",
+      "sha256": "ed5f8e0d5365e3e456dc095c6908ddc71f68fc85c270390bfec8954098cf6a07"
+    },
+    {
+      "bytes": 8833,
+      "file": "arena-native-derived-projector-v2.test.py",
+      "sha256": "6d72f3bfdb7e94f30f2f6da0363c233054c330d8b5da97878842cfa866544016"
+    },
+    {
+      "bytes": 4718,
+      "file": "arena-native-derived-projector-v2.test.mjs",
+      "sha256": "8ee70315e6440ac59647bd96d6a2506314526fcf39b56060b0676e8954c4b9fe"
+    },
+    {
+      "bytes": 5766,
+      "file": "arena-native-derived-projector-v2.md",
+      "sha256": "c5713d125bd62bab08812255039c529a45a312267629d2ceedca3086e86d3373"
+    },
+    {
+      "bytes": 38998,
+      "file": "arena-native-derived-projector-v2.stage.json",
+      "sha256": "d02385bfa2320894f7a12ebb8060c51da642bb5cb64215b36ff71a9732c33dba"
+    }
+  ],
+  "format": "yunipals-arena-native-derived-projector-v2-preparation",
+  "knownRequiredFollowups": [
+    "root actual exclusive support-v2 installation and installed receipt qualification",
+    "actual protected Owner2 input and genuine unused original unit/socket/public namespace review",
+    "root explicit once-only service start then actual catch-up/capture/current qualification",
+    "C new inverse/native-return producers must authenticate actual Owner2/support refs",
+    "separate actual ready0 source continuation and inverse timing qualification"
+  ],
+  "originalOwnerAcceptanceClaimed": false,
+  "publicStageClosureCount": 166,
+  "publicStageClosureFile": "arena-native-derived-projector-v2.stage.json",
+  "publicStageClosureSha256": "d02385bfa2320894f7a12ebb8060c51da642bb5cb64215b36ff71a9732c33dba",
+  "separateExternalPrerequisiteFiles": 6,
+  "verification": {
+    "actualNewArtifactReproduced": true,
+    "allOtherOwnerAndTopLevelAlgorithmBodiesIdentical": true,
+    "genuineExclusiveInstallerBodiesRetained": true,
+    "independentReview": "C independently reran8 Python and4 Node; reproduced actual8b94/b038/37c outputs, verified164+6 closure and no concrete findings",
+    "newDatabaseOrServiceFixtureEffects": false,
+    "nodeControlsPassed": 4,
+    "originalPostgresEvidenceHistoricalOnly": true,
+    "pythonControlsPassed": 8
+  }
+}

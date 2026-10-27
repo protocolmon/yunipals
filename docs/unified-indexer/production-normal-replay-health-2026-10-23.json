@@ -1,0 +1,62 @@
+{
+  "format": "yunipals-normal-replay-health-observation-v1",
+  "checkpoint": {
+    "at": "2026-10-23T01:38:30.964276+00:00",
+    "buildId": "bf4939b3ff",
+    "checkpoints": [
+      {
+        "blockTimestamp": 1792690499,
+        "chain": 1,
+        "completeBlock": 26249684
+      },
+      {
+        "blockTimestamp": 1760163442,
+        "chain": 56,
+        "completeBlock": 64218646
+      },
+      {
+        "blockTimestamp": 1792690983,
+        "chain": 137,
+        "completeBlock": 95990408
+      },
+      {
+        "blockTimestamp": 1792691223,
+        "chain": 8453,
+        "completeBlock": 52950938
+      }
+    ],
+    "databaseWrites": 0,
+    "providerCalls": 0,
+    "runtime": {
+      "invocation": "c3463c9a2e1240e8890e318ba1360cf4",
+      "pid": 716994,
+      "startMonotonicMicroseconds": 66117947533239,
+      "startTicks": 6611794751
+    },
+    "schema": "unified_shadow_20261020_7e7375b0",
+    "serviceActions": 0,
+    "validated": true
+  },
+  "resources": {
+    "databaseWrites": 0,
+    "healthAt": "2026-10-23T01:38:30.964535+00:00",
+    "providerCalls": 0,
+    "rootFreeBytes": 45483835392,
+    "serviceActions": 0,
+    "sourceMemoryCurrentBytes": 400900096,
+    "sourceMemoryEvents": {
+      "high": 0,
+      "low": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_group_kill": 0,
+      "oom_kill": 0
+    },
+    "sourceMemoryMaxBytes": 6442450944,
+    "volumeFreeBytes": 95476449280
+  },
+  "bnbHistoricalBlockCoveragePercent": 46.6,
+  "fixedBnbTarget": 129172539,
+  "allChainsCurrent": false,
+  "nativeSourcePromoted": false
+}

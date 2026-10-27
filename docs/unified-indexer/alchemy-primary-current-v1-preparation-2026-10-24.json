@@ -1,0 +1,110 @@
+{
+  "format": "yunipals-alchemy-primary-current-v1-preparation",
+  "sourceOnly": true,
+  "hostQualified": false,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py",
+      "bytes": 33499,
+      "sha256": "753c701d62f3fd03f23a8a9ed7436eafea98a8627054fcdc24cedd61d9bd6215"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py",
+      "bytes": 35034,
+      "sha256": "ed4fe759cd03adc5b39eb783a9c723273d5e123948105314a1477fbc43e6cd87"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.postgres.test.mjs",
+      "bytes": 3717,
+      "sha256": "f4bcce88cb86e557ea24bb16aabc296569dd89c7cde6380db4d8f037abef4df2"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.md",
+      "bytes": 9130,
+      "sha256": "7b86f85beb227b6372e242a4216f1e19ba03741ac888d12b981d9646d2d7de35"
+    }
+  ],
+  "focusedTestsPassed": 33,
+  "controlsLogSha256": "3e7276c9f1876d29171c5686b3f6380669b3cefbce734e689be715d89c1a5c12",
+  "controls": [
+    "Real protected receipt files and exact admission-link/plan/result bindings.",
+    "Never-paid all-nine-journal absence and mixed never/prepared/stopped branches.",
+    "Actual /proc PID/start escaped-process refusal and exact budget backend tuple drain.",
+    "Private file, definition, actor, boot-link, manager job and security drift refusal.",
+    "Late first-route actor/definition drift after last metrics read refuses at final four-route CAS.",
+    "Typed exact deadline timer due/start/stop timeout proof; RuntimeMax cannot replace oneshot timeout.",
+    "Deadline preparation works before financial result/admission link exist.",
+    "Actual financial Owner.acknowledge result builder and actual financial model are executed against the public offline snapshot, then consumed by the actual quiet leaf; producer format is not mirrored.",
+    "Explicit lost-start terminalScanRequired branch executes two complete same-UID proc scans initially and before final four-actor CAS. Real escaped subprocess refuses; after exit its actual kernel tuple is absent. Same-UID argv drift/unknown live program and paid-path references refuse.",
+    "Actual six-key timer schema has no MainPID; service-only PID query plus typed Unit no-job and exact Timer due proof accepted. Nonzero timer Job refuses.",
+    "All five actual8afd metrics paid fallback flags must be strictly false, routing free_first and typed paidCalls zero; bounded nonnegative active/queued FREE traffic accepted. Paid mode/calls/each fallback flag and malformed or excessive queue/concurrency values refuse.",
+    "Actual lifecycle source projection and actual leaf emitted SQL both use backend_start::text. Genuine disposable PG16 reproduces native JSON T separator vs text space for one still-live connection; actual leaf accepted the old mismatched projection and refuses the fixed equal text PID/start tuple. No production or write query.",
+    "Actual31/36 manager response qualifies all5 omitted Service hooks through exact D-Bus a(sasbttttuii) empty arrays; nonempty/unsupported/other missing field refuses. Canonical shape unchanged."
+  ],
+  "knownUnqualifiedPrefixes": [],
+  "lifecycleOwner": "ypal-alchemy-source-switch-v1.py (separate root-owned implementation; not qualified by this packet)",
+  "financialAuthorityQualified": false,
+  "sourceActorQualified": false,
+  "databaseWrites": 0,
+  "providerCalls": 0,
+  "serviceActions": 0,
+  "gitMutations": 0,
+  "formatCorrection": {
+    "historicalUnpublishedLeafSha256": "44a12e84ab91763d8d83999db87dab7b9e3c56f1e349abfc00e9683223363ed9",
+    "reason": "Result format corrected to actual producer yunipals-ypal-alchemy-catchup-financial-v1; old candidate was never production qualified."
+  },
+  "terminalScanScope": "Fixed RPC account metadata plus same-account stat/argv only. Lifecycle still owns complete interrupted-prefix role/session attribution; leaf does not infer no financial effects from missing ACK.",
+  "actualTimerSchemaEvidence": {
+    "source": "Root bounded read-only production systemctl show of existing yunipals-booster-artwork-queue.timer, session66649",
+    "requested": [
+      "Id",
+      "MainPID",
+      "ActiveState",
+      "LoadState",
+      "FragmentPath",
+      "DropInPaths",
+      "UnitFileState"
+    ],
+    "observedKeys": [
+      "Id",
+      "ActiveState",
+      "LoadState",
+      "FragmentPath",
+      "DropInPaths",
+      "UnitFileState"
+    ],
+    "mainPidAbsent": true,
+    "servicesOnlyMainPidFix": true,
+    "rawProductionValuesExported": false
+  },
+  "genuinePostgresGroupsPassed": 1,
+  "commands": [
+    "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.test.py",
+    "/root/.nvm/versions/node/v24.18.1/bin/node ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.postgres.test.mjs",
+    "python3 -I -B ops/unified-indexer-transition/ypal-alchemy-primary-current-v1.py"
+  ],
+  "sameVersionCorrections": {
+    "historicalPublishedNeverDeployedSourceSha256": "552bd85d811645ee0ba02c2ab0747438d5bbab96e0edc59c850870e8d6f59862",
+    "rootActualState": "Leaf path and financial BASE absent; no actual receipts, so same-v1 correction permitted while historical Git preserved.",
+    "backendSerialization": "backend_start::text matches actual lifecycle capture exactly; no timezone parser.",
+    "financialQuietScope": "Paid activity must be absent; legitimate bounded FREE work may continue. Exact original8afd actor/environment/security/activation still required."
+  },
+  "genuinePostgresEvidence": {
+    "fixture": "Existing fixed postgres:16.15 disposable container yunipals-unified-indexer-test-20261020,127.0.0.1:56967",
+    "sql": "BEGIN READ ONLY; SET LOCAL timezone=UTC; pg_stat_activity own still-live test client only; ROLLBACK",
+    "groups": 1,
+    "passed": true,
+    "sandboxAttempt": "Initial Docker inspect EPERM before database access; exact isolated read-only test approved and passed with escalation.",
+    "databaseWrites": 0,
+    "productionDatabaseAccess": false,
+    "providerCalls": 0,
+    "hostActions": 0
+  },
+  "actualHookSchemaEvidence": {
+    "managerShapeSha256": "d245f8a484f7329554b158af90361295f3f017a694175766ed29a904a2574876",
+    "typedHookEvidenceSha256": "1703e6aacc6f3627218d79f4532f6757121dfbeab97023337670ef6aeb6be9d8",
+    "producer": "root separate read-only production observations",
+    "historicalInactiveLeafSha256": "8de3b2ea30f20b8120b3c2ee5e7efd3b046438f4f211e430b36045edaba8c37c",
+    "assumedAbsentDefault": false
+  }
+}

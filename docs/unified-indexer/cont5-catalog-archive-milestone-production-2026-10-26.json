@@ -1,0 +1,16 @@
+{
+  "allColumnACLQualified": true,
+  "archiveResultSha256": "f11904775d05b055c0e427e908f0d85babc6d3168390f9504348c9d037930506",
+  "archivedFileCount": 2,
+  "capture2IntentUnchanged": true,
+  "catalogProofSha256": "3a8f0b73613ef1c386820dd192a60dccbbe1d56d0173b64f65c7e9a9c494dbcb",
+  "databaseOrServiceActionsByThisObserver": 0,
+  "directoryAndFileInodesPreserved": true,
+  "format": "root-cont5-recovery-milestone-observation-v1",
+  "matchingSQLentryProcessCountAtReconciliation": 0,
+  "milestoneObservationOnly": true,
+  "observedAt": "2026-10-26T02:22:47.225073+00:00",
+  "ownedAPPBackendCountAtReconciliation": 0,
+  "terminalBaselineResultPresent": false,
+  "wholeCatalogQualified": true
+}

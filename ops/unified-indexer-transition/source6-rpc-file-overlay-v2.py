@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""One raw RPC file mounted read-only at its retained path; original config stays exact."""
+import hashlib,json
+from pathlib import Path
+WORKSPACE=Path('/var/lib/yunipals-unified-shadow/20261020-008028af-a')
+OPS=Path('/opt/yunipals-unified/operations/free-replay-20261020')
+DIRECTORY=OPS/'source6-rpc-file-v2'
+MOUNT=WORKSPACE/'apps/yunipals-indexer/lib/unified/rpc-preflight.ts'
+PATCH=OPS/'source6-rpc-source-v2.input.ts'
+CONFIG_SHA='9a52e04cba44e2903c53bf497a37eeed6e63efd793f1639f29a48a92dc1bfd77'
+PARENT_RPC_SHA='a78c5062f9eec266cf2e7ee6c78b22c4ac3812ce8777e35fa3f76c2fbd1105ba'
+PATCH_SHA='a5f083cc936b28f91137c0ea3f7c6232cd8d4df1bb9bf8b236ad8d1c2f445e55'
+FORMAT='yunipals-source6-rpc-file-overlay-v2'
+def fail(code):raise RuntimeError(code)
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def render(config,parent_rpc,patch,*,workspace=WORKSPACE,directory=DIRECTORY):
+    if sha(config)!=CONFIG_SHA or sha(parent_rpc)!=PARENT_RPC_SHA or sha(patch)!=PATCH_SHA:fail('exact_retained_config_parent_and_reviewed_RPC_patch_required')
+    target=workspace/'apps/yunipals-indexer/lib/unified/rpc-preflight.ts'
+    return {'rpc-preflight.ts':patch},{'format':FORMAT,'originalConfigSha256':CONFIG_SHA,'originalRpcSha256':PARENT_RPC_SHA,'reviewedRpcPatchSha256':PATCH_SHA,
+        'root':str(workspace/'apps/yunipals-indexer'),'configArgument':'ponder.config.ts','readOnlyBind':str(directory/'rpc-preflight.ts')+':'+str(target),
+        'files':{str(directory/'rpc-preflight.ts'):PATCH_SHA},'byteLimit':10485760,'sourceFilesChanged':False,'schemaOrHandlersChanged':False,'counterChanges':False,'paidAuthorityAdded':False}
+
+# Execute the actual installed original Ponder config once under the exact raw-file
+# namespace bind. The retained build hash is compared by the caller; all 12 RPC
+# preflight/chain checks are intercepted in-process, with no network or database.
+OFFLINE="import{readFileSync,realpathSync}from'node:fs';import{createHash}from'node:crypto';import{createRequire}from'node:module';import path from'node:path';import{pathToFileURL}from'node:url';\nconst project=process.cwd(),require=createRequire(realpathSync('./node_modules/ponder/package.json')),entry=pathToFileURL(require.resolve('./dist/esm/index.js'));\nconst internal=p=>import(new URL(p,entry));const policy=await import(pathToFileURL(path.resolve(project,'../../packages/yunipals-indexer-server/src/rpc-policy.ts')));\nconst profile=JSON.parse(readFileSync(process.env.UNIFIED_RPC_PROFILE_FILE,'utf8'));let calls=0;\nglobalThis.fetch=async(input,options={})=>{const u=new URL(input),chain=({19201:1,19202:8453,19203:137,19204:56})[u.port];if(u.hostname!=='127.0.0.1'||!chain)throw Error('offline_only');calls++;\nif(u.pathname==='/unified/preflight')return new Response(JSON.stringify({profileId:policy.unifiedRpcProfileId(profile),manifestHash:policy.unifiedRpcManifestId(profile),chainId:chain,coordinatorId:profile.coordinatorId,scope:profile.scope,workload:options.headers['x-yunipals-rpc-workload'],paid:'explicit_bounded_permit_only',budget:{},replay:{mode:'free_only'}}));\nif(u.pathname==='/unified'&&JSON.parse(options.body).method==='eth_chainId')return new Response(JSON.stringify({result:'0x'+chain.toString(16)}));throw Error('offline_only');};\nconst{createBuild}=await internal('./build/index.js'),{createLogger}=await internal('./internal/logger.js'),{MetricsService}=await internal('./internal/metrics.js'),{buildOptions}=await internal('./internal/options.js'),{createShutdown}=await internal('./internal/shutdown.js');\nconst configs=['ponder.config.ts'],hashes=[];for(const config of configs){const shutdown=createShutdown(),cliOptions={root:project,config,command:'start',version:'0.17.5',schema:'unified_shadow_20261020_7e7375b0',logLevel:'silent',logFormat:'json'};\nconst options=buildOptions({cliOptions});if(options.rootDir!==project||options.schemaFile!==path.join(project,'ponder.schema.ts')||options.indexingDir!==path.join(project,'src')||options.ponderDir!==path.join(project,'.ponder'))throw Error('retained_paths_changed');\nconst common={options,logger:createLogger({level:'silent',mode:'json'}),metrics:new MetricsService(),shutdown,buildShutdown:shutdown,apiShutdown:shutdown};\ntry{const b=await createBuild({common,cliOptions}),r=await b.executeConfig();if(r.status!=='success')throw Error('offline_config_failed',{cause:r.error});hashes.push(r.result.contentHash);}finally{await shutdown.kill();}}\nif(hashes.length!==1||calls!==12)throw Error('offline_config_identity_changed');const hash=v=>createHash('sha256').update(v).digest('hex'),{globSync}=require('glob');const schemaHash=hash(readFileSync('ponder.schema.ts','utf8'));\nconst files=globSync(path.join(project,'src/**/*.{js,mjs,ts,mts}'),{ignore:[path.join(project,'src/api/**/*.{js,mjs,ts,mts}'),path.join(project,'src/**/*.{test,spec}.{js,mjs,ts,mts}')]});const h=createHash('sha256');for(const file of files)h.update(readFileSync(file,'utf8'));const indexingHash=h.digest('hex');\nconsole.log(JSON.stringify({buildId:hash('2'+hashes[0]+schemaHash+indexingHash).slice(0,10),configHash:hashes[0],schemaHash,indexingHash,indexingFiles:files.length,offlineInterceptedFetches:calls,realRpcRequests:0,rootUnchanged:true,cacheUnchanged:true,schemaAndHandlersUnchanged:true}));"

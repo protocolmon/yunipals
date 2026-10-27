@@ -1,0 +1,74 @@
+{
+  "format": "yunipals-recent-feature-handover-preparation-v1",
+  "preparedOnly": true,
+  "files": {
+    "ops/unified-indexer-transition/booster-api-binding-v3.py": "55890fbc16af34209156e17972a75ac54e6bbe83ed845ee0b8a9e156288d8309",
+    "ops/unified-indexer-transition/consumer-owned-booster-policy-v3.py": "a9c6d98bb831f936426220e6f5d288827c38215b56e55349a126cdffc97ef613",
+    "ops/unified-indexer-transition/consumer-owned-booster-runtime-v4.py": "ae099a6430ec9fb902e723e4da558923002ea9b9c309ae9776d59e892a248e41",
+    "ops/unified-indexer-transition/consumer-operational-live-booster-v2.py": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "ops/unified-indexer-transition/booster-current-api-checks-v2.py": "1da3a94b5514233396d311b1677291348430c6dd96030ab0ca838ffb59470bdf",
+    "ops/unified-indexer-transition/booster-source-parity-v3.py": "7aa661c86a5dd1ef6efcfe9ca6e9494c7bfe2b055bd0b1e8daec9f4457e3a18a",
+    "ops/unified-indexer-transition/booster-feature-handover-v7.py": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "ops/unified-indexer-transition/booster-current-feature-v2.test.py": "2014bdc648a2a31d783f92d4aa70d017b02cb8e9b596d65af95f83220034a560",
+    "ops/unified-indexer-transition/booster-feature-handover-v7.test.py": "2c2a2021fba55d49ca04589fcb770077d1e8a06a2d734a06ea352715f7e57047",
+    "ops/unified-indexer-transition/booster-source-parity-v3.test.py": "87686f431b0cc538104b8efcb8049296c02c7ca56ea001a5044a4c067e619470",
+    "ops/unified-indexer-transition/booster-feature-handover-v7.postgres-test.mjs": "127757ad3e3411087734599d4323fe0a4e3b529497232da3439e94189e55fc52",
+    "ops/unified-indexer-transition/booster-feature-handover-v7.md": "7fe0c9222bdec974d548bfb35bbbf655cc8565cb32da17e75b8712be612ed0b1"
+  },
+  "readOnlyQualification": {
+    "file": "docs/unified-indexer/booster-recent-feature-readonly-qualification-2026-10-23.json",
+    "sha256": "7122d5f3b81aa354d62f0e30a00aa7e472984a8d51726472217a13f3d73b093c"
+  },
+  "postgresAcceptance": {
+    "file": "docs/unified-indexer/booster-feature-v7-postgres-acceptance-2026-10-23.json",
+    "sha256": "1244cf1a6259818d33fc52cd8414e38dd6d3447e9cb4c2ead7513dd78befc92b"
+  },
+  "historicalFilesUnchanged": {
+    "booster-api-binding-v2.py": "4ce2f6216ee3774ad89ca5ed53bae9db606d292354715497c0eb00df74f3e909",
+    "consumer-owned-booster-policy-v2.py": "235c1a65309f92440335faf881d592371b10c3df824c50a1aa55ef68092ab720",
+    "consumer-owned-booster-runtime-v3.py": "5f42dccc1e632848594c763ff2490d56fbb063f32e0e022a72f88e07fe9b7811",
+    "consumer-operational-live-booster-v1.py": "7fc0f645067be01406c4643abf4a4473a936fdbea54bfce68943a739e3a25f1b",
+    "booster-feature-handover-v6.py": "114dd95754dce1280d3d93553150b02b07e8cd77f328aab355b4d39a7f60d12b",
+    "booster-source-parity-v2.py": "0daf6d004107d1cfea362c538384ff74b23a61e3daf2536e4574aed9084def2f",
+    "booster-current-api-checks-v1.py": "591c117583e9d0568340dfe6f0390c8ddb7bcd984efbcb41afea35b645ab13bf",
+    "current-feature-final-public-stage-v1.py": "73afd1e1015232b27106754d71f8b148afc0cd8ff77637e39a92aa2382ad64a6"
+  },
+  "operatorSeam": {
+    "entry": "consumer-operational-live-booster-v2.py",
+    "entrySha256": "e283589fef912cdf38b3dbced2e621c1665ea7f8992a0938fa0f3fc83fc08d39",
+    "installFormat": "yunipals-consumer-operational-install-v7",
+    "featureBindingFormat": "yunipals-current-booster-feature-binding-v2",
+    "featureOperator": "booster-feature-handover-v7.py",
+    "featureOperatorSha256": "0f5024cdbb373ce8015f2abf59f459d16d143f3f909ac3382d5170a1d4967984",
+    "featureBase": "/var/backups/yunipals-booster-feature-handover-v7-20261023",
+    "inverseFormat": "yunipals-booster-feature-inverse-validation-v1",
+    "inverseReadField": "oldTenReadsPreserved",
+    "launchReads": 10,
+    "nativeAdditions": 8,
+    "parityFormat": "yunipals-booster-common-boundary-parity-v3"
+  },
+  "tests": {
+    "currentBindingControls": 14,
+    "retainedLifecycleLostSqlAckControls": 23,
+    "parityControls": 9,
+    "actualPostgresGroups": 14
+  },
+  "productionActions": {
+    "staged": false,
+    "grantChanges": 0,
+    "schemaChanges": 0,
+    "serviceActions": 0,
+    "databaseWrites": 0,
+    "providerCalls": 0
+  },
+  "remainingGates": [
+    "combined source ready/current canonical Base coverage",
+    "four actual current-entry consumer installations",
+    "owned eight-read native admission",
+    "fresh same-boundary full state and recent feed parity",
+    "actual reader and queue switch/availability",
+    "actual newer event and post-event parity",
+    "owned old source retirement",
+    "later final-supervisor exact dependency binding"
+  ]
+}

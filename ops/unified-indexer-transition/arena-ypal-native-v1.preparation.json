@@ -1,0 +1,199 @@
+{
+  "format": "yunipals-arena-ypal-native-preparation-v1",
+  "status": "prepared-for-independent-review-not-applied",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.admission.postgres.test.py",
+      "sha256": "252f86cf38f3373217ee170bc904da43405f2bf03ebf4e55eaa66dc1d18883a4",
+      "bytes": 9206
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.admission.py",
+      "sha256": "4efe2a556b6b4dab6826341d80caaeac62065fc3991fe5502da9e8e45be81a5e",
+      "bytes": 25731
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.admission.test.py",
+      "sha256": "92a9155c8eb83551bff633ca4a40692752963a7028750463a8cc72074d3c8c92",
+      "bytes": 17719
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.adoption.mjs",
+      "sha256": "d45e552bd0bc76fa526acaa1e37b6e910498cb88af03bbd17b501812b348a162",
+      "bytes": 7246
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.catalog.postgres.test.mjs",
+      "sha256": "c5d41dfd1fe7c33db6d437c47b4ccecd0ec2621cbef968f250e1a24d9a68a2c9",
+      "bytes": 4214
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.catalog.py",
+      "sha256": "933c3357ae1c231012f24d9235ec6a97fb2e7db2f1a5ce1046adbf9e6cdb1430",
+      "bytes": 9378
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.catalog.summary.json",
+      "sha256": "8fa8e006e4d7d4e51baeba1f25f5ff1908445fabc9148a1f8511ca5ba1401142",
+      "bytes": 4049
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.credentials.py",
+      "sha256": "6fb7e4708671e3213991ef96a6cc4096ff9195579fb12506ef1811a415338e8f",
+      "bytes": 26582
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.credentials.test.py",
+      "sha256": "e8c883c79a0486d9f006233569275c6f138ebb55b2e7849fdf20c74331afd68c",
+      "bytes": 12498
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.manifest.json",
+      "sha256": "75db8f6ae4b7121753d6d6425992bbb60856b4632f95d707c18e126fec91a5b2",
+      "bytes": 1984
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.md",
+      "sha256": "22aadeb7fd8194c2e994c86cf8e498d2d24d1134935a6da8f18217540cff31df",
+      "bytes": 9785
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.mjs",
+      "sha256": "bbade6fb6e64079046b16ce650ffe495577e9a10f4d9cc2d835f479b8a04eba1",
+      "bytes": 25192
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.postgres.test.mjs",
+      "sha256": "07869cb516afa843cb695e6a8bdfa562111dfa85a25d16f6f487a37224a86662",
+      "bytes": 14568
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.proposal.json",
+      "sha256": "ca56a4be29abe53f5b7a6b3f4c8a13d6a557c1e38fa07521df78e10fd4fe3d80",
+      "bytes": 62979
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.py",
+      "sha256": "c539c8d99a2e14eedaa0387dd25fdce044e51f3c68459b95768c60c081f2d22e",
+      "bytes": 75595
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.rehearsal.py",
+      "sha256": "2eb8c84292b8547650e94ead891a8b987e027786e082f6377c8299d38e69edaf",
+      "bytes": 15363
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.source.py",
+      "sha256": "df20acc91c6f16454c28c39e00cc80870a25efaf33f72cd60af40e54c09368e2",
+      "bytes": 7817
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.source.sql.review",
+      "sha256": "a045f16cd35135d6ae60c522f39bbefe50a683d57906482e78597edec9ca1c45",
+      "bytes": 3184
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.test.mjs",
+      "sha256": "ad613dab9a1b896be1c3183f8234d4b7038e554db9df3aa3b933499b2ede7f81",
+      "bytes": 9210
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.test.py",
+      "sha256": "facd1e5eafd2a604e745a4033274a63bdbe6ec93cd0a4a22deba9e696fb43195",
+      "bytes": 37968
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-ypal-native-v1.validation.json",
+      "sha256": "a3ee8943ff2b34e56b5590f4a45ddeffcd56331d82a3ff0a1050b6cbcad5ae73",
+      "bytes": 3591
+    }
+  ],
+  "source": {
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "schema": "unified_ypal_20261023_v1",
+    "schemaOid": "75963410",
+    "buildId": "71e2a7f3b7",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "policy": "latest",
+    "applicationBufferBlocks": 0
+  },
+  "requiredLogicalEdges": {
+    "operational": 227,
+    "source": 13,
+    "total": 240
+  },
+  "sourceCatalogSha256": "938a9821e266b79c5963f0f66ffc52a9a301bc908d8a870744feeed9272a4083",
+  "runtimeSourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24",
+  "runtimeInstallSha256": "3921ea98422778333a21068aadab016af5e6e4907b8c7b9deef7c73e14d531ad",
+  "historicalInputsUnmodified": true,
+  "privateCatalogPublished": false,
+  "sourceAuthorityInPhaseLeaf": false,
+  "financialAuthorityInPhaseLeaf": false,
+  "newAdmissionAndAuthRequired": true,
+  "oldPendingApprovalReused": false,
+  "productionMutations": 0,
+  "limitations": [
+    "No actual new-source role admission/auth/cutover receipt exists.",
+    "Current canonical/latest-complete coverage is an actual effect-time gate; local fixtures do not prove production ready.",
+    "Pre-adoption inverse supports owned terminal source; after adoption original runtime restore is forbidden. Separately admitted modern public rollback target remains a different gate.",
+    "Unknown or unowned transaction/file/start prefixes refuse and require explicit read-only reconciliation."
+  ],
+  "historicalPublicDependencies": [
+    {
+      "path": "ops/arena-native-admission-20261022/operational-roles.current.sql.review",
+      "sha256": "310b817daf1ee7254e54d21a783334638d3ef58aee3c430dd10f4991a704d9b3",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-modern-runtime-preflight-v1.py",
+      "sha256": "527701897b15ccf25c67aa372013f76405308b2b300a565d96271ba15f0a6631",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-runtime-restore-v1.py",
+      "sha256": "505a4937867abdc623b7d21367bf76a42ecea4a103d374116dbb3181fb60febb",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-owner-migration-v2.py",
+      "sha256": "70ca16836b8df7f71683ae7999be83bb97186c063133a15b2f6b8d58f074ef65",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-operational-role-inventory-v1.py",
+      "sha256": "c99cfd2f240721727da66594f0e720f2dfe7f2fed36cfb942d9b147d71b3d785",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/arena-legacy-origin-adopt-v2.mjs",
+      "sha256": "26deb0262b61d1c3e937b5968a8cd489a60a82fd28d22d32200bc6e444f70c8b",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-release-register-v1.py",
+      "sha256": "c034cca76a101a19aa1a668ff5b91eaa883fda775406ba52e9b6a3ec8993133d",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-source-v1/start-source.py",
+      "sha256": "3a70a1167f7e8ffcc73689bc8f0b668319ad1801801c4b403fc791998a7686f6",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-combined-rpc-admission-v1.py",
+      "sha256": "02eddae174a3178b59938f991509ce01b088724254064364e80c868377a4e09a",
+      "gitTracked": true
+    },
+    {
+      "path": "ops/arena-consumer-release-review/operational-migrations.v1.json",
+      "sha256": "f6f8c50c7242671f8736acdedb724df7dfd6bf0fb510343af5482e2794cf8f5b",
+      "gitTracked": true
+    },
+    {
+      "path": "docs/unified-indexer/ypal-combined-source-production-start-2026-10-23.json",
+      "sha256": "73a6f6d153b5bfe15a45e538f6c1b210c7cb9c7fdd39bd0ad670e32da4fd3c96",
+      "gitTracked": true
+    }
+  ],
+  "transitiveHistoricalDependencyContract": "Existing pinned loaders recursively authenticate their published source and exact protected receipts. Runtime/archive/private values are not part of this public publication packet."
+}

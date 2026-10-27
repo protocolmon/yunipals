@@ -1,0 +1,24 @@
+{
+  "actualOngoingFinancialReceiptSha256": "181cc20ac191a91a5cb32fe203fc287747d8cc8ec1695056b08cbb9301e7829a",
+  "completed": true,
+  "completionDropinsPreserved": 2,
+  "exitCode": 0,
+  "format": "yunipals-alchemy-temporary-guard-retirement-production-v1",
+  "observedAt": "2026-10-24T23:36:48.196137+00:00",
+  "oldSourceOverlayPreserved": true,
+  "originalBootLinksPreserved": 6,
+  "originalUnitFilesPreserved": 12,
+  "phase": "retire",
+  "report": {
+    "databaseWrites": 0,
+    "format": "yunipals-alchemy-ordinary-runtime-v1",
+    "oldBoots": 6,
+    "oldUnits": 12,
+    "providerCalls": 0,
+    "retired": true
+  },
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutSha256": "7d70f940e175d711b765609d55ccb548b74698e5d4d79d88d60375a43c9ba33b",
+  "temporaryTimersRetired": 6
+}

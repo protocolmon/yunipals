@@ -1,0 +1,18 @@
+{
+  "format": "yunipals-booster-batch-owner-browser-v1",
+  "passed": true,
+  "packageSha256": "bf06804bab6c68cd42515500af5c7118a1ee1ebf66a4f46c96a854fd7f80fc1e",
+  "checks": [
+    "owner connects and reviews exact package, roles, proxy and fee quote without automatic wallet writes",
+    "network change during deferred final simulation invalidates the review and sends zero transactions",
+    "one explicit deploy signature uses creation bytes and actual receipt address; upgrade is a separate review",
+    "refresh recovers saved deployment without another signature and wrong manual runtime is rejected",
+    "second explicit signature upgrades the verified implementation with empty initialization and validates actual slot/max10",
+    "completed reload has no repeated writes and owner page fits a mobile viewport",
+    "confirmed reverted deployment requires explicit receipt resolution before a fresh review and never auto resubmits"
+  ],
+  "syntheticWalletTransactions": 2,
+  "realNetworkProviderCalls": 0,
+  "blockedUnrelatedRequests": 4,
+  "productionActions": 0
+}

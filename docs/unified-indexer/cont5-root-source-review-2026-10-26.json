@@ -1,0 +1,20 @@
+{
+  "CIndependentReview": "no findings",
+  "SQLPredicatesCallbackAndApprovalClocksUnchanged": true,
+  "actualReconciliationGatesConstruction": "80f4bfc735defa3d36b6f57ce9a23fcd24c54a2a343e68e014935d153c62d125",
+  "actualSourceManifestsByteReproduced": 3,
+  "allRuntimeSourcesAndSupportAndRunbookRead": true,
+  "findings": [],
+  "finiteOwnRowsVerified": 17,
+  "format": "yunipals-cont5-root-source-review-v1",
+  "freshBaselineRequired": true,
+  "genuineMetadataProofProducerRetained": "f536ddc6eb003a04817642833846fd2d035b4c74c2aa7477b4f85ce3b548fdc2",
+  "independentComposedControlsPassed": 12,
+  "independentHeldDiagnosticControlsPassed": 8,
+  "independentProfileControlsPassed": 8,
+  "inverseEffectsClosedPendingActualBridge": true,
+  "oldBaselineOnlyHistorical": true,
+  "preparationSha256": "9ab6ccb09329bcc05430015b5728bf002c24018a3c86f22a4f78359512a9e0fe",
+  "productionNewBaselineQualified": false,
+  "runtimeOriginsVerified": 323
+}

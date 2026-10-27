@@ -1,0 +1,98 @@
+{
+  "automaticRetryAllowed": false,
+  "catalogComparison": {
+    "acl": {
+      "beforeCount": 276,
+      "beforeEqualsTarget": false,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 280,
+      "targetType": "list"
+    },
+    "columnAcl": {
+      "beforeCount": 0,
+      "beforeEqualsTarget": true,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 0,
+      "targetType": "list"
+    },
+    "epochs": {
+      "beforeCount": 4,
+      "beforeEqualsTarget": false,
+      "beforeType": "list",
+      "preparedEqualsTarget": false,
+      "targetCount": 4,
+      "targetType": "list"
+    },
+    "functions": {
+      "beforeCount": 2,
+      "beforeEqualsTarget": false,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 2,
+      "targetType": "list"
+    },
+    "guards": {
+      "beforeCount": 35,
+      "beforeEqualsTarget": false,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 35,
+      "targetType": "list"
+    },
+    "tables": {
+      "beforeCount": 27,
+      "beforeEqualsTarget": true,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 27,
+      "targetType": "list"
+    },
+    "triggers": {
+      "beforeCount": 32,
+      "beforeEqualsTarget": false,
+      "beforeType": "list",
+      "preparedEqualsTarget": true,
+      "targetCount": 42,
+      "targetType": "list"
+    }
+  },
+  "currentReadinessLeaf": {
+    "ageMilliseconds": 39363.67,
+    "canonical": true,
+    "checkedBlock": "53124087",
+    "errorCode": null,
+    "frameBlock": "53124106",
+    "nativeMode": true,
+    "probe": true,
+    "producerCheckedUs": "1793037528834685",
+    "sameFrontier": true,
+    "state": "ready"
+  },
+  "databaseWrites": 0,
+  "failedRootResultSha256": "ed7a7e0fc22fd509675f76f1ff6daed79b2841779a83a713bbe3411abd1f9a3b",
+  "finalScheduledGate": {
+    "ageNanoseconds": 1335957000,
+    "capturedMonotonicNanoseconds": 66463180431188817,
+    "checkedUs": "1793036502911839",
+    "queryNanoseconds": 103492443,
+    "remainingNanoseconds": 118560550557,
+    "ttlNanoseconds": 120000000000
+  },
+  "format": "yunipals-cont6-failed-cache-outcome-v1",
+  "observedAt": "2026-10-26T18:00:55Z",
+  "openedToPreparedSeconds": 157.249834007,
+  "ownedBackendCount": 0,
+  "ownedChildGone": true,
+  "renewalScheduling": {
+    "elapsedNanoseconds": 22227779541,
+    "resultPresent": true,
+    "sampleCount": 10
+  },
+  "serviceActions": 0,
+  "sourceCurrentQualified": false,
+  "transactionId": "17621037",
+  "transactionStatus": "aborted",
+  "wholeCatalogQualified": false
+}

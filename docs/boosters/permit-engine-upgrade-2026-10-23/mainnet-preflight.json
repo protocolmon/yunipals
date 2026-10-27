@@ -1,0 +1,26 @@
+{
+  "format": "yunipals-permit-engine-current-chain-preflight-v1",
+  "observedAt": "2026-10-23T16:18:23.721Z",
+  "chainId": 8453,
+  "blockNumber": "52991478",
+  "owner": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "proxy": "0x455FaBAd0ac8fF1eA4DF70ca07AA56A272cB2609",
+  "proxyCodeKeccak256": "0xa7022e521c634305b0b86f45a8c10af47878d58952877dac7af4a6cbbb165d34",
+  "implementation": "0xeba9d4deb6914ab67a820ea27c2fc3f43812e471",
+  "implementationCodeKeccak256": "0xa5eadd4114e6f37b1189c9729f3ea7a03ef21675ccdf69d8b3da0d6aa522ee7a",
+  "upgraderRole": true,
+  "registry": "0xeaeE2da120a398f21729D50672AC5d1Dd71d7274",
+  "monsters": "0x105319be2182018c31FB10B1bE198c3cf238a146",
+  "wrapper": "0xb0407dbe851f8318bd31404A49e658143C982F23",
+  "requestsPaused": false,
+  "maxOpenPacks": 10,
+  "tokenPermit": {
+    "address": "0xE5a54a517CDE8ED48A336B173044b1138Aa2c1a3",
+    "name": "PROTO",
+    "domainVersion": "1",
+    "domainMatches": true,
+    "ownerNonce": "0"
+  },
+  "signatures": 0,
+  "broadcasts": 0
+}

@@ -1,0 +1,2621 @@
+{
+  "actionsPerformed": {
+    "grants": 0,
+    "passwordChanges": 0,
+    "privateFileWrites": 0,
+    "providerCalls": 0,
+    "roleChanges": 0,
+    "schemaMigrations": 0,
+    "serviceJobs": 0,
+    "sourceSelectionChanges": 0
+  },
+  "candidate": {
+    "actualBuildInstallConstructorPinsRequired": true,
+    "files": 1796,
+    "manifestSha256": "fe6a122bd9dbac6614ff2126db2010a4f73bc54921f8dc40109a9c850ee3eb3e",
+    "sourceDigest": "264a33229f4c47c004362d264fa90f670784b70be8a6ec6d82187cc7e987ae24"
+  },
+  "current": {
+    "actors": {
+      "yunipals-arena-api.service": {
+        "invocation": "9505bd5b4df3486ab7b61dda66d58bbf",
+        "process": {
+          "argvSha256": "48033fd3517518f5fc99bf3a860fc5946b2c35f73ac23da74a0de38e9ed5a944",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010704,
+          "startTicks": 6613556067,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-capacity.service": {
+        "invocation": "5e643cf3ce964cd2b075b327e2a7e215",
+        "process": {
+          "argvSha256": "0dde1fc978ca2adb160509f7ff7b34f15448ac549e819c845956283969f7f078",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010705,
+          "startTicks": 6613556068,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-control.service": {
+        "invocation": "16ac3359ed69495e91c4643d48e631cb",
+        "process": {
+          "argvSha256": "6301d53722424609c5d08db467e274a0c77e95e4519105867bcbac295d426746",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010707,
+          "startTicks": 6613556069,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-lobby.service": {
+        "invocation": "a8a32e585e124230b144d415af917b74",
+        "process": {
+          "argvSha256": "61960c11f7c4652f443c8ec0ca9a1c2ffd0e8e88c4b09b1ae08f11023a659a7b",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010709,
+          "startTicks": 6613556070,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-media.service": {
+        "invocation": "75f56cefd9b04c02bfe0920c0fe80b3d",
+        "process": {
+          "argvSha256": "1d7d10835fbc0d85d326105f1b2578a808dddc0a8d4061064b9cb40abe300be6",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010717,
+          "startTicks": 6613556073,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-projector.service": {
+        "invocation": "9b8899b656ee4b33a45be330630a7bbe",
+        "process": {
+          "argvSha256": "de96f89c8676dbc30afd2365b43a6dd8a7d853917dc39bf28853de491bb13252",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010723,
+          "startTicks": 6613556073,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-referee.service": {
+        "invocation": "a645b1a5522a420f89bddbeb61661e9d",
+        "process": {
+          "argvSha256": "91a0bfdb7746dc29055258c83c20101ed40f663885de02a715df3710b49076d6",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010724,
+          "startTicks": 6613556074,
+          "uid": 971
+        }
+      },
+      "yunipals-arena-settlement.service": {
+        "invocation": "9d615f541f504db68e3110aac6eaaa45",
+        "process": {
+          "argvSha256": "0e11a4ed5f8bb1e3aa337e1d1dfab885741b2995fb51c75c6522410b96b580e1",
+          "cwd": "/srv/yunipals-arena/releases/20261016-6ef08318/release/apps/yunipals-market-api",
+          "exe": "/srv/yunipals-arena/runtime/node-v24.18.1",
+          "gid": 965,
+          "pid": 1010733,
+          "startTicks": 6613556076,
+          "uid": 971
+        }
+      }
+    },
+    "committedMarkers": [
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 1
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 2
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 3
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 4
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 5
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 6
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 7
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 8
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 9
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 10
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 11
+      },
+      {
+        "checksumMatches": true,
+        "present": true,
+        "version": 12
+      }
+    ],
+    "definitions": {
+      "yunipals-arena-api.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-api.service": "963eef06c381e36fd3709ff52fd1f15eb2d4f77c463d9f96dfb87c6cf28dc27b"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-capacity.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-capacity.service": "025e734357a4071c18350f4bcb159d9a94be39fd30610b07632e962d44dc7bf5"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-control.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-control.service": "37a96d3eb4900cd6498518254e54843990bb1f608613fd12f5ede5a021f2454a"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-lobby.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-lobby.service": "766d99e2d58cca944dda66256a2be64cf4193380758906831defea301ee71cbc"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-media.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-media.service": "1ad225678e2717dfcdb030f984902b81dd68582ccf7cb24376d74b6f1edc2129",
+          "/etc/systemd/system/yunipals-arena-media.service.d/storage-allocation.conf": "9a31bd31aa6bf6f3a58b4c82f23fe9c67e9b70402acbe3218de6e0562412039a"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-projector.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-projector.service": "613f82c473d0dba786084f21946f43fa5d9f62f12497d07d12cc19546b5694d8"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-referee.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-referee.service": "636e86908b493379fcc3e69907e2b97215a3de8f12521351fde656205f79b5e9"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "yunipals-arena-settlement.service": {
+        "definitions": {
+          "/etc/systemd/system/yunipals-arena-settlement.service": "ee934dc774e7fbd2262b43bea98b641e2e3a95042f7d22ec623727c22aa5d356"
+        },
+        "inlineEnvironmentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    "halted": false,
+    "legacyIdentityCount": 2,
+    "nativeMode": false,
+    "ownerResultSha256": "84dbb0028be4099cce8322b5f646289d5d095eb14ec3cf03392a559f76a9beae",
+    "ownerReviewHash": "d25366f7c8af14c6cf9f2a8bf418da169663ddefa98241b53f31e3808f7073a5",
+    "privateStateCounts": {
+      "adjudication": {
+        "legacyOrUnboundRows": 1,
+        "rows": 1
+      },
+      "admission": {
+        "legacyOrUnboundRows": 6,
+        "rows": 6
+      },
+      "fighter_snapshot": {
+        "legacyOrUnboundRows": 4,
+        "rows": 4
+      },
+      "frozen_input": {
+        "legacyOrUnboundRows": 1,
+        "rows": 1
+      },
+      "media_job": {
+        "legacyOrUnboundRows": 1,
+        "rows": 1
+      },
+      "provider_task": {
+        "legacyOrUnboundRows": 10,
+        "rows": 10
+      },
+      "submission": {
+        "legacyOrUnboundRows": 4,
+        "rows": 4
+      },
+      "transaction_intent": {
+        "legacyOrUnboundRows": 6,
+        "rows": 6
+      }
+    },
+    "restoreResultSha256": "b1102b2b294b98ba98e61d96850a7bb765669ca23b3d4dd5bd06504e501efc33",
+    "sourceSelectionCount": 0
+  },
+  "currentAmbientAcknowledgement": {
+    "addedGeneratedFunctionCount": 21,
+    "currentFunctionCount": 23,
+    "functions": [
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "8bdcb2cf60ce35520f39e353e643049dfb27f9f1683a4fb78ed24f9c253a83d1",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "live_query",
+        "oid": 75963762,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "a39d78d0fe89c21403b576b82428a5c3274b1ee784d810394b02a10edec4da8b",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "live_query_notify",
+        "oid": 75963763,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "289e8f5f388537de0496569f4333ea0f79d1b0bf7860b12f72ad71e8778662c9",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__token",
+        "oid": 76996087,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "a6c2f85356c2beab5ab2a0d56b7fb759305744edd5fd726dc6c195623fdf23fc",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__token_lifecycle",
+        "oid": 76996088,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "4c756a55157fd2bc25593705cd8047d76558d00b5d3e436b90c4b7b5700d1157",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__transfer_event",
+        "oid": 76996089,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "8075760f432a4ab483c86e7e802b7cc6dd4e59cf9ab4a3d41b497d94bab637dd",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__admin_role_event",
+        "oid": 76996090,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "87933b7b06289ee472e22edf74c65c953f86e55351c715cd765500586273cda7",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__contract_owner_event",
+        "oid": 76996091,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "5311a135762879da822b874733f58b96b76f34d9954737d645b4aae6894c8de2",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_type",
+        "oid": 76996092,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "1d5f94b2c3e5da5440117778a48fa4dcf9d092a10accb1767728ff337d2fa165",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_original",
+        "oid": 76996093,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "5d830c3efa49ae211d8606093fdab588dfc2dda149a9447d964703919bc4cba2",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_request",
+        "oid": 76996094,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "2e4730e5f36b48a7823e2a4040c21ac4313442517315c4c22e74c50d6f34dbe0",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_monster",
+        "oid": 76996095,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "628d2c9b780da97be725e88b011829189b054a9958ad7ab338c5b4640ccf88d1",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_refund",
+        "oid": 76996096,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "dd31bc66f97082d9f7f534da982b347d0da38310826d3aa2ac5191a1ce9fbff6",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_engine_state",
+        "oid": 76996097,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "15fe79b4b24d2b9d50acb8418725a6234087401b8fa9331acfc90ecb181ec978",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_event",
+        "oid": 76996098,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "afa0367a211bf9aeb53fd38d6257256ee464ed828704b18a2e636bee69502375",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__booster_checkpoint",
+        "oid": 76996099,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "dd761c99c225e78d1a76143028c655ffec54ce0cc1b5f59c4b26be1550cf601c",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__chain_checkpoint",
+        "oid": 76996100,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "8cbc50d64ffe7974851f1bfe4560576c8f77c98b8f5039c607b5cb76f1c38cac",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__chain_block",
+        "oid": 76996101,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "20c43904fcc249a6b5193a11502cec39f6655007a5e8a411d05ca48c25f9e69c",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__indexer_source",
+        "oid": 76996102,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "40c5b4e58ea0a8d4feb818bd780229b4a70e01eceb2d3011055224c02b879326",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__canonical_event",
+        "oid": 76996103,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "0f981f8475fd0bc788491318a8542b08fe26c1b167245d702f2057f32bcb81ae",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__transaction_candidate",
+        "oid": 76996104,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "1b3a812f81b462f8a265593851f7eccc172de8dec2fb912f8ebe9df079171406",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__arena_tournament",
+        "oid": 76996105,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "e5ea3b9992b45b1b2e8222806c7f58eea79ff9614496ca370b19328242dd7805",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__arena_seat",
+        "oid": 76996106,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      },
+      {
+        "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+        "bodySha256": "2d3f461f331d1c215da71ac6d78be27370cd097950258aa937e2971e27b6dcfc",
+        "config": null,
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "operation_reorg__arena_credit",
+        "oid": 76996107,
+        "otherNonownerAclCount": 0,
+        "ownerOid": 73004621,
+        "publicExecuteCount": 1,
+        "result": "trigger",
+        "schema": "unified_ypal_20261023_v1",
+        "securityDefiner": false,
+        "signature": ""
+      }
+    ],
+    "generatorRuntimeProof": {
+      "allMatched": true,
+      "databaseWrites": 0,
+      "fileCount": 2,
+      "files": {
+        "dist/esm/database/actions.js": {
+          "acceptedInventoryMatched": true,
+          "bytes": 20697,
+          "group": 964,
+          "mode": "0640",
+          "relativeRuntimePath": "node_modules/.pnpm/ponder@0.17.5_patch_hash=srrmuiqb5i2rcvch3r4b6lqznm_@opentelemetry+api@1.9.1_@types+node@22.1_tdbbixbrmtn4q2y4g3krukmyfy/node_modules/ponder/dist/esm/database/actions.js",
+          "rootOwned": true,
+          "sha256": "03d03f76f79821baebf36064d48f5469dd3f3e496a6aa12a7e5d4e2fc1463110"
+        },
+        "dist/esm/drizzle/onchain.js": {
+          "acceptedInventoryMatched": true,
+          "bytes": 8047,
+          "group": 964,
+          "mode": "0640",
+          "relativeRuntimePath": "node_modules/.pnpm/ponder@0.17.5_patch_hash=srrmuiqb5i2rcvch3r4b6lqznm_@opentelemetry+api@1.9.1_@types+node@22.1_tdbbixbrmtn4q2y4g3krukmyfy/node_modules/ponder/dist/esm/drizzle/onchain.js",
+          "rootOwned": true,
+          "sha256": "475cb1fb8f64d77c98070ada1144caec407ecfc80805bd37b885427ca3bbc7c4"
+        }
+      },
+      "format": "yunipals-arena-Ponder-generator-readonly-proof-v1",
+      "inventorySha256": "ebeb5a3f1ab9a2152500ff7bf859b81e62101fe8b15b9c0e4d5bb51d5b40da40",
+      "providerCalls": 0,
+      "serviceActions": 0
+    },
+    "historicalProposalSha256": "ca56a4be29abe53f5b7a6b3f4c8a13d6a557c1e38fa07521df78e10fd4fe3d80",
+    "newDefaultAclCount": 0,
+    "originalCatalogSha256": "938a9821e266b79c5963f0f66ffc52a9a301bc908d8a870744feeed9272a4083",
+    "originalFunctionCount": 2,
+    "sourceCompletionReceiptSha256": "dd98ef06f05d88c1e0af0ff7bf9329f79bfb171cce1e10690a628c678f7e2ea6",
+    "sourceCurrentIntakeSha256": "70faf2514d0240625f0a1eaa84f527be5fb16bcf4391e56e8644bc708ae2d420"
+  },
+  "directCutover": {
+    "extraLegacyUpgradeRequired": false,
+    "nativeWorkersStartedOnce": true,
+    "newCommittedSchemaOwnerAdopterRequired": true,
+    "oldWorkersStoppedOnce": true,
+    "privateBackupAndCipherContextPreserved": true,
+    "reuseMigrationOperator": false,
+    "sourceReadinessRequiredBeforeSelectionOrAdoption": true
+  },
+  "filesAbsent": [
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-arena/native-read.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-api.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-disclosure.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-client.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-referee.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-media.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-execution-lobby.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-execution-referee.env",
+      "regular": null,
+      "uid": null
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "gid": null,
+      "mode": null,
+      "path": "/etc/yunipals-unified/consumers/arena-capacity.env",
+      "regular": null,
+      "uid": null
+    }
+  ],
+  "format": "yunipals-arena-ypal-current-admission-v1-proposal",
+  "grantorPolicy": "Historical207 and modern20 operational edges execute under SET LOCAL ROLE yunipals_arena_owner; no mixed postgres delta grantor.",
+  "historicalObservationNotice": "Original eight Arena actor/definition/private-count snapshots are retained evidence and must be freshly verified; no new role/admission/credential facts are asserted.",
+  "historicalProposalSha256": "f172c11d9168233304d7648360e92d207e481d83545ef080a5b6f9c4855af496",
+  "historicalRequiredEdgeCount": 207,
+  "modernAdditionalEdgeCount": 20,
+  "modernDeltaStatementCount": 7,
+  "observations": {
+    "yunipals-arena-current-role-catalog-readonly-20261022.json": "bfd1e75f945d6fe9bfcf756aeaf3495873af10116a5e5911f53a7c1c14f3eb94",
+    "yunipals-arena-current-role-targets-readonly-20261022.json": "b71e5f82c41d7ee9fd2493863683ed2f43fe4b20a807707678ffdeeb925362c7",
+    "yunipals-arena-native-private-path-presence-20261022.json": "6c35488f0d96eeeabe8ba43f37016fafa228c63732b2dc4197dd78f51d7f8f05",
+    "yunipals-arena-retained-actors-readonly-20261022.json": "04178ead43d7f84f9aeaa01a15d81f35753cb23e100b2d1a69e0fe88add6d394"
+  },
+  "operationalTarget": {
+    "database": {
+      "allowConnections": true,
+      "connectionLimit": -1,
+      "oid": 2303669,
+      "ownerOid": 2303667,
+      "publicAcl": []
+    },
+    "defaultAclCount": 2,
+    "hbaErrorCount": 0,
+    "isolation": "repeatable read",
+    "limits": {
+      "currentSessions": 24,
+      "maxConnections": 96,
+      "reserved": 3
+    },
+    "loopbackMatchingAuthRules": {
+      "yunipals_arena_native_api": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_capacity": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_client": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_disclosure": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_execution_lobby": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_execution_referee": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_media": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ],
+      "yunipals_arena_native_referee": [
+        {
+          "authMethod": "scram-sha-256",
+          "line": 115,
+          "type": "host"
+        }
+      ]
+    },
+    "readOnly": true,
+    "schemas": [
+      {
+        "name": "yunipals_arena",
+        "oid": 2303670,
+        "ownerOid": 2303667
+      }
+    ],
+    "tcpAuthenticationTested": false
+  },
+  "sourceCatalogFile": "/var/backups/yunipals-arena-existing-default-review-20261024/review-20261024T215100Z-3843882/ambient-current-catalog.json",
+  "sourceCatalogSha256": "b709ebaf92d05a92e89781bf329506ef85e7a2ca77830df1fb80c41c048685aa",
+  "sourceContext": {
+    "applicationBufferBlocks": 0,
+    "buildId": "71e2a7f3b7",
+    "manifestHash": "0x23d5ca6870ce9828d435b9bf5be2291c775c23703e9ab77047f2970198e9c112",
+    "nativePolicy": "latest",
+    "releaseId": "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3",
+    "schemaOid": 75963410
+  },
+  "sourceReader": {
+    "actualObservedDefaultAclCount": 0,
+    "actualObservedFunctionOids": [
+      75963762,
+      75963763
+    ],
+    "connectionLimit": 32,
+    "existingAmbientAuthority": {
+      "actualCatalogRequired": true,
+      "publicDatabase": [
+        "CONNECT",
+        "TEMPORARY"
+      ],
+      "publicFunctionDescriptors": [
+        {
+          "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+          "bodySha256": "8bdcb2cf60ce35520f39e353e643049dfb27f9f1683a4fb78ed24f9c253a83d1",
+          "configEntryCount": 0,
+          "language": "plpgsql",
+          "leakproof": false,
+          "name": "live_query",
+          "oid": 75963762,
+          "otherAclEntries": 0,
+          "ownerExecute": true,
+          "ownerOid": 73004621,
+          "publicExecute": true,
+          "result": "trigger",
+          "schema": "unified_ypal_20261023_v1",
+          "securityDefiner": false,
+          "signature": ""
+        },
+        {
+          "aclSha256": "e11db788df633234e0dd6a9231c8fd4612e28d93ded5bdffa99f2be79bc7874e",
+          "bodySha256": "a39d78d0fe89c21403b576b82428a5c3274b1ee784d810394b02a10edec4da8b",
+          "configEntryCount": 0,
+          "language": "plpgsql",
+          "leakproof": false,
+          "name": "live_query_notify",
+          "oid": 75963763,
+          "otherAclEntries": 0,
+          "ownerExecute": true,
+          "ownerOid": 73004621,
+          "publicExecute": true,
+          "result": "trigger",
+          "schema": "unified_ypal_20261023_v1",
+          "securityDefiner": false,
+          "signature": ""
+        }
+      ],
+      "publicNonDefinerFunctions": [
+        {
+          "oid": 75963762,
+          "securityDefiner": false
+        },
+        {
+          "oid": 75963763,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996087,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996088,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996089,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996090,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996091,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996092,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996093,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996094,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996095,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996096,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996097,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996098,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996099,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996100,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996101,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996102,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996103,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996104,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996105,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996106,
+          "securityDefiner": false
+        },
+        {
+          "oid": 76996107,
+          "securityDefiner": false
+        }
+      ]
+    },
+    "exists": false,
+    "observedRoleOid": null,
+    "permanentSourceWrites": false,
+    "privateFile": "/etc/yunipals-arena/native-read.env",
+    "role": "arena_native_reader",
+    "tables": [
+      {
+        "columns": {
+          "chain_id": 20,
+          "chain_name": 25,
+          "finalized_checkpoint": 1043,
+          "latest_checkpoint": 1043,
+          "safe_checkpoint": 1043
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1._ponder_checkpoint",
+        "oid": 75963418,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "key": 25,
+          "value": 3802
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1._ponder_meta",
+        "oid": 75963411,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "amount": 1700,
+          "block_hash": 25,
+          "block_number": 1700,
+          "deployment": 25,
+          "id": 25,
+          "last_event_id": 25,
+          "wallet": 25
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.arena_credit",
+        "oid": 75963726,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block_hash": 25,
+          "block_number": 1700,
+          "deployment": 25,
+          "id": 25,
+          "last_event_id": 25,
+          "opened_block_hash": 25,
+          "opened_event_id": 25,
+          "state": 3802,
+          "tournament_id": 25
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.arena_tournament",
+        "oid": 75963696,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "abi_hash": 25,
+          "address": 25,
+          "args": 25,
+          "block_hash": 25,
+          "block_number": 1700,
+          "chain_id": 23,
+          "data": 25,
+          "id": 25,
+          "log_index": 23,
+          "name": 25,
+          "source_id": 25,
+          "timestamp": 1700,
+          "topics": 25,
+          "transaction_hash": 25,
+          "transaction_index": 23
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.canonical_event",
+        "oid": 75963666,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block_hash": 25,
+          "block_number": 1700,
+          "chain_id": 23,
+          "id": 25,
+          "parent_hash": 25,
+          "timestamp": 1700
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.chain_block",
+        "oid": 75963636,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block_hash": 25,
+          "block_number": 1700,
+          "chain_id": 23,
+          "id": 25,
+          "parent_hash": 25,
+          "timestamp": 1700
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.chain_checkpoint",
+        "oid": 75963621,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "chain_id": 23,
+          "definition": 25,
+          "id": 25,
+          "manifest_hash": 25
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.indexer_source",
+        "oid": 75963651,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block_hash": 25,
+          "block_number": 1700,
+          "chain_id": 23,
+          "id": 25,
+          "transaction_hash": 25
+        },
+        "kind": "r",
+        "name": "unified_ypal_20261023_v1.transaction_candidate",
+        "oid": 75963681,
+        "ownerOid": 73004621,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block_hash": 25,
+          "block_number": 20,
+          "chain_id": 23,
+          "release_id": 25,
+          "witness_hash": 25,
+          "witness_number": 20
+        },
+        "kind": "r",
+        "name": "yunipals_indexer_control.chain_anchor",
+        "oid": 73011156,
+        "ownerOid": 10,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "anchors": 3802,
+          "chain_id": 23,
+          "checked_at": 1184,
+          "error_code": 25,
+          "finality_error_code": 25,
+          "finalized_hash": 25,
+          "finalized_number": 20,
+          "halted": 16,
+          "head_hash": 25,
+          "head_number": 20,
+          "head_timestamp": 20,
+          "observed_at_ms": 20,
+          "provider_id": 25,
+          "release_id": 25,
+          "revision": 20,
+          "witness_hash": 25,
+          "witness_number": 20
+        },
+        "kind": "r",
+        "name": "yunipals_indexer_control.chain_status",
+        "oid": 73011132,
+        "ownerOid": 10,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "build_id": 25,
+          "created_at": 1184,
+          "id": 25,
+          "manifest": 3802,
+          "manifest_hash": 25,
+          "physical_schema": 25
+        },
+        "kind": "r",
+        "name": "yunipals_indexer_control.release",
+        "oid": 73011103,
+        "ownerOid": 10,
+        "rowSecurity": false
+      },
+      {
+        "columns": {
+          "block": 3802,
+          "block_hash": 25,
+          "block_number": 20,
+          "chain_id": 23,
+          "payload_hash": 25,
+          "provider_id": 25,
+          "receipt": 3802,
+          "transaction_hash": 25,
+          "verified_at": 1184
+        },
+        "kind": "r",
+        "name": "yunipals_indexer_control.transaction_evidence",
+        "oid": 73011148,
+        "ownerOid": 10,
+        "rowSecurity": false
+      }
+    ]
+  },
+  "sourceTarget": {
+    "actualCatalogCaptured": true,
+    "actualCatalogSummarySha256": "8fa8e006e4d7d4e51baeba1f25f5ff1908445fabc9148a1f8511ca5ba1401142",
+    "currentAmbientCatalogRequired": true,
+    "database": {
+      "allowConnections": true,
+      "connectionLimit": -1,
+      "oid": 17584,
+      "ownerOid": 16388,
+      "publicAcl": [
+        {
+          "grantable": false,
+          "privilege": "TEMPORARY"
+        },
+        {
+          "grantable": false,
+          "privilege": "CONNECT"
+        }
+      ]
+    },
+    "defaultAclCount": 0,
+    "schemas": [
+      {
+        "name": "unified_ypal_20261023_v1",
+        "oid": 75963410,
+        "ownerOid": 73004621
+      },
+      {
+        "name": "yunipals_indexer_control",
+        "oid": 73011094,
+        "ownerOid": 10
+      }
+    ]
+  },
+  "sql": {
+    "arena-ypal-native-v1.source.sql.review": "a045f16cd35135d6ae60c522f39bbefe50a683d57906482e78597edec9ca1c45",
+    "operational-roles.current.sql.review": "310b817daf1ee7254e54d21a783334638d3ef58aee3c430dd10f4991a704d9b3"
+  },
+  "status": "reviewed-current-ambient-no-admission-yet",
+  "workers": [
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "admission.key",
+          "source": "/etc/yunipals-arena/admission.key"
+        }
+      ],
+      "exists": false,
+      "id": "api",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-api.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-api.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.adjudication"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.admission"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.admission"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.challenge"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.challenge"
+        },
+        {
+          "attribute": "used_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.challenge"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "next_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "tracking_until",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halt_reason",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halted",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.fighter_snapshot"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.fighter_snapshot"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_publication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "DELETE",
+          "relation": "yunipals_arena.session"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.session"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.session"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.submission"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.submission"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": "cipher_context",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.identity_job"
+        }
+      ],
+      "role": "yunipals_arena_native_api",
+      "unit": "yunipals-arena-native-api.service"
+    },
+    {
+      "connectionLimit": 4,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "exists": false,
+      "id": "disclosure",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-disclosure.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-disclosure.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halt_reason",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": "native_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": "native_check_lease",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": "revealed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": "revealed_block_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": "revealed_event_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.submission"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": "cipher_context",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.tournament_identity"
+        }
+      ],
+      "role": "yunipals_arena_native_disclosure",
+      "unit": "yunipals-arena-native-disclosure.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "exists": false,
+      "id": "client_tracker",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-client.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-client.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.client_receipt_history"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.client_receipt_history"
+        },
+        {
+          "attribute": "canonical",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_receipt_history"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_receipt_history"
+        },
+        {
+          "attribute": "finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_receipt_history"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "indexed_through_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "next_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "proof_event_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "receipt_block_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "receipt_block_number",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "receipt_finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "result",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": "verified_release_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.client_transaction"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halt_reason",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halted",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        }
+      ],
+      "role": "yunipals_arena_native_client",
+      "unit": "yunipals-arena-native-client.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "exists": false,
+      "id": "referee_provider",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/arena.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-referee.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-referee.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.adjudication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.adjudication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.provider_action_evidence"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "actual_microusd",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "error_code",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "native_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "native_check_lease",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "provider_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "response",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "updated_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "updated_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "artwork",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "reserved_microusd",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "profile",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "provider_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "usage",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": "profile_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.identity_job"
+        }
+      ],
+      "role": "yunipals_arena_native_referee",
+      "unit": "yunipals-arena-native-referee.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "exists": false,
+      "id": "media_provider",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-media.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-media.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.adjudication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "detail",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "film_sha256",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "input_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "native_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "native_check_lease",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "outcome_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "publication_hash",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "updated_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.media_publication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_publication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.provider_action_evidence"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "actual_microusd",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "error_code",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "native_check_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "native_check_lease",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "response",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": "updated_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.identity_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "DELETE",
+          "relation": "yunipals_arena.capacity"
+        }
+      ],
+      "role": "yunipals_arena_native_media",
+      "unit": "yunipals-arena-native-media.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "execution.key",
+          "source": "/etc/yunipals-arena/operator.key"
+        }
+      ],
+      "exists": false,
+      "id": "execution_lobby",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-execution-lobby.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-execution-lobby.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halt_reason",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halted",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.opening_action_observation"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.provider_task"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": "cipher_context",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "receipt",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "receipt_finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "canonical",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.identity_job"
+        }
+      ],
+      "role": "yunipals_arena_native_execution_lobby",
+      "unit": "yunipals-arena-native-execution@lobby.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        },
+        {
+          "id": "execution.key",
+          "source": "/etc/yunipals-arena/referee.key"
+        }
+      ],
+      "exists": false,
+      "id": "execution_referee",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-execution-referee.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-execution-referee.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.adjudication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halt_reason",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": "halted",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.fighter_snapshot"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.frozen_input"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_publication"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "indexed_block",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "observed_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": "source_id",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.source_operational_cursor"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.submission"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": "cipher_context",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.tournament_identity"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "receipt",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "receipt_finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": "state",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_intent"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "canonical",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        },
+        {
+          "attribute": "finalized",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.transaction_receipt_history"
+        }
+      ],
+      "role": "yunipals_arena_native_execution_referee",
+      "unit": "yunipals-arena-native-execution@referee.service"
+    },
+    {
+      "connectionLimit": 8,
+      "credentialMapping": [
+        {
+          "id": "strategy-encryption.key",
+          "source": "/etc/yunipals-arena/strategy-encryption.key"
+        }
+      ],
+      "exists": false,
+      "id": "capacity_sampler",
+      "observedRoleOid": null,
+      "orderedEnvironmentFiles": [
+        "/etc/yunipals-arena/runtime.env",
+        "/etc/yunipals-arena/database.env",
+        "/etc/yunipals-arena/runware.env",
+        "/etc/yunipals-arena/native-read.env",
+        "/etc/yunipals-unified/consumers/arena-capacity.env"
+      ],
+      "privateOverlay": "/etc/yunipals-unified/consumers/arena-capacity.env",
+      "requiredEdges": [
+        {
+          "attribute": null,
+          "privilege": "DELETE",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "INSERT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": "snapshot",
+          "privilege": "UPDATE",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.deployment"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.operational_migration"
+        },
+        {
+          "attribute": null,
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.source_selection"
+        },
+        {
+          "attribute": "deployment",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": "snapshot",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": "checked_at",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.capacity"
+        },
+        {
+          "attribute": "deployment",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "state",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        },
+        {
+          "attribute": "updated_at",
+          "privilege": "SELECT",
+          "relation": "yunipals_arena.media_job"
+        }
+      ],
+      "role": "yunipals_arena_native_capacity",
+      "unit": "yunipals-arena-native-capacity.service"
+    }
+  ]
+}

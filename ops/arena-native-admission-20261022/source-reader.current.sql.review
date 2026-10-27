@@ -1,0 +1,35 @@
+-- REVIEWED PROPOSAL ONLY; unchanged finite source template grant list.
+-- Review on the candidate source DB as owner before installation.
+-- Creates the exact fresh NOLOGIN arena_native_reader. No LOGIN/password change.
+-- Existing source database PUBLIC CONNECT/TEMP and two invoker functions are
+-- observed ambient authority; this file does not revoke them or claim otherwise.
+-- This role has no operational/private strategy or signer access.
+BEGIN;
+SET LOCAL lock_timeout='2s';
+SET LOCAL statement_timeout='15s';
+DO $arena_source$
+BEGIN
+ IF current_database()<>'yunipals_backfill' OR current_setting('port')<>'5432'
+ THEN RAISE EXCEPTION 'fixed_arena_source_target_changed'; END IF;
+ IF (SELECT oid FROM pg_database WHERE datname=current_database()) IS DISTINCT FROM 17584::oid
+ OR (SELECT oid FROM pg_namespace WHERE nspname='unified_shadow_20261020_7e7375b0') IS DISTINCT FROM 73004622::oid
+ OR (SELECT oid FROM pg_namespace WHERE nspname='yunipals_indexer_control') IS DISTINCT FROM 73011094::oid
+ THEN RAISE EXCEPTION 'current_source_namespace_identity_changed'; END IF;
+ IF EXISTS(SELECT 1 FROM(VALUES ('unified_shadow_20261020_7e7375b0._ponder_checkpoint',73032456),('unified_shadow_20261020_7e7375b0._ponder_meta',73032449),('unified_shadow_20261020_7e7375b0.arena_credit',73032764),('unified_shadow_20261020_7e7375b0.arena_tournament',73032734),('unified_shadow_20261020_7e7375b0.canonical_event',73032704),('unified_shadow_20261020_7e7375b0.chain_block',73032674),('unified_shadow_20261020_7e7375b0.chain_checkpoint',73032659),('unified_shadow_20261020_7e7375b0.indexer_source',73032689),('unified_shadow_20261020_7e7375b0.transaction_candidate',73032719),('yunipals_indexer_control.chain_anchor',73011156),('yunipals_indexer_control.chain_status',73011132),('yunipals_indexer_control.release',73011103),('yunipals_indexer_control.transaction_evidence',73011148))e(name,oid) LEFT JOIN pg_class c ON c.oid=e.oid AND c.oid=to_regclass(e.name)WHERE c.oid IS NULL OR c.relkind<>'r'OR c.relrowsecurity)
+ THEN RAISE EXCEPTION 'current_13_source_relation_graph_changed'; END IF;
+ IF EXISTS(SELECT 1 FROM pg_roles WHERE rolname='arena_native_reader')
+ THEN RAISE EXCEPTION 'fresh_arena_source_role_name_already_present'; END IF;
+END $arena_source$;
+CREATE ROLE arena_native_reader NOLOGIN PASSWORD NULL NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS CONNECTION LIMIT 32;
+GRANT CONNECT ON DATABASE yunipals_backfill TO arena_native_reader;
+GRANT USAGE ON SCHEMA "unified_shadow_20261020_7e7375b0",yunipals_indexer_control
+  TO "arena_native_reader";
+GRANT SELECT ON "unified_shadow_20261020_7e7375b0"._ponder_meta,"unified_shadow_20261020_7e7375b0"._ponder_checkpoint,
+  "unified_shadow_20261020_7e7375b0".indexer_source,"unified_shadow_20261020_7e7375b0".chain_checkpoint,
+  "unified_shadow_20261020_7e7375b0".chain_block,"unified_shadow_20261020_7e7375b0".canonical_event,
+  "unified_shadow_20261020_7e7375b0".transaction_candidate,"unified_shadow_20261020_7e7375b0".arena_tournament,
+  "unified_shadow_20261020_7e7375b0".arena_credit TO "arena_native_reader";
+GRANT SELECT ON yunipals_indexer_control.release,
+  yunipals_indexer_control.chain_status,yunipals_indexer_control.chain_anchor,
+  yunipals_indexer_control.transaction_evidence TO "arena_native_reader";
+COMMIT;

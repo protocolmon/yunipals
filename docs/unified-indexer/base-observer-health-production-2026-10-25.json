@@ -1,0 +1,39 @@
+{
+  "currentBaseError": null,
+  "databaseWrites": 0,
+  "finalized": 53048220,
+  "format": "yunipals-base-observer-readonly-summary-v1",
+  "historicalFinalityVersusFrameworkCheckpointConflated": false,
+  "historicalWaitingCauseIdentified": false,
+  "last15Minutes": {
+    "executionFailures": 0,
+    "observed": 104,
+    "waiting": 20,
+    "waitingPercent": 16.13
+  },
+  "last5Minutes": {
+    "observed": 36,
+    "waiting": 5,
+    "waitingPercent": 12.2
+  },
+  "nativeAfterWitnessMatchesFetchedLatestHash": true,
+  "nativeWitnessLinksToFetchedLatestParent": true,
+  "numericWitness": 53048879,
+  "observedAt": "2026-10-25T00:11:48.620600+00:00",
+  "observerPID": 3948391,
+  "permitHeaders": 0,
+  "providerLagPredicatesAtCapture": {
+    "finalizedBelowPreviousObservedFinalized": false,
+    "headBelowPreviousObservedHead": false,
+    "nativeCompleteAbovePublicHead": false,
+    "nativeWitnessAbovePublicHead": false,
+    "numericNativeWitnessHashMatches": true,
+    "numericNativeWitnessReturned": true
+  },
+  "publicHead": 53048880,
+  "reportSha256": "7caf1632c37a3090aaf28c7669f394b8dbf26539dbbfa71d4abf7086e47e2b0e",
+  "rpcAttempts": 4,
+  "sameEpochs": true,
+  "serviceActions": 0,
+  "sourcePID": 3985426
+}

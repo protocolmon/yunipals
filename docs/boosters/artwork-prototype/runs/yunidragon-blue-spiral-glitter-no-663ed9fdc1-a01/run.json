@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01",
+  "recipeVersion": "og-booster-card-v2-brand-study",
+  "fingerprint": "663ed9fdc1b5c43f88c4283e08fc2cb6b7092043d9e5132083bfd6a9870365f2",
+  "attempt": 1,
+  "createdAt": "2026-10-19T08:47:49.966928+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "traits": {
+    "type": "Yunidragon",
+    "color": "Blue",
+    "horn": "Spiral",
+    "glitter": "No",
+    "ids": {
+      "types": 4,
+      "colors": 3,
+      "horns": 1,
+      "glitters": 0
+    },
+    "variantId": 80,
+    "key": "yunidragon-blue-spiral-glitter-no"
+  },
+  "design": {
+    "frameStyle": "brand",
+    "label": "Brand lavender",
+    "frameColor": "#c7c9f9",
+    "brandColor": "#7e22ce",
+    "headingFont": "Archivo Black",
+    "decision": "comparison candidate; border policy not selected"
+  },
+  "sourceRunId": "yunidragon-blue-spiral-glitter-no-c2877facdb-a01",
+  "references": {
+    "og": {
+      "path": "references/yunidragon-blue-og.png",
+      "sha256": "d8080100339fc653a3b4986c4e4a9309bcb5f2fb22463a1a720ad707d608607c"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "source": {
+      "path": "runs/yunidragon-blue-spiral-glitter-no-c2877facdb-a01/card.png",
+      "sha256": "366306fb07701359344027488aa9b24974208bcb6022e325fe729b03c3543786"
+    }
+  },
+  "referenceProvenance": {
+    "image": "references/yunidragon-blue-og.png",
+    "source": "OG Yunipals character reference from protopals-ponder/artwork/refs/yunidragon_blue.png",
+    "legacyType": "Unidragon",
+    "chainId": null,
+    "contract": null,
+    "tokenId": null,
+    "identity": "The OG blue Yunidragon: a slender upright long-necked baby dragon, large amber-brown eyes, a broad cyan forehead crest with blue spots, blue cheek and dorsal surfaces with light mint-cyan underbelly, coral-red layered ear fins, four short clawed legs, a long tapering tail, and the recognizable OG facial features. Preserve these distinctive markings and body proportions; do not turn it into a stocky winged dragon or another animal."
+  },
+  "backgroundModifier": "meadow-blue: preserve rolling green hills, a clear azure sky, soft clouds and the distant windmill",
+  "stageOrder": [
+    "revision"
+  ],
+  "prompts": {
+    "revision": "Edit the attached finished YUNIPALS trading card into a corrected brand-study candidate.\nOutput one 1024 x 1536 PNG, portrait 2:3, transparent exterior.\nImage #1 is the exact source card. Preserve this OG Blue Yunidragon's\nface, anatomy, colors, markings, pose, full body, meadow, windmill and composition.\nImage #2 is the OFFICIAL Yunipals logo downloaded from https://www.yunipals.com/.\n\nHORN CORRECTION: Replace the ivory forehead horn with the OG normal SPIRAL horn: a naturally tapered, refined golden horn, warm honey-gold with antique bronze shadows and soft golden-beige highlights, distinct spiraling grooves. It must read as GOLD, not white, ivory, marshmallow or an exaggerated soft-serve cone. Keep its forehead attachment and the monster's face intact.\n\nFRAME COMPARISON \u2014 Brand lavender:\nChange the outer frame's dominant material color to #c7c9f9.\nUse a soft polished LAVENDER frame matching the Yunipals website CI, with grape-purple recessed edge detail.\nReplace the previous gold frame, gold nameplate rims and gold lettering. Gold is\nreserved for a Spiral horn; the frame must visibly read as the requested color.\nUse thin grape-purple #7e22ce inner pinstripes and a restrained purple-to-cyan accent.\nKeep a premium clean rounded collectible-card silhouette with an intact border.\n\nOFFICIAL BRANDING:\nReplace the old 3D beige dragon medallion with the EXACT supplied official flat logo:\ndark outlined pale-gold dragon head, green eye, mint fins, hot-pink circle, white sparkles.\nKeep the logo a faithful flat graphic, not a newly illustrated 3D dragon. Keep its\npink badge visible and recognizable, placed cleanly in the top-left header area.\nUse a pale frosted-glass white/lavender header and matching bottom nameplate.\nExact header text YUNIPALS in chunky Archivo Black-style sans-serif, grape #7e22ce.\nExact bottom name YUNIDRAGON, same grape-purple brand typography.\nThese are the only words. No level, stats, badge text or added labels.\n\nFINISH:\nKeep ordinary non-glitter monster surfaces and a non-holographic card. Do not add glitter, rainbow foil, sparkles or prismatic effects to the creature or scene.\nKeep transparent margins around all four sides, rounded corners, no exterior halo,\nno drop shadow, no canvas-edge pixels. Preserve the source card's character identity.\n"
+  },
+  "stages": {
+    "revision": {
+      "path": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision.png",
+      "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a",
+      "recordedAt": "2026-10-19T08:50:21.712447+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.087777,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Inspected full card and white/black/checkerboard composites. Transparent outer edges are clean. Spiral horns are warm gold; diamond horns remain clear crystal. Official flat logo and purple CI text are visible. Glitter variants retain body sparkle and holographic card treatment. Frame color remains a design comparison pending user review.",
+          "recordedAt": "2026-10-19T08:55:51.046688+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/qa/revision-white.png",
+          "black": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/qa/revision-black.png",
+          "checkerboard": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/qa/revision-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "User selected these four lavender cards and requested removal of the other styles, 19 October 2026.",
+    "recordedAt": "2026-10-19T09:23:05.080041+00:00"
+  }
+}

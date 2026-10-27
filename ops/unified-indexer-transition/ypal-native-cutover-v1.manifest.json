@@ -1,0 +1,26 @@
+{
+  "format": "yunipals-ypal-native-cutover-source-v1",
+  "files": {
+    "ypal-native-cutover-v1.py": "344f7d0e015d728ec134d00c4ada2c82a3a2f1aab023cf78880eb600a57ef62b",
+    "ypal-native-cutover-v1.mjs": "950b18cfb42d210e3fca47f4f3464de7dd5dc0d1dbc42fd846c2171aa8b2d1a7",
+    "ypal-native-cutover-proof-v1.py": "9ab496cd169190d2bc4373857b0d358f4278ff58e06c708694ac65b11c3e3946",
+    "ypal-cache-finish-v2.py": "8deaa8209713732e6505daf097972c203b68790f371aee8deb6a0b0d91189baa",
+    "ypal-native-cutover-v1.action.sql": "ac8d08858a28a11b75f51f70e3b841d363db7ac98654afb244a274a34a705f50",
+    "ypal-native-reader-probe-v1.mjs": "4dadc7ad35c0fa7a68f07ec03b5bb74f5386b5c5de3817ee9dc2af683ff48c3f"
+  },
+  "dependencies": {
+    "ypal-generation-publisher-install-v1.py": "6fd77eac7014eb68b5f605d04a8d432c95866bc55a9f0814bf76ffb24943610c",
+    "ypal-main-api-install-v1.py": "2f789f343ccfd0c99800e98e735bce366a4747c54f6f1372519b2e1fe92db633",
+    "ypal-native-generation-v1.py": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6",
+    "retained-workers-stage-v1.py": "4cf40a8e43c5eec383d17834099b8da5e5b700ec229b7c3de8909cf601ca2416",
+    "ypal-generation-recovery-v1.mjs": "b45dd8e4f3e470afb18c192a27c50b6d6161ade514b8babdd2225ed18dd5ef21",
+    "ypal-cache-guard-transition-v1.mjs": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+    "ypal-combined-ordinary-observer-owner-v1.py": "f81c2e321304c36c1dc63f26dfecb23ecb1a5a84dc3facabdce06a240300f0f6",
+    "ownership-parity-peer-v2.mjs": "d1e8283b440d6debe046edf25b7fdf6b18b552604e35256eadf210a3734db920",
+    "ownership-parity-peer-v4.mjs": "b86fbfacfee337623fa0b3aaa77dbdf145d5ef85610e4e07c91d36bc51ed2b8e",
+    "fixed-boundary-witness-v3.mjs": "bba7bd4bdb74908c85fd51fc93cdf8a53c8cbbce25e647f37004762c8e59796c",
+    "metadata-fixed-parity-v4.py": "d367701ea44de7cb5fada336d182f5c1a47536cc4221fdd120a048ea9641ee53",
+    "ypal-feature-handover-v1.py": "e50658bc8f0430c85f624b94a931469b3a12b956d1f8ab14d0ed673b18e0ab8e",
+    "consumer-operational-preview-v6.py": "447e7f6c25842b983ba23c59dbc6486be156f43c524de780d4f6b77966973777"
+  }
+}

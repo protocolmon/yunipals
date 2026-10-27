@@ -1,0 +1,9 @@
+{
+  "readAdmissionSha256": null,
+  "readPlanSha256": null,
+  "readContextInputSha256": null,
+  "cachePreparedSha256": null,
+  "cacheInputsSha256": null,
+  "readerResultSha256": null,
+  "readerManifestSha256": null
+}

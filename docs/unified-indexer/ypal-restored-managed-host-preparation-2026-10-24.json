@@ -1,0 +1,58 @@
+{
+  "format": "yunipals-restored-managed-host-preparation-source-v1",
+  "sourceOnly": true,
+  "publicPayloadCommit": "0c4832b5fdbf3e32d1eb402e5ad1c395ef114087",
+  "operatorSha256": "75d376801cee9d55b17df7bc155d30c63460cb4829f347ad372d2d79b7efa673",
+  "testsSha256": "bccbb8bb3f0540dc288549a12c65232841e776d814b02b9b160f028feb707d45",
+  "publicPlanSha256": "e81fa22d0ff9f25cbb4d667b6d537caf710b50fb1e775503a233f95d07bb638a",
+  "publicFiles": 88,
+  "publicBytes": 1925797,
+  "existingOnlyAncestryOrTestedBackingFiles": 11,
+  "localControls": {
+    "authorPassed": 10,
+    "independentlyRerunByRootPassed": 10,
+    "productionCalls": 0,
+    "externalNetworkCalls": 0,
+    "realDisposableFilesystemControls": true
+  },
+  "preservation": {
+    "existingFilesOverwritten": false,
+    "existingModesChanged": false,
+    "OPSChmodAllowed": false,
+    "newOwnedRuntimeDirectoryMode": "0755",
+    "newPublicLauncherAndEnvironmentMode": "0644",
+    "newOperatorFilesMode": "0600",
+    "newAuditDirectoryMode": "0700",
+    "currentSourceAndServingCASRequired": true,
+    "native44AndSyncCacheIdentityRequired": true,
+    "safeFinalizedRecoveryFloorsRequired": true,
+    "futureManagedHostConstructionAllowed": false,
+    "futureAcknowledgementFabricationAllowed": false,
+    "defaultHTTPProxyAndTLSPreserved": true
+  },
+  "futureHostExecution": {
+    "completed": false,
+    "publicSourceStaged": false,
+    "UID970ReadabilityQualified": false,
+    "completedInverseQualified": false,
+    "actualREADAdmissionQualified": false,
+    "nativeAdoptionQualified": false,
+    "sourceReadinessQualified": false,
+    "financialAuthorityQualified": false
+  },
+  "actionsByAuthor": {
+    "hostCalls": 0,
+    "productionDatabaseWrites": 0,
+    "roleOrGrantChanges": 0,
+    "serviceActions": 0,
+    "providerCalls": 0,
+    "credentialsTransferred": false,
+    "gitActions": 0
+  },
+  "limitations": [
+    "Code-namespace compilation does not qualify a live managed mount namespace.",
+    "Actual READ, role authentication, provenance, native adoption and full inverse receipts remain separate future gates.",
+    "Unknown or partial staging has no automatic retry, force or service action.",
+    "Detailed actual host state remains in the exclusive root-private audit; stdout is aggregate only."
+  ]
+}

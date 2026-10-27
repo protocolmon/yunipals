@@ -13,14 +13,19 @@ import {
 } from "@protopals/yunipals-market-core/marketOrder";
 import { address } from "@protopals/yunipals-market-core/validation";
 
+import { readBnbDiscoveryBinding } from "@/indexer/bnbDiscoveryRead";
 import { BnbOrderError } from "@/bnb/orders";
 import { isOpenSeaChain } from "@protopals/yunipals-market-core/openseaRegistry";
 import { decodeSeaportOrder } from "@protopals/yunipals-market-core/seaportWire";
 import { summarizeDiscoveredOpenSeaOrder } from "@/opensea/discoveryOrder";
 import { readOpenSeaSources } from "@/reads/openseaSources";
-import { marketOrderRowsSql } from "@/reads/orderRows";
+import {
+  marketplaceOwnershipSqlContext,
+  marketplaceOwnershipSqlRelations
+} from "@/indexer/ownershipSql";
+import { marketOrderRowsStatementSql } from "@/reads/orderRows";
 import { transaction } from "@/db/pool";
-import { indexedTokenHiddenSql } from "@/reads/visibility";
+import { indexedTokenHiddenSqlFor } from "@/reads/visibility";
 import {
   parsePageRequest,
   readSnapshotPage,
@@ -47,17 +52,31 @@ export const observedOrderStateSql = `CASE WHEN o.origin='validated' THEN o.stat
 
 export async function readOrderSources(
   db: Db,
-  observedAt: Date
+  observedAt: Date,
+  selected: readonly MarketplaceChain[] = Object.keys(
+    marketplaceChains
+  ) as MarketplaceChain[]
 ): Promise<OrderSources> {
+  const ownership = await marketplaceOwnershipSqlContext(db, selected);
+  const discoveryBinding = selected.includes("bnb")
+    ? await readBnbDiscoveryBinding(db)
+    : { native: false, ready: true };
+  const bnbSync =
+    ownership.mode === "unified"
+      ? `(SELECT true AS singleton,block_number AS last_scanned_block,block_hash AS last_scanned_hash,
+       observed_at AS updated_at,CASE WHEN ready THEN observed_at END AS caught_up_at,NULL::text AS last_error
+       FROM ${ownership.tokenRelation.replace(/\.token$/, ".source_status")} WHERE collection='bnb')`
+      : "bnb_indexer.sync_state";
   // The BNB indexer and order worker advance on independent schedules. Their
   // fresh checkpoints prove each source separately; comparing their block
   // numbers made every indexer refresh look incomplete until the next worker
   // heartbeat, even though no order evidence depended on that comparison.
-  const result = await db.query<{
-    status: SourceStatus;
-    provenance: Record<string, unknown>;
-  }>(
-    `SELECT CASE
+  const result = selected.includes("bnb")
+    ? await db.query<{
+        status: SourceStatus;
+        provenance: Record<string, unknown>;
+      }>(
+        `SELECT CASE
       WHEN v.mode='live' THEN CASE
         WHEN s.last_error IS NOT NULL OR s.last_scanned_block IS NULL OR s.last_scanned_hash IS NULL
           OR s.updated_at NOT BETWEEN $1::timestamptz-interval '720 seconds' AND $1::timestamptz+interval '30 seconds'
@@ -89,19 +108,23 @@ export async function readOrderSources(
         'indexerBlock',s.last_scanned_block::text,'indexerHash',s.last_scanned_hash,'indexerUpdatedAt',s.updated_at,
         'discoveryMode',v.mode,'discoveryNext',v.next_block::text,
         'discoveryTarget',v.target_block::text,'discoveryUpdatedAt',v.updated_at) AS provenance
-    FROM bnb_indexer.sync_state s LEFT JOIN yunipals_market.checkpoint h
+    FROM ${bnbSync} s LEFT JOIN yunipals_market.checkpoint h
       ON h.source='chain' AND h.chain_id=56 AND h.name='bnb-order-worker'
     LEFT JOIN yunipals_market.bnb_discovery_cursor v ON v.singleton
     WHERE s.singleton`,
-    [observedAt]
-  );
+        [observedAt]
+      )
+    : { rows: [] };
   const row = result.rows.length === 1 ? result.rows[0] : undefined;
   const opensea = await readOpenSeaSources(
     db,
     observedAt,
     orderObservationStaleSql
   );
-  const bnbStatus = row?.status ?? "unavailable";
+  const bnbStatus =
+    discoveryBinding.native && !discoveryBinding.ready
+      ? "syncing"
+      : (row?.status ?? "unavailable");
   const bnbCoverage =
     bnbStatus === "available"
       ? "complete"
@@ -159,8 +182,9 @@ export async function readOrderSources(
   };
 }
 
-const currentAssetSql = `jsonb_build_object('owner',t.owner,'lifecycle',t.lifecycle,
-  'burned',t.burned,'hidden',${indexedTokenHiddenSql})`;
+const currentAssetSql =
+  () => `jsonb_build_object('owner',t.owner,'lifecycle',t.lifecycle,
+  'burned',t.burned,'hidden',${indexedTokenHiddenSqlFor("t", marketplaceOwnershipSqlRelations().transferRelation)})`;
 const orderSummarySql = `o.summary || jsonb_build_object('status',${observedOrderStateSql})`;
 type OrderRow = {
   summary: unknown;
@@ -285,20 +309,20 @@ export class OrderReadService {
       query,
       page,
       async (db, observedAt) => {
-        const sources = await readOrderSources(db, observedAt);
+        const sources = await readOrderSources(db, observedAt, selected);
         // Own-maker queries deliberately LEFT JOIN current inventory. Missing
         // observations fail explicitly; they must not erase cancellation history.
         const rows = await db.query<OrderRow>(
           `SELECT ${orderSummarySql} AS summary,o.recovery_components,o.side,${observedOrderStateSql} AS state,o.chain_id,o.protocol_address,o.contract_address,o.token_id::text,o.order_hash,o.maker,o.lifecycle,
-          ${currentAssetSql} AS current_asset
-        FROM ${marketOrderRowsSql} o JOIN yunipals_market.collection c ON c.chain_id=o.chain_id AND c.contract_address=o.contract_address
+          ${currentAssetSql()} AS current_asset
+        FROM ${marketOrderRowsStatementSql()} o JOIN yunipals_market.collection c ON c.chain_id=o.chain_id AND c.contract_address=o.contract_address
         -- Preserve the per-order token lookup across the foreign-table boundary.
         CROSS JOIN LATERAL (
           SELECT o.contract_address::text AS contract_key,o.token_id::text AS token_key OFFSET 0
         ) wallet_key
         LEFT JOIN LATERAL (
           SELECT t.collection,t.token_id,t.owner,t.lifecycle,t.burned
-          FROM yunipals_read_v4.token t
+          FROM ${marketplaceOwnershipSqlRelations().tokenRelation} t
           WHERE t.collection=c.slug AND t.chain_id=o.chain_id
             AND lower(t.contract_address)=wallet_key.contract_key AND t.token_id=wallet_key.token_key
           LIMIT 1
@@ -349,6 +373,7 @@ export class OrderReadService {
       await db.query(
         "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"
       );
+      await marketplaceOwnershipSqlContext(db, [asset.chain]);
       const clock = await db.query<{ now: Date }>(
         "SELECT clock_timestamp() AS now"
       );
@@ -356,7 +381,7 @@ export class OrderReadService {
       const token = await db.query<{
         current_asset: OrderRow["current_asset"];
       }>(
-        `SELECT ${currentAssetSql} AS current_asset FROM yunipals_read_v4.token t
+        `SELECT ${currentAssetSql()} AS current_asset FROM ${marketplaceOwnershipSqlRelations().tokenRelation} t
         WHERE t.collection=$1 AND t.chain_id=$2 AND lower(t.contract_address)=$3 AND t.token_id=$4`,
         [
           asset.chain,
@@ -378,7 +403,7 @@ export class OrderReadService {
       )
         throw new BnbOrderError("asset_observation_unavailable", 503);
       const owner = getAddress(current.owner);
-      const sources = await readOrderSources(db, observedAt);
+      const sources = await readOrderSources(db, observedAt, [asset.chain]);
       const sourceStatus = sources.statuses[asset.chain];
       const availability = sources.availability?.[asset.chain] ?? {
         chain: asset.chain,
@@ -440,7 +465,7 @@ export class OrderReadService {
         `WITH eligible AS (SELECT ${orderSummarySql} AS summary,o.recovery_components,o.side,${observedOrderStateSql} AS state,o.chain_id,o.protocol_address,o.contract_address,o.token_id::text,o.order_hash,o.maker,o.lifecycle,
           $8::jsonb AS current_asset,row_number() OVER (PARTITION BY o.side
             ORDER BY CASE WHEN o.side='listing' THEN o.gross_amount ELSE -o.gross_amount END,o.order_hash) AS rank
-          FROM ${marketOrderRowsSql} o
+          FROM ${marketOrderRowsStatementSql()} o
         WHERE o.chain_id=$2 AND o.contract_address=$3 AND o.token_id=$4 AND o.protocol_address=$5
           AND o.browse_candidate AND o.lifecycle=$6
           AND (${observedOrderStateSql})='active' AND o.start_time<=extract(epoch FROM $1::timestamptz)

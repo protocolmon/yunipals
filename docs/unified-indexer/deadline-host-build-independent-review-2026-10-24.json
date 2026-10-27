@@ -1,0 +1,36 @@
+{
+  "format": "yunipals-deadline-host-build-independent-review-v1",
+  "sourceReview": "PASS",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-host-build-v1/probe.py",
+      "sha256": "e9e84e7450debf66295279c92ffd67d0a5e8a28a2b3afc3599338c11ce271f90"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-host-build-v1/probe.test.py",
+      "sha256": "c710949260630d57f7f7b7bea7f7deb845c12044ab607f843d978a3da7c66323"
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-rpc-deadline-host-build-v1/local-build.json",
+      "sha256": "4ad7055868dc2f736a944564f7021a3d9d922da0ec70ac6c3d3507bdff18fd07"
+    }
+  ],
+  "localControls": {
+    "passed": 9,
+    "failed": 0,
+    "command": "python3 ops/unified-indexer-transition/ypal-rpc-deadline-host-build-v1/probe.test.py"
+  },
+  "scope": [
+    "Three separate writable cache/codegen bindings and three read-only overlays; no bind-list reset",
+    "Clean dummy database environment, AF_UNIX-only private network and inaccessible PostgreSQL paths",
+    "Bounded unprivileged one-shot transient and exclusive no-repeat intent",
+    "Stable current source/peer/input equality and preserved safe recovery floors before acceptance"
+  ],
+  "hostCalls": 0,
+  "sourceEdits": 0,
+  "productionActions": 0,
+  "limitations": [
+    "No actual host path, UID readability, mount or transient invocation was tested by this review",
+    "No running transport change or source readiness is qualified"
+  ]
+}

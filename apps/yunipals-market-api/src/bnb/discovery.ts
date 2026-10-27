@@ -15,7 +15,10 @@ import {
   type ValidatedOrderParameters,
   type ValidatedPublication
 } from "@protopals/yunipals-market-core/bnbDiscovery";
-import { marketplaceChains, seaportDeployment } from "@protopals/yunipals-market-core/registry";
+import {
+  marketplaceChains,
+  seaportDeployment
+} from "@protopals/yunipals-market-core/registry";
 import { seaportReadAbi } from "@protopals/yunipals-market-core/seaport";
 import { seaportEventAbi } from "@protopals/yunipals-market-core/seaportEvents";
 import {
@@ -53,7 +56,7 @@ type PublicationRow = {
   end_time: string;
 };
 
-function parameterJson(parameters: ValidatedOrderParameters) {
+export function parameterJson(parameters: ValidatedOrderParameters) {
   const { counter: _counter, ...wire } = encodeSeaportOrder({
     ...parameters,
     counter: 0n
@@ -65,7 +68,7 @@ function parameterJson(parameters: ValidatedOrderParameters) {
   };
 }
 
-function storedParameters(value: unknown): ValidatedOrderParameters {
+export function storedParameters(value: unknown): ValidatedOrderParameters {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error("Invalid stored publication.");
   const record = value as Record<string, unknown>;
@@ -80,7 +83,11 @@ function storedParameters(value: unknown): ValidatedOrderParameters {
   return { ...parameters, totalOriginalConsiderationItems: BigInt(original) };
 }
 
-async function rollingBoundary(client: PublicClient, head: bigint, time: bigint) {
+export async function rollingBoundary(
+  client: PublicClient,
+  head: bigint,
+  time: bigint
+) {
   const earliest = await client.getBlock({ blockNumber: 0n });
   if (earliest.timestamp > time) return 0n;
   let low = 0n;
@@ -200,10 +207,8 @@ export async function reconstructPublishedComponents(
   return { counter, components };
 }
 
-/** A single leased pass; API requests never invoke this function. */
-export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
-  const { pool, logClient, stateClient, policy, launchBlock } = options;
-  const policyFingerprint = keccak256(
+export function bnbDiscoveryPolicyFingerprint(policy: BnbPolicy) {
+  return keccak256(
     toHex(
       JSON.stringify({
         version: policy.version,
@@ -217,6 +222,143 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
       })
     )
   );
+}
+
+export async function observeDiscoveredBnbOrders(
+  pool: Pool,
+  stateClient: PublicClient,
+  policy: BnbPolicy,
+  finalized: { number: bigint; hash: Hex; timestamp: bigint },
+  nextBlock: bigint,
+  verifySource?: () => Promise<void>
+) {
+  const binding = await bindDiscoveredBnbLifecycles(
+    pool,
+    stateClient,
+    policy,
+    finalized.number
+  );
+  const due = await pool.query<PublicationRow>(
+    `SELECT order_hash,parameters,maker,end_time::text FROM yunipals_market.bnb_discovered_order
+       WHERE state IN ('active','unavailable','inconsistent') AND end_time>$1::numeric
+       ORDER BY state_observed_at NULLS FIRST,publication_block,order_hash LIMIT 100`,
+    [finalized.timestamp.toString()]
+  );
+  const counters = new Map<string, bigint>();
+  const observations: Array<{
+    hash: Hex;
+    state: string;
+    components: string | null;
+  }> = [];
+  for (const row of due.rows) {
+    let counter = counters.get(row.maker);
+    if (counter === undefined) {
+      counter = await stateClient.readContract({
+        address: seaportDeployment.address,
+        abi: seaportReadAbi,
+        functionName: "getCounter",
+        args: [getAddress(row.maker)],
+        blockNumber: finalized.number
+      });
+      counters.set(row.maker, counter);
+    }
+    const status = await stateClient.readContract({
+      address: seaportDeployment.address,
+      abi: seaportReadAbi,
+      functionName: "getOrderStatus",
+      args: [row.order_hash],
+      blockNumber: finalized.number
+    });
+    const result = observeValidatedPublication(
+      {
+        orderHash: row.order_hash,
+        parameters: storedParameters(row.parameters)
+      },
+      counter,
+      {
+        isValidated: status[0],
+        isCancelled: status[1],
+        totalFilled: status[2],
+        totalSize: status[3]
+      },
+      finalized.timestamp
+    );
+    observations.push({
+      hash: row.order_hash,
+      state: result.state,
+      components: result.components
+        ? JSON.stringify(encodeSeaportOrder(result.components))
+        : null
+    });
+  }
+  const anchor = await stateClient.getBlock({
+    blockNumber: finalized.number
+  });
+  if (anchor.hash !== finalized.hash)
+    throw new Error("BNB observation anchor changed.");
+  await transaction(pool, async (db) => {
+    await verifySource?.();
+    for (const observed of observations)
+      await db.query(
+        `UPDATE yunipals_market.bnb_discovered_order SET state=$2,
+           components=$3::jsonb,state_block=$4,state_hash=$5,
+           state_observed_at=clock_timestamp()
+           WHERE protocol_address=$1 AND order_hash=$6`,
+        [
+          protocol,
+          observed.state,
+          observed.components,
+          finalized.number.toString(),
+          finalized.hash.toLowerCase(),
+          observed.hash.toLowerCase()
+        ]
+      );
+    await db.query(
+      `UPDATE yunipals_market.bnb_discovery_cursor SET updated_at=clock_timestamp(),
+         last_error_code=NULL WHERE singleton AND next_block=$1`,
+      [nextBlock.toString()]
+    );
+  });
+  const health = await pool.query<{
+    unbound: string;
+    stale_active: string;
+    oldest_state_observed_at: Date | null;
+  }>(
+    `SELECT
+         count(*) FILTER (WHERE bound_lifecycle IS NULL)::text AS unbound,
+         count(*) FILTER (WHERE state IN ('active','unavailable','inconsistent')
+           AND (state_observed_at IS NULL OR state_observed_at<clock_timestamp()-interval '720 seconds'))::text AS stale_active,
+         min(state_observed_at) FILTER (WHERE state IN ('active','unavailable','inconsistent')) AS oldest_state_observed_at
+       FROM yunipals_market.bnb_discovered_order
+       WHERE end_time>extract(epoch FROM clock_timestamp())`
+  );
+  return {
+    observed: observations.length,
+    bound: binding.bound,
+    unbound: Number(health.rows[0]?.unbound ?? 0),
+    staleActive: Number(health.rows[0]?.stale_active ?? 0),
+    oldestStateObservedAt:
+      health.rows[0]?.oldest_state_observed_at?.toISOString() ?? null
+  };
+}
+
+/** A single leased pass; API requests never invoke this function. */
+export type BnbDiscoveryPassResult = {
+  locked: boolean;
+  scanned: number;
+  observed: number;
+  bound?: number;
+  lagBlocks?: string;
+  unbound?: number;
+  staleActive?: number;
+  oldestStateObservedAt?: string | null;
+};
+
+export async function runBnbDiscoveryPass(
+  options: BnbDiscoveryOptions
+): Promise<BnbDiscoveryPassResult> {
+  const { pool, logClient, stateClient, policy, launchBlock } = options;
+  const policyFingerprint = bnbDiscoveryPolicyFingerprint(policy);
   if (launchBlock < 1n || launchBlock > BigInt(Number.MAX_SAFE_INTEGER))
     throw new Error("Configure a positive BNB discovery launch block.");
   const range = options.maxRange ?? 100_000n;
@@ -232,6 +374,29 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
     );
     locked = acquired.rows[0]?.locked === true;
     if (!locked) return { locked: false, scanned: 0, observed: 0 };
+    const selected = await holder.query<{ reader_mode: string }>(
+      `SELECT reader_mode FROM yunipals_market.bnb_discovery_cursor WHERE singleton`
+    );
+    if (selected.rows[0]?.reader_mode === "unified")
+      throw new Error(
+        "The BNB discovery RPC scanner is disabled in unified mode."
+      );
+    const legacy = (
+      await holder.query<{
+        configuration: { policy: string; launchBlock: string };
+      }>(
+        "SELECT configuration FROM yunipals_market.marketplace_legacy_selection WHERE consumer='bnb-discovery'"
+      )
+    ).rows[0];
+    if (
+      legacy &&
+      (legacy.configuration.policy !== policyFingerprint ||
+        legacy.configuration.launchBlock !== launchBlock.toString())
+    ) {
+      throw new Error(
+        "Legacy discovery selection differs from this compatible worker."
+      );
+    }
 
     const finalized = await readConfirmedBlock(stateClient, 56);
     const now = BigInt(Date.now());
@@ -264,7 +429,8 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
     if (stored && BigInt(stored.launch_block) !== launchBlock)
       throw new Error("BNB discovery launch block differs from stored state.");
     const needsBoundary =
-      !stored || stored.policy_fingerprint !== policyFingerprint ||
+      !stored ||
+      stored.policy_fingerprint !== policyFingerprint ||
       Date.now() - stored.updated_at.getTime() >= 30 * 86400_000;
     let start = launchBlock;
     if (needsBoundary) {
@@ -431,7 +597,13 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
       const endBlock = await stateClient.getBlock({ blockNumber: end });
       if (!endBlock.hash) throw new Error("Missing BNB scan anchor.");
       await transaction(pool, async (db) => {
-        for (const { log, publication, timestamp, summary, published } of publications) {
+        for (const {
+          log,
+          publication,
+          timestamp,
+          summary,
+          published
+        } of publications) {
           await db.query(
             `INSERT INTO yunipals_market.bnb_discovered_order
              (protocol_address,order_hash,contract_address,token_id,maker,side,currency,
@@ -468,7 +640,11 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
           `UPDATE yunipals_market.bnb_discovery_cursor SET next_block=$1,
            scanned_block_hash=$2,updated_at=clock_timestamp(),last_error_code=NULL
            WHERE singleton AND next_block=$3`,
-          [(end + 1n).toString(), endBlock.hash.toLowerCase(), nextBlock.toString()]
+          [
+            (end + 1n).toString(),
+            endBlock.hash.toLowerCase(),
+            nextBlock.toString()
+          ]
         );
         if (advanced.rowCount !== 1)
           throw new Error("BNB discovery cursor changed concurrently.");
@@ -477,120 +653,28 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
       scanned++;
     }
 
-    const binding = await bindDiscoveredBnbLifecycles(
+    const observation = await observeDiscoveredBnbOrders(
       pool,
       stateClient,
       policy,
-      finalized.number
-    );
-    const due = await holder.query<PublicationRow>(
-      `SELECT order_hash,parameters,maker,end_time::text FROM yunipals_market.bnb_discovered_order
-       WHERE state IN ('active','unavailable','inconsistent') AND end_time>$1::numeric
-       ORDER BY state_observed_at NULLS FIRST,publication_block,order_hash LIMIT 100`,
-      [finalized.timestamp.toString()]
-    );
-    const counters = new Map<string, bigint>();
-    const observations: Array<{
-      hash: Hex;
-      state: string;
-      components: string | null;
-    }> = [];
-    for (const row of due.rows) {
-      let counter = counters.get(row.maker);
-      if (counter === undefined) {
-        counter = await stateClient.readContract({
-          address: seaportDeployment.address,
-          abi: seaportReadAbi,
-          functionName: "getCounter",
-          args: [getAddress(row.maker)],
-          blockNumber: finalized.number
-        });
-        counters.set(row.maker, counter);
-      }
-      const status = await stateClient.readContract({
-        address: seaportDeployment.address,
-        abi: seaportReadAbi,
-        functionName: "getOrderStatus",
-        args: [row.order_hash],
-        blockNumber: finalized.number
-      });
-      const result = observeValidatedPublication(
-        { orderHash: row.order_hash, parameters: storedParameters(row.parameters) },
-        counter,
-        {
-          isValidated: status[0],
-          isCancelled: status[1],
-          totalFilled: status[2],
-          totalSize: status[3]
-        },
-        finalized.timestamp
-      );
-      observations.push({
-        hash: row.order_hash,
-        state: result.state,
-        components: result.components
-          ? JSON.stringify(encodeSeaportOrder(result.components))
-          : null
-      });
-    }
-    const anchor = await stateClient.getBlock({
-      blockNumber: finalized.number
-    });
-    if (anchor.hash !== finalized.hash)
-      throw new Error("BNB observation anchor changed.");
-    await transaction(pool, async (db) => {
-      for (const observed of observations)
-        await db.query(
-          `UPDATE yunipals_market.bnb_discovered_order SET state=$2,
-           components=$3::jsonb,state_block=$4,state_hash=$5,
-           state_observed_at=clock_timestamp()
-           WHERE protocol_address=$1 AND order_hash=$6`,
-          [
-            protocol,
-            observed.state,
-            observed.components,
-            finalized.number.toString(),
-            finalized.hash.toLowerCase(),
-            observed.hash.toLowerCase()
-          ]
-        );
-      await db.query(
-        `UPDATE yunipals_market.bnb_discovery_cursor SET updated_at=clock_timestamp(),
-         last_error_code=NULL WHERE singleton AND next_block=$1`,
-        [nextBlock.toString()]
-      );
-    });
-    const health = await holder.query<{
-      unbound: string;
-      stale_active: string;
-      oldest_state_observed_at: Date | null;
-    }>(
-      `SELECT
-         count(*) FILTER (WHERE bound_lifecycle IS NULL)::text AS unbound,
-         count(*) FILTER (WHERE state IN ('active','unavailable','inconsistent')
-           AND (state_observed_at IS NULL OR state_observed_at<clock_timestamp()-interval '720 seconds'))::text AS stale_active,
-         min(state_observed_at) FILTER (WHERE state IN ('active','unavailable','inconsistent')) AS oldest_state_observed_at
-       FROM yunipals_market.bnb_discovered_order
-       WHERE end_time>extract(epoch FROM clock_timestamp())`
+      { ...finalized, hash: finalized.hash },
+      nextBlock
     );
     return {
       locked: true,
       scanned,
-      observed: observations.length,
-      bound: binding.bound,
-      lagBlocks: finalized.number >= nextBlock
-        ? (finalized.number - nextBlock + 1n).toString()
-        : "0",
-      unbound: Number(health.rows[0]?.unbound ?? 0),
-      staleActive: Number(health.rows[0]?.stale_active ?? 0),
-      oldestStateObservedAt: health.rows[0]?.oldest_state_observed_at?.toISOString() ?? null
+      lagBlocks:
+        finalized.number >= nextBlock
+          ? (finalized.number - nextBlock + 1n).toString()
+          : "0",
+      ...observation
     };
   } catch (error) {
     if (locked) {
       try {
         await holder.query(
           `UPDATE yunipals_market.bnb_discovery_cursor
-           SET last_error_code='discovery_pass_failed' WHERE singleton`
+           SET last_error_code='discovery_pass_failed' WHERE singleton AND reader_mode='legacy'`
         );
       } catch {
         // Preserve the original failure; the cursor cannot claim fresh coverage.
@@ -599,7 +683,10 @@ export async function runBnbDiscoveryPass(options: BnbDiscoveryOptions) {
     throw error;
   } finally {
     if (locked)
-      await holder.query("SELECT pg_advisory_unlock($1,$2)", [lockNamespace, lockId]);
+      await holder.query("SELECT pg_advisory_unlock($1,$2)", [
+        lockNamespace,
+        lockId
+      ]);
     holder.release();
   }
 }

@@ -1,0 +1,27 @@
+{
+  "format": "yunipals-ypal-www-production-v1",
+  "checkedAt": "2026-10-23T22:02:29.127869+00:00",
+  "canonicalOrigin": "https://www.yunipals.com",
+  "deploymentUrl": "https://yunipals-b7of51sqp-devving.vercel.app",
+  "deploymentId": "dpl_CS8aqHbNomZZuYeAgx3UimCaj1tA",
+  "releaseManifestSha256": "7f5872e9d87f3631d9e3c3e2b7ba3ff028dbfe552e2af8c37a1879d5e2b2d28b",
+  "confirmedDeploymentSha256": "3249c24a567f611cf7276776668825bf28ced27902c9d3804dc0b5c33acf394c",
+  "sourceReceiptSha256": "581990e80baa6ae074786b7b2cf7c771c82ebe046253a1de23a96f251d900efd",
+  "readerReceiptSha256": "9bf720f7d669b1863184db4214602a16346f7913d6d2fbdcd4090a42c1ba6e1c",
+  "apiBootReceiptSha256": "30fabaf05eb34e9b39c513457abf178996deeab72941bc9df9850e5c4ab423a3",
+  "canonicalManifestReadAndMatched": true,
+  "productionReadOnlyAcceptanceSha256": "85c698219c462166065a606a261e3450a7340281c86e1d34b991142e45a869bb",
+  "actualOpeningTransaction": "0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7",
+  "openingReplayPath": "/boosters?opening=0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7",
+  "wrapPath": "/wrap",
+  "publishedFirstVariants": [
+    171,
+    178,
+    244
+  ],
+  "artworkGeneratorMode": "subscription-assisted; no unattended image generator configured",
+  "nextDayClaimLiveTest": "Not yet eligible; remains outstanding.",
+  "previousDeploymentUrl": "https://yunipals-fpxxed02z-devving.vercel.app",
+  "previousReleaseManifestSha256": "6f1206cee59299b8257ea6b82a03cc767359229d7e850c488ee2c21d9b989aab",
+  "arenaPostPromoteAcceptanceSha256": "000de781a896b19bd531934bd40490a986dc6d631c1349cd8c032379f426b1f6"
+}

@@ -1,0 +1,41 @@
+{
+  "cacheInputCreated": false,
+  "featureTrafficOrScannerRetirementApplied": false,
+  "format": "yunipals-publication-v6-production-preparation-v1",
+  "goalComplete": false,
+  "peerQualification": {
+    "completed": true,
+    "exitCode": 0,
+    "observedAt": "2026-10-25T11:07:21.019416+00:00",
+    "phase": "qualify",
+    "report": {
+      "databaseConnections": 0,
+      "format": "yunipals-ordinary-reader-peer-v6",
+      "peers": 2,
+      "permissionChanges": 0,
+      "providerCalls": 0,
+      "publicFiles": 12,
+      "qualificationSha256": "f13073d9a1e12e317572fe108cef35513c3784245973622d8f83658b34f05aa4",
+      "qualified": true,
+      "serviceActions": 0
+    },
+    "stderrBytes": 0,
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "4c2b8b65d5c9df1a93f3b81f78c0206c288d0e75783a4bda6c98e5af1fa97d8c"
+  },
+  "readerLoginOrPublicationApplied": false,
+  "sourceOnlyLocalReviewPassed": true,
+  "sourceStage": {
+    "completed": true,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "observedAt": "2026-10-25T10:58:44.409372+00:00",
+    "permissionChanges": 0,
+    "phase": "stage",
+    "providerCalls": 0,
+    "publicFilesCreated": 17,
+    "publicFilesVerified": 77,
+    "serviceActions": 0
+  },
+  "wholeCallbackTimingQualified": false
+}

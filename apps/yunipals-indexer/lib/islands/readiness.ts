@@ -1,6 +1,12 @@
 import type { Pool } from "pg";
 import { islandCollection } from "../constants.js";
-import { sqlIdentifier } from "../offchain/sql.js";
+import {
+  sqlIdentifier,
+  unifiedOwnershipReads,
+  physicalPonderSchemaName,
+  ownershipReadConfig
+} from "../offchain/sql.js";
+import { unifiedOwnershipStatus } from "../ownership/readiness.js";
 import { chainReadiness } from "../metadata/chain-readiness.js";
 
 export function ethereumCheckpointBlock(checkpoint: unknown) {
@@ -18,6 +24,37 @@ export async function islandsReadiness(
   schemaName: string
 ) {
   const ownership = await chainReadiness(pool, [islandCollection.slug]);
+  if (unifiedOwnershipReads) {
+    const source = (await unifiedOwnershipStatus(pool, [
+      islandCollection.slug
+    ]))!;
+    const checkpoint = source.collections[0]!;
+    const verified = (
+      await pool.query<{ build_id: string; verified_block: string | null }>(
+        `SELECT r.build_id,v.checkpoint_block::text AS verified_block FROM yunipals_indexer_control.release r
+      LEFT JOIN metadata.island_verification v ON v.collection=$1 AND v.schema_name=$2 AND v.build_id=r.build_id WHERE r.id=$3`,
+        [
+          islandCollection.slug,
+          physicalPonderSchemaName,
+          ownershipReadConfig.releaseId
+        ]
+      )
+    ).rows[0];
+    return {
+      ready:
+        ownership.ready &&
+        checkpoint.available &&
+        verified?.verified_block !== null &&
+        verified?.verified_block !== undefined &&
+        BigInt(checkpoint.block_number!) >= BigInt(verified.verified_block),
+      indexedBlock: checkpoint.block_number ?? null,
+      verifiedBlock: verified?.verified_block ?? null,
+      indexing: checkpoint.available,
+      buildId: verified?.build_id ?? null,
+      ownership,
+      source
+    };
+  }
   const schema = sqlIdentifier(schemaName);
   const checkpoint = (
     await pool.query<{ latest_checkpoint: string }>(

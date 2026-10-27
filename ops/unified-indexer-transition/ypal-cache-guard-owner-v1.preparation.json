@@ -1,0 +1,72 @@
+{
+  "format": "yunipals-ypal-cache-guard-owner-source-preparation-v1",
+  "status": "independently-reviewed-runtime-staged",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.py",
+      "sha256": "c54f8af6846df7a013fe0b39680806aa623e29d0bde145e62fc47e65107794ba",
+      "bytes": 91954
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.mjs",
+      "sha256": "d44194958061ce06517d41579ec36b8d0f31b166f871d80849eb48093c3f1551",
+      "bytes": 13600
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.test.py",
+      "sha256": "15fa73e5de1048336314ae3a9d3f7c0e620e7ec00a96a877073724b2710182a5",
+      "bytes": 32017
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1-postgres.test.mjs",
+      "sha256": "3f139e716b2836109cb2ea91f71dd0c11f742d80a43d6e7fb7e7581a6f9316f0",
+      "bytes": 19878
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-cache-guard-owner-v1.md",
+      "sha256": "af705c9708586726b1f0e03efec22e3e74418fb62478365ce1fa650f304b3c2e",
+      "bytes": 9696
+    }
+  ],
+  "validation": {
+    "pythonControls": 22,
+    "disposablePostgreSQL16Groups": 11,
+    "postgresChecks": [
+      "lock_timeout_after_recorded_actual_XID_always_rolls_back_even_when_diagnostic_capture_fails",
+      "actual_psql_JSON_scalar_contract_parses_aborted_XID_for_readonly_recovery",
+      "real_official_rehearsal_exact_four_reads_and_no_commit_callback",
+      "root_sorted_journal_roundtrip_preserves_original_JS_catalog_digest_via_literal_plan_JSON",
+      "missing_root_durable_ACK_aborts_real_transaction_and_all_grants",
+      "one_actual_commit_after_prepared_XID_and_external_precommit_visibility_proof",
+      "real_inverse_preserves_data_and_monotonic_epochs_not_saved_revision_values",
+      "live_cache_worker_session_lock_refuses_mutation_before_BEGIN",
+      "lost_commit_and_inverse_ACKs_reconcile_by_own_XID_and_exact_catalog_without_reexecution",
+      "repeating_inverse_after_proven_commit_refuses_without_second_epoch_increment",
+      "broader_fifth_public_or_write_edge_refused_separately_from_143_READ_scope"
+    ],
+    "fixtureOnly": true,
+    "productionExecutionPerformed": false
+  },
+  "bindings": {
+    "unchangedTransitionComponentSha256": "6cba5a1d840df67dc0a25dbde5f73bbf064daab92e9b5d5ff7396c40d48595a2",
+    "acceptedUnpublishedCandidateProducerSha256": "762bc10ea3e882cf8016c846e22bc8073a36a32cf680ea4b3527f520ce092ce6"
+  },
+  "scope": {
+    "separateAdditionalCollectorSelects": 4,
+    "original143ReadAdmissionModified": false,
+    "preparationKeepsPredecessorSelected": true,
+    "preparationStartsNativeWorker": false,
+    "requiresActualLegacyHTTPFallback": true,
+    "coordinatedCutoverProducerBound": false,
+    "finishClosed": true,
+    "actualReceiptsSupplied": false,
+    "detailedProductionObservationsPublished": false,
+    "completeCacheRelationACLsBoundToAcknowledgedPostcatalog": true,
+    "runtimeFilesStaged": true
+  },
+  "limitations": [
+    "Requires actual acknowledged READ admission, metadata adoption/provenance and an unpublished validated native generation candidate.",
+    "Four collector SELECTs require separate explicit authorization and their own acknowledgement.",
+    "Finish requires a separately reviewed coordinated publication/reader producer with exact phase-aware preservation; it is closed in this preparation."
+  ]
+}

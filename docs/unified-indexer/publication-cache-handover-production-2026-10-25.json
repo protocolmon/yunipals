@@ -1,0 +1,437 @@
+{
+  "actualCommitPreDispatchInspection": {
+    "actualCommitAttemptJournalAbsent": true,
+    "allCacheSQLIntentsAbsent": true,
+    "cacheWriterStopped": true,
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-cache-commit-predispatch-inspection",
+    "observedAt": "2026-10-25T17:26:08.768666+00:00",
+    "originalCommitDispatched": false,
+    "resultSha256": "987aab20d11a82a47d8f35ab306f8a9a9fe0d56704b373fc9e374a7f04aa8b11",
+    "sameOriginalBootArchived": true,
+    "serviceActions": 0
+  },
+  "actualCompleteCallbackQualification": {
+    "actionResultSha256": "cc644c76c49b92e2f9bbef56e0e845a5a759a487134d91d92dbb7a177718afe7",
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "captureId": "cache-kernel-prepared-20261025-1",
+    "completeCallbackWindowQualified": true,
+    "completed": true,
+    "databaseWrites": 0,
+    "effectActionRequested": false,
+    "elapsedNanoseconds": 77118632219,
+    "elapsedSeconds": 190.206,
+    "format": "root-publication-kernel-v1-cache-qualify",
+    "nativeGenerationPublished": false,
+    "observedAt": "2026-10-25T17:21:58.017136+00:00",
+    "phase": "qualify",
+    "reviewHash": "d7106ccac499db4b1394f68469b975a890938efacf81f79511b1fe8b2053d541",
+    "serviceActions": 0,
+    "timingReceiptSha256": "b4d03a6c44bc137c749b420a8ce38e2622029c827e01e3bb251ca613b81e6336"
+  },
+  "actualDispatchedCommitFailure": {
+    "automaticRetryAllowed": false,
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerActionDispatched": true,
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": false,
+    "elapsedSeconds": 296.914,
+    "exceptionClass": "RuntimeError",
+    "fixedCode": "bounded_readonly_full_publication_query_failed",
+    "format": "root-publication-kernel-v1-cache-commit",
+    "observedAt": "2026-10-25T17:32:36.209218+00:00",
+    "sourceFrames": [
+      {
+        "file": "<stdin>",
+        "function": "<module>",
+        "line": 48
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "execute_cache",
+        "line": 410
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "attempt",
+        "line": 391
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "attempt",
+        "line": 381
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "run",
+        "line": 409
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "commit",
+        "line": 610
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "<lambda>",
+        "line": 305
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "qualified_sql_child",
+        "line": 140
+      },
+      {
+        "file": "ypal-restored-read-cache-provider-v1.py",
+        "function": "qualified_sql_child",
+        "line": 184
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "_sql_child",
+        "line": 222
+      },
+      {
+        "file": "ypal-restored-read-cache-provider-v1.py",
+        "function": "check",
+        "line": 183
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "prepared",
+        "line": 608
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "prerequisites",
+        "line": 416
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "metadata_current",
+        "line": 246
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "invoke",
+        "line": 179
+      },
+      {
+        "file": "ypal-ordinary-metadata-handover-v5.py",
+        "function": "metadata",
+        "line": 581
+      },
+      {
+        "file": "ypal-ordinary-metadata-handover-v5.py",
+        "function": "publication_proof",
+        "line": 181
+      },
+      {
+        "file": "ypal-ordinary-metadata-handover-v5.py",
+        "function": "query",
+        "line": 117
+      },
+      {
+        "file": "ypal-ordinary-publication-query-v2.py",
+        "function": "query",
+        "line": 133
+      },
+      {
+        "file": "ypal-ordinary-publication-query-v2.py",
+        "function": "peer_read",
+        "line": 108
+      },
+      {
+        "file": "ypal-ordinary-publication-query-v2.py",
+        "function": "need",
+        "line": 27
+      }
+    ],
+    "stage": "cache-commit"
+  },
+  "actualDownstreamSourceStage": {
+    "candidateInputsCreated": 0,
+    "commit": "98f727b2f1a60379faef8077cef2abf746cf69d1",
+    "completed": true,
+    "currentReadinessClaimed": false,
+    "databaseWrites": 0,
+    "existingFilesOverwritten": 0,
+    "format": "root-downstream-accept-v1-source-stage",
+    "observedAt": "2026-10-25T17:07:30.185230+00:00",
+    "permissionChanges": 0,
+    "providerCalls": 0,
+    "publicFilesCreated": 24,
+    "publicFilesVerified": 252,
+    "resultSha256": "8b194a2c2937253236c3806c43e9dc466144a4a17bcf43a04f0ba30c19c6aed9",
+    "serviceActions": 0
+  },
+  "actualDrain": {
+    "actionResultSha256": "3cf15b45b659bc37e87e54448355c6ffbdd58eb0abd36033d2fbf6542f1bea8f",
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "cacheWriterStopped": true,
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": true,
+    "databaseWrites": 0,
+    "effectActionRequested": true,
+    "elapsedSeconds": 190.879,
+    "format": "root-publication-kernel-v1-cache-drain",
+    "nativeGenerationPublished": false,
+    "observedAt": "2026-10-25T17:17:19.100486+00:00",
+    "phase": "drain",
+    "reviewHash": "d7106ccac499db4b1394f68469b975a890938efacf81f79511b1fe8b2053d541"
+  },
+  "actualRollbackRehearsal": {
+    "additionalReadDeltaSha256": "434670db6b96a53ede7028d22ca7de190491c45852c5fe537d639a4c44492eed",
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": true,
+    "elapsedSeconds": 420.116,
+    "format": "root-publication-kernel-v1-cache-rehearsal",
+    "observedAt": "2026-10-25T17:07:04.901071+00:00",
+    "rehearsalResultSha256": "78f870862d7e656e59bca598667dfa794c6022f98047a80a07a7bb3a4ffba6e3",
+    "reviewHash": "d7106ccac499db4b1394f68469b975a890938efacf81f79511b1fe8b2053d541",
+    "rollbackRehearsalRequested": true,
+    "serviceActions": 0,
+    "trafficSwitchRequested": false
+  },
+  "actualServerErrorDetails": {
+    "completed": true,
+    "databaseWrites": 0,
+    "errors": [
+      {
+        "category": "other",
+        "errorLineSha256": "38bc56d113b469052ea3ba608a77942a28bd6cc094348aca061015a6cd63a866",
+        "sanitizedDetail": "base_metadata_approval_pending",
+        "sanitizedErrorTemplate": "Native Base metadata unavailable",
+        "timestamp": "2026-10-25 17:09:53.659 UTC"
+      },
+      {
+        "category": "other",
+        "errorLineSha256": "ad47fcb6e50235e104a905b47bf9ecfba0751c2ca740035bf4cc75eac6e2d6c2",
+        "sanitizedDetail": "base_metadata_approval_pending",
+        "sanitizedErrorTemplate": "Native Base metadata unavailable",
+        "timestamp": "2026-10-25 17:32:10.350 UTC"
+      }
+    ],
+    "format": "root-cache-error-classification",
+    "serviceActions": 0
+  },
+  "actualTransactionReconciliation": {
+    "actualCommitRepeated": false,
+    "actualTransactionId": "16540148",
+    "cacheCommitAcknowledged": false,
+    "completed": true,
+    "databaseWrites": 0,
+    "format": "root-cache-commit-transaction-inspection",
+    "metadataQueryServerErrors": [],
+    "newDirectCacheReads": 0,
+    "observedAt": "2026-10-25T17:37:03.725448+00:00",
+    "ownedChildGone": true,
+    "ownerSQLSessions": 0,
+    "preparedAcknowledgementAbsent": true,
+    "resultSha256": "d5b29c3b2ebf170d0d595ffdd4d91157e282ceb6ab882d61642529fb1d1ccfdf",
+    "serviceActions": 0,
+    "transactionStatus": "aborted"
+  },
+  "actualZeroEffectInspection": {
+    "actualDrainRepeated": false,
+    "completed": true,
+    "databaseWrites": 0,
+    "diagnosticExitCode": 0,
+    "diagnosticQueryElapsedSeconds": 0.114,
+    "diagnosticQuerySha256": "ef3fda0078659a6dc842037ea4602b48cd968609612729acfd14c656de7f30c6",
+    "diagnosticSqlState42883": false,
+    "diagnosticSqlState57014": false,
+    "diagnosticStatementTimeout": false,
+    "diagnosticStderrBytes": 0,
+    "diagnosticStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnosticSucceeded": true,
+    "drainSideEffectJournalsAbsent": true,
+    "format": "root-cache-drain-readonly-inspection",
+    "observedAt": "2026-10-25T17:13:02.833731+00:00",
+    "originalDiscardedStderrRecovered": false,
+    "sameCacheDefinitions": true,
+    "sameOriginalBootInode": true,
+    "sameOriginalCacheInvocation": true,
+    "serviceActions": 0
+  },
+  "automaticEffectRetryAllowed": false,
+  "cacheCommitAccepted": false,
+  "cachePreparedAcknowledged": false,
+  "completeCallbackTimingRunning": false,
+  "firstCommitPreflight": {
+    "automaticRetryAllowed": false,
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerActionDispatched": false,
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": false,
+    "elapsedSeconds": 26.093,
+    "exceptionClass": "RuntimeError",
+    "fixedCode": "bounded_readonly_inventory_command_required",
+    "format": "root-publication-kernel-v1-cache-commit",
+    "observedAt": "2026-10-25T17:23:29.073818+00:00",
+    "sourceFrames": [
+      {
+        "file": "<stdin>",
+        "function": "<module>",
+        "line": 34
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "preflight",
+        "line": 229
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "preflight",
+        "line": 104
+      },
+      {
+        "file": "ypal-ordinary-source-authority-v6.py",
+        "function": "observed",
+        "line": 113
+      },
+      {
+        "file": "ypal-ordinary-source-authority-v6.py",
+        "function": "preflight",
+        "line": 480
+      },
+      {
+        "file": "ypal-alchemy-ordinary-consumer-context-v1.py",
+        "function": "observe_runtime",
+        "line": 146
+      },
+      {
+        "file": "ypal-alchemy-ordinary-consumer-context-v1.py",
+        "function": "current",
+        "line": 122
+      },
+      {
+        "file": "ypal-alchemy-ordinary-runtime-v1.py",
+        "function": "validate_current_source",
+        "line": 600
+      },
+      {
+        "file": "ypal-alchemy-ordinary-runtime-v1.py",
+        "function": "current",
+        "line": 578
+      },
+      {
+        "file": "ypal-alchemy-ordinary-runtime-v1.py",
+        "function": "source_sessions",
+        "line": 201
+      },
+      {
+        "file": "ypal-alchemy-ordinary-runtime-v1.py",
+        "function": "kernel_backends",
+        "line": 90
+      },
+      {
+        "file": "ypal-old-runtime-inventory-v1.py",
+        "function": "peer_fds",
+        "line": 83
+      },
+      {
+        "file": "ypal-old-runtime-inventory-v1.py",
+        "function": "run",
+        "line": 36
+      },
+      {
+        "file": "ypal-old-runtime-inventory-v1.py",
+        "function": "need",
+        "line": 28
+      }
+    ],
+    "stage": "source-preflight"
+  },
+  "firstDrainAttempt": {
+    "automaticRetryAllowed": false,
+    "cacheInputsSha256": "2aafbf18b8b24bfcd2499d7fc9106db82d7cfe9c72acd5354d37d7c6fbd2f3fa",
+    "callerActionDispatched": true,
+    "callerSha256": "6b261303f659ab2f8b9152733b5eeb6f3cb02be1c09f1ab38380dc41d3795e3a",
+    "completed": false,
+    "elapsedSeconds": 156.254,
+    "exceptionClass": "RuntimeError",
+    "fixedCode": "bounded_command_ACK_unknown_inspect_no_retry",
+    "format": "root-publication-kernel-v1-cache-drain",
+    "observedAt": "2026-10-25T17:10:20.439831+00:00",
+    "sourceFrames": [
+      {
+        "file": "<stdin>",
+        "function": "<module>",
+        "line": 39
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "execute_cache",
+        "line": 410
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "attempt",
+        "line": 391
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "attempt",
+        "line": 381
+      },
+      {
+        "file": "ypal-ordinary-publication-kernel-v1.py",
+        "function": "run",
+        "line": 409
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "drain",
+        "line": 570
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "prerequisites",
+        "line": 413
+      },
+      {
+        "file": "ypal-ordinary-read-cache-accept-v2.py",
+        "function": "query",
+        "line": 251
+      },
+      {
+        "file": "recover.py",
+        "function": "query",
+        "line": 162
+      },
+      {
+        "file": "ypal-managed-handover-v1.py",
+        "function": "query",
+        "line": 407
+      },
+      {
+        "file": "ypal-managed-handover-v1.py",
+        "function": "peer_query",
+        "line": 402
+      },
+      {
+        "file": "ypal-managed-handover-v1.py",
+        "function": "command",
+        "line": 181
+      },
+      {
+        "file": "ypal-managed-handover-v1.py",
+        "function": "need",
+        "line": 98
+      }
+    ],
+    "stage": "cache-drain"
+  },
+  "format": "yunipals-publication-cache-handover-production-v1",
+  "generationAccepted": 105,
+  "generationPublished": false,
+  "newCommitPreflightRunning": false,
+  "newDrainAttemptRunning": false,
+  "readerTrafficSwitched": false,
+  "remainingCacheAction": "reviewed_recovery_and_metadata_approval_freshness_investigation",
+  "underlyingApprovalGateConditionConfirmed": false
+}

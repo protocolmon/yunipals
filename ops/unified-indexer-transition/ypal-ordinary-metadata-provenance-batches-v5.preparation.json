@@ -1,0 +1,52 @@
+{
+  "format": "yunipals-ordinary-metadata-provenance-batches-v5-preparation",
+  "sourceOnly": true,
+  "implementationReadyForIndependentReview": true,
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5.py",
+      "sha256": "8076f82a275d8ab146dee427482f66029e1d44bec36b309eb16afb9d5d524f18",
+      "bytes": 20579
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5.test.py",
+      "sha256": "3efc77bd20e6d741b41d3343b044c582a550b7445023722584abb9d24c9b250e",
+      "bytes": 23054
+    },
+    {
+      "path": "ops/unified-indexer-transition/ypal-ordinary-metadata-provenance-batches-v5.md",
+      "sha256": "843212aba3e8c9673b6b7e990130a4c3cf06b1718e60df3b79455421c1eb471c",
+      "bytes": 6323
+    }
+  ],
+  "localFocusedControls": 23,
+  "genuineProvenanceBodyUnchanged": true,
+  "originalMaximumRowsPerBatch": 5000,
+  "originalIndexCount": 128,
+  "runnerMaximumSeconds": 3600,
+  "childReservationSeconds": 720,
+  "genuineFullSourcePreflightAndPostflight": true,
+  "actualIndexQualifiedPreviously": {
+    "databaseOid": "17584",
+    "relationOid": "75963666",
+    "indexOid": "77273352"
+  },
+  "actualSelectionReceiptRequired": true,
+  "productionExecutionQualified": false,
+  "productionThroughputQualified": false,
+  "actualRunnerInputSha256": null,
+  "actualSelectedReceiptSha256": null,
+  "databaseWritesByPreparation": 0,
+  "serviceActions": 0,
+  "providerCallsByPreparation": 0,
+  "automaticRetryAllowed": false,
+  "scopeLimit": "Baseline READ143 plus V5b71; active acknowledged paid ordinary source only; before cache4/LOGIN; no inverse/managed alias.",
+  "selectionCompletionProducerSha256": "9a1dd6344bacac8dfcad75cc67f769c0ba46aec9db6f752f2b672cde9a59b8b5",
+  "actualSelectionCompletionSha256": null,
+  "firstProductionProposal": {
+    "firstIndex": 0,
+    "maxBatches": 1,
+    "maxSeconds": 900
+  },
+  "supersededUnexecutedDraftArchive": "/tmp/yunipals-provenance-runner-before-selection-completion-20261025"
+}

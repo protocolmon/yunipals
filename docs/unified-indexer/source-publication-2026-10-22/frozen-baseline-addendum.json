@@ -1,0 +1,38 @@
+{
+  "format": "yunipals-public-source-frozen-baseline-addendum-v1",
+  "purpose": "Preserve exact historical baseline bytes unavailable in reachable public Git history without changing the frozen 437-file working-source closure.",
+  "sourceDigest": "3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d",
+  "files": [
+    {
+      "path": "ops/unified-indexer-transition/frozen-baseline-source/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d/source.tar.gz",
+      "bytes": 2202375,
+      "sha256": "af09ea5b6f557f582e5203dbca38eed6641280bc5b5f49ee180a76b528a7aa2f"
+    },
+    {
+      "path": "ops/unified-indexer-transition/frozen-baseline-source/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d/RELEASE-MANIFEST.json",
+      "bytes": 412807,
+      "sha256": "1cdf261d411007868ad1f026a58cae381b02c5f92c6a9a45da30e9867e9f7df8"
+    },
+    {
+      "path": "ops/unified-indexer-transition/frozen-baseline-source/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d/SHA256SUMS",
+      "bytes": 293608,
+      "sha256": "ae0ad2f42cc63814c54a030e94e75cba9db5996ef23c9ea39807afaf4567d216"
+    },
+    {
+      "path": "ops/unified-indexer-transition/frozen-baseline-source/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d/verification.json",
+      "bytes": 38818,
+      "sha256": "0a95c071a40558558094a9a925e58a614995f0eea3b63670122ca2ae89cff655"
+    },
+    {
+      "path": "ops/unified-indexer-transition/frozen-baseline-source/3c8776b9ff9002a8827421bdae838ca669148172ff2d0c6616ee4e40b0f1826d/README.md",
+      "bytes": 2295,
+      "sha256": "b539260af0954382df1f9b02955fbb5eec99051eb4aafbe84643eef6ffaec493"
+    }
+  ],
+  "sourceCount": 1746,
+  "archiveSha256": "af09ea5b6f557f582e5203dbca38eed6641280bc5b5f49ee180a76b528a7aa2f",
+  "releaseManifestSha256": "1cdf261d411007868ad1f026a58cae381b02c5f92c6a9a45da30e9867e9f7df8",
+  "secretScanFindings": 0,
+  "noGitMutation": true,
+  "noRuntimeChange": true
+}
