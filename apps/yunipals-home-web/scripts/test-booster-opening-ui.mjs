@@ -720,6 +720,9 @@ try {
       await packs.getByText("11 pulls saved across 3 originals").waitFor();
       assert.equal(await packs.locator("article").count(), 1);
       const selector = packs.getByRole("combobox", { name: "Choose original" });
+      await selector
+        .locator('img[src="/__fixture-card.svg?original=7"]')
+        .waitFor();
       await selector.locator("img").evaluate((img) => img.decode());
       assert.equal(
         await selector.locator("img").getAttribute("src"),
@@ -735,6 +738,12 @@ try {
         "/__fixture-card.svg?original=21"
       );
       await option.click();
+      await selector
+        .getByText("Original #21 · 5 saved pulls", { exact: true })
+        .waitFor();
+      await selector
+        .locator('img[src="/__fixture-card.svg?original=21"]')
+        .waitFor();
       assert.equal(
         await selector.locator("img").getAttribute("src"),
         "/__fixture-card.svg?original=21"
@@ -764,14 +773,21 @@ try {
       await page.screenshot({
         path: values.output.replace(/\.json$/, "-original-menu-mobile.png")
       });
-      await page.keyboard.press("End");
       await page.waitForFunction(
-        () =>
-          document.activeElement?.textContent === "Original #99 · 3 saved pulls"
+        () => document.activeElement?.getAttribute("role") === "option"
+      );
+      await page.keyboard.press("End");
+      await page.waitForFunction(() =>
+        document.activeElement
+          ?.getAttribute("data-select-value")
+          ?.endsWith(":99")
       );
       await page.keyboard.press("Enter");
       await selector
         .getByText("Original #99 · 3 saved pulls", { exact: true })
+        .waitFor();
+      await selector
+        .locator('img[src="/__fixture-card.svg?original=99"]')
         .waitFor();
       assert.equal(
         await selector.locator("img").getAttribute("src"),
