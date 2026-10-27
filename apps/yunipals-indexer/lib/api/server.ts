@@ -15,7 +15,8 @@ import {
 import {
   cachedSearchReadRelationFor,
   cachedTraitReadRelationFor,
-  cachedMissingKeys
+  cachedMissingKeys,
+  readCacheFreshSql
 } from "../metadata/read-cache.js";
 import { LocalMetadataReader } from "../metadata/resolve.js";
 import { metadataSourceMode } from "../metadata/publication.js";
@@ -897,24 +898,22 @@ app.get("/v1/tokens", async (c) => {
   const canonicalCountSql = simpleExactCount
     ? `SELECT (${baseCountSql} - ${hiddenCountSql})::int AS total`
     : `SELECT COALESCE(sum(total), 0)::int AS total FROM (${filteredCountSql}) filtered_counts`;
-  const countSql =
-    cachedProofs &&
-    countNeedsSearch &&
-    !ownerResolution &&
-    traitGroups.size === 0 &&
-    burned === undefined
-      ? cachedExactCountSql({
-          chains,
-          generation: projectionId!,
-          relations: selectedRelations,
-          filters: countWithoutVisibility,
-          fallback: canonicalCountSql
-        })
-      : canonicalCountSql;
+  const cachedCountEligible =
+    cachedProofs && !ownerResolution && traitGroups.size === 0;
+  const countSql = cachedCountEligible
+    ? cachedExactCountSql({
+        chains,
+        generation: projectionId!,
+        relations: selectedRelations,
+        filters: countWithoutVisibility,
+        fallback: canonicalCountSql,
+        burned: burned === undefined ? undefined : burned === "true"
+      })
+    : canonicalCountSql;
   // A cold exact count validates every publication and chain anchor. Give that
   // bounded read-only query its own budget; ordinary API reads retain 10 s.
   const queryExactCount = async () => {
-    if (simpleExactCount)
+    if (simpleExactCount && !cachedCountEligible)
       return Number((await pool.query(countSql, countParams)).rows[0].total);
     return apiReadTransaction(pool, async (client) => {
       await client.query("SET LOCAL statement_timeout = '30s'");
@@ -922,7 +921,21 @@ app.get("/v1/tokens", async (c) => {
       await client.query("SET LOCAL jit = off");
       if (!ownerResolution && (traitGroups.size === 0 || broadTraits)) {
         await client.query("SET LOCAL work_mem = '64MB'");
-        await client.query("SET LOCAL enable_nestloop = off");
+        const cachedCountReady =
+          cachedCountEligible &&
+          unifiedOwnershipReads &&
+          (
+            await client.query<{ fresh: boolean }>(
+              `SELECT ${readCacheFreshSql(projectionId!, chains)} AS fresh`
+            )
+          ).rows[0]?.fresh === true;
+        await client.query(
+          cachedCountReady
+            ? "SET LOCAL enable_nestloop = on"
+            : "SET LOCAL enable_nestloop = off"
+        );
+        if (cachedCountReady)
+          await client.query("SET LOCAL enable_material = off");
         await client.query("SET LOCAL random_page_cost = 1.1");
         await client.query("SET LOCAL join_collapse_limit = 1");
         await client.query("SET LOCAL from_collapse_limit = 1");

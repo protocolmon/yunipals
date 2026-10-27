@@ -13,6 +13,7 @@ const root = path.resolve(project, "../..");
 const require = createRequire(path.join(project, "package.json"));
 const compiler = createRequire(require.resolve("tsx/package.json"))("esbuild");
 const profiles = {
+  "main-api": "lib/api/server.ts",
   "read-cache": "lib/metadata/read-cache-worker.ts",
   "verify-islands": "scripts/verify-islands.ts",
   "islands-metadata": "lib/islands/worker.ts"
@@ -24,7 +25,7 @@ assert(
     Object.hasOwn(profiles, args[1]) &&
     args[2] === "--outdir" &&
     args[3],
-  "Usage: build-application-worker.mjs --worker read-cache|verify-islands|islands-metadata --outdir FRESH_DIRECTORY"
+  "Usage: build-application-worker.mjs --worker main-api|read-cache|verify-islands|islands-metadata --outdir FRESH_DIRECTORY"
 );
 assert(Number(process.versions.node.split(".")[0]) >= 24, "Node 24 required");
 const profile = args[1];
