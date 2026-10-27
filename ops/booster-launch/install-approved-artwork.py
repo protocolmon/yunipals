@@ -2,7 +2,8 @@
 """Copy one existing art_runtime.py publication: hashed assets first, immutable metadata last.
 
 No generator, image API, image processing or credentials. Review is read-only;
---apply installs only a queued variant and refuses replacing any published data.
+--apply normally requires a queued variant. --allow-unrevealed explicitly permits
+prepublishing the frozen catalog. Both modes refuse replacing published data.
 """
 import argparse
 import fcntl
@@ -34,7 +35,7 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def plan(source, target, slug, rank):
+def plan(source, target, slug, rank, allow_unrevealed=False):
     require(slug in COMMITMENTS and 0 <= rank < 264, "Unknown frozen catalog/variant")
     relative = Path("catalogs") / slug
     manifest = json.loads(read(target / relative / "manifest.json"))
@@ -77,14 +78,15 @@ def plan(source, target, slug, rank):
     existing = destination.exists()
     if existing:
         require(json.loads(read(destination)) == metadata, "Published variant cannot be replaced")
-    else:
+    elif not allow_unrevealed or (target / "jobs" / slug / f"{rank}.json").exists():
         job = json.loads(read(target / "jobs" / slug / f"{rank}.json"))
         require(job["schemaVersion"] == 1 and job["catalog"] == slug and job["variantId"] == rank
                 and job["catalogHash"] == manifest["catalogHash"]
                 and job["traits"] == {key.lower(): value for key, value in traits.items()}
                 and job["status"] in ("queued", "prepared"), "No matching observed queue job")
     return destination, metadata_bytes, assets, {"catalog": slug, "variantId": rank,
-        "alreadyPublished": existing, "artworkSha256": y["artworkSha256"],
+        "alreadyPublished": existing, "allowUnrevealed": allow_unrevealed,
+        "artworkSha256": y["artworkSha256"],
         "metadataSha256": sha(metadata_bytes), "assets": sorted(assets)}
 
 
@@ -111,12 +113,12 @@ def exclusive_file(destination, data):
         temporary.unlink(missing_ok=True)
 
 
-def install(source, target, slug, rank, apply=False):
+def install(source, target, slug, rank, apply=False, allow_unrevealed=False):
     if not apply:
-        return {"status": "REVIEWED", **plan(source, target, slug, rank)[3]}
+        return {"status": "REVIEWED", **plan(source, target, slug, rank, allow_unrevealed)[3]}
     with (target / ".generation.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        destination, metadata, assets, proof = plan(source, target, slug, rank)
+        destination, metadata, assets, proof = plan(source, target, slug, rank, allow_unrevealed)
         for filename, data in assets.items():
             exclusive_file(target / "assets" / filename, data)
         if not proof["alreadyPublished"]:
@@ -131,5 +133,6 @@ if __name__ == "__main__":
     parser.add_argument("--catalog", required=True, choices=sorted(COMMITMENTS))
     parser.add_argument("--variant", required=True, type=int)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--allow-unrevealed", action="store_true", help="Prepublish reviewed artwork from the frozen catalog without an observed reveal job")
     args = parser.parse_args()
-    print(json.dumps(install(args.source, args.directory, args.catalog, args.variant, args.apply), indent=2))
+    print(json.dumps(install(args.source, args.directory, args.catalog, args.variant, args.apply, args.allow_unrevealed), indent=2))

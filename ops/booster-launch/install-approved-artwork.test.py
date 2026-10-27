@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Reuse approved variant149 to test publication transfer; no generation or production writes."""
+"""Test hash-bound publication transfer with deterministic local fixtures."""
+import hashlib
 import importlib.util
+from io import BytesIO
 import json
 from pathlib import Path
-import shutil
 import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/boosters"))
@@ -30,12 +32,27 @@ class ApprovedArtworkTransferTests(unittest.TestCase):
         for directory in (self.source, self.target):
             art_runtime.init_catalog(art_lab.DEFAULT_LAB, directory, SLUG, "https://api.yunipals.com/yunipals-indexer")
         old = json.loads((ROOT / "docs/boosters/artwork-runtime/catalogs/base-standard-v1-demo/variants/149.json").read_text())
-        sha = old["yunipals"]["artworkSha256"]
-        (self.source / "masks").mkdir()
-        shutil.copyfile(ROOT / "docs/boosters/artwork-runtime/masks" / (sha + ".json"), self.source / "masks" / (sha + ".json"))
-        # Existing immutable publisher performs the actual source/QA acceptance.
-        published = art_runtime.publish(art_lab.DEFAULT_LAB, self.source, SLUG, old["provenance"]["runId"], old["provenance"]["stage"])
-        self.metadata = Path(published["metadata"])
+        # Transfer validation does not need an operator's untracked generation
+        # runs. The real publisher's generation/visual QA is tested separately.
+        assets = self.source / "assets"
+        assets.mkdir()
+        def save(data, suffix):
+            digest = hashlib.sha256(data).hexdigest()
+            name = digest + suffix
+            (assets / name).write_bytes(data)
+            return m.PUBLIC + name, digest
+        png = BytesIO()
+        Image.new("RGBA", (16, 24), (100, 130, 160, 255)).save(png, format="PNG")
+        old["image"], old["yunipals"]["artworkSha256"] = save(png.getvalue(), ".png")
+        old["yunipals"]["holo"] = {
+            key: save(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1536"><rect id="{key}" width="1024" height="1536" fill="white"/></svg>'.encode(), ".svg")[0]
+            for key in ["foreground", "background", "stars"]
+        }
+        manifest = json.loads((self.source / "catalogs" / SLUG / "manifest.json").read_text())
+        old["yunipals"]["catalogCommitment"] = manifest["artworkHash"]
+        self.metadata = self.source / "catalogs" / SLUG / "variants/149.json"
+        self.metadata.parent.mkdir()
+        self.metadata.write_text(json.dumps(old))
         self.destination = self.target / "catalogs" / SLUG / "variants/149.json"
         self.job = self.target / "jobs" / SLUG / "149.json"
         self.job.parent.mkdir(parents=True)
@@ -46,7 +63,7 @@ class ApprovedArtworkTransferTests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_actual_existing_publisher_output_transfers_all_holo_assets_before_metadata(self):
+    def test_verified_bundle_transfers_all_holo_assets_before_metadata(self):
         review = m.install(self.source, self.target, SLUG, RANK)
         self.assertEqual(review["status"], "REVIEWED")
         self.assertEqual(len(review["assets"]), 4)
@@ -61,6 +78,39 @@ class ApprovedArtworkTransferTests(unittest.TestCase):
         self.job.unlink()
         with self.assertRaisesRegex(RuntimeError, "Missing regular artifact"):
             m.install(self.source, self.target, SLUG, RANK, True)
+        self.assertFalse(self.destination.exists())
+
+    def test_explicit_prepublishing_allows_missing_job_and_remains_immutable(self):
+        self.job.unlink()
+        proof = m.install(self.source, self.target, SLUG, RANK, allow_unrevealed=True)
+        self.assertEqual(proof["status"], "REVIEWED")
+        self.assertTrue(proof["allowUnrevealed"])
+        self.assertFalse(self.destination.exists())
+        result = m.install(self.source, self.target, SLUG, RANK, True, True)
+        self.assertEqual(result["status"], "INSTALLED")
+        original = self.destination.read_bytes()
+        document = json.loads(self.metadata.read_text())
+        document["description"] = "Replacement is still forbidden"
+        self.metadata.write_text(json.dumps(document))
+        with self.assertRaisesRegex(RuntimeError, "cannot be replaced"):
+            m.install(self.source, self.target, SLUG, RANK, True, True)
+        self.assertEqual(self.destination.read_bytes(), original)
+
+    def test_prepublishing_still_rejects_an_existing_invalid_job(self):
+        document = json.loads(self.job.read_text())
+        document["variantId"] = RANK + 1
+        self.job.write_text(json.dumps(document))
+        with self.assertRaisesRegex(RuntimeError, "No matching observed queue job"):
+            m.install(self.source, self.target, SLUG, RANK, True, True)
+        self.assertFalse(self.destination.exists())
+
+    def test_prepublishing_does_not_allow_unbound_image_bytes(self):
+        self.job.unlink()
+        document = json.loads(self.metadata.read_text())
+        image = self.source / "assets" / document["image"].rsplit("/", 1)[1]
+        image.write_bytes(image.read_bytes() + b"changed")
+        with self.assertRaisesRegex(RuntimeError, "hash mismatch"):
+            m.install(self.source, self.target, SLUG, RANK, True, True)
         self.assertFalse(self.destination.exists())
 
     def test_failure_after_assets_leaves_metadata_missing_and_retry_is_safe(self):

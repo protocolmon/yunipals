@@ -1,6 +1,6 @@
-# On-demand artwork integration
+# Booster artwork
 
-One image per variant, shared by every monster with that variant. All 66 exact OG species/color references are registered. The recipe uses the complete OG character palette, official logo and approved lavender/crisp-body style. Public metadata never starts image generation. Only confirmed indexed booster reveals enter the deduplicated queue.
+One image per variant, shared by every monster with that variant. Generate and review the full 264-variant catalog in Codex before relying on immediate artwork for every opening. All 66 exact OG species/color references are registered. The recipe uses the complete OG character palette, official logo and approved lavender/crisp-body style. Public metadata never starts image generation. The confirmed-reveal queue remains a fallback for missing artwork.
 
 The frozen catalog commits to the trait catalog, generator source, approved style references, logo and 66 OG image hashes. It commits to a recipe and its references, **not** to 264 images that do not exist yet. The first approved publication of each variant is immutable. Changed recipes/references or origins require a new catalog for future pack types. Contract upgrades remain possible as requested.
 
@@ -75,6 +75,29 @@ python3 scripts/boosters/art_runtime.py \
 This example is a deployment target, not a claim that this route is live. Configure the API mount, volume and CORS first. Serve the resulting manifest and verify its commitment before activating a pack with those URLs. Publish accepted sample runs into the same catalog using the command below; pixels/masks can be reused but the public origin is catalog-specific.
 
 ## Subscription-assisted queue processing
+
+For full-catalog preparation, enumerate the 11 types, six colors, two horns and
+two glitter finishes in `contracts/boosters/config/base-standard-v1.traits.json`.
+Use `art_lab.py prepare` for each combination, then generate its exact `nextStage`
+through Codex, accept it, inspect its light/dark/checkerboard previews, and record
+visual approval. Reuse completed accepted runs. Every glitter image also needs
+calibrated foreground/background/star masks and a viewer check before publication.
+
+After the existing local publisher produces the reviewed assets and metadata,
+the production transfer helper can explicitly prepublish a frozen variant:
+
+```sh
+python3 ops/booster-launch/install-approved-artwork.py \
+  --source /path/to/staged-publication \
+  --catalog base-mainnet-standard-v1 --variant VARIANT_ID --allow-unrevealed
+# Repeat with --apply after the read-only review succeeds.
+```
+
+`--allow-unrevealed` removes the need to wait for an observed reveal job. It keeps
+the frozen manifest, exact trait validation, asset hashes, holo requirements and
+immutable-publication checks. An existing queue job must still match. Without
+this flag, the helper continues to require an observed queued/prepared variant.
+It does not change contracts, mint NFTs or spend image API credits.
 
 ```sh
 python3 scripts/boosters/art_runtime.py --catalog base-standard-v1-demo jobs
