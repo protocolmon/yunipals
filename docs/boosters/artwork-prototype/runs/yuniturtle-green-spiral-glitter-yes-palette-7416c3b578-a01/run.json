@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "id": "yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01",
+  "recipeVersion": "og-booster-card-v5-species-palette",
+  "fingerprint": "7416c3b57855bfd4e209ade54b94df2d173fb1fb22c6568806d690fd3a72ff33",
+  "attempt": 1,
+  "createdAt": "2026-10-19T17:42:17.844286+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "purpose": "color-correction",
+  "traits": {
+    "type": "Yuniturtle",
+    "color": "Green",
+    "horn": "Spiral",
+    "glitter": "Yes",
+    "ids": {
+      "types": 7,
+      "colors": 2,
+      "horns": 1,
+      "glitters": 1
+    },
+    "variantId": 149,
+    "key": "yuniturtle-green-spiral-glitter-yes"
+  },
+  "design": {
+    "frameStyle": "brand",
+    "label": "Brand lavender",
+    "frameColor": "#c7c9f9",
+    "brandColor": "#7e22ce",
+    "headingFont": "Archivo Black",
+    "decision": "user-locked lavender-crisp-v1",
+    "styleLock": "lavender-crisp-v1"
+  },
+  "references": {
+    "og": {
+      "path": "references/yuniturtle-ecd51d15d2d2.png",
+      "sha256": "ecd51d15d2d28cd3b2aad753dd1a62d34b93c2dc3e56c8fd48b265decffcffe4"
+    },
+    "style": {
+      "path": "runs/yunidragon-blue-spiral-glitter-yes-clarity-7532766767-a01/clarity.png",
+      "sha256": "b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "source": {
+      "path": "runs/yuniturtle-green-spiral-glitter-yes-8b4ad45040-a01/card.png",
+      "sha256": "8291306e07d3c61c4ee3548347a23acac03f8d601d8874710f28b575d8e51e2c"
+    },
+    "palette": {
+      "path": "references/palette-green-7bfc286cdc83.png",
+      "sha256": "7bfc286cdc832fa442c69b2ef9367a197af4a95570d36159645c39af1851cba1"
+    }
+  },
+  "referenceProvenance": {
+    "image": "references/yuniturtle-ecd51d15d2d2.png",
+    "identity": "The exact OG Yuniturtle: a small long-necked swimming turtle with a round expressive face, huge warm brown eyes behind silver/gold round diving goggles and a red strap, a short muzzle, blue mop-like head tendrils and neck plates, a small rounded blue shell, four broad paddle-shaped flippers with blue spots, and red ring markings along the neck/body. Preserve the goggles, shell, flippers, long neck and floating/swimming OG silhouette; do not turn it into a squat land tortoise.",
+    "source": "Cached OG BNB Yunipals reference: /root/protobits/tmp/imagegen/bnb-references/04-10001644187-uniturtle.png; original token ID 10001644187. Character reference only; lunar scene is not part of the booster design.",
+    "legacyType": "Uniturtle",
+    "tokenId": "10001644187",
+    "chainId": 56,
+    "contract": null
+  },
+  "backgroundModifier": "meadow-green: preserve green hills, soft clouds and the distant windmill",
+  "stageOrder": [
+    "palette"
+  ],
+  "prompts": {
+    "palette": "Use case: precise-object-edit.\nImage #1 is the EDIT TARGET: the exact Green Yuniturtle YUNIPALS card.\nImage #2 is the ACTUAL OG Green Yuniturtle, the authority for the COMPLETE SPECIES-SPECIFIC COLORWAY, including secondary details and eyes.\nOutput one 1024 x 1536 PNG, portrait 2:3, with genuine transparent exterior.\n\nCorrect the ENTIRE MONSTER COLORWAY in image #1 to match the actual same-species, same-color OG in image #2. Apply its exact corresponding colors to body, hair/mane/feathers, shell, fins, feet, eye/iris, markings and accessories. Do not keep secondary colors from the old blue character. Image #1 controls geometry and design; image #2 controls ALL character colors except the explicitly requested horn trait.\nOG PALETTE: OG green Uniturtle: light yellow-lime skin/body/flippers, fresh leaf-green hair/mop tendrils, a leaf-green shell and green flipper spots, pink-magenta goggle strap, neck ring markings and rear-flipper band, purple iris, silver/gold goggle rims. The hair, shell and flipper spots must be GREEN, never blue. Match these exact corresponding colors to the pictured OG; the requested golden spiral horn overrides its original horn.\nMatch the original OG hue, restrained saturation, lightness and warm/cool relationships between lit surfaces, midtones and shadows. Do not interpret the word Green as a generic vivid paint. The OG image is the color authority. Do not exaggerate saturation or make the body neon. Preserve crisp clean dimensional surfaces, readable form shading and sharp eye/face detail. Do not add grain, frost, blur, a cloudy glitter blanket or an outline glow.\n\nSTRICT INVARIANTS: preserve image #1's EXACT species identity, pose, silhouette, camera, crop, proportions, facial geometry, eye shapes, marking shapes, accessory shapes, fins/mane/feathers/wings shapes, Spiral horn, meadow, sky, windmill, all existing background star positions and rainbow streaks, official flat pink logo, lavender border, purple lettering, exact YUNIPALS header and exact YUNITURTLE footer. No anatomy or composition changes. The old hair, eye and marking COLORS are intentionally NOT invariant: replace them with their corresponding colors from image #2. Preserve their shapes. Keep image #1's requested horn trait, stance and scene; do not replace the monster or change anatomy.\nKeep only the existing sparse tiny body glints. Preserve the complete approved holographic background and frame; no body rainbow recoloring.\nKeep every edge of the complete rounded lavender border, equal transparent margins, no exterior shadow, halo or visible canvas-edge pixels. This is a precise local color correction, not a new card design.\n"
+  },
+  "stages": {
+    "palette": {
+      "path": "runs/yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01/palette.png",
+      "sha256": "45709a6ac84f0e183a8de46cdab2a76afb0c44d2acafc033a65e248c8d6d8fdd",
+      "recordedAt": "2026-10-19T17:44:13.426655+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.07794,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Inspected complete artwork and white/black/checkerboard cutouts. Exact same-species/color OG reference matched across body and secondary details: turtle green hair/shell/spots, pink strap/markings, purple iris; chick coral body, green eyes/markings/inner feathers, red beak/feet/eye masks. Requested horn traits and lavender card design preserved. Clean complete rounded border, transparent exterior, no halo or visible canvas-edge pixels. Human review pending.",
+          "recordedAt": "2026-10-19T17:45:17.194524+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01/qa/palette-white.png",
+          "black": "runs/yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01/qa/palette-black.png",
+          "checkerboard": "runs/yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01/qa/palette-checkerboard.png"
+        }
+      },
+      "preview": "runs/yuniturtle-green-spiral-glitter-yes-palette-7416c3b578-a01/palette_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "User approved the current gallery artwork and requested application integration.",
+    "recordedAt": "2026-10-19T18:21:33.545988+00:00"
+  },
+  "sourceRunId": "yuniturtle-green-spiral-glitter-yes-8b4ad45040-a01",
+  "paletteProvenance": {
+    "color": "Green",
+    "monsterType": "Yuniturtle",
+    "image": "references/palette-green-7bfc286cdc83.png",
+    "description": "OG green Uniturtle: light yellow-lime skin/body/flippers, fresh leaf-green hair/mop tendrils, a leaf-green shell and green flipper spots, pink-magenta goggle strap, neck ring markings and rear-flipper band, purple iris, silver/gold goggle rims. The hair, shell and flipper spots must be GREEN, never blue. Match these exact corresponding colors to the pictured OG; the requested golden spiral horn overrides its original horn.",
+    "source": "Actual OG Uniturtle #1000000214; https://meta.polkamon.com/meta?id=1000000214; code T04C02H10B01G00; image https://drive.polychainmonsters.com/ipfs/QmSQxGf3feNR6uvyaU21estDBDKiwicFGaFiUxcxA8eteA"
+  }
+}

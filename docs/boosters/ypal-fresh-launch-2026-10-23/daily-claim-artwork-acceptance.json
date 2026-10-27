@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-27T12:12:28.049Z",
+  "opening": "0xa805e7324cd86825a30f89a3273a6fc7dace68eb07bd86f69a1007ae2949e0e3",
+  "walletConnections": 0,
+  "signatures": 0,
+  "transactions": 0,
+  "rpcCalls": 4,
+  "pageErrors": [],
+  "checks": [
+    "Tested release entry asset is live",
+    {
+      "responsiveOpening": [
+        {
+          "viewport": 1333,
+          "width": 400,
+          "gap": 34.6422119140625,
+          "actionBottom": 569.7349853515625
+        },
+        {
+          "viewport": 844,
+          "width": 252,
+          "gap": 24.75830078125,
+          "actionBottom": 380.68572998046875
+        }
+      ]
+    },
+    "Progressive slow tear completed",
+    {
+      "realDailyClaimTokens": [
+        "4",
+        "5",
+        "6"
+      ],
+      "artwork": "ready with real generated images"
+    }
+  ],
+  "passed": true,
+  "completedAt": "2026-10-27T12:12:35.458Z"
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Yunibranch",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/2911bc34475dbd2a360ff125497b768873c4b173ac734029481e29d891e21540.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunibranch"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 55,
+    "artworkSha256": "2911bc34475dbd2a360ff125497b768873c4b173ac734029481e29d891e21540",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/c75513fa05701a7e82a01188928a60115cf7f576443d48cbdabb1b84dd9ad0d2.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/486068a40b4d4c390b86ef7c5d8b3c710ee853607014fbd0e3911d5318c9e92f.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9f117d9faed7643c6de35fedf0e74cc822365233c6e39f912b7e003ee8e8d688.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunibranch-green-diamond-glitter-yes-68afc765cb-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

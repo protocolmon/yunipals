@@ -1,0 +1,36 @@
+{
+  "name": "Yunidragon",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/f0e030ac9973e52457f67dec8f0af752e304161ed29197178cdca1ad930ff52f.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunidragon"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 78,
+    "artworkSha256": "f0e030ac9973e52457f67dec8f0af752e304161ed29197178cdca1ad930ff52f",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunidragon-green-diamond-glitter-no-ca5bce37dc-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

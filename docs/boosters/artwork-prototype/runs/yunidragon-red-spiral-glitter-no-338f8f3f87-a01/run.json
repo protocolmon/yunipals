@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "yunidragon-red-spiral-glitter-no-338f8f3f87-a01",
+  "recipeVersion": "og-booster-card-v5-species-palette",
+  "fingerprint": "338f8f3f872c2fa29bafe5b2b384019cf37f1736fb64f0be8a24f1f50cc6b666",
+  "attempt": 1,
+  "createdAt": "2026-10-27T11:32:45.359640+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "purpose": "locked-design-sample",
+  "traits": {
+    "type": "Yunidragon",
+    "color": "Red",
+    "horn": "Spiral",
+    "glitter": "No",
+    "ids": {
+      "types": 4,
+      "colors": 4,
+      "horns": 1,
+      "glitters": 0
+    },
+    "variantId": 84,
+    "key": "yunidragon-red-spiral-glitter-no"
+  },
+  "design": {
+    "frameStyle": "brand",
+    "label": "Brand lavender",
+    "frameColor": "#c7c9f9",
+    "brandColor": "#7e22ce",
+    "headingFont": "Archivo Black",
+    "decision": "user-locked lavender-crisp-v1",
+    "styleLock": "lavender-crisp-v1"
+  },
+  "references": {
+    "style": {
+      "path": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision.png",
+      "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "palette": {
+      "path": "references/palette-red-79a882a0d466.png",
+      "sha256": "79a882a0d46623dd8e4c71079b8cdacc74a17af51d2212d222455ef0166d0111"
+    },
+    "og": {
+      "path": "references/palette-red-79a882a0d466.png",
+      "sha256": "79a882a0d46623dd8e4c71079b8cdacc74a17af51d2212d222455ef0166d0111"
+    }
+  },
+  "referenceProvenance": {
+    "color": "Red",
+    "monsterType": "Yunidragon",
+    "image": "references/palette-red-79a882a0d466.png",
+    "description": "Match the complete original Red Unidragon colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.",
+    "source": "OG Unidragon #1000000236; ethereum; https://meta.polkamon.com/meta?id=1000000236; image https://drive.polychainmonsters.com/ipfs/QmNYCJx6DnHvHj9Fy3iHGgM1ko7PQLREsXKjE9pSbagbJj; source metadata in /root/yunipals/docs/boosters/artwork-prototype/references/og-yunidragon-red.metadata.json"
+  },
+  "paletteProvenance": {
+    "color": "Red",
+    "monsterType": "Yunidragon",
+    "image": "references/palette-red-79a882a0d466.png",
+    "description": "Match the complete original Red Unidragon colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.",
+    "source": "OG Unidragon #1000000236; ethereum; https://meta.polkamon.com/meta?id=1000000236; image https://drive.polychainmonsters.com/ipfs/QmNYCJx6DnHvHj9Fy3iHGgM1ko7PQLREsXKjE9pSbagbJj; source metadata in /root/yunipals/docs/boosters/artwork-prototype/references/og-yunidragon-red.metadata.json"
+  },
+  "backgroundModifier": "meadow-red: preserve green hills, soft clouds and the distant windmill",
+  "stageOrder": [
+    "card"
+  ],
+  "prompts": {
+    "card": "Create ONE finished YUNIPALS collectible card as a 1024 x 1536 PNG, portrait 2:3, with genuine transparent exterior.\nReference #1 is the SPECIFIC OG Red Yunidragon. Preserve its visible species identity, facial structure, anatomy, complete silhouette, markings and proportions. This is also the correct target colorway.\nReference #2 is the APPROVED LOCKED CARD DESIGN. Copy its exact lavender frame, purple typography, official logo placement, polished clean 3D illustration quality, composition scale and finish policy. Its dragon is only a style example; the new character must be the specific monster in reference #1.\nReference #3 is the OFFICIAL FLAT YUNIPALS LOGO. Preserve its recognizable pink badge, dark outlined pale-gold face, green eye and mint fins exactly.\nReference #4 is the ACTUAL OG Red Yunidragon, the authority for the ENTIRE CHARACTER PALETTE. Match all corresponding body, hair/mane/feathers, shell, fins, feet, eye/iris, markings and accessory colors, including hue, saturation, lightness, highlights and shadows: Match the complete original Red Unidragon colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.. Its exact colorway overrides every conflicting color in reference #1 or #2. Preserve the requested horn trait and card design; do not copy its background or framing. The color name alone is insufficient.\n\nTRAITS: Type Yunidragon; main body color Red; horn Spiral; glitter No.\nPreserve the OG monster's face, eyes, body shape, markings, distinctive fins/mane/wings, proportions and stance. Apply the complete OG Red Yunidragon colorway from reference #4 to every corresponding character region, including secondary details and eyes. Preserve the shapes of its markings while matching their OG colors; do not retain colors from a different colorway. Do not increase saturation for dramatic lighting or let holographic reflections recolor the body. Keep clothing, eyewear and anatomical features from the OG identity. Forehead horn: exactly one naturally tapered warm honey-GOLD spiral horn, defined spiral grooves and antique-bronze shadows, naturally attached and clearly visible. No extra unicorn horns.\nUse crisp dimensional colored surfaces with clean edges and readable form shading, as in the locked design. No blurry eyes, soft-focus body, dense speckles, frosted coating or glowing body outline.\nFINISH: GLITTER NO: smooth clean colored monster surfaces, ordinary matte illustrated scenery and a polished lavender frame. No body glitter, rainbow foil, prismatic streaks or floating starbursts.\n\nSCENE: meadow-red: cheerful rolling green hills, soft clouds and a small distant windmill, with a gentle red accent in the wildflowers; preserve the approved meadow landmarks. Replace reference #1's lunar/rocky setting completely. One full-body monster, naturally grounded or hovering if that is its OG stance. Fit its complete horn, wings/fins, feet and tail inside the art window.\nFRAME: identical signature soft polished LAVENDER #c7c9f9 frame for every body color; grape-purple #7e22ce inner outlines and accents, pale white/lavender header and bottom nameplate. Never recolor the frame to match the creature. Follow the approved reference's rounded silhouette, proportions and thin inset details.\nExact top text: YUNIPALS. Exact bottom text: YUNIDRAGON. Bold chunky Archivo Black-style grape-purple lettering, centered and fully legible. Put the supplied official flat pink logo at the top-left header as in the approved design. These are the ONLY words. No level, number, rarity badge, stats, extra captions or invented text.\nKeep the complete border with equal small transparent margins on all four sides, clean rounded corners, no exterior drop shadow or halo, and no visible canvas-edge pixels. This is a single premium card in the locked design, not a layout comparison.\n"
+  },
+  "stages": {
+    "card": {
+      "path": "runs/yunidragon-red-spiral-glitter-no-338f8f3f87-a01/card.png",
+      "sha256": "82ea297479b75ba3d7e25ab1cfc2c64c6fe26d1e6891364ac2824e86937d60f2",
+      "recordedAt": "2026-10-27T12:52:41.284315+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.088885,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Agent inspected native artwork plus white, black and checkerboard previews: correct exact OG Yunidragon palette and anatomy, requested horn, matte finish, intact frame, readable title and transparent exterior. No new human approval claimed.",
+          "recordedAt": "2026-10-27T12:57:55.195706+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunidragon-red-spiral-glitter-no-338f8f3f87-a01/qa/card-white.png",
+          "black": "runs/yunidragon-red-spiral-glitter-no-338f8f3f87-a01/qa/card-black.png",
+          "checkerboard": "runs/yunidragon-red-spiral-glitter-no-338f8f3f87-a01/qa/card-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunidragon-red-spiral-glitter-no-338f8f3f87-a01/card_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "Agent visual approval under user-approved locked lavender style; native and three composite backgrounds inspected.",
+    "recordedAt": "2026-10-27T12:57:55.200717+00:00"
+  }
+}

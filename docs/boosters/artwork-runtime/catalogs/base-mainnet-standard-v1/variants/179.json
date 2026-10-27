@@ -1,0 +1,40 @@
+{
+  "name": "Yuniaqua",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/04974acdd2a1a45437e95d4843fcfc92a89bc534da322e657093234a99465e47.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniaqua"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 179,
+    "artworkSha256": "04974acdd2a1a45437e95d4843fcfc92a89bc534da322e657093234a99465e47",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/7ab5f853122fd70129063db5bc291193451afe2922c123ba6adc477d1708d753.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/6b56274705e2f59985743986db3f16861a2dd3b296ebcc8de185155040854728.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/f56e56f4189caaa343bf3ea5f43d43601ee0fa03680ff8037bfd53a06d4f0c02.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yuniaqua-blue-diamond-glitter-yes-02e01c4a1b-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

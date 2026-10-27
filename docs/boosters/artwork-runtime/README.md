@@ -1,133 +1,159 @@
 # Booster artwork
 
-One image per variant, shared by every monster with that variant. Generate and review the full 264-variant catalog in Codex before relying on immediate artwork for every opening. All 66 exact OG species/color references are registered. The recipe uses the complete OG character palette, official logo and approved lavender/crisp-body style. Public metadata never starts image generation. The confirmed-reveal queue remains a fallback for missing artwork.
+The complete live YPAL catalog, `base-mainnet-standard-v1`, is generated,
+reviewed and published: **264 cards**, comprising 11 species × six colors × two
+horns × two finishes. There are 132 matte cards and 132 holographic cards. Every
+holographic card includes foreground, background and star masks calibrated to
+its exact pixels. All 264 public metadata responses and all 660 image/mask assets
+passed verification on 27 October 2026.
 
-The frozen catalog commits to the trait catalog, generator source, approved style references, logo and 66 OG image hashes. It commits to a recipe and its references, **not** to 264 images that do not exist yet. The first approved publication of each variant is immutable. Changed recipes/references or origins require a new catalog for future pack types. Contract upgrades remain possible as requested.
+An opening selects an existing variant image. It never starts image generation.
+NFT-specific metadata adds the token's identity and birth information while
+sharing that variant's artwork. The real three-day claim for original #1 minted
+NFTs #4–6; all three images display in the verified live replay.
 
-`base-standard-v1-demo` is the current loopback-only integration catalog; `base-standard-v1` is an archived earlier local catalog. Eight approved variants are published: 80, 81, 82, 83, 120, 149, 206, 259. Four holo variants have exact-image foreground/background/star masks. Metadata and PNG/SVG assets use content hashes. The foreground remains at the original pixel position; the light layers are masked to the background so they cannot wash out the monster.
+The collection, packs and wrapping share the one application at
+[www.yunipals.com](https://www.yunipals.com). The fresh YPAL pack costs 1 YPAL per
+original, supports up to ten originals per transaction, and earns one additional
+mint every 24 hours after reveal. Older PROTO catalogs and local demo catalogs
+are historical fixtures, not the live pack.
 
-## Setup
+## Included files
 
-Use Python 3.11 or later and the repository's Node.js version. Install the
-image-processing dependency in an isolated environment:
+- `catalogs/base-mainnet-standard-v1/manifest.json`: the original frozen recipe,
+  references, trait dictionary and public origin. Its artwork commitment remains
+  `0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac`.
+- `catalogs/base-mainnet-standard-v1/variants/0.json` through `263.json`: all
+  approved public variant metadata.
+- `catalogs/base-mainnet-standard-v1/complete-assets.json`: a separate inventory
+  of every metadata hash, native source run and PNG/SVG asset. This inventory
+  does not modify the frozen manifest.
+- `assets/`: content-addressed native PNGs and SVG foil layers.
+- `masks/`: exact-image silhouette and star calibration maps. Older approved
+  cards also have authored maps in `scripts/boosters/artwork/`.
+- `calibration/`: reviewed SAM prompt points, model hashes and calibration
+  provenance for the new holographic cards. See its [notes](calibration/README.md).
+- `../artwork-prototype/`: the native generation runs, exact prompts, source
+  stages, official logo, locked style images and all 66 OG species/color
+  references. `canonical.json` selects the actual published run for all 264
+  variants. Native pixels are preserved rather than resized or repainted.
+
+## Verify a checkout
+
+Use Python 3.11 or later and the repository's Node.js version:
 
 ```sh
 python3 -m venv /tmp/yunipals-booster-art-venv
 /tmp/yunipals-booster-art-venv/bin/pip install -r scripts/boosters/requirements.txt
+/tmp/yunipals-booster-art-venv/bin/python scripts/boosters/verify_art_catalog.py
 ```
 
-The exact OG references, approved style references and card calibrations are
-included in this repository. The publisher loads authored calibration modules
-from `scripts/boosters/artwork`; it does not require the old artwork review site.
-Keep API credentials and pending jobs outside source control.
+The verifier runs offline. It checks the frozen generator and all references,
+complete trait coverage, accepted native source runs, transparent card margins,
+the inventory hashes, and every published PNG/SVG. It rebuilds publication in a
+temporary directory and requires identical metadata and asset bytes. Expect
+`variantCount: 264`, `matteCount: 132`, `holoCount: 132`, `assetCount: 660`.
+CI runs the same check. No image API key or new image generation is required.
 
-## Live application
+## Serve the included catalog
 
-The production collection and packs share **https://www.yunipals.com**. The Base
-catalog is `base-mainnet-smoke-v1`; the separate unlimited public pack is type 2.
-See [the accepted main-site release](../mainnet-launch/canonical-www-production-2026-10-22.json).
-Variant 73 was revealed and published through a genuine mainnet opening. New
-variant generation still requires an operator to generate and approve images;
-the durable queue alone is not an unattended image-generation service.
+Copy the included public catalog and assets to a persistent runtime directory,
+keeping pending jobs and locks outside Git:
 
-## Local demo
+```sh
+install -d /srv/yunipals/booster-artwork/catalogs /srv/yunipals/booster-artwork/assets
+cp -a docs/boosters/artwork-runtime/catalogs/base-mainnet-standard-v1 \
+  /srv/yunipals/booster-artwork/catalogs/
+cp -a docs/boosters/artwork-runtime/assets/. /srv/yunipals/booster-artwork/assets/
+```
 
-Build contracts and start Anvil and the local harness as described in `../../boosters-implementation.md`. The harness uses the real 264-variant catalog and the local artwork service. It writes public addresses to `/tmp/yunipals-boosters-local.json`. The browser test deliberately chooses a mock seed for the approved green turtle; mainnet randomness is never controlled.
-
-## Service configuration
-
-Set these on the indexer API and queue worker:
+Configure the shared indexer API:
 
 ```sh
 BOOSTER_ARTWORK_DIRECTORY=/srv/yunipals/booster-artwork
-BOOSTER_ARTWORK_CATALOGS=base-mainnet-smoke-v1
-BOOSTER_DATABASE_SCHEMA=yunipals_boosters_v1
+BOOSTER_ARTWORK_CATALOGS=base-mainnet-standard-v1
 ```
 
-Use the same persistent filesystem for API, worker and the Codex publisher. Mount it read-only in the API if possible; the queue worker writes only jobs. This prototype supports one publisher with advisory locking and atomic writes, and concurrent deduplicated enqueue operations on a filesystem that supports hardlinks. It is not a distributed object-storage queue. Back up manifests, metadata, masks, assets and lab references/run provenance before enabling sales. Keep jobs outside Git.
+Follow the [single indexer setup](../../../apps/yunipals-indexer/README.md) for
+database, ingestion and API startup. The API can mount the artwork directory
+read-only. These files retain the live catalog's frozen public origin; a different
+origin or recipe needs a new catalog for future pack types.
 
-```sh
-pnpm --filter @protopals/yunipals-indexer start:booster-artwork
-# One scan:
-pnpm --filter @protopals/yunipals-indexer start:booster-artwork --once
-```
-
-Only catalogHash + metadataBaseURI matches are scanned, and indexed numeric traits must match the variant rank. Reorgs cannot create NFTs through this queue; an already-generated valid variant can remain cached after a reveal is rolled back. No marketplace, score or arena records are added.
-
-The existing API serves:
+The existing API exposes these routes under its configured mount prefix:
 
 - `GET /v1/boosters/art/:catalog/manifest.json`
-- `GET /v1/boosters/art/:catalog/:variant.json` — 200 immutable when ready; 202/no-store with `Retry-After: 5` while missing, queued, prepared or blocked.
-- `GET /v1/boosters/art-assets/:sha.png` and `:sha.svg` — immutable, fingerprints checked before serving.
+- `GET /v1/boosters/art/:catalog/:variant.json`
+- `GET /v1/boosters/art-assets/:sha.png`
+- `GET /v1/boosters/art-assets/:sha.svg`
 
-The collection and detail pages poll pending metadata; images are lazy-loaded in collection grids. The detail viewer supports pointer/touch, keyboard arrows/Home, reset, auto tilt, live holo toggle and reduced motion. Metadata without calibrated masks shows the static card rather than applying a whole-body foil layer.
+Ready metadata and fingerprint-checked assets are immutable. A missing variant
+in a different catalog returns 202 with `Retry-After: 5`; it does not trigger an
+image-generation request. The frontend distinguishes missing publication from
+an image request failure and refreshes pending metadata.
 
-## Initialize a public catalog
+Back up catalogs, assets, calibration maps and generation provenance. Use the
+existing guarded publication helper for incremental production additions;
+never replace a previously published variant.
 
-Use the actual HTTPS API prefix, including `/yunipals-indexer` if the service is mounted there. The loopback catalog cannot be reused on mainnet.
+## Prepare a future catalog
+
+The current catalog is complete; these commands are for future artwork and
+pack types. The frozen manifest commits to the recipe and references. First
+publication of a variant is immutable. A changed recipe, reference or public
+origin requires a new catalog.
 
 ```sh
 python3 scripts/boosters/art_runtime.py \
-  --directory /srv/yunipals/booster-artwork --catalog base-mainnet-smoke-v1 \
-  init --public-url https://api.yunipals.com/yunipals-indexer
+  --directory /srv/yunipals/booster-artwork --catalog NEW_CATALOG \
+  init --public-url https://YOUR_PUBLIC_API_PREFIX
 ```
 
-This example is a deployment target, not a claim that this route is live. Configure the API mount, volume and CORS first. Serve the resulting manifest and verify its commitment before activating a pack with those URLs. Publish accepted sample runs into the same catalog using the command below; pixels/masks can be reused but the public origin is catalog-specific.
+Use `art_lab.py prepare` for each dictionary combination, then `art_lab.py next
+--run RUN_ID` to obtain the exact prompt and ordered references. Generate through
+Codex's built-in subscription image generation, accept the native output,
+inspect the white/black/checkerboard previews, finalize and record visual
+acceptance. Reuse existing accepted runs. Consult `art_lab.py --help` for the
+controller's commands; never edit run manifests to skip review.
 
-## Subscription-assisted queue processing
+A new holographic card also needs an exact-image numeric SVG foreground path
+and painted background star points, stored with the native PNG's SHA-256.
+Inspect the silhouette and test the real interactive viewer at multiple angles
+before registration. Multiple `M…Z` paths are treated as a union; a scanline
+rectangle path preserves gaps and holes. Do not place stars on the monster.
 
-For full-catalog preparation, enumerate the 11 types, six colors, two horns and
-two glitter finishes in `contracts/boosters/config/base-standard-v1.traits.json`.
-Use `art_lab.py prepare` for each combination, then generate its exact `nextStage`
-through Codex, accept it, inspect its light/dark/checkerboard previews, and record
-visual approval. Reuse completed accepted runs. Every glitter image also needs
-calibrated foreground/background/star masks and a viewer check before publication.
+```sh
+python3 scripts/boosters/art_runtime.py \
+  --directory /srv/yunipals/booster-artwork register-masks \
+  --image /absolute/path/to/card.png --map /absolute/path/to/map.json
+python3 scripts/boosters/art_runtime.py \
+  --directory /srv/yunipals/booster-artwork --catalog NEW_CATALOG \
+  publish --run RUN_ID
+```
 
-After the existing local publisher produces the reviewed assets and metadata,
-the production transfer helper can explicitly prepublish a frozen variant:
+The reviewed production transfer helper supports prepublication before a reveal:
 
 ```sh
 python3 ops/booster-launch/install-approved-artwork.py \
   --source /path/to/staged-publication \
-  --catalog base-mainnet-standard-v1 --variant VARIANT_ID --allow-unrevealed
-# Repeat with --apply after the read-only review succeeds.
+  --catalog NEW_CATALOG --variant VARIANT_ID --allow-unrevealed
+# Repeat with --apply only after the read-only review succeeds.
 ```
 
-`--allow-unrevealed` removes the need to wait for an observed reveal job. It keeps
-the frozen manifest, exact trait validation, asset hashes, holo requirements and
-immutable-publication checks. An existing queue job must still match. Without
-this flag, the helper continues to require an observed queued/prepared variant.
-It does not change contracts, mint NFTs or spend image API credits.
+This retains frozen-manifest, trait, asset-hash, holo and immutable-publication
+checks. It does not change contracts, mint NFTs or spend image API credits.
+
+## Optional queue fallback
+
+A confirmed-reveal queue remains available for other incomplete catalogs:
 
 ```sh
-python3 scripts/boosters/art_runtime.py --catalog base-standard-v1-demo jobs
-python3 scripts/boosters/art_lab.py next --run RUN_ID
+pnpm --filter @protopals/yunipals-indexer start:booster-artwork --once
+python3 scripts/boosters/art_runtime.py --catalog NEW_CATALOG jobs
 ```
 
-`jobs` prepares reproducible run plans for missing variants, validates the frozen source/reference commitment and records the run ID. The next-stage output contains the exact prompt and ordered local image references. In Codex, inspect the references and use built-in image generation through the `protopals-art`/`imagegen` workflow. This is an operator-assisted queue; there is no unattended subscription endpoint. No API key is read or used. A future API executor can consume the same next-stage contract.
-
-Accept the generated output, perform the controller's existing alpha/canvas checks and inspect light, dark and checkerboard previews. Mark its visual review and explicit approval using `art_lab.py` before publication. The publisher refuses pending/rejected candidates and refuses replacing an existing variant. Keep the approved source run and image path in provenance. Consult `art_lab.py --help` for the accept/finalize/review commands; they require genuine native PNG output, not a screenshot or thumbnail.
-
-For a new holo, calibrate a JSON map in native 1024×1536 card coordinates:
-
-```json
-{
-  "sha256": "EXACT_PNG_SHA256",
-  "foreground": "M400 300 C300 400 300 900 500 1200 L800 1200 Z",
-  "stars": [
-    [120, 350, 16],
-    [850, 520, 12]
-  ]
-}
-```
-
-The example silhouette is illustrative; trace the actual monster and use its painted background stars. Multiple `M…Z` paths are treated as a union. Do not place star points on the face/body. Validate with the interactive viewer at several tilt angles before publishing. Registering a changed map for the same pixels is refused.
-
-```sh
-python3 scripts/boosters/art_runtime.py register-masks \
-  --image /absolute/path/to/card.png --map /absolute/path/to/map.json
-python3 scripts/boosters/art_runtime.py --catalog base-standard-v1-demo \
-  publish --run RUN_ID
-```
-
-Pass the production `--directory` and `--catalog` for a production publication. Native images, metadata and masks are copied to immutable content-addressed files; new metadata is visible on the frontend's next five-second poll. There is no onchain metadata rewrite or second user transaction. Generic historical color references remain archived but are not used for new generation.
+Only matching catalog commitments and numeric traits are admitted. Queue
+processing prepares reproducible plans for operator-assisted generation; it is
+not an unattended subscription endpoint. The complete live catalog does not
+depend on this queue to supply artwork. The API and queue share persistent
+storage; publication uses advisory locking and atomic writes. There is no
+second user transaction to make already-approved artwork visible.

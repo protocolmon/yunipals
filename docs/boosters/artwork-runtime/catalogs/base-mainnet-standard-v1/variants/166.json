@@ -1,0 +1,36 @@
+{
+  "name": "Yuniturtle",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ac4ce87b1e2460d16802633b851c22f12aa5692082e2ee9ebfc89bdbd8e6393e.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniturtle"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 166,
+    "artworkSha256": "ac4ce87b1e2460d16802633b851c22f12aa5692082e2ee9ebfc89bdbd8e6393e",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yuniturtle-black-diamond-glitter-no-d4d99eda45-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

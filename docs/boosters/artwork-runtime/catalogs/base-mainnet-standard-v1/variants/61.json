@@ -1,0 +1,40 @@
+{
+  "name": "Yunibranch",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/23678a41c2bb2c644cced49a2e89fa18c5c53437396866752ddaa2040c0c6c9b.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunibranch"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 61,
+    "artworkSha256": "23678a41c2bb2c644cced49a2e89fa18c5c53437396866752ddaa2040c0c6c9b",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/2f6916bac946dfd3cce5dcae20d36f7a9c3fe12f9dec4ccf362c43b85801aaf2.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ee6842a1e44cd73bce87b1788a52b783d7bf934418c8207e389322329c2a00f4.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/28c72e193e22ffb209478ac9aee8ee4bb62d9150b91817ec877ca55a57bf003d.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunibranch-red-spiral-glitter-yes-7e1373adc0-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

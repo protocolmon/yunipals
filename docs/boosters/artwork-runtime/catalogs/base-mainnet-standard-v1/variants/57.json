@@ -1,0 +1,40 @@
+{
+  "name": "Yunibranch",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/53c0d0208d1a708807057614b3ef0b8e8ea4ae2702930bc94df767fb1eca96c9.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunibranch"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 57,
+    "artworkSha256": "53c0d0208d1a708807057614b3ef0b8e8ea4ae2702930bc94df767fb1eca96c9",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/4ba527f517ad956b54664c75f4ef2228d8e18725983f73281cf33eddfcfb5fd3.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/c26e6c75e775c21286946b7498eaa7254de6c7218e4bf99d005413399d43d7fb.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/34c656e4bd8aed31d2ae5764a5bf130613a240e0b0b9e5b235ff081cc67e05a4.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunibranch-blue-spiral-glitter-yes-2612cc0f76-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

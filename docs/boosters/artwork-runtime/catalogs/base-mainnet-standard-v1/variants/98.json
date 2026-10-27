@@ -1,0 +1,36 @@
+{
+  "name": "Yunicursed",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/84c9750cead98fcf65d25401213616b82f7df0c118397aa01a2e5310dad34515.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunicursed"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Yellow"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 98,
+    "artworkSha256": "84c9750cead98fcf65d25401213616b82f7df0c118397aa01a2e5310dad34515",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunicursed-yellow-diamond-glitter-no-8a0702afa5-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

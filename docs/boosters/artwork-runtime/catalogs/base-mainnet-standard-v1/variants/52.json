@@ -1,0 +1,36 @@
+{
+  "name": "Yunibranch",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/4e1fe581d8d175bc5ea8eee41f7f0807c46fd26165950241be9987b5415e923f.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunibranch"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 52,
+    "artworkSha256": "4e1fe581d8d175bc5ea8eee41f7f0807c46fd26165950241be9987b5415e923f",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunibranch-green-spiral-glitter-no-94c1bb7766-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

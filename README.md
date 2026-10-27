@@ -22,8 +22,9 @@ generator and deployment scripts.
   setup, startup and systemd guide.
 - [Booster contracts](contracts/boosters/README.md): upgradeable Base pack rules,
   shared monster NFTs, duplicate-free draws and VRF recovery.
-- [Artwork generator](docs/boosters/artwork-runtime/README.md): reference-based
-  card recipes, review and content-addressed publication, with a durable queue.
+- [Booster artwork](docs/boosters/artwork-runtime/README.md): all 264 approved
+  cards, native generation records, exact references and calibrated foil layers,
+  with an offline verification command.
 - [Shared core](packages/yunipals-market-core/README.md): chain registries,
   order encoding and validation shared by the web app and API.
 - [Marketplace API and workers](apps/yunipals-market-api/README.md): supports
@@ -151,6 +152,8 @@ pins and their small compatibility patches are explained in
 Booster packs: see [implementation and rollout](docs/boosters-implementation.md)
 and [contracts](contracts/boosters/README.md). The current Base pack uses 264
 variants, costs 1 YPAL plus VRF/gas, and earns one mint credit every 24 hours
-after reveal. The [live release evidence](docs/boosters/mainnet-launch/canonical-www-production-2026-10-22.json)
-distinguishes accepted mainnet behavior from remaining elapsed-time and
-unattended-artwork work.
+after reveal. All 264 variant images are generated and published, including the
+132 holographic cards and their calibrated foil layers. A real elapsed daily
+claim and its three-card replay have passed. See the [current artwork setup and
+verification guide](docs/boosters/artwork-runtime/README.md) and
+[fresh YPAL launch evidence](docs/boosters/ypal-fresh-launch-2026-10-23/README.md).

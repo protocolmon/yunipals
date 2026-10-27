@@ -1,0 +1,40 @@
+{
+  "name": "Yunisheep",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/022d3674be49e8804dad4bc5d946b4bbfec3f050d5e2e5c09e4e84547ede202c.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunisheep"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 239,
+    "artworkSha256": "022d3674be49e8804dad4bc5d946b4bbfec3f050d5e2e5c09e4e84547ede202c",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ab729f0ee9a5315013ef76e8447aabfb36b9c6a315b345166c6a7d88fa4ab8f1.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9b5b467a9727191f19cff0d88502ddf45ba6f33415f631dd47d3b91a58efa6f3.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/b9466f4150b4a5efb96967a84d5c8e2e66c8f24c27243e9265f9ec4a975ff1c3.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunisheep-black-diamond-glitter-yes-6649417866-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

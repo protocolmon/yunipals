@@ -1,0 +1,36 @@
+{
+  "name": "Yuniaqua",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/27f88ae17796ff7523d8c1f9153b966c02c563d7031b22ac69fa195ffb85c89d.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniaqua"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 180,
+    "artworkSha256": "27f88ae17796ff7523d8c1f9153b966c02c563d7031b22ac69fa195ffb85c89d",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yuniaqua-red-spiral-glitter-no-228b8d5c33-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

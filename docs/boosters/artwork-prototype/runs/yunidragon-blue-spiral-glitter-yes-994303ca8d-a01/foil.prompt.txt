@@ -1,0 +1,11 @@
+Edit this exact finished 1024 x 1536 YUNIPALS card to add a holographic finish.
+Keep the SAME Yunidragon identity, Blue color, Spiral horn,
+pose, meadow scene, framing, logo, typography and card dimensions.
+GLITTER = YES has TWO visible properties: the monster's body has fine embedded glitter,
+and the card art has a luxurious prismatic holographic foil overlay. Preserve and make
+readable the body glitter. Add tasteful rainbow refraction, fine diagonal holographic
+sheen and small sparkling glints over the art, while keeping the original body color
+and face recognizable. Leave the gold border, logo and text crisp and unobscured.
+Exact header YUNIPALS, exact bottom name YUNIDRAGON; no extra text.
+Preserve the transparent exterior and clean rounded silhouette. No exterior halo,
+no shadow or opaque background. Output one 1024 x 1536 PNG with transparency.

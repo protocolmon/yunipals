@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01",
+  "recipeVersion": "og-booster-card-v2-brand-study",
+  "fingerprint": "688075ed981e4fe89220c0d0fda0ef134371fd3d479a46993a76293aafa4ed6e",
+  "attempt": 1,
+  "createdAt": "2026-10-19T14:05:15.938370+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "traits": {
+    "type": "Yunidragon",
+    "color": "Blue",
+    "horn": "Diamond",
+    "glitter": "Yes",
+    "ids": {
+      "types": 4,
+      "colors": 3,
+      "horns": 2,
+      "glitters": 1
+    },
+    "variantId": 83,
+    "key": "yunidragon-blue-diamond-glitter-yes"
+  },
+  "design": {
+    "frameStyle": "body-clarity",
+    "label": "Crisp body proof"
+  },
+  "sourceRunId": "yunidragon-blue-diamond-glitter-yes-bcb547cd8a-a01",
+  "references": {
+    "og": {
+      "path": "references/yunidragon-blue-og.png",
+      "sha256": "d8080100339fc653a3b4986c4e4a9309bcb5f2fb22463a1a720ad707d608607c"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "source": {
+      "path": "runs/yunidragon-blue-diamond-glitter-yes-bcb547cd8a-a01/revision.png",
+      "sha256": "12debb3d7173ce8b9cdb02728309c0b8733ef2783bb9c6465a09b579fcdf39fe"
+    },
+    "clarity": {
+      "path": "runs/yunidragon-blue-diamond-glitter-no-2235ec9ad4-a01/revision.png",
+      "sha256": "5648ba974f7fe9950461b7da65e1cc97e6e8edb571cf453cea66449178a13087"
+    }
+  },
+  "referenceProvenance": {
+    "image": "references/yunidragon-blue-og.png",
+    "source": "OG Yunipals character reference from protopals-ponder/artwork/refs/yunidragon_blue.png",
+    "legacyType": "Unidragon",
+    "chainId": null,
+    "contract": null,
+    "tokenId": null,
+    "identity": "The OG blue Yunidragon: a slender upright long-necked baby dragon, large amber-brown eyes, a broad cyan forehead crest with blue spots, blue cheek and dorsal surfaces with light mint-cyan underbelly, coral-red layered ear fins, four short clawed legs, a long tapering tail, and the recognizable OG facial features. Preserve these distinctive markings and body proportions; do not turn it into a stocky winged dragon or another animal."
+  },
+  "backgroundModifier": "meadow-blue: preserve rolling green hills, a clear azure sky, soft clouds and the distant windmill",
+  "stageOrder": [
+    "clarity"
+  ],
+  "prompts": {
+    "clarity": "Use case: precise-object-edit.\nImage #1 is the EDIT TARGET: the exact approved Blue Yunidragon holographic trading card with a Diamond horn.\nImage #2 is a SURFACE-CLARITY REFERENCE ONLY: the same monster's classic card. Do not copy its pose, framing, proportions or composition.\nOutput ONE 1024 x 1536 portrait PNG with genuine transparent exterior.\n\nChange ONLY the monster's surface rendering in IMAGE #1. Remove the dense frosted glitter coating, rainbow dust, milky haze and noisy sparkling blanket that soften its face and body. Restore the clean sharp premium 3D illustration finish seen in image #2: crisply defined eye and eyelids, nose, mouth, turquoise face markings, body segments, fins, feet and tail; smooth saturated blue and mint skin, clear form shading and sharp silhouette. Preserve the exact existing anatomy, pose and positions in image #1. Keep the Diamond horn unchanged, including its clear faceted diamond crystal.\nGlitter=Yes must remain: retain only a few TINY, SPARSE embedded mineral glints on the chest, shoulder/back and tail. Keep the eye, face and contour clean and readable. No frost, cloudy sparkle veil, gritty noise, glowing body outline, blur or soft focus. The monster should look clean, dimensional and crisp at thumbnail size.\n\nSTRICT INVARIANTS: preserve image #1's complete lavender card frame, exact YUNIPALS header, exact YUNIDRAGON footer, official flat pink logo, all lettering, camera, character geometry, pose, background meadow, windmill, sky, rainbow streaks, and the positions/shapes of its existing large painted stars. The background and frame must KEEP their approved holographic treatment. Do not move, add or remove stars or scene objects. Do not change words, border shape, crop, scale or transparent margins. This is a local surface-material correction, not a new illustration or sharpening filter.\nKeep all four card edges intact, rounded silhouette, clean transparent exterior, no exterior shadow or halo and no visible canvas-edge pixels.\n"
+  },
+  "stages": {
+    "clarity": {
+      "path": "runs/yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01/clarity.png",
+      "sha256": "0156cc2a608cf55c63cbb6b71d3910e295c353bd6d8f712992e0ec6269fcb476",
+      "recordedAt": "2026-10-19T14:08:04.864042+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.077632,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Reviewed source and white/black/checkerboard composites. Clean crisp eye, face, segments and contours; sparse isolated body glints; holographic background, crystal horn, logo and lavender frame preserved. Clean transparent exterior and intact border. Clarity proof pending user review.",
+          "recordedAt": "2026-10-19T14:09:41.169737+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01/qa/clarity-white.png",
+          "black": "runs/yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01/qa/clarity-black.png",
+          "checkerboard": "runs/yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01/qa/clarity-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunidragon-blue-diamond-glitter-yes-clarity-688075ed98-a01/clarity_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "User approved crisp-body design and requested locking it for more samples.",
+    "recordedAt": "2026-10-19T14:36:04.224736+00:00"
+  },
+  "purpose": "body-clarity"
+}

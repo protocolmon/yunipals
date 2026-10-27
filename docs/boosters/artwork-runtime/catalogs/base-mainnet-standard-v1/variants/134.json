@@ -1,0 +1,36 @@
+{
+  "name": "Yunikles",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/7a8fd29822cf6ac7db0bdf34065f29a04c2c118ba44c7522afdfc1370001d967.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunikles"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 134,
+    "artworkSha256": "7a8fd29822cf6ac7db0bdf34065f29a04c2c118ba44c7522afdfc1370001d967",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunikles-red-diamond-glitter-no-4c5521e929-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

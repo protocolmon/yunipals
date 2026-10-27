@@ -1,0 +1,40 @@
+{
+  "name": "Yunisheep",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/67d2f94f0c11ae15506bd2afeec4de82b4a040e159da49af37000d8be4cbe675.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunisheep"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 225,
+    "artworkSha256": "67d2f94f0c11ae15506bd2afeec4de82b4a040e159da49af37000d8be4cbe675",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/413446d193c020da42241553661fe456cda9a7f9e80e1890ff0f19de7ce03e23.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/f8ec9942d93ad24c1292203c23be19cc8336edea8d6f0f171abd7685e24fff72.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/37772c07e979c300990b8f570803cb9af98ce383f591552f67ed4a672ec514f4.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunisheep-blue-spiral-glitter-yes-3f81b19e2a-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

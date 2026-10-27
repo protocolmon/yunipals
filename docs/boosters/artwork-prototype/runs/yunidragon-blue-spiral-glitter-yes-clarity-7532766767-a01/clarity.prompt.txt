@@ -1,0 +1,10 @@
+Use case: precise-object-edit.
+Image #1 is the EDIT TARGET: the exact approved Blue Yunidragon holographic trading card with a Spiral horn.
+Image #2 is a SURFACE-CLARITY REFERENCE ONLY: the same monster's classic card. Do not copy its pose, framing, proportions or composition.
+Output ONE 1024 x 1536 portrait PNG with genuine transparent exterior.
+
+Change ONLY the monster's surface rendering in IMAGE #1. Remove the dense frosted glitter coating, rainbow dust, milky haze and noisy sparkling blanket that soften its face and body. Restore the clean sharp premium 3D illustration finish seen in image #2: crisply defined eye and eyelids, nose, mouth, turquoise face markings, body segments, fins, feet and tail; smooth saturated blue and mint skin, clear form shading and sharp silhouette. Preserve the exact existing anatomy, pose and positions in image #1. Keep the Spiral horn unchanged, including its warm honey-gold spiral grooves.
+Glitter=Yes must remain: retain only a few TINY, SPARSE embedded mineral glints on the chest, shoulder/back and tail. Keep the eye, face and contour clean and readable. No frost, cloudy sparkle veil, gritty noise, glowing body outline, blur or soft focus. The monster should look clean, dimensional and crisp at thumbnail size.
+
+STRICT INVARIANTS: preserve image #1's complete lavender card frame, exact YUNIPALS header, exact YUNIDRAGON footer, official flat pink logo, all lettering, camera, character geometry, pose, background meadow, windmill, sky, rainbow streaks, and the positions/shapes of its existing large painted stars. The background and frame must KEEP their approved holographic treatment. Do not move, add or remove stars or scene objects. Do not change words, border shape, crop, scale or transparent margins. This is a local surface-material correction, not a new illustration or sharpening filter.
+Keep all four card edges intact, rounded silhouette, clean transparent exterior, no exterior shadow or halo and no visible canvas-edge pixels.

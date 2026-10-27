@@ -1,0 +1,36 @@
+{
+  "name": "Yunicursed",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9ccf4e43687d92b92c4ffaf8e35e574cb84e8328d753c57aaba9b9556b86a6af.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunicursed"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "No"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 108,
+    "artworkSha256": "9ccf4e43687d92b92c4ffaf8e35e574cb84e8328d753c57aaba9b9556b86a6af",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": null
+  },
+  "provenance": {
+    "runId": "yunicursed-red-spiral-glitter-no-8b71444675-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

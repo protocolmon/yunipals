@@ -1,0 +1,40 @@
+{
+  "name": "Yunichick",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/da1c67fdfe67a36507459c754807142ddaf62ae3e1cbb0344b5a5b18ecf2f545.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunichick"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Yellow"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 193,
+    "artworkSha256": "da1c67fdfe67a36507459c754807142ddaf62ae3e1cbb0344b5a5b18ecf2f545",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/cb974c1c134c586d0ee1dc47cbbb2f858c00dab8d7f7f90cf4dffb5d350b4e9e.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/98511f2652f8c50569538399b9efb2adb6845507640b59465a327f477555fa1f.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/47b87f2e46661b5b030ba6df5f72d5a3f9de3ea5a649410455e0b9aefa60a059.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunichick-yellow-spiral-glitter-yes-eade1439a3-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

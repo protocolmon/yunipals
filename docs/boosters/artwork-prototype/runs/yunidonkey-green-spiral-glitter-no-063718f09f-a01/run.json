@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "yunidonkey-green-spiral-glitter-no-063718f09f-a01",
+  "recipeVersion": "og-booster-card-v5-species-palette",
+  "fingerprint": "063718f09f2c44c97b2d6af4025ca7582e62ecbdc846b99a2c8e738627b9fbc1",
+  "attempt": 1,
+  "createdAt": "2026-10-27T11:32:44.664472+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "purpose": "locked-design-sample",
+  "traits": {
+    "type": "Yunidonkey",
+    "color": "Green",
+    "horn": "Spiral",
+    "glitter": "No",
+    "ids": {
+      "types": 2,
+      "colors": 2,
+      "horns": 1,
+      "glitters": 0
+    },
+    "variantId": 28,
+    "key": "yunidonkey-green-spiral-glitter-no"
+  },
+  "design": {
+    "frameStyle": "brand",
+    "label": "Brand lavender",
+    "frameColor": "#c7c9f9",
+    "brandColor": "#7e22ce",
+    "headingFont": "Archivo Black",
+    "decision": "user-locked lavender-crisp-v1",
+    "styleLock": "lavender-crisp-v1"
+  },
+  "references": {
+    "style": {
+      "path": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision.png",
+      "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "palette": {
+      "path": "references/palette-green-26cac5473dc3.png",
+      "sha256": "26cac5473dc3f83251b1af4652f44aef6cbd63f5a2d49ec3644ba5f983637534"
+    },
+    "og": {
+      "path": "references/palette-green-26cac5473dc3.png",
+      "sha256": "26cac5473dc3f83251b1af4652f44aef6cbd63f5a2d49ec3644ba5f983637534"
+    }
+  },
+  "referenceProvenance": {
+    "color": "Green",
+    "monsterType": "Yunidonkey",
+    "image": "references/palette-green-26cac5473dc3.png",
+    "description": "Match this exact original Green Yunidonkey full colorway: body, hair, shell, fins, feet, eyes and every marking. Requested horn overrides the original horn.",
+    "source": "https://meta.polkamon.com/meta?id=1000000732; https://drive.polychainmonsters.com/ipfs/QmUmXh3HFEZqyBB4Cgma6VMsNBpgmVZhzGQk5JA8UpBYLJ"
+  },
+  "paletteProvenance": {
+    "color": "Green",
+    "monsterType": "Yunidonkey",
+    "image": "references/palette-green-26cac5473dc3.png",
+    "description": "Match this exact original Green Yunidonkey full colorway: body, hair, shell, fins, feet, eyes and every marking. Requested horn overrides the original horn.",
+    "source": "https://meta.polkamon.com/meta?id=1000000732; https://drive.polychainmonsters.com/ipfs/QmUmXh3HFEZqyBB4Cgma6VMsNBpgmVZhzGQk5JA8UpBYLJ"
+  },
+  "backgroundModifier": "meadow-green: preserve green hills, soft clouds and the distant windmill",
+  "stageOrder": [
+    "card"
+  ],
+  "prompts": {
+    "card": "Create ONE finished YUNIPALS collectible card as a 1024 x 1536 PNG, portrait 2:3, with genuine transparent exterior.\nReference #1 is the SPECIFIC OG Green Yunidonkey. Preserve its visible species identity, facial structure, anatomy, complete silhouette, markings and proportions. This is also the correct target colorway.\nReference #2 is the APPROVED LOCKED CARD DESIGN. Copy its exact lavender frame, purple typography, official logo placement, polished clean 3D illustration quality, composition scale and finish policy. Its dragon is only a style example; the new character must be the specific monster in reference #1.\nReference #3 is the OFFICIAL FLAT YUNIPALS LOGO. Preserve its recognizable pink badge, dark outlined pale-gold face, green eye and mint fins exactly.\nReference #4 is the ACTUAL OG Green Yunidonkey, the authority for the ENTIRE CHARACTER PALETTE. Match all corresponding body, hair/mane/feathers, shell, fins, feet, eye/iris, markings and accessory colors, including hue, saturation, lightness, highlights and shadows: Match this exact original Green Yunidonkey full colorway: body, hair, shell, fins, feet, eyes and every marking. Requested horn overrides the original horn.. Its exact colorway overrides every conflicting color in reference #1 or #2. Preserve the requested horn trait and card design; do not copy its background or framing. The color name alone is insufficient.\n\nTRAITS: Type Yunidonkey; main body color Green; horn Spiral; glitter No.\nPreserve the OG monster's face, eyes, body shape, markings, distinctive fins/mane/wings, proportions and stance. Apply the complete OG Green Yunidonkey colorway from reference #4 to every corresponding character region, including secondary details and eyes. Preserve the shapes of its markings while matching their OG colors; do not retain colors from a different colorway. Do not increase saturation for dramatic lighting or let holographic reflections recolor the body. Keep clothing, eyewear and anatomical features from the OG identity. Forehead horn: exactly one naturally tapered warm honey-GOLD spiral horn, defined spiral grooves and antique-bronze shadows, naturally attached and clearly visible. No extra unicorn horns.\nUse crisp dimensional colored surfaces with clean edges and readable form shading, as in the locked design. No blurry eyes, soft-focus body, dense speckles, frosted coating or glowing body outline.\nFINISH: GLITTER NO: smooth clean colored monster surfaces, ordinary matte illustrated scenery and a polished lavender frame. No body glitter, rainbow foil, prismatic streaks or floating starbursts.\n\nSCENE: meadow-green: cheerful rolling green hills, soft clouds and a small distant windmill, with a gentle green accent in the wildflowers; preserve the approved meadow landmarks. Replace reference #1's lunar/rocky setting completely. One full-body monster, naturally grounded or hovering if that is its OG stance. Fit its complete horn, wings/fins, feet and tail inside the art window.\nFRAME: identical signature soft polished LAVENDER #c7c9f9 frame for every body color; grape-purple #7e22ce inner outlines and accents, pale white/lavender header and bottom nameplate. Never recolor the frame to match the creature. Follow the approved reference's rounded silhouette, proportions and thin inset details.\nExact top text: YUNIPALS. Exact bottom text: YUNIDONKEY. Bold chunky Archivo Black-style grape-purple lettering, centered and fully legible. Put the supplied official flat pink logo at the top-left header as in the approved design. These are the ONLY words. No level, number, rarity badge, stats, extra captions or invented text.\nKeep the complete border with equal small transparent margins on all four sides, clean rounded corners, no exterior drop shadow or halo, and no visible canvas-edge pixels. This is a single premium card in the locked design, not a layout comparison.\n"
+  },
+  "stages": {
+    "card": {
+      "path": "runs/yunidonkey-green-spiral-glitter-no-063718f09f-a01/card.png",
+      "sha256": "9d7fc4989b8c3e5dc99e0edaa1fa85f04013d06e2457841a5f7b3bd4a72e2916",
+      "recordedAt": "2026-10-27T12:20:15.922844+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.083485,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Agent checked the native card and white, black and checkerboard previews: correct exact OG palette and Yunidonkey identity, one requested horn, matte finish, intact lavender frame and readable branding, transparent exterior without visible canvas-edge pixels. No new human approval claimed.",
+          "recordedAt": "2026-10-27T12:38:00.931735+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunidonkey-green-spiral-glitter-no-063718f09f-a01/qa/card-white.png",
+          "black": "runs/yunidonkey-green-spiral-glitter-no-063718f09f-a01/qa/card-black.png",
+          "checkerboard": "runs/yunidonkey-green-spiral-glitter-no-063718f09f-a01/qa/card-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunidonkey-green-spiral-glitter-no-063718f09f-a01/card_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "Agent visual approval under the user-approved locked lavender style and exact species/color references; reviewed native image and all three compositing backgrounds.",
+    "recordedAt": "2026-10-27T12:38:00.937045+00:00"
+  }
+}

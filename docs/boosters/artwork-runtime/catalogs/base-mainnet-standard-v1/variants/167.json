@@ -1,0 +1,40 @@
+{
+  "name": "Yuniturtle",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/c805b2255899faffdd4405a51923a8bb68518054de1b060f5312ea4b640c2931.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniturtle"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 167,
+    "artworkSha256": "c805b2255899faffdd4405a51923a8bb68518054de1b060f5312ea4b640c2931",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9ab0497e82f45807f393d3e44691473f7fcafdd8cd48c3ca9935b6c7ab677e66.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/fc0fb8e2b9634a9d5256ccea2290396b0c51ec345eee7a01c3b67fddf969e12d.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9a2478a7efa5050d41b0caa0d5ab524bf4151fd53e77b8a0f5325672405379f9.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yuniturtle-black-diamond-glitter-yes-8c6b0ff42d-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

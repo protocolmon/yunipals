@@ -1,0 +1,40 @@
+{
+  "name": "Yunikles",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/699f988a0b4cfae097d54fccb602b7244cd0e32afa8468530d0aa7d56c1450f9.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunikles"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 131,
+    "artworkSha256": "699f988a0b4cfae097d54fccb602b7244cd0e32afa8468530d0aa7d56c1450f9",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/2282e5b493839a757792cba3f33ac38bcd9af15c38731e3885f28ea9a522a91f.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/5ab990f307a8e8e9e381008db514379bf57abef9e8080d31c89bf7444580d057.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ef9feb8037a8923b5d566b4511d8f1c015ff4f363a08dfe9f738cc482fdfce89.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunikles-blue-diamond-glitter-yes-88e4fa3b03-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

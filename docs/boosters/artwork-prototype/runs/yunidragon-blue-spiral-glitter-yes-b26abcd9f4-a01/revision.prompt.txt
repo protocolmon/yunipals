@@ -1,0 +1,30 @@
+Edit the attached finished YUNIPALS trading card into a corrected brand-study candidate.
+Output one 1024 x 1536 PNG, portrait 2:3, transparent exterior.
+Image #1 is the exact source card. Preserve this OG Blue Yunidragon's
+face, anatomy, colors, markings, pose, full body, meadow, windmill and composition.
+Image #2 is the OFFICIAL Yunipals logo downloaded from https://www.yunipals.com/.
+
+HORN CORRECTION: Replace the ivory forehead horn with the OG normal SPIRAL horn: a naturally tapered, refined golden horn, warm honey-gold with antique bronze shadows and soft golden-beige highlights, distinct spiraling grooves. It must read as GOLD, not white, ivory, marshmallow or an exaggerated soft-serve cone. Keep its forehead attachment and the monster's face intact.
+
+FRAME COMPARISON — Brand lavender:
+Change the outer frame's dominant material color to #c7c9f9.
+Use a soft polished LAVENDER frame matching the Yunipals website CI, with grape-purple recessed edge detail.
+Replace the previous gold frame, gold nameplate rims and gold lettering. Gold is
+reserved for a Spiral horn; the frame must visibly read as the requested color.
+Use thin grape-purple #7e22ce inner pinstripes and a restrained purple-to-cyan accent.
+Keep a premium clean rounded collectible-card silhouette with an intact border.
+
+OFFICIAL BRANDING:
+Replace the old 3D beige dragon medallion with the EXACT supplied official flat logo:
+dark outlined pale-gold dragon head, green eye, mint fins, hot-pink circle, white sparkles.
+Keep the logo a faithful flat graphic, not a newly illustrated 3D dragon. Keep its
+pink badge visible and recognizable, placed cleanly in the top-left header area.
+Use a pale frosted-glass white/lavender header and matching bottom nameplate.
+Exact header text YUNIPALS in chunky Archivo Black-style sans-serif, grape #7e22ce.
+Exact bottom name YUNIDRAGON, same grape-purple brand typography.
+These are the only words. No level, stats, badge text or added labels.
+
+FINISH:
+Retain clearly visible glitter embedded in the monster BODY and holographic rainbow foil OVER the card ART. Keep the original face and color readable; leave the new frame, logo and text crisp.
+Keep transparent margins around all four sides, rounded corners, no exterior halo,
+no drop shadow, no canvas-edge pixels. Preserve the source card's character identity.

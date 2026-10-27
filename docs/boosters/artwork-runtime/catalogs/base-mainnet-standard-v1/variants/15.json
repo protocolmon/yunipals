@@ -1,0 +1,40 @@
+{
+  "name": "Yuniair",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9bc401fbf541ef5213e58f619bd6bbc6d012f20196c2e6c924b29e2aefc1c282.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniair"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 15,
+    "artworkSha256": "9bc401fbf541ef5213e58f619bd6bbc6d012f20196c2e6c924b29e2aefc1c282",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/2fa5b8ba5e3d5945e5781f53cf6b8c4b2f3e6a84d57b3ec850ab95f2df5ba686.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/400e3ed2f874b1b69d4a78401caf73b1042129b405046bf9ae055124de532c19.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/9d073c5e9e6ec368a1265ca6b679b1a4c2b01dafb6f0820692f1bb3ea81f8464.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yuniair-red-diamond-glitter-yes-14dbf48fb3-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

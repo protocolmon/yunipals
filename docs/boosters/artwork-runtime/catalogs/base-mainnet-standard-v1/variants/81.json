@@ -1,0 +1,40 @@
+{
+  "name": "Yunidragon",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunidragon"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 81,
+    "artworkSha256": "b93732d33fa04a36fa7b8450c61ddef4d686021945da6e4e2c5aeafc13d7434d",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/bd5c884625e02e6b123194dc967721cca7347a707028bc0513a9eee6567d65c9.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/adccd798930b06b046e3ffce427b18726246761268b132dca2400805d10e4457.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/94359c4804ad3c0d74676836784019a916dbbdeb9bfa75a7b8a434473c7d3800.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunidragon-blue-spiral-glitter-yes-clarity-7532766767-a01",
+    "stage": "clarity",
+    "recipeVersion": "og-booster-card-v2-brand-study"
+  }
+}

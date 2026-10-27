@@ -1,0 +1,40 @@
+{
+  "name": "Yuniair",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/54968391a5332431d45d6293695036a55c5aa59efe3af21e21316d5cc43653df.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniair"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 13,
+    "artworkSha256": "54968391a5332431d45d6293695036a55c5aa59efe3af21e21316d5cc43653df",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/30b8995e09f9550589280ed7b0471a3de3382522670a6e81cd5aa53b4a273390.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/0f1df19d72c8ce51b0b6448bfbc547a9bb98254951d0bce00c5377cc2e48fce4.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/a87f01e03c8b64851fabf827ed526c8bcb612a1d61a51c877e997dc5210cc401.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yuniair-red-spiral-glitter-yes-7272be8ba2-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

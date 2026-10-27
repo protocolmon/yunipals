@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01",
+  "recipeVersion": "og-booster-card-v5-species-palette",
+  "fingerprint": "6c41a1b2e5798cde67dd27c2f08a468c44a0d1ef810c637ff75def30db8c8df7",
+  "attempt": 1,
+  "createdAt": "2026-10-27T11:32:47.103236+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "purpose": "locked-design-sample",
+  "traits": {
+    "type": "Yunichick",
+    "color": "Yellow",
+    "horn": "Diamond",
+    "glitter": "No",
+    "ids": {
+      "types": 9,
+      "colors": 1,
+      "horns": 2,
+      "glitters": 0
+    },
+    "variantId": 194,
+    "key": "yunichick-yellow-diamond-glitter-no"
+  },
+  "design": {
+    "frameStyle": "brand",
+    "label": "Brand lavender",
+    "frameColor": "#c7c9f9",
+    "brandColor": "#7e22ce",
+    "headingFont": "Archivo Black",
+    "decision": "user-locked lavender-crisp-v1",
+    "styleLock": "lavender-crisp-v1"
+  },
+  "references": {
+    "style": {
+      "path": "runs/yunidragon-blue-spiral-glitter-no-663ed9fdc1-a01/revision.png",
+      "sha256": "7cc78b1050c1c9cadf78b74057c4f059499c123c7217e14ca9efc6c18550d08a"
+    },
+    "logo": {
+      "path": "references/yunipals-official-website-logo.png",
+      "sha256": "c8e80a05283edc759c930cff68bc1c689c5e134ad3c0aebf3ba4dfed65866951"
+    },
+    "palette": {
+      "path": "references/palette-yellow-064ac27a8cbb.png",
+      "sha256": "064ac27a8cbb31b97d4c1050b031b4637e1f9709c591b691643d6413c88d0bf3"
+    },
+    "og": {
+      "path": "references/palette-yellow-064ac27a8cbb.png",
+      "sha256": "064ac27a8cbb31b97d4c1050b031b4637e1f9709c591b691643d6413c88d0bf3"
+    }
+  },
+  "referenceProvenance": {
+    "color": "Yellow",
+    "monsterType": "Yunichick",
+    "image": "references/palette-yellow-064ac27a8cbb.png",
+    "description": "Match the complete original Yellow Unichick colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.",
+    "source": "OG Unichick #1000000027; ethereum; https://meta.polkamon.com/meta?id=1000000027; image https://drive.polychainmonsters.com/ipfs/QmRkVuWkhywXVXkFDHo24nrnsKShZKQt8DSM1tgeyBU5a9; source metadata in /root/yunipals/docs/boosters/artwork-prototype/references/og-yunichick-yellow.metadata.json"
+  },
+  "paletteProvenance": {
+    "color": "Yellow",
+    "monsterType": "Yunichick",
+    "image": "references/palette-yellow-064ac27a8cbb.png",
+    "description": "Match the complete original Yellow Unichick colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.",
+    "source": "OG Unichick #1000000027; ethereum; https://meta.polkamon.com/meta?id=1000000027; image https://drive.polychainmonsters.com/ipfs/QmRkVuWkhywXVXkFDHo24nrnsKShZKQt8DSM1tgeyBU5a9; source metadata in /root/yunipals/docs/boosters/artwork-prototype/references/og-yunichick-yellow.metadata.json"
+  },
+  "backgroundModifier": "meadow-yellow: preserve green hills, soft clouds and the distant windmill",
+  "stageOrder": [
+    "card"
+  ],
+  "prompts": {
+    "card": "Create ONE finished YUNIPALS collectible card as a 1024 x 1536 PNG, portrait 2:3, with genuine transparent exterior.\nReference #1 is the SPECIFIC OG Yellow Yunichick. Preserve its visible species identity, facial structure, anatomy, complete silhouette, markings and proportions. This is also the correct target colorway.\nReference #2 is the APPROVED LOCKED CARD DESIGN. Copy its exact lavender frame, purple typography, official logo placement, polished clean 3D illustration quality, composition scale and finish policy. Its dragon is only a style example; the new character must be the specific monster in reference #1.\nReference #3 is the OFFICIAL FLAT YUNIPALS LOGO. Preserve its recognizable pink badge, dark outlined pale-gold face, green eye and mint fins exactly.\nReference #4 is the ACTUAL OG Yellow Yunichick, the authority for the ENTIRE CHARACTER PALETTE. Match all corresponding body, hair/mane/feathers, shell, fins, feet, eye/iris, markings and accessory colors, including hue, saturation, lightness, highlights and shadows: Match the complete original Yellow Unichick colorway visible in this exact OG image: primary skin, hair/mane/feathers, shell, fins, feet, iris, markings and accessories, including highlights and shadows. Preserve the original hue and saturation of each corresponding region. The requested booster horn overrides the reference horn.. Its exact colorway overrides every conflicting color in reference #1 or #2. Preserve the requested horn trait and card design; do not copy its background or framing. The color name alone is insufficient.\n\nTRAITS: Type Yunichick; main body color Yellow; horn Diamond; glitter No.\nPreserve the OG monster's face, eyes, body shape, markings, distinctive fins/mane/wings, proportions and stance. Apply the complete OG Yellow Yunichick colorway from reference #4 to every corresponding character region, including secondary details and eyes. Preserve the shapes of its markings while matching their OG colors; do not retain colors from a different colorway. Do not increase saturation for dramatic lighting or let holographic reflections recolor the body. Keep clothing, eyewear and anatomical features from the OG identity. Forehead horn: exactly one elongated translucent faceted DIAMOND crystal horn, crisp flat planes, no spiral grooves, naturally attached and clearly visible. No extra unicorn horns.\nUse crisp dimensional colored surfaces with clean edges and readable form shading, as in the locked design. No blurry eyes, soft-focus body, dense speckles, frosted coating or glowing body outline.\nFINISH: GLITTER NO: smooth clean colored monster surfaces, ordinary matte illustrated scenery and a polished lavender frame. No body glitter, rainbow foil, prismatic streaks or floating starbursts.\n\nSCENE: meadow-yellow: cheerful rolling green hills, soft clouds and a small distant windmill, with a gentle yellow accent in the wildflowers; preserve the approved meadow landmarks. Replace reference #1's lunar/rocky setting completely. One full-body monster, naturally grounded or hovering if that is its OG stance. Fit its complete horn, wings/fins, feet and tail inside the art window.\nFRAME: identical signature soft polished LAVENDER #c7c9f9 frame for every body color; grape-purple #7e22ce inner outlines and accents, pale white/lavender header and bottom nameplate. Never recolor the frame to match the creature. Follow the approved reference's rounded silhouette, proportions and thin inset details.\nExact top text: YUNIPALS. Exact bottom text: YUNICHICK. Bold chunky Archivo Black-style grape-purple lettering, centered and fully legible. Put the supplied official flat pink logo at the top-left header as in the approved design. These are the ONLY words. No level, number, rarity badge, stats, extra captions or invented text.\nKeep the complete border with equal small transparent margins on all four sides, clean rounded corners, no exterior drop shadow or halo, and no visible canvas-edge pixels. This is a single premium card in the locked design, not a layout comparison.\n"
+  },
+  "stages": {
+    "card": {
+      "path": "runs/yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01/card.png",
+      "sha256": "a47ac79625186b7f811d579076e94b364deba5aea2419449b08bd349f3993fe9",
+      "recordedAt": "2026-10-27T13:52:31.569531+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.086364,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Agent inspected native artwork plus white, black and checkerboard previews: exact OG Yunichick palette, crest, beak, feather markings and curled tail, requested horn, matte finish, intact frame, readable title and transparent exterior. No new human approval claimed.",
+          "recordedAt": "2026-10-27T14:03:29.714185+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01/qa/card-white.png",
+          "black": "runs/yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01/qa/card-black.png",
+          "checkerboard": "runs/yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01/qa/card-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunichick-yellow-diamond-glitter-no-6c41a1b2e5-a01/card_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "accepted",
+    "note": "Agent visual approval under user-approved locked lavender style; native and three composite backgrounds inspected.",
+    "recordedAt": "2026-10-27T14:03:29.719285+00:00"
+  }
+}

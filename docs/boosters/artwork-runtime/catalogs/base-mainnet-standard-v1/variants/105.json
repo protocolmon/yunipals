@@ -1,0 +1,40 @@
+{
+  "name": "Yunicursed",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/17ace9c9391dcaa29094c6c3e38e7143f3d8cabd0fa4426f7be096d87d83dd33.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunicursed"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 105,
+    "artworkSha256": "17ace9c9391dcaa29094c6c3e38e7143f3d8cabd0fa4426f7be096d87d83dd33",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/aecffa04e80e379979db21c9cb7f26d52d81bab9058cac7732dff8700e08c87e.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/798f2ceee07ab409a85ca66535c4a117fbd528bb20686fe54ce09bafb5746d82.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/993ca4da48871ef17da56e7630763d2b1bb70aac83224f08b641afc2f1174f25.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunicursed-blue-spiral-glitter-yes-c8753be98f-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

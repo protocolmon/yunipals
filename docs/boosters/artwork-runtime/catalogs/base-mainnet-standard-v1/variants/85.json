@@ -1,0 +1,40 @@
+{
+  "name": "Yunidragon",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/d2bbd2d48beee0b460421dca5d5599d15fd1738b98e4a3743abdb0a81e84c5bb.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunidragon"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 85,
+    "artworkSha256": "d2bbd2d48beee0b460421dca5d5599d15fd1738b98e4a3743abdb0a81e84c5bb",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/7464f7ffa60f6498c04cee95d531ebd18a75e7eba6601b43fc877c20d8224b27.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/d71a5824aab6d7cce878cbbfc0a93ae5fef4a02c20b21aaf4f64a0df33591c08.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ff39033e926ac8e0125e5c78e2534d529c45f38f85fc460112224b3bf77b0d4c.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunidragon-red-spiral-glitter-yes-51801692bf-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

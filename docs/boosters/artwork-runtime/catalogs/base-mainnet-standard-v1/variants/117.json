@@ -1,0 +1,40 @@
+{
+  "name": "Yunicursed",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/6333de39e86aa66325bb10e8b2a806fa8c0bf9eab681c8d203ec892015ad92ea.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunicursed"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Black"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 117,
+    "artworkSha256": "6333de39e86aa66325bb10e8b2a806fa8c0bf9eab681c8d203ec892015ad92ea",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/d53a3941e31cdb9cd074a585e00891f600b583832af220336dc51be7d015b01b.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/be5396f1f658e0787eaa77893d250a9736e986af5da6e3ea8b3fadbe19987c4b.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/0335f4b635c90ad4542336644702b92560c2ff27a004621a9f8d438ae3783272.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunicursed-black-spiral-glitter-yes-39952ed821-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Yuniaqua",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/4a9d4f8dafa0ea2a71803e22ca2d6c0dd2e6a1098d86cb9a40756f5ff5120a2d.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yuniaqua"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Purple"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Spiral"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 185,
+    "artworkSha256": "4a9d4f8dafa0ea2a71803e22ca2d6c0dd2e6a1098d86cb9a40756f5ff5120a2d",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/2697bfa1046aeffe83b803e998dace6bfd37537bb725253e09ccbe468524c366.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/04ff5c6ce6378b030c71913a18ba60f0f5ebef40345ca80e65ff8977531d7085.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/f17f21ef40f931e1d86e2789beac62cc35e496d5fe7413f82df4ac93ff3512a1.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yuniaqua-purple-spiral-glitter-yes-d37897085b-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

@@ -112,10 +112,16 @@ NFT #4's onchain token URI serves per-NFT metadata with `Birth day: 3` and the
 actual mint timestamp. The original now records four minted variants and three
 committed daily credits.
 
-These newly drawn variants are queued for artwork and currently have no image.
-Unseen artwork still requires approved operator generation and review; the
-five-second queue is not an unattended image generator. The opening polls for
-publication and distinguishes this state from a failed image request.
+All three daily-claim card artworks are now published. The live replay decoded
+the real images for NFTs #4–6 on desktop and mobile, completed the slower tear
+animation and reported no browser errors. See the
+[daily-claim artwork acceptance](daily-claim-artwork-acceptance.json).
+
+The entire 264-variant catalog is also generated, visually reviewed and
+prepublished. All 264 public metadata responses and all 660 PNG/SVG assets passed
+hash verification. Future draws from this catalog reuse the existing images;
+they do not wait for image generation. See the
+[complete catalog guide](../artwork-runtime/README.md).
 
 Combined-source parity, API/queue handover and temporary-source retirement
 completed with the shared-indexer cutover on 27 October 2026.

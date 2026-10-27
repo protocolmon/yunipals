@@ -21,6 +21,21 @@ env:
   CI: "true"
 
 jobs:
+  booster-artwork:
+    name: Complete booster artwork
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install isolated artwork dependencies
+        run: |
+          python3 -m venv /tmp/yunipals-booster-art-venv
+          /tmp/yunipals-booster-art-venv/bin/pip install -r scripts/boosters/requirements.txt
+      - run: /tmp/yunipals-booster-art-venv/bin/python scripts/boosters/verify_art_catalog.py
+      - run: /tmp/yunipals-booster-art-venv/bin/python ops/booster-launch/install-approved-artwork.test.py
+
   typecheck:
     name: Typecheck
     runs-on: ubuntu-24.04

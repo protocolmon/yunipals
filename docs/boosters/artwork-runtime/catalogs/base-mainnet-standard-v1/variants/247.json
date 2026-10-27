@@ -1,0 +1,40 @@
+{
+  "name": "Yunifairy",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/0d4c635fcb594882aed42668c2a4363065bf2a0f2728634995640e59a00f90ce.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunifairy"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Green"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 247,
+    "artworkSha256": "0d4c635fcb594882aed42668c2a4363065bf2a0f2728634995640e59a00f90ce",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/ff83312310ea9388da9b3545143aa4736d3454601e387f18ac31ec22401f15ec.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/77c8f9b999e35eba14c388ad9e4ea158400b386522b80198e4d1a2c03bc97f51.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/aed8a04134eb4572fffa4658597209d646c62896540d08d6875eee7a31691dd8.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunifairy-green-diamond-glitter-yes-15692bc0cc-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01",
+  "recipeVersion": "og-booster-card-v1",
+  "fingerprint": "b483a4e0d57baf286323eb0c45fbda497b78c7182dfa82f943caaaaaf97123d6",
+  "attempt": 1,
+  "createdAt": "2026-10-19T08:15:25.390901+00:00",
+  "executionMode": "codex-subscription-assisted",
+  "traits": {
+    "type": "Yunidragon",
+    "color": "Blue",
+    "horn": "Diamond",
+    "glitter": "No",
+    "ids": {
+      "types": 4,
+      "colors": 3,
+      "horns": 2,
+      "glitters": 0
+    },
+    "variantId": 82,
+    "key": "yunidragon-blue-diamond-glitter-no"
+  },
+  "references": {
+    "og": {
+      "path": "references/yunidragon-blue-og.png",
+      "sha256": "d8080100339fc653a3b4986c4e4a9309bcb5f2fb22463a1a720ad707d608607c"
+    },
+    "logo": {
+      "path": "references/yunipals-logo.png",
+      "sha256": "d97533f95e7de6278eb8426a333c2c0eedbf789d556d91b1e55a65626cd3fb29"
+    }
+  },
+  "referenceProvenance": {
+    "image": "references/yunidragon-blue-og.png",
+    "source": "OG Yunipals character reference from protopals-ponder/artwork/refs/yunidragon_blue.png",
+    "legacyType": "Unidragon",
+    "chainId": null,
+    "contract": null,
+    "tokenId": null,
+    "identity": "The OG blue Yunidragon: a slender upright long-necked baby dragon, large amber-brown eyes, a broad cyan forehead crest with blue spots, blue cheek and dorsal surfaces with light mint-cyan underbelly, coral-red layered ear fins, four short clawed legs, a long tapering tail, and the recognizable OG facial features. Preserve these distinctive markings and body proportions; do not turn it into a stocky winged dragon or another animal."
+  },
+  "backgroundModifier": "meadow-blue: preserve rolling green hills, a clear azure sky, soft clouds and the distant windmill",
+  "stageOrder": [
+    "creature",
+    "card"
+  ],
+  "prompts": {
+    "creature": "Create a 1024 x 1024 PNG character reference by EDITING the attached OG Yunipals monster.\nThis exact character is the identity reference, not merely a style example.\nIDENTITY TO PRESERVE: The OG blue Yunidragon: a slender upright long-necked baby dragon, large amber-brown eyes, a broad cyan forehead crest with blue spots, blue cheek and dorsal surfaces with light mint-cyan underbelly, coral-red layered ear fins, four short clawed legs, a long tapering tail, and the recognizable OG facial features. Preserve these distinctive markings and body proportions; do not turn it into a stocky winged dragon or another animal.\nPreserve its species, face, eye shape, silhouette, body proportions, limb count, tail,\nears, distinctive head structures and recognizable markings. Keep the original soft\npainted 3D collectible rendering style. Do not invent a new species or evolve it.\nTARGET TYPE: Yunidragon. PRIMARY BODY COLOR: Blue.\nRecolor its main body surfaces to this color; keep recognizable secondary markings\nand natural eye colors. The primary color must be unmistakable.\nFOREHEAD HORN: exactly one clearly visible DIAMOND horn: an elongated faceted crystal spike, with crisp flat diamond-cut planes, an icy translucent ivory surface, and NO spiral ridges, naturally attached at the center of the forehead.\nReplace the existing forehead horn with this requested horn. Preserve other anatomical\nfeatures of the OG reference; do not add extra unicorn horns.\nGLITTER = NO: ordinary smooth painted body surfaces, without embedded glitter, sparkle particles, rainbow sheen or holographic effects.\nFull body, open eyes, centered, friendly expression and the OG character's recognizable\nstance. Use a clean soft neutral studio background and a small ground shadow.\nOnly one monster. No text, no logo, no card frame, no accessories, no extra characters.\n",
+    "card": "Create one finished 1024 x 1536 PNG YUNIPALS collectible card, portrait 2:3.\nReference image #1 is the EXACT Yunidragon character to preserve.\nReference image #2 supplies ONLY the OG meadow background: green hills, blue sky,\nsoft clouds and the small distant windmill. Do not copy its original monster.\nReference image #3 is the YUNIPALS logo badge; preserve its recognizable design.\nSeat the character from image #1 naturally in that cheerful painted-3D meadow.\nKeep the same face, anatomy, body color, Diamond horn and\nordinary non-glitter body.\nThe creature is large and readable, its complete body, horn and tail inside the frame.\nCARD DESIGN: a clean premium warm-gold rounded frame, a pale frosted-glass header\nand matching bottom nameplate, soft painterly lighting, rich but coherent colors.\nPlace the supplied logo badge at the left of the header. Exact header: YUNIPALS.\nExact bottom name: YUNIDRAGON. These are the only text elements.\nNo level badge, statistics, numbers, rarity symbols, ability text or invented labels.\nThis stage is a NON-HOLOGRAPHIC base card. Preserve requested glitter on the creature\nwhen present, but do not add whole-card rainbow foil yet.\nOUTPUT: one upright card with clean rounded corners on a FULLY TRANSPARENT exterior,\nno surrounding canvas color, no exterior glow, no drop shadow, no halo. The card fills\nmost of the image with a small equal transparent margin and an intact gold outer border.\n"
+  },
+  "stages": {
+    "creature": {
+      "path": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/creature.png",
+      "sha256": "9f0e281fdae2d37ccd8ea532261c4e52da4d49505698639600725d908c81b12d",
+      "recordedAt": "2026-10-19T08:22:00.239400+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1254,
+        "height": 1254,
+        "format": "PNG"
+      },
+      "preview": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/creature_preview.webp"
+    },
+    "card": {
+      "path": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/card.png",
+      "sha256": "585c20585b03088bbc21d29c9ce4eaf70507ad0d5346c6616ba757643680b7d2",
+      "recordedAt": "2026-10-19T08:23:58.369541+00:00",
+      "provider": "codex-image-gen",
+      "qa": {
+        "width": 1024,
+        "height": 1536,
+        "format": "PNG",
+        "transparentFraction": 0.108089,
+        "visibleCanvasEdgePixels": 0,
+        "visualReview": {
+          "status": "agent-reviewed",
+          "note": "Checked OG facial identity and anatomy, requested horn shape and body glitter, full-body framing and legible title; inspected card and foil silhouettes on white, black and checkerboard. No exterior halo, clipped border or visible canvas-edge pixels. Human approval remains pending.",
+          "recordedAt": "2026-10-19T08:28:34.972720+00:00",
+          "humanApproval": "pending"
+        },
+        "previews": {
+          "white": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/qa/card-white.png",
+          "black": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/qa/card-black.png",
+          "checkerboard": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/qa/card-checkerboard.png"
+        }
+      },
+      "preview": "runs/yunidragon-blue-diamond-glitter-no-b483a4e0d5-a01/card_preview.webp"
+    }
+  },
+  "review": {
+    "decision": "pending",
+    "note": ""
+  }
+}

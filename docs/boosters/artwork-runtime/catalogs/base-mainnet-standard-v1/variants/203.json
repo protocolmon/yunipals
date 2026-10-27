@@ -1,0 +1,40 @@
+{
+  "name": "Yunichick",
+  "description": "A Yunipal from the shared booster collection.",
+  "image": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/4dfc6fbd52fc8c73e64db1ca340e3149f9bd121d4b02da92a55f3588fc2aafdc.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Yunichick"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Horn",
+      "value": "Diamond"
+    },
+    {
+      "trait_type": "Glitter",
+      "value": "Yes"
+    }
+  ],
+  "yunipals": {
+    "version": 1,
+    "status": "ready",
+    "variantId": 203,
+    "artworkSha256": "4dfc6fbd52fc8c73e64db1ca340e3149f9bd121d4b02da92a55f3588fc2aafdc",
+    "catalogCommitment": "0x29c9b8dfc3c35854a0396850a4e40da3457cf44a9901157c67564b92d61276ac",
+    "holo": {
+      "foreground": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/3036c21a174215100c67e1ca13b1c3b966d0c591e3429f3325670270d4b3b29f.svg",
+      "background": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/3a981b5064979a428678dcf1942ea057b24f485f8c91b9b6f62d3467ff2a6f20.svg",
+      "stars": "https://api.yunipals.com/yunipals-indexer/v1/boosters/art-assets/b2be50c331519e8a03052af162830c5fe72a8a0d859b9b050252df31e4d2c3e1.svg"
+    }
+  },
+  "provenance": {
+    "runId": "yunichick-blue-diamond-glitter-yes-60ca317242-a01",
+    "stage": "card",
+    "recipeVersion": "og-booster-card-v5-species-palette"
+  }
+}
