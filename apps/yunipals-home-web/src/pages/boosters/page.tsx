@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
-import { useAccount } from "wagmi";
 import { isAddress } from "viem";
+import { ArrowUpRight, UserRound } from "lucide-react";
 import {
   boosterAddresses,
   boosterQueryKey,
@@ -9,10 +9,10 @@ import {
   fetchBoosterOriginal,
   fetchMonsterArtwork
 } from "@/lib/boosters";
+import { shortAddress } from "@/lib/format";
 import { BoosterPackSection } from "./BoosterPackSection";
 import { BoosterArtwork } from "./BoosterCollection";
 import { BoosterOriginalControls } from "./BoosterOriginalControls";
-import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterFAQ } from "./BoosterFAQ";
 import { BoosterBirthDetails } from "./BoosterBirthDetails";
 import { BoosterRecentOpenings } from "./BoosterRecentOpenings";
@@ -41,7 +41,6 @@ export function BoosterPage() {
 
 export function BoosterMonsterPage() {
   const { collection = "", tokenId = "" } = useParams();
-  const { address } = useAccount();
   const deployment = boosterAddresses();
   const enabled =
     deployment !== null &&
@@ -142,12 +141,27 @@ export function BoosterMonsterPage() {
               tokenId={monster.tokenId}
             />
             {!monster.burned && (
-              <Link
-                className="mt-5 block break-all text-sm underline"
-                to={`/collector/${monster.owner}`}
-              >
-                Owner: {monster.owner}
-              </Link>
+              <div className="mt-5 text-sm">
+                <p className="mb-2 text-muted">Owner</p>
+                <Link
+                  className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 font-bold transition-colors hover:border-grape/30 hover:bg-lavender/20 focus-visible:ring-2 focus-visible:ring-grape"
+                  to={`/collector/${monster.owner}`}
+                  title={monster.owner}
+                  aria-label={`View collection owned by ${monster.owner}`}
+                >
+                  <UserRound
+                    size={16}
+                    className="text-grape"
+                    aria-hidden="true"
+                  />
+                  {shortAddress(monster.owner)}
+                  <ArrowUpRight
+                    size={16}
+                    className="text-muted"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
             )}
             {original.data && (
               <BoosterOriginalControls original={original.data.item} />
@@ -167,17 +181,6 @@ export function BoosterMonsterPage() {
                 View original
               </Link>
             )}
-            {!monster.burned &&
-              address?.toLowerCase() === monster.owner.toLowerCase() && (
-                <div className="mt-8">
-                  <BoosterActionButton
-                    action={{ kind: "burn", tokenId: monster.tokenId }}
-                    className="border border-line bg-white text-ink"
-                  >
-                    Burn Yunipal
-                  </BoosterActionButton>
-                </div>
-              )}
           </div>
         </div>
       )}

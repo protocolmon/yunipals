@@ -17,6 +17,18 @@
 .booster-card-viewer .tilt-viewer:focus-visible {
   outline: 3px solid #7e22ce;
 }
+.booster-card-viewer .tilt-viewer.can-expand {
+  cursor: zoom-in;
+}
+.booster-card-lightbox .booster-card-viewer.is-expanded .tilt-viewer {
+  --viewer-height: min(calc(100dvh - 190px), calc((100vw - 32px) * 1.5));
+  --viewer-padding: clamp(12px, 2vh, 24px);
+  min-height: 160px;
+  background: transparent;
+}
+.booster-card-lightbox .booster-card-viewer.is-expanded .tilt-card {
+  display: block;
+}
 .booster-card-viewer .tilt-viewer.is-tracking {
   cursor: grabbing;
 }
@@ -232,7 +244,8 @@
 }
 .booster-card-viewer .tilt-art-stars .art-star-light {
   filter: brightness(2.3) saturate(0.8) blur(0.35px);
-  mask-image: radial-gradient(
+  mask-image:
+    radial-gradient(
       ellipse 28% 24% at var(--spot-x) var(--spot-y),
       #000 0%,
       #000a 35%,
@@ -244,7 +257,8 @@
       #000b var(--star-sweep),
       transparent calc(var(--star-sweep) + 18%)
     );
-  -webkit-mask-image: radial-gradient(
+  -webkit-mask-image:
+    radial-gradient(
       ellipse 28% 24% at var(--spot-x) var(--spot-y),
       #000 0%,
       #000a 35%,

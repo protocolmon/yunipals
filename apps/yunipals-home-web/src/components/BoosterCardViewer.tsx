@@ -1,17 +1,23 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MonsterArtwork } from "@/lib/boosters";
 
 type Driver = { reset: () => void; auto: (enabled: boolean) => void };
 export function BoosterCardViewer({
   artwork,
-  interactive = true
+  interactive = true,
+  onExpand,
+  variant = "default"
 }: {
   artwork: MonsterArtwork;
   interactive?: boolean;
+  onExpand?: () => void;
+  variant?: "default" | "expanded";
 }) {
-  const viewerRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<HTMLElement | null>(null);
+  const cardRef = useRef<HTMLSpanElement>(null);
+  const gesture = useRef({ x: 0, y: 0, dragged: false });
   const driverRef = useRef<Driver | null>(null);
   const [auto, setAuto] = useState(false);
   const [liveHolo, setLiveHolo] = useState(true);
@@ -256,21 +262,66 @@ export function BoosterCardViewer({
     "--background-mask": artwork.holo ? url(artwork.holo.background) : "none",
     "--star-mask": artwork.holo ? url(artwork.holo.stars) : "none"
   } as CSSProperties;
+  const Viewport = onExpand ? "button" : "div";
   return (
-    <div className={cn("booster-card-viewer", !interactive && "is-static")}>
-      <div
-        ref={viewerRef}
+    <div
+      className={cn(
+        "booster-card-viewer",
+        !interactive && "is-static",
+        variant === "expanded" && "is-expanded"
+      )}
+    >
+      <Viewport
+        ref={(element: HTMLDivElement | HTMLButtonElement | null) => {
+          viewerRef.current = element;
+        }}
+        type={onExpand ? "button" : undefined}
         className={cn(
-          "tilt-viewer rounded-card bg-lavender/20",
+          "tilt-viewer relative w-full rounded-card bg-lavender/20",
+          onExpand && "can-expand",
           holo && "is-holo"
         )}
         data-live-holo={liveHolo}
         data-foil-style="prism"
-        role={interactive ? "group" : undefined}
-        aria-label={interactive ? "Interactive Yunipal card" : undefined}
+        role={!onExpand && interactive ? "group" : undefined}
+        aria-label={
+          onExpand
+            ? `View ${artwork.name ?? "Yunipal card"} larger`
+            : interactive
+              ? "Interactive Yunipal card"
+              : undefined
+        }
+        aria-haspopup={onExpand ? "dialog" : undefined}
         tabIndex={interactive ? 0 : undefined}
+        onPointerDownCapture={(event) => {
+          gesture.current = {
+            x: event.clientX,
+            y: event.clientY,
+            dragged: false
+          };
+        }}
+        onPointerMoveCapture={(event) => {
+          if (
+            event.buttons &&
+            Math.hypot(
+              event.clientX - gesture.current.x,
+              event.clientY - gesture.current.y
+            ) > 8
+          )
+            gesture.current.dragged = true;
+        }}
+        onClick={
+          onExpand
+            ? (event) => {
+                if (event.detail === 0 || !gesture.current.dragged) {
+                  driverRef.current?.reset();
+                  onExpand();
+                }
+              }
+            : undefined
+        }
       >
-        <div
+        <span
           ref={cardRef}
           style={style}
           className={cn("tilt-card", holo && "has-monster-depth")}
@@ -315,12 +366,20 @@ export function BoosterCardViewer({
               )}
             </>
           )}
-        </div>
-      </div>
+        </span>
+        {onExpand && (
+          <span className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-grape shadow-sm">
+            <Expand size={18} aria-hidden="true" />
+          </span>
+        )}
+      </Viewport>
       {interactive && (
         <>
           <div
-            className="mt-4 flex flex-wrap gap-2"
+            className={cn(
+              "mt-4 flex flex-wrap gap-2",
+              variant === "expanded" && "justify-center"
+            )}
             role="group"
             aria-label="Card viewer controls"
           >
@@ -351,7 +410,12 @@ export function BoosterCardViewer({
               </button>
             )}
           </div>
-          <p className="mt-2 text-xs text-muted">
+          <p
+            className={cn(
+              "mt-2 text-xs text-muted",
+              variant === "expanded" && "text-center text-white/70"
+            )}
+          >
             {reduced
               ? "Motion is disabled by your reduced-motion setting."
               : "Move your mouse or drag to tilt. Use the arrow keys; Home resets."}

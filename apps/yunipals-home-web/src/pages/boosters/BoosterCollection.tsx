@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { isAddress } from "viem";
@@ -10,6 +11,7 @@ import {
   fetchMonsterArtwork
 } from "@/lib/boosters";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
+import { BoosterCardLightbox } from "./BoosterCardLightbox";
 
 export function BoosterArtwork({
   uri,
@@ -20,6 +22,7 @@ export function BoosterArtwork({
   label: string;
   interactive?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const query = useQuery({
     queryKey: [...boosterQueryKey, "artwork", uri],
     queryFn: ({ signal }) => fetchMonsterArtwork(uri, signal),
@@ -29,7 +32,22 @@ export function BoosterArtwork({
       query.state.data && query.state.data.status !== "ready" ? 5000 : false
   });
   if (query.data?.image)
-    return <BoosterCardViewer artwork={query.data} interactive={interactive} />;
+    return (
+      <>
+        <BoosterCardViewer
+          artwork={query.data}
+          interactive={interactive}
+          onExpand={interactive ? () => setExpanded(true) : undefined}
+        />
+        {expanded && (
+          <BoosterCardLightbox
+            artwork={query.data}
+            label={label}
+            onClose={() => setExpanded(false)}
+          />
+        )}
+      </>
+    );
   return (
     <div
       className="flex aspect-[2/3] items-center justify-center rounded-card bg-lavender/20 p-6 text-center text-muted"
