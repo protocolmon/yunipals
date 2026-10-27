@@ -123,6 +123,16 @@ Optional Ponder overlay files load after its private base file in this order: `Y
 
 RPC policy enforcement stays enabled. Set `UNIFIED_RPC_PROFILE_FILE` and `UNIFIED_RPC_PROFILE_ID` to the profile installed by the budget coordinator and use the four proxy URLs in the example. Historical replay also needs the coordinator's bounded replay allowances. A missing or mismatched profile stops startup. Optional sources must match that profile.
 
+## Collection snapshots and storage
+
+Application snapshot publication uses the existing `yunipals_indexer_control.chain_anchor` table when a build outlives Ponder's short block-header cache. The publisher role needs `SELECT`, `INSERT` and `UPDATE` on that table. It verifies the captured block and a current Ponder witness through the budget proxy before retaining evidence; a conflicting physical block still rejects publication.
+
+Give the publisher the same public `UNIFIED_RPC_PROFILE_ID` as the shared indexer. Set `PROJECTION_ANCHOR_RPC_URL_<chainId>` to each chain's loopback `/unified` URL when its ordinary `PONDER_RPC_URL_<chainId>` serves another purpose. `PROJECTION_ANCHOR_RPC_PROFILE_ID` can select that profile independently. These checks use the `unified_evidence` allocation and preserve the coordinator's daily caps.
+
+Snapshot builds need space for a new generation and private input tables alongside published data. Keep `PROJECTION_MIN_FREE_BYTES` and the configured backup overlap allowance; pointing `PROJECTION_STORAGE_PATH` at an empty disk does not move PostgreSQL data there. If derived relations use a separate PostgreSQL tablespace, mount its volume before PostgreSQL starts and include it in physical backups. PostgreSQL supports moving existing tables and indexes with [`SET TABLESPACE`](https://www.postgresql.org/docs/16/sql-altertable.html), preserving their SQL identity and data. Keep enough space on both filesystems for the move and subsequent builds.
+
+For a full logical restore onto different storage, use `pg_restore --no-tablespaces` to place objects in the target database's default tablespace, or create the intended tablespace locations before restoring. An application metadata archive is separate from a full database backup.
+
 ## Start and stop
 
 Run the supported command from the repository root:
