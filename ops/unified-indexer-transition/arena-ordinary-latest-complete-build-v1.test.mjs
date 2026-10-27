@@ -15,6 +15,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   PINS,
+  pinned,
   ENTRIES,
   FACADE,
   SOURCE
@@ -114,7 +115,11 @@ try {
   mkdirSync(clone);
   const copy = (file) => {
     mkdirSync(path.dirname(path.join(clone, file)), { recursive: true });
-    cpSync(path.join(root, file), path.join(clone, file));
+    if (file === PINS.archive[0]) {
+      writeFileSync(path.join(clone, file), pinned(root, PINS.archive));
+    } else {
+      cpSync(path.join(root, file), path.join(clone, file));
+    }
   };
   const metadata = [
     name,

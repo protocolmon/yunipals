@@ -74,3 +74,8 @@ docs/boosters/artwork-prototype/.generation.lock
 docs/boosters/artwork-runtime/jobs/
 docs/boosters/artwork-runtime/.generation.lock
 .env*.local
+
+# Generated migration reports and duplicate source snapshots.
+/docs/unified-indexer/*-20??-??-??.json
+/docs/unified-indexer/source-publication-*/*.tar.gz
+/ops/unified-indexer-transition/frozen-baseline-source/**/source.tar.gz

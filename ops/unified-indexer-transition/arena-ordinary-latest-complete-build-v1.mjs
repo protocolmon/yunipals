@@ -2,6 +2,7 @@
 // two reviewed latest-complete readiness changes. No installs or live effects.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -67,8 +68,21 @@ const safe = (name) => {
   );
   return name;
 };
-function pinned(tree, [name, digest]) {
-  const raw = readFileSync(path.join(tree, name));
+// Archived source remains reproducible from its immutable public Git revision.
+// Keep the ordinary checkout free of duplicated compressed source trees.
+export function pinned(tree, [name, digest]) {
+  const file = path.join(tree, name);
+  const raw =
+    name === PINS.archive[0] && !existsSync(file)
+      ? execFileSync(
+          "git",
+          ["show", `78ba19fb3325678e4c21aa20b7c5fb5d905eda59:${name}`],
+          {
+            cwd: tree,
+            maxBuffer: 16_000_000
+          }
+        )
+      : readFileSync(file);
   assert.equal(sha(raw), digest, name);
   return raw;
 }
