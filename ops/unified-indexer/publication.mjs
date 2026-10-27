@@ -9,7 +9,7 @@ import { installedModules, databaseIdentity, hash } from "./configure-readers.mj
 export const FORMAT = "yunipals-fresh-publication-v1";
 export const SOURCE_REVIEWED = true;
 const PROJECT = "/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer";
-const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/8424b45951dd642d3f78da88e7a4d0b428c4175d8054c5fd25cedc88e613d0dd";
+const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/771a75fbdf7dd804c6bb172222cb20583d6c3768511f0634c8193e6744495593";
 const READ = "yunipals_ownership_4e77f52b_v5", PHYSICAL = "unified_ypal_20261023_v1";
 const RELEASE = "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3";
 const IDENTITY = "0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab";
@@ -31,8 +31,19 @@ export function publicationSourcePredicate(parameter) {
       WHERE b.ready IS DISTINCT FROM true OR b.chain_id IS DISTINCT FROM a.chain_id
         OR b.release_id IS DISTINCT FROM (${proof}->>'releaseId')
         OR b.manifest_hash IS DISTINCT FROM (${proof}->>'manifestHash')
-        OR b.block_number<a.block_number OR NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block canonical
+        OR b.block_number<a.block_number
+        OR EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block changed
+          WHERE changed.chain_id=a.chain_id AND changed.block_number=a.block_number
+            AND changed.block_hash IS DISTINCT FROM a.block_hash)
+        OR NOT (EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block canonical
           WHERE canonical.chain_id=a.chain_id AND canonical.block_number=a.block_number AND canonical.block_hash=a.block_hash)
+          OR (NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block present
+              WHERE present.chain_id=a.chain_id AND present.block_number=a.block_number)
+            AND EXISTS(SELECT 1 FROM yunipals_indexer_control.chain_anchor retained
+              JOIN ${physicalPonderSchema}.chain_block witness ON witness.chain_id=retained.chain_id
+                AND witness.block_number=retained.witness_number AND witness.block_hash=retained.witness_hash
+              WHERE retained.release_id=${proof}->>'releaseId' AND retained.chain_id=a.chain_id
+                AND retained.block_number=a.block_number AND retained.block_hash=a.block_hash)))
         OR NOT EXISTS(SELECT 1 FROM metadata.chain_readiness c WHERE c.collection=a.collection
           AND c.state='ready' AND c.checkpoint_block IS NOT NULL AND c.verified_at IS NOT NULL))
     AND EXISTS(SELECT 1 FROM ${ponderSchema}.base_metadata_frame(true) f
@@ -78,6 +89,8 @@ export async function publish(db, modules, plan, ack) {
   await databaseIdentity(db, "yunipals");
   const current = await actualPlan(db, modules.reader, plan.generationId);
   assert.deepEqual(plan, current, "same_fresh_current_publication_plan_required");
+  assert.equal(typeof modules.official.retainProjectionAnchors, "function");
+  await modules.official.retainProjectionAnchors(db, plan.candidateSourceSnapshot);
   // Reject expired canonical headers before the costly private wallet build.
   await sourceCurrent(db, plan.candidateSourceSnapshot, modules.cache);
   const authorize = async (phase, value) => {
@@ -85,7 +98,13 @@ export async function publish(db, modules, plan, ack) {
     assert(process.hrtime.bigint() - start < 5_000_000_000n, "bounded_five_second_Root_ACK_required"); return true;
   };
   const result = await modules.reader.publishPreparedCandidate(db, modules.official, plan, {
-    privatePrepared: value => authorize("wallet-private-prepared", value), beforeCommit: value => authorize("publication-prepared", value)
+    privatePrepared: async value => {
+      // This callback runs after the private COMMIT and before global staging.
+      // Network verification stays outside the timed durable journal ACK.
+      await modules.official.retainProjectionAnchors(db, plan.candidateSourceSnapshot);
+      await modules.official.retainProjectionAnchors(db, value.sourceSnapshot);
+      return authorize("wallet-private-prepared", value);
+    }, beforeCommit: value => authorize("publication-prepared", value)
   });
   return { format: FORMAT, completed: true, generationId: plan.generationId, publication: result, permissionsChanged: false, automaticRepublishAllowed: false };
 }

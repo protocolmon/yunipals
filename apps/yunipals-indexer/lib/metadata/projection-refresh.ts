@@ -26,6 +26,8 @@ import {
   projectionSourceSnapshot,
   type ProjectionSourceSnapshot
 } from "./projection-snapshot.js";
+import { retainProjectionAnchors } from "./projection-anchors.js";
+export { retainProjectionAnchors } from "./projection-anchors.js";
 
 const scopes = Array.from(
   { length: (1 << collectionSlugs.length) - 1 },
@@ -543,6 +545,11 @@ export async function refreshProjectionGeneration(
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
       [id, JSON.stringify(validation)]
     );
+    if (nativeProjectionSnapshotEnabled())
+      await retainProjectionAnchors(
+        client,
+        projectionSourceSnapshot(validation.sourceSnapshot)
+      );
     if (options.publish === false) {
       // Reader ownership identities share the active pointer and derived
       // stamps. Preparation must leave them untouched until coordinated cutover.

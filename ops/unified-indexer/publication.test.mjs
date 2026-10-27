@@ -25,6 +25,7 @@ function fixture() {
     return { rows: [] };
   } };
   const official = {
+    async retainProjectionAnchors(actual, value) { calls.push("retain"); assert.equal(actual, db); assert.deepEqual(value, snapshot); },
     async refreshProjectionGeneration(options) { calls.push("refresh"); assert.deepEqual(options, { publish: false }); return { prepared: true, predecessor: "103", generationId: "106" }; },
     async prepareNativeLeaderboardCandidate(actual, id) { calls.push("wallet"); assert.equal(actual, db); assert.equal(id, "106"); return { generationId: id, predecessor: "103", metadataReleaseId: observation.archive, sourceSnapshot: clone(snapshot), walletRows: "2", walletRowsSha256: "b".repeat(64) }; },
     async stagePreparedNativeLeaderboard(actual, handle) { calls.push("stage"); assert.equal(actual, db); observation.walletStats = { rows: handle.walletRows, sha256: handle.walletRowsSha256 }; observation.stamps[0] = stamp("leaderboard"); },
@@ -35,7 +36,7 @@ function fixture() {
 }
 test("source predicate equals the complete genuine TypeScript builder", () => {
   const raw = readFileSync(new URL("../../apps/yunipals-indexer/lib/metadata/projection-snapshot.ts", import.meta.url), "utf8");
-  assert.equal(hash(raw), "ced919589ef32d9686daa7323e40a0de61d662dda04b72457a842661429ac8ee");
+  assert.equal(hash(raw), "94e724f9b3b198fe18b7115d600936dc0c110f9ee2416167ca06129ed6890203");
   const start = raw.indexOf("export function projectionPublicationSourcePredicate"), end = raw.indexOf("/** Retain rollback predecessors", start);
   const source = raw.slice(start, end).trim().replace("export function", "function").replace("parameter: string", "parameter");
   const original = new Function("ponderSchema", "physicalPonderSchema", source + ";return projectionPublicationSourcePredicate;")('"yunipals_ownership_4e77f52b_v5"', '"unified_ypal_20261023_v1"');
@@ -52,7 +53,7 @@ test("complete retained publication body performs private build,stage,CAS and tw
   const value = await owner.publish(f.db, f.modules, plan, async phase => { phases.push(phase); return true; });
   assert.equal(value.completed, true); assert.equal(value.publication.after.pointer.current, "106");
   assert.deepEqual(phases, ["wallet-private-prepared", "publication-prepared"]);
-  assert.deepEqual(f.calls, ["native120", "wallet", "stage", "CAS"]); assert.equal(f.log.filter(sql => sql === "COMMIT").length, 2);
+  assert.deepEqual(f.calls, ["retain", "native120", "wallet", "retain", "retain", "stage", "CAS"]); assert.equal(f.log.filter(sql => sql === "COMMIT").length, 2);
   assert(!f.log.some(sql => /GRANT |ALTER ROLE/.test(sql)));
 });
 test("aged canonical snapshot fails before wallet computation or publication", async () => {

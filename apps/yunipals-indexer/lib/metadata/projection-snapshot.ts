@@ -196,8 +196,19 @@ export function projectionPublicationSourcePredicate(parameter: string) {
       WHERE b.ready IS DISTINCT FROM true OR b.chain_id IS DISTINCT FROM a.chain_id
         OR b.release_id IS DISTINCT FROM (${proof}->>'releaseId')
         OR b.manifest_hash IS DISTINCT FROM (${proof}->>'manifestHash')
-        OR b.block_number<a.block_number OR NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block canonical
+        OR b.block_number<a.block_number
+        OR EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block changed
+          WHERE changed.chain_id=a.chain_id AND changed.block_number=a.block_number
+            AND changed.block_hash IS DISTINCT FROM a.block_hash)
+        OR NOT (EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block canonical
           WHERE canonical.chain_id=a.chain_id AND canonical.block_number=a.block_number AND canonical.block_hash=a.block_hash)
+          OR (NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block present
+              WHERE present.chain_id=a.chain_id AND present.block_number=a.block_number)
+            AND EXISTS(SELECT 1 FROM yunipals_indexer_control.chain_anchor retained
+              JOIN ${physicalPonderSchema}.chain_block witness ON witness.chain_id=retained.chain_id
+                AND witness.block_number=retained.witness_number AND witness.block_hash=retained.witness_hash
+              WHERE retained.release_id=${proof}->>'releaseId' AND retained.chain_id=a.chain_id
+                AND retained.block_number=a.block_number AND retained.block_hash=a.block_hash)))
         OR NOT EXISTS(SELECT 1 FROM metadata.chain_readiness c WHERE c.collection=a.collection
           AND c.state='ready' AND c.checkpoint_block IS NOT NULL AND c.verified_at IS NOT NULL))
     AND EXISTS(SELECT 1 FROM ${ponderSchema}.base_metadata_frame(true) f
