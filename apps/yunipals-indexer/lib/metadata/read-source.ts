@@ -92,13 +92,14 @@ const publicationRows = `(SELECT document_row.*,provenance.source_kind,provenanc
 function archiveRead(
   schema: string,
   collectionPredicate = "true",
-  includeBase = !ownershipBnbOnlySchema(schema)
+  includeBase = !ownershipBnbOnlySchema(schema),
+  canonicalSchema = schema
 ) {
   return `SELECT published.* FROM ${publicationRows} published
-      JOIN ${schema}.token_lifecycle publication_lifecycle
+      JOIN ${canonicalSchema}.token_lifecycle publication_lifecycle
         ON publication_lifecycle.collection=published.collection AND publication_lifecycle.token_id=published.token_id::text
         AND publication_lifecycle.lifecycle=published.lifecycle
-      JOIN ${schema}.transfer_event publication_mint
+      JOIN ${canonicalSchema}.transfer_event publication_mint
         ON publication_mint.collection=publication_lifecycle.collection AND publication_mint.token_id=publication_lifecycle.token_id
         AND publication_mint.lifecycle=publication_lifecycle.lifecycle AND publication_mint."from"='0x0000000000000000000000000000000000000000'
       ${
@@ -146,7 +147,8 @@ export const metadataScanReadRelation =
 export function metadataReadRelationFor(
   schema: string,
   includeBase = !ownershipBnbOnlySchema(schema),
-  chains: readonly CollectionSlug[] = collectionSlugs
+  chains: readonly CollectionSlug[] = collectionSlugs,
+  stagedCanonical = false
 ) {
   if (chains.some((chain) => !collectionSlugs.includes(chain)))
     throw new Error("Invalid metadata collection");
@@ -155,17 +157,18 @@ export function metadataReadRelationFor(
     ? `published.collection IN (${selected.map((chain) => `'${chain}'`).join(",")})`
     : "false";
   return metadataSourceMode() === "archive"
-    ? `(${archiveRead(schema, predicate, includeBase && selected.includes("base"))})`
+    ? `(${archiveRead(schema, predicate, includeBase && selected.includes("base"), stagedCanonical ? '"pg_temp"' : schema)})`
     : `(SELECT published.* FROM ${metadataReadRelation} published WHERE ${predicate})`;
 }
 export function metadataSearchReadRelationFor(
   schema: string,
   includeBase = !ownershipBnbOnlySchema(schema),
   chains: readonly CollectionSlug[] = collectionSlugs,
-  id?: string
+  id?: string,
+  stagedCanonical = false
 ) {
   const relation = searchReadRelation(
-    metadataReadRelationFor(schema, includeBase, chains),
+    metadataReadRelationFor(schema, includeBase, chains, stagedCanonical),
     id
   );
   if (metadataSourceMode() === "archive") return relation;

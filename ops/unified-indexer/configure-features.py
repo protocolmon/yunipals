@@ -143,7 +143,8 @@ def configuration(read=read_public):
     need(len(raw) == row['bytes'], 'accepted Islands metadata worker required')
     selector = PUBLIC / 'islands-metadata-native.public.env'
     values = {'DATABASE_SCHEMA': PHYSICAL, 'READ_DATABASE_SCHEMA': READ, 'OWNERSHIP_READ_MODE': 'unified',
-              'OWNERSHIP_READ_SCHEMA': READ, 'OWNERSHIP_RELEASE_ID': RELEASE, 'BASE_METADATA_INGESTION': 'native'}
+              'OWNERSHIP_READ_SCHEMA': READ, 'OWNERSHIP_RELEASE_ID': RELEASE, 'BASE_METADATA_INGESTION': 'native',
+              'YUNIPALS_PROJECTION_MODE': 'generation'}
     files[str(selector)] = ''.join(k + '=' + v + '\n' for k, v in sorted(values.items())).encode()
     files[str(SYSTEM / (ISLANDS + '.d') / 'zzzzzzzzzzzzzzzzzzzzzzzzz-cold-unified.conf')] = (
         '[Service]\nWorkingDirectory=' + str(PROJECT) + '\nEnvironmentFile=' + str(selector) +

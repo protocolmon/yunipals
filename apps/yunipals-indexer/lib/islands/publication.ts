@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import { islandCollection, ZERO_ADDRESS } from "../constants.js";
-import { sqlIdentifier } from "../offchain/sql.js";
+import { sqlIdentifier, unifiedOwnershipReads } from "../offchain/sql.js";
 import { canonicalJson } from "../metadata/source/canonical.js";
 import { metadataRetry } from "../metadata/retry.js";
 import {
@@ -24,7 +24,7 @@ export function islandMintQuery(schemaName: string) {
       AND l.mint_transaction_hash=$4 AND e.log_index=$5
       AND t.chain_id=${islandCollection.chainId} AND t.contract_address='${islandCollection.address}'
       AND NOT t.burned AND t.mint_block<=$6::numeric
-    FOR SHARE OF t,l,e`;
+    ${unifiedOwnershipReads ? "" : "FOR SHARE OF t,l,e"}`;
 }
 
 export async function publishIslandMetadata(
@@ -40,7 +40,9 @@ export async function publishIslandMetadata(
   const revision = islandRevision(job, observation, raw);
   const client = await pool.connect();
   try {
-    await client.query("BEGIN");
+    await client.query(
+      unifiedOwnershipReads ? "BEGIN ISOLATION LEVEL READ COMMITTED" : "BEGIN"
+    );
     const canonical = await client.query(islandMintQuery(schemaName), [
       islandCollection.slug,
       job.tokenId,
@@ -108,6 +110,24 @@ export async function publishIslandMetadata(
         auditSeconds
       ]
     );
+    // Native consumers read guarded views without source UPDATE privileges.
+    // Recheck the mint in a fresh statement before making metadata visible.
+    if (
+      unifiedOwnershipReads &&
+      (
+        await client.query(islandMintQuery(schemaName), [
+          islandCollection.slug,
+          job.tokenId,
+          job.lifecycle,
+          job.mintTransactionHash,
+          job.mintLogIndex,
+          observation.blockNumber.toString()
+        ])
+      ).rows.length !== 1
+    ) {
+      await client.query("ROLLBACK");
+      return "obsolete";
+    }
     await client.query("COMMIT");
     return "published";
   } catch (error) {
@@ -128,7 +148,9 @@ export async function retryIslandMetadata(
   const retry = metadataRetry(error, job.attempts + 1, null);
   const client = await pool.connect();
   try {
-    await client.query("BEGIN");
+    await client.query(
+      unifiedOwnershipReads ? "BEGIN ISOLATION LEVEL READ COMMITTED" : "BEGIN"
+    );
     const canonical = await client.query(islandMintQuery(schemaName), [
       islandCollection.slug,
       job.tokenId,
@@ -164,6 +186,22 @@ export async function retryIslandMetadata(
         retry.delaySeconds
       ]
     );
+    if (
+      unifiedOwnershipReads &&
+      (
+        await client.query(islandMintQuery(schemaName), [
+          islandCollection.slug,
+          job.tokenId,
+          job.lifecycle,
+          job.mintTransactionHash,
+          job.mintLogIndex,
+          block.toString()
+        ])
+      ).rows.length !== 1
+    ) {
+      await client.query("ROLLBACK");
+      return "obsolete";
+    }
     await client.query("COMMIT");
     return "retry";
   } catch (failure) {

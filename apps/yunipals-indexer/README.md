@@ -131,7 +131,26 @@ Give the publisher the same public `UNIFIED_RPC_PROFILE_ID` as the shared indexe
 
 Snapshot builds need space for a new generation and private input tables alongside published data. Keep `PROJECTION_MIN_FREE_BYTES` and the configured backup overlap allowance; pointing `PROJECTION_STORAGE_PATH` at an empty disk does not move PostgreSQL data there. If derived relations use a separate PostgreSQL tablespace, mount its volume before PostgreSQL starts and include it in physical backups. PostgreSQL supports moving existing tables and indexes with [`SET TABLESPACE`](https://www.postgresql.org/docs/16/sql-altertable.html), preserving their SQL identity and data. Keep enough space on both filesystems for the move and subsequent builds.
 
+Set `PROJECTION_STORAGE_PATH` to a path on PostgreSQL's actual data filesystem when the worker role cannot read `data_directory`. The capacity check still accounts separately for derived tablespaces and backup overlap.
+
 For a full logical restore onto different storage, use `pg_restore --no-tablespaces` to place objects in the target database's default tablespace, or create the intended tablespace locations before restoring. An application metadata archive is separate from a full database backup.
+
+## Application workers
+
+Application caches and metadata workers consume the shared indexer; they do not scan chain logs.
+
+For API processes, use the [public capacity settings](../../ops/unified-indexer/api-capacity.public.env.example) after the API's private and source-selector files. Allow concurrent requests while keeping the combined API and offchain pool sizes below the role's connection limit. A one-connection probe configuration is unsuitable for normal browsing.
+
+Build a reproducible Node entrypoint for the required worker from the repository root:
+
+```sh
+node apps/yunipals-indexer/scripts/build-application-worker.mjs --worker read-cache --outdir /absolute/fresh-worker-directory
+node --env-file=/absolute/cache-worker.env /absolute/fresh-worker-directory/dist/read-cache.mjs
+```
+
+The output includes a manifest binding the source files, compiler and artifact hashes. Install the declared dependencies alongside the artifact. Supported profiles are `read-cache`, `islands-metadata` and `verify-islands`; give each its own existing application role and private configuration. Persistent cache writes are limited to `metadata_projection.read_member` and `metadata_projection.read_set`. Native cache builds also need PostgreSQL's `TEMP` permission to stage bounded mint evidence inside their transaction; staging disappears on commit or rollback. `READ_CACHE_BUILD_TIMEOUT_MS` defaults to 180000 and accepts 1000–900000 milliseconds per statement. Failed builds roll back without publishing a partial cache.
+
+Before enabling Islands API readiness for a registered native build, run the `verify-islands` artifact with `--activate --output /absolute/new-report.json`. It compares every active token owner at Ethereum's finalized block, checks the registered source's block hash and verifies metadata coverage. The output path must be new. Native metadata reads use the registered ownership views; publication rechecks the canonical mint before committing.
 
 ## Start and stop
 

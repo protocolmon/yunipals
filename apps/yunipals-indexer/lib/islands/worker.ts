@@ -4,7 +4,7 @@ import { mainnet } from "viem/chains";
 import { islandsAbi } from "../abi.js";
 import { islandCollection } from "../constants.js";
 import { pool } from "../offchain/db.js";
-import { physicalPonderSchemaName } from "../offchain/sql.js";
+import { ownershipIslandsSchemaName } from "../offchain/sql.js";
 import { fetchMetadata } from "../metadata/fetch.js";
 import { safeErrorMessage } from "../safe-error.js";
 import { islandMetadataHosts, islandMetadataUri } from "./metadata.js";
@@ -86,7 +86,7 @@ try {
       ]);
       const jobs = await dueIslandJobs(
         pool,
-        physicalPonderSchemaName,
+        ownershipIslandsSchemaName,
         block.number
       );
       // Shared fallback documents are fetched once per batch. This cache expires
@@ -120,7 +120,7 @@ try {
               const fetched = await document;
               await publishIslandMetadata(
                 pool,
-                physicalPonderSchemaName,
+                ownershipIslandsSchemaName,
                 job,
                 {
                   uri,
@@ -135,7 +135,7 @@ try {
             } catch (error) {
               await retryIslandMetadata(
                 pool,
-                physicalPonderSchemaName,
+                ownershipIslandsSchemaName,
                 job,
                 block.number!,
                 error

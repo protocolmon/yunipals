@@ -169,6 +169,33 @@ export function cachedMissingKeys(
   };
 }
 
+/** Materialize only this collection's guarded mint evidence within the cache's
+ * repeatable-read transaction. Real statistics prevent repeated full view scans.
+ * These temporary relations disappear on commit or rollback.
+ */
+export async function stageReadCacheOwnership(
+  db: Pick<PoolClient, "query">,
+  schema: string,
+  chain: CollectionSlug
+) {
+  selected([chain], schema);
+  await db.query(
+    `CREATE TEMP TABLE token_lifecycle ON COMMIT DROP AS
+      SELECT collection,token_id,lifecycle,mint_transaction_hash,mint_block
+      FROM ${schema}.token_lifecycle WHERE collection=$1`,
+    [chain]
+  );
+  await db.query(
+    `CREATE TEMP TABLE transfer_event ON COMMIT DROP AS
+      SELECT collection,token_id,lifecycle,transaction_hash,block_number,log_index,"from"
+      FROM ${schema}.transfer_event WHERE collection=$1
+        AND "from"='0x0000000000000000000000000000000000000000'`,
+    [chain]
+  );
+  await db.query("ANALYZE pg_temp.token_lifecycle");
+  await db.query("ANALYZE pg_temp.transfer_event");
+}
+
 /** Build one chain's exact proof set under one MVCC snapshot, off the HTTP path. */
 export async function buildReadCache(
   db: PoolClient,
@@ -179,14 +206,26 @@ export async function buildReadCache(
     throw new Error("Read cache requires generation mode");
   idSql(id);
   selected([chain]);
+  const timeout = Number(process.env.READ_CACHE_BUILD_TIMEOUT_MS ?? 180000);
+  if (!Number.isSafeInteger(timeout) || timeout < 1000 || timeout > 900000)
+    throw new Error("read_cache_build_timeout_out_of_bounds");
   const schema = chain === "bnb" ? bnbSchema : physicalPonderSchema;
   await db.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
   try {
-    await db.query("SET LOCAL statement_timeout='60s'");
+    await db.query("SELECT set_config('statement_timeout',$1,true)", [
+      `${timeout}ms`
+    ]);
     await db.query("SET LOCAL lock_timeout='1s'");
     await db.query("SET LOCAL work_mem='64MB'");
     await db.query("SET LOCAL jit=off");
-    await db.query("SET LOCAL enable_nestloop=off");
+    await db.query(
+      unifiedOwnershipReads
+        ? "SET LOCAL enable_nestloop=on"
+        : "SET LOCAL enable_nestloop=off"
+    );
+    // Guarded views underestimate the size of a full collection. Avoid a
+    // materialized inner scan repeated once for every token in the outer join.
+    if (unifiedOwnershipReads) await db.query("SET LOCAL enable_material=off");
     await db.query("SET LOCAL random_page_cost=1.1");
     const ownership = unifiedOwnershipReads
       ? await unifiedOwnershipStatus(db, [chain])
@@ -221,11 +260,17 @@ export async function buildReadCache(
       "DELETE FROM metadata_projection.read_member WHERE generation_id=$1 AND collection=$2",
       [id, chain]
     );
+    const stagedCanonical =
+      unifiedOwnershipReads &&
+      chain !== "bnb" &&
+      metadataSourceMode() === "archive";
+    if (stagedCanonical) await stageReadCacheOwnership(db, schema, chain);
     const original = metadataSearchReadRelationFor(
       schema,
       chain === "base",
       [chain],
-      id
+      id,
+      stagedCanonical
     );
     const inserted = await db.query(
       `INSERT INTO metadata_projection.read_member
