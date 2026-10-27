@@ -22,7 +22,7 @@ test("durable Arena identity migration retains private history through public de
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const parsed = new URL(url);
   assert.ok(["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname));
-  assert.equal(parsed.pathname, "/arena");
+  assert.ok(["/arena", "/yunipals_arena_test"].includes(parsed.pathname));
   const pool = new pg.Pool({ connectionString: url, max: 3 });
   const contract = `0x${randomBytes(20).toString("hex")}` as Address,
     deployment = `8453:${contract}`;

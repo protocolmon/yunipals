@@ -34,7 +34,7 @@ async function fixture(legacyContext = false) {
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const parsed = new URL(url);
   assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(parsed.hostname));
-  assert.equal(parsed.pathname, "/arena");
+  assert.ok(["/arena", "/yunipals_arena_test"].includes(parsed.pathname));
   const pool = new pg.Pool({ connectionString: url, max: 6 });
   await migrateArena(pool);
   const storage = await mkdtemp("/tmp/yunipals-native-media-");

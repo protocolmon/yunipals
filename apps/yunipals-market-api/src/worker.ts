@@ -120,16 +120,14 @@ async function main() {
     const policy = production
       ? buildProductionBnbPolicy(production)
       : bnbValidationPolicy;
-    const finality = production
-      ? ("finalized" as const)
-      : ("confirmations" as const);
+    const finality = "confirmations" as const;
     try {
       await writeBnbWorkerHeartbeat(pool, client, finality);
     } catch (error) {
       if (!rpcComputeBudgetError(error)) throw error;
     }
     const options = {
-      confirmations: production ? 1n : 20n,
+      confirmations: production ? 5n : 20n,
       finality,
       indexerMaxAgeMs: 720000
     };
@@ -234,7 +232,7 @@ async function main() {
         : new BnbSaleReplay(pool, saleClient, Date.now, {
             finality,
             confirmationPolicy: production
-              ? "bnb-finalized-tag-v1"
+              ? "bnb-local-production-depth-5-v1"
               : "bnb-local-validation-depth-20-v1"
           });
       while (!stopping) {

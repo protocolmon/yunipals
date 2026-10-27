@@ -23,8 +23,8 @@ function publicClient(rpc: LiveRpc) {
 async function assertLiveChain(client: PublicClient, chain: MarketplaceChain) {
   const head =
     chain === "bnb"
-      ? await readBnbHead(client, Date.now, "finalized")
-      : await readOpenSeaHead(client, chain, Date.now, "finalized");
+      ? await readBnbHead(client, Date.now, "confirmations")
+      : await readOpenSeaHead(client, chain, Date.now, "confirmations");
   if ((await client.getChainId()) !== marketplaceChains[chain].chainId)
     throw new Error("Trading RPC returned the wrong chain.");
   const [seaportCode, collectionCode] = await Promise.all([

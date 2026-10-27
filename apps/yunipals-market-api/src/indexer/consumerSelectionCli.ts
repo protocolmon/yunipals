@@ -104,9 +104,7 @@ try {
         confirmationPolicy:
           sale.chain === "base"
             ? { kind: "latest" }
-            : sale.finality === "finalized"
-              ? { kind: "finalized" }
-              : { kind: "depth", subsequentBlocks: policy.confirmations }
+            : { kind: "depth", subsequentBlocks: policy.confirmations }
       }
     };
   }

@@ -134,12 +134,10 @@ async function main() {
           confirmationPolicy:
             config.chain === "base"
               ? { kind: "latest" }
-              : config.finality === "finalized"
-                ? { kind: "finalized" }
-                : {
-                    kind: "depth",
-                    subsequentBlocks: settings!.rows[0]!.confirmations
-                  }
+              : {
+                  kind: "depth",
+                  subsequentBlocks: settings!.rows[0]!.confirmations
+                }
         })
       : new CollectionSaleReplay(
           pool,

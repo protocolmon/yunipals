@@ -50,7 +50,7 @@ async function fixture(existsInitially = true) {
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const parsed = new URL(url);
   assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(parsed.hostname));
-  assert.equal(parsed.pathname, "/arena");
+  assert.ok(["/arena", "/yunipals_arena_test"].includes(parsed.pathname));
   const pool = new pg.Pool({ connectionString: url, max: 5 });
   await migrateArena(pool);
   const contract = `0x${randomBytes(20).toString("hex")}` as Address,
