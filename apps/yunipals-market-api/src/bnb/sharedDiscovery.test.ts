@@ -154,7 +154,7 @@ function fixture(events: SharedBnbEvent[]) {
   const block = (number: bigint) => ({
     number,
     hash: hash(Number(number)),
-    timestamp: number === 0n ? now - 1000n : now - 107n + number
+    timestamp: number === 0n ? now - 1000n : now - 100n + number - 100n
   });
   const reader = {
     release: {
@@ -244,13 +244,9 @@ function fixture(events: SharedBnbEvent[]) {
       blockTag?: string;
       blockNumber?: bigint;
     }) =>
-      block(
-        blockTag === "latest"
-          ? 107n
-          : blockTag === "finalized"
-            ? 102n
-            : blockNumber!
-      ),
+      blockTag === "latest"
+        ? { ...block(107n), timestamp: now }
+        : block(blockTag === "finalized" ? 102n : blockNumber!),
     getCode: async () => code,
     readContract: async ({
       functionName,
