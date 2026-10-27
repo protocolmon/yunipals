@@ -9,7 +9,7 @@ import { installedModules, databaseIdentity, hash } from "./configure-readers.mj
 export const FORMAT = "yunipals-fresh-publication-v1";
 export const SOURCE_REVIEWED = true;
 const PROJECT = "/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer";
-const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/2b104015af8aa0fd6f4710c07bcc73125819e663a3d2f15de8d31443e587cefe";
+const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/8424b45951dd642d3f78da88e7a4d0b428c4175d8054c5fd25cedc88e613d0dd";
 const READ = "yunipals_ownership_4e77f52b_v5", PHYSICAL = "unified_ypal_20261023_v1";
 const RELEASE = "0x4e77f52be3e0daa7075a22afe03fbeb7352daee788265ff69fe5c9ec2cf5c1f3";
 const IDENTITY = "0xda708289a59500c6a1a40dc661e37cd4b6fab4fee0b4cff312e6232476fa08ab";

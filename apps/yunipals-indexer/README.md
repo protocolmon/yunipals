@@ -174,6 +174,14 @@ pnpm --filter @protopals/yunipals-indexer build:staking-support --outdir /absolu
 
 The output includes a source manifest and requires the `pg` runtime package. Its only command argument is `once`.
 
+The collection publisher libraries can also be built from the current checkout:
+
+```sh
+node apps/yunipals-indexer/scripts/build-publication-runtime.mjs --outdir /absolute/publication-runtime
+```
+
+The builder records input and output hashes, checks its exported functions, and verifies that the compiled worker includes the statistics refresh before filter generation and vacuum after the build. Keep the generated manifest with the installed libraries and their declared runtime dependencies.
+
 ## Local checks
 
 ```sh

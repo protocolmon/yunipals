@@ -12,7 +12,7 @@ export const FORMAT = "yunipals-indexer-cold-sql-v1";
 export const APPLY_REVIEWED = true;
 const OPS = "/opt/yunipals-unified/operations/free-replay-20261020";
 const PROJECT = "/opt/yunipals-unified/releases/41e5b5fdb1ae4623fb742a9cc77e6e5c578d48845c9102bbafbb06880045987b/apps/yunipals-indexer";
-const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/2b104015af8aa0fd6f4710c07bcc73125819e663a3d2f15de8d31443e587cefe";
+const PUBLISHER = "/opt/yunipals-unified/nonmarket-consumer-releases/8424b45951dd642d3f78da88e7a4d0b428c4175d8054c5fd25cedc88e613d0dd";
 const CACHE = ["read_epoch", "read_guard", "read_set", "read_member"].map(name => "metadata_projection." + name);
 const COLLECTOR = "yunipals_unified_collector";
 const COLLECTOR_OID = "73187672";
@@ -195,7 +195,7 @@ export async function installedModules(publicColumnSql) {
     assert.equal(hash(sources[name]), digest, "exact_accepted_business_source");
   }
   const manifestRaw = readFileSync(PUBLISHER + "/manifest.json");
-  assert.equal(hash(manifestRaw), "1a8174b05977bd6ef1adfd50a9f5679543c6be1325bbbf126a81cafec23c7b84");
+  assert.equal(hash(manifestRaw), "fed4a891ed34e6df04caaec3fcaaafab57d8828105008dc14bf552b04eae3e0e");
   const manifest = JSON.parse(manifestRaw), official = {};
   assert.equal(manifest.artifactDigest, PUBLISHER.split("/").at(-1));
   for (const name of ["native-leaderboard-preparation", "projection-publication"]) { const row = manifest.files.find(value => value.path === "dist/" + name + ".mjs"); const raw = readFileSync(PUBLISHER + "/" + row.path); assert.equal(raw.length, row.bytes); assert.equal(hash(raw), row.sha256); Object.assign(official, await import(pathToFileURL(PUBLISHER + "/" + row.path).href)); }
