@@ -6,7 +6,8 @@ libs = ["lib"]
 solc_version = "0.8.30"
 evm_version = "cancun"
 optimizer = true
-optimizer_runs = 200
+# Optimize for deployment size; the recovery verifier shares the engine runtime.
+optimizer_runs = 1
 via_ir = true
 bytecode_hash = "none"
 extra_output = ["storageLayout"]

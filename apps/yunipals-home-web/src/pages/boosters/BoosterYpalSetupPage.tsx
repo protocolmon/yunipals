@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   useAccount,
   usePublicClient,
@@ -46,7 +46,30 @@ type Review = {
 const storageKey = `yunipals/boosters/ypal-launch/v1/${ypalLaunchPackageSha256}`;
 const hashPattern = /^0x[0-9a-f]{64}$/i;
 
+const BoosterEthSetupPage = lazy(() =>
+  import("./BoosterEthSetupPage").then((module) => ({
+    default: module.BoosterEthSetupPage
+  }))
+);
+
 export function BoosterYpalSetupPage() {
+  const [params] = useSearchParams();
+  return params.get("payment") === "eth" ? (
+    <Suspense
+      fallback={
+        <p role="status" className="p-8">
+          Loading ETH payment setup…
+        </p>
+      }
+    >
+      <BoosterEthSetupPage />
+    </Suspense>
+  ) : (
+    <BoosterYpalLaunchPage />
+  );
+}
+
+function BoosterYpalLaunchPage() {
   const { address, chainId } = useAccount(),
     wallet = useWalletClient();
   const client = usePublicClient({ chainId: 8453 }),

@@ -608,7 +608,7 @@ contract AuditPoCTest is AuditFixture {
         fee.mint(alice, 10 ether);
         vm.startPrank(alice);
         fee.approve(address(engine), type(uint256).max);
-        vm.expectRevert(bytes("unsupported transfer fee"));
+        vm.expectRevert(BoosterPacks.PaymentAccountingMismatch.selector);
         engine.openPack{value: 0.001 ether}(feePack, 0.001 ether, block.timestamp);
         vm.stopPrank();
         assertEq(fee.balanceOf(alice), 10 ether);

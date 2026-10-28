@@ -8,6 +8,7 @@ import {
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import { boosterPurchaseAbi } from "@/lib/boosterPurchase";
+import { boosterEthAbi } from "@/lib/boosterEth";
 import { boosterPermitAbi } from "@/lib/boosterPermit";
 
 export type BoosterCreatedRequest = {
@@ -40,8 +41,15 @@ export type BoosterRevealExpectation = {
   packTypeId?: string;
   quantity?: number;
   originalId?: string;
+  paymentAdapter?: string;
+  payer?: string;
 };
-type SubmittedTransaction = { hash: Hex; to: string | null; input: Hex };
+type SubmittedTransaction = {
+  hash: Hex;
+  to: string | null;
+  input: Hex;
+  from?: string;
+};
 type Receipt = Pick<
   TransactionReceipt,
   "status" | "transactionHash" | "blockHash" | "blockNumber" | "logs"
@@ -90,6 +98,39 @@ export function boosterTransactionExpectation(
   transaction: SubmittedTransaction,
   expected: BoosterRevealExpectation
 ): BoosterRevealExpectation {
+  if (
+    expected.paymentAdapter &&
+    transaction.to?.toLowerCase() === expected.paymentAdapter.toLowerCase()
+  ) {
+    requireReceipt(
+      transaction.hash.toLowerCase() === expected.hash.toLowerCase() &&
+        expected.kind === "open" &&
+        typeof transaction.from === "string" &&
+        /^0x[0-9a-f]{40}$/i.test(transaction.from)
+    );
+    const decoded = decodeFunctionData({
+      abi: boosterEthAbi,
+      data: transaction.input
+    });
+    requireReceipt(decoded.functionName === "openPacks");
+    const args = decoded.args as readonly [
+      bigint,
+      number,
+      number,
+      bigint,
+      bigint,
+      bigint
+    ];
+    requireReceipt(args[2] === 0 || args[2] === 1);
+    return {
+      ...expected,
+      expectedRequestCount: count(args[1], 10),
+      packTypeId: args[0].toString(),
+      quantity: 1,
+      originalId: undefined,
+      payer: transaction.from.toLowerCase()
+    };
+  }
   requireReceipt(
     transaction.hash.toLowerCase() === expected.hash.toLowerCase() &&
       transaction.to?.toLowerCase() === expected.engine.toLowerCase()
@@ -168,6 +209,8 @@ export function confirmedBoosterRequests(
         typeof event.logIndex === "number" &&
         Number.isSafeInteger(event.logIndex) &&
         event.logIndex >= 0 &&
+        (!expected.payer ||
+          event.args.payer.toLowerCase() === expected.payer.toLowerCase()) &&
         event.args.opening === (expected.kind === "open") &&
         Number.isInteger(event.args.quantity) &&
         event.args.quantity >= 1 &&

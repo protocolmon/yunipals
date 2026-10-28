@@ -456,3 +456,38 @@ test("one wrapper combines only the complete verified groups, retaining gaps/tra
     )
   );
 });
+
+test("ETH purchases retain hash, destination, count and buyer guards", async () => {
+  const { ethPackPurchaseData, capEthPackQuote } = await import("./boosterEth");
+  const adapter = "0x5555555555555555555555555555555555555555";
+  const from = "0x3333333333333333333333333333333333333333";
+  const transaction = {
+    hash: transactionHash,
+    to: adapter,
+    from,
+    input: ethPackPurchaseData(2n, 3, capEthPackQuote(0, 100n), 200n, 999999n)
+  };
+  const intent = boosterTransactionExpectation(transaction, {
+    ...expected,
+    paymentAdapter: adapter
+  });
+  assert.equal(intent.expectedRequestCount, 3);
+  assert.equal(intent.payer, from);
+  assert.equal(confirmedBoosterRequests(receipt(), intent).length, 3);
+  assert.throws(() => boosterTransactionExpectation(transaction, expected));
+  assert.throws(() =>
+    boosterTransactionExpectation(
+      { ...transaction, hash: blockHash },
+      { ...expected, paymentAdapter: adapter }
+    )
+  );
+  assert.throws(() =>
+    boosterTransactionExpectation(
+      { ...transaction, from: undefined },
+      { ...expected, paymentAdapter: adapter }
+    )
+  );
+  assert.throws(() =>
+    confirmedBoosterRequests(receipt(), { ...intent, payer: adapter })
+  );
+});

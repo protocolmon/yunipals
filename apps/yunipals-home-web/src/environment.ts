@@ -34,6 +34,7 @@ export const environment = {
   boosterDeploymentSha256:
     import.meta.env?.VITE_BOOSTER_DEPLOYMENT_SHA256?.trim() || "",
   boosterRegistry: import.meta.env?.VITE_BOOSTER_REGISTRY?.trim() || "",
+  boosterEthAdapter: import.meta.env?.VITE_BOOSTER_ETH_ADAPTER?.trim() || "",
   boosterEngine: import.meta.env?.VITE_BOOSTER_ENGINE?.trim() || "",
   boosterMonsters: import.meta.env?.VITE_BOOSTER_MONSTERS?.trim() || "",
   boosterSetupSha256: import.meta.env?.VITE_BOOSTER_SETUP_SHA256?.trim() || "",

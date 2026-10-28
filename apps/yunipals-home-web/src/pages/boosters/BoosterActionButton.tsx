@@ -185,6 +185,14 @@ export function BoosterActionButton({
                     <dd>{review.action.quantity}</dd>
                   </div>
                 )}
+                {review.ethQuote && (
+                  <div className="flex justify-between gap-4">
+                    <dt>Estimated ETH pack price</dt>
+                    <dd title={`${formatEther(review.ethQuote.price)} ETH`}>
+                      {formatRoundedAmount(review.ethQuote.price, 18, "ETH")}
+                    </dd>
+                  </div>
+                )}
                 {review.tokenPrice > 0n && (
                   <div className="flex justify-between gap-4">
                     <dt>Total pack price</dt>
@@ -261,7 +269,29 @@ export function BoosterActionButton({
                   </dd>
                 </div>
               </dl>
-              {review.permitApproval && !review.permitSigned ? (
+              {review.ethQuote ? (
+                <>
+                  <p className="text-sm text-muted">
+                    One transaction converts ETH to YPAL and opens your packs.
+                    Unused ETH is returned automatically, or saved for
+                    withdrawal if your wallet cannot receive it. Cards arrive
+                    after randomness is confirmed.
+                  </p>
+                  <details className="mt-3 text-xs text-muted">
+                    <summary className="cursor-pointer font-semibold focus-visible:ring-2 focus-visible:ring-grape">
+                      Conversion details
+                    </summary>
+                    <p className="mt-2">
+                      {review.ethQuote.route === 0
+                        ? "ETH → PMON → YPAL"
+                        : "ETH → PROTO → PMON → YPAL"}
+                      . Up to 0.5% price movement. Quote expires in 10 minutes.
+                      The pack price is burned when the opening request
+                      succeeds.
+                    </p>
+                  </details>
+                </>
+              ) : review.permitApproval && !review.permitSigned ? (
                 <p className="text-sm text-muted">
                   Sign a gas-free approval, then review one transaction that
                   includes the approval and opens your packs.

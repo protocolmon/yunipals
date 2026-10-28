@@ -4,9 +4,7 @@ pragma solidity 0.8.30;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {
-    ReentrancyGuardUpgradeable
-} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {IVRFV2PlusWrapper} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 import {BoosterAdmin} from "./BoosterAdmin.sol";
@@ -22,6 +20,10 @@ interface IBurnable {
 contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofRecovery {
     using SafeERC20 for IERC20;
     using VariantDraw for mapping(uint32 => uint32);
+
+    error PaymentAccountingMismatch();
+    error InvalidProofDependencies();
+    error InvalidRequestId();
 
     enum Status {
         Unknown,
@@ -67,6 +69,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     uint256 public totalRefundLiability;
     uint256[41] private __gap;
 
+    bytes32 public constant PAYMENT_ADAPTER_ROLE = keccak256("PAYMENT_ADAPTER_ROLE");
     uint32 public constant CALLBACK_RESERVE = 150_000;
     uint32 public constant MAX_OPEN_PACKS = 10;
     uint256 public constant PERMIT_OPEN_VERSION = 1;
@@ -106,12 +109,10 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         _disableInitializers();
     }
 
-    function initialize(
-        address admin,
-        PackRegistry registry_,
-        YunipalMonsters monsters_,
-        IVRFV2PlusWrapper wrapper_
-    ) external initializer {
+    function initialize(address admin, PackRegistry registry_, YunipalMonsters monsters_, IVRFV2PlusWrapper wrapper_)
+        external
+        initializer
+    {
         require(
             address(registry_).code.length != 0 && address(monsters_).code.length != 0
                 && address(wrapper_).code.length != 0,
@@ -164,8 +165,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         Original storage s = originals[originalId];
         if (s.minted == 0 || s.burned) return 0;
         PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
-        uint256 earned =
-            ((block.timestamp - s.revealedAt) / pack.rules.intervalSeconds) * pack.rules.mintsPerInterval;
+        uint256 earned = ((block.timestamp - s.revealedAt) / pack.rules.intervalSeconds) * pack.rules.mintsPerInterval;
         uint256 maxEarned = pack.totalVariants - 1;
         if (earned > maxEarned) earned = maxEarned;
         return uint32(earned - s.dailyCommitted);
@@ -180,7 +180,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         PackRegistry.Pack memory pack = _openingPack(packTypeId, deadline);
         _burnPayment(pack.rules.paymentToken, pack.rules.price);
         uint256 paid;
-        (requestId, originalId, paid) = _open(packTypeId, pack, _paymentBudget(maxVrfPrice));
+        (requestId, originalId, paid) = _open(packTypeId, pack, _paymentBudget(maxVrfPrice), msg.sender);
         _refund(msg.sender, msg.value - paid);
     }
 
@@ -191,7 +191,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         nonReentrant
         returns (uint256[] memory requestIds, uint256[] memory originalIds)
     {
-        return _openPacks(packTypeId, count, maxTotalVrfPrice, _openingPacks(packTypeId, count, deadline));
+        return _openPacks(packTypeId, count, maxTotalVrfPrice, _openingPacks(packTypeId, count, deadline), msg.sender);
     }
 
     /// @notice Best-effort EIP-2612 permit and one atomic purchase of independent originals.
@@ -221,14 +221,29 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         assembly ("memory-safe") {
             pop(call(gas(), tokenAddress, 0, add(permitData, 32), mload(permitData), 0, 0))
         }
-        _openPacks(packTypeId, count, maxTotalVrfPrice, pack);
+        _openPacks(packTypeId, count, maxTotalVrfPrice, pack, msg.sender);
+    }
+
+    /// @notice A granted payment adapter funds a purchase for its authenticated buyer.
+    /// @dev Tokens are pulled from the adapter; requests, NFTs and VRF refunds belong
+    /// to the buyer. Existing request storage and event semantics stay unchanged.
+    function openPacksFor(address buyer, uint256 packTypeId, uint32 count, uint256 maxTotalVrfPrice, uint256 deadline)
+        external
+        payable
+        nonReentrant
+        onlyRole(PAYMENT_ADAPTER_ROLE)
+        returns (uint256[] memory requestIds, uint256[] memory originalIds)
+    {
+        require(buyer != address(0), "zero buyer");
+        return _openPacks(packTypeId, count, maxTotalVrfPrice, _openingPacks(packTypeId, count, deadline), buyer);
     }
 
     function _openPacks(
         uint256 packTypeId,
         uint32 count,
         uint256 maxTotalVrfPrice,
-        PackRegistry.Pack memory pack
+        PackRegistry.Pack memory pack,
+        address buyer
     ) private returns (uint256[] memory requestIds, uint256[] memory originalIds) {
         uint256 amount;
         // A uint128 price times at most ten cannot overflow uint256.
@@ -242,10 +257,10 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         uint256 budget = _paymentBudget(maxTotalVrfPrice);
         for (uint256 i; i < count; ++i) {
             uint256 price;
-            (requestIds[i], originalIds[i], price) = _open(packTypeId, pack, budget - paid);
+            (requestIds[i], originalIds[i], price) = _open(packTypeId, pack, budget - paid, buyer);
             paid += price;
         }
-        _refund(msg.sender, msg.value - paid);
+        _refund(buyer, msg.value - paid);
     }
 
     function _openingPacks(uint256 packTypeId, uint32 count, uint256 deadline)
@@ -257,11 +272,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         return _openingPack(packTypeId, deadline);
     }
 
-    function _openingPack(uint256 packTypeId, uint256 deadline)
-        private
-        view
-        returns (PackRegistry.Pack memory pack)
-    {
+    function _openingPack(uint256 packTypeId, uint256 deadline) private view returns (PackRegistry.Pack memory pack) {
         require(!requestsPaused && block.timestamp <= deadline, "requests paused or expired");
         pack = registry.getPack(packTypeId);
         require(pack.rules.engine == address(this), "invalid engine");
@@ -272,15 +283,14 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         uint256 beforeBalance = token.balanceOf(address(this));
         uint256 beforeSupply = token.totalSupply();
         token.safeTransferFrom(msg.sender, address(this), amount);
-        require(token.balanceOf(address(this)) == beforeBalance + amount, "unsupported transfer fee");
+        if (token.balanceOf(address(this)) != beforeBalance + amount) revert PaymentAccountingMismatch();
         IBurnable(address(token)).burn(amount);
-        require(
-            token.balanceOf(address(this)) == beforeBalance && token.totalSupply() == beforeSupply - amount,
-            "burn accounting mismatch"
-        );
+        if (token.balanceOf(address(this)) != beforeBalance || token.totalSupply() != beforeSupply - amount) {
+            revert PaymentAccountingMismatch();
+        }
     }
 
-    function _open(uint256 packTypeId, PackRegistry.Pack memory pack, uint256 budget)
+    function _open(uint256 packTypeId, PackRegistry.Pack memory pack, uint256 budget, address buyer)
         private
         returns (uint256 requestId, uint256 originalId, uint256 paid)
     {
@@ -288,8 +298,8 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         originalId = monsters.reserveOriginal(packTypeId);
         originals[originalId].packTypeId = packTypeId;
         originals[originalId].remaining = pack.totalVariants;
-        (requestId, paid) = _request(originalId, 1, true, pack, budget);
-        emit PaymentBurned(requestId, msg.sender, pack.rules.paymentToken, pack.rules.price);
+        (requestId, paid) = _request(originalId, 1, true, pack, budget, buyer);
+        emit PaymentBurned(requestId, buyer, pack.rules.paymentToken, pack.rules.price);
     }
 
     function claim(uint256 originalId, uint32 quantity, uint256 maxVrfPrice, uint256 deadline)
@@ -301,13 +311,11 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         require(!requestsPaused && block.timestamp <= deadline, "requests paused or expired");
         Original storage s = originals[originalId];
         require(s.minted > 0 && !s.burned && monsters.ownerOf(originalId) == msg.sender, "owner only");
-        require(
-            s.pendingRequest == 0 && quantity > 0 && quantity <= claimable(originalId), "unavailable credits"
-        );
+        require(s.pendingRequest == 0 && quantity > 0 && quantity <= claimable(originalId), "unavailable credits");
         PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
         s.dailyCommitted += quantity;
         uint256 paid;
-        (requestId, paid) = _request(originalId, quantity, false, pack, _paymentBudget(maxVrfPrice));
+        (requestId, paid) = _request(originalId, quantity, false, pack, _paymentBudget(maxVrfPrice), msg.sender);
         _refund(msg.sender, msg.value - paid);
     }
 
@@ -316,25 +324,26 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         uint32 quantity,
         bool opening,
         PackRegistry.Pack memory pack,
-        uint256 paymentBudget
+        uint256 paymentBudget,
+        address buyer
     ) private returns (uint256 id, uint256 price) {
         uint32 callbackGas = _callbackGas(pack.rules, quantity);
         price = wrapper.calculateRequestPriceNative(callbackGas, 1);
         require(price <= paymentBudget, "VRF price exceeds budget");
         address coordinator = IProofWrapper(address(wrapper)).s_vrfCoordinator();
         address blockhashStore = IProofCoordinator(coordinator).BLOCKHASH_STORE();
-        require(coordinator.code.length != 0 && blockhashStore.code.length != 0, "invalid proof dependencies");
+        if (coordinator.code.length == 0 || blockhashStore.code.length == 0) revert InvalidProofDependencies();
         id = wrapper.requestRandomWordsInNative{value: price}(
             callbackGas,
             pack.rules.confirmations,
             1,
             VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: true}))
         );
-        require(id != 0 && requests[id].status == Status.Unknown, "invalid request id");
+        if (id == 0 || requests[id].status != Status.Unknown) revert InvalidRequestId();
         _recordProofContext(id, coordinator, blockhashStore, pack.rules.confirmations);
         requests[id] = Request(
             originalId,
-            msg.sender,
+            buyer,
             price,
             0,
             pack.ruleHash,
@@ -350,7 +359,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
             id,
             originalId,
             originals[originalId].packTypeId,
-            msg.sender,
+            buyer,
             quantity,
             opening,
             price,
@@ -377,9 +386,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     function restoreRandomness(uint256 id, Proof calldata proof) external nonReentrant {
         Request storage r = requests[id];
         require(r.status == Status.Pending && !r.received, "not awaiting randomness");
-        require(
-            !originals[r.originalId].burned && originals[r.originalId].pendingRequest == id, "rights ended"
-        );
+        require(!originals[r.originalId].burned && originals[r.originalId].pendingRequest == id, "rights ended");
         uint256 word = _verifyRequestProof(id, proof);
         _receiveRandomness(id, word);
         emit RandomnessRestored(id, msg.sender);
