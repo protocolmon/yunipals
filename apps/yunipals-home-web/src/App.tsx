@@ -21,6 +21,11 @@ import { ActivityPage } from "@/pages/orders/ActivityPage";
 import { BoosterPage, BoosterMonsterPage } from "@/pages/boosters/page";
 import { BoosterSetupPage } from "@/pages/boosters/BoosterSetupPage";
 import { AnalyticsConsentProvider } from "@/providers/AnalyticsConsentProvider";
+const BrandkitPage = lazy(() =>
+  import("@/pages/brandkit/page").then((module) => ({
+    default: module.BrandkitPage
+  }))
+);
 const BoosterBatchSetupPage = lazy(() =>
   import("@/pages/boosters/BoosterBatchSetupPage").then((module) => ({
     default: module.BoosterBatchSetupPage
@@ -248,6 +253,7 @@ function AppContent() {
           />
           <Route path="/collection/:tokenId" element={<CollectionPage />} />
           <Route path="/leaderboard" element={<LeaderboardRoute />} />
+          <Route path="/brandkit" element={<BrandkitPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/collector/:address" element={<CollectorPage />} />

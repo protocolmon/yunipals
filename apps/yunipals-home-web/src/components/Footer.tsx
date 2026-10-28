@@ -34,6 +34,12 @@ export function Footer({
         </div>
         <div className="flex flex-col gap-4 sm:items-end">
           <div className="flex flex-wrap gap-x-4 gap-y-2 sm:justify-end">
+            <Link
+              to="/brandkit"
+              className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+            >
+              Brandkit
+            </Link>
             {!exomonView && (
               <button
                 type="button"

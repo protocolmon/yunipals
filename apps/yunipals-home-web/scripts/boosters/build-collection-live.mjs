@@ -204,6 +204,8 @@ const assets = [
     ? [
         "arena/rules-v1.json",
         "images/bitcoin-unidragon-square.webp",
+        "images/brandkit/yunipals-logo.png",
+        "images/brandkit/yunipals-brandkit.zip",
         "images/element/yunipals-bnb-featured-600x400.jpg",
         "images/opensea/logomark-blue.svg",
         "images/opensea/yunipals-og-ethereum-banner-desktop.jpg",
