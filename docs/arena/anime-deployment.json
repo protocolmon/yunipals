@@ -1,6 +1,6 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "four reviewed v2 fighters approved and draw reserve funded; native source ready; all pilot services running with a single-wallet allowlist; awaiting the admin browser signature to unpause paid entry",
+  "status": "four reviewed v2 fighters approved and reserve funded to the fixed draw cap; native source and pilot workers ready; admin browser unpause pending; admissions remain guarded by the live gas-priced draw quote",
   "chainId": 8453,
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
   "registryDeploymentBlock": 53251773,
@@ -20,7 +20,7 @@
   ],
   "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
   "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
-  "websiteDeploymentId": "dpl_4bDqg5Ee9ec2AzD919R3aApHnazT",
+  "websiteDeploymentId": "dpl_DbgBKMiVJFtpjM7c1L3NQJ3iSErd",
   "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
   "apiUrl": "https://api.yunipals.com/api/anime-arena",
   "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
@@ -87,7 +87,13 @@
     "objectsReused": 368,
     "workersStarted": false,
     "providerRequests": 0,
-    "transactionsBroadcast": 0
+    "transactionsBroadcast": 0,
+    "latestEncryptedBackup": {
+      "status": "success",
+      "createdAt": "2026-10-29T20:39:08.739585+00:00",
+      "objectsUploaded": 9,
+      "objectsReused": 944
+    }
   },
   "drawReserveTargetWei": "10000000000000",
   "backendEntryMode": "pilot",
@@ -101,6 +107,16 @@
     "storageAccessCheckedAsServiceUser": true,
     "serviceBootActivationEnabled": true,
     "newPilotProviderRequests": 0,
-    "newPilotChargedMicrousd": 0
+    "newPilotChargedMicrousd": 0,
+    "scheduledCapacityRefreshPassed": true
+  },
+  "drawQuoteGuard": {
+    "usesGasPriceBuffer": 2,
+    "maximumWei": "10000000000000",
+    "blocksWhenBufferedQuoteExceedsCap": true,
+    "latestObservationAt": "2026-10-29T20:41:12.339Z",
+    "latestBufferedQuoteWei": "10258296420764",
+    "latestQuoteWithinCap": false,
+    "additionalReserveFundingNeeded": false
   }
 }
