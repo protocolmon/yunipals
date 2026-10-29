@@ -53,13 +53,16 @@ process.once("SIGINT", () => {
 try {
   while (!stopped) {
     let measuredSince: string | undefined;
+    let stage = "database clock";
     try {
       measuredSince = (
         await runtime.pool.query<{ measured_at: string }>(
           "SELECT clock_timestamp()::text AS measured_at"
         )
       ).rows[0]!.measured_at;
+      stage = "source readiness";
       await runtime.service.ready();
+      stage = "media storage";
       const mediaStorage = await arenaMediaStorageBudget(
         storage,
         Number(process.env.ARENA_MEDIA_QUOTA_BYTES ?? ARENA_MEDIA_QUOTA_BYTES),
@@ -67,6 +70,7 @@ try {
           process.env.ARENA_MEDIA_RESERVED_BYTES ?? ARENA_MEDIA_RESERVED_BYTES
         )
       );
+      stage = "provider credit";
       const runwareMicrousd =
         runtime.config.mediaKind === "anime"
           ? 0
@@ -103,6 +107,7 @@ try {
         runtime.config.mediaKind === "anime"
           ? await measureOpenRouterCredit(directorKey!)
           : undefined;
+      stage = "Base head and gas";
       const [block, gasPrice] = await Promise.all([
         base.getBlock({ blockTag: "latest" }),
         base.getGasPrice()
@@ -110,6 +115,7 @@ try {
       if (Math.abs(Number(block.timestamp) * 1000 - Date.now()) > 120000)
         throw new Error("Base head is stale.");
       const address = runtime.config.deployment.contract;
+      stage = "arena funding configuration";
       const [available, maximum, referee, operator, wrapper] =
         await base.multicall({
           blockNumber: block.number,
@@ -122,6 +128,7 @@ try {
             { address, abi: arenaAbi, functionName: "i_vrfV2PlusWrapper" }
           ]
         });
+      stage = "draw and operating funds";
       const [quote, refereeGas, operatorGas, disk] = await Promise.all([
         base.readContract({
           address: wrapper,
@@ -138,6 +145,7 @@ try {
         base.getBalance({ address: operator, blockNumber: block.number }),
         statfs(storage)
       ]);
+      stage = "capacity snapshot";
       await runtime.capacity.save(
         {
           runwareMicrousd,
@@ -163,7 +171,7 @@ try {
         [runtime.config.deployment.id]
       );
       console.error(
-        "Arena capacity is unavailable; new admissions are paused."
+        `Arena capacity is unavailable at ${stage}; new admissions are paused.`
       );
     }
     // Five-minute health checks; short waits allow prompt graceful shutdown.
