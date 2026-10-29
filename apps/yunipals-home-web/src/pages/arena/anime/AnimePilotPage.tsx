@@ -231,12 +231,11 @@ export function AnimePilotPage() {
               !api.entriesEnabled ||
               api.contract.toLowerCase() !== animePilot.arena ||
               api.eligibilityRegistry?.toLowerCase() !== animePilot.registry ||
-              fresh.applicationsOpen ||
               !fresh.fighters.every((fighter) => fighter.status === 2) ||
               fresh.balance < fresh.vrfPrice
             )
               throw Error(
-                "Finish artwork approval, close applications, fund the draw and wait for pilot services before enabling entry."
+                "Finish artwork approval, fund the draw and wait for pilot services before enabling entry."
               );
           }
           to = animePilot.arena;
@@ -337,7 +336,8 @@ export function AnimePilotPage() {
                 <p className="text-sm">
                   Open applications, then switch to the pilot wallet and apply
                   for all four fighters. Switch back to approve the reviewed
-                  artwork and close applications.
+                  artwork. Applications may stay open while paid entry is
+                  limited to the pilot wallet.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <button
@@ -382,7 +382,6 @@ export function AnimePilotPage() {
                       disabled ||
                       (data.paused &&
                         (!approved ||
-                          data.applicationsOpen ||
                           data.balance < data.vrfPrice ||
                           !pilotReady))
                     }

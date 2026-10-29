@@ -4,8 +4,9 @@ The confirmed browser contracts are recorded in
 `docs/arena/anime-browser-deployment-confirmed-v1.json`. Their owner/curator is the
 browser deployment wallet; server workers cannot sign owner actions. Use
 `https://www.yunipals.com/arena/anime/pilot` to open applications, apply from the
-pilot NFT wallet, approve the four pinned reviewed manifests, close applications,
-fund the draw and enable the controlled pilot. Paid entry also requires the API's
+pilot NFT wallet, approve the four pinned reviewed manifests, fund the draw and
+enable the controlled pilot. Applications may remain open; the paid pilot stays
+limited to the explicitly configured pilot wallet. Paid entry also requires the API's
 explicit pilot wallet allowlist. Keep public entry closed until pilot acceptance.
 
 Each service loads `/etc/yunipals-anime-arena/roles/ROLE.env` with its existing
@@ -21,7 +22,11 @@ website's `VITE_ANIME_ARENA_API_URL` to
 
 For source staging, keep existing ingestion and observers running. An isolated
 candidate may use four identity-bound loopback endpoints in its reviewed RPC
-profile; do not replace the live profile or bypass preflight. Preserve every
+profile; do not replace the live profile or bypass preflight.
+The isolated relays may opt into `MARKET_RPC_PROXY_UNIFIED_SOURCE_QUEUE=true`
+to buffer validated free-source bursts with the existing request, byte, timeout
+and cancellation bounds. This setting grants no paid fallback or replay permit;
+ordinary callers keep their existing backpressure behavior. Preserve every
 existing source definition, including per-contract booster deployment blocks.
 Set `UNIFIED_ANIME_ARENA` to give the new arena its own Ponder log filter and
 deployment block, retaining the video history cache. Register the actual Ponder

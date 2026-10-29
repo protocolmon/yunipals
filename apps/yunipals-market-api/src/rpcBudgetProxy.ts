@@ -111,6 +111,7 @@ export type RpcBudgetProxyOptions = {
   salePaidFallbackOnFreeFailure?: boolean;
   unifiedSourcePaidPrimary?: boolean;
   unifiedSourcePaidLogs?: boolean;
+  unifiedSourceQueue?: boolean;
   bnbSelectivePrimaryIndices?: number[];
   bnbSelectivePoolSha256?: string;
   bnbSelectiveTransactionPrimaryIndices?: number[];
@@ -241,6 +242,8 @@ export function readRpcBudgetProxyEnvironment(
     input.MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_PRIMARY ?? "false";
   const unifiedSourcePaidLogsValue =
     input.MARKET_RPC_PROXY_UNIFIED_SOURCE_PAID_LOGS ?? "false";
+  const unifiedSourceQueueValue =
+    input.MARKET_RPC_PROXY_UNIFIED_SOURCE_QUEUE ?? "false";
   if (
     !new Set(["true", "false"]).has(paidFallbackValue) ||
     !new Set(["true", "false"]).has(foregroundPaidFallbackValue) ||
@@ -249,6 +252,7 @@ export function readRpcBudgetProxyEnvironment(
     !new Set(["true", "false"]).has(salePaidFallbackValue) ||
     !new Set(["true", "false"]).has(unifiedSourcePaidPrimaryValue) ||
     !new Set(["true", "false"]).has(unifiedSourcePaidLogsValue) ||
+    !new Set(["true", "false"]).has(unifiedSourceQueueValue) ||
     (unifiedSourcePaidPrimaryValue === "true" &&
       unifiedSourcePaidLogsValue === "true")
   )
@@ -261,6 +265,7 @@ export function readRpcBudgetProxyEnvironment(
   const salePaidFallbackOnFreeFailure = salePaidFallbackValue === "true";
   const unifiedSourcePaidPrimary = unifiedSourcePaidPrimaryValue === "true";
   const unifiedSourcePaidLogs = unifiedSourcePaidLogsValue === "true";
+  const unifiedSourceQueue = unifiedSourceQueueValue === "true";
   const loopback = ["127.0.0.1", "localhost", "[::1]"].includes(
     upstream.hostname
   );
@@ -344,6 +349,7 @@ export function readRpcBudgetProxyEnvironment(
     salePaidFallbackOnFreeFailure,
     unifiedSourcePaidPrimary,
     unifiedSourcePaidLogs,
+    unifiedSourceQueue,
     ...(bnbSelectivePrimaryIndices !== undefined ||
     bnbSelectivePoolSha256 !== undefined
       ? { bnbSelectivePrimaryIndices, bnbSelectivePoolSha256 }
@@ -450,7 +456,8 @@ export function isFreeRpcCall(
       Array.isArray(call.params) &&
       call.params.length === 2 &&
       call.params.every(
-        (value) => typeof value === "string" && /^0x(?:0|[1-9a-f][0-9a-f]*)$/.test(value)
+        (value) =>
+          typeof value === "string" && /^0x(?:0|[1-9a-f][0-9a-f]*)$/.test(value)
       ) &&
       BigInt(call.params[1]) <= 2147483647n
     );
@@ -899,11 +906,15 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
   if (
     typeof unifiedSourcePaidPrimary !== "boolean" ||
     typeof unifiedSourcePaidLogs !== "boolean" ||
+    (options.unifiedSourceQueue !== undefined &&
+      typeof options.unifiedSourceQueue !== "boolean") ||
     (unifiedSourcePaidPrimary && unifiedSourcePaidLogs) ||
-    ((unifiedSourcePaidPrimary || unifiedSourcePaidLogs) &&
+    ((unifiedSourcePaidPrimary ||
+      unifiedSourcePaidLogs ||
+      options.unifiedSourceQueue) &&
       !options.unifiedPolicy)
   )
-    throw new Error("Unified paid primary requires an explicit RPC policy.");
+    throw new Error("Unified source modes require an explicit RPC policy.");
   const freeFailureCooldownMs =
     options.freeFailureCooldownMs ?? defaultFreeFailureCooldownMs;
   const freeRateLimitCooldownMs =
@@ -969,7 +980,9 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
       new Set(selectiveIndices).size !== selectiveIndices.length ||
       selectiveIndices.some(
         (index) =>
-          !Number.isSafeInteger(index) || index < 0 || index >= primaryUrls.length
+          !Number.isSafeInteger(index) ||
+          index < 0 ||
+          index >= primaryUrls.length
       ) ||
       options.bnbSelectivePoolSha256 !== rpcPrimaryPoolSha256(primaryUrls))
   )
@@ -995,10 +1008,14 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
         selectiveTransactionIndices.length ||
       selectiveTransactionIndices.some(
         (index) =>
-          !Number.isSafeInteger(index) || index < 0 || index >= primaryUrls.length
+          !Number.isSafeInteger(index) ||
+          index < 0 ||
+          index >= primaryUrls.length
       ))
   )
-    throw new Error("Invalid BNB selective transaction endpoint configuration.");
+    throw new Error(
+      "Invalid BNB selective transaction endpoint configuration."
+    );
   const configuredLogPool =
     options.freeLogUpstreams ??
     (options.freeLogUpstream ? [options.freeLogUpstream] : []);
@@ -1193,7 +1210,9 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
           maximumObservedQueuedSourceRequests,
           sourceQueue.length
         );
-        sourceRequest.signal.addEventListener("abort", cancelled, { once: true });
+        sourceRequest.signal.addEventListener("abort", cancelled, {
+          once: true
+        });
         if (sourceRequest.signal.aborted) cancelled();
       });
     } else {
@@ -1325,7 +1344,7 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
     const minimumIntervalMs =
       workload === "source"
         ? selectiveHeader
-          ? selectiveHeaderMinimumIntervalMs ?? freeSourceMinimumIntervalMs
+          ? (selectiveHeaderMinimumIntervalMs ?? freeSourceMinimumIntervalMs)
           : freeSourceMinimumIntervalMs
         : workload === "order_projection" || workload === "foreground"
           ? freeOrderMinimumIntervalMs
@@ -1422,6 +1441,7 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
           freeOrderMinimumIntervalMs,
           freeMinimumIntervalMs,
           sourcePacingQueueWaitMs,
+          unifiedSourceQueue: options.unifiedSourceQueue ?? false,
           sourceQueueLimit: maximumQueuedSourceRequests,
           sourceQueueByteLimit: maximumQueuedSourceBytes,
           sourceQueueWaitMs,
@@ -1741,10 +1761,13 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
         response(output, 400, { error: "selective_free_batch_unavailable" });
         return;
       }
-      // Buffer explicitly selected paid source modes, after full request
-      // validation. Normal/legacy callers retain their existing backpressure.
+      // Buffer explicitly selected source modes, after full request validation.
+      // Free source queuing is opt-in and never grants paid fallback or permits.
+      // Normal/legacy callers retain their existing backpressure.
       const sourceRequest =
-        (unifiedSourcePaidPrimary || unifiedSourcePaidLogs) &&
+        (unifiedSourcePaidPrimary ||
+          unifiedSourcePaidLogs ||
+          options.unifiedSourceQueue) &&
         unifiedWorkload === "unified_source"
           ? new AbortController()
           : undefined;
@@ -2090,6 +2113,7 @@ async function main() {
     salePaidFallbackOnFreeFailure: environment.salePaidFallbackOnFreeFailure,
     unifiedSourcePaidPrimary: environment.unifiedSourcePaidPrimary,
     unifiedSourcePaidLogs: environment.unifiedSourcePaidLogs,
+    unifiedSourceQueue: environment.unifiedSourceQueue,
     bnbSelectivePrimaryIndices: environment.bnbSelectivePrimaryIndices,
     bnbSelectivePoolSha256: environment.bnbSelectivePoolSha256,
     bnbSelectiveTransactionPrimaryIndices:

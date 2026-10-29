@@ -8,12 +8,13 @@ import ts from "typescript";
 const root = fileURLToPath(new URL("..", import.meta.url));
 const output = process.argv[2] ?? "/tmp/yunipals-anime-pilot-ui";
 await mkdir(output, { recursive: true });
-const fixture = `import {decodeFunctionData} from 'viem';import {animePilot} from '/src/lib/animePilot';import {animeRegistryAbi} from '@protopals/yunipals-market-core/animeRegistryAbi';
-const listeners=new Set();const mode=new URLSearchParams(location.search).get('wallet')||'admin';let identity={address:mode==='admin'?animePilot.admin:mode==='pilot'?animePilot.wallet:'0x1111111111111111111111111111111111111111',chainId:8453};let open=sessionStorage.getItem('pilot-open')==='true';const applied=new Set(JSON.parse(sessionStorage.getItem('pilot-applied')||'[]'));window.__sends=[];let wallet;let balance=BigInt(sessionStorage.getItem('pilot-reserve')||'0');
-function refresh(){wallet={account:{address:identity.address},async sendTransaction(input){if(input.chain.id!==8453)throw Error('wrong network');if(input.to===animePilot.arena&&input.data==='0x'){if(input.value!==animePilot.reserveWei-balance||input.value>10000000000000n)throw Error('wrong reserve payment');balance+=input.value;sessionStorage.setItem('pilot-reserve',String(balance));window.__sends.push('fund');return '0x'+'ab'.repeat(32);}const decoded=decodeFunctionData({abi:animeRegistryAbi,data:input.data});if(decoded.functionName==='setApplicationsOpen'){open=decoded.args[0];sessionStorage.setItem('pilot-open',String(open));}else if(decoded.functionName==='applyForArena'){applied.add(String(decoded.args[0]));sessionStorage.setItem('pilot-applied',JSON.stringify([...applied]));}else throw Error('unexpected send');window.__sends.push(decoded.functionName);return '0x'+'ab'.repeat(32);}};}refresh();
+const fixture = `import {decodeFunctionData} from 'viem';import {animePilot} from '/src/lib/animePilot';import {animeRegistryAbi} from '@protopals/yunipals-market-core/animeRegistryAbi';import {animeArenaAbi} from '@protopals/yunipals-market-core/animeArenaAbi';
+const listeners=new Set();const mode=new URLSearchParams(location.search).get('wallet')||'admin';let identity={address:mode==='admin'?animePilot.admin:mode==='pilot'?animePilot.wallet:'0x1111111111111111111111111111111111111111',chainId:8453};let open=sessionStorage.getItem('pilot-open')==='true';const applied=new Set(JSON.parse(sessionStorage.getItem('pilot-applied')||'[]'));window.__sends=[];let wallet;let paused=true;const approved=new URLSearchParams(location.search).get('stage')==='approved';let balance=BigInt(sessionStorage.getItem('pilot-reserve')||'0');
+function refresh(){wallet={account:{address:identity.address},async sendTransaction(input){if(input.chain.id!==8453)throw Error('wrong network');if(input.to===animePilot.arena&&input.data==='0x'){if(input.value!==animePilot.reserveWei-balance||input.value>10000000000000n)throw Error('wrong reserve payment');balance+=input.value;sessionStorage.setItem('pilot-reserve',String(balance));window.__sends.push('fund');return '0x'+'ab'.repeat(32);}const decoded=decodeFunctionData({abi:input.to===animePilot.arena?animeArenaAbi:animeRegistryAbi,data:input.data});if(decoded.functionName==='setEntriesPaused'){paused=decoded.args[0];}else if(decoded.functionName==='setApplicationsOpen'){open=decoded.args[0];sessionStorage.setItem('pilot-open',String(open));}else if(decoded.functionName==='applyForArena'){applied.add(String(decoded.args[0]));sessionStorage.setItem('pilot-applied',JSON.stringify([...applied]));}else throw Error('unexpected send');window.__sends.push(decoded.functionName);return '0x'+'ab'.repeat(32);}};}refresh();
 export const subscribe=f=>{listeners.add(f);return()=>listeners.delete(f)};export const snapshot=()=>identity;export const signing=()=>wallet;export const setIdentity=window.__identity=(chainId,address=identity.address)=>{identity={address,chainId};refresh();for(const f of listeners)f();};
-export const client={getBlockNumber:async()=>100n,getGasPrice:async()=>6000000n,getBalance:async()=>balance,call:async()=>({data:'0x'}),waitForTransactionReceipt:async()=>({status:'success'}),async readContract(input){switch(input.functionName){case'owner':case'curator':return animePilot.admin;case'applicationsOpen':return open;case'entriesPaused':return true;case'rulesHash':return animePilot.rulesHash;case'eligibility':return animePilot.registry;case'estimateRequestPriceNative':if(input.args[2]!==12000000n)throw Error('draw quote omitted gas buffer');return 4900000000000n;case'ownerOf':return animePilot.wallet;case'fighters':return [applied.has(String(input.args[0]))?1:0,0,0,'0x'+'00'.repeat(32)];default:throw Error('unexpected read');}}};`;
+export const client={getBlockNumber:async()=>100n,getGasPrice:async()=>6000000n,getBalance:async()=>balance,call:async()=>({data:'0x'}),waitForTransactionReceipt:async()=>({status:'success'}),async readContract(input){switch(input.functionName){case'owner':case'curator':return animePilot.admin;case'applicationsOpen':return open;case'entriesPaused':return paused;case'rulesHash':return animePilot.rulesHash;case'eligibility':return animePilot.registry;case'estimateRequestPriceNative':if(input.args[2]!==12000000n)throw Error('draw quote omitted gas buffer');return 4900000000000n;case'ownerOf':return animePilot.wallet;case'fighters':return [approved?2:applied.has(String(input.args[0]))?1:0,0,0,'0x'+'00'.repeat(32)];default:throw Error('unexpected read');}}};`;
 const modules = {
+  "virtual:anime-environment.ts": `export const environment={animeArenaApiUrl:"http://127.0.0.1:5209/__pilot-api",arenaApiUrl:null};`,
   "virtual:anime-fixture.ts": fixture,
   "virtual:anime-wagmi.ts": `import {useSyncExternalStore} from 'react';import {subscribe,snapshot,signing,client,setIdentity} from 'virtual:anime-fixture.ts';export const useAccount=()=>useSyncExternalStore(subscribe,snapshot);export function useWalletClient(){useSyncExternalStore(subscribe,snapshot);return{data:signing()};}export const usePublicClient=()=>client;export const useSwitchChain=()=>({switchChainAsync:async({chainId})=>setIdentity(chainId)});`,
   "virtual:anime-rainbow.ts": `export const useConnectModal=()=>({openConnectModal:()=>{}});`,
@@ -38,6 +39,8 @@ const server = await createServer({
       name: "anime-setup-fixture",
       enforce: "pre",
       resolveId(id) {
+        if (id === "@/environment" || /\/src\/environment(?:\.ts)?$/.test(id))
+          return "\0virtual:anime-environment.ts";
         if (modules[id]) return "\0" + id;
         if (id === "wagmi") return "\0virtual:anime-wagmi.ts";
         if (id === "@rainbow-me/rainbowkit")
@@ -57,7 +60,19 @@ const server = await createServer({
       },
       configureServer(s) {
         s.middlewares.use((req, res, next) => {
-          if (req.url?.startsWith("/__anime-setup")) {
+          if (req.url === "/__pilot-api/config") {
+            res.setHeader("Content-Type", "application/json");
+            res.end(
+              JSON.stringify({
+                chainId: 8453,
+                entryMode: "pilot",
+                entriesEnabled: true,
+                contract: "0x576790deff75af86fa638d9a1427e1eee7007094",
+                eligibilityRegistry:
+                  "0xdbcab53a8e32d43997de252fd49c43ab8df290bf"
+              })
+            );
+          } else if (req.url?.startsWith("/__anime-setup")) {
             res.setHeader("Content-Type", "text/html");
             res.end(
               '<!doctype html><html><head><link rel="stylesheet" href="/src/globals.css"></head><body><div id="root"></div><script type="module" src="/@id/__x00__virtual:anime-entry.tsx"></script></body></html>'
@@ -156,6 +171,20 @@ try {
     ),
     true
   );
+  await page.goto(
+    "http://127.0.0.1:5209/__anime-setup?wallet=admin&stage=approved"
+  );
+  await page
+    .getByRole("button", { name: "Enable controlled paid pilot" })
+    .click();
+  await page.getByRole("button", { name: "Pause paid entry" }).waitFor();
+  assert.deepEqual(await page.evaluate(() => window.__sends), [
+    "setEntriesPaused"
+  ]);
+  assert.equal(
+    await page.evaluate(() => sessionStorage.getItem("pilot-open")),
+    "true"
+  );
   await page.goto("http://127.0.0.1:5209/__anime-setup?wallet=other");
   await page
     .getByText("Connect the deployment wallet for owner controls")
@@ -179,6 +208,7 @@ try {
         checks: [
           "owner opens applications",
           "entry remains gated",
+          "approved pilot enables while applications stay open",
           "draw quote includes buffered gas",
           "reserve payment matches the reviewed cap",
           "pilot applies for all four",
