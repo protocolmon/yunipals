@@ -7,7 +7,14 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
-import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+  readFileSync,
+  mkdirSync
+} from "node:fs";
+import { stageStudioRehearsal } from "./animeRehearsalAssets";
 import type { PublicClient, Address } from "viem";
 import {
   ANIME_BASE_COLLECTION,
@@ -130,6 +137,80 @@ function kitManifest(): AnimeManifest {
   m.defaultLoadout = ["vine-lash", "thorn-volley"];
   return m;
 }
+test("studio rehearsals stage four complete pinned kits and reject obsolete or changed assets", async () => {
+  const folder = mkdtempSync(join(tmpdir(), "anime-studio-rehearsal-"));
+  try {
+    const root = resolve("../.."),
+      publication = join(folder, "publication");
+    const recipe = JSON.parse(
+      readFileSync(
+        join(root, "docs/arena/anime-recipe-v2/recipe-lock.json"),
+        "utf8"
+      )
+    );
+    const tokens = ["1", "2", "3", "4"];
+    for (const tokenId of tokens) {
+      const m = kitManifest();
+      m.tokenId = tokenId;
+      m.recipe.sha256 = recipe.sha256;
+      const token = join(publication, "fighters/v1", tokenId);
+      mkdirSync(token, { recursive: true });
+      writeFileSync(join(token, "manifest.json"), JSON.stringify(m));
+      for (const s of [
+        ...Object.values(m.sprites),
+        ...m.kits!.map((k) => k.windup)
+      ])
+        writeFileSync(join(token, s.file), bytes);
+      for (const s of m
+        .kits!.flatMap((k) => [k.strike, k.projectile, k.impact])
+        .filter((s) => !!s)) {
+        const path = join(publication, s.sheet);
+        mkdirSync(resolve(path, ".."), { recursive: true });
+        writeFileSync(path, bytes);
+      }
+    }
+    const staged = await stageStudioRehearsal(
+      root,
+      publication,
+      tokens,
+      join(folder, "assets")
+    );
+    assert.equal(staged.roster.length, 4);
+    for (const f of staged.roster) {
+      assert.equal(staged.loadouts[f.id]!.length, 2);
+      assert.deepEqual(
+        staged.loadouts[f.id]!.map((k) => k.id),
+        ["vine-lash", "thorn-volley"]
+      );
+    }
+    await assert.rejects(
+      stageStudioRehearsal(
+        root,
+        publication,
+        ["1", "1", "2", "3"],
+        join(folder, "invalid")
+      ),
+      /four different/
+    );
+    const first = join(publication, "fighters/v1/1/manifest.json"),
+      m = JSON.parse(readFileSync(first, "utf8"));
+    m.recipe.id = "anime-fighter-v1";
+    writeFileSync(first, JSON.stringify(m));
+    await assert.rejects(
+      stageStudioRehearsal(root, publication, tokens, join(folder, "obsolete")),
+      /obsolete|Invalid|exactly three/
+    );
+    m.recipe.id = "anime-fighter-v2";
+    writeFileSync(first, JSON.stringify(m));
+    writeFileSync(join(publication, m.kits[0].strike.sheet), "changed");
+    await assert.rejects(
+      stageStudioRehearsal(root, publication, tokens, join(folder, "changed")),
+      /changed|differs|checksum/
+    );
+  } finally {
+    rmSync(folder, { recursive: true, force: true });
+  }
+});
 test("v1 manifests remain unchanged and v2 commits three kits, shared sheets and two choices", () => {
   const old = manifest(),
     before = canonicalAnimeJson(old);

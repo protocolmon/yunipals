@@ -130,6 +130,16 @@ task is reused without another generation charge.
 
 ## Claude direction and cost evidence
 
+Use `arena-anime-rehearsal.mjs prepare-studio-choreography JOB REVIEW_ASSETS TOKEN_IDS`
+for a comparison using freshly generated v2 kits on the original cast. `TOKEN_IDS`
+is a comma-separated list of four reviewed exports matching the original cast's
+token IDs and species. It requires three kits and a two-kit default per fighter,
+verifies every windup/sheet commitment, pins the new manifest hashes and refuses
+to overwrite an existing rehearsal. Character poses and frozen combat are reused;
+the director gets only the two selected kits. This is a private reference-cast
+comparison and grants no Base approval. The plain `prepare-choreography` command
+uses the old prototype kit assets for regression comparison only.
+
 Claude supplies bounded horizontal/flight/depth/facing/rotation paths, per-event
 attack visuals, short attack names and cut-in text/timing under
 `claude-choreography/v5`. The existing call also selects a compatible kit ID or

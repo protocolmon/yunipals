@@ -15,6 +15,7 @@ import { animeRepository } from "./animeRepository";
 import { canonicalJson, sha256 } from "../draw";
 import type { FrozenInput } from "../types";
 import { loadLiveArenaCatalog } from "./catalog";
+import { stageStudioRehearsal } from "./animeRehearsalAssets";
 import { productionValidator } from "./adjudication";
 import { refereeRequest, refereeCandidate } from "./refereeApi";
 import {
@@ -34,7 +35,10 @@ import {
   type AnimeDirectionInput
 } from "./animeDirection";
 import type { LiveFrozenInput } from "./input";
-import type { AnimeKnownKit } from "@protopals/yunipals-market-core/anime";
+import type {
+  AnimeKnownKit,
+  AnimeManifest
+} from "@protopals/yunipals-market-core/anime";
 
 const root = animeRepository();
 const engine = join(root, "apps/yunipals-anime-engine");
@@ -131,8 +135,21 @@ async function task(
     true
   );
 }
-async function prepareChoreography(job: string) {
+async function prepareChoreography(
+  job: string,
+  studio?: { publication: string; tokens: string[] }
+) {
   await mkdir(job, { recursive: true, mode: 0o700 });
+  if (studio) {
+    try {
+      await readFile(join(job, "authorization.json"));
+      throw new Error(
+        "Keep the existing rehearsal and its assets immutable. Use a fresh directory for new studio kits."
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
   const source = join(root, "apps/yunipals-market-api/src/arena/live/fixtures");
   const input = await json<FrozenInput>(join(source, "pilot-input.json"));
   const outcome = await json<{ matches: AnimeMatch[]; championId: string }>(
@@ -141,14 +158,60 @@ async function prepareChoreography(job: string) {
   const validation = await productionValidator(root)(input, outcome);
   if (!validation.valid)
     throw new Error("Manual reference combat failed validation.");
-  const fixture = (await import(
-    pathToFileURL(join(engine, "fixture.mjs")).href
-  )) as { prepareFixture: (job: string) => Promise<void> };
-  const staging = join(job, "fixture-build");
-  await fixture.prepareFixture(staging);
-  await cp(join(staging, "assets"), join(job, "fixture-assets"), {
-    recursive: true
-  });
+  if (studio) {
+    const assets = join(job, "fixture-assets");
+    const staged = await stageStudioRehearsal(
+      root,
+      studio.publication,
+      studio.tokens,
+      assets
+    );
+    const aliases = Object.fromEntries(
+      staged.roster.map((f) => {
+        const original = input.roster.find(
+          (o) => o.tokenId === f.tokenId && o.species === f.species
+        );
+        if (!original)
+          throw new Error(
+            "Reference studio tokens must match the original cast and species."
+          );
+        return [f.id, original.id];
+      })
+    );
+    const fighters = await json<Record<string, unknown>>(
+      join(assets, "fighters.json")
+    );
+    const sprites = await json<Record<string, unknown>>(
+      join(assets, "sprites.json")
+    );
+    await save(
+      join(assets, "fighters.json"),
+      Object.fromEntries(
+        Object.entries(fighters).map(([id, f]) => [aliases[id]!, f])
+      )
+    );
+    await save(
+      join(assets, "sprites.json"),
+      Object.fromEntries(
+        Object.entries(sprites).map(([name, sprite]) => {
+          const id = Object.keys(aliases).find((id) =>
+            name.startsWith(id + "-")
+          );
+          return [id ? aliases[id] + name.slice(id.length) : name, sprite];
+        })
+      )
+    );
+  } else {
+    const fixture = (await import(
+      pathToFileURL(join(engine, "fixture.mjs")).href
+    )) as { prepareFixture: (job: string) => Promise<void> };
+    const staging = join(job, "fixture-build");
+    await fixture.prepareFixture(staging);
+    await cp(join(staging, "assets"), join(job, "fixture-assets"), {
+      recursive: true
+    });
+    await rm(staging, { recursive: true });
+  }
   const historical = await json<AnimeDirectionInput["tournament"]>(
     join(engine, "fixtures/tournament.json")
   );
@@ -176,7 +239,11 @@ async function prepareChoreography(job: string) {
   const fighters = await json<
     Record<
       string,
-      { manifest: { look: { attackKind: string }; kits?: AnimeKnownKit[] } }
+      {
+        manifest: { look: { attackKind: string }; kits?: AnimeKnownKit[] };
+        manifestHash: string;
+        loadout?: string[];
+      }
     >
   >(join(job, "fixture-assets/fighters.json"));
   const strategies = Object.fromEntries(
@@ -186,7 +253,12 @@ async function prepareChoreography(job: string) {
     tournament,
     strategies,
     loadouts: Object.fromEntries(
-      Object.entries(fighters).map(([id, f]) => [id, f.manifest.kits ?? []])
+      Object.entries(fighters).map(([id, f]) => [
+        id,
+        (f.manifest.kits ?? []).filter(
+          (k) => !f.loadout || f.loadout.includes(k.id)
+        )
+      ])
     ),
     choreography: directTournament(
       tournament,
@@ -217,6 +289,15 @@ async function prepareChoreography(job: string) {
       directorPolicy: ANIME_DIRECTOR_POLICY,
       refereeReused: true,
       artworkReused: true,
+      ...(studio
+        ? {
+            studioReferenceKits: true,
+            studioManifestHashes: Object.values(fighters).map(
+              (f) => f.manifestHash
+            ),
+            basePosesReused: true
+          }
+        : {}),
       mainnetTransactions: 0
     },
     true
@@ -225,7 +306,6 @@ async function prepareChoreography(job: string) {
     ...animeDirectorRequest(direction),
     stream: true
   });
-  await rm(staging, { recursive: true });
   console.log(
     JSON.stringify({
       state: "manual-reference-frozen",
@@ -477,19 +557,35 @@ async function acceptReferee(job: string, production = false) {
     outcome
   );
   const looks = await json<
-    Record<string, { manifest: { look: { attackKind: string } } }>
+    Record<
+      string,
+      {
+        manifest: { look: { attackKind: string }; kits?: AnimeKnownKit[] };
+        loadout?: string[];
+      }
+    >
   >(join(job, "fixture-assets/fighters.json"));
+  const loadouts = Object.fromEntries(
+    Object.entries(looks).map(([id, f]) => [
+      id,
+      (f.manifest.kits ?? []).filter(
+        (k) => !f.loadout || f.loadout.includes(k.id)
+      )
+    ])
+  );
   const direction: AnimeDirectionInput = {
     tournament,
     strategies: Object.fromEntries(
       input.strategies.map((s) => [s.fighterId, s.text])
     ),
+    loadouts,
     choreography: directTournament(
       tournament,
       Object.fromEntries(
         Object.entries(looks).map(([id, f]) => [id, f.manifest.look])
       ),
-      Object.fromEntries(input.strategies.map((s) => [s.fighterId, s.text]))
+      Object.fromEntries(input.strategies.map((s) => [s.fighterId, s.text])),
+      loadouts
     )
   };
   await save(join(job, "direction-input.json"), direction, true);
@@ -574,6 +670,39 @@ async function render(job: string, variant: Variant) {
     job,
     variant
   );
+  const authorization = await json<{
+    studioReferenceKits?: boolean;
+    studioManifestHashes?: string[];
+  }>(join(job, "authorization.json"));
+  const studio = authorization.studioReferenceKits === true;
+  if (studio) {
+    const fighters = await json<
+      Record<
+        string,
+        {
+          manifest: AnimeManifest;
+          manifestHash: string;
+          loadout: [string, string];
+        }
+      >
+    >(join(job, "fixture-assets/fighters.json"));
+    const frozen = await json<FrozenInput>(join(job, "input.json"));
+    if (
+      frozen.roster.length !== 4 ||
+      Object.keys(fighters).length !== 4 ||
+      frozen.roster.some((f) => {
+        const entry = fighters[f.id];
+        return (
+          !entry ||
+          entry.manifest.recipe.id !== "anime-fighter-v2" ||
+          entry.manifest.kits?.length !== 3 ||
+          entry.loadout?.length !== 2 ||
+          !authorization.studioManifestHashes?.includes(entry.manifestHash)
+        );
+      })
+    )
+      throw new Error("Studio rehearsal lost its four pinned v2 fighters.");
+  }
   const folder = join(job, "films", variant),
     assets = join(folder, "assets"),
     pub = join(folder, "public");
@@ -696,6 +825,11 @@ async function render(job: string, variant: Variant) {
       : "provider-reported charges",
     artworkGenerationCostUsd: 0,
     artworkReused: true,
+    artworkSource: authorization.studioReferenceKits
+      ? "fresh-studio-v2-kits-on-reference-cast"
+      : studio
+        ? "reviewed-studio-v2"
+        : "historical-prototype",
     videoModelCalls: 0
   });
   await save(join(pub, "media-policy.json"), {
@@ -704,12 +838,13 @@ async function render(job: string, variant: Variant) {
     directorPolicy: ANIME_DIRECTOR_POLICY,
     refereeReused: referenceReview,
     offchain: true,
-    historicalArtwork: true,
+    historicalArtwork: !studio || authorization.studioReferenceKits === true,
+    attackAssetsSource: studio ? "studio-generated-v2" : "prototype-reference",
     noMainnetTransactions: true
   });
   await writeFile(
     join(pub, "credits.txt"),
-    `Private Yunipals rehearsal; historical fixture artwork reused. ${referenceReview ? "Original manual battle referee output reused; new Claude choreography." : "New referee and director output."}\nMusic: "Split In Synapse" by Kevin MacLeod (incompetech.com), CC BY 4.0.\nhttps://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100703\nhttps://creativecommons.org/licenses/by/4.0/\nMusic excerpted, looped and mixed with synthesized SFX. Fonts: Bangers and Russo One, SIL OFL.\n`
+    `Private Yunipals rehearsal; ${authorization.studioReferenceKits ? "historical character poses reused, fresh recipe-v2 studio windups and attack sheets for all four fighters; no Base approval" : studio ? "reviewed recipe-v2 studio fighters and generated attack kits" : "historical fixture artwork reused"}. ${referenceReview ? "Original manual battle referee output reused; new Claude choreography." : "New referee and director output."}\nMusic: "Split In Synapse" by Kevin MacLeod (incompetech.com), CC BY 4.0.\nhttps://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100703\nhttps://creativecommons.org/licenses/by/4.0/\nMusic excerpted, looped and mixed with synthesized SFX. Fonts: Bangers and Russo One, SIL OFL.\n`
   );
   const proof = join(folder, "proof");
   await mkdir(proof, { recursive: true });
@@ -746,9 +881,10 @@ async function render(job: string, variant: Variant) {
   );
 }
 async function summary(job: string) {
-  const authorization = await json<{ version: string }>(
-    join(job, "authorization.json")
-  );
+  const authorization = await json<{
+    version: string;
+    studioReferenceKits?: boolean;
+  }>(join(job, "authorization.json"));
   if (authorization.version === "anime-production-rehearsal/v1") {
     const referee = await json<PaidReceipt>(
       join(job, "tasks/referee/receipt.json")
@@ -817,6 +953,13 @@ async function summary(job: string) {
       additionalInferenceCostUsd: receipt.actualCostUsd,
       refereeReused: true,
       artworkReused: true,
+      ...(authorization.studioReferenceKits
+        ? {
+            basePosesReused: true,
+            attackAssetsSource: "studio-generated-v2",
+            kitFighters: 4
+          }
+        : {}),
       mainnetTransactions: 0
     };
     await save(join(job, "summary.json"), report);
@@ -869,12 +1012,13 @@ async function summary(job: string) {
   await save(join(job, "summary.json"), report);
   console.log(JSON.stringify(report, null, 2));
 }
-const [operation, rawJob, variant] = process.argv.slice(2);
+const [operation, rawJob, variant, tokenList] = process.argv.slice(2);
 if (
   !rawJob ||
   ![
     "prepare",
     "prepare-choreography",
+    "prepare-studio-choreography",
     "prepare-production",
     "accept-referee",
     "accept-production-referee",
@@ -884,7 +1028,7 @@ if (
   ].includes(operation ?? "")
 )
   throw new Error(
-    "Usage: arena-anime-rehearsal prepare|prepare-choreography|accept-referee|validate|render|summary PRIVATE_JOB [haiku|opus]"
+    "Usage: arena-anime-rehearsal OPERATION PRIVATE_JOB [haiku|opus]; prepare-studio-choreography PRIVATE_JOB REVIEW_ASSETS TOKEN_ID,TOKEN_ID,TOKEN_ID,TOKEN_ID"
   );
 const job = resolve(rawJob);
 if (
@@ -894,7 +1038,16 @@ if (
   throw new Error("Use an isolated private rehearsal directory.");
 if (operation === "prepare") await prepare(job);
 else if (operation === "prepare-production") await prepare(job, true);
-else if (operation === "prepare-choreography") await prepareChoreography(job);
+else if (operation === "prepare-studio-choreography") {
+  if (!variant || !tokenList)
+    throw new Error(
+      "Use prepare-studio-choreography JOB PUBLICATION TOKEN_ID,TOKEN_ID,TOKEN_ID,TOKEN_ID"
+    );
+  await prepareChoreography(job, {
+    publication: resolve(variant),
+    tokens: tokenList.split(",")
+  });
+} else if (operation === "prepare-choreography") await prepareChoreography(job);
 else if (operation === "accept-referee") await acceptReferee(job);
 else if (operation === "accept-production-referee")
   await acceptReferee(job, true);

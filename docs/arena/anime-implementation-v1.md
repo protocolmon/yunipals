@@ -35,7 +35,8 @@ semantic-frame hashes are attached under
 same frozen tournament hash. Historical no-kit fixtures retain procedural attacks;
 they cannot receive launch admission.
 
-A single production-route OpenRouter Opus rehearsal returned valid kit selections
+The initial engine regression used the prototype Cedar/Zephyr sheets and fallback
+effects for Bastion/Elrond. Its production-route OpenRouter Opus rehearsal returned valid kit selections
 and **5 / 5 / 6** attacks. Its reported charge was **$0.141292**, within the existing
 **$0.80** bound (11,578 prompt tokens, 4,749 completion tokens). The original
 manual-reference referee result and prototype artwork were reused, so this is the
@@ -43,6 +44,24 @@ incremental director cost, not a fresh referee-plus-artwork price. The resulting
 film is **122.51 seconds**, H.264/AAC, 1280×720 at 30 fps. Private original request,
 response and accounting are retained on `yunipals-main` under
 `/var/lib/yunipals-anime-arena/rehearsals/kits-20261029`.
+
+The corrected original-cast comparison uses **12 freshly generated windups and 12
+fresh shared effect sheets** from the recipe-v2 studio. All four reviewed exports
+have three kits and a two-kit loadout. The new `prepare-studio-choreography` mode
+verifies those exports, pins their hashes and refuses to overwrite a prior demo.
+All **16 attacks** select a fresh v2 kit, with **zero procedural fallbacks**; the
+character poses and exact frozen combat are reused. The reference exports are
+private test artifacts, not verified or approved Base fighters. Their scale and
+element palettes were reviewed before the final render.
+
+This comparison's new Opus call cost **$0.150936**. Its original response is retained
+under `/var/lib/yunipals-anime-arena/rehearsals/fresh-reference-kits-20261029`.
+Appearance review reused the exact same paid request/response without another
+provider submission. The final film is **121.65 seconds**, with SHA-256
+`805abe730ca385e81b62db48dd2109edcd16d20468bf834cf27b4456f0510e31`.
+The local `kit-audit.json` records every selected kit and verifies its windup/sheet
+bytes against the rendered manifests, generation receipts and unchanged combat.
+The new staging/obsolete-asset checks bring the manifest/admission suite to 16 tests.
 
 Actual Base **Yunibranch #1000001445** completed the subscription studio from
 finalized onchain traits and original artwork through all nine poses, three
