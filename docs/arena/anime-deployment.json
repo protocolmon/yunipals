@@ -20,7 +20,7 @@
   ],
   "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
   "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
-  "websiteDeploymentId": "dpl_DbgBKMiVJFtpjM7c1L3NQJ3iSErd",
+  "websiteDeploymentId": "dpl_5Qgu41Xe7uqnqwvTPPtBMpeECffc",
   "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
   "apiUrl": "https://api.yunipals.com/api/anime-arena",
   "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
@@ -117,6 +117,9 @@
     "latestObservationAt": "2026-10-29T20:41:12.339Z",
     "latestBufferedQuoteWei": "10258296420764",
     "latestQuoteWithinCap": false,
-    "additionalReserveFundingNeeded": false
-  }
+    "additionalReserveFundingNeeded": false,
+    "keepsOwnerControlsAndFightersVisible": true,
+    "quoteOutageBlocksOnlyPaidEnable": true
+  },
+  "websiteSourceCommit": "b02eb099"
 }
