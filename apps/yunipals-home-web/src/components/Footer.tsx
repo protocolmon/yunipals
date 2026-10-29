@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
@@ -60,18 +59,6 @@ export function Footer({
               Privacy Notice
             </Link>
           </div>
-          {!exomonView && (
-            <a
-              href="https://opensea.io/collection/yunipals-islands"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 self-start rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4 md:self-end"
-            >
-              Islands · Grassland Archipelago on OpenSea
-              <ArrowUpRight aria-hidden="true" className="shrink-0" size={16} />
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          )}
           {exomonView ? (
             <p className="text-xs font-semibold text-muted">
               Exomon · Solana Mainnet

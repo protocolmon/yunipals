@@ -536,11 +536,7 @@ try {
   const islands = page
     .locator("footer")
     .getByRole("link", { name: /Islands.*Grassland Archipelago/ });
-  assert.equal(
-    await islands.getAttribute("href"),
-    "https://opensea.io/collection/yunipals-islands"
-  );
-  assert.equal(await islands.getAttribute("target"), "_blank");
+  assert.equal(await islands.count(), 0);
   assert.ok((await page.locator("footer").innerText()).includes("BNB Chain"));
   const sitemap = await page.request.get(`${app.origin}/sitemap.xml`, {
     maxRedirects: 0
