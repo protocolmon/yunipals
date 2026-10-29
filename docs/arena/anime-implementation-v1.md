@@ -215,8 +215,11 @@ retention and mobile layout; four validation tests cover package tampering,
 creation identity, altered runtime and orphaned receipts.
 
 The assets hostname now resolves to `168.119.172.10`, has a valid HTTPS certificate,
-and serves the frozen engine and recipe-v2 assets. Contracts and anime services
-remain unconfigured until the browser deployment receipts are supplied.
+and serves the frozen engine, recipe-v2 assets and all four reviewed pilot fighters.
+The user supplied browser deployment receipts; both creations were independently
+verified against the pinned package. The closed API is running on the real
+contracts. Native source catch-up, source acceptance, encrypted restore verification
+and the wallet-signed paid pilot remain in progress.
 
 1. Review and sign the registry (applications closed) and arena (entries paused) on
    Base using the admin wallet. The final rules hash and constructor arguments are
@@ -227,14 +230,18 @@ remain unconfigured until the browser deployment receipts are supplied.
 3. Install DNS/TLS/assets/services and private selectors; verify the encrypted backup
    with an isolated restore drill, including the pinned Node/Chromium binaries.
    Pinned Node/Chromium, Python Pillow/numpy, ffmpeg and the private OpenRouter
-   credential are already installed and verified. Production anime units remain
-   uninstalled; activate them only with the real deployment/source configuration.
+   credential are installed and verified. Anime units and role-specific database
+   selectors are installed; the API runs closed. Activate the paid workers only
+   after canonical source acceptance.
 4. Complete the subscription terms/account review described below. Generate four actual
    Base pilot fighters through the studio and obtain curator review/onchain approval.
 5. Run the controlled paid pilot and measure real referee/gas costs, publication,
    payouts and claims. Open public applications/entries only after acceptance.
 
-Addresses and launch state remain explicitly unset in `anime-deployment.json`.
+Confirmed addresses and the current closed launch state are recorded in
+`anime-deployment.json`. The deployment wallet signs owner actions through the
+pilot page. The existing pilot NFT wallet supplies all four fighters and needs
+4 USDC on Base for the four entry payments; it already has Base gas.
 The existing conservative $0.70 referee reservation is retained as pilot funding
 headroom; it is distinct from the anime tournament's $0.60 operations revenue. The
 referee model, effort, schema and combat rules were not reduced to fit the reservation.
