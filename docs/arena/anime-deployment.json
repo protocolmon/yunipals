@@ -1,19 +1,18 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "browser contracts deployed closed; pilot page and four reviewed v2 fighters published; closed API running; isolated native source and encrypted restore drill in progress; paid pilot awaits wallet applications and 4 USDC",
+  "status": "four pilot applications and USDC funding confirmed; curator approval pending; encrypted restore drill passed; source binding reviewed; paid entry remains paused",
   "chainId": 8453,
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
   "registryDeploymentBlock": 53251773,
   "arena": "0x576790deff75af86fa638d9a1427e1eee7007094",
   "arenaDeploymentBlock": 53251781,
   "rulesHash": "0x5f3e761ba928f464ced77cc645d6e4f8fc112e7cb054dd5e49c5a39ef52c98e1",
-  "applicationsOpen": false,
+  "applicationsOpen": true,
   "entriesOpen": false,
   "initialArtwork": "one reviewed shared scene; actual island draw, terrain and rewards remain unchanged",
   "deferredArtwork": "generate and review unique anime artwork for all 898 islands as the final artwork step",
   "remainingLiveAcceptance": [
     "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
-    "encrypted backup restore check including anime assets and pinned runtimes",
     "one unified indexer source/schema transition and parity review",
     "commercial subscription artwork terms review",
     "four curator-reviewed Base pilot fighters via the studio",
@@ -22,7 +21,7 @@
   ],
   "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
   "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
-  "websiteDeploymentId": "dpl_9XscqcrwWVirBA8yHcipfou5SrtT",
+  "websiteDeploymentId": "dpl_G88UxYpj1ffTiRQb9ic1pcWFmZaC",
   "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
   "apiUrl": "https://api.yunipals.com/api/anime-arena",
   "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
@@ -49,11 +48,28 @@
     "schema": "unified_anime_20261029_v4",
     "buildId": "a93bc48f92",
     "manifestHash": "0x0f9c8fb8be8ad6f6cd0d73688710a91378e582159c95d036b3ef7dadd96c51e5",
-    "activatedForExistingConsumers": false
+    "activatedForExistingConsumers": false,
+    "selectedForAnimePilot": true,
+    "sourceEpoch": "5bc9eac0-646a-41e9-951d-296c09272f04",
+    "sourceReviewHash": "0x7cfb3413829bef3812c21fefc6f729974576085da28a88b5c17ebb12358a7706",
+    "acceptedBlock": "53251781",
+    "relayMaxInFlight": 8
   },
   "runtime": {
     "releaseId": "anime-20261029-d3c13ee82ec8",
     "sourceCommit": "4fe011a8b881d1d445814db3f7f2a25328b79c65",
     "archiveSha256": "4111aa5195c31b9728fab01163e87a94221e6543e6442ba5e6017b400cd03685"
-  }
+  },
+  "backupRestoreVerification": {
+    "status": "success",
+    "startedAt": "2026-10-29T18:26:02.433473+00:00",
+    "restoreDrill": true,
+    "allUploadsEncrypted": true,
+    "objectsUploaded": 581,
+    "objectsReused": 368,
+    "workersStarted": false,
+    "providerRequests": 0,
+    "transactionsBroadcast": 0
+  },
+  "drawReserveTargetWei": "10000000000000"
 }

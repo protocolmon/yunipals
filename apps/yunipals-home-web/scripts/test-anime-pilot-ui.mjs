@@ -9,10 +9,10 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const output = process.argv[2] ?? "/tmp/yunipals-anime-pilot-ui";
 await mkdir(output, { recursive: true });
 const fixture = `import {decodeFunctionData} from 'viem';import {animePilot} from '/src/lib/animePilot';import {animeRegistryAbi} from '@protopals/yunipals-market-core/animeRegistryAbi';
-const listeners=new Set();const mode=new URLSearchParams(location.search).get('wallet')||'admin';let identity={address:mode==='admin'?animePilot.admin:mode==='pilot'?animePilot.wallet:'0x1111111111111111111111111111111111111111',chainId:8453};let open=sessionStorage.getItem('pilot-open')==='true';const applied=new Set(JSON.parse(sessionStorage.getItem('pilot-applied')||'[]'));window.__sends=[];let wallet;
-function refresh(){wallet={account:{address:identity.address},async sendTransaction(input){if(input.chain.id!==8453)throw Error('wrong network');const decoded=decodeFunctionData({abi:animeRegistryAbi,data:input.data});if(decoded.functionName==='setApplicationsOpen'){open=decoded.args[0];sessionStorage.setItem('pilot-open',String(open));}else if(decoded.functionName==='applyForArena'){applied.add(String(decoded.args[0]));sessionStorage.setItem('pilot-applied',JSON.stringify([...applied]));}else throw Error('unexpected send');window.__sends.push(decoded.functionName);return '0x'+'ab'.repeat(32);}};}refresh();
+const listeners=new Set();const mode=new URLSearchParams(location.search).get('wallet')||'admin';let identity={address:mode==='admin'?animePilot.admin:mode==='pilot'?animePilot.wallet:'0x1111111111111111111111111111111111111111',chainId:8453};let open=sessionStorage.getItem('pilot-open')==='true';const applied=new Set(JSON.parse(sessionStorage.getItem('pilot-applied')||'[]'));window.__sends=[];let wallet;let balance=BigInt(sessionStorage.getItem('pilot-reserve')||'0');
+function refresh(){wallet={account:{address:identity.address},async sendTransaction(input){if(input.chain.id!==8453)throw Error('wrong network');if(input.to===animePilot.arena&&input.data==='0x'){if(input.value!==animePilot.reserveWei-balance||input.value>10000000000000n)throw Error('wrong reserve payment');balance+=input.value;sessionStorage.setItem('pilot-reserve',String(balance));window.__sends.push('fund');return '0x'+'ab'.repeat(32);}const decoded=decodeFunctionData({abi:animeRegistryAbi,data:input.data});if(decoded.functionName==='setApplicationsOpen'){open=decoded.args[0];sessionStorage.setItem('pilot-open',String(open));}else if(decoded.functionName==='applyForArena'){applied.add(String(decoded.args[0]));sessionStorage.setItem('pilot-applied',JSON.stringify([...applied]));}else throw Error('unexpected send');window.__sends.push(decoded.functionName);return '0x'+'ab'.repeat(32);}};}refresh();
 export const subscribe=f=>{listeners.add(f);return()=>listeners.delete(f)};export const snapshot=()=>identity;export const signing=()=>wallet;export const setIdentity=window.__identity=(chainId,address=identity.address)=>{identity={address,chainId};refresh();for(const f of listeners)f();};
-export const client={getBlockNumber:async()=>100n,getBalance:async()=>0n,call:async()=>({data:'0x'}),waitForTransactionReceipt:async()=>({status:'success'}),async readContract(input){switch(input.functionName){case'owner':case'curator':return animePilot.admin;case'applicationsOpen':return open;case'entriesPaused':return true;case'rulesHash':return animePilot.rulesHash;case'eligibility':return animePilot.registry;case'calculateRequestPriceNative':return 1000n;case'ownerOf':return animePilot.wallet;case'fighters':return [applied.has(String(input.args[0]))?1:0,0,0,'0x'+'00'.repeat(32)];default:throw Error('unexpected read');}}};`;
+export const client={getBlockNumber:async()=>100n,getGasPrice:async()=>6000000n,getBalance:async()=>balance,call:async()=>({data:'0x'}),waitForTransactionReceipt:async()=>({status:'success'}),async readContract(input){switch(input.functionName){case'owner':case'curator':return animePilot.admin;case'applicationsOpen':return open;case'entriesPaused':return true;case'rulesHash':return animePilot.rulesHash;case'eligibility':return animePilot.registry;case'estimateRequestPriceNative':if(input.args[2]!==12000000n)throw Error('draw quote omitted gas buffer');return 4900000000000n;case'ownerOf':return animePilot.wallet;case'fighters':return [applied.has(String(input.args[0]))?1:0,0,0,'0x'+'00'.repeat(32)];default:throw Error('unexpected read');}}};`;
 const modules = {
   "virtual:anime-fixture.ts": fixture,
   "virtual:anime-wagmi.ts": `import {useSyncExternalStore} from 'react';import {subscribe,snapshot,signing,client,setIdentity} from 'virtual:anime-fixture.ts';export const useAccount=()=>useSyncExternalStore(subscribe,snapshot);export function useWalletClient(){useSyncExternalStore(subscribe,snapshot);return{data:signing()};}export const usePublicClient=()=>client;export const useSwitchChain=()=>({switchChainAsync:async({chainId})=>setIdentity(chainId)});`,
@@ -105,6 +105,21 @@ try {
   assert.deepEqual(await page.evaluate(() => window.__sends), [
     "setApplicationsOpen"
   ]);
+  await page.getByRole("button", { name: /Fund draw reserve/ }).click();
+  await page.waitForFunction(() => window.__sends.length === 2);
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll("button")].some(
+      (b) => b.textContent.includes("Fund draw reserve") && b.disabled
+    )
+  );
+  assert.deepEqual(await page.evaluate(() => window.__sends), [
+    "setApplicationsOpen",
+    "fund"
+  ]);
+  assert.equal(
+    await page.evaluate(() => sessionStorage.getItem("pilot-reserve")),
+    "10000000000000"
+  );
   await page.goto("http://127.0.0.1:5209/__anime-setup?wallet=pilot");
   await page
     .getByRole("button", { name: "Apply for this fighter" })
@@ -164,6 +179,8 @@ try {
         checks: [
           "owner opens applications",
           "entry remains gated",
+          "draw quote includes buffered gas",
+          "reserve payment matches the reviewed cap",
           "pilot applies for all four",
           "other wallets have no controls",
           "mobile has no overflow",

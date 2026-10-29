@@ -16,7 +16,7 @@ export const animePilot = {
   wrapper: "0xb0407dbe851f8318bd31404a49e658143c982f23",
   rulesHash:
     "0x5f3e761ba928f464ced77cc645d6e4f8fc112e7cb054dd5e49c5a39ef52c98e1",
-  reserveWei: 1000000000000n,
+  reserveWei: 10000000000000n,
   fighters: [
     {
       tokenId: "1000702255",
@@ -45,10 +45,11 @@ export const animePilot = {
   ]
 } as const;
 const wrapperAbi = parseAbi([
-  "function calculateRequestPriceNative(uint32,uint32) view returns (uint256)"
+  "function estimateRequestPriceNative(uint32,uint32,uint256) view returns (uint256)"
 ]);
 export async function readAnimePilotState(client: PublicClient) {
   const blockNumber = await client.getBlockNumber({ cacheTime: 0 });
+  const gasPrice = await client.getGasPrice();
   const registry = {
     address: animePilot.registry,
     abi: animeRegistryAbi,
@@ -76,8 +77,8 @@ export async function readAnimePilotState(client: PublicClient) {
     client.readContract({
       address: animePilot.wrapper,
       abi: wrapperAbi,
-      functionName: "calculateRequestPriceNative",
-      args: [120000, 1],
+      functionName: "estimateRequestPriceNative",
+      args: [120000, 1, gasPrice * 2n],
       blockNumber
     }),
     Promise.all(

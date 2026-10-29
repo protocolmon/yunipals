@@ -373,7 +373,8 @@ export function AnimePilotPage() {
                     disabled={disabled || data.balance >= animePilot.reserveWei}
                     onClick={() => void run("fund")}
                   >
-                    Fund draw reserve · up to 0.000001 ETH
+                    Fund draw reserve · up to{" "}
+                    {formatEther(animePilot.reserveWei)} ETH
                   </button>
                   <button
                     className={button}
