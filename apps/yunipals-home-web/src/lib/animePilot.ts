@@ -49,7 +49,6 @@ const wrapperAbi = parseAbi([
 ]);
 export async function readAnimePilotState(client: PublicClient) {
   const blockNumber = await client.getBlockNumber({ cacheTime: 0 });
-  const gasPrice = await client.getGasPrice();
   const registry = {
     address: animePilot.registry,
     abi: animeRegistryAbi,
@@ -64,6 +63,7 @@ export async function readAnimePilotState(client: PublicClient) {
     rulesHash,
     eligibility,
     balance,
+    vrfMax,
     vrfPrice,
     fighters
   ] = await Promise.all([
@@ -74,13 +74,21 @@ export async function readAnimePilotState(client: PublicClient) {
     client.readContract({ ...arena, functionName: "rulesHash" }),
     client.readContract({ ...arena, functionName: "eligibility" }),
     client.getBalance({ address: animePilot.arena, blockNumber }),
-    client.readContract({
-      address: animePilot.wrapper,
-      abi: wrapperAbi,
-      functionName: "estimateRequestPriceNative",
-      args: [120000, 1, gasPrice * 2n],
-      blockNumber
-    }),
+    client.readContract({ ...arena, functionName: "maxVrfCost" }),
+    // A missing price blocks new paid entry, while owner controls and fighter
+    // status remain available. The quote is checked again before enabling.
+    client
+      .getGasPrice()
+      .then((gasPrice) =>
+        client.readContract({
+          address: animePilot.wrapper,
+          abi: wrapperAbi,
+          functionName: "estimateRequestPriceNative",
+          args: [120000, 1, gasPrice * 2n],
+          blockNumber
+        })
+      )
+      .catch(() => null),
     Promise.all(
       animePilot.fighters.map(async (fighter) => {
         const [value, holder] = await Promise.all([
@@ -120,11 +128,21 @@ export async function readAnimePilotState(client: PublicClient) {
     throw Error(
       "The deployed arena settings differ from this pilot. Stop and review the deployment."
     );
-  if (vrfPrice > 10000000000000n)
-    throw Error(
-      "The current island draw exceeds the arena's fixed spending cap."
-    );
-  return { applicationsOpen, paused, balance, vrfPrice, fighters };
+  return { applicationsOpen, paused, balance, vrfMax, vrfPrice, fighters };
+}
+export function animePilotDrawBlocker(
+  state: Pick<
+    Awaited<ReturnType<typeof readAnimePilotState>>,
+    "balance" | "vrfMax" | "vrfPrice"
+  >
+) {
+  if (state.vrfPrice === null || state.vrfPrice <= 0n)
+    return "The island draw price is temporarily unavailable. Paid entry can be enabled after the price is checked. This page checks again every 15 seconds.";
+  if (state.vrfPrice > state.vrfMax)
+    return "Base gas is currently too high for the island draw's fixed spending cap. Adding funds cannot increase this cap. This page checks again every 15 seconds.";
+  if (state.balance < state.vrfPrice)
+    return "The island draw reserve needs funding before paid entry can be enabled.";
+  return null;
 }
 export async function verifyPilotManifest(
   tokenId: string,

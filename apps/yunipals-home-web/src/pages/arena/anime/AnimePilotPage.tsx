@@ -20,6 +20,7 @@ import { animeRegistryAbi } from "@protopals/yunipals-market-core/animeRegistryA
 import { animeArenaAbi } from "@protopals/yunipals-market-core/animeArenaAbi";
 import {
   animePilot,
+  animePilotDrawBlocker,
   readAnimePilotState,
   verifyPilotManifest,
   pilotOwnsFighters
@@ -96,6 +97,7 @@ export function AnimePilotPage() {
   const admin = address?.toLowerCase() === animePilot.admin.toLowerCase();
   const holder = address?.toLowerCase() === animePilot.wallet;
   const data = state.data;
+  const drawBlocker = data ? animePilotDrawBlocker(data) : null;
   const approved =
     !!data && data.fighters.every((fighter) => fighter.status === 2);
   const pilotReady =
@@ -222,6 +224,8 @@ export function AnimePilotPage() {
         }
         if (action === "enable" || action === "pause") {
           if (action === "enable") {
+            const freshDrawBlocker = animePilotDrawBlocker(fresh);
+            if (freshDrawBlocker) throw Error(freshDrawBlocker);
             const api = await arenaRequestAt<ArenaConfig>(
               environment.animeArenaApiUrl,
               "/config"
@@ -231,8 +235,7 @@ export function AnimePilotPage() {
               !api.entriesEnabled ||
               api.contract.toLowerCase() !== animePilot.arena ||
               api.eligibilityRegistry?.toLowerCase() !== animePilot.registry ||
-              !fresh.fighters.every((fighter) => fighter.status === 2) ||
-              fresh.balance < fresh.vrfPrice
+              !fresh.fighters.every((fighter) => fighter.status === 2)
             )
               throw Error(
                 "Finish artwork approval, fund the draw and wait for pilot services before enabling entry."
@@ -322,9 +325,21 @@ export function AnimePilotPage() {
               entry: {data.paused ? "paused" : "enabled for the pilot"}
             </p>
             <p className="mt-2 text-sm text-muted">
-              Island draw reserve: {formatEther(data.balance)} ETH. Current draw
-              quote: {formatEther(data.vrfPrice)} ETH.
+              Island draw reserve: {formatEther(data.balance)} ETH. Buffered
+              draw quote:{" "}
+              {data.vrfPrice === null
+                ? "unavailable"
+                : `${formatEther(data.vrfPrice)} ETH`}
+              . Fixed draw cap: {formatEther(data.vrfMax)} ETH.
             </p>
+            {drawBlocker && (
+              <p
+                className="mt-4 rounded-card border border-line bg-lavender/10 p-4 text-sm"
+                role="status"
+              >
+                {drawBlocker}
+              </p>
+            )}
             {admin && (
               <section
                 className="mt-6 space-y-4 rounded-card border border-line p-5"
@@ -381,9 +396,7 @@ export function AnimePilotPage() {
                     disabled={
                       disabled ||
                       (data.paused &&
-                        (!approved ||
-                          data.balance < data.vrfPrice ||
-                          !pilotReady))
+                        (!approved || !!drawBlocker || !pilotReady))
                     }
                     onClick={() => void run(data.paused ? "enable" : "pause")}
                   >
