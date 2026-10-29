@@ -20,6 +20,7 @@ const names = [
   "src/film.js",
   "src/director.ts",
   "src/fighterNames.js",
+  "src/kitPolicy.js",
   "render.mjs",
   "mix.py",
   ...(await readdir(join(root, "static/assets"))).map(

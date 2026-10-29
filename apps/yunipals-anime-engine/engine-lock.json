@@ -1,15 +1,17 @@
 {
-  "version": "1.0.5",
+  "version": "1.1.0",
   "chromium": "151.0.7922.34",
-  "sha256": "accf6e78e61681b338f3a6d93f68a3513dcf91d42339e947da0b236194eef3c4",
+  "sha256": "773db47209a827ac6c62e2e245da10cd16917f9e53605f6badbf135f6b3a7d5e",
   "files": {
     "mix.py": "373a09a303dc0f7a1e314ead8edb33e5e3fc0220c791c6e1ab850f79efd07019",
-    "render.mjs": "ca737640d1516e2d5514562ae86db1636a224cf1c2d4567d9742b9cb5dccd006",
-    "src/director.ts": "b2f0f99b1a0a06ca4ef94a9bc8c88a9eb6a8822648a0b23f8d5fc85f969ef624",
+    "render.mjs": "a392af4d368406bab06f8a5af945e9ebd55f5d2f80f53d31a6068c2e7d0241c1",
+    "src/director.ts": "2dfbe3f44447bce7b92d7048765f3becdeb51028f15c9e4eb5f3b5542480f584",
     "src/fighterNames.js": "b2f8f29b15dec5b0d010017558f94c60d4b862acef56f4a14552253c3752f5a9",
-    "src/film.js": "19cf52795edf609e9014a4505f03f1b50a030250d616352a50c55f9fc61f013a",
+    "src/film.js": "ec35594bccd9d64b88a5fba576a3328ad1e1a8d29fae186c41b7f7b622651994",
+    "src/kitPolicy.js": "7dc1f82a9c7ff6ad788d1bb180991e21f2c016c79f1f7a9118a9e8a86da3aa32",
     "static/assets/Bangers.ttf": "4160a7311de9342674cce9160cde9fcbb30f48190397d86ff1b70b455af65824",
     "static/assets/RussoOne.ttf": "bc0abcc660bd8b7ad3000ecb2898a27c58a29a50f7ec81652fa12e75148d09df",
-    "static/assets/bg-arena.webp": "ed9c8e136a075c7966022c8e1207ee3d273b0c0fd9f90efe4179f057deba799d"
+    "static/assets/bg-arena.webp": "ed9c8e136a075c7966022c8e1207ee3d273b0c0fd9f90efe4179f057deba799d",
+    "static/assets/kit-palettes.json": "2d674ba5ba75100b5b1bf7d0f924a6c8107c75a0ef40167cbfebe326ccd8e6e6"
   }
 }

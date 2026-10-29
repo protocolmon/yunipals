@@ -1,0 +1,296 @@
+{
+  "version": "anime-engine-release-review/v1",
+  "comparisonImage": "1.1.0-before-after.jpg",
+  "comparisonImageSha256": "9b70d6c42589d904db2e8aec871f4dfce97a8803f2f8d440eb52966c7475b7a6",
+  "reference": ".arena-lab/anime-v1/site-v3/final-v3.mp4",
+  "before": {
+    "version": "anime-engine-frame-review/v1",
+    "variants": {
+      "manual": {
+        "engineVersion": "1.0.5",
+        "engineSha256": "accf6e78e61681b338f3a6d93f68a3513dcf91d42339e947da0b236194eef3c4",
+        "duration": 115.90863636363534,
+        "frames": [
+          {
+            "name": "SF1-ready.png",
+            "t": 11.3,
+            "sha256": "917ceb9e0808a15c6cd1be631532769727be03e3166f7b81211e118d7cb03912"
+          },
+          {
+            "name": "SF1-first-contact.png",
+            "t": 15.459999999999955,
+            "sha256": "ffa2ffedff47e9effa2239366dc5effd13c752623d81ed3d063af78ddfe73182"
+          },
+          {
+            "name": "SF1-reply.png",
+            "t": 18.359999999999992,
+            "sha256": "1a2a017487d3b4dcd16ab0b11e1481fe1bfac421b474c2677fb972797ed8f585"
+          },
+          {
+            "name": "SF1-winner.png",
+            "t": 38.119545454545175,
+            "sha256": "82721603ae8eedfdc19427d50c34c45077f78c01b8666052340484dd279da2be"
+          },
+          {
+            "name": "SF2-ready.png",
+            "t": 49.244545454545175,
+            "sha256": "91df94ec940d9338b5eaa282284cc9aa8d07ff347e4cc8ba4a4541bf4b3245c4"
+          },
+          {
+            "name": "SF2-first-contact.png",
+            "t": 53.40454545454512,
+            "sha256": "137fc2898e0c9906f555cb93b413d76394e17bf984cbc89e860411835ed9c47c"
+          },
+          {
+            "name": "SF2-reply.png",
+            "t": 58.95621212121182,
+            "sha256": "07ac53ef14d6e88c96f559a4186cf6757bb668d47ba8966af8f41a73d0e38b5a"
+          },
+          {
+            "name": "SF2-winner.png",
+            "t": 72.72909090909027,
+            "sha256": "bf54f590bc95637a14bbfb44e42bef788152693d37b6fc037ad61da4e3e1daab"
+          },
+          {
+            "name": "FINAL-ready.png",
+            "t": 84.23909090909028,
+            "sha256": "9279f6172dd1a00f7ef639582ce5ef4699425c6f2c42f16b547cc501297e261a"
+          },
+          {
+            "name": "FINAL-first-contact.png",
+            "t": 88.81909090909025,
+            "sha256": "06e798d8b0c85ce5dd6024617ce19e38f5f3fba322dc4862ae29c8f3d710efba"
+          },
+          {
+            "name": "FINAL-reply.png",
+            "t": 91.49909090909028,
+            "sha256": "704e51ef462a1b9a9c093db6bbecd650152afe443d73c23b34959bd49ad1366a"
+          },
+          {
+            "name": "FINAL-winner.png",
+            "t": 110.90863636363534,
+            "sha256": "8068c90baadea101793be02b5afd0c2e681c4dd8fbf54bdbf2a801ed9da433d6"
+          }
+        ],
+        "tournamentSha256": "79291cd5f9fc744e2a7522d717fadc6fed4611e5eb7e2d064ff084680eb5f393"
+      },
+      "automated": {
+        "engineVersion": "1.0.5",
+        "engineSha256": "accf6e78e61681b338f3a6d93f68a3513dcf91d42339e947da0b236194eef3c4",
+        "duration": 120.43363636363549,
+        "frames": [
+          {
+            "name": "SF1-ready.png",
+            "t": 11.3,
+            "sha256": "917ceb9e0808a15c6cd1be631532769727be03e3166f7b81211e118d7cb03912"
+          },
+          {
+            "name": "SF1-first-contact.png",
+            "t": 15.459999999999955,
+            "sha256": "0ff51d88787dd12695b6cb3e2744bace6a47c1bb40fa4a5b2ecf096388eb8315"
+          },
+          {
+            "name": "SF1-reply.png",
+            "t": 18.359999999999992,
+            "sha256": "8de3d238acfa720c562c6fada4b5c036055fe26dcd9e092517085d85c14d2600"
+          },
+          {
+            "name": "SF1-winner.png",
+            "t": 39.344545454545155,
+            "sha256": "07cd4108c150f3be34adce2e1c9c7417ce16e1e088b38ba20882e8beca0d81b3"
+          },
+          {
+            "name": "SF2-ready.png",
+            "t": 50.44454545454516,
+            "sha256": "91df94ec940d9338b5eaa282284cc9aa8d07ff347e4cc8ba4a4541bf4b3245c4"
+          },
+          {
+            "name": "SF2-first-contact.png",
+            "t": 54.604545454545104,
+            "sha256": "fad602c36db8ee89238811e818869e53a9d68b2e8dc09328dfd3dc194f8ce6cb"
+          },
+          {
+            "name": "SF2-reply.png",
+            "t": 61.3662121212118,
+            "sha256": "7d537f70b660fc0d29dbc79fab899ac7189ddd64363963b61205d00d0013727b"
+          },
+          {
+            "name": "SF2-winner.png",
+            "t": 76.54909090909042,
+            "sha256": "4313e68382fb03936ddaed9fa46cd6a5a6f8413e3d998cdb73598ab694cc9e01"
+          },
+          {
+            "name": "FINAL-ready.png",
+            "t": 87.64909090909043,
+            "sha256": "9279f6172dd1a00f7ef639582ce5ef4699425c6f2c42f16b547cc501297e261a"
+          },
+          {
+            "name": "FINAL-first-contact.png",
+            "t": 92.2290909090904,
+            "sha256": "ff3472ecacefafc603943d404129bf7cb346da8d1bcc4f55754f277b3e748b08"
+          },
+          {
+            "name": "FINAL-reply.png",
+            "t": 94.90909090909044,
+            "sha256": "3bffdd6c55d53d86912001cd89efd42ed47e2f14447e62025fa735406e83246e"
+          },
+          {
+            "name": "FINAL-winner.png",
+            "t": 115.43363636363549,
+            "sha256": "8bfd55aa44c41cea888ec1b83e338fd4335328bb626b8a7677cbcec0e88686f0"
+          }
+        ],
+        "tournamentSha256": "79291cd5f9fc744e2a7522d717fadc6fed4611e5eb7e2d064ff084680eb5f393"
+      }
+    }
+  },
+  "after": {
+    "version": "anime-engine-frame-review/v1",
+    "variants": {
+      "manual": {
+        "engineVersion": "1.1.0",
+        "engineSha256": "773db47209a827ac6c62e2e245da10cd16917f9e53605f6badbf135f6b3a7d5e",
+        "duration": 116.82863636363538,
+        "frames": [
+          {
+            "name": "SF1-ready.png",
+            "t": 11.3,
+            "sha256": "917ceb9e0808a15c6cd1be631532769727be03e3166f7b81211e118d7cb03912"
+          },
+          {
+            "name": "SF1-first-contact.png",
+            "t": 15.459999999999955,
+            "sha256": "bf3be999ab7d60b34fe5a421273e12f14629744a86b1cc05fc46aac9e6feaf06"
+          },
+          {
+            "name": "SF1-reply.png",
+            "t": 18.359999999999992,
+            "sha256": "b0f597383c5634c5624c3cdd0a7ff151f365e8ab6afaa9a5c1b127ed7b414731"
+          },
+          {
+            "name": "SF1-winner.png",
+            "t": 38.47954545454517,
+            "sha256": "82c652d282f906988f5020334c59deed33442c582ae8f2dbdc883d8fc7b785fb"
+          },
+          {
+            "name": "SF2-ready.png",
+            "t": 49.60454545454517,
+            "sha256": "91df94ec940d9338b5eaa282284cc9aa8d07ff347e4cc8ba4a4541bf4b3245c4"
+          },
+          {
+            "name": "SF2-first-contact.png",
+            "t": 53.764545454545114,
+            "sha256": "23c3e2cbb47797e6728c91cd26706f94b2894b9baa61e4bc325c6a055063a2d7"
+          },
+          {
+            "name": "SF2-reply.png",
+            "t": 59.31621212121181,
+            "sha256": "8684510dbb46276fd2fbf3d8218ea198b27d5d92635c0ac1fa737a1fa8ff5386"
+          },
+          {
+            "name": "SF2-winner.png",
+            "t": 73.36909090909032,
+            "sha256": "02dd7de24dbd09b164f2bf8e849a7576d3a26c43a8f021e3d63b762a452d6cf5"
+          },
+          {
+            "name": "FINAL-ready.png",
+            "t": 84.87909090909032,
+            "sha256": "9279f6172dd1a00f7ef639582ce5ef4699425c6f2c42f16b547cc501297e261a"
+          },
+          {
+            "name": "FINAL-first-contact.png",
+            "t": 89.45909090909029,
+            "sha256": "735d9553cc49df3c34e6e744bdb74be1575f0efa274c7ee1f66f4bd86ccefb97"
+          },
+          {
+            "name": "FINAL-reply.png",
+            "t": 92.13909090909033,
+            "sha256": "a8e559ccebb3350591c8b395b9eb6eb0ce694e07ee9c5c95b736a0955f52f00b"
+          },
+          {
+            "name": "FINAL-winner.png",
+            "t": 111.82863636363538,
+            "sha256": "f1e69ac03f590e83ca5cea077ee7b71a0e968e53434ae9993299ace4d7d8dddf"
+          }
+        ],
+        "tournamentSha256": "79291cd5f9fc744e2a7522d717fadc6fed4611e5eb7e2d064ff084680eb5f393"
+      },
+      "automated": {
+        "engineVersion": "1.1.0",
+        "engineSha256": "773db47209a827ac6c62e2e245da10cd16917f9e53605f6badbf135f6b3a7d5e",
+        "duration": 121.35363636363547,
+        "frames": [
+          {
+            "name": "SF1-ready.png",
+            "t": 11.3,
+            "sha256": "917ceb9e0808a15c6cd1be631532769727be03e3166f7b81211e118d7cb03912"
+          },
+          {
+            "name": "SF1-first-contact.png",
+            "t": 15.459999999999955,
+            "sha256": "2f6996b619b6e158ed95ca10915f45087e7c0415c086a955b2438cdcd06a6c00"
+          },
+          {
+            "name": "SF1-reply.png",
+            "t": 18.359999999999992,
+            "sha256": "9c87e5a2cd659cdfe25b08bd924947f237de86753ef0735a89163ffae3886399"
+          },
+          {
+            "name": "SF1-winner.png",
+            "t": 39.704545454545155,
+            "sha256": "fa03ca618cf0b0eb58c13b88aaeb3ce679d519563ce918d3d43c0b96d36a4814"
+          },
+          {
+            "name": "SF2-ready.png",
+            "t": 50.804545454545156,
+            "sha256": "91df94ec940d9338b5eaa282284cc9aa8d07ff347e4cc8ba4a4541bf4b3245c4"
+          },
+          {
+            "name": "SF2-first-contact.png",
+            "t": 54.9645454545451,
+            "sha256": "0b513d8ffdca89dc87a6f2e381842074de2aa88ed6b4ac66a9e49cad39d13373"
+          },
+          {
+            "name": "SF2-reply.png",
+            "t": 61.7262121212118,
+            "sha256": "a4bed3bb1ee4a1aed5116da18b44334ac62f39fddd837b6d7cbe232b5a0abe9c"
+          },
+          {
+            "name": "SF2-winner.png",
+            "t": 77.18909090909041,
+            "sha256": "7483966589e80678f44d28c7b70d95c761aa41f16a0a524735766da58c724427"
+          },
+          {
+            "name": "FINAL-ready.png",
+            "t": 88.2890909090904,
+            "sha256": "9279f6172dd1a00f7ef639582ce5ef4699425c6f2c42f16b547cc501297e261a"
+          },
+          {
+            "name": "FINAL-first-contact.png",
+            "t": 92.86909090909037,
+            "sha256": "f15226b19e827a5aabb97b85903714b7246efc99a1669053b34e6bd44d97d275"
+          },
+          {
+            "name": "FINAL-reply.png",
+            "t": 95.54909090909041,
+            "sha256": "bb1c4ec24afb7865eed58622d85bf6360988b8b239419838a3a3c4d37b604675"
+          },
+          {
+            "name": "FINAL-winner.png",
+            "t": 116.35363636363547,
+            "sha256": "e3f55349cec79c7c947d15803f95b4a7ef77055be7642ec9488375230dd35dd1"
+          }
+        ],
+        "tournamentSha256": "79291cd5f9fc744e2a7522d717fadc6fed4611e5eb7e2d064ff084680eb5f393"
+      }
+    }
+  },
+  "frozenCombatUnchanged": true,
+  "providerCallsForFrames": 0,
+  "notes": [
+    "Cedar and Zephyr use their painted prototype sheets and windups. Element art is recoloured to the committed fighter palette.",
+    "Bastion and Elrond have no kits and retain procedural attacks.",
+    "These are historical visual fixtures, not admissible launch fighters. Fresh recipe-v2 Base fighters require three kits and a two-kit default.",
+    "Non-KO hit stops, two-frame release smears and release camera punches apply to both paths. Existing audio synthesis and music are unchanged."
+  ]
+}

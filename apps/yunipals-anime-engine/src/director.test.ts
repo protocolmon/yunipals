@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { animeFighterName } from "./fighterNames.js";
+import { resolveAnimeKit } from "./kitPolicy.js";
 import {
   directTournament,
   strategyQuote,
@@ -11,6 +12,33 @@ import {
 const fixture = JSON.parse(
   readFileSync(new URL("../fixtures/tournament.json", import.meta.url), "utf8")
 ) as AnimeTournament;
+test("kits resolve by frozen name, compatible loadout order and validated explicit selection", () => {
+  const kits = [
+    { id: "thorn-volley", name: "Thorn Volley", kind: "projectile" as const },
+    { id: "vine-lash", name: "Vine Lash", kind: "strike" as const },
+    { id: "leaf-shot", name: "Leaf Shot", kind: "projectile" as const }
+  ];
+  assert.equal(resolveAnimeKit("leaf shot", "star", kits)?.id, "leaf-shot");
+  assert.equal(
+    resolveAnimeKit("Unknown", "orb", kits, null)?.id,
+    "thorn-volley"
+  );
+  assert.equal(resolveAnimeKit("Vine Lash", "vine", kits)?.id, "vine-lash");
+  assert.equal(resolveAnimeKit("Unknown", "dash", kits), undefined);
+  assert.equal(resolveAnimeKit("Unknown", "unknown", kits), undefined);
+  assert.equal(
+    resolveAnimeKit("Unknown", "jet", kits, "leaf-shot")?.id,
+    "leaf-shot"
+  );
+  assert.throws(
+    () => resolveAnimeKit("Unknown", "star", kits, "foreign"),
+    /loadout/
+  );
+  assert.throws(
+    () => resolveAnimeKit("Unknown", "dash", kits, "vine-lash"),
+    /compatible/
+  );
+});
 test("staging is deterministic and cannot alter outcomes", () => {
   const before = JSON.stringify(fixture);
   const looks = Object.fromEntries(
@@ -22,6 +50,30 @@ test("staging is deterministic and cannot alter outcomes", () => {
   );
   assert.equal(JSON.stringify(fixture), before);
   assert.equal(Object.keys(directTournament(fixture, looks, {})).length, 3);
+});
+test("named kits select the matching presentation even when the species default uses another effect", () => {
+  const t = structuredClone(fixture),
+    e = t.matches[0]!.events[0]!;
+  e.attackName = "Thorn Volley";
+  const before = JSON.stringify(t);
+  const looks = Object.fromEntries(
+    Object.keys(t.fighters).map((id) => [id, { attackKind: "vine" }])
+  );
+  const result = directTournament(
+    t,
+    looks,
+    {},
+    {
+      [e.actorId]: [
+        { id: "thorn-volley", name: "Thorn Volley", kind: "projectile" }
+      ]
+    }
+  );
+  const c = result[t.matches[0]!.id]!;
+  assert.equal(c.kinds[e.id], "orb");
+  assert.equal(c.kits![e.id], "thorn-volley");
+  assert.equal(c.names[e.id], "THORN VOLLEY");
+  assert.equal(JSON.stringify(t), before);
 });
 test("quotes are verbatim and attack names have at most two words", () => {
   const text = "Move left. Then strike from cover.";

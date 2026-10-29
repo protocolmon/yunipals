@@ -1,4 +1,6 @@
 import { animeFighterName } from "./fighterNames.js";
+import { resolveAnimeKit, type AnimeKitChoice } from "./kitPolicy.js";
+export { resolveAnimeKit, compatibleAnimeKit } from "./kitPolicy.js";
 
 export type AnimeEvent = {
   id: string;
@@ -48,6 +50,7 @@ export type AnimeMatchChoreography = {
   pos: Record<string, AnimePosition>;
   names: Record<string, string>;
   kinds: Record<string, AnimeAttackKind>;
+  kits?: Record<string, string | null>;
   cutins: Array<{
     at: number;
     type: string;
@@ -84,7 +87,8 @@ export function strategyQuote(text: string) {
 export function directTournament(
   t: AnimeTournament,
   looks: Record<string, { attackKind: string }>,
-  strategies: Record<string, string>
+  strategies: Record<string, string>,
+  loadouts: Record<string, AnimeKitChoice[]> = {}
 ): Record<string, AnimeMatchChoreography> {
   return Object.fromEntries(
     t.matches.map((m, index) => {
@@ -171,21 +175,62 @@ export function directTournament(
           names: Object.fromEntries(
             events.map((e) => [
               e.id,
-              ATTACK_NAMES[looks[e.actorId]!.attackKind] ?? "BODY STRIKE"
+              resolveAnimeKit(
+                e.attackName,
+                eventKind(e, looks[e.actorId]!.attackKind, loadouts[e.actorId]),
+                loadouts[e.actorId]
+              )?.name.toUpperCase() ??
+                ATTACK_NAMES[looks[e.actorId]!.attackKind] ??
+                "BODY STRIKE"
             ])
           ),
           kinds: Object.fromEntries(
             events.map((e) => [
               e.id,
-              (Object.hasOwn(ATTACK_NAMES, looks[e.actorId]!.attackKind)
-                ? looks[e.actorId]!.attackKind
-                : "dash") as AnimeAttackKind
+              eventKind(e, looks[e.actorId]!.attackKind, loadouts[e.actorId])
             ])
           ),
           cutins,
+          ...(Object.keys(loadouts).length
+            ? {
+                kits: Object.fromEntries(
+                  events.map((e) => [
+                    e.id,
+                    resolveAnimeKit(
+                      e.attackName,
+                      eventKind(
+                        e,
+                        looks[e.actorId]!.attackKind,
+                        loadouts[e.actorId]
+                      ),
+                      loadouts[e.actorId]
+                    )?.id ?? null
+                  ])
+                )
+              }
+            : {}),
           result: `${animeFighterName(t.fighters[m.winnerId]!.name)} wins.`
         }
       ];
     })
   );
+}
+
+function eventKind(
+  e: AnimeEvent,
+  fallback: string,
+  loadout: readonly AnimeKitChoice[] = []
+): AnimeAttackKind {
+  const kit = loadout.find(
+    (k) => k.name.toUpperCase() === e.attackName.trim().toUpperCase()
+  );
+  if (kit?.kind === "strike") return "vine";
+  if (kit?.kind === "dash") return "dash";
+  if (kit?.kind === "projectile")
+    return ["star", "jet", "orb"].includes(fallback)
+      ? (fallback as AnimeAttackKind)
+      : "orb";
+  return (
+    Object.hasOwn(ATTACK_NAMES, fallback) ? fallback : "dash"
+  ) as AnimeAttackKind;
 }

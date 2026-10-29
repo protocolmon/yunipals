@@ -50,6 +50,12 @@ export async function prepareFixture(job) {
     (await readFile(join(root, "fixtures/look.js"), "utf8")) +
       ";JSON.stringify(FIXTURE_LOOK)"
   );
+  const kits = JSON.parse(
+    await readFile(join(root, "fixtures/kits.json"), "utf8")
+  );
+  const recipe = JSON.parse(
+    await readFile(join(root, "static/assets/kit-palettes.json"), "utf8")
+  ).lock;
   const fighters = Object.fromEntries(
     Object.entries(JSON.parse(looks)).map(([id, l]) => {
       const manifest = {
@@ -67,6 +73,16 @@ export async function prepareFixture(job) {
             .map((p) => [p, sprites[id + "-" + p]])
         )
       };
+      // Historical visual references contain the single kit painted per actor.
+      // They are not admissible Base manifests (live v2 fighters require 3/2).
+      if (kits[id]) {
+        manifest.recipe = { id: "anime-fighter-v2", sha256: recipe.sha256 };
+        manifest.kits = kits[id];
+        manifest.defaultLoadout = kits[id].map((k) => k.id);
+        for (const kit of kits[id])
+          manifest.look.stageHeight[`windup-${kit.id}`] =
+            id === "cedar" ? 300 : 250;
+      }
       return [
         id,
         {

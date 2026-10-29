@@ -43,10 +43,10 @@ export async function withFilm(job, callback) {
       const url = new URL(req.url, "http://localhost");
       let bytes, type;
       if (url.pathname === "/") {
-        bytes = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0"><canvas id="c" width="1280" height="720"></canvas><script src="/film.js"></script><script>const c=document.getElementById('c');window.ready=YunipalsFilm.loadAssets('/assets/');window.frameAt=(t,png=false)=>{YunipalsFilm.drawFrame(c.getContext('2d'),t);return c.toDataURL(png?'image/png':'image/jpeg',0.94);};</script></body></html>`;
+        bytes = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0"><canvas id="c" width="1280" height="720"></canvas><script type="module">import "/film.js";const c=document.getElementById('c');window.ready=YunipalsFilm.loadAssets('/assets/');window.frameAt=(t,png=false)=>{YunipalsFilm.drawFrame(c.getContext('2d'),t);return c.toDataURL(png?'image/png':'image/jpeg',0.94);};</script></body></html>`;
         type = "text/html; charset=utf-8";
-      } else if (url.pathname === "/film.js") {
-        bytes = await readFile(join(root, "src/film.js"));
+      } else if (["/film.js", "/kitPolicy.js"].includes(url.pathname)) {
+        bytes = await readFile(join(root, "src", url.pathname.slice(1)));
         type = types[".js"];
       } else {
         const match = /^\/assets\/([A-Za-z0-9_.-]+)$/.exec(url.pathname);

@@ -1,4 +1,5 @@
-// Yunipals Arena — anime motion engine (v2: full tournament).
+import { resolveAnimeKit } from "./kitPolicy.js";
+// Yunipals Arena — deterministic full-tournament motion and signature kits.
 // Every frame is a pure function of film time, so one code path drives live
 // playback, scrubbing and frame-exact offline rendering.
 //   tournament.json   — referee data only (events, timing, verdicts)
@@ -76,6 +77,16 @@ const KIND = {
 
 // ---------- data ----------
 const IMG = {};
+const FX = {},
+  LOADOUTS = {};
+let ELEMENTS = {};
+const eventKit = (e) => (e.kit ? FX[e.actorId]?.[e.kit] : undefined);
+const sheetFrame = (im, index, sheet) => ({
+  sx: ((index % sheet.cols) * im.width) / sheet.cols,
+  sy: (Math.floor(index / sheet.cols) * im.height) / sheet.rows,
+  sw: im.width / sheet.cols,
+  sh: im.height / sheet.rows
+});
 let T = null,
   CH = null,
   SCENES = [],
@@ -90,6 +101,7 @@ async function loadAssets(base = "assets/") {
   ]);
   const fighters = await get("fighters.json");
   const manifest = await get("sprites.json");
+  const expected = {};
   const digest = async (bytes) =>
     [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))]
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -103,6 +115,24 @@ async function loadAssets(base = "assets/") {
             .map((k) => `${JSON.stringify(k)}:${canonical(v[k])}`)
             .join(",")}}`
         : JSON.stringify(v);
+  if (Object.values(fighters).some((f) => f.manifest.kits?.length)) {
+    const palettes = await get("kit-palettes.json");
+    if (
+      (await digest(new TextEncoder().encode(palettes.style))) !==
+        palettes.lock.files["style.json"] ||
+      (await digest(
+        new TextEncoder().encode(canonical(palettes.lock.files))
+      )) !== palettes.lock.sha256
+    )
+      throw new Error("Kit palette recipe changed");
+    ELEMENTS = JSON.parse(palettes.style).kits.elements;
+    for (const f of Object.values(fighters))
+      if (
+        f.manifest.kits?.length &&
+        f.manifest.recipe?.sha256 !== palettes.lock.sha256
+      )
+        throw new Error("Fighter kit recipe differs from palette recipe");
+  }
   for (const id of Object.keys(T.fighters)) {
     const { manifest: m, manifestHash } = fighters[id];
     if (
@@ -115,16 +145,44 @@ async function loadAssets(base = "assets/") {
       kind: m.look.attackKind,
       defFace: m.look.face,
       face: {},
-      h: m.look.stageHeight,
+      h: { ...m.look.stageHeight },
       origin: m.look.origin,
       torso: m.look.torso
     };
+    FX[id] = Object.fromEntries((m.kits ?? []).map((k) => [k.id, { ...k }]));
+    const chosen =
+      fighters[id].loadout ??
+      m.defaultLoadout ??
+      (m.kits ?? []).map((k) => k.id);
+    if (
+      new Set(chosen).size !== chosen.length ||
+      chosen.some((kit) => !FX[id][kit])
+    )
+      throw new Error("Fighter loadout changed");
+    LOADOUTS[id] = chosen.map((kit) => FX[id][kit]);
+    for (const [pose, s] of Object.entries(m.sprites))
+      expected[`${id}-${pose}`] = s.sha256;
+    for (const k of Object.values(FX[id])) {
+      const pose = `windup-${k.id}`;
+      LOOK[id].h[pose] ??= k.windup.h;
+      LOOK[id].face[pose] = m.look.face;
+      k.hue =
+        hue(LOOK[id].color) - hue(ELEMENTS[k.element]?.color ?? LOOK[id].color);
+      expected[`${id}-${pose}`] = k.windup.sha256;
+      for (const role of ["projectile", "strike", "impact"]) {
+        if (!k[role]) continue;
+        const key = `${id}-kit-${k.id}-${role}`;
+        expected[key] = k[role].sha256;
+        k[role] = { ...k[role], asset: key };
+      }
+    }
   }
   const need = ["bg-arena"];
   for (const id of Object.keys(T.fighters)) {
     for (const p of Object.keys(LOOK[id].h)) need.push(`${id}-${p}`);
     need.push(`${id}-cutin`);
   }
+  need.push(...Object.keys(expected).filter((key) => key.includes("-kit-")));
   await Promise.all(
     need.map(async (n) => {
       const asset = manifest[n];
@@ -136,9 +194,7 @@ async function loadAssets(base = "assets/") {
       if ((await digest(bytes)) !== asset.sha256)
         throw new Error("Sprite changed");
       if (n !== "bg-arena") {
-        const id = Object.keys(T.fighters).find((id) => n.startsWith(id + "-"));
-        const pose = n.slice(id.length + 1);
-        if (fighters[id].manifest.sprites[pose].sha256 !== asset.sha256)
+        if (expected[n] !== asset.sha256)
           throw new Error("Sprite differs from fighter manifest");
       }
       const url = URL.createObjectURL(new Blob([bytes]));
@@ -147,6 +203,26 @@ async function loadAssets(base = "assets/") {
         im.src = url;
         await im.decode();
         IMG[n] = im;
+        if (n.includes("-kit-")) {
+          const id = Object.keys(T.fighters).find((id) =>
+            n.startsWith(id + "-kit-")
+          );
+          const k = Object.values(FX[id])
+            .flatMap((k) => [k.projectile, k.strike, k.impact])
+            .find((s) => s?.asset === n);
+          if (
+            !k ||
+            !Number.isInteger(k.cols) ||
+            !Number.isInteger(k.rows) ||
+            k.cols < 1 ||
+            k.rows < 1 ||
+            k.cols > 4 ||
+            k.rows > 4 ||
+            im.width % k.cols ||
+            im.height % k.rows
+          )
+            throw new Error("Kit sheet grid changed");
+        }
       } finally {
         URL.revokeObjectURL(url);
       }
@@ -183,6 +259,13 @@ function buildMatch(m) {
     ...e,
     i,
     kind: c.kinds?.[e.id] || LOOK[e.actorId].kind,
+    kit:
+      resolveAnimeKit(
+        e.attackName,
+        c.kinds?.[e.id] || LOOK[e.actorId].kind,
+        LOADOUTS[e.actorId],
+        c.kits?.[e.id]
+      )?.id ?? null,
     short: c.names?.[e.id] || e.attackName.toUpperCase(),
     end: e.outcome === "interrupted" ? m.verdictSeconds : e.contact,
     ko:
@@ -209,7 +292,14 @@ function buildMatch(m) {
       kind: "cutin",
       ci
     })),
-    { b: m.verdictSeconds, dur: 1.2, kind: "ko" }
+    { b: m.verdictSeconds, dur: 1.2, kind: "ko" },
+    ...M.events
+      .filter((e) => ["hit", "guarded"].includes(e.outcome) && !e.ko)
+      .map((e) => ({
+        b: e.contact,
+        dur: e.outcome === "hit" ? 0.14 : 0.08,
+        kind: "hitstop"
+      }))
   ].sort((a, z) => a.b - z.b);
   const bEnd = m.settledSeconds + 0.8,
     step = 0.005;
@@ -389,8 +479,14 @@ function stage(M, id, b, f) {
     if (
       e.actorId === id &&
       win(b, e.start, e.outcome === "interrupted" ? e.end : e.recoveryUntil)
-    )
+    ) {
       s.pose = e.kind === "dash" && has(id, "dash") ? "dash" : "attack";
+      const pose = e.kit && `windup-${e.kit}`;
+      if (b < e.release && pose && has(id, pose)) {
+        s.pose = pose;
+        s.x -= s.face * 10 * smooth((b - e.start) / (e.release - e.start));
+      }
+    }
   for (const e of M.events)
     if (
       e.targetId === id &&
@@ -523,6 +619,11 @@ function camera(M, f) {
   cx /= n;
   cy /= n;
   zoom /= n;
+  for (const e of M.events)
+    if (e.outcome !== "interrupted") {
+      const age = f - e.fRelease;
+      if (age >= 0 && age < 0.25) zoom *= 1 + 0.07 * (1 - age / 0.25) ** 2;
+    }
   const hw = 640 / zoom,
     hh = 360 / zoom;
   return {
@@ -556,7 +657,8 @@ const toScreen = (cam, p) => ({
 // ---------- drawing primitives ----------
 function sprite(ctx, name, x, y, o = {}) {
   const im = IMG[name],
-    [id, pose] = name.split("-");
+    id = Object.keys(LOOK).find((id) => name.startsWith(id + "-")),
+    pose = name.slice(id.length + 1);
   const h = (o.h || LOOK[id]?.h[pose] || 250) * (o.scale || 1),
     w = (im.width / im.height) * h;
   ctx.save();
@@ -570,6 +672,29 @@ function sprite(ctx, name, x, y, o = {}) {
   ctx.restore();
 }
 const spriteFace = (id, pose) => LOOK[id].face[pose] ?? LOOK[id].defFace;
+function hue(hex) {
+  const [r, g, b] = [1, 3, 5].map(
+    (i) => parseInt(hex.slice(i, i + 2), 16) / 255
+  );
+  const max = Math.max(r, g, b),
+    delta = max - Math.min(r, g, b);
+  if (!delta) return 0;
+  return (
+    ((max === r
+      ? (g - b) / delta
+      : max === g
+        ? (b - r) / delta + 2
+        : (r - g) / delta + 4) *
+      60 +
+      360) %
+    360
+  );
+}
+function paintedFrame(ctx, sheet, frame, x, y, width, height) {
+  const im = IMG[sheet.asset],
+    rect = sheetFrame(im, frame, sheet);
+  ctx.drawImage(im, rect.sx, rect.sy, rect.sw, rect.sh, x, y, width, height);
+}
 function shadow(ctx, x, y, w, a) {
   ctx.save();
   ctx.globalAlpha = a;
@@ -772,7 +897,8 @@ function dust(ctx, x, y, age, seed, n = 9) {
 }
 
 // ---------- attacks ----------
-const isProjectile = (e) => e.kind === "star" || e.kind === "orb";
+const isProjectile = (e) =>
+  e.kind === "star" || e.kind === "orb" || !!eventKit(e)?.projectile;
 function shotPath(M, e, f) {
   const from = origin(stage(M, e.actorId, e.release, f));
   const to = torso(
@@ -792,6 +918,7 @@ function drawProjectile(ctx, M, e, b, f) {
   });
   const orb = e.kind === "orb",
     r = /burst/i.test(e.attackName) ? 34 : 26;
+  const kit = eventKit(e);
   for (let k = 14; k >= 1; k--) {
     const q = p - k * 0.03;
     if (q < 0) continue;
@@ -802,10 +929,31 @@ function drawProjectile(ctx, M, e, b, f) {
       pt.y,
       r * (1.6 - k * 0.07),
       orb ? "rgba(90,140,255,0.6)" : "rgba(255,190,60,0.55)",
-      (1 - k / 15) * 0.7
+      (1 - k / 15) * (kit?.projectile ? 0.25 : 0.7)
     );
   }
   const pt = pos(p);
+  if (kit?.projectile) {
+    const sheet = kit.projectile,
+      size = (150 * r) / 26;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.92;
+    ctx.filter = `hue-rotate(${kit.hue}deg)`;
+    ctx.translate(pt.x, pt.y);
+    if (to.x > from.x) ctx.scale(-1, 1);
+    paintedFrame(
+      ctx,
+      sheet,
+      Math.floor(f * 14) % (sheet.cols * sheet.rows),
+      -size / 2,
+      -size / 2,
+      size,
+      size
+    );
+    ctx.restore();
+    return;
+  }
   if (orb) {
     glow(ctx, pt.x, pt.y, r * 3.2, "rgba(120,170,255,0.9)");
     ctx.save();
@@ -867,6 +1015,34 @@ function drawVine(ctx, M, e, b, f) {
     ret = clamp((b - e.contact) / Math.max(0.12, e.recoveryUntil - e.contact));
   const reach = ext * (1 - smooth(ret));
   if (reach <= 0.01) return;
+  const kit = eventKit(e);
+  if (kit?.strike) {
+    const sheet = kit.strike,
+      im = IMG[sheet.asset],
+      dist = Math.hypot(to.x - from.x, to.y - from.y) * 1.08;
+    const frame =
+      ret > 0 || ext < 0.85 ? 0 : Math.min(2, sheet.cols * sheet.rows - 1);
+    const rect = sheetFrame(im, frame, sheet),
+      height = ((dist * rect.sh) / rect.sw) * 1.3;
+    ctx.save();
+    ctx.translate(from.x, from.y);
+    ctx.rotate(Math.atan2(to.y - from.y, to.x - from.x));
+    ctx.beginPath();
+    ctx.rect(-10, -height, dist * reach + 10, height * 2);
+    ctx.clip();
+    ctx.filter = `hue-rotate(${kit.hue}deg) brightness(.25)`;
+    for (const [x, y] of [
+      [3, 0],
+      [-3, 0],
+      [0, 3],
+      [0, -3]
+    ])
+      paintedFrame(ctx, sheet, frame, x, -height / 2 + y, dist, height);
+    ctx.filter = `hue-rotate(${kit.hue}deg)`;
+    paintedFrame(ctx, sheet, frame, 0, -height / 2, dist, height);
+    ctx.restore();
+    return;
+  }
   const mx = lerp(from.x, to.x, 0.5),
     my = Math.min(from.y, to.y) - 110,
     pts = [];
@@ -1070,6 +1246,21 @@ function drawFighter(ctx, M, s, b, f, seg) {
     (onFloor ? 0.28 : 0.18) * alpha
   );
   const sc = 1 + s.depth * 0.002;
+  for (const e of M.events)
+    if (
+      e.actorId === id &&
+      e.outcome !== "interrupted" &&
+      win(f, e.fRelease, e.fRelease + 2 / FPS)
+    ) {
+      sprite(ctx, `${id}-attack`, s.x - s.face * 40, s.y, {
+        rot: s.rot,
+        sx: 1.45,
+        sy: 0.96,
+        flip: spriteFace(id, "attack") !== s.face,
+        scale: sc,
+        alpha: 0.45 * alpha
+      });
+    }
   sprite(ctx, name, s.x, s.y, {
     rot: s.rot,
     sx: s.sx,
@@ -1102,6 +1293,7 @@ function drawImpacts(ctx, M, b, f) {
         t = torso(tg),
         K = KIND[e.kind],
         guard = e.outcome === "guarded";
+      const kit = eventKit(e);
       if (age >= 0 && age < 0.35) {
         ctx.save();
         ctx.globalAlpha = 1 - age / 0.35;
@@ -1156,6 +1348,26 @@ function drawImpacts(ctx, M, b, f) {
       if (e.kind === "vine") leaves(ctx, t.x, t.y, age, e.i * 31, 16);
       if (e.kind === "jet") droplets(ctx, t.x, t.y, age, e.i * 13, 26);
       if (!tg.fly) dust(ctx, tg.x, GROUND + tg.depth, age, e.i * 7, 8);
+      if (kit?.impact && age >= 0 && age < 0.3) {
+        const sheet = kit.impact,
+          size = e.ko ? 420 : 300;
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        ctx.rotate(R(e.i * 53 + 3) * Math.PI * 2);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.filter = `hue-rotate(${kit.hue}deg)`;
+        ctx.globalAlpha = age > 0.225 ? 1 - (age - 0.225) / 0.075 : 1;
+        paintedFrame(
+          ctx,
+          sheet,
+          Math.min(sheet.cols * sheet.rows - 1, Math.floor(age / 0.075)),
+          -size / 2,
+          -size / 2,
+          size,
+          size
+        );
+        ctx.restore();
+      }
     }
     if (e.outcome === "dodged") {
       const endB =
@@ -1702,8 +1914,9 @@ function drawMatch(ctx, M, f) {
   for (const s of bodies) drawFighter(ctx, M, s, b, f, seg);
   for (const e of M.events) {
     drawCharge(ctx, M, e, b, f);
-    if (e.kind === "vine") drawVine(ctx, M, e, b, f);
-    else if (e.kind === "jet") drawJet(ctx, M, e, b, f);
+    if (eventKit(e)?.strike || e.kind === "vine") drawVine(ctx, M, e, b, f);
+    else if (e.kind === "jet" && !eventKit(e)?.projectile)
+      drawJet(ctx, M, e, b, f);
     else if (isProjectile(e) && e.outcome !== "dodged")
       drawProjectile(ctx, M, e, b, f);
   }
@@ -1743,7 +1956,8 @@ function drawMatch(ctx, M, f) {
         : inFight
           ? 1
           : 0;
-  if (seg.kind === "fight") for (const e of M.events) callout(ctx, M, e, f);
+  if (seg.kind === "fight" || seg.kind === "hitstop")
+    for (const e of M.events) callout(ctx, M, e, f);
   if (seg.kind !== "result" && seg.kind !== "vs") popups(ctx, M, f, cam);
   hud(ctx, M, f, b, hudA);
   if (seg.kind === "vs") drawVs(ctx, M, f);
