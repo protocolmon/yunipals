@@ -33,6 +33,7 @@ import {
   type ArenaStrategyReceipt
 } from "@/lib/arenaStrategies";
 import { fetchOwnerTokens, type IndexedChain } from "@/lib/yunipalsIndexer";
+import { collectorClient, defaultCollectorFilters } from "@/lib/collector";
 import { ArenaFilm } from "./ArenaFilm";
 import { ArenaJoinBanner } from "./ArenaJoinBanner";
 import {
@@ -553,11 +554,20 @@ export function LiveArenaPage() {
   const inventory = useInfiniteQuery({
     queryKey: ["arena-inventory", deployment.kind, address],
     queryFn: async ({ pageParam, signal }) => {
-      const page = await fetchOwnerTokens(
-        address!,
-        { limit: 24, cursor: pageParam },
-        signal
-      );
+      const page =
+        deployment.kind === "anime"
+          ? await collectorClient.page(
+              address!,
+              { ...defaultCollectorFilters, chains: ["base"] },
+              "visible",
+              pageParam,
+              signal
+            )
+          : await fetchOwnerTokens(
+              address!,
+              { limit: 24, cursor: pageParam },
+              signal
+            );
       if (deployment.kind !== "anime") return page;
       const base = page.items.filter((t) => t.chainId === 8453);
       const eligible = await Promise.all(

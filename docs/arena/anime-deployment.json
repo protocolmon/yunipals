@@ -1,6 +1,6 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "four pilot applications and USDC funding confirmed; encrypted restore drill passed; native source selected for the closed pilot with final sync pending; curator approval and draw-reserve funding pending",
+  "status": "four reviewed v2 fighters approved and draw reserve funded; native source ready; all pilot services running with a single-wallet allowlist; awaiting the admin browser signature to unpause paid entry",
   "chainId": 8453,
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
   "registryDeploymentBlock": 53251773,
@@ -15,32 +15,35 @@
     "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
     "one unified indexer source/schema transition and parity review",
     "commercial subscription artwork terms review",
-    "four curator-reviewed Base pilot fighters via the studio",
     "controlled 1 USDC pilot: referee, render, publication, payout release and claim",
-    "open applications and entries after pilot acceptance"
+    "open public paid entry after pilot acceptance; applications remain open at the owner's request"
   ],
   "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
   "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
-  "websiteDeploymentId": "dpl_G88UxYpj1ffTiRQb9ic1pcWFmZaC",
+  "websiteDeploymentId": "dpl_4bDqg5Ee9ec2AzD919R3aApHnazT",
   "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
   "apiUrl": "https://api.yunipals.com/api/anime-arena",
   "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
   "pilotFighters": [
     {
       "tokenId": "1000702255",
-      "manifestHash": "0x21ae742e3288e9d8f79f4aa32d697aaed92512da88d594d91da7727c6903fefc"
+      "manifestHash": "0x21ae742e3288e9d8f79f4aa32d697aaed92512da88d594d91da7727c6903fefc",
+      "onchainStatus": "Approved"
     },
     {
       "tokenId": "1000702258",
-      "manifestHash": "0x42f3c0f215884d343b399b2c30898b958d14de36d818eba33f8387912d685893"
+      "manifestHash": "0x42f3c0f215884d343b399b2c30898b958d14de36d818eba33f8387912d685893",
+      "onchainStatus": "Approved"
     },
     {
       "tokenId": "10003506584",
-      "manifestHash": "0x71031200def3f6a9d0ef6e4f463b484e819e9f4eae2c1ec523f6d39a84b27035"
+      "manifestHash": "0x71031200def3f6a9d0ef6e4f463b484e819e9f4eae2c1ec523f6d39a84b27035",
+      "onchainStatus": "Approved"
     },
     {
       "tokenId": "20000002689",
-      "manifestHash": "0x08beeb30c42b630d5817d31a988309b88124eaf040978d3fd2c50239f870bac8"
+      "manifestHash": "0x08beeb30c42b630d5817d31a988309b88124eaf040978d3fd2c50239f870bac8",
+      "onchainStatus": "Approved"
     }
   ],
   "nativeCandidate": {
@@ -62,12 +65,18 @@
       "pilotOwnershipRowsCompared": 4,
       "pilotOwnershipRowsMatch": true,
       "fullHistoricalAllFeatureParityComplete": false
-    }
+    },
+    "frameworkReady": true,
+    "productionReaderReady": true,
+    "relaySourceQueueEnabled": true,
+    "relaySourceQueueWaitMs": 8000,
+    "relayFreeRequestTimeoutMs": 10000,
+    "paidReplayCalls": 0
   },
   "runtime": {
-    "releaseId": "anime-20261029-d3c13ee82ec8",
-    "sourceCommit": "4fe011a8b881d1d445814db3f7f2a25328b79c65",
-    "archiveSha256": "4111aa5195c31b9728fab01163e87a94221e6543e6442ba5e6017b400cd03685"
+    "releaseId": "anime-20261029-fcff0b431c45",
+    "sourceCommit": "e804eb51cacc8f99da11aa30ceebd6ff167d8d73",
+    "archiveSha256": "5c671bb4eeebd43aea1b34a3fbfef9f6f639b4eda44903313d1cc96f952443cc"
   },
   "backupRestoreVerification": {
     "status": "success",
@@ -80,5 +89,18 @@
     "providerRequests": 0,
     "transactionsBroadcast": 0
   },
-  "drawReserveTargetWei": "10000000000000"
+  "drawReserveTargetWei": "10000000000000",
+  "backendEntryMode": "pilot",
+  "backendPilotWalletCount": 1,
+  "contractEntriesPaused": true,
+  "drawReserveFundedWei": "10000000000000",
+  "pilotServices": {
+    "apiReady": true,
+    "workerCount": 8,
+    "capacitySnapshotPassed": true,
+    "storageAccessCheckedAsServiceUser": true,
+    "serviceBootActivationEnabled": true,
+    "newPilotProviderRequests": 0,
+    "newPilotChargedMicrousd": 0
+  }
 }

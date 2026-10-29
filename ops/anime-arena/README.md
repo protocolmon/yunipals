@@ -119,6 +119,11 @@ Provision DNS A/AAAA for `assets-anime.yunipals.com`, TLS, and the nginx fragmen
 Create `/var/www/assets-anime.yunipals.com` and
 `/var/lib/yunipals-anime-arena/{media,studio}`. Public files are 0644 and directories
 0755; private studio/media paths belong to the service user and are not web roots.
+Keep `/var/lib/yunipals-anime-arena` root-owned with group `yunipals-arena` and
+mode 0710 so workers can traverse to their owner-only 0700 media directory.
+Check media access as `yunipals-arena`; a root-only storage check cannot verify
+worker access through the parent directory. Keep studio and recovery permissions
+private independently.
 The assets server permits GET/HEAD, approved website origins and hash-based immutable
 caching. Publish the frozen recipe and versioned engine bundle with their locks too.
 DNS and HTTPS were provisioned on `yunipals-main` on 2026-10-29, and the reviewed
