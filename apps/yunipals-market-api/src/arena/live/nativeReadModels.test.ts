@@ -45,7 +45,7 @@ after(async () => {
   await pool.end();
 });
 
-async function fixture(t: TestContext) {
+async function fixture(t: TestContext, mediaKind: "video" | "anime" = "video") {
   const contract = `0x${randomBytes(20).toString("hex")}` as Address;
   const deployment = `8453:${contract}`,
     sourceId = `arena:${deployment}`;
@@ -62,7 +62,8 @@ async function fixture(t: TestContext) {
   const definition = {
     contract,
     startBlock: "1",
-    abiHash: manifestDigest(arenaAbi)
+    abiHash: manifestDigest(arenaAbi),
+    mediaKind
   };
   const manifest = {
     version: 1 as const,
@@ -169,7 +170,9 @@ async function fixture(t: TestContext) {
     "https://example.invalid",
     new StrategyCipher(randomBytes(32)),
     { message: async () => false, strategy: async () => false },
-    source
+    source,
+    undefined,
+    mediaKind
   );
   const models = new NativeArenaReadModels(service);
   const event = async (
@@ -596,5 +599,34 @@ test("native PostgreSQL canonical evidence corruption and selected operational s
   await assert.rejects(
     f.models.rewards(wallet),
     /source selection is not ready/
+  );
+});
+
+test("anime wallet totals and rewards use the 1 USDC deployment economics", async (t) => {
+  const f = await fixture(t, "anime");
+  await f.add("1", { phase: "settled", winners: [0, 1, 0], videoHash: h("f") });
+  await f.add("2", { phase: "expired" });
+  await f.add("3", { phase: "settled", winners: [0, 1, 0] });
+  const totals = await f.models.wallet(wallet);
+  assert.deepEqual(
+    [
+      totals.entryPayments,
+      totals.winnings,
+      totals.hostingRewards,
+      totals.operationsRewards,
+      totals.refunds,
+      totals.pending
+    ],
+    ["6000000", "3200000", "200000", "600000", "2000000", "4000000"]
+  );
+  const rewards = await f.models.rewards(wallet);
+  assert.deepEqual(
+    rewards.items.map((r) => [r.kind, r.amount]),
+    [
+      ["winner", "3200000"],
+      ["host", "200000"],
+      ["operations", "600000"],
+      ["refund", "2000000"]
+    ]
   );
 });

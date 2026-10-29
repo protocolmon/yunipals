@@ -4,6 +4,8 @@ import {
   type LocalAccount,
   type PublicClient
 } from "viem";
+import { ANIME_BASE_COLLECTION } from "@protopals/yunipals-market-core/anime";
+import { animeDigest, type AnimeFighters } from "./animeFighters";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { withArenaSourceLease } from "./sourceSelection";
 import {
@@ -29,7 +31,8 @@ export function createAdmission(
     id: string,
     nft: AdmissionRequest,
     wallet: Address
-  ) => Promise<unknown>
+  ) => Promise<unknown>,
+  anime?: AnimeFighters
 ) {
   return async (id: string, wallet: Address, nft: AdmissionRequest) =>
     withArenaSourceLease(service, async () => {
@@ -42,6 +45,15 @@ export function createAdmission(
         throw new ArenaRequestError(
           400,
           "Choose a Yunipal from a supported collection."
+        );
+      if (
+        anime &&
+        (nft.nftChainId !== 8453 ||
+          nft.collection.toLowerCase() !== ANIME_BASE_COLLECTION)
+      )
+        throw new ArenaRequestError(
+          400,
+          "The anime arena accepts Base OG Yunipals only."
         );
       const before = await service.tournamentContext(id),
         state = before.state;
@@ -88,8 +100,20 @@ export function createAdmission(
           403,
           "This wallet does not own that NFT at the confirmed ownership snapshot."
         );
+      const animeManifest = anime
+        ? await anime.eligible(nft, ownershipBlock.number)
+        : null;
       // Identity must be usable before an entry permit can authorize a payment.
-      await ensureIdentity(id, nft, wallet);
+      const prepared = await ensureIdentity(id, nft, wallet);
+      if (
+        animeManifest &&
+        (prepared as { animeManifestHash?: string })?.animeManifestHash !==
+          animeDigest(animeManifest)
+      )
+        throw new ArenaRequestError(
+          409,
+          "This tournament has an older fighter snapshot. Choose another lobby after curator review."
+        );
       const current = await base.getBlock({ blockTag: "latest" });
       if (Math.abs(Number(current.timestamp) * 1000 - Date.now()) > 120_000)
         throw new ArenaRequestError(

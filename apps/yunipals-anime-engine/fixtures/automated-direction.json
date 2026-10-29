@@ -1,0 +1,463 @@
+{
+  "version": "anime-direction/v3",
+  "attacks": [
+    {
+      "matchId": "SF1",
+      "eventId": "SF1-1",
+      "name": "Water Hammer",
+      "kind": "jet"
+    },
+    {
+      "matchId": "SF1",
+      "eventId": "SF1-2",
+      "name": "Neck Lash",
+      "kind": "vine"
+    },
+    {
+      "matchId": "SF1",
+      "eventId": "SF1-3",
+      "name": "Tide Ram",
+      "kind": "jet"
+    },
+    {
+      "matchId": "SF1",
+      "eventId": "SF1-4",
+      "name": "Repeat Lash",
+      "kind": "vine"
+    },
+    {
+      "matchId": "SF1",
+      "eventId": "SF1-5",
+      "name": "Final Vine",
+      "kind": "vine"
+    },
+    {
+      "matchId": "SF2",
+      "eventId": "SF2-1",
+      "name": "Pressure Orb",
+      "kind": "orb"
+    },
+    {
+      "matchId": "SF2",
+      "eventId": "SF2-2",
+      "name": "Amber Flank",
+      "kind": "star"
+    },
+    {
+      "matchId": "SF2",
+      "eventId": "SF2-3",
+      "name": "Wing Check",
+      "kind": "dash"
+    },
+    {
+      "matchId": "SF2",
+      "eventId": "SF2-4",
+      "name": "Back Burst",
+      "kind": "star"
+    },
+    {
+      "matchId": "SF2",
+      "eventId": "SF2-5",
+      "name": "Broken Dive",
+      "kind": "dash"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-1",
+      "name": "Amber Angle",
+      "kind": "star"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-2",
+      "name": "Rising Whip",
+      "kind": "vine"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-3",
+      "name": "Return Burst",
+      "kind": "star"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-4",
+      "name": "Tracking Vine",
+      "kind": "vine"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-5",
+      "name": "Closing Nova",
+      "kind": "star"
+    },
+    {
+      "matchId": "FINAL",
+      "eventId": "FINAL-6",
+      "name": "Severed Lash",
+      "kind": "vine"
+    }
+  ],
+  "motion": [
+    {
+      "matchId": "SF1",
+      "fighterId": "bastion",
+      "x": [
+        {
+          "t": 0,
+          "value": 380
+        },
+        {
+          "t": 0.5,
+          "value": 440
+        },
+        {
+          "t": 1.88,
+          "value": 440
+        },
+        {
+          "t": 2.38,
+          "value": 560
+        },
+        {
+          "t": 3.91,
+          "value": 560
+        }
+      ],
+      "y": [],
+      "depth": [],
+      "face": [
+        {
+          "t": 0,
+          "value": 1
+        }
+      ],
+      "rot": []
+    },
+    {
+      "matchId": "SF1",
+      "fighterId": "cedar",
+      "x": [
+        {
+          "t": 0,
+          "value": 900
+        },
+        {
+          "t": 0.65,
+          "value": 900
+        },
+        {
+          "t": 0.9,
+          "value": 960
+        },
+        {
+          "t": 3.91,
+          "value": 960
+        }
+      ],
+      "y": [],
+      "depth": [],
+      "face": [
+        {
+          "t": 0,
+          "value": -1
+        }
+      ],
+      "rot": []
+    },
+    {
+      "matchId": "SF2",
+      "fighterId": "elrond",
+      "x": [
+        {
+          "t": 0,
+          "value": 380
+        },
+        {
+          "t": 0.5,
+          "value": 380
+        },
+        {
+          "t": 1.1,
+          "value": 600
+        },
+        {
+          "t": 1.72,
+          "value": 760
+        },
+        {
+          "t": 2.2,
+          "value": 1000
+        },
+        {
+          "t": 2.61,
+          "value": 960
+        }
+      ],
+      "y": [
+        {
+          "t": 0,
+          "value": 415
+        },
+        {
+          "t": 2.61,
+          "value": 415
+        }
+      ],
+      "depth": [],
+      "face": [
+        {
+          "t": 0,
+          "value": 1
+        },
+        {
+          "t": 1.95,
+          "value": -1
+        }
+      ],
+      "rot": []
+    },
+    {
+      "matchId": "SF2",
+      "fighterId": "zephyr",
+      "x": [
+        {
+          "t": 0,
+          "value": 900
+        },
+        {
+          "t": 0.91,
+          "value": 900
+        },
+        {
+          "t": 1.72,
+          "value": 880
+        },
+        {
+          "t": 2.61,
+          "value": 880
+        }
+      ],
+      "y": [
+        {
+          "t": 0,
+          "value": 415
+        },
+        {
+          "t": 0.65,
+          "value": 415
+        },
+        {
+          "t": 0.9,
+          "value": 390
+        },
+        {
+          "t": 1.5,
+          "value": 415
+        }
+      ],
+      "depth": [
+        {
+          "t": 0,
+          "value": 0
+        },
+        {
+          "t": 0.65,
+          "value": 0
+        },
+        {
+          "t": 0.9,
+          "value": 30
+        },
+        {
+          "t": 1.5,
+          "value": 0
+        }
+      ],
+      "face": [
+        {
+          "t": 0,
+          "value": -1
+        },
+        {
+          "t": 2,
+          "value": 1
+        }
+      ],
+      "rot": []
+    },
+    {
+      "matchId": "FINAL",
+      "fighterId": "cedar",
+      "x": [
+        {
+          "t": 0,
+          "value": 380
+        },
+        {
+          "t": 0.85,
+          "value": 380
+        },
+        {
+          "t": 1.1,
+          "value": 330
+        },
+        {
+          "t": 1.6,
+          "value": 400
+        },
+        {
+          "t": 3.77,
+          "value": 400
+        }
+      ],
+      "y": [],
+      "depth": [],
+      "face": [
+        {
+          "t": 0,
+          "value": 1
+        }
+      ],
+      "rot": []
+    },
+    {
+      "matchId": "FINAL",
+      "fighterId": "zephyr",
+      "x": [
+        {
+          "t": 0,
+          "value": 900
+        },
+        {
+          "t": 3.07,
+          "value": 900
+        },
+        {
+          "t": 3.57,
+          "value": 780
+        },
+        {
+          "t": 3.77,
+          "value": 800
+        }
+      ],
+      "y": [
+        {
+          "t": 0,
+          "value": 415
+        },
+        {
+          "t": 1.75,
+          "value": 415
+        },
+        {
+          "t": 1.96,
+          "value": 370
+        },
+        {
+          "t": 2.47,
+          "value": 430
+        },
+        {
+          "t": 3.77,
+          "value": 430
+        }
+      ],
+      "depth": [],
+      "face": [
+        {
+          "t": 0,
+          "value": -1
+        }
+      ],
+      "rot": []
+    }
+  ],
+  "cutins": [
+    {
+      "matchId": "SF1",
+      "index": 0,
+      "at": 2.2,
+      "title": "CROSSFIRE!",
+      "quotes": [
+        {
+          "fighterId": "bastion",
+          "text": "a second short water hammer after recovery"
+        },
+        {
+          "fighterId": "cedar",
+          "text": "then repeat the heavy lash after my own recovery"
+        }
+      ]
+    },
+    {
+      "matchId": "SF1",
+      "index": 1,
+      "at": 3.4,
+      "title": "VINE LASH",
+      "quotes": [
+        {
+          "fighterId": "cedar",
+          "text": "Keep tracking and attacking after each recovery"
+        }
+      ]
+    },
+    {
+      "matchId": "SF2",
+      "index": 0,
+      "at": 1.2,
+      "title": "CROSSFIRE!",
+      "quotes": [
+        {
+          "fighterId": "elrond",
+          "text": "drive a wing-assisted shoulder check into her actual flank"
+        },
+        {
+          "fighterId": "zephyr",
+          "text": "fire a heavy amber starburst from my forepaws into his side"
+        }
+      ]
+    },
+    {
+      "matchId": "SF2",
+      "index": 1,
+      "at": 2.3,
+      "title": "STAR BURST",
+      "quotes": [
+        {
+          "fighterId": "zephyr",
+          "text": "counter his exposed back with another starburst after recovery"
+        }
+      ]
+    },
+    {
+      "matchId": "FINAL",
+      "index": 0,
+      "at": 2.3,
+      "title": "CROSSFIRE!",
+      "quotes": [
+        {
+          "fighterId": "cedar",
+          "text": "Keep tracking and attacking after each recovery"
+        },
+        {
+          "fighterId": "zephyr",
+          "text": "dodge the real return attack if free before firing again"
+        }
+      ]
+    },
+    {
+      "matchId": "FINAL",
+      "index": 1,
+      "at": 3.3,
+      "title": "STAR BURST",
+      "quotes": [
+        {
+          "fighterId": "zephyr",
+          "text": "send one heavy starburst at the torso"
+        }
+      ]
+    }
+  ]
+}

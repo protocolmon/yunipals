@@ -1,3 +1,4 @@
+import { animeRead } from "./animeRead";
 import { serve } from "@hono/node-server";
 import { createArenaApp } from "./http";
 import { arenaRuntime } from "./runtime";
@@ -21,6 +22,9 @@ if (native) {
 }
 const app = createArenaApp(runtime.service, {
   entriesEnabled: runtime.config.entriesEnabled,
+  mediaKind: runtime.config.mediaKind,
+  eligibilityRegistry: runtime.config.eligibilityRegistry,
+  ...(runtime.anime ? animeRead(runtime) : {}),
   launchMode: runtime.config.launchMode,
   rules: {
     rulesHash: runtime.catalog.rulesHash,

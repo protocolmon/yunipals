@@ -1,3 +1,4 @@
+import { arenaEconomics } from "@protopals/yunipals-market-core/anime";
 import { randomBytes, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import type { Address, Hex } from "viem";
@@ -90,10 +91,15 @@ export class ArenaIntake {
           "credit" | "list" | "work" | "transaction" | "browse"
         >
       >,
-    readonly sourceSelection?: ArenaSourceBinding
+    readonly sourceSelection?: ArenaSourceBinding,
+    readonly mediaKind: "video" | "anime" = "video"
   ) {
     if (nativeSource && deployment !== `8453:${contract.toLowerCase()}`)
       throw new Error("Native Arena deployment identity mismatch.");
+  }
+
+  get economics() {
+    return arenaEconomics(this.mediaKind);
   }
 
   get indexerMode() {

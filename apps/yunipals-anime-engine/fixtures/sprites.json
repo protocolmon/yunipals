@@ -1,0 +1,152 @@
+{
+  "bastion-attack": {
+    "w": 751,
+    "h": 640,
+    "file": "bastion-attack.webp",
+    "sha256": "71b6529bbce56552b05eb32f118489234e822240b72a4f2926ef9402eda1e3af"
+  },
+  "bastion-cutin": {
+    "w": 1137,
+    "h": 640,
+    "file": "bastion-cutin.webp",
+    "sha256": "134c914dd87c7ae693a77966e5946cc98252940180231f8e453a3a2bd2b78177"
+  },
+  "bastion-down": {
+    "w": 1240,
+    "h": 380,
+    "file": "bastion-down.webp",
+    "sha256": "10a6b4d24c80f6c410867490f60b8abe2733a61ddf716d2f4d7b8ce9632dd31a"
+  },
+  "bastion-guard": {
+    "w": 831,
+    "h": 640,
+    "file": "bastion-guard.webp",
+    "sha256": "8916b36be7441a34f58e9dec19b7b3422078cbabcb706334171c4168cb4d5acc"
+  },
+  "bastion-hurt": {
+    "w": 774,
+    "h": 640,
+    "file": "bastion-hurt.webp",
+    "sha256": "8c1f85fac46fa728a5f61ed09659aa7281110eeb8a52225cc2d9e3ad5bdb5e38"
+  },
+  "bastion-idle": {
+    "w": 696,
+    "h": 640,
+    "file": "bastion-idle.webp",
+    "sha256": "eafa12afd9d2e562c74559ab315f90c6dcca1a2c4b7d983d2516e08e8f63c764"
+  },
+  "cedar-attack": {
+    "w": 618,
+    "h": 640,
+    "file": "cedar-attack.webp",
+    "sha256": "775582429902b3ce08a75265780b85ac63655219cd4bbe917216179ea56acab6"
+  },
+  "cedar-cutin": {
+    "w": 1137,
+    "h": 640,
+    "file": "cedar-cutin.webp",
+    "sha256": "ffc6f21bc403d3ba949dd7de2e285c7c7b4bd992d78ae000184bebbf6410d853"
+  },
+  "cedar-dodge": {
+    "w": 907,
+    "h": 640,
+    "file": "cedar-dodge.webp",
+    "sha256": "8e14f6c475a4e9a54c53d00e09dae4b02e2b3d369755440b5d1b7bcb8fdfb1fe"
+  },
+  "cedar-down": {
+    "w": 1222,
+    "h": 488,
+    "file": "cedar-down.webp",
+    "sha256": "ccbc0abc16885081647a381cfa871b5edec7e8bb19424228d9a6341de191a4e9"
+  },
+  "cedar-hurt": {
+    "w": 679,
+    "h": 640,
+    "file": "cedar-hurt.webp",
+    "sha256": "2e9bb2a1ce5447114fe115c44132cb3a0564538a613cd89521a58a534a6e18df"
+  },
+  "cedar-idle": {
+    "w": 657,
+    "h": 640,
+    "file": "cedar-idle.webp",
+    "sha256": "d378f641e4ed76dc512c03f0548f0fbbdc27bb40ffa4373824c9daee6ae9a059"
+  },
+  "cedar-victory": {
+    "w": 559,
+    "h": 640,
+    "file": "cedar-victory.webp",
+    "sha256": "47825f96c0ce542669eab93cb7562254ba9d6012a745aa84b47441f2dc9126a9"
+  },
+  "elrond-attack": {
+    "w": 791,
+    "h": 640,
+    "file": "elrond-attack.webp",
+    "sha256": "7c4ef3ac5e1757d1f2e16540375de82f617e944847d95c61400de6e8ee5a31ba"
+  },
+  "elrond-cutin": {
+    "w": 1137,
+    "h": 640,
+    "file": "elrond-cutin.webp",
+    "sha256": "ef34ab24dbf1b524e43b69861061c9eb0e6c767af8db664cf8be93084f9018cf"
+  },
+  "elrond-dash": {
+    "w": 1212,
+    "h": 640,
+    "file": "elrond-dash.webp",
+    "sha256": "8a57246888d2340d2faccab44398b89419a4ed3dc39228078caa2896a0ea2620"
+  },
+  "elrond-down": {
+    "w": 1206,
+    "h": 518,
+    "file": "elrond-down.webp",
+    "sha256": "ecef3693334c96370bc64157bf93e9cac5a50743e904afbf6bc66d13e456f317"
+  },
+  "elrond-hurt": {
+    "w": 791,
+    "h": 640,
+    "file": "elrond-hurt.webp",
+    "sha256": "cf98f73c558bca9ce3733fc04e1750c271763a36eeb6a048ab5b5f0d7a6cbf5f"
+  },
+  "elrond-idle": {
+    "w": 846,
+    "h": 640,
+    "file": "elrond-idle.webp",
+    "sha256": "e1c18fc7be24f060a99b208df171b8c7c0989a9f423670917ebf8f2e1e95c719"
+  },
+  "zephyr-attack": {
+    "w": 762,
+    "h": 640,
+    "file": "zephyr-attack.webp",
+    "sha256": "1caa3c84f7f8292fd376bcf1ad740f627a45731af52ed788d7bd532013ce5a01"
+  },
+  "zephyr-cutin": {
+    "w": 1137,
+    "h": 640,
+    "file": "zephyr-cutin.webp",
+    "sha256": "e8e9d90d13afe63641af2d9a953acfeb21138e8e3115be587afeea3a3e65c494"
+  },
+  "zephyr-dodge": {
+    "w": 672,
+    "h": 640,
+    "file": "zephyr-dodge.webp",
+    "sha256": "ebc02097657a8fa432f01ea5464eb08b147d88a75a70b9ad4da9c233d2dd52e3"
+  },
+  "zephyr-hurt": {
+    "w": 619,
+    "h": 640,
+    "file": "zephyr-hurt.webp",
+    "sha256": "1d55cd5f5f54202f37c1ec6f82c922da9684f790bfbda39f2980b4e124a3e044"
+  },
+  "zephyr-idle": {
+    "w": 681,
+    "h": 640,
+    "file": "zephyr-idle.webp",
+    "sha256": "b75c16427f005f8f03c768f67e1f27649238c79a13b3d8fa22b9d2cf768059d1"
+  },
+  "zephyr-victory": {
+    "w": 646,
+    "h": 640,
+    "file": "zephyr-victory.webp",
+    "sha256": "3928b29011a249c79a8f5b1815317615d31def7f519505020ec906d7ec22d20e"
+  }
+}

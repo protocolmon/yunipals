@@ -1,3 +1,4 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import {
   useInfiniteQuery,
   useQuery,
@@ -13,9 +14,8 @@ import type {
   ArenaRewardsPage
 } from "@protopals/yunipals-market-core/arenaViews";
 import { Select, SelectItem } from "@/components/ui/select";
-import { environment } from "@/environment";
 import { cn } from "@/lib/utils";
-import { arenaRequest, type ArenaConfig } from "@/lib/arenaLive";
+import { type ArenaConfig } from "@/lib/arenaLive";
 import { ArenaNavigation } from "./ArenaNavigation";
 import {
   ArenaCardsLoading,
@@ -28,6 +28,8 @@ import { useArenaWallet } from "./useArenaWallet";
 const button =
   "rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape disabled:opacity-50";
 export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const { address } = useAccount();
   const client = useQueryClient();
   const [params, setParams] = useSearchParams();
@@ -40,19 +42,19 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
   ].includes(rawStatus)
     ? (rawStatus as ArenaListStatus)
     : "all";
-  const configured = !!environment.arenaApiUrl;
+  const configured = !!deployment.apiUrl;
   const config = useQuery({
-    queryKey: ["arena-live", "config"],
+    queryKey: ["arena-live", deployment.kind, "config"],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaConfig>("/config", undefined, signal),
     enabled: configured,
     staleTime: 60000
   });
   const wallet = useArenaWallet(config.data, () =>
-    client.invalidateQueries({ queryKey: ["arena-live"] })
+    client.invalidateQueries({ queryKey: ["arena-live", deployment.kind] })
   );
   const summary = useQuery({
-    queryKey: ["arena-live", "summary", address],
+    queryKey: ["arena-live", deployment.kind, "summary", address],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaWalletSummary>(
         `/wallets/${address}/summary`,
@@ -63,7 +65,7 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
     refetchInterval: 30000
   });
   const history = useInfiniteQuery({
-    queryKey: ["arena-live", "history", address, role, status],
+    queryKey: ["arena-live", deployment.kind, "history", address, role, status],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) => {
       const query = new URLSearchParams({
@@ -84,7 +86,7 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
     refetchInterval: 60000
   });
   const rewards = useInfiniteQuery({
-    queryKey: ["arena-live", "rewards", address],
+    queryKey: ["arena-live", deployment.kind, "rewards", address],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) =>
       arenaRequest<ArenaRewardsPage>(

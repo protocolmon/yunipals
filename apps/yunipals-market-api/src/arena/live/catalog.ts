@@ -8,6 +8,11 @@ import {
   ARENA_NFT_COLLECTIONS
 } from "@protopals/yunipals-market-core/arena";
 import { IDENTITY_POLICY_HASH, IDENTITY_MODEL } from "./identityAnalysis";
+import {
+  ANIME_DIRECTOR_MODEL,
+  ANIME_DIRECTOR_RESERVE,
+  ANIME_DIRECTOR_POLICY
+} from "./animeDirection";
 
 export const ARENA_POOL_HASH =
   "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c" as const;
@@ -126,3 +131,61 @@ export function loadLiveArenaCatalog(root: string) {
   };
 }
 export type LiveArenaCatalog = ReturnType<typeof loadLiveArenaCatalog>;
+
+/** Only the production envelope differs; combat rules and referee settings are identical. */
+export function loadAnimeArenaCatalog(root: string, registry: string) {
+  if (!/^0x[0-9a-f]{40}$/.test(registry) || /^0x0{40}$/.test(registry))
+    throw new Error("Anime registry address is required.");
+  const base = loadLiveArenaCatalog(root);
+  const engine = JSON.parse(
+    readFileSync(
+      join(root, "apps/yunipals-anime-engine/engine-lock.json"),
+      "utf8"
+    )
+  ) as { version: string; sha256: string };
+  const recipe = JSON.parse(
+    readFileSync(
+      join(root, "docs/arena/anime-recipe-v1/recipe-lock.json"),
+      "utf8"
+    )
+  ) as { sha256: string };
+  const manifest = {
+    ...base.manifest,
+    version: "anime-rules-v1",
+    identityPolicy:
+      "anime-fighter-v1: curator-reviewed identity, current Base traits and SHA-256-verified manifests and sprites; approval follows the token",
+    supportedNftCollections: {
+      8453: base.manifest.supportedNftCollections[8453]!
+    },
+    eligibilityRegistry: registry,
+    economics: {
+      entryMicrousd: 1000000,
+      winnerMicrousd: 3200000,
+      islandMicrousd: 200000,
+      operationsMicrousd: 600000
+    },
+    media: {
+      policy: "anime-engine/v1",
+      engineVersion: engine.version,
+      engineSha256: engine.sha256,
+      recipeId: "anime-fighter-v1",
+      recipeSha256: recipe.sha256,
+      director: {
+        policy: ANIME_DIRECTOR_POLICY,
+        provider: "openrouter",
+        model: ANIME_DIRECTOR_MODEL,
+        reserveMicrousd: ANIME_DIRECTOR_RESERVE
+      }
+    },
+    policies: {
+      ...base.manifest.policies,
+      approval:
+        "art and approval follow the token on transfer; public rejection notes; Base OG only"
+    }
+  };
+  return {
+    ...base,
+    manifest,
+    rulesHash: `0x${sha256(canonicalJson(manifest))}` as Hex
+  };
+}

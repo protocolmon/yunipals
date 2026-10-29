@@ -23,7 +23,6 @@ import type {
 import { ARENA_ISLANDS } from "./catalog";
 import { PreparingIdentity } from "./identityAnalysis";
 
-const cookie = "__Host-yunipals-arena";
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new ArenaRequestError(400, "Expected a JSON object.");
@@ -48,6 +47,10 @@ export function createArenaApp(
   service: ArenaIntake,
   options: {
     entriesEnabled: boolean;
+    mediaKind?: "video" | "anime";
+    eligibilityRegistry?: Address;
+    fighter?: (id: string) => Promise<unknown>;
+    fighterQueue?: (query: Record<string, string>) => Promise<unknown>;
     launchMode?: "pilot" | "public";
     rules?: { rulesHash: Hex; manifest: unknown };
     admit?: (
@@ -70,6 +73,10 @@ export function createArenaApp(
   }
 ) {
   const app = new Hono();
+  const cookie =
+    options.mediaKind === "anime"
+      ? "__Host-yunipals-anime-arena"
+      : "__Host-yunipals-arena";
   const transactions = new ArenaClientTransactions(service);
   const reads = new ArenaReadModels(service);
   app.use(
@@ -132,7 +139,10 @@ export function createArenaApp(
       chainId: 8453,
       contract: service.contract,
       paymentToken: ARENA_USDC,
-      entryFee: ARENA_ENTRY_FEE.toString(),
+      entryFee:
+        options.mediaKind === "anime" ? "1000000" : ARENA_ENTRY_FEE.toString(),
+      mediaKind: options.mediaKind ?? "video",
+      eligibilityRegistry: options.eligibilityRegistry ?? null,
       strategyMaxLength: ARENA_STRATEGY_LIMIT,
       entriesEnabled: options.entriesEnabled,
       entryMode: options.entriesEnabled
@@ -145,6 +155,14 @@ export function createArenaApp(
         service.indexerMode === "unified" ? "latest" : "base-depth-3-v1"
     })
   );
+  if (options.fighter)
+    app.get("/fighters/:tokenId", async (c) =>
+      c.json(await options.fighter!(c.req.param("tokenId")))
+    );
+  if (options.fighterQueue)
+    app.get("/fighters", async (c) =>
+      c.json(await options.fighterQueue!(c.req.query()))
+    );
   app.get("/rules", (c) => {
     if (!options.rules)
       throw new ArenaRequestError(

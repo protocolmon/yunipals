@@ -1,8 +1,8 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ArenaTimelineEvent } from "@protopals/yunipals-market-core/arenaViews";
 import type { ArenaPublicTournament } from "@protopals/yunipals-market-core/arena";
-import { arenaRequest } from "@/lib/arenaLive";
 import { ArenaLoading } from "./ArenaFeedback";
 import { useArenaClock } from "./useArenaClock";
 
@@ -65,9 +65,18 @@ export function ArenaEvidence({
 }: {
   tournament: ArenaPublicTournament;
 }) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const [open, setOpen] = useState(false);
   const timeline = useQuery({
-    queryKey: ["arena-live", "timeline", t.id, t.resultHash, t.videoHash],
+    queryKey: [
+      "arena-live",
+      deployment.kind,
+      "timeline",
+      t.id,
+      t.resultHash,
+      t.videoHash
+    ],
     queryFn: ({ signal }) =>
       arenaRequest<{ items: ArenaTimelineEvent[] }>(
         `/tournaments/${t.id}/timeline`,

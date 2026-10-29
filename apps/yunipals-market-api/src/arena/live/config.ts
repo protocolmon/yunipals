@@ -36,7 +36,9 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   const key = readPrivateFile(required(env, "ARENA_ENCRYPTION_KEY_FILE"));
   if (!/^[0-9a-f]{64}$/i.test(key))
     throw new Error("Arena encryption key must be 32 hexadecimal bytes.");
-  const port = Number(env.ARENA_PORT ?? 53911);
+  const port = Number(
+    env.ARENA_PORT ?? (env.ARENA_MEDIA_KIND === "anime" ? 53912 : 53911)
+  );
   if (!Number.isInteger(port) || port < 1024 || port > 65535)
     throw new Error("Invalid arena API port.");
   const rulesHash = required(env, "ARENA_RULES_HASH") as Hex;
@@ -62,7 +64,38 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
     !pilotWallets.length
   )
     throw new Error("Controlled paid entry requires explicit pilot wallets.");
+  const mediaKind = env.ARENA_MEDIA_KIND ?? "video";
+  if (mediaKind !== "video" && mediaKind !== "anime")
+    throw new Error("Invalid ARENA_MEDIA_KIND.");
+  const eligibilityRegistry = env.ARENA_ELIGIBILITY_REGISTRY?.toLowerCase() as
+    | Address
+    | undefined;
+  if (
+    mediaKind === "anime" &&
+    (!eligibilityRegistry ||
+      !isAddress(eligibilityRegistry) ||
+      /^0x0{40}$/.test(eligibilityRegistry))
+  )
+    throw new Error("Anime arena requires an eligibility registry.");
+  if (mediaKind === "anime" && env.ARENA_INDEXER_MODE !== "unified")
+    throw new Error("Anime arena requires unified indexing.");
+  if (
+    mediaKind === "anime" &&
+    env.ARENA_INDEXER_SOURCE_KIND === "legacy_rollback"
+  )
+    throw new Error(
+      "Anime arena requires the unified registry source, not a legacy rollback."
+    );
+  if (mediaKind === "video" && eligibilityRegistry)
+    throw new Error("Eligibility registry requires anime media kind.");
+  const fighterAssetsOrigin =
+    env.ARENA_FIGHTER_ASSETS_ORIGIN ?? "https://assets-anime.yunipals.com";
+  if (fighterAssetsOrigin !== "https://assets-anime.yunipals.com")
+    throw new Error("Unsupported anime assets origin.");
   return {
+    mediaKind: mediaKind as "video" | "anime",
+    eligibilityRegistry,
+    fighterAssetsOrigin,
     deployment: {
       id: `8453:${contract.toLowerCase()}`,
       contract: contract as Address,

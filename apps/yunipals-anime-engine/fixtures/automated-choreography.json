@@ -1,0 +1,366 @@
+{
+  "SF1": {
+    "label": "SEMIFINAL 1",
+    "pos": {
+      "bastion": {
+        "x": [
+          [
+            0,
+            380
+          ],
+          [
+            0.5,
+            440
+          ],
+          [
+            1.88,
+            440
+          ],
+          [
+            2.38,
+            560
+          ],
+          [
+            3.91,
+            560
+          ]
+        ],
+        "face": [
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "cedar": {
+        "x": [
+          [
+            0,
+            900
+          ],
+          [
+            0.65,
+            900
+          ],
+          [
+            0.9,
+            960
+          ],
+          [
+            3.91,
+            960
+          ]
+        ],
+        "face": [
+          [
+            0,
+            -1
+          ]
+        ]
+      }
+    },
+    "names": {
+      "SF1-1": "Water Hammer",
+      "SF1-2": "Neck Lash",
+      "SF1-3": "Tide Ram",
+      "SF1-4": "Repeat Lash",
+      "SF1-5": "Final Vine"
+    },
+    "kinds": {
+      "SF1-1": "jet",
+      "SF1-2": "vine",
+      "SF1-3": "jet",
+      "SF1-4": "vine",
+      "SF1-5": "vine"
+    },
+    "cutins": [
+      {
+        "at": 2.2,
+        "type": "both",
+        "title": "CROSSFIRE!",
+        "quotes": {
+          "bastion": "a second short water hammer after recovery",
+          "cedar": "then repeat the heavy lash after my own recovery"
+        }
+      },
+      {
+        "at": 3.4,
+        "type": "one",
+        "who": "cedar",
+        "title": "VINE LASH",
+        "quote": "Keep tracking and attacking after each recovery"
+      }
+    ],
+    "result": "Cedar wins."
+  },
+  "SF2": {
+    "label": "SEMIFINAL 2",
+    "pos": {
+      "elrond": {
+        "x": [
+          [
+            0,
+            380
+          ],
+          [
+            0.5,
+            380
+          ],
+          [
+            1.1,
+            600
+          ],
+          [
+            1.72,
+            760
+          ],
+          [
+            2.2,
+            1000
+          ],
+          [
+            2.61,
+            960
+          ]
+        ],
+        "y": [
+          [
+            0,
+            415
+          ],
+          [
+            2.61,
+            415
+          ]
+        ],
+        "face": [
+          [
+            0,
+            1
+          ],
+          [
+            1.95,
+            -1
+          ]
+        ]
+      },
+      "zephyr": {
+        "x": [
+          [
+            0,
+            900
+          ],
+          [
+            0.91,
+            900
+          ],
+          [
+            1.72,
+            880
+          ],
+          [
+            2.61,
+            880
+          ]
+        ],
+        "y": [
+          [
+            0,
+            415
+          ],
+          [
+            0.65,
+            415
+          ],
+          [
+            0.9,
+            390
+          ],
+          [
+            1.5,
+            415
+          ]
+        ],
+        "depth": [
+          [
+            0,
+            0
+          ],
+          [
+            0.65,
+            0
+          ],
+          [
+            0.9,
+            30
+          ],
+          [
+            1.5,
+            0
+          ]
+        ],
+        "face": [
+          [
+            0,
+            -1
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      }
+    },
+    "names": {
+      "SF2-1": "Pressure Orb",
+      "SF2-2": "Amber Flank",
+      "SF2-3": "Wing Check",
+      "SF2-4": "Back Burst",
+      "SF2-5": "Broken Dive"
+    },
+    "kinds": {
+      "SF2-1": "orb",
+      "SF2-2": "star",
+      "SF2-3": "dash",
+      "SF2-4": "star",
+      "SF2-5": "dash"
+    },
+    "cutins": [
+      {
+        "at": 1.2,
+        "type": "both",
+        "title": "CROSSFIRE!",
+        "quotes": {
+          "elrond": "drive a wing-assisted shoulder check into her actual flank",
+          "zephyr": "fire a heavy amber starburst from my forepaws into his side"
+        }
+      },
+      {
+        "at": 2.3,
+        "type": "one",
+        "who": "zephyr",
+        "title": "STAR BURST",
+        "quote": "counter his exposed back with another starburst after recovery"
+      }
+    ],
+    "result": "Zephyr wins."
+  },
+  "FINAL": {
+    "label": "FINAL",
+    "pos": {
+      "cedar": {
+        "x": [
+          [
+            0,
+            380
+          ],
+          [
+            0.85,
+            380
+          ],
+          [
+            1.1,
+            330
+          ],
+          [
+            1.6,
+            400
+          ],
+          [
+            3.77,
+            400
+          ]
+        ],
+        "face": [
+          [
+            0,
+            1
+          ]
+        ]
+      },
+      "zephyr": {
+        "x": [
+          [
+            0,
+            900
+          ],
+          [
+            3.07,
+            900
+          ],
+          [
+            3.57,
+            780
+          ],
+          [
+            3.77,
+            800
+          ]
+        ],
+        "y": [
+          [
+            0,
+            415
+          ],
+          [
+            1.75,
+            415
+          ],
+          [
+            1.96,
+            370
+          ],
+          [
+            2.47,
+            430
+          ],
+          [
+            3.77,
+            430
+          ]
+        ],
+        "face": [
+          [
+            0,
+            -1
+          ]
+        ]
+      }
+    },
+    "names": {
+      "FINAL-1": "Amber Angle",
+      "FINAL-2": "Rising Whip",
+      "FINAL-3": "Return Burst",
+      "FINAL-4": "Tracking Vine",
+      "FINAL-5": "Closing Nova",
+      "FINAL-6": "Severed Lash"
+    },
+    "kinds": {
+      "FINAL-1": "star",
+      "FINAL-2": "vine",
+      "FINAL-3": "star",
+      "FINAL-4": "vine",
+      "FINAL-5": "star",
+      "FINAL-6": "vine"
+    },
+    "cutins": [
+      {
+        "at": 2.3,
+        "type": "both",
+        "title": "CROSSFIRE!",
+        "quotes": {
+          "cedar": "Keep tracking and attacking after each recovery",
+          "zephyr": "dodge the real return attack if free before firing again"
+        }
+      },
+      {
+        "at": 3.3,
+        "type": "one",
+        "who": "zephyr",
+        "title": "STAR BURST",
+        "quote": "send one heavy starburst at the torso"
+      }
+    ],
+    "result": "Zephyr wins."
+  }
+}

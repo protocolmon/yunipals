@@ -1,8 +1,7 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Copy, Play, ScrollText, Sparkles } from "lucide-react";
-import { arenaRequest } from "@/lib/arenaLive";
-import { environment } from "@/environment";
 import { cn } from "@/lib/utils";
 import { ArenaLoading } from "./ArenaFeedback";
 
@@ -72,6 +71,7 @@ export type ArenaReviewResult = {
 type Prompts = {
   inputSha256: string;
   outcomeSha256: string;
+  choreography?: Record<string, unknown>;
   shots: Array<{
     matchId: string;
     part: "opening" | "continuation";
@@ -137,16 +137,18 @@ export function ArenaBattleReview({
   mediaReady: boolean;
   onWatchMoment: (seconds: number) => void;
 }) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const [open, setOpen] = useState(false);
   const [matchId, setMatchId] = useState("SF1");
   const [view, setView] = useState<"judging" | "generation">("judging");
   const review = useQuery({
-    queryKey: ["arena-live", "review", id, mediaReady],
+    queryKey: ["arena-live", deployment.kind, "review", id, mediaReady],
     enabled: open,
     staleTime: Infinity,
     queryFn: async ({ signal }) => {
       const artifact = (file: string) => `/tournaments/${id}/artifacts/${file}`;
-      const [result, prompts, frozen] = await Promise.all([
+      const [result, prompts, frozen, clock] = await Promise.all([
         arenaRequest<ArenaReviewResult>(
           `/tournaments/${id}/result`,
           undefined,
@@ -157,6 +159,14 @@ export function ArenaBattleReview({
           : Promise.resolve(null),
         mediaReady
           ? arenaRequest<FrozenInput>(artifact("input.json"), undefined, signal)
+          : Promise.resolve(null),
+        mediaReady && deployment.kind === "anime"
+          ? arenaRequest<{
+              chapters: Array<{
+                id: string;
+                events: Array<{ id: string; contact: number }>;
+              }>;
+            }>(artifact("film.json"), undefined, signal)
           : Promise.resolve(null)
       ]);
       if (
@@ -168,7 +178,7 @@ export function ArenaBattleReview({
           "The saved media prompts do not match this confirmed result."
         );
       }
-      return { result, prompts, frozen };
+      return { result, prompts, frozen, clock };
     }
   });
   const data = review.data;
@@ -179,7 +189,7 @@ export function ArenaBattleReview({
   const name = (fighterId: string) => fighter(fighterId)?.name ?? fighterId;
   const secondsOffset = matchId === "SF1" ? 0 : matchId === "SF2" ? 8 : 16;
   const shots = data?.prompts?.shots.filter((s) => s.matchId === matchId) ?? [];
-  const image = `${environment.arenaApiUrl}/tournaments/${id}/artifacts/${matchId}.png`;
+  const image = `${deployment.apiUrl}/tournaments/${id}/artifacts/${matchId}.png`;
   return (
     <details
       className="rounded-card border border-lavender bg-lavender/10 p-5 sm:p-6"
@@ -416,7 +426,16 @@ export function ArenaBattleReview({
                             className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-grape hover:bg-lavender/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
                             onClick={() =>
                               onWatchMoment(
-                                secondsOffset + Math.max(0, event.contact - 0.3)
+                                deployment.kind === "anime"
+                                  ? Math.max(
+                                      0,
+                                      (data.clock?.chapters
+                                        .find((c) => c.id === matchId)
+                                        ?.events.find((e) => e.id === event.id)
+                                        ?.contact ?? 0) - 0.3
+                                    )
+                                  : secondsOffset +
+                                      Math.max(0, event.contact - 0.3)
                               )
                             }
                           >
@@ -468,6 +487,15 @@ export function ArenaBattleReview({
                 <p className="text-sm text-muted">
                   Exact generation prompts appear after the film is published.
                 </p>
+              ) : deployment.kind === "anime" ? (
+                <PromptText
+                  title="Saved anime choreography"
+                  text={JSON.stringify(
+                    data.prompts?.choreography?.[matchId] ?? {},
+                    null,
+                    2
+                  )}
+                />
               ) : (
                 <>
                   <div className="flex items-center gap-2 text-sm font-semibold text-grape">

@@ -27,6 +27,17 @@ import {
 } from "./mediaPublication";
 import { publishedPayoutFilm } from "./payout";
 import { createArenaApp } from "./http";
+import { AnimeDirectorApi } from "./animeDirectorApi";
+import { fixtureProviderDirection } from "./animeDirectionFixture";
+import {
+  ANIME_DIRECTOR_MODEL,
+  applyAnimeProviderDirection,
+  type AnimeDirectionInput,
+  type AnimeProviderDirection
+} from "./animeDirection";
+import { exportAnimeTournament } from "./animeMedia";
+import { directTournament } from "../../../../yunipals-anime-engine/src/director";
+import { ArenaCapacity, type CapacitySnapshot } from "./capacity";
 
 async function fixture(legacyContext = false) {
   const url =
@@ -44,6 +55,7 @@ async function fixture(legacyContext = false) {
   const input = JSON.parse(
     await readFile(resolve("src/arena/live/fixtures/pilot-input.json"), "utf8")
   );
+  input.tournamentId = "1";
   const candidate = JSON.parse(
     await readFile(
       resolve("src/arena/live/fixtures/pilot-outcome.json"),
@@ -329,6 +341,238 @@ async function fixture(legacyContext = false) {
 }
 const requireDigest = (bytes: Uint8Array) =>
   createHash("sha256").update(bytes).digest("hex");
+
+function claudeFixture(f: Awaited<ReturnType<typeof fixture>>) {
+  const tournament = exportAnimeTournament(f.input, f.candidate);
+  const strategies = Object.fromEntries(
+    f.input.strategies.map((s: { fighterId: string; text: string }) => [
+      s.fighterId,
+      s.text
+    ])
+  );
+  const choreography = directTournament(
+    tournament,
+    Object.fromEntries(
+      Object.keys(tournament.fighters).map((id) => [id, { attackKind: "orb" }])
+    ),
+    strategies
+  );
+  const input: AnimeDirectionInput = { tournament, strategies, choreography };
+  const output: AnimeProviderDirection = fixtureProviderDirection(input);
+  let posts = 0,
+    gets = 0;
+  const options = {
+    losePost: false,
+    omitCost: false,
+    costAvailable: false,
+    invalid: false
+  };
+  const id = `gen-${randomUUID()}`;
+  const api = new AnimeDirectorApi(
+    f.pool,
+    "not-a-live-key",
+    f.guard,
+    f.storage,
+    async (url) => {
+      if (String(url).includes("/generation?")) {
+        gets++;
+        return options.costAvailable
+          ? Response.json({ data: { id, total_cost: 0.0012345 } })
+          : new Response(null, { status: 404 });
+      }
+      assert.equal(
+        String(url),
+        "https://openrouter.ai/api/v1/chat/completions"
+      );
+      posts++;
+      if (options.losePost) throw new Error("Lost response");
+      const value = structuredClone(output);
+      if (options.invalid) {
+        const cutins = JSON.parse(value.matches.SF1!.cutins);
+        cutins[0].quotes[0].text = "Invented dialogue.";
+        value.matches.SF1!.cutins = JSON.stringify(cutins);
+      }
+      return Response.json({
+        id,
+        model: ANIME_DIRECTOR_MODEL,
+        choices: [
+          { finish_reason: "stop", message: { content: JSON.stringify(value) } }
+        ],
+        usage: options.omitCost
+          ? { prompt_tokens: 100 }
+          : { cost: 0.0012345, prompt_tokens: 100, completion_tokens: 80 }
+      });
+    }
+  );
+  return { api, input, output, options, counts: () => ({ posts, gets }) };
+}
+
+test("Claude cut-ins persist one canonical task, actual charge and native evidence across render retries", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f),
+      before = structuredClone(c.input);
+    const result = await c.api.direct(await f.folder(), c.input);
+    assert.equal(result.receipt.actualCostUsd, 0.0012345);
+    assert.equal(result.receipt.actualMicrousd, 1235);
+    assert.deepEqual(
+      result.choreography,
+      applyAnimeProviderDirection(c.input, c.output)
+    );
+    assert.deepEqual(c.input, before);
+    assert.deepEqual(await c.api.direct(await f.folder(), c.input), result);
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    const tasks = await f.pool.query(
+      "SELECT p.state,p.actual_microusd,e.evidence FROM yunipals_arena.provider_task p JOIN yunipals_arena.provider_action_evidence e USING(request_id) WHERE p.deployment=$1",
+      [f.service.deployment]
+    );
+    assert.equal(tasks.rows.length, 1);
+    assert.equal(tasks.rows[0].actual_microusd, "1235");
+    assert.equal(tasks.rows[0].evidence.inputHash, f.first.state.inputHash);
+    assert.equal(tasks.rows[0].evidence.resultHash, f.state.resultHash);
+  } finally {
+    await f.close();
+  }
+});
+test("Claude accounting retrieves the saved generation after a reorg without repurchasing it", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f);
+    c.options.omitCost = true;
+    await assert.rejects(c.api.direct(await f.folder(), c.input));
+    f.fork();
+    await f.seed();
+    f.source(true);
+    c.options.costAvailable = true;
+    const worker = new NativeArenaMedia(f.service, f.api, f.media, (task) =>
+      c.api.step(task.id, task.incarnation)
+    );
+    assert.equal((await worker.reconcile()).completed, 1);
+    assert.deepEqual(c.counts(), { posts: 1, gets: 2 });
+    const tasks = await f.pool.query(
+      "SELECT state,actual_microusd FROM yunipals_arena.provider_task WHERE deployment=$1",
+      [f.service.deployment]
+    );
+    assert.deepEqual(tasks.rows, [
+      { state: "completed", actual_microusd: "1235" }
+    ]);
+  } finally {
+    await f.close();
+  }
+});
+test("an ambiguous Claude submission never buys an automatic replacement", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f);
+    c.options.losePost = true;
+    await assert.rejects(
+      c.api.direct(await f.folder(), c.input),
+      /unconfirmed/
+    );
+    c.options.losePost = false;
+    await assert.rejects(
+      c.api.direct(await f.folder(), c.input),
+      /reconciliation/
+    );
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    assert.equal(
+      (
+        await f.pool.query(
+          "SELECT state FROM yunipals_arena.provider_task WHERE deployment=$1",
+          [f.service.deployment]
+        )
+      ).rows[0].state,
+      "uncertain"
+    );
+  } finally {
+    await f.close();
+  }
+});
+test("invalid Claude dialogue retains its charge and original response without a paid reroll", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f);
+    c.options.invalid = true;
+    await assert.rejects(c.api.direct(await f.folder(), c.input), /recovery/);
+    await assert.rejects(c.api.direct(await f.folder(), c.input), /recovery/);
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    assert.equal(
+      (
+        await f.pool.query(
+          "SELECT actual_microusd FROM yunipals_arena.provider_task WHERE deployment=$1",
+          [f.service.deployment]
+        )
+      ).rows[0].actual_microusd,
+      "1235"
+    );
+  } finally {
+    await f.close();
+  }
+});
+test("Claude requires current source, matching hashes, scoped job and funding before a paid request", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f);
+    await assert.rejects(c.api.direct("/tmp/wrong-job", c.input), /origin/);
+    const changed = structuredClone(c.input);
+    changed.tournament.source.inputSha256 = "a".repeat(64);
+    await assert.rejects(c.api.direct(await f.folder(), changed), /canonical/);
+    f.funding(true);
+    await assert.rejects(c.api.direct(await f.folder(), c.input), /Funding/);
+    assert.equal(c.counts().posts, 0);
+    f.funding(false);
+    await c.api.direct(await f.folder(), c.input);
+    assert.equal(c.counts().posts, 1);
+    changed.strategies[Object.keys(changed.strategies)[0]!] = "Changed";
+    await assert.rejects(
+      c.api.direct(await f.folder(), {
+        ...changed,
+        tournament: c.input.tournament
+      }),
+      /frozen/
+    );
+  } finally {
+    await f.close();
+  }
+});
+
+test("anime admission reserves Claude funds for every outstanding film and a new lobby", async () => {
+  const f = await fixture();
+  try {
+    const capacity = new ArenaCapacity(
+      f.pool,
+      f.service.deployment,
+      f.service,
+      "anime"
+    );
+    const snapshot: CapacitySnapshot = {
+      runwareMicrousd: 0,
+      openaiBudgetMicrousd: 1400000,
+      openaiBudgetExpiresAt: Date.now() + 86400000,
+      vrfAvailableWei: "1000000000000000",
+      vrfQuoteWei: "1000000000000",
+      vrfMaxWei: "10000000000000",
+      refereeGasWei: "1000000000000000",
+      operatorGasWei: "1000000000000000",
+      diskFreeBytes: 10000000000
+    };
+    await capacity.save(snapshot);
+    await assert.rejects(capacity.check(false), /cut-in generation funds/);
+    await capacity.save({ ...snapshot, openrouterMicrousd: 799999 });
+    await assert.rejects(capacity.check(false), /cut-in generation funds/);
+    await capacity.save({ ...snapshot, openrouterMicrousd: 800000 });
+    assert.equal((await capacity.check(false)).ready, true);
+    await assert.rejects(capacity.check(true), /cut-in generation funds/);
+    await capacity.save({ ...snapshot, openrouterMicrousd: 1600000 });
+    assert.equal((await capacity.check(true)).ready, true);
+  } finally {
+    await f.pool.query(
+      "DELETE FROM yunipals_arena.capacity WHERE deployment=$1",
+      [f.service.deployment]
+    );
+    await f.close();
+  }
+});
 
 test("native media retrieves an orphaned UUID during source outage without buying a replacement", async () => {
   const f = await fixture();

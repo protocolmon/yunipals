@@ -1,0 +1,23 @@
+{
+  "version": "yunipals-anime-arena/timing/v1",
+  "status": "approved 2026-10-28; not deployed",
+  "joinWindow": {
+    "approved": true,
+    "seconds": 604800,
+    "startsAt": "first successful paid entry",
+    "emptyLobbyDeadline": null,
+    "advanceWhen": "four paid seats and finalized island are ready before expiry"
+  },
+  "strategyWindow": {
+    "approved": true,
+    "seconds": 86400,
+    "startsAt": "four paid seats and finalized island are ready",
+    "advanceWhen": "all four valid strategy commitments are frozen before expiry"
+  },
+  "resolutionWindow": {
+    "approved": true,
+    "seconds": 86400,
+    "startsAt": "onchain input freeze"
+  },
+  "note": "Windows are maximum waits. Ready tournaments advance immediately; no mandatory seven-day or twenty-four-hour delay."
+}

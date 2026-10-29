@@ -55,6 +55,11 @@ contracts/arena/broadcast/
 !/docs/arena/mainnet-rules-manifest-v1.json
 !/docs/arena/rules-v2/
 !/docs/arena/identity-registry-v1/
+!/docs/arena/anime-arena-plan-v1.md
+!/docs/arena/anime-attack-kits-brief-v1.md
+!/docs/arena/anime-implementation-v1.md
+!/docs/arena/anime-deployment.json
+!/docs/arena/anime-recipe-v1/
 
 # Publish only the stable runtime data from the original art/research archives.
 /docs/islands/*

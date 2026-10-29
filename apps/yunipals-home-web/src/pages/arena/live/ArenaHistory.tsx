@@ -1,3 +1,4 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 import type {
@@ -30,12 +31,13 @@ export function ArenaTournamentCard({
   tournament: ArenaTournamentSummary;
   wallet?: string;
 }) {
+  const deployment = useArenaDeployment();
   const own = t.fighters.filter(
     (f) => f.player.toLowerCase() === wallet?.toLowerCase()
   );
   const action =
     t.phase === "open"
-      ? "Join · 2 USDC"
+      ? `Join · ${deployment.entry} USDC`
       : t.phase === "strategies" &&
           Date.now() / 1000 < t.deadline &&
           own.some((f) => !t.submittedSeats.includes(f.seat))
@@ -50,7 +52,7 @@ export function ArenaTournamentCard({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-bold">
           <Link
-            to={`/arena/${t.id}`}
+            to={`${deployment.basePath}/${t.id}`}
             className="rounded hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
           >
             Tournament #{t.id}
@@ -122,7 +124,7 @@ export function ArenaTournamentCard({
         </p>
       ) : null}
       <Link
-        to={`/arena/${t.id}`}
+        to={`${deployment.basePath}/${t.id}`}
         className="mt-5 self-start rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
       >
         {action}
@@ -139,6 +141,7 @@ const rewardLabels = {
   withdrawal: "Wallet withdrawal"
 };
 export function ArenaRewardList({ items }: { items: ArenaRewardRecord[] }) {
+  const deployment = useArenaDeployment();
   return (
     <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
       {items.map((item) => (
@@ -150,7 +153,10 @@ export function ArenaRewardList({ items }: { items: ArenaRewardRecord[] }) {
             <p className="font-semibold">{rewardLabels[item.kind]}</p>
             <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted">
               {item.tournamentId ? (
-                <Link to={`/arena/${item.tournamentId}`} className="underline">
+                <Link
+                  to={`${deployment.basePath}/${item.tournamentId}`}
+                  className="underline"
+                >
                   Tournament #{item.tournamentId}
                 </Link>
               ) : (

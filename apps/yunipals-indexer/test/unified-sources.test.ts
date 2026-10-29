@@ -248,3 +248,34 @@ describe("pinned Ponder coverage", () => {
     ).toThrow(/chain mismatch/);
   });
 });
+
+it("adds the registry and second arena in one source manifest without changing video identity", () => {
+  const old = buildSourceManifest({
+    UNIFIED_ARENA_DEPLOYMENTS: JSON.stringify([{ address, startBlock: 10 }])
+  });
+  const next = buildSourceManifest({
+    UNIFIED_ARENA_DEPLOYMENTS: JSON.stringify([
+      { address, startBlock: 10 },
+      { address: other, startBlock: 100 }
+    ]),
+    UNIFIED_ANIME_REGISTRY: `0x${"56".repeat(20)}`,
+    UNIFIED_ANIME_REGISTRY_START_BLOCK: "99"
+  });
+  validateSourceManifest(next);
+  expect(next.sources.find((s) => s.id === `arena:8453:${address}`)).toEqual(
+    old.sources.find((s) => s.id === `arena:8453:${address}`)
+  );
+  const registry = next.sources.find((s) => s.id === "anime-registry:8453")!;
+  expect(registry.receiptRequirement).toBe("none");
+  expect(registry.startBlock).toBe("99");
+  expect(registry.policies).toEqual([
+    { kind: "latest" },
+    { kind: "depth", subsequentBlocks: 5 }
+  ]);
+  expect(
+    next.sources.filter((s) => s.feature === "arena" && s.enabled)
+  ).toHaveLength(2);
+  expect(() =>
+    buildSourceManifest({ UNIFIED_ANIME_REGISTRY: address })
+  ).toThrow(/registry source/);
+});

@@ -7,6 +7,7 @@ import { boundedBody } from "./mediaApi";
 import { arenaRuntime } from "./runtime";
 import { arenaNativeConfiguration } from "./nativeSource";
 import { arenaOpenaiFundingMode } from "./funding";
+import { measureOpenRouterCredit } from "./animeDirectorApi";
 import {
   arenaMediaStorageBudget,
   ARENA_MEDIA_QUOTA_BYTES,
@@ -14,6 +15,7 @@ import {
 } from "./storage";
 
 const key = process.env.RUNWARE_API_KEY,
+  directorKey = process.env.OPENROUTER_API_KEY,
   storage = process.env.ARENA_MEDIA_ROOT;
 const fundingMode = arenaOpenaiFundingMode();
 // Zeroed pilot fields mean "not used" in ongoing mode, not a provider balance.
@@ -27,7 +29,8 @@ const expiresAt =
     ? 0
     : Date.parse(process.env.ARENA_OPENAI_BUDGET_EXPIRES_AT ?? "");
 if (
-  !key ||
+  (!key && process.env.ARENA_MEDIA_KIND !== "anime") ||
+  (!directorKey && process.env.ARENA_MEDIA_KIND === "anime") ||
   !storage ||
   !Number.isSafeInteger(allowance) ||
   allowance < 0 ||
@@ -64,26 +67,42 @@ try {
           process.env.ARENA_MEDIA_RESERVED_BYTES ?? ARENA_MEDIA_RESERVED_BYTES
         )
       );
-      const taskUUID = randomUUID();
-      // Account response also contains team/key metadata: never persist or log it.
-      // Official API: https://runware.ai/docs/models-api/account-management
-      const response = await fetch("https://api.runware.ai/v1", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify([
-          { taskType: "accountManagement", taskUUID, operation: "getDetails" }
-        ]),
-        redirect: "error",
-        signal: AbortSignal.timeout(20000)
-      });
-      if (!response.ok) throw new Error("Account availability check failed.");
-      const runwareMicrousd = runwareCreditMicrousd(
-        JSON.parse((await boundedBody(response, 1000000)).toString("utf8")),
-        taskUUID
-      );
+      const runwareMicrousd =
+        runtime.config.mediaKind === "anime"
+          ? 0
+          : await (async () => {
+              const taskUUID = randomUUID();
+              // Account response also contains team/key metadata: never persist or log it.
+              // Official API: https://runware.ai/docs/models-api/account-management
+              const response = await fetch("https://api.runware.ai/v1", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${key}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify([
+                  {
+                    taskType: "accountManagement",
+                    taskUUID,
+                    operation: "getDetails"
+                  }
+                ]),
+                redirect: "error",
+                signal: AbortSignal.timeout(20000)
+              });
+              if (!response.ok)
+                throw new Error("Account availability check failed.");
+              return runwareCreditMicrousd(
+                JSON.parse(
+                  (await boundedBody(response, 1000000)).toString("utf8")
+                ),
+                taskUUID
+              );
+            })();
+      const openrouterMicrousd =
+        runtime.config.mediaKind === "anime"
+          ? await measureOpenRouterCredit(directorKey!)
+          : undefined;
       const [block, gasPrice] = await Promise.all([
         base.getBlock({ blockTag: "latest" }),
         base.getGasPrice()
@@ -122,6 +141,7 @@ try {
       await runtime.capacity.save(
         {
           runwareMicrousd,
+          ...(openrouterMicrousd !== undefined ? { openrouterMicrousd } : {}),
           openaiFundingMode: fundingMode,
           openaiBudgetMicrousd: allowance,
           openaiBudgetExpiresAt: expiresAt,

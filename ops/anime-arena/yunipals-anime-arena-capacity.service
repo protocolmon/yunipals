@@ -1,0 +1,27 @@
+[Unit]
+Description=Yunipals Anime Arena capacity
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=yunipals-arena
+Group=yunipals-arena
+WorkingDirectory=/srv/yunipals-anime-arena/current/apps/yunipals-market-api
+EnvironmentFile=/etc/yunipals-anime-arena/runtime.env
+EnvironmentFile=/etc/yunipals-anime-arena/database.env
+EnvironmentFile=/etc/yunipals-anime-arena/openrouter.env
+LoadCredential=strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key
+ExecStart=/usr/bin/env ARENA_ADMISSION_KEY_FILE= ARENA_REFEREE_KEY_FILE= ARENA_LOBBY_KEY_FILE= ARENA_EXECUTION_KEY_FILE= ARENA_ENCRYPTION_KEY_FILE=%d/strategy-encryption.key ARENA_ENTRIES_ENABLED=false /srv/yunipals-arena/runtime/node-v24.22.1 dist/arena-capacity.mjs
+MemoryMax=512M
+TasksMax=64
+Restart=on-failure
+RestartSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

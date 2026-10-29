@@ -108,7 +108,7 @@ export class NativeArenaReferee {
       const result = await this.adjudicator.step(
         this.service.deployment,
         id,
-        1600000,
+        Math.max(700000, Number(this.service.economics.operations)),
         context.incarnation
       );
       return {

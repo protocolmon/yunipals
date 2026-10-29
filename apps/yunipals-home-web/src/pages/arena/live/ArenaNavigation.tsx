@@ -1,19 +1,25 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 export function ArenaNavigation() {
+  const deployment = useArenaDeployment();
   const { pathname } = useLocation();
   return (
     <nav aria-label="Arena navigation" className="my-6 flex flex-wrap gap-2">
       {[
-        ["/arena", "Tournaments"],
-        ["/arena/me", "My Arena"],
-        ["/arena/hosting", "Hosting"],
-        ["/arena/rules", "Rules"]
+        [deployment.basePath, "Tournaments"],
+        [`${deployment.basePath}/me`, "My Arena"],
+        [`${deployment.basePath}/hosting`, "Hosting"],
+        [`${deployment.basePath}/rules`, "Rules"],
+        ...(deployment.kind === "anime"
+          ? [["/arena/anime/studio", "Public queue"]]
+          : [["/arena/anime", "Anime Arena"]])
       ].map(([href, label]) => {
         const active =
           pathname === href ||
-          (href === "/arena" && /^\/arena\/\d+$/.test(pathname));
+          (href === deployment.basePath &&
+            new RegExp(`^${deployment.basePath}/[0-9]+$`).test(pathname));
         return (
           <Link
             key={href}

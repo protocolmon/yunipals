@@ -387,7 +387,7 @@ export class NativeArenaReadModels {
           hostedTournaments: this.count(t.hosted_tournaments),
           championships: this.count(t.championships),
           entryPayments: String(
-            BigInt(this.amount(t.entered_seats)) * 2000000n
+            BigInt(this.amount(t.entered_seats)) * this.service.economics.entry
           ),
           winnings: this.amount(t.winnings),
           hostingRewards: this.amount(t.hosting),
@@ -509,7 +509,11 @@ export class NativeArenaReadModels {
                 (s) => s.player === filter.wallet
               ).length;
               if (count)
-                add("refund", String(BigInt(count) * 2000000n), wallet);
+                add(
+                  "refund",
+                  String(BigInt(count) * this.service.economics.entry),
+                  wallet
+                );
             } else if (row.event_name === "PayoutsReleased") {
               if (state.phase !== "settled" || !state.videoHash)
                 throw updating();
@@ -517,11 +521,15 @@ export class NativeArenaReadModels {
                 state.winners &&
                 state.seats[state.winners[2]]?.player === filter.wallet
               )
-                add("winner", "6000000", wallet);
+                add("winner", this.service.economics.winner.toString(), wallet);
               if (state.islandBeneficiary === filter.wallet)
-                add("host", "400000", wallet);
+                add("host", this.service.economics.island.toString(), wallet);
               if (state.treasury === filter.wallet)
-                add("operations", "1600000", wallet);
+                add(
+                  "operations",
+                  this.service.economics.operations.toString(),
+                  wallet
+                );
             } else throw updating();
           }
         }

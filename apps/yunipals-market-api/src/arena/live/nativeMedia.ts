@@ -10,7 +10,12 @@ export class NativeArenaMedia {
   constructor(
     readonly service: ArenaIntake,
     readonly api: ArenaMediaApi,
-    readonly media: ArenaMedia
+    readonly media: ArenaMedia,
+    private readonly recoverTask?: (task: {
+      id: string;
+      incarnation: string;
+      asset: string;
+    }) => Promise<{ state: string }>
   ) {
     if (!service.nativeSource?.work || api.native?.service !== service)
       throw new Error(
@@ -50,13 +55,15 @@ export class NativeArenaMedia {
           row.id,
           row.incarnation
         );
-        const result = await this.api.step(
-          this.service.deployment,
-          row.id,
-          row.asset,
-          folder,
-          row.incarnation
-        );
+        const result = this.recoverTask
+          ? await this.recoverTask(row)
+          : await this.api.step(
+              this.service.deployment,
+              row.id,
+              row.asset,
+              folder,
+              row.incarnation
+            );
         if (result.state === "completed") completed++;
       } catch {
         unavailable++;

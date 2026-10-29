@@ -1,0 +1,46 @@
+{
+  "id": "anime-fighter-v1",
+  "version": 1,
+  "style": "Crisp hand-drawn anime cel shading, confident dark outlines, bright local colours, restrained rim light. Preserve the reference token's exact species, colour, horn, markings and functional anatomy. No extra wings, limbs, accessories, weapons, text, borders or watermark. Full body, generous margin, readable silhouette. Flat chroma green #00FF00 background; avoid green light spill.",
+  "poses": {
+    "idle": "Neutral fighting stance, face right, full body, square composition.",
+    "attack": "Powerful species-appropriate attack pose, face right, full body, square composition.",
+    "dodge": "Evade sideways, preserve anatomy, full body, square composition.",
+    "dash": "Fast forward movement using the reviewed locomotion, face right, square composition.",
+    "guard": "Braced defensive posture, face right, square composition.",
+    "hurt": "Recoiling from a hit, face right, square composition.",
+    "down": "Defeated and resting on the ground, unharmed, square composition.",
+    "victory": "Triumphant pose, full body, square composition.",
+    "cutin": "Dramatic close-up for an anime cut-in, face right, 16:9 composition. Flat dark violet background instead of green."
+  },
+  "defaults": {
+    "attackKind": "dash",
+    "locomotion": "ground",
+    "face": 1,
+    "palette": { "color": "#a16bee", "light": "#e6caff", "dark": "#40246b" },
+    "height": 260,
+    "origin": [0.35, 0.55],
+    "torso": [0.05, 0.5]
+  },
+  "species": {
+    "Unibranch": {
+      "attackKind": "vine",
+      "locomotion": "ground",
+      "height": 270
+    },
+    "Uniturtle": { "attackKind": "jet", "locomotion": "ground", "height": 215 },
+    "Unifairy": { "attackKind": "star", "locomotion": "flight", "height": 250 },
+    "Elrond Unidragon": {
+      "attackKind": "orb",
+      "locomotion": "flight",
+      "height": 250
+    }
+  },
+  "review": "Species defaults are suggestions. Curator must review the actual anatomy, locomotion, every sprite and the final manifest. Traits and art follow the token on transfer.",
+  "generation": {
+    "executor": "codex-subscription",
+    "maxRetries": 2,
+    "background": "#00FF00",
+    "images": 9
+  }
+}

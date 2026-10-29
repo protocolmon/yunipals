@@ -3,6 +3,7 @@ pragma solidity 0.8.30;
 
 import {Script, console2} from "forge-std/Script.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {AnimeFighterRegistry} from "../src/AnimeFighterRegistry.sol";
 import {YunipalsArena} from "../src/YunipalsArena.sol";
 
 /// @notice All settings are public. Wallet secrets come from Foundry's encrypted keystore.
@@ -27,6 +28,7 @@ contract DeployArena is Script {
             treasury: deployer,
             islands: ISLANDS,
             vrfWrapper: WRAPPER,
+            eligibility: vm.envOr("ARENA_ELIGIBILITY", address(0)),
             paymentToken: vm.envAddress("ARENA_PAYMENT_TOKEN"),
             entryFee: vm.envUint("ARENA_ENTRY_FEE_RAW").toUint128(),
             winnerBps: vm.envUint("ARENA_WINNER_BPS").toUint16(),
@@ -39,7 +41,26 @@ contract DeployArena is Script {
         });
         require(c.admin == deployer, "Pilot admin must be the selected deployment wallet");
         require(c.paymentToken == 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913, "Base native USDC required");
-        require(c.entryFee == 2_000_000 && c.winnerBps == 7500 && c.islandBps == 500, "Unapproved economics");
+        if (c.eligibility == address(0)) {
+            require(
+                c.entryFee == 2_000_000 && c.winnerBps == 7500 && c.islandBps == 500,
+                "Unapproved video economics"
+            );
+        } else {
+            AnimeFighterRegistry registry = AnimeFighterRegistry(c.eligibility);
+            require(
+                registry.owner() == c.admin && registry.curator() == c.admin,
+                "Unexpected anime registry roles"
+            );
+            require(
+                registry.BASE_YUNIPALS() == 0x98433dF878e8C898CB907345C3a7756E5F72240f,
+                "Unexpected anime collection"
+            );
+            require(
+                c.entryFee == 1_000_000 && c.winnerBps == 8000 && c.islandBps == 500,
+                "Unapproved anime economics"
+            );
+        }
         require(c.joinWindow == 7 days && c.strategyWindow == 24 hours, "Unapproved entry/strategy windows");
         require(c.resolutionWindow == 24 hours, "Unapproved referee window");
         console2.log("Chain: Base mainnet (8453)");

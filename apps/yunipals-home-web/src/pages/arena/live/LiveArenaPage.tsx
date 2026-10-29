@@ -1,3 +1,4 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import {
   useInfiniteQuery,
   useQuery,
@@ -12,17 +13,12 @@ import type {
   ArenaPublicTournament,
   ArenaSeat
 } from "@protopals/yunipals-market-core/arena";
-import { environment } from "@/environment";
 import { Select, SelectItem } from "@/components/ui/select";
 import type {
   ArenaHistoryPage,
   ArenaWalletSummary
 } from "@protopals/yunipals-market-core/arenaViews";
-import {
-  arenaRequest,
-  fetchArenaTournament,
-  type ArenaConfig
-} from "@/lib/arenaLive";
+import { fetchArenaTournament, type ArenaConfig } from "@/lib/arenaLive";
 import { cn } from "@/lib/utils";
 import { arenaFighterKey } from "@/lib/arenaTransactions";
 import {
@@ -375,6 +371,8 @@ function StrategyEditor({
 }
 
 export function LiveArenaPage() {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const { address } = useAccount();
@@ -383,16 +381,16 @@ export function LiveArenaPage() {
   useEffect(() => setApprovalEntries(1), [address]);
   const queryClient = useQueryClient();
   const [revealedId, setRevealedId] = useState<string | null>(null);
-  const configured = !!environment.arenaApiUrl;
+  const configured = !!deployment.apiUrl;
   const config = useQuery({
-    queryKey: ["arena-live", "config"],
+    queryKey: ["arena-live", deployment.kind, "config"],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaConfig>("/config", undefined, signal),
     enabled: configured,
     staleTime: 60_000
   });
   const list = useInfiniteQuery({
-    queryKey: ["arena-live", "list"],
+    queryKey: ["arena-live", deployment.kind, "list"],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) =>
       arenaRequest<ArenaHistoryPage>(
@@ -407,8 +405,13 @@ export function LiveArenaPage() {
   const tournaments = list.data?.pages.flatMap((p) => p.items) ?? [];
   const selectedId = id;
   const detail = useQuery({
-    queryKey: ["arena-live", "tournament", selectedId],
-    queryFn: ({ signal }) => fetchArenaTournament(selectedId!, signal),
+    queryKey: ["arena-live", deployment.kind, "tournament", selectedId],
+    queryFn: ({ signal }) =>
+      arenaRequest<ArenaPublicTournament>(
+        `/tournaments/${selectedId!}`,
+        undefined,
+        signal
+      ),
     enabled: configured && !!selectedId,
     refetchInterval: 10000
   });
@@ -417,6 +420,7 @@ export function LiveArenaPage() {
   const context = useQuery({
     queryKey: [
       "arena-live",
+      deployment.kind,
       "context",
       tournament?.id,
       tournament?.islandId,
@@ -435,7 +439,7 @@ export function LiveArenaPage() {
     refetchInterval: 15000
   });
   const summary = useQuery({
-    queryKey: ["arena-live", "summary", address],
+    queryKey: ["arena-live", deployment.kind, "summary", address],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaWalletSummary>(
         `/wallets/${address}/summary`,
@@ -446,12 +450,36 @@ export function LiveArenaPage() {
     refetchInterval: 30000
   });
   const wallet = useArenaWallet(config.data, () =>
-    queryClient.invalidateQueries({ queryKey: ["arena-live"] })
+    queryClient.invalidateQueries({ queryKey: ["arena-live", deployment.kind] })
   );
   const inventory = useInfiniteQuery({
-    queryKey: ["arena-inventory", address],
-    queryFn: ({ pageParam, signal }) =>
-      fetchOwnerTokens(address!, { limit: 24, cursor: pageParam }, signal),
+    queryKey: ["arena-inventory", deployment.kind, address],
+    queryFn: async ({ pageParam, signal }) => {
+      const page = await fetchOwnerTokens(
+        address!,
+        { limit: 24, cursor: pageParam },
+        signal
+      );
+      if (deployment.kind !== "anime") return page;
+      const base = page.items.filter((t) => t.chainId === 8453);
+      const eligible = await Promise.all(
+        base.map(async (t) => ({
+          token: t,
+          approved:
+            (
+              await arenaRequest<{ fighter: { status: string } }>(
+                `/fighters/${t.tokenId}`,
+                undefined,
+                signal
+              )
+            ).fighter.status === "Approved"
+        }))
+      );
+      return {
+        ...page,
+        items: eligible.filter((t) => t.approved).map((t) => t.token)
+      };
+    },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled: configured && !!address && tournament?.phase === "open"
@@ -482,7 +510,7 @@ export function LiveArenaPage() {
       <header className="flex flex-wrap items-start justify-between gap-6">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-grape">
-            Yunipals Arena
+            {deployment.label}
           </p>
           <h1 className="mt-3 font-display text-4xl md:text-5xl">
             Four fighters. One champion.
@@ -500,10 +528,16 @@ export function LiveArenaPage() {
         className="my-8 grid grid-cols-2 gap-4 rounded-card bg-panel-base p-6 md:grid-cols-4"
       >
         {[
-          ["Entry", "2 USDC"],
-          ["Champion", "6 USDC"],
-          ["Island owner", "0.40 USDC"],
-          ["Operations", "1.60 USDC"]
+          ["Entry", `${deployment.entry} USDC`],
+          ["Champion", `${deployment.champion} USDC`],
+          [
+            "Island owner",
+            deployment.kind === "anime" ? "0.20 USDC" : "0.40 USDC"
+          ],
+          [
+            "Operations",
+            deployment.kind === "anime" ? "0.60 USDC" : "1.60 USDC"
+          ]
         ].map(([label, value]) => (
           <div key={label}>
             <p className="text-sm text-muted">{label}</p>
@@ -557,7 +591,7 @@ export function LiveArenaPage() {
             [
               "01",
               "Bring your Yunipal",
-              "Pick one of your NFTs and enter an open tournament for 2 USDC. Your NFT stays yours."
+              `Pick ${deployment.kind === "anime" ? "an approved Base OG fighter" : "one of your NFTs"} and enter for ${deployment.entry} USDC. Your NFT stays yours.`
             ],
             [
               "02",
@@ -567,7 +601,7 @@ export function LiveArenaPage() {
             [
               "03",
               "Watch. Win. Claim.",
-              "Two semifinals and a final decide one champion. Watch the battles and claim the 6 USDC prize."
+              `Two semifinals and a final decide one champion. Watch the battles and claim the ${deployment.champion} USDC prize.`
             ]
           ].map(([step, title, description]) => (
             <article key={step} className="rounded-card border border-line p-5">
@@ -791,8 +825,8 @@ export function LiveArenaPage() {
               <h2 className="text-2xl font-bold">Choose your fighter</h2>
               <p className="mt-3 text-muted">
                 Connect your wallet using the button in the header to see your
-                Yunipals. Pick a fighter and enter for 2 USDC; your NFT stays in
-                your wallet.
+                Yunipals. Pick a fighter and enter for {deployment.entry} USDC;
+                your NFT stays in your wallet.
               </p>
             </section>
           ) : null}
@@ -822,15 +856,21 @@ export function LiveArenaPage() {
                       )
                     }
                   >
-                    <SelectItem value="1">2 USDC · 1 entry</SelectItem>
-                    <SelectItem value="4">8 USDC · 4 entries</SelectItem>
-                    <SelectItem value="10">20 USDC · 10 entries</SelectItem>
+                    <SelectItem value="1">
+                      {deployment.entry} USDC · 1 entry
+                    </SelectItem>
+                    <SelectItem value="4">
+                      {Number(deployment.entry) * 4} USDC · 4 entries
+                    </SelectItem>
+                    <SelectItem value="10">
+                      {Number(deployment.entry) * 10} USDC · 10 entries
+                    </SelectItem>
                   </Select>
                 </div>
                 <p id="arena-approval-help" className="mt-3 text-sm text-muted">
                   A higher limit saves repeat approvals. Each entry still
-                  charges only 2 USDC. This limit applies when a new approval is
-                  needed; an existing allowance is reused.
+                  charges only {deployment.entry} USDC. This limit applies when
+                  a new approval is needed; an existing allowance is reused.
                 </p>
               </div>
               {inventory.isPending && (
@@ -926,7 +966,7 @@ export function LiveArenaPage() {
                           ) : entered ? (
                             "Entered"
                           ) : (
-                            "Enter · 2 USDC"
+                            `Enter · ${deployment.entry} USDC`
                           )}
                         </button>
                       </article>

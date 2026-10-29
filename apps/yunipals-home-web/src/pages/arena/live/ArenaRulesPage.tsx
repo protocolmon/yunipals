@@ -1,19 +1,21 @@
+import { ANIME_REASONS } from "@protopals/yunipals-market-core/anime";
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useQuery } from "@tanstack/react-query";
-import { environment } from "@/environment";
-import { arenaRequest } from "@/lib/arenaLive";
 import { ArenaNavigation } from "./ArenaNavigation";
 import { ArenaLoading } from "./ArenaFeedback";
 
 export function ArenaRulesPage() {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const rules = useQuery({
-    queryKey: ["arena-live", "rules"],
+    queryKey: ["arena-live", deployment.kind, "rules"],
     queryFn: ({ signal }) =>
       arenaRequest<{ rulesHash: string; manifest: unknown }>(
         "/rules",
         undefined,
         signal
       ),
-    enabled: !!environment.arenaApiUrl,
+    enabled: !!deployment.apiUrl,
     staleTime: 60000
   });
   return (
@@ -26,6 +28,34 @@ export function ArenaRulesPage() {
       </h1>
       <ArenaNavigation />
       <div className="space-y-6">
+        {deployment.kind === "anime" && (
+          <section className="rounded-card border border-line bg-white p-6">
+            <h2 className="text-xl font-bold">Anime fighters · Base OG only</h2>
+            <p className="mt-3 text-muted">
+              Apply from your Base OG token page. Applying costs Base gas only.
+              Curator approval is required before entry. The winner receives
+              80%, the island owner 5% and operations 15%.
+            </p>
+            <p className="mt-3 text-muted">
+              Approval and fighter art follow the NFT when it is sold. Rejection
+              reasons and curator notes are public. Rejected holders may
+              reapply; revoked fighters await curator re-approval. Traits
+              changed after approval require a new review.
+            </p>
+            <p className="mt-3 text-muted">
+              Maximum windows: 7 days to fill a lobby, 24 hours for strategies
+              and 24 hours for referee resolution. Ready tournaments advance
+              immediately.
+            </p>
+            <ul className="mt-3 space-y-2 text-sm">
+              {Object.entries(ANIME_REASONS).map(([code, reason]) => (
+                <li key={code}>
+                  Reason {code}: {reason}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         <section className="rounded-card border border-line bg-white p-6">
           <h2 className="text-xl font-bold">Enter with your Yunipal</h2>
           <p className="mt-3 text-muted">
@@ -35,9 +65,12 @@ export function ArenaRulesPage() {
             in your wallet.
           </p>
           <p className="mt-3 text-muted">
-            Entry costs 2 USDC on Base. The eight-USDC pool pays 6 USDC to the
-            champion, 0.40 USDC to the island hosting beneficiary and 1.60 USDC
-            to operations. Wallet transactions also require Base ETH for gas.
+            Entry costs {deployment.entry} USDC on Base. A full tournament pays{" "}
+            {deployment.champion} USDC to the champion,{" "}
+            {deployment.kind === "anime" ? "0.20" : "0.40"} USDC to the island
+            hosting beneficiary and{" "}
+            {deployment.kind === "anime" ? "0.60" : "1.60"} USDC to operations.
+            Wallet transactions also require Base ETH for gas.
           </p>
         </section>
         <section className="rounded-card border border-line bg-white p-6">
@@ -132,11 +165,11 @@ export function ArenaRulesPage() {
           <summary className="cursor-pointer font-semibold">
             Published rules version
           </summary>
-          {environment.arenaApiUrl && rules.isPending ? (
+          {deployment.apiUrl && rules.isPending ? (
             <div className="mt-4">
               <ArenaLoading label="Loading published rules…" />
             </div>
-          ) : environment.arenaApiUrl && rules.isError ? (
+          ) : deployment.apiUrl && rules.isError ? (
             <p role="alert" className="mt-4">
               The live rules service is unavailable. The published launch copy
               is available below.{" "}
@@ -153,7 +186,7 @@ export function ArenaRulesPage() {
                 {rules.data?.rulesHash}
               </p>
               <a
-                href={`${environment.arenaApiUrl}/rules`}
+                href={`${deployment.apiUrl}/rules`}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-3 inline-block font-semibold underline"
@@ -163,7 +196,11 @@ export function ArenaRulesPage() {
             </>
           ) : null}
           <a
-            href="/arena/rules-v1.json"
+            href={
+              deployment.kind === "anime"
+                ? `${deployment.apiUrl}/rules`
+                : "/arena/rules-v1.json"
+            }
             target="_blank"
             rel="noreferrer"
             className="mt-4 inline-block font-semibold underline"

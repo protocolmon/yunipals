@@ -486,7 +486,8 @@ export class NativeArenaClientTransactions {
             receipt,
             this.service.contract,
             this.paymentToken,
-            true
+            true,
+            this.service.economics.entry
           )
         : null;
     const changed = this.changed(row, proof);

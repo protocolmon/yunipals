@@ -1,8 +1,7 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Crown, Swords } from "lucide-react";
-import { environment } from "@/environment";
-import { arenaRequest } from "@/lib/arenaLive";
 import { ArenaLoading } from "./ArenaFeedback";
 import {
   ArenaBattleReview,
@@ -20,13 +19,15 @@ export function ArenaFilm({
   showResults: boolean;
   fighters: Array<ArenaReviewFighter | null>;
 }) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const video = useRef<HTMLVideoElement>(null);
   const [playback, setPlayback] = useState({ match: 0, winner: false });
   const [buffering, setBuffering] = useState(false);
   const [playbackError, setPlaybackError] = useState(false);
   const [playbackVersion, setPlaybackVersion] = useState(0);
   const media = useQuery({
-    queryKey: ["arena-live", "media", id],
+    queryKey: ["arena-live", deployment.kind, "media", id],
     queryFn: ({ signal }) =>
       arenaRequest<{ state: string; payoutsReleased: boolean }>(
         `/tournaments/${id}/media`,
@@ -38,8 +39,17 @@ export function ArenaFilm({
         ? false
         : 15000
   });
+  const clock = useQuery({
+    queryKey: ["arena-live", deployment.kind, "film-clock", id],
+    queryFn: ({ signal }) =>
+      arenaRequest<{
+        chapters: Array<{ id: string; t: number; winnerAt: number }>;
+      }>(`/tournaments/${id}/artifacts/film.json`, undefined, signal),
+    enabled: deployment.kind === "anime" && media.data?.state === "ready",
+    staleTime: Infinity
+  });
   const result = useQuery({
-    queryKey: ["arena-live", "result", id],
+    queryKey: ["arena-live", deployment.kind, "result", id],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaReviewResult>(
         `/tournaments/${id}/result`,
@@ -50,7 +60,7 @@ export function ArenaFilm({
     staleTime: Infinity
   });
   const artifact = (name: string) =>
-    `${environment.arenaApiUrl}/tournaments/${id}/artifacts/${name}`;
+    `${deployment.apiUrl}/tournaments/${id}/artifacts/${name}`;
   const match = result.data?.outcome.matches[playback.match];
   const pair = match
     ? match.fighterIds.map((fid) => fighters.find((f) => f?.id === fid))
@@ -136,12 +146,19 @@ export function ArenaFilm({
                 src={artifact("film.mp4")}
                 poster={artifact("SF1.png")}
                 onTimeUpdate={(event) => {
-                  const index = Math.min(
-                    2,
-                    Math.floor(event.currentTarget.currentTime / 8)
-                  );
+                  const time = event.currentTarget.currentTime;
+                  const chapters = clock.data?.chapters;
+                  const index =
+                    deployment.kind === "anime"
+                      ? Math.max(
+                          0,
+                          chapters?.findLastIndex((c) => time >= c.t) ?? 0
+                        )
+                      : Math.min(2, Math.floor(time / 8));
                   const settled =
-                    event.currentTarget.currentTime - index * 8 >= 6;
+                    deployment.kind === "anime"
+                      ? !!chapters?.[index] && time >= chapters[index]!.winnerAt
+                      : time - index * 8 >= 6;
                   setPlayback((current) =>
                     current.match === index && current.winner === settled
                       ? current
@@ -190,7 +207,9 @@ export function ArenaFilm({
             </p>
           ) : null}
           <p className="text-sm text-muted">
-            Three fights · 24 seconds. The film includes the results.
+            {deployment.kind === "anime"
+              ? "Three anime battles. The film includes the results."
+              : "Three fights · 24 seconds. The film includes the results."}
           </p>
           <p role="status" className="text-sm text-muted">
             {media.data.payoutsReleased

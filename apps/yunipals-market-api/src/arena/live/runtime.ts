@@ -1,4 +1,6 @@
 import pg from "pg";
+import { parseAbi } from "viem";
+import { AnimeFighters } from "./animeFighters";
 import { ArenaCapacity } from "./capacity";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { ARENA_USDC } from "@protopals/yunipals-market-core/arena";
@@ -14,7 +16,8 @@ import {
 import {
   ARENA_ISLANDS,
   ARENA_POOL_HASH,
-  loadLiveArenaCatalog
+  loadLiveArenaCatalog,
+  loadAnimeArenaCatalog
 } from "./catalog";
 import { ArenaInputCompiler } from "./input";
 import { ArenaIdentityAnalysis } from "./identityAnalysis";
@@ -30,7 +33,10 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
   const config = arenaConfig();
   const root = process.env.ARENA_REPOSITORY_ROOT;
   if (!root) throw new Error("ARENA_REPOSITORY_ROOT is required.");
-  const catalog = loadLiveArenaCatalog(root);
+  const catalog =
+    config.mediaKind === "anime"
+      ? loadAnimeArenaCatalog(root, config.eligibilityRegistry!)
+      : loadLiveArenaCatalog(root);
   if (catalog.rulesHash !== config.rulesHash)
     throw new Error("Local rules manifest differs from ARENA_RULES_HASH.");
   const clients = arenaRpcClients(),
@@ -102,8 +108,8 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
   });
   if (
     values[0].toLowerCase() !== ARENA_USDC.toLowerCase() ||
-    values[1] !== 2_000_000n ||
-    values[2] !== 7500 ||
+    values[1] !== (config.mediaKind === "anime" ? 1_000_000n : 2_000_000n) ||
+    values[2] !== (config.mediaKind === "anime" ? 8000 : 7500) ||
     values[3] !== 500 ||
     values[4] !== 604800 ||
     values[5] !== 86400 ||
@@ -116,6 +122,27 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
     throw new Error(
       "Arena contract settings do not match the approved launch configuration."
     );
+  const anime =
+    config.mediaKind === "anime"
+      ? new AnimeFighters(
+          base,
+          config.eligibilityRegistry!,
+          config.fighterAssetsOrigin,
+          fetch,
+          "media" in catalog.manifest
+            ? catalog.manifest.media.recipeSha256
+            : undefined
+        )
+      : undefined;
+  if (anime) {
+    const actual = await base.readContract({
+      address: config.deployment.contract,
+      abi: parseAbi(["function eligibility() view returns (address)"]),
+      functionName: "eligibility"
+    });
+    if (actual.toLowerCase() !== config.eligibilityRegistry)
+      throw new Error("Anime eligibility registry differs from the contract.");
+  }
   const signer = config.admissionKeyFile
     ? arenaSigner(config.admissionKeyFile)
     : null;
@@ -151,7 +178,8 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
       sourcePool,
       native,
       deployment: config.deployment,
-      base
+      base,
+      mediaKind: config.mediaKind
     });
     const service = new ArenaIntake(
       pool,
@@ -164,7 +192,8 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
         strategy: (input) => base.verifyTypedData(input)
       },
       nativeSource,
-      binding
+      binding,
+      config.mediaKind
     );
     const selected = (
       await pool.query("SELECT 1 FROM yunipals_arena.deployment WHERE id=$1", [
@@ -187,7 +216,12 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
           "Native Arena execution schema does not match this runtime."
         );
     }
-    const capacity = new ArenaCapacity(pool, config.deployment.id, service);
+    const capacity = new ArenaCapacity(
+      pool,
+      config.deployment.id,
+      service,
+      config.mediaKind
+    );
     const identityAnalysis = new ArenaIdentityAnalysis(
       pool,
       config.deployment.id,
@@ -204,12 +238,23 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
         ? (id) =>
             transaction(pool, (db) => service.tournamentContext(id, db, true))
         : undefined,
-      (nft, payload, wallet) => identityAnalysis.resolve(nft, payload, wallet)
+      (nft, payload, wallet) => identityAnalysis.resolve(nft, payload, wallet),
+      anime
+        ? async (nft) => {
+            const block = await base.getBlock({ blockTag: "latest" });
+            return anime.snapshot(nft, await anime.eligible(nft, block.number));
+          }
+        : undefined
     );
     const compiler = new ArenaInputCompiler(service, catalog, identities);
     const admit = signer
-      ? createAdmission(service, signer, clients, (id, nft, wallet) =>
-          identities.ensure(id, nft, nft.incarnation, wallet)
+      ? createAdmission(
+          service,
+          signer,
+          clients,
+          (id, nft, wallet) =>
+            identities.ensure(id, nft, nft.incarnation, wallet),
+          anime
         )
       : undefined;
     return {
@@ -217,6 +262,8 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
         await Promise.all([pool.end(), sourcePool?.end()]);
       },
       capacity,
+      anime,
+      sourcePool,
       config,
       clients,
       pool,

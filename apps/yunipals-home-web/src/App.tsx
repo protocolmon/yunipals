@@ -1,3 +1,4 @@
+import { ArenaDeploymentProvider } from "@/lib/arenaDeployment";
 import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -57,6 +58,11 @@ const YpalWrapPage = lazy(() =>
   }))
 );
 const freshYpalLaunch = environment.boosterLaunchId === "base-ypal-v1";
+const AnimeStudioPage = lazy(() =>
+  import("@/pages/arena/anime/AnimeStudioPage").then((module) => ({
+    default: module.AnimeStudioPage
+  }))
+);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -230,6 +236,54 @@ function AppContent() {
           <Route
             path="/monsters/:collection/:tokenId"
             element={<BoosterMonsterPage />}
+          />
+          <Route
+            path="/arena/anime"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <LiveArenaPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/me"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <ArenaDashboard role="entrant" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/hosting"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <ArenaDashboard role="host" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/rules"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <ArenaRulesPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/studio"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <AnimeStudioPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/:id"
+            element={
+              <ArenaDeploymentProvider kind="anime">
+                <LiveArenaPage />
+              </ArenaDeploymentProvider>
+            }
           />
           <Route path="/arena" element={<LiveArenaPage />} />
           <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />

@@ -47,9 +47,11 @@ async function run() {
       sourcePool,
       native,
       deployment: config.deployment,
-      base
+      base,
+      mediaKind: config.mediaKind
     });
-    if (!nativeSource) throw new Error("Native disclosure source is unavailable.");
+    if (!nativeSource)
+      throw new Error("Native disclosure source is unavailable.");
     const service = new ArenaIntake(
       pool,
       config.deployment.id,
@@ -61,7 +63,8 @@ async function run() {
         strategy: (input) => base.verifyTypedData(input)
       },
       nativeSource,
-      binding
+      binding,
+      config.mediaKind
     );
     // Neither this command nor startup performs migrations or adopts legacy work.
     await service.ready();

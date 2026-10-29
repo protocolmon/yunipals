@@ -134,7 +134,8 @@ export class NativeArenaSource {
     readonly pool: Pool,
     readonly releaseId: string,
     contract: string,
-    startBlock: bigint
+    startBlock: bigint,
+    mediaKind: "video" | "anime" = "video"
   ) {
     if (
       !hash(releaseId) ||
@@ -146,7 +147,8 @@ export class NativeArenaSource {
     this.definition = {
       contract: contract.toLowerCase(),
       startBlock: String(startBlock),
-      abiHash: manifestDigest(arenaAbi)
+      abiHash: manifestDigest(arenaAbi),
+      mediaKind
     };
   }
   async read(

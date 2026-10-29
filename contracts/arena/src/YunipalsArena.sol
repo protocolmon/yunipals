@@ -14,6 +14,7 @@ import {
     VRFV2PlusWrapperConsumerBase
 } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+import {IEligibility} from "./IEligibility.sol";
 import {IslandPool} from "./IslandPool.sol";
 
 /// @notice Four NFT seats, one VRF island draw, private server intake and an attested result.
@@ -40,6 +41,7 @@ contract YunipalsArena is Ownable2Step, ReentrancyGuard, EIP712, VRFV2PlusWrappe
         address treasury;
         address islands;
         address vrfWrapper;
+        address eligibility; // zero = no extra admission restriction
         address paymentToken; // zero = native ETH; otherwise a standard, non-rebasing ERC20
         uint128 entryFee;
         uint16 winnerBps;
@@ -134,6 +136,7 @@ contract YunipalsArena is Ownable2Step, ReentrancyGuard, EIP712, VRFV2PlusWrappe
     address public treasury;
     address public lobbyOperator;
     IERC721 public immutable islands;
+    address public immutable eligibility;
     address public immutable paymentToken;
     uint128 public immutable entryFee;
     uint16 public immutable winnerBps;
@@ -168,6 +171,7 @@ contract YunipalsArena is Ownable2Step, ReentrancyGuard, EIP712, VRFV2PlusWrappe
                 || c.maxVrfCost == 0 || c.joinWindow < 10 minutes || c.joinWindow > 30 days
                 || c.strategyWindow < 10 minutes || c.strategyWindow > 7 days || c.resolutionWindow < 1 hours
                 || c.resolutionWindow > 30 days
+                || (c.eligibility != address(0) && c.eligibility.code.length == 0)
                 || (c.paymentToken != address(0) && c.paymentToken.code.length == 0)
         ) revert InvalidConfig();
         admissionSigner = c.admissionSigner;
@@ -175,6 +179,7 @@ contract YunipalsArena is Ownable2Step, ReentrancyGuard, EIP712, VRFV2PlusWrappe
         treasury = c.treasury;
         lobbyOperator = c.lobbyOperator;
         islands = IERC721(c.islands);
+        eligibility = c.eligibility;
         paymentToken = c.paymentToken;
         entryFee = c.entryFee;
         winnerBps = c.winnerBps;
@@ -260,6 +265,12 @@ contract YunipalsArena is Ownable2Step, ReentrancyGuard, EIP712, VRFV2PlusWrappe
         ) revert InvalidEntry();
         if (!SignatureChecker.isValidSignatureNow(admissionSigner, entryDigest(id, e, expiry), permit)) {
             revert InvalidSignature();
+        }
+        if (
+            eligibility != address(0)
+                && !IEligibility(eligibility).isEligible(e.nftChainId, e.collection, e.tokenId)
+        ) {
+            revert InvalidEntry();
         }
         bytes32 nft = nftKey(e);
         if (activeNftTournament[nft] != 0) revert InvalidEntry();

@@ -1,0 +1,22 @@
+{
+  "version": "anime-arena/deployment/v1",
+  "status": "full Claude choreography restored; manual-reference comparison ready for visual review; public launch pending",
+  "chainId": 8453,
+  "registry": null,
+  "registryDeploymentBlock": null,
+  "arena": null,
+  "arenaDeploymentBlock": null,
+  "rulesHash": null,
+  "applicationsOpen": false,
+  "entriesOpen": false,
+  "remainingLiveAcceptance": [
+    "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
+    "review and sign paused contract deployments from the admin wallet",
+    "one unified indexer source/schema transition and parity review",
+    "DNS, TLS, static assets and encrypted backup restore check",
+    "commercial subscription artwork terms review",
+    "four curator-reviewed Base pilot fighters via the studio",
+    "controlled 1 USDC pilot: referee, render, publication, payout release and claim",
+    "open applications and entries after pilot acceptance"
+  ]
+}

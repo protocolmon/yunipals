@@ -1,3 +1,4 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { LoaderCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -61,6 +62,7 @@ export function ArenaTransactionFeedback({
   busy: boolean;
   onCheck: () => void;
 }) {
+  const deployment = useArenaDeployment();
   const pending = transactionPending(operation);
   const delayed = operation.state === "delayed";
   return (
@@ -91,7 +93,7 @@ export function ArenaTransactionFeedback({
           Approval sets your spending limit; it does not enter a fighter or
           charge the entry fee. Entry needs a separate wallet transaction.
           {operation.state === "indexed" && !busy
-            ? " Choose your fighter below and click Enter · 2 USDC to continue. Your approval will be reused."
+            ? ` Choose your fighter below and click Enter · ${deployment.entry} USDC to continue. Your approval will be reused.`
             : null}
         </p>
       ) : null}

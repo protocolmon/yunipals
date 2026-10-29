@@ -30,7 +30,12 @@ export type FighterSnapshot = Fighter & {
   imageSha256: string;
   metadataSha256: string;
   identityProfileSha256: string;
-  identityVersion: "reviewed-artwork-v1" | "artwork-analysis-v1";
+  identityVersion:
+    | "reviewed-artwork-v1"
+    | "artwork-analysis-v1"
+    | "anime-fighter-v1";
+  animeManifestHash?: string;
+  animeRecipeHash?: string;
 };
 
 /** Indexer metadata is data, never prompt instructions. Only reviewed image-bound
@@ -233,7 +238,10 @@ export class ArenaIdentities {
       nft: AdmissionRequest,
       payload: unknown,
       wallet?: string
-    ) => Promise<IdentityProfile>
+    ) => Promise<IdentityProfile>,
+    private readonly compile?: (
+      nft: AdmissionRequest
+    ) => Promise<FighterSnapshot>
   ) {}
 
   private async selected(id: string, expectedIncarnation?: string) {
@@ -308,20 +316,24 @@ export class ArenaIdentities {
     incarnation: string,
     wallet?: string
   ) {
-    const payload = await this.load(nft);
-    const metadata = identityMetadata(nft, payload);
-    const known = this.profiles.some(
-      (p) =>
-        p.image === metadata.image &&
-        p.species === metadata.species &&
-        p.color === metadata.color &&
-        p.horn === metadata.horn
-    );
-    const profiles =
-      known || !this.resolve
-        ? this.profiles
-        : [await this.resolve(nft, payload, wallet)];
-    const snapshot = compileIdentity(nft, payload, profiles);
+    const snapshot = this.compile
+      ? await this.compile(nft)
+      : await (async () => {
+          const payload = await this.load(nft);
+          const metadata = identityMetadata(nft, payload);
+          const known = this.profiles.some(
+            (p) =>
+              p.image === metadata.image &&
+              p.species === metadata.species &&
+              p.color === metadata.color &&
+              p.horn === metadata.horn
+          );
+          const profiles =
+            known || !this.resolve
+              ? this.profiles
+              : [await this.resolve(nft, payload, wallet)];
+          return compileIdentity(nft, payload, profiles);
+        })();
     if (((await this.context?.(id))?.incarnation ?? "legacy") !== incarnation)
       throw new ArenaRequestError(
         409,

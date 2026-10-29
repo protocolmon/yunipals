@@ -1,3 +1,4 @@
+import { arenaEconomics } from "../../yunipals-market-core/src/anime.js";
 import type { SourceDefinition } from "../../yunipals-indexer-client/src/sources.js";
 import type { PoolClient } from "pg";
 import type { IndexerReader, SourceStatus } from "./readers.js";
@@ -7,6 +8,7 @@ import { manifestDigest } from "./identity.js";
 import { CanonicalSourceUnavailable } from "./paging.js";
 
 export type ArenaReadDefinition = {
+  mediaKind?: "video" | "anime";
   contract: string;
   startBlock: string;
   abiHash: string;
@@ -795,8 +797,8 @@ export async function readArenaBrowse(
         result.island = (
           await db.query<{ hosted: string; released: string; pending: string }>(
             `SELECT count(*)::text AS hosted,
-       (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*400000)::text AS released,
-       (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*400000)::text AS pending
+       (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*${arenaEconomics(definition.mediaKind).island})::text AS released,
+       (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*${arenaEconomics(definition.mediaKind).island})::text AS pending
        FROM ${schema}.arena_tournament WHERE deployment=$1 AND state->>'islandId'=$2`,
             [deployment, request.islandId]
           )
@@ -907,11 +909,11 @@ export async function readArenaBrowse(
         FROM ${schema}.arena_tournament WHERE deployment=$1)
        SELECT count(*) FILTER(WHERE own>0)::text AS entered_tournaments,coalesce(sum(own),0)::text AS entered_seats,
         count(*) FILTER(WHERE host)::text AS hosted_tournaments,count(*) FILTER(WHERE state->>'phase'='settled' AND winner)::text AS championships,
-        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND winner)*6000000)::text AS winnings,
-        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND host)*400000)::text AS hosting,
-        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND treasury)*1600000)::text AS operations,
-        coalesce(sum(own*2000000) FILTER(WHERE state->>'phase'='expired'),0)::text AS refunds,
-        coalesce(sum((CASE WHEN winner THEN 6000000 ELSE 0 END)+(CASE WHEN host THEN 400000 ELSE 0 END)+(CASE WHEN treasury THEN 1600000 ELSE 0 END))
+        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND winner)*${arenaEconomics(definition.mediaKind).winner})::text AS winnings,
+        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND host)*${arenaEconomics(definition.mediaKind).island})::text AS hosting,
+        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL AND treasury)*${arenaEconomics(definition.mediaKind).operations})::text AS operations,
+        coalesce(sum(own*${arenaEconomics(definition.mediaKind).entry}) FILTER(WHERE state->>'phase'='expired'),0)::text AS refunds,
+        coalesce(sum((CASE WHEN winner THEN ${arenaEconomics(definition.mediaKind).winner} ELSE 0 END)+(CASE WHEN host THEN ${arenaEconomics(definition.mediaKind).island} ELSE 0 END)+(CASE WHEN treasury THEN ${arenaEconomics(definition.mediaKind).operations} ELSE 0 END))
           FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL),0)::text AS pending FROM participants`,
             [deployment, request.wallet]
           )

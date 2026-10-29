@@ -21,7 +21,8 @@ export function arenaClientReceiptEvidence(
   receipt: TransactionReceipt,
   contract: Address,
   paymentToken: Address,
-  strict = false
+  strict = false,
+  entryFee = ARENA_ENTRY_FEE
 ): ArenaTransactionStatus["result"] {
   for (const log of receipt.logs) {
     if (
@@ -49,7 +50,7 @@ export function arenaClientReceiptEvidence(
           decoded.eventName === "Approval" &&
           same(decoded.args.owner, row.wallet) &&
           same(decoded.args.spender, contract) &&
-          decoded.args.value >= ARENA_ENTRY_FEE
+          decoded.args.value >= entryFee
         )
           return {
             event: "Approval",

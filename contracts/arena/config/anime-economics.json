@@ -1,0 +1,31 @@
+{
+  "version": "yunipals-anime-arena/economics/v1",
+  "status": "approved; not deployed",
+  "approvedOn": "2026-10-28",
+  "chainId": 8453,
+  "paymentToken": {
+    "symbol": "USDC",
+    "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "decimals": 6
+  },
+  "participants": 4,
+  "entryFeeRaw": "1000000",
+  "winnerBps": 8000,
+  "islandBps": 500,
+  "operationsBps": 1500,
+  "fullTournamentRaw": {
+    "pot": "4000000",
+    "winner": "3200000",
+    "islandOwner": "200000",
+    "operations": "600000"
+  },
+  "operationsPolicy": "The operations share covers generation and operating costs; it is not all profit. No paid quality replacements at launch.",
+  "treasuryPolicy": {
+    "initialAdmin": "deployer",
+    "initialTreasury": "deployer",
+    "adminTransfer": "Ownable2Step transferOwnership then acceptOwnership",
+    "treasuryUpdate": "Owner-only setTreasury; newly opened lobbies only",
+    "existingTournamentRecipientsPreserved": true,
+    "existingClaimBalancesPreserved": true
+  }
+}

@@ -24,6 +24,8 @@ import {
 } from "../constants.js";
 import { baseMetadataAbi } from "../metadata/base-abi.js";
 
+import { animeRegistryAbi } from "../../../../packages/yunipals-market-core/src/animeRegistryAbi.js";
+
 type Environment = Record<string, string | undefined>;
 
 export type ArenaSourceDeployment = {
@@ -84,6 +86,22 @@ export function arenaSourceDeployments(
       return { address: address as Address, startBlock: Number(start) };
     })
     .sort((a, b) => a.address.localeCompare(b.address));
+}
+
+export function animeRegistrySource(env: Environment = process.env) {
+  const address = env.UNIFIED_ANIME_REGISTRY?.toLowerCase();
+  const start = env.UNIFIED_ANIME_REGISTRY_START_BLOCK;
+  if (address === undefined && start === undefined) return null;
+  if (
+    !address ||
+    !/^0x[0-9a-f]{40}$/.test(address) ||
+    /^0x0{40}$/.test(address) ||
+    !start ||
+    !/^[1-9][0-9]*$/.test(start) ||
+    !Number.isSafeInteger(Number(start))
+  )
+    throw new Error("Invalid anime registry source.");
+  return { address: address as Address, startBlock: Number(start) };
 }
 
 function source(
@@ -224,6 +242,20 @@ export function buildSourceManifest(
         arenaAbi,
         null,
         null,
+        arenaPolicies
+      )
+    );
+  const registry = animeRegistrySource(env);
+  if (registry)
+    sources.push(
+      source(
+        "anime-registry:8453",
+        "anime-registry",
+        8453,
+        "AnimeFighterRegistry",
+        animeRegistryAbi,
+        registry.address,
+        registry.startBlock,
         arenaPolicies
       )
     );

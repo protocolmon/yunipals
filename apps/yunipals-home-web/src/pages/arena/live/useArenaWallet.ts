@@ -1,3 +1,4 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useEffect, useRef, useState } from "react";
 import { BaseError, erc20Abi, toHex, type Hex } from "viem";
 import {
@@ -18,7 +19,6 @@ import {
   type ArenaTransactionStatus
 } from "@protopals/yunipals-market-core/arena";
 import {
-  arenaRequest,
   ArenaRequestError,
   type ArenaAdmission,
   type ArenaConfig
@@ -62,6 +62,8 @@ export function useArenaWallet(
   config: ArenaConfig | undefined,
   refresh: () => Promise<unknown>
 ) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
   const { switchChainAsync } = useSwitchChain();
@@ -424,7 +426,7 @@ export function useArenaWallet(
         assertCurrent();
         if (balance < BigInt(config.entryFee))
           throw new Error(
-            "You need at least 2 USDC on Base to enter this fighter."
+            `You need at least ${deployment.entry} USDC on Base to enter this fighter.`
           );
         if (gasBalance === 0n)
           throw new Error(

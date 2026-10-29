@@ -1,3 +1,4 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { ArrowRight, Plus, Swords, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ArenaTournamentSummary } from "@protopals/yunipals-market-core/arenaViews";
@@ -7,6 +8,7 @@ export function ArenaJoinBanner({
 }: {
   tournaments: ArenaTournamentSummary[];
 }) {
+  const deployment = useArenaDeployment();
   const next = tournaments.find(
     (t) =>
       t.phase === "open" &&
@@ -37,10 +39,11 @@ export function ArenaJoinBanner({
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-semibold">
             <span className="rounded-full bg-white/80 px-3 py-1.5">
-              2 USDC entry
+              {deployment.entry} USDC entry
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5">
-              <Trophy size={15} className="text-grape" aria-hidden="true" />6
+              <Trophy size={15} className="text-grape" aria-hidden="true" />
+              {deployment.champion}
               USDC champion prize
             </span>
           </div>
@@ -77,7 +80,7 @@ export function ArenaJoinBanner({
             })}
           </div>
           <Link
-            to={`/arena/${next.id}#join`}
+            to={`${deployment.basePath}/${next.id}#join`}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-grape px-5 py-3 text-sm font-bold text-white shadow-cta transition hover:bg-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
           >
             Join tournament #{next.id}{" "}

@@ -62,3 +62,24 @@ class BackupPolicyTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class AnimeBackupPolicyTest(unittest.TestCase):
+    def test_optional_before_launch_and_required_after_setup(self):
+        from backup_policy import anime_backup_files
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            roots = {name: root / name for name in ['assets', 'media', 'studio', 'configuration', 'chromium']}
+            roots['node'] = root / 'node-v24'
+            self.assertEqual(anime_backup_files(roots), {})
+            roots['configuration'].mkdir()
+            with self.assertRaises(AssertionError): anime_backup_files(roots)
+            for key, path in roots.items():
+                if key == 'node': path.write_text('fixture-runtime')
+                else: path.mkdir(exist_ok=True)
+            (roots['assets'] / 'manifest.json').write_text('{}')
+            files = anime_backup_files(roots)
+            self.assertIn('assets/manifest.json', files)
+            self.assertIn('node/node-v24', files)
+            (roots['assets'] / 'escape').symlink_to('/etc')
+            with self.assertRaises(AssertionError): anime_backup_files(roots)

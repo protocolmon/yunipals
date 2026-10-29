@@ -10,8 +10,10 @@ import { boosterContracts } from "./lib/boosters/config.js";
 import { baseMetadataAbi } from "./lib/metadata/base-abi.js";
 import {
   arenaSourceDeployments,
+  animeRegistrySource,
   buildSourceManifest
 } from "./lib/unified/sources.js";
+import { animeRegistryAbi } from "../../packages/yunipals-market-core/src/animeRegistryAbi.js";
 import { arenaAbi } from "../../packages/yunipals-market-core/src/arenaAbi.js";
 import { seaportEventAbi } from "../../packages/yunipals-market-core/src/seaportEvents.js";
 import type { Address } from "viem";
@@ -37,6 +39,7 @@ if (!ethereumRpcUrl) throw new Error("PONDER_RPC_URL_1 is required");
 const sourceManifest = buildSourceManifest();
 await preflightUnifiedRpc(sourceManifest);
 const arenas = arenaSourceDeployments();
+const animeRegistry = animeRegistrySource();
 const seaport = sourceManifest.sources.find(
   (source) => source.id === "marketplace:bnb:seaport"
 )!;
@@ -98,6 +101,12 @@ export default createConfig({
         ? baseIslandCollection.address
         : ([] as Address[]),
       startBlock: baseIslands.enabled ? baseIslandCollection.deploymentBlock : 0
+    },
+    AnimeFighterRegistry: {
+      chain: "base",
+      abi: animeRegistryAbi,
+      address: animeRegistry ? animeRegistry.address : ([] as Address[]),
+      startBlock: animeRegistry?.startBlock ?? 0
     },
     YunipalsArena: {
       chain: "base",
