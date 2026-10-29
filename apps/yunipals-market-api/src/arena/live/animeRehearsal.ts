@@ -34,6 +34,7 @@ import {
   type AnimeDirectionInput
 } from "./animeDirection";
 import type { LiveFrozenInput } from "./input";
+import type { AnimeKnownKit } from "@protopals/yunipals-market-core/anime";
 
 const root = animeRepository();
 const engine = join(root, "apps/yunipals-anime-engine");
@@ -173,7 +174,10 @@ async function prepareChoreography(job: string) {
     outcome
   );
   const fighters = await json<
-    Record<string, { manifest: { look: { attackKind: string } } }>
+    Record<
+      string,
+      { manifest: { look: { attackKind: string }; kits?: AnimeKnownKit[] } }
+    >
   >(join(job, "fixture-assets/fighters.json"));
   const strategies = Object.fromEntries(
     input.strategies.map((s) => [s.fighterId, s.text])
@@ -181,6 +185,9 @@ async function prepareChoreography(job: string) {
   const direction: AnimeDirectionInput = {
     tournament,
     strategies,
+    loadouts: Object.fromEntries(
+      Object.entries(fighters).map(([id, f]) => [id, f.manifest.kits ?? []])
+    ),
     choreography: directTournament(
       tournament,
       Object.fromEntries(

@@ -5,12 +5,14 @@ import type {
   directTournament
 } from "../../../../yunipals-anime-engine/src/director";
 import { canonicalJson, sha256 } from "../draw";
+import type { AnimeKnownKit } from "@protopals/yunipals-market-core/anime";
+import { resolveAnimeKit } from "../../../../yunipals-anime-engine/src/kitPolicy.js";
 
 export const ANIME_DIRECTOR_MODEL = "anthropic/claude-opus-5.5";
 export const ANIME_DIRECTOR_RESERVE = 800000;
 export const ANIME_DIRECTOR_ASSET = "anime/director";
-export const ANIME_DIRECTOR_POLICY = "claude-choreography/v4";
-export const ANIME_PROVIDER_DIRECTION_VERSION = "anime-direction/v4";
+export const ANIME_DIRECTOR_POLICY = "claude-choreography/v5";
+export const ANIME_PROVIDER_DIRECTION_VERSION = "anime-direction/v5";
 /** Historical normalized representation; production provider output uses v4. */
 export const ANIME_DIRECTION_VERSION = "anime-direction/v3";
 export type AnimeChoreography = ReturnType<typeof directTournament>;
@@ -18,6 +20,7 @@ export type AnimeDirectionInput = {
   tournament: AnimeTournament;
   strategies: Record<string, string>;
   choreography: AnimeChoreography;
+  loadouts?: Record<string, AnimeKnownKit[]>;
 };
 export type AnimeDirectorReceipt = {
   provider: "openrouter";
@@ -35,6 +38,7 @@ export type AnimeDirection = {
     eventId: string;
     name: string;
     kind: AnimeAttackKind;
+    kit?: string | null;
   }>;
   motion: Array<{
     matchId: string;
@@ -94,17 +98,21 @@ export function animeDirectorRequest(input: AnimeDirectionInput) {
           "Stage the recorded visibleAction faithfully: approaches, lateral evasions, low-flight banks, flank changes, " +
           "body-contact rushes and follow-through. Make the actual exchange legible instead of moving both fighters forward for every shot. " +
           "Never invent attacks, change attack/defense timing, outcomes, damage, strategies or winners. A sparse fight must stay sparse. " +
-          "Return version anime-direction/v4 and the exact matches object required by the schema. " +
+          "Return version anime-direction/v5 and the exact matches object required by the schema. " +
           "Every match is a required named property: complete the FINAL as fully as both semifinals. " +
           "Inside each match, attacks, motion and cutins are STRINGS containing JSON arrays, using normal JSON string escaping. " +
-          "Decode those strings to these exact records: attacks [{eventId,name,kind}], " +
+          "Decode those strings to these exact records: attacks [{eventId,name,kind,kit}], " +
           "motion [{fighterId,x,y,depth,face,rot}], cutins [{index,at,title,quotes:[{fighterId,text}]}]. " +
           "Do not repeat matchId inside these records; the containing match supplies it. " +
           "Complete every eventId, fighterId and cut-in index listed in requiredCoverage, exactly once. " +
           "Include every recorded event, even an interrupted windup that never releases; the engine suppresses its hit. " +
           "For EVERY event choose a vivid attack name of one or two words, at most 24 characters, and its visual kind. " +
-          "Use the supplied choreography.kinds default for ranged attacks; use dash for a recorded shoulder check, tackle or other body-contact attack. " +
-          "Allowed kinds are vine, star, jet, orb, dash; each event permits its supplied default or dash. " +
+          "Use the supplied choreography.kinds default for attacks without a matching kit; use dash for a recorded shoulder check, tackle or other body-contact attack. " +
+          "Allowed kinds are vine, star, jet, orb, dash; each event permits its supplied default, a compatible loadout kit's kind, or dash for recorded body contact. " +
+          "For EVERY attack include kit: a kit id from that actor's supplied loadout, or null if none fits. " +
+          "Choose the kit whose name or description matches the frozen attackName/visibleAction. " +
+          "Strike kits require kind vine; projectile kits require star, jet or orb; dash kits require dash and a recorded body-contact attack. " +
+          "Never turn a ranged attack into body contact to fit a kit. Kit names and descriptions are cosmetic vocabulary with no combat effect. " +
           "A dash that hits or is guarded must bring body centres within 220 horizontal pixels and 120 vertical pixels at contact. " +
           "For EVERY fighter in EVERY match provide motion channels x,y,depth,face,rot. Channels contain {t,value} keys " +
           "in referee seconds, strictly increasing, at most 16 per channel, ending by verdictSeconds. No pixel movement after the verdict; the engine handles falls. " +
@@ -143,7 +151,7 @@ export function animeDirectorRequest(input: AnimeDirectionInput) {
     response_format: {
       type: "json_schema",
       json_schema: {
-        name: "anime_choreography_v4",
+        name: "anime_choreography_v5",
         strict: true,
         schema: object({
           version: { type: "string", enum: [ANIME_PROVIDER_DIRECTION_VERSION] },
@@ -212,7 +220,7 @@ export function applyAnimeProviderDirection(
     const match = record(matches[m.id]);
     keys(match, ["attacks", "motion", "cutins"]);
     normalized.attacks.push(
-      ...entries(match.attacks, ["eventId", "name", "kind"]).map(
+      ...entries(match.attacks, ["eventId", "name", "kind", "kit"]).map(
         (item) =>
           ({ matchId: m.id, ...item }) as AnimeDirection["attacks"][number]
       )
@@ -436,7 +444,13 @@ export function applyAnimeDirection(
   );
   for (const candidate of value.attacks) {
     const attack = record(candidate);
-    keys(attack, ["matchId", "eventId", "name", "kind"]);
+    keys(attack, [
+      "matchId",
+      "eventId",
+      "name",
+      "kind",
+      ...(Object.hasOwn(attack, "kit") ? ["kit"] : [])
+    ]);
     const { matchId, eventId } = attack;
     if (
       typeof matchId !== "string" ||
@@ -446,11 +460,38 @@ export function applyAnimeDirection(
       throw new Error("Unknown or repeated anime event.");
     choreography[matchId]!.names[eventId] = label(attack.name, 24, 2);
     const defaultKind = input.choreography[matchId]!.kinds[eventId];
-    if (attack.kind !== defaultKind && attack.kind !== "dash")
+    choreography[matchId]!.kinds[eventId] = attack.kind as AnimeAttackKind;
+    const event = input.tournament.matches
+      .find((m) => m.id === matchId)!
+      .events.find((e) => e.id === eventId)!;
+    if (
+      attack.kit !== undefined &&
+      attack.kit !== null &&
+      typeof attack.kit !== "string"
+    )
+      throw new Error("Invalid anime kit id.");
+    const kit = resolveAnimeKit(
+      event.attackName,
+      attack.kind as string,
+      input.loadouts?.[event.actorId],
+      attack.kit as string | null | undefined
+    );
+    if (attack.kind !== defaultKind && attack.kind !== "dash" && !kit)
       throw new Error(
         "Anime attack kind differs from its fighter's available effect."
       );
-    choreography[matchId]!.kinds[eventId] = attack.kind as AnimeAttackKind;
+    if (
+      kit?.kind === "dash" &&
+      !/shoulder|tackl|body[- ]?(?:check|slam|contact|rush)|head[- ]?butt|\bram(?:ming)?\b|collid/i.test(
+        String(event.visibleAction)
+      )
+    )
+      throw new Error("A ranged attack cannot use a body-contact kit.");
+    if (input.loadouts && Object.keys(input.loadouts).length) {
+      choreography[matchId]!.kits ??= {};
+      choreography[matchId]!.kits![eventId] = kit?.id ?? null;
+      if (kit) choreography[matchId]!.names[eventId] = kit.name.toUpperCase();
+    }
   }
   for (const candidate of value.cutins) {
     const cutin = record(candidate);

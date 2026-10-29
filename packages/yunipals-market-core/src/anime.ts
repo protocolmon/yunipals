@@ -293,7 +293,7 @@ export function parseAnimeManifest(
 
 /** Only the loadout is public; neither it nor kit vocabulary affects combat rules. */
 export function parseAnimeLoadout(
-  m: Pick<AnimeManifest, "kits" | "defaultLoadout">,
+  m: { kits?: readonly Pick<AnimeKit, "id">[]; defaultLoadout?: AnimeLoadout },
   value?: unknown
 ): AnimeLoadout | undefined {
   if (!m.kits) {

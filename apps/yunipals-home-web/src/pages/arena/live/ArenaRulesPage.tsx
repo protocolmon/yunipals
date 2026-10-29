@@ -90,6 +90,17 @@ export function ArenaRulesPage() {
         </section>
         <section className="rounded-card border border-line bg-white p-6">
           <h2 className="text-xl font-bold">Write your own strategy</h2>
+          {deployment.kind === "anime" && (
+            <p className="mt-3 text-muted">
+              Each fighter has three signature techniques. Choose two before
+              locking your strategy, or use the default pair. The chosen names
+              and descriptions help the referee describe your usual attacks, and
+              their effects appear in the film. Techniques grant no extra
+              damage, energy, speed or defense. Choices are revealed with the
+              strategies and lock with your strategy; a missed deadline uses the
+              default pair.
+            </p>
+          )}
           <p className="mt-3 text-muted">
             Once all four fighters and the island are ready, you have up to 24
             hours to submit a custom strategy of up to 2,400 characters. Include

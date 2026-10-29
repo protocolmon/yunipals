@@ -1,6 +1,6 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "full Claude choreography restored; manual-reference comparison ready for visual review; public launch pending",
+  "status": "recipe-v2 kits and loadouts verified locally; engine 1.1.0; public deployment pending",
   "chainId": 8453,
   "registry": null,
   "registryDeploymentBlock": null,

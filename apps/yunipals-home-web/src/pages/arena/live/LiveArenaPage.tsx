@@ -10,6 +10,10 @@ import { formatUnits, type Address } from "viem";
 import { LoaderCircle } from "lucide-react";
 import { useAccount } from "wagmi";
 import type {
+  AnimeKnownKit,
+  AnimeLoadout
+} from "@protopals/yunipals-market-core/anime";
+import type {
   ArenaPublicTournament,
   ArenaSeat
 } from "@protopals/yunipals-market-core/arena";
@@ -71,6 +75,8 @@ type Context = {
     image: string;
     identity: string;
     locomotion: "ground" | "flight";
+    animeKits?: AnimeKnownKit[];
+    animeDefaultLoadout?: AnimeLoadout;
   } | null>;
   tiePriority: string[];
   ready: boolean;
@@ -133,7 +139,7 @@ function FighterSeat({
   );
 }
 
-function StrategyEditor({
+export function StrategyEditor({
   tournament,
   seat,
   fighter,
@@ -151,7 +157,12 @@ function StrategyEditor({
   progress?: string | null;
   submissionError?: string | null;
   contract: Address | undefined;
-  submit: (id: string, seat: number, text: string) => Promise<void>;
+  submit: (
+    id: string,
+    seat: number,
+    text: string,
+    loadout?: AnimeLoadout
+  ) => Promise<void>;
   readReceipt: (
     id: string,
     seat: number
@@ -168,6 +179,10 @@ function StrategyEditor({
   const saved = contract
     ? readArenaStrategy(contract, seat.player, tournament.id, seat.seat)
     : null;
+  const [chosen, setChosen] = useState<string[] | undefined>(
+    () => saved?.signed?.loadout ?? saved?.loadout
+  );
+  const loadout = chosen ?? fighter?.animeDefaultLoadout;
   const locked = tournament.submittedSeats.includes(seat.seat);
   const now = useArenaClock(tournament.serverTime);
   const closed = now >= tournament.deadline;
@@ -287,6 +302,70 @@ function StrategyEditor({
         </p>
       ) : (
         <>
+          {fighter?.animeKits && (
+            <fieldset className="my-4" disabled={busy || !!saved?.signed}>
+              <legend className="font-semibold">Choose two techniques</legend>
+              <p className="my-2 text-sm text-muted">
+                These names and effects shape your film. They add no combat
+                advantage. Your choices appear with the revealed strategies.
+              </p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {fighter.animeKits.map((kit) => {
+                  const selected = loadout?.includes(kit.id) ?? false;
+                  return (
+                    <button
+                      key={kit.id}
+                      type="button"
+                      aria-pressed={selected}
+                      disabled={!selected && loadout?.length === 2}
+                      className={cn(
+                        "rounded-2xl border border-line p-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-50",
+                        selected && "border-grape bg-lavender/30"
+                      )}
+                      onClick={() => {
+                        const next = selected
+                          ? (loadout ?? []).filter((id) => id !== kit.id)
+                          : [...(loadout ?? []), kit.id];
+                        setChosen(next);
+                        try {
+                          if (contract)
+                            saveArenaStrategy(
+                              contract,
+                              seat.player,
+                              tournament.id,
+                              seat.seat,
+                              {
+                                text,
+                                ...(next.length === 2
+                                  ? { loadout: next as AnimeLoadout }
+                                  : {})
+                              }
+                            );
+                          setDraftError(null);
+                        } catch {
+                          setDraftError(
+                            "Your browser could not save these choices for refresh recovery."
+                          );
+                        }
+                      }}
+                    >
+                      <span className="block font-semibold">
+                        {selected ? "✓ " : ""}
+                        {kit.name}
+                      </span>
+                      <span className="mt-1 block text-sm text-muted">
+                        {kit.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-sm" role="status">
+                {loadout?.length ?? 0} of 2 selected. Deselect a technique to
+                choose another.
+              </p>
+            </fieldset>
+          )}
           <label
             htmlFor={`strategy-${seat.seat}`}
             className="my-3 block text-sm text-muted"
@@ -306,7 +385,13 @@ function StrategyEditor({
                     seat.player,
                     tournament.id,
                     seat.seat,
-                    { text: value, signed: saved?.signed }
+                    {
+                      text: value,
+                      signed: saved?.signed,
+                      ...(loadout?.length === 2
+                        ? { loadout: loadout as AnimeLoadout }
+                        : {})
+                    }
                   );
                 setDraftError(null);
               } catch {
@@ -338,8 +423,19 @@ function StrategyEditor({
               )}
               aria-busy={Boolean(progress)}
               aria-label={progress ?? undefined}
-              disabled={busy || !text.trim()}
-              onClick={() => void submit(tournament.id, seat.seat, text)}
+              disabled={
+                busy ||
+                !text.trim() ||
+                (!!fighter?.animeKits && loadout?.length !== 2)
+              }
+              onClick={() =>
+                void submit(
+                  tournament.id,
+                  seat.seat,
+                  text,
+                  loadout as AnimeLoadout | undefined
+                )
+              }
             >
               {progress ? (
                 <>

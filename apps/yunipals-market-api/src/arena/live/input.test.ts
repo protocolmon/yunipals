@@ -145,6 +145,69 @@ test("mainnet input preserves paid order, public draw and exact custom strategie
   );
   assert.equal(input.pool.entries.length, 898);
   assert.equal(input.tiePriority.length, 4);
+  assert.ok(input.roster.every((f) => !Object.hasOwn(f, "techniques")));
+  assert.ok(input.strategies.every((s) => !Object.hasOwn(s, "loadout")));
+  const kits = [
+    {
+      id: "vine-lash",
+      name: "Vine Lash",
+      kind: "strike" as const,
+      description: "A sweeping vine."
+    },
+    {
+      id: "thorn-volley",
+      name: "Thorn Volley",
+      kind: "projectile" as const,
+      description: "A shower of thorns."
+    },
+    {
+      id: "root-slam",
+      name: "Root Slam",
+      kind: "dash" as const,
+      description: "A charging root strike."
+    }
+  ];
+  const kitRoster = roster.map((f) => ({
+    ...f,
+    animeKits: kits,
+    animeDefaultLoadout: ["vine-lash", "thorn-volley"] as [string, string]
+  }));
+  const withKits = compileLiveInput(
+    state,
+    contract,
+    catalog,
+    kitRoster,
+    strategies.map((s, i) => ({
+      ...s,
+      ...(i === 0
+        ? { loadout: ["thorn-volley", "root-slam"] as [string, string] }
+        : {})
+    }))
+  );
+  assert.deepEqual(withKits.strategies[0]!.loadout, [
+    "thorn-volley",
+    "root-slam"
+  ]);
+  assert.deepEqual(withKits.strategies[1]!.loadout, [
+    "vine-lash",
+    "thorn-volley"
+  ]);
+  assert.deepEqual(
+    withKits.roster[0]!.techniques,
+    kits.slice(1).map(({ name, description }) => ({ name, description }))
+  );
+  assert.ok(!Object.hasOwn(withKits.roster[0]!, "animeKits"));
+  assert.throws(
+    () =>
+      compileLiveInput(
+        state,
+        contract,
+        catalog,
+        kitRoster,
+        strategies.map((s) => ({ ...s, loadout: ["foreign", "root-slam"] }))
+      ),
+    /two different kits/
+  );
   assert.throws(
     () =>
       compileLiveInput(

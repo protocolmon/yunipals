@@ -523,7 +523,12 @@ export function useArenaWallet(
           fighter
         );
       }),
-    submit: (id: string, seat: number, text: string) =>
+    submit: (
+      id: string,
+      seat: number,
+      text: string,
+      loadout?: import("@protopals/yunipals-market-core/anime").AnimeLoadout
+    ) =>
       execute("Preparing your strategy", async () => {
         if (!config || !address) throw new Error("Connect your wallet first.");
         setStrategyTarget({ scope, tournamentId: id, seat });
@@ -541,7 +546,11 @@ export function useArenaWallet(
         assertCurrent();
         if (prior.locked) {
           clearArenaStrategy(config.contract, address, id, seat);
-          if (prior.text !== normalized)
+          if (
+            prior.text !== normalized ||
+            (loadout &&
+              JSON.stringify(prior.loadout) !== JSON.stringify(loadout))
+          )
             throw new Error(
               "Your earlier strategy is already locked. It cannot be replaced."
             );
@@ -549,7 +558,11 @@ export function useArenaWallet(
         }
         const saved = readArenaStrategy(config.contract, address, id, seat);
         let body = saved.signed;
-        if (body && body.text !== normalized)
+        if (
+          body &&
+          (body.text !== normalized ||
+            JSON.stringify(body.loadout) !== JSON.stringify(loadout))
+        )
           throw new Error(
             "A signed strategy is waiting for confirmation. Retry that saved strategy before making changes."
           );
@@ -571,9 +584,16 @@ export function useArenaWallet(
             message: { tournamentId: BigInt(id), seat, commitment }
           });
           assertCurrent();
-          body = { seat, text: normalized, salt, signature };
+          body = {
+            seat,
+            text: normalized,
+            salt,
+            signature,
+            ...(loadout ? { loadout } : {})
+          };
           saveArenaStrategy(config.contract, address, id, seat, {
             text: normalized,
+            ...(loadout ? { loadout } : {}),
             signed: body
           });
         }
@@ -585,6 +605,8 @@ export function useArenaWallet(
         );
         if (
           !receipt.locked ||
+          (body.loadout &&
+            JSON.stringify(receipt.loadout) !== JSON.stringify(body.loadout)) ||
           receipt.commitment !==
             strategyCommitment(
               config.contract,

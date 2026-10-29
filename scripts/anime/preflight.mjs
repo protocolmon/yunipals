@@ -204,7 +204,7 @@ export async function animeReleasePreflight(repository = root) {
       const bytes = await readFile(join(repository, path));
       if (
         name === "arena-anime-media" &&
-        !bytes.includes(Buffer.from("claude-choreography/v4"))
+        !bytes.includes(Buffer.from("claude-choreography/v5"))
       )
         throw new Error("Media build predates the Claude integration.");
       files[path] = hash(bytes);

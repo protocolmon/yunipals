@@ -149,9 +149,17 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
       "utf8"
     )
   ) as { sha256: string };
+  const rules = {
+    ...base.rules,
+    refereeInstructions:
+      base.rules.refereeInstructions +
+      "\nKnown techniques are cosmetic names for the fighter's usual attacks; they grant no damage, energy, timing or defensive effect."
+  };
   const manifest = {
     ...base.manifest,
-    version: "anime-rules-v1",
+    version: "anime-rules-v2",
+    rules,
+    inputCompilerVersion: "anime-loadout-input-v2",
     identityPolicy:
       "anime-fighter-v1: curator-reviewed identity, current Base traits and SHA-256-verified manifests and sprites; approval follows the token",
     supportedNftCollections: {
@@ -185,6 +193,7 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
   };
   return {
     ...base,
+    rules,
     manifest,
     rulesHash: `0x${sha256(canonicalJson(manifest))}` as Hex
   };

@@ -6,6 +6,10 @@ import { canonicalJson, sha256 } from "../draw";
 import type { Fighter } from "../types";
 import type { AdmissionRequest } from "./admission";
 import { ArenaRequestError } from "./intake";
+import type {
+  AnimeKnownKit,
+  AnimeLoadout
+} from "@protopals/yunipals-market-core/anime";
 
 const chains: Record<number, string> = {
   1: "ethereum",
@@ -36,6 +40,8 @@ export type FighterSnapshot = Fighter & {
     | "anime-fighter-v1";
   animeManifestHash?: string;
   animeRecipeHash?: string;
+  animeKits?: AnimeKnownKit[];
+  animeDefaultLoadout?: AnimeLoadout;
 };
 
 /** Indexer metadata is data, never prompt instructions. Only reviewed image-bound

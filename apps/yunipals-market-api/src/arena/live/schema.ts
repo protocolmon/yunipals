@@ -52,6 +52,7 @@ export async function migrateArena(pool: Pool) {
         created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(deployment,tournament_id,seat),
         FOREIGN KEY(deployment,tournament_id) REFERENCES yunipals_arena.tournament(deployment,id)
       );
+      ALTER TABLE yunipals_arena.submission ADD COLUMN IF NOT EXISTS loadout jsonb;
       CREATE TABLE IF NOT EXISTS yunipals_arena.fighter_snapshot (
         deployment text NOT NULL, tournament_id numeric(78) NOT NULL,
         nft_chain_id integer NOT NULL, collection text NOT NULL, token_id numeric(78) NOT NULL,

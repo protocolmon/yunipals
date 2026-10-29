@@ -71,6 +71,11 @@ Use `python3 scripts/anime/studio.py --lab /var/lib/yunipals-anime-arena/studio 
 - `review TOKEN idle`, `generate TOKEN --stage 2`, `key TOKEN`, `fit TOKEN`.
 - Review contact sheet, traits, anatomy, locomotion, anchors and `fighter.json`. For a
   new artwork, edit the draft identity and set `identityDraft=false` after review.
+- Launch uses fresh recipe-v2 fighters only. Run `review TOKEN poses`, then
+  `kits TOKEN` for the three windups and missing shared species/element sheets.
+  Inspect `kits-contact-sheet.jpg`; run `review TOKEN approve-kit KIT_ID` for each
+  of the three kits. Sheets are reused across fighters; published sheets cannot
+  be rerolled without a recipe change. No Approved-to-Approved upgrade is needed.
 - `review TOKEN reroll POSE` retains the old image, invalidates review, and regenerates
   only that pose. Run key/fit and review again. Maximum two retries per generation.
 - `review TOKEN approve`, `export TOKEN`, `publish`. The manifest hash commits to the
@@ -127,7 +132,9 @@ task is reused without another generation charge.
 
 Claude supplies bounded horizontal/flight/depth/facing/rotation paths, per-event
 attack visuals, short attack names and cut-in text/timing under
-`claude-choreography/v4`. Its provider schema requires a named block for every
+`claude-choreography/v5`. The existing call also selects a compatible kit ID or
+null for every event from that actor's chosen two-kit loadout. Foreign IDs and
+ranged attacks presented as body-contact kits are rejected. Its provider schema requires a named block for every
 match, each with encoded JSON arrays for attacks, motion and cut-ins. This keeps
 the provider grammar small enough to compile. The independent decoder validates
 every field and exact event/fighter/cut-in coverage before applying movement checks;

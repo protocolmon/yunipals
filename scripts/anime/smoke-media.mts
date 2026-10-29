@@ -33,6 +33,25 @@ if (!job.startsWith("/tmp/"))
   throw new Error("Use a temporary synthetic job folder.");
 const chrome = process.env.ANIME_CHROME;
 if (!chrome) throw new Error("ANIME_CHROME required.");
+const publicationIndex = process.argv.indexOf("--fighter-publication");
+const fighterPublication =
+  publicationIndex >= 0
+    ? resolve(process.argv[publicationIndex + 1]!)
+    : undefined;
+const publicationToken = process.argv[publicationIndex + 2];
+if (fighterPublication && !/^[1-9][0-9]*$/.test(publicationToken ?? ""))
+  throw new Error("Use --fighter-publication DIRECTORY TOKEN_ID");
+const publishedFighter = fighterPublication
+  ? ((await readFile(
+      join(
+        fighterPublication,
+        "fighters/v1",
+        publicationToken!,
+        "manifest.json"
+      ),
+      "utf8"
+    ).then(JSON.parse)) as AnimeManifest)
+  : undefined;
 const json = async (path: string) => JSON.parse(await readFile(path, "utf8"));
 const fixture = await json(join(engine, "fixtures/tournament.json"));
 const index = await json(join(engine, "fixtures/sprites.json"));
@@ -48,6 +67,7 @@ const kinds: Record<string, AnimeManifest["look"]["attackKind"]> = {
   bastion: "jet",
   elrond: "orb"
 };
+const sheets = new Map<string, Buffer>();
 const assets = new Map<string, Buffer>(),
   manifests = new Map<string, AnimeManifest>();
 const mapping: Record<string, string> = {};
@@ -58,7 +78,13 @@ const fighters = new AnimeFighters(
   `0x${"1".repeat(40)}`,
   "https://assets-anime.yunipals.com",
   (async (url: string) => {
-    const parts = new URL(url).pathname.split("/");
+    const pathname = new URL(url).pathname;
+    if (pathname.startsWith("/recipes/")) {
+      const bytes = sheets.get(pathname.slice(1));
+      if (!bytes) throw new Error("Unexpected shared sheet request.");
+      return new Response(bytes);
+    }
+    const parts = pathname.split("/");
     const tokenId = parts[3]!,
       name = parts[4]!;
     if (name.endsWith(".json"))
@@ -72,7 +98,10 @@ const fighters = new AnimeFighters(
 for (const [alias, data] of Object.entries(fixture.fighters) as Array<
   [string, { name: string; species: string; locomotion: "ground" | "flight" }]
 >) {
-  const tokenId = String(++i),
+  const tokenId =
+      alias === "cedar" && publishedFighter
+        ? publishedFighter.tokenId
+        : String(++i),
     sprites: Record<string, AnimeSprite> = {};
   for (const pose of [
     "idle",
@@ -102,7 +131,7 @@ for (const [alias, data] of Object.entries(fixture.fighters) as Array<
     background: 1,
     glitter: 0
   };
-  const manifest: AnimeManifest = {
+  let manifest: AnimeManifest = {
     version: "anime-fighter/v1",
     chainId: 8453,
     collection: ANIME_BASE_COLLECTION,
@@ -135,6 +164,26 @@ for (const [alias, data] of Object.entries(fixture.fighters) as Array<
     generatedWith: "codex-subscription",
     reviewedAt: "2026-10-28T00:00:00Z"
   };
+  if (alias === "cedar" && publishedFighter && fighterPublication) {
+    manifest = publishedFighter;
+    for (const sprite of [
+      ...Object.values(manifest.sprites),
+      ...manifest.kits!.map((k) => k.windup)
+    ])
+      assets.set(
+        tokenId + "/" + sprite.file,
+        await readFile(
+          join(fighterPublication, "fighters/v1", tokenId, sprite.file)
+        )
+      );
+    for (const sheet of manifest
+      .kits!.flatMap((k) => [k.projectile, k.strike, k.impact])
+      .filter((s) => !!s))
+      sheets.set(
+        sheet.sheet,
+        await readFile(join(fighterPublication, sheet.sheet))
+      );
+  }
   manifests.set(tokenId, manifest);
   const snapshot = fighters.snapshot(
     { nftChainId: 8453, collection: ANIME_BASE_COLLECTION, tokenId },
@@ -227,6 +276,31 @@ assert.deepEqual(
 for (const [name, proof] of Object.entries(publication.manifest.files))
   await verifyPublicationFile(join(job, "public"), name, proof);
 const film = await json(join(job, "public/film.json"));
+if (publishedFighter) {
+  const rendered = await json(join(job, "assets/fighters.json"));
+  const actor = rendered[mapping.cedar!];
+  assert.equal(actor.manifestHash, animeDigest(publishedFighter));
+  assert.deepEqual(actor.loadout, publishedFighter.defaultLoadout);
+  const staged = await json(join(job, "assets/sprites.json"));
+  for (const kit of publishedFighter.kits!) {
+    assert.equal(
+      staged[`${mapping.cedar}-windup-${kit.id}`].sha256,
+      kit.windup.sha256
+    );
+    for (const role of ["projectile", "strike", "impact"] as const)
+      if (kit[role])
+        assert.equal(
+          staged[`${mapping.cedar}-kit-${kit.id}-${role}`].sha256,
+          kit[role]!.sha256
+        );
+  }
+  const prompts = await json(join(job, "public/prompts.json"));
+  assert.ok(
+    Object.values(prompts.choreography.SF1.kits).includes(
+      publishedFighter.defaultLoadout![0]
+    )
+  );
+}
 assert.equal(film.chromium, "151.0.7922.34");
 assert.equal(
   film.probe.streams.find((s: { codecType: string }) => s.codecType === "video")
@@ -238,7 +312,7 @@ assert.equal(receipt.mediaCostMicrousd, 0);
 if (process.argv.includes("--mock-director")) {
   assert.equal(receipt.director.generationId, "gen-offline-fixture");
   const prompts = await json(join(job, "public/prompts.json"));
-  assert.equal(prompts.director.policy, "claude-choreography/v4");
+  assert.equal(prompts.director.policy, "claude-choreography/v5");
   assert.equal(prompts.choreography.SF2.kinds["SF2-3"], "dash");
   assert.equal(prompts.choreography.SF2.kinds["SF2-5"], "dash");
   assert.ok(prompts.choreography.SF2.pos[mapping.elrond!].y.length > 1);
@@ -255,6 +329,12 @@ console.log(
     {
       syntheticFixture: true,
       mockedDirector: process.argv.includes("--mock-director"),
+      ...(publishedFighter
+        ? {
+            studioTokenId: publishedFighter.tokenId,
+            studioManifestHash: animeDigest(publishedFighter)
+          }
+        : {}),
       publicationHash: publication.publicationHash,
       files: Object.keys(publication.manifest.files),
       duration: film.duration,

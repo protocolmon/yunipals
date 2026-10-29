@@ -16,6 +16,7 @@ import {
 } from "@protopals/yunipals-market-core/anime";
 import { environment } from "@/environment";
 import { arenaRequestAt } from "@/lib/arenaLive";
+import { AnimeKitPreview } from "./AnimeKitPreview";
 
 type FighterResponse = {
   fighter: AnimeFighter;
@@ -159,6 +160,29 @@ export function AnimeFighterCard({
                   <p className="text-sm">
                     Approved artwork is awaiting a publication check.
                   </p>
+                )}
+                {data?.manifest?.kits && (
+                  <div
+                    className="grid gap-3 sm:grid-cols-3"
+                    aria-label="Signature techniques"
+                  >
+                    {data.manifest.kits.map((kit) => (
+                      <div
+                        key={kit.id}
+                        className="space-y-2 rounded-2xl border border-line p-3"
+                      >
+                        <AnimeKitPreview
+                          kit={kit}
+                          assetsOrigin={data.assetsOrigin}
+                        />
+                        <h3 className="font-semibold">{kit.name}</h3>
+                        <p className="text-xs capitalize text-muted">
+                          {kit.element}
+                        </p>
+                        <p className="text-sm">{kit.description}</p>
+                      </div>
+                    ))}
+                  </div>
                 )}
                 <a
                   href={`${data?.assetsOrigin}/fighters/v1/${tokenId}/card.jpg`}

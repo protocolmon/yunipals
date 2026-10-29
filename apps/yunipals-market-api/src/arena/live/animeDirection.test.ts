@@ -102,6 +102,66 @@ test("Claude labels reject omitted, duplicated, foreign or oversized battle data
     assert.throws(() => applyAnimeDirection(input, changed));
   }
 });
+
+test("director kits stay in the actor's loadout and cannot turn ranged events into body contact", () => {
+  const { input, direction } = fixture();
+  input.loadouts = Object.fromEntries(
+    Object.keys(input.tournament.fighters).map((id) => [
+      id,
+      [
+        {
+          id: `${id}-shot`,
+          name: "Moon Shot",
+          kind: "projectile" as const,
+          description: "A shining projectile."
+        },
+        {
+          id: `${id}-rush`,
+          name: "Body Rush",
+          kind: "dash" as const,
+          description: "A shoulder check."
+        }
+      ]
+    ])
+  );
+  for (const attack of direction.attacks) attack.kit = null;
+  const before = canonicalJson(input.tournament);
+  const target = direction.attacks.find((a) => a.kind !== "dash")!;
+  const event = input.tournament.matches
+    .find((m) => m.id === target.matchId)!
+    .events.find((e) => e.id === target.eventId)!;
+  target.kit = `${event.actorId}-shot`;
+  const result = applyAnimeDirection(input, direction);
+  assert.equal(result[target.matchId]!.kits![target.eventId], target.kit);
+  assert.equal(result[target.matchId]!.names[target.eventId], "MOON SHOT");
+  assert.equal(canonicalJson(input.tournament), before);
+  target.kit = "foreign-shot";
+  assert.throws(() => applyAnimeDirection(input, direction), /loadout/);
+  target.kit = `${event.actorId}-rush`;
+  assert.throws(() => applyAnimeDirection(input, direction), /incompatible/);
+  target.kind = "dash";
+  assert.throws(() => applyAnimeDirection(input, direction), /ranged attack/);
+  const originalName = event.attackName;
+  event.attackName = "Body Rush";
+  input.choreography[target.matchId]!.kinds[target.eventId] = "dash";
+  assert.throws(() => applyAnimeDirection(input, direction), /ranged attack/);
+  event.attackName = originalName;
+  input.choreography[target.matchId]!.kinds[target.eventId] = "orb";
+  target.kind = "orb";
+  target.kit = null;
+  assert.equal(
+    applyAnimeDirection(input, direction)[target.matchId]!.kits![
+      target.eventId
+    ],
+    `${event.actorId}-shot`
+  );
+  const provider = fixtureProviderDirection(input, direction);
+  const block = provider.matches[target.matchId]!;
+  const attacks = JSON.parse(block.attacks);
+  delete attacks[0].kit;
+  block.attacks = JSON.stringify(attacks);
+  assert.throws(() => applyAnimeProviderDirection(input, provider), /fields/);
+});
 test("motion and cut-ins reject missing fighters, impossible paths, fake contact and hidden combat edits", () => {
   const { input, direction } = fixture();
   for (const mutate of [
@@ -150,7 +210,7 @@ test("Claude request pins its model, provider, output schema, price and input en
   assert.equal(request.response_format.json_schema.strict, true);
   assert.equal(
     request.response_format.json_schema.name,
-    "anime_choreography_v4"
+    "anime_choreography_v5"
   );
   // PostgreSQL jsonb can reorder object keys in the frozen input. Required-key
   // arrays must remain stable when the policy is reconstructed after a restart.

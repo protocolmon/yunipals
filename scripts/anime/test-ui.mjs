@@ -26,7 +26,7 @@ let state = "Applied";
 const fighter = () => ({
   tokenId: "1",
   status: state,
-  recipeVersion: 1,
+  recipeVersion: 2,
   applications: 2,
   manifestHash: `0x${"a".repeat(64)}`,
   applicant: `0x${"1".repeat(40)}`,
@@ -67,7 +67,7 @@ await page.route("**/api/**", async (route) => {
   else if (path === "/rules")
     body = {
       rulesHash: `0x${"b".repeat(64)}`,
-      manifest: { version: anime ? "anime-rules-v1" : "arena-mainnet-input-v1" }
+      manifest: { version: anime ? "anime-rules-v2" : "arena-mainnet-input-v1" }
     };
   else if (path === "/tournaments") body = { items: [], nextCursor: null };
   else if (path === "/fighters")
@@ -86,7 +86,23 @@ await page.route("**/api/**", async (route) => {
         state === "Approved"
           ? {
               identity: { species: "Unibranch" },
-              sprites: { idle: { file: "idle.12345678.webp" } }
+              sprites: { idle: { file: "idle.12345678.webp" } },
+              kits: ["Vine Lash", "Thorn Volley", "Root Slam"].map(
+                (name, i) => ({
+                  id: name.toLowerCase().replaceAll(" ", "-"),
+                  name,
+                  element: "nature",
+                  kind: ["strike", "projectile", "dash"][i],
+                  description: `${name} signature effect.`,
+                  impact: {
+                    sheet:
+                      "recipes/anime-fighter-v2/species/elements-nature/impact.12345678.webp",
+                    cols: 2,
+                    rows: 2,
+                    blend: "add"
+                  }
+                })
+              )
             }
           : null
     };
@@ -116,6 +132,7 @@ try {
     .getByRole("heading", { name: "Anime fighters · Base OG only" })
     .waitFor();
   await page.getByText(/Approval and fighter art follow the NFT/).waitFor();
+  await page.getByText(/Choose two before locking your strategy/).waitFor();
   await page.goto(`${app.origin}/arena/anime/studio`);
   await page.getByRole("link", { name: "Base Yunipal #1" }).waitFor();
   await page
@@ -146,10 +163,15 @@ try {
       await page.getByText(/Curator note: <img src=x/).waitFor();
     if (status === "Revoked")
       await page.getByText("Awaiting curator re-approval.").waitFor();
-    if (status === "Approved")
+    if (status === "Approved") {
       await page
         .getByRole("link", { name: "Enter the anime arena", exact: true })
         .waitFor();
+      for (const name of ["Vine Lash", "Thorn Volley", "Root Slam"])
+        await page
+          .getByRole("img", { name: `${name} effect preview` })
+          .waitFor();
+    }
     assert.equal(
       await page.getByRole("button", { name: /^(Apply|Reapply)$/ }).count(),
       0,
@@ -165,6 +187,81 @@ try {
     path: join(output, "approved-token-mobile.png"),
     fullPage: true
   });
+  // Exercise the real form in isolation: no wallet signing or provider calls.
+  await page.route("**/__anime-kit-form", (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: '<!doctype html><html><head><link rel="stylesheet" href="/src/globals.css"><script type="module">import RefreshRuntime from "/@react-refresh"; RefreshRuntime.injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; window.$RefreshSig$ = () => (type) => type; window.__vite_plugin_react_preamble_installed__ = true;</script></head><body><div id="kit-form"></div></body></html>'
+    })
+  );
+  await page.goto(`${app.origin}/__anime-kit-form`);
+  await page.evaluate(async () => {
+    const React = (await import("/node_modules/.vite/deps/react.js")).default;
+    const { createRoot } = (
+      await import("/node_modules/.vite/deps/react-dom_client.js")
+    ).default;
+    const { StrategyEditor } = await import(
+      "/src/pages/arena/live/LiveArenaPage.tsx"
+    );
+    window.__kitSubmissions = [];
+    const kits = ["Vine Lash", "Thorn Volley", "Root Slam"].map((name) => ({
+      id: name.toLowerCase().replaceAll(" ", "-"),
+      name,
+      kind: "strike",
+      description: `${name} signature effect.`
+    }));
+    createRoot(document.getElementById("kit-form")).render(
+      React.createElement(StrategyEditor, {
+        tournament: {
+          id: "93",
+          submittedSeats: [],
+          deadline: Math.floor(Date.now() / 1000) + 86400,
+          serverTime: Math.floor(Date.now() / 1000)
+        },
+        seat: {
+          seat: 0,
+          player: `0x${"1".repeat(40)}`,
+          nftChainId: 8453,
+          tokenId: "1"
+        },
+        contract: `0x${"2".repeat(40)}`,
+        fighter: {
+          name: "Yunibranch",
+          locomotion: "ground",
+          animeKits: kits,
+          animeDefaultLoadout: [kits[0].id, kits[1].id]
+        },
+        busy: false,
+        submit: async (...args) => {
+          window.__kitSubmissions.push(args);
+        },
+        readReceipt: async () => undefined
+      })
+    );
+  });
+  const vine = page.getByRole("button", { name: /Vine Lash/ }),
+    thorn = page.getByRole("button", { name: /Thorn Volley/ }),
+    root = page.getByRole("button", { name: /Root Slam/ });
+  await vine.waitFor();
+  assert.equal(await vine.getAttribute("aria-pressed"), "true");
+  assert.equal(await thorn.getAttribute("aria-pressed"), "true");
+  assert.equal(await root.isDisabled(), true);
+  await vine.focus();
+  await page.keyboard.press("Space");
+  assert.equal(await vine.getAttribute("aria-pressed"), "false");
+  const lock = page.getByRole("button", { name: "Sign & lock strategy" });
+  await page.getByRole("textbox").fill("Thorn Volley, then Root Slam.");
+  assert.equal(await lock.isDisabled(), true);
+  await root.focus();
+  await page.keyboard.press("Enter");
+  await lock.click();
+  assert.deepEqual(await page.evaluate(() => window.__kitSubmissions), [
+    ["93", 0, "Thorn Volley, then Root Slam.", ["thorn-volley", "root-slam"]]
+  ]);
+  await page.screenshot({
+    path: join(output, "loadout-picker-mobile.png"),
+    fullPage: true
+  });
   assert.deepEqual(errors, []);
   assert.ok(requests.some((p) => p === "/api/arena/config"));
   assert.ok(requests.some((p) => p === "/api/anime-arena/config"));
@@ -177,7 +274,9 @@ try {
           "public queue and escaped rejection notes",
           "all five token states for non-owner",
           "approved preview and mobile overflow",
-          "rules and transfer policy"
+          "rules and transfer policy",
+          "three signature kit canvas previews and cosmetic loadout rules",
+          "keyboard 2-of-3 defaults, selection limit and submitted loadout"
         ],
         errors,
         requests

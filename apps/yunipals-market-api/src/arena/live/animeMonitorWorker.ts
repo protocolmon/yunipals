@@ -78,7 +78,7 @@ try {
         verifiedAt = Date.now();
       }
       const assetsHealthy = await fetch(
-        `${runtime.anime.origin}/recipes/anime-fighter-v1/recipe-lock.json`,
+        `${runtime.anime.origin}/recipes/anime-fighter-v2/recipe-lock.json`,
         {
           method: "HEAD",
           redirect: "error",

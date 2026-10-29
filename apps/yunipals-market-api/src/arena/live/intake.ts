@@ -1,4 +1,9 @@
-import { arenaEconomics } from "@protopals/yunipals-market-core/anime";
+import {
+  arenaEconomics,
+  parseAnimeLoadout,
+  type AnimeLoadout
+} from "@protopals/yunipals-market-core/anime";
+import type { FighterSnapshot } from "./identity";
 import { randomBytes, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import type { Address, Hex } from "viem";
@@ -43,6 +48,7 @@ type Submission = {
   commitment: Hex;
   signature: Hex;
   ciphertext: string;
+  loadout: AnimeLoadout | null;
 };
 export type StrategySubmission = {
   seat: number;
@@ -50,6 +56,7 @@ export type StrategySubmission = {
   salt: Hex;
   signature: Hex;
   incarnation?: string;
+  loadout?: AnimeLoadout;
 };
 export type ArenaTournamentContext = {
   state: ArenaTournament;
@@ -318,6 +325,56 @@ export class ArenaIntake {
     ).rows.map((row) => row.id);
   }
 
+  private async strategyLoadout(
+    db: Queryable,
+    id: string,
+    context: ArenaTournamentContext,
+    seatIndex: number,
+    value?: unknown
+  ) {
+    if (this.mediaKind !== "anime") {
+      if (value !== undefined)
+        throw new ArenaRequestError(
+          400,
+          "Attack loadouts are available in Anime Arena."
+        );
+      return undefined;
+    }
+    const seat = context.state.seats[seatIndex]!;
+    const row = (
+      await db.query<{ snapshot: FighterSnapshot; snapshot_hash: string }>(
+        "SELECT snapshot,snapshot_hash FROM yunipals_arena.fighter_snapshot WHERE deployment=$1 AND tournament_id=$2 AND nft_chain_id=$3 AND collection=$4 AND token_id=$5 AND incarnation=$6",
+        [
+          this.deployment,
+          id,
+          seat.nftChainId,
+          seat.collection.toLowerCase(),
+          seat.tokenId,
+          context.incarnation
+        ]
+      )
+    ).rows[0];
+    if (!row || digest(canonicalJson(row.snapshot)) !== row.snapshot_hash)
+      throw new ArenaRequestError(
+        409,
+        "Fighter art needs to be prepared before choosing a loadout."
+      );
+    try {
+      return parseAnimeLoadout(
+        {
+          kits: row.snapshot.animeKits,
+          defaultLoadout: row.snapshot.animeDefaultLoadout
+        },
+        value
+      );
+    } catch {
+      throw new ArenaRequestError(
+        400,
+        "Choose two different kits from this fighter."
+      );
+    }
+  }
+
   async submit(id: string, wallet: Address, input: StrategySubmission) {
     let text: string;
     let commitment: Hex;
@@ -376,9 +433,20 @@ export class ArenaIntake {
         current.seats[input.seat]?.player.toLowerCase() !== wallet.toLowerCase()
       )
         throw new ArenaRequestError(409, "The tournament seat changed.");
+      const loadout = await this.strategyLoadout(
+        db,
+        id,
+        context,
+        input.seat,
+        input.loadout
+      );
       const existing = (
-        await db.query<{ commitment: Hex; wallet: string }>(
-          "SELECT commitment,wallet FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND seat=$3 AND incarnation=$4",
+        await db.query<{
+          commitment: Hex;
+          wallet: string;
+          loadout: AnimeLoadout | null;
+        }>(
+          "SELECT commitment,wallet,loadout FROM yunipals_arena.submission WHERE deployment=$1 AND tournament_id=$2 AND seat=$3 AND incarnation=$4",
           [this.deployment, id, input.seat, context.incarnation]
         )
       ).rows[0];
@@ -393,7 +461,17 @@ export class ArenaIntake {
             409,
             "Your first strategy is locked and cannot be replaced."
           );
-        return { seat: input.seat, commitment, locked: true };
+        if (canonicalJson(existing.loadout) !== canonicalJson(loadout ?? null))
+          throw new ArenaRequestError(
+            409,
+            "Your first strategy and loadout are already locked."
+          );
+        return {
+          seat: input.seat,
+          commitment,
+          locked: true,
+          ...(loadout ? { loadout } : {})
+        };
       }
       if (
         this.nativeSource &&
@@ -433,7 +511,7 @@ export class ArenaIntake {
         }
       );
       await db.query(
-        "INSERT INTO yunipals_arena.submission(deployment,tournament_id,seat,wallet,commitment,signature,ciphertext,incarnation) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+        "INSERT INTO yunipals_arena.submission(deployment,tournament_id,seat,wallet,commitment,signature,ciphertext,incarnation,loadout) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
         [
           this.deployment,
           id,
@@ -442,10 +520,16 @@ export class ArenaIntake {
           commitment,
           input.signature,
           ciphertext,
-          context.incarnation
+          context.incarnation,
+          loadout ? JSON.stringify(loadout) : null
         ]
       );
-      return { seat: input.seat, commitment, locked: true };
+      return {
+        seat: input.seat,
+        commitment,
+        locked: true,
+        ...(loadout ? { loadout } : {})
+      };
     });
   }
 
@@ -482,7 +566,8 @@ export class ArenaIntake {
       locked: true as const,
       commitment: row.commitment,
       text: value.text,
-      receivedAt: row.created_at.toISOString()
+      receivedAt: row.created_at.toISOString(),
+      ...(row.loadout ? { loadout: row.loadout } : {})
     };
   }
 
@@ -520,36 +605,52 @@ export class ArenaIntake {
           409,
           "The roster and island must be ready."
         );
-      const strategies = state.seats.map((seat) => {
-        const row = rows.find((r) => r.seat === seat.seat);
-        if (row && row.wallet.toLowerCase() !== seat.player.toLowerCase())
-          throw new ArenaRequestError(
-            409,
-            "The roster changed and needs reconciliation."
+      const strategies: NonNullable<ArenaPublicTournament["strategies"]> =
+        state.seats.map((seat) => {
+          const row = rows.find((r) => r.seat === seat.seat);
+          if (row && row.wallet.toLowerCase() !== seat.player.toLowerCase())
+            throw new ArenaRequestError(
+              409,
+              "The roster changed and needs reconciliation."
+            );
+          if (row)
+            return {
+              seat: row.seat,
+              commitment: row.commitment,
+              signature: row.signature,
+              ...this.cipher.open<{ text: string; salt: Hex }>(
+                `${context.cipherContext}/seat/${row.seat}`,
+                row.ciphertext
+              ),
+              source: "player" as const,
+              ...(row.loadout ? { loadout: row.loadout } : {})
+            };
+          if (Date.now() < state.deadline * 1000)
+            throw new ArenaRequestError(
+              409,
+              "Waiting for all four strategies."
+            );
+          if (state.randomWord === null)
+            throw new ArenaRequestError(409, "The island draw is not ready.");
+          return automaticStrategy(
+            this.contract,
+            BigInt(id),
+            seat.seat,
+            state.rulesHash,
+            BigInt(state.randomWord!)
           );
-        if (row)
-          return {
-            seat: row.seat,
-            commitment: row.commitment,
-            signature: row.signature,
-            ...this.cipher.open<{ text: string; salt: Hex }>(
-              `${context.cipherContext}/seat/${row.seat}`,
-              row.ciphertext
-            ),
-            source: "player" as const
-          };
-        if (Date.now() < state.deadline * 1000)
-          throw new ArenaRequestError(409, "Waiting for all four strategies.");
-        if (state.randomWord === null)
-          throw new ArenaRequestError(409, "The island draw is not ready.");
-        return automaticStrategy(
-          this.contract,
-          BigInt(id),
-          seat.seat,
-          state.rulesHash,
-          BigInt(state.randomWord!)
-        );
-      });
+        });
+      if (this.mediaKind === "anime")
+        for (const strategy of strategies) {
+          const chosen = await this.strategyLoadout(
+            db,
+            id,
+            context,
+            strategy.seat,
+            strategy.loadout
+          );
+          if (chosen) strategy.loadout = chosen;
+        }
       const automaticStrategyMask = strategies.reduce(
         (mask, strategy) =>
           mask | (strategy.source === "automatic" ? 1 << strategy.seat : 0),

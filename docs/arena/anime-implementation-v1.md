@@ -1,16 +1,68 @@
 # Anime Arena implementation and verification
 
-Prepared 2026-10-28. Repository implementation and pinned rendering dependencies
+Prepared 2026-10-28; signature-kit acceptance completed 2026-10-29. Repository implementation and pinned rendering dependencies
 are installed on the indexer server for paused deployment review. A fresh private
 paid rehearsal validated the referee and selected the required Claude director.
 The user's subsequent review found film quality below the manual Claude version.
 Full Claude choreography has since been restored; its comparison film is ready for
 visual review, which remains an explicit launch acceptance item.
+The latest local release adds recipe-v2 kits, the owner loadout picker and engine
+1.1.0. Launch uses fresh v2 fighters only; no registry upgrade or v1 migration.
 **Contracts, public website and anime services have not been deployed or opened.**
 See `ops/anime-arena/README.md` for the ordered rollout and operator commands.
 `node scripts/anime/preflight.mjs` checks the local release; `--launch` also refuses
 outstanding live acceptance. The generated local review is
 `anime-release-review-v1.json` (ignored by Git and included in the review archive).
+
+## Signature-kit acceptance · 2026-10-29
+
+All seven work items in `anime-attack-kits-brief-v1.md` are implemented. Manifests
+commit three kits and a two-kit default; the studio reviews three windups plus
+shared species/element sheets. The existing Opus call selects kit IDs, validates
+membership/compatible visuals and refuses ranged events presented as body contact.
+Plaintext loadouts lock with strategy submissions, remain outside the signed text
+commitment, appear in disclosure, and supply only cosmetic names/descriptions to
+the referee. Missing strategies use the fighter's default pair. The website has
+three animated effect previews and a keyboard-accessible two-of-three picker.
+
+Engine **1.1.0**, hash
+`773db47209a827ac6c62e2e245da10cd16917f9e53605f6badbf135f6b3a7d5e`, adds
+painted projectiles/strikes/impacts, kit windups, hit stops, release smears and camera
+punches. Both golden sets were deliberately regenerated once and verified. The
+engine and both sets are committed together. Before/after images and all 48
+semantic-frame hashes are attached under
+`apps/yunipals-anime-engine/fixtures/review/1.1.0*`. Both paths retain exactly the
+same frozen tournament hash. Historical no-kit fixtures retain procedural attacks;
+they cannot receive launch admission.
+
+A single production-route OpenRouter Opus rehearsal returned valid kit selections
+and **5 / 5 / 6** attacks. Its reported charge was **$0.141292**, within the existing
+**$0.80** bound (11,578 prompt tokens, 4,749 completion tokens). The original
+manual-reference referee result and prototype artwork were reused, so this is the
+incremental director cost, not a fresh referee-plus-artwork price. The resulting
+film is **122.51 seconds**, H.264/AAC, 1280×720 at 30 fps. Private original request,
+response and accounting are retained on `yunipals-main` under
+`/var/lib/yunipals-anime-arena/rehearsals/kits-20261029`.
+
+Actual Base **Yunibranch #1000001445** completed the subscription studio from
+finalized onchain traits and original artwork through all nine poses, three
+windups, three shared sheets, visual review, validated export and private local
+publication. Its manifest hash is
+`0xb4659ad34a120a72ae7afa6739f784a079f5f5ee11524929db734d9afc94c762`.
+The complete media callback then consumed that published v2 manifest alongside
+the fallback fixtures, verified windup/sheet hashes and default loadout, rendered
+both audio variants, and verified all twelve publication files. That offline
+callback used mocked direction, made no provider calls and took **183.14 seconds**.
+Its film duration is **116.36 seconds**. This acceptance publication is local;
+the token has not been approved onchain.
+
+Current checks: 18 studio/transport tests; 15 manifest/admission/configuration
+tests; 9 director/cost tests; 3 input compiler tests; 19 database lifecycle tests
+including custom/default/automatic loadouts; 7 engine policy/name tests; both
+12-frame golden sets; desktop/mobile preview and keyboard picker flows; API/web
+strict type checks and production builds; eight release preflight checks. Public
+source scans found no secrets. Audio synthesis and music remain unchanged. The
+earlier verification and cost sections below describe the preceding release.
 
 ## Implemented
 
@@ -34,7 +86,7 @@ outstanding live acceptance. The generated local review is
   publication and unsigned curator batches. API-key generation is refused.
 - Maintained engine app with manifest-driven appearance, deterministic rendering,
   validated Claude movement/body-attack staging, cut-ins and exact whole-word
-  strategy fragments. Current engine **1.0.5**, Chromium **151.0.7922.34**. Font
+  strategy fragments. Current engine **1.1.0**, Chromium **151.0.7922.34**. Font
   licenses are included. The renderer produces 1280×720 at 30 fps, SFX/music variants,
   chapter/event playback clocks and the existing twelve-file publication package.
   It reuses native media locks, source fences, publication verification and payouts.

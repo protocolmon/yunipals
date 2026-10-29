@@ -252,7 +252,7 @@ Two new Base sources in `lib/unified/sources.ts`:
 
 ## 7. Fighter art: recipe, studio tool, hosting
 
-### 7.1 Recipe `anime-fighter-v1` (frozen before the first approval)
+### 7.1 Recipe `anime-fighter-v2` (fresh launch fighters)
 
 Per fighter, 9 images from `codex exec` with the built-in image tool, chroma-key
 `#00FF00` backgrounds, 1:1 for poses and 16:9 for the cut-in:
@@ -315,7 +315,7 @@ visible.
   "identity": { "species": "Unibranch", "color": "Purple", "horn": "Candy Cane",
                 "text": "Purple Unibranch, cream chest…", "locomotion": "ground",
                 "identityVersion": "anime-fighter-v1" },
-  "recipe": { "id": "anime-fighter-v1", "sha256": "…" },
+  "recipe": { "id": "anime-fighter-v2", "sha256": "…" },
   "look": { "attackKind": "vine", "palette": { "color": "#d63fd0", "light": "#ff8af2", "dark": "#5a1c8c" },
             "face": 1, "stageHeight": { "idle": 270, "attack": 320 }, "origin": [0.34, 0.37], "torso": [0.04, 0.52] },
   "sprites": { "idle": { "file": "idle.3f9a1c2b.webp", "sha256": "…", "w": 1131, "h": 1101 }, "…": {} },
@@ -346,7 +346,7 @@ onchain hash, before use (same pattern as `verifyPublicationFile`).
   `Cache-Control: public, max-age=31536000, immutable` for hash-named files, `max-age=300`
   for `manifest.json`, no directory listing.
 - Layout: `fighters/v1/<tokenId>/{manifest.json, <pose>.<sha8>.webp, cutin.<sha8>.jpg, card.jpg}`,
-  `recipes/anime-fighter-v1/{style.json, board.png}`,
+  `recipes/anime-fighter-v2/{style.json, board.png}`,
   `recipes/anime-fighter-v2/species/<species>/{<kind>.<sha8>.png, impact-<element>.<sha8>.png}`
   (the shared FX library), `engine/<version>/` for the
   published engine build used by the website's live mode.
@@ -450,7 +450,7 @@ this deployment and reuses `ArenaMedia.step`'s locking, job table and publicatio
 | --- | --- |
 | `export` | Frozen input + adjudication → `tournament.json` (the prototype's `export_tournament.py`, ported to TS inside the worker so no decryption happens in Python) |
 | `fighters` | Fetch and verify the four manifests and sprites into the job folder |
-| `direct` | Base staging is supplied to the required Opus director through OpenRouter. `claude-choreography/v4` requires every match as a named block, validates exact event/fighter/cut-in coverage after decoding, and returns bounded x/y/depth/facing/rotation paths, per-event default or body-contact attack visuals, and cut-in names, whole-word verbatim strategy quotes and timing within recorded windups. Ground/flight, visible dodge displacement, body-contact distance and channel bounds are checked. Frozen attacks, defense times, damage and winners never change. The manual Claude CLI film is the comparison baseline. With kits (section 7.5) the director also returns a `kit` id per attack event from the actor's loadout; the validator enforces loadout membership and kind compatibility, with the deterministic name-match fallback. |
+| `direct` | Base staging is supplied to the required Opus director through OpenRouter. `claude-choreography/v5` requires every match as a named block, validates exact event/fighter/cut-in coverage after decoding, and returns bounded x/y/depth/facing/rotation paths, per-event default or body-contact attack visuals, and cut-in names, whole-word verbatim strategy quotes and timing within recorded windups. Ground/flight, visible dodge displacement, body-contact distance and channel bounds are checked. Frozen attacks, defense times, damage and winners never change. The manual Claude CLI film is the comparison baseline. With kits (section 7.5) the director also returns a `kit` id per attack event from the actor's loadout; the validator enforces loadout membership and kind compatibility, with the deterministic name-match fallback. |
 | `render` | `node render.mjs` with pinned `chrome-headless-shell`, 1280×720 @ 30 fps, deterministic frames; `mix.py` SFX + music; ffmpeg encode. ~2–3 min CPU per tournament. |
 | `assemble` | Produce the **existing published file set**: `film.mp4`, `native-sfx.mp4` (same film, SFX-only track), `SF1.png`/`SF2.png`/`FINAL.png` (poster frames from the renderer), `input.json`, `outcome.json`, `prompts.json` (choreography + director inputs), `film.json` (probe, engine version, recipe and manifest hashes), `receipts.json` (render receipts, no provider), `media-policy.json`, `credits.txt` (music CC-BY credit, fonts). |
 | publish | Unchanged `buildMediaPublication` / `commitMediaPublication`; settlement calls `releasePayouts(id, filmHash)` as today. |
@@ -460,13 +460,15 @@ provider keys, no signing keys in the Python/Node child). The service user needs
 own `chrome-headless-shell` under `/srv/yunipals-arena/runtime/` plus the `deb.deps`
 packages; pin the version and record it in `film.json`.
 
-### 8.3 Rules manifest `anime-rules-v1`
+### 8.3 Rules manifest `anime-rules-v2`
 
 Derived from `mainnet-rules-manifest-v1.json` with: entry 1 USDC and the approved split,
 collection restriction and eligibility registry address, `media.policy =
 "anime-engine/v1"` with the engine hash and recipe id, identity source
-`anime-fighter-v1`. Combat rules, referee model/settings, schema and tie-break stay
-identical so the referee validation remains valid. Its `rulesHash` is the deployment's
+`anime-fighter-v1` (identity schema, independent of recipe v2). Combat rules, referee
+model/settings, outcome schema and tie-break stay identical. The anime input compiler
+adds the two chosen techniques' names/descriptions and plaintext loadout IDs, and the
+referee instructions add the cosmetic-only sentence from section 7.5. Its `rulesHash` is the deployment's
 immutable rules hash.
 
 ## 9. Anime engine productionization

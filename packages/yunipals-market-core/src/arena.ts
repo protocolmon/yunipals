@@ -243,6 +243,7 @@ export type ArenaPublicTournament = ArenaTournament & {
   };
   submittedSeats: number[];
   strategies: Array<{
+    loadout?: [string, string];
     seat: number;
     text: string;
     salt: Hex;

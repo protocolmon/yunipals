@@ -10,6 +10,8 @@ import {
 import { join } from "node:path";
 import {
   ANIME_BASE_COLLECTION,
+  parseAnimeLoadout,
+  type AnimeKnownKit,
   type AnimeManifest
 } from "@protopals/yunipals-market-core/anime";
 import {
@@ -140,9 +142,15 @@ export function animeMediaBuilder(
     await mkdir(assets, { recursive: true });
     const manifests: Record<
       string,
-      { manifest: AnimeManifest; manifestHash: string }
+      {
+        manifest: AnimeManifest;
+        manifestHash: string;
+        loadout?: [string, string];
+      }
     > = {};
     const sprites: Record<string, { file: string; sha256: string }> = {};
+    const loadouts: Record<string, AnimeKnownKit[]> = {};
+    const shared = new Set<string>();
     for (const fighter of input.roster) {
       if (
         fighter.chainId !== 8453 ||
@@ -165,11 +173,56 @@ export function animeMediaBuilder(
         manifest: m,
         manifestHash: fighter.animeManifestHash
       };
+      const loadout = parseAnimeLoadout(
+        m,
+        input.strategies.find((s) => s.fighterId === fighter.id)?.loadout
+      );
+      if (loadout) {
+        manifests[fighter.id]!.loadout = loadout;
+        loadouts[fighter.id] = loadout.map((id) => {
+          const k = m.kits!.find((k) => k.id === id)!;
+          return {
+            id: k.id,
+            name: k.name,
+            kind: k.kind,
+            description: k.description
+          };
+        });
+      }
       for (const [pose, sprite] of Object.entries(m.sprites)) {
         const bytes = await fighters.spriteBytes(fighter.tokenId, sprite);
         const file = `${fighter.id}-${sprite.file}`;
         await writeFile(join(assets, file), bytes, { mode: 0o600 });
         sprites[`${fighter.id}-${pose}`] = { file, sha256: sprite.sha256 };
+      }
+      for (const k of m.kits ?? []) {
+        const file = `${fighter.id}-${k.windup.file}`;
+        await writeFile(
+          join(assets, file),
+          await fighters.spriteBytes(fighter.tokenId, k.windup),
+          { mode: 0o600 }
+        );
+        sprites[`${fighter.id}-windup-${k.id}`] = {
+          file,
+          sha256: k.windup.sha256
+        };
+        for (const role of ["projectile", "strike", "impact"] as const) {
+          const sheet = k[role];
+          if (!sheet) continue;
+          const file = `fx-${sheet.sha256}.webp`;
+          if (!shared.has(file)) {
+            await writeFile(
+              join(assets, file),
+              await fighters.sheetBytes(sheet),
+              { mode: 0o600 }
+            );
+            shared.add(file);
+          }
+          sprites[`${fighter.id}-kit-${k.id}-${role}`] = {
+            file,
+            sha256: sheet.sha256
+          };
+        }
       }
     }
     for (const file of await readdir(join(engine, "static/assets")))
@@ -187,7 +240,8 @@ export function animeMediaBuilder(
       Object.fromEntries(
         Object.entries(manifests).map(([id, m]) => [id, m.manifest.look])
       ),
-      Object.fromEntries(input.strategies.map((s) => [s.fighterId, s.text]))
+      Object.fromEntries(input.strategies.map((s) => [s.fighterId, s.text])),
+      loadouts
     );
     const direction = director
       ? await director(job, {
@@ -195,7 +249,8 @@ export function animeMediaBuilder(
           strategies: Object.fromEntries(
             input.strategies.map((s) => [s.fighterId, s.text])
           ),
-          choreography: baseChoreography
+          choreography: baseChoreography,
+          loadouts
         })
       : null;
     const choreography = direction?.choreography ?? baseChoreography;

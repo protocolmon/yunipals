@@ -316,7 +316,14 @@ test("approved economics and referee settings are isolated from the video arena"
   const video = loadLiveArenaCatalog(root),
     anime = loadAnimeArenaCatalog(root, registry);
   assert.deepEqual(anime.manifest.referee, video.manifest.referee);
-  assert.deepEqual(anime.rules, video.rules);
+  assert.deepEqual(anime.rules.combat, video.rules.combat);
+  assert.ok(
+    anime.rules.refereeInstructions.startsWith(video.rules.refereeInstructions)
+  );
+  assert.ok(
+    anime.rules.refereeInstructions.includes("Known techniques are cosmetic")
+  );
+  assert.equal(anime.manifest.version, "anime-rules-v2");
   assert.notEqual(anime.rulesHash, video.rulesHash);
   assert.equal(anime.manifest.economics.entryMicrousd, 1000000);
   assert.equal(video.manifest.economics.entryMicrousd, 2000000);

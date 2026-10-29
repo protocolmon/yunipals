@@ -46,7 +46,10 @@ export function fixtureProviderDirection(
           attacks: JSON.stringify(
             direction.attacks
               .filter((e) => e.matchId === m.id)
-              .map(({ matchId, ...item }) => item)
+              .map(({ matchId, ...item }) => ({
+                ...item,
+                kit: item.kit ?? null
+              }))
           ),
           motion: JSON.stringify(
             direction.motion

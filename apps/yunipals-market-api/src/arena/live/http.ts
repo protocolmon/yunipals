@@ -425,12 +425,22 @@ export function createArenaApp(
       typeof body.text !== "string"
     )
       throw new ArenaRequestError(400, "Invalid strategy submission.");
+    if (
+      body.loadout !== undefined &&
+      (!Array.isArray(body.loadout) ||
+        body.loadout.length !== 2 ||
+        body.loadout.some((v) => typeof v !== "string"))
+    )
+      throw new ArenaRequestError(400, "Choose two attack kits.");
     return c.json(
       await service.submit(id(c.req.param("id")), wallet, {
         seat: body.seat,
         text: body.text,
         salt: hex(body.salt),
         signature: hex(body.signature),
+        ...(body.loadout !== undefined
+          ? { loadout: body.loadout as [string, string] }
+          : {}),
         ...(typeof body.incarnation === "string"
           ? { incarnation: body.incarnation }
           : {})

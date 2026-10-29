@@ -224,7 +224,18 @@ export class AnimeFighters {
       identityProfileSha256: hash(canonicalAnimeJson(m.identity)),
       identityVersion: "anime-fighter-v1",
       animeManifestHash: manifestHash,
-      animeRecipeHash: m.recipe.sha256
+      animeRecipeHash: m.recipe.sha256,
+      ...(m.kits
+        ? {
+            animeKits: m.kits.map((k) => ({
+              id: k.id,
+              name: k.name,
+              kind: k.kind,
+              description: k.description
+            })),
+            animeDefaultLoadout: m.defaultLoadout!
+          }
+        : {})
     };
   }
 }
