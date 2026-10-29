@@ -84,7 +84,10 @@ export function SharedArenaSetupPage() {
       chainId === 8453 &&
       loadedStorage === storage,
     retry: false,
-    refetchInterval: hash ? 10000 : false
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: (query) => (hash && !query.state.data ? 10000 : false)
   });
   const isOwner =
     !!address && address.toLowerCase() === bundle.data?.admin.toLowerCase();
