@@ -86,6 +86,9 @@ def shared_arena_backup_files(roots=None):
     return anime_backup_files(roots or {
         'configuration': '/etc/yunipals-arena-modes',
         'release': '/srv/yunipals-arena-modes/recovery',
+        'sourceConfiguration': '/etc/yunipals-arena-modes-source',
+        'sourceRpc': '/etc/yunipals-arena-modes-source-rpc',
+        'sourceObserver': '/etc/yunipals-arena-modes-source-observer',
         'videoMedia': '/var/lib/yunipals-arena-modes/video/media',
         'animeMedia': '/var/lib/yunipals-arena-modes/anime/media'
     })

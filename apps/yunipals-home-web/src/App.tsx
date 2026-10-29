@@ -313,7 +313,16 @@ function AppContent() {
             }
           />
           <Route path="/arena/anime/setup" element={<AnimeSetupPage />} />
-          <Route path="/arena/anime/pilot" element={<AnimePilotPage />} />
+          <Route
+            path="/arena/anime/pilot"
+            element={
+              environment.sharedArenaApiUrl ? (
+                <Navigate to="/arena/anime" replace />
+              ) : (
+                <AnimePilotPage />
+              )
+            }
+          />
           <Route
             path="/arena/anime/:id"
             element={

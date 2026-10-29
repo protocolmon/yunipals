@@ -51,13 +51,22 @@ export const signing=()=>({account:{address:identity.address},async sendTransact
 f.reader.getTransactionReceipt=async()=>{if(!sent||scenario==='pending')throw Error('Transaction pending');return{...f.state.receipt,status:scenario==='reverted'?'reverted':'success'}};
 f.reader.estimateGas=async()=>1000000n;f.reader.estimateFeesPerGas=async()=>({maxFeePerGas:10000000n,maxPriorityFeePerGas:100000n});f.reader.call=async()=>({data:'0x'});
 f.reader.waitForTransactionReceipt=async()=>{if(scenario==='pending')throw Error('Receipt timeout; transaction retained');return f.reader.getTransactionReceipt()};
+const originalRead=f.reader.readContract;window.__modes={video:true,anime:true};window.__ownerCalls=[];
+f.reader.readContract=async(input)=>input.blockNumber!==undefined?originalRead(input):input.functionName==='owner'?owner:window.__modes[Number(input.args?.[0])===0?'video':'anime'];
+export async function ownerWrite(input){if(input.account!==owner||input.functionName!=='setEntriesPaused')throw Error('Wrong owner request');window.__ownerCalls.push(input.args);window.__modes[input.args[0]===0?'video':'anime']=input.args[1];return hash;}
 export const client=f.reader;`;
 const modules = {
   "virtual:shared-fixture.ts": fixture,
-  "virtual:shared-wagmi.ts": `import {useSyncExternalStore} from 'react';import {subscribe,snapshot,signing,client,setIdentity} from 'virtual:shared-fixture.ts';export const useAccount=()=>useSyncExternalStore(subscribe,snapshot);export function useWalletClient(){useSyncExternalStore(subscribe,snapshot);return{data:signing()};}export const usePublicClient=()=>client;export const useSwitchChain=()=>({switchChainAsync:async({chainId})=>setIdentity(chainId)});`,
+  "virtual:shared-wagmi.ts": `import {useSyncExternalStore} from 'react';import {subscribe,snapshot,signing,client,setIdentity,ownerWrite} from 'virtual:shared-fixture.ts';export const useAccount=()=>useSyncExternalStore(subscribe,snapshot);export function useWalletClient(){useSyncExternalStore(subscribe,snapshot);return{data:signing()};}export const useWriteContract=()=>({writeContractAsync:ownerWrite});export const usePublicClient=()=>client;export const useSwitchChain=()=>({switchChainAsync:async({chainId})=>setIdentity(chainId)});`,
   "virtual:shared-rainbow.ts": `export const useConnectModal=()=>({openConnectModal:()=>{}});`,
   "virtual:shared-entry.tsx": `import React from 'react';import {createRoot} from 'react-dom/client';import {QueryClient,QueryClientProvider} from '@tanstack/react-query';import {MemoryRouter} from 'react-router-dom';import {SharedArenaSetupPage} from '/src/pages/arena/SharedArenaSetupPage';createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><SharedArenaSetupPage/></QueryClientProvider></MemoryRouter></React.StrictMode>);`
 };
+const { getContractAddress } = await import("viem");
+const fixtureBundle = JSON.parse(raw);
+const fixtureAddress = getContractAddress({
+  from: fixtureBundle.admin,
+  nonce: 7n
+});
 const server = await createServer({
   root,
   configFile: false,
@@ -87,6 +96,10 @@ const server = await createServer({
           return modules[id.slice(1)];
       },
       async transform(code, id) {
+        if (id.endsWith("/src/lib/sharedArenaLiveDeployment.ts"))
+          return "export const sharedArenaConfirmedHash=null;";
+        if (id.endsWith("/src/environment.ts"))
+          return `export const environment={sharedArenaApiUrl:'http://127.0.0.1:5209/__mock/shared'};`;
         if (id.startsWith("\0virtual:"))
           return transformWithEsbuild(code, id.slice(1), {
             loader: id.endsWith("tsx") ? "tsx" : "ts",
@@ -95,7 +108,34 @@ const server = await createServer({
       },
       configureServer(s) {
         s.middlewares.use((req, res, next) => {
-          if (req.url?.startsWith("/__shared-setup")) {
+          if (req.url?.startsWith("/__mock/shared/")) {
+            const kind = req.url.split("/")[3],
+              name = req.url.split("/")[4],
+              bundle = JSON.parse(raw);
+            const value =
+              name === "config"
+                ? {
+                    chainId: 8453,
+                    contract: undefined,
+                    contractVersion: 2,
+                    randomnessFunding: "first-entrant",
+                    mediaKind: kind,
+                    entriesEnabled: true,
+                    entryMode: "pilot"
+                  }
+                : name === "health"
+                  ? {
+                      ok: true,
+                      indexerMode: "unified",
+                      sourceKind: "unified",
+                      sourceEpoch: "test-only"
+                    }
+                  : { rulesHash: bundle.rulesHashes[kind] };
+            // Same deterministic creation address as the verifier fixture.
+            if (name === "config") value.contract = fixtureAddress;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify(value));
+          } else if (req.url?.startsWith("/__shared-setup")) {
             res.setHeader("Content-Type", "text/html");
             res.end(
               '<!doctype html><html><head><link rel="stylesheet" href="/src/globals.css"></head><body><div id="root"></div><script type="module" src="/@id/__x00__virtual:shared-entry.tsx"></script></body></html>'
@@ -153,6 +193,53 @@ try {
   const record = JSON.parse(await page.locator("pre").textContent());
   assert.equal(record.version, "arena-modes-browser/confirmed-v2");
   assert.equal(record.registry, JSON.parse(raw).registry);
+  await page.route("**/__mock/shared/anime/config", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        chainId: 8453,
+        contract: "0x" + "9".repeat(40),
+        contractVersion: 2,
+        randomnessFunding: "first-entrant",
+        mediaKind: "anime",
+        entriesEnabled: true,
+        entryMode: "pilot"
+      })
+    })
+  );
+  await page
+    .getByRole("button", { name: "Enable anime pilot", exact: true })
+    .click();
+  await page
+    .getByRole("alert")
+    .filter({ hasText: "not ready for its controlled pilot" })
+    .waitFor();
+  assert.deepEqual(await page.evaluate(() => window.__ownerCalls), []);
+  await page.unroute("**/__mock/shared/anime/config");
+  await page
+    .getByRole("button", { name: "Enable anime pilot", exact: true })
+    .click();
+  await page.getByText("anime: entries open", { exact: true }).waitFor();
+  assert.deepEqual(await page.evaluate(() => window.__ownerCalls), [
+    [1, false]
+  ]);
+  await page.route("**/__mock/shared/anime/health", (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "test-only outage" })
+    })
+  );
+  await page
+    .getByRole("button", { name: "Pause anime entries", exact: true })
+    .click();
+  await page.getByText("anime: entries paused", { exact: true }).waitFor();
+  assert.deepEqual(await page.evaluate(() => window.__ownerCalls), [
+    [1, false],
+    [1, true]
+  ]);
+  await page.unroute("**/__mock/shared/anime/health");
   assert.ok(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -217,7 +304,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Shared browser deployment passed: exact creation, chain/wallet changes, one signed transaction, both paused modes, reload recovery, pending retention, reverted retry and mobile layout."
+    "Shared browser deployment and controls passed: exact creation, chain/wallet changes, wrong-service rejection, independent mode enable/pause, pause during outage, reload recovery, pending retention, reverted retry and mobile layout."
   );
 } finally {
   await browser.close();

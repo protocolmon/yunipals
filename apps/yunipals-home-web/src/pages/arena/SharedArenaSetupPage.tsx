@@ -11,6 +11,8 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { BaseError, formatEther, type Hex } from "viem";
 import { base } from "viem/chains";
 import { Link } from "react-router-dom";
+import { sharedArenaConfirmedHash } from "@/lib/sharedArenaLiveDeployment";
+import { SharedArenaControls } from "./SharedArenaControls";
 import {
   readSharedArenaDeploymentPackage,
   readSharedArenaDeployment,
@@ -59,8 +61,10 @@ export function SharedArenaSetupPage() {
     try {
       const saved = storage ? localStorage.getItem(storage) : null;
       if (saved && validHash(saved)) setHash(saved);
+      else if (sharedArenaConfirmedHash) setHash(sharedArenaConfirmedHash);
     } catch {
       /* Receipt recovery is also available below. */
+      setHash(sharedArenaConfirmedHash);
     }
     setLoadedStorage(storage);
   }, [storage, chainId]);
@@ -129,7 +133,7 @@ export function SharedArenaSetupPage() {
         );
       assertWallet();
       if (storage) localStorage.removeItem(storage);
-      setHash(null);
+      setHash(sharedArenaConfirmedHash);
       setReview(null);
       setMessage(
         "The reverted transaction is cleared. Review a fresh deployment fee before retrying."
@@ -273,7 +277,7 @@ export function SharedArenaSetupPage() {
           {bundle.error.message}
         </p>
       )}
-      {isOwner && !hash && (
+      {isOwner && !hash && !sharedArenaConfirmedHash && (
         <section
           className="mt-6 space-y-4 rounded-card border border-line p-5"
           aria-label="Deploy shared Arena"
@@ -334,6 +338,11 @@ export function SharedArenaSetupPage() {
           {result.error && <p role="alert">{result.error.message}</p>}
           {result.data && (
             <>
+              <SharedArenaControls
+                contract={result.data.arena.address}
+                admin={result.data.admin}
+                rulesHashes={result.data.rulesHashes}
+              />
               <p className="break-all">
                 Verified shared Arena: {result.data.arena.address}
               </p>
