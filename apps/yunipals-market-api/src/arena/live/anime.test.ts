@@ -404,7 +404,7 @@ test("approved economics and referee settings are isolated from the video arena"
   assert.ok(
     anime.rules.refereeInstructions.includes("Known techniques are cosmetic")
   );
-  assert.equal(anime.manifest.version, "anime-rules-v2");
+  assert.equal(anime.manifest.version, "anime-rules-v3");
   assert.notEqual(anime.rulesHash, video.rulesHash);
   assert.equal(anime.manifest.economics.entryMicrousd, 1000000);
   assert.equal(video.manifest.economics.entryMicrousd, 2000000);

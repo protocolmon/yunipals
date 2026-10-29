@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { resolve } from "node:path";
 import { test } from "node:test";
 import type { Address } from "viem";
-import { loadLiveArenaCatalog } from "./catalog";
+import { loadAnimeArenaCatalog, loadLiveArenaCatalog } from "./catalog";
+import { compileAnimeBackgroundCatalog } from "./animeBackgrounds";
+import { canonicalJson, sha256 } from "../draw";
 import {
   compileIdentity,
   indexerMetadata,
@@ -147,6 +149,49 @@ test("mainnet input preserves paid order, public draw and exact custom strategie
   assert.equal(input.tiePriority.length, 4);
   assert.ok(input.roster.every((f) => !Object.hasOwn(f, "techniques")));
   assert.ok(input.strategies.every((s) => !Object.hasOwn(s, "loadout")));
+  assert.ok(!Object.hasOwn(input.island, "animeBackground"));
+  const anime = loadAnimeArenaCatalog(root, contract);
+  const animeState = { ...state, rulesHash: anime.rulesHash };
+  const frozen = compileLiveInput(
+    animeState,
+    contract,
+    anime,
+    roster,
+    strategies
+  );
+  const frozenBytes = canonicalJson(frozen);
+  const background = frozen.island.animeBackground!;
+  assert.equal(background.mode, "shared-preview");
+  assert.equal(frozen.island.tokenId, draw.tokenId);
+  const overrides = compileAnimeBackgroundCatalog(
+    {
+      version: "anime-background-catalog/v1",
+      fallback: background,
+      islands: {
+        [draw.tokenId]: {
+          ...background,
+          mode: "island",
+          sourceIslandTokenId: draw.tokenId,
+          sourceProfileSha256: frozen.island.profileSha256,
+          file: `islands/v1/${draw.tokenId}/arena.${background.sha256.slice(0, 8)}.webp`
+        }
+      }
+    },
+    catalog.islands
+  );
+  const later = compileLiveInput(
+    animeState,
+    contract,
+    { ...anime, islands: overrides },
+    roster,
+    strategies
+  );
+  assert.equal(later.island.animeBackground!.mode, "island");
+  assert.equal(later.rulesHash, frozen.rulesHash);
+  assert.equal(canonicalJson(frozen), frozenBytes);
+  assert.notEqual(sha256(canonicalJson(later)), sha256(frozenBytes));
+  assert.deepEqual(later.island.profile, frozen.island.profile);
+  assert.deepEqual(later.draw, frozen.draw);
   const kits = [
     {
       id: "vine-lash",

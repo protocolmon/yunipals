@@ -21,6 +21,7 @@ import {
 import type { LiveFrozenInput } from "../../apps/yunipals-market-api/src/arena/live/input";
 import { manualAnimeDirection } from "../../apps/yunipals-market-api/src/arena/live/animeDirectionFixture";
 import { animeRepository } from "../../apps/yunipals-market-api/src/arena/live/animeRepository";
+import { loadAnimeArenaCatalog } from "../../apps/yunipals-market-api/src/arena/live/catalog";
 import {
   ANIME_DIRECTOR_MODEL,
   applyAnimeDirection,
@@ -199,7 +200,9 @@ const input = {
   tournamentId: "1",
   roster,
   semifinals: fixture.semifinals.map((pair: string[]) => pair.map(map)),
-  island: { name: fixture.islandName },
+  island: loadAnimeArenaCatalog(root, `0x${"1".repeat(40)}`).islands.find(
+    (i) => i.tokenId === "195"
+  )!,
   rules: {
     combat: {
       initialHealth: fixture.initialHealth,
@@ -276,6 +279,17 @@ assert.deepEqual(
 for (const [name, proof] of Object.entries(publication.manifest.files))
   await verifyPublicationFile(join(job, "public"), name, proof);
 const film = await json(join(job, "public/film.json"));
+assert.deepEqual(film.background, input.island.animeBackground);
+assert.deepEqual(
+  (await json(join(job, "public/media-policy.json"))).background,
+  film.background
+);
+assert.equal(
+  createHash("sha256")
+    .update(await readFile(join(job, "assets/bg-arena.webp")))
+    .digest("hex"),
+  film.background.sha256
+);
 if (publishedFighter) {
   const rendered = await json(join(job, "assets/fighters.json"));
   const actor = rendered[mapping.cedar!];

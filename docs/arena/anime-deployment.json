@@ -1,6 +1,6 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "recipe-v2 kits and loadouts verified locally; engine 1.1.0; public deployment pending",
+  "status": "recipe-v2 kits, loadouts and single shared background verified locally; engine 1.1.0; public deployment pending",
   "chainId": 8453,
   "registry": null,
   "registryDeploymentBlock": null,
@@ -9,6 +9,8 @@
   "rulesHash": null,
   "applicationsOpen": false,
   "entriesOpen": false,
+  "initialArtwork": "one reviewed shared scene; actual island draw, terrain and rewards remain unchanged",
+  "deferredArtwork": "generate and review unique anime artwork for all 898 islands as the final artwork step",
   "remainingLiveAcceptance": [
     "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
     "review and sign paused contract deployments from the admin wallet",

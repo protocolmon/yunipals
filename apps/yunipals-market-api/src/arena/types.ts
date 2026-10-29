@@ -1,3 +1,4 @@
+import type { AnimeBackground } from "@protopals/yunipals-market-core/anime";
 // Browser-safe wire types. Private strategy storage lives in store.ts.
 export type Fighter = {
   id: string;
@@ -12,6 +13,7 @@ export type Fighter = {
 };
 
 export type Island = {
+  animeBackground?: AnimeBackground;
   tokenId: string;
   edition: "Genesis" | "Personal";
   weight: number;

@@ -75,13 +75,45 @@ callback used mocked direction, made no provider calls and took **183.14 seconds
 Its film duration is **116.36 seconds**. This acceptance publication is local;
 the token has not been approved onchain.
 
-Current checks: 18 studio/transport tests; 15 manifest/admission/configuration
+Signature-kit checks: 18 studio/transport tests; 16 manifest/admission/configuration
 tests; 9 director/cost tests; 3 input compiler tests; 19 database lifecycle tests
 including custom/default/automatic loadouts; 7 engine policy/name tests; both
 12-frame golden sets; desktop/mobile preview and keyboard picker flows; API/web
 strict type checks and production builds; eight release preflight checks. Public
 source scans found no secrets. Audio synthesis and music remain unchanged. The
 earlier verification and cost sections below describe the preceding release.
+
+## Single-background functional release · 2026-10-29
+
+The user approved using the existing Brookstone Ring #195 anime backdrop to
+finish functionality. The new `anime-backgrounds-v1.json` catalogue supplies that
+one reviewed scene to all 898 islands. It preserves the complete weighted draw,
+pool hash, selected terrain profiles and hosting rewards. Tournament and film
+pages identify shared artwork; the referee instructions explicitly use the
+selected island's profile and ignore the artwork's source island.
+
+Each input freezes the background path, checksum, dimensions, source island and
+profile hash. Rendering checks the exact bytes before the director can be called,
+then publishes that same provenance in `film.json` and `media-policy.json`.
+Future reviewed per-island overrides affect new inputs only. The rules manifest
+binds the background selection policy rather than the mutable catalogue, so
+adding those cosmetic assets does not require another contract deployment.
+The engine remains **1.1.0** with its existing lock and golden sets unchanged.
+
+Verification covers all 898 unchanged island records; exact frozen input hashes
+before/after a catalogue override; checksum, path and profile refusals before
+direction; the existing 16 manifest/admission checks and three input checks;
+desktop/mobile routes, previews and keyboard loadout selection; API/web strict
+type checks and production builds. The complete offline callback consumed the
+actual Base #1000001445 studio publication alongside regression fixtures, rendered
+both audio variants in **177.67 seconds**, and verified all twelve publication
+files. Duration **116.36 seconds**; **zero provider calls** for this check.
+All **nine** local release preflight checks pass. Launch review correctly remains
+closed while contract addresses and live acceptance are outstanding.
+
+The functional release uses one background. Generating unique artwork for all
+**898 islands** remains the final artwork task, separate from the live rollout
+below. Bulk generation has not been started or scheduled.
 
 ## Implemented
 

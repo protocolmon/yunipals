@@ -2,6 +2,7 @@ import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Crown, Swords } from "lucide-react";
+import type { AnimeBackground } from "@protopals/yunipals-market-core/anime";
 import { ArenaLoading } from "./ArenaFeedback";
 import {
   ArenaBattleReview,
@@ -44,6 +45,7 @@ export function ArenaFilm({
     queryFn: ({ signal }) =>
       arenaRequest<{
         chapters: Array<{ id: string; t: number; winnerAt: number }>;
+        background?: AnimeBackground;
       }>(`/tournaments/${id}/artifacts/film.json`, undefined, signal),
     enabled: deployment.kind === "anime" && media.data?.state === "ready",
     staleTime: Infinity
@@ -212,6 +214,9 @@ export function ArenaFilm({
               : "Three fights · 24 seconds. The film includes the results."}
           </p>
           <p role="status" className="text-sm text-muted">
+            {clock.data?.background?.mode === "shared-preview"
+              ? "Shared arena artwork · selected island rules and hosting rewards apply. "
+              : ""}
             {media.data.payoutsReleased
               ? "Payouts are unlocked. Recipients can claim their USDC."
               : "Video published. Payouts are unlocking on Base…"}

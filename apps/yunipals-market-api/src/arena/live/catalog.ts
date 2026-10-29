@@ -9,6 +9,10 @@ import {
 } from "@protopals/yunipals-market-core/arena";
 import { IDENTITY_POLICY_HASH, IDENTITY_MODEL } from "./identityAnalysis";
 import {
+  ANIME_BACKGROUND_POLICY,
+  loadAnimeBackgroundCatalog
+} from "./animeBackgrounds";
+import {
   ANIME_DIRECTOR_MODEL,
   ANIME_DIRECTOR_RESERVE,
   ANIME_DIRECTOR_POLICY
@@ -153,13 +157,14 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
     ...base.rules,
     refereeInstructions:
       base.rules.refereeInstructions +
-      "\nKnown techniques are cosmetic names for the fighter's usual attacks; they grant no damage, energy, timing or defensive effect."
+      "\nKnown techniques are cosmetic names for the fighter's usual attacks; they grant no damage, energy, timing or defensive effect." +
+      "\nThe island's animeBackground records cosmetic artwork only; use the selected island's profile for terrain rules, never the artwork's source island."
   };
   const manifest = {
     ...base.manifest,
-    version: "anime-rules-v2",
+    version: "anime-rules-v3",
     rules,
-    inputCompilerVersion: "anime-loadout-input-v2",
+    inputCompilerVersion: "anime-loadout-background-input-v3",
     identityPolicy:
       "anime-fighter-v1: curator-reviewed identity, current Base traits and SHA-256-verified manifests and sprites; approval follows the token",
     supportedNftCollections: {
@@ -178,6 +183,7 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
       engineSha256: engine.sha256,
       recipeId: "anime-fighter-v2",
       recipeSha256: recipeV2.sha256,
+      backgroundPolicy: ANIME_BACKGROUND_POLICY,
       director: {
         policy: ANIME_DIRECTOR_POLICY,
         provider: "openrouter",
@@ -193,6 +199,7 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
   };
   return {
     ...base,
+    islands: loadAnimeBackgroundCatalog(root, base.islands),
     rules,
     manifest,
     rulesHash: `0x${sha256(canonicalJson(manifest))}` as Hex

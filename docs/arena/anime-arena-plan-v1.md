@@ -1,6 +1,6 @@
 # Anime Arena implementation plan v1
 
-Status on 2026-10-28: economics, timing, rejection visibility, transfer rule and curator key
+Status on 2026-10-29: economics, timing, rejection visibility, transfer rule and curator key
 approved (section 14). Contracts, indexer support, API, website, studio and renderer
 are implemented; the runtime is installed and privately rehearsed on the indexer
 server. Contracts, website and public anime services remain undeployed. Current verification and remaining live
@@ -352,8 +352,9 @@ onchain hash, before use (same pattern as `verifyPublicationFile`).
   published engine build used by the website's live mode.
 - Published by the studio `publish` command as root via rsync, files 0644. Add the
   directory to `ops/arena/backup_policy.py` so it is in the encrypted storage-box backup.
-- DNS: A/AAAA records for the subdomain to this server (Hetzner `91.98.159.219`,
-  `2a01:4f8:c17:40ff::1`).
+- DNS: point the A record at the production indexer server, `yunipals-main`
+  (`168.119.172.10`). Add AAAA only after verifying that server's IPv6 address.
+  The development/preview server is separate.
 
 ### 7.5 Signature attack kits and the player loadout
 
@@ -409,6 +410,31 @@ of the event's kind → code-drawn `look.attackKind`.
 Cost: 3 windup images per fighter at sponsorship (subscription, or ~$0.10–0.50 at API
 medium quality), the one-time species library, and a few hundred extra referee input
 tokens per tournament. Per-battle media cost stays at zero.
+
+### 7.6 Island artwork: one shared scene first
+
+The user approved completing functionality with **one shared anime background** on
+2026-10-29. Use the reviewed Brookstone Ring #195 scene already included in engine
+1.1.0. Generating unique artwork for all **898 islands** is the final artwork task;
+it is not a prerequisite for the functional release or controlled pilot.
+
+The VRF draw, pool hash, 898 island profiles, terrain rules and island-owner rewards
+remain unchanged. The website identifies the film's artwork as shared, alongside
+the actual selected island. It must not present #195 as the winner of another
+island's draw or replace the selected island's combat profile.
+
+`anime-backgrounds-v1.json` contains a reviewed shared fallback and an initially empty
+`islands` override map. Each background records its version, mode, asset path, SHA-256,
+dimensions, source island and source profile hash. The compiler freezes that exact
+record in `input.island.animeBackground`; the worker verifies the image bytes before
+direction, and publishes the record in `film.json` and `media-policy.json`. Old jobs
+retain their frozen record when the catalogue changes.
+
+The final image batch adds reviewed overrides under
+`islands/v1/<tokenId>/arena.<sha8>.webp`. Every override must match its island's exact
+profile hash and use the fixed anime assets origin. The rules hash binds the selection
+policy rather than the mutable artwork catalogue, so publishing those cosmetic
+overrides does not require a contract redeployment. No per-battle image call is added.
 
 ## 8. Market API (`apps/yunipals-market-api/src/arena`)
 

@@ -2,6 +2,16 @@
 export const ANIME_BASE_COLLECTION =
   "0x98433df878e8c898cb907345c3a7756e5f72240f" as const;
 export const ANIME_ASSETS_ORIGIN = "https://assets-anime.yunipals.com";
+export type AnimeBackground = {
+  version: "anime-background/v1";
+  mode: "shared-preview" | "island";
+  file: string;
+  sha256: string;
+  w: number;
+  h: number;
+  sourceIslandTokenId: string;
+  sourceProfileSha256: string;
+};
 export const ANIME_STATUSES = [
   "None",
   "Applied",

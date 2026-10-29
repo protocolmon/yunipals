@@ -22,7 +22,8 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [],
   requests = [];
 page.on("pageerror", (error) => errors.push(error.message));
-let state = "Applied";
+let state = "Applied",
+  backgroundMode = "shared-preview";
 const fighter = () => ({
   tokenId: "1",
   status: state,
@@ -67,9 +68,35 @@ await page.route("**/api/**", async (route) => {
   else if (path === "/rules")
     body = {
       rulesHash: `0x${"b".repeat(64)}`,
-      manifest: { version: anime ? "anime-rules-v2" : "arena-mainnet-input-v1" }
+      manifest: { version: anime ? "anime-rules-v3" : "arena-mainnet-input-v1" }
     };
   else if (path === "/tournaments") body = { items: [], nextCursor: null };
+  else if (path === "/tournaments/93")
+    body = {
+      id: "93",
+      phase: "strategies",
+      seats: [],
+      submittedSeats: [],
+      deadline: Math.floor(Date.now() / 1000) + 86400,
+      serverTime: Math.floor(Date.now() / 1000),
+      islandId: "1",
+      requestId: "3",
+      strategies: null,
+      winners: null
+    };
+  else if (path === "/tournaments/93/context")
+    body = {
+      island: {
+        tokenId: "1",
+        name: "Selected island #1",
+        image: "https://assets-anime.yunipals.com/island-fixture.webp",
+        traits: { biome: "Ancient Grounds" },
+        profile: { geometry: "A pillared court." },
+        animeBackground: { mode: backgroundMode }
+      },
+      roster: [],
+      rules: { combat: { terrainPolicy: "Selected island terrain." } }
+    };
   else if (path === "/fighters")
     body = {
       items: [fighter()],
@@ -133,6 +160,25 @@ try {
     .waitFor();
   await page.getByText(/Approval and fighter art follow the NFT/).waitFor();
   await page.getByText(/Choose two before locking your strategy/).waitFor();
+  await page
+    .getByText(/Anime films currently use one shared arena backdrop/)
+    .waitFor();
+  await page.goto(`${app.origin}/arena/anime/93`);
+  await page.getByRole("heading", { name: "Selected island #1" }).waitFor();
+  await page.getByText(/The film uses shared arena artwork/).waitFor();
+  assert.equal(await page.getByText("Brookstone Ring #195").count(), 0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: join(output, "shared-island-mobile.png"),
+    fullPage: true
+  });
+  backgroundMode = "island";
+  await page.reload();
+  await page.getByRole("heading", { name: "Selected island #1" }).waitFor();
+  assert.equal(
+    await page.getByText(/The film uses shared arena artwork/).count(),
+    0
+  );
   await page.goto(`${app.origin}/arena/anime/studio`);
   await page.getByRole("link", { name: "Base Yunipal #1" }).waitFor();
   await page
@@ -275,6 +321,7 @@ try {
           "all five token states for non-owner",
           "approved preview and mobile overflow",
           "rules and transfer policy",
+          "shared arena artwork with the selected island's rules and rewards",
           "three signature kit canvas previews and cosmetic loadout rules",
           "keyboard 2-of-3 defaults, selection limit and submitted loadout"
         ],

@@ -87,6 +87,14 @@ export function ArenaRulesPage() {
             powers. The island resident stays off the fighting surface and does
             not attack.
           </p>
+          {deployment.kind === "anime" && (
+            <p className="mt-3 text-muted">
+              Anime films currently use one shared arena backdrop while unique
+              artwork is prepared for every island. The selected island still
+              determines terrain rules and the hosting reward. Artwork does not
+              change the result.
+            </p>
+          )}
         </section>
         <section className="rounded-card border border-line bg-white p-6">
           <h2 className="text-xl font-bold">Write your own strategy</h2>
@@ -124,7 +132,8 @@ export function ArenaRulesPage() {
             ties use the published priority shown before strategy submission.
           </p>
           <p className="mt-3 text-muted">
-            The bracket and champion are fixed before producing the 24-second
+            The bracket and champion are fixed before producing the{" "}
+            {deployment.kind === "anime" ? "full tournament" : "24-second"}{" "}
             film. Video imperfections do not change the result. All rewards
             unlock after the completed film is published and the payout
             transaction is confirmed. A technical video delay keeps those

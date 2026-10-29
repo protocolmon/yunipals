@@ -11,6 +11,7 @@ import { LoaderCircle } from "lucide-react";
 import { useAccount } from "wagmi";
 import type {
   AnimeKnownKit,
+  AnimeBackground,
   AnimeLoadout
 } from "@protopals/yunipals-market-core/anime";
 import type {
@@ -68,6 +69,7 @@ type Context = {
     image: string;
     traits: Record<string, string>;
     profile: Record<string, unknown>;
+    animeBackground?: AnimeBackground;
   } | null;
   roster: Array<{
     id: string;
@@ -878,6 +880,14 @@ export function LiveArenaPage() {
                   <h3 className="text-xl font-bold">
                     {context.data.island.name}
                   </h3>
+                  {context.data.island.animeBackground?.mode ===
+                    "shared-preview" && (
+                    <p className="mt-3 text-sm text-muted">
+                      The film uses shared arena artwork while island-specific
+                      scenes are prepared. Your selected island’s terrain rules
+                      and hosting rewards still apply.
+                    </p>
+                  )}
                   <dl className="mt-4 grid grid-cols-2 gap-4">
                     {Object.entries(context.data.island.traits).map(
                       ([key, value]) => (

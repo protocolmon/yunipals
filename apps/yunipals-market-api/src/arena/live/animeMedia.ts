@@ -21,6 +21,7 @@ import {
 } from "../../../../yunipals-anime-engine/src/director";
 import { animeFighterName } from "../../../../yunipals-anime-engine/src/fighterNames.js";
 import { AnimeFighters } from "./animeFighters";
+import { frozenAnimeBackground } from "./animeBackgrounds";
 import type { LiveFrozenInput } from "./input";
 import {
   ANIME_DIRECTOR_POLICY,
@@ -136,6 +137,10 @@ export function animeMediaBuilder(
   }>
 ) {
   return async (job: string, input: LiveFrozenInput, candidate: unknown) => {
+    const { background, bytes: backgroundBytes } = await frozenAnimeBackground(
+      repository,
+      input.island
+    );
     const renderStarted = Date.now();
     const engine = join(repository, "apps/yunipals-anime-engine");
     const assets = join(job, "assets");
@@ -226,10 +231,14 @@ export function animeMediaBuilder(
       }
     }
     for (const file of await readdir(join(engine, "static/assets")))
-      await copyFile(join(engine, "static/assets", file), join(assets, file));
+      if (file !== "bg-arena.webp")
+        await copyFile(join(engine, "static/assets", file), join(assets, file));
+    await writeFile(join(assets, "bg-arena.webp"), backgroundBytes, {
+      mode: 0o600
+    });
     sprites["bg-arena"] = {
       file: "bg-arena.webp",
-      sha256: digest(await readFile(join(assets, "bg-arena.webp")))
+      sha256: background.sha256
     };
     const tournament = exportAnimeTournament(
       input,
@@ -338,6 +347,7 @@ export function animeMediaBuilder(
       throw new Error("Anime audio variants differ in duration.");
     const film = await readFile(join(job, "public/film.mp4"));
     await json(join(job, "public/film.json"), {
+      background,
       sha256: digest(film),
       outcomeSha256: tournament.source.outcomeSha256,
       inputSha256: tournament.source.inputSha256,
@@ -364,6 +374,7 @@ export function animeMediaBuilder(
       director: direction?.receipt ?? null
     });
     await json(join(job, "public/media-policy.json"), {
+      background,
       version: "anime-engine/v1",
       authoritative: "published film and frozen referee outcome",
       engineVersion: receipt.engineVersion,

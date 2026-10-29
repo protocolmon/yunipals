@@ -115,6 +115,31 @@ export async function animeReleasePreflight(repository = root) {
     )
       throw new Error("Package, engine and golden browser pins differ.");
   });
+  await verify("Reviewed shared arena artwork", async () => {
+    const catalog = await json(
+      join(repository, "docs/arena/anime-backgrounds-v1.json")
+    );
+    const background = catalog.fallback;
+    const assignments = await json(
+      join(repository, "docs/islands/arena-reveal-results-v1/assignments.json")
+    );
+    const source = assignments.assignments.find(
+      (i) => i.tokenId === background?.sourceIslandTokenId
+    );
+    if (
+      catalog.version !== "anime-background-catalog/v1" ||
+      background?.mode !== "shared-preview" ||
+      source?.profileSha256 !== background.sourceProfileSha256 ||
+      background.sha256 !== engine.files["static/assets/bg-arena.webp"] ||
+      background.file !== `engine/${engine.version}/static/assets/bg-arena.webp`
+    )
+      throw new Error(
+        "Shared artwork differs from the reviewed source or frozen engine asset."
+      );
+    files["docs/arena/anime-backgrounds-v1.json"] = hash(
+      await readFile(join(repository, "docs/arena/anime-backgrounds-v1.json"))
+    );
+  });
   await verify("Approved economics and timing", async () => {
     const economics = await json(
       join(repository, "contracts/arena/config/anime-economics.json")
@@ -204,9 +229,14 @@ export async function animeReleasePreflight(repository = root) {
       const bytes = await readFile(join(repository, path));
       if (
         name === "arena-anime-media" &&
-        !bytes.includes(Buffer.from("claude-choreography/v5"))
+        (!bytes.includes(Buffer.from("claude-choreography/v5")) ||
+          !bytes.includes(
+            Buffer.from("Frozen anime background checksum failed.")
+          ))
       )
-        throw new Error("Media build predates the Claude integration.");
+        throw new Error(
+          "Media build predates the director or frozen background integration."
+        );
       files[path] = hash(bytes);
     }
   });

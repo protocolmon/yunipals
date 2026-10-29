@@ -30,7 +30,7 @@ by a service. Batches are signed from that wallet's own keystore.
    addresses/blocks and the rules hash in `docs/arena/anime-deployment.json`.
 
 Run `node scripts/anime/preflight.mjs --output /tmp/anime-release-review.json` after
-building. It checks frozen engine/recipe hashes, browser/golden pins, economics,
+building. It checks frozen engine/recipe hashes, browser/golden pins, shared artwork, economics,
 closed pilot defaults, service credential isolation and compiled anime entrypoints.
 It does not load credentials or change services/contracts. `--launch` additionally
 refuses missing deployment addresses/blocks/rules and outstanding live acceptance.
@@ -59,6 +59,21 @@ Create `/var/www/assets-anime.yunipals.com` and
 0755; private studio/media paths belong to the service user and are not web roots.
 The assets server permits GET/HEAD, approved website origins and hash-based immutable
 caching. Publish the frozen recipe and versioned engine bundle with their locks too.
+
+Complete the functional release with the single reviewed Brookstone Ring #195
+background in `docs/arena/anime-backgrounds-v1.json`. Keep its `islands` map empty
+for now. All 898 islands remain eligible for the normal draw, terrain and hosting
+reward; the website labels the film artwork as shared. The compiler freezes the
+chosen asset's source/path/hash in each input and the worker checks those bytes
+before direction. Verify the matching provenance in `film.json` and
+`media-policy.json` during the pilot.
+
+Unique anime artwork for all 898 islands is the **last artwork step**, after
+functionality. Publish reviewed hash-named files under
+`islands/v1/<tokenId>/arena.<sha8>.webp` and add overrides matching the existing
+island profile hashes. Retain earlier assets for frozen jobs. Reload the catalogue
+for new tournaments; this cosmetic update does not require redeploying contracts
+or changing combat rules. Bulk image generation has not been started or scheduled.
 
 The studio uses the operator's ChatGPT-authenticated Codex CLI and no API key. Confirm
 commercial subscription-generated image terms before launch; the implementation does
