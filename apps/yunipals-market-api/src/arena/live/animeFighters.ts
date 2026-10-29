@@ -67,7 +67,7 @@ export class AnimeFighters {
     readonly registry: Address,
     readonly origin: string,
     private readonly fetcher: typeof fetch = fetch,
-    private readonly recipeSha256?: string | Record<string, string>
+    private readonly recipeSha256?: string
   ) {}
   async status(tokenId: string, blockNumber?: bigint) {
     const [status, recipeVersion, applications, manifestHash] =
@@ -169,21 +169,15 @@ export class AnimeFighters {
         "The anime arena accepts Base OG Yunipals only."
       );
     const state = await this.status(nft.tokenId, blockNumber);
-    if (state.status !== "Approved" || ![1, 2].includes(state.recipeVersion))
+    if (state.status !== "Approved" || state.recipeVersion !== 2)
       throw new ArenaRequestError(
         409,
         "This Base Yunipal needs curator approval before entering the anime arena."
       );
     const manifest = await this.manifest(nft.tokenId, state.manifestHash);
-    const recipe =
-      typeof this.recipeSha256 === "string"
-        ? manifest.recipe.id === "anime-fighter-v1"
-          ? this.recipeSha256
-          : undefined
-        : this.recipeSha256?.[manifest.recipe.id];
     if (
-      manifest.recipe.id !== `anime-fighter-v${state.recipeVersion}` ||
-      (this.recipeSha256 && (!recipe || manifest.recipe.sha256 !== recipe))
+      manifest.recipe.id !== "anime-fighter-v2" ||
+      (this.recipeSha256 && manifest.recipe.sha256 !== this.recipeSha256)
     )
       throw new ArenaRequestError(
         409,

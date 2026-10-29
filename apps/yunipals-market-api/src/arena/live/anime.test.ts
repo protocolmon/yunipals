@@ -171,10 +171,10 @@ function setup(
     chainHash?: string;
     corruptSprite?: boolean;
     recipeVersion?: number;
-    supportedRecipes?: Record<string, string>;
+    recipeSha256?: string;
   } = {}
 ) {
-  const m = options.manifest ?? manifest();
+  const m = options.manifest ?? kitManifest();
   const reads: Array<{ functionName: string; blockNumber?: bigint }> = [];
   const urls: string[] = [];
   const client = {
@@ -210,7 +210,7 @@ function setup(
       registry,
       origin,
       fetcher,
-      options.supportedRecipes
+      options.recipeSha256
     ),
     m,
     reads,
@@ -222,28 +222,17 @@ const nft = {
   collection: ANIME_BASE_COLLECTION,
   tokenId: "1234"
 };
-test("both committed recipes stay admissible and v2 sheets are verified by hash", async () => {
-  const m = kitManifest(),
-    recipes = {
-      "anime-fighter-v1": "b".repeat(64),
-      "anime-fighter-v2": "b".repeat(64)
-    };
-  const old = setup({ supportedRecipes: recipes });
-  assert.equal(
-    (await old.fighters.eligible(nft, 90n)).recipe.id,
-    "anime-fighter-v1"
-  );
-  const v2 = setup({ manifest: m, supportedRecipes: recipes });
+test("launch accepts fresh v2 fighters and refuses obsolete recipe-v1 approvals", async () => {
+  const m = kitManifest();
+  const v2 = setup({ manifest: m, recipeSha256: "b".repeat(64) });
   assert.deepEqual(await v2.fighters.eligible(nft, 90n), m);
   await v2.fighters.manifest("1234", animeDigest(m), true);
   assert.ok(
     v2.urls.some((url) => url.includes("species/elements-nature/impact"))
   );
-  const mismatched = setup({ manifest: m, recipeVersion: 1 });
-  await assert.rejects(
-    mismatched.fighters.eligible(nft, 90n),
-    /unsupported recipe/
-  );
+  const old = setup({ manifest: manifest() });
+  await assert.rejects(old.fighters.eligible(nft, 90n), /curator approval/);
+  assert.equal(old.urls.length, 0);
   const corrupt = setup({ manifest: m, corruptSprite: true });
   await assert.rejects(
     corrupt.fighters.sheetBytes(m.kits![0]!.impact),

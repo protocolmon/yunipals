@@ -18,11 +18,10 @@ vocabulary. Per-battle inference cost must not rise beyond the existing director
   winners. Kits are presentation only.
 - No new per-battle provider calls. The only inference change is a `kit` field in the
   existing Opus director response and a few hundred extra tokens in the referee input.
-- Approved v1 fighters keep their committed manifest and recipe. Kits arrive as recipe
-  `anime-fighter-v2`; a v1 fighter is upgraded only through a new curator approval with
-  a new manifest hash. Nothing is deployed yet, so if `AnimeFighterRegistry.approve`
-  cannot re-approve an `Approved` token, add that path now (or document revoke →
-  approve as the upgrade route) rather than after deployment.
+- Scope update from the user (2026-10-29): the feature is not live. Launch with
+  fresh recipe-v2 fighters and remove obsolete v1 admission; do not implement an
+  Approved-to-Approved registry upgrade or a v1 migration. Keep historical
+  prototype assets only as visual regression references.
 - Code-drawn attacks stay as the fallback for any fighter, kind or event without a kit.
 - Engine output stays deterministic. Hit stop and the camera punch change the timing
   of every film, so bump the engine minor version and regenerate both golden-frame sets

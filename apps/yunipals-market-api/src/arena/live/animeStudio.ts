@@ -92,9 +92,8 @@ if (operation === "prepare") {
   if (!isAddress(input.registry) || /^0x0{40}$/i.test(input.registry))
     throw new Error("Registry address required");
   const ids = input.ids.map((id) => BigInt(animeTokenId(id)));
-  const recipeVersion = input.recipeVersion ?? 1;
-  if (![1, 2].includes(recipeVersion))
-    throw new Error("Unsupported approval recipe");
+  const recipeVersion = input.recipeVersion ?? 2;
+  if (recipeVersion !== 2) throw new Error("Unsupported approval recipe");
   const data =
     input.functionName === "approve"
       ? encodeFunctionData({

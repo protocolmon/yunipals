@@ -142,11 +142,11 @@ class StudioTest(unittest.TestCase):
             (folder / 'export' / 'private.env').write_text('should-never-be-published')
             studio.publish(lab, published)
             self.assertFalse((published / 'fighters/v1/1234/private.env').exists())
-            self.assertTrue((published / 'fighters/v1/1234/manifest.json').is_file())
+            self.assertFalse((published / 'fighters/v1/1234/manifest.json').exists())
             data['identity']['text'] = 'Changed after review'
             studio.write(folder / 'fighter.json', data)
             with self.assertRaises(ValueError): studio.export(folder)
-            with self.assertRaises(ValueError): studio.publish(lab, published)
+            self.assertEqual(studio.publish(lab, published)['published'], [])
 
 
 if __name__ == '__main__': unittest.main()

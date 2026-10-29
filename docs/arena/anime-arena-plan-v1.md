@@ -360,8 +360,9 @@ onchain hash, before use (same pattern as `verifyPublicationFile`).
 Validated on 2026-10-29 with a Cedar/Zephyr experiment (review page `/v3-attacks/` on
 the preview site; brief for implementation in `anime-attack-kits-brief-v1.md`):
 painted kits plus free engine timing made the attacks read as anime hits at zero
-per-battle cost. This is now part of the recipe (as recipe v2; approved v1 fighters
-keep their committed recipe until re-approved).
+per-battle cost. This is now part of recipe v2. The feature is not live: launch starts with fresh
+v2 fighters, with no v1 migration or Approved-to-Approved upgrade path. Historical
+prototype fighters remain visual regression references only.
 
 **Kit** = one named attack with its own art. Three per fighter, generated at
 sponsorship time:

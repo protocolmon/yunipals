@@ -27,12 +27,12 @@ Painted art replaces procedural projectiles/strikes for the selected kit. Missin
 kits retain the deterministic procedural fallback. Existing music and synthesized
 SFX are unchanged.
 
-The curator can upgrade an Approved fighter only with a higher recipe version and
-a new hash. Publication retains the original content-addressed manifest and assets,
-so previously frozen films continue to resolve their committed v1 files. A loadout
-changes presentation vocabulary only; it grants no combat effect.
+The feature starts with freshly prepared recipe-v2 fighters. There is no approved-v1
+migration or registry upgrade path. Historical prototype art remains a test
+reference only. A loadout changes presentation vocabulary and grants no combat
+effect.
 
-Studio sequence (use a separate private lab for a v1-to-v2 upgrade):
+Studio sequence for a fresh v2 fighter:
 
 ```sh
 python3 scripts/anime/studio.py --lab PRIVATE_LAB prepare TOKEN --recipe anime-fighter-v2
@@ -54,5 +54,5 @@ Before `review ... poses`, review the identity and clear `identityDraft` in the
 private fighter record. `review TOKEN reroll KIT_ID.windup` archives that windup;
 `review TOKEN reroll species:projectile` (or strike/impact) rerolls unpublished
 shared sheets under the library lock. Published library art cannot be rerolled.
-Approval batches carry their recipe version; v1 and v2 use separate batches.
+Approval batches carry recipe version 2.
 The studio only emits unsigned approval calldata.

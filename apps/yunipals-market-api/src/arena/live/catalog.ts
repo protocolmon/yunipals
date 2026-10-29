@@ -143,12 +143,6 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
       "utf8"
     )
   ) as { version: string; sha256: string };
-  const recipe = JSON.parse(
-    readFileSync(
-      join(root, "docs/arena/anime-recipe-v1/recipe-lock.json"),
-      "utf8"
-    )
-  ) as { sha256: string };
   const recipeV2 = JSON.parse(
     readFileSync(
       join(root, "docs/arena/anime-recipe-v2/recipe-lock.json"),
@@ -176,10 +170,6 @@ export function loadAnimeArenaCatalog(root: string, registry: string) {
       engineSha256: engine.sha256,
       recipeId: "anime-fighter-v2",
       recipeSha256: recipeV2.sha256,
-      recipes: {
-        "anime-fighter-v1": recipe.sha256,
-        "anime-fighter-v2": recipeV2.sha256
-      },
       director: {
         policy: ANIME_DIRECTOR_POLICY,
         provider: "openrouter",

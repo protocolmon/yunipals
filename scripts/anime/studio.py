@@ -213,7 +213,8 @@ def _generate(folder, stage=None, only=None):
             if approval["sha256"] != digest((raw / "idle.png").read_bytes()):
                 raise ValueError("Review the idle before generating the other poses")
             refs.append(raw / "idle.png")
-        prompt = (folder / "prompts" / (pose + ".txt")).read_text()
+        prompt = style["style"] + "\n" + style["poses"][pose] + "\n" + read(folder / "fighter.json")["identity"]["text"]
+        (folder / "prompts" / (pose + ".txt")).write_text(prompt)
         generate_image(out, prompt, refs)
     return {"generated": poses}
 
@@ -234,10 +235,10 @@ def generate_image(out, prompt, refs):
     command = ["codex", "exec", "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
     for ref in refs:
         command += ["--image", str(ref)]
-    command += [prompt]
+    command += ["--", prompt]
     for attempt in range(3):
-        with (out.parent / f"{out.stem}.{attempt}.receipt.jsonl").open("wb") as receipt:
-            result = subprocess.run(command[:2] + ["--json"] + command[2:], env=env, stdout=receipt, stderr=subprocess.DEVNULL, timeout=1200)
+        with (out.parent / f"{out.stem}.{attempt}.receipt.jsonl").open("wb") as receipt, (out.parent / f"{out.stem}.{attempt}.stderr.log").open("wb") as errors:
+            result = subprocess.run(command[:2] + ["--json"] + command[2:], env=env, stdout=receipt, stderr=errors, timeout=1200)
         if result.returncode == 0 and out.is_file():
             from PIL import Image
             with Image.open(out) as image:
@@ -313,7 +314,7 @@ def make_species_sheet(folder, kit, role):
 def kits(folder):
     style, lock = fighter_recipe(folder)
     if style["id"] != "anime-fighter-v2":
-        raise ValueError("Prepare a new recipe v2 job to upgrade a v1 fighter")
+        raise ValueError("This launch requires a freshly prepared recipe v2 fighter")
     if not (folder / "poses-review.json").is_file() or read(folder / "poses-review.json")["poses"] != pose_hashes(folder):
         raise ValueError("Review the nine base poses with review TOKEN poses before stage 3")
     data = read(folder / "fighter.json")
@@ -579,7 +580,7 @@ def copy_public(source, target, destination):
 
 
 def publish(lab, destination):
-    for version in ("anime-fighter-v1", "anime-fighter-v2"):
+    for version in ("anime-fighter-v2",):
         style, lock = recipe(version)
         recipe_target = destination / "recipes" / style["id"]
         for name in [*lock["files"], "recipe-lock.json"]:
@@ -604,6 +605,8 @@ def publish(lab, destination):
     published = []
     for folder in sorted(lab.iterdir()):
         if not folder.is_dir() or not (folder / "export-receipt.json").is_file():
+            continue
+        if read(folder / "export/manifest.json")["recipe"]["id"] != "anime-fighter-v2":
             continue
         tid = token_id(folder.name)
         receipt = read(folder / "export-receipt.json")
@@ -662,10 +665,9 @@ def batch(lab, registry, approving):
         if approving:
             receipt = read(folder / "export-receipt.json")
             manifest = read(folder / "export/manifest.json")
-            version = 2 if manifest["recipe"]["id"] == "anime-fighter-v2" else 1
-            if "recipeVersion" in result and result["recipeVersion"] != version:
-                raise ValueError("Create separate approval batches for each recipe version")
-            result["recipeVersion"] = version
+            if manifest["recipe"]["id"] != "anime-fighter-v2":
+                continue
+            result["recipeVersion"] = 2
             if receipt["fingerprint"] != fingerprint(folder) or "0x"+digest((folder / "export/manifest.json").read_bytes()) != receipt["manifestHash"]:
                 raise ValueError("Export needs review again")
             remote = fetch(f"{ASSETS}/fighters/v1/{tid}/manifest.json", 65536)
@@ -706,7 +708,7 @@ def main():
         if command == "generate":
             part.add_argument("--stage", type=int, choices=[1, 2, 3])
         if command == "prepare":
-            part.add_argument("--recipe", choices=["anime-fighter-v1", "anime-fighter-v2"], default="anime-fighter-v2")
+            part.add_argument("--recipe", choices=["anime-fighter-v2"], default="anime-fighter-v2")
         if command == "review":
             part.add_argument("decision", choices=["idle", "poses", "approve-kit", "approve", "reroll", "reject"])
             part.add_argument("values", nargs="*")
