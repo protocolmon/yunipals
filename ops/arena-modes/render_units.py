@@ -19,6 +19,9 @@ def render(mode, role):
         value = value.replace("/etc/yunipals-anime-arena/openrouter.env", "/etc/yunipals-arena/runware.env")
         if role == "monitor":
             value = value.replace("dist/arena-anime-monitor.mjs", "dist/arena-monitor.mjs")
+            # The DB-only health worker needs the actual admission setting to
+            # report stale capacity while the pilot is enabled.
+            value = value.replace(" ARENA_ENTRIES_ENABLED=false", "")
             value = value.replace("Type=simple", "Type=oneshot")
             value = value.replace("Restart=on-failure\nRestartSec=30\n", "")
             value = value.replace("MemoryMax=512M", "ReadWritePaths=/var/lib/yunipals-arena-modes/video/health\nMemoryMax=512M")
