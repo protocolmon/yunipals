@@ -198,6 +198,20 @@ film publication, matching the production capacity worker's required behavior.
 
 ## Remaining live rollout and acceptance
 
+The user selected browser signing on 2026-10-29. The two-step setup page at
+`/arena/anime/setup` deploys the registry closed, then the arena paused, using a
+pinned public bytecode/rules package. The connected wallet receives the new admin,
+curator and treasury roles. Exact creation data, canonical receipts, runtime code
+and closed initial state are verified; pending hashes survive reloads. Local Base
+fork execution of both actual creation transactions passed. Browser qualification
+covers chain-change review invalidation, both steps, reload recovery, pending hash
+retention and mobile layout; four validation tests cover package tampering,
+creation identity, altered runtime and orphaned receipts.
+
+The assets hostname now resolves to `168.119.172.10`, has a valid HTTPS certificate,
+and serves the frozen engine and recipe-v2 assets. Contracts and anime services
+remain unconfigured until the browser deployment receipts are supplied.
+
 1. Review and sign the registry (applications closed) and arena (entries paused) on
    Base using the admin wallet. The final rules hash and constructor arguments are
    generated **after the real registry address is known**, using `animeDeployment.ts`

@@ -63,6 +63,11 @@ const AnimeStudioPage = lazy(() =>
     default: module.AnimeStudioPage
   }))
 );
+const AnimeSetupPage = lazy(() =>
+  import("@/pages/arena/anime/AnimeSetupPage").then((module) => ({
+    default: module.AnimeSetupPage
+  }))
+);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -277,6 +282,7 @@ function AppContent() {
               </ArenaDeploymentProvider>
             }
           />
+          <Route path="/arena/anime/setup" element={<AnimeSetupPage />} />
           <Route
             path="/arena/anime/:id"
             element={

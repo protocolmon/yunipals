@@ -7,6 +7,29 @@ by a service. Batches are signed from that wallet's own keystore.
 
 ## Prepare and verify
 
+The user selected **browser wallet deployment** on 2026-10-29. Use
+`https://www.yunipals.com/arena/anime/setup` after publishing the reviewed website
+build. No server keystore unlock is needed. The connected wallet becomes the new
+registry owner/curator and arena owner/treasury; the existing admission, referee and
+lobby worker addresses remain unchanged. Review and sign the registry creation,
+then the arena creation. Applications and paid entry start closed. Copy the final
+deployment record back to the operator for service/indexer setup and the pilot.
+
+The public package is `public/arena/anime-deployment-v1.json`, pinned by SHA-256 in
+the browser helper and curated website build. To explicitly regenerate it after
+reviewed Solidity or rules changes, build the contracts, then run
+`node --import tsx ../../scripts/anime/build-browser-deployment.mts` from the market
+API directory and review/update the browser package checksum. The page estimates
+fees, retains sent hashes before waiting, supports manual receipt recovery, and
+verifies the exact creation input, sender, value, canonical block, deployed runtime
+and closed initial state. It computes the arena rules hash from the confirmed
+registry address, without guessing wallet nonces. Restore the same deployment in
+another browser using its actual transaction hashes; never submit another creation
+while a saved transaction is pending.
+
+The server-keystore procedure below remains an alternative for an operator who
+explicitly chooses that signing method; do not use it for this browser deployment.
+
 1. Install the workspace with pinned dependencies. Build the market API and website;
    run the arena Solidity suite and anime tests. Install Python Pillow/numpy and ffmpeg.
    Install Node 24.22.1 and Chromium **151.0.7922.34** (headless shell) under
@@ -59,6 +82,9 @@ Create `/var/www/assets-anime.yunipals.com` and
 0755; private studio/media paths belong to the service user and are not web roots.
 The assets server permits GET/HEAD, approved website origins and hash-based immutable
 caching. Publish the frozen recipe and versioned engine bundle with their locks too.
+DNS and HTTPS were provisioned on `yunipals-main` on 2026-10-29, and the reviewed
+engine 1.1.0 and recipe-v2 assets are publicly reachable. No fighter has been
+approved and no anime application/entry service has been opened by that asset step.
 
 Complete the functional release with the single reviewed Brookstone Ring #195
 background in `docs/arena/anime-backgrounds-v1.json`. Keep its `islands` map empty

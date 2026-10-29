@@ -14,6 +14,7 @@ import { parseArgs } from "node:util";
 import { build } from "vite";
 import { validateBoosterSetup } from "../../src/lib/boosterSetup.ts";
 import { ypalFrontendDeployment } from "./ypal-frontend-deployment.mjs";
+import { animeDeploymentPackageSha256 } from "../../src/lib/animeDeployment.ts";
 
 const { values } = parseArgs({
   options: {
@@ -85,6 +86,13 @@ if (ypalLaunchPackageSha !== undefined) {
   }
 }
 if (values["full-app"]) {
+  if (
+    sha(await readFile(join(app, "public/arena/anime-deployment-v1.json"))) !==
+    animeDeploymentPackageSha256
+  )
+    throw Error(
+      "The anime browser deployment package differs from the reviewed checksum."
+    );
   const metadataUpgrade = await readFile(
     join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
   );
@@ -203,6 +211,7 @@ const assets = [
   ...(values["full-app"]
     ? [
         "arena/rules-v1.json",
+        "arena/anime-deployment-v1.json",
         "images/bitcoin-unidragon-square.webp",
         "images/brandkit/yunipals-logo.png",
         "images/brandkit/yunipals-brandkit.zip",
