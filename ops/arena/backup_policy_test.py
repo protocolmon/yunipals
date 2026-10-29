@@ -69,7 +69,7 @@ class AnimeBackupPolicyTest(unittest.TestCase):
         from backup_policy import anime_backup_files
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            roots = {name: root / name for name in ['assets', 'media', 'studio', 'configuration', 'chromium']}
+            roots = {name: root / name for name in ['assets', 'media', 'studio', 'configuration', 'chromium', 'release']}
             roots['node'] = root / 'node-v24'
             self.assertEqual(anime_backup_files(roots), {})
             roots['configuration'].mkdir()
@@ -78,8 +78,12 @@ class AnimeBackupPolicyTest(unittest.TestCase):
                 if key == 'node': path.write_text('fixture-runtime')
                 else: path.mkdir(exist_ok=True)
             (roots['assets'] / 'manifest.json').write_text('{}')
+            (roots['release'] / 'runtime.tar.gz').write_bytes(b'fixture-release')
+            (roots['release'] / 'release.json').write_text('{}')
             files = anime_backup_files(roots)
             self.assertIn('assets/manifest.json', files)
             self.assertIn('node/node-v24', files)
+            self.assertIn('release/runtime.tar.gz', files)
+            self.assertIn('release/release.json', files)
             (roots['assets'] / 'escape').symlink_to('/etc')
             with self.assertRaises(AssertionError): anime_backup_files(roots)

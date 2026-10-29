@@ -29,7 +29,16 @@ const unitCredentials: Readonly<Record<string, readonly string[]>> = {
   "yunipals-arena-native-execution@referee.service": [
     encryptionKey,
     "execution.key"
-  ]
+  ],
+  "yunipals-anime-arena-api.service": [encryptionKey, "admission.key"],
+  "yunipals-anime-arena-capacity.service": [encryptionKey],
+  "yunipals-anime-arena-client.service": [encryptionKey],
+  "yunipals-anime-arena-control.service": [encryptionKey],
+  "yunipals-anime-arena-lobby.service": [encryptionKey, "operator.key"],
+  "yunipals-anime-arena-media.service": [encryptionKey],
+  "yunipals-anime-arena-monitor.service": [encryptionKey],
+  "yunipals-anime-arena-referee.service": [encryptionKey],
+  "yunipals-anime-arena-settlement.service": [encryptionKey, "referee.key"]
 };
 
 function refuse(): never {

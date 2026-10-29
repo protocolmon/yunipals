@@ -17,6 +17,7 @@ import {
 import type { SourceManifest } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { sourceManifestHash } from "./sources.js";
 import { boundedRpcFetch } from "./rpc-call-deadline.js";
+import { withReviewedLogFloors } from "./rpc-log-floor.js";
 
 const productionEndpoints: Record<number, string> = {
   1: "http://127.0.0.1:19201/unified",
@@ -73,7 +74,8 @@ export async function preflightUnifiedRpc(
   if (!config) return null;
   if (unifiedRpcManifestId(config.profile) !== sourceManifestHash(manifest))
     throw new Error("Unified RPC source manifest differs from review.");
-  const endpoints = options.endpoints ?? productionEndpoints;
+  const endpoints =
+    options.endpoints ?? config.profile.endpoints ?? productionEndpoints;
   const request = options.fetch ?? fetch;
   const diagnostics: Array<Record<string, unknown>> = [];
   for (const [chain, endpoint] of Object.entries(endpoints)) {
@@ -159,7 +161,11 @@ export function unifiedRpcTransport(
   const url = env[`PONDER_RPC_URL_${chainId}`];
   if (!config) return url;
   if (!url) throw new Error("Explicit unified RPC URL required.");
-  return unifiedRpcHttpTransport(url, chainId, "unified_source", env);
+  return withReviewedLogFloors(
+    unifiedRpcHttpTransport(url, chainId, "unified_source", env),
+    config.profile,
+    chainId
+  );
 }
 
 export function unifiedRpcHttpTransport(

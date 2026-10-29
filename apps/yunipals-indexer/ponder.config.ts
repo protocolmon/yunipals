@@ -9,7 +9,7 @@ import { baseRpcUrlOf, bnbRpcUrlOf, polygonRpcUrlOf } from "./lib/rpc.js";
 import { boosterContracts } from "./lib/boosters/config.js";
 import { baseMetadataAbi } from "./lib/metadata/base-abi.js";
 import {
-  arenaSourceDeployments,
+  arenaContractSources,
   animeRegistrySource,
   buildSourceManifest
 } from "./lib/unified/sources.js";
@@ -38,7 +38,7 @@ const polygonRpcUrl = polygonRpcUrlOf();
 if (!ethereumRpcUrl) throw new Error("PONDER_RPC_URL_1 is required");
 const sourceManifest = buildSourceManifest();
 await preflightUnifiedRpc(sourceManifest);
-const arenas = arenaSourceDeployments();
+const { video: arenas, anime: animeArena } = arenaContractSources();
 const animeRegistry = animeRegistrySource();
 const seaport = sourceManifest.sources.find(
   (source) => source.id === "marketplace:bnb:seaport"
@@ -115,6 +115,12 @@ export default createConfig({
       startBlock: arenas.length
         ? Math.min(...arenas.map((deployment) => deployment.startBlock))
         : 0
+    },
+    YunipalsAnimeArena: {
+      chain: "base",
+      abi: arenaAbi,
+      address: animeArena ? animeArena.address : ([] as Address[]),
+      startBlock: animeArena?.startBlock ?? 0
     },
     BnbSeaport: {
       chain: "bnb",

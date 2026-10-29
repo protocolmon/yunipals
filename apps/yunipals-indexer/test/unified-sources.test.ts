@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildSourceManifest,
   arenaSourceDeployments,
+  arenaContractSources,
   sourceManifestHash
 } from "../lib/unified/sources.js";
 import { validateSourceManifest } from "../../../packages/yunipals-indexer-client/src/sources.js";
@@ -12,6 +13,38 @@ import {
 
 const address = `0x${"12".repeat(20)}`;
 const other = `0x${"34".repeat(20)}`;
+
+it("starts anime logs at their own deployment without changing video history", () => {
+  const env = {
+    UNIFIED_ARENA_DEPLOYMENTS: JSON.stringify([
+      { address, startBlock: 50 },
+      { address: other, startBlock: 100 }
+    ]),
+    UNIFIED_ANIME_ARENA: other,
+    UNIFIED_ANIME_REGISTRY: `0x${"56".repeat(20)}`,
+    UNIFIED_ANIME_REGISTRY_START_BLOCK: "99"
+  };
+  expect(arenaContractSources(env)).toEqual({
+    video: [{ address, startBlock: 50 }],
+    anime: { address: other, startBlock: 100 }
+  });
+  expect(() =>
+    arenaContractSources({
+      ...env,
+      UNIFIED_ANIME_ARENA: `0x${"78".repeat(20)}`
+    })
+  ).toThrow("reviewed");
+  expect(() =>
+    arenaContractSources({
+      ...env,
+      UNIFIED_ANIME_REGISTRY: undefined,
+      UNIFIED_ANIME_REGISTRY_START_BLOCK: undefined
+    })
+  ).toThrow("registry");
+  expect(
+    arenaContractSources({ ...env, UNIFIED_ANIME_ARENA: undefined }).video
+  ).toHaveLength(2);
+});
 
 describe("unified source manifest", () => {
   it("includes all ownership chains and explicitly disables unconfigured optional contracts", () => {

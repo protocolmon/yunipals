@@ -1,5 +1,39 @@
 # Anime Arena operations
 
+The confirmed browser contracts are recorded in
+`docs/arena/anime-browser-deployment-confirmed-v1.json`. Their owner/curator is the
+browser deployment wallet; server workers cannot sign owner actions. Use
+`https://www.yunipals.com/arena/anime/pilot` to open applications, apply from the
+pilot NFT wallet, approve the four pinned reviewed manifests, close applications,
+fund the draw and enable the controlled pilot. Paid entry also requires the API's
+explicit pilot wallet allowlist. Keep public entry closed until pilot acceptance.
+
+Each service loads `/etc/yunipals-anime-arena/roles/ROLE.env` with its existing
+role-specific operational database identity and read-only source connection.
+Copy only those two connection settings from the corresponding native Arena
+role. Referee receives OpenAI access; media and capacity receive OpenRouter
+access. Systemd credential trust names each anime unit and its exact key names.
+No owner key is installed in a server worker.
+
+Install the API location in the `api.yunipals.com` HTTPS server and set the
+website's `VITE_ANIME_ARENA_API_URL` to
+`https://api.yunipals.com/api/anime-arena`. The website is hosted separately.
+
+For source staging, keep existing ingestion and observers running. An isolated
+candidate may use four identity-bound loopback endpoints in its reviewed RPC
+profile; do not replace the live profile or bypass preflight. Preserve every
+existing source definition, including per-contract booster deployment blocks.
+Set `UNIFIED_ANIME_ARENA` to give the new arena its own Ponder log filter and
+deployment block, retaining the video history cache. Register the actual Ponder
+build and source definitions, wait for canonical caught-up coverage, review its
+source binding, and only then enable the new operational consumers. Paid replay
+requires its own bounded review; the pilot candidate has no paid replay permit.
+
+Before the encrypted restore drill, retain the exact installed anime release
+archive and checksum record under `/srv/yunipals-anime-arena/recovery`. Backups
+include that release, public artwork, private studio receipts, service configuration,
+media, and the pinned Node/Chromium binaries. Keep restored workers quarantined.
+
 This is a second deployment and service set sharing `yunipals_arena`. All operational
 records retain the existing deployment/incarnation keys. Keep the video source and
 services running. The curator is initially the arena admin wallet and is never loaded

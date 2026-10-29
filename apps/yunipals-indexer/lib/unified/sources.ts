@@ -104,6 +104,25 @@ export function animeRegistrySource(env: Environment = process.env) {
   return { address: address as Address, startBlock: Number(start) };
 }
 
+/** Keep the new arena's log filters independent so Ponder reuses the existing
+ * video history and never scans the anime address before its deployment. */
+export function arenaContractSources(env: Environment = process.env) {
+  const deployments = arenaSourceDeployments(env);
+  const address = env.UNIFIED_ANIME_ARENA?.toLowerCase();
+  if (address === undefined) return { video: deployments, anime: null };
+  const anime = deployments.find(
+    (deployment) => deployment.address === address
+  );
+  if (!anime || !animeRegistrySource(env))
+    throw new Error(
+      "Anime Arena must be a reviewed deployment with its registry."
+    );
+  return {
+    video: deployments.filter((deployment) => deployment !== anime),
+    anime
+  };
+}
+
 function source(
   id: string,
   feature: SourceFeature,

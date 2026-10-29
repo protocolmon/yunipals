@@ -245,7 +245,7 @@ it("shared helper is identical to the reviewed standalone implementation", () =>
   expect(shape(helper(shared)!)).toEqual(shape(helper(standalone)!));
 });
 
-it("generic application delta preserves endpoints and all other transport logic", () => {
+it("deadline delta preserves transport logic around the reviewed endpoint selection", () => {
   const baseline = readFileSync(
     new URL("../lib/unified/rpc-preflight-source-v3.ts", import.meta.url),
     "utf8"
@@ -263,11 +263,52 @@ it("generic application delta preserves endpoints and all other transport logic"
     (context) => {
       const visit: ts.Visitor = (node) => {
         if (
+          ts.isVariableDeclaration(node) &&
+          ts.isIdentifier(node.name) &&
+          node.name.text === "endpoints"
+        ) {
+          expect(node.initializer?.getText(source).replace(/\s+/g, " ")).toBe(
+            "options.endpoints ?? config.profile.endpoints ?? productionEndpoints"
+          );
+          return ts.factory.updateVariableDeclaration(
+            node,
+            node.name,
+            node.exclamationToken,
+            node.type,
+            ts.factory.createBinaryExpression(
+              ts.factory.createPropertyAccessExpression(
+                ts.factory.createIdentifier("options"),
+                "endpoints"
+              ),
+              ts.SyntaxKind.QuestionQuestionToken,
+              ts.factory.createIdentifier("productionEndpoints")
+            )
+          );
+        }
+        if (
           ts.isImportDeclaration(node) &&
           ts.isStringLiteral(node.moduleSpecifier) &&
-          node.moduleSpecifier.text === "./rpc-call-deadline.js"
+          ["./rpc-call-deadline.js", "./rpc-log-floor.js"].includes(
+            node.moduleSpecifier.text
+          )
         )
           return undefined;
+        if (
+          ts.isCallExpression(node) &&
+          ts.isIdentifier(node.expression) &&
+          node.expression.text === "withReviewedLogFloors"
+        ) {
+          expect(
+            node.arguments.map((arg) =>
+              arg.getText(source).replace(/\s+/g, " ")
+            )
+          ).toEqual([
+            'unifiedRpcHttpTransport(url, chainId, "unified_source", env)',
+            "config.profile",
+            "chainId"
+          ]);
+          return node.arguments[0];
+        }
         if (
           ts.isVariableStatement(node) &&
           node.declarationList.declarations.some(

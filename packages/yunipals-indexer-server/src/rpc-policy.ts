@@ -20,6 +20,8 @@ export type UnifiedRpcProfile = {
   coordinatorId: string;
   reviewId?: string;
   manifest: SourceManifest;
+  /** Optional, identity-bound loopback listeners for an isolated source candidate. */
+  endpoints?: Readonly<Record<number, string>>;
   limits: {
     batchCalls: number;
     logRange: number;
@@ -76,7 +78,8 @@ export function validateUnifiedRpcProfile(value: unknown): UnifiedRpcProfile {
     "coordinatorId",
     "manifest",
     "limits",
-    ...(profile.reviewId !== undefined ? ["reviewId"] : [])
+    ...(profile.reviewId !== undefined ? ["reviewId"] : []),
+    ...(profile.endpoints !== undefined ? ["endpoints"] : [])
   ]);
   if (
     profile.version !== 1 ||
@@ -98,6 +101,22 @@ export function validateUnifiedRpcProfile(value: unknown): UnifiedRpcProfile {
   )
     throw new Error("Invalid unified RPC review identity.");
   validateSourceManifest(profile.manifest as SourceManifest);
+  if (profile.endpoints !== undefined) {
+    const endpoints = object(profile.endpoints);
+    exact(endpoints, ["1", "56", "137", "8453"]);
+    const ports = new Set<number>();
+    for (const endpoint of Object.values(endpoints)) {
+      if (typeof endpoint !== "string")
+        throw new Error("Invalid reviewed RPC endpoint.");
+      const match = /^http:\/\/127\.0\.0\.1:([1-9][0-9]{3,4})\/unified$/.exec(
+        endpoint
+      );
+      const port = Number(match?.[1]);
+      if (!match || port < 1024 || port > 65535 || ports.has(port))
+        throw new Error("Invalid reviewed RPC endpoint.");
+      ports.add(port);
+    }
+  }
   const limits = object(profile.limits);
   exact(limits, ["batchCalls", "logRange", "addresses", "topicValues"]);
   integer(limits.batchCalls, 100);

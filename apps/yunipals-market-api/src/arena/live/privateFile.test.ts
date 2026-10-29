@@ -190,6 +190,41 @@ test("all deployed legacy and native credential unit/key combinations remain sup
     });
 });
 
+test("anime services trust only their exact deployed credential names", async (t) => {
+  const roles: Record<string, string[]> = {
+    api: ["admission.key"],
+    capacity: [],
+    client: [],
+    control: [],
+    lobby: ["operator.key"],
+    media: [],
+    monitor: [],
+    referee: [],
+    settlement: ["referee.key"]
+  };
+  for (const [role, keys] of Object.entries(roles)) {
+    for (const name of ["strategy-encryption.key", ...keys])
+      await t.test(`${role}/${name}`, (child) => {
+        const state = systemdFixture(
+          child,
+          `yunipals-anime-arena-${role}.service`,
+          name
+        );
+        assert.equal(readPrivateFile(state.path), syntheticSecret.trim());
+      });
+    if (!keys.includes("admission.key"))
+      await t.test(`${role} refuses admission signing`, (child) => {
+        const state = systemdFixture(
+          child,
+          `yunipals-anime-arena-${role}.service`,
+          "admission.key"
+        );
+        assert.throws(() => readPrivateFile(state.path), refusal);
+        assert.equal(state.dataReads, 0);
+      });
+  }
+});
+
 test("the exact environment directory and direct canonical child path are mandatory", async (t) => {
   for (const variant of [
     "absent",

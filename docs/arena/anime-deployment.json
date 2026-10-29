@@ -1,24 +1,54 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "recipe-v2 kits, loadouts and single shared background verified locally; engine 1.1.0; public deployment pending",
+  "status": "browser contracts deployed closed; pilot page and four reviewed v2 fighters published; isolated native source catching up; paid pilot awaiting wallet applications and source acceptance",
   "chainId": 8453,
-  "registry": null,
-  "registryDeploymentBlock": null,
-  "arena": null,
-  "arenaDeploymentBlock": null,
-  "rulesHash": null,
+  "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
+  "registryDeploymentBlock": 53251773,
+  "arena": "0x576790deff75af86fa638d9a1427e1eee7007094",
+  "arenaDeploymentBlock": 53251781,
+  "rulesHash": "0x5f3e761ba928f464ced77cc645d6e4f8fc112e7cb054dd5e49c5a39ef52c98e1",
   "applicationsOpen": false,
   "entriesOpen": false,
   "initialArtwork": "one reviewed shared scene; actual island draw, terrain and rewards remain unchanged",
   "deferredArtwork": "generate and review unique anime artwork for all 898 islands as the final artwork step",
   "remainingLiveAcceptance": [
     "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
-    "review and sign paused contract deployments from the admin wallet",
+    "encrypted backup restore check including anime assets and pinned runtimes",
     "one unified indexer source/schema transition and parity review",
-    "DNS, TLS, static assets and encrypted backup restore check",
     "commercial subscription artwork terms review",
     "four curator-reviewed Base pilot fighters via the studio",
     "controlled 1 USDC pilot: referee, render, publication, payout release and claim",
     "open applications and entries after pilot acceptance"
-  ]
+  ],
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
+  "websiteDeploymentId": "dpl_AFNcfDaS6uywErDVDX4eUkYe4ENg",
+  "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
+  "apiUrl": "https://api.yunipals.com/api/anime-arena",
+  "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
+  "pilotFighters": [
+    {
+      "tokenId": "1000702255",
+      "manifestHash": "0x21ae742e3288e9d8f79f4aa32d697aaed92512da88d594d91da7727c6903fefc"
+    },
+    {
+      "tokenId": "1000702258",
+      "manifestHash": "0x42f3c0f215884d343b399b2c30898b958d14de36d818eba33f8387912d685893"
+    },
+    {
+      "tokenId": "10003506584",
+      "manifestHash": "0x71031200def3f6a9d0ef6e4f463b484e819e9f4eae2c1ec523f6d39a84b27035"
+    },
+    {
+      "tokenId": "20000002689",
+      "manifestHash": "0x08beeb30c42b630d5817d31a988309b88124eaf040978d3fd2c50239f870bac8"
+    }
+  ],
+  "nativeCandidate": {
+    "releaseId": "0x8259ea139f2f43876accd205ca21685b59ef2d1a5c7b0bf09b171712c894b7de",
+    "schema": "unified_anime_20261029_v4",
+    "buildId": "a93bc48f92",
+    "manifestHash": "0x0f9c8fb8be8ad6f6cd0d73688710a91378e582159c95d036b3ef7dadd96c51e5",
+    "activatedForExistingConsumers": false
+  }
 }

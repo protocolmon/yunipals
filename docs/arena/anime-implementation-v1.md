@@ -8,7 +8,13 @@ Full Claude choreography has since been restored; its comparison film is ready f
 visual review, which remains an explicit launch acceptance item.
 The latest local release adds recipe-v2 kits, the owner loadout picker and engine
 1.1.0. Launch uses fresh v2 fighters only; no registry upgrade or v1 migration.
-**Contracts, public website and anime services have not been deployed or opened.**
+The browser deployment is confirmed on Base: registry
+`0xdbcab53a8e32d43997de252fd49c43ab8df290bf`, arena
+`0x576790deff75af86fa638d9a1427e1eee7007094`. The website has browser setup and
+controlled-pilot pages; artwork HTTPS and four reviewed Base fighter exports are
+published. Applications and paid entry remain closed pending browser signatures.
+The isolated native source is catching up; operational services are staged closed.
+The controlled paid battle and actual production API cost are still pending.
 See `ops/anime-arena/README.md` for the ordered rollout and operator commands.
 `node scripts/anime/preflight.mjs` checks the local release; `--launch` also refuses
 outstanding live acceptance. The generated local review is

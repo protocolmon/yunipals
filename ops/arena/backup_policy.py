@@ -54,6 +54,7 @@ ANIME_BACKUP_ROOTS = {
     'media': '/var/lib/yunipals-anime-arena/media',
     'studio': '/var/lib/yunipals-anime-arena/studio',
     'configuration': '/etc/yunipals-anime-arena',
+    'release': '/srv/yunipals-anime-arena/recovery',
     'chromium': '/srv/yunipals-arena/runtime/chromium-151.0.7922.34',
     'node': '/srv/yunipals-arena/runtime/node-v24.22.1'
 }

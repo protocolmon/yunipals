@@ -9,7 +9,7 @@ User=yunipals-arena
 Group=yunipals-arena
 WorkingDirectory=/srv/yunipals-anime-arena/current/apps/yunipals-market-api
 EnvironmentFile=/etc/yunipals-anime-arena/runtime.env
-EnvironmentFile=/etc/yunipals-anime-arena/database.env
+EnvironmentFile=/etc/yunipals-anime-arena/roles/settlement.env
 LoadCredential=strategy-encryption.key:/etc/yunipals-arena/strategy-encryption.key
 LoadCredential=referee.key:/etc/yunipals-arena/referee.key
 ExecStart=/usr/bin/env ARENA_ADMISSION_KEY_FILE= ARENA_REFEREE_KEY_FILE= ARENA_LOBBY_KEY_FILE= ARENA_EXECUTION_KEY_FILE= ARENA_ENCRYPTION_KEY_FILE=%d/strategy-encryption.key ARENA_EXECUTION_KEY_FILE=%d/referee.key ARENA_ENTRIES_ENABLED=false ARENA_EXECUTION_ROLE=referee /srv/yunipals-arena/runtime/node-v24.22.1 dist/arena-native-execution.mjs

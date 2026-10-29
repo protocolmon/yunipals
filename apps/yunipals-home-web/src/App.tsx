@@ -68,6 +68,11 @@ const AnimeSetupPage = lazy(() =>
     default: module.AnimeSetupPage
   }))
 );
+const AnimePilotPage = lazy(() =>
+  import("@/pages/arena/anime/AnimePilotPage").then((module) => ({
+    default: module.AnimePilotPage
+  }))
+);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -283,6 +288,7 @@ function AppContent() {
             }
           />
           <Route path="/arena/anime/setup" element={<AnimeSetupPage />} />
+          <Route path="/arena/anime/pilot" element={<AnimePilotPage />} />
           <Route
             path="/arena/anime/:id"
             element={
