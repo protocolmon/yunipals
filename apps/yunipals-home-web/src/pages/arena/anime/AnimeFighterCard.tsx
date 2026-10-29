@@ -41,12 +41,15 @@ export function AnimeFighterCard({
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState<string | null>(null),
     [error, setError] = useState<string | null>(null);
+  const apiUrl = environment.sharedArenaApiUrl
+    ? `${environment.sharedArenaApiUrl}/anime`
+    : environment.animeArenaApiUrl;
   const query = useQuery({
-    queryKey: ["anime-fighter", tokenId],
-    enabled: !!environment.animeArenaApiUrl,
+    queryKey: ["anime-fighter", apiUrl, tokenId],
+    enabled: !!apiUrl,
     queryFn: ({ signal }) =>
       arenaRequestAt<FighterResponse>(
-        environment.animeArenaApiUrl,
+        apiUrl,
         `/fighters/${tokenId}`,
         undefined,
         signal
@@ -100,8 +103,10 @@ export function AnimeFighterCard({
       <p className="text-sm text-muted">
         Turn this Base OG Yunipal into a reviewed anime fighter. Applying costs
         Base gas only. Approved entry costs 1 USDC.
+        {environment.sharedArenaApiUrl &&
+          " The first entrant also pays the quoted island draw fee in ETH."}
       </p>
-      {!environment.animeArenaApiUrl ? (
+      {!apiUrl ? (
         <p>Applications are being prepared for launch.</p>
       ) : query.isPending ? (
         <div
