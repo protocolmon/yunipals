@@ -34,7 +34,7 @@ performed using predicted addresses or invented source readiness:
    Required differences from existing mode configuration: `ARENA_CONTRACT_VERSION=2`,
    common confirmed contract and block, each package rules hash,
    `ARENA_MEDIA_KIND`, `ARENA_INDEXER_MODE=unified`, source kind/release, public
-   origin, unique ports 53913/53914 and media directories
+   origin, unique API ports 53915/53916 and media directories
    `/var/lib/yunipals-arena-modes/MODE/media`. Anime alone sets the registry.
    Keep `ARENA_ENTRIES_ENABLED=false`, `ARENA_NEW_LOBBIES_ENABLED=false` and the
    existing pilot wallet allowlist until readiness review. Provider keys remain

@@ -78,3 +78,14 @@ def anime_backup_files(roots=None):
             if path.is_file():
                 result[kind + '/' + str(path.relative_to(root))] = path
     return result
+
+
+def shared_arena_backup_files(roots=None):
+    # Optional until shared configuration exists, then require every recovery
+    # root together. Reuse the same traversal and symlink checks as anime.
+    return anime_backup_files(roots or {
+        'configuration': '/etc/yunipals-arena-modes',
+        'release': '/srv/yunipals-arena-modes/recovery',
+        'videoMedia': '/var/lib/yunipals-arena-modes/video/media',
+        'animeMedia': '/var/lib/yunipals-arena-modes/anime/media'
+    })

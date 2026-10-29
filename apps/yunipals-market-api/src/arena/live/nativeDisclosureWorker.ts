@@ -24,14 +24,14 @@ async function run() {
   const sourcePool = new pg.Pool({
     ...common,
     connectionString: native.databaseUrl,
-    max: 3,
+    max: config.contractVersion === 2 ? 2 : 3,
     application_name: "arena_native_disclosure_source",
     options: "-c default_transaction_read_only=on"
   });
   const pool = new pg.Pool({
     ...common,
     connectionString: config.databaseUrl,
-    max: 4,
+    max: config.contractVersion === 2 ? 2 : 4,
     application_name: "arena_native_disclosure"
   });
   let stopped = false;

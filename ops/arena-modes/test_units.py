@@ -33,6 +33,10 @@ class SharedArenaUnitSecurityTest(unittest.TestCase):
                     self.assertIn("ProtectSystem=strict", value)
                     self.assertIn("ProtectHome=true", value)
                     self.assertNotIn("deployer", value)
+                    if mode == "video" and role == "monitor":
+                        self.assertIn("Type=oneshot", value)
+                        self.assertNotIn("anime-monitor", value)
+                        self.assertIn("ReadWritePaths=/var/lib/yunipals-arena-modes/video/health", value)
 
 
 if __name__ == "__main__":

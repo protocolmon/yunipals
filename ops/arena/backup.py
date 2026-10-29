@@ -19,7 +19,7 @@ import subprocess
 import tarfile
 import tempfile
 
-from backup_policy import atomic_json, dump_tables, expired_snapshots, valid_prune_files, anime_backup_files
+from backup_policy import atomic_json, dump_tables, expired_snapshots, valid_prune_files, anime_backup_files, shared_arena_backup_files
 
 
 def interrupted(signum, frame):
@@ -216,6 +216,7 @@ try:
                     'databaseTables': dump_tables(backup.run(['pg_restore', '--list', str(database_dump)])),
                     'mediaFiles': {str(p.relative_to(media)): store_object(p, 'media', temporary) for p in files},
                     'animeFiles': {name: store_object(path, 'anime', temporary) for name, path in anime_backup_files().items()},
+                    'sharedArenaFiles': {name: store_object(path, 'anime', temporary) for name, path in shared_arena_backup_files().items()},
                     'keys': keys, 'recovery': recovery,
                     'islandsBackup': json.loads(metadata_backup.read_text()),
                     'restoreRule': 'Keep all workers stopped. Restore quarantined. Compare canonical chain and provider tasks before resuming. Never generate replacement UUIDs for missing or uncertain jobs.'}
@@ -254,7 +255,7 @@ try:
                         assert content == (private / member.name).read_bytes()
                         if member.name == 'strategy-encryption.key':
                             (temporary / member.name).write_bytes(content)
-                for value in [*manifest['mediaFiles'].values(), *manifest.get('animeFiles', {}).values(), *recovery.values()]:
+                for value in [*manifest['mediaFiles'].values(), *manifest.get('animeFiles', {}).values(), *manifest.get('sharedArenaFiles', {}).values(), *recovery.values()]:
                     recovered = temporary / 'verified-object'
                     recover_object(value, recovered, temporary)
                     recovered.unlink()

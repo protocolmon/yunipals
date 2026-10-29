@@ -104,7 +104,7 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
   const pool = new pg.Pool({
     connectionString: config.databaseUrl,
     application_name: "yunipals_arena",
-    max: 8,
+    max: config.contractVersion === 2 ? 2 : 8,
     connectionTimeoutMillis: 2000,
     statement_timeout: 5000,
     lock_timeout: 2000,
@@ -115,7 +115,7 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
       ? new pg.Pool({
           connectionString: native.databaseUrl,
           application_name: "arena_native_source",
-          max: 4,
+          max: config.contractVersion === 2 ? 2 : 4,
           connectionTimeoutMillis: 2000,
           statement_timeout: 5000,
           lock_timeout: 2000,

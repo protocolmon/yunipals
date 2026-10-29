@@ -17,6 +17,11 @@ def render(mode, role):
     if mode == "video":
         value = value.replace("dist/arena-anime-media.mjs", "dist/arena-native-media.mjs")
         value = value.replace("/etc/yunipals-anime-arena/openrouter.env", "/etc/yunipals-arena/runware.env")
+        if role == "monitor":
+            value = value.replace("dist/arena-anime-monitor.mjs", "dist/arena-monitor.mjs")
+            value = value.replace("Type=simple", "Type=oneshot")
+            value = value.replace("Restart=on-failure\nRestartSec=30\n", "")
+            value = value.replace("MemoryMax=512M", "ReadWritePaths=/var/lib/yunipals-arena-modes/video/health\nMemoryMax=512M")
     # Provider credentials cannot override the mode's reviewed public/runtime or
     # database settings. Only referee, media and capacity get provider access.
     provider = [line for line in value.splitlines() if line in (
@@ -39,4 +44,6 @@ if __name__ == "__main__":
     for mode in ("video", "anime"):
         for role in ROLES:
             (target / f"yunipals-arena-v2-{mode}-{role}.service").write_text(render(mode, role))
-    print(f"Rendered 18 units in {target}; none installed or started.")
+    (target / "yunipals-arena-v2-video-monitor.timer").write_text(
+        "[Unit]\nDescription=Shared video Arena health schedule\n[Timer]\nOnBootSec=2min\nOnUnitActiveSec=5min\nUnit=yunipals-arena-v2-video-monitor.service\n[Install]\nWantedBy=timers.target\n")
+    print(f"Rendered 18 services and one timer in {target}; none installed or started.")

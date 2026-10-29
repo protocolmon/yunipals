@@ -51,7 +51,10 @@ const baseIslands = sourceManifest.sources.find(
 )!;
 
 export default createConfig({
-  database: { kind: "postgres" },
+  database: {
+    kind: "postgres",
+    ...(sharedArena ? { poolConfig: { max: 11 } } : {})
+  },
   ordering: "multichain",
   chains: {
     mainnet: {
