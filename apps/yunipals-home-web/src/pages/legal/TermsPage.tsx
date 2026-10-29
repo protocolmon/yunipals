@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { environment } from "@/environment";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { tradingTermsVersion } from "@/lib/marketplace/tradingInformation";
 
@@ -219,6 +220,22 @@ export function TermsPage() {
             retrospectively alter completed blockchain transactions.
           </p>
         </section>
+        {environment.production && (
+          <section className={sectionClass}>
+            <h2 className="display text-2xl text-ink">13. Software licenses</h2>
+            <p>
+              Yunipals uses third-party software. License texts and attribution
+              notices are available in the{" "}
+              <a
+                href="/THIRD_PARTY_LICENSES.txt"
+                className="rounded-lg font-semibold text-ethereum underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+              >
+                Software licenses
+              </a>
+              .
+            </p>
+          </section>
+        )}
       </div>
     </main>
   );

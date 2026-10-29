@@ -97,8 +97,13 @@ async function context(init) {
   return ctx;
 }
 async function settings(page) {
+  if (new URL(page.url()).pathname !== "/privacy")
+    await page
+      .locator("footer")
+      .getByRole("link", { name: "Privacy Notice", exact: true })
+      .click();
   await page
-    .locator("footer")
+    .getByRole("main")
     .getByRole("button", { name: "Analytics settings", exact: true })
     .click();
   return page.getByRole("dialog", { name: "Analytics settings", exact: true });
@@ -206,8 +211,9 @@ try {
   const second = await ctx.newPage();
   await second.goto(`${app.origin}/privacy`);
   await settle(second);
-  const beforeWithdrawal = payloads.length;
   dialog = await settings(page);
+  await settle(page);
+  const beforeWithdrawal = payloads.length;
   await dialog
     .getByRole("button", { name: "Turn analytics off", exact: true })
     .click();
@@ -228,9 +234,9 @@ try {
   tests.push("Regrant generates a fresh browser identifier");
   const requestCount = requests.length;
   blockMixpanel = true;
-  await page.getByRole("link", { name: "Privacy Notice", exact: true }).click();
+  await page.getByRole("link", { name: "Terms of Use", exact: true }).click();
   await page
-    .getByRole("heading", { name: "How Yunipals handles information" })
+    .getByRole("heading", { name: "Yunipals Terms of Use" })
     .waitFor();
   await settle(page);
   assert.ok(requests.length > requestCount);
