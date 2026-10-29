@@ -87,16 +87,20 @@ if (operation === "prepare") {
     hashes?: Hex[];
     codes?: number[];
     notes?: string[];
+    recipeVersion?: number;
   };
   if (!isAddress(input.registry) || /^0x0{40}$/i.test(input.registry))
     throw new Error("Registry address required");
   const ids = input.ids.map((id) => BigInt(animeTokenId(id)));
+  const recipeVersion = input.recipeVersion ?? 1;
+  if (![1, 2].includes(recipeVersion))
+    throw new Error("Unsupported approval recipe");
   const data =
     input.functionName === "approve"
       ? encodeFunctionData({
           abi: animeRegistryAbi,
           functionName: "approve",
-          args: [ids, input.hashes!, 1]
+          args: [ids, input.hashes!, recipeVersion]
         })
       : encodeFunctionData({
           abi: animeRegistryAbi,

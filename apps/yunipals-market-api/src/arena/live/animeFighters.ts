@@ -9,7 +9,8 @@ import {
   parseAnimeManifest,
   type AnimeTraits,
   type AnimeManifest,
-  type AnimeSprite
+  type AnimeSprite,
+  type AnimeSheet
 } from "@protopals/yunipals-market-core/anime";
 import type { FighterSnapshot } from "./identity";
 import type { AdmissionRequest } from "./admission";
@@ -66,7 +67,7 @@ export class AnimeFighters {
     readonly registry: Address,
     readonly origin: string,
     private readonly fetcher: typeof fetch = fetch,
-    private readonly recipeSha256?: string
+    private readonly recipeSha256?: string | Record<string, string>
   ) {}
   async status(tokenId: string, blockNumber?: bigint) {
     const [status, recipeVersion, applications, manifestHash] =
@@ -111,14 +112,24 @@ export class AnimeFighters {
         409,
         "This fighter's published art differs from its approval. Curator review is required."
       );
-    if (sprites)
+    if (sprites) {
       for (const sprite of Object.values(m.sprites))
         await this.spriteBytes(tokenId, sprite);
+      const sheets = new Map<string, AnimeSheet>();
+      for (const kit of m.kits ?? []) {
+        await this.spriteBytes(tokenId, kit.windup);
+        for (const sheet of [kit.projectile, kit.strike, kit.impact])
+          if (sheet) sheets.set(sheet.sheet, sheet);
+      }
+      for (const sheet of sheets.values()) await this.sheetBytes(sheet);
+    }
     return m;
   }
   async spriteBytes(tokenId: string, sprite: AnimeSprite) {
     if (
-      !/^[a-z]+\.[a-f0-9]{8}\.webp$/.test(sprite.file) ||
+      !/^(?:[a-z]+|windup-[a-z][a-z0-9-]{0,39})\.[a-f0-9]{8}\.webp$/.test(
+        sprite.file
+      ) ||
       !/^[a-f0-9]{64}$/.test(sprite.sha256)
     )
       throw new Error("Invalid anime sprite reference.");
@@ -131,6 +142,23 @@ export class AnimeFighters {
       throw new Error("Anime sprite checksum mismatch.");
     return bytes;
   }
+  async sheetBytes(sheet: AnimeSheet) {
+    if (
+      !/^recipes\/anime-fighter-v2\/species\/[a-z][a-z0-9-]*\/(?:[a-z][a-z0-9-]*\.)?(?:projectile|strike|impact)\.[a-f0-9]{8}\.webp$/.test(
+        sheet.sheet
+      ) ||
+      !/^[a-f0-9]{64}$/.test(sheet.sha256)
+    )
+      throw new Error("Invalid anime sheet reference.");
+    const bytes = await boundedAnimeFetch(
+      `${this.origin}/${sheet.sheet}`,
+      16 * 1024 * 1024,
+      this.fetcher
+    );
+    if (hash(bytes) !== sheet.sha256)
+      throw new Error("Anime sheet checksum mismatch.");
+    return bytes;
+  }
   async eligible(nft: AdmissionRequest, blockNumber: bigint) {
     if (
       nft.nftChainId !== 8453 ||
@@ -141,13 +169,22 @@ export class AnimeFighters {
         "The anime arena accepts Base OG Yunipals only."
       );
     const state = await this.status(nft.tokenId, blockNumber);
-    if (state.status !== "Approved" || state.recipeVersion !== 1)
+    if (state.status !== "Approved" || ![1, 2].includes(state.recipeVersion))
       throw new ArenaRequestError(
         409,
         "This Base Yunipal needs curator approval before entering the anime arena."
       );
     const manifest = await this.manifest(nft.tokenId, state.manifestHash);
-    if (this.recipeSha256 && manifest.recipe.sha256 !== this.recipeSha256)
+    const recipe =
+      typeof this.recipeSha256 === "string"
+        ? manifest.recipe.id === "anime-fighter-v1"
+          ? this.recipeSha256
+          : undefined
+        : this.recipeSha256?.[manifest.recipe.id];
+    if (
+      manifest.recipe.id !== `anime-fighter-v${state.recipeVersion}` ||
+      (this.recipeSha256 && (!recipe || manifest.recipe.sha256 !== recipe))
+    )
       throw new ArenaRequestError(
         409,
         "This fighter uses an unsupported recipe. Curator review is required."

@@ -130,7 +130,7 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
           config.fighterAssetsOrigin,
           fetch,
           "media" in catalog.manifest
-            ? catalog.manifest.media.recipeSha256
+            ? catalog.manifest.media.recipes
             : undefined
         )
       : undefined;

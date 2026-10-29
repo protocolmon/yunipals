@@ -31,6 +31,35 @@ export type AnimeSprite = {
   w: number;
   h: number;
 };
+export type AnimeSheet = {
+  sheet: string;
+  sha256: string;
+  cols: number;
+  rows: number;
+  blend: "add" | "alpha";
+};
+export type AnimeKit = {
+  id: string;
+  name: string;
+  kind: "projectile" | "strike" | "dash";
+  element: string;
+  description: string;
+  windup: AnimeSprite;
+  projectile?: AnimeSheet;
+  strike?: AnimeSheet;
+  impact: AnimeSheet;
+};
+export type AnimeLoadout = [string, string];
+export type AnimeKnownKit = Pick<
+  AnimeKit,
+  "id" | "name" | "kind" | "description"
+>;
+export const animeSpeciesSlug = (species: string) =>
+  species
+    .toLowerCase()
+    .replace(/\byuni/g, "uni")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 export type AnimeManifest = {
   version: "anime-fighter/v1";
   chainId: 8453;
@@ -47,7 +76,7 @@ export type AnimeManifest = {
     locomotion: "ground" | "flight";
     identityVersion: "anime-fighter-v1";
   };
-  recipe: { id: "anime-fighter-v1"; sha256: string };
+  recipe: { id: "anime-fighter-v1" | "anime-fighter-v2"; sha256: string };
   look: {
     attackKind: "vine" | "star" | "jet" | "orb" | "dash";
     palette: { color: string; light: string; dark: string };
@@ -57,6 +86,8 @@ export type AnimeManifest = {
     torso: [number, number];
   };
   sprites: Record<string, AnimeSprite>;
+  kits?: AnimeKit[];
+  defaultLoadout?: AnimeLoadout;
   generatedWith: "codex-subscription";
   reviewedAt: string;
 };
@@ -137,7 +168,7 @@ export function parseAnimeManifest(
     !text(m.identity.text, 1500) ||
     !["ground", "flight"].includes(m.identity.locomotion) ||
     m.identity.identityVersion !== "anime-fighter-v1" ||
-    m.recipe?.id !== "anime-fighter-v1" ||
+    !["anime-fighter-v1", "anime-fighter-v2"].includes(m.recipe?.id) ||
     !hash(m.recipe.sha256) ||
     !m.look ||
     !["vine", "star", "jet", "orb", "dash"].includes(m.look.attackKind) ||
@@ -185,12 +216,102 @@ export function parseAnimeManifest(
     !Number.isFinite(Date.parse(m.reviewedAt))
   )
     throw new Error("Invalid anime fighter manifest.");
+  const kits = m.kits;
+  if (
+    kits !== undefined ||
+    m.defaultLoadout !== undefined ||
+    m.recipe.id === "anime-fighter-v2"
+  ) {
+    if (
+      m.recipe.id !== "anime-fighter-v2" ||
+      !Array.isArray(kits) ||
+      kits.length !== 3
+    )
+      throw new Error("Recipe v2 requires exactly three attack kits.");
+    const ids = new Set<string>();
+    const slug = (v: unknown) =>
+      typeof v === "string" && /^[a-z][a-z0-9-]{0,39}$/.test(v);
+    for (const k of kits) {
+      if (
+        !k ||
+        !slug(k.id) ||
+        ids.has(k.id) ||
+        !text(k.name, 24) ||
+        !/^[A-Za-z0-9][A-Za-z0-9 '!\-]*$/.test(k.name) ||
+        k.name.trim() !== k.name ||
+        k.name.split(/\s+/).length > 2 ||
+        !["projectile", "strike", "dash"].includes(k.kind) ||
+        !slug(k.element) ||
+        !text(k.description, 120) ||
+        !k.windup ||
+        !hash(k.windup.sha256) ||
+        k.windup.file !==
+          `windup-${k.id}.${k.windup.sha256.slice(0, 8)}.webp` ||
+        ![k.windup.w, k.windup.h].every(
+          (n) => Number.isInteger(n) && n > 0 && n <= 4096
+        ) ||
+        !m.look.stageHeight[`windup-${k.id}`] ||
+        (k.kind === "projectile") !== !!k.projectile ||
+        (k.kind === "strike") !== !!k.strike
+      )
+        throw new Error("Invalid anime attack kit.");
+      ids.add(k.id);
+      for (const role of ["projectile", "strike", "impact"] as const) {
+        const sheet = k[role];
+        if (!sheet && role !== "impact") continue;
+        const directory =
+          role === "impact"
+            ? `elements-${k.element}`
+            : animeSpeciesSlug(m.identity.species);
+        const filename = role === "impact" ? "impact" : `${k.id}.${role}`;
+        if (
+          !sheet ||
+          !hash(sheet.sha256) ||
+          sheet.sheet !==
+            `recipes/anime-fighter-v2/species/${directory}/${filename}.${sheet.sha256.slice(0, 8)}.webp` ||
+          ![sheet.cols, sheet.rows].every(
+            (n) => Number.isInteger(n) && n >= 1 && n <= 4
+          ) ||
+          !(role === "strike" ? [2, 4] : [4]).includes(
+            sheet.cols * sheet.rows
+          ) ||
+          sheet.blend !== (role === "strike" ? "alpha" : "add")
+        )
+          throw new Error("Invalid anime kit sheet.");
+      }
+    }
+    parseAnimeLoadout(m, m.defaultLoadout);
+  }
   for (const pose of Object.keys(m.look.stageHeight))
-    if (!m.sprites[pose]) throw new Error("Stage height has no sprite.");
+    if (!m.sprites[pose] && !kits?.some((k) => pose === `windup-${k.id}`))
+      throw new Error("Stage height has no sprite.");
   for (const pose of Object.keys(m.sprites))
     if (pose !== "cutin" && !m.look.stageHeight[pose])
       throw new Error("Sprite has no stage height.");
   return m;
+}
+
+/** Only the loadout is public; neither it nor kit vocabulary affects combat rules. */
+export function parseAnimeLoadout(
+  m: Pick<AnimeManifest, "kits" | "defaultLoadout">,
+  value?: unknown
+): AnimeLoadout | undefined {
+  if (!m.kits) {
+    if (value !== undefined)
+      throw new Error("This fighter has no attack kits.");
+    return undefined;
+  }
+  const chosen = value === undefined ? m.defaultLoadout : value;
+  if (
+    !Array.isArray(chosen) ||
+    chosen.length !== 2 ||
+    chosen[0] === chosen[1] ||
+    chosen.some(
+      (id) => typeof id !== "string" || !m.kits!.some((k) => k.id === id)
+    )
+  )
+    throw new Error("Choose two different kits from this fighter.");
+  return [chosen[0], chosen[1]];
 }
 
 export function arenaEconomics(kind: "video" | "anime" = "video") {

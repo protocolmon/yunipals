@@ -143,6 +143,31 @@ contract AnimeFighterRegistryTest is Test {
         assertEq(uint256(status()), 2);
     }
 
+    function testApprovedRecipeUpgradePreservesEligibility() public {
+        applyOne();
+        approveOne();
+        uint256[] memory ids = new uint256[](1);
+        bytes32[] memory hashes = new bytes32[](1);
+        ids[0] = 1;
+        hashes[0] = keccak256("reviewed-v2-manifest");
+        vm.prank(curator);
+        registry.approve(ids, hashes, 2);
+        (, uint16 recipe, uint32 applications, bytes32 hash) = registry.fighters(1);
+        assertEq(recipe, 2);
+        assertEq(applications, 1);
+        assertEq(hash, hashes[0]);
+        assertTrue(registry.isEligible(8453, registry.BASE_YUNIPALS(), 1));
+        vm.prank(curator);
+        vm.expectRevert(AnimeFighterRegistry.InvalidState.selector);
+        registry.approve(ids, hashes, 2);
+        vm.prank(curator);
+        vm.expectRevert(AnimeFighterRegistry.InvalidState.selector);
+        registry.approve(ids, hashes, 1);
+        vm.prank(curator);
+        vm.expectRevert(AnimeFighterRegistry.InvalidState.selector);
+        registry.approve(ids, hashes, 3);
+    }
+
     function testRevokedCannotApply() public {
         applyOne();
         approveOne();

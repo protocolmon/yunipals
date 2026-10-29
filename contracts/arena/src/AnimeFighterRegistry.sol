@@ -98,7 +98,16 @@ contract AnimeFighterRegistry is Ownable2Step, IEligibility {
         if (recipeVersion == 0) revert InvalidConfig();
         for (uint256 i; i < ids.length; ++i) {
             Fighter storage f = fighters[ids[i]];
-            if (f.status != Status.Applied && f.status != Status.Revoked) revert InvalidState();
+            if (f.status == Status.Approved) {
+                // A reviewed recipe upgrade preserves eligibility and historical
+                // content-addressed manifests. Same-version edits and downgrades
+                // require an explicit revoke/review instead of a silent replacement.
+                if (recipeVersion <= f.recipeVersion || hashes[i] == f.manifestHash) {
+                    revert InvalidState();
+                }
+            } else if (f.status != Status.Applied && f.status != Status.Revoked) {
+                revert InvalidState();
+            }
             if (hashes[i] == bytes32(0)) revert InvalidConfig();
             f.status = Status.Approved;
             f.manifestHash = hashes[i];

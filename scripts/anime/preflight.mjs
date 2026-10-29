@@ -67,7 +67,12 @@ export async function animeReleasePreflight(repository = root) {
   let engine, recipe;
   for (const [label, folder, file] of [
     ["Frozen anime engine", "apps/yunipals-anime-engine", "engine-lock.json"],
-    ["Frozen fighter recipe", "docs/arena/anime-recipe-v1", "recipe-lock.json"]
+    ["Frozen fighter recipe", "docs/arena/anime-recipe-v1", "recipe-lock.json"],
+    [
+      "Frozen fighter recipe v2",
+      "docs/arena/anime-recipe-v2",
+      "recipe-lock.json"
+    ]
   ])
     await verify(label, async () => {
       const lock = await json(join(repository, folder, file));

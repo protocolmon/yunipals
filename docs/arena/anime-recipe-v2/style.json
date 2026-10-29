@@ -1,0 +1,443 @@
+{
+  "id": "anime-fighter-v2",
+  "version": 2,
+  "style": "Crisp hand-drawn anime cel shading, confident dark outlines, bright local colours, restrained rim light. Preserve the reference token's exact species, colour, horn, markings and functional anatomy. No extra wings, limbs, accessories, weapons, text, borders or watermark. Full body, generous margin, readable silhouette. Flat chroma green #00FF00 background; avoid green light spill.",
+  "poses": {
+    "idle": "Neutral fighting stance, face right, full body, square composition.",
+    "attack": "Powerful species-appropriate attack pose, face right, full body, square composition.",
+    "dodge": "Evade sideways, preserve anatomy, full body, square composition.",
+    "dash": "Fast forward movement using the reviewed locomotion, face right, square composition.",
+    "guard": "Braced defensive posture, face right, square composition.",
+    "hurt": "Recoiling from a hit, face right, square composition.",
+    "down": "Defeated and resting on the ground, unharmed, square composition.",
+    "victory": "Triumphant pose, full body, square composition.",
+    "cutin": "Dramatic close-up for an anime cut-in, face right, 16:9 composition. Flat dark violet background instead of green."
+  },
+  "defaults": {
+    "attackKind": "dash",
+    "locomotion": "ground",
+    "face": 1,
+    "palette": {
+      "color": "#a16bee",
+      "light": "#e6caff",
+      "dark": "#40246b"
+    },
+    "height": 260,
+    "origin": [
+      0.35,
+      0.55
+    ],
+    "torso": [
+      0.05,
+      0.5
+    ]
+  },
+  "species": {
+    "Unibranch": {
+      "attackKind": "vine",
+      "locomotion": "ground",
+      "height": 270
+    },
+    "Uniturtle": {
+      "attackKind": "jet",
+      "locomotion": "ground",
+      "height": 215
+    },
+    "Unifairy": {
+      "attackKind": "star",
+      "locomotion": "flight",
+      "height": 250
+    },
+    "Elrond Unidragon": {
+      "attackKind": "orb",
+      "locomotion": "flight",
+      "height": 250
+    }
+  },
+  "review": "Species defaults are suggestions. Curator must review the actual anatomy, locomotion, every sprite and the final manifest. Traits and art follow the token on transfer.",
+  "generation": {
+    "executor": "codex-subscription",
+    "maxRetries": 2,
+    "background": "#00FF00",
+    "images": 12,
+    "sharedSheets": "Generated once per species/kit and once per element; no per-battle generation."
+  },
+  "kits": {
+    "species": {
+      "Unibranch": [
+        {
+          "id": "vine-lash",
+          "name": "Vine Lash",
+          "kind": "strike",
+          "element": "nature",
+          "description": "A thick thorny vine lashes from a raised forehoof.",
+          "windupPrompt": "Shift weight back, forehoof drawn behind the shoulder with a coiled vine."
+        },
+        {
+          "id": "thorn-volley",
+          "name": "Thorn Volley",
+          "kind": "projectile",
+          "element": "nature",
+          "description": "A cluster of green thorns spirals toward the opponent.",
+          "windupPrompt": "Plant the hind hooves and gather thorn motes around the forward forehoof."
+        },
+        {
+          "id": "root-slam",
+          "name": "Root Slam",
+          "kind": "dash",
+          "element": "nature",
+          "description": "A short body rush ends in a root-wrapped shoulder strike.",
+          "windupPrompt": "Crouch low and brace the shoulder, without growing extra limbs."
+        }
+      ],
+      "Unifairy": [
+        {
+          "id": "starburst",
+          "name": "Starburst",
+          "kind": "projectile",
+          "element": "amber",
+          "description": "A golden star with an amber aura flies from the horn.",
+          "windupPrompt": "Hover with wings swept back, forelegs tucked and head pulled back to charge the horn."
+        },
+        {
+          "id": "amber-ray",
+          "name": "Amber Ray",
+          "kind": "projectile",
+          "element": "amber",
+          "description": "A narrow amber light bolt pulses toward the opponent.",
+          "windupPrompt": "Hover at an angle and gather a small amber light at the horn."
+        },
+        {
+          "id": "wing-rush",
+          "name": "Wing Rush",
+          "kind": "dash",
+          "element": "amber",
+          "description": "A quick flight rush leads with the shoulder.",
+          "windupPrompt": "Bank backward with the wings tucked for a fast shoulder-led rush."
+        }
+      ],
+      "Uniturtle": [
+        {
+          "id": "water-jet",
+          "name": "Water Jet",
+          "kind": "projectile",
+          "element": "water",
+          "description": "A compact blue water jet bursts from the mouth.",
+          "windupPrompt": "Brace on four feet and draw the head back to prepare a water jet."
+        },
+        {
+          "id": "shell-rush",
+          "name": "Shell Rush",
+          "kind": "dash",
+          "element": "water",
+          "description": "A low shell-first rush slides along the floor.",
+          "windupPrompt": "Lower the shell and tuck the head, preserving all visible anatomy."
+        },
+        {
+          "id": "tidal-strike",
+          "name": "Tidal Strike",
+          "kind": "strike",
+          "element": "water",
+          "description": "A thick curling water lash sweeps forward.",
+          "windupPrompt": "Brace low and raise one front foot beside a small coil of water."
+        }
+      ],
+      "Elrond Unidragon": [
+        {
+          "id": "void-orb",
+          "name": "Void Orb",
+          "kind": "projectile",
+          "element": "void",
+          "description": "A dark violet orb gathers around a bright purple core.",
+          "windupPrompt": "Pull the head back and coil the torso around a small violet glow."
+        },
+        {
+          "id": "shoulder-check",
+          "name": "Shoulder Check",
+          "kind": "dash",
+          "element": "void",
+          "description": "A wing-assisted shoulder rush follows the opponent.",
+          "windupPrompt": "Bank backward with the shoulder braced, preserving the reviewed wing anatomy."
+        },
+        {
+          "id": "void-claw",
+          "name": "Void Claw",
+          "kind": "strike",
+          "element": "void",
+          "description": "A broad violet slash follows the visible foreclaw.",
+          "windupPrompt": "Draw one foreclaw back across the chest for a short slash."
+        }
+      ],
+      "Uniair": [
+        {
+          "id": "gale-bolt",
+          "name": "Gale Bolt",
+          "kind": "projectile",
+          "element": "air",
+          "description": "A compact pale cyan gust spins toward the opponent.",
+          "windupPrompt": "Lean back and gather a small gust beside the visible attack origin."
+        },
+        {
+          "id": "gale-lash",
+          "name": "Gale Lash",
+          "kind": "strike",
+          "element": "air",
+          "description": "A thick crescent of wind sweeps across the strike line.",
+          "windupPrompt": "Coil the torso for a broad species-appropriate wind sweep."
+        },
+        {
+          "id": "breeze-rush",
+          "name": "Breeze Rush",
+          "kind": "dash",
+          "element": "air",
+          "description": "A swift body rush carries a short wake of wind.",
+          "windupPrompt": "Shift backward in the reviewed locomotion, bracing for a forward rush."
+        }
+      ],
+      "Unidonkey": [
+        {
+          "id": "dust-kick",
+          "name": "Dust Kick",
+          "kind": "projectile",
+          "element": "earth",
+          "description": "A dense ball of amber dust flies from a hoof strike.",
+          "windupPrompt": "Draw one hind hoof back without adding limbs or changing the silhouette."
+        },
+        {
+          "id": "hoof-sweep",
+          "name": "Hoof Sweep",
+          "kind": "strike",
+          "element": "earth",
+          "description": "A thick earthy crescent follows a sweeping hoof.",
+          "windupPrompt": "Plant three hooves and coil the fourth for a short sweeping strike."
+        },
+        {
+          "id": "stubborn-rush",
+          "name": "Stubborn Rush",
+          "kind": "dash",
+          "element": "earth",
+          "description": "A grounded shoulder rush keeps a low sturdy stance.",
+          "windupPrompt": "Lower the head and shift weight onto the rear hooves."
+        }
+      ],
+      "Unidragon": [
+        {
+          "id": "flare-orb",
+          "name": "Flare Orb",
+          "kind": "projectile",
+          "element": "fire",
+          "description": "A bright orange flame orb curls toward the opponent.",
+          "windupPrompt": "Draw the head back to gather a small flame, preserving the exact reviewed anatomy."
+        },
+        {
+          "id": "flame-claw",
+          "name": "Flame Claw",
+          "kind": "strike",
+          "element": "fire",
+          "description": "A thick flame-edged slash follows a visible foreclaw.",
+          "windupPrompt": "Draw a foreclaw back beside the chest for a short slash."
+        },
+        {
+          "id": "dragon-rush",
+          "name": "Dragon Rush",
+          "kind": "dash",
+          "element": "fire",
+          "description": "A body rush drives forward behind the shoulder.",
+          "windupPrompt": "Coil the torso and brace the shoulder in the reviewed locomotion."
+        }
+      ],
+      "Unicursed": [
+        {
+          "id": "hex-orb",
+          "name": "Hex Orb",
+          "kind": "projectile",
+          "element": "void",
+          "description": "A violet hex sphere turns around a dim dark core.",
+          "windupPrompt": "Draw back around a small violet glow without changing the silhouette."
+        },
+        {
+          "id": "hex-slash",
+          "name": "Hex Slash",
+          "kind": "strike",
+          "element": "void",
+          "description": "A broad violet crescent cuts along the attack line.",
+          "windupPrompt": "Coil for a short species-appropriate sweeping strike."
+        },
+        {
+          "id": "shadow-rush",
+          "name": "Shadow Rush",
+          "kind": "dash",
+          "element": "void",
+          "description": "A short shoulder-led rush leaves a violet wake.",
+          "windupPrompt": "Shift weight back with the shoulder braced for a forward rush."
+        }
+      ],
+      "Unikles": [
+        {
+          "id": "sun-bolt",
+          "name": "Sun Bolt",
+          "kind": "projectile",
+          "element": "light",
+          "description": "A compact white-gold bolt shines toward the opponent.",
+          "windupPrompt": "Draw one visible forelimb back beside a small white-gold light."
+        },
+        {
+          "id": "golden-sweep",
+          "name": "Golden Sweep",
+          "kind": "strike",
+          "element": "light",
+          "description": "A thick golden crescent follows the visible striking limb.",
+          "windupPrompt": "Coil for a broad forelimb sweep without adding weapons or accessories."
+        },
+        {
+          "id": "hero-rush",
+          "name": "Hero Rush",
+          "kind": "dash",
+          "element": "light",
+          "description": "A grounded shoulder rush follows through in a sturdy stance.",
+          "windupPrompt": "Brace the shoulder and shift weight back on the reviewed legs."
+        }
+      ],
+      "Uniaqua": [
+        {
+          "id": "bubble-burst",
+          "name": "Bubble Burst",
+          "kind": "projectile",
+          "element": "water",
+          "description": "A bright blue water sphere carries a ring of bubbles.",
+          "windupPrompt": "Draw the head back to charge a small blue water sphere."
+        },
+        {
+          "id": "tidal-lash",
+          "name": "Tidal Lash",
+          "kind": "strike",
+          "element": "water",
+          "description": "A thick curved ribbon of water sweeps forward.",
+          "windupPrompt": "Coil for a broad species-appropriate water sweep."
+        },
+        {
+          "id": "wave-rush",
+          "name": "Wave Rush",
+          "kind": "dash",
+          "element": "water",
+          "description": "A low body rush travels behind a small curl of water.",
+          "windupPrompt": "Brace the shoulder and draw back in the reviewed locomotion."
+        }
+      ],
+      "Unichick": [
+        {
+          "id": "ember-shot",
+          "name": "Ember Shot",
+          "kind": "projectile",
+          "element": "fire",
+          "description": "A small orange ember spins inside a short flame trail.",
+          "windupPrompt": "Draw the head back with a small ember near the beak."
+        },
+        {
+          "id": "wing-sweep",
+          "name": "Wing Sweep",
+          "kind": "strike",
+          "element": "fire",
+          "description": "A thick orange crescent follows a visible wing sweep.",
+          "windupPrompt": "Draw one visible wing back without changing its anatomy or number."
+        },
+        {
+          "id": "chick-rush",
+          "name": "Chick Rush",
+          "kind": "dash",
+          "element": "fire",
+          "description": "A quick body rush leads with the shoulder.",
+          "windupPrompt": "Lower the body and brace the shoulder in the reviewed locomotion."
+        }
+      ],
+      "Unisheep": [
+        {
+          "id": "cloud-puff",
+          "name": "Cloud Puff",
+          "kind": "projectile",
+          "element": "air",
+          "description": "A dense pale cyan puff spins along the attack line.",
+          "windupPrompt": "Lean back with the wool compressed and a small cyan puff near the muzzle."
+        },
+        {
+          "id": "wool-sweep",
+          "name": "Wool Sweep",
+          "kind": "strike",
+          "element": "air",
+          "description": "A thick curling gust follows a short foreleg sweep.",
+          "windupPrompt": "Plant the hind hooves and draw one foreleg back for a short sweep."
+        },
+        {
+          "id": "ram-rush",
+          "name": "Ram Rush",
+          "kind": "dash",
+          "element": "air",
+          "description": "A short grounded ram leads with the sturdy shoulder.",
+          "windupPrompt": "Lower the body and brace the shoulder without changing the horn."
+        }
+      ]
+    },
+    "elements": {
+      "nature": {
+        "color": "#369c45",
+        "light": "#d9ff99",
+        "dark": "#163e27"
+      },
+      "amber": {
+        "color": "#ffb02e",
+        "light": "#fff6c2",
+        "dark": "#7a3111"
+      },
+      "water": {
+        "color": "#36a9e1",
+        "light": "#c5f8ff",
+        "dark": "#123b75"
+      },
+      "void": {
+        "color": "#a16bee",
+        "light": "#e6caff",
+        "dark": "#40246b"
+      },
+      "air": {
+        "color": "#8edfe8",
+        "light": "#e9ffff",
+        "dark": "#31536b"
+      },
+      "earth": {
+        "color": "#be8b43",
+        "light": "#f8dd9b",
+        "dark": "#4e3020"
+      },
+      "fire": {
+        "color": "#ed7435",
+        "light": "#ffe6a0",
+        "dark": "#7e271b"
+      },
+      "light": {
+        "color": "#edda8b",
+        "light": "#ffffe8",
+        "dark": "#7a602d"
+      }
+    },
+    "sheets": {
+      "projectile": {
+        "cols": 2,
+        "rows": 2,
+        "blend": "add",
+        "prompt": "Paint a species-specific {name}: {description} Palette {palette}. The projectile flies LEFT with its trail toward the RIGHT. Exactly four loop frames in a 2 by 2 grid, no gaps or grid lines. One effect per equal square panel at a consistent scale. Crisp anime cel shading, bright readable core and restrained glow, no creature or text. Uniform PURE BLACK #000000 background edge to edge; do not use green chroma key. No ground, frame, border or ambient haze."
+      },
+      "strike": {
+        "cols": 1,
+        "rows": 2,
+        "blend": "alpha",
+        "prompt": "Paint a species-specific {name}: {description} Palette {palette}. An opaque physical whip/slash object with a dark outline, extending horizontally from the LEFT origin to the RIGHT tip. Use a thick brush: minimum main stroke width 48 pixels in a 1024-pixel-wide panel. Exactly TWO stacked equal panels in a 1 by 2 grid, no gaps or grid lines: relaxed extension, then taut contact with a restrained glow. Uniform PURE BLACK #000000 background, no creature, text, floor, border or haze. Preserve solid opaque local colour; this is not an additive glow."
+      },
+      "impact": {
+        "cols": 2,
+        "rows": 2,
+        "blend": "add",
+        "prompt": "Paint an anime impact burst in the {element} element, palette {palette}. Exactly four equal panels in a 2 by 2 grid with no gaps or grid lines: tiny flash, expanding jagged spark, maximum burst with element particles, fading ring. One consistent centred burst per panel, crisp cel-shaded shapes. Uniform PURE BLACK #000000 background, no creature, text, ground, frame or ambient haze."
+      }
+    }
+  }
+}

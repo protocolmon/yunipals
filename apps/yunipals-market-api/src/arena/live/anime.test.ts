@@ -13,6 +13,7 @@ import {
   ANIME_BASE_COLLECTION,
   canonicalAnimeJson,
   parseAnimeManifest,
+  parseAnimeLoadout,
   arenaEconomics,
   type AnimeManifest
 } from "@protopals/yunipals-market-core/anime";
@@ -92,6 +93,76 @@ function manifest(): AnimeManifest {
     reviewedAt: "2026-10-28T00:00:00Z"
   };
 }
+function kitManifest(): AnimeManifest {
+  const m = manifest();
+  m.recipe.id = "anime-fighter-v2";
+  m.kits = [
+    { id: "vine-lash", name: "Vine Lash", kind: "strike" as const },
+    { id: "thorn-volley", name: "Thorn Volley", kind: "projectile" as const },
+    { id: "root-slam", name: "Root Slam", kind: "dash" as const }
+  ].map((k) => {
+    m.look.stageHeight[`windup-${k.id}`] = 270;
+    const sheet = (role: "strike" | "projectile" | "impact") => ({
+      sheet: `recipes/anime-fighter-v2/species/${role === "impact" ? "elements-nature/impact" : `unibranch/${k.id}.${role}`}.${hash.slice(0, 8)}.webp`,
+      sha256: hash,
+      cols: role === "strike" ? 1 : 2,
+      rows: 2,
+      blend: role === "strike" ? ("alpha" as const) : ("add" as const)
+    });
+    return {
+      ...k,
+      element: "nature",
+      description: "A cosmetic signature technique.",
+      windup: {
+        file: `windup-${k.id}.${hash.slice(0, 8)}.webp`,
+        sha256: hash,
+        w: 64,
+        h: 64
+      },
+      ...(k.kind === "strike"
+        ? { strike: sheet("strike") }
+        : k.kind === "projectile"
+          ? { projectile: sheet("projectile") }
+          : {}),
+      impact: sheet("impact")
+    };
+  });
+  m.defaultLoadout = ["vine-lash", "thorn-volley"];
+  return m;
+}
+test("v1 manifests remain unchanged and v2 commits three kits, shared sheets and two choices", () => {
+  const old = manifest(),
+    before = canonicalAnimeJson(old);
+  assert.equal(parseAnimeManifest(old, "1234"), old);
+  assert.equal(canonicalAnimeJson(old), before);
+  assert.equal(parseAnimeLoadout(old), undefined);
+  const m = kitManifest();
+  assert.equal(parseAnimeManifest(m, "1234"), m);
+  assert.deepEqual(parseAnimeLoadout(m), m.defaultLoadout);
+  assert.deepEqual(parseAnimeLoadout(m, ["root-slam", "vine-lash"]), [
+    "root-slam",
+    "vine-lash"
+  ]);
+  assert.throws(() => parseAnimeLoadout(old, ["a", "b"]));
+  for (const mutate of [
+    (v: AnimeManifest) => v.kits!.pop(),
+    (v: AnimeManifest) => (v.kits![1]!.id = v.kits![0]!.id),
+    (v: AnimeManifest) => (v.defaultLoadout = ["root-slam", "root-slam"]),
+    (v: AnimeManifest) => (v.defaultLoadout = ["foreign", "vine-lash"]),
+    (v: AnimeManifest) => delete v.defaultLoadout,
+    (v: AnimeManifest) => (v.recipe.id = "anime-fighter-v1"),
+    (v: AnimeManifest) => (v.kits![0]!.strike!.sheet = "../private.webp"),
+    (v: AnimeManifest) => (v.kits![0]!.impact.blend = "alpha"),
+    (v: AnimeManifest) => (v.kits![0]!.strike!.cols = 9),
+    (v: AnimeManifest) => (v.kits![0]!.windup.sha256 = "changed"),
+    (v: AnimeManifest) => delete v.look.stageHeight["windup-vine-lash"],
+    (v: AnimeManifest) => (v.kits![0]!.name = "TOO MANY WORDS")
+  ]) {
+    const invalid = structuredClone(m);
+    mutate(invalid);
+    assert.throws(() => parseAnimeManifest(invalid, "1234"));
+  }
+});
 function setup(
   options: {
     status?: number;
@@ -99,6 +170,8 @@ function setup(
     manifest?: AnimeManifest;
     chainHash?: string;
     corruptSprite?: boolean;
+    recipeVersion?: number;
+    supportedRecipes?: Record<string, string>;
   } = {}
 ) {
   const m = options.manifest ?? manifest();
@@ -111,7 +184,13 @@ function setup(
     }) => {
       reads.push(args);
       return args.functionName === "fighters"
-        ? [options.status ?? 2, 1, 1, options.chainHash ?? animeDigest(m)]
+        ? [
+            options.status ?? 2,
+            options.recipeVersion ??
+              (m.recipe.id === "anime-fighter-v2" ? 2 : 1),
+            1,
+            options.chainHash ?? animeDigest(m)
+          ]
         : (options.currentTraits ?? { ...m.traits, rarityScore: 10n });
     }
   } as unknown as PublicClient;
@@ -126,7 +205,13 @@ function setup(
     );
   }) as typeof fetch;
   return {
-    fighters: new AnimeFighters(client, registry, origin, fetcher),
+    fighters: new AnimeFighters(
+      client,
+      registry,
+      origin,
+      fetcher,
+      options.supportedRecipes
+    ),
     m,
     reads,
     urls
@@ -137,6 +222,34 @@ const nft = {
   collection: ANIME_BASE_COLLECTION,
   tokenId: "1234"
 };
+test("both committed recipes stay admissible and v2 sheets are verified by hash", async () => {
+  const m = kitManifest(),
+    recipes = {
+      "anime-fighter-v1": "b".repeat(64),
+      "anime-fighter-v2": "b".repeat(64)
+    };
+  const old = setup({ supportedRecipes: recipes });
+  assert.equal(
+    (await old.fighters.eligible(nft, 90n)).recipe.id,
+    "anime-fighter-v1"
+  );
+  const v2 = setup({ manifest: m, supportedRecipes: recipes });
+  assert.deepEqual(await v2.fighters.eligible(nft, 90n), m);
+  await v2.fighters.manifest("1234", animeDigest(m), true);
+  assert.ok(
+    v2.urls.some((url) => url.includes("species/elements-nature/impact"))
+  );
+  const mismatched = setup({ manifest: m, recipeVersion: 1 });
+  await assert.rejects(
+    mismatched.fighters.eligible(nft, 90n),
+    /unsupported recipe/
+  );
+  const corrupt = setup({ manifest: m, corruptSprite: true });
+  await assert.rejects(
+    corrupt.fighters.sheetBytes(m.kits![0]!.impact),
+    /checksum/
+  );
+});
 test("anime admission reads approval and traits at the ownership block", async () => {
   const { fighters, m, reads } = setup();
   assert.deepEqual(await fighters.eligible(nft, 90n), m);

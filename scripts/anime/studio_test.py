@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from PIL import Image
+from PIL import ImageDraw
+from kit_assets import key_sheet
 
 spec = importlib.util.spec_from_file_location('studio', Path(__file__).with_name('studio.py'))
 studio = importlib.util.module_from_spec(spec)
@@ -12,6 +14,66 @@ spec.loader.exec_module(studio)
 
 
 class StudioTest(unittest.TestCase):
+    def v2_folder(self, lab, tid):
+        folder = lab / tid
+        (folder / 'raw').mkdir(parents=True)
+        (folder / 'prompts').mkdir()
+        style, lock = studio.recipe('anime-fighter-v2')
+        for pose in style['poses']:
+            image = Image.new('RGB', (64,64), '#00ff00')
+            ImageDraw.Draw(image).rectangle((10,8,53,55),fill='#aa44cc')
+            image.save(folder/'raw'/(pose+'.png'))
+        Image.new('RGB',(64,64),'#aa44cc').save(folder/'artwork.png')
+        Image.new('RGB',(64,64),'#aa44cc').save(folder/'board.png')
+        traits={'monsterType':7,'color':3,'horn':2,'background':1,'glitter':0}
+        studio.write(folder/'fighter.json',{'chainId':8453,'collection':studio.COLLECTION,'tokenId':tid,'traits':traits,'traitsHash':'0x'+studio.digest(studio.canonical(traits)),
+            'artwork':{'url':'https://drive.polychainmonsters.com/ipfs/QmExample','sha256':'b'*64},
+            'identity':{'species':'Unibranch','color':'Purple','horn':'Candy Cane','text':'Four hoof legs, no wings.','locomotion':'ground','identityVersion':'anime-fighter-v1'},
+            'identityDraft':False,'recipe':{'id':'anime-fighter-v2','sha256':lock['sha256']},'look':style['defaults'].copy()})
+        studio.write(folder/'stage-contract.json',{'tokenId':tid})
+        studio.review(folder,'idle',[])
+        studio.key(folder);studio.fit(folder);studio.review(folder,'poses',[])
+        return folder
+
+    def test_sheet_keying_preserves_grid_and_uses_separate_blending_rules(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);image=Image.new('RGB',(4,4),(21,21,21));image.putpixel((1,1),(58,40,20));image.save(root/'raw.png')
+            key_sheet(root/'raw.png',root/'add.webp','add',2,2)
+            key_sheet(root/'raw.png',root/'alpha.webp','alpha',1,2)
+            additive=Image.open(root/'add.webp');alpha=Image.open(root/'alpha.webp')
+            self.assertEqual(additive.size,(4,4));self.assertEqual(additive.getpixel((0,0)),(0,0,0))
+            self.assertEqual(additive.getpixel((1,1)),(58,40,20));self.assertEqual(alpha.getpixel((1,1))[3],255)
+            self.assertLess(alpha.getpixel((0,0))[3],25)
+            with self.assertRaises(ValueError):key_sheet(root/'raw.png',root/'bad.webp','add',3,2)
+
+    def test_v2_export_publish_shared_sheets_and_review_invalidation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lab=Path(tmp)/'lab';folder=self.v2_folder(lab,'1234');calls=[]
+            def generate(out,prompt,refs):
+                if out.exists():return
+                calls.append(str(out));out.parent.mkdir(parents=True,exist_ok=True)
+                image=Image.new('RGB',(64,64),'#000000' if 'species' in out.parts else '#00ff00')
+                ImageDraw.Draw(image).rectangle((10,8,53,55),fill='#aa44cc');image.save(out)
+                studio.write(out.with_suffix('.receipt.json'),{'sha256':studio.digest(out.read_bytes())})
+            with patch.object(studio,'generate_image',side_effect=generate):
+                studio.kits(folder)
+                self.assertEqual(len(calls),6) # three windups, strike, projectile, shared impact
+                for kit in studio.read(folder/'kits.json'):studio.review(folder,'approve-kit',[kit['id']])
+                studio.review(folder,'approve',[]);studio.export(folder)
+                manifest=studio.read(folder/'export/manifest.json')
+                self.assertEqual(len(manifest['sprites']),9);self.assertEqual(len(manifest['kits']),3)
+                self.assertEqual(manifest['defaultLoadout'],['vine-lash','thorn-volley'])
+                self.assertTrue((folder/'kits-contact-sheet.jpg').exists())
+                destination=Path(tmp)/'site';studio.publish(lab,destination)
+                for kit in manifest['kits']:
+                    self.assertTrue((destination/kit['impact']['sheet']).is_file())
+                    self.assertTrue((destination/'fighters/v1/1234'/kit['windup']['file']).is_file())
+                other=self.v2_folder(lab,'1235');studio.kits(other)
+                self.assertEqual(len(calls),9) # no additional shared sheet generation
+                with self.assertRaisesRegex(ValueError,'Published species art'):studio.review(folder,'reroll',['species:strike'])
+                (folder/'raw/windup-vine-lash.png').write_bytes(b'changed')
+                with self.assertRaises(ValueError):studio.export(folder)
+
     def test_installed_studio_uses_built_helper_without_development_dependencies(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

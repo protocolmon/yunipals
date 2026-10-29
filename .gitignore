@@ -60,6 +60,7 @@ contracts/arena/broadcast/
 !/docs/arena/anime-implementation-v1.md
 !/docs/arena/anime-deployment.json
 !/docs/arena/anime-recipe-v1/
+!/docs/arena/anime-recipe-v2/
 
 # Publish only the stable runtime data from the original art/research archives.
 /docs/islands/*
