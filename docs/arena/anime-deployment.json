@@ -1,6 +1,6 @@
 {
   "version": "anime-arena/deployment/v1",
-  "status": "four pilot applications and USDC funding confirmed; curator approval pending; encrypted restore drill passed; source binding reviewed; paid entry remains paused",
+  "status": "four pilot applications and USDC funding confirmed; encrypted restore drill passed; native source selected for the closed pilot with final sync pending; curator approval and draw-reserve funding pending",
   "chainId": 8453,
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
   "registryDeploymentBlock": 53251773,
@@ -53,7 +53,16 @@
     "sourceEpoch": "5bc9eac0-646a-41e9-951d-296c09272f04",
     "sourceReviewHash": "0x7cfb3413829bef3812c21fefc6f729974576085da28a88b5c17ebb12358a7706",
     "acceptedBlock": "53251781",
-    "relayMaxInFlight": 8
+    "relayMaxInFlight": 8,
+    "pilotParity": {
+      "throughBlock": "53256057",
+      "videoArenaEventsCompared": 19,
+      "videoArenaMissingEvents": 0,
+      "videoArenaExtraEvents": 0,
+      "pilotOwnershipRowsCompared": 4,
+      "pilotOwnershipRowsMatch": true,
+      "fullHistoricalAllFeatureParityComplete": false
+    }
   },
   "runtime": {
     "releaseId": "anime-20261029-d3c13ee82ec8",
