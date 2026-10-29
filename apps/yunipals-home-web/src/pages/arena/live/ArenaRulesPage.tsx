@@ -8,7 +8,7 @@ export function ArenaRulesPage() {
   const deployment = useArenaDeployment();
   const arenaRequest = useArenaRequest();
   const rules = useQuery({
-    queryKey: ["arena-live", deployment.kind, "rules"],
+    queryKey: ["arena-live", deployment.scope, "rules"],
     queryFn: ({ signal }) =>
       arenaRequest<{ rulesHash: string; manifest: unknown }>(
         "/rules",
@@ -72,6 +72,15 @@ export function ArenaRulesPage() {
             {deployment.kind === "anime" ? "0.60" : "1.60"} USDC to operations.
             Wallet transactions also require Base ETH for gas.
           </p>
+          {deployment.shared && (
+            <p className="mt-3 text-muted">
+              The first successful entrant also pays the quoted island draw fee
+              in ETH. Later entrants pay no draw fee. Unused ETH is returned
+              automatically; if your wallet rejects the transfer, you can claim
+              that refund separately. The oracle fee already spent is not
+              refunded if the battle expires.
+            </p>
+          )}
         </section>
         <section className="rounded-card border border-line bg-white p-6">
           <h2 className="text-xl font-bold">An island selected by VRF</h2>

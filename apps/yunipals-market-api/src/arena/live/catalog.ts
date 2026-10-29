@@ -17,6 +17,42 @@ import {
   ANIME_DIRECTOR_RESERVE,
   ANIME_DIRECTOR_POLICY
 } from "./animeDirection";
+import type {
+  ArenaContractVersion,
+  ArenaMediaKind
+} from "@protopals/yunipals-market-core/arenaProtocol";
+
+export function loadModeArenaCatalog(
+  root: string,
+  kind: ArenaMediaKind,
+  registry: string | undefined,
+  version: ArenaContractVersion
+) {
+  const base =
+    kind === "anime"
+      ? loadAnimeArenaCatalog(root, registry!)
+      : loadLiveArenaCatalog(root);
+  if (version === 1) return base;
+  const manifest = {
+    ...base.manifest,
+    version: "arena-shared-modes-input-v2",
+    arenaMode: kind,
+    randomnessFunding: {
+      policy: "first-entrant-randomness-v1",
+      payer: "first successful entrant",
+      limit: "ETH value approved in that entry transaction",
+      excess:
+        "automatic refund; withdrawable credit if the receiver rejects ETH",
+      expiry:
+        "USDC entries remain refundable; the used oracle fee is not refundable"
+    }
+  };
+  return {
+    ...base,
+    manifest,
+    rulesHash: `0x${sha256(canonicalJson(manifest))}` as Hex
+  };
+}
 
 export const ARENA_POOL_HASH =
   "0x9d80402505ef5b278e8417b2d9b6e2b80d63326bb02d7f465f42d19f7dc8019c" as const;

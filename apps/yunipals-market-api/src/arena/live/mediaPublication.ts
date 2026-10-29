@@ -1,3 +1,7 @@
+import {
+  parseArenaDeployment,
+  arenaKind
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { stat, readFile } from "node:fs/promises";
@@ -49,7 +53,7 @@ export function parseMediaPublication(
     !validHash(publicationHash) ||
     digest(value) !== publicationHash ||
     typeof value.deployment !== "string" ||
-    !/^8453:0x[0-9a-f]{40}$/.test(value.deployment) ||
+    !/^8453:0x[0-9a-f]{40}(?::(?:video|anime))?$/.test(value.deployment) ||
     typeof value.tournamentId !== "string" ||
     !/^[1-9][0-9]{0,77}$/.test(value.tournamentId) ||
     !validHash(value.incarnation) ||
@@ -62,6 +66,12 @@ export function parseMediaPublication(
       Object.keys(publishedMediaTypes).sort().join()
   )
     throw new Error("Media publication manifest is invalid.");
+  const identity = parseArenaDeployment(value.deployment);
+  if (
+    identity.version === 2 &&
+    arenaKind((BigInt(value.tournamentId) - 1n) % 2n) !== identity.mediaKind
+  )
+    throw new Error("Media publication belongs to another Arena mode.");
   for (const entry of Object.values(value.files)) {
     if (
       !record(entry) ||

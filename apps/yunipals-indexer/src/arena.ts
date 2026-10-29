@@ -39,7 +39,8 @@ if (
         const transition = applyArenaEvent(
           existing?.state ?? null,
           item.name,
-          args
+          args,
+          contract === "YunipalsAnimeArena" ? "anime" : "video"
         );
         if (transition.state) {
           const values = {

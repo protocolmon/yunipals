@@ -20,7 +20,12 @@ export async function selectedArenaRuntimeSource(options: {
   pool: Pool;
   sourcePool?: Pool;
   native: ReturnType<typeof arenaNativeConfiguration>;
-  deployment: { id: string; contract: Address; startBlock: bigint };
+  deployment: {
+    id: string;
+    contract: Address;
+    startBlock: bigint;
+    contractVersion?: 1 | 2;
+  };
   mediaKind?: "video" | "anime";
   base: Pick<PublicClient, "getBlock" | "getChainId">;
 }) {
@@ -77,7 +82,8 @@ export async function selectedArenaRuntimeSource(options: {
         native.releaseId,
         deployment.contract,
         deployment.startBlock,
-        options.mediaKind
+        options.mediaKind,
+        deployment.contractVersion
       ),
       binding
     };

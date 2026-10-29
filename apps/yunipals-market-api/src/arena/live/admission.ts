@@ -1,3 +1,4 @@
+import { readArenaPaused } from "./protocol";
 import {
   erc721Abi,
   type Address,
@@ -123,17 +124,12 @@ export function createAdmission(
       const [live, paused] = await Promise.all([
         base.readContract({
           address: service.contract,
-          abi: arenaAbi,
+          abi: service.contractAbi,
           functionName: "tournament",
           args: [BigInt(id)],
           blockNumber: current.number
         }),
-        base.readContract({
-          address: service.contract,
-          abi: arenaAbi,
-          functionName: "entriesPaused",
-          blockNumber: current.number
-        })
+        readArenaPaused(base, service, current.number)
       ]);
       if (
         paused ||

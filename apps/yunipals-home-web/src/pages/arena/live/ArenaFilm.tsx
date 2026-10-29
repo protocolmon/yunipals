@@ -28,7 +28,7 @@ export function ArenaFilm({
   const [playbackError, setPlaybackError] = useState(false);
   const [playbackVersion, setPlaybackVersion] = useState(0);
   const media = useQuery({
-    queryKey: ["arena-live", deployment.kind, "media", id],
+    queryKey: ["arena-live", deployment.scope, "media", id],
     queryFn: ({ signal }) =>
       arenaRequest<{ state: string; payoutsReleased: boolean }>(
         `/tournaments/${id}/media`,
@@ -41,7 +41,7 @@ export function ArenaFilm({
         : 15000
   });
   const clock = useQuery({
-    queryKey: ["arena-live", deployment.kind, "film-clock", id],
+    queryKey: ["arena-live", deployment.scope, "film-clock", id],
     queryFn: ({ signal }) =>
       arenaRequest<{
         chapters: Array<{ id: string; t: number; winnerAt: number }>;
@@ -51,7 +51,7 @@ export function ArenaFilm({
     staleTime: Infinity
   });
   const result = useQuery({
-    queryKey: ["arena-live", deployment.kind, "result", id],
+    queryKey: ["arena-live", deployment.scope, "result", id],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaReviewResult>(
         `/tournaments/${id}/result`,

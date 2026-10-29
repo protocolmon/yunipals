@@ -12,6 +12,7 @@ import {
   type SourceManifest
 } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { arenaAbi } from "../../../../packages/yunipals-market-core/src/arenaAbi.js";
+import { arenaV2Abi } from "../../../../packages/yunipals-market-core/src/arenaV2Abi.js";
 import { seaportDeployment } from "../../../../packages/yunipals-market-core/src/registry.js";
 import { seaportEventAbi } from "../../../../packages/yunipals-market-core/src/seaportEvents.js";
 import { collectionAbi, islandsAbi, baseIslandsAbi } from "../abi.js";
@@ -32,6 +33,25 @@ export type ArenaSourceDeployment = {
   address: Address;
   startBlock: number;
 };
+
+export function sharedArenaSource(env: Environment = process.env) {
+  const address = env.UNIFIED_SHARED_ARENA?.toLowerCase();
+  const start = env.UNIFIED_SHARED_ARENA_START_BLOCK;
+  if (address === undefined && start === undefined) return null;
+  if (
+    !address ||
+    !/^0x[0-9a-f]{40}$/.test(address) ||
+    /^0x0{40}$/.test(address) ||
+    !start ||
+    !/^[1-9][0-9]*$/.test(start) ||
+    !Number.isSafeInteger(Number(start)) ||
+    arenaSourceDeployments(env).some(
+      (deployment) => deployment.address === address
+    )
+  )
+    throw new Error("Invalid or duplicate shared Arena source.");
+  return { address: address as Address, startBlock: Number(start) };
+}
 
 // Read-only configuration. Never import Arena's encryption/signing runtime.
 export function arenaSourceDeployments(
@@ -265,6 +285,20 @@ export function buildSourceManifest(
       )
     );
   const registry = animeRegistrySource(env);
+  const shared = sharedArenaSource(env);
+  if (shared)
+    sources.push(
+      source(
+        `arena:8453:${shared.address}`,
+        "arena",
+        8453,
+        "YunipalsArenaV2",
+        arenaV2Abi,
+        shared.address,
+        shared.startBlock,
+        arenaPolicies
+      )
+    );
   if (registry)
     sources.push(
       source(

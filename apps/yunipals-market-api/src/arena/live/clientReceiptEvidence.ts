@@ -6,6 +6,13 @@ import {
 } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import {
+  arenaContractAbi,
+  arenaEventKind,
+  arenaMode,
+  type ArenaContractVersion,
+  type ArenaMediaKind
+} from "@protopals/yunipals-market-core/arenaProtocol";
+import {
   ARENA_ENTRY_FEE,
   type ArenaTransactionAction,
   type ArenaTransactionStatus
@@ -22,7 +29,9 @@ export function arenaClientReceiptEvidence(
   contract: Address,
   paymentToken: Address,
   strict = false,
-  entryFee = ARENA_ENTRY_FEE
+  entryFee = ARENA_ENTRY_FEE,
+  version: ArenaContractVersion = 1,
+  kind: ArenaMediaKind = "video"
 ): ArenaTransactionStatus["result"] {
   for (const log of receipt.logs) {
     if (
@@ -61,11 +70,17 @@ export function arenaClientReceiptEvidence(
       } else {
         if (!same(log.address, contract)) continue;
         const decoded = decodeEventLog({
-          abi: arenaAbi,
+          abi: arenaContractAbi(version),
           data: log.data,
           topics: log.topics,
           strict: true
         });
+        if (
+          version === 2 &&
+          arenaEventKind(Object.fromEntries(Object.entries(decoded.args))) !==
+            kind
+        )
+          continue;
         if (
           row.action.kind === "entry" &&
           decoded.eventName === "Entered" &&
@@ -83,12 +98,18 @@ export function arenaClientReceiptEvidence(
           };
         if (
           row.action.kind === "claim" &&
-          decoded.eventName === "Claimed" &&
+          ((decoded.eventName === "RandomnessRefundClaimed" &&
+            row.action.asset === "randomness-refund") ||
+            (decoded.eventName === "Claimed" &&
+              row.action.asset === undefined)) &&
+          (version === 1 ||
+            ("mode" in decoded.args &&
+              decoded.args.mode === arenaMode(kind))) &&
           same(decoded.args.player, row.wallet) &&
-          same(decoded.args.recipient, row.wallet)
+          same(decoded.args.recipient, row.action.recipient ?? row.wallet)
         )
           return {
-            event: "Claimed",
+            event: decoded.eventName,
             amount: decoded.args.amount.toString(),
             blockNumber: receipt.blockNumber.toString(),
             logIndex: log.logIndex!

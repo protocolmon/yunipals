@@ -44,17 +44,17 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
     : "all";
   const configured = !!deployment.apiUrl;
   const config = useQuery({
-    queryKey: ["arena-live", deployment.kind, "config"],
+    queryKey: ["arena-live", deployment.scope, "config"],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaConfig>("/config", undefined, signal),
     enabled: configured,
     staleTime: 60000
   });
   const wallet = useArenaWallet(config.data, () =>
-    client.invalidateQueries({ queryKey: ["arena-live", deployment.kind] })
+    client.invalidateQueries({ queryKey: ["arena-live", deployment.scope] })
   );
   const summary = useQuery({
-    queryKey: ["arena-live", deployment.kind, "summary", address],
+    queryKey: ["arena-live", deployment.scope, "summary", address],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaWalletSummary>(
         `/wallets/${address}/summary`,
@@ -65,7 +65,14 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
     refetchInterval: 30000
   });
   const history = useInfiniteQuery({
-    queryKey: ["arena-live", deployment.kind, "history", address, role, status],
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "history",
+      address,
+      role,
+      status
+    ],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) => {
       const query = new URLSearchParams({
@@ -86,7 +93,7 @@ export function ArenaDashboard({ role }: { role: "entrant" | "host" }) {
     refetchInterval: 60000
   });
   const rewards = useInfiniteQuery({
-    queryKey: ["arena-live", deployment.kind, "rewards", address],
+    queryKey: ["arena-live", deployment.scope, "rewards", address],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) =>
       arenaRequest<ArenaRewardsPage>(

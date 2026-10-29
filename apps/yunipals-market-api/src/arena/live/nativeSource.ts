@@ -1,3 +1,7 @@
+import {
+  arenaContractAbi,
+  type ArenaContractVersion
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import type { Pool } from "pg";
 import { createIndexerReader } from "@protopals/yunipals-indexer-server/readers";
 import {
@@ -135,7 +139,8 @@ export class NativeArenaSource {
     readonly releaseId: string,
     contract: string,
     startBlock: bigint,
-    mediaKind: "video" | "anime" = "video"
+    mediaKind: "video" | "anime" = "video",
+    readonly contractVersion: ArenaContractVersion = 1
   ) {
     if (
       !hash(releaseId) ||
@@ -147,7 +152,8 @@ export class NativeArenaSource {
     this.definition = {
       contract: contract.toLowerCase(),
       startBlock: String(startBlock),
-      abiHash: manifestDigest(arenaAbi),
+      abiHash: manifestDigest(arenaContractAbi(contractVersion)),
+      ...(contractVersion === 2 ? { contractVersion } : {}),
       mediaKind
     };
   }

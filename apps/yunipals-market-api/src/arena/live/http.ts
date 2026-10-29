@@ -74,9 +74,11 @@ export function createArenaApp(
 ) {
   const app = new Hono();
   const cookie =
-    options.mediaKind === "anime"
-      ? "__Host-yunipals-anime-arena"
-      : "__Host-yunipals-arena";
+    service.contractVersion === 2
+      ? `__Host-yunipals-arena-${service.contract.slice(2).toLowerCase()}-${service.mediaKind}`
+      : options.mediaKind === "anime"
+        ? "__Host-yunipals-anime-arena"
+        : "__Host-yunipals-arena";
   const transactions = new ArenaClientTransactions(service);
   const reads = new ArenaReadModels(service);
   app.use(
@@ -138,6 +140,9 @@ export function createArenaApp(
     c.json({
       chainId: 8453,
       contract: service.contract,
+      contractVersion: service.contractVersion,
+      randomnessFunding:
+        service.contractVersion === 2 ? "first-entrant" : "reserve",
       paymentToken: ARENA_USDC,
       entryFee:
         options.mediaKind === "anime" ? "1000000" : ARENA_ENTRY_FEE.toString(),

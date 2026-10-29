@@ -1,3 +1,4 @@
+import { readArenaSettings } from "./protocol";
 import pg from "pg";
 import { parseAbi } from "viem";
 import { AnimeFighters } from "./animeFighters";
@@ -17,7 +18,8 @@ import {
   ARENA_ISLANDS,
   ARENA_POOL_HASH,
   loadLiveArenaCatalog,
-  loadAnimeArenaCatalog
+  loadAnimeArenaCatalog,
+  loadModeArenaCatalog
 } from "./catalog";
 import { ArenaInputCompiler } from "./input";
 import { ArenaIdentityAnalysis } from "./identityAnalysis";
@@ -33,91 +35,35 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
   const config = arenaConfig();
   const root = process.env.ARENA_REPOSITORY_ROOT;
   if (!root) throw new Error("ARENA_REPOSITORY_ROOT is required.");
-  const catalog =
-    config.mediaKind === "anime"
-      ? loadAnimeArenaCatalog(root, config.eligibilityRegistry!)
-      : loadLiveArenaCatalog(root);
+  const catalog = loadModeArenaCatalog(
+    root,
+    config.mediaKind,
+    config.eligibilityRegistry,
+    config.contractVersion
+  );
   if (catalog.rulesHash !== config.rulesHash)
     throw new Error("Local rules manifest differs from ARENA_RULES_HASH.");
   const clients = arenaRpcClients(),
     base = clients.get(8453)!;
-  const values = await base.multicall({
-    allowFailure: false,
-    contracts: [
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "paymentToken"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "entryFee"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "winnerBps"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "islandBps"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "joinWindow"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "strategyWindow"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "rulesHash"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "poolHash"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "admissionSigner"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "resolutionWindow"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "islands"
-      },
-      {
-        address: config.deployment.contract,
-        abi: arenaAbi,
-        functionName: "i_vrfV2PlusWrapper"
-      }
-    ]
+  const settings = await readArenaSettings(base, {
+    contract: config.deployment.contract,
+    mediaKind: config.mediaKind,
+    contractVersion: config.contractVersion
   });
   if (
-    values[0].toLowerCase() !== ARENA_USDC.toLowerCase() ||
-    values[1] !== (config.mediaKind === "anime" ? 1_000_000n : 2_000_000n) ||
-    values[2] !== (config.mediaKind === "anime" ? 8000 : 7500) ||
-    values[3] !== 500 ||
-    values[4] !== 604800 ||
-    values[5] !== 86400 ||
-    values[6] !== config.rulesHash ||
-    values[7] !== ARENA_POOL_HASH ||
-    values[9] !== catalog.manifest.timing.resolutionSeconds ||
-    values[10].toLowerCase() !== ARENA_ISLANDS ||
-    values[11].toLowerCase() !== "0xb0407dbe851f8318bd31404a49e658143c982f23"
+    settings.paymentToken.toLowerCase() !== ARENA_USDC.toLowerCase() ||
+    settings.entryFee !==
+      (config.mediaKind === "anime" ? 1_000_000n : 2_000_000n) ||
+    settings.winnerBps !== (config.mediaKind === "anime" ? 8000 : 7500) ||
+    settings.islandBps !== 500 ||
+    settings.joinWindow !== 604800 ||
+    settings.strategyWindow !== 86400 ||
+    settings.rulesHash !== config.rulesHash ||
+    settings.poolHash !== ARENA_POOL_HASH ||
+    settings.resolutionWindow !== catalog.manifest.timing.resolutionSeconds ||
+    settings.islands.toLowerCase() !== ARENA_ISLANDS ||
+    settings.wrapper.toLowerCase() !==
+      "0xb0407dbe851f8318bd31404a49e658143c982f23"
   )
     throw new Error(
       "Arena contract settings do not match the approved launch configuration."
@@ -135,18 +81,23 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
         )
       : undefined;
   if (anime) {
-    const actual = await base.readContract({
-      address: config.deployment.contract,
-      abi: parseAbi(["function eligibility() view returns (address)"]),
-      functionName: "eligibility"
-    });
+    const actual =
+      settings.eligibility ??
+      (await base.readContract({
+        address: config.deployment.contract,
+        abi: parseAbi(["function eligibility() view returns (address)"]),
+        functionName: "eligibility"
+      }));
     if (actual.toLowerCase() !== config.eligibilityRegistry)
       throw new Error("Anime eligibility registry differs from the contract.");
   }
   const signer = config.admissionKeyFile
     ? arenaSigner(config.admissionKeyFile)
     : null;
-  if (signer && signer.address.toLowerCase() !== values[8].toLowerCase())
+  if (
+    signer &&
+    signer.address.toLowerCase() !== settings.admissionSigner.toLowerCase()
+  )
     throw new Error("Arena admission signer does not match the contract.");
   if (config.entriesEnabled && !signer)
     throw new Error("Paid entry requires the admission signer.");
@@ -193,7 +144,8 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
       },
       nativeSource,
       binding,
-      config.mediaKind
+      config.mediaKind,
+      config.contractVersion
     );
     const selected = (
       await pool.query("SELECT 1 FROM yunipals_arena.deployment WHERE id=$1", [

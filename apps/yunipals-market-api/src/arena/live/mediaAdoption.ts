@@ -1,3 +1,4 @@
+import { parseArenaDeployment } from "@protopals/yunipals-market-core/arenaProtocol";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Pool, PoolClient } from "pg";
@@ -56,7 +57,7 @@ export async function verifyNativeArenaFilm(
   )
     throw new Error("Arena publication head is unavailable.");
   const film = await client.readContract({
-    address: observed.tournament.deployment.slice(5) as Address,
+    address: parseArenaDeployment(observed.tournament.deployment).contract,
     abi: arenaAbi,
     functionName: "publishedVideoHash",
     args: [BigInt(observed.tournament.id)],
@@ -80,8 +81,7 @@ export class ArenaMediaAdoption {
     readonly storage: string,
     readonly verify: (observed: NativeArenaActionObservation) => Promise<void>
   ) {
-    if (!/^8453:0x[0-9a-f]{40}$/.test(deployment))
-      throw new Error("Invalid Arena adoption deployment.");
+    parseArenaDeployment(deployment);
   }
   private async fence(db: Queryable) {
     const marker = (

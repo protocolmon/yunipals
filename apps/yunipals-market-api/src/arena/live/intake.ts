@@ -1,4 +1,9 @@
 import {
+  arenaContractAbi,
+  arenaDeploymentId,
+  type ArenaContractVersion
+} from "@protopals/yunipals-market-core/arenaProtocol";
+import {
   arenaEconomics,
   parseAnimeLoadout,
   type AnimeLoadout
@@ -99,10 +104,18 @@ export class ArenaIntake {
         >
       >,
     readonly sourceSelection?: ArenaSourceBinding,
-    readonly mediaKind: "video" | "anime" = "video"
+    readonly mediaKind: "video" | "anime" = "video",
+    readonly contractVersion: ArenaContractVersion = 1
   ) {
-    if (nativeSource && deployment !== `8453:${contract.toLowerCase()}`)
+    if (
+      nativeSource &&
+      deployment !== arenaDeploymentId(contract, mediaKind, contractVersion)
+    )
       throw new Error("Native Arena deployment identity mismatch.");
+  }
+
+  get contractAbi() {
+    return arenaContractAbi(this.contractVersion);
   }
 
   get economics() {

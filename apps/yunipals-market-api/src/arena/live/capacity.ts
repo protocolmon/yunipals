@@ -6,6 +6,7 @@ import { ARENA_MEDIA_TOURNAMENT_RESERVED_BYTES } from "./storage";
 import { ANIME_DIRECTOR_RESERVE } from "./animeDirection";
 
 export type CapacitySnapshot = {
+  randomnessFunding?: "reserve" | "first-entrant";
   openaiFundingMode?: ArenaOpenaiFundingMode;
   runwareMicrousd: number;
   openrouterMicrousd?: number;
@@ -81,6 +82,8 @@ export function validateCapacity(value: CapacitySnapshot) {
         value.mediaQuotaBytes!);
   if (
     !mediaValid ||
+    (value.randomnessFunding !== undefined &&
+      !["reserve", "first-entrant"].includes(value.randomnessFunding)) ||
     (value.openaiFundingMode !== undefined &&
       !["capped", "ongoing"].includes(value.openaiFundingMode)) ||
     !integer(value.runwareMicrousd) ||
@@ -154,6 +157,13 @@ export class ArenaCapacity {
         "New entries are temporarily paused while operating capacity is checked."
       );
     const h = validateCapacity(health.snapshot);
+    if (
+      (this.service?.contractVersion === 2) !==
+      (h.randomnessFunding === "first-entrant")
+    )
+      return unavailable(
+        "The randomness funding policy needs a fresh capacity check."
+      );
     const ongoing = h.openaiFundingMode === "ongoing";
     if (!ongoing && h.openaiBudgetExpiresAt <= Date.now())
       return unavailable(
@@ -287,6 +297,7 @@ export class ArenaCapacity {
       Number(newLobby);
     if (
       firstEntries &&
+      h.randomnessFunding !== "first-entrant" &&
       (BigInt(h.vrfQuoteWei) === 0n ||
         BigInt(h.vrfQuoteWei) > BigInt(h.vrfMaxWei) ||
         BigInt(h.vrfAvailableWei) <

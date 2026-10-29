@@ -2,35 +2,47 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { environment } from "@/environment";
 import { arenaRequestAt } from "@/lib/arenaLive";
 export type ArenaKind = "video" | "anime";
-const ArenaDeploymentContext = createContext<ArenaKind>("video");
+const ArenaDeploymentContext = createContext<{
+  kind: ArenaKind;
+  shared: boolean;
+}>({ kind: "video", shared: false });
 export function ArenaDeploymentProvider({
   kind,
+  shared = false,
   children
 }: {
   kind: ArenaKind;
+  shared?: boolean;
   children: ReactNode;
 }) {
+  const value = useMemo(() => ({ kind, shared }), [kind, shared]);
   return (
-    <ArenaDeploymentContext.Provider value={kind}>
+    <ArenaDeploymentContext.Provider value={value}>
       {children}
     </ArenaDeploymentContext.Provider>
   );
 }
 export function useArenaDeployment() {
-  const kind = useContext(ArenaDeploymentContext);
+  const { kind, shared } = useContext(ArenaDeploymentContext);
   return useMemo(
     () => ({
       kind,
-      apiUrl:
-        kind === "anime"
+      shared,
+      scope: shared ? `${kind}:shared` : kind,
+      apiUrl: shared
+        ? environment.sharedArenaApiUrl
+          ? `${environment.sharedArenaApiUrl}/${kind}`
+          : null
+        : kind === "anime"
           ? environment.animeArenaApiUrl
           : environment.arenaApiUrl,
-      basePath: kind === "anime" ? "/arena/anime" : "/arena",
+      basePath:
+        kind === "anime" ? "/arena/anime" : shared ? "/arena/video" : "/arena",
       entry: kind === "anime" ? "1" : "2",
       champion: kind === "anime" ? "3.20" : "6",
       label: kind === "anime" ? "Anime Arena" : "Yunipals Arena"
     }),
-    [kind]
+    [kind, shared]
   );
 }
 export function useArenaRequest() {

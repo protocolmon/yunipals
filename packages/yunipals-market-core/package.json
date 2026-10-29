@@ -42,7 +42,9 @@
     "./arenaViews": "./src/arenaViews.ts",
     "./animeRegistryAbi": "./src/animeRegistryAbi.ts",
     "./animeArenaAbi": "./src/animeArenaAbi.ts",
-    "./anime": "./src/anime.ts"
+    "./anime": "./src/anime.ts",
+    "./arenaV2Abi": "./src/arenaV2Abi.ts",
+    "./arenaProtocol": "./src/arenaProtocol.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

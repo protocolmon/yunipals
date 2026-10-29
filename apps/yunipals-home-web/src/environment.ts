@@ -15,6 +15,8 @@ export const environment = {
   fixtures: import.meta.env?.MODE === "fixtures",
   production: import.meta.env?.PROD === true,
   arenaLab: import.meta.env?.DEV === true,
+  sharedArenaApiUrl:
+    import.meta.env?.VITE_SHARED_ARENA_API_URL?.replace(/\/$/, "") || null,
   animeArenaApiUrl:
     import.meta.env?.VITE_ANIME_ARENA_API_URL?.replace(/\/$/, "") || null,
   arenaApiUrl: import.meta.env?.VITE_ARENA_API_URL?.replace(/\/$/, "") || null,

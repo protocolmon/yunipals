@@ -64,7 +64,8 @@ async function run() {
       },
       nativeSource,
       binding,
-      config.mediaKind
+      config.mediaKind,
+      config.contractVersion
     );
     // Neither this command nor startup performs migrations or adopts legacy work.
     await service.ready();

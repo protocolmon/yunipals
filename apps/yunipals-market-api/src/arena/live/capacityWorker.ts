@@ -110,37 +110,49 @@ try {
       stage = "Base head and gas";
       const [block, gasPrice] = await Promise.all([
         base.getBlock({ blockTag: "latest" }),
-        base.getGasPrice()
+        runtime.config.contractVersion === 2
+          ? Promise.resolve(0n)
+          : base.getGasPrice()
       ]);
       if (Math.abs(Number(block.timestamp) * 1000 - Date.now()) > 120000)
         throw new Error("Base head is stale.");
       const address = runtime.config.deployment.contract;
       stage = "arena funding configuration";
-      const [available, maximum, referee, operator, wrapper] =
-        await base.multicall({
-          blockNumber: block.number,
-          allowFailure: false,
-          contracts: [
-            { address, abi: arenaAbi, functionName: "availableVrfFunds" },
-            { address, abi: arenaAbi, functionName: "maxVrfCost" },
-            { address, abi: arenaAbi, functionName: "referee" },
-            { address, abi: arenaAbi, functionName: "lobbyOperator" },
-            { address, abi: arenaAbi, functionName: "i_vrfV2PlusWrapper" }
-          ]
-        });
+      const [referee, operator, wrapper] = await base.multicall({
+        blockNumber: block.number,
+        allowFailure: false,
+        contracts: [
+          { address, abi: arenaAbi, functionName: "referee" },
+          { address, abi: arenaAbi, functionName: "lobbyOperator" },
+          { address, abi: arenaAbi, functionName: "i_vrfV2PlusWrapper" }
+        ]
+      });
+      const [available, maximum] =
+        runtime.config.contractVersion === 2
+          ? [0n, 0n]
+          : await base.multicall({
+              blockNumber: block.number,
+              allowFailure: false,
+              contracts: [
+                { address, abi: arenaAbi, functionName: "availableVrfFunds" },
+                { address, abi: arenaAbi, functionName: "maxVrfCost" }
+              ]
+            });
       stage = "draw and operating funds";
       const [quote, refereeGas, operatorGas, disk] = await Promise.all([
-        base.readContract({
-          address: wrapper,
-          abi: parseAbi([
-            "function estimateRequestPriceNative(uint32,uint32,uint256) view returns (uint256)"
-          ]),
-          functionName: "estimateRequestPriceNative",
-          // eth_call does not supply tx.gasprice by default. Price with a 2x
-          // current-gas buffer; the contract enforces its cap again at join.
-          args: [120000, 1, gasPrice * 2n],
-          blockNumber: block.number
-        }),
+        runtime.config.contractVersion === 2
+          ? Promise.resolve(0n)
+          : base.readContract({
+              address: wrapper,
+              abi: parseAbi([
+                "function estimateRequestPriceNative(uint32,uint32,uint256) view returns (uint256)"
+              ]),
+              functionName: "estimateRequestPriceNative",
+              // eth_call does not supply tx.gasprice by default. Price with a 2x
+              // current-gas buffer; the contract enforces its cap again at join.
+              args: [120000, 1, gasPrice * 2n],
+              blockNumber: block.number
+            }),
         base.getBalance({ address: referee, blockNumber: block.number }),
         base.getBalance({ address: operator, blockNumber: block.number }),
         statfs(storage)
@@ -148,6 +160,8 @@ try {
       stage = "capacity snapshot";
       await runtime.capacity.save(
         {
+          randomnessFunding:
+            runtime.config.contractVersion === 2 ? "first-entrant" : "reserve",
           runwareMicrousd,
           ...(openrouterMicrousd !== undefined ? { openrouterMicrousd } : {}),
           openaiFundingMode: fundingMode,

@@ -107,7 +107,7 @@ export class NativeArenaClientTransactions {
             String(event.args.tokenId) === row.action.tokenId
           : row.action.kind === "claim" &&
             same(event.args.player, row.wallet) &&
-            same(event.args.recipient, row.wallet) &&
+            same(event.args.recipient, row.action.recipient ?? row.wallet) &&
             String(event.args.amount) === result.amount)
     );
   }
@@ -243,23 +243,33 @@ export class NativeArenaClientTransactions {
       }
       let incarnation: string | null = null;
       if (action.kind === "claim") {
-        const credit = await this.service.nativeSource!.credit!(address);
-        if (BigInt(credit.amount) === 0n) {
-          const proof = await this.service.nativeSource!.transaction!(
-            hash.toLowerCase()
+        if (
+          action.asset === "randomness-refund" &&
+          this.service.contractVersion !== 2
+        )
+          throw new ArenaRequestError(
+            400,
+            "This arena has no entrant-funded randomness refunds."
           );
-          if (
-            !proof.events.some(
-              (event) =>
-                event.name === "Claimed" &&
-                same(event.args.player, address) &&
-                same(event.args.recipient, address)
-            )
-          )
-            throw new ArenaRequestError(
-              409,
-              "There is no indexed claim balance for this wallet."
+        if (action.asset !== "randomness-refund") {
+          const credit = await this.service.nativeSource!.credit!(address);
+          if (BigInt(credit.amount) === 0n) {
+            const proof = await this.service.nativeSource!.transaction!(
+              hash.toLowerCase()
             );
+            if (
+              !proof.events.some(
+                (event) =>
+                  event.name === "Claimed" &&
+                  same(event.args.player, address) &&
+                  same(event.args.recipient, address)
+              )
+            )
+              throw new ArenaRequestError(
+                409,
+                "There is no indexed claim balance for this wallet."
+              );
+          }
         }
       } else {
         const origins = (
@@ -487,7 +497,9 @@ export class NativeArenaClientTransactions {
             this.service.contract,
             this.paymentToken,
             true,
-            this.service.economics.entry
+            this.service.economics.entry,
+            this.service.contractVersion,
+            this.service.mediaKind
           )
         : null;
     const changed = this.changed(row, proof);

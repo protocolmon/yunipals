@@ -6,6 +6,8 @@ import {
   baseIslandCollection
 } from "./lib/constants.js";
 import { baseRpcUrlOf, bnbRpcUrlOf, polygonRpcUrlOf } from "./lib/rpc.js";
+import { arenaV2Abi } from "../../packages/yunipals-market-core/src/arenaV2Abi.js";
+import { sharedArenaSource } from "./lib/unified/sources.js";
 import { boosterContracts } from "./lib/boosters/config.js";
 import { baseMetadataAbi } from "./lib/metadata/base-abi.js";
 import {
@@ -40,6 +42,7 @@ const sourceManifest = buildSourceManifest();
 await preflightUnifiedRpc(sourceManifest);
 const { video: arenas, anime: animeArena } = arenaContractSources();
 const animeRegistry = animeRegistrySource();
+const sharedArena = sharedArenaSource();
 const seaport = sourceManifest.sources.find(
   (source) => source.id === "marketplace:bnb:seaport"
 )!;
@@ -121,6 +124,12 @@ export default createConfig({
       abi: arenaAbi,
       address: animeArena ? animeArena.address : ([] as Address[]),
       startBlock: animeArena?.startBlock ?? 0
+    },
+    YunipalsArenaV2: {
+      chain: "base",
+      abi: arenaV2Abi,
+      address: sharedArena ? sharedArena.address : ([] as Address[]),
+      startBlock: sharedArena?.startBlock ?? 0
     },
     BnbSeaport: {
       chain: "bnb",

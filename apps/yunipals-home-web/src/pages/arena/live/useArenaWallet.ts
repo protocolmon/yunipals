@@ -1,6 +1,17 @@
+import { readArenaJoinPayment } from "@/lib/arenaPayment";
+import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
+import { arenaMode } from "@protopals/yunipals-market-core/arenaProtocol";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useEffect, useRef, useState } from "react";
-import { BaseError, erc20Abi, toHex, type Hex } from "viem";
+import {
+  BaseError,
+  erc20Abi,
+  toHex,
+  isAddress,
+  formatEther,
+  type Address,
+  type Hex
+} from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -86,7 +97,7 @@ export function useArenaWallet(
   const guard = useRef(false);
   const scope =
     address && config
-      ? `${config.contract.toLowerCase()}/${address.toLowerCase()}`
+      ? `${config.contract.toLowerCase()}/${address.toLowerCase()}${config.contractVersion === 2 ? `/${deployment.kind}` : ""}`
       : null;
   const currentScope = useRef(scope);
   const privateScope = useRef<{
@@ -101,7 +112,9 @@ export function useArenaWallet(
   const visibleOperation =
     operation &&
     operation.wallet.toLowerCase() === address?.toLowerCase() &&
-    operation.contract.toLowerCase() === config?.contract.toLowerCase()
+    operation.contract.toLowerCase() === config?.contract.toLowerCase() &&
+    operation.mediaKind ===
+      (config?.contractVersion === 2 ? deployment.kind : undefined)
       ? operation
       : null;
   const pendingFighter = transactionPending(visibleOperation)
@@ -160,7 +173,13 @@ export function useArenaWallet(
     setError(null);
     setTransaction(null);
     const value =
-      address && config ? readArenaTransaction(address, config.contract) : null;
+      address && config
+        ? readArenaTransaction(
+            address,
+            config.contract,
+            config.contractVersion === 2 ? deployment.kind : undefined
+          )
+        : null;
     setOperation(value);
     if (value && transactionPending(value)) void resumeRef.current(value);
     return () => {
@@ -330,7 +349,13 @@ export function useArenaWallet(
     if (!address || !config) throw new Error("Connect your wallet first.");
     if (currentScope.current === scope) setTransaction(hash);
     let value = {
-      ...newArenaTransaction(address, config.contract, hash, action),
+      ...newArenaTransaction(
+        address,
+        config.contract,
+        hash,
+        action,
+        config.contractVersion === 2 ? deployment.kind : undefined
+      ),
       fighter
     };
     remember(value);
@@ -493,8 +518,49 @@ export function useArenaWallet(
         if (Number(permit.expiry) * 1000 < Date.now() + 60000)
           permit = await admission();
         assertCurrent();
-        progress("Confirm in wallet…");
-        setBusy("Confirm entry in your wallet");
+        const payment = await readArenaJoinPayment(client, config, id);
+        const joinArgs = [
+          BigInt(id),
+          {
+            ...permit.entry,
+            nftChainId: BigInt(permit.entry.nftChainId),
+            tokenId: BigInt(permit.entry.tokenId)
+          },
+          BigInt(permit.expiry),
+          permit.signature
+        ] as const;
+        if (config.contractVersion === 2 && payment.fees) {
+          const [gas, balance] = await Promise.all([
+            client.estimateContractGas({
+              account: address,
+              address: config.contract,
+              abi: arenaV2Abi,
+              functionName: "join",
+              args: joinArgs,
+              value: payment.value,
+              ...payment.fees
+            }),
+            client.getBalance({ address })
+          ]);
+          if (
+            balance <
+            payment.value + ((gas * 125n) / 100n) * payment.fees.maxFeePerGas
+          )
+            throw new Error(
+              `You need ${formatEther(payment.value)} ETH for the island draw, plus enough ETH for network gas.`
+            );
+        }
+        assertCurrent();
+        progress(
+          payment.firstEntry
+            ? `First entry: up to ${formatEther(payment.value)} ETH for the island draw; unused ETH is returned.`
+            : "Confirm in wallet…"
+        );
+        setBusy(
+          payment.firstEntry
+            ? "Confirm entry and island draw fee in your wallet"
+            : "Confirm entry in your wallet"
+        );
         await confirmed(
           await writeContractAsync({
             chainId: 8453,
@@ -502,16 +568,10 @@ export function useArenaWallet(
             address: config.contract,
             abi: arenaAbi,
             functionName: "join",
-            args: [
-              BigInt(id),
-              {
-                ...permit.entry,
-                nftChainId: BigInt(permit.entry.nftChainId),
-                tokenId: BigInt(permit.entry.tokenId)
-              },
-              BigInt(permit.expiry),
-              permit.signature
-            ]
+            ...(config.contractVersion === 2
+              ? { value: payment.value, ...payment.fees }
+              : {}),
+            args: joinArgs
           }),
           {
             kind: "entry",
@@ -622,27 +682,55 @@ export function useArenaWallet(
         clearArenaStrategy(config.contract, address, id, seat);
         setBusy("Updating your strategy");
       }),
-    claim: () =>
-      execute("Claiming your USDC", async () => {
-        if (!config || !address) throw new Error("Connect your wallet first.");
-        if (transactionPending(visibleOperation))
-          throw new Error(
-            "Check your pending transaction before claiming again."
+    claim: (refund = false, recipient?: Address) =>
+      execute(
+        refund ? "Claiming unused draw-fee ETH" : "Claiming your USDC",
+        async () => {
+          if (!config || !address)
+            throw new Error("Connect your wallet first.");
+          if (transactionPending(visibleOperation))
+            throw new Error(
+              "Check your pending transaction before claiming again."
+            );
+          const target = recipient ?? address;
+          if (
+            !isAddress(target) ||
+            /^0x0{40}$/i.test(target) ||
+            target.toLowerCase() === config.contract.toLowerCase()
+          )
+            throw new Error("Choose a valid refund recipient.");
+          if (refund && config.contractVersion !== 2)
+            throw new Error("This arena has no entrant-funded draw refunds.");
+          await ensureSession(
+            refund ? "Claiming unused draw-fee ETH" : "Claiming your USDC"
           );
-        await ensureSession("Claiming your USDC");
-        if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
-        await confirmed(
-          await writeContractAsync({
-            chainId: 8453,
-            account: address,
-            address: config.contract,
-            abi: arenaAbi,
-            functionName: "claim",
-            args: [address]
-          }),
-          { kind: "claim" }
-        );
-      }),
+          if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
+          const hash =
+            config.contractVersion === 2
+              ? await writeContractAsync({
+                  chainId: 8453,
+                  account: address,
+                  address: config.contract,
+                  abi: arenaV2Abi,
+                  functionName: refund ? "claimRandomnessRefund" : "claim",
+                  args: [arenaMode(deployment.kind), target]
+                })
+              : await writeContractAsync({
+                  chainId: 8453,
+                  account: address,
+                  address: config.contract,
+                  abi: arenaAbi,
+                  functionName: "claim",
+                  args: [address]
+                });
+          await confirmed(
+            hash,
+            refund
+              ? { kind: "claim", asset: "randomness-refund", recipient: target }
+              : { kind: "claim" }
+          );
+        }
+      ),
     readStrategy: (id: string, seat: number) =>
       execute("Loading your locked strategy", async () => {
         setStrategyTarget({ scope, tournamentId: id, seat });

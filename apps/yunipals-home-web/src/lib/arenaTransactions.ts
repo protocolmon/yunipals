@@ -19,22 +19,29 @@ export type PendingArenaTransaction = ArenaTransactionStatus & {
   wallet: Address;
   contract: Address;
   fighter?: ArenaEntryTarget;
+  mediaKind?: "video" | "anime";
 };
-const storageKey = (wallet: Address, contract: Address) =>
-  `yunipals/arena/transaction/v1/8453/${contract.toLowerCase()}/${wallet.toLowerCase()}`;
+const storageKey = (
+  wallet: Address,
+  contract: Address,
+  kind?: "video" | "anime"
+) =>
+  `yunipals/arena/transaction/v1/8453/${contract.toLowerCase()}/${wallet.toLowerCase()}${kind ? `/${kind}` : ""}`;
 
 export function readArenaTransaction(
   wallet: Address,
-  contract: Address
+  contract: Address,
+  kind?: "video" | "anime"
 ): PendingArenaTransaction | null {
   try {
     const value = JSON.parse(
-      localStorage.getItem(storageKey(wallet, contract)) ?? "null"
+      localStorage.getItem(storageKey(wallet, contract, kind)) ?? "null"
     ) as PendingArenaTransaction | null;
     if (
       !value ||
       value.wallet.toLowerCase() !== wallet.toLowerCase() ||
       value.contract.toLowerCase() !== contract.toLowerCase() ||
+      value.mediaKind !== kind ||
       !/^0x[0-9a-f]{64}$/i.test(value.hash) ||
       !["entry", "approval", "claim"].includes(value.action.kind) ||
       ![
@@ -56,7 +63,7 @@ export function readArenaTransaction(
 export function saveArenaTransaction(value: PendingArenaTransaction) {
   try {
     localStorage.setItem(
-      storageKey(value.wallet, value.contract),
+      storageKey(value.wallet, value.contract, value.mediaKind),
       JSON.stringify(value)
     );
   } catch {
@@ -68,11 +75,13 @@ export function newArenaTransaction(
   wallet: Address,
   contract: Address,
   hash: Hex,
-  action: ArenaTransactionAction
+  action: ArenaTransactionAction,
+  mediaKind?: "video" | "anime"
 ): PendingArenaTransaction {
   return {
     wallet,
     contract,
+    ...(mediaKind ? { mediaKind } : {}),
     hash,
     action,
     state: "submitted",
@@ -106,7 +115,9 @@ export function transactionLabel(value: PendingArenaTransaction) {
       ? "USDC approval"
       : value.action.kind === "entry"
         ? "Entry"
-        : "USDC claim";
+        : value.action.asset === "randomness-refund"
+          ? "ETH refund"
+          : "USDC claim";
   if (value.state === "failed")
     return "The transaction did not complete this action.";
   if (value.state === "delayed")
@@ -120,6 +131,8 @@ export function transactionLabel(value: PendingArenaTransaction) {
       ? "Entry confirmed and added to the tournament."
       : value.action.kind === "approval"
         ? "USDC approval is ready. Complete your fighter’s entry next."
-        : "USDC claimed. Your balance and withdrawal history are updated.";
+        : value.action.asset === "randomness-refund"
+          ? "Unused draw-fee ETH claimed."
+          : "USDC claimed. Your balance and withdrawal history are updated.";
   return `${action} submitted. Checking its result…`;
 }

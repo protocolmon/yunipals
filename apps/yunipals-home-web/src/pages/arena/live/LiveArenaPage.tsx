@@ -6,9 +6,12 @@ import {
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { formatUnits, type Address } from "viem";
+import { formatUnits, formatEther, type Address } from "viem";
 import { LoaderCircle } from "lucide-react";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
+import { readArenaJoinPayment } from "@/lib/arenaPayment";
+import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
+import { arenaMode } from "@protopals/yunipals-market-core/arenaProtocol";
 import type {
   AnimeKnownKit,
   AnimeBackground,
@@ -475,6 +478,8 @@ export function LiveArenaPage() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const { address } = useAccount();
+  const publicClient = usePublicClient({ chainId: 8453 });
+  const [refundRecipient, setRefundRecipient] = useState("");
   const [approvalEntries, setApprovalEntries] =
     useState<ArenaApprovalEntries>(1);
   useEffect(() => setApprovalEntries(1), [address]);
@@ -482,14 +487,14 @@ export function LiveArenaPage() {
   const [revealedId, setRevealedId] = useState<string | null>(null);
   const configured = !!deployment.apiUrl;
   const config = useQuery({
-    queryKey: ["arena-live", deployment.kind, "config"],
+    queryKey: ["arena-live", deployment.scope, "config"],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaConfig>("/config", undefined, signal),
     enabled: configured,
     staleTime: 60_000
   });
   const list = useInfiniteQuery({
-    queryKey: ["arena-live", deployment.kind, "list"],
+    queryKey: ["arena-live", deployment.scope, "list"],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam, signal }) =>
       arenaRequest<ArenaHistoryPage>(
@@ -504,7 +509,7 @@ export function LiveArenaPage() {
   const tournaments = list.data?.pages.flatMap((p) => p.items) ?? [];
   const selectedId = id;
   const detail = useQuery({
-    queryKey: ["arena-live", deployment.kind, "tournament", selectedId],
+    queryKey: ["arena-live", deployment.scope, "tournament", selectedId],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaPublicTournament>(
         `/tournaments/${selectedId!}`,
@@ -515,11 +520,47 @@ export function LiveArenaPage() {
     refetchInterval: 10000
   });
   const tournament = detail.data;
+  const drawQuote = useQuery({
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "draw-quote",
+      config.data?.contract,
+      tournament?.id,
+      tournament?.seats.length
+    ],
+    queryFn: () =>
+      readArenaJoinPayment(publicClient!, config.data!, tournament!.id),
+    enabled:
+      !!publicClient &&
+      config.data?.contractVersion === 2 &&
+      tournament?.phase === "open",
+    refetchInterval: 15000,
+    retry: false
+  });
+  const refund = useQuery({
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "eth-refund",
+      config.data?.contract,
+      address
+    ],
+    queryFn: () =>
+      publicClient!.readContract({
+        address: config.data!.contract,
+        abi: arenaV2Abi,
+        functionName: "randomnessRefund",
+        args: [arenaMode(deployment.kind), address!]
+      }),
+    enabled: !!publicClient && !!address && config.data?.contractVersion === 2,
+    refetchInterval: 15000
+  });
   const showResults = revealedId === tournament?.id;
   const context = useQuery({
     queryKey: [
       "arena-live",
-      deployment.kind,
+      deployment.scope,
       "context",
       tournament?.id,
       tournament?.islandId,
@@ -538,7 +579,7 @@ export function LiveArenaPage() {
     refetchInterval: 15000
   });
   const summary = useQuery({
-    queryKey: ["arena-live", deployment.kind, "summary", address],
+    queryKey: ["arena-live", deployment.scope, "summary", address],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaWalletSummary>(
         `/wallets/${address}/summary`,
@@ -549,10 +590,12 @@ export function LiveArenaPage() {
     refetchInterval: 30000
   });
   const wallet = useArenaWallet(config.data, () =>
-    queryClient.invalidateQueries({ queryKey: ["arena-live", deployment.kind] })
+    queryClient.invalidateQueries({
+      queryKey: ["arena-live", deployment.scope]
+    })
   );
   const inventory = useInfiniteQuery({
-    queryKey: ["arena-inventory", deployment.kind, address],
+    queryKey: ["arena-inventory", deployment.scope, address],
     queryFn: async ({ pageParam, signal }) => {
       const page =
         deployment.kind === "anime"
@@ -746,6 +789,43 @@ export function LiveArenaPage() {
           onCheck={() => void wallet.checkStatus()}
         />
       ) : null}
+      {address && refund.data !== undefined && refund.data > 0n && (
+        <section
+          className="my-6 space-y-3 rounded-card border border-line p-5"
+          aria-label="Unused draw fee refund"
+        >
+          <p>Unused draw-fee refund: {formatEther(refund.data)} ETH.</p>
+          <p className="text-sm text-muted">
+            Your wallet did not accept the automatic return. You can send the
+            unused ETH to this wallet or another address you control.
+          </p>
+          <label
+            htmlFor="arena-refund-recipient"
+            className="block text-sm font-semibold"
+          >
+            ETH recipient
+          </label>
+          <input
+            id="arena-refund-recipient"
+            className="w-full rounded-full border border-line px-4 py-2"
+            value={refundRecipient}
+            placeholder={address}
+            onChange={(event) => setRefundRecipient(event.target.value)}
+          />
+          <button
+            className={action}
+            disabled={!!wallet.busy || wallet.pendingTransaction}
+            onClick={() =>
+              void wallet.claim(
+                true,
+                (refundRecipient.trim() || address) as Address
+              )
+            }
+          >
+            Claim unused ETH
+          </button>
+        </section>
+      )}
       {address &&
         configured &&
         (claimable !== "0" || wallet.operation?.action.kind === "claim") && (
@@ -953,6 +1033,20 @@ export function LiveArenaPage() {
                 Your NFT stays in your wallet. Each different NFT can occupy one
                 active seat.
               </p>
+              {config.data?.contractVersion === 2 && (
+                <div
+                  className="my-4 rounded-card border border-line bg-lavender/10 p-4"
+                  role="status"
+                >
+                  {drawQuote.isPending
+                    ? "Checking the island draw fee…"
+                    : drawQuote.error
+                      ? "The draw fee could not be checked yet. It will be checked again before your wallet confirms payment."
+                      : drawQuote.data?.firstEntry
+                        ? `The first entry also pays up to ${formatEther(drawQuote.data.value)} ETH for the island draw, plus network gas. Unused ETH is returned automatically. The used draw fee is not refundable if the battle later expires.`
+                        : "The island draw is already paid. This entry pays USDC and network gas only."}
+                </div>
+              )}
               <div className="my-5 rounded-card border border-line bg-panel-base p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <label

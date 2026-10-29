@@ -188,7 +188,7 @@ export type ArenaTransactionAction =
       tokenId: string;
     }
   | { kind: "approval"; tournamentId: string; incarnation?: Hex }
-  | { kind: "claim" };
+  | { kind: "claim"; asset?: "randomness-refund"; recipient?: Address };
 export type ArenaTransactionStatus = {
   hash: Hex;
   action: ArenaTransactionAction;
@@ -205,7 +205,7 @@ export type ArenaTransactionStatus = {
   receiptBlockHash?: Hex | null;
   trackingExpiresAt?: string;
   result: {
-    event: "Entered" | "Claimed" | "Approval";
+    event: "Entered" | "Claimed" | "Approval" | "RandomnessRefundClaimed";
     blockNumber: string;
     logIndex: number;
     seat?: number;

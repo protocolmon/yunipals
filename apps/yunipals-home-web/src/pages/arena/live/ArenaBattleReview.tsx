@@ -143,7 +143,7 @@ export function ArenaBattleReview({
   const [matchId, setMatchId] = useState("SF1");
   const [view, setView] = useState<"judging" | "generation">("judging");
   const review = useQuery({
-    queryKey: ["arena-live", deployment.kind, "review", id, mediaReady],
+    queryKey: ["arena-live", deployment.scope, "review", id, mediaReady],
     enabled: open,
     staleTime: Infinity,
     queryFn: async ({ signal }) => {

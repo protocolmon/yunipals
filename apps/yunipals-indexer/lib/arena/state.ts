@@ -1,4 +1,5 @@
 import type { Address, Hex } from "viem";
+import { arenaEconomics } from "../../../../packages/yunipals-market-core/src/anime.js";
 import type { ArenaTournament } from "../../../../packages/yunipals-market-core/src/arena.js";
 
 export type ArenaCreditChange = { wallet: Address; amount: bigint };
@@ -38,7 +39,8 @@ function hash(value: unknown): Hex {
 export function applyArenaEvent(
   previous: ArenaTournament | null,
   eventName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  mediaKind: "video" | "anime" = "video"
 ): ArenaTransition {
   const credits: ArenaCreditChange[] = [];
   if (eventName === "Claimed") {
@@ -171,9 +173,18 @@ export function applyArenaEvent(
       if (!winner) throw new Error("Missing Arena winning seat.");
       state.videoHash = videoHash;
       credits.push(
-        { wallet: winner.player, amount: 6_000_000n },
-        { wallet: state.islandBeneficiary, amount: 400_000n },
-        { wallet: state.treasury, amount: 1_600_000n }
+        {
+          wallet: winner.player,
+          amount: BigInt(arenaEconomics(mediaKind).winner)
+        },
+        {
+          wallet: state.islandBeneficiary,
+          amount: BigInt(arenaEconomics(mediaKind).island)
+        },
+        {
+          wallet: state.treasury,
+          amount: BigInt(arenaEconomics(mediaKind).operations)
+        }
       );
       break;
     }
@@ -184,7 +195,7 @@ export function applyArenaEvent(
       credits.push(
         ...state.seats.map((seat) => ({
           wallet: seat.player,
-          amount: 2_000_000n
+          amount: BigInt(arenaEconomics(mediaKind).entry)
         }))
       );
       break;

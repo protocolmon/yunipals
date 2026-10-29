@@ -5,6 +5,8 @@ import { environment } from "@/environment";
 export type ArenaConfig = {
   chainId: 8453;
   contract: Address;
+  contractVersion?: 1 | 2;
+  randomnessFunding?: "reserve" | "first-entrant";
   paymentToken: Address;
   entryFee: string;
   mediaKind?: "video" | "anime";

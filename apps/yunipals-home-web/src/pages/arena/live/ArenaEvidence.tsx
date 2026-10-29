@@ -71,7 +71,7 @@ export function ArenaEvidence({
   const timeline = useQuery({
     queryKey: [
       "arena-live",
-      deployment.kind,
+      deployment.scope,
       "timeline",
       t.id,
       t.resultHash,

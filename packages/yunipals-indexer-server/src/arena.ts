@@ -1,3 +1,8 @@
+import {
+  arenaDeploymentId,
+  arenaEventKind,
+  arenaMode
+} from "../../yunipals-market-core/src/arenaProtocol.js";
 import { arenaEconomics } from "../../yunipals-market-core/src/anime.js";
 import type { SourceDefinition } from "../../yunipals-indexer-client/src/sources.js";
 import type { PoolClient } from "pg";
@@ -8,6 +13,7 @@ import { manifestDigest } from "./identity.js";
 import { CanonicalSourceUnavailable } from "./paging.js";
 
 export type ArenaReadDefinition = {
+  contractVersion?: 1 | 2;
   mediaKind?: "video" | "anime";
   contract: string;
   startBlock: string;
@@ -35,7 +41,9 @@ function sourceOf(reader: IndexerReader, definition: ArenaReadDefinition) {
     !/^0x[0-9a-f]{40}$/.test(definition.contract) ||
     /^0x0{40}$/.test(definition.contract) ||
     !decimal.test(definition.startBlock) ||
-    !hash.test(definition.abiHash)
+    !hash.test(definition.abiHash) ||
+    ![1, 2].includes(definition.contractVersion ?? 1) ||
+    (definition.contractVersion === 2 && !definition.mediaKind)
   )
     throw new Error("Invalid Arena read deployment.");
   const source = reader.release.manifest.sources.find(
@@ -47,12 +55,38 @@ function sourceOf(reader: IndexerReader, definition: ArenaReadDefinition) {
     source.chainId !== 8453 ||
     source.address !== definition.contract ||
     source.startBlock !== definition.startBlock ||
-    source.abiHash !== definition.abiHash
+    source.abiHash !== definition.abiHash ||
+    (source.contractName === "YunipalsArenaV2") !==
+      (definition.contractVersion === 2)
   )
     throw new Error(
       "Arena read deployment differs from the registered source."
     );
-  return source;
+  return {
+    ...source,
+    arenaVersion: definition.contractVersion ?? 1,
+    arenaMediaKind: definition.mediaKind ?? "video"
+  };
+}
+function arenaReadDeployment(definition: ArenaReadDefinition) {
+  return arenaDeploymentId(
+    definition.contract,
+    definition.mediaKind,
+    definition.contractVersion
+  );
+}
+function eventInMode(
+  args: Record<string, unknown>,
+  source: ReturnType<typeof sourceOf>
+) {
+  if (source.arenaVersion !== 2) return true;
+  try {
+    return arenaEventKind(args) === source.arenaMediaKind;
+  } catch {
+    throw new CanonicalSourceUnavailable(
+      "Invalid shared Arena event mode or tournament id."
+    );
+  }
 }
 function available(status: SourceStatus) {
   if (
@@ -88,7 +122,7 @@ function eventArgs(row: EventRow): Record<string, unknown> {
 }
 function evidence(
   row: EventRow | undefined,
-  source: SourceDefinition,
+  source: ReturnType<typeof sourceOf>,
   tournamentId?: string
 ): ArenaEventEvidence {
   if (
@@ -110,6 +144,10 @@ function evidence(
   if (
     !args ||
     typeof args !== "object" ||
+    !eventInMode(args, source) ||
+    (source.arenaVersion === 2 &&
+      ["TournamentOpened", "Claimed"].includes(row.name) &&
+      args.mode === undefined) ||
     (tournamentId !== undefined &&
       (!("id" in args) || String(args.id) !== tournamentId))
   )
@@ -216,11 +254,13 @@ export async function readArenaTransaction(
         throw new CanonicalSourceUnavailable(
           "Arena transaction event limit exceeded."
         );
-      const events = rows.map((row) => ({
-        ...evidence(row, source),
-        name: row.name,
-        args: eventArgs(row)
-      }));
+      const events = rows
+        .filter((row) => eventInMode(eventArgs(row), source))
+        .map((row) => ({
+          ...evidence(row, source),
+          name: row.name,
+          args: eventArgs(row)
+        }));
       if (events.some((event) => BigInt(event.blockNumber) > indexed))
         return { ...empty, inclusion: "not_indexed" as const };
       if (options.blockNumber !== undefined) {
@@ -259,7 +299,7 @@ export async function readArenaTransaction(
             block_number: string;
           }>(
             `SELECT opened_event_id,opened_block_hash,block_number::text FROM ${schema}.arena_tournament WHERE deployment=$1 AND tournament_id=$2`,
-            [`8453:${definition.contract}`, options.tournamentId]
+            [arenaReadDeployment(definition), options.tournamentId]
           )
         ).rows[0];
         if (row) {
@@ -300,7 +340,7 @@ export async function readArenaTransaction(
           origin = {
             opened,
             incarnation: manifestDigest({
-              deployment: `8453:${definition.contract}`,
+              deployment: arenaReadDeployment(definition),
               tournamentId: options.tournamentId,
               openedEventId: opened.id,
               openedBlockHash: opened.blockHash
@@ -335,7 +375,7 @@ export async function readArenaCredit(
           block_hash: string;
         }>(
           `SELECT amount::text,last_event_id,block_number::text,block_hash FROM ${schema}.arena_credit WHERE deployment=$1 AND wallet=$2`,
-          [`8453:${definition.contract}`, wallet]
+          [arenaReadDeployment(definition), wallet]
         )
       ).rows[0];
       if (!row) return { ...coverage, amount: "0", last: null };
@@ -418,7 +458,7 @@ export async function readArenaTournamentIds(
         (
           await db.query(
             `SELECT 1 FROM ${schema}.arena_tournament WHERE deployment=$1 AND block_number>$2 LIMIT 1`,
-            [`8453:${definition.contract}`, String(indexed)]
+            [arenaReadDeployment(definition), String(indexed)]
           )
         ).rowCount
       )
@@ -432,7 +472,7 @@ export async function readArenaTournamentIds(
       ${options.wallet ? `AND (state->>'islandBeneficiary'=$3 OR EXISTS(SELECT 1 FROM jsonb_array_elements(state->'seats') seat WHERE seat->>'player'=$3))` : ""}
       ORDER BY tournament_id::numeric ${options.workOnly ? "ASC" : "DESC"} LIMIT $2`,
           [
-            `8453:${definition.contract}`,
+            arenaReadDeployment(definition),
             limit,
             ...(options.wallet ? [options.wallet] : [])
           ]
@@ -482,7 +522,7 @@ export async function readArenaTournament(
         throw new CanonicalSourceUnavailable(
           "Arena is still indexing the required block."
         );
-      const deployment = `8453:${definition.contract}`,
+      const deployment = arenaReadDeployment(definition),
         schema = sqlIdentifier(reader.release.schema);
       const row = (
         await db.query<NativeRow>(
@@ -686,7 +726,7 @@ export async function readArenaBrowse(
     async (db, { status }) => {
       const { indexed, coverage } = await frame(db, reader, status, source),
         schema = sqlIdentifier(reader.release.schema),
-        deployment = `8453:${definition.contract}`;
+        deployment = arenaReadDeployment(definition);
       // Ponder may publish event handlers within a block before its checkpoint.
       // Do not expose their partial aggregate state or an empty substitute.
       if (
@@ -744,6 +784,7 @@ export async function readArenaBrowse(
         AND o.chain_id=8453 AND e.chain_id=8453 AND o.address=$3 AND e.address=$3 AND o.abi_hash=$4 AND e.abi_hash=$4
         AND o.args::jsonb->>'id'=t.tournament_id AND e.args::jsonb->>'id'=t.tournament_id AND t.state->>'id'=t.tournament_id
         AND o.block_hash=t.opened_block_hash AND e.block_hash=t.block_hash AND e.block_number=t.block_number
+        ${definition.contractVersion === 2 ? `AND o.args::jsonb->>'mode'='${arenaMode(definition.mediaKind!)}' AND mod(t.tournament_id::numeric-1,2)=${arenaMode(definition.mediaKind!)}` : ""}
         AND o.block_number<=e.block_number AND e.block_number<=$5
         AND (o.block_number<e.block_number OR o.log_index<=e.log_index),false) LIMIT 1`,
             [
@@ -764,6 +805,7 @@ export async function readArenaBrowse(
           await db.query(
             `SELECT 1 FROM ${schema}.arena_credit c LEFT JOIN ${schema}.canonical_event e ON e.id=c.last_event_id
       WHERE c.deployment=$1 AND NOT COALESCE(e.source_id=$2 AND e.chain_id=8453 AND e.address=$3 AND e.abi_hash=$4
+       ${definition.contractVersion === 2 ? `AND ((e.name='Claimed' AND e.args::jsonb->>'mode'='${arenaMode(definition.mediaKind!)}') OR (e.name<>'Claimed' AND mod((e.args::jsonb->>'id')::numeric-1,2)=${arenaMode(definition.mediaKind!)}))` : ""}
        AND e.name IN ('Claimed','PayoutsReleased','TournamentExpired') AND e.block_hash=c.block_hash AND e.block_number=c.block_number
        AND e.block_number<=$5 AND (e.name<>'Claimed' OR lower(e.args::jsonb->>'player')=c.wallet),false) LIMIT 1`,
             [
@@ -928,7 +970,7 @@ export async function readArenaBrowse(
         result.withdrawals = (
           await db.query<{ amount: string }>(
             `SELECT coalesce(sum((args::jsonb->>'amount')::numeric),0)::text AS amount
-       FROM ${schema}.canonical_event WHERE source_id=$1 AND name='Claimed' AND lower(args::jsonb->>'player')=$2 AND block_number<=$3`,
+       FROM ${schema}.canonical_event WHERE source_id=$1 AND name='Claimed' AND lower(args::jsonb->>'player')=$2 AND block_number<=$3 ${definition.contractVersion === 2 ? `AND args::jsonb->>'mode'='${arenaMode(definition.mediaKind!)}'` : ""}`,
             [source.id, request.wallet, String(indexed)]
           )
         ).rows[0]!.amount;
@@ -939,6 +981,7 @@ export async function readArenaBrowse(
        FROM ${schema}.canonical_event e LEFT JOIN ${schema}.arena_tournament t ON t.deployment=$1 AND t.tournament_id=e.args::jsonb->>'id'
        LEFT JOIN ${schema}.canonical_event o ON o.id=t.opened_event_id
        WHERE e.source_id=$2 AND e.block_number<=$3
+       ${definition.contractVersion === 2 ? `AND (e.name<>'Claimed' OR e.args::jsonb->>'mode'='${arenaMode(definition.mediaKind!)}')` : ""}
        AND (e.name='Claimed' OR (e.block_number>o.block_number OR (e.block_number=o.block_number AND e.log_index>=o.log_index)))
        AND ($4::numeric IS NULL OR e.block_number::numeric*4294967296+e.log_index+1<$4)
        AND (${request.kind === "timeline" ? "e.args::jsonb->>'id'=$5" : "e.name IN ('PayoutsReleased','TournamentExpired','Claimed') AND ((e.name='Claimed' AND lower(e.args::jsonb->>'player')=$5) OR (e.name<>'Claimed' AND (t.state->>'islandBeneficiary'=$5 OR t.state->>'treasury'=$5 OR EXISTS(SELECT 1 FROM jsonb_array_elements(t.state->'seats') s WHERE s->>'player'=$5))))"})

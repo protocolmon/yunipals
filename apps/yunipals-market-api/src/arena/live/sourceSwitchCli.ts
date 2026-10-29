@@ -1,3 +1,7 @@
+import {
+  arenaDeploymentId,
+  arenaVersion
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import { parseArgs } from "node:util";
 import pg from "pg";
 import { createPublicClient, http, isAddress, type PublicClient } from "viem";
@@ -75,7 +79,13 @@ async function run() {
       options: "-c default_transaction_read_only=on"
     });
   try {
-    const deployment = `8453:${contract}`,
+    const version = arenaVersion(process.env.ARENA_CONTRACT_VERSION);
+    const mediaKind = process.env.ARENA_MEDIA_KIND ?? "video";
+    if (mediaKind !== "video" && mediaKind !== "anime")
+      throw new Error("Invalid Arena mode.");
+    if (version === 2 && kind !== "unified")
+      throw new Error("Shared Arena requires a unified source.");
+    const deployment = arenaDeploymentId(contract, mediaKind, version),
       selected = await selectedArenaSource(pool, deployment);
     if (
       selected &&
@@ -119,7 +129,14 @@ async function run() {
             minimum,
             client
           )
-        : new NativeArenaSource(sourcePool, targetId, contract, BigInt(start));
+        : new NativeArenaSource(
+            sourcePool,
+            targetId,
+            contract,
+            BigInt(start),
+            mediaKind,
+            version
+          );
     const binding = selected
       ? {
           epoch: selected.epoch,

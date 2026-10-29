@@ -1,3 +1,4 @@
+import { arenaVersion } from "@protopals/yunipals-market-core/arenaProtocol";
 import pg from "pg";
 import { arenaNativeConfiguration, NativeArenaSource } from "./nativeSource";
 
@@ -34,7 +35,9 @@ try {
     pool,
     config.releaseId,
     contract,
-    BigInt(start)
+    BigInt(start),
+    process.env.ARENA_MEDIA_KIND === "anime" ? "anime" : "video",
+    arenaVersion(process.env.ARENA_CONTRACT_VERSION)
   );
   const result = await source.read(id);
   console.log(
