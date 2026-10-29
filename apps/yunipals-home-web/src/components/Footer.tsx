@@ -37,6 +37,12 @@ export function Footer({
             >
               Brandkit
             </Link>
+            <Link
+              to="/contracts"
+              className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+            >
+              Contracts
+            </Link>
             {!exomonView && (
               <button
                 type="button"

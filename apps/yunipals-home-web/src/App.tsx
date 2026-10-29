@@ -26,6 +26,11 @@ const BrandkitPage = lazy(() =>
     default: module.BrandkitPage
   }))
 );
+const ContractsPage = lazy(() =>
+  import("@/pages/contracts/page").then((module) => ({
+    default: module.ContractsPage
+  }))
+);
 const BoosterBatchSetupPage = lazy(() =>
   import("@/pages/boosters/BoosterBatchSetupPage").then((module) => ({
     default: module.BoosterBatchSetupPage
@@ -254,6 +259,7 @@ function AppContent() {
           <Route path="/collection/:tokenId" element={<CollectionPage />} />
           <Route path="/leaderboard" element={<LeaderboardRoute />} />
           <Route path="/brandkit" element={<BrandkitPage />} />
+          <Route path="/contracts" element={<ContractsPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/collector/:address" element={<CollectorPage />} />

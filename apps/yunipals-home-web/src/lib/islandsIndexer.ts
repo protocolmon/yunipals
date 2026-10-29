@@ -10,6 +10,8 @@ import {
 export const islandsCollectionId = "ethereum-islands";
 export const islandsContractAddress =
   "0xa22e2f53ca787414dc0643c399f92234949e2305";
+export const baseIslandsContractAddress =
+  "0x79b68a12a2952a9a8d0cc4d0b3fb00252c41d168";
 export const islandsCollectionHref = "/?collection=islands";
 export type IslandCollectionId = "ethereum-islands" | "base-islands-v2";
 export type IslandOrigin = "all" | "original" | "airdrop";
