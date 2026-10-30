@@ -32,6 +32,11 @@ const ContractsPage = lazy(() =>
     default: module.ContractsPage
   }))
 );
+const BoosterPhilosophyPage = lazy(() =>
+  import("@/pages/boosters/BoosterPhilosophyPage").then((module) => ({
+    default: module.BoosterPhilosophyPage
+  }))
+);
 const BoosterBatchSetupPage = lazy(() =>
   import("@/pages/boosters/BoosterBatchSetupPage").then((module) => ({
     default: module.BoosterBatchSetupPage
@@ -213,6 +218,10 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
+          <Route
+            path="/boosters/why-packs"
+            element={<BoosterPhilosophyPage />}
+          />
           <Route path="/wrap" element={<YpalWrapPage />} />
           <Route
             path="/boosters/setup/ypal"
