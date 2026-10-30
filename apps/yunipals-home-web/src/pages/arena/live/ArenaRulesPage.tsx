@@ -1,7 +1,7 @@
 import { ANIME_REASONS } from "@protopals/yunipals-market-core/anime";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useQuery } from "@tanstack/react-query";
-import { ArenaNavigation } from "./ArenaNavigation";
+import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaLoading } from "./ArenaFeedback";
 
 export function ArenaRulesPage() {
@@ -19,14 +19,11 @@ export function ArenaRulesPage() {
     staleTime: 60000
   });
   return (
-    <main className="mx-auto max-w-4xl px-5 pb-20 pt-12 text-ink">
-      <p className="text-sm font-bold uppercase tracking-widest text-grape">
-        Yunipals Arena
-      </p>
-      <h1 className="mt-3 font-display text-4xl md:text-5xl">
-        How the Arena works
-      </h1>
-      <ArenaNavigation />
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10 text-ink">
+      <ArenaPageHeader
+        title="How the Arena works"
+        description="From your first entry to your final reward: the rules, costs and timing of a battle."
+      />
       <div className="space-y-6">
         {deployment.kind === "anime" && (
           <section className="rounded-card border border-line bg-white p-6">

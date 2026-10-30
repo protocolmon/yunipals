@@ -7,7 +7,7 @@ import {
   type AnimeStatus
 } from "@protopals/yunipals-market-core/anime";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
-import { ArenaNavigation } from "../live/ArenaNavigation";
+import { ArenaPageHeader } from "../live/ArenaPageHeader";
 import { cn } from "@/lib/utils";
 type Queue = {
   items: AnimeFighter[];
@@ -19,7 +19,7 @@ export function AnimeStudioPage() {
   const deployment = useArenaDeployment(),
     request = useArenaRequest();
   const query = useInfiniteQuery({
-    queryKey: ["anime-studio", status],
+    queryKey: ["anime-studio", deployment.scope, status],
     initialPageParam: undefined as string | undefined,
     enabled: !!deployment.apiUrl,
     queryFn: ({ pageParam, signal }) =>
@@ -33,17 +33,11 @@ export function AnimeStudioPage() {
   });
   const counts = query.data?.pages[0]?.counts;
   return (
-    <main className="mx-auto max-w-5xl px-5 pb-20 pt-12 text-ink">
-      <p className="text-sm font-bold uppercase tracking-widest text-grape">
-        Anime Arena
-      </p>
-      <h1 className="mt-3 font-display text-4xl">Public fighter queue</h1>
-      <p className="mt-4 max-w-2xl text-muted">
-        Every application is visible. The curator reviews fighters in
-        application order. Rejection reasons and notes are public; holders can
-        reapply.
-      </p>
-      <ArenaNavigation />
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10 text-ink">
+      <ArenaPageHeader
+        title="Fighter approvals"
+        description="Follow fighter applications and artwork reviews. Approval lets your Base OG Yunipal enter anime battles."
+      />
       <div
         className="my-6 flex flex-wrap gap-3"
         aria-label="Filter fighter queue"
@@ -67,7 +61,7 @@ export function AnimeStudioPage() {
         ))}
       </div>
       {!deployment.apiUrl ? (
-        <p>The public queue will open with applications.</p>
+        <p>Fighter approvals will open with applications.</p>
       ) : query.isPending ? (
         <div
           className="h-24 animate-pulse rounded-card bg-lavender/30"

@@ -88,6 +88,21 @@ const LiveArenaPage = lazy(() =>
     default: module.LiveArenaPage
   }))
 );
+const ArenaQueuePage = lazy(() =>
+  import("@/pages/arena/live/ArenaQueuePage").then((m) => ({
+    default: m.ArenaQueuePage
+  }))
+);
+const ArenaRewardsPage = lazy(() =>
+  import("@/pages/arena/live/ArenaRewardsPage").then((m) => ({
+    default: m.ArenaRewardsPage
+  }))
+);
+const ArenaWatchPage = lazy(() =>
+  import("@/pages/arena/live/ArenaWatchPage").then((m) => ({
+    default: m.ArenaWatchPage
+  }))
+);
 const ArenaDashboard = lazy(() =>
   import("@/pages/arena/live/ArenaDashboard").then((module) => ({
     default: module.ArenaDashboard
@@ -264,7 +279,29 @@ function AppContent() {
                 kind="anime"
                 shared={!!environment.sharedArenaApiUrl}
               >
-                <LiveArenaPage />
+                <ArenaQueuePage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/rewards"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaRewardsPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/watch"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaWatchPage />
               </ArenaDeploymentProvider>
             }
           />
@@ -345,12 +382,14 @@ function AppContent() {
           />
           <Route path="/arena" element={<ArenaHub />} />
           <Route path="/arena/setup" element={<SharedArenaSetupPage />} />
-          <Route path="/arena/history" element={<LiveArenaPage />} />
+          <Route path="/arena/history" element={<ArenaWatchPage />} />
+          <Route path="/arena/watch" element={<ArenaWatchPage />} />
+          <Route path="/arena/rewards" element={<ArenaRewardsPage />} />
           <Route
             path="/arena/video"
             element={
               <ArenaDeploymentProvider kind="video" shared>
-                <LiveArenaPage />
+                <ArenaQueuePage />
               </ArenaDeploymentProvider>
             }
           />
@@ -359,6 +398,22 @@ function AppContent() {
             element={
               <ArenaDeploymentProvider kind="video" shared>
                 <LiveArenaPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/rewards"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaRewardsPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/watch"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaWatchPage />
               </ArenaDeploymentProvider>
             }
           />

@@ -40,7 +40,12 @@ export function useArenaDeployment() {
         kind === "anime" ? "/arena/anime" : shared ? "/arena/video" : "/arena",
       entry: kind === "anime" ? "1" : "2",
       champion: kind === "anime" ? "3.20" : "6",
-      label: kind === "anime" ? "Anime Arena" : "Yunipals Arena"
+      label:
+        kind === "anime"
+          ? "Anime Arena"
+          : shared
+            ? "Video Arena"
+            : "Previous Video Arena"
     }),
     [kind, shared]
   );

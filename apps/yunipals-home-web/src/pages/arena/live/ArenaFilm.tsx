@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { arenaArtifactPath, type ArenaMediaStatus } from "@/lib/arenaMedia";
 import { useQuery } from "@tanstack/react-query";
@@ -227,9 +228,20 @@ export function ArenaFilm({
             {clock.data?.background?.mode === "shared-preview"
               ? "Shared arena artwork · selected island rules and hosting rewards apply. "
               : ""}
-            {media.data.payoutsReleased
-              ? "Payouts are unlocked. Recipients can claim their USDC."
-              : "Video published. Payouts are unlocking on Base…"}
+            {media.data.payoutsReleased ? (
+              <>
+                Payouts are unlocked. Visit{" "}
+                <Link
+                  to={`${deployment.basePath}/rewards`}
+                  className="font-semibold underline"
+                >
+                  Rewards & claims
+                </Link>{" "}
+                to collect your USDC.
+              </>
+            ) : (
+              "Video published. Payouts are unlocking on Base…"
+            )}
           </p>
           <a
             className="inline-block rounded font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
