@@ -1,6 +1,6 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T10:22:30.658780+00:00",
+  "recordedAt": "2026-10-30T10:54:17.292722+00:00",
   "state": "pilot-enabled-awaiting-entries",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
@@ -48,7 +48,7 @@
     "canonicalDesktopAndMobile": true,
     "canonicalConnectedOwnerReadOnly": true,
     "walletTransactionsSentByBrowserChecks": 0,
-    "paidBattleStarted": false,
+    "paidBattleStarted": true,
     "sharedHistoryRegressionTests": 7,
     "nativeSigningAndReceiptTests": 10,
     "livePilotBrowser": {
@@ -168,7 +168,8 @@
       "entryStillRequiresCanonicalReceiptAndIndexedResult": true,
       "batchFallbackAfterAmbiguousSubmission": false,
       "providerTasksGeneratedByVerification": 0
-    }
+    },
+    "nativeMediaTests": 15
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -199,23 +200,34 @@
       "completedAt": "2026-10-29T22:55:51.724646+00:00",
       "objectsUploaded": 66,
       "objectsReused": 952
+    },
+    "mediaWorkerFix": {
+      "status": "success",
+      "createdAt": "2026-10-30T10:51:57.308842+00:00",
+      "completedAt": "2026-10-30T10:53:53.725033+00:00",
+      "objectsUploaded": 6,
+      "objectsReused": 1086,
+      "allFourMediaFixRecoveryObjectsCached": true
     }
   },
   "pending": [
-    "Remaining two pilot wallet entries in anime tournament #2 (red turtle and yellow chick already indexed)",
-    "Four signed strategies/loadouts to start promptly",
-    "Production film, actual provider cost reconciliation, settlement and claims"
+    "Recover original OpenRouter director generation receipt/output from its gen-\u2026 identifier",
+    "Publish and verify film, release payouts and verify claims",
+    "Reconcile actual OpenAI billing; compute complete per-film cost after OpenRouter receipt recovery"
   ],
   "backend": {
-    "releaseId": "shared-runtime-20261030-8ef320e05513",
-    "sourceCommit": "2307ecd96a01969af1c38f63f53290b127d0fd5f",
-    "archiveSha256": "cdc50526099b06d63dcda7ed2a6354c87a8d60c77d9c79b8e6d64586cc6b7a94",
+    "releaseId": "shared-runtime-20261030-4312a6952949",
+    "sourceCommit": "a4ce098fa98eaae243048c95470d1653fa330250",
+    "archiveSha256": "57b26c48cbd8956cb8c1fd72769babc59486aeedc5bc3fc48af12fdd46098b4d",
     "signingOperationalPoolMax": 3,
     "otherOperationalPoolMax": 2,
     "sourcePoolMax": 2,
     "newSigningRoleConnectionLimits": 3,
     "signingRolesChanged": 4,
-    "frozenEngineAndRecipesUnchanged": true
+    "frozenEngineAndRecipesUnchanged": true,
+    "mediaOperationalPoolMax": 3,
+    "mediaRoleConnectionLimits": 3,
+    "mediaRolesChanged": 2
   },
   "openings": [
     {
@@ -230,5 +242,17 @@
       "state": "confirmed",
       "hash": "0xc1f933a32958b51155728eaab3ce487d82aefe66d77f1b4c3436b702fe47b9db"
     }
-  ]
+  ],
+  "previousBackend": {
+    "releaseId": "shared-runtime-20261030-8ef320e05513",
+    "sourceCommit": "2307ecd96a01969af1c38f63f53290b127d0fd5f",
+    "archiveSha256": "cdc50526099b06d63dcda7ed2a6354c87a8d60c77d9c79b8e6d64586cc6b7a94",
+    "signingOperationalPoolMax": 3,
+    "otherOperationalPoolMax": 2,
+    "sourcePoolMax": 2,
+    "newSigningRoleConnectionLimits": 3,
+    "signingRolesChanged": 4,
+    "frozenEngineAndRecipesUnchanged": true
+  },
+  "pilotAudit": "anime-paid-pilot-2-2026-10-30.json"
 }

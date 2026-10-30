@@ -196,3 +196,20 @@ At the public API check, tournament #2 had two indexed pilot entries: red turtle
 require the pilot wallet. No provider generation was started by these UI checks.
 Backend services, deployed contracts, frozen recipes and fighter manifests are
 unchanged by this frontend release.
+
+
+## Paid pilot execution and media pool correction
+
+All four entries and strategies in anime tournament #2 are confirmed. Its single
+referee request completed and validated, and settlement is confirmed on Base.
+The [pilot audit](anime-paid-pilot-2-2026-10-30.md) records measured token usage,
+the pending OpenRouter generation receipt and the withheld film/payout status.
+
+The current backend is now `shared-runtime-20261030-4312a6952949`, source
+`a4ce098fa98eaae243048c95470d1653fa330250`, archive SHA256
+`57b26c48cbd8956cb8c1fd72769babc59486aeedc5bc3fc48af12fdd46098b4d`.
+Media workers have a three-connection operational pool and matching login limits
+so the job lock and source lease can coexist with provider checks/claims. Signing
+workers remain at three, other operational workers at two and source pools at two.
+The fix passed 15 real PostgreSQL media tests, TypeScript and build checks and
+retains all original task IDs, frozen data, engine, recipes and approved assets.
