@@ -58,8 +58,9 @@ PublicNode and Tenderly endpoints. Existing relays and reviewed source identitie
 were preserved. A failover-list formatting error was corrected before readiness
 checks; the final relay check passed with zero paid calls.
 
-Separate operational login roles use two-connection pools and separate read-only
-source roles. Provider access and signing credentials remain scoped per worker;
+Separate operational login roles initially used two-connection pools and separate
+read-only source roles. The later signing/media exceptions are recorded below.
+Provider access and signing credentials remain scoped per worker;
 no owner key is installed. Twenty-four reviewed services/timers are enabled for
 restart, with the video DB-only monitor scheduled by its timer. Both pilot APIs,
 capacity checks and all four fighters' 12 kits, windups and sheet hashes passed
@@ -116,7 +117,7 @@ Seven real PostgreSQL history tests (including both v2 modes and cursor isolatio
 ten native signing/receipt tests (including the three-connection limit), strict
 TypeScript and the API build passed.
 
-The current immutable backend is
+The immutable backend at this observation was
 `shared-runtime-20261030-8ef320e05513`, source commit
 `2307ecd96a01969af1c38f63f53290b127d0fd5f`. Its exact archive SHA256 is
 `cdc50526099b06d63dcda7ed2a6354c87a8d60c77d9c79b8e6d64586cc6b7a94`.
@@ -205,7 +206,7 @@ referee request completed and validated, and settlement is confirmed on Base.
 The [pilot audit](anime-paid-pilot-2-2026-10-30.md) records measured token usage,
 the pending OpenRouter generation receipt and the withheld film/payout status.
 
-The current backend is now `shared-runtime-20261030-4312a6952949`, source
+The backend at this observation was `shared-runtime-20261030-4312a6952949`, source
 `a4ce098fa98eaae243048c95470d1653fa330250`, archive SHA256
 `57b26c48cbd8956cb8c1fd72769babc59486aeedc5bc3fc48af12fdd46098b4d`.
 Media workers have a three-connection operational pool and matching login limits
@@ -213,3 +214,59 @@ so the job lock and source lease can coexist with provider checks/claims. Signin
 workers remain at three, other operational workers at two and source pools at two.
 The fix passed 15 real PostgreSQL media tests, TypeScript and build checks and
 retains all original task IDs, frozen data, engine, recipes and approved assets.
+
+
+## Completed paid pilot and durable director recovery
+
+Anime tournament #2 is complete. Its 115.57-second film is live at
+https://www.yunipals.com/arena/anime/2, with 16 attacks using the selected generated
+v2 kits. All 12 kits and 32 windup/sheet bindings passed file-hash checks. The
+existing background is reused for island #418; the 898-island batch stays deferred.
+
+The current backend is `shared-runtime-20261030-d950355ea88f`, source
+`3d76514836fff2da56ae267a53aca921d09595d5`, archive SHA256
+`da739ee85fa7d42251040228b0202c60368d251804a8c031421e2f50b26071aa`.
+It captures director responses before database writes and permits read-only
+revalidation of retained output. The anime media role now has the narrow
+`UPDATE(provider_id)` permission. Shell slides explicitly recorded as body attacks
+pass validation; ranged attacks retain their separate checks. Thirty real media
+and direction tests, strict TypeScript and build checks passed. Historical task
+failures, frozen combat bytes, engine, recipes and approved manifests are preserved.
+
+The original Claude call was charged but its output was not retained. The user
+explicitly approved exactly one recovery request, capped at $0.75. It cost
+$0.162416 and its captured output was revalidated without another generation.
+OpenRouter charges total $0.310752, including the original $0.148336. The OpenAI
+referee usage prices to $0.304696 at published rates; invoice reconciliation
+remains pending. The complete usage-priced pilot therefore costs $0.615448;
+the successful referee/director pair costs $0.467112. Reservations are not charges.
+These figures exclude infrastructure, gas and earlier asset generation. No new
+image or identity provider requests were made for this battle.
+
+Website deployment `dpl_BDqPK6UuGXCgDDQHsjjU7AnMcCyv`, source
+`16b652a5b4866e0c672717e0821598d9497a211f`, fixes the player to include the
+publication selector required by native media. Battle review, saved inputs and
+generation prompts use the same selection.
+Chapter/review caching and the player key include that selector. Streamed API
+responses now retain the allowed browser origin, credential and Vary headers;
+untrusted origins remain forbidden. The origin/range HTTP regression passed. Its
+227-file, 14,090,513-byte curated build has
+manifest SHA256 `2a0320d9f9dcdf712942fde52e5166950441b080b4e0210ce66547ff5d560453`.
+Three URL-selection regressions, web TypeScript/build, staged and canonical real
+playback, review expansion, saved choreography, Watch this moment seeking,
+byte ranges and desktop/phone layouts passed. Browser checks
+sent no wallet signatures or transactions. The scoped source secret scan passed;
+all nine static-build scanner matches are byte-for-byte unchanged from the prior
+release. The canonical HTML matches the tested build.
+
+Film SHA256 `91e48793ae6de7d42af2f9d210f0ee5519a899324d52793f7b239e20e61b19f1`
+is committed by successful payout-release transaction
+`0x760543351ecefc27dd93f29ab097af44921809d244900cc2ecd9c311d48c7eb4`.
+Direct Base reads confirmed 3.20 USDC claimable by the champion's pilot wallet,
+0.20 USDC by the island beneficiary and 0.60 USDC by the treasury. Wallet recipients
+claim through their own browser signatures. Admission remains pilot-wallet-only.
+Final encrypted backup status is recorded in the accompanying JSON.
+
+Encrypted backup completed at `2026-10-30T13:01:12.322471+00:00` (9 objects
+uploaded, 1,136 reused). Its verified object cache contains the final runtime and
+website archives, captured recovery response and published film.

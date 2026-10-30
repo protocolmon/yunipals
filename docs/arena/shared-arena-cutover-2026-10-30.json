@@ -1,7 +1,7 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T10:54:17.292722+00:00",
-  "state": "pilot-enabled-awaiting-entries",
+  "recordedAt": "2026-10-30T12:59:01.127100+00:00",
+  "state": "paid-pilot-completed",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
@@ -16,12 +16,12 @@
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
-    "deploymentId": "dpl_9Abt43EXcXvkA9to8VfBtSPyEP3v",
+    "deploymentId": "dpl_BDqPK6UuGXCgDDQHsjjU7AnMcCyv",
     "url": "https://www.yunipals.com",
-    "sourceCommit": "cda2bf56bda047c6ea932b2a9942330fcd356257",
-    "manifestSha256": "71e9ede3e1402eff0186ecf637715471be579e7a5556223ab98dc25aaba605ff",
+    "sourceCommit": "16b652a5b4866e0c672717e0821598d9497a211f",
+    "manifestSha256": "2a0320d9f9dcdf712942fde52e5166950441b080b4e0210ce66547ff5d560453",
     "files": 227,
-    "bytes": 14090063
+    "bytes": 14090513
   },
   "source": {
     "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
@@ -169,7 +169,17 @@
       "batchFallbackAfterAmbiguousSubmission": false,
       "providerTasksGeneratedByVerification": 0
     },
-    "nativeMediaTests": 15
+    "nativeMediaTests": 20,
+    "animeDirectionValidationTests": 10,
+    "filmSelectionTests": 3,
+    "paidFilmPublished": true,
+    "canonicalFilmPlaybackDesktopAndMobile": true,
+    "payoutReleaseConfirmed": true,
+    "verifiedAttacksUsingGeneratedKits": 16,
+    "httpMediaOriginAndRangeTests": 1,
+    "canonicalBattleReviewLoaded": true,
+    "watchMomentSeekingPassed": true,
+    "savedChoreographyAvailable": true
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -179,20 +189,20 @@
     "auditedVideoUsdcLiabilityRaw": "2000000"
   },
   "backup": {
-    "checkedAt": "2026-10-30T07:32:47.465640+00:00",
+    "checkedAt": "2026-10-30T13:01:36.732016+00:00",
     "latest-attempt.json": {
       "status": "success",
-      "createdAt": "2026-10-30T07:28:18.333835+00:00",
-      "completedAt": "2026-10-30T07:30:00.619854+00:00",
-      "objectsUploaded": 2,
-      "objectsReused": 1023
+      "createdAt": "2026-10-30T12:59:05.716009+00:00",
+      "completedAt": "2026-10-30T13:01:12.322471+00:00",
+      "objectsUploaded": 9,
+      "objectsReused": 1136
     },
     "latest-success.json": {
       "status": "success",
-      "createdAt": "2026-10-30T07:28:18.333835+00:00",
-      "completedAt": "2026-10-30T07:30:00.619854+00:00",
-      "objectsUploaded": 2,
-      "objectsReused": 1023
+      "createdAt": "2026-10-30T12:59:05.716009+00:00",
+      "completedAt": "2026-10-30T13:01:12.322471+00:00",
+      "objectsUploaded": 9,
+      "objectsReused": 1136
     },
     "latest-restore-drill.json": {
       "status": "success",
@@ -208,17 +218,21 @@
       "objectsUploaded": 6,
       "objectsReused": 1086,
       "allFourMediaFixRecoveryObjectsCached": true
+    },
+    "encryptedObjectCacheVerified": {
+      "finalRuntimeArchive": true,
+      "finalWebsiteArchive": true,
+      "capturedRecoveryResponse": true,
+      "film": true
     }
   },
   "pending": [
-    "Recover original OpenRouter director generation receipt/output from its gen-\u2026 identifier",
-    "Publish and verify film, release payouts and verify claims",
-    "Reconcile actual OpenAI billing; compute complete per-film cost after OpenRouter receipt recovery"
+    "OpenAI invoice reconciliation; recorded-usage price is $0.304696. No functionality or additional generation is pending."
   ],
   "backend": {
-    "releaseId": "shared-runtime-20261030-4312a6952949",
-    "sourceCommit": "a4ce098fa98eaae243048c95470d1653fa330250",
-    "archiveSha256": "57b26c48cbd8956cb8c1fd72769babc59486aeedc5bc3fc48af12fdd46098b4d",
+    "releaseId": "shared-runtime-20261030-d950355ea88f",
+    "sourceCommit": "3d76514836fff2da56ae267a53aca921d09595d5",
+    "archiveSha256": "da739ee85fa7d42251040228b0202c60368d251804a8c031421e2f50b26071aa",
     "signingOperationalPoolMax": 3,
     "otherOperationalPoolMax": 2,
     "sourcePoolMax": 2,
@@ -227,7 +241,10 @@
     "frozenEngineAndRecipesUnchanged": true,
     "mediaOperationalPoolMax": 3,
     "mediaRoleConnectionLimits": 3,
-    "mediaRolesChanged": 2
+    "mediaRolesChanged": 2,
+    "directorCaptureGrantApplied": true,
+    "directorValidationPolicy": "anime-direction-validation/v2",
+    "streamedArtifactCorsPreserved": true
   },
   "openings": [
     {
@@ -254,5 +271,75 @@
     "signingRolesChanged": 4,
     "frozenEngineAndRecipesUnchanged": true
   },
-  "pilotAudit": "anime-paid-pilot-2-2026-10-30.json"
+  "pilotAudit": "anime-paid-pilot-2-2026-10-30.json",
+  "previousBackends": [
+    {
+      "releaseId": "shared-runtime-20261030-4312a6952949",
+      "sourceCommit": "a4ce098fa98eaae243048c95470d1653fa330250",
+      "archiveSha256": "57b26c48cbd8956cb8c1fd72769babc59486aeedc5bc3fc48af12fdd46098b4d",
+      "signingOperationalPoolMax": 3,
+      "otherOperationalPoolMax": 2,
+      "sourcePoolMax": 2,
+      "newSigningRoleConnectionLimits": 3,
+      "signingRolesChanged": 4,
+      "frozenEngineAndRecipesUnchanged": true,
+      "mediaOperationalPoolMax": 3,
+      "mediaRoleConnectionLimits": 3,
+      "mediaRolesChanged": 2
+    },
+    {
+      "releaseId": "shared-runtime-20261030-046e02b2aaf7",
+      "sourceCommit": "6596c199ebb97c1f1492185792d30d4e0d683c68",
+      "archiveSha256": "7deeb9291dbdb28beb08cec9dd2b50757e4707c351170ffa52d28d5a6badac9c",
+      "signingOperationalPoolMax": 3,
+      "otherOperationalPoolMax": 2,
+      "sourcePoolMax": 2,
+      "newSigningRoleConnectionLimits": 3,
+      "signingRolesChanged": 4,
+      "frozenEngineAndRecipesUnchanged": true,
+      "mediaOperationalPoolMax": 3,
+      "mediaRoleConnectionLimits": 3,
+      "mediaRolesChanged": 2,
+      "directorCaptureGrantApplied": true,
+      "directorValidationPolicy": "anime-direction-validation/v2"
+    }
+  ],
+  "previousWebsites": [
+    {
+      "deploymentId": "dpl_9Abt43EXcXvkA9to8VfBtSPyEP3v",
+      "url": "https://www.yunipals.com",
+      "sourceCommit": "cda2bf56bda047c6ea932b2a9942330fcd356257",
+      "manifestSha256": "71e9ede3e1402eff0186ecf637715471be579e7a5556223ab98dc25aaba605ff",
+      "files": 227,
+      "bytes": 14090063
+    },
+    {
+      "deploymentId": "dpl_5CNBZ5n3kN7JCYEDj8dGaCf59uaS",
+      "url": "https://www.yunipals.com",
+      "sourceCommit": "38a2c160da2a143a7ad60d6932e9ab8f7421a0e5",
+      "manifestSha256": "54c111217e35f67b1deeffa3790da9ea779d4d1d5c022003177277ebe5818413",
+      "files": 227,
+      "bytes": 14090531
+    }
+  ],
+  "paidPilot": {
+    "tournamentId": "2",
+    "filmUrl": "https://www.yunipals.com/arena/anime/2",
+    "filmSha256": "91e48793ae6de7d42af2f9d210f0ee5519a899324d52793f7b239e20e61b19f1",
+    "publication": "0x96190d541af6e234de828f6e244b29f6984b2bff3c3d3483b4f38ba9908620d9",
+    "durationSeconds": 115.566667,
+    "releasePayoutsTransaction": "0x760543351ecefc27dd93f29ab097af44921809d244900cc2ecd9c311d48c7eb4",
+    "championClaimableUsdc": "3.20",
+    "islandBeneficiaryClaimableUsdc": "0.20",
+    "treasuryClaimableUsdc": "0.60",
+    "openaiUsagePricedUsd": 0.304696,
+    "openaiInvoiceReconciled": false,
+    "openrouterActualUsd": 0.310752,
+    "completeUsagePricedUsd": 0.615448,
+    "successfulRefereeAndDirectorUsd": 0.467112,
+    "lostOriginalDirectorOverheadUsd": 0.148336,
+    "approvedRecoveryRequests": 1,
+    "extraImageOrIdentityCalls": 0,
+    "frozenCombatAndEnginePreserved": true
+  }
 }
