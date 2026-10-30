@@ -1,4 +1,5 @@
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { arenaArtifactPath, type ArenaMediaStatus } from "@/lib/arenaMedia";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Crown, Swords } from "lucide-react";
@@ -30,7 +31,7 @@ export function ArenaFilm({
   const media = useQuery({
     queryKey: ["arena-live", deployment.scope, "media", id],
     queryFn: ({ signal }) =>
-      arenaRequest<{ state: string; payoutsReleased: boolean }>(
+      arenaRequest<ArenaMediaStatus>(
         `/tournaments/${id}/media`,
         undefined,
         signal
@@ -40,14 +41,23 @@ export function ArenaFilm({
         ? false
         : 15000
   });
+  const artifactPath = (name: string) =>
+    arenaArtifactPath(id, name, media.data);
   const clock = useQuery({
-    queryKey: ["arena-live", deployment.scope, "film-clock", id],
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "film-clock",
+      id,
+      media.data?.incarnation,
+      media.data?.publication
+    ],
     queryFn: ({ signal }) =>
       arenaRequest<{
         chapters: Array<{ id: string; t: number; winnerAt: number }>;
         background?: AnimeBackground;
-      }>(`/tournaments/${id}/artifacts/film.json`, undefined, signal),
-    enabled: deployment.kind === "anime" && media.data?.state === "ready",
+      }>(artifactPath("film.json")!, undefined, signal),
+    enabled: deployment.kind === "anime" && !!artifactPath("film.json"),
     staleTime: Infinity
   });
   const result = useQuery({
@@ -62,7 +72,7 @@ export function ArenaFilm({
     staleTime: Infinity
   });
   const artifact = (name: string) =>
-    `${deployment.apiUrl}/tournaments/${id}/artifacts/${name}`;
+    `${deployment.apiUrl}${artifactPath(name)}`;
   const match = result.data?.outcome.matches[playback.match];
   const pair = match
     ? match.fighterIds.map((fid) => fighters.find((f) => f?.id === fid))
@@ -91,7 +101,7 @@ export function ArenaFilm({
       <h2 id="arena-film-heading" className="text-2xl font-bold">
         Watch the battles
       </h2>
-      {media.data?.state === "ready" ? (
+      {media.data?.state === "ready" && artifactPath("film.mp4") ? (
         <>
           <div
             className="overflow-hidden rounded-card border border-line bg-white shadow-card"
@@ -139,7 +149,7 @@ export function ArenaFilm({
             <div className="arena-film-picture relative overflow-hidden bg-ink">
               <video
                 ref={video}
-                key={`${id}/${playbackVersion}`}
+                key={`${deployment.scope}/${id}/${media.data.incarnation}/${media.data.publication}/${playbackVersion}`}
                 controls
                 playsInline
                 preload="none"
