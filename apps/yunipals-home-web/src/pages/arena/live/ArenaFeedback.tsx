@@ -100,9 +100,9 @@ export function ArenaTransactionFeedback({
       ) : null}
       {pending && !delayed ? (
         <p className="mt-3 text-sm text-muted">
-          We check a few Base blocks and wait for the indexed result. This page
-          updates automatically. You can leave and return; your transaction is
-          saved.
+          We verify your transaction on Base and wait for its indexed result.
+          This page updates automatically. You can leave and return; your
+          transaction is saved.
         </p>
       ) : null}
       <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
