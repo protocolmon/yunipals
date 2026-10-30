@@ -115,6 +115,12 @@ export function createArenaApp(
     )
       return c.json({ error: "Use application/json." }, 415);
     await next();
+    // Streamed artifact responses replace the prepared response headers.
+    c.header("Vary", "Origin");
+    if (origin === service.origin) {
+      c.header("Access-Control-Allow-Origin", origin);
+      c.header("Access-Control-Allow-Credentials", "true");
+    }
   });
   app.onError((error, c) => {
     if (error instanceof PreparingIdentity)
