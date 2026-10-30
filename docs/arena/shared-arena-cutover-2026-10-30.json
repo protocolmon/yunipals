@@ -1,0 +1,89 @@
+{
+  "version": "shared-arena-pilot-cutover/v2",
+  "recordedAt": "2026-10-30T00:06:33.699102+00:00",
+  "state": "services-ready-awaiting-owner-unpauses",
+  "chainId": 8453,
+  "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
+  "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
+  "deploymentBlock": "53261777",
+  "creationTransaction": "0xb428cadf0ee49422852ece94a598781825b7d6d5d55782ba3ca6e02f77a09850",
+  "randomnessFunding": "first-entrant",
+  "contractModesPaused": {
+    "video": true,
+    "anime": true
+  },
+  "serviceEntries": "pilot-wallet-only",
+  "website": {
+    "deploymentId": "dpl_6wcZ99BWLDenjfCayJ9bcR7Whhju",
+    "url": "https://www.yunipals.com",
+    "sourceCommit": "3eefb814451dd8058f98ef146069a1f91fe731f6",
+    "manifestSha256": "1b64536f9aeb3a5b3564e634e55d3a5b8c4fd9543982f4ac49a3bcce818dad1e",
+    "files": 227,
+    "bytes": 14084224
+  },
+  "source": {
+    "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
+    "buildId": "754660052d",
+    "physicalSchema": "unified_arena_modes_20261029_v1",
+    "sourceCount": 15,
+    "existingSourceDefinitionsChanged": 0,
+    "epochs": {
+      "video": "478aae2f-ad39-40b3-84a8-3119075ead68",
+      "anime": "8a3b8df1-0bf1-46b8-b81f-92790887d7d1"
+    },
+    "servingVerifiedPrefix": true,
+    "lastFrameworkReady": false,
+    "paidReplayPermits": 0,
+    "paidFallback": false
+  },
+  "verification": {
+    "apiResponses": 135,
+    "apiFailures": 0,
+    "sourceErrors": 0,
+    "indexedApprovedFighters": 4,
+    "verifiedAttackKits": 12,
+    "newIslandBackgrounds": 1,
+    "canonicalDesktopAndMobile": true,
+    "canonicalConnectedOwnerReadOnly": true,
+    "walletTransactionsSentByBrowserChecks": 0,
+    "paidBattleStarted": false
+  },
+  "legacy": {
+    "admissionIssuersClosed": 2,
+    "permitsExpired": true,
+    "lobbyWorkersDisabled": true,
+    "claimsAndSettlementRetained": true,
+    "auditedVideoUsdcLiabilityRaw": "2000000"
+  },
+  "backup": {
+    "checkedAt": "2026-10-30T00:06:33.699102+00:00",
+    "latest-attempt.json": {
+      "status": "success",
+      "createdAt": "2026-10-30T00:03:58.740520+00:00",
+      "completedAt": "2026-10-30T00:05:33.791500+00:00",
+      "objectsUploaded": 2,
+      "objectsReused": 1021
+    },
+    "latest-success.json": {
+      "status": "success",
+      "createdAt": "2026-10-30T00:03:58.740520+00:00",
+      "completedAt": "2026-10-30T00:05:33.791500+00:00",
+      "objectsUploaded": 2,
+      "objectsReused": 1021
+    },
+    "latest-restore-drill.json": {
+      "status": "success",
+      "createdAt": "2026-10-29T22:47:20.925309+00:00",
+      "completedAt": "2026-10-29T22:55:51.724646+00:00",
+      "objectsUploaded": 66,
+      "objectsReused": 952
+    }
+  },
+  "pending": [
+    "Two owner browser signatures to unpause the modes",
+    "Pilot wallet USDC approval, four anime joins and strategies/loadouts",
+    "Production film, actual cost reconciliation, settlement and claims"
+  ]
+}

@@ -1,5 +1,8 @@
 # Shared Arena release — 29 October 2026
 
+This records the initial website release. Current server cutover and remaining
+wallet actions are in [the 30 October handoff](shared-arena-cutover-2026-10-30.md).
+
 Implementation commit: `5d3b74c8d970c1cbe5a6703c948157a1bd2c3d74`.
 
 Website deployment `dpl_BuKGjhhCy9XnuoDsetiGnvvTHcre`:
@@ -43,11 +46,9 @@ The curated frontend contains 227 files / 14,079,382 bytes. Its release manifest
 SHA256 is `0b1ac95f8e109d5e9d58fb061cdc51f5c34ccb71c666c11315fe19e0406fc336`.
 Prototype media and private credentials are excluded.
 
-Pending: the admin's browser-signed deployment and confirmed record. No new
-shared contract address has been configured or invented. The new modes have
-not been activated; `VITE_SHARED_ARENA_API_URL` remains unset. Existing server
-services, old contracts and claims remain in place. The old video liability was
-2 USDC at the migration audit and must remain claimable. Continue with the
-address-dependent cutover in `ops/arena-modes/README.md`, then run the real paid
-pilot and record actual production provider costs. No provider generation was
+At this initial website release, the admin's confirmed browser deployment was
+still pending and the shared API setting was unset. The subsequent verified
+deployment, server cutover, current website and remaining owner signatures are
+recorded in [the 30 October handoff](shared-arena-cutover-2026-10-30.md). The old
+video liability audited at 2 USDC remains claimable. No provider generation was
 performed for this release's development checks.
