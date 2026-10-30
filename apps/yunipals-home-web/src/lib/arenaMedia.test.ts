@@ -5,7 +5,14 @@ import { arenaArtifactPath } from "./arenaMedia";
 test("native film artifacts select the exact published incarnation", () => {
   const origin = `0x${"a".repeat(64)}`;
   const publication = `0x${"b".repeat(64)}`;
-  for (const name of ["film.mp4", "film.json", "SF1.png", "credits.txt"])
+  for (const name of [
+    "film.mp4",
+    "film.json",
+    "prompts.json",
+    "input.json",
+    "SF1.png",
+    "credits.txt"
+  ])
     assert.equal(
       arenaArtifactPath("2", name, {
         state: "ready",

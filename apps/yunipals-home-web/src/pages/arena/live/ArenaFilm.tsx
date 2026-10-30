@@ -253,7 +253,7 @@ export function ArenaFilm({
       )}
       <ArenaBattleReview
         id={id}
-        mediaReady={media.data?.state === "ready"}
+        media={media.data}
         onWatchMoment={watchMoment}
       />
       {showResults && (

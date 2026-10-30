@@ -1,4 +1,5 @@
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { arenaArtifactPath, type ArenaMediaStatus } from "@/lib/arenaMedia";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, Copy, Play, ScrollText, Sparkles } from "lucide-react";
@@ -130,11 +131,11 @@ function PromptText({ title, text }: { title: string; text: string }) {
 
 export function ArenaBattleReview({
   id,
-  mediaReady,
+  media,
   onWatchMoment
 }: {
   id: string;
-  mediaReady: boolean;
+  media?: ArenaMediaStatus;
   onWatchMoment: (seconds: number) => void;
 }) {
   const deployment = useArenaDeployment();
@@ -142,12 +143,21 @@ export function ArenaBattleReview({
   const [open, setOpen] = useState(false);
   const [matchId, setMatchId] = useState("SF1");
   const [view, setView] = useState<"judging" | "generation">("judging");
+  const artifact = (file: string) => arenaArtifactPath(id, file, media);
+  const mediaReady = !!artifact("prompts.json");
   const review = useQuery({
-    queryKey: ["arena-live", deployment.scope, "review", id, mediaReady],
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "review",
+      id,
+      mediaReady,
+      media?.incarnation,
+      media?.publication
+    ],
     enabled: open,
     staleTime: Infinity,
     queryFn: async ({ signal }) => {
-      const artifact = (file: string) => `/tournaments/${id}/artifacts/${file}`;
       const [result, prompts, frozen, clock] = await Promise.all([
         arenaRequest<ArenaReviewResult>(
           `/tournaments/${id}/result`,
@@ -155,10 +165,14 @@ export function ArenaBattleReview({
           signal
         ),
         mediaReady
-          ? arenaRequest<Prompts>(artifact("prompts.json"), undefined, signal)
+          ? arenaRequest<Prompts>(artifact("prompts.json")!, undefined, signal)
           : Promise.resolve(null),
         mediaReady
-          ? arenaRequest<FrozenInput>(artifact("input.json"), undefined, signal)
+          ? arenaRequest<FrozenInput>(
+              artifact("input.json")!,
+              undefined,
+              signal
+            )
           : Promise.resolve(null),
         mediaReady && deployment.kind === "anime"
           ? arenaRequest<{
@@ -166,7 +180,7 @@ export function ArenaBattleReview({
                 id: string;
                 events: Array<{ id: string; contact: number }>;
               }>;
-            }>(artifact("film.json"), undefined, signal)
+            }>(artifact("film.json")!, undefined, signal)
           : Promise.resolve(null)
       ]);
       if (
@@ -189,7 +203,7 @@ export function ArenaBattleReview({
   const name = (fighterId: string) => fighter(fighterId)?.name ?? fighterId;
   const secondsOffset = matchId === "SF1" ? 0 : matchId === "SF2" ? 8 : 16;
   const shots = data?.prompts?.shots.filter((s) => s.matchId === matchId) ?? [];
-  const image = `${deployment.apiUrl}/tournaments/${id}/artifacts/${matchId}.png`;
+  const image = `${deployment.apiUrl}${artifact(`${matchId}.png`)}`;
   return (
     <details
       className="rounded-card border border-lavender bg-lavender/10 p-5 sm:p-6"
