@@ -8,10 +8,10 @@ The existing fighter registry and its four approvals remain in use; applications
 remain open as requested.
 
 The production website now serves deployment
-`dpl_Hn5PXEqi1XZfP1L8hs6kD5n5rwDm` (frontend commit
-`15e41cda62c27ac265286f28787ed57e2307ab97`). The curated build contains 227 files
-and 14,084,258 bytes; manifest SHA256
-`dff4f4877e66124c8012042d5ce87ea4d0a64ba7c2ba7fff30169eaa53885503`.
+`dpl_9Abt43EXcXvkA9to8VfBtSPyEP3v` (frontend commit
+`cda2bf56bda047c6ea932b2a9942330fcd356257`). The curated build contains 227 files
+and 14,090,063 bytes; manifest SHA256
+`71e9ede3e1402eff0186ecf637715471be579e7a5556223ab98dc25aaba605ff`.
 The canonical www HTML matches this exact build. Persistent production setting
 `VITE_SHARED_ARENA_API_URL=https://api.yunipals.com/api/arena-v2` is installed.
 Both service configs advertise version 2 and first-entrant randomness funding.
@@ -159,3 +159,40 @@ passed repeated Join clicks on desktop/mobile and a retained-approval recovery
 check using a read-only wallet and mocked tracking responses. Strict TypeScript,
 four deployment/storage helper tests and the scoped secret scan passed. These
 checks sent no real wallet signatures or transactions.
+
+
+## Follow-up: compact controls and combined wallet entries
+
+USDC approval now waits for its successful Base receipt and a fresh sufficient
+allowance, then proceeds directly to entry without waiting for the indexer.
+A local approval-confirmed marker describes that check separately from canonical
+indexing. Entries and claims retain their canonical receipt and indexed-result
+requirements. Reloading a retained approval checks the same transaction; it never
+automatically resends it.
+
+Wallets advertising EIP-5792 atomic support on Base, including an offered wallet
+upgrade, receive one batch containing the selected USDC approval limit followed
+by the signed entry and any first-entry draw value. Conventional wallets use the
+two-confirmation flow. Atomic submission has no automatic sequential fallback.
+The caller-supplied batch ID is saved before asking the wallet, retained through
+ambiguous responses and reloads, and handed over only after an exact fighter
+Entered event yields a durably stored transaction hash. Wrong-chain, non-atomic,
+partial or mismatched results do not unlock another payment.
+
+The entry button stays 48 pixels high with short visible labels; its full status
+remains available to screen readers and the page-level progress display. Draw
+pricing and refund details remain outside the button. Canonical desktop and phone
+checks passed on 30 October 2026 at 10:21 UTC: labels fit without truncation, repeat
+Join clicks scroll back to the form, and the mocked wallet receives ordered
+approval and entry calls. These checks used synthetic wallet submissions and
+mock admission responses, with zero real signatures or broadcasts. Eleven local
+browser cases cover ordinary approvals, supported/ready/global atomic capability,
+rejection, lost responses, reload, complete failure, partial failure and mismatched
+receipts. Eight relevant unit tests and strict web TypeScript checks also passed.
+
+At the public API check, tournament #2 had two indexed pilot entries: red turtle
+1000702258 and yellow chick 10003506584. The island draw was fulfilled for island
+418. The remaining entries and four private strategy/loadout signatures still
+require the pilot wallet. No provider generation was started by these UI checks.
+Backend services, deployed contracts, frozen recipes and fighter manifests are
+unchanged by this frontend release.

@@ -1,6 +1,6 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T09:50:03.608Z",
+  "recordedAt": "2026-10-30T10:22:30.658780+00:00",
   "state": "pilot-enabled-awaiting-entries",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
@@ -16,12 +16,12 @@
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
-    "deploymentId": "dpl_Hn5PXEqi1XZfP1L8hs6kD5n5rwDm",
+    "deploymentId": "dpl_9Abt43EXcXvkA9to8VfBtSPyEP3v",
     "url": "https://www.yunipals.com",
-    "sourceCommit": "15e41cda62c27ac265286f28787ed57e2307ab97",
-    "manifestSha256": "dff4f4877e66124c8012042d5ce87ea4d0a64ba7c2ba7fff30169eaa53885503",
+    "sourceCommit": "cda2bf56bda047c6ea932b2a9942330fcd356257",
+    "manifestSha256": "71e9ede3e1402eff0186ecf637715471be579e7a5556223ab98dc25aaba605ff",
     "files": 227,
-    "bytes": 14084258
+    "bytes": 14090063
   },
   "source": {
     "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
@@ -112,7 +112,63 @@
       "legacy",
       "video",
       "anime"
-    ]
+    ],
+    "compactEntryAndWalletBatching": {
+      "origin": "https://www.yunipals.com",
+      "verifiedAt": "2026-10-30T10:21:48.372Z",
+      "results": [
+        {
+          "scrollY": 1890,
+          "joinTop": 120,
+          "hash": "#join",
+          "width": 1440
+        },
+        {
+          "scrollY": 1891,
+          "joinTop": 119,
+          "hash": "#join",
+          "width": 1440
+        },
+        {
+          "scrollY": 2902,
+          "joinTop": 119,
+          "hash": "#join",
+          "width": 390
+        },
+        {
+          "scrollY": 2902,
+          "joinTop": 119,
+          "hash": "#join",
+          "width": 390
+        },
+        {
+          "width": 1440,
+          "buttonHeight": 48,
+          "label": "Confirm\u2026"
+        },
+        {
+          "width": 390,
+          "buttonHeight": 48,
+          "label": "Confirm\u2026"
+        }
+      ],
+      "walletRpcMocked": true,
+      "admissionApiMocked": true,
+      "actualTransactions": 0,
+      "actualSignatures": 0,
+      "batchCalls": 2,
+      "errors": [],
+      "canonicalHtmlMatchesBuild": true,
+      "walletFlowBrowserCases": 11,
+      "batchAndApprovalUnitTests": 4,
+      "sharedDeploymentAndPaymentUnitTests": 4,
+      "strictTypeScriptPassed": true,
+      "sequentialApprovalWaitsForReceiptAndLiveAllowance": true,
+      "sequentialApprovalDoesNotWaitForIndexer": true,
+      "entryStillRequiresCanonicalReceiptAndIndexedResult": true,
+      "batchFallbackAfterAmbiguousSubmission": false,
+      "providerTasksGeneratedByVerification": 0
+    }
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -146,7 +202,7 @@
     }
   },
   "pending": [
-    "Pilot wallet approval for 4 USDC and four anime entries in tournament #2",
+    "Remaining two pilot wallet entries in anime tournament #2 (red turtle and yellow chick already indexed)",
     "Four signed strategies/loadouts to start promptly",
     "Production film, actual provider cost reconciliation, settlement and claims"
   ],
