@@ -10,6 +10,7 @@ import {
   animeDirectorRequest,
   applyAnimeDirection,
   applyAnimeProviderDirection,
+  isAnimeBodyContact,
   type AnimeDirection,
   type AnimeDirectionInput
 } from "./animeDirection";
@@ -51,6 +52,35 @@ function fixture() {
   for (const cutin of direction.cutins) cutin.title = "MAKE YOUR MOVE!";
   return { input, direction };
 }
+test("recorded turtle shell slides are body contact, while shell projectiles stay ranged", () => {
+  assert.equal(
+    isAnimeBodyContact(
+      "Turtle slides from the left start toward yellow's feet. Yellow sidesteps before arrival; the shell crosses the vacated spot."
+    ),
+    true
+  );
+  assert.equal(
+    isAnimeBodyContact(
+      "Yuniturtle rolls into the opponent with its shell forward."
+    ),
+    true
+  );
+  assert.equal(
+    isAnimeBodyContact("Turtle fires a shell projectile toward the opponent."),
+    false
+  );
+  assert.equal(
+    isAnimeBodyContact(
+      "Turtle slides toward the opponent and fires a shell projectile."
+    ),
+    false
+  );
+  assert.equal(
+    isAnimeBodyContact("A shell projectile slides toward the opponent."),
+    false
+  );
+  assert.equal(isAnimeBodyContact("Fires a water jet."), false);
+});
 test("Claude restores manual movement and body attacks without altering frozen combat", () => {
   const { input, direction } = fixture();
   const before = structuredClone(input);

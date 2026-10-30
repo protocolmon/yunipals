@@ -28,7 +28,7 @@ type Completion = {
   }>;
   usage?: Record<string, unknown>;
 };
-type DirectorTask = {
+export type DirectorTask = {
   asset: string;
   reserved_microusd: string;
   actual_microusd: string | null;
@@ -45,6 +45,7 @@ type DirectorTask = {
 export const ANIME_DIRECTOR_RECOVERY_ASSET = `${ANIME_DIRECTOR_ASSET}/recovery-1`;
 export const ANIME_DIRECTOR_RECOVERY_RESERVE = 750000;
 const resolvedModel = "anthropic/claude-opus-5.5-20260921";
+export const ANIME_DIRECTOR_VALIDATION_POLICY = "anime-direction-validation/v2";
 const generationId = (value: unknown): value is string =>
   typeof value === "string" && /^gen-[A-Za-z0-9_-]{1,180}$/.test(value);
 function usd(value: unknown): value is number {
@@ -54,6 +55,97 @@ function usd(value: unknown): value is number {
     value >= 0 &&
     Number.isSafeInteger(Math.ceil(value * 1000000))
   );
+}
+
+function directorCandidate(response: Completion): unknown {
+  const choice = response.choices?.[0];
+  if (
+    ![ANIME_DIRECTOR_MODEL, resolvedModel].includes(response.model) ||
+    response.choices?.length !== 1 ||
+    choice?.finish_reason !== "stop" ||
+    choice.message?.tool_calls?.length ||
+    typeof choice.message?.content !== "string"
+  )
+    throw new Error("Claude did not return the pinned structured direction.");
+  return JSON.parse(choice.message.content);
+}
+
+/** Revalidate exact stored bytes under the current validator. Historical failed
+ * task rows stay immutable; invalid direction never becomes a rendering fallback. */
+export function validatedAnimeDirectorTask(task: DirectorTask) {
+  const receipt = task.response?.receipt;
+  if (
+    !(
+      task.state === "completed" ||
+      (task.state === "failed" && task.error_code === "director_output_invalid")
+    ) ||
+    !receipt ||
+    !task.response?.provider ||
+    receipt.generationId !== task.provider_id ||
+    receipt.requestId !== task.request_id ||
+    task.actual_microusd === null ||
+    receipt.actualMicrousd !== Number(task.actual_microusd) ||
+    BigInt(task.actual_microusd) > BigInt(task.reserved_microusd)
+  )
+    throw new Error(
+      "Claude direction needs recovery; the existing task is retained."
+    );
+  return {
+    choreography: applyAnimeProviderDirection(
+      task.request.input,
+      directorCandidate(task.response.provider)
+    ),
+    receipt: {
+      ...receipt,
+      validationPolicy: ANIME_DIRECTOR_VALIDATION_POLICY,
+      revalidated: task.state === "failed"
+    }
+  };
+}
+
+export function validatedAnimeDirectorPublication(
+  tasks: DirectorTask[],
+  rendered: unknown,
+  receipt: unknown
+) {
+  const original = tasks.find((t) => t.asset === ANIME_DIRECTOR_ASSET);
+  const recovery = tasks.find((t) => t.asset === ANIME_DIRECTOR_RECOVERY_ASSET);
+  if (
+    !original ||
+    tasks.length !== (recovery ? 2 : 1) ||
+    (recovery &&
+      (original.state !== "failed" ||
+        original.error_code !== "director_content_not_retained" ||
+        !generationId(original.provider_id) ||
+        original.actual_microusd === null ||
+        original.response?.receipt?.generationId !== original.provider_id ||
+        original.response.receipt.actualMicrousd !==
+          Number(original.actual_microusd) ||
+        canonicalJson(original.request) !== canonicalJson(recovery.request)))
+  )
+    throw new Error(
+      "Anime publication requires its original director task and an auditable recovery."
+    );
+  const selected = recovery ?? original;
+  const validated = validatedAnimeDirectorTask(selected);
+  if (
+    canonicalJson(validated.choreography) !== canonicalJson(rendered) ||
+    canonicalJson(validated.receipt) !== canonicalJson(receipt)
+  )
+    throw new Error(
+      "Anime film differs from its validated original director response."
+    );
+  const total = tasks.reduce((sum, task) => {
+    if (task.actual_microusd === null || !/^[0-9]+$/.test(task.actual_microusd))
+      throw new Error("Anime director charges are not reconciled.");
+    return sum + BigInt(task.actual_microusd);
+  }, 0n);
+  if (total > 1600000n)
+    throw new Error("Anime director charges exceed the generation cap.");
+  return {
+    totalMicrousd: Number(total),
+    activeMicrousd: validated.receipt.actualMicrousd
+  };
 }
 
 /** A single durable media task. Lost submissions never authorize a replacement.
@@ -191,17 +283,14 @@ export class AnimeDirectorApi {
       );
     });
     const task = await this.step(id, incarnation);
-    if (task.state !== "completed" || !task.response?.receipt)
+    try {
+      return validatedAnimeDirectorTask(task);
+    } catch (cause) {
       throw new Error(
-        "Claude direction needs recovery; the existing task is retained."
+        "Claude direction needs recovery; the existing task is retained.",
+        { cause }
       );
-    return {
-      choreography: applyAnimeProviderDirection(
-        input,
-        this.candidate(task.response.provider)
-      ),
-      receipt: task.response.receipt
-    };
+    }
   }
   async step(id: string, incarnation: string) {
     return withArenaSourceLease(this.native.service, () =>
@@ -360,7 +449,10 @@ export class AnimeDirectorApi {
     try {
       if (BigInt(receipt.actualMicrousd) > BigInt(task.reserved_microusd))
         throw new Error("Director charge exceeded its reservation.");
-      applyAnimeProviderDirection(task.request.input, this.candidate(provider));
+      applyAnimeProviderDirection(
+        task.request.input,
+        directorCandidate(provider)
+      );
     } catch {
       valid = false;
     }
@@ -375,18 +467,6 @@ export class AnimeDirectorApi {
       ]
     );
     return (await this.task(id, incarnation))!;
-  }
-  private candidate(response: Completion): unknown {
-    const choice = response.choices?.[0];
-    if (
-      ![ANIME_DIRECTOR_MODEL, resolvedModel].includes(response.model) ||
-      response.choices?.length !== 1 ||
-      choice?.finish_reason !== "stop" ||
-      choice.message?.tool_calls?.length ||
-      typeof choice.message?.content !== "string"
-    )
-      throw new Error("Claude did not return the pinned structured direction.");
-    return JSON.parse(choice.message.content);
   }
 }
 

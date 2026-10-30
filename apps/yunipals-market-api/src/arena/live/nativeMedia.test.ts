@@ -30,11 +30,14 @@ import { createArenaApp } from "./http";
 import {
   AnimeDirectorApi,
   ANIME_DIRECTOR_RECOVERY_ASSET,
-  ANIME_DIRECTOR_RECOVERY_RESERVE
+  ANIME_DIRECTOR_RECOVERY_RESERVE,
+  validatedAnimeDirectorTask,
+  validatedAnimeDirectorPublication
 } from "./animeDirectorApi";
 import { fixtureProviderDirection } from "./animeDirectionFixture";
 import {
   ANIME_DIRECTOR_MODEL,
+  ANIME_DIRECTOR_ASSET,
   applyAnimeProviderDirection,
   type AnimeDirectionInput,
   type AnimeProviderDirection
@@ -676,6 +679,85 @@ test("Claude resumes its reserved request with source and media locks using the 
     ).rows;
     assert.equal(after[0].request_id, before[0].request_id);
     assert.equal(after[0].state, "completed");
+  } finally {
+    await f.close();
+  }
+});
+
+test("publication revalidates exact paid direction while preserving historical validation failures and all charges", async () => {
+  const f = await fixture();
+  try {
+    const c = claudeFixture(f);
+    await c.api.direct(await f.folder(), c.input);
+    const [task] = (
+      await f.pool.query(
+        "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1",
+        [f.service.deployment]
+      )
+    ).rows;
+    const historical = {
+      ...task,
+      asset: ANIME_DIRECTOR_RECOVERY_ASSET,
+      state: "failed",
+      error_code: "director_output_invalid"
+    };
+    const before = structuredClone(historical);
+    const result = validatedAnimeDirectorTask(historical);
+    assert.equal(result.receipt.revalidated, true);
+    assert.deepEqual(historical, before);
+    const original = {
+      ...task,
+      asset: ANIME_DIRECTOR_ASSET,
+      request_id: randomUUID(),
+      provider_id: "gen-original-lost",
+      state: "failed",
+      error_code: "director_content_not_retained",
+      actual_microusd: "1000",
+      response: {
+        receipt: { generationId: "gen-original-lost", actualMicrousd: 1000 }
+      }
+    };
+    const charges = validatedAnimeDirectorPublication(
+      [original, historical],
+      result.choreography,
+      result.receipt
+    );
+    assert.deepEqual(charges, { totalMicrousd: 2235, activeMicrousd: 1235 });
+    assert.throws(
+      () =>
+        validatedAnimeDirectorPublication(
+          [original, historical],
+          {},
+          result.receipt
+        ),
+      /differs/
+    );
+    assert.throws(
+      () =>
+        validatedAnimeDirectorPublication(
+          [original, historical],
+          result.choreography,
+          { ...result.receipt, generationId: "gen-foreign" }
+        ),
+      /differs/
+    );
+    assert.throws(
+      () =>
+        validatedAnimeDirectorPublication(
+          [{ ...original, state: "uncertain" }, historical],
+          result.choreography,
+          result.receipt
+        ),
+      /auditable recovery/
+    );
+    const bad = structuredClone(historical);
+    const output = JSON.parse(bad.response.provider.choices[0].message.content);
+    const cutins = JSON.parse(output.matches.SF1.cutins);
+    cutins[0].quotes[0].text = "Invented dialogue";
+    output.matches.SF1.cutins = JSON.stringify(cutins);
+    bad.response.provider.choices[0].message.content = JSON.stringify(output);
+    assert.throws(() => validatedAnimeDirectorTask(bad));
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
   } finally {
     await f.close();
   }

@@ -26,6 +26,8 @@ export type AnimeDirectorReceipt = {
   provider: "openrouter";
   model: typeof ANIME_DIRECTOR_MODEL;
   resolvedModel?: string;
+  validationPolicy?: string;
+  revalidated?: boolean;
   requestId: string;
   generationId: string;
   actualCostUsd: number;
@@ -330,6 +332,26 @@ function atTime(channel: number[][] | undefined, t: number, fallback: number) {
   }
   return channel.at(-1)![1]!;
 }
+export function isAnimeBodyContact(visibleAction: unknown) {
+  const action = String(visibleAction);
+  if (
+    /shoulder|tackl|body[- ]?(?:check|slam|contact|rush)|head[- ]?butt|\bram(?:ming)?\b|collid/i.test(
+      action
+    )
+  )
+    return true;
+  // Shell Rush can be recorded as the turtle sliding toward the opponent,
+  // including a miss where its shell crosses the opponent's vacated position.
+  const approach = action.split(".")[0]!;
+  return (
+    /\bshell\b/i.test(action) &&
+    /\b(?:yuni)?turtle\s+(?:slides?|rolls?|rush(?:es)?|charges?)\b[^.]*\b(?:toward|into|through|across)\b/i.test(
+      approach
+    ) &&
+    !/\b(?:projectiles?|fires?|launches?|shoots?)\b/i.test(approach)
+  );
+}
+
 function validateActionStaging(
   input: AnimeDirectionInput,
   ch: AnimeChoreography
@@ -481,12 +503,7 @@ export function applyAnimeDirection(
       throw new Error(
         "Anime attack kind differs from its fighter's available effect."
       );
-    if (
-      kit?.kind === "dash" &&
-      !/shoulder|tackl|body[- ]?(?:check|slam|contact|rush)|head[- ]?butt|\bram(?:ming)?\b|collid/i.test(
-        String(event.visibleAction)
-      )
-    )
+    if (kit?.kind === "dash" && !isAnimeBodyContact(event.visibleAction))
       throw new Error("A ranged attack cannot use a body-contact kit.");
     if (input.loadouts && Object.keys(input.loadouts).length) {
       choreography[matchId]!.kits ??= {};

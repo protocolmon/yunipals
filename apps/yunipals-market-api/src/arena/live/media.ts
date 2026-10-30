@@ -17,7 +17,10 @@ import {
   publishedMediaTypes
 } from "./mediaPublication";
 import { mediaFolder, mediaIncarnation } from "./mediaPaths";
-import { ANIME_DIRECTOR_ASSET } from "./animeDirection";
+import {
+  validatedAnimeDirectorPublication,
+  type DirectorTask
+} from "./animeDirectorApi";
 export { mediaFolder } from "./mediaPaths";
 
 /** Publication changes retained bytes and provider balances. Invalidate admission
@@ -423,14 +426,8 @@ export class ArenaMedia {
         file: "public/film.mp4",
         sha256: receipt.sha256
       });
-      const tasks = await this.pool.query<{
-        asset: string;
-        request_id: string;
-        reserved_microusd: string;
-        actual_microusd: string | null;
-        state: string;
-      }>(
-        "SELECT asset,request_id,reserved_microusd,actual_microusd,state FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND kind='media' AND incarnation=$3 ORDER BY asset",
+      const tasks = await this.pool.query<DirectorTask>(
+        "SELECT asset,request_id,reserved_microusd,actual_microusd,state,provider_id,request,response,error_code FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND kind='media' AND incarnation=$3 ORDER BY asset",
         [deployment, id, incarnation]
       );
       if (
@@ -442,20 +439,56 @@ export class ArenaMedia {
         throw new Error(
           "Native publication requires all nine completed original media tasks."
         );
-      if (
-        origin &&
-        this.anime &&
-        (tasks.rows.length !== 1 ||
-          tasks.rows[0]?.asset !== ANIME_DIRECTOR_ASSET ||
-          tasks.rows[0]?.state !== "completed")
-      )
-        throw new Error(
-          "Anime publication requires its completed original Claude task."
+      if (origin && this.anime) {
+        const prompts = JSON.parse(
+          await readFile(join(job, "public/prompts.json"), "utf8")
         );
+        const receipts = JSON.parse(
+          await readFile(join(job, "public/receipts.json"), "utf8")
+        );
+        const charges = validatedAnimeDirectorPublication(
+          tasks.rows,
+          prompts.choreography,
+          receipts.director
+        );
+        await writeFile(
+          join(job, "public/receipts.json"),
+          JSON.stringify(
+            {
+              ...receipts,
+              mediaCostMicrousd: charges.totalMicrousd,
+              activeDirectorCostMicrousd: charges.activeMicrousd,
+              recoveryOverheadMicrousd:
+                charges.totalMicrousd - charges.activeMicrousd
+            },
+            null,
+            2
+          ) + "\n",
+          { mode: 0o600 }
+        );
+      }
       if (!this.anime)
         await writeFile(
           join(job, "public/receipts.json"),
-          JSON.stringify(tasks.rows, null, 2) + "\n",
+          JSON.stringify(
+            tasks.rows.map(
+              ({
+                asset,
+                request_id,
+                reserved_microusd,
+                actual_microusd,
+                state
+              }) => ({
+                asset,
+                request_id,
+                reserved_microusd,
+                actual_microusd,
+                state
+              })
+            ),
+            null,
+            2
+          ) + "\n",
           { mode: 0o600 }
         );
       const publication = origin
