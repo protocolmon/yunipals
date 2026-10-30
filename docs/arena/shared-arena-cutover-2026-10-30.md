@@ -8,10 +8,10 @@ The existing fighter registry and its four approvals remain in use; applications
 remain open as requested.
 
 The production website now serves deployment
-`dpl_9Abt43EXcXvkA9to8VfBtSPyEP3v` (frontend commit
-`cda2bf56bda047c6ea932b2a9942330fcd356257`). The curated build contains 227 files
-and 14,090,063 bytes; manifest SHA256
-`71e9ede3e1402eff0186ecf637715471be579e7a5556223ab98dc25aaba605ff`.
+`dpl_EmPxmcqZbCHABFR5YYgzeePv9JZW` (frontend commit
+`e27f9d7dc9d6c00964e06f2df2c86c49baaf9854`). The curated build contains 236 files
+and 14,458,520 bytes; manifest SHA256
+`df8ab38962b35c1871f14072e44bbb0f439ce9be702b8a9a7ef1ee3c6f4e59bf`.
 The canonical www HTML matches this exact build. Persistent production setting
 `VITE_SHARED_ARENA_API_URL=https://api.yunipals.com/api/arena-v2` is installed.
 Both service configs advertise version 2 and first-entrant randomness funding.
@@ -315,3 +315,47 @@ Canonical film playback, byte-range streaming, battle review and Watch this mome
 seeking passed again at `2026-10-30T13:59:45.518Z`. Encrypted backup completed at
 `2026-10-30T14:02:22.202490+00:00` (7 objects uploaded, 1,144 reused); the verified
 object cache includes both exact new release archives.
+
+
+## Arena navigation and mode previews
+
+The mode chooser at `/arena` uses actual existing battle artwork: one optimized
+cinematic still and an anime composition of the engine background and two
+approved fighter poses. The four WebP assets total 350,872 bytes. No artwork or
+provider request was generated for this change.
+
+Both `/arena/anime` and `/arena/video` now show only joinable queues. Their sole
+entry action opens the selected battle at `#join`. Each mode has three primary
+destinations: Join a battle, My battles (`/me`) and Rewards & claims (`/rewards`).
+My battles defaults to ongoing fights and includes settled results whose film is
+still rendering; completed, refunded and full history have separate filters.
+It offers strategy actions and tracking, without presenting other open queues.
+Public completed films are available under Watch battles (`/watch`). Fighter
+approvals and rules remain secondary destinations. Detail pages show only the
+selected battle, its fighter selection, strategies, film and evidence.
+
+All USDC claims, manual draw-fee ETH refunds, withdrawal records and hosting
+history links now live in Rewards & claims. They use the existing wallet and
+transaction recovery workflow. Earlier video balances remain reachable at
+`/arena/rewards`; no contract, backend, admission or confirmation policy changed.
+
+Website source is `e27f9d7dc9d6c00964e06f2df2c86c49baaf9854`, local branch
+`codex/arena-navigation`. No Git source publication was performed. Four focused
+view-classification tests, strict web TypeScript and the curated build passed.
+Staged and canonical desktop/390px phone checks passed for real data and explicit
+mocked edge states: queue filtering and pagination, join-anchor scrolling,
+ongoing rendering films, strategy actions, refund routing, balance error/retry,
+wallet isolation, manual ETH refunds and recipient reset. Existing film playback,
+byte ranges, review and moment seeking passed. Saved transaction recovery still
+polled at about two seconds, including reload recovery. Checks sent no wallet
+signatures, transactions or provider requests. The changed-source secret scan
+found nothing; all nine public-bundle matches have the same candidate values as
+the previous release (comparison accounts for Unicode column offsets).
+
+The exact website archive SHA256 is
+`508ce6da3baf463fe375a866d8aeef6c68fb11a30d27bf8a3048eca8b51f2636`.
+Final encrypted backup status is recorded in the accompanying JSON.
+
+Encrypted backup completed at `2026-10-30T14:47:27.154954+00:00` (2 objects
+uploaded, 1,152 reused). The verified encrypted object cache contains both the
+exact live frontend and the navigation verification/source recovery archives.

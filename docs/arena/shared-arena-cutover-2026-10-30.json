@@ -1,6 +1,6 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T14:03:13.593326+00:00",
+  "recordedAt": "2026-10-30T14:47:57.015289+00:00",
   "state": "paid-pilot-completed",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
@@ -16,13 +16,13 @@
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
-    "deploymentId": "dpl_46vPFDaju6uXthEqzNb8nxzkguHH",
+    "deploymentId": "dpl_EmPxmcqZbCHABFR5YYgzeePv9JZW",
     "url": "https://www.yunipals.com",
-    "sourceCommit": "275729dea2ec7a6645abab82fa6d240cb28799b3",
-    "manifestSha256": "1d59deff8ef93461e9f29035d9c6456549f402361b28c3e2e9f42f53f87a5393",
-    "files": 227,
-    "bytes": 14090520,
-    "archiveSha256": "f58a95ac05114d29ffa4dcbf094dbe08eee73ed0f1a8c9bf2eaaf9dce55e8305"
+    "sourceCommit": "e27f9d7dc9d6c00964e06f2df2c86c49baaf9854",
+    "manifestSha256": "df8ab38962b35c1871f14072e44bbb0f439ce9be702b8a9a7ef1ee3c6f4e59bf",
+    "files": 236,
+    "bytes": 14458520,
+    "archiveSha256": "508ce6da3baf463fe375a866d8aeef6c68fb11a30d27bf8a3048eca8b51f2636"
   },
   "source": {
     "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
@@ -184,7 +184,203 @@
     "nativeClientTransactionTests": 11,
     "legacyArenaProductionTests": 24,
     "indexedBnbActionTests": 11,
-    "canonicalFastPollingAndMobileRecoveryPassed": true
+    "canonicalFastPollingAndMobileRecoveryPassed": true,
+    "arenaNavigation": {
+      "viewClassificationTests": 4,
+      "webTypeScript": "passed",
+      "curatedBuild": "passed",
+      "secretScan": {
+        "changedSourceFindings": 0,
+        "staticPublicClientFindings": 9,
+        "knownValueMatches": true,
+        "newStaticValues": 0,
+        "comparison": "All exact candidate values matching finding delimiters; independent of Unicode column offsets."
+      },
+      "staged": {
+        "verifiedAt": "2026-10-30T14:41:55.334Z",
+        "target": "https://yunipals-azecpf0nw-devving.vercel.app",
+        "assetsFromExactLocalBuild": true,
+        "stagedHtmlVerified": true,
+        "results": [
+          {
+            "width": 1440,
+            "kind": "live-public-data",
+            "hubImages": 4,
+            "queueHref": "/arena/anime/4#join",
+            "noQueueOnPersonalOrRewardsOrDetail": true,
+            "claimedBalanceDisabled": true,
+            "legacyClaimsPreserved": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 390,
+            "kind": "live-public-data",
+            "hubImages": 4,
+            "queueHref": "/arena/anime/4#join",
+            "noQueueOnPersonalOrRewardsOrDetail": true,
+            "claimedBalanceDisabled": true,
+            "legacyClaimsPreserved": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 1440,
+            "kind": "synthetic-indexed-states",
+            "paginationAcrossNonmatchingPages": true,
+            "queuesExcludeFullAndNonOpen": true,
+            "joinAnchorScroll": true,
+            "renderingFilmStillOngoing": true,
+            "strategyAction": true,
+            "completedAndRefundedFilters": true,
+            "refundRoutesToRewards": true,
+            "walletBalanceIsolation": true,
+            "ethRefundControlsCentralized": true,
+            "ethRecipientResetOnWalletChange": true,
+            "balanceErrorRetry": true,
+            "watchOnlyReadyFilms": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 390,
+            "kind": "synthetic-indexed-states",
+            "paginationAcrossNonmatchingPages": true,
+            "queuesExcludeFullAndNonOpen": true,
+            "joinAnchorScroll": true,
+            "renderingFilmStillOngoing": true,
+            "strategyAction": true,
+            "completedAndRefundedFilters": true,
+            "refundRoutesToRewards": true,
+            "walletBalanceIsolation": true,
+            "ethRefundControlsCentralized": true,
+            "ethRecipientResetOnWalletChange": true,
+            "balanceErrorRetry": true,
+            "watchOnlyReadyFilms": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          }
+        ]
+      },
+      "canonical": {
+        "verifiedAt": "2026-10-30T14:43:17.403Z",
+        "target": "https://www.yunipals.com",
+        "assetsFromExactLocalBuild": false,
+        "stagedHtmlVerified": false,
+        "results": [
+          {
+            "width": 1440,
+            "kind": "live-public-data",
+            "hubImages": 4,
+            "queueHref": "/arena/anime/4#join",
+            "noQueueOnPersonalOrRewardsOrDetail": true,
+            "claimedBalanceDisabled": true,
+            "legacyClaimsPreserved": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 390,
+            "kind": "live-public-data",
+            "hubImages": 4,
+            "queueHref": "/arena/anime/4#join",
+            "noQueueOnPersonalOrRewardsOrDetail": true,
+            "claimedBalanceDisabled": true,
+            "legacyClaimsPreserved": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 1440,
+            "kind": "synthetic-indexed-states",
+            "paginationAcrossNonmatchingPages": true,
+            "queuesExcludeFullAndNonOpen": true,
+            "joinAnchorScroll": true,
+            "renderingFilmStillOngoing": true,
+            "strategyAction": true,
+            "completedAndRefundedFilters": true,
+            "refundRoutesToRewards": true,
+            "walletBalanceIsolation": true,
+            "ethRefundControlsCentralized": true,
+            "ethRecipientResetOnWalletChange": true,
+            "balanceErrorRetry": true,
+            "watchOnlyReadyFilms": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 390,
+            "kind": "synthetic-indexed-states",
+            "paginationAcrossNonmatchingPages": true,
+            "queuesExcludeFullAndNonOpen": true,
+            "joinAnchorScroll": true,
+            "renderingFilmStillOngoing": true,
+            "strategyAction": true,
+            "completedAndRefundedFilters": true,
+            "refundRoutesToRewards": true,
+            "walletBalanceIsolation": true,
+            "ethRefundControlsCentralized": true,
+            "ethRecipientResetOnWalletChange": true,
+            "balanceErrorRetry": true,
+            "watchOnlyReadyFilms": true,
+            "walletSignatures": 0,
+            "walletTransactions": 0,
+            "errors": []
+          }
+        ]
+      },
+      "savedTransactionRecovery": {
+        "verifiedAt": "2026-10-30T14:42:04.268Z",
+        "target": "https://yunipals-azecpf0nw-devving.vercel.app",
+        "canonicalOrigin": "https://www.yunipals.com",
+        "canonicalHtmlMatchesBuild": true,
+        "stagedAssetsFromExactLocalBuild": true,
+        "trackingApiMocked": true,
+        "results": [
+          {
+            "width": 1440,
+            "firstPollMs": 2014,
+            "registrationCount": 1,
+            "statusPolls": 2,
+            "reloadRecovery": false,
+            "completed": true,
+            "actualWalletSignatures": 0,
+            "actualWalletTransactions": 0,
+            "errors": []
+          },
+          {
+            "width": 390,
+            "firstPollMs": 2005,
+            "registrationCount": 3,
+            "statusPolls": 2,
+            "reloadRecovery": true,
+            "completed": true,
+            "actualWalletSignatures": 0,
+            "actualWalletTransactions": 0,
+            "errors": []
+          }
+        ]
+      },
+      "film": {
+        "verifiedAt": "2026-10-30T14:42:59.335Z",
+        "rangePlaybackPassed": true,
+        "battleReviewLoaded": true,
+        "watchMomentSeekingPassed": true,
+        "savedChoreographyAvailable": true,
+        "artifactErrors": [],
+        "errors": [],
+        "walletSignatures": 0,
+        "walletTransactions": 0
+      },
+      "canonicalHtmlMatchesExactBuild": true
+    }
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -194,20 +390,20 @@
     "auditedVideoUsdcLiabilityRaw": "2000000"
   },
   "backup": {
-    "checkedAt": "2026-10-30T14:02:38.691672+00:00",
+    "checkedAt": "2026-10-30T14:47:57.015289+00:00",
     "latest-attempt.json": {
       "status": "success",
-      "createdAt": "2026-10-30T14:00:14.841480+00:00",
-      "completedAt": "2026-10-30T14:02:22.202490+00:00",
-      "objectsUploaded": 7,
-      "objectsReused": 1144
+      "createdAt": "2026-10-30T14:45:25.137381+00:00",
+      "completedAt": "2026-10-30T14:47:27.154954+00:00",
+      "objectsUploaded": 2,
+      "objectsReused": 1152
     },
     "latest-success.json": {
       "status": "success",
-      "createdAt": "2026-10-30T14:00:14.841480+00:00",
-      "completedAt": "2026-10-30T14:02:22.202490+00:00",
-      "objectsUploaded": 7,
-      "objectsReused": 1144
+      "createdAt": "2026-10-30T14:45:25.137381+00:00",
+      "completedAt": "2026-10-30T14:47:27.154954+00:00",
+      "objectsUploaded": 2,
+      "objectsReused": 1152
     },
     "latest-restore-drill.json": {
       "status": "success",
@@ -249,6 +445,30 @@
         "completedAt": "2026-10-30T14:02:22.202490+00:00",
         "objectsUploaded": 7,
         "objectsReused": 1144
+      }
+    },
+    "arenaNavigation": {
+      "state": "encrypted-backup-confirmed",
+      "websiteArchiveSha256": "508ce6da3baf463fe375a866d8aeef6c68fb11a30d27bf8a3048eca8b51f2636",
+      "recoveryPath": "/srv/yunipals-arena-modes/recovery/shared-arena-web-navigation-20261030.tar.gz",
+      "checkedAt": "2026-10-30T14:47:57.015289+00:00",
+      "latest-attempt.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:45:25.137381+00:00",
+        "completedAt": "2026-10-30T14:47:27.154954+00:00",
+        "objectsUploaded": 2,
+        "objectsReused": 1152
+      },
+      "latest-success.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:45:25.137381+00:00",
+        "completedAt": "2026-10-30T14:47:27.154954+00:00",
+        "objectsUploaded": 2,
+        "objectsReused": 1152
+      },
+      "encryptedObjectCacheVerified": {
+        "website": true,
+        "evidence": true
       }
     }
   },
@@ -372,6 +592,16 @@
       "manifestSha256": "2a0320d9f9dcdf712942fde52e5166950441b080b4e0210ce66547ff5d560453",
       "files": 227,
       "bytes": 14090513
+    },
+    {
+      "deploymentId": "dpl_46vPFDaju6uXthEqzNb8nxzkguHH",
+      "url": "https://www.yunipals.com",
+      "sourceCommit": "275729dea2ec7a6645abab82fa6d240cb28799b3",
+      "manifestSha256": "1d59deff8ef93461e9f29035d9c6456549f402361b28c3e2e9f42f53f87a5393",
+      "files": 227,
+      "bytes": 14090520,
+      "archiveSha256": "f58a95ac05114d29ffa4dcbf094dbe08eee73ed0f1a8c9bf2eaaf9dce55e8305",
+      "replacedAt": "2026-10-30T14:45:18.853134+00:00"
     }
   ],
   "paidPilot": {
@@ -562,6 +792,68 @@
       "watchMomentSeekingPassed": true,
       "savedChoreographyAvailable": true,
       "errors": []
+    }
+  },
+  "arenaNavigation": {
+    "recordedAt": "2026-10-30T14:45:18.853134+00:00",
+    "sourceBranch": "codex/arena-navigation",
+    "sourcePublished": false,
+    "primaryPages": [
+      "Join a battle",
+      "My battles",
+      "Rewards & claims"
+    ],
+    "queuePaths": [
+      "/arena/anime",
+      "/arena/video"
+    ],
+    "personalPaths": [
+      "/arena/anime/me",
+      "/arena/video/me"
+    ],
+    "claimPaths": [
+      "/arena/anime/rewards",
+      "/arena/video/rewards"
+    ],
+    "legacyClaimsPath": "/arena/rewards",
+    "publicFilmsPaths": [
+      "/arena/anime/watch",
+      "/arena/video/watch"
+    ],
+    "queuesRemovedFromOtherPublicPages": true,
+    "filmsRenderingRemainOngoing": true,
+    "claimsUseExistingWalletWorkflow": true,
+    "backendReleaseChanged": false,
+    "admissionModeChanged": false,
+    "newProviderCalls": 0,
+    "newWalletTransactions": 0,
+    "teaserAssets": [
+      {
+        "path": "images/arena/anime-background.webp",
+        "bytes": 163540,
+        "sha256": "ed9c8e136a075c7966022c8e1207ee3d273b0c0fd9f90efe4179f057deba799d"
+      },
+      {
+        "path": "images/arena/anime-chick.webp",
+        "bytes": 39892,
+        "sha256": "4fa4f432326177a8f02a51e082257edd8ae6bac63f634b9ece1c289cf5af1b74"
+      },
+      {
+        "path": "images/arena/anime-turtle.webp",
+        "bytes": 47446,
+        "sha256": "382181e0ff6a291ab704e9b3021850e47b74d29197cb0a02a1c06cba5250d64b"
+      },
+      {
+        "path": "images/arena/video-preview.webp",
+        "bytes": 99994,
+        "sha256": "16742793e261eccf776211a116159055ff3078b3eafccfd5ba1a554f80016181"
+      }
+    ],
+    "teaserProvenance": {
+      "video": "Existing owned pilot SF1 first frame, resized/encoded as WebP.",
+      "anime": "Existing engine background and two approved transparent Base fighter idle poses, composed in the browser.",
+      "totalBytes": 350872,
+      "newArtworkGenerations": 0
     }
   }
 }
