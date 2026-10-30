@@ -25,6 +25,7 @@ export type AnimeDirectionInput = {
 export type AnimeDirectorReceipt = {
   provider: "openrouter";
   model: typeof ANIME_DIRECTOR_MODEL;
+  resolvedModel?: string;
   requestId: string;
   generationId: string;
   actualCostUsd: number;

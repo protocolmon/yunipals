@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import type { Pool } from "pg";
 import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
@@ -15,6 +16,7 @@ import {
 import { boundedBody } from "./mediaApi";
 import { savedMediaFolder } from "./mediaPaths";
 import { NativeArenaProvider } from "./nativeProvider";
+import { animeDirectorCapture } from "./animeDirectorCapture";
 import { withArenaSourceLease } from "./sourceSelection";
 
 type Completion = {
@@ -27,6 +29,10 @@ type Completion = {
   usage?: Record<string, unknown>;
 };
 type DirectorTask = {
+  asset: string;
+  reserved_microusd: string;
+  actual_microusd: string | null;
+  error_code: string | null;
   request_id: string;
   state: string;
   provider_id: string | null;
@@ -36,6 +42,9 @@ type DirectorTask = {
   };
   response: { provider: Completion; receipt?: AnimeDirectorReceipt } | null;
 };
+export const ANIME_DIRECTOR_RECOVERY_ASSET = `${ANIME_DIRECTOR_ASSET}/recovery-1`;
+export const ANIME_DIRECTOR_RECOVERY_RESERVE = 750000;
+const resolvedModel = "anthropic/claude-opus-5.5-20260921";
 const generationId = (value: unknown): value is string =>
   typeof value === "string" && /^gen-[A-Za-z0-9_-]{1,180}$/.test(value);
 function usd(value: unknown): value is number {
@@ -63,8 +72,14 @@ export class AnimeDirectorApi {
   private async task(id: string, incarnation: string) {
     return (
       await this.pool.query<DirectorTask>(
-        "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media' AND asset=$4",
-        [this.native.service.deployment, id, incarnation, ANIME_DIRECTOR_ASSET]
+        "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media' AND asset IN($4,$5) ORDER BY asset DESC LIMIT 1",
+        [
+          this.native.service.deployment,
+          id,
+          incarnation,
+          ANIME_DIRECTOR_ASSET,
+          ANIME_DIRECTOR_RECOVERY_ASSET
+        ]
       )
     ).rows[0];
   }
@@ -79,6 +94,44 @@ export class AnimeDirectorApi {
       throw new Error(
         "Anime direction does not match the canonical input and outcome."
       );
+  }
+  private async assertRecovery(
+    task: DirectorTask,
+    id: string,
+    incarnation: string
+  ) {
+    if (task.asset !== ANIME_DIRECTOR_RECOVERY_ASSET) return;
+    const original = (
+      await this.pool.query<DirectorTask>(
+        "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media' AND asset=$4",
+        [this.native.service.deployment, id, incarnation, ANIME_DIRECTOR_ASSET]
+      )
+    ).rows[0];
+    if (
+      !original ||
+      original.state !== "failed" ||
+      original.error_code !== "director_content_not_retained" ||
+      !generationId(original.provider_id) ||
+      original.actual_microusd === null ||
+      !/^[0-9]+$/.test(original.actual_microusd) ||
+      original.response?.receipt?.generationId !== original.provider_id ||
+      original.response.receipt.actualMicrousd !==
+        Number(original.actual_microusd) ||
+      BigInt(task.reserved_microusd) !==
+        BigInt(ANIME_DIRECTOR_RECOVERY_RESERVE) ||
+      canonicalJson(task.request) !== canonicalJson(original.request)
+    )
+      throw new Error(
+        "Director recovery requires the original billed receipt and unchanged frozen request."
+      );
+    const total = (
+      await this.pool.query<{ total: string }>(
+        "SELECT coalesce(sum(coalesce(actual_microusd,reserved_microusd)),0)::text AS total FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3",
+        [this.native.service.deployment, id, incarnation]
+      )
+    ).rows[0]!;
+    if (BigInt(total.total) > 1600000n)
+      throw new Error("Combined generation budget exhausted.");
   }
   async direct(job: string, input: AnimeDirectionInput) {
     const id = input.tournament.source.tournamentId;
@@ -101,12 +154,13 @@ export class AnimeDirectorApi {
       ]);
       const old = (
         await db.query<DirectorTask>(
-          "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media' AND asset=$4",
+          "SELECT * FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND incarnation=$3 AND kind='media' AND asset IN($4,$5) ORDER BY asset DESC LIMIT 1",
           [
             this.native.service.deployment,
             id,
             incarnation,
-            ANIME_DIRECTOR_ASSET
+            ANIME_DIRECTOR_ASSET,
+            ANIME_DIRECTOR_RECOVERY_ASSET
           ]
         )
       ).rows[0];
@@ -163,7 +217,50 @@ export class AnimeDirectorApi {
       throw new Error("Anime director request must be reserved first.");
     if (["completed", "failed", "incomplete", "cancelled"].includes(task.state))
       return task;
+    if (task.state === "uncertain" && !task.provider_id) {
+      // A complete local capture can reconcile a lost DB update without another POST.
+      try {
+        const folder = await savedMediaFolder(
+          this.pool,
+          this.storage,
+          this.native.service.deployment,
+          id,
+          incarnation
+        );
+        const headers = JSON.parse(
+          await readFile(
+            join(
+              folder,
+              "provider-receipts",
+              `${task.request_id}.headers.json`
+            ),
+            "utf8"
+          )
+        );
+        const provider = JSON.parse(
+          await readFile(
+            join(folder, "provider-receipts", `${task.request_id}.response`),
+            "utf8"
+          )
+        ) as Completion;
+        if (
+          headers.clientRequestId !== task.request_id ||
+          headers.status !== 200 ||
+          !generationId(provider.id) ||
+          (headers.generationId && headers.generationId !== provider.id)
+        )
+          throw new Error("Incomplete saved receipt.");
+        await this.pool.query(
+          "UPDATE yunipals_arena.provider_task SET state='accounting',provider_id=$2,response=$3,error_code=NULL,updated_at=now() WHERE request_id=$1 AND state='uncertain' AND provider_id IS NULL",
+          [task.request_id, provider.id, { provider }]
+        );
+        task = (await this.task(id, incarnation))!;
+      } catch {
+        /* An incomplete capture never authorizes another paid request. */
+      }
+    }
     if (task.state === "reserved") {
+      await this.assertRecovery(task, id, incarnation);
       if (
         canonicalJson(task.request.body) !==
         canonicalJson(animeDirectorRequest(task.request.input))
@@ -174,7 +271,16 @@ export class AnimeDirectorApi {
       if (!(await this.native.claim(task.request_id, "media", authorized)))
         return (await this.task(id, incarnation))!;
       let response: Response;
+      let capture: Awaited<ReturnType<typeof animeDirectorCapture>> | undefined;
       try {
+        const folder = await savedMediaFolder(
+          this.pool,
+          this.storage,
+          this.native.service.deployment,
+          id,
+          incarnation
+        );
+        capture = await animeDirectorCapture(folder, task.request_id);
         response = await this.fetcher(
           "https://openrouter.ai/api/v1/chat/completions",
           {
@@ -189,10 +295,7 @@ export class AnimeDirectorApi {
             signal: AbortSignal.timeout(120000)
           }
         );
-        if (!response.ok) throw new Error("Director submission failed.");
-        const provider = JSON.parse(
-          (await boundedBody(response, 256000)).toString("utf8")
-        ) as Completion;
+        const provider = JSON.parse(await capture.read(response)) as Completion;
         if (!generationId(provider.id))
           throw new Error("Missing generation ID.");
         await this.pool.query(
@@ -207,6 +310,8 @@ export class AnimeDirectorApi {
         throw new Error(
           "Claude submission is unconfirmed; automatic replacement is blocked."
         );
+      } finally {
+        await capture?.close();
       }
       task = (await this.task(id, incarnation))!;
     }
@@ -248,11 +353,12 @@ export class AnimeDirectorApi {
       generationId: task.provider_id,
       actualCostUsd: cost,
       actualMicrousd: Math.ceil(cost * 1000000),
+      resolvedModel: provider.model,
       usage: provider.usage ?? null
     };
     let valid = true;
     try {
-      if (receipt.actualMicrousd > ANIME_DIRECTOR_RESERVE)
+      if (BigInt(receipt.actualMicrousd) > BigInt(task.reserved_microusd))
         throw new Error("Director charge exceeded its reservation.");
       applyAnimeProviderDirection(task.request.input, this.candidate(provider));
     } catch {
@@ -273,7 +379,7 @@ export class AnimeDirectorApi {
   private candidate(response: Completion): unknown {
     const choice = response.choices?.[0];
     if (
-      response.model !== ANIME_DIRECTOR_MODEL ||
+      ![ANIME_DIRECTOR_MODEL, resolvedModel].includes(response.model) ||
       response.choices?.length !== 1 ||
       choice?.finish_reason !== "stop" ||
       choice.message?.tool_calls?.length ||

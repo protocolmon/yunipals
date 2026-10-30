@@ -8,7 +8,10 @@ import { ArenaMedia } from "./media";
 import { StrategyCipher } from "./crypto";
 import { verifyNativeArenaAction } from "./nativeAction";
 import { animeMediaBuilder } from "./animeMedia";
-import { AnimeDirectorApi } from "./animeDirectorApi";
+import {
+  AnimeDirectorApi,
+  ANIME_DIRECTOR_RECOVERY_ASSET
+} from "./animeDirectorApi";
 import { ANIME_DIRECTOR_ASSET } from "./animeDirection";
 import { animeRepository } from "./animeRepository";
 
@@ -68,7 +71,9 @@ const media = new ArenaMedia(
   )
 );
 const worker = new NativeArenaMedia(runtime.service, api, media, (task) => {
-  if (task.asset !== ANIME_DIRECTOR_ASSET)
+  if (
+    ![ANIME_DIRECTOR_ASSET, ANIME_DIRECTOR_RECOVERY_ASSET].includes(task.asset)
+  )
     throw new Error("Unknown anime provider task.");
   return director.step(task.id, task.incarnation);
 });
