@@ -38,15 +38,20 @@ import {
 import { exportAnimeTournament } from "./animeMedia";
 import { directTournament } from "../../../../yunipals-anime-engine/src/director";
 import { ArenaCapacity, type CapacitySnapshot } from "./capacity";
+import { arenaOperationalPoolMax } from "./runtime";
 
-async function fixture(legacyContext = false) {
+async function fixture(legacyContext = false, poolMax = 6) {
   const url =
     process.env.ARENA_TEST_DATABASE_URL ??
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const parsed = new URL(url);
   assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(parsed.hostname));
   assert.ok(["/arena", "/yunipals_arena_test"].includes(parsed.pathname));
-  const pool = new pg.Pool({ connectionString: url, max: 6 });
+  const pool = new pg.Pool({
+    connectionString: url,
+    max: poolMax,
+    connectionTimeoutMillis: 500
+  });
   await migrateArena(pool);
   const storage = await mkdtemp("/tmp/yunipals-native-media-");
   const hash = () => `0x${randomBytes(32).toString("hex")}` as Hex;
@@ -406,6 +411,55 @@ function claudeFixture(f: Awaited<ReturnType<typeof fixture>>) {
   );
   return { api, input, output, options, counts: () => ({ posts, gets }) };
 }
+
+test("Claude resumes its reserved request with source and media locks using the production three-connection pool", async () => {
+  const f = await fixture(false, 2);
+  try {
+    const c = claudeFixture(f);
+    const job = await f.folder();
+    const runLocked = async () => {
+      const lock = await f.pool.connect();
+      try {
+        await lock.query("SELECT pg_advisory_lock(hashtext($1))", [
+          `arena/media/${f.service.deployment}/1`
+        ]);
+        return await c.api.direct(job, c.input);
+      } finally {
+        await lock.query("SELECT pg_advisory_unlock(hashtext($1))", [
+          `arena/media/${f.service.deployment}/1`
+        ]);
+        lock.release();
+      }
+    };
+    await assert.rejects(runLocked(), /timeout|connection/i);
+    assert.deepEqual(c.counts(), { posts: 0, gets: 0 });
+    const before = (
+      await f.pool.query(
+        "SELECT request_id,state FROM yunipals_arena.provider_task WHERE deployment=$1",
+        [f.service.deployment]
+      )
+    ).rows;
+    assert.equal(before.length, 1);
+    assert.equal(before[0].state, "reserved");
+    f.pool.options.max = arenaOperationalPoolMax(2, {
+      native: true,
+      media: true
+    });
+    const result = await runLocked();
+    assert.equal(result.receipt.actualMicrousd, 1235);
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    const after = (
+      await f.pool.query(
+        "SELECT request_id,state FROM yunipals_arena.provider_task WHERE deployment=$1",
+        [f.service.deployment]
+      )
+    ).rows;
+    assert.equal(after[0].request_id, before[0].request_id);
+    assert.equal(after[0].state, "completed");
+  } finally {
+    await f.close();
+  }
+});
 
 test("Claude cut-ins persist one canonical task, actual charge and native evidence across render retries", async () => {
   const f = await fixture();

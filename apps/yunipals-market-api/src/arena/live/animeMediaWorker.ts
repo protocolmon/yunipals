@@ -21,7 +21,7 @@ class OfflineAnimeApi extends ArenaMediaApi {
     throw new Error("Anime media cannot call a generation provider.");
   }
 }
-const runtime = await arenaRuntime({ native: true });
+const runtime = await arenaRuntime({ native: true, media: true });
 if (!runtime.anime)
   throw new Error("This worker requires ARENA_MEDIA_KIND=anime.");
 const root = animeRepository(),

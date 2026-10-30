@@ -17,7 +17,7 @@ async function run() {
     storage = process.env.ARENA_MEDIA_ROOT;
   if (!key || !root || !storage)
     throw new Error("Existing media configuration is required.");
-  const runtime = await arenaRuntime({ native: true });
+  const runtime = await arenaRuntime({ native: true, media: true });
   if (runtime.config.mediaKind !== "video")
     throw new Error("Anime arenas must use arena-anime-media.");
   let stopped = false;
