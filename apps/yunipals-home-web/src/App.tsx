@@ -7,10 +7,7 @@ import { Nav } from "@/components/Nav";
 import { environment } from "@/environment";
 import { exomonCollectionRedirect } from "@/lib/collectionBrowserFilters";
 import { PendingMarketTransactions } from "@/components/marketplace/PendingMarketTransactions";
-import {
-  TradingConsentProvider,
-  useTradingConsent
-} from "@/components/marketplace/TradingConsentProvider";
+import { TradingConsentProvider } from "@/components/marketplace/TradingConsentProvider";
 import { CollectionPage } from "@/pages/collection/page";
 import { CollectorPage } from "@/pages/collector/page";
 import { LeaderboardPage } from "@/pages/leaderboard/page";
@@ -181,7 +178,6 @@ function LeaderboardRoute() {
 }
 
 function AppContent() {
-  const { openInformation } = useTradingConsent();
   const { pathname, search } = useLocation();
   const exomonView =
     environment.exomonEnabled &&
@@ -493,7 +489,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      <Footer onTradingInformation={openInformation} exomonView={exomonView} />
+      <Footer exomonView={exomonView} />
       {!exomonView && <PendingMarketTransactions />}
     </div>
   );
