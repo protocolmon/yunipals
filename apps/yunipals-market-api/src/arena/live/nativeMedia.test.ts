@@ -475,6 +475,47 @@ test("Claude's captured response recovers a failed DB update without another pro
   }
 });
 
+test("the anime media role recovers captured Claude output after its provider-ID column grant is applied", async () => {
+  const f = await fixture();
+  const role = `arena_director_${randomBytes(8).toString("hex")}`;
+  let apiPool: pg.Pool | undefined;
+  try {
+    await f.pool.query(`CREATE ROLE ${role} NOLOGIN;
+      GRANT USAGE ON SCHEMA yunipals_arena TO ${role};
+      GRANT SELECT ON ALL TABLES IN SCHEMA yunipals_arena TO ${role};
+      GRANT INSERT ON yunipals_arena.provider_task TO ${role};
+      GRANT UPDATE(state,response,error_code,updated_at,actual_microusd) ON yunipals_arena.provider_task TO ${role};`);
+    apiPool = new pg.Pool({
+      connectionString: f.pool.options.connectionString,
+      max: 3,
+      options: `-c role=${role}`
+    });
+    const c = claudeFixture(f, apiPool);
+    await assert.rejects(
+      c.api.direct(await f.folder(), c.input),
+      /unconfirmed/
+    );
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    await f.pool.query(
+      `GRANT UPDATE(provider_id) ON yunipals_arena.provider_task TO ${role}`
+    );
+    const result = await c.api.direct(await f.folder(), c.input);
+    assert.equal(result.receipt.generationId, c.options.generationId);
+    assert.deepEqual(c.counts(), { posts: 1, gets: 0 });
+    const permissions = (
+      await f.pool.query(
+        "SELECT has_column_privilege($1,'yunipals_arena.provider_task','request','UPDATE') AS request, has_column_privilege($1,'yunipals_arena.provider_task','reserved_microusd','UPDATE') AS reservation",
+        [role]
+      )
+    ).rows[0];
+    assert.deepEqual(permissions, { request: false, reservation: false });
+  } finally {
+    await apiPool?.end();
+    await f.pool.query(`DROP OWNED BY ${role}; DROP ROLE ${role}`);
+    await f.close();
+  }
+});
+
 test("one explicitly staged director recovery preserves the original charge and frozen request", async () => {
   const f = await fixture();
   try {
