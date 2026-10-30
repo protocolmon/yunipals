@@ -8,10 +8,10 @@ The existing fighter registry and its four approvals remain in use; applications
 remain open as requested.
 
 The production website now serves deployment
-`dpl_6wcZ99BWLDenjfCayJ9bcR7Whhju` (frontend commit
-`3eefb814451dd8058f98ef146069a1f91fe731f6`). The curated build contains 227 files
-and 14,084,224 bytes; manifest SHA256
-`1b64536f9aeb3a5b3564e634e55d3a5b8c4fd9543982f4ac49a3bcce818dad1e`.
+`dpl_Hn5PXEqi1XZfP1L8hs6kD5n5rwDm` (frontend commit
+`15e41cda62c27ac265286f28787ed57e2307ab97`). The curated build contains 227 files
+and 14,084,258 bytes; manifest SHA256
+`dff4f4877e66124c8012042d5ce87ea4d0a64ba7c2ba7fff30169eaa53885503`.
 The canonical www HTML matches this exact build. Persistent production setting
 `VITE_SHARED_ARENA_API_URL=https://api.yunipals.com/api/arena-v2` is installed.
 Both service configs advertise version 2 and first-entrant randomness funding.
@@ -139,3 +139,23 @@ strategy/loadout for each fighter when the editors appear to avoid waiting for
 the strategy deadline. NFT-owner signatures are required; the workers do not
 have authority to sign those wallet actions. The paid film and cost measurement
 remain pending these entries.
+
+
+## Join navigation and entry progress follow-up
+
+Frontend commit `15e41cda` makes repeated navigation to the existing `#join`
+fragment scroll the picker into view again. It also uses the same mode-aware
+transaction scope for rendering, persistence and polling. Previously the polling
+and visible-state checks omitted the shared mode suffix, which stopped the flow
+after approval and left a recovered operation showing “Updating entry…”. Approval
+and entry progress now have distinct labels; storage keys remain compatible.
+
+The pilot's completed transaction was a 1-USDC allowance approval, not a paid
+entry; the tracker had already reconciled it. The updated page recovers that
+retained approval and enables entry. Synthetic local browser regressions passed
+approval-to-entry continuation and reload recovery in legacy, shared video and
+shared anime modes without duplicate sends. The exact staged and canonical builds
+passed repeated Join clicks on desktop/mobile and a retained-approval recovery
+check using a read-only wallet and mocked tracking responses. Strict TypeScript,
+four deployment/storage helper tests and the scoped secret scan passed. These
+checks sent no real wallet signatures or transactions.

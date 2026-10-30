@@ -1,6 +1,6 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T07:32:47.465640+00:00",
+  "recordedAt": "2026-10-30T09:50:03.608Z",
   "state": "pilot-enabled-awaiting-entries",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
@@ -16,12 +16,12 @@
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
-    "deploymentId": "dpl_6wcZ99BWLDenjfCayJ9bcR7Whhju",
+    "deploymentId": "dpl_Hn5PXEqi1XZfP1L8hs6kD5n5rwDm",
     "url": "https://www.yunipals.com",
-    "sourceCommit": "3eefb814451dd8058f98ef146069a1f91fe731f6",
-    "manifestSha256": "1b64536f9aeb3a5b3564e634e55d3a5b8c4fd9543982f4ac49a3bcce818dad1e",
+    "sourceCommit": "15e41cda62c27ac265286f28787ed57e2307ab97",
+    "manifestSha256": "dff4f4877e66124c8012042d5ce87ea4d0a64ba7c2ba7fff30169eaa53885503",
     "files": 227,
-    "bytes": 14084224
+    "bytes": 14084258
   },
   "source": {
     "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
@@ -71,7 +71,48 @@
       "ethCoversDrawAndGasBuffer": true,
       "alreadyApprovedFour": false
     },
-    "providerTasksBeforePilot": 0
+    "providerTasksBeforePilot": 0,
+    "repeatJoinAndApprovalRecovery": {
+      "origin": "https://www.yunipals.com",
+      "verifiedAt": "2026-10-30T09:50:03.608Z",
+      "results": [
+        {
+          "scrollY": 1455,
+          "joinTop": 118,
+          "hash": "#join",
+          "width": 1440
+        },
+        {
+          "scrollY": 1455,
+          "joinTop": 118,
+          "hash": "#join",
+          "width": 1440
+        },
+        {
+          "scrollY": 2240,
+          "joinTop": 119,
+          "hash": "#join",
+          "width": 390
+        },
+        {
+          "scrollY": 2240,
+          "joinTop": 119,
+          "hash": "#join",
+          "width": 390
+        }
+      ],
+      "recoveredApproval": true,
+      "enabledEntryButtons": 4,
+      "walletTransactions": 0,
+      "walletSignatures": 0,
+      "trackingApiMockedForRecovery": true,
+      "errors": []
+    },
+    "walletFlowRegressionModes": [
+      "legacy",
+      "video",
+      "anime"
+    ]
   },
   "legacy": {
     "admissionIssuersClosed": 2,
