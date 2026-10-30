@@ -20,6 +20,8 @@ export type PendingArenaTransaction = ArenaTransactionStatus & {
   contract: Address;
   fighter?: ArenaEntryTarget;
   mediaKind?: "video" | "anime";
+  // Receipt + live allowance checked on Base; this is not an indexer result.
+  approvalConfirmed?: boolean;
 };
 
 export function arenaTransactionScope(
@@ -115,10 +117,16 @@ export function transactionFighter(value: PendingArenaTransaction | null) {
 }
 
 export function transactionPending(value: PendingArenaTransaction | null) {
-  return !!value && !["indexed", "failed"].includes(value.state);
+  return (
+    !!value &&
+    !(value.action.kind === "approval" && value.approvalConfirmed) &&
+    !["indexed", "failed"].includes(value.state)
+  );
 }
 
 export function transactionLabel(value: PendingArenaTransaction) {
+  if (value.action.kind === "approval" && value.approvalConfirmed)
+    return "USDC approval confirmed. Complete your fighter’s entry next.";
   const action =
     value.action.kind === "approval"
       ? "USDC approval"

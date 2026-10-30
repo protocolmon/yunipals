@@ -92,7 +92,8 @@ export function ArenaTransactionFeedback({
         <p className="mt-3 text-sm text-muted">
           Approval sets your spending limit; it does not enter a fighter or
           charge the entry fee. Entry needs a separate wallet transaction.
-          {operation.state === "indexed" && !busy
+          {(operation.state === "indexed" || operation.approvalConfirmed) &&
+          !busy
             ? ` Choose your fighter below and click Enter · ${deployment.entry} USDC to continue. Your approval will be reused.`
             : null}
         </p>

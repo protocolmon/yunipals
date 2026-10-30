@@ -788,7 +788,18 @@ export function LiveArenaPage() {
           <ArenaLoading label={`${wallet.busy}…`} />
         </div>
       )}
-      {wallet.operation ? (
+      {wallet.batchPending ? (
+        <div className="my-4 rounded-card border border-line p-5" role="status">
+          <p>Your wallet is handling this combined approval and entry.</p>
+          <button
+            className={cn(action, "mt-3")}
+            disabled={!!wallet.busy}
+            onClick={() => void wallet.checkStatus()}
+          >
+            Check entry status
+          </button>
+        </div>
+      ) : wallet.operation ? (
         <ArenaTransactionFeedback
           operation={wallet.operation}
           busy={!!wallet.busy}
@@ -1086,7 +1097,9 @@ export function LiveArenaPage() {
                 <p id="arena-approval-help" className="mt-3 text-sm text-muted">
                   A higher limit saves repeat approvals. Each entry still
                   charges only {deployment.entry} USDC. This limit applies when
-                  a new approval is needed; an existing allowance is reused.
+                  a new approval is needed; an existing allowance is reused.{" "}
+                  Compatible wallets approve and enter together. Other wallets
+                  ask for approval, then immediately ask you to confirm entry.
                 </p>
               </div>
               {inventory.isPending && (
@@ -1148,7 +1161,7 @@ export function LiveArenaPage() {
                         <button
                           className={cn(
                             action,
-                            "inline-flex min-h-12 w-full items-center justify-center gap-2 px-3 text-sm",
+                            "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
                             progress && "bg-grape disabled:opacity-100"
                           )}
                           aria-busy={!!progress}
@@ -1175,7 +1188,11 @@ export function LiveArenaPage() {
                                 aria-hidden="true"
                                 className="shrink-0 motion-safe:animate-spin"
                               />
-                              <span role="status" aria-live="polite">
+                              <span
+                                className="truncate"
+                                role="status"
+                                aria-live="polite"
+                              >
                                 {progress.label}
                               </span>
                             </>
