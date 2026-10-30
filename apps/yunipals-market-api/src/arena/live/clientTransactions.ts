@@ -17,6 +17,7 @@ import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
 import { ArenaIntake, ArenaRequestError } from "./intake";
 import { arenaClientReceiptEvidence } from "./clientReceiptEvidence";
+import { scheduleArenaClientCheck } from "./clientTrackingSchedule";
 import { NativeArenaClientTransactions } from "./nativeClientTransactions";
 
 type Tracked = {
@@ -260,9 +261,11 @@ export class ArenaClientTransactions {
     const finalized = await readConfirmedBlock(client, 8453);
     for (const row of rows) {
       // Persist backoff before network I/O, including failed/ambiguous reads.
-      await this.service.pool.query(
-        "UPDATE yunipals_arena.client_transaction SET next_check_at=now()+interval '30 seconds' WHERE deployment=$1 AND hash=$2",
-        [this.service.deployment, row.hash]
+      await scheduleArenaClientCheck(
+        this.service.pool,
+        this.service.deployment,
+        row.hash,
+        "backoff"
       );
       if (Date.now() > row.tracking_until.getTime()) {
         await this.save(row, "delayed");
@@ -273,6 +276,12 @@ export class ArenaClientTransactions {
       } catch (error) {
         if (!(error instanceof TransactionReceiptNotFoundError)) throw error;
       }
+      await scheduleArenaClientCheck(
+        this.service.pool,
+        this.service.deployment,
+        row.hash,
+        "active"
+      );
     }
   }
 

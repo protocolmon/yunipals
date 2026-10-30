@@ -359,9 +359,15 @@ export function bnbIndexRefetchInterval(
     indexed.coverage?.finalizedThroughBlock !== undefined &&
     BigInt(indexed.coverage.finalizedThroughBlock) >=
       BigInt(indexed.transaction.blockNumber);
-  return finalized ||
+  if (
+    finalized ||
     indexed?.state === "unsupported" ||
     (error instanceof MarketApiError && error.status === 422)
-    ? false
-    : 30_000;
+  )
+    return false;
+  return error ||
+    indexed?.state === "indexed" ||
+    indexed?.state === "source_unavailable"
+    ? 30_000
+    : 2_000;
 }

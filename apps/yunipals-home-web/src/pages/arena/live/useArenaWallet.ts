@@ -358,7 +358,7 @@ export function useArenaWallet(
         }
         // Indexing can take longer than the initial UI wait. Keep reading
         // the DB status until completion; these requests never trigger RPC reads.
-        const interval = Date.now() - started < 90_000 ? 5000 : 15_000;
+        const interval = Date.now() - started < 90_000 ? 2000 : 5000;
         await new Promise<void>((resolve, reject) => {
           const stop = () => {
             clearTimeout(timer);

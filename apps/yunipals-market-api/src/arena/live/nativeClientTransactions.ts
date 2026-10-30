@@ -14,6 +14,7 @@ import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
 import { ArenaIntake, ArenaRequestError } from "./intake";
 import { arenaClientReceiptEvidence } from "./clientReceiptEvidence";
+import { scheduleArenaClientCheck } from "./clientTrackingSchedule";
 import { json } from "./projection";
 import type { NativeArenaSource } from "./nativeSource";
 
@@ -368,10 +369,11 @@ export class NativeArenaClientTransactions {
       if ((await client.getChainId()) !== 8453)
         throw new Error("Native client tracking requires Base.");
       for (const row of rows) {
-        await db.query(
-          `UPDATE yunipals_arena.client_transaction SET next_check_at=now()+interval '30 seconds'
-          WHERE deployment=$1 AND hash=$2`,
-          [this.service.deployment, row.hash]
+        await scheduleArenaClientCheck(
+          db,
+          this.service.deployment,
+          row.hash,
+          "backoff"
         );
         try {
           await this.reconcile(row, client);
@@ -379,6 +381,12 @@ export class NativeArenaClientTransactions {
           if (!(error instanceof TransactionReceiptNotFoundError)) throw error;
           await this.lost(row);
         }
+        await scheduleArenaClientCheck(
+          db,
+          this.service.deployment,
+          row.hash,
+          "active"
+        );
       }
     } finally {
       if (locked)

@@ -392,5 +392,18 @@ test("unsupported tracking stops polling but never upgrades to Action indexed", 
     bnbIndexRefetchInterval(undefined, new MarketApiError(503)),
     30_000
   );
-  assert.equal(bnbIndexRefetchInterval(undefined, null), 30_000);
+  assert.equal(bnbIndexRefetchInterval(undefined, null), 2_000);
+  for (const state of [
+    "awaiting_indexing",
+    "action_not_observed",
+    "inclusion_changed"
+  ] as const) {
+    const pending = { ...indexed, state };
+    assert.equal(bnbIndexRefetchInterval(pending, null), 2_000);
+    assert.notEqual(pendingBnbIndexLabel(pending, null), "Action indexed");
+  }
+  assert.equal(
+    bnbIndexRefetchInterval({ ...indexed, state: "source_unavailable" }, null),
+    30_000
+  );
 });
