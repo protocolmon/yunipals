@@ -1,7 +1,7 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T00:06:33.699102+00:00",
-  "state": "services-ready-awaiting-owner-unpauses",
+  "recordedAt": "2026-10-30T07:32:47.465640+00:00",
+  "state": "pilot-enabled-awaiting-entries",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
   "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
@@ -11,8 +11,8 @@
   "creationTransaction": "0xb428cadf0ee49422852ece94a598781825b7d6d5d55782ba3ca6e02f77a09850",
   "randomnessFunding": "first-entrant",
   "contractModesPaused": {
-    "video": true,
-    "anime": true
+    "video": false,
+    "anime": false
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
@@ -34,7 +34,7 @@
       "anime": "8a3b8df1-0bf1-46b8-b81f-92790887d7d1"
     },
     "servingVerifiedPrefix": true,
-    "lastFrameworkReady": false,
+    "lastFrameworkReady": true,
     "paidReplayPermits": 0,
     "paidFallback": false
   },
@@ -48,7 +48,30 @@
     "canonicalDesktopAndMobile": true,
     "canonicalConnectedOwnerReadOnly": true,
     "walletTransactionsSentByBrowserChecks": 0,
-    "paidBattleStarted": false
+    "paidBattleStarted": false,
+    "sharedHistoryRegressionTests": 7,
+    "nativeSigningAndReceiptTests": 10,
+    "livePilotBrowser": {
+      "verifiedAt": "2026-10-30T07:29:44.113Z",
+      "url": "https://www.yunipals.com/arena/anime/2#join",
+      "fighterCards": 4,
+      "enabledEntryButtons": 4,
+      "approvalLimit": "4 USDC / 4 entries",
+      "firstEntryDrawQuoteVisible": true,
+      "mobileOverflow": false,
+      "walletSignatures": 0,
+      "walletTransactions": 0,
+      "errors": []
+    },
+    "pilotWallet": {
+      "firstEntry": true,
+      "drawQuoteEth": "0.000002891658532406",
+      "walletOwnsAllFour": true,
+      "usdcSufficientForFour": true,
+      "ethCoversDrawAndGasBuffer": true,
+      "alreadyApprovedFour": false
+    },
+    "providerTasksBeforePilot": 0
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -58,20 +81,20 @@
     "auditedVideoUsdcLiabilityRaw": "2000000"
   },
   "backup": {
-    "checkedAt": "2026-10-30T00:06:33.699102+00:00",
+    "checkedAt": "2026-10-30T07:32:47.465640+00:00",
     "latest-attempt.json": {
       "status": "success",
-      "createdAt": "2026-10-30T00:03:58.740520+00:00",
-      "completedAt": "2026-10-30T00:05:33.791500+00:00",
+      "createdAt": "2026-10-30T07:28:18.333835+00:00",
+      "completedAt": "2026-10-30T07:30:00.619854+00:00",
       "objectsUploaded": 2,
-      "objectsReused": 1021
+      "objectsReused": 1023
     },
     "latest-success.json": {
       "status": "success",
-      "createdAt": "2026-10-30T00:03:58.740520+00:00",
-      "completedAt": "2026-10-30T00:05:33.791500+00:00",
+      "createdAt": "2026-10-30T07:28:18.333835+00:00",
+      "completedAt": "2026-10-30T07:30:00.619854+00:00",
       "objectsUploaded": 2,
-      "objectsReused": 1021
+      "objectsReused": 1023
     },
     "latest-restore-drill.json": {
       "status": "success",
@@ -82,8 +105,33 @@
     }
   },
   "pending": [
-    "Two owner browser signatures to unpause the modes",
-    "Pilot wallet USDC approval, four anime joins and strategies/loadouts",
-    "Production film, actual cost reconciliation, settlement and claims"
+    "Pilot wallet approval for 4 USDC and four anime entries in tournament #2",
+    "Four signed strategies/loadouts to start promptly",
+    "Production film, actual provider cost reconciliation, settlement and claims"
+  ],
+  "backend": {
+    "releaseId": "shared-runtime-20261030-8ef320e05513",
+    "sourceCommit": "2307ecd96a01969af1c38f63f53290b127d0fd5f",
+    "archiveSha256": "cdc50526099b06d63dcda7ed2a6354c87a8d60c77d9c79b8e6d64586cc6b7a94",
+    "signingOperationalPoolMax": 3,
+    "otherOperationalPoolMax": 2,
+    "sourcePoolMax": 2,
+    "newSigningRoleConnectionLimits": 3,
+    "signingRolesChanged": 4,
+    "frozenEngineAndRecipesUnchanged": true
+  },
+  "openings": [
+    {
+      "deployment": "8453:0xf34fb0a9ecf31bf7516098105036aba7ed4adda9:anime",
+      "purpose": "open-lobby",
+      "state": "confirmed",
+      "hash": "0x25cc2a8ba51c5b321bb67c266cae2c096e7a2543999dce900604bc8d8232a060"
+    },
+    {
+      "deployment": "8453:0xf34fb0a9ecf31bf7516098105036aba7ed4adda9:video",
+      "purpose": "open-lobby",
+      "state": "confirmed",
+      "hash": "0xc1f933a32958b51155728eaab3ce487d82aefe66d77f1b4c3436b702fe47b9db"
+    }
   ]
 }

@@ -19,7 +19,7 @@ Both service configs advertise version 2 and first-entrant randomness funding.
 ## Server and canonical source
 
 Hostname `yunipals-main` was verified through `root@168.119.172.10` before changes.
-The immutable runtime is
+The initial immutable runtime was
 `/srv/yunipals-arena-modes/releases/shared-runtime-20261029-d6722fe2ae05`
 (backend commit `939fc9c7`); its retained archive SHA256 is
 `f63d83b49d3bc4e0558f30efb9878463c0395459acfaee8821404133e4a09c39`.
@@ -80,13 +80,13 @@ source-binding receipts. The restore drill completed successfully at
 `2026-10-29T22:55:51.724646+00:00`, restoring 27 tables with quarantine preserved.
 Final incremental backup status is recorded in the accompanying cutover JSON.
 
-At this handoff both contract modes remain paused. Services permit only pilot
+At the initial handoff both contract modes remained paused. Services permit only pilot
 wallet `0x08820403d7edb694a2e91eba5bcc73dbcd24ab23`; no paid battle or AI generation
 has been started. Desktop/mobile checks and a read-only injected owner wallet
 verified the real confirmed contract and available per-mode enable controls on
 both the staged and canonical website. Those checks sent no wallet transactions.
 
-The next actions are the deployment wallet's two browser-signed mode unpauses at
+The initial handoff requested the deployment wallet's two browser-signed mode unpauses at
 `https://www.yunipals.com/arena/setup`, followed by the pilot wallet's new-spender
 USDC approval, four anime joins and strategy/loadout signatures. The first
 successful entrant supplies the quoted draw fee in ETH; subsequent entrants do
@@ -95,3 +95,47 @@ one oracle request, film generation using production APIs, settlement, claims
 and actual provider costs. Reserved budget amounts must not be reported as
 actual charges; OpenAI usage requires pricing/billing reconciliation and
 OpenRouter generation receipts supply its actual charge.
+
+
+## Follow-up: both modes enabled, real lobbies ready
+
+Both owner unpauses are verified onchain. Video tournament #1 and anime tournament
+#2 are open and indexed, with no entrants or provider tasks at this observation.
+Their opening transactions are recorded in the accompanying JSON. Ponder's
+framework readiness flag was observed as 1 before the backend fix.
+
+The first real lobby checks exposed two backend issues: history validation still
+compared the canonical source against the private mode deployment identifier,
+and signing workers had only two connections while holding a source lease and a
+nonce lock before capacity checks. Commit `2307ecd9` fixes canonical history and
+cursor validation without removing mode isolation, and gives only the signing
+entrypoint a three-connection operational pool. Only its four login limits were
+raised to three; other operational and source pools remain at two. The reviewed
+operational database had 57 of 96 connections in use before this four-slot change.
+Seven real PostgreSQL history tests (including both v2 modes and cursor isolation),
+ten native signing/receipt tests (including the three-connection limit), strict
+TypeScript and the API build passed.
+
+The current immutable backend is
+`shared-runtime-20261030-8ef320e05513`, source commit
+`2307ecd96a01969af1c38f63f53290b127d0fd5f`. Its exact archive SHA256 is
+`cdc50526099b06d63dcda7ed2a6354c87a8d60c77d9c79b8e6d64586cc6b7a94`.
+All 13,837 files and 84 internal symlinks were verified before switching the
+current pointer. Engine/recipe hashes, source identities and legacy services were
+preserved. The updated release archive is retained in encrypted recovery coverage;
+the final incremental backup completed successfully at
+`2026-10-30T07:30:00.619854+00:00`.
+
+A read-only pilot account on the actual canonical website verified all four
+fighter cards, four enabled entry buttons, the first-entry ETH draw quote, the
+4-USDC approval option and the mobile layout, with no signatures or transactions
+sent. Public reads also verified ownership of all four fighters and sufficient
+USDC and ETH. The draw quote is dynamic and checked again before each join.
+
+The next wallet action is at
+`https://www.yunipals.com/arena/anime/2#join`: connect the existing pilot wallet,
+choose the 4-USDC/four-entry approval limit, and enter all four fighters. Lock a
+strategy/loadout for each fighter when the editors appear to avoid waiting for
+the strategy deadline. NFT-owner signatures are required; the workers do not
+have authority to sign those wallet actions. The paid film and cost measurement
+remain pending these entries.
