@@ -47,6 +47,12 @@ contracts/arena/broadcast/
 /keystores/
 .arena-private/
 
+# Downloaded anime reference art stays out of source and Git history.
+/apps/yunipals-anime-engine/fixtures/assets/
+/apps/yunipals-anime-engine/fixtures/review/*.jpg
+/docs/arena/anime-recipe-v1/board.png
+/docs/arena/anime-recipe-v2/board.png
+
 # Internal Arena evidence is retained locally, outside the public source set.
 /docs/arena/*
 !/docs/arena/README.md

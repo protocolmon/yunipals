@@ -35,6 +35,7 @@ effect.
 Studio sequence for a fresh v2 fighter:
 
 ```sh
+python3 scripts/anime/fetch-assets.py
 python3 scripts/anime/studio.py --lab PRIVATE_LAB prepare TOKEN --recipe anime-fighter-v2
 python3 scripts/anime/studio.py --lab PRIVATE_LAB generate TOKEN --stage 1
 python3 scripts/anime/studio.py --lab PRIVATE_LAB review TOKEN idle

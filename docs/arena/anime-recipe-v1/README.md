@@ -1,6 +1,9 @@
 # Anime fighter recipe v1
 
 `recipe-lock.json` commits to the exact bytes of `style.json` and `board.png`.
+The board is an ignored external asset. Run `python3 scripts/anime/fetch-assets.py`
+from the repository root before using the studio or release preflight; the
+download verifies its existing checksum without changing the recipe lock.
 The board uses the existing reviewed prototype's four idle images as style references.
 Those historical Ethereum fighters are regression fixtures, not approved Base fighters.
 

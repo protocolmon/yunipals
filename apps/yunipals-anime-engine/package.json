@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --import tsx src/director.test.ts && node golden.mjs && node golden.mjs --automated",
+    "test": "python3 ../../scripts/anime/fetch-assets.py && node --import tsx src/director.test.ts && node golden.mjs && node golden.mjs --automated",
     "render": "node render.mjs"
   },
   "devDependencies": {
