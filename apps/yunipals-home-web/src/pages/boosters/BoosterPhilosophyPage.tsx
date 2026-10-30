@@ -7,7 +7,7 @@ import { usePageMetadata } from "@/hooks/usePageMetadata";
 export function BoosterPhilosophyPage() {
   usePageMetadata(
     "A fairer way to open packs | Yunipals",
-    "Our thinking behind Yunipals packs: a full set of 264 variants to collect over time, the fun of every reveal, and grading as the planned next layer."
+    "Our thinking behind Yunipals packs: a full set of 264 variants to collect over time, the fun of every reveal, and planned skill-based grading for collectors who want to master more."
   );
 
   return (
@@ -186,18 +186,31 @@ export function BoosterPhilosophyPage() {
               id="packs-grading-heading"
               className="font-display text-2xl leading-tight text-ink sm:text-3xl"
             >
-              Grading adds another reason to collect.
+              A shared set. A new challenge to master.
             </h2>
             <p>
-              The next layer we want to add is grading. The idea is to introduce
-              rarities through grading, giving collectors something extra to
-              discover while keeping the full base set within everyone’s reach.
+              If everyone eventually gets the same cards and that’s the whole
+              experience, collecting could start to feel predictable. A complete
+              set is a satisfying milestone. We want it to open the door to
+              another challenge, too.
             </p>
             <p>
-              Grading is planned and isn’t live yet. We’ll share how it works
-              before it launches. The foundation is already here: a set you can
-              complete, a collection that grows with you, and the fun of opening
-              the next pack.
+              That’s where grading comes in. We’re planning a skill-based
+              grading feature, with the rarest grades reserved for the best
+              collectors. The ambition is to make those grades something you
+              earn through skill and mastery. A shared base set gives everyone
+              the same foundation, with the rarest grades as a further goal.
+            </p>
+            <p>
+              This is how we want fairness and rarity to work together. Everyone
+              can enjoy the same collection of Yunipals, and dedicated
+              collectors have something exceptional to work towards. Completing
+              the set gives you a milestone to celebrate; mastering grading
+              gives you a reason to keep going.
+            </p>
+            <p>
+              Grading is planned and isn’t live yet. We’ll share the mechanics
+              and how grades are earned before it launches.
             </p>
           </section>
 
