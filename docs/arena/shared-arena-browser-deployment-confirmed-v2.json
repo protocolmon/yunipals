@@ -1,0 +1,17 @@
+{
+  "version": "arena-modes-browser/confirmed-v2",
+  "chainId": 8453,
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
+  "packageSha256": "3234c6116adecd55b5db04c754c12cd0c72c0406bbeec092e07dcb9fe61053bd",
+  "rulesHashes": {
+    "video": "0xd30e53016123ccf34051a493c8d1d35f2f5eadc57ddf149138e6fa8857477f1a",
+    "anime": "0x53016f2d742310660bb30ae48e0f0efdba74f0516a7238b3bf8a935e810363af"
+  },
+  "arena": {
+    "address": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
+    "transactionHash": "0xb428cadf0ee49422852ece94a598781825b7d6d5d55782ba3ca6e02f77a09850",
+    "blockNumber": "53261777",
+    "blockHash": "0xe5b5d5e6084f20d0a2cf384efebddab12725c6ae8d8b34036a0a8827bc2ea70f"
+  }
+}

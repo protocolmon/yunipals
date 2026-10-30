@@ -1,3 +1,4 @@
+import { arenaMode } from "@protopals/yunipals-market-core/arenaProtocol";
 import type { PoolClient } from "pg";
 import { withArenaSourceLease } from "./sourceSelection";
 import {
@@ -272,7 +273,7 @@ export class NativeArenaTransactions {
   private async validate(intent: NativeIntent) {
     const decoded = parseTransaction(intent.raw_transaction);
     const call = decodeFunctionData({
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       data: decoded.data ?? "0x"
     });
     if (
@@ -290,7 +291,10 @@ export class NativeArenaTransactions {
       ).toLowerCase() !== intent.signer.toLowerCase() ||
       !(functions[intent.purpose] as string[]).includes(call.functionName) ||
       (intent.purpose === "open-lobby"
-        ? (call.args?.length ?? 0) !== 0
+        ? this.service.contractVersion === 2
+          ? call.args?.length !== 1 ||
+            call.args[0] !== arenaMode(this.service.mediaKind)
+          : (call.args?.length ?? 0) !== 0
         : call.args?.[0] !== BigInt(intent.tournament_id))
     )
       throw new Error("Saved native Arena transaction is inconsistent.");
@@ -309,7 +313,7 @@ export class NativeArenaTransactions {
   }
   private effect(intent: NativeIntent, receipt: TransactionReceipt) {
     const call = decodeFunctionData({
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       data: parseTransaction(intent.raw_transaction).data ?? "0x"
     });
     for (const log of receipt.logs) {
@@ -327,7 +331,7 @@ export class NativeArenaTransactions {
         continue;
       try {
         const event = decodeEventLog({
-          abi: arenaAbi,
+          abi: this.service.contractAbi,
           topics: log.topics,
           data: log.data,
           strict: true
@@ -336,6 +340,13 @@ export class NativeArenaTransactions {
           event.eventName !== eventNames[intent.purpose] ||
           !("id" in event.args) ||
           String(event.args.id) !== intent.tournament_id
+        )
+          continue;
+        if (
+          intent.purpose === "open-lobby" &&
+          this.service.contractVersion === 2 &&
+          (!("mode" in event.args) ||
+            event.args.mode !== arenaMode(this.service.mediaKind))
         )
           continue;
         if (

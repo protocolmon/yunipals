@@ -1,3 +1,9 @@
+import { readArenaPaused, readArenaNextId } from "./protocol";
+import {
+  arenaMode,
+  nextArenaTournamentId
+} from "@protopals/yunipals-market-core/arenaProtocol";
+import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
 import { encodeFunctionData, type LocalAccount, type PublicClient } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import { ARENA_RESOLUTION_SECONDS } from "@protopals/yunipals-market-core/arena";
@@ -82,26 +88,22 @@ export class NativeArenaControl {
       if (!this.service.nativeSource?.list)
         throw new Error("Native lobby list is unavailable.");
       const latest = await this.service.nativeSource.list();
-      if (BigInt(latest.ids[0] ?? "0") + 1n !== BigInt(id))
+      if (
+        nextArenaTournamentId(
+          latest.ids[0],
+          this.service.mediaKind,
+          this.service.contractVersion
+        ) !== BigInt(id)
+      )
         throw new Error(
           "Native lobby coverage has not caught up to the next ID."
         );
       const [next, paused, operator] = await Promise.all([
+        readArenaNextId(this.client, this.service, head.number),
+        readArenaPaused(this.client, this.service, head.number),
         this.client.readContract({
           address: this.service.contract,
-          abi: arenaAbi,
-          functionName: "nextTournamentId",
-          blockNumber: head.number
-        }),
-        this.client.readContract({
-          address: this.service.contract,
-          abi: arenaAbi,
-          functionName: "entriesPaused",
-          blockNumber: head.number
-        }),
-        this.client.readContract({
-          address: this.service.contract,
-          abi: arenaAbi,
+          abi: this.service.contractAbi,
           functionName: "lobbyOperator",
           blockNumber: head.number
         })
@@ -114,17 +116,20 @@ export class NativeArenaControl {
         throw new Error(
           "Native lobby is paused or its operator/next ID changed."
         );
-      return encodeFunctionData({
-        abi: arenaAbi,
-        functionName: "openTournament"
-      });
+      return this.service.contractVersion === 2
+        ? encodeFunctionData({
+            abi: arenaV2Abi,
+            functionName: "openTournament",
+            args: [arenaMode(this.service.mediaKind)]
+          })
+        : encodeFunctionData({ abi: arenaAbi, functionName: "openTournament" });
     }
     if (!context)
       throw new Error("Native control requires a canonical opening.");
     const state = context.state;
     const live = await this.client.readContract({
       address: this.service.contract,
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       functionName: "tournament",
       args: [BigInt(id)],
       blockNumber: head.number
@@ -141,7 +146,7 @@ export class NativeArenaControl {
       )
         throw new Error("Native island is not ready to finalize.");
       return encodeFunctionData({
-        abi: arenaAbi,
+        abi: this.service.contractAbi,
         functionName: "finalizeIsland",
         args: [BigInt(id)]
       });
@@ -178,12 +183,12 @@ export class NativeArenaControl {
       ] as const;
       return prepared.automaticStrategyMask === 0
         ? encodeFunctionData({
-            abi: arenaAbi,
+            abi: this.service.contractAbi,
             functionName: "freezeInput",
             args
           })
         : encodeFunctionData({
-            abi: arenaAbi,
+            abi: this.service.contractAbi,
             functionName: "freezeInputWithFallback",
             args: [...args, prepared.automaticStrategyMask]
           });
@@ -199,7 +204,7 @@ export class NativeArenaControl {
       )
         throw new Error("Native tournament has not expired.");
       return encodeFunctionData({
-        abi: arenaAbi,
+        abi: this.service.contractAbi,
         functionName: "expire",
         args: [BigInt(id)]
       });
@@ -207,14 +212,14 @@ export class NativeArenaControl {
     const [published, referee] = await Promise.all([
       this.client.readContract({
         address: this.service.contract,
-        abi: arenaAbi,
+        abi: this.service.contractAbi,
         functionName: "publishedVideoHash",
         args: [BigInt(id)],
         blockNumber: head.number
       }),
       this.client.readContract({
         address: this.service.contract,
-        abi: arenaAbi,
+        abi: this.service.contractAbi,
         functionName: "referee",
         blockNumber: head.number
       })
@@ -236,7 +241,7 @@ export class NativeArenaControl {
       context
     );
     return encodeFunctionData({
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       functionName: "releasePayouts",
       args: [BigInt(id), film]
     });

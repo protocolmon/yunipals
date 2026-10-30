@@ -6,12 +6,16 @@ import {
   baseIslandCollection
 } from "./lib/constants.js";
 import { baseRpcUrlOf, bnbRpcUrlOf, polygonRpcUrlOf } from "./lib/rpc.js";
+import { arenaV2Abi } from "../../packages/yunipals-market-core/src/arenaV2Abi.js";
+import { sharedArenaSource } from "./lib/unified/sources.js";
 import { boosterContracts } from "./lib/boosters/config.js";
 import { baseMetadataAbi } from "./lib/metadata/base-abi.js";
 import {
-  arenaSourceDeployments,
+  arenaContractSources,
+  animeRegistrySource,
   buildSourceManifest
 } from "./lib/unified/sources.js";
+import { animeRegistryAbi } from "../../packages/yunipals-market-core/src/animeRegistryAbi.js";
 import { arenaAbi } from "../../packages/yunipals-market-core/src/arenaAbi.js";
 import { seaportEventAbi } from "../../packages/yunipals-market-core/src/seaportEvents.js";
 import type { Address } from "viem";
@@ -36,7 +40,9 @@ const polygonRpcUrl = polygonRpcUrlOf();
 if (!ethereumRpcUrl) throw new Error("PONDER_RPC_URL_1 is required");
 const sourceManifest = buildSourceManifest();
 await preflightUnifiedRpc(sourceManifest);
-const arenas = arenaSourceDeployments();
+const { video: arenas, anime: animeArena } = arenaContractSources();
+const animeRegistry = animeRegistrySource();
+const sharedArena = sharedArenaSource();
 const seaport = sourceManifest.sources.find(
   (source) => source.id === "marketplace:bnb:seaport"
 )!;
@@ -45,7 +51,10 @@ const baseIslands = sourceManifest.sources.find(
 )!;
 
 export default createConfig({
-  database: { kind: "postgres" },
+  database: {
+    kind: "postgres",
+    ...(sharedArena ? { poolConfig: { max: 11 } } : {})
+  },
   ordering: "multichain",
   chains: {
     mainnet: {
@@ -99,6 +108,12 @@ export default createConfig({
         : ([] as Address[]),
       startBlock: baseIslands.enabled ? baseIslandCollection.deploymentBlock : 0
     },
+    AnimeFighterRegistry: {
+      chain: "base",
+      abi: animeRegistryAbi,
+      address: animeRegistry ? animeRegistry.address : ([] as Address[]),
+      startBlock: animeRegistry?.startBlock ?? 0
+    },
     YunipalsArena: {
       chain: "base",
       abi: arenaAbi,
@@ -106,6 +121,18 @@ export default createConfig({
       startBlock: arenas.length
         ? Math.min(...arenas.map((deployment) => deployment.startBlock))
         : 0
+    },
+    YunipalsAnimeArena: {
+      chain: "base",
+      abi: arenaAbi,
+      address: animeArena ? animeArena.address : ([] as Address[]),
+      startBlock: animeArena?.startBlock ?? 0
+    },
+    YunipalsArenaV2: {
+      chain: "base",
+      abi: arenaV2Abi,
+      address: sharedArena ? sharedArena.address : ([] as Address[]),
+      startBlock: sharedArena?.startBlock ?? 0
     },
     BnbSeaport: {
       chain: "bnb",

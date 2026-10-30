@@ -3,13 +3,7 @@ import { Link } from "react-router-dom";
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { environment } from "@/environment";
 
-export function Footer({
-  onTradingInformation,
-  exomonView = false
-}: {
-  onTradingInformation: () => void;
-  exomonView?: boolean;
-}) {
+export function Footer({ exomonView = false }: { exomonView?: boolean }) {
   return (
     <footer className="border-t border-line bg-white">
       <div className="mx-auto flex max-w-6xl flex-col justify-between gap-4 px-4 py-6 md:flex-row md:items-center">
@@ -43,15 +37,6 @@ export function Footer({
             >
               Contracts
             </Link>
-            {!exomonView && (
-              <button
-                type="button"
-                onClick={onTradingInformation}
-                className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
-              >
-                Buying and selling information
-              </button>
-            )}
             <Link
               to="/terms"
               className="rounded-lg text-sm font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"

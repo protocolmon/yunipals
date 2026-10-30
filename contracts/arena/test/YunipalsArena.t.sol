@@ -108,6 +108,18 @@ contract ReenteringRecipient {
     }
 }
 
+contract MockEligibility {
+    bool public eligible;
+
+    function setEligible(bool value) external {
+        eligible = value;
+    }
+
+    function isEligible(uint256, address, uint256) external view returns (bool) {
+        return eligible;
+    }
+}
+
 contract YunipalsArenaTest is Test {
     YunipalsArena arena;
     MockWrapper wrapper;
@@ -144,6 +156,7 @@ contract YunipalsArenaTest is Test {
             treasury: treasury,
             islands: address(islands),
             vrfWrapper: address(wrapper),
+            eligibility: address(0),
             paymentToken: token,
             entryFee: fee,
             winnerBps: 5000,
@@ -209,6 +222,30 @@ contract YunipalsArenaTest is Test {
         (bytes32[4] memory c, bytes[4] memory s) = signedStrategies(id);
         if (expected != bytes4(0)) vm.expectRevert(expected);
         arena.freezeInput(id, keccak256("frozen input"), c, s);
+    }
+
+    function testEligibilityRefusesUnapproved() public {
+        MockEligibility gate = new MockEligibility();
+        YunipalsArena.Config memory c = config(address(0), FEE);
+        c.eligibility = address(gate);
+        arena = new YunipalsArena(c);
+        arena.setEntriesPaused(false);
+        vm.deal(address(arena), 1 ether);
+        uint256 id = arena.openTournament();
+        _joinSeat(id, 0, YunipalsArena.InvalidEntry.selector);
+        gate.setEligible(true);
+        joinSeat(id, 0);
+        gate.setEligible(false);
+        _joinSeat(id, 1, YunipalsArena.InvalidEntry.selector);
+        assertEq(arena.tournament(id).count, 1);
+        assertEq(arena.entries(id)[0].tokenId, entrant(0).tokenId);
+    }
+
+    function testEligibilityMustHaveCode() public {
+        YunipalsArena.Config memory c = config(address(0), FEE);
+        c.eligibility = address(12345);
+        vm.expectRevert(YunipalsArena.InvalidConfig.selector);
+        new YunipalsArena(c);
     }
 
     function testStartsPausedAndOnlyOwnerOpens() public {

@@ -440,9 +440,30 @@ try {
     .getByRole("heading", { name: "Yunipals across chains." })
     .waitFor();
   await count(24);
-  const tradingInfoButton = page
+  assert.equal(
+    await page
+      .locator("footer")
+      .getByText("Buying and selling information")
+      .count(),
+    0
+  );
+  await page
     .locator("footer")
-    .getByRole("button", { name: "Buying and selling information" });
+    .getByRole("link", { name: "Terms of Use", exact: true })
+    .click();
+  const information = page.getByRole("region", {
+    name: "Buying and selling information"
+  });
+  await information.waitFor();
+  assert.match(
+    await information.innerText(),
+    /Sellers publish BNB Chain orders in on-chain Seaport/
+  );
+  assert.equal(await notice.count(), 0);
+  const tradingInfoButton = information.getByRole("button", {
+    name: "Review trading terms",
+    exact: true
+  });
   await tradingInfoButton.click();
   await notice.waitFor();
   assert.match(
@@ -475,6 +496,10 @@ try {
     ),
     "dismissed"
   );
+  await page
+    .getByRole("link", { name: "Back to collection", exact: true })
+    .click();
+  await count(24);
   const gatedBuy = cards
     .first()
     .getByRole("button", { name: "Buy", exact: true });
@@ -491,6 +516,10 @@ try {
     await gatedBuy.evaluate((button) => button === document.activeElement),
     true
   );
+  await page
+    .locator("footer")
+    .getByRole("link", { name: "Terms of Use", exact: true })
+    .click();
   await tradingInfoButton.click();
   await notice.waitFor();
   await notice.getByRole("checkbox").check();
@@ -511,8 +540,12 @@ try {
     ),
     true
   );
+  await page
+    .getByRole("link", { name: "Back to collection", exact: true })
+    .click();
+  await count(24);
   pass(
-    "Collection browsing opens directly; buying and selling information gates Buy, records versioned acceptance and restores focus"
+    "Trading information lives in Terms without a separate footer link; Buy still requires versioned acceptance and restores focus"
   );
   const homeTitle = "Yunipals — Explore the Collection";
   const homeDescription =
@@ -1275,11 +1308,15 @@ try {
   assert.equal(await fallbackNotice.count(), 0);
   await fallbackPage
     .locator("footer")
-    .getByRole("button", { name: "Buying and selling information" })
+    .getByRole("link", { name: "Terms of Use", exact: true })
+    .click();
+  await fallbackPage
+    .getByRole("button", { name: "Review trading terms", exact: true })
     .click();
   await fallbackNotice
     .getByRole("button", { name: "Browse only", exact: true })
     .click();
+  await fallbackPage.goto(`${app.origin}/?chain=bnb&sale=listed`);
   await fallbackPage.reload();
   await fallbackPage.locator("main article").first().waitFor();
   assert.equal(await fallbackNotice.count(), 0);
@@ -1314,7 +1351,10 @@ try {
   assert.equal(await privateNotice.count(), 0);
   await privatePage
     .locator("footer")
-    .getByRole("button", { name: "Buying and selling information" })
+    .getByRole("link", { name: "Terms of Use", exact: true })
+    .click();
+  await privatePage
+    .getByRole("button", { name: "Review trading terms", exact: true })
     .click();
   await privateNotice.waitFor();
   const bounds = await privateNotice.boundingBox();
@@ -1325,6 +1365,7 @@ try {
   await privateNotice
     .getByRole("button", { name: "Close buying and selling information" })
     .click();
+  await privatePage.goBack();
   await privatePage
     .getByRole("heading", { name: "Catalog ethereum 1", exact: true })
     .waitFor();
@@ -1333,7 +1374,7 @@ try {
   await privatePage.close();
   assert.deepEqual(errors, []);
   pass(
-    "The on-demand notice fits mobile deep links and stays dismissible when both storage adapters fail"
+    "Trading information in Terms fits mobile, stays dismissible with blocked storage, and returns to the previous deep link"
   );
   assert.equal(
     requests.some(

@@ -1,0 +1,60 @@
+{
+  "cedar": [
+    {
+      "id": "vine-lash",
+      "name": "Vine Lash",
+      "kind": "strike",
+      "element": "nature",
+      "description": "The painted signature attack from the reviewed comparison prototype.",
+      "windup": {
+        "file": "cedar-windup-vine-lash.webp",
+        "sha256": "eedb67890458127c593eeeb64bb0a4eca5d61835a80c379c752bb2d5bf9fe855",
+        "w": 1168,
+        "h": 1070
+      },
+      "strike": {
+        "sheet": "recipes/anime-fighter-v2/species/unibranch/vine-lash.strike.71045ce1.webp",
+        "sha256": "71045ce175bdcf76861523bdb061b92763f7be22c8a6b3144bbe540687479a23",
+        "cols": 1,
+        "rows": 2,
+        "blend": "alpha"
+      },
+      "impact": {
+        "sheet": "recipes/anime-fighter-v2/species/elements-nature/impact.f485ed0f.webp",
+        "sha256": "f485ed0fda6512f72f8151dbad91c046cbc3d02f1b0f31a3428290d9456d8d0f",
+        "cols": 2,
+        "rows": 2,
+        "blend": "add"
+      }
+    }
+  ],
+  "zephyr": [
+    {
+      "id": "starburst",
+      "name": "Starburst",
+      "kind": "projectile",
+      "element": "amber",
+      "description": "The painted signature attack from the reviewed comparison prototype.",
+      "windup": {
+        "file": "zephyr-windup-starburst.webp",
+        "sha256": "7468a155865ac4b8f6383d4bbcf4b99610b454b667181fa002183d11b954daf1",
+        "w": 952,
+        "h": 1103
+      },
+      "projectile": {
+        "sheet": "recipes/anime-fighter-v2/species/unifairy/starburst.projectile.f27e71ca.webp",
+        "sha256": "f27e71caa5289a79e3f6638d0ab784422dc633e250f1685d78242b7aece74b69",
+        "cols": 2,
+        "rows": 2,
+        "blend": "add"
+      },
+      "impact": {
+        "sheet": "recipes/anime-fighter-v2/species/elements-amber/impact.5eb7d11a.webp",
+        "sha256": "5eb7d11a7bbd5b11b3cb9a6871addbb11e3ba15d695779429c5145e2dbe8a3d6",
+        "cols": 2,
+        "rows": 2,
+        "blend": "add"
+      }
+    }
+  ]
+}

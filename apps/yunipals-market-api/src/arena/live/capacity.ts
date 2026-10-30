@@ -3,10 +3,13 @@ import { transaction } from "@/db/pool";
 import { ArenaIntake, ArenaRequestError } from "./intake";
 import type { ArenaOpenaiFundingMode } from "./funding";
 import { ARENA_MEDIA_TOURNAMENT_RESERVED_BYTES } from "./storage";
+import { ANIME_DIRECTOR_RESERVE } from "./animeDirection";
 
 export type CapacitySnapshot = {
+  randomnessFunding?: "reserve" | "first-entrant";
   openaiFundingMode?: ArenaOpenaiFundingMode;
   runwareMicrousd: number;
+  openrouterMicrousd?: number;
   openaiBudgetMicrousd: number;
   openaiBudgetExpiresAt: number;
   vrfAvailableWei: string;
@@ -79,9 +82,13 @@ export function validateCapacity(value: CapacitySnapshot) {
         value.mediaQuotaBytes!);
   if (
     !mediaValid ||
+    (value.randomnessFunding !== undefined &&
+      !["reserve", "first-entrant"].includes(value.randomnessFunding)) ||
     (value.openaiFundingMode !== undefined &&
       !["capped", "ongoing"].includes(value.openaiFundingMode)) ||
     !integer(value.runwareMicrousd) ||
+    (value.openrouterMicrousd !== undefined &&
+      !integer(value.openrouterMicrousd)) ||
     !integer(value.openaiBudgetMicrousd) ||
     !integer(value.openaiBudgetExpiresAt) ||
     !integer(value.diskFreeBytes) ||
@@ -105,7 +112,8 @@ export class ArenaCapacity {
   constructor(
     private readonly pool: Pool,
     private readonly deployment: string,
-    private readonly service?: ArenaIntake
+    private readonly service?: ArenaIntake,
+    private readonly mediaKind: "video" | "anime" = "video"
   ) {}
   get indexerMode() {
     return this.service?.indexerMode ?? "legacy";
@@ -149,6 +157,13 @@ export class ArenaCapacity {
         "New entries are temporarily paused while operating capacity is checked."
       );
     const h = validateCapacity(health.snapshot);
+    if (
+      (this.service?.contractVersion === 2) !==
+      (h.randomnessFunding === "first-entrant")
+    )
+      return unavailable(
+        "The randomness funding policy needs a fresh capacity check."
+      );
     const ongoing = h.openaiFundingMode === "ongoing";
     if (!ongoing && h.openaiBudgetExpiresAt <= Date.now())
       return unavailable(
@@ -237,7 +252,7 @@ export class ArenaCapacity {
       return unavailable(
         "New entries are paused while referee funds are replenished."
       );
-    // Every unsettled or not-yet-published tournament requires up to $0.90 media.
+    // Anime uses its pinned Claude reservation; video reserves $0.90.
     // Subtract only tasks already issued for those same tournaments, not old films.
     const reserved = this.service?.nativeSource
       ? {
@@ -259,21 +274,30 @@ export class ArenaCapacity {
           )
         ).rows[0]!;
     const remainingMedia =
-      BigInt(active.length + Number(newLobby)) * 900000n -
+      BigInt(active.length + Number(newLobby)) *
+        (this.mediaKind === "anime"
+          ? BigInt(ANIME_DIRECTOR_RESERVE)
+          : 900000n) -
       BigInt(reserved.amount);
+    const mediaCredit =
+      this.mediaKind === "anime" ? h.openrouterMicrousd : h.runwareMicrousd;
     if (
+      !integer(mediaCredit) ||
       (remainingMedia > 0n ? remainingMedia : 0n) +
         BigInt(usage.media_unfinished) >
-      BigInt(h.runwareMicrousd)
+        BigInt(mediaCredit)
     )
       return unavailable(
-        "New entries are paused while video funds are replenished."
+        this.mediaKind === "anime"
+          ? "New entries are paused while cut-in generation funds are replenished."
+          : "New entries are paused while video funds are replenished."
       );
     const firstEntries =
       rows.filter((r) => r.phase === "open" && r.seats === 0).length +
       Number(newLobby);
     if (
       firstEntries &&
+      h.randomnessFunding !== "first-entrant" &&
       (BigInt(h.vrfQuoteWei) === 0n ||
         BigInt(h.vrfQuoteWei) > BigInt(h.vrfMaxWei) ||
         BigInt(h.vrfAvailableWei) <

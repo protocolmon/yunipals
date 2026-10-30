@@ -41,6 +41,7 @@ import {
   refereeRequest
 } from "./refereeApi";
 import type { PublicClient } from "viem";
+import { canonicalJson, sha256 } from "../draw";
 import {
   ArenaAdjudicator,
   productionValidator,
@@ -93,7 +94,7 @@ after(async () => {
   await pool.end();
 });
 
-async function fixture() {
+async function fixture(mediaKind: "video" | "anime" = "video") {
   const deployment = `test/${randomUUID()}`;
   deployments.push(deployment);
   await pool.query(
@@ -106,7 +107,10 @@ async function fixture() {
     contract,
     "https://www.yunipals.com",
     cipher,
-    { message: verifyMessage, strategy: verifyTypedData }
+    { message: verifyMessage, strategy: verifyTypedData },
+    undefined,
+    undefined,
+    mediaKind
   );
   let logIndex = 0;
   const events: ArenaEvent[] = [];
@@ -165,6 +169,121 @@ async function fixture() {
   }
   return { deployment, service, emit, events, submission };
 }
+
+test("anime loadouts validate pinned kits, stay plaintext, default and disclose without changing commitments", async () => {
+  const f = await fixture("anime");
+  const context = await f.service.tournamentContext("1");
+  const kits = [
+    {
+      id: "vine-lash",
+      name: "Vine Lash",
+      kind: "strike",
+      description: "Vines sweep forward."
+    },
+    {
+      id: "thorn-volley",
+      name: "Thorn Volley",
+      kind: "projectile",
+      description: "Thorns scatter."
+    },
+    {
+      id: "root-slam",
+      name: "Root Slam",
+      kind: "dash",
+      description: "Roots rush forward."
+    }
+  ];
+  for (const seat of context.state.seats) {
+    const snapshot = {
+      animeKits: kits,
+      animeDefaultLoadout: ["vine-lash", "thorn-volley"]
+    };
+    await pool.query(
+      "INSERT INTO yunipals_arena.fighter_snapshot(deployment,tournament_id,nft_chain_id,collection,token_id,snapshot,snapshot_hash,incarnation) VALUES($1,1,$2,$3,$4,$5,$6,$7)",
+      [
+        f.deployment,
+        seat.nftChainId,
+        seat.collection.toLowerCase(),
+        seat.tokenId,
+        JSON.stringify(snapshot),
+        sha256(canonicalJson(snapshot)),
+        context.incarnation
+      ]
+    );
+  }
+  const input = await f.submission(0);
+  for (const loadout of [
+    ["foreign", "root-slam"],
+    ["vine-lash", "vine-lash"],
+    ["vine-lash"]
+  ]) {
+    await assert.rejects(
+      f.service.submit("1", accounts[0]!.address, {
+        ...input,
+        loadout: loadout as [string, string]
+      }),
+      /two different kits/
+    );
+  }
+  const loadout: [string, string] = ["thorn-volley", "root-slam"];
+  const receipt = await f.service.submit("1", accounts[0]!.address, {
+    ...input,
+    loadout
+  });
+  assert.deepEqual(receipt.loadout, loadout);
+  assert.equal(
+    receipt.commitment,
+    strategyCommitment(contract, 1n, 0, input.text, input.salt)
+  );
+  await assert.rejects(
+    f.service.submit("1", accounts[0]!.address, input),
+    /already locked/
+  );
+  assert.deepEqual(
+    await f.service.submit("1", accounts[0]!.address, { ...input, loadout }),
+    receipt
+  );
+  const stored = (
+    await pool.query(
+      "SELECT loadout,ciphertext FROM yunipals_arena.submission WHERE deployment=$1 AND seat=0",
+      [f.deployment]
+    )
+  ).rows[0];
+  assert.deepEqual(stored.loadout, loadout);
+  assert.ok(!JSON.stringify(stored.ciphertext).includes(input.text));
+  for (const seat of [1, 2]) {
+    const r = await f.service.submit(
+      "1",
+      accounts[seat]!.address,
+      await f.submission(seat)
+    );
+    assert.deepEqual(r.loadout, ["vine-lash", "thorn-volley"]);
+  }
+  await f.emit("RandomnessReceived", { id: 1, word: 777, requestId: 100 });
+  await pool.query(
+    "UPDATE yunipals_arena.tournament SET state=jsonb_set(state,'{deadline}',to_jsonb($2::bigint)) WHERE deployment=$1",
+    [f.deployment, Math.floor(Date.now() / 1000) - 1]
+  );
+  const frozen = await f.service.prepareInput("1", (_state, strategies) => ({
+    strategies
+  }));
+  assert.equal(frozen.automaticStrategyMask, 8);
+  await f.emit("AutomaticStrategiesAssigned", { id: 1, seatMask: 8 });
+  await f.emit("InputFrozen", {
+    id: 1,
+    inputHash: frozen.inputHash,
+    strategyCommitments: frozen.commitments,
+    deadline: Math.floor(Date.now() / 1000) + 3600
+  });
+  assert.deepEqual(
+    (await f.service.publicView("1")).strategies?.[0]!.loadout,
+    loadout
+  );
+  assert.deepEqual((await f.service.publicView("1")).strategies?.[3]!.loadout, [
+    "vine-lash",
+    "thorn-volley"
+  ]);
+});
 
 test("NFT snapshots survive concurrent preparation, metadata changes and process restart; tampering is rejected", async () => {
   const f = await fixture();

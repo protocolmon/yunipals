@@ -1,0 +1,125 @@
+{
+  "version": "anime-arena/deployment/v1",
+  "status": "four reviewed v2 fighters approved and reserve funded to the fixed draw cap; native source and pilot workers ready; admin browser unpause pending; admissions remain guarded by the live gas-priced draw quote",
+  "chainId": 8453,
+  "registry": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
+  "registryDeploymentBlock": 53251773,
+  "arena": "0x576790deff75af86fa638d9a1427e1eee7007094",
+  "arenaDeploymentBlock": 53251781,
+  "rulesHash": "0x5f3e761ba928f464ced77cc645d6e4f8fc112e7cb054dd5e49c5a39ef52c98e1",
+  "applicationsOpen": true,
+  "entriesOpen": false,
+  "initialArtwork": "one reviewed shared scene; actual island draw, terrain and rewards remain unchanged",
+  "deferredArtwork": "generate and review unique anime artwork for all 898 islands as the final artwork step",
+  "remainingLiveAcceptance": [
+    "visual review of the restored automated choreography against the manual-reference film using identical frozen combat events",
+    "one unified indexer source/schema transition and parity review",
+    "commercial subscription artwork terms review",
+    "controlled 1 USDC pilot: referee, render, publication, payout release and claim",
+    "open public paid entry after pilot acceptance; applications remain open at the owner's request"
+  ],
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "browserSetupUrl": "https://www.yunipals.com/arena/anime/setup",
+  "websiteDeploymentId": "dpl_5Qgu41Xe7uqnqwvTPPtBMpeECffc",
+  "pilotUrl": "https://www.yunipals.com/arena/anime/pilot",
+  "apiUrl": "https://api.yunipals.com/api/anime-arena",
+  "pilotWallet": "0x08820403d7edb694a2e91eba5bcc73dbcd24ab23",
+  "pilotFighters": [
+    {
+      "tokenId": "1000702255",
+      "manifestHash": "0x21ae742e3288e9d8f79f4aa32d697aaed92512da88d594d91da7727c6903fefc",
+      "onchainStatus": "Approved"
+    },
+    {
+      "tokenId": "1000702258",
+      "manifestHash": "0x42f3c0f215884d343b399b2c30898b958d14de36d818eba33f8387912d685893",
+      "onchainStatus": "Approved"
+    },
+    {
+      "tokenId": "10003506584",
+      "manifestHash": "0x71031200def3f6a9d0ef6e4f463b484e819e9f4eae2c1ec523f6d39a84b27035",
+      "onchainStatus": "Approved"
+    },
+    {
+      "tokenId": "20000002689",
+      "manifestHash": "0x08beeb30c42b630d5817d31a988309b88124eaf040978d3fd2c50239f870bac8",
+      "onchainStatus": "Approved"
+    }
+  ],
+  "nativeCandidate": {
+    "releaseId": "0x8259ea139f2f43876accd205ca21685b59ef2d1a5c7b0bf09b171712c894b7de",
+    "schema": "unified_anime_20261029_v4",
+    "buildId": "a93bc48f92",
+    "manifestHash": "0x0f9c8fb8be8ad6f6cd0d73688710a91378e582159c95d036b3ef7dadd96c51e5",
+    "activatedForExistingConsumers": false,
+    "selectedForAnimePilot": true,
+    "sourceEpoch": "5bc9eac0-646a-41e9-951d-296c09272f04",
+    "sourceReviewHash": "0x7cfb3413829bef3812c21fefc6f729974576085da28a88b5c17ebb12358a7706",
+    "acceptedBlock": "53251781",
+    "relayMaxInFlight": 8,
+    "pilotParity": {
+      "throughBlock": "53256057",
+      "videoArenaEventsCompared": 19,
+      "videoArenaMissingEvents": 0,
+      "videoArenaExtraEvents": 0,
+      "pilotOwnershipRowsCompared": 4,
+      "pilotOwnershipRowsMatch": true,
+      "fullHistoricalAllFeatureParityComplete": false
+    },
+    "frameworkReady": true,
+    "productionReaderReady": true,
+    "relaySourceQueueEnabled": true,
+    "relaySourceQueueWaitMs": 8000,
+    "relayFreeRequestTimeoutMs": 10000,
+    "paidReplayCalls": 0
+  },
+  "runtime": {
+    "releaseId": "anime-20261029-fcff0b431c45",
+    "sourceCommit": "e804eb51cacc8f99da11aa30ceebd6ff167d8d73",
+    "archiveSha256": "5c671bb4eeebd43aea1b34a3fbfef9f6f639b4eda44903313d1cc96f952443cc"
+  },
+  "backupRestoreVerification": {
+    "status": "success",
+    "startedAt": "2026-10-29T18:26:02.433473+00:00",
+    "restoreDrill": true,
+    "allUploadsEncrypted": true,
+    "objectsUploaded": 581,
+    "objectsReused": 368,
+    "workersStarted": false,
+    "providerRequests": 0,
+    "transactionsBroadcast": 0,
+    "latestEncryptedBackup": {
+      "status": "success",
+      "createdAt": "2026-10-29T20:39:08.739585+00:00",
+      "objectsUploaded": 9,
+      "objectsReused": 944
+    }
+  },
+  "drawReserveTargetWei": "10000000000000",
+  "backendEntryMode": "pilot",
+  "backendPilotWalletCount": 1,
+  "contractEntriesPaused": true,
+  "drawReserveFundedWei": "10000000000000",
+  "pilotServices": {
+    "apiReady": true,
+    "workerCount": 8,
+    "capacitySnapshotPassed": true,
+    "storageAccessCheckedAsServiceUser": true,
+    "serviceBootActivationEnabled": true,
+    "newPilotProviderRequests": 0,
+    "newPilotChargedMicrousd": 0,
+    "scheduledCapacityRefreshPassed": true
+  },
+  "drawQuoteGuard": {
+    "usesGasPriceBuffer": 2,
+    "maximumWei": "10000000000000",
+    "blocksWhenBufferedQuoteExceedsCap": true,
+    "latestObservationAt": "2026-10-29T20:41:12.339Z",
+    "latestBufferedQuoteWei": "10258296420764",
+    "latestQuoteWithinCap": false,
+    "additionalReserveFundingNeeded": false,
+    "keepsOwnerControlsAndFightersVisible": true,
+    "quoteOutageBlocksOnlyPaidEnable": true
+  },
+  "websiteSourceCommit": "b02eb099"
+}

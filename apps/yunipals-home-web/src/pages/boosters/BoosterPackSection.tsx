@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Clock3, Layers3, PlayCircle, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  Clock3,
+  Layers3,
+  PlayCircle,
+  Sparkles
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { type Hex } from "viem";
 import { useAccount } from "wagmi";
@@ -68,6 +74,13 @@ export function BoosterPackSection() {
               Each pack unlocks its own collection of 264 unique variants.
               Unused daily mints stack up, so you can claim them later.
             </p>
+            <Link
+              to="/boosters/why-packs"
+              className="mt-5 inline-flex items-center gap-2 rounded-full py-2 text-sm font-bold text-grape underline decoration-grape/30 underline-offset-4 hover:decoration-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+            >
+              Why we made packs this way
+              <ArrowRight size={16} aria-hidden="true" className="shrink-0" />
+            </Link>
           </div>
         </div>
         {!deployment && !freshPending && (

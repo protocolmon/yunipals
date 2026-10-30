@@ -1,3 +1,8 @@
+import {
+  parseArenaDeployment,
+  arenaContractAbi,
+  arenaKind
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import type { PublicClient, Address } from "viem";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
 import type {
@@ -55,18 +60,25 @@ export async function verifyNativeArenaAction(
         throw new Error("Native Arena action event is no longer canonical.");
     })
   );
-  const contract = t.deployment.slice(5) as Address;
+  const deployment = parseArenaDeployment(t.deployment);
+  if (
+    deployment.version === 2 &&
+    (BigInt(t.id) <= 0n ||
+      arenaKind((BigInt(t.id) - 1n) % 2n) !== deployment.mediaKind)
+  )
+    throw new Error("Native Arena action belongs to another mode.");
+  const contract = deployment.contract;
   const [live, mask] = await Promise.all([
     client.readContract({
       address: contract,
-      abi: arenaAbi,
+      abi: arenaContractAbi(deployment.version),
       functionName: "tournament",
       args: [BigInt(t.id)],
       blockNumber: head.number
     }),
     client.readContract({
       address: contract,
-      abi: arenaAbi,
+      abi: arenaContractAbi(deployment.version),
       functionName: "automaticStrategyMask",
       args: [BigInt(t.id)],
       blockNumber: head.number

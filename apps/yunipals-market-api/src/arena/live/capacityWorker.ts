@@ -7,6 +7,7 @@ import { boundedBody } from "./mediaApi";
 import { arenaRuntime } from "./runtime";
 import { arenaNativeConfiguration } from "./nativeSource";
 import { arenaOpenaiFundingMode } from "./funding";
+import { measureOpenRouterCredit } from "./animeDirectorApi";
 import {
   arenaMediaStorageBudget,
   ARENA_MEDIA_QUOTA_BYTES,
@@ -14,6 +15,7 @@ import {
 } from "./storage";
 
 const key = process.env.RUNWARE_API_KEY,
+  directorKey = process.env.OPENROUTER_API_KEY,
   storage = process.env.ARENA_MEDIA_ROOT;
 const fundingMode = arenaOpenaiFundingMode();
 // Zeroed pilot fields mean "not used" in ongoing mode, not a provider balance.
@@ -27,7 +29,8 @@ const expiresAt =
     ? 0
     : Date.parse(process.env.ARENA_OPENAI_BUDGET_EXPIRES_AT ?? "");
 if (
-  !key ||
+  (!key && process.env.ARENA_MEDIA_KIND !== "anime") ||
+  (!directorKey && process.env.ARENA_MEDIA_KIND === "anime") ||
   !storage ||
   !Number.isSafeInteger(allowance) ||
   allowance < 0 ||
@@ -50,13 +53,16 @@ process.once("SIGINT", () => {
 try {
   while (!stopped) {
     let measuredSince: string | undefined;
+    let stage = "database clock";
     try {
       measuredSince = (
         await runtime.pool.query<{ measured_at: string }>(
           "SELECT clock_timestamp()::text AS measured_at"
         )
       ).rows[0]!.measured_at;
+      stage = "source readiness";
       await runtime.service.ready();
+      stage = "media storage";
       const mediaStorage = await arenaMediaStorageBudget(
         storage,
         Number(process.env.ARENA_MEDIA_QUOTA_BYTES ?? ARENA_MEDIA_QUOTA_BYTES),
@@ -64,64 +70,100 @@ try {
           process.env.ARENA_MEDIA_RESERVED_BYTES ?? ARENA_MEDIA_RESERVED_BYTES
         )
       );
-      const taskUUID = randomUUID();
-      // Account response also contains team/key metadata: never persist or log it.
-      // Official API: https://runware.ai/docs/models-api/account-management
-      const response = await fetch("https://api.runware.ai/v1", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify([
-          { taskType: "accountManagement", taskUUID, operation: "getDetails" }
-        ]),
-        redirect: "error",
-        signal: AbortSignal.timeout(20000)
-      });
-      if (!response.ok) throw new Error("Account availability check failed.");
-      const runwareMicrousd = runwareCreditMicrousd(
-        JSON.parse((await boundedBody(response, 1000000)).toString("utf8")),
-        taskUUID
-      );
+      stage = "provider credit";
+      const runwareMicrousd =
+        runtime.config.mediaKind === "anime"
+          ? 0
+          : await (async () => {
+              const taskUUID = randomUUID();
+              // Account response also contains team/key metadata: never persist or log it.
+              // Official API: https://runware.ai/docs/models-api/account-management
+              const response = await fetch("https://api.runware.ai/v1", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${key}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify([
+                  {
+                    taskType: "accountManagement",
+                    taskUUID,
+                    operation: "getDetails"
+                  }
+                ]),
+                redirect: "error",
+                signal: AbortSignal.timeout(20000)
+              });
+              if (!response.ok)
+                throw new Error("Account availability check failed.");
+              return runwareCreditMicrousd(
+                JSON.parse(
+                  (await boundedBody(response, 1000000)).toString("utf8")
+                ),
+                taskUUID
+              );
+            })();
+      const openrouterMicrousd =
+        runtime.config.mediaKind === "anime"
+          ? await measureOpenRouterCredit(directorKey!)
+          : undefined;
+      stage = "Base head and gas";
       const [block, gasPrice] = await Promise.all([
         base.getBlock({ blockTag: "latest" }),
-        base.getGasPrice()
+        runtime.config.contractVersion === 2
+          ? Promise.resolve(0n)
+          : base.getGasPrice()
       ]);
       if (Math.abs(Number(block.timestamp) * 1000 - Date.now()) > 120000)
         throw new Error("Base head is stale.");
       const address = runtime.config.deployment.contract;
-      const [available, maximum, referee, operator, wrapper] =
-        await base.multicall({
-          blockNumber: block.number,
-          allowFailure: false,
-          contracts: [
-            { address, abi: arenaAbi, functionName: "availableVrfFunds" },
-            { address, abi: arenaAbi, functionName: "maxVrfCost" },
-            { address, abi: arenaAbi, functionName: "referee" },
-            { address, abi: arenaAbi, functionName: "lobbyOperator" },
-            { address, abi: arenaAbi, functionName: "i_vrfV2PlusWrapper" }
-          ]
-        });
+      stage = "arena funding configuration";
+      const [referee, operator, wrapper] = await base.multicall({
+        blockNumber: block.number,
+        allowFailure: false,
+        contracts: [
+          { address, abi: arenaAbi, functionName: "referee" },
+          { address, abi: arenaAbi, functionName: "lobbyOperator" },
+          { address, abi: arenaAbi, functionName: "i_vrfV2PlusWrapper" }
+        ]
+      });
+      const [available, maximum] =
+        runtime.config.contractVersion === 2
+          ? [0n, 0n]
+          : await base.multicall({
+              blockNumber: block.number,
+              allowFailure: false,
+              contracts: [
+                { address, abi: arenaAbi, functionName: "availableVrfFunds" },
+                { address, abi: arenaAbi, functionName: "maxVrfCost" }
+              ]
+            });
+      stage = "draw and operating funds";
       const [quote, refereeGas, operatorGas, disk] = await Promise.all([
-        base.readContract({
-          address: wrapper,
-          abi: parseAbi([
-            "function estimateRequestPriceNative(uint32,uint32,uint256) view returns (uint256)"
-          ]),
-          functionName: "estimateRequestPriceNative",
-          // eth_call does not supply tx.gasprice by default. Price with a 2x
-          // current-gas buffer; the contract enforces its cap again at join.
-          args: [120000, 1, gasPrice * 2n],
-          blockNumber: block.number
-        }),
+        runtime.config.contractVersion === 2
+          ? Promise.resolve(0n)
+          : base.readContract({
+              address: wrapper,
+              abi: parseAbi([
+                "function estimateRequestPriceNative(uint32,uint32,uint256) view returns (uint256)"
+              ]),
+              functionName: "estimateRequestPriceNative",
+              // eth_call does not supply tx.gasprice by default. Price with a 2x
+              // current-gas buffer; the contract enforces its cap again at join.
+              args: [120000, 1, gasPrice * 2n],
+              blockNumber: block.number
+            }),
         base.getBalance({ address: referee, blockNumber: block.number }),
         base.getBalance({ address: operator, blockNumber: block.number }),
         statfs(storage)
       ]);
+      stage = "capacity snapshot";
       await runtime.capacity.save(
         {
+          randomnessFunding:
+            runtime.config.contractVersion === 2 ? "first-entrant" : "reserve",
           runwareMicrousd,
+          ...(openrouterMicrousd !== undefined ? { openrouterMicrousd } : {}),
           openaiFundingMode: fundingMode,
           openaiBudgetMicrousd: allowance,
           openaiBudgetExpiresAt: expiresAt,
@@ -143,7 +185,7 @@ try {
         [runtime.config.deployment.id]
       );
       console.error(
-        "Arena capacity is unavailable; new admissions are paused."
+        `Arena capacity is unavailable at ${stage}; new admissions are paused.`
       );
     }
     // Five-minute health checks; short waits allow prompt graceful shutdown.

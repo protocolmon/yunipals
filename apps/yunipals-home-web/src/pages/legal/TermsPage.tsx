@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { useTradingConsent } from "@/components/marketplace/TradingConsentProvider";
+import { TradingInformationContent } from "@/components/marketplace/TradingInformationContent";
 import { environment } from "@/environment";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { tradingTermsVersion } from "@/lib/marketplace/tradingInformation";
@@ -7,6 +9,7 @@ import { tradingTermsVersion } from "@/lib/marketplace/tradingInformation";
 const sectionClass = "space-y-3";
 
 export function TermsPage() {
+  const { openInformation } = useTradingConsent();
   usePageMetadata(
     "Terms of Use | Yunipals",
     "Terms for Yunipals collection tools and optional buying and selling features."
@@ -26,6 +29,26 @@ export function TermsPage() {
       <p className="mt-3 text-sm text-muted">Version {tradingTermsVersion}</p>
 
       <div className="mt-10 space-y-9 text-sm leading-relaxed text-ink/80 sm:text-base">
+        <section
+          id="buying-and-selling"
+          aria-labelledby="trading-information-heading"
+          className="scroll-mt-24 space-y-4 rounded-card border border-line bg-lavender/10 p-5 sm:p-6"
+        >
+          <h2
+            id="trading-information-heading"
+            className="display text-2xl text-ink"
+          >
+            Buying and selling information
+          </h2>
+          <TradingInformationContent />
+          <button
+            type="button"
+            onClick={openInformation}
+            className="rounded-full border border-line bg-white px-5 py-3 text-sm font-bold text-ink hover:border-grape/30 hover:text-grape focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge focus-visible:ring-offset-4"
+          >
+            Review trading terms
+          </button>
+        </section>
         <section className={sectionClass}>
           <h2 className="display text-2xl text-ink">1. These terms</h2>
           <p>
@@ -47,8 +70,8 @@ export function TermsPage() {
             Yunipals uses OpenSea services for buying and selling on Ethereum,
             Base and Polygon. Sellers publish BNB Chain orders in on-chain
             Seaport validation transactions, which Yunipals indexes.
-            Transactions settle through Seaport smart contracts. Yunipals is
-            not OpenSea and is not endorsed by or affiliated with OpenSea.
+            Transactions settle through Seaport smart contracts. Yunipals is not
+            OpenSea and is not endorsed by or affiliated with OpenSea.
           </p>
           <p>
             OpenSea, wallet providers, blockchain networks and other third

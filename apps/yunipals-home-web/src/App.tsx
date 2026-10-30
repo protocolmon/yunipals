@@ -1,3 +1,4 @@
+import { ArenaDeploymentProvider } from "@/lib/arenaDeployment";
 import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -6,10 +7,7 @@ import { Nav } from "@/components/Nav";
 import { environment } from "@/environment";
 import { exomonCollectionRedirect } from "@/lib/collectionBrowserFilters";
 import { PendingMarketTransactions } from "@/components/marketplace/PendingMarketTransactions";
-import {
-  TradingConsentProvider,
-  useTradingConsent
-} from "@/components/marketplace/TradingConsentProvider";
+import { TradingConsentProvider } from "@/components/marketplace/TradingConsentProvider";
 import { CollectionPage } from "@/pages/collection/page";
 import { CollectorPage } from "@/pages/collector/page";
 import { LeaderboardPage } from "@/pages/leaderboard/page";
@@ -29,6 +27,11 @@ const BrandkitPage = lazy(() =>
 const ContractsPage = lazy(() =>
   import("@/pages/contracts/page").then((module) => ({
     default: module.ContractsPage
+  }))
+);
+const BoosterPhilosophyPage = lazy(() =>
+  import("@/pages/boosters/BoosterPhilosophyPage").then((module) => ({
+    default: module.BoosterPhilosophyPage
   }))
 );
 const BoosterBatchSetupPage = lazy(() =>
@@ -57,9 +60,49 @@ const YpalWrapPage = lazy(() =>
   }))
 );
 const freshYpalLaunch = environment.boosterLaunchId === "base-ypal-v1";
+const ArenaHub = lazy(() =>
+  import("@/pages/arena/ArenaHub").then((module) => ({
+    default: module.ArenaHub
+  }))
+);
+const SharedArenaSetupPage = lazy(() =>
+  import("@/pages/arena/SharedArenaSetupPage").then((module) => ({
+    default: module.SharedArenaSetupPage
+  }))
+);
+const AnimeStudioPage = lazy(() =>
+  import("@/pages/arena/anime/AnimeStudioPage").then((module) => ({
+    default: module.AnimeStudioPage
+  }))
+);
+const AnimeSetupPage = lazy(() =>
+  import("@/pages/arena/anime/AnimeSetupPage").then((module) => ({
+    default: module.AnimeSetupPage
+  }))
+);
+const AnimePilotPage = lazy(() =>
+  import("@/pages/arena/anime/AnimePilotPage").then((module) => ({
+    default: module.AnimePilotPage
+  }))
+);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
+  }))
+);
+const ArenaQueuePage = lazy(() =>
+  import("@/pages/arena/live/ArenaQueuePage").then((m) => ({
+    default: m.ArenaQueuePage
+  }))
+);
+const ArenaRewardsPage = lazy(() =>
+  import("@/pages/arena/live/ArenaRewardsPage").then((m) => ({
+    default: m.ArenaRewardsPage
+  }))
+);
+const ArenaWatchPage = lazy(() =>
+  import("@/pages/arena/live/ArenaWatchPage").then((m) => ({
+    default: m.ArenaWatchPage
   }))
 );
 const ArenaDashboard = lazy(() =>
@@ -135,7 +178,6 @@ function LeaderboardRoute() {
 }
 
 function AppContent() {
-  const { openInformation } = useTradingConsent();
   const { pathname, search } = useLocation();
   const exomonView =
     environment.exomonEnabled &&
@@ -172,6 +214,10 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
+          <Route
+            path="/boosters/why-packs"
+            element={<BoosterPhilosophyPage />}
+          />
           <Route path="/wrap" element={<YpalWrapPage />} />
           <Route
             path="/boosters/setup/ypal"
@@ -231,7 +277,175 @@ function AppContent() {
             path="/monsters/:collection/:tokenId"
             element={<BoosterMonsterPage />}
           />
-          <Route path="/arena" element={<LiveArenaPage />} />
+          <Route
+            path="/arena/anime"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaQueuePage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/rewards"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaRewardsPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/watch"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaWatchPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/me"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaDashboard role="entrant" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/hosting"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaDashboard role="host" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/rules"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <ArenaRulesPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/studio"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <AnimeStudioPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/anime/setup"
+            element={
+              environment.sharedArenaApiUrl ? (
+                <Navigate to="/arena/setup" replace />
+              ) : (
+                <AnimeSetupPage />
+              )
+            }
+          />
+          <Route
+            path="/arena/anime/pilot"
+            element={
+              environment.sharedArenaApiUrl ? (
+                <Navigate to="/arena/anime" replace />
+              ) : (
+                <AnimePilotPage />
+              )
+            }
+          />
+          <Route
+            path="/arena/anime/:id"
+            element={
+              <ArenaDeploymentProvider
+                kind="anime"
+                shared={!!environment.sharedArenaApiUrl}
+              >
+                <LiveArenaPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route path="/arena" element={<ArenaHub />} />
+          <Route path="/arena/setup" element={<SharedArenaSetupPage />} />
+          <Route path="/arena/history" element={<ArenaWatchPage />} />
+          <Route path="/arena/watch" element={<ArenaWatchPage />} />
+          <Route path="/arena/rewards" element={<ArenaRewardsPage />} />
+          <Route
+            path="/arena/video"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaQueuePage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/:id"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <LiveArenaPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/rewards"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaRewardsPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/watch"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaWatchPage />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/me"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaDashboard role="entrant" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/hosting"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaDashboard role="host" />
+              </ArenaDeploymentProvider>
+            }
+          />
+          <Route
+            path="/arena/video/rules"
+            element={
+              <ArenaDeploymentProvider kind="video" shared>
+                <ArenaRulesPage />
+              </ArenaDeploymentProvider>
+            }
+          />
           <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />
           <Route
             path="/arena/hosting"
@@ -275,7 +489,7 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
-      <Footer onTradingInformation={openInformation} exomonView={exomonView} />
+      <Footer exomonView={exomonView} />
       {!exomonView && <PendingMarketTransactions />}
     </div>
   );

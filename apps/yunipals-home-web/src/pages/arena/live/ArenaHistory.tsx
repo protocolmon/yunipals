@@ -1,3 +1,4 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 import type {
@@ -25,17 +26,21 @@ export function arenaStatusLabel(t: ArenaTournamentSummary) {
 
 export function ArenaTournamentCard({
   tournament: t,
-  wallet
+  wallet,
+  intent = "track"
 }: {
   tournament: ArenaTournamentSummary;
   wallet?: string;
+  intent?: "join" | "track" | "watch";
 }) {
+  const deployment = useArenaDeployment();
+  const battleHref = `${deployment.basePath}/${t.id}${intent === "join" ? "#join" : ""}`;
   const own = t.fighters.filter(
     (f) => f.player.toLowerCase() === wallet?.toLowerCase()
   );
   const action =
-    t.phase === "open"
-      ? "Join · 2 USDC"
+    intent === "join" && t.phase === "open"
+      ? `Choose a fighter · ${deployment.entry} USDC`
       : t.phase === "strategies" &&
           Date.now() / 1000 < t.deadline &&
           own.some((f) => !t.submittedSeats.includes(f.seat))
@@ -44,23 +49,25 @@ export function ArenaTournamentCard({
           ? "Watch battles"
           : t.phase === "expired"
             ? "View refund"
-            : "View tournament";
+            : "View battle";
   return (
     <article className="flex flex-col rounded-card border border-line bg-white p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-bold">
           <Link
-            to={`/arena/${t.id}`}
+            to={battleHref}
             className="rounded hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
           >
-            Tournament #{t.id}
+            Battle #{t.id}
           </Link>
         </h3>
         {own.length ? (
           <span className="rounded-full bg-mint/30 px-3 py-1 text-xs font-semibold">
-            {own.length === 1
-              ? "Your fighter"
-              : `${own.length} of your fighters`}
+            {action === "Write your strategy"
+              ? "Your move"
+              : own.length === 1
+                ? "Your fighter"
+                : `${own.length} of your fighters`}
           </span>
         ) : null}
       </div>
@@ -122,7 +129,13 @@ export function ArenaTournamentCard({
         </p>
       ) : null}
       <Link
-        to={`/arena/${t.id}`}
+        to={
+          intent === "join"
+            ? battleHref
+            : t.phase === "expired"
+              ? `${deployment.basePath}/rewards`
+              : `${deployment.basePath}/${t.id}`
+        }
         className="mt-5 self-start rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
       >
         {action}
@@ -139,6 +152,7 @@ const rewardLabels = {
   withdrawal: "Wallet withdrawal"
 };
 export function ArenaRewardList({ items }: { items: ArenaRewardRecord[] }) {
+  const deployment = useArenaDeployment();
   return (
     <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
       {items.map((item) => (
@@ -150,8 +164,11 @@ export function ArenaRewardList({ items }: { items: ArenaRewardRecord[] }) {
             <p className="font-semibold">{rewardLabels[item.kind]}</p>
             <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted">
               {item.tournamentId ? (
-                <Link to={`/arena/${item.tournamentId}`} className="underline">
-                  Tournament #{item.tournamentId}
+                <Link
+                  to={`${deployment.basePath}/${item.tournamentId}`}
+                  className="underline"
+                >
+                  Battle #{item.tournamentId}
                 </Link>
               ) : (
                 <span>Combined wallet balance</span>

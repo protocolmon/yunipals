@@ -30,7 +30,7 @@ async function run() {
     (!settlementCap || !/^[1-9][0-9]*$/.test(settlementCap))
   )
     throw new Error("A separate settlement execution fee cap is required.");
-  const runtime = await arenaRuntime({ native: true });
+  const runtime = await arenaRuntime({ native: true, execution: true });
   let stopped = false;
   const stop = () => {
     stopped = true;

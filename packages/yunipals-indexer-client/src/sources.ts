@@ -4,7 +4,8 @@ export type SourceFeature =
   | "boosters"
   | "base-metadata"
   | "marketplace"
-  | "arena";
+  | "arena"
+  | "anime-registry";
 
 export type ConfirmationPolicy =
   | { kind: "latest" }
@@ -61,7 +62,8 @@ const features: readonly SourceFeature[] = [
   "boosters",
   "base-metadata",
   "marketplace",
-  "arena"
+  "arena",
+  "anime-registry"
 ];
 const chains = new Set([1, 56, 137, 8453]);
 const decimal = /^(0|[1-9][0-9]*)$/;

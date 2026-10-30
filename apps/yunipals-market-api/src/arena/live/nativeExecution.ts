@@ -1,3 +1,4 @@
+import { nextArenaTournamentId } from "@protopals/yunipals-market-core/arenaProtocol";
 import type { Address } from "viem";
 import { ARENA_RESOLUTION_SECONDS } from "@protopals/yunipals-market-core/arena";
 import { ArenaIntake } from "./intake";
@@ -52,7 +53,13 @@ export class NativeArenaExecution {
       if (!source.list)
         throw new Error("Native lobby coverage is unavailable.");
       const latest = await source.list(),
-        id = String(BigInt(latest.ids[0] ?? "0") + 1n);
+        id = String(
+          nextArenaTournamentId(
+            latest.ids[0],
+            this.service.mediaKind,
+            this.service.contractVersion
+          )
+        );
       const intent = await this.control.prepare("open-lobby", id);
       return this.control.advanceIntent(intent);
     }

@@ -188,6 +188,7 @@ try {
       treasury: accounts[0].address,
       islands: islands.address,
       vrfWrapper: wrapper.address,
+      eligibility: "0x0000000000000000000000000000000000000000",
       paymentToken: currency.address,
       entryFee: 2000000n,
       winnerBps: 7500,

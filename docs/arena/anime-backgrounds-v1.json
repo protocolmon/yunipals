@@ -1,0 +1,14 @@
+{
+  "version": "anime-background-catalog/v1",
+  "fallback": {
+    "version": "anime-background/v1",
+    "mode": "shared-preview",
+    "file": "engine/1.1.0/static/assets/bg-arena.webp",
+    "sha256": "ed9c8e136a075c7966022c8e1207ee3d273b0c0fd9f90efe4179f057deba799d",
+    "w": 1137,
+    "h": 640,
+    "sourceIslandTokenId": "195",
+    "sourceProfileSha256": "0374c8ef70d6a01993e6875795c6085bf83a2a8d4fbc7a66f7263f9c85e03508"
+  },
+  "islands": {}
+}

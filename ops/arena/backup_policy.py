@@ -46,3 +46,49 @@ def expired_snapshots(names, now):
 def valid_prune_files(names):
     allowed = SNAPSHOT_FILES | {name + '.part' for name in SNAPSHOT_FILES}
     return all(name in allowed for name in names)
+
+
+# Optional before anime launch; required together once its private config exists.
+ANIME_BACKUP_ROOTS = {
+    'assets': '/var/www/assets-anime.yunipals.com',
+    'media': '/var/lib/yunipals-anime-arena/media',
+    'studio': '/var/lib/yunipals-anime-arena/studio',
+    'configuration': '/etc/yunipals-anime-arena',
+    'release': '/srv/yunipals-anime-arena/recovery',
+    'chromium': '/srv/yunipals-arena/runtime/chromium-151.0.7922.34',
+    'node': '/srv/yunipals-arena/runtime/node-v24.22.1'
+}
+
+
+def anime_backup_files(roots=None):
+    from pathlib import Path
+    selected = {key: Path(value) for key, value in (roots or ANIME_BACKUP_ROOTS).items()}
+    if not selected['configuration'].exists():
+        return {}
+    result = {}
+    for kind, root in selected.items():
+        assert root.exists() and not root.is_symlink(), 'Missing anime recovery root'
+        if root.is_file():
+            result[kind + '/' + root.name] = root
+            continue
+        assert root.is_dir(), 'Invalid anime recovery root'
+        paths = sorted(root.rglob('*'))
+        assert all(not p.is_symlink() for p in paths), 'Unexpected anime backup symlink'
+        for path in paths:
+            if path.is_file():
+                result[kind + '/' + str(path.relative_to(root))] = path
+    return result
+
+
+def shared_arena_backup_files(roots=None):
+    # Optional until shared configuration exists, then require every recovery
+    # root together. Reuse the same traversal and symlink checks as anime.
+    return anime_backup_files(roots or {
+        'configuration': '/etc/yunipals-arena-modes',
+        'release': '/srv/yunipals-arena-modes/recovery',
+        'sourceConfiguration': '/etc/yunipals-arena-modes-source',
+        'sourceRpc': '/etc/yunipals-arena-modes-source-rpc',
+        'sourceObserver': '/etc/yunipals-arena-modes-source-observer',
+        'videoMedia': '/var/lib/yunipals-arena-modes/video/media',
+        'animeMedia': '/var/lib/yunipals-arena-modes/anime/media'
+    })

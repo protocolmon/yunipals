@@ -1,11 +1,33 @@
+import { readArenaJoinPayment } from "@/lib/arenaPayment";
+import {
+  arenaCallsEntryHash,
+  arenaCallsRejected,
+  clearArenaCalls,
+  readArenaCalls,
+  saveArenaCalls,
+  type PendingArenaCalls
+} from "@/lib/arenaCalls";
+import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
+import { arenaMode } from "@protopals/yunipals-market-core/arenaProtocol";
+import { base } from "viem/chains";
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useEffect, useRef, useState } from "react";
-import { BaseError, erc20Abi, toHex, type Hex } from "viem";
+import {
+  BaseError,
+  erc20Abi,
+  toHex,
+  isAddress,
+  formatEther,
+  type Address,
+  type Hex
+} from "viem";
 import {
   useAccount,
   usePublicClient,
   useSignMessage,
   useSignTypedData,
   useSwitchChain,
+  useWalletClient,
   useWriteContract
 } from "wagmi";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
@@ -18,7 +40,6 @@ import {
   type ArenaTransactionStatus
 } from "@protopals/yunipals-market-core/arena";
 import {
-  arenaRequest,
   ArenaRequestError,
   type ArenaAdmission,
   type ArenaConfig
@@ -38,6 +59,7 @@ import {
   transactionPending,
   transactionFighter,
   arenaFighterKey,
+  arenaTransactionScope,
   type ArenaEntryTarget,
   type PendingArenaTransaction
 } from "@/lib/arenaTransactions";
@@ -62,8 +84,11 @@ export function useArenaWallet(
   config: ArenaConfig | undefined,
   refresh: () => Promise<unknown>
 ) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
+  const { data: walletClient } = useWalletClient({ chainId: 8453 });
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
   const { signTypedDataAsync } = useSignTypedData();
@@ -84,7 +109,11 @@ export function useArenaWallet(
   const guard = useRef(false);
   const scope =
     address && config
-      ? `${config.contract.toLowerCase()}/${address.toLowerCase()}`
+      ? arenaTransactionScope(
+          address,
+          config.contract,
+          config.contractVersion === 2 ? deployment.kind : undefined
+        )
       : null;
   const currentScope = useRef(scope);
   const privateScope = useRef<{
@@ -96,24 +125,42 @@ export function useArenaWallet(
   const [operation, setOperation] = useState<PendingArenaTransaction | null>(
     null
   );
+  const [calls, setCalls] = useState<PendingArenaCalls | null>(null);
+  const visibleCalls =
+    calls &&
+    arenaTransactionScope(calls.wallet, calls.contract, calls.mediaKind) ===
+      scope
+      ? calls
+      : null;
   const visibleOperation =
     operation &&
     operation.wallet.toLowerCase() === address?.toLowerCase() &&
-    operation.contract.toLowerCase() === config?.contract.toLowerCase()
+    operation.contract.toLowerCase() === config?.contract.toLowerCase() &&
+    operation.mediaKind ===
+      (config?.contractVersion === 2 ? deployment.kind : undefined)
       ? operation
       : null;
   const pendingFighter = transactionPending(visibleOperation)
     ? transactionFighter(visibleOperation)
     : null;
-  const entryProgress =
-    pendingFighter && visibleOperation
+  const entryProgress = visibleCalls
+    ? {
+        key: arenaFighterKey(visibleCalls.fighter),
+        label:
+          busy === "Approve USDC and enter together in your wallet"
+            ? "Confirm in wallet…"
+            : "Confirming entry…"
+      }
+    : pendingFighter && visibleOperation
       ? {
           key: arenaFighterKey(pendingFighter),
           label:
             visibleOperation.state === "delayed"
               ? "Transaction pending…"
               : visibleOperation.state === "indexing"
-                ? "Updating entry…"
+                ? visibleOperation.action.kind === "approval"
+                  ? "Updating approval…"
+                  : "Updating entry…"
                 : visibleOperation.action.kind === "approval"
                   ? "Confirming approval…"
                   : "Confirming entry…"
@@ -134,6 +181,9 @@ export function useArenaWallet(
         }
       : null;
   const resumeRef = useRef<(value: PendingArenaTransaction) => Promise<void>>(
+    async () => {}
+  );
+  const resumeCallsRef = useRef<(value: PendingArenaCalls) => Promise<void>>(
     async () => {}
   );
   useEffect(() => {
@@ -158,13 +208,38 @@ export function useArenaWallet(
     setError(null);
     setTransaction(null);
     const value =
-      address && config ? readArenaTransaction(address, config.contract) : null;
+      address && config
+        ? readArenaTransaction(
+            address,
+            config.contract,
+            config.contractVersion === 2 ? deployment.kind : undefined
+          )
+        : null;
     setOperation(value);
-    if (value && transactionPending(value)) void resumeRef.current(value);
+    const savedCalls =
+      address && config
+        ? readArenaCalls(
+            address,
+            config.contract,
+            config.contractVersion === 2 ? deployment.kind : undefined
+          )
+        : null;
+    setCalls(savedCalls);
+    if (!savedCalls && value && transactionPending(value))
+      void resumeRef.current(value);
     return () => {
       tracker.current?.abort();
     };
   }, [scope]);
+  useEffect(() => {
+    if (!walletClient || !address || !config || guard.current) return;
+    const saved = readArenaCalls(
+      address,
+      config.contract,
+      config.contractVersion === 2 ? deployment.kind : undefined
+    );
+    if (saved) void resumeCallsRef.current(saved);
+  }, [scope, walletClient]);
   async function execute<T>(
     label: string,
     task: () => Promise<T>
@@ -236,7 +311,7 @@ export function useArenaWallet(
     saveArenaTransaction(value);
     if (
       currentScope.current ===
-      `${value.contract.toLowerCase()}/${value.wallet.toLowerCase()}`
+      arenaTransactionScope(value.wallet, value.contract, value.mediaKind)
     )
       setOperation(value);
   }
@@ -244,7 +319,11 @@ export function useArenaWallet(
     tracker.current?.abort();
     const controller = new AbortController();
     tracker.current = controller;
-    const expectedScope = `${value.contract.toLowerCase()}/${value.wallet.toLowerCase()}`;
+    const expectedScope = arenaTransactionScope(
+      value.wallet,
+      value.contract,
+      value.mediaKind
+    );
     const valid = () =>
       !controller.signal.aborted && currentScope.current === expectedScope;
     let latest = value;
@@ -279,7 +358,7 @@ export function useArenaWallet(
         }
         // Indexing can take longer than the initial UI wait. Keep reading
         // the DB status until completion; these requests never trigger RPC reads.
-        const interval = Date.now() - started < 90_000 ? 5000 : 15_000;
+        const interval = Date.now() - started < 90_000 ? 2000 : 5000;
         await new Promise<void>((resolve, reject) => {
           const stop = () => {
             clearTimeout(timer);
@@ -314,24 +393,99 @@ export function useArenaWallet(
     try {
       const session = await arenaRequest<{ wallet: string }>("/me");
       if (session.wallet.toLowerCase() !== value.wallet.toLowerCase()) return;
-      await indexed(value);
+      if (value.action.kind === "approval")
+        await confirmed(value.hash, value.action, value.fighter);
+      else await indexed(value);
     } catch {
       /* Explicit status checking can renew an expired session. */
     }
   };
+  resumeCallsRef.current = async (value) => {
+    await execute("Checking combined entry", async () => {
+      await ensureSession("Checking combined entry");
+      await finishCalls(value);
+    });
+  };
+
+  function clearCalls(value: PendingArenaCalls) {
+    clearArenaCalls(value);
+    if (
+      currentScope.current ===
+      arenaTransactionScope(value.wallet, value.contract, value.mediaKind)
+    )
+      setCalls(null);
+  }
+
+  async function finishCalls(value: PendingArenaCalls) {
+    if (!walletClient)
+      throw new Error(
+        "Reconnect the same wallet to check your combined entry."
+      );
+    let hash: Hex | null = null;
+    try {
+      const status = await walletClient.waitForCallsStatus({
+        id: value.id,
+        pollingInterval: 1500,
+        timeout: 60_000
+      });
+      assertCurrent();
+      if (
+        status.chainId === 8453 &&
+        (status.statusCode === 400 ||
+          (status.statusCode === 500 && status.atomic))
+      ) {
+        clearCalls(value);
+        throw new Error(
+          "The combined entry did not complete. No entry fee was paid. You can try again."
+        );
+      }
+      hash = arenaCallsEntryHash(value, status);
+      if (!hash) throw new IndexingPending();
+    } catch (error) {
+      if (!readArenaCalls(value.wallet, value.contract, value.mediaKind))
+        throw error;
+      throw new Error(
+        "Your combined entry is retained. Check its status before trying another entry."
+      );
+    }
+    await confirmed(
+      hash,
+      { kind: "entry", ...value.fighter },
+      value.fighter,
+      (operation) => {
+        // Keep the batch recovery ID until its transaction hash is durable too.
+        if (
+          readArenaTransaction(value.wallet, value.contract, value.mediaKind)
+            ?.hash !== operation.hash
+        )
+          throw new Error(
+            "Your entry is retained in your wallet. Check its status to finish updating the page."
+          );
+        clearCalls(value);
+      }
+    );
+  }
 
   async function confirmed(
     hash: Hex,
     action: ArenaTransactionAction,
-    fighter?: ArenaEntryTarget
+    fighter?: ArenaEntryTarget,
+    recorded?: (value: PendingArenaTransaction) => void
   ) {
     if (!address || !config) throw new Error("Connect your wallet first.");
     if (currentScope.current === scope) setTransaction(hash);
     let value = {
-      ...newArenaTransaction(address, config.contract, hash, action),
+      ...newArenaTransaction(
+        address,
+        config.contract,
+        hash,
+        action,
+        config.contractVersion === 2 ? deployment.kind : undefined
+      ),
       fighter
     };
     remember(value);
+    recorded?.(value);
     if (!client) throw new Error("Base wallet connection is unavailable.");
     let cancelled = false;
     const receipt = await client.waitForTransactionReceipt({
@@ -356,6 +510,23 @@ export function useArenaWallet(
     value = { ...value, hash: receipt.transactionHash, state: "indexing" };
     remember(value);
     if (currentScope.current !== scope) throw new IndexingPending();
+    if (action.kind === "approval") {
+      const allowance = await client.readContract({
+        address: config.paymentToken,
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [address, config.contract]
+      });
+      assertCurrent();
+      if (allowance < BigInt(config.entryFee)) {
+        remember({ ...value, state: "failed" });
+        throw new Error(
+          "The USDC allowance is too low for this entry. Please try again."
+        );
+      }
+      remember({ ...value, approvalConfirmed: true });
+      return;
+    }
     setBusy("Updating tournament data");
     await indexed(value);
   }
@@ -365,14 +536,26 @@ export function useArenaWallet(
     error,
     transaction,
     operation: visibleOperation,
-    pendingTransaction: transactionPending(visibleOperation),
+    pendingTransaction: !!visibleCalls || transactionPending(visibleOperation),
+    batchPending: !!visibleCalls,
     entryProgress,
     strategyFeedback,
     checkStatus: () =>
       execute("Checking transaction status", async () => {
+        if (visibleCalls) {
+          await ensureSession("Checking combined entry");
+          await finishCalls(visibleCalls);
+          return;
+        }
         if (!visibleOperation || !transactionPending(visibleOperation)) return;
         await ensureSession("Checking transaction status");
-        await indexed(visibleOperation);
+        if (visibleOperation.action.kind === "approval")
+          await confirmed(
+            visibleOperation.hash,
+            visibleOperation.action,
+            visibleOperation.fighter
+          );
+        else await indexed(visibleOperation);
       }),
     join: (
       id: string,
@@ -393,7 +576,7 @@ export function useArenaWallet(
         progress("Preparing…");
         if (!config?.entriesEnabled || !client || !address)
           throw new Error("Paid entry is not open yet.");
-        if (transactionPending(visibleOperation))
+        if (visibleCalls || transactionPending(visibleOperation))
           throw new Error(
             "Check your pending transaction before entering again."
           );
@@ -424,7 +607,7 @@ export function useArenaWallet(
         assertCurrent();
         if (balance < BigInt(config.entryFee))
           throw new Error(
-            "You need at least 2 USDC on Base to enter this fighter."
+            `You need at least ${deployment.entry} USDC on Base to enter this fighter.`
           );
         if (gasBalance === 0n)
           throw new Error(
@@ -467,6 +650,99 @@ export function useArenaWallet(
         };
         let permit = await prepare();
         assertCurrent();
+        let atomic = false;
+        if (
+          allowance < BigInt(config.entryFee) &&
+          walletClient?.account.address.toLowerCase() === address.toLowerCase()
+        ) {
+          try {
+            const capabilities = await walletClient.getCapabilities<undefined>({
+              account: address
+            });
+            atomic = ["supported", "ready"].includes(
+              (capabilities[8453]?.atomic ?? capabilities[0]?.atomic)?.status ??
+                "unsupported"
+            );
+          } catch {
+            /* Conventional wallets use the two-confirmation flow. */
+          }
+          assertCurrent();
+        }
+        if (atomic && walletClient) {
+          if (Number(permit.expiry) * 1000 < Date.now() + 60000)
+            permit = await admission();
+          const payment = await readArenaJoinPayment(client, config, id);
+          if (gasBalance <= payment.value)
+            throw new Error(
+              "Add ETH on Base to cover the island draw and network gas."
+            );
+          assertCurrent();
+          const batch: PendingArenaCalls = {
+            id: toHex(crypto.getRandomValues(new Uint8Array(32))),
+            wallet: address,
+            contract: config.contract,
+            mediaKind:
+              config.contractVersion === 2 ? deployment.kind : undefined,
+            fighter
+          };
+          // Refuse to send if the recovery record cannot be saved.
+          saveArenaCalls(batch);
+          setCalls(batch);
+          progress("Confirm in wallet…");
+          setBusy("Approve USDC and enter together in your wallet");
+          let response;
+          try {
+            response = await walletClient.sendCalls({
+              id: batch.id,
+              account: address,
+              chain: base,
+              forceAtomic: true,
+              experimental_fallback: false,
+              calls: [
+                {
+                  to: config.paymentToken,
+                  abi: erc20Abi,
+                  functionName: "approve",
+                  args: [
+                    config.contract,
+                    BigInt(config.entryFee) * BigInt(approvalEntries)
+                  ]
+                },
+                {
+                  to: config.contract,
+                  abi: arenaAbi,
+                  functionName: "join",
+                  args: [
+                    BigInt(id),
+                    {
+                      ...permit.entry,
+                      nftChainId: BigInt(permit.entry.nftChainId),
+                      tokenId: BigInt(permit.entry.tokenId)
+                    },
+                    BigInt(permit.expiry),
+                    permit.signature
+                  ],
+                  value: payment.value
+                }
+              ]
+            });
+          } catch (error) {
+            if (arenaCallsRejected(error)) {
+              clearCalls(batch);
+              throw error;
+            }
+            throw new Error(
+              "Your wallet may have submitted the combined entry. Check its status before trying again."
+            );
+          }
+          const submitted = { ...batch, id: response.id };
+          saveArenaCalls(submitted);
+          assertCurrent();
+          setCalls(submitted);
+          setBusy("Confirming your entry on Base");
+          await finishCalls(submitted);
+          return;
+        }
         if (allowance < BigInt(config.entryFee)) {
           progress("Approve in wallet…");
           setBusy(
@@ -491,8 +767,45 @@ export function useArenaWallet(
         if (Number(permit.expiry) * 1000 < Date.now() + 60000)
           permit = await admission();
         assertCurrent();
+        const payment = await readArenaJoinPayment(client, config, id);
+        const joinArgs = [
+          BigInt(id),
+          {
+            ...permit.entry,
+            nftChainId: BigInt(permit.entry.nftChainId),
+            tokenId: BigInt(permit.entry.tokenId)
+          },
+          BigInt(permit.expiry),
+          permit.signature
+        ] as const;
+        if (config.contractVersion === 2 && payment.fees) {
+          const [gas, balance] = await Promise.all([
+            client.estimateContractGas({
+              account: address,
+              address: config.contract,
+              abi: arenaV2Abi,
+              functionName: "join",
+              args: joinArgs,
+              value: payment.value,
+              ...payment.fees
+            }),
+            client.getBalance({ address })
+          ]);
+          if (
+            balance <
+            payment.value + ((gas * 125n) / 100n) * payment.fees.maxFeePerGas
+          )
+            throw new Error(
+              `You need ${formatEther(payment.value)} ETH for the island draw, plus enough ETH for network gas.`
+            );
+        }
+        assertCurrent();
         progress("Confirm in wallet…");
-        setBusy("Confirm entry in your wallet");
+        setBusy(
+          payment.firstEntry
+            ? "Confirm entry and island draw fee in your wallet"
+            : "Confirm entry in your wallet"
+        );
         await confirmed(
           await writeContractAsync({
             chainId: 8453,
@@ -500,16 +813,10 @@ export function useArenaWallet(
             address: config.contract,
             abi: arenaAbi,
             functionName: "join",
-            args: [
-              BigInt(id),
-              {
-                ...permit.entry,
-                nftChainId: BigInt(permit.entry.nftChainId),
-                tokenId: BigInt(permit.entry.tokenId)
-              },
-              BigInt(permit.expiry),
-              permit.signature
-            ]
+            ...(config.contractVersion === 2
+              ? { value: payment.value, ...payment.fees }
+              : {}),
+            args: joinArgs
           }),
           {
             kind: "entry",
@@ -521,7 +828,12 @@ export function useArenaWallet(
           fighter
         );
       }),
-    submit: (id: string, seat: number, text: string) =>
+    submit: (
+      id: string,
+      seat: number,
+      text: string,
+      loadout?: import("@protopals/yunipals-market-core/anime").AnimeLoadout
+    ) =>
       execute("Preparing your strategy", async () => {
         if (!config || !address) throw new Error("Connect your wallet first.");
         setStrategyTarget({ scope, tournamentId: id, seat });
@@ -539,7 +851,11 @@ export function useArenaWallet(
         assertCurrent();
         if (prior.locked) {
           clearArenaStrategy(config.contract, address, id, seat);
-          if (prior.text !== normalized)
+          if (
+            prior.text !== normalized ||
+            (loadout &&
+              JSON.stringify(prior.loadout) !== JSON.stringify(loadout))
+          )
             throw new Error(
               "Your earlier strategy is already locked. It cannot be replaced."
             );
@@ -547,7 +863,11 @@ export function useArenaWallet(
         }
         const saved = readArenaStrategy(config.contract, address, id, seat);
         let body = saved.signed;
-        if (body && body.text !== normalized)
+        if (
+          body &&
+          (body.text !== normalized ||
+            JSON.stringify(body.loadout) !== JSON.stringify(loadout))
+        )
           throw new Error(
             "A signed strategy is waiting for confirmation. Retry that saved strategy before making changes."
           );
@@ -569,9 +889,16 @@ export function useArenaWallet(
             message: { tournamentId: BigInt(id), seat, commitment }
           });
           assertCurrent();
-          body = { seat, text: normalized, salt, signature };
+          body = {
+            seat,
+            text: normalized,
+            salt,
+            signature,
+            ...(loadout ? { loadout } : {})
+          };
           saveArenaStrategy(config.contract, address, id, seat, {
             text: normalized,
+            ...(loadout ? { loadout } : {}),
             signed: body
           });
         }
@@ -583,6 +910,8 @@ export function useArenaWallet(
         );
         if (
           !receipt.locked ||
+          (body.loadout &&
+            JSON.stringify(receipt.loadout) !== JSON.stringify(body.loadout)) ||
           receipt.commitment !==
             strategyCommitment(
               config.contract,
@@ -598,27 +927,55 @@ export function useArenaWallet(
         clearArenaStrategy(config.contract, address, id, seat);
         setBusy("Updating your strategy");
       }),
-    claim: () =>
-      execute("Claiming your USDC", async () => {
-        if (!config || !address) throw new Error("Connect your wallet first.");
-        if (transactionPending(visibleOperation))
-          throw new Error(
-            "Check your pending transaction before claiming again."
+    claim: (refund = false, recipient?: Address) =>
+      execute(
+        refund ? "Claiming unused draw-fee ETH" : "Claiming your USDC",
+        async () => {
+          if (!config || !address)
+            throw new Error("Connect your wallet first.");
+          if (visibleCalls || transactionPending(visibleOperation))
+            throw new Error(
+              "Check your pending transaction before claiming again."
+            );
+          const target = recipient ?? address;
+          if (
+            !isAddress(target) ||
+            /^0x0{40}$/i.test(target) ||
+            target.toLowerCase() === config.contract.toLowerCase()
+          )
+            throw new Error("Choose a valid refund recipient.");
+          if (refund && config.contractVersion !== 2)
+            throw new Error("This arena has no entrant-funded draw refunds.");
+          await ensureSession(
+            refund ? "Claiming unused draw-fee ETH" : "Claiming your USDC"
           );
-        await ensureSession("Claiming your USDC");
-        if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
-        await confirmed(
-          await writeContractAsync({
-            chainId: 8453,
-            account: address,
-            address: config.contract,
-            abi: arenaAbi,
-            functionName: "claim",
-            args: [address]
-          }),
-          { kind: "claim" }
-        );
-      }),
+          if (chainId !== 8453) await switchChainAsync({ chainId: 8453 });
+          const hash =
+            config.contractVersion === 2
+              ? await writeContractAsync({
+                  chainId: 8453,
+                  account: address,
+                  address: config.contract,
+                  abi: arenaV2Abi,
+                  functionName: refund ? "claimRandomnessRefund" : "claim",
+                  args: [arenaMode(deployment.kind), target]
+                })
+              : await writeContractAsync({
+                  chainId: 8453,
+                  account: address,
+                  address: config.contract,
+                  abi: arenaAbi,
+                  functionName: "claim",
+                  args: [address]
+                });
+          await confirmed(
+            hash,
+            refund
+              ? { kind: "claim", asset: "randomness-refund", recipient: target }
+              : { kind: "claim" }
+          );
+        }
+      ),
     readStrategy: (id: string, seat: number) =>
       execute("Loading your locked strategy", async () => {
         setStrategyTarget({ scope, tournamentId: id, seat });

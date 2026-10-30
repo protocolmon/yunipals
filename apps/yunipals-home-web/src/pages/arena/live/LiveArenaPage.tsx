@@ -1,3 +1,4 @@
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import {
   useInfiniteQuery,
   useQuery,
@@ -5,24 +6,21 @@ import {
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { formatUnits, type Address } from "viem";
+import { formatEther, type Address } from "viem";
 import { LoaderCircle } from "lucide-react";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
+import { readArenaJoinPayment } from "@/lib/arenaPayment";
+import type {
+  AnimeKnownKit,
+  AnimeBackground,
+  AnimeLoadout
+} from "@protopals/yunipals-market-core/anime";
 import type {
   ArenaPublicTournament,
   ArenaSeat
 } from "@protopals/yunipals-market-core/arena";
-import { environment } from "@/environment";
 import { Select, SelectItem } from "@/components/ui/select";
-import type {
-  ArenaHistoryPage,
-  ArenaWalletSummary
-} from "@protopals/yunipals-market-core/arenaViews";
-import {
-  arenaRequest,
-  fetchArenaTournament,
-  type ArenaConfig
-} from "@/lib/arenaLive";
+import type { ArenaConfig } from "@/lib/arenaLive";
 import { cn } from "@/lib/utils";
 import { arenaFighterKey } from "@/lib/arenaTransactions";
 import {
@@ -32,8 +30,8 @@ import {
   type ArenaStrategyReceipt
 } from "@/lib/arenaStrategies";
 import { fetchOwnerTokens, type IndexedChain } from "@/lib/yunipalsIndexer";
+import { collectorClient, defaultCollectorFilters } from "@/lib/collector";
 import { ArenaFilm } from "./ArenaFilm";
-import { ArenaJoinBanner } from "./ArenaJoinBanner";
 import {
   ArenaCardsLoading,
   ArenaLoading,
@@ -41,12 +39,23 @@ import {
 } from "./ArenaFeedback";
 import { useArenaWallet, type ArenaApprovalEntries } from "./useArenaWallet";
 import { useArenaClock } from "./useArenaClock";
-import { ArenaNavigation } from "./ArenaNavigation";
+import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaDeadline, ArenaEvidence } from "./ArenaEvidence";
-import { ArenaTournamentCard } from "./ArenaHistory";
 
 const action =
   "rounded-full bg-ink px-6 py-3 font-semibold text-white transition hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-40";
+const entryButtonLabels: Record<string, string> = {
+  "Switch to Base…": "Switch…",
+  "Checking fighter…": "Checking…",
+  "Checking artwork…": "Checking…",
+  "Approve in wallet…": "Approve…",
+  "Confirm in wallet…": "Confirm…",
+  "Confirming approval…": "Confirming…",
+  "Confirming entry…": "Confirming…",
+  "Updating approval…": "Updating…",
+  "Updating entry…": "Updating…",
+  "Transaction pending…": "Pending…"
+};
 const phases = {
   open: "Gathering fighters",
   strategies: "Choose your strategy",
@@ -68,6 +77,7 @@ type Context = {
     image: string;
     traits: Record<string, string>;
     profile: Record<string, unknown>;
+    animeBackground?: AnimeBackground;
   } | null;
   roster: Array<{
     id: string;
@@ -75,6 +85,8 @@ type Context = {
     image: string;
     identity: string;
     locomotion: "ground" | "flight";
+    animeKits?: AnimeKnownKit[];
+    animeDefaultLoadout?: AnimeLoadout;
   } | null>;
   tiePriority: string[];
   ready: boolean;
@@ -137,7 +149,7 @@ function FighterSeat({
   );
 }
 
-function StrategyEditor({
+export function StrategyEditor({
   tournament,
   seat,
   fighter,
@@ -155,7 +167,12 @@ function StrategyEditor({
   progress?: string | null;
   submissionError?: string | null;
   contract: Address | undefined;
-  submit: (id: string, seat: number, text: string) => Promise<void>;
+  submit: (
+    id: string,
+    seat: number,
+    text: string,
+    loadout?: AnimeLoadout
+  ) => Promise<void>;
   readReceipt: (
     id: string,
     seat: number
@@ -172,6 +189,10 @@ function StrategyEditor({
   const saved = contract
     ? readArenaStrategy(contract, seat.player, tournament.id, seat.seat)
     : null;
+  const [chosen, setChosen] = useState<string[] | undefined>(
+    () => saved?.signed?.loadout ?? saved?.loadout
+  );
+  const loadout = chosen ?? fighter?.animeDefaultLoadout;
   const locked = tournament.submittedSeats.includes(seat.seat);
   const now = useArenaClock(tournament.serverTime);
   const closed = now >= tournament.deadline;
@@ -291,6 +312,70 @@ function StrategyEditor({
         </p>
       ) : (
         <>
+          {fighter?.animeKits && (
+            <fieldset className="my-4" disabled={busy || !!saved?.signed}>
+              <legend className="font-semibold">Choose two techniques</legend>
+              <p className="my-2 text-sm text-muted">
+                These names and effects shape your film. They add no combat
+                advantage. Your choices appear with the revealed strategies.
+              </p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {fighter.animeKits.map((kit) => {
+                  const selected = loadout?.includes(kit.id) ?? false;
+                  return (
+                    <button
+                      key={kit.id}
+                      type="button"
+                      aria-pressed={selected}
+                      disabled={!selected && loadout?.length === 2}
+                      className={cn(
+                        "rounded-2xl border border-line p-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-50",
+                        selected && "border-grape bg-lavender/30"
+                      )}
+                      onClick={() => {
+                        const next = selected
+                          ? (loadout ?? []).filter((id) => id !== kit.id)
+                          : [...(loadout ?? []), kit.id];
+                        setChosen(next);
+                        try {
+                          if (contract)
+                            saveArenaStrategy(
+                              contract,
+                              seat.player,
+                              tournament.id,
+                              seat.seat,
+                              {
+                                text,
+                                ...(next.length === 2
+                                  ? { loadout: next as AnimeLoadout }
+                                  : {})
+                              }
+                            );
+                          setDraftError(null);
+                        } catch {
+                          setDraftError(
+                            "Your browser could not save these choices for refresh recovery."
+                          );
+                        }
+                      }}
+                    >
+                      <span className="block font-semibold">
+                        {selected ? "✓ " : ""}
+                        {kit.name}
+                      </span>
+                      <span className="mt-1 block text-sm text-muted">
+                        {kit.description}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-sm" role="status">
+                {loadout?.length ?? 0} of 2 selected. Deselect a technique to
+                choose another.
+              </p>
+            </fieldset>
+          )}
           <label
             htmlFor={`strategy-${seat.seat}`}
             className="my-3 block text-sm text-muted"
@@ -310,7 +395,13 @@ function StrategyEditor({
                     seat.player,
                     tournament.id,
                     seat.seat,
-                    { text: value, signed: saved?.signed }
+                    {
+                      text: value,
+                      signed: saved?.signed,
+                      ...(loadout?.length === 2
+                        ? { loadout: loadout as AnimeLoadout }
+                        : {})
+                    }
                   );
                 setDraftError(null);
               } catch {
@@ -342,8 +433,19 @@ function StrategyEditor({
               )}
               aria-busy={Boolean(progress)}
               aria-label={progress ?? undefined}
-              disabled={busy || !text.trim()}
-              onClick={() => void submit(tournament.id, seat.seat, text)}
+              disabled={
+                busy ||
+                !text.trim() ||
+                (!!fighter?.animeKits && loadout?.length !== 2)
+              }
+              onClick={() =>
+                void submit(
+                  tournament.id,
+                  seat.seat,
+                  text,
+                  loadout as AnimeLoadout | undefined
+                )
+              }
             >
               {progress ? (
                 <>
@@ -375,48 +477,61 @@ function StrategyEditor({
 }
 
 export function LiveArenaPage() {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const { address } = useAccount();
+  const publicClient = usePublicClient({ chainId: 8453 });
   const [approvalEntries, setApprovalEntries] =
     useState<ArenaApprovalEntries>(1);
   useEffect(() => setApprovalEntries(1), [address]);
   const queryClient = useQueryClient();
   const [revealedId, setRevealedId] = useState<string | null>(null);
-  const configured = !!environment.arenaApiUrl;
+  const configured = !!deployment.apiUrl;
   const config = useQuery({
-    queryKey: ["arena-live", "config"],
+    queryKey: ["arena-live", deployment.scope, "config"],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaConfig>("/config", undefined, signal),
     enabled: configured,
     staleTime: 60_000
   });
-  const list = useInfiniteQuery({
-    queryKey: ["arena-live", "list"],
-    initialPageParam: undefined as string | undefined,
-    queryFn: ({ pageParam, signal }) =>
-      arenaRequest<ArenaHistoryPage>(
-        `/tournaments${pageParam ? `?cursor=${encodeURIComponent(pageParam)}` : ""}`,
+  const selectedId = id;
+  const detail = useQuery({
+    queryKey: ["arena-live", deployment.scope, "tournament", selectedId],
+    queryFn: ({ signal }) =>
+      arenaRequest<ArenaPublicTournament>(
+        `/tournaments/${selectedId!}`,
         undefined,
         signal
       ),
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
-    enabled: configured,
-    refetchInterval: 15000
-  });
-  const tournaments = list.data?.pages.flatMap((p) => p.items) ?? [];
-  const selectedId = id;
-  const detail = useQuery({
-    queryKey: ["arena-live", "tournament", selectedId],
-    queryFn: ({ signal }) => fetchArenaTournament(selectedId!, signal),
     enabled: configured && !!selectedId,
     refetchInterval: 10000
   });
   const tournament = detail.data;
+  const drawQuote = useQuery({
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "draw-quote",
+      config.data?.contract,
+      tournament?.id,
+      tournament?.seats.length
+    ],
+    queryFn: () =>
+      readArenaJoinPayment(publicClient!, config.data!, tournament!.id),
+    enabled:
+      !!publicClient &&
+      config.data?.contractVersion === 2 &&
+      tournament?.phase === "open",
+    refetchInterval: 15000,
+    retry: false
+  });
   const showResults = revealedId === tournament?.id;
   const context = useQuery({
     queryKey: [
       "arena-live",
+      deployment.scope,
       "context",
       tournament?.id,
       tournament?.islandId,
@@ -434,24 +549,48 @@ export function LiveArenaPage() {
     staleTime: 60000,
     refetchInterval: 15000
   });
-  const summary = useQuery({
-    queryKey: ["arena-live", "summary", address],
-    queryFn: ({ signal }) =>
-      arenaRequest<ArenaWalletSummary>(
-        `/wallets/${address}/summary`,
-        undefined,
-        signal
-      ),
-    enabled: configured && !!address,
-    refetchInterval: 30000
-  });
   const wallet = useArenaWallet(config.data, () =>
-    queryClient.invalidateQueries({ queryKey: ["arena-live"] })
+    queryClient.invalidateQueries({
+      queryKey: ["arena-live", deployment.scope]
+    })
   );
   const inventory = useInfiniteQuery({
-    queryKey: ["arena-inventory", address],
-    queryFn: ({ pageParam, signal }) =>
-      fetchOwnerTokens(address!, { limit: 24, cursor: pageParam }, signal),
+    queryKey: ["arena-inventory", deployment.scope, address],
+    queryFn: async ({ pageParam, signal }) => {
+      const page =
+        deployment.kind === "anime"
+          ? await collectorClient.page(
+              address!,
+              { ...defaultCollectorFilters, chains: ["base"] },
+              "visible",
+              pageParam,
+              signal
+            )
+          : await fetchOwnerTokens(
+              address!,
+              { limit: 24, cursor: pageParam },
+              signal
+            );
+      if (deployment.kind !== "anime") return page;
+      const base = page.items.filter((t) => t.chainId === 8453);
+      const eligible = await Promise.all(
+        base.map(async (t) => ({
+          token: t,
+          approved:
+            (
+              await arenaRequest<{ fighter: { status: string } }>(
+                `/fighters/${t.tokenId}`,
+                undefined,
+                signal
+              )
+            ).fighter.status === "Approved"
+        }))
+      );
+      return {
+        ...page,
+        items: eligible.filter((t) => t.approved).map((t) => t.token)
+      };
+    },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (last) => last.nextCursor ?? undefined,
     enabled: configured && !!address && tournament?.phase === "open"
@@ -471,46 +610,29 @@ export function LiveArenaPage() {
       document.getElementById("join")?.scrollIntoView({ block: "start" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [location.hash, tournament?.id, tournament?.phase, context.isPending]);
-  const error = config.error ?? detail.error ?? list.error;
-  const claimable =
-    summary.data?.wallet.toLowerCase() === address?.toLowerCase()
-      ? (summary.data?.available ?? null)
-      : null;
+  }, [
+    location.hash,
+    location.key,
+    tournament?.id,
+    tournament?.phase,
+    context.isPending
+  ]);
+  const error = config.error ?? detail.error;
   return (
-    <main className="mx-auto max-w-6xl px-5 pb-20 pt-12 text-ink">
-      <header className="flex flex-wrap items-start justify-between gap-6">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-grape">
-            Yunipals Arena
-          </p>
-          <h1 className="mt-3 font-display text-4xl md:text-5xl">
-            Four fighters. One champion.
-          </h1>
-          <p className="mt-4 max-w-2xl text-muted">
-            Study your opponents and island. Submit your own strategy. Watch two
-            semifinals and a final decide the champion.
-          </p>
-        </div>
-      </header>
-      <ArenaNavigation />
-      <ArenaJoinBanner tournaments={tournaments} />
-      <section
-        aria-label="Entry and payouts"
-        className="my-8 grid grid-cols-2 gap-4 rounded-card bg-panel-base p-6 md:grid-cols-4"
-      >
-        {[
-          ["Entry", "2 USDC"],
-          ["Champion", "6 USDC"],
-          ["Island owner", "0.40 USDC"],
-          ["Operations", "1.60 USDC"]
-        ].map(([label, value]) => (
-          <div key={label}>
-            <p className="text-sm text-muted">{label}</p>
-            <p className="mt-1 text-xl font-bold">{value}</p>
-          </div>
-        ))}
-      </section>
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 text-ink sm:pt-10">
+      <ArenaPageHeader
+        title={`Battle #${id}`}
+        description={
+          tournament
+            ? phases[tournament.phase]
+            : "Your fighters, island and battle film, all in one place."
+        }
+        section={
+          tournament?.phase === "open" && !ownedSeats.length
+            ? "join"
+            : "battles"
+        }
+      />
       {!configured && (
         <p role="status" className="rounded-card border border-line p-6">
           Mainnet tournaments are being prepared. Paid entry is not open yet.
@@ -532,54 +654,9 @@ export function LiveArenaPage() {
           {error.message}
         </p>
       )}
-      {configured &&
-      !error &&
-      (list.isPending || (!!selectedId && detail.isPending)) ? (
-        <ArenaCardsLoading
-          label={selectedId ? "Loading tournament" : "Loading tournaments"}
-        />
-      ) : null}
-      {configured &&
-      !error &&
-      !id &&
-      list.isSuccess &&
-      tournaments.length === 0 ? (
-        <p role="status" className="rounded-card bg-lavender/20 p-6">
-          The next lobby is being prepared.
-        </p>
-      ) : null}
-      {!id ? (
-        <section
-          className="my-8 grid gap-4 sm:grid-cols-3"
-          aria-label="How Arena works"
-        >
-          {[
-            [
-              "01",
-              "Bring your Yunipal",
-              "Pick one of your NFTs and enter an open tournament for 2 USDC. Your NFT stays yours."
-            ],
-            [
-              "02",
-              "Outsmart your opponents",
-              "Once four fighters join, study the drawn island and submit your own private strategy."
-            ],
-            [
-              "03",
-              "Watch. Win. Claim.",
-              "Two semifinals and a final decide one champion. Watch the battles and claim the 6 USDC prize."
-            ]
-          ].map(([step, title, description]) => (
-            <article key={step} className="rounded-card border border-line p-5">
-              <span className="text-xs font-bold text-grape">{step}</span>
-              <h2 className="mt-2 text-lg font-bold">{title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                {description}
-              </p>
-            </article>
-          ))}
-        </section>
-      ) : null}
+      {configured && !error && detail.isPending && (
+        <ArenaCardsLoading label="Loading battle…" />
+      )}
       {wallet.error &&
         !(
           tournament?.phase === "strategies" &&
@@ -597,48 +674,40 @@ export function LiveArenaPage() {
           <ArenaLoading label={`${wallet.busy}…`} />
         </div>
       )}
-      {wallet.operation ? (
+      {wallet.batchPending ? (
+        <div className="my-4 rounded-card border border-line p-5" role="status">
+          <p>Your wallet is handling this combined approval and entry.</p>
+          <button
+            className={cn(action, "mt-3")}
+            disabled={!!wallet.busy}
+            onClick={() => void wallet.checkStatus()}
+          >
+            Check entry status
+          </button>
+        </div>
+      ) : wallet.operation ? (
         <ArenaTransactionFeedback
           operation={wallet.operation}
           busy={!!wallet.busy}
           onCheck={() => void wallet.checkStatus()}
         />
       ) : null}
-      {address &&
-        configured &&
-        (claimable !== "0" || wallet.operation?.action.kind === "claim") && (
-          <section className="my-6 flex flex-wrap items-center gap-4">
-            {summary.isPending ? (
-              <ArenaLoading label="Loading available USDC…" />
-            ) : claimable === null ? (
-              <span role="alert" className="text-sm text-muted">
-                Your reward balance could not be loaded.{" "}
-                <button
-                  className="font-semibold underline"
-                  onClick={() => void summary.refetch()}
-                >
-                  Try again
-                </button>
-              </span>
-            ) : (
-              <span>Claimable: {formatUnits(BigInt(claimable), 6)} USDC</span>
-            )}
-            <button
-              className={action}
-              disabled={
-                !!wallet.busy ||
-                wallet.pendingTransaction ||
-                claimable === null ||
-                claimable === "0"
-              }
-              onClick={() => void wallet.claim()}
-            >
-              Claim USDC
-            </button>
-          </section>
-        )}
       {id && tournament && (
         <>
+          {["settled", "expired"].includes(tournament.phase) && (
+            <p className="my-5 rounded-2xl border border-line p-4 text-sm text-muted">
+              {tournament.phase === "expired"
+                ? "Entry refunds are managed in "
+                : "Winnings and hosting rewards are managed in "}
+              <Link
+                to={`${deployment.basePath}/rewards`}
+                className="font-semibold text-grape underline"
+              >
+                Rewards & claims
+              </Link>
+              .
+            </p>
+          )}
           {tournament.projection?.ready === false ? (
             <p
               role="status"
@@ -652,10 +721,10 @@ export function LiveArenaPage() {
           <section className="my-8">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-bold">
-                  Tournament #{tournament.id}
-                </h2>
-                <p className="mt-1 text-muted">{phases[tournament.phase]}</p>
+                <h2 className="text-2xl font-bold">Battle roster</h2>
+                <p className="mt-1 text-muted">
+                  {tournament.seats.length} of 4 fighters
+                </p>
               </div>
               <ArenaDeadline tournament={tournament} />
             </div>
@@ -748,6 +817,14 @@ export function LiveArenaPage() {
                   <h3 className="text-xl font-bold">
                     {context.data.island.name}
                   </h3>
+                  {context.data.island.animeBackground?.mode ===
+                    "shared-preview" && (
+                    <p className="mt-3 text-sm text-muted">
+                      The film uses shared arena artwork while island-specific
+                      scenes are prepared. Your selected island’s terrain rules
+                      and hosting rewards still apply.
+                    </p>
+                  )}
                   <dl className="mt-4 grid grid-cols-2 gap-4">
                     {Object.entries(context.data.island.traits).map(
                       ([key, value]) => (
@@ -791,8 +868,8 @@ export function LiveArenaPage() {
               <h2 className="text-2xl font-bold">Choose your fighter</h2>
               <p className="mt-3 text-muted">
                 Connect your wallet using the button in the header to see your
-                Yunipals. Pick a fighter and enter for 2 USDC; your NFT stays in
-                your wallet.
+                Yunipals. Pick a fighter and enter for {deployment.entry} USDC;
+                your NFT stays in your wallet.
               </p>
             </section>
           ) : null}
@@ -803,6 +880,20 @@ export function LiveArenaPage() {
                 Your NFT stays in your wallet. Each different NFT can occupy one
                 active seat.
               </p>
+              {config.data?.contractVersion === 2 && (
+                <div
+                  className="my-4 rounded-card border border-line bg-lavender/10 p-4"
+                  role="status"
+                >
+                  {drawQuote.isPending
+                    ? "Checking the island draw fee…"
+                    : drawQuote.error
+                      ? "The draw fee could not be checked yet. It will be checked again before your wallet confirms payment."
+                      : drawQuote.data?.firstEntry
+                        ? `The first entry also pays up to ${formatEther(drawQuote.data.value)} ETH for the island draw, plus network gas. Unused ETH is returned automatically. The used draw fee is not refundable if the battle later expires.`
+                        : "The island draw is already paid. This entry pays USDC and network gas only."}
+                </div>
+              )}
               <div className="my-5 rounded-card border border-line bg-panel-base p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <label
@@ -822,15 +913,23 @@ export function LiveArenaPage() {
                       )
                     }
                   >
-                    <SelectItem value="1">2 USDC · 1 entry</SelectItem>
-                    <SelectItem value="4">8 USDC · 4 entries</SelectItem>
-                    <SelectItem value="10">20 USDC · 10 entries</SelectItem>
+                    <SelectItem value="1">
+                      {deployment.entry} USDC · 1 entry
+                    </SelectItem>
+                    <SelectItem value="4">
+                      {Number(deployment.entry) * 4} USDC · 4 entries
+                    </SelectItem>
+                    <SelectItem value="10">
+                      {Number(deployment.entry) * 10} USDC · 10 entries
+                    </SelectItem>
                   </Select>
                 </div>
                 <p id="arena-approval-help" className="mt-3 text-sm text-muted">
                   A higher limit saves repeat approvals. Each entry still
-                  charges only 2 USDC. This limit applies when a new approval is
-                  needed; an existing allowance is reused.
+                  charges only {deployment.entry} USDC. This limit applies when
+                  a new approval is needed; an existing allowance is reused.{" "}
+                  Compatible wallets approve and enter together. Other wallets
+                  ask for approval, then immediately ask you to confirm entry.
                 </p>
               </div>
               {inventory.isPending && (
@@ -892,10 +991,11 @@ export function LiveArenaPage() {
                         <button
                           className={cn(
                             action,
-                            "inline-flex min-h-12 w-full items-center justify-center gap-2 px-3 text-sm",
+                            "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
                             progress && "bg-grape disabled:opacity-100"
                           )}
                           aria-busy={!!progress}
+                          aria-label={progress?.label}
                           disabled={
                             !!wallet.busy ||
                             wallet.pendingTransaction ||
@@ -919,14 +1019,19 @@ export function LiveArenaPage() {
                                 aria-hidden="true"
                                 className="shrink-0 motion-safe:animate-spin"
                               />
-                              <span role="status" aria-live="polite">
-                                {progress.label}
+                              <span
+                                className="truncate"
+                                role="status"
+                                aria-live="polite"
+                              >
+                                {entryButtonLabels[progress.label] ??
+                                  progress.label}
                               </span>
                             </>
                           ) : entered ? (
                             "Entered"
                           ) : (
-                            "Enter · 2 USDC"
+                            `Enter · ${deployment.entry} USDC`
                           )}
                         </button>
                       </article>
@@ -1039,39 +1144,6 @@ export function LiveArenaPage() {
           />
         </>
       )}
-      {list.data &&
-        (tournaments.some((t) => (id ? t.id !== id : t.phase !== "open")) ||
-          list.hasNextPage) && (
-          <section className="mt-12">
-            <h2 className="mb-4 text-2xl font-bold">
-              {id ? "More battles" : "Latest battles"}
-            </h2>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {tournaments
-                .filter((t) => (id ? t.id !== id : t.phase !== "open"))
-                .map((t) => (
-                  <ArenaTournamentCard
-                    key={t.id}
-                    tournament={t}
-                    wallet={address}
-                  />
-                ))}
-            </div>
-            {list.hasNextPage ? (
-              <button
-                className={cn(action, "mt-5")}
-                disabled={list.isFetchingNextPage}
-                onClick={() => void list.fetchNextPage()}
-              >
-                {list.isFetchingNextPage ? (
-                  <ArenaLoading label="Loading more tournaments…" />
-                ) : (
-                  "Load more tournaments"
-                )}
-              </button>
-            ) : null}
-          </section>
-        )}
     </main>
   );
 }

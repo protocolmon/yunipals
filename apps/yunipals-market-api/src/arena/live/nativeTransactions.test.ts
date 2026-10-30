@@ -44,14 +44,18 @@ import {
   type MediaPublicationManifest
 } from "./mediaPublication";
 
-async function fixture(existsInitially = true) {
+async function fixture(existsInitially = true, poolMax = 5) {
   const url =
     process.env.ARENA_TEST_DATABASE_URL ??
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const parsed = new URL(url);
   assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(parsed.hostname));
   assert.ok(["/arena", "/yunipals_arena_test"].includes(parsed.pathname));
-  const pool = new pg.Pool({ connectionString: url, max: 5 });
+  const pool = new pg.Pool({
+    connectionString: url,
+    max: poolMax,
+    connectionTimeoutMillis: 1000
+  });
   await migrateArena(pool);
   const contract = `0x${randomBytes(20).toString("hex")}` as Address,
     deployment = `8453:${contract}`;
@@ -977,6 +981,20 @@ test("native receipt acceptance rejects a source rollback after the RPC checks",
       ).rows[0].state,
       "submitted"
     );
+  } finally {
+    await f.cleanup();
+  }
+});
+
+test("native lobby capacity, signing and receipt reconciliation fit three connections", async () => {
+  const f = await fixture(false, 3);
+  try {
+    const control = f.control();
+    const intent = await control.prepare("open-lobby", "1");
+    assert.equal(intent.state, "prepared");
+    assert.equal((await control.advance("open-lobby", "1")).state, "submitted");
+    await f.mine(intent);
+    assert.equal((await control.advance("open-lobby", "1")).state, "confirmed");
   } finally {
     await f.cleanup();
   }

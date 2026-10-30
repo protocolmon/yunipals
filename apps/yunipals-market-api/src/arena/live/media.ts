@@ -17,6 +17,10 @@ import {
   publishedMediaTypes
 } from "./mediaPublication";
 import { mediaFolder, mediaIncarnation } from "./mediaPaths";
+import {
+  validatedAnimeDirectorPublication,
+  type DirectorTask
+} from "./animeDirectorApi";
 export { mediaFolder } from "./mediaPaths";
 
 /** Publication changes retained bytes and provider balances. Invalidate admission
@@ -120,7 +124,12 @@ export class ArenaMedia {
     private readonly api: ArenaMediaApi,
     private readonly repository: string,
     private readonly storage: string,
-    private readonly offline = offlineMediaTool(repository)
+    private readonly offline = offlineMediaTool(repository),
+    private readonly anime?: (
+      job: string,
+      input: LiveFrozenInput,
+      candidate: unknown
+    ) => Promise<void>
   ) {}
 
   async step(deployment: string, id: string, expectedIncarnation?: string) {
@@ -248,153 +257,166 @@ export class ArenaMedia {
         outcome: row.candidate,
         validation: row.validation
       });
-      const refs = new Map<string, MediaReference>();
-      for (const f of input.roster) {
-        if (!/^[0-9a-f]{64}$/.test(f.imageSha256))
-          throw new Error("Missing verified fighter artwork.");
-        const source = join(
-          this.repository,
-          "docs/arena/identity-registry-v1/references",
-          f.imageSha256 + ".img"
-        );
-        const reviewed =
-          input.roster.find((r) => r.id === f.id)?.identityVersion ===
-          "reviewed-artwork-v1";
-        const bytes = reviewed
-          ? await readFile(source)
-          : (
-              await this.pool.query<{ artwork: Buffer }>(
-                `SELECT artwork FROM yunipals_arena.identity_job WHERE deployment=$1 AND state='ready' AND profile->>'imageSha256'=$2 LIMIT 1`,
-                [deployment, f.imageSha256]
-              )
-            ).rows[0]?.artwork;
-        if (!bytes) throw new Error("Verified fighter artwork is missing.");
-        if (hashBytes(bytes) !== f.imageSha256)
-          throw new Error("Fighter artwork changed.");
-        const file = `references/${f.imageSha256}.img`;
-        await immutableBytes(join(job, file), bytes);
-        refs.set(f.id, { file, sha256: f.imageSha256 });
-      }
-      const islandPath = join(
-        this.repository,
-        "docs/islands/arena-artwork-production-v2/https-releases/4d50ebe8ec0d1ae8c0b9b9f94ad3daef21a7235b06d07df2412fb33c139fc1f9/public/images",
-        input.island.tokenId + ".png"
-      );
-      if (!/^[1-9][0-9]{0,4}$/.test(input.island.tokenId))
-        throw new Error("Invalid island reference.");
-      const island = await readFile(islandPath),
-        islandRef = {
-          file: "references/island.png",
-          sha256: hashBytes(island)
-        };
-      const metadata = JSON.parse(
-        await readFile(
-          islandPath
-            .replace("/images/", "/metadata/")
-            .replace(/\.png$/, ".json"),
-          "utf8"
-        )
-      );
-      if (metadata.properties?.image_sha256 !== islandRef.sha256)
-        throw new Error("Island artwork differs from its published checksum.");
-      await immutableBytes(join(job, islandRef.file), island);
-      await immutableJson(join(job, "reference-lock.json"), {
-        fighters: [...refs],
-        island: islandRef
-      });
-      await this.offline("compile", job);
-      const matches = (
-        row.candidate as {
-          matches: Array<{ id: string; fighterIds: string[] }>;
-        }
-      ).matches;
-      for (const match of matches) {
-        if (!["SF1", "SF2", "FINAL"].includes(match.id))
-          throw new Error("Invalid match ID.");
-        const scene = join(job, "scenes", match.id);
-        const request = {
-          kind: "image" as const,
-          prompt: (
-            await readFile(join(scene, "frame-prompt.txt"), "utf8")
-          ).trim(),
-          references: [
-            ...match.fighterIds.map((fid) => refs.get(fid)!),
-            islandRef
-          ]
-        };
-        if (request.references.some((r) => !r))
-          throw new Error("Missing match reference.");
-        await this.api.reserve(
+      if (this.anime) {
+        await this.progress(
           deployment,
           id,
-          `${match.id}/image`,
-          request,
+          "assembling",
+          "anime-render",
           incarnation
         );
-        const image = await this.api.step(
-          deployment,
-          id,
-          `${match.id}/image`,
-          job,
-          incarnation
-        );
-        if (image.state !== "completed")
-          return this.progress(
-            deployment,
-            id,
-            image.state === "failed" ? "needs-attention" : "images",
-            `${match.id}/image`,
-            incarnation
+        await this.anime(job, input, row.candidate);
+      } else {
+        const refs = new Map<string, MediaReference>();
+        for (const f of input.roster) {
+          if (!/^[0-9a-f]{64}$/.test(f.imageSha256))
+            throw new Error("Missing verified fighter artwork.");
+          const source = join(
+            this.repository,
+            "docs/arena/identity-registry-v1/references",
+            f.imageSha256 + ".img"
           );
-        if (!image.response?.local)
-          throw new Error("Completed image is missing its receipt.");
-        await this.verifyAsset(job, image.response.local);
-        for (const part of ["opening", "continuation"] as const) {
-          if (part === "continuation")
-            await this.offline("extract", job, match.id);
-          const file =
-            part === "opening"
-              ? image.response.local.file
-              : `scenes/${match.id}/continuation-frame.png`;
-          const frame = await readFile(await within(job, file));
-          const videoRequest = {
-            kind: "video" as const,
-            prompt: (
-              await readFile(join(scene, `${part}-prompt.txt`), "utf8")
-            ).trim(),
-            references: [{ file, sha256: hashBytes(frame) }],
-            duration: (part === "opening" ? 3 : 5) as 3 | 5
+          const reviewed =
+            input.roster.find((r) => r.id === f.id)?.identityVersion ===
+            "reviewed-artwork-v1";
+          const bytes = reviewed
+            ? await readFile(source)
+            : (
+                await this.pool.query<{ artwork: Buffer }>(
+                  `SELECT artwork FROM yunipals_arena.identity_job WHERE deployment=$1 AND state='ready' AND profile->>'imageSha256'=$2 LIMIT 1`,
+                  [deployment, f.imageSha256]
+                )
+              ).rows[0]?.artwork;
+          if (!bytes) throw new Error("Verified fighter artwork is missing.");
+          if (hashBytes(bytes) !== f.imageSha256)
+            throw new Error("Fighter artwork changed.");
+          const file = `references/${f.imageSha256}.img`;
+          await immutableBytes(join(job, file), bytes);
+          refs.set(f.id, { file, sha256: f.imageSha256 });
+        }
+        const islandPath = join(
+          this.repository,
+          "docs/islands/arena-artwork-production-v2/https-releases/4d50ebe8ec0d1ae8c0b9b9f94ad3daef21a7235b06d07df2412fb33c139fc1f9/public/images",
+          input.island.tokenId + ".png"
+        );
+        if (!/^[1-9][0-9]{0,4}$/.test(input.island.tokenId))
+          throw new Error("Invalid island reference.");
+        const island = await readFile(islandPath),
+          islandRef = {
+            file: "references/island.png",
+            sha256: hashBytes(island)
           };
-          const asset = `${match.id}/${part}`;
+        const metadata = JSON.parse(
+          await readFile(
+            islandPath
+              .replace("/images/", "/metadata/")
+              .replace(/\.png$/, ".json"),
+            "utf8"
+          )
+        );
+        if (metadata.properties?.image_sha256 !== islandRef.sha256)
+          throw new Error(
+            "Island artwork differs from its published checksum."
+          );
+        await immutableBytes(join(job, islandRef.file), island);
+        await immutableJson(join(job, "reference-lock.json"), {
+          fighters: [...refs],
+          island: islandRef
+        });
+        await this.offline("compile", job);
+        const matches = (
+          row.candidate as {
+            matches: Array<{ id: string; fighterIds: string[] }>;
+          }
+        ).matches;
+        for (const match of matches) {
+          if (!["SF1", "SF2", "FINAL"].includes(match.id))
+            throw new Error("Invalid match ID.");
+          const scene = join(job, "scenes", match.id);
+          const request = {
+            kind: "image" as const,
+            prompt: (
+              await readFile(join(scene, "frame-prompt.txt"), "utf8")
+            ).trim(),
+            references: [
+              ...match.fighterIds.map((fid) => refs.get(fid)!),
+              islandRef
+            ]
+          };
+          if (request.references.some((r) => !r))
+            throw new Error("Missing match reference.");
           await this.api.reserve(
             deployment,
             id,
-            asset,
-            videoRequest,
+            `${match.id}/image`,
+            request,
             incarnation
           );
-          const clip = await this.api.step(
+          const image = await this.api.step(
             deployment,
             id,
-            asset,
+            `${match.id}/image`,
             job,
             incarnation
           );
-          if (clip.state !== "completed")
+          if (image.state !== "completed")
             return this.progress(
               deployment,
               id,
-              clip.state === "failed" ? "needs-attention" : "videos",
-              asset,
+              image.state === "failed" ? "needs-attention" : "images",
+              `${match.id}/image`,
               incarnation
             );
-          if (!clip.response?.local)
-            throw new Error("Completed video is missing its receipt.");
-          await this.verifyAsset(job, clip.response.local);
+          if (!image.response?.local)
+            throw new Error("Completed image is missing its receipt.");
+          await this.verifyAsset(job, image.response.local);
+          for (const part of ["opening", "continuation"] as const) {
+            if (part === "continuation")
+              await this.offline("extract", job, match.id);
+            const file =
+              part === "opening"
+                ? image.response.local.file
+                : `scenes/${match.id}/continuation-frame.png`;
+            const frame = await readFile(await within(job, file));
+            const videoRequest = {
+              kind: "video" as const,
+              prompt: (
+                await readFile(join(scene, `${part}-prompt.txt`), "utf8")
+              ).trim(),
+              references: [{ file, sha256: hashBytes(frame) }],
+              duration: (part === "opening" ? 3 : 5) as 3 | 5
+            };
+            const asset = `${match.id}/${part}`;
+            await this.api.reserve(
+              deployment,
+              id,
+              asset,
+              videoRequest,
+              incarnation
+            );
+            const clip = await this.api.step(
+              deployment,
+              id,
+              asset,
+              job,
+              incarnation
+            );
+            if (clip.state !== "completed")
+              return this.progress(
+                deployment,
+                id,
+                clip.state === "failed" ? "needs-attention" : "videos",
+                asset,
+                incarnation
+              );
+            if (!clip.response?.local)
+              throw new Error("Completed video is missing its receipt.");
+            await this.verifyAsset(job, clip.response.local);
+          }
         }
+        await this.progress(deployment, id, "assembling", null, incarnation);
+        await this.offline("assemble", job);
       }
-      await this.progress(deployment, id, "assembling", null, incarnation);
-      await this.offline("assemble", job);
       const receipt = JSON.parse(
         await readFile(join(job, "public/film.json"), "utf8")
       ) as { sha256: string; outcomeSha256: string };
@@ -404,29 +426,71 @@ export class ArenaMedia {
         file: "public/film.mp4",
         sha256: receipt.sha256
       });
-      const tasks = await this.pool.query<{
-        asset: string;
-        request_id: string;
-        reserved_microusd: string;
-        actual_microusd: string | null;
-        state: string;
-      }>(
-        "SELECT asset,request_id,reserved_microusd,actual_microusd,state FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND kind='media' AND incarnation=$3 ORDER BY asset",
+      const tasks = await this.pool.query<DirectorTask>(
+        "SELECT asset,request_id,reserved_microusd,actual_microusd,state,provider_id,request,response,error_code FROM yunipals_arena.provider_task WHERE deployment=$1 AND tournament_id=$2 AND kind='media' AND incarnation=$3 ORDER BY asset",
         [deployment, id, incarnation]
       );
       if (
         origin &&
+        !this.anime &&
         (tasks.rows.length !== 9 ||
           tasks.rows.some((task) => task.state !== "completed"))
       )
         throw new Error(
           "Native publication requires all nine completed original media tasks."
         );
-      await writeFile(
-        join(job, "public/receipts.json"),
-        JSON.stringify(tasks.rows, null, 2) + "\n",
-        { mode: 0o600 }
-      );
+      if (origin && this.anime) {
+        const prompts = JSON.parse(
+          await readFile(join(job, "public/prompts.json"), "utf8")
+        );
+        const receipts = JSON.parse(
+          await readFile(join(job, "public/receipts.json"), "utf8")
+        );
+        const charges = validatedAnimeDirectorPublication(
+          tasks.rows,
+          prompts.choreography,
+          receipts.director
+        );
+        await writeFile(
+          join(job, "public/receipts.json"),
+          JSON.stringify(
+            {
+              ...receipts,
+              mediaCostMicrousd: charges.totalMicrousd,
+              activeDirectorCostMicrousd: charges.activeMicrousd,
+              recoveryOverheadMicrousd:
+                charges.totalMicrousd - charges.activeMicrousd
+            },
+            null,
+            2
+          ) + "\n",
+          { mode: 0o600 }
+        );
+      }
+      if (!this.anime)
+        await writeFile(
+          join(job, "public/receipts.json"),
+          JSON.stringify(
+            tasks.rows.map(
+              ({
+                asset,
+                request_id,
+                reserved_microusd,
+                actual_microusd,
+                state
+              }) => ({
+                asset,
+                request_id,
+                reserved_microusd,
+                actual_microusd,
+                state
+              })
+            ),
+            null,
+            2
+          ) + "\n",
+          { mode: 0o600 }
+        );
       const publication = origin
         ? await buildMediaPublication(join(job, "public"), {
             deployment,

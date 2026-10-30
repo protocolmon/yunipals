@@ -29,7 +29,34 @@ const unitCredentials: Readonly<Record<string, readonly string[]>> = {
   "yunipals-arena-native-execution@referee.service": [
     encryptionKey,
     "execution.key"
-  ]
+  ],
+  "yunipals-anime-arena-api.service": [encryptionKey, "admission.key"],
+  "yunipals-anime-arena-capacity.service": [encryptionKey],
+  "yunipals-anime-arena-client.service": [encryptionKey],
+  "yunipals-anime-arena-control.service": [encryptionKey],
+  "yunipals-anime-arena-lobby.service": [encryptionKey, "operator.key"],
+  "yunipals-anime-arena-media.service": [encryptionKey],
+  "yunipals-anime-arena-monitor.service": [encryptionKey],
+  "yunipals-anime-arena-referee.service": [encryptionKey],
+  "yunipals-anime-arena-settlement.service": [encryptionKey, "referee.key"],
+  "yunipals-arena-v2-video-api.service": [encryptionKey, "admission.key"],
+  "yunipals-arena-v2-video-capacity.service": [encryptionKey],
+  "yunipals-arena-v2-video-client.service": [encryptionKey],
+  "yunipals-arena-v2-video-control.service": [encryptionKey],
+  "yunipals-arena-v2-video-lobby.service": [encryptionKey, "operator.key"],
+  "yunipals-arena-v2-video-media.service": [encryptionKey],
+  "yunipals-arena-v2-video-monitor.service": [encryptionKey],
+  "yunipals-arena-v2-video-referee.service": [encryptionKey],
+  "yunipals-arena-v2-video-settlement.service": [encryptionKey, "referee.key"],
+  "yunipals-arena-v2-anime-api.service": [encryptionKey, "admission.key"],
+  "yunipals-arena-v2-anime-capacity.service": [encryptionKey],
+  "yunipals-arena-v2-anime-client.service": [encryptionKey],
+  "yunipals-arena-v2-anime-control.service": [encryptionKey],
+  "yunipals-arena-v2-anime-lobby.service": [encryptionKey, "operator.key"],
+  "yunipals-arena-v2-anime-media.service": [encryptionKey],
+  "yunipals-arena-v2-anime-monitor.service": [encryptionKey],
+  "yunipals-arena-v2-anime-referee.service": [encryptionKey],
+  "yunipals-arena-v2-anime-settlement.service": [encryptionKey, "referee.key"]
 };
 
 function refuse(): never {

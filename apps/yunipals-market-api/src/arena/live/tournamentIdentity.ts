@@ -1,3 +1,7 @@
+import {
+  parseArenaDeployment,
+  arenaKind
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import type { PoolClient } from "pg";
 import { manifestDigest } from "@protopals/yunipals-indexer-server/identity";
 import type {
@@ -18,6 +22,7 @@ type Observed = NativeArenaObservation & { tournament: NativeArenaTournament };
 type Queryable = Pick<PoolClient, "query">;
 function assertObservation(observed: Observed) {
   const t = observed.tournament;
+  const deployment = parseArenaDeployment(t.deployment);
   const expected = manifestDigest({
     deployment: t.deployment,
     tournamentId: t.id,
@@ -26,9 +31,11 @@ function assertObservation(observed: Observed) {
   });
   if (
     expected !== t.incarnation ||
-    !/^8453:0x[0-9a-f]{40}$/.test(t.deployment) ||
     !/^(0|[1-9][0-9]*)$/.test(t.id) ||
     BigInt(t.id) >= 2n ** 256n ||
+    (deployment.version === 2 &&
+      (BigInt(t.id) <= 0n ||
+        arenaKind((BigInt(t.id) - 1n) % 2n) !== deployment.mediaKind)) ||
     t.id !== t.state.id ||
     !/^0x[0-9a-f]{64}$/.test(observed.releaseId) ||
     !/^0x[0-9a-f]{64}$/.test(t.opened.blockHash) ||
@@ -36,7 +43,7 @@ function assertObservation(observed: Observed) {
     !Number.isSafeInteger(t.opened.logIndex) ||
     t.opened.logIndex < 0 ||
     t.opened.id !==
-      `${t.deployment}:${t.opened.transactionHash}:${t.opened.logIndex}`
+      `${deployment.canonicalPrefix}:${t.opened.transactionHash}:${t.opened.logIndex}`
   )
     throw new Error("Invalid observed Arena identity.");
 }

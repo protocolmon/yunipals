@@ -150,6 +150,7 @@ try {
       treasury: accounts[0]!.address,
       islands: islands.address,
       vrfWrapper: wrapper.address,
+      eligibility: "0x0000000000000000000000000000000000000000",
       paymentToken: currency.address,
       entryFee: 2_000_000n,
       winnerBps: 7500,
@@ -584,6 +585,8 @@ try {
     }),
     0n
   );
+  // Publication invalidates capacity; the live capacity worker refreshes before the next lobby.
+  await capacity.save(funded);
   // A paid, unfilled lobby expires without a VRF callback or any AI request.
   const secondLobby = await lobby.prepare("open-lobby", "2");
   await lobby.advance("open-lobby", "2");

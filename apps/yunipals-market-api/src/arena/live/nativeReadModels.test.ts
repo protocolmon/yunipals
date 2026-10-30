@@ -5,6 +5,12 @@ import pg from "pg";
 import type { Address, Hex } from "viem";
 import type { ArenaTournament } from "@protopals/yunipals-market-core/arena";
 import { arenaAbi } from "@protopals/yunipals-market-core/arenaAbi";
+import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
+import {
+  arenaDeploymentId,
+  arenaMode,
+  type ArenaContractVersion
+} from "@protopals/yunipals-market-core/arenaProtocol";
 import {
   readArenaBrowse,
   type ArenaBrowseRequest
@@ -45,10 +51,15 @@ after(async () => {
   await pool.end();
 });
 
-async function fixture(t: TestContext) {
+async function fixture(
+  t: TestContext,
+  mediaKind: "video" | "anime" = "video",
+  contractVersion: ArenaContractVersion = 1
+) {
   const contract = `0x${randomBytes(20).toString("hex")}` as Address;
-  const deployment = `8453:${contract}`,
-    sourceId = `arena:${deployment}`;
+  const deployment = arenaDeploymentId(contract, mediaKind, contractVersion),
+    canonicalPrefix = `8453:${contract}`,
+    sourceId = `arena:${canonicalPrefix}`;
   const schema = `arena_reads_${randomBytes(5).toString("hex")}`;
   await pool.query(`CREATE SCHEMA ${schema};
     CREATE TABLE ${schema}._ponder_meta(key text PRIMARY KEY,value jsonb);
@@ -62,7 +73,9 @@ async function fixture(t: TestContext) {
   const definition = {
     contract,
     startBlock: "1",
-    abiHash: manifestDigest(arenaAbi)
+    abiHash: manifestDigest(contractVersion === 2 ? arenaV2Abi : arenaAbi),
+    contractVersion,
+    mediaKind
   };
   const manifest = {
     version: 1 as const,
@@ -74,7 +87,7 @@ async function fixture(t: TestContext) {
         id: sourceId,
         feature: "arena" as const,
         chainId: 8453,
-        contractName: "Arena",
+        contractName: contractVersion === 2 ? "YunipalsArenaV2" : "Arena",
         address: contract,
         startBlock: "1",
         endBlock: null,
@@ -169,7 +182,10 @@ async function fixture(t: TestContext) {
     "https://example.invalid",
     new StrategyCipher(randomBytes(32)),
     { message: async () => false, strategy: async () => false },
-    source
+    source,
+    undefined,
+    mediaKind,
+    contractVersion
   );
   const models = new NativeArenaReadModels(service);
   const event = async (
@@ -180,7 +196,7 @@ async function fixture(t: TestContext) {
   ) => {
     const tx = `0x${randomBytes(32).toString("hex")}` as Hex,
       blockHash = h(String(block));
-    const eventId = `${deployment}:${tx}:0`;
+    const eventId = `${canonicalPrefix}:${tx}:0`;
     await pool.query(
       `INSERT INTO ${schema}.canonical_event VALUES($1,$2,8453,$3,$4,$5,$6,$7,$8,$9,0,0)`,
       [
@@ -189,7 +205,9 @@ async function fixture(t: TestContext) {
         contract,
         definition.abiHash,
         name,
-        JSON.stringify(args),
+        JSON.stringify(
+          contractVersion === 2 ? { ...args, mode: arenaMode(mediaKind) } : args
+        ),
         block,
         blockHash,
         tx
@@ -597,4 +615,79 @@ test("native PostgreSQL canonical evidence corruption and selected operational s
     f.models.rewards(wallet),
     /source selection is not ready/
   );
+});
+
+test("anime wallet totals and rewards use the 1 USDC deployment economics", async (t) => {
+  const f = await fixture(t, "anime");
+  await f.add("1", { phase: "settled", winners: [0, 1, 0], videoHash: h("f") });
+  await f.add("2", { phase: "expired" });
+  await f.add("3", { phase: "settled", winners: [0, 1, 0] });
+  const totals = await f.models.wallet(wallet);
+  assert.deepEqual(
+    [
+      totals.entryPayments,
+      totals.winnings,
+      totals.hostingRewards,
+      totals.operationsRewards,
+      totals.refunds,
+      totals.pending
+    ],
+    ["6000000", "3200000", "200000", "600000", "2000000", "4000000"]
+  );
+  const rewards = await f.models.rewards(wallet);
+  assert.deepEqual(
+    rewards.items.map((r) => [r.kind, r.amount]),
+    [
+      ["winner", "3200000"],
+      ["host", "200000"],
+      ["operations", "600000"],
+      ["refund", "2000000"]
+    ]
+  );
+});
+
+test("shared-mode history keeps its canonical source and mode-scoped cursors", async (t) => {
+  for (const kind of ["video", "anime"] as const) {
+    const f = await fixture(t, kind, 2);
+    const first = kind === "video" ? "1" : "2";
+    const second = kind === "video" ? "3" : "4";
+    await f.add(first);
+    await f.add(second);
+    const page = await f.models.tournaments({}, { limit: 1 });
+    assert.deepEqual(
+      page.items.map((item) => item.id),
+      [second]
+    );
+    assert.ok(page.nextCursor);
+    const cursor = JSON.parse(
+      Buffer.from(page.nextCursor, "base64url").toString()
+    );
+    assert.equal(cursor.deployment, f.deployment);
+    assert.equal(cursor.source, `arena:8453:${f.service.contract}`);
+    const next = await f.models.tournaments({}, { cursor: page.nextCursor });
+    assert.deepEqual(
+      next.items.map((item) => item.id),
+      [first]
+    );
+    for (const altered of [
+      { ...cursor, source: `${cursor.source}:${kind}` },
+      {
+        ...cursor,
+        deployment: f.deployment.replace(
+          /:(video|anime)$/,
+          kind === "video" ? ":anime" : ":video"
+        )
+      }
+    ]) {
+      await assert.rejects(
+        f.models.tournaments(
+          {},
+          {
+            cursor: Buffer.from(JSON.stringify(altered)).toString("base64url")
+          }
+        ),
+        /cursor/i
+      );
+    }
+  }
 });

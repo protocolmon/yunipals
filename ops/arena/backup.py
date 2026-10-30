@@ -19,7 +19,7 @@ import subprocess
 import tarfile
 import tempfile
 
-from backup_policy import atomic_json, dump_tables, expired_snapshots, valid_prune_files
+from backup_policy import atomic_json, dump_tables, expired_snapshots, valid_prune_files, anime_backup_files, shared_arena_backup_files
 
 
 def interrupted(signum, frame):
@@ -179,7 +179,7 @@ try:
         assert all(not p.is_symlink() for p in paths), 'Unexpected symlink in private media'
         files = [p for p in paths if p.is_file()]
         directories = [arena_prefix, arena_prefix + '/objects', arena_prefix + '/snapshots', remote_dir]
-        directories += [arena_prefix + '/objects/' + kind for kind in ['media', 'keys', 'release', 'runtime', 'tools']]
+        directories += [arena_prefix + '/objects/' + kind for kind in ['media', 'keys', 'release', 'runtime', 'tools', 'anime']]
         remote.command('mkdir -p ' + ' '.join(map(shlex.quote, directories)))
         remote.command('chmod 700 ' + ' '.join(map(shlex.quote, directories)))
         # Stable tar metadata permits reuse until a recovery key changes.
@@ -215,6 +215,8 @@ try:
                     'databaseSha256': backup.digest(database_dump),
                     'databaseTables': dump_tables(backup.run(['pg_restore', '--list', str(database_dump)])),
                     'mediaFiles': {str(p.relative_to(media)): store_object(p, 'media', temporary) for p in files},
+                    'animeFiles': {name: store_object(path, 'anime', temporary) for name, path in anime_backup_files().items()},
+                    'sharedArenaFiles': {name: store_object(path, 'anime', temporary) for name, path in shared_arena_backup_files().items()},
                     'keys': keys, 'recovery': recovery,
                     'islandsBackup': json.loads(metadata_backup.read_text()),
                     'restoreRule': 'Keep all workers stopped. Restore quarantined. Compare canonical chain and provider tasks before resuming. Never generate replacement UUIDs for missing or uncertain jobs.'}
@@ -253,7 +255,7 @@ try:
                         assert content == (private / member.name).read_bytes()
                         if member.name == 'strategy-encryption.key':
                             (temporary / member.name).write_bytes(content)
-                for value in [*manifest['mediaFiles'].values(), *recovery.values()]:
+                for value in [*manifest['mediaFiles'].values(), *manifest.get('animeFiles', {}).values(), *manifest.get('sharedArenaFiles', {}).values(), *recovery.values()]:
                     recovered = temporary / 'verified-object'
                     recover_object(value, recovered, temporary)
                     recovered.unlink()

@@ -240,16 +240,17 @@ export class ArenaReadModels {
         const treasury = s.treasury?.toLowerCase() === address;
         if (s.phase === "settled" && winner) championships++;
         if (s.videoHash) {
-          if (winner) winnings += 6000000n;
-          if (host) hosting += 400000n;
-          if (treasury) operations += 1600000n;
+          if (winner) winnings += this.service.economics.winner;
+          if (host) hosting += this.service.economics.island;
+          if (treasury) operations += this.service.economics.operations;
         } else if (s.phase === "settled") {
           pending +=
-            (winner ? 6000000n : 0n) +
-            (host ? 400000n : 0n) +
-            (treasury ? 1600000n : 0n);
+            (winner ? this.service.economics.winner : 0n) +
+            (host ? this.service.economics.island : 0n) +
+            (treasury ? this.service.economics.operations : 0n);
         }
-        if (s.phase === "expired") refunds += BigInt(own) * 2000000n;
+        if (s.phase === "expired")
+          refunds += BigInt(own) * this.service.economics.entry;
       }
       const available =
         (
@@ -278,7 +279,9 @@ export class ArenaReadModels {
         enteredSeats,
         hostedTournaments,
         championships,
-        entryPayments: String(BigInt(enteredSeats) * 2000000n),
+        entryPayments: String(
+          BigInt(enteredSeats) * this.service.economics.entry
+        ),
         winnings: String(winnings),
         hostingRewards: String(hosting),
         operationsRewards: String(operations),
@@ -304,8 +307,8 @@ export class ArenaReadModels {
             pending: string;
           }>(
             `SELECT count(*)::text AS hosted,
-        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*400000)::text AS released,
-        (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*400000)::text AS pending
+        (count(*) FILTER(WHERE state->>'videoHash' IS NOT NULL)*${this.service.economics.island})::text AS released,
+        (count(*) FILTER(WHERE state->>'phase'='settled' AND state->>'videoHash' IS NULL)*${this.service.economics.island})::text AS pending
        FROM yunipals_arena.tournament WHERE deployment=$1 AND state->>'islandId'=$2`,
             [this.service.deployment, tokenId]
           )
@@ -404,17 +407,26 @@ export class ArenaReadModels {
         const count = s.seats.filter(
           (seat) => lower(seat.player) === lower(wallet)
         ).length;
-        if (count) add("refund", String(BigInt(count) * 2000000n), wallet);
+        if (count)
+          add(
+            "refund",
+            String(BigInt(count) * this.service.economics.entry),
+            wallet
+          );
       } else {
         if (
           s.winners &&
           s.seats[s.winners[2]]?.player.toLowerCase() === lower(wallet)
         )
-          add("winner", "6000000", wallet);
+          add("winner", this.service.economics.winner.toString(), wallet);
         if (s.islandBeneficiary?.toLowerCase() === lower(wallet))
-          add("host", "400000", wallet);
+          add("host", this.service.economics.island.toString(), wallet);
         if (s.treasury?.toLowerCase() === lower(wallet))
-          add("operations", "1600000", wallet);
+          add(
+            "operations",
+            this.service.economics.operations.toString(),
+            wallet
+          );
       }
     }
     return {

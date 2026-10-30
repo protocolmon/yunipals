@@ -787,10 +787,16 @@ try {
     assert.equal(await notice.count(), 0);
     await page
       .locator("footer")
-      .getByRole("button", { name: "Buying and selling information" })
+      .getByRole("link", { name: "Terms of Use", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Review trading terms", exact: true })
       .click();
     await notice.getByRole("checkbox").check();
     await notice.getByRole("button", { name: "Accept and continue" }).click();
+    await page.goto(`${values.url}/collection/bnb/${tokenId}`, {
+      waitUntil: "domcontentloaded"
+    });
     await page.getByRole("button", { name: /Connect/ }).first().click();
     await page.getByText("Yunipals test wallet", { exact: true }).last().click();
     await page.goto(`${values.url}/collection/bnb/${tokenId}`, {
@@ -861,12 +867,18 @@ try {
   assert.equal(await tradingNotice.count(), 0);
   await page
     .locator("footer")
-    .getByRole("button", { name: "Buying and selling information" })
+    .getByRole("link", { name: "Terms of Use", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Review trading terms", exact: true })
     .click();
   await tradingNotice.getByRole("checkbox").check();
   await tradingNotice
     .getByRole("button", { name: "Accept and continue", exact: true })
     .click();
+  await page.goto(`${values.url}/collection/bnb/${tokenId}`, {
+    waitUntil: "domcontentloaded"
+  });
   await page
     .getByRole("button", { name: "Connect to buy", exact: true })
     .click();

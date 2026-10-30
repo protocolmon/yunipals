@@ -5,6 +5,11 @@ await mkdir("dist", { recursive: true });
 const { dependencies } = JSON.parse(await readFile("package.json", "utf8"));
 await build({
   entryPoints: {
+    "arena-anime-rehearsal": "src/arena/live/animeRehearsal.ts",
+    "arena-anime-monitor": "src/arena/live/animeMonitorWorker.ts",
+    "arena-anime-deployment": "src/arena/live/animeDeployment.ts",
+    "arena-anime-media": "src/arena/live/animeMediaWorker.ts",
+    "arena-anime-studio": "src/arena/live/animeStudio.ts",
     "arena-monitor": "src/arena/live/healthWorker.ts",
     "arena-recovery": "src/arena/live/recoveryCli.ts",
     "arena-inspect": "src/arena/live/inspect.ts",

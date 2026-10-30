@@ -1,3 +1,4 @@
+import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { LoaderCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -61,6 +62,7 @@ export function ArenaTransactionFeedback({
   busy: boolean;
   onCheck: () => void;
 }) {
+  const deployment = useArenaDeployment();
   const pending = transactionPending(operation);
   const delayed = operation.state === "delayed";
   return (
@@ -90,16 +92,17 @@ export function ArenaTransactionFeedback({
         <p className="mt-3 text-sm text-muted">
           Approval sets your spending limit; it does not enter a fighter or
           charge the entry fee. Entry needs a separate wallet transaction.
-          {operation.state === "indexed" && !busy
-            ? " Choose your fighter below and click Enter · 2 USDC to continue. Your approval will be reused."
+          {(operation.state === "indexed" || operation.approvalConfirmed) &&
+          !busy
+            ? ` Choose your fighter below and click Enter · ${deployment.entry} USDC to continue. Your approval will be reused.`
             : null}
         </p>
       ) : null}
       {pending && !delayed ? (
         <p className="mt-3 text-sm text-muted">
-          We check a few Base blocks and wait for the indexed result. This page
-          updates automatically. You can leave and return; your transaction is
-          saved.
+          We verify your transaction on Base and wait for its indexed result.
+          This page updates automatically. You can leave and return; your
+          transaction is saved.
         </p>
       ) : null}
       <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">

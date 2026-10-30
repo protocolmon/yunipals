@@ -23,7 +23,6 @@ import type {
 import { ARENA_ISLANDS } from "./catalog";
 import { PreparingIdentity } from "./identityAnalysis";
 
-const cookie = "__Host-yunipals-arena";
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new ArenaRequestError(400, "Expected a JSON object.");
@@ -48,6 +47,10 @@ export function createArenaApp(
   service: ArenaIntake,
   options: {
     entriesEnabled: boolean;
+    mediaKind?: "video" | "anime";
+    eligibilityRegistry?: Address;
+    fighter?: (id: string) => Promise<unknown>;
+    fighterQueue?: (query: Record<string, string>) => Promise<unknown>;
     launchMode?: "pilot" | "public";
     rules?: { rulesHash: Hex; manifest: unknown };
     admit?: (
@@ -70,6 +73,12 @@ export function createArenaApp(
   }
 ) {
   const app = new Hono();
+  const cookie =
+    service.contractVersion === 2
+      ? `__Host-yunipals-arena-${service.contract.slice(2).toLowerCase()}-${service.mediaKind}`
+      : options.mediaKind === "anime"
+        ? "__Host-yunipals-anime-arena"
+        : "__Host-yunipals-arena";
   const transactions = new ArenaClientTransactions(service);
   const reads = new ArenaReadModels(service);
   app.use(
@@ -106,6 +115,12 @@ export function createArenaApp(
     )
       return c.json({ error: "Use application/json." }, 415);
     await next();
+    // Streamed artifact responses replace the prepared response headers.
+    c.header("Vary", "Origin");
+    if (origin === service.origin) {
+      c.header("Access-Control-Allow-Origin", origin);
+      c.header("Access-Control-Allow-Credentials", "true");
+    }
   });
   app.onError((error, c) => {
     if (error instanceof PreparingIdentity)
@@ -131,8 +146,14 @@ export function createArenaApp(
     c.json({
       chainId: 8453,
       contract: service.contract,
+      contractVersion: service.contractVersion,
+      randomnessFunding:
+        service.contractVersion === 2 ? "first-entrant" : "reserve",
       paymentToken: ARENA_USDC,
-      entryFee: ARENA_ENTRY_FEE.toString(),
+      entryFee:
+        options.mediaKind === "anime" ? "1000000" : ARENA_ENTRY_FEE.toString(),
+      mediaKind: options.mediaKind ?? "video",
+      eligibilityRegistry: options.eligibilityRegistry ?? null,
       strategyMaxLength: ARENA_STRATEGY_LIMIT,
       entriesEnabled: options.entriesEnabled,
       entryMode: options.entriesEnabled
@@ -145,6 +166,14 @@ export function createArenaApp(
         service.indexerMode === "unified" ? "latest" : "base-depth-3-v1"
     })
   );
+  if (options.fighter)
+    app.get("/fighters/:tokenId", async (c) =>
+      c.json(await options.fighter!(c.req.param("tokenId")))
+    );
+  if (options.fighterQueue)
+    app.get("/fighters", async (c) =>
+      c.json(await options.fighterQueue!(c.req.query()))
+    );
   app.get("/rules", (c) => {
     if (!options.rules)
       throw new ArenaRequestError(
@@ -407,12 +436,22 @@ export function createArenaApp(
       typeof body.text !== "string"
     )
       throw new ArenaRequestError(400, "Invalid strategy submission.");
+    if (
+      body.loadout !== undefined &&
+      (!Array.isArray(body.loadout) ||
+        body.loadout.length !== 2 ||
+        body.loadout.some((v) => typeof v !== "string"))
+    )
+      throw new ArenaRequestError(400, "Choose two attack kits.");
     return c.json(
       await service.submit(id(c.req.param("id")), wallet, {
         seat: body.seat,
         text: body.text,
         salt: hex(body.salt),
         signature: hex(body.signature),
+        ...(body.loadout !== undefined
+          ? { loadout: body.loadout as [string, string] }
+          : {}),
         ...(typeof body.incarnation === "string"
           ? { incarnation: body.incarnation }
           : {})

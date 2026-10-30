@@ -54,6 +54,12 @@ export function readUnifiedRpcPolicyEnvironment(
     )
   )
     throw new Error("Unified RPC chain is not reviewed.");
+  if (
+    profile.endpoints &&
+    profile.endpoints[chainId] !==
+      `http://${input.MARKET_RPC_PROXY_HOST ?? "127.0.0.1"}:${input.MARKET_RPC_PROXY_PORT}/unified`
+  )
+    throw new Error("RPC listener differs from its reviewed endpoint.");
   return { profile, chainId };
 }
 

@@ -44,3 +44,22 @@ export const arenaCredit = onchainTable(
   }),
   (table) => ({ wallet: index().on(table.deployment, table.wallet) })
 );
+
+export const animeFighter = onchainTable(
+  "anime_fighter",
+  (t) => ({
+    id: t.text().primaryKey(),
+    status: t.integer().notNull(),
+    recipeVersion: t.integer("recipe_version").notNull(),
+    manifestHash: t.hex("manifest_hash").notNull(),
+    applicant: t.hex().notNull(),
+    applications: t.integer().notNull(),
+    reasonCode: t.integer("reason_code"),
+    note: t.text(),
+    appliedBlock: t.bigint("applied_block").notNull(),
+    lastEventId: t.text("last_event_id").notNull(),
+    blockNumber: t.bigint("block_number").notNull(),
+    blockHash: t.hex("block_hash").notNull()
+  }),
+  (table) => ({ queue: index().on(table.status, table.appliedBlock, table.id) })
+);

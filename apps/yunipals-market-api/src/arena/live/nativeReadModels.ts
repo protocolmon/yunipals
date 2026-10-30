@@ -1,6 +1,7 @@
 import type { PoolClient } from "pg";
 import type { Address, Hex } from "viem";
 import type { ArenaTournament } from "@protopals/yunipals-market-core/arena";
+import { parseArenaDeployment } from "@protopals/yunipals-market-core/arenaProtocol";
 import type {
   ArenaHistoryPage,
   ArenaHistoryRole,
@@ -57,6 +58,10 @@ const updating = () =>
 export class NativeArenaReadModels {
   constructor(private readonly service: ArenaIntake) {}
 
+  private sourceId() {
+    return `arena:${parseArenaDeployment(this.service.deployment).canonicalPrefix}`;
+  }
+
   private selection() {
     return canonicalJson(this.service.sourceSelection ?? null);
   }
@@ -97,7 +102,7 @@ export class NativeArenaReadModels {
         value.filter !== sha256(canonicalJson(filter)) ||
         value.selection !== this.selection() ||
         !hash.test(value.release) ||
-        value.source !== `arena:${this.service.deployment}` ||
+        value.source !== this.sourceId() ||
         !validId(value.id) ||
         !value.anchor ||
         !decimal.test(value.anchor.number) ||
@@ -157,7 +162,7 @@ export class NativeArenaReadModels {
     };
     const first = await source.browse(anchored);
     if (
-      first.sourceId !== `arena:${this.service.deployment}` ||
+      first.sourceId !== this.sourceId() ||
       !hash.test(first.releaseId) ||
       !decimal.test(first.indexedThroughBlock) ||
       (cursor &&
@@ -387,7 +392,7 @@ export class NativeArenaReadModels {
           hostedTournaments: this.count(t.hosted_tournaments),
           championships: this.count(t.championships),
           entryPayments: String(
-            BigInt(this.amount(t.entered_seats)) * 2000000n
+            BigInt(this.amount(t.entered_seats)) * this.service.economics.entry
           ),
           winnings: this.amount(t.winnings),
           hostingRewards: this.amount(t.hosting),
@@ -509,7 +514,11 @@ export class NativeArenaReadModels {
                 (s) => s.player === filter.wallet
               ).length;
               if (count)
-                add("refund", String(BigInt(count) * 2000000n), wallet);
+                add(
+                  "refund",
+                  String(BigInt(count) * this.service.economics.entry),
+                  wallet
+                );
             } else if (row.event_name === "PayoutsReleased") {
               if (state.phase !== "settled" || !state.videoHash)
                 throw updating();
@@ -517,11 +526,15 @@ export class NativeArenaReadModels {
                 state.winners &&
                 state.seats[state.winners[2]]?.player === filter.wallet
               )
-                add("winner", "6000000", wallet);
+                add("winner", this.service.economics.winner.toString(), wallet);
               if (state.islandBeneficiary === filter.wallet)
-                add("host", "400000", wallet);
+                add("host", this.service.economics.island.toString(), wallet);
               if (state.treasury === filter.wallet)
-                add("operations", "1600000", wallet);
+                add(
+                  "operations",
+                  this.service.economics.operations.toString(),
+                  wallet
+                );
             } else throw updating();
           }
         }

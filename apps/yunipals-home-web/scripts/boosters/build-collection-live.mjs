@@ -14,6 +14,8 @@ import { parseArgs } from "node:util";
 import { build } from "vite";
 import { validateBoosterSetup } from "../../src/lib/boosterSetup.ts";
 import { ypalFrontendDeployment } from "./ypal-frontend-deployment.mjs";
+import { animeDeploymentPackageSha256 } from "../../src/lib/animeDeployment.ts";
+import { sharedArenaDeploymentSha256 } from "../../src/lib/sharedArenaDeployment.ts";
 
 const { values } = parseArgs({
   options: {
@@ -85,6 +87,19 @@ if (ypalLaunchPackageSha !== undefined) {
   }
 }
 if (values["full-app"]) {
+  if (
+    sha(
+      await readFile(join(app, "public/arena/shared-arena-deployment-v2.json"))
+    ) !== sharedArenaDeploymentSha256
+  )
+    throw Error("The shared Arena package differs from the reviewed checksum.");
+  if (
+    sha(await readFile(join(app, "public/arena/anime-deployment-v1.json"))) !==
+    animeDeploymentPackageSha256
+  )
+    throw Error(
+      "The anime browser deployment package differs from the reviewed checksum."
+    );
   const metadataUpgrade = await readFile(
     join(app, "public/boosters/monsters-token-metadata-upgrade-v1.json")
   );
@@ -203,6 +218,12 @@ const assets = [
   ...(values["full-app"]
     ? [
         "arena/rules-v1.json",
+        "arena/anime-deployment-v1.json",
+        "arena/shared-arena-deployment-v2.json",
+        "images/arena/video-preview.webp",
+        "images/arena/anime-background.webp",
+        "images/arena/anime-turtle.webp",
+        "images/arena/anime-chick.webp",
         "images/bitcoin-unidragon-square.webp",
         "images/brandkit/yunipals-logo.png",
         "images/brandkit/yunipals-brandkit.zip",

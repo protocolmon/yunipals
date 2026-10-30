@@ -1,8 +1,10 @@
+import { Link } from "react-router-dom";
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { arenaArtifactPath, type ArenaMediaStatus } from "@/lib/arenaMedia";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Crown, Swords } from "lucide-react";
-import { environment } from "@/environment";
-import { arenaRequest } from "@/lib/arenaLive";
+import type { AnimeBackground } from "@protopals/yunipals-market-core/anime";
 import { ArenaLoading } from "./ArenaFeedback";
 import {
   ArenaBattleReview,
@@ -20,15 +22,17 @@ export function ArenaFilm({
   showResults: boolean;
   fighters: Array<ArenaReviewFighter | null>;
 }) {
+  const deployment = useArenaDeployment();
+  const arenaRequest = useArenaRequest();
   const video = useRef<HTMLVideoElement>(null);
   const [playback, setPlayback] = useState({ match: 0, winner: false });
   const [buffering, setBuffering] = useState(false);
   const [playbackError, setPlaybackError] = useState(false);
   const [playbackVersion, setPlaybackVersion] = useState(0);
   const media = useQuery({
-    queryKey: ["arena-live", "media", id],
+    queryKey: ["arena-live", deployment.scope, "media", id],
     queryFn: ({ signal }) =>
-      arenaRequest<{ state: string; payoutsReleased: boolean }>(
+      arenaRequest<ArenaMediaStatus>(
         `/tournaments/${id}/media`,
         undefined,
         signal
@@ -38,8 +42,27 @@ export function ArenaFilm({
         ? false
         : 15000
   });
+  const artifactPath = (name: string) =>
+    arenaArtifactPath(id, name, media.data);
+  const clock = useQuery({
+    queryKey: [
+      "arena-live",
+      deployment.scope,
+      "film-clock",
+      id,
+      media.data?.incarnation,
+      media.data?.publication
+    ],
+    queryFn: ({ signal }) =>
+      arenaRequest<{
+        chapters: Array<{ id: string; t: number; winnerAt: number }>;
+        background?: AnimeBackground;
+      }>(artifactPath("film.json")!, undefined, signal),
+    enabled: deployment.kind === "anime" && !!artifactPath("film.json"),
+    staleTime: Infinity
+  });
   const result = useQuery({
-    queryKey: ["arena-live", "result", id],
+    queryKey: ["arena-live", deployment.scope, "result", id],
     queryFn: ({ signal }) =>
       arenaRequest<ArenaReviewResult>(
         `/tournaments/${id}/result`,
@@ -50,7 +73,7 @@ export function ArenaFilm({
     staleTime: Infinity
   });
   const artifact = (name: string) =>
-    `${environment.arenaApiUrl}/tournaments/${id}/artifacts/${name}`;
+    `${deployment.apiUrl}${artifactPath(name)}`;
   const match = result.data?.outcome.matches[playback.match];
   const pair = match
     ? match.fighterIds.map((fid) => fighters.find((f) => f?.id === fid))
@@ -79,7 +102,7 @@ export function ArenaFilm({
       <h2 id="arena-film-heading" className="text-2xl font-bold">
         Watch the battles
       </h2>
-      {media.data?.state === "ready" ? (
+      {media.data?.state === "ready" && artifactPath("film.mp4") ? (
         <>
           <div
             className="overflow-hidden rounded-card border border-line bg-white shadow-card"
@@ -127,7 +150,7 @@ export function ArenaFilm({
             <div className="arena-film-picture relative overflow-hidden bg-ink">
               <video
                 ref={video}
-                key={`${id}/${playbackVersion}`}
+                key={`${deployment.scope}/${id}/${media.data.incarnation}/${media.data.publication}/${playbackVersion}`}
                 controls
                 playsInline
                 preload="none"
@@ -136,12 +159,19 @@ export function ArenaFilm({
                 src={artifact("film.mp4")}
                 poster={artifact("SF1.png")}
                 onTimeUpdate={(event) => {
-                  const index = Math.min(
-                    2,
-                    Math.floor(event.currentTarget.currentTime / 8)
-                  );
+                  const time = event.currentTarget.currentTime;
+                  const chapters = clock.data?.chapters;
+                  const index =
+                    deployment.kind === "anime"
+                      ? Math.max(
+                          0,
+                          chapters?.findLastIndex((c) => time >= c.t) ?? 0
+                        )
+                      : Math.min(2, Math.floor(time / 8));
                   const settled =
-                    event.currentTarget.currentTime - index * 8 >= 6;
+                    deployment.kind === "anime"
+                      ? !!chapters?.[index] && time >= chapters[index]!.winnerAt
+                      : time - index * 8 >= 6;
                   setPlayback((current) =>
                     current.match === index && current.winner === settled
                       ? current
@@ -190,12 +220,28 @@ export function ArenaFilm({
             </p>
           ) : null}
           <p className="text-sm text-muted">
-            Three fights · 24 seconds. The film includes the results.
+            {deployment.kind === "anime"
+              ? "Three anime battles. The film includes the results."
+              : "Three fights · 24 seconds. The film includes the results."}
           </p>
           <p role="status" className="text-sm text-muted">
-            {media.data.payoutsReleased
-              ? "Payouts are unlocked. Recipients can claim their USDC."
-              : "Video published. Payouts are unlocking on Base…"}
+            {clock.data?.background?.mode === "shared-preview"
+              ? "Shared arena artwork · selected island rules and hosting rewards apply. "
+              : ""}
+            {media.data.payoutsReleased ? (
+              <>
+                Payouts are unlocked. Visit{" "}
+                <Link
+                  to={`${deployment.basePath}/rewards`}
+                  className="font-semibold underline"
+                >
+                  Rewards & claims
+                </Link>{" "}
+                to collect your USDC.
+              </>
+            ) : (
+              "Video published. Payouts are unlocking on Base…"
+            )}
           </p>
           <a
             className="inline-block rounded font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
@@ -219,7 +265,7 @@ export function ArenaFilm({
       )}
       <ArenaBattleReview
         id={id}
-        mediaReady={media.data?.state === "ready"}
+        media={media.data}
         onWatchMoment={watchMoment}
       />
       {showResults && (

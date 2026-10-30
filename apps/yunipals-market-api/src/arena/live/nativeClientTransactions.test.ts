@@ -407,6 +407,119 @@ test("native claim registration works after the claim drained its balance and ne
   }
 });
 
+test("pending native claims advance after two seconds without bypassing indexed evidence", async () => {
+  const f = await fixture();
+  const delay = async () =>
+    Number(
+      (
+        await f.pool.query(
+          `SELECT extract(epoch FROM next_check_at-clock_timestamp()) AS seconds
+          FROM yunipals_arena.client_transaction WHERE deployment=$1 AND hash=$2`,
+          [f.deployment, f.txhash]
+        )
+      ).rows[0].seconds
+    );
+  try {
+    f.mined("claim");
+    await f.tracker.register(f.wallet, f.txhash, { kind: "claim" });
+    f.proof.inclusion = "not_indexed";
+    await f.tracker.reconcileBatch(f.client);
+    const pending = await f.tracker.read(f.wallet, f.txhash);
+    assert.equal(pending.state, "indexing");
+    assert.equal(pending.result, null);
+    assert.ok((await delay()) > 0 && (await delay()) <= 2);
+    const reads = f.counts().receiptReads;
+    await f.tracker.reconcileBatch(f.client);
+    assert.equal(f.counts().receiptReads, reads, "No retry before it is due");
+
+    f.proof.inclusion = "canonical";
+    await new Promise((resolve) => setTimeout(resolve, 2100));
+    await f.tracker.reconcileBatch(f.client);
+    const confirmed = await f.tracker.read(f.wallet, f.txhash);
+    assert.equal(confirmed.state, "indexed");
+    assert.equal(confirmed.result?.amount, "123");
+    assert.equal(confirmed.finalized, false);
+    assert.ok((await delay()) > 28 && (await delay()) <= 30);
+    const acceptedReads = f.counts().receiptReads;
+    await f.tick();
+    assert.equal(f.counts().receiptReads, acceptedReads);
+  } finally {
+    await f.close();
+  }
+});
+
+test("missing native receipts retry quickly, but RPC failures retain durable backoff", async () => {
+  const f = await fixture();
+  try {
+    f.mined("entry");
+    await f.tracker.register(f.wallet, f.txhash, f.entry);
+    f.missing = true;
+    await f.tick();
+    assert.equal(
+      (await f.tracker.read(f.wallet, f.txhash)).state,
+      "confirming"
+    );
+    const seconds = async () =>
+      Number(
+        (
+          await f.pool.query(
+            `SELECT extract(epoch FROM next_check_at-clock_timestamp()) AS seconds
+            FROM yunipals_arena.client_transaction WHERE deployment=$1 AND hash=$2`,
+            [f.deployment, f.txhash]
+          )
+        ).rows[0].seconds
+      );
+    assert.ok((await seconds()) > 0 && (await seconds()) <= 2);
+    await f.pool.query(
+      "UPDATE yunipals_arena.client_transaction SET next_check_at=now() WHERE deployment=$1",
+      [f.deployment]
+    );
+    const failing = {
+      ...f.client,
+      getTransactionReceipt: async () => {
+        throw new Error("RPC temporarily unavailable");
+      }
+    } as unknown as PublicClient;
+    await assert.rejects(
+      f.tracker.reconcileBatch(failing),
+      /RPC temporarily unavailable/
+    );
+    assert.ok((await seconds()) > 28 && (await seconds()) <= 30);
+    await f.tracker.reconcileBatch(failing);
+    assert.equal((await f.tracker.read(f.wallet, f.txhash)).result, null);
+  } finally {
+    await f.close();
+  }
+});
+
+test("older pending native transactions slow down without changing their saved identity", async () => {
+  const f = await fixture();
+  try {
+    f.mined("entry");
+    await f.pool.query(
+      `INSERT INTO yunipals_arena.client_transaction
+      (deployment,hash,wallet,action,reader_mode,tournament_id,incarnation,created_at)
+      VALUES($1,$2,$3,$4,'unified',1,$5,now()-interval '2 minutes')`,
+      [f.deployment, f.txhash, f.wallet, f.entry, f.incarnation]
+    );
+    f.proof.inclusion = "not_indexed";
+    await f.tracker.reconcileBatch(f.client);
+    const row = (
+      await f.pool.query(
+        `SELECT state,hash,action,extract(epoch FROM next_check_at-clock_timestamp()) AS seconds
+        FROM yunipals_arena.client_transaction WHERE deployment=$1 AND hash=$2`,
+        [f.deployment, f.txhash]
+      )
+    ).rows[0];
+    assert.equal(row.state, "indexing");
+    assert.equal(row.hash, f.txhash);
+    assert.deepEqual(row.action, f.entry);
+    assert.ok(Number(row.seconds) > 8 && Number(row.seconds) <= 10);
+  } finally {
+    await f.close();
+  }
+});
+
 test("native tracker withholds partial coverage, malformed receipts, stale entries and unavailable sources", async () => {
   const f = await fixture();
   try {

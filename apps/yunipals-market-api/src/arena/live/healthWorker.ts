@@ -6,10 +6,19 @@ import { selectedArenaRuntimeSource } from "./selectedSourceRuntime";
 import { ArenaIntake } from "./intake";
 import { StrategyCipher } from "./crypto";
 import { arenaHealth } from "./health";
+import {
+  arenaDeploymentId,
+  arenaVersion
+} from "@protopals/yunipals-market-core/arenaProtocol";
 
 const contract = process.env.ARENA_CONTRACT;
 if (!contract || !isAddress(contract) || !process.env.ARENA_DATABASE_URL)
   throw new Error("Arena monitor deployment configuration is required.");
+const version = arenaVersion(process.env.ARENA_CONTRACT_VERSION);
+const kind = process.env.ARENA_MEDIA_KIND ?? "video";
+if (kind !== "video" && kind !== "anime")
+  throw new Error("Invalid Arena monitor mode.");
+const deployment = arenaDeploymentId(contract, kind, version);
 const pool = new pg.Pool({
   connectionString: process.env.ARENA_DATABASE_URL,
   max: 1,
@@ -28,7 +37,10 @@ const sourcePool =
         options: "-c default_transaction_read_only=on"
       })
     : undefined;
-const directory = "/var/lib/yunipals-arena/health";
+const directory =
+  version === 2
+    ? `/var/lib/yunipals-arena-modes/${kind}/health`
+    : "/var/lib/yunipals-arena/health";
 try {
   await mkdir(directory, { recursive: true, mode: 0o700 });
   let service: ArenaIntake | undefined;
@@ -42,10 +54,12 @@ try {
       sourcePool,
       native,
       deployment: {
-        id: `8453:${contract.toLowerCase()}`,
+        id: deployment,
+        contractVersion: version,
         contract: contract as Address,
         startBlock: BigInt(process.env.ARENA_DEPLOYMENT_BLOCK!)
       },
+      mediaKind: kind,
       base: {
         getChainId: async () => {
           throw new Error("Monitor has no RPC.");
@@ -57,18 +71,20 @@ try {
     });
     service = new ArenaIntake(
       pool,
-      `8453:${contract.toLowerCase()}`,
+      deployment,
       contract as Address,
       "https://www.yunipals.com",
       new StrategyCipher(Buffer.alloc(32)),
       { message: async () => false, strategy: async () => false },
       nativeSource,
-      binding
+      binding,
+      kind,
+      version
     );
   }
   const value = await arenaHealth(
     pool,
-    `8453:${contract.toLowerCase()}`,
+    deployment,
     process.env.ARENA_ENTRIES_ENABLED === "true",
     service
   );

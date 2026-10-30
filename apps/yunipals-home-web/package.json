@@ -28,6 +28,7 @@
     "test:islands:staking-fork": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-island-staking-fork.mjs",
     "test:islands:staking-ui": "node scripts/test-island-staking-ui.mjs",
     "test:analytics": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/analytics/client.test.ts",
+    "test:anime": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/animeDeployment.test.ts",
     "test:analytics:ui": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/test-analytics-ui.mjs",
     "test:select:ui": "node scripts/test-select-ui.mjs",
     "test:select": "node --experimental-strip-types --test src/components/ui/select.test.ts",

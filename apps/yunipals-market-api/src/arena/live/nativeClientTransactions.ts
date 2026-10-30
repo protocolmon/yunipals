@@ -14,6 +14,7 @@ import { transaction } from "@/db/pool";
 import { canonicalJson } from "../draw";
 import { ArenaIntake, ArenaRequestError } from "./intake";
 import { arenaClientReceiptEvidence } from "./clientReceiptEvidence";
+import { scheduleArenaClientCheck } from "./clientTrackingSchedule";
 import { json } from "./projection";
 import type { NativeArenaSource } from "./nativeSource";
 
@@ -107,7 +108,7 @@ export class NativeArenaClientTransactions {
             String(event.args.tokenId) === row.action.tokenId
           : row.action.kind === "claim" &&
             same(event.args.player, row.wallet) &&
-            same(event.args.recipient, row.wallet) &&
+            same(event.args.recipient, row.action.recipient ?? row.wallet) &&
             String(event.args.amount) === result.amount)
     );
   }
@@ -243,23 +244,33 @@ export class NativeArenaClientTransactions {
       }
       let incarnation: string | null = null;
       if (action.kind === "claim") {
-        const credit = await this.service.nativeSource!.credit!(address);
-        if (BigInt(credit.amount) === 0n) {
-          const proof = await this.service.nativeSource!.transaction!(
-            hash.toLowerCase()
+        if (
+          action.asset === "randomness-refund" &&
+          this.service.contractVersion !== 2
+        )
+          throw new ArenaRequestError(
+            400,
+            "This arena has no entrant-funded randomness refunds."
           );
-          if (
-            !proof.events.some(
-              (event) =>
-                event.name === "Claimed" &&
-                same(event.args.player, address) &&
-                same(event.args.recipient, address)
-            )
-          )
-            throw new ArenaRequestError(
-              409,
-              "There is no indexed claim balance for this wallet."
+        if (action.asset !== "randomness-refund") {
+          const credit = await this.service.nativeSource!.credit!(address);
+          if (BigInt(credit.amount) === 0n) {
+            const proof = await this.service.nativeSource!.transaction!(
+              hash.toLowerCase()
             );
+            if (
+              !proof.events.some(
+                (event) =>
+                  event.name === "Claimed" &&
+                  same(event.args.player, address) &&
+                  same(event.args.recipient, address)
+              )
+            )
+              throw new ArenaRequestError(
+                409,
+                "There is no indexed claim balance for this wallet."
+              );
+          }
         }
       } else {
         const origins = (
@@ -358,10 +369,11 @@ export class NativeArenaClientTransactions {
       if ((await client.getChainId()) !== 8453)
         throw new Error("Native client tracking requires Base.");
       for (const row of rows) {
-        await db.query(
-          `UPDATE yunipals_arena.client_transaction SET next_check_at=now()+interval '30 seconds'
-          WHERE deployment=$1 AND hash=$2`,
-          [this.service.deployment, row.hash]
+        await scheduleArenaClientCheck(
+          db,
+          this.service.deployment,
+          row.hash,
+          "backoff"
         );
         try {
           await this.reconcile(row, client);
@@ -369,6 +381,12 @@ export class NativeArenaClientTransactions {
           if (!(error instanceof TransactionReceiptNotFoundError)) throw error;
           await this.lost(row);
         }
+        await scheduleArenaClientCheck(
+          db,
+          this.service.deployment,
+          row.hash,
+          "active"
+        );
       }
     } finally {
       if (locked)
@@ -486,7 +504,10 @@ export class NativeArenaClientTransactions {
             receipt,
             this.service.contract,
             this.paymentToken,
-            true
+            true,
+            this.service.economics.entry,
+            this.service.contractVersion,
+            this.service.mediaKind
           )
         : null;
     const changed = this.changed(row, proof);

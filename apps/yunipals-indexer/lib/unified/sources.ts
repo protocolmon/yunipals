@@ -12,6 +12,7 @@ import {
   type SourceManifest
 } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { arenaAbi } from "../../../../packages/yunipals-market-core/src/arenaAbi.js";
+import { arenaV2Abi } from "../../../../packages/yunipals-market-core/src/arenaV2Abi.js";
 import { seaportDeployment } from "../../../../packages/yunipals-market-core/src/registry.js";
 import { seaportEventAbi } from "../../../../packages/yunipals-market-core/src/seaportEvents.js";
 import { collectionAbi, islandsAbi, baseIslandsAbi } from "../abi.js";
@@ -24,12 +25,33 @@ import {
 } from "../constants.js";
 import { baseMetadataAbi } from "../metadata/base-abi.js";
 
+import { animeRegistryAbi } from "../../../../packages/yunipals-market-core/src/animeRegistryAbi.js";
+
 type Environment = Record<string, string | undefined>;
 
 export type ArenaSourceDeployment = {
   address: Address;
   startBlock: number;
 };
+
+export function sharedArenaSource(env: Environment = process.env) {
+  const address = env.UNIFIED_SHARED_ARENA?.toLowerCase();
+  const start = env.UNIFIED_SHARED_ARENA_START_BLOCK;
+  if (address === undefined && start === undefined) return null;
+  if (
+    !address ||
+    !/^0x[0-9a-f]{40}$/.test(address) ||
+    /^0x0{40}$/.test(address) ||
+    !start ||
+    !/^[1-9][0-9]*$/.test(start) ||
+    !Number.isSafeInteger(Number(start)) ||
+    arenaSourceDeployments(env).some(
+      (deployment) => deployment.address === address
+    )
+  )
+    throw new Error("Invalid or duplicate shared Arena source.");
+  return { address: address as Address, startBlock: Number(start) };
+}
 
 // Read-only configuration. Never import Arena's encryption/signing runtime.
 export function arenaSourceDeployments(
@@ -84,6 +106,41 @@ export function arenaSourceDeployments(
       return { address: address as Address, startBlock: Number(start) };
     })
     .sort((a, b) => a.address.localeCompare(b.address));
+}
+
+export function animeRegistrySource(env: Environment = process.env) {
+  const address = env.UNIFIED_ANIME_REGISTRY?.toLowerCase();
+  const start = env.UNIFIED_ANIME_REGISTRY_START_BLOCK;
+  if (address === undefined && start === undefined) return null;
+  if (
+    !address ||
+    !/^0x[0-9a-f]{40}$/.test(address) ||
+    /^0x0{40}$/.test(address) ||
+    !start ||
+    !/^[1-9][0-9]*$/.test(start) ||
+    !Number.isSafeInteger(Number(start))
+  )
+    throw new Error("Invalid anime registry source.");
+  return { address: address as Address, startBlock: Number(start) };
+}
+
+/** Keep the new arena's log filters independent so Ponder reuses the existing
+ * video history and never scans the anime address before its deployment. */
+export function arenaContractSources(env: Environment = process.env) {
+  const deployments = arenaSourceDeployments(env);
+  const address = env.UNIFIED_ANIME_ARENA?.toLowerCase();
+  if (address === undefined) return { video: deployments, anime: null };
+  const anime = deployments.find(
+    (deployment) => deployment.address === address
+  );
+  if (!anime || !animeRegistrySource(env))
+    throw new Error(
+      "Anime Arena must be a reviewed deployment with its registry."
+    );
+  return {
+    video: deployments.filter((deployment) => deployment !== anime),
+    anime
+  };
 }
 
 function source(
@@ -224,6 +281,34 @@ export function buildSourceManifest(
         arenaAbi,
         null,
         null,
+        arenaPolicies
+      )
+    );
+  const registry = animeRegistrySource(env);
+  const shared = sharedArenaSource(env);
+  if (shared)
+    sources.push(
+      source(
+        `arena:8453:${shared.address}`,
+        "arena",
+        8453,
+        "YunipalsArenaV2",
+        arenaV2Abi,
+        shared.address,
+        shared.startBlock,
+        arenaPolicies
+      )
+    );
+  if (registry)
+    sources.push(
+      source(
+        "anime-registry:8453",
+        "anime-registry",
+        8453,
+        "AnimeFighterRegistry",
+        animeRegistryAbi,
+        registry.address,
+        registry.startBlock,
         arenaPolicies
       )
     );

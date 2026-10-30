@@ -1,0 +1,36 @@
+{
+  "version": "anime-browser-deployment/confirmed-v1",
+  "chainId": 8453,
+  "admin": "0xB3883Cd96d72B08b8226452305A28D65974a3727",
+  "packageSha256": "550fd2e6dfc454a533f9cbb5e78d4fd6e298159d6314ab473e975a8b40d87d85",
+  "rulesHash": "0x5f3e761ba928f464ced77cc645d6e4f8fc112e7cb054dd5e49c5a39ef52c98e1",
+  "deployments": {
+    "registry": {
+      "address": "0xdbcab53a8e32d43997de252fd49c43ab8df290bf",
+      "transactionHash": "0x94aba69f01d12d809d4e85c3f09a4fde0fcb571f4c73a7d46f49af3c58e844e4",
+      "blockNumber": "53251773",
+      "blockHash": "0x85872122c81135461db487c78bbbc27b84e6651dab01b988641775549fe0addd"
+    },
+    "arena": {
+      "address": "0x576790deff75af86fa638d9a1427e1eee7007094",
+      "transactionHash": "0x087837f3609016796b69084f40319963723c95feafd98a68c62154bf38759344",
+      "blockNumber": "53251781",
+      "blockHash": "0x99ee643f72314f975cf0fcec359e37cd421fb011a2f17bf1c3b68c04b5dedfa1"
+    }
+  },
+  "costs": {
+    "registry": {
+      "gasUsed": "1190654",
+      "effectiveGasPrice": "6000000",
+      "l1FeeWei": "113893895931"
+    },
+    "arena": {
+      "gasUsed": "4184303",
+      "effectiveGasPrice": "6000000",
+      "l1FeeWei": "408614780927"
+    }
+  },
+  "verifiedAt": "2026-10-29T16:55:55.733Z",
+  "applicationsOpen": false,
+  "entriesPaused": true
+}

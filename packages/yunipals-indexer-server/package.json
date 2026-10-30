@@ -10,7 +10,8 @@
     "./ownership": "./src/ownership.ts",
     "./arena": "./src/arena.ts",
     "./marketplace": "./src/marketplace.ts",
-    "./action-evidence": "./src/action-evidence.ts"
+    "./action-evidence": "./src/action-evidence.ts",
+    "./anime": "./src/anime.ts"
   },
   "dependencies": {
     "@protopals/yunipals-indexer-client": "workspace:*",

@@ -1,0 +1,16 @@
+{
+  "name": "@protopals/yunipals-anime-engine",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "python3 ../../scripts/anime/fetch-assets.py && node --import tsx src/director.test.ts && node golden.mjs && node golden.mjs --automated",
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15"
+  },
+  "dependencies": {
+    "playwright-core": "1.58.2"
+  }
+}

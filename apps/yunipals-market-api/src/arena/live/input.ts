@@ -13,6 +13,7 @@ import type { FighterSnapshot } from "./identity";
 import { ArenaIdentities } from "./identity";
 import { ARENA_POOL_HASH, type LiveArenaCatalog } from "./catalog";
 import { ArenaIntake, ArenaRequestError } from "./intake";
+import { parseAnimeLoadout } from "@protopals/yunipals-market-core/anime";
 
 export function onchainIslandDraw(
   contract: Address,
@@ -141,6 +142,12 @@ export function compileLiveInput(
         "Fighter or strategy does not match the paid seat order."
       );
   }
+  const loadouts = roster.map((f, i) =>
+    parseAnimeLoadout(
+      { kits: f.animeKits, defaultLoadout: f.animeDefaultLoadout },
+      strategies[i]!.loadout
+    )
+  );
   return {
     version: "arena-mainnet-input-v1" as const,
     mode: "base-mainnet" as const,
@@ -159,7 +166,17 @@ export function compileLiveInput(
       ticket: state.ticket!
     },
     island,
-    roster,
+    roster: roster.map(({ animeKits, animeDefaultLoadout, ...fighter }, i) => ({
+      ...fighter,
+      ...(loadouts[i]
+        ? {
+            techniques: loadouts[i]!.map((id) => {
+              const kit = animeKits!.find((k) => k.id === id)!;
+              return { name: kit.name, description: kit.description };
+            })
+          }
+        : {})
+    })),
     seats: state.seats,
     semifinals: [
       [roster[0]!.id, roster[1]!.id],
@@ -168,7 +185,8 @@ export function compileLiveInput(
     strategies: strategies.map((s) => ({
       fighterId: roster[s.seat]!.id,
       text: s.text,
-      source: s.source ?? "player"
+      source: s.source ?? "player",
+      ...(loadouts[s.seat] ? { loadout: loadouts[s.seat] } : {})
     })),
     tiePriority: tiePriority(state.id, state.randomWord!, roster)
   };

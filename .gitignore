@@ -47,6 +47,12 @@ contracts/arena/broadcast/
 /keystores/
 .arena-private/
 
+# Downloaded anime reference art stays out of source and Git history.
+/apps/yunipals-anime-engine/fixtures/assets/
+/apps/yunipals-anime-engine/fixtures/review/*.jpg
+/docs/arena/anime-recipe-v1/board.png
+/docs/arena/anime-recipe-v2/board.png
+
 # Internal Arena evidence is retained locally, outside the public source set.
 /docs/arena/*
 !/docs/arena/README.md
@@ -55,6 +61,14 @@ contracts/arena/broadcast/
 !/docs/arena/mainnet-rules-manifest-v1.json
 !/docs/arena/rules-v2/
 !/docs/arena/identity-registry-v1/
+!/docs/arena/anime-arena-plan-v1.md
+!/docs/arena/anime-attack-kits-brief-v1.md
+!/docs/arena/anime-implementation-v1.md
+!/docs/arena/anime-deployment.json
+!/docs/arena/anime-backgrounds-v1.json
+!/docs/arena/anime-browser-deployment-confirmed-v1.json
+!/docs/arena/anime-recipe-v1/
+!/docs/arena/anime-recipe-v2/
 
 # Publish only the stable runtime data from the original art/research archives.
 /docs/islands/*

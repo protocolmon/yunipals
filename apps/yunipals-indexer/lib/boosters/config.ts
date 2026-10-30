@@ -45,25 +45,36 @@ export function boosterContracts(
   env: Record<string, string | undefined> = process.env
 ) {
   const deployment = boosterDeployment(env);
+  const contractStart = (name: "REGISTRY" | "ENGINE" | "MONSTERS") => {
+    const configured = env[`BOOSTER_${name}_DEPLOYMENT_BLOCK`];
+    if (configured === undefined) return deployment?.startBlock ?? 0;
+    if (
+      !deployment ||
+      !/^[1-9][0-9]*$/.test(configured) ||
+      !Number.isSafeInteger(Number(configured))
+    )
+      throw new Error(`Invalid BOOSTER_${name}_DEPLOYMENT_BLOCK`);
+    return Number(configured);
+  };
   // An empty address list subscribes to no logs; never use undefined (all addresses).
   return {
     BoosterRegistry: {
       chain: "base" as const,
       abi: packRegistryAbi,
       address: deployment ? deployment.registry : ([] as Address[]),
-      startBlock: deployment?.startBlock ?? 0
+      startBlock: contractStart("REGISTRY")
     },
     BoosterEngine: {
       chain: "base" as const,
       abi: boosterPacksAbi,
       address: deployment ? deployment.engine : ([] as Address[]),
-      startBlock: deployment?.startBlock ?? 0
+      startBlock: contractStart("ENGINE")
     },
     BoosterMonsters: {
       chain: "base" as const,
       abi: yunipalMonstersAbi,
       address: deployment ? deployment.monsters : ([] as Address[]),
-      startBlock: deployment?.startBlock ?? 0
+      startBlock: contractStart("MONSTERS")
     }
   };
 }

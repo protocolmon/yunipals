@@ -24,14 +24,14 @@ async function run() {
   const sourcePool = new pg.Pool({
     ...common,
     connectionString: native.databaseUrl,
-    max: 3,
+    max: config.contractVersion === 2 ? 2 : 3,
     application_name: "arena_native_disclosure_source",
     options: "-c default_transaction_read_only=on"
   });
   const pool = new pg.Pool({
     ...common,
     connectionString: config.databaseUrl,
-    max: 4,
+    max: config.contractVersion === 2 ? 2 : 4,
     application_name: "arena_native_disclosure"
   });
   let stopped = false;
@@ -47,9 +47,11 @@ async function run() {
       sourcePool,
       native,
       deployment: config.deployment,
-      base
+      base,
+      mediaKind: config.mediaKind
     });
-    if (!nativeSource) throw new Error("Native disclosure source is unavailable.");
+    if (!nativeSource)
+      throw new Error("Native disclosure source is unavailable.");
     const service = new ArenaIntake(
       pool,
       config.deployment.id,
@@ -61,7 +63,9 @@ async function run() {
         strategy: (input) => base.verifyTypedData(input)
       },
       nativeSource,
-      binding
+      binding,
+      config.mediaKind,
+      config.contractVersion
     );
     // Neither this command nor startup performs migrations or adopts legacy work.
     await service.ready();

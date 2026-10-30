@@ -1,3 +1,4 @@
+import { AnimeFighterCard } from "@/pages/arena/anime/AnimeFighterCard";
 import {
   useInfiniteQuery,
   useQuery,
@@ -323,6 +324,13 @@ function TokenDetail({
             </div>
 
             <TokenMarketPanel token={token} />
+            {chain === "base" && (
+              <AnimeFighterCard
+                key={tokenId}
+                tokenId={tokenId}
+                owner={token.owner}
+              />
+            )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a

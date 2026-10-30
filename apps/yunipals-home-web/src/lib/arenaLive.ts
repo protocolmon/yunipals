@@ -5,8 +5,12 @@ import { environment } from "@/environment";
 export type ArenaConfig = {
   chainId: 8453;
   contract: Address;
+  contractVersion?: 1 | 2;
+  randomnessFunding?: "reserve" | "first-entrant";
   paymentToken: Address;
   entryFee: string;
+  mediaKind?: "video" | "anime";
+  eligibilityRegistry?: Address | null;
   strategyMaxLength: number;
   entriesEnabled: boolean;
   entryMode?: "closed" | "pilot" | "public";
@@ -37,9 +41,16 @@ export async function arenaRequest<T>(
   body?: unknown,
   signal?: AbortSignal
 ): Promise<T> {
-  if (!environment.arenaApiUrl)
-    throw new Error("Arena is being prepared for launch.");
-  const response = await fetch(`${environment.arenaApiUrl}${path}`, {
+  return arenaRequestAt<T>(environment.arenaApiUrl, path, body, signal);
+}
+export async function arenaRequestAt<T>(
+  apiUrl: string | null,
+  path: string,
+  body?: unknown,
+  signal?: AbortSignal
+): Promise<T> {
+  if (!apiUrl) throw new Error("Arena is being prepared for launch.");
+  const response = await fetch(`${apiUrl}${path}`, {
     method: body === undefined ? "GET" : "POST",
     credentials: "include",
     signal,

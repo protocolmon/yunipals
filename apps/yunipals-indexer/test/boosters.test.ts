@@ -6,7 +6,7 @@ import {
   boosterIdentity,
   type BoosterOriginal
 } from "../../../packages/yunipals-market-core/src/boosters.js";
-import { boosterDeployment } from "../lib/boosters/config.js";
+import { boosterContracts, boosterDeployment } from "../lib/boosters/config.js";
 
 const address = "0x1111111111111111111111111111111111111111";
 const hash = `0x${"ab".repeat(32)}` as const;
@@ -128,6 +128,32 @@ describe("booster catalog and deployment validation", () => {
         BOOSTER_DEPLOYMENT_BLOCK: "0"
       })
     ).toThrow("deployment block");
+  });
+  it("preserves exact per-contract deployment blocks across source releases", () => {
+    const env = {
+      BOOSTER_ENGINE: address,
+      BOOSTER_REGISTRY: address,
+      BOOSTER_MONSTERS: address,
+      BOOSTER_WRAPPER: address,
+      BOOSTER_DEPLOYMENT_BLOCK: "52995007"
+    };
+    expect(boosterContracts(env).BoosterEngine.startBlock).toBe(52995007);
+    const contracts = boosterContracts({
+      ...env,
+      BOOSTER_ENGINE_DEPLOYMENT_BLOCK: "52995174",
+      BOOSTER_MONSTERS_DEPLOYMENT_BLOCK: "52995029"
+    });
+    expect(contracts.BoosterRegistry.startBlock).toBe(52995007);
+    expect(contracts.BoosterEngine.startBlock).toBe(52995174);
+    expect(contracts.BoosterMonsters.startBlock).toBe(52995029);
+    for (const invalid of ["0", "-1", "1.5", "9007199254740992", ""]) {
+      expect(() =>
+        boosterContracts({ ...env, BOOSTER_ENGINE_DEPLOYMENT_BLOCK: invalid })
+      ).toThrow("BOOSTER_ENGINE_DEPLOYMENT_BLOCK");
+    }
+    expect(() =>
+      boosterContracts({ BOOSTER_ENGINE_DEPLOYMENT_BLOCK: "1" })
+    ).toThrow("BOOSTER_ENGINE_DEPLOYMENT_BLOCK");
   });
   it("keeps same-chain collections distinct with exact large token IDs", () => {
     const id = "900719925474099300000";

@@ -101,7 +101,7 @@ export class NativeArenaSettlement {
       throw new Error("Invalid native paid-seat bracket.");
     const live = await this.client.readContract({
       address: this.service.contract,
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       functionName: "tournament",
       args: [BigInt(id)],
       blockNumber: head.number
@@ -115,7 +115,7 @@ export class NativeArenaSettlement {
         "Native input is not ready for settlement or its deadline is too close."
       );
     return encodeFunctionData({
-      abi: arenaAbi,
+      abi: this.service.contractAbi,
       functionName: "settle",
       args: [BigInt(id), saved.outcome_hash as Hex, first!, second!, champion!]
     });

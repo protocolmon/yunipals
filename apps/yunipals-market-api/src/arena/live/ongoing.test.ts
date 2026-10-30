@@ -12,6 +12,7 @@ import {
 import { arenaOpenaiFundingMode } from "./funding";
 import { arenaHealth } from "./health";
 import { ArenaIdentityAnalysis, PreparingIdentity } from "./identityAnalysis";
+import type { ArenaIntake } from "./intake";
 
 const gib = 1024 ** 3;
 const funded = (): CapacitySnapshot => ({
@@ -149,6 +150,35 @@ test("filled tournaments can open third/fourth lobbies after pilot expiry, while
       [f.deployment]
     );
     await assert.rejects(f.capacity.check(true), /operating capacity/);
+  } finally {
+    await f.close();
+  }
+});
+
+test("entrant-funded capacity removes only the legacy draw reserve gate", async () => {
+  const f = await fixture();
+  try {
+    const shared = new ArenaCapacity(f.pool, f.deployment, {
+      contractVersion: 2
+    } as ArenaIntake);
+    const snapshot: CapacitySnapshot = {
+      ...funded(),
+      randomnessFunding: "first-entrant",
+      vrfAvailableWei: "0",
+      vrfQuoteWei: "0",
+      vrfMaxWei: "0"
+    };
+    await shared.save(snapshot);
+    assert.equal((await shared.check(true)).ready, true);
+    await assert.rejects(f.capacity.check(true), /funding policy/);
+    await shared.save({ ...snapshot, randomnessFunding: "reserve" });
+    await assert.rejects(shared.check(true), /funding policy/);
+    await shared.save({ ...snapshot, refereeGasWei: "0" });
+    await assert.rejects(shared.check(true), /operating funds/);
+    await shared.save({ ...snapshot, runwareMicrousd: 0 });
+    await assert.rejects(shared.check(true), /video funds/);
+    await shared.save({ ...snapshot, diskFreeBytes: 0 });
+    await assert.rejects(shared.check(true), /operating funds/);
   } finally {
     await f.close();
   }
