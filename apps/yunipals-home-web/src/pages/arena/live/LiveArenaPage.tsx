@@ -52,6 +52,18 @@ import { ArenaTournamentCard } from "./ArenaHistory";
 
 const action =
   "rounded-full bg-ink px-6 py-3 font-semibold text-white transition hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-40";
+const entryButtonLabels: Record<string, string> = {
+  "Switch to Base…": "Switch…",
+  "Checking fighter…": "Checking…",
+  "Checking artwork…": "Checking…",
+  "Approve in wallet…": "Approve…",
+  "Confirm in wallet…": "Confirm…",
+  "Confirming approval…": "Confirming…",
+  "Confirming entry…": "Confirming…",
+  "Updating approval…": "Updating…",
+  "Updating entry…": "Updating…",
+  "Transaction pending…": "Pending…"
+};
 const phases = {
   open: "Gathering fighters",
   strategies: "Choose your strategy",
@@ -1165,6 +1177,7 @@ export function LiveArenaPage() {
                             progress && "bg-grape disabled:opacity-100"
                           )}
                           aria-busy={!!progress}
+                          aria-label={progress?.label}
                           disabled={
                             !!wallet.busy ||
                             wallet.pendingTransaction ||
@@ -1193,7 +1206,8 @@ export function LiveArenaPage() {
                                 role="status"
                                 aria-live="polite"
                               >
-                                {progress.label}
+                                {entryButtonLabels[progress.label] ??
+                                  progress.label}
                               </span>
                             </>
                           ) : entered ? (
