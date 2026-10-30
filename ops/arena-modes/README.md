@@ -29,7 +29,10 @@ performed using predicted addresses or invented source readiness:
    Use distinct least-privilege database login identities per mode and worker,
    cloned from corresponding reviewed roles, and separate read-only source
    credentials. Review role connection limits and total pool capacity before
-   adding services. No owner key belongs in a worker.
+   adding services. Shared signing workers (`lobby` and `settlement`) require
+   three operational connections for their source lease, nonce lock and checks;
+   other workers use two. Match the four signing login limits to three and keep
+   source pools at two. No owner key belongs in a worker.
 5. Prepare `/etc/yunipals-arena-modes/{video,anime}/runtime.env` and `roles/*.env`.
    Required differences from existing mode configuration: `ARENA_CONTRACT_VERSION=2`,
    common confirmed contract and block, each package rules hash,

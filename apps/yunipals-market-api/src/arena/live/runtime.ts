@@ -28,7 +28,9 @@ import { arenaNativeConfiguration } from "./nativeSource";
 import { arenaTransactionMigration } from "./transactionSchema";
 import { selectedArenaRuntimeSource } from "./selectedSourceRuntime";
 
-export async function arenaRuntime(options: { native?: boolean } = {}) {
+export async function arenaRuntime(
+  options: { native?: boolean; execution?: boolean } = {}
+) {
   const native = arenaNativeConfiguration();
   if (native.mode === "unified" && !options.native)
     throw new Error("This Arena entrypoint has not enabled native consumers.");
@@ -104,7 +106,14 @@ export async function arenaRuntime(options: { native?: boolean } = {}) {
   const pool = new pg.Pool({
     connectionString: config.databaseUrl,
     application_name: "yunipals_arena",
-    max: config.contractVersion === 2 ? 2 : 8,
+    // A signing worker holds a source lease and a nonce lock while its
+    // capacity/input checks query the pool. Those checks need a third slot.
+    max:
+      config.contractVersion === 2
+        ? options.execution
+          ? 3
+          : 2
+        : 8,
     connectionTimeoutMillis: 2000,
     statement_timeout: 5000,
     lock_timeout: 2000,

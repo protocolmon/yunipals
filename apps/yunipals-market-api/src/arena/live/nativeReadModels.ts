@@ -1,6 +1,7 @@
 import type { PoolClient } from "pg";
 import type { Address, Hex } from "viem";
 import type { ArenaTournament } from "@protopals/yunipals-market-core/arena";
+import { parseArenaDeployment } from "@protopals/yunipals-market-core/arenaProtocol";
 import type {
   ArenaHistoryPage,
   ArenaHistoryRole,
@@ -57,6 +58,10 @@ const updating = () =>
 export class NativeArenaReadModels {
   constructor(private readonly service: ArenaIntake) {}
 
+  private sourceId() {
+    return `arena:${parseArenaDeployment(this.service.deployment).canonicalPrefix}`;
+  }
+
   private selection() {
     return canonicalJson(this.service.sourceSelection ?? null);
   }
@@ -97,7 +102,7 @@ export class NativeArenaReadModels {
         value.filter !== sha256(canonicalJson(filter)) ||
         value.selection !== this.selection() ||
         !hash.test(value.release) ||
-        value.source !== `arena:${this.service.deployment}` ||
+        value.source !== this.sourceId() ||
         !validId(value.id) ||
         !value.anchor ||
         !decimal.test(value.anchor.number) ||
@@ -157,7 +162,7 @@ export class NativeArenaReadModels {
     };
     const first = await source.browse(anchored);
     if (
-      first.sourceId !== `arena:${this.service.deployment}` ||
+      first.sourceId !== this.sourceId() ||
       !hash.test(first.releaseId) ||
       !decimal.test(first.indexedThroughBlock) ||
       (cursor &&
