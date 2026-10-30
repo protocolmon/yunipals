@@ -78,7 +78,8 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 21);
+  assert.equal(tables.length, 22);
+  assert.ok(tables.some((table) => getTableConfig(table).name === "anime_fighter"));
   const database = createDatabase({ common, namespace, preBuild, schemaBuild });
   await database.migrateSync();
   await database.migrate({

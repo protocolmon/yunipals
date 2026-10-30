@@ -23,7 +23,9 @@ test("registry reader binds FIFO pages, public notes and reapplication to comple
     "postgres://postgres:arena-local-test@127.0.0.1:55441/arena";
   const url = new URL(connectionString);
   assert.ok(["127.0.0.1", "localhost"].includes(url.hostname));
-  assert.equal(url.pathname, "/arena");
+  assert.ok(["/arena", "/yunipals_arena_test"].includes(url.pathname));
+  assert.equal(url.search, "", "Connection overrides are not allowed");
+  assert.equal(url.hash, "");
   const pool = new pg.Pool({ connectionString, max: 3 });
   const schema = `anime_test_${randomBytes(4).toString("hex")}`;
   const registry = `0x${"1".repeat(40)}`,
