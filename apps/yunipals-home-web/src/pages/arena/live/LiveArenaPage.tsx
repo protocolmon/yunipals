@@ -650,7 +650,13 @@ export function LiveArenaPage() {
       document.getElementById("join")?.scrollIntoView({ block: "start" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [location.hash, tournament?.id, tournament?.phase, context.isPending]);
+  }, [
+    location.hash,
+    location.key,
+    tournament?.id,
+    tournament?.phase,
+    context.isPending
+  ]);
   const error = config.error ?? detail.error ?? list.error;
   const claimable =
     summary.data?.wallet.toLowerCase() === address?.toLowerCase()

@@ -49,6 +49,7 @@ import {
   transactionPending,
   transactionFighter,
   arenaFighterKey,
+  arenaTransactionScope,
   type ArenaEntryTarget,
   type PendingArenaTransaction
 } from "@/lib/arenaTransactions";
@@ -97,7 +98,11 @@ export function useArenaWallet(
   const guard = useRef(false);
   const scope =
     address && config
-      ? `${config.contract.toLowerCase()}/${address.toLowerCase()}${config.contractVersion === 2 ? `/${deployment.kind}` : ""}`
+      ? arenaTransactionScope(
+          address,
+          config.contract,
+          config.contractVersion === 2 ? deployment.kind : undefined
+        )
       : null;
   const currentScope = useRef(scope);
   const privateScope = useRef<{
@@ -128,7 +133,9 @@ export function useArenaWallet(
             visibleOperation.state === "delayed"
               ? "Transaction pending…"
               : visibleOperation.state === "indexing"
-                ? "Updating entry…"
+                ? visibleOperation.action.kind === "approval"
+                  ? "Updating approval…"
+                  : "Updating entry…"
                 : visibleOperation.action.kind === "approval"
                   ? "Confirming approval…"
                   : "Confirming entry…"
@@ -257,7 +264,7 @@ export function useArenaWallet(
     saveArenaTransaction(value);
     if (
       currentScope.current ===
-      `${value.contract.toLowerCase()}/${value.wallet.toLowerCase()}`
+      arenaTransactionScope(value.wallet, value.contract, value.mediaKind)
     )
       setOperation(value);
   }
@@ -265,7 +272,11 @@ export function useArenaWallet(
     tracker.current?.abort();
     const controller = new AbortController();
     tracker.current = controller;
-    const expectedScope = `${value.contract.toLowerCase()}/${value.wallet.toLowerCase()}`;
+    const expectedScope = arenaTransactionScope(
+      value.wallet,
+      value.contract,
+      value.mediaKind
+    );
     const valid = () =>
       !controller.signal.aborted && currentScope.current === expectedScope;
     let latest = value;

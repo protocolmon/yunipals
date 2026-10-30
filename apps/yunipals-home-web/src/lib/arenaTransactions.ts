@@ -21,12 +21,21 @@ export type PendingArenaTransaction = ArenaTransactionStatus & {
   fighter?: ArenaEntryTarget;
   mediaKind?: "video" | "anime";
 };
+
+export function arenaTransactionScope(
+  wallet: Address,
+  contract: Address,
+  kind?: "video" | "anime"
+) {
+  return `${contract.toLowerCase()}/${wallet.toLowerCase()}${kind ? `/${kind}` : ""}`;
+}
+
 const storageKey = (
   wallet: Address,
   contract: Address,
   kind?: "video" | "anime"
 ) =>
-  `yunipals/arena/transaction/v1/8453/${contract.toLowerCase()}/${wallet.toLowerCase()}${kind ? `/${kind}` : ""}`;
+  `yunipals/arena/transaction/v1/8453/${arenaTransactionScope(wallet, contract, kind)}`;
 
 export function readArenaTransaction(
   wallet: Address,
