@@ -1,6 +1,6 @@
 {
   "version": "shared-arena-pilot-cutover/v2",
-  "recordedAt": "2026-10-30T12:59:01.127100+00:00",
+  "recordedAt": "2026-10-30T14:03:13.593326+00:00",
   "state": "paid-pilot-completed",
   "chainId": 8453,
   "arena": "0xf34fb0a9ecf31bf7516098105036aba7ed4adda9",
@@ -16,12 +16,13 @@
   },
   "serviceEntries": "pilot-wallet-only",
   "website": {
-    "deploymentId": "dpl_BDqPK6UuGXCgDDQHsjjU7AnMcCyv",
+    "deploymentId": "dpl_46vPFDaju6uXthEqzNb8nxzkguHH",
     "url": "https://www.yunipals.com",
-    "sourceCommit": "16b652a5b4866e0c672717e0821598d9497a211f",
-    "manifestSha256": "2a0320d9f9dcdf712942fde52e5166950441b080b4e0210ce66547ff5d560453",
+    "sourceCommit": "275729dea2ec7a6645abab82fa6d240cb28799b3",
+    "manifestSha256": "1d59deff8ef93461e9f29035d9c6456549f402361b28c3e2e9f42f53f87a5393",
     "files": 227,
-    "bytes": 14090513
+    "bytes": 14090520,
+    "archiveSha256": "f58a95ac05114d29ffa4dcbf094dbe08eee73ed0f1a8c9bf2eaaf9dce55e8305"
   },
   "source": {
     "releaseId": "0x1208eee958af251fc4c88e2df40925d85eb8312e80cf3b329ebcb706742fe97d",
@@ -179,7 +180,11 @@
     "httpMediaOriginAndRangeTests": 1,
     "canonicalBattleReviewLoaded": true,
     "watchMomentSeekingPassed": true,
-    "savedChoreographyAvailable": true
+    "savedChoreographyAvailable": true,
+    "nativeClientTransactionTests": 11,
+    "legacyArenaProductionTests": 24,
+    "indexedBnbActionTests": 11,
+    "canonicalFastPollingAndMobileRecoveryPassed": true
   },
   "legacy": {
     "admissionIssuersClosed": 2,
@@ -189,20 +194,20 @@
     "auditedVideoUsdcLiabilityRaw": "2000000"
   },
   "backup": {
-    "checkedAt": "2026-10-30T13:01:36.732016+00:00",
+    "checkedAt": "2026-10-30T14:02:38.691672+00:00",
     "latest-attempt.json": {
       "status": "success",
-      "createdAt": "2026-10-30T12:59:05.716009+00:00",
-      "completedAt": "2026-10-30T13:01:12.322471+00:00",
-      "objectsUploaded": 9,
-      "objectsReused": 1136
+      "createdAt": "2026-10-30T14:00:14.841480+00:00",
+      "completedAt": "2026-10-30T14:02:22.202490+00:00",
+      "objectsUploaded": 7,
+      "objectsReused": 1144
     },
     "latest-success.json": {
       "status": "success",
-      "createdAt": "2026-10-30T12:59:05.716009+00:00",
-      "completedAt": "2026-10-30T13:01:12.322471+00:00",
-      "objectsUploaded": 9,
-      "objectsReused": 1136
+      "createdAt": "2026-10-30T14:00:14.841480+00:00",
+      "completedAt": "2026-10-30T14:02:22.202490+00:00",
+      "objectsUploaded": 7,
+      "objectsReused": 1144
     },
     "latest-restore-drill.json": {
       "status": "success",
@@ -224,15 +229,36 @@
       "finalWebsiteArchive": true,
       "capturedRecoveryResponse": true,
       "film": true
+    },
+    "adaptiveTransactionTracking": {
+      "checkedAt": "2026-10-30T14:02:38.691672+00:00",
+      "encryptedObjectCacheVerified": {
+        "fastTrackingRuntime": true,
+        "fastTrackingWebsite": true
+      },
+      "latest-attempt.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:00:14.841480+00:00",
+        "completedAt": "2026-10-30T14:02:22.202490+00:00",
+        "objectsUploaded": 7,
+        "objectsReused": 1144
+      },
+      "latest-success.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:00:14.841480+00:00",
+        "completedAt": "2026-10-30T14:02:22.202490+00:00",
+        "objectsUploaded": 7,
+        "objectsReused": 1144
+      }
     }
   },
   "pending": [
     "OpenAI invoice reconciliation; recorded-usage price is $0.304696. No functionality or additional generation is pending."
   ],
   "backend": {
-    "releaseId": "shared-runtime-20261030-d950355ea88f",
-    "sourceCommit": "3d76514836fff2da56ae267a53aca921d09595d5",
-    "archiveSha256": "da739ee85fa7d42251040228b0202c60368d251804a8c031421e2f50b26071aa",
+    "releaseId": "shared-runtime-20261030-508916db6104",
+    "sourceCommit": "9b37c6fd65d9f6875d7b4bdc0e6e8ca564e18a80",
+    "archiveSha256": "f786fddb852769f6c48e1dbe24306e909f232f546c2484fd670856327d433edf",
     "signingOperationalPoolMax": 3,
     "otherOperationalPoolMax": 2,
     "sourcePoolMax": 2,
@@ -244,7 +270,8 @@
     "mediaRolesChanged": 2,
     "directorCaptureGrantApplied": true,
     "directorValidationPolicy": "anime-direction-validation/v2",
-    "streamedArtifactCorsPreserved": true
+    "streamedArtifactCorsPreserved": true,
+    "adaptivePendingTransactionChecks": true
   },
   "openings": [
     {
@@ -302,6 +329,23 @@
       "mediaRolesChanged": 2,
       "directorCaptureGrantApplied": true,
       "directorValidationPolicy": "anime-direction-validation/v2"
+    },
+    {
+      "releaseId": "shared-runtime-20261030-d950355ea88f",
+      "sourceCommit": "3d76514836fff2da56ae267a53aca921d09595d5",
+      "archiveSha256": "da739ee85fa7d42251040228b0202c60368d251804a8c031421e2f50b26071aa",
+      "signingOperationalPoolMax": 3,
+      "otherOperationalPoolMax": 2,
+      "sourcePoolMax": 2,
+      "newSigningRoleConnectionLimits": 3,
+      "signingRolesChanged": 4,
+      "frozenEngineAndRecipesUnchanged": true,
+      "mediaOperationalPoolMax": 3,
+      "mediaRoleConnectionLimits": 3,
+      "mediaRolesChanged": 2,
+      "directorCaptureGrantApplied": true,
+      "directorValidationPolicy": "anime-direction-validation/v2",
+      "streamedArtifactCorsPreserved": true
     }
   ],
   "previousWebsites": [
@@ -320,6 +364,14 @@
       "manifestSha256": "54c111217e35f67b1deeffa3790da9ea779d4d1d5c022003177277ebe5818413",
       "files": 227,
       "bytes": 14090531
+    },
+    {
+      "deploymentId": "dpl_BDqPK6UuGXCgDDQHsjjU7AnMcCyv",
+      "url": "https://www.yunipals.com",
+      "sourceCommit": "16b652a5b4866e0c672717e0821598d9497a211f",
+      "manifestSha256": "2a0320d9f9dcdf712942fde52e5166950441b080b4e0210ce66547ff5d560453",
+      "files": 227,
+      "bytes": 14090513
     }
   ],
   "paidPilot": {
@@ -340,6 +392,176 @@
     "lostOriginalDirectorOverheadUsd": 0.148336,
     "approvedRecoveryRequests": 1,
     "extraImageOrIdentityCalls": 0,
-    "frozenCombatAndEnginePreserved": true
+    "frozenCombatAndEnginePreserved": true,
+    "championWithdrawal": {
+      "transactionHash": "0xcb3a4d41c05927ff00b01bfe90b05011b3299166b5ab0ba3ef4cd9851cbaf0bb",
+      "rawUsdc": "3200000",
+      "receiptBlock": "53288364",
+      "indexedAt": "2026-10-30T13:15:07.367603+00:00",
+      "state": "indexed"
+    }
+  },
+  "transactionTracking": {
+    "verifiedAt": "2026-10-30T13:59:40.393066+00:00",
+    "branch": "codex/arena-fast-tracking",
+    "backend": {
+      "verifiedAt": "2026-10-30T13:52:43.036552+00:00",
+      "releaseId": "shared-runtime-20261030-508916db6104",
+      "sourceCommit": "9b37c6fd65d9f6875d7b4bdc0e6e8ca564e18a80",
+      "archiveSha256": "f786fddb852769f6c48e1dbe24306e909f232f546c2484fd670856327d433edf",
+      "verifiedFiles": 13840,
+      "verifiedSymlinks": 84,
+      "unitsRestarted": [
+        "yunipals-arena-v2-anime-client.service",
+        "yunipals-arena-v2-video-client.service"
+      ],
+      "providerRequestsCreated": 0,
+      "frozenCombatAndEnginePreserved": true,
+      "publishedFilmPreserved": true,
+      "trackingSchedule": {
+        "freshPendingSeconds": 2,
+        "freshWindowSeconds": 90,
+        "olderPendingSeconds": 10,
+        "errorAndFinalitySeconds": 30
+      },
+      "confirmationAndSourcePoliciesUnchanged": true,
+      "priorReleaseId": "shared-runtime-20261030-d950355ea88f"
+    },
+    "website": {
+      "deploymentId": "dpl_46vPFDaju6uXthEqzNb8nxzkguHH",
+      "url": "https://www.yunipals.com",
+      "sourceCommit": "275729dea2ec7a6645abab82fa6d240cb28799b3",
+      "manifestSha256": "1d59deff8ef93461e9f29035d9c6456549f402361b28c3e2e9f42f53f87a5393",
+      "files": 227,
+      "bytes": 14090520,
+      "archiveSha256": "f58a95ac05114d29ffa4dcbf094dbe08eee73ed0f1a8c9bf2eaaf9dce55e8305"
+    },
+    "confirmationAndSourcePoliciesUnchanged": true,
+    "server": {
+      "freshPendingSeconds": 2,
+      "freshWindowSeconds": 90,
+      "olderPendingSeconds": 10,
+      "rpcErrorAndFinalityAuditSeconds": 30,
+      "newCallsCannotResetCreatedAt": true,
+      "batchLimitUnchanged": 8
+    },
+    "browser": {
+      "arenaFirst90Seconds": 2,
+      "arenaThereafterSeconds": 5,
+      "bnbPendingSeconds": 2,
+      "bnbErrorOrAcceptedFinalitySeconds": 30,
+      "bnbFinalizedStopsPolling": true
+    },
+    "tests": {
+      "nativeClientTransactions": 11,
+      "legacyArenaProduction": 24,
+      "indexedBnbAction": 11,
+      "total": 46,
+      "apiAndWebTypeScriptPassed": true,
+      "apiAndWebBuildsPassed": true,
+      "scopedSourceSecretScanPassed": true,
+      "staticScan": {
+        "previousKnownFindings": 9,
+        "currentFindings": 9,
+        "unchangedExactMatchBytes": 9,
+        "newFindings": 0
+      }
+    },
+    "stagedBrowser": {
+      "verifiedAt": "2026-10-30T13:56:51.279Z",
+      "target": "https://yunipals-n0tf0psqr-devving.vercel.app",
+      "canonicalOrigin": "https://www.yunipals.com",
+      "canonicalHtmlMatchesBuild": true,
+      "stagedAssetsFromExactLocalBuild": true,
+      "trackingApiMocked": true,
+      "results": [
+        {
+          "width": 1440,
+          "firstPollMs": 2012,
+          "registrationCount": 1,
+          "statusPolls": 2,
+          "reloadRecovery": false,
+          "completed": true,
+          "actualWalletSignatures": 0,
+          "actualWalletTransactions": 0,
+          "errors": []
+        },
+        {
+          "width": 390,
+          "firstPollMs": 2006,
+          "registrationCount": 3,
+          "statusPolls": 2,
+          "reloadRecovery": true,
+          "completed": true,
+          "actualWalletSignatures": 0,
+          "actualWalletTransactions": 0,
+          "errors": []
+        }
+      ]
+    },
+    "canonicalBrowser": {
+      "verifiedAt": "2026-10-30T13:58:10.208Z",
+      "target": "https://www.yunipals.com",
+      "canonicalOrigin": "https://www.yunipals.com",
+      "canonicalHtmlMatchesBuild": true,
+      "stagedAssetsFromExactLocalBuild": false,
+      "trackingApiMocked": true,
+      "results": [
+        {
+          "width": 1440,
+          "firstPollMs": 2014,
+          "registrationCount": 1,
+          "statusPolls": 2,
+          "reloadRecovery": false,
+          "completed": true,
+          "actualWalletSignatures": 0,
+          "actualWalletTransactions": 0,
+          "errors": []
+        },
+        {
+          "width": 390,
+          "firstPollMs": 2008,
+          "registrationCount": 3,
+          "statusPolls": 2,
+          "reloadRecovery": true,
+          "completed": true,
+          "actualWalletSignatures": 0,
+          "actualWalletTransactions": 0,
+          "errors": []
+        }
+      ]
+    },
+    "newPaidProviderCalls": 0,
+    "walletTransactionsSentByVerification": 0,
+    "walletSignaturesSentByVerification": 0,
+    "backup": {
+      "checkedAt": "2026-10-30T14:02:38.691672+00:00",
+      "encryptedObjectCacheVerified": {
+        "fastTrackingRuntime": true,
+        "fastTrackingWebsite": true
+      },
+      "latest-attempt.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:00:14.841480+00:00",
+        "completedAt": "2026-10-30T14:02:22.202490+00:00",
+        "objectsUploaded": 7,
+        "objectsReused": 1144
+      },
+      "latest-success.json": {
+        "status": "success",
+        "createdAt": "2026-10-30T14:00:14.841480+00:00",
+        "completedAt": "2026-10-30T14:02:22.202490+00:00",
+        "objectsUploaded": 7,
+        "objectsReused": 1144
+      }
+    },
+    "filmRegression": {
+      "verifiedAt": "2026-10-30T13:59:45.518Z",
+      "rangePlaybackPassed": true,
+      "battleReviewLoaded": true,
+      "watchMomentSeekingPassed": true,
+      "savedChoreographyAvailable": true,
+      "errors": []
+    }
   }
 }

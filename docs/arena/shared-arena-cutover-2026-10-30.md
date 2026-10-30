@@ -270,3 +270,48 @@ Final encrypted backup status is recorded in the accompanying JSON.
 Encrypted backup completed at `2026-10-30T13:01:12.322471+00:00` (9 objects
 uploaded, 1,136 reused). Its verified object cache contains the final runtime and
 website archives, captured recovery response and published film.
+
+
+## Adaptive transaction tracking — 30 October 2026
+
+Pending transactions in both shared Arena modes retry every 2 seconds for their
+first 90 seconds, then every 10 seconds. Before receipt/source I/O, the worker
+persists a 30-second backoff; a successful check earns the faster pending retry.
+RPC failures, crashes and accepted transactions awaiting finality keep the slower
+cadence. Original transaction identity, creation time, batch bounds, exact event
+checks, canonical source fencing and reorg handling are preserved. No schema,
+confirmation depth, Ponder polling, combat, provider or admission setting changed.
+
+The Arena browser polls every 2 seconds initially and every 5 seconds after 90
+seconds. BNB marketplace indexed-status polling uses 2 seconds while pending,
+30 seconds on errors or accepted-but-unfinalized evidence, and stops when final.
+The progress explanation no longer implies an extra fixed block-count wait.
+
+Backend release `shared-runtime-20261030-508916db6104` is built from
+`9b37c6fd65d9f6875d7b4bdc0e6e8ca564e18a80`; archive SHA256
+`f786fddb852769f6c48e1dbe24306e909f232f546c2484fd670856327d433edf`.
+Only the two shared client workers were restarted. The original-contract services
+were preserved. Website deployment `dpl_46vPFDaju6uXthEqzNb8nxzkguHH` is built from
+`275729dea2ec7a6645abab82fa6d240cb28799b3`; manifest SHA256
+`1d59deff8ef93461e9f29035d9c6456549f402361b28c3e2e9f42f53f87a5393`.
+Its curated output contains 227 files and 14,090,520 bytes. Changes are retained on
+local branch `codex/arena-fast-tracking`; no source publication was performed.
+
+Eleven native tracker, 24 existing Arena production and 11 BNB indexed-evidence
+regressions passed, alongside API/web TypeScript and builds. The real PostgreSQL
+queue test advances a pending claim after two seconds without manually making it
+due, retains 30-second RPC-error backoff, slows older work, and withholds success
+until indexed evidence matches. Staged and canonical desktop/mobile browser tests
+measured the first status poll at about 2 seconds and recovered the same saved
+hash across reload. Tracking responses were mocked; tests sent no real wallet
+signatures, transactions or provider requests. The scoped source secret scan
+passed; all nine static-build scanner matches were unchanged from the prior build.
+
+The pilot wallet's 3.20-USDC withdrawal is now indexed: transaction
+`0xcb3a4d41c05927ff00b01bfe90b05011b3299166b5ab0ba3ef4cd9851cbaf0bb`,
+receipt block 53288364. This completes its live withdrawal acceptance step.
+
+Canonical film playback, byte-range streaming, battle review and Watch this moment
+seeking passed again at `2026-10-30T13:59:45.518Z`. Encrypted backup completed at
+`2026-10-30T14:02:22.202490+00:00` (7 objects uploaded, 1,144 reused); the verified
+object cache includes both exact new release archives.
