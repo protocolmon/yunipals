@@ -1,0 +1,34 @@
+name: ETH pack payments
+on:
+  pull_request:
+    paths:
+      - "contracts/boosters/**"
+      - "scripts/boosters/check-storage.py"
+      - "apps/yunipals-home-web/src/lib/booster*"
+      - "apps/yunipals-home-web/src/lib/fixtures/eth-payment-package.json"
+      - "apps/yunipals-home-web/src/hooks/useBoosterActions.ts"
+      - "apps/yunipals-home-web/src/pages/boosters/**"
+      - ".github/workflows/booster-eth.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts-and-checkout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Install pinned Solidity tools and dependencies
+        run: |
+          npm install --prefix /tmp/yunipals-forge --ignore-scripts @foundry-rs/forge-linux-amd64@1.7.1
+          python3 contracts/boosters/install-dependencies.py
+      - name: Contract regressions and storage compatibility
+        run: |
+          /tmp/yunipals-forge/node_modules/@foundry-rs/forge-linux-amd64/bin/forge test --root contracts/boosters
+          python3 scripts/boosters/check-storage.py
+      - name: Payment quotes, receipt validation and deployment package
+        working-directory: apps/yunipals-home-web
+        run: node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/boosterEth.test.ts src/lib/boosterEthSetup.test.ts src/lib/boosterPurchase.test.ts src/lib/boosterPermit.test.ts src/lib/boosterReveal.test.ts

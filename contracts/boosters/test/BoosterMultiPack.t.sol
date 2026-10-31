@@ -317,7 +317,7 @@ contract BoosterMultiPackTest is Test {
         buy(3, 1 ether, 1 ether);
         assertRolledBack(packId, 100 ether, 100 ether, 1);
         wrapper.configure(0, 0, 3, false);
-        vm.expectRevert(bytes("invalid request id"));
+        vm.expectRevert(BoosterPacks.InvalidRequestId.selector);
         buy(3, 1 ether, 1 ether);
         assertRolledBack(packId, 100 ether, 100 ether, 1);
     }
@@ -335,7 +335,7 @@ contract BoosterMultiPackTest is Test {
 
     function testBurnAndTransferAccountingCannotUseUnsupportedToken() public {
         vm.mockCall(address(token), abi.encodeCall(token.totalSupply, ()), abi.encode(100 ether));
-        vm.expectRevert(bytes("burn accounting mismatch"));
+        vm.expectRevert(BoosterPacks.PaymentAccountingMismatch.selector);
         buy(3, 1 ether, 1 ether);
         vm.clearMockedCalls();
         assertRolledBack(packId, 100 ether, 100 ether, 1);

@@ -7,6 +7,7 @@ import type { BoosterType } from "@protopals/yunipals-market-core/boosters";
 
 import { environment } from "@/environment";
 import { boosterAddresses, boosterQueryKey } from "@/lib/boosters";
+import { boosterEthAddress, checkBoosterEthPayment } from "@/lib/boosterEth";
 import { readBoosterPurchaseLimit } from "@/lib/boosterPurchase";
 import { cn } from "@/lib/utils";
 import { BoosterActionButton } from "./BoosterActionButton";
@@ -27,6 +28,7 @@ export function BoosterPurchaseOptions({
   onSubmitted?: (hash: Hex, replacedHash?: Hex) => void;
   onPreview: (quantity: number) => void;
 }) {
+  const [payment, setPayment] = useState<"ypal" | "eth">("ypal");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const inputId = useId();
   const client = usePublicClient({ chainId: 8453 });
@@ -38,12 +40,63 @@ export function BoosterPurchaseOptions({
     refetchInterval: 30_000,
     retry: 1
   });
+  const adapter = boosterEthAddress(environment.boosterEthAdapter);
+  const ethAvailable = useQuery({
+    queryKey: [
+      ...boosterQueryKey,
+      "eth-payment",
+      adapter,
+      deployment?.engine,
+      pack.paymentToken
+    ],
+    enabled: Boolean(adapter && client && deployment),
+    staleTime: 60_000,
+    retry: 1,
+    queryFn: async () => {
+      await checkBoosterEthPayment(
+        client!,
+        adapter!,
+        deployment!.engine,
+        pack.paymentToken as `0x${string}`
+      );
+      return true;
+    }
+  });
+  const selectedPayment = ethAvailable.data ? payment : "ypal";
   const limit = availability.data ?? 1;
   const quantity = Math.min(selectedQuantity, limit);
   const total = BigInt(pack.price) * BigInt(quantity);
 
   return (
     <div>
+      {ethAvailable.data && (
+        <fieldset className="mb-5">
+          <legend className="mb-2 text-sm font-bold text-ink">Pay with</legend>
+          <div className="inline-flex gap-1 rounded-full border border-grape/20 bg-lavender/20 p-1">
+            {(["ypal", "eth"] as const).map((method) => (
+              <label
+                key={method}
+                className={cn(
+                  "cursor-pointer rounded-full px-5 py-2 text-sm font-bold focus-within:ring-2 focus-within:ring-grape",
+                  selectedPayment === method
+                    ? "bg-grape text-white"
+                    : "text-grape"
+                )}
+              >
+                <input
+                  type="radio"
+                  name={`${inputId}-payment`}
+                  value={method}
+                  checked={selectedPayment === method}
+                  onChange={() => setPayment(method)}
+                  className="sr-only"
+                />
+                {method.toUpperCase()}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <label htmlFor={inputId} className="block text-sm font-bold text-ink">
         Packs to open
       </label>
@@ -132,11 +185,18 @@ export function BoosterPurchaseOptions({
         </span>
       </p>
       <p className="mt-3 text-sm text-muted">
-        The full price is burned when your opening transaction succeeds.
+        {selectedPayment === "eth"
+          ? "ETH is converted automatically to the exact YPAL pack price. Review the ETH quote before confirming."
+          : "The full price is burned when your opening transaction succeeds."}
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <BoosterActionButton
-          action={{ kind: "open", packTypeId: pack.packTypeId, quantity }}
+          action={{
+            kind: "open",
+            packTypeId: pack.packTypeId,
+            quantity,
+            payment: selectedPayment
+          }}
           disabled={paused}
           onConfirmed={onConfirmed}
           onSubmitted={onSubmitted}

@@ -35,12 +35,26 @@ import {
   type BoosterPermit
 } from "@/lib/boosterPermit";
 
+import {
+  boosterEthAddress,
+  checkBoosterEthPayment,
+  quoteEthPackRoutes,
+  ethPackPurchaseData,
+  boosterEthAbi,
+  type EthPackQuote
+} from "@/lib/boosterEth";
+
 export type BoosterAction =
-  | { kind: "open"; packTypeId: string; quantity?: number }
+  | {
+      kind: "open";
+      packTypeId: string;
+      quantity?: number;
+      payment?: "ypal" | "eth";
+    }
   | { kind: "claim"; packTypeId: string; originalId: string; quantity: number }
   | { kind: "recover"; requestId: string }
   | { kind: "burn"; tokenId: string }
-  | { kind: "refund" };
+  | { kind: "refund"; source?: "eth" };
 
 type Review = {
   action: BoosterAction;
@@ -63,6 +77,7 @@ type Review = {
   permitSigned: boolean;
   permit?: BoosterPermit;
   expiresAt: number;
+  ethQuote?: EthPackQuote;
 };
 
 export function useBoosterActions() {
@@ -253,6 +268,7 @@ export function useBoosterActions() {
       let tokenDecimals = 18;
       let approval = false;
       let permit: BoosterPermit | null = null;
+      let ethQuote: EthPackQuote | undefined;
       const expiresAt = Math.floor(Date.now() / 1000) + 600;
       const deadline = block.timestamp + 600n;
       if (action.kind === "open" || action.kind === "claim") {
@@ -303,64 +319,124 @@ export function useBoosterActions() {
             throw new Error(
               "There aren’t enough packs left for this quantity."
             );
-          const token = pack.rules.paymentToken;
-          const [balance, allowance, decimals, symbol] = await Promise.all([
-            client.readContract({
-              address: token,
-              abi: erc20Abi,
-              functionName: "balanceOf",
-              args: [account]
-            }),
-            client.readContract({
-              address: token,
-              abi: erc20Abi,
-              functionName: "allowance",
-              args: [account, deployment.engine]
-            }),
-            client.readContract({
-              address: token,
-              abi: erc20Abi,
-              functionName: "decimals"
-            }),
-            client.readContract({
-              address: token,
-              abi: erc20Abi,
-              functionName: "symbol"
-            })
-          ]);
-          tokenDecimals = decimals;
-          tokenSymbol = symbol;
-          tokenBalance = balance;
-          if (balance < tokenPrice)
-            throw new Error(`You need more ${symbol} for these packs.`);
-          approval = allowance < tokenPrice;
-          if (approval) {
-            if (await engineSupportsBoosterPermit(client, deployment.engine))
-              permit = await readBoosterPermit(client, {
-                owner: account,
-                spender: deployment.engine,
-                token,
-                value: tokenPrice,
-                deadline
-              });
-            if (permit) {
-              approval = false;
-              approvalAmount = tokenPrice;
-              data = "0x";
-            } else {
-              const defaultApproval = 1000n * 10n ** BigInt(decimals);
-              approvalAmount =
-                tokenPrice > defaultApproval ? tokenPrice : defaultApproval;
-              to = token;
-              value = 0n;
-              data = encodeFunctionData({
+          if (action.payment === "eth") {
+            const adapter = boosterEthAddress(environment.boosterEthAdapter);
+            if (!adapter)
+              throw new Error("ETH pack payments are not activated yet.");
+            await checkBoosterEthPayment(
+              client,
+              adapter,
+              deployment.engine,
+              pack.rules.paymentToken
+            );
+            const quotes = await quoteEthPackRoutes(client, tokenPrice);
+            // Simulate the complete purchase and compare acquisition + Base L1/L2
+            // gas. A route that cannot execute is never offered to the wallet.
+            const candidates = await Promise.allSettled(
+              quotes.map(async (quote) => {
+                const input = ethPackPurchaseData(
+                  packTypeId,
+                  quantity,
+                  quote,
+                  value,
+                  deadline
+                );
+                const transaction = {
+                  account,
+                  to: adapter,
+                  data: input,
+                  value: value + quote.maximum,
+                  ...fees
+                };
+                await client.call(transaction);
+                const gas =
+                  ((await client.estimateGas(transaction)) * 120n) / 100n;
+                const fee =
+                  gas * fees.maxFeePerGas +
+                  (await estimateL1Fee(client, { ...transaction, gas }));
+                return { quote, cost: quote.price + fee };
+              })
+            );
+            const available = candidates.flatMap((result) =>
+              result.status === "fulfilled" ? [result.value] : []
+            );
+            available.sort((a, b) =>
+              a.cost < b.cost ? -1 : a.cost > b.cost ? 1 : 0
+            );
+            if (!available.length)
+              throw new Error(
+                "The ETH purchase could not be simulated. Refresh the quote or pay with YPAL."
+              );
+            ethQuote = available[0].quote;
+            to = adapter;
+            data = ethPackPurchaseData(
+              packTypeId,
+              quantity,
+              ethQuote,
+              value,
+              deadline
+            );
+            value += ethQuote.maximum;
+          } else {
+            const token = pack.rules.paymentToken;
+            const [balance, allowance, decimals, symbol] = await Promise.all([
+              client.readContract({
+                address: token,
                 abi: erc20Abi,
-                functionName: "approve",
-                args: [deployment.engine, approvalAmount]
-              });
-            }
-          } else
-            data = boosterPurchaseData(packTypeId, quantity, value, deadline);
+                functionName: "balanceOf",
+                args: [account]
+              }),
+              client.readContract({
+                address: token,
+                abi: erc20Abi,
+                functionName: "allowance",
+                args: [account, deployment.engine]
+              }),
+              client.readContract({
+                address: token,
+                abi: erc20Abi,
+                functionName: "decimals"
+              }),
+              client.readContract({
+                address: token,
+                abi: erc20Abi,
+                functionName: "symbol"
+              })
+            ]);
+            tokenDecimals = decimals;
+            tokenSymbol = symbol;
+            tokenBalance = balance;
+            if (balance < tokenPrice)
+              throw new Error(`You need more ${symbol} for these packs.`);
+            approval = allowance < tokenPrice;
+            if (approval) {
+              if (await engineSupportsBoosterPermit(client, deployment.engine))
+                permit = await readBoosterPermit(client, {
+                  owner: account,
+                  spender: deployment.engine,
+                  token,
+                  value: tokenPrice,
+                  deadline
+                });
+              if (permit) {
+                approval = false;
+                approvalAmount = tokenPrice;
+                data = "0x";
+              } else {
+                const defaultApproval = 1000n * 10n ** BigInt(decimals);
+                approvalAmount =
+                  tokenPrice > defaultApproval ? tokenPrice : defaultApproval;
+                to = token;
+                value = 0n;
+                data = encodeFunctionData({
+                  abi: erc20Abi,
+                  functionName: "approve",
+                  args: [deployment.engine, approvalAmount]
+                });
+              }
+            } else
+              data = boosterPurchaseData(packTypeId, quantity, value, deadline);
+          }
         } else
           data = encodeFunctionData({
             abi: boosterPacksAbi,
@@ -389,6 +465,15 @@ export function useBoosterActions() {
           abi: yunipalMonstersAbi,
           functionName: "burn",
           args: [BigInt(action.tokenId)]
+        });
+      } else if (action.source === "eth") {
+        const adapter = boosterEthAddress(environment.boosterEthAdapter);
+        if (!adapter) throw new Error("ETH payment contract is unavailable.");
+        to = adapter;
+        data = encodeFunctionData({
+          abi: boosterEthAbi,
+          functionName: "withdrawRefund",
+          args: [account]
         });
       } else
         data = encodeFunctionData({
@@ -443,7 +528,8 @@ export function useBoosterActions() {
         permitApproval: permit !== null,
         permitSigned: false,
         ...(permit ? { permit } : {}),
-        expiresAt
+        expiresAt,
+        ...(ethQuote ? { ethQuote } : {})
       });
       setPhase("idle");
     } catch (cause) {
@@ -573,6 +659,32 @@ export function useBoosterActions() {
           throw new Error("You need more ETH for randomness and network gas.");
         await checkedWallet(current.account, active.wallet);
         permitSendAttempted = true;
+      }
+      if (current.ethQuote) {
+        // Recheck the fixed deployment, simulation and balance immediately before
+        // wallet submission. Signed calldata keeps the reviewed spend limits.
+        await checkBoosterEthPayment(
+          active.client,
+          current.to,
+          deployment.engine,
+          environment.boosterPaymentToken as Address
+        );
+        await active.client.call({
+          account: current.account,
+          to: current.to,
+          data: current.data,
+          value: current.value,
+          maxFeePerGas: current.maxFeePerGas,
+          maxPriorityFeePerGas: current.maxPriorityFeePerGas
+        });
+        if (
+          (await active.client.getBalance({ address: current.account })) <
+          current.value + (current.networkFee ?? 0n)
+        )
+          throw new Error(
+            "You need more ETH for this purchase and network gas."
+          );
+        await checkedWallet(current.account, active.wallet);
       }
       if (
         !activePage.current ||

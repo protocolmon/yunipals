@@ -12,6 +12,8 @@ import {
   Play,
   X
 } from "lucide-react";
+import { environment } from "@/environment";
+import { boosterEthAddress, boosterEthAbi } from "@/lib/boosterEth";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import {
   boosterTransactionExpectation,
@@ -193,12 +195,16 @@ export function BoosterTransactions({
         expected = boosterTransactionExpectation(transaction, {
           hash,
           engine: deployment!.engine,
+          paymentAdapter:
+            boosterEthAddress(environment.boosterEthAdapter) ?? undefined,
           kind: "open"
         });
       } catch {
         expected = boosterTransactionExpectation(transaction, {
           hash,
           engine: deployment!.engine,
+          paymentAdapter:
+            boosterEthAddress(environment.boosterEthAdapter) ?? undefined,
           kind: "claim"
         });
       }
@@ -258,6 +264,7 @@ export function BoosterTransactions({
             // Recover actual multi-pack count after a reload or wallet
             // replacement. Never infer missing requests from nearby IDs/payer.
             if (
+              environment.boosterEthAdapter ||
               events.length > 1 ||
               (row.expectedRequestCount ?? 1) > 1 ||
               events.some(
@@ -273,7 +280,12 @@ export function BoosterTransactions({
                 await client.getTransaction({
                   hash: receipt.transactionHash
                 }),
-                expected
+                {
+                  ...expected,
+                  paymentAdapter:
+                    boosterEthAddress(environment.boosterEthAdapter) ??
+                    undefined
+                }
               );
             const requests = confirmedBoosterRequests(receipt, expected);
             const states = await Promise.all(
@@ -313,9 +325,23 @@ export function BoosterTransactions({
       );
     }
   });
+  const ethAdapter = boosterEthAddress(environment.boosterEthAdapter);
+  const ethRefund = useQuery({
+    queryKey: [...boosterQueryKey, "eth-refund", ethAdapter, address],
+    enabled: Boolean(showHistory && ethAdapter && address && client),
+    refetchInterval: 15000,
+    queryFn: () =>
+      client!.readContract({
+        address: ethAdapter!,
+        abi: boosterEthAbi,
+        functionName: "refundCredits",
+        args: [address!]
+      })
+  });
   if (
     !selectedHash &&
-    (!address || (!query.data?.length && !refund.data && !query.error))
+    (!address ||
+      (!query.data?.length && !refund.data && !ethRefund.data && !query.error))
   )
     return null;
   const history =
@@ -324,7 +350,10 @@ export function BoosterTransactions({
   return (
     <>
       {showHistory &&
-        (history.length > 0 || query.error || Boolean(refund.data)) && (
+        (history.length > 0 ||
+          query.error ||
+          Boolean(refund.data) ||
+          Boolean(ethRefund.data)) && (
           <details className="group mt-8 rounded-2xl border border-line bg-white/80">
             <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape [&::-webkit-details-marker]:hidden">
               <Layers3 size={18} className="text-grape" aria-hidden="true" />
@@ -345,6 +374,13 @@ export function BoosterTransactions({
                 Opening history is temporarily unavailable. Your openings are
                 saved.
               </p>
+            )}
+            {ethRefund.data !== undefined && ethRefund.data > 0n && (
+              <div className="p-4">
+                <BoosterActionButton action={{ kind: "refund", source: "eth" }}>
+                  Withdraw unused ETH from pack payment
+                </BoosterActionButton>
+              </div>
             )}
             {refund.data !== undefined && refund.data > 0n && (
               <div className="px-5 pb-4">
