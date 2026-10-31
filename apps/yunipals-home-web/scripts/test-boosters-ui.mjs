@@ -334,13 +334,25 @@ try {
     const img = document.querySelector(".booster-card-viewer .tilt-card > img");
     return img?.complete && img.naturalWidth === 1024;
   });
-  await page
-    .getByRole("button", { name: "Live holo on", exact: true })
-    .waitFor();
   const card = page.getByRole("group", {
     name: "Interactive Yunipal card",
     exact: true
   });
+  assert.equal(await page.getByLabel("Card viewer controls").count(), 0);
+  assert.equal(await card.getAttribute("data-live-holo"), "true");
+  const expectAutoTilt = async () => {
+    const rotation = await card
+      .locator(".tilt-card")
+      .evaluate((el) => el.style.getPropertyValue("--rotate-y"));
+    await page.waitForFunction(
+      (previous) =>
+        document
+          .querySelector(".tilt-card")
+          .style.getPropertyValue("--rotate-y") !== previous,
+      rotation
+    );
+  };
+  await expectAutoTilt();
   const bounds = await card.boundingBox();
   await page.mouse.move(
     bounds.x + bounds.width * 0.7,
@@ -413,24 +425,13 @@ try {
     type: "touchEnd",
     touchPoints: []
   });
-  await page.getByRole("button", { name: "Auto tilt", exact: true }).click();
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Auto tilt", exact: true })
-      .getAttribute("aria-pressed"),
-    "true"
-  );
+  await expectAutoTilt();
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page
-    .getByText("Motion is disabled by your reduced-motion setting.", {
-      exact: true
-    })
-    .waitFor();
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Auto tilt", exact: true })
-      .isDisabled(),
-    true
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector(".tilt-card")
+        .style.getPropertyValue("--rotate-y") === "0deg"
   );
   assert.equal(
     await card
@@ -439,16 +440,10 @@ try {
     "none"
   );
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.getByRole("button", { name: "Live holo on", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Live holo off", exact: true })
-    .waitFor();
-  await page
-    .getByRole("button", { name: "Live holo off", exact: true })
-    .click();
+  await expectAutoTilt();
   await cdp.detach();
   report.checks.push(
-    "integrated viewer supports mouse, touch, keyboard, auto tilt, holo toggle and reduced motion"
+    "integrated viewer supports mouse, touch, keyboard, automatic tilt and reduced motion without settings"
   );
 
   await page.getByLabel("Mints in this batch").fill("3");
