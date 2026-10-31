@@ -368,6 +368,17 @@ try {
         await page.screenshot({ path, fullPage: true });
         report.screenshots.push(path);
       }
+      await page.evaluate(() => window.__wrapIdentity(8453, null));
+      await page
+        .getByRole("button", {
+          name: "Connect wallet to get YPAL",
+          exact: true
+        })
+        .waitFor();
+      assert.deepEqual(await page.locator("section dl dd").allTextContents(), [
+        "—",
+        "—"
+      ]);
       await context.close();
     }
   );

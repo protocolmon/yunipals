@@ -126,7 +126,7 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
           >
             {wrap.balances
               ? formatRoundedAmount(wrap.balances.pmonBalance, 18, "PMON")
-              : wrap.loading
+              : wrap.address && wrap.chainId === 8453 && wrap.loading
                 ? "Checking…"
                 : "—"}
           </dd>
@@ -172,7 +172,7 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
           >
             {wrap.balances
               ? formatRoundedAmount(wrap.balances.ypalBalance, 18, "YPAL")
-              : wrap.loading
+              : wrap.address && wrap.chainId === 8453 && wrap.loading
                 ? "Checking…"
                 : "—"}
           </dd>
