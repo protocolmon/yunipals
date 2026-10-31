@@ -3,7 +3,7 @@ import { Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MonsterArtwork } from "@/lib/boosters";
 
-type Driver = { reset: () => void; auto: (enabled: boolean) => void };
+type Driver = { reset: () => void };
 export function BoosterCardViewer({
   artwork,
   interactive = true,
@@ -19,9 +19,6 @@ export function BoosterCardViewer({
   const cardRef = useRef<HTMLSpanElement>(null);
   const gesture = useRef({ x: 0, y: 0, dragged: false });
   const driverRef = useRef<Driver | null>(null);
-  const [auto, setAuto] = useState(false);
-  const [liveHolo, setLiveHolo] = useState(true);
-  const [reduced, setReduced] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const holo = Boolean(artwork.holo && artwork.attributes.glitter === "Yes");
   useEffect(() => {
@@ -31,12 +28,13 @@ export function BoosterCardViewer({
     const viewer = viewerRef.current,
       card = cardRef.current;
     if (!viewer || !card || !interactive || imageFailed) return;
-    setAuto(false);
     const media = matchMedia("(prefers-reduced-motion: reduce)");
     let x = 0,
       y = 0,
       frame = 0,
       demo = 0,
+      resume = 0,
+      inactive = false,
       pointer: number | null = null;
     let light: { x: number; y: number } | null = null;
     const clamp = (v: number) => Math.max(-1, Math.min(1, v));
@@ -94,8 +92,9 @@ export function BoosterCardViewer({
     };
     const stop = () => {
       cancelAnimationFrame(demo);
+      clearTimeout(resume);
       demo = 0;
-      setAuto(false);
+      resume = 0;
     };
     const tilt = (nx: number, ny: number) => {
       if (media.matches) return;
@@ -130,6 +129,7 @@ export function BoosterCardViewer({
         ((event.clientX - r.left) / r.width) * 2 - 1,
         ((event.clientY - r.top) / r.height) * 2 - 1
       );
+      if (pointer === null) resumeAuto();
     };
     const down = (event: PointerEvent) => {
       if (media.matches || !event.isPrimary || event.button !== 0) return;
@@ -145,12 +145,14 @@ export function BoosterCardViewer({
           viewer.releasePointerCapture(pointer);
         pointer = null;
         viewer.classList.remove("is-tracking");
+        resumeAuto();
       }
     };
     const leave = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && pointer === null) {
         light = null;
         viewer.classList.remove("has-hotspot");
+        startAuto();
       }
     };
     const key = (event: KeyboardEvent) => {
@@ -182,13 +184,27 @@ export function BoosterCardViewer({
                 : 0)
         );
       }
+      resumeAuto();
     };
     const preference = () => {
-      setReduced(media.matches);
       if (media.matches) reset();
+      else startAuto();
     };
-    const hidden = () => {
+    const visibility = () => {
       if (document.hidden) stop();
+      else startAuto();
+    };
+    const blur = () => {
+      inactive = true;
+      reset();
+    };
+    const focus = () => {
+      inactive = false;
+      startAuto();
+    };
+    const cancel = () => {
+      reset();
+      startAuto();
     };
     const demoTick = (time: number) => {
       // Stop immediately even if a browser delays the media-query change event.
@@ -201,14 +217,19 @@ export function BoosterCardViewer({
       tilt(Math.sin(time / 1800) * 0.6, Math.cos(time / 2300) * 0.4);
       demo = requestAnimationFrame(demoTick);
     };
+    const startAuto = () => {
+      stop();
+      if (!media.matches && !document.hidden && !inactive && pointer === null)
+        demo = requestAnimationFrame(demoTick);
+    };
+    const resumeAuto = () => {
+      clearTimeout(resume);
+      resume = window.setTimeout(startAuto, 1500);
+    };
     driverRef.current = {
-      reset,
-      auto: (enabled) => {
-        stop();
-        if (enabled && !media.matches) {
-          setAuto(true);
-          demo = requestAnimationFrame(demoTick);
-        }
+      reset: () => {
+        reset();
+        resumeAuto();
       }
     };
     preference();
@@ -216,25 +237,27 @@ export function BoosterCardViewer({
     viewer.addEventListener("pointerdown", down);
     viewer.addEventListener("pointermove", move);
     viewer.addEventListener("pointerup", up);
-    viewer.addEventListener("pointercancel", reset);
+    viewer.addEventListener("pointercancel", cancel);
     viewer.addEventListener("pointerleave", leave);
     viewer.addEventListener("keydown", key);
     media.addEventListener("change", preference);
-    document.addEventListener("visibilitychange", hidden);
-    window.addEventListener("blur", stop);
+    document.addEventListener("visibilitychange", visibility);
+    window.addEventListener("blur", blur);
+    window.addEventListener("focus", focus);
     return () => {
       cancelAnimationFrame(frame);
-      cancelAnimationFrame(demo);
+      stop();
       driverRef.current = null;
       viewer.removeEventListener("pointerdown", down);
       viewer.removeEventListener("pointermove", move);
       viewer.removeEventListener("pointerup", up);
-      viewer.removeEventListener("pointercancel", reset);
+      viewer.removeEventListener("pointercancel", cancel);
       viewer.removeEventListener("pointerleave", leave);
       viewer.removeEventListener("keydown", key);
       media.removeEventListener("change", preference);
-      document.removeEventListener("visibilitychange", hidden);
-      window.removeEventListener("blur", stop);
+      document.removeEventListener("visibilitychange", visibility);
+      window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", focus);
     };
   }, [artwork.image, interactive, imageFailed]);
   if (!artwork.image || imageFailed)
@@ -281,7 +304,7 @@ export function BoosterCardViewer({
           onExpand && "can-expand",
           holo && "is-holo"
         )}
-        data-live-holo={liveHolo}
+        data-live-holo="true"
         data-foil-style="prism"
         role={!onExpand && interactive ? "group" : undefined}
         aria-label={
@@ -373,55 +396,6 @@ export function BoosterCardViewer({
           </span>
         )}
       </Viewport>
-      {interactive && (
-        <>
-          <div
-            className={cn(
-              "mt-4 flex flex-wrap gap-2",
-              variant === "expanded" && "justify-center"
-            )}
-            role="group"
-            aria-label="Card viewer controls"
-          >
-            <button
-              type="button"
-              disabled={reduced}
-              aria-pressed={auto}
-              className="rounded-full border border-line px-4 py-2 text-sm focus-visible:ring-2"
-              onClick={() => driverRef.current?.auto(!auto)}
-            >
-              Auto tilt
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-line px-4 py-2 text-sm focus-visible:ring-2"
-              onClick={() => driverRef.current?.reset()}
-            >
-              Reset
-            </button>
-            {holo && (
-              <button
-                type="button"
-                aria-pressed={liveHolo}
-                className="rounded-full border border-line px-4 py-2 text-sm focus-visible:ring-2"
-                onClick={() => setLiveHolo((value) => !value)}
-              >
-                Live holo {liveHolo ? "on" : "off"}
-              </button>
-            )}
-          </div>
-          <p
-            className={cn(
-              "mt-2 text-xs text-muted",
-              variant === "expanded" && "text-center text-white/70"
-            )}
-          >
-            {reduced
-              ? "Motion is disabled by your reduced-motion setting."
-              : "Move your mouse or drag to tilt. Use the arrow keys; Home resets."}
-          </p>
-        </>
-      )}
     </div>
   );
 }
