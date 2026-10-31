@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 
 export function BoosterOpeningShare({
   hash,
-  compact = false
+  compact = false,
+  linkLabel = "Replay opening"
 }: {
   hash: string;
   compact?: boolean;
+  linkLabel?: string;
 }) {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
@@ -27,7 +29,7 @@ export function BoosterOpeningShare({
           reloadDocument
           className="font-bold text-grape underline"
         >
-          Replay opening
+          {linkLabel}
         </Link>
       )}
       <button
@@ -66,7 +68,7 @@ export function BoosterOpeningShare({
       </button>
       {copyFailed && (
         <span role="status" className="text-muted">
-          Open Replay opening and copy its address to share.
+          Open “{linkLabel}” and copy its address to share.
         </span>
       )}
     </div>

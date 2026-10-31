@@ -26,6 +26,7 @@ const { values } = parseArgs({
     "components-only": { type: "boolean", default: false },
     "layout-only": { type: "boolean", default: false },
     "claims-only": { type: "boolean", default: false },
+    "saved-opening-only": { type: "boolean", default: false },
     port: { type: "string", default: "5198" }
   }
 });
@@ -49,7 +50,6 @@ const sourcePaths = [
   "src/pages/boosters/BoosterTransactions.tsx",
   "src/pages/boosters/BoosterRequestOpening.tsx",
   "src/pages/boosters/BoosterOpeningShare.tsx",
-  "src/pages/boosters/BoosterClaimPacks.tsx",
   "src/pages/boosters/BoosterOriginalThumbnail.tsx",
   "src/pages/boosters/BoosterOriginalControls.tsx",
   "src/components/ui/select.tsx",
@@ -89,31 +89,33 @@ function inspect(node) {
   ts.forEachChild(node, inspect);
 }
 inspect(collectionTree);
-assert(
-  !rendered.has("BoosterPackSection"),
-  "Home must not mount the purchase component, including hidden JSX"
-);
-assert(!/import\s.*BoosterPackSection/.test(collectionText));
-assert(
-  !rendered.has("BoosterCollection"),
-  "Homepage must not mount a separate booster gallery"
-);
-assert(
-  rendered.has("CollectionPackCard"),
-  "Pack cards share the normal collection grid"
-);
-assert(
-  collectionText.includes("useBoosterCollectionCards"),
-  "Normal collection includes global pack pagination"
-);
-const navText = await readFile(`${root}/src/components/Nav.tsx`, "utf8");
-assert(/<ScanSearch\b/.test(navText), "Grading uses the inspection icon");
-assert(navText.includes("Grading is coming soon"));
-assert(!navText.includes("Battles are coming soon"));
-report.checks.push({
-  name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
-  passed: true
-});
+if (!values["saved-opening-only"]) {
+  assert(
+    !rendered.has("BoosterPackSection"),
+    "Home must not mount the purchase component, including hidden JSX"
+  );
+  assert(!/import\s.*BoosterPackSection/.test(collectionText));
+  assert(
+    !rendered.has("BoosterCollection"),
+    "Homepage must not mount a separate booster gallery"
+  );
+  assert(
+    rendered.has("CollectionPackCard"),
+    "Pack cards share the normal collection grid"
+  );
+  assert(
+    collectionText.includes("useBoosterCollectionCards"),
+    "Normal collection includes global pack pagination"
+  );
+  const navText = await readFile(`${root}/src/components/Nav.tsx`, "utf8");
+  assert(/<ScanSearch\b/.test(navText), "Grading uses the inspection icon");
+  assert(navText.includes("Grading is coming soon"));
+  assert(!navText.includes("Battles are coming soon"));
+  report.checks.push({
+    name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
+    passed: true
+  });
+}
 
 const ids = {
   entry: "virtual:booster-opening-ui.tsx",
@@ -146,7 +148,7 @@ if(sessionStorage.getItem('fixture-opening-scenario')!==scenario()){
  localStorage.removeItem(fixtureStorageKey);sessionStorage.removeItem('fixture-multi-fulfilled');
  sessionStorage.setItem('fixture-opening-scenario',scenario());
 }
-if(scenario()!=='empty'&&!readStored(owner,engine).length)saveBoosterTransaction(owner,engine,{
+if(scenario()!=='empty'&&scenario()!=='multi-replay-loading'&&!readStored(owner,engine).length)saveBoosterTransaction(owner,engine,{
  hash,kind:scenario()==='claim'?'claim':'open',cancelled:scenario()==='cancelled',
  ...(multi()&&scenario()!=='multi-legacy'?{expectedRequestCount:3,packTypeId:'2',quantity:1}:{}),
  ...(scenario()==='claim'?{expectedRequestCount:1,packTypeId:'2',quantity:3,originalId:'7'}:{})
@@ -159,7 +161,7 @@ const fixtureOriginal=(tokenId)=>({id:'8453:'+monsters+':'+tokenId,tokenId,colle
 export const fetchBoosterOriginal=async(_collection,tokenId)=>({item:fixtureOriginal(tokenId)});
 export const fetchBoosterRequest=async()=>({item:{status:'completed'}});
 export const fetchBoosterOwner=async()=>({items:scenario().startsWith('daily-')?(scenario()==='daily-grouped'?['7','21','99']:['7']).map(fixtureOriginal):[],nextCursor:null,requestsPaused:scenario()==='daily-paused'});
-export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:scenario()==='multi-incomplete'&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
+export const fetchBoosterRequestMonsters=async(_engine,id)=>{(window.__openingRequestCardFetches??=[]).push(id);return{items:['multi-incomplete','multi-replay-loading'].includes(scenario())&&!fulfilled()&&id==='31'?[]:(scenario()==='claim'?['17','41','99']:[originalId(id)]).map(tokenId=>({id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,requestKey:'8453:'+engine+':'+id,originalKey:'8453:'+monsters+':'+originalId(id),typeKey:'8453:'+registry+':2',isOriginal:scenario()!=='claim',metadataUri:'fixture:'+tokenId,owner:id==='31'?engine:owner,mintedTo:owner,burned:id==='250'}))};};
 export const fetchBoosterTypes=async()=>({requestsPaused:false,items:[{...fixturePack,id:"fixture-smoke-1",packTypeId:"1",manifestUri:"https://api.example.invalid/boosters/base-mainnet-smoke-v1/manifest.json"},fixturePack]});
 export const client={
  async readContract({functionName,args}){
@@ -192,7 +194,7 @@ export const client={
 const entry = `
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {MemoryRouter,Route,Routes} from 'react-router-dom';
+import {BrowserRouter,MemoryRouter,Route,Routes} from 'react-router-dom';
 import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
 import {BoosterPackOpening} from '/src/pages/boosters/BoosterPackOpening';
 import {BoosterTransactions} from '/src/pages/boosters/BoosterTransactions';
@@ -201,6 +203,7 @@ import {BoosterOriginalControls} from '/src/pages/boosters/BoosterOriginalContro
 import {fixtureArtwork,boosterAddresses,fetchBoosterOriginal} from '${ids.boosters}';
 import '/src/globals.css';
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
+const Router=${values["saved-opening-only"] ? "BrowserRouter" : "MemoryRouter"};
 window.__refreshBoosters=()=>query.invalidateQueries();
 function OriginalDetailFixture(){
  const [original,setOriginal]=useState(null);
@@ -211,9 +214,9 @@ function Harness(){
  const mode=new URLSearchParams(location.search).get('mode')||(new URLSearchParams(location.search).has('opening')?'transactions':'opening');
  const [open,setOpen]=useState(false),[closed,setClosed]=useState(0);
  const [submitted,setSubmitted]=useState(mode==='submitted'?'0x'+'a'.repeat(64):null);
- return <MemoryRouter initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><main>
+ return <Router initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><main>
   {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:mode==='detail'?<Routes><Route path="/boosters" element={<BoosterPackSection/>}/><Route path="*" element={<OriginalDetailFixture/>}/></Routes>:<BoosterTransactions autoOpenHash={submitted} onOpeningClosed={()=>setSubmitted(null)}/>}
- </main></QueryClientProvider></MemoryRouter>;
+ </main></QueryClientProvider></Router>;
 }
 createRoot(document.getElementById('root')).render(<Harness/>);`;
 const modules = {
@@ -347,6 +350,8 @@ async function drag(locator, dx, dy, cancel = false) {
   await page.mouse.up();
 }
 async function run(name, fn) {
+  if (values["saved-opening-only"] && !name.startsWith("Saved opening")) return;
+  if (!values["saved-opening-only"] && name.startsWith("Saved opening")) return;
   if (values["layout-only"] && !name.startsWith("Responsive")) return;
   if (
     values["claims-only"] &&
@@ -536,6 +541,144 @@ async function protectedLayout(target = page) {
   return geometry;
 }
 try {
+  await run(
+    "Saved opening is linked before confirmation, survives refresh, and stays closed until reopened from history",
+    async () => {
+      const hash = "0x" + "a".repeat(64);
+      await visit("mode=submitted&scenario=submission");
+      await page.waitForURL((url) => url.searchParams.get("opening") === hash);
+      assert.equal(
+        new URL(page.url()).searchParams.get("scenario"),
+        "submission"
+      );
+      await page
+        .getByText("Waiting for transaction confirmation…", { exact: true })
+        .waitFor();
+      const progress = page.getByRole("dialog", {
+        name: "Your pack",
+        exact: true
+      });
+      assert.equal(
+        await progress
+          .getByRole("link", { name: "Return to this opening" })
+          .getAttribute("href"),
+        `/boosters?opening=${hash}`
+      );
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            writeText: async (value) => {
+              window.__copiedOpening = value;
+            }
+          }
+        });
+      });
+      await progress.getByRole("button", { name: "Copy opening link" }).click();
+      assert.equal(
+        await page.evaluate(() => window.__copiedOpening),
+        `${origin}/boosters?opening=${hash}`
+      );
+      await progress
+        .getByRole("button", { name: "Opening link copied" })
+        .waitFor();
+      await page.reload();
+      await progress.waitFor();
+      await page
+        .getByText("Waiting for transaction confirmation…", { exact: true })
+        .waitFor();
+      await progress.getByRole("button", { name: "Close pack" }).click();
+      await page.waitForURL((url) => !url.searchParams.has("opening"));
+      await page.getByRole("dialog").waitFor({ state: "detached" });
+      assert.equal(await page.getByRole("dialog").count(), 0);
+      assert.equal(
+        await page.locator("details").evaluate((element) => element.open),
+        true
+      );
+      const pendingResume = page.getByRole("button", {
+        name: "View 1-card booster opening",
+        exact: true
+      });
+      await pendingResume.click();
+      await page.waitForURL((url) => url.searchParams.get("opening") === hash);
+      await progress
+        .getByText("Waiting for transaction confirmation…", { exact: true })
+        .waitFor();
+      await progress.getByRole("button", { name: "Close pack" }).click();
+      await page.waitForURL((url) => !url.searchParams.has("opening"));
+      await page.getByRole("dialog").waitFor({ state: "detached" });
+      await page.evaluate(() => {
+        window.__receiptConfirmed = true;
+        window.__refreshBoosters();
+      });
+      const resume = page.getByRole("button", {
+        name: "View 3-card booster opening",
+        exact: true
+      });
+      await resume.waitFor();
+      assert.equal(await page.getByRole("dialog").count(), 0);
+      await resume.click();
+      await page.waitForURL((url) => url.searchParams.get("opening") === hash);
+      await progress
+        .getByRole("link", { name: "Return to this opening" })
+        .waitFor();
+      await page.keyboard.press("Escape");
+    }
+  );
+  await run(
+    "Saved opening link restores loading cards without a wallet or local history, handles clipboard failure, and reaches the reveal",
+    async () => {
+      const hash = "0x" + "a".repeat(64);
+      await visit(
+        `mode=transactions&scenario=multi-replay-loading&opening=${hash}`
+      );
+      const progress = page.getByRole("dialog", {
+        name: "Your pack",
+        exact: true
+      });
+      await progress
+        .getByText("Your cards are ready. Loading their artwork…", {
+          exact: true
+        })
+        .waitFor();
+      await page.evaluate(() => {
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            writeText: async () => {
+              throw new Error("Clipboard denied");
+            }
+          }
+        });
+      });
+      await progress.getByRole("button", { name: "Copy opening link" }).click();
+      await progress
+        .getByText(
+          "Open “Return to this opening” and copy its address to share."
+        )
+        .waitFor();
+      await page.evaluate(() => localStorage.clear());
+      await progress
+        .getByRole("link", { name: "Return to this opening" })
+        .click();
+      await page.waitForURL(`${origin}/boosters?opening=${hash}`);
+      await progress
+        .getByText("Your cards are ready. Loading their artwork…", {
+          exact: true
+        })
+        .waitFor();
+      await page.evaluate(() => {
+        window.__completeMulti = true;
+        window.__refreshBoosters();
+      });
+      await waitStage("sealed");
+      await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await page.keyboard.press("Escape");
+      await page.waitForURL((url) => !url.searchParams.has("opening"));
+      await page.getByRole("dialog").waitFor({ state: "detached" });
+      assert.equal(await page.getByRole("dialog").count(), 0);
+    }
+  );
   await run(
     "Responsive demo and actual wrapper fill the opening scene without a heading gap",
     async () => {
