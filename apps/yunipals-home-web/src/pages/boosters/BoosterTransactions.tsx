@@ -98,8 +98,10 @@ function SubmittedOpening({
         detail={status}
       />
       <p className="mt-4 text-sm text-muted">
-        Safe to close. Your opening is saved.
+        Safe to close. Save your opening link to return anytime, even while your
+        cards are loading.
       </p>
+      <BoosterOpeningShare hash={hash} linkLabel="Return to this opening" />
       <a
         href={`https://basescan.org/tx/${hash}`}
         target="_blank"
@@ -135,6 +137,7 @@ export function BoosterTransactions({
 }) {
   const { address } = useAccount();
   const [search, setSearch] = useSearchParams();
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [opening, setOpening] = useState<{
     hash: string;
     wallet: string;
@@ -153,7 +156,21 @@ export function BoosterTransactions({
           (row) => row.hash.toLowerCase() === selectedHash?.toLowerCase()
         )
       : undefined;
+  useEffect(() => {
+    // The pack page restores openings from its URL. Embedded daily-card
+    // dialogs use the share link because their host pages don't restore it.
+    if (!showHistory || !selectedHash || permalink === selectedHash) return;
+    setSearch(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        next.set("opening", selectedHash);
+        return next;
+      },
+      { replace: true }
+    );
+  }, [showHistory, selectedHash, permalink, setSearch]);
   const closeOpening = () => {
+    setHistoryOpen(true);
     setOpening(null);
     onOpeningClosed?.();
     if (search.has("opening")) {
@@ -354,7 +371,11 @@ export function BoosterTransactions({
           query.error ||
           Boolean(refund.data) ||
           Boolean(ethRefund.data)) && (
-          <details className="group mt-8 rounded-2xl border border-line bg-white/80">
+          <details
+            open={historyOpen}
+            onToggle={(event) => setHistoryOpen(event.currentTarget.open)}
+            className="group mt-8 rounded-2xl border border-line bg-white/80"
+          >
             <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape [&::-webkit-details-marker]:hidden">
               <Layers3 size={18} className="text-grape" aria-hidden="true" />
               Your openings
@@ -392,6 +413,8 @@ export function BoosterTransactions({
             <ul className="divide-y divide-line border-t border-line px-5">
               {history.map((row) => {
                 const total = row.requests?.length ?? 0;
+                const canResume =
+                  total > 0 || row.status === "Waiting for confirmation";
                 const ready =
                   row.status === "Revealed" || row.status === "Partly revealed";
                 const quantity =
@@ -419,7 +442,7 @@ export function BoosterTransactions({
                         {ready ? "Ready" : row.status}
                       </p>
                     </div>
-                    {total > 0 && row.status !== "Forfeited" && (
+                    {canResume && row.status !== "Forfeited" && (
                       <button
                         type="button"
                         className="inline-flex items-center gap-2 rounded-full bg-lavender/40 px-4 py-2 font-bold text-grape transition hover:bg-lavender/70 focus-visible:ring-2 focus-visible:ring-grape"
@@ -432,7 +455,7 @@ export function BoosterTransactions({
                         {ready ? "Replay" : "View"}
                       </button>
                     )}
-                    {total > 0 && (
+                    {canResume && (
                       <BoosterOpeningShare hash={row.hash} compact />
                     )}
                     <a

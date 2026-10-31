@@ -20,6 +20,7 @@ import {
 import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterActionButton } from "./BoosterActionButton";
+import { BoosterOpeningShare } from "./BoosterOpeningShare";
 
 type Props = { onClose: () => void } & (
   | { requestId: string; requests?: never }
@@ -278,8 +279,16 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
         </button>
       )}
       <p className="mt-5 text-sm text-muted">
-        Safe to close. Your opening is saved.
+        {requests?.[0]?.transactionHash
+          ? "Safe to close. Save your opening link to return anytime, even while your cards are loading."
+          : "Safe to close. Return to this original to check your pending daily cards."}
       </p>
+      {requests?.[0]?.transactionHash && (
+        <BoosterOpeningShare
+          hash={requests[0].transactionHash}
+          linkLabel="Return to this opening"
+        />
+      )}
     </dialog>,
     document.body
   );
