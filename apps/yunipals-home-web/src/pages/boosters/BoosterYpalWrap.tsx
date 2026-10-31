@@ -2,6 +2,14 @@ import { useEffect, useRef } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { formatEther, formatUnits } from "viem";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Check,
+  Coins,
+  RefreshCw,
+  Wallet
+} from "lucide-react";
 
 import { useYpalWrap } from "@/hooks/useYpalWrap";
 import { formatRoundedAmount } from "@/lib/format";
@@ -34,139 +42,285 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
     (wrap.balanceError instanceof Error ? wrap.balanceError.message : null);
   return (
     <section
-      className="space-y-4 rounded-card border border-line bg-white p-5"
+      className="rounded-card border border-lavender/50 bg-white p-5 shadow-card sm:p-7"
       aria-labelledby="ypal-wrap-title"
     >
-      <div>
-        <h2 id="ypal-wrap-title" className="font-display text-xl text-ink">
-          Get YPAL
-        </h2>
-        <p className="mt-1 text-sm text-muted">
-          Wrap PMON on Base to receive the same amount of YPAL. Use YPAL to open
-          Yunipals packs.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 id="ypal-wrap-title" className="font-display text-2xl text-ink">
+            Get YPAL
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            Wrap PMON to YPAL, one for one.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-basechain/5 px-3 py-1.5 text-xs font-bold text-basechain">
+          <span
+            className="h-2 w-2 rounded-full bg-basechain"
+            aria-hidden="true"
+          />
+          Base
+        </span>
       </div>
-      {wrap.balances && (
-        <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          <div>
-            <dt className="text-muted">PMON balance</dt>
-            <dd title={formatUnits(wrap.balances.pmonBalance, 18)}>
-              {formatRoundedAmount(wrap.balances.pmonBalance, 18, "PMON")}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-muted">YPAL balance</dt>
-            <dd title={formatUnits(wrap.balances.ypalBalance, 18)}>
-              {formatRoundedAmount(wrap.balances.ypalBalance, 18, "YPAL")}
-            </dd>
-          </div>
-        </dl>
-      )}
-      {!wrap.address ? (
-        <button
-          className={boosterButtonClass}
-          onClick={() => openConnectModal?.()}
-        >
-          Connect wallet to get YPAL
-        </button>
-      ) : wrap.chainId !== 8453 ? (
-        <button
-          className={boosterButtonClass}
-          onClick={() => switcher.switchChain({ chainId: 8453 })}
-        >
-          Switch to Base to get YPAL
-        </button>
-      ) : (
-        <>
+      <div className="mt-6 rounded-2xl border border-line bg-lavender/10 p-4 focus-within:border-grape/50 sm:p-5">
+        <div className="flex items-center justify-between gap-3">
           <label
             htmlFor="ypal-wrap-amount"
-            className="block text-sm font-medium"
+            className="text-sm font-semibold text-muted"
           >
-            PMON amount
+            <span aria-hidden="true">You wrap</span>
+            <span className="sr-only">PMON amount</span>
           </label>
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              id="ypal-wrap-amount"
-              inputMode="decimal"
-              autoComplete="off"
-              value={wrap.amount}
-              onChange={(event) => wrap.setAmount(event.target.value)}
-              className="min-w-0 flex-1 rounded-full border border-line bg-white px-4 py-2"
-              aria-invalid={Boolean(wrap.inputError)}
-              aria-describedby="ypal-wrap-explanation"
-            />
-            <button
-              className={boosterButtonClass}
-              disabled={!wrap.canPrepare}
-              onClick={() =>
-                wrap.prepare(wrap.needsApproval ? "approve" : "wrap")
-              }
-            >
-              {wrap.needsApproval ? "Review PMON approval" : "Review wrap"}
-            </button>
-          </div>
-          <p id="ypal-wrap-explanation" className="text-sm text-muted">
-            {wrap.parsedAmount
-              ? `${formatUnits(wrap.parsedAmount, 18)} PMON → ${formatUnits(wrap.parsedAmount, 18)} YPAL`
-              : "Enter the amount to wrap."}{" "}
+          <button
+            type="button"
+            disabled={
+              !wrap.address ||
+              wrap.chainId !== 8453 ||
+              !wrap.balances ||
+              wrap.busy ||
+              Boolean(wrap.pending) ||
+              wrap.balances.pmonBalance === 0n
+            }
+            onClick={() =>
+              wrap.balances &&
+              wrap.setAmount(formatUnits(wrap.balances.pmonBalance, 18))
+            }
+            className="rounded-full bg-white px-3 py-1 text-xs font-bold text-grape transition-colors hover:bg-lavender/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Max
+          </button>
+        </div>
+        <div className="mt-3 flex items-center gap-3">
+          <input
+            id="ypal-wrap-amount"
+            aria-label="PMON amount"
+            inputMode="decimal"
+            autoComplete="off"
+            value={wrap.amount}
+            onChange={(event) => wrap.setAmount(event.target.value)}
+            disabled={
+              !wrap.address ||
+              wrap.chainId !== 8453 ||
+              wrap.busy ||
+              Boolean(wrap.pending)
+            }
+            className="w-full min-w-0 rounded-lg bg-transparent py-1 text-3xl font-semibold tracking-tight text-ink placeholder:text-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-60"
+            aria-invalid={Boolean(wrap.inputError || wrap.insufficient)}
+            aria-describedby="ypal-wrap-explanation ypal-wrap-errors"
+          />
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-white py-2 pl-2 pr-3 text-sm font-bold text-ink">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-grape/10 text-grape">
+              <Coins size={18} aria-hidden="true" />
+            </span>
+            PMON
+          </span>
+        </div>
+        <dl className="mt-3 flex flex-wrap items-baseline gap-x-1 text-xs text-muted">
+          <dt>PMON balance</dt>
+          <dd
+            title={
+              wrap.balances
+                ? formatUnits(wrap.balances.pmonBalance, 18)
+                : undefined
+            }
+          >
             {wrap.balances
+              ? formatRoundedAmount(wrap.balances.pmonBalance, 18, "PMON")
+              : wrap.loading
+                ? "Checking…"
+                : "—"}
+          </dd>
+        </dl>
+      </div>
+      <div
+        className="relative z-10 -my-3 flex justify-center"
+        aria-hidden="true"
+      >
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl border-4 border-white bg-lavender/40 text-grape">
+          <ArrowDown size={18} />
+        </span>
+      </div>
+      <div className="rounded-2xl border border-grape/15 bg-panel-polygon p-4 sm:p-5">
+        <p className="text-sm font-semibold text-muted">You receive</p>
+        <div className="mt-3 flex min-w-0 items-center justify-between gap-3">
+          <output
+            htmlFor="ypal-wrap-amount"
+            className="min-w-0 break-all text-3xl font-semibold tracking-tight text-ink"
+            aria-live="polite"
+          >
+            {wrap.parsedAmount ? formatUnits(wrap.parsedAmount, 18) : "0"}
+          </output>
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white bg-white py-2 pl-2 pr-3 text-sm font-bold text-ink">
+            <img
+              src="/images/yunipals-logo.webp"
+              alt=""
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
+            YPAL
+          </span>
+        </div>
+        <dl className="mt-3 flex flex-wrap items-baseline gap-x-1 text-xs text-muted">
+          <dt>YPAL balance</dt>
+          <dd
+            title={
+              wrap.balances
+                ? formatUnits(wrap.balances.ypalBalance, 18)
+                : undefined
+            }
+          >
+            {wrap.balances
+              ? formatRoundedAmount(wrap.balances.ypalBalance, 18, "YPAL")
+              : wrap.loading
+                ? "Checking…"
+                : "—"}
+          </dd>
+        </dl>
+      </div>
+      <div className="mt-4 flex items-center justify-between gap-3 text-xs">
+        <span className="font-semibold text-muted">1 PMON = 1 YPAL</span>
+        {wrap.address && wrap.chainId === 8453 && (
+          <button
+            type="button"
+            disabled={wrap.busy || wrap.loading}
+            onClick={() => void wrap.refresh()}
+            className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-muted hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-40"
+          >
+            <RefreshCw size={12} aria-hidden="true" />
+            Refresh balances
+          </button>
+        )}
+      </div>
+      <div
+        id="ypal-wrap-errors"
+        className="mt-3 space-y-2 text-sm text-red-700"
+        role="status"
+      >
+        {wrap.inputError && <p>{wrap.inputError}</p>}
+        {wrap.insufficient && (
+          <p>Your Base PMON balance is lower than this amount.</p>
+        )}
+      </div>
+      {wrap.address && wrap.chainId === 8453 && (
+        <ol
+          aria-label="Wrapping steps"
+          className="my-5 grid grid-cols-2 gap-2 text-xs font-semibold"
+        >
+          <li className="flex items-center gap-2 text-grape">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-grape/10">
+              {wrap.balances && !wrap.needsApproval ? (
+                <Check size={14} aria-hidden="true" />
+              ) : (
+                "1"
+              )}
+            </span>
+            Approve PMON
+          </li>
+          <li
+            className={cn(
+              "flex items-center gap-2",
+              wrap.balances && !wrap.needsApproval ? "text-grape" : "text-muted"
+            )}
+          >
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-lavender/25">
+              2
+            </span>
+            Wrap to YPAL
+          </li>
+        </ol>
+      )}
+      <button
+        type="button"
+        className={cn(
+          boosterButtonClass,
+          "mt-2 flex w-full items-center justify-center gap-2 bg-grape py-3.5 shadow-none hover:bg-grape/90 focus-visible:outline-grape"
+        )}
+        disabled={Boolean(
+          wrap.address && wrap.chainId === 8453 && !wrap.canPrepare
+        )}
+        onClick={() => {
+          if (!wrap.address) openConnectModal?.();
+          else if (wrap.chainId !== 8453)
+            switcher.switchChain({ chainId: 8453 });
+          else void wrap.prepare(wrap.needsApproval ? "approve" : "wrap");
+        }}
+      >
+        {!wrap.address ? (
+          <>
+            <Wallet size={18} aria-hidden="true" />
+            Connect wallet to get YPAL
+          </>
+        ) : wrap.chainId !== 8453 ? (
+          "Switch to Base to get YPAL"
+        ) : wrap.needsApproval ? (
+          "Review PMON approval"
+        ) : (
+          "Review wrap"
+        )}
+      </button>
+      <p
+        id="ypal-wrap-explanation"
+        className="mt-3 text-center text-xs leading-relaxed text-muted"
+      >
+        {!wrap.address
+          ? "Connect your wallet to see your Base balances."
+          : wrap.chainId !== 8453
+            ? "Switch networks to use your PMON on Base."
+            : wrap.balances
               ? wrap.needsApproval
                 ? "Approve this exact amount first, then review wrapping separately."
                 : "Your existing allowance is sufficient for this amount."
-              : "Checking the current PMON allowance."}
-          </p>
-          {wrap.inputError && (
-            <p className="text-sm text-red-700">{wrap.inputError}</p>
-          )}
-          {wrap.insufficient && (
-            <p className="text-sm text-red-700">
-              Your Base PMON balance is lower than this amount.
-            </p>
-          )}
-          {wrap.loading && !wrap.balances && (
-            <p role="status" className="text-sm text-muted">
-              Checking Base balances and YPAL…
-            </p>
-          )}
-          <button
-            className="text-sm underline"
-            disabled={wrap.busy}
-            onClick={() => void wrap.refresh()}
-          >
-            Refresh balances
-          </button>
-        </>
-      )}
+              : "Checking Base balances and YPAL…"}
+      </p>
       {wrap.pending && (
-        <div className="space-y-2 rounded-xl border border-line p-3 text-sm">
-          <p>
-            Saved {wrap.pending.kind === "approve" ? "PMON approval" : "wrap"}{" "}
-            transaction
-          </p>
-          <a
-            href={`https://basescan.org/tx/${wrap.pending.hash}`}
-            target="_blank"
-            rel="noreferrer"
-            className="block break-all underline"
-          >
-            {wrap.pending.hash}
-          </a>
+        <div className="mt-5 rounded-2xl border border-lavender/50 bg-lavender/10 p-4 text-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold text-ink">
+                Saved{" "}
+                {wrap.pending.kind === "approve" ? "PMON approval" : "wrap"}{" "}
+                transaction
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                Check its status before continuing.
+              </p>
+            </div>
+            <a
+              href={`https://basescan.org/tx/${wrap.pending.hash}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="View saved transaction on BaseScan"
+              title={wrap.pending.hash}
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg p-1 text-xs font-semibold text-grape underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
+            >
+              BaseScan <ArrowUpRight size={14} aria-hidden="true" />
+            </a>
+          </div>
           <button
-            className={boosterButtonClass}
+            type="button"
             disabled={wrap.busy}
             onClick={wrap.resolvePending}
+            className="mt-3 inline-flex items-center gap-2 rounded-full border border-grape/20 bg-white px-4 py-2 text-xs font-bold text-grape hover:bg-lavender/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-40"
           >
+            <RefreshCw size={13} aria-hidden="true" />
             Check pending transaction
           </button>
         </div>
       )}
       {wrap.message && (
-        <p role="status" className="text-sm">
+        <p
+          role="status"
+          className="mt-4 rounded-xl bg-mint/40 p-3 text-sm text-ink"
+        >
           {wrap.message}
         </p>
       )}
       {failure && (
-        <p role="alert" className="text-sm text-red-700">
+        <p
+          role="alert"
+          className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+        >
           {failure}
         </p>
       )}

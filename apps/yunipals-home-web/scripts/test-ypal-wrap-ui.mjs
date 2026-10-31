@@ -25,7 +25,10 @@ const { values } = parseArgs({
     }
   }
 });
-assert(["all", "receipt"].includes(values.filter), "Unknown wrap test filter");
+assert(
+  ["all", "receipt", "layout"].includes(values.filter),
+  "Unknown wrap test filter"
+);
 const root = fileURLToPath(new URL("..", import.meta.url));
 process.chdir(root);
 const pkg = JSON.parse(
@@ -44,7 +47,8 @@ const ids = {
   wagmi: "virtual:ypal-wrap-wagmi.ts",
   rainbow: "virtual:ypal-wrap-rainbow.ts",
   action: "virtual:ypal-wrap-action.ts",
-  fees: "virtual:ypal-wrap-fees.ts"
+  fees: "virtual:ypal-wrap-fees.ts",
+  environment: "virtual:ypal-wrap-environment.ts"
 };
 const fixture = `
 import {encodeAbiParameters,encodeEventTopics,decodeFunctionData,erc20Abi,hashDomain,parseAbiParameters} from 'viem';
@@ -117,7 +121,8 @@ const modules = {
   [ids.rainbow]: `export const useConnectModal=()=>({openConnectModal:()=>{}});`,
   [ids.action]: `export const boosterButtonClass=${JSON.stringify(buttonClass)};`,
   [ids.fees]: `export const estimateL1Fee=async()=>1000n;`,
-  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterYpalWrap}from'/src/pages/boosters/BoosterYpalWrap';import{deployment,scenario}from'${ids.fixture}';import '/src/globals.css';const root=createRoot(document.getElementById('root'));window.__wrapUnmount=()=>root.unmount();function MountedPanel(){React.useEffect(()=>{window.__wrapReady=true;},[]);return <BoosterYpalWrap deployment={scenario==='inactive'?null:deployment}/>;}root.render(<React.StrictMode><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MountedPanel/></QueryClientProvider></React.StrictMode>);`
+  [ids.environment]: `import {deployment} from '${ids.fixture}';export const environment={boostersEnabled:true,boosterLaunchId:"base-ypal-v1",boosterPaymentToken:deployment.ypal,boosterPmon:deployment.pmon,boosterDeploymentSha256:deployment.manifestSha256};`,
+  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterYpalWrap}from'/src/pages/boosters/BoosterYpalWrap';import{YpalWrapPage}from'/src/pages/wrap/page';import{MemoryRouter}from'react-router-dom';import{deployment,scenario}from'${ids.fixture}';import '/src/globals.css';const root=createRoot(document.getElementById('root'));window.__wrapUnmount=()=>root.unmount();function MountedPanel(){React.useEffect(()=>{window.__wrapReady=true;},[]);return scenario==='page'?<MemoryRouter><YpalWrapPage/></MemoryRouter>:<BoosterYpalWrap deployment={scenario==='inactive'?null:deployment}/>;}root.render(<React.StrictMode><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><MountedPanel/></QueryClientProvider></React.StrictMode>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "yunipals-wrap-vite-"));
 const server = await createServer({
@@ -135,7 +140,8 @@ const server = await createServer({
       "@tanstack/react-query",
       "viem",
       "viem/chains",
-      "zod"
+      "zod",
+      "react-router-dom"
     ]
   },
   server: { host: "127.0.0.1", port: 5207, strictPort: true, watch: null },
@@ -154,6 +160,8 @@ const server = await createServer({
       enforce: "pre",
       resolveId(id, importer) {
         if (Object.hasOwn(modules, id)) return "\0" + id;
+        if (id === "@/environment" || /\/src\/environment(?:\.ts)?$/.test(id))
+          return "\0" + ids.environment;
         if (id === "wagmi") return "\0" + ids.wagmi;
         if (id === "@rainbow-me/rainbowkit") return "\0" + ids.rainbow;
         if (id === "viem/op-stack") return "\0" + ids.fees;
@@ -287,6 +295,8 @@ try {
     return { page, context };
   }
   async function check(name, action) {
+    if (values.filter === "layout" && !name.startsWith("Wrap page artwork"))
+      return;
     if (
       values.filter === "receipt" &&
       !/^(Pending hash|Mined receipt|Transient receipt)/.test(name)
@@ -323,6 +333,41 @@ try {
         ]),
         [0, 0, 0]
       );
+      await context.close();
+    }
+  );
+  await check(
+    "Wrap page artwork, exact Max amount and responsive layout",
+    async () => {
+      const { page, context } = await visit("page");
+      await page.getByRole("button", { name: "Max", exact: true }).click();
+      assert.equal(
+        await page.getByLabel("PMON amount", { exact: true }).inputValue(),
+        "100"
+      );
+      assert.equal(await page.locator("output").textContent(), "100");
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      for (const [name, width, height] of [
+        ["desktop", 1440, 1050],
+        ["mobile", 390, 844]
+      ]) {
+        await page.setViewportSize({ width, height });
+        await page.getByLabel("PMON amount", { exact: true }).fill("1");
+        await page.evaluate(() =>
+          Promise.all(
+            Array.from(document.images).map((image) => image.decode())
+          )
+        );
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+          ),
+          false
+        );
+        const path = `/tmp/yunipals-wrap-redesign-${name}.png`;
+        await page.screenshot({ path, fullPage: true });
+        report.screenshots.push(path);
+      }
       await context.close();
     }
   );
