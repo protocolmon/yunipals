@@ -35,6 +35,7 @@ import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { BoosterActionButton } from "./BoosterActionButton";
 import { BoosterRequestOpening } from "./BoosterRequestOpening";
 import { BoosterOpeningShare } from "./BoosterOpeningShare";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 type TrackedTransaction = StoredBoosterTransaction & {
   status: string;
@@ -225,9 +226,11 @@ export function BoosterTransactions({
           kind: "claim"
         });
       }
+      const requests = confirmedBoosterRequests(receipt, expected);
+      onchainAnalytics.confirmed(8453, receipt.transactionHash);
       return {
         status: "Transaction confirmed. Loading your pack requests…",
-        requests: confirmedBoosterRequests(receipt, expected)
+        requests
       };
     }
   });
@@ -262,8 +265,10 @@ export function BoosterTransactions({
               return { ...row, status: "Waiting for confirmation" };
             if (receipt.status !== "success")
               return { ...row, status: "Transaction reverted" };
-            if (row.kind !== "open" && row.kind !== "claim")
+            if (row.kind !== "open" && row.kind !== "claim") {
+              onchainAnalytics.confirmed(8453, receipt.transactionHash);
               return { ...row, status: "Confirmed" };
+            }
             const events = parseEventLogs({
               abi: boosterPacksAbi,
               eventName: "RequestCreated",
@@ -305,6 +310,7 @@ export function BoosterTransactions({
                 }
               );
             const requests = confirmedBoosterRequests(receipt, expected);
+            onchainAnalytics.confirmed(8453, receipt.transactionHash);
             const states = await Promise.all(
               requests.map(async (created) =>
                 confirmedBoosterRequestState(

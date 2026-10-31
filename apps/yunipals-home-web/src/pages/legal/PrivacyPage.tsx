@@ -25,7 +25,7 @@ export function PrivacyPage() {
       <h1 className="display mt-2 text-4xl text-ink sm:text-5xl">
         How Yunipals handles information
       </h1>
-      <p className="mt-3 text-sm text-muted">Last updated October 8, 2026</p>
+      <p className="mt-3 text-sm text-muted">Last updated October 31, 2026</p>
 
       <div className="mt-10 space-y-9 text-sm leading-relaxed text-ink/80 sm:text-base">
         <section className={sectionClass}>
@@ -71,22 +71,46 @@ export function PrivacyPage() {
             With your permission, Yunipals uses Mixpanel to understand how
             visitors browse collections and use wallet and trading features. We
             send selected interaction events, a broad device category, event
-            times and a randomly generated browser identifier. This information
-            is pseudonymous and can connect activity from the same browser.
+            times and a randomly generated browser identifier. When you connect
+            a wallet, we also use a stable identifier derived from that wallet
+            to create a Mixpanel user profile and link consenting activity from
+            the same wallet across visits, browsers and devices. The identifier
+            uses a cryptographic hash of the normalized wallet address and a
+            Yunipals-specific namespace. It is pseudonymous, not anonymous: it
+            can be linked to a known wallet by calculating the same identifier.
+            A wallet connection is not proof of a person’s identity.
           </p>
           <p>
-            We exclude wallet addresses, ENS names, signatures, transaction and
-            order hashes, search text, full page URLs and raw error messages
+            We exclude raw wallet addresses, ENS names, signatures, transaction
+            and order hashes, search text, full page URLs and raw error messages
             from analytics events. We do not record browsing sessions or
-            automatically capture clicks. IP-derived geolocation is disabled,
-            although Mixpanel receives your IP address when your browser
-            connects to its servers.
+            automatically capture clicks. After consent, we request an
+            approximate country code from our hosting provider when available.
+            The host infers it from your connection’s IP address; VPNs and
+            proxies may make it inaccurate. We send the country code on events
+            and identified user profiles, without sending a city, region,
+            precise coordinates or an IP address as an analytics property.
+            Mixpanel’s own IP-derived geolocation is disabled, although it
+            receives your IP address when your browser connects to its servers.
+          </p>
+          <p>
+            We measure submissions and confirmed on-chain actions initiated
+            through this interface, including trades, approvals, wrapping,
+            booster actions, island withdrawals and arena entries and claims.
+            Confirmation events follow successful transaction receipt checks;
+            reverted or cancelled actions are not counted as confirmed.
+            Analytics does not monitor unrelated wallet activity or backfill
+            public transaction history. Events describe the action and network
+            without transaction hashes, token identifiers, amounts or
+            recipients.
           </p>
           <p>
             Analytics starts only after you select Allow analytics. Declining it
             does not restrict browsing, wallet connections or trading. We also
             respect supported Do Not Track and Global Privacy Control signals.
             Trading-term acceptance is separate from analytics permission.
+            Visitors who allowed our earlier browser-only analytics are asked
+            again before wallet-linked profiles or country tracking starts.
           </p>
           <p>
             {config.enabled
@@ -99,14 +123,19 @@ export function PrivacyPage() {
               {config.retention.value === 1
                 ? config.retention.unit.slice(0, -1)
                 : config.retention.unit}{" "}
-              under the Mixpanel project policy.
+              under the Mixpanel project policy. User profiles and identity
+              links are retained until deleted; the event-retention window does
+              not automatically delete a profile.
             </p>
           )}
           <p>
             You can change your choice at any time. Turning analytics off stops
-            new collection and removes analytics identifiers and local
-            deduplication records. Requests already sent and previously
-            collected events are not automatically deleted.
+            new collection and removes locally stored analytics identifiers and
+            deduplication records. Previously collected events, user profiles
+            and identity links are not automatically deleted. If you later allow
+            analytics with the same wallet, its stable identifier can reconnect
+            that activity to the existing profile. Contact us to request
+            deletion.
           </p>
           <button
             type="button"
@@ -125,10 +154,11 @@ export function PrivacyPage() {
               >
                 {config.privacyEmail}
               </a>
-              . We may need your random analytics identifier to locate
-              browser-specific information. You can find it in Analytics
-              settings while analytics is enabled. Wallet addresses are not used
-              to identify analytics records.
+              . We may need your analytics identifier to locate the information.
+              Analytics settings shows your wallet-derived identifier when a
+              wallet is linked, or your browser identifier otherwise. Copy it
+              before turning analytics off. If you used multiple wallets or
+              unlinked browsers, more than one identifier may be needed.
             </p>
           )}
         </section>

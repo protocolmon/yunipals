@@ -56,9 +56,12 @@ export function AnalyticsNotice(props: AnalyticsNoticeProps) {
       >
         <p>
           With your permission, we use Mixpanel to understand collection
-          browsing and wallet and trading features. We use a random browser
-          identifier and selected interaction events. Wallet addresses and
-          signatures are excluded. You can browse and trade whichever option you
+          browsing and wallet and on-chain features. We use a random browser
+          identifier, an approximate country when available, and selected
+          interaction and transaction events. Connecting a wallet links these
+          events to a user profile using a stable wallet-derived identifier,
+          including across devices. Raw wallet addresses and signatures are
+          excluded. You can browse and use wallet features whichever option you
           choose.
         </p>
         <p>
@@ -98,8 +101,9 @@ export function AnalyticsNotice(props: AnalyticsNoticeProps) {
             </summary>
             <p className="mt-2">
               Include this identifier when requesting access to or deletion of
-              analytics information. Copy it before turning analytics off, which
-              removes it from this browser.
+              events and profiles. This is your wallet-derived identifier when
+              connected, or your browser identifier otherwise. Copy it before
+              turning analytics off, which removes local analytics records.
             </p>
             <code className="mt-2 block break-all text-xs text-ink">
               {props.privacyId}

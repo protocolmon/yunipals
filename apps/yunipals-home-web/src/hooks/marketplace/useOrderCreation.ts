@@ -524,7 +524,8 @@ export function useOrderCreation(input: {
         analyticsOperations.published(
           intent.asset.chainId,
           intent.orderHash,
-          input.side
+          input.side,
+          intent.order.offerer
         );
         setStage("published");
         setMessage(
@@ -597,7 +598,8 @@ export function useOrderCreation(input: {
       analyticsOperations.published(
         intent.asset.chainId,
         intent.orderHash,
-        input.side
+        input.side,
+        intent.order.offerer
       );
       setStage("published");
       signed.current = undefined;

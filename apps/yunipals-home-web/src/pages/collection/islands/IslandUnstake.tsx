@@ -19,6 +19,7 @@ import {
 import { islandsCollectionId, type IslandToken } from "@/lib/islandsIndexer";
 import { acquireMarketplaceWallet } from "@/lib/marketplace/walletExecution";
 import { cn } from "@/lib/utils";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 const buttonClass =
   "rounded-full bg-ink px-5 py-3 text-sm font-bold text-white disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-ethereum";
@@ -85,6 +86,11 @@ export function IslandUnstake({ token }: { token: IslandToken }) {
       confirmations: 1,
       timeout: 180_000,
       onReplaced: ({ transactionReceipt }) => {
+        onchainAnalytics.replace(
+          1,
+          submitted,
+          transactionReceipt.transactionHash
+        );
         updatePending(transactionReceipt.transactionHash);
         saveHash(account, token.tokenId, transactionReceipt.transactionHash);
         if (
@@ -97,7 +103,10 @@ export function IslandUnstake({ token }: { token: IslandToken }) {
     // A receipt is definitive, including a cancellation or revert. Timeouts retain the saved hash.
     saveHash(account, token.tokenId);
     updatePending(undefined);
+    if (receipt.status === "reverted")
+      onchainAnalytics.failed(1, receipt.transactionHash, "reverted");
     assertIslandWithdrawal(receipt, account, token.tokenId);
+    onchainAnalytics.confirmed(1, receipt.transactionHash);
     await query.invalidateQueries({ queryKey: [islandsCollectionId] });
     if (
       !mounted.current ||
@@ -165,6 +174,7 @@ export function IslandUnstake({ token }: { token: IslandToken }) {
         ...fresh.call,
         chainId: 1
       });
+      onchainAnalytics.submitted(1, "island-unstake", submitted, account);
       saveHash(account, token.tokenId, submitted);
       unconfirmedHash = submitted;
       if (

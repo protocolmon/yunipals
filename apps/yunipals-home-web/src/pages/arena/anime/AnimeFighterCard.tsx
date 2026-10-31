@@ -17,6 +17,7 @@ import {
 import { environment } from "@/environment";
 import { arenaRequestAt } from "@/lib/arenaLive";
 import { AnimeKitPreview } from "./AnimeKitPreview";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 type FighterResponse = {
   fighter: AnimeFighter;
@@ -73,7 +74,28 @@ export function AnimeFighterCard({
         functionName: "applyForArena",
         args: [BigInt(tokenId)]
       });
-      const receipt = await client.waitForTransactionReceipt({ hash });
+      onchainAnalytics.submitted(8453, "arena-register", hash, address);
+      let observedHash = hash;
+      let cancelled = false;
+      const receipt = await client.waitForTransactionReceipt({
+        hash,
+        onReplaced: (replacement) => {
+          cancelled = replacement.reason === "cancelled";
+          onchainAnalytics.replace(
+            8453,
+            observedHash,
+            replacement.transactionReceipt.transactionHash
+          );
+          observedHash = replacement.transactionReceipt.transactionHash;
+        }
+      });
+      if (cancelled || receipt.status !== "success")
+        onchainAnalytics.failed(
+          8453,
+          receipt.transactionHash,
+          cancelled ? "cancelled" : "reverted"
+        );
+      else onchainAnalytics.confirmed(8453, receipt.transactionHash);
       if (receipt.status !== "success")
         throw new Error("The application transaction did not succeed.");
       setMessage(

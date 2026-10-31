@@ -11,6 +11,10 @@ import {
   type MarketTransactionIntent,
   type TransactionCall
 } from "@/lib/marketplace/transactionIntent";
+import {
+  onchainAnalytics,
+  marketAnalyticsAction
+} from "@/lib/analytics/onchain";
 import { analyticsOperations } from "@/lib/analytics/operations";
 
 export type MarketExecutionStage =
@@ -105,14 +109,30 @@ export async function executeMarketTransaction(
   try {
     options.onSubmitted(hash);
     analyticsOperations.submitted(intent, hash);
+    const analyticsAction = marketAnalyticsAction(intent.kind);
+    if (analyticsAction)
+      onchainAnalytics.submitted(
+        intent.chainId,
+        analyticsAction,
+        hash,
+        intent.account
+      );
     options.onStage("pending");
     const receipt = await wallet.wait(hash, intent.chainId, (replacement) => {
       analyticsOperations.submitted(intent, replacement, currentHash);
+      onchainAnalytics.replace(intent.chainId, currentHash, replacement);
       currentHash = replacement;
       options.onSubmitted(replacement);
     });
     currentHash = receipt.transactionHash;
+    if (receipt.status === "reverted")
+      onchainAnalytics.failed(
+        intent.chainId,
+        receipt.transactionHash,
+        "reverted"
+      );
     assertMarketReceipt(intent, receipt);
+    onchainAnalytics.confirmed(intent.chainId, receipt.transactionHash);
     analyticsOperations.confirmed(intent.chainId, receipt.transactionHash);
     options.onStage("confirmed");
     return receipt;

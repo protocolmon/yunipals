@@ -16,6 +16,7 @@ import {
   type YpalWrapKind,
   type YpalWrapPending
 } from "@/lib/ypalWrap";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 export type YpalWrapReview = {
   kind: YpalWrapKind;
@@ -289,6 +290,9 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
       setMessage("Confirming on Base. Your transaction hash is saved.");
       return;
     }
+    if (result.status === "failed")
+      onchainAnalytics.failed(8453, record.hash, "reverted");
+    else onchainAnalytics.confirmed(8453, record.hash);
     remember(key, null);
     if (mounted.current && latest.current.storageKey === key) {
       setMessage(
@@ -349,6 +353,12 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
         ...transaction,
         chain: base
       });
+      onchainAnalytics.submitted(
+        8453,
+        captured.kind === "approve" ? "approve-currency" : "wrap-ypal",
+        hash,
+        captured.owner
+      );
       let record: YpalWrapPending = {
         hash,
         kind: captured.kind,
@@ -385,11 +395,14 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
             !originalExact ||
             next.chainId !== 8453 ||
             (!nextExact && !cancelled);
+          onchainAnalytics.replace(8453, hash, next.hash);
           hash = next.hash;
           record = { ...record, hash };
           remember(captured.storageKey, record);
         }
       });
+      if (foreignReplacement)
+        onchainAnalytics.failed(8453, hash, "unexpected-replacement");
       if (foreignReplacement)
         throw Error(
           "The replacement differs from the reviewed action. Its hash is retained for checking."

@@ -1,3 +1,4 @@
+import { fetchAnalyticsCountry } from "@/lib/analytics/identity";
 import { environment } from "@/environment";
 import { createAnalyticsClient } from "@/lib/analytics/client";
 import { hasAnalyticsPrivacySignal } from "@/lib/analytics/consent";
@@ -23,6 +24,14 @@ export const analytics = createAnalyticsClient(environment.analytics, {
   load: async () =>
     (await import("@/lib/analytics/mixpanel")).createMixpanelAdapter,
   uuid: () => crypto.randomUUID(),
+  country: fetchAnalyticsCountry,
+  // Atomically bind an anonymous device across tabs. Without Web Locks, use a
+  // fresh device ID on wallet connection to prevent two wallets sharing a cluster.
+  withIdentityLock: (task) =>
+    navigator.locks
+      ? navigator.locks.request("yunipals-analytics-identity-v2", task)
+      : Promise.resolve().then(task),
+  linkAnonymous: typeof navigator !== "undefined" && Boolean(navigator.locks),
   deviceType: () =>
     window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop"
 });
