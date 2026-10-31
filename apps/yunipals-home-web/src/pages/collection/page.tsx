@@ -42,6 +42,13 @@ import {
 } from "@/components/CollectionFilters";
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { TokenArtwork } from "@/components/TokenArtwork";
+import { MonsterGroups } from "@/components/MonsterGroups";
+import { MonsterViewToggle } from "@/components/MonsterViewToggle";
+import {
+  TokenVersionProvider,
+  TokenVersionInfo,
+  useVersionCapabilities
+} from "@/components/TokenVersions";
 import { TokenCard } from "@/components/TokenCard";
 import { TradeReviewDialog } from "@/components/marketplace/TradeReviewDialog";
 import { useTradingConsent } from "@/components/marketplace/TradingConsentProvider";
@@ -256,6 +263,9 @@ function TokenDetail({
             <h1 className="display mt-3 text-4xl text-ink sm:text-6xl">
               {token.name || "Unknown Yunipal"}
             </h1>
+            <TokenVersionProvider tokens={[token]}>
+              <TokenVersionInfo token={token} />
+            </TokenVersionProvider>
             {description && (
               <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/65">
                 {description}
@@ -528,8 +538,29 @@ function CollectionExplorer() {
       )
     };
   }, [collectionQuery, isTcg]);
+  const versionCapabilities = useVersionCapabilities();
+  const groupingAvailable =
+    environment.monsterGroupingEnabled &&
+    versionCapabilities.data?.grouping &&
+    (!includesSolana(filters) || versionCapabilities.data.solanaGrouping);
+  const requestedView =
+    collectionQuery.get("view") === "nfts"
+      ? "nfts"
+      : collectionQuery.get("view") === "grouped" ||
+          environment.groupedMonstersDefault
+        ? "grouped"
+        : "nfts";
+  const marketFiltered = hasMarketFilters(filters);
+  const grouped = Boolean(
+    !isTcg &&
+      groupingAvailable &&
+      requestedView === "grouped" &&
+      !marketFiltered
+  );
   const canonicalQuery = serializeCollectionFilters(filters);
   canonicalQuery.set("edition", edition);
+  if (environment.monsterVersionsEnabled && !isTcg)
+    canonicalQuery.set("view", marketFiltered ? "nfts" : requestedView);
   const canonicalSearch = canonicalQuery.toString();
   useEffect(() => {
     saveCollectionFilters(canonicalSearch);
@@ -573,9 +604,8 @@ function CollectionExplorer() {
   const withSolana = !isTcg && includesSolana(filters);
   const catalog = useMarketCatalog(
     toEvmCollectionFilters(filters),
-    !isTcg && !withSolana
+    !isTcg && !withSolana && !grouped
   );
-  const marketFiltered = hasMarketFilters(filters);
   const useLegacy =
     withSolana ||
     (!marketFiltered &&
@@ -599,9 +629,14 @@ function CollectionExplorer() {
         updateCollectionChains(filters, nextFilters)
       );
       next.set("edition", edition);
+      if (environment.monsterVersionsEnabled)
+        next.set(
+          "view",
+          hasMarketFilters(nextFilters) ? "nfts" : requestedView
+        );
       setSearchParams(next, { replace: true });
     },
-    [setSearchParams, filters, edition]
+    [setSearchParams, filters, edition, requestedView]
   );
   const setEdition = useCallback(
     (nextEdition: CollectionEdition) => {
@@ -632,7 +667,7 @@ function CollectionExplorer() {
     staleTime: 60_000
   });
   const legacyTokensQuery = useInfiniteQuery({
-    enabled: !isTcg && useLegacy && !marketFiltered,
+    enabled: !isTcg && useLegacy && !marketFiltered && !grouped,
     queryKey: [
       "collection",
       collectionBrowserCacheVersion,
@@ -934,22 +969,25 @@ function CollectionExplorer() {
                 className="mt-2 text-sm font-medium text-muted"
                 aria-live="polite"
               >
-                {isTcg
-                  ? gridLoading
-                    ? "Loading TCG cards…"
-                    : gridError
-                      ? "TCG cards temporarily unavailable"
-                      : `${formatInteger(gridItems.length)} TCG card${gridItems.length === 1 ? "" : "s"}${packCards.query.hasNextPage ? " loaded" : ""}`
-                  : incompleteEmptyResults
-                    ? "Listings temporarily unavailable"
-                    : totalMatches !== undefined
-                      ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "OG Yunipals"}`
-                      : "Loading collection…"}
+                {grouped
+                  ? "Explore verified monster versions"
+                  : isTcg
+                    ? gridLoading
+                      ? "Loading TCG cards…"
+                      : gridError
+                        ? "TCG cards temporarily unavailable"
+                        : `${formatInteger(gridItems.length)} TCG card${gridItems.length === 1 ? "" : "s"}${packCards.query.hasNextPage ? " loaded" : ""}`
+                    : incompleteEmptyResults
+                      ? "Listings temporarily unavailable"
+                      : totalMatches !== undefined
+                        ? `${formatInteger(totalMatches)} ${selectedChain === "solana" ? "Exomon" : "OG Yunipals"}`
+                        : "Loading collection…"}
                 {catalogPage &&
                   !incompleteEmptyResults &&
                   filters.sale === "listed" &&
                   ` · ${formatInteger(catalogPage.verifiedListedTotal)} ${catalogPage.listingCompleteness === "complete" ? "for sale" : "verified listings"}`}
                 {!isTcg &&
+                  !grouped &&
                   gridItems.length > 0 &&
                   ` · ${formatInteger(gridItems.length)} loaded`}
               </p>
@@ -1139,212 +1177,249 @@ function CollectionExplorer() {
             </aside>
 
             <div className="min-w-0">
-              {!isTcg &&
-                catalog.configured &&
-                !withSolana &&
-                !incompleteEmptyResults &&
-                (useLegacy ||
-                  !catalogPage ||
-                  catalogPage.listingCompleteness !== "complete") && (
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
-                    <span>
-                      {useLegacy
-                        ? "Prices are unavailable. Showing collection details only."
-                        : catalogPage?.listingCompleteness === "partial"
-                          ? "Some listings are temporarily unavailable. Please try again shortly."
-                          : catalogPage?.listingCompleteness === "unavailable"
-                            ? "Prices are temporarily unavailable. Collection details remain available."
-                            : "Checking purchase availability…"}
-                    </span>
-                    {(useLegacy || catalogPage) && (
+              {!isTcg && groupingAvailable && (
+                <div className="mb-5 space-y-2">
+                  <MonsterViewToggle
+                    grouped={grouped}
+                    disabled={marketFiltered}
+                    onChange={(view) => {
+                      const next = new URLSearchParams(canonicalQuery);
+                      next.set("view", view);
+                      setSearchParams(next);
+                    }}
+                  />
+                  {marketFiltered && (
+                    <p className="text-xs text-muted">
+                      Sale and price filters show individual NFTs.
+                    </p>
+                  )}
+                  {grouped && (
+                    <p className="text-xs text-muted">
+                      Trait counts include each NFT version.
+                    </p>
+                  )}
+                </div>
+              )}
+              {grouped && versionCapabilities.data ? (
+                <MonsterGroups
+                  params={serializeCollectionFilters(filters)}
+                  revision={versionCapabilities.data.revision}
+                />
+              ) : (
+                <TokenVersionProvider tokens={tokens}>
+                  {!isTcg &&
+                    catalog.configured &&
+                    !withSolana &&
+                    !incompleteEmptyResults &&
+                    (useLegacy ||
+                      !catalogPage ||
+                      catalogPage.listingCompleteness !== "complete") && (
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+                        <span>
+                          {useLegacy
+                            ? "Prices are unavailable. Showing collection details only."
+                            : catalogPage?.listingCompleteness === "partial"
+                              ? "Some listings are temporarily unavailable. Please try again shortly."
+                              : catalogPage?.listingCompleteness ===
+                                  "unavailable"
+                                ? "Prices are temporarily unavailable. Collection details remain available."
+                                : "Checking purchase availability…"}
+                        </span>
+                        {(useLegacy || catalogPage) && (
+                          <button
+                            type="button"
+                            onClick={refreshCatalog}
+                            className="rounded-full border border-line px-3 py-2 font-bold text-ink focus-visible:ring-2 focus-visible:ring-ethereum"
+                          >
+                            Try again
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  {gridItems.length > 0 && (catalogError || gridError) && (
+                    <p role="alert" className="mb-4 text-sm text-muted">
+                      {catalogError ??
+                        (isTcg
+                          ? "Some TCG cards could not be refreshed."
+                          : "Some original collection results could not be loaded.")}
+                    </p>
+                  )}
+                  {catalogError && gridItems.length === 0 ? (
+                    <div
+                      role="alert"
+                      className="rounded-card border border-line bg-white p-6 text-sm"
+                    >
+                      <p>{catalogError}</p>
+                      <button
+                        type="button"
+                        onClick={() => setFilters(clearMarketFilters(filters))}
+                        className="mt-4 rounded-full border border-line px-4 py-2 font-bold focus-visible:ring-2 focus-visible:ring-ethereum"
+                      >
+                        Clear sale and price filters
+                      </button>
+                    </div>
+                  ) : gridLoading && gridItems.length === 0 ? (
+                    <TokenGridSkeleton count={12} />
+                  ) : gridError && gridItems.length === 0 ? (
+                    <div role="alert" className="space-y-3">
+                      {marketFiltered && (
+                        <p className="text-sm text-muted">
+                          Sale and price results are unavailable. Your filters
+                          are still applied.
+                        </p>
+                      )}
+                      <QueryError onRetry={refreshCatalog} />
+                    </div>
+                  ) : gridItems.length === 0 ? (
+                    <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
+                      <Users
+                        aria-hidden="true"
+                        className="mx-auto text-muted"
+                        size={28}
+                      />
+                      <p className="mt-3 font-bold text-ink">
+                        {incompleteEmptyResults
+                          ? "Listings are temporarily unavailable."
+                          : isTcg && packCards.query.hasNextPage
+                            ? "No matches in the loaded cards yet."
+                            : "No Yunipals match this combination."}
+                      </p>
+                      <p className="mt-1 text-sm text-muted">
+                        {incompleteEmptyResults
+                          ? "Please try again shortly. Your filters are still applied."
+                          : isTcg
+                            ? "Remove a trait filter to explore more TCG cards."
+                            : "Try another chain, remove a trait, or widen the rarity range."}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={
+                          incompleteEmptyResults
+                            ? refreshCatalog
+                            : () => setFilters(clearCollectionFilters(filters))
+                        }
+                        className="mt-5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                      >
+                        {incompleteEmptyResults
+                          ? "Try again"
+                          : "Clear all filters"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                      {gridItems.map((item, index) =>
+                        item.kind === "pack" ? (
+                          <CollectionPackCard
+                            key={collectionGridIdentity(item)}
+                            monster={item.monster}
+                          />
+                        ) : (
+                          (() => {
+                            const token = item.token;
+                            return (
+                              <TokenCard
+                                key={collectionGridIdentity(item)}
+                                token={token}
+                                eager={index < 6}
+                                market={
+                                  catalog.configured &&
+                                  !withSolana &&
+                                  token.chain !== "solana" && (
+                                    <CatalogCardMarket
+                                      market={
+                                        useLegacy
+                                          ? { status: "unknown", listings: [] }
+                                          : (marketByAsset.get(
+                                              marketplaceAssetKey(token)
+                                            ) ?? {
+                                              status: "unknown",
+                                              listings: []
+                                            })
+                                      }
+                                      account={address}
+                                      canBuy={
+                                        Boolean(
+                                          capabilities.data?.[token.chain]
+                                            ?.read &&
+                                            capabilities.data?.[token.chain]
+                                              ?.buy
+                                        ) && !capabilities.isError
+                                      }
+                                      onBuy={(order, trigger) =>
+                                        requestTradingConsent(() =>
+                                          setSelectedTrade({
+                                            order,
+                                            trigger,
+                                            name: token.name || "Yunipal"
+                                          })
+                                        )
+                                      }
+                                    />
+                                  )
+                                }
+                              />
+                            );
+                          })()
+                        )
+                      )}
+                    </div>
+                  )}
+
+                  <CollectionPackPagination cards={packCards} />
+
+                  {!isTcg &&
+                    !useLegacy &&
+                    catalog.query.isRefetchError &&
+                    tokens.length > 0 && (
+                      <p role="alert" className="mt-5 text-sm text-muted">
+                        Prices could not be refreshed. The displayed results are
+                        from the last successful check.
+                      </p>
+                    )}
+                  {!isTcg && tokensQuery.isFetchNextPageError && (
+                    <div
+                      role="alert"
+                      className="mt-5 rounded-card border border-line p-4 text-sm"
+                    >
+                      <p>
+                        The next page could not be loaded. Existing results are
+                        still shown.
+                      </p>
                       <button
                         type="button"
                         onClick={refreshCatalog}
-                        className="rounded-full border border-line px-3 py-2 font-bold text-ink focus-visible:ring-2 focus-visible:ring-ethereum"
+                        className="mt-3 rounded-full border border-line px-4 py-2 font-bold focus-visible:ring-2 focus-visible:ring-ethereum"
                       >
-                        Try again
+                        Refresh collection
                       </button>
-                    )}
-                  </div>
-                )}
-              {gridItems.length > 0 && (catalogError || gridError) && (
-                <p role="alert" className="mb-4 text-sm text-muted">
-                  {catalogError ??
-                    (isTcg
-                      ? "Some TCG cards could not be refreshed."
-                      : "Some original collection results could not be loaded.")}
-                </p>
-              )}
-              {catalogError && gridItems.length === 0 ? (
-                <div
-                  role="alert"
-                  className="rounded-card border border-line bg-white p-6 text-sm"
-                >
-                  <p>{catalogError}</p>
-                  <button
-                    type="button"
-                    onClick={() => setFilters(clearMarketFilters(filters))}
-                    className="mt-4 rounded-full border border-line px-4 py-2 font-bold focus-visible:ring-2 focus-visible:ring-ethereum"
-                  >
-                    Clear sale and price filters
-                  </button>
-                </div>
-              ) : gridLoading && gridItems.length === 0 ? (
-                <TokenGridSkeleton count={12} />
-              ) : gridError && gridItems.length === 0 ? (
-                <div role="alert" className="space-y-3">
-                  {marketFiltered && (
-                    <p className="text-sm text-muted">
-                      Sale and price results are unavailable. Your filters are
-                      still applied.
-                    </p>
+                    </div>
                   )}
-                  <QueryError onRetry={refreshCatalog} />
-                </div>
-              ) : gridItems.length === 0 ? (
-                <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
-                  <Users
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                  <p className="mt-3 font-bold text-ink">
-                    {incompleteEmptyResults
-                      ? "Listings are temporarily unavailable."
-                      : isTcg && packCards.query.hasNextPage
-                        ? "No matches in the loaded cards yet."
-                        : "No Yunipals match this combination."}
-                  </p>
-                  <p className="mt-1 text-sm text-muted">
-                    {incompleteEmptyResults
-                      ? "Please try again shortly. Your filters are still applied."
-                      : isTcg
-                        ? "Remove a trait filter to explore more TCG cards."
-                        : "Try another chain, remove a trait, or widen the rarity range."}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={
-                      incompleteEmptyResults
-                        ? refreshCatalog
-                        : () => setFilters(clearCollectionFilters(filters))
-                    }
-                    className="mt-5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-                  >
-                    {incompleteEmptyResults ? "Try again" : "Clear all filters"}
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-                  {gridItems.map((item, index) =>
-                    item.kind === "pack" ? (
-                      <CollectionPackCard
-                        key={collectionGridIdentity(item)}
-                        monster={item.monster}
-                      />
-                    ) : (
-                      (() => {
-                        const token = item.token;
-                        return (
-                          <TokenCard
-                            key={collectionGridIdentity(item)}
-                            token={token}
-                            eager={index < 6}
-                            market={
-                              catalog.configured &&
-                              !withSolana &&
-                              token.chain !== "solana" && (
-                                <CatalogCardMarket
-                                  market={
-                                    useLegacy
-                                      ? { status: "unknown", listings: [] }
-                                      : (marketByAsset.get(
-                                          marketplaceAssetKey(token)
-                                        ) ?? {
-                                          status: "unknown",
-                                          listings: []
-                                        })
-                                  }
-                                  account={address}
-                                  canBuy={
-                                    Boolean(
-                                      capabilities.data?.[token.chain]?.read &&
-                                        capabilities.data?.[token.chain]?.buy
-                                    ) && !capabilities.isError
-                                  }
-                                  onBuy={(order, trigger) =>
-                                    requestTradingConsent(() =>
-                                      setSelectedTrade({
-                                        order,
-                                        trigger,
-                                        name: token.name || "Yunipal"
-                                      })
-                                    )
-                                  }
-                                />
-                              )
-                            }
+                  {!isTcg && !catalogError && tokensQuery.hasNextPage && (
+                    <div className="mt-9 text-center">
+                      <button
+                        type="button"
+                        disabled={tokensQuery.isFetchingNextPage}
+                        onClick={() => void tokensQuery.fetchNextPage()}
+                        className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white shadow-cta transition hover:-translate-y-0.5 hover:opacity-90 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-4"
+                      >
+                        {tokensQuery.isFetchingNextPage ? (
+                          <Loader2
+                            aria-hidden="true"
+                            className="animate-spin"
+                            size={16}
                           />
-                        );
-                      })()
-                    )
+                        ) : (
+                          <ArrowRight aria-hidden="true" size={16} />
+                        )}
+                        {tokensQuery.isFetchingNextPage
+                          ? "Loading…"
+                          : selectedChain === "solana"
+                            ? "Load more Exomon"
+                            : "Load more Yunipals"}
+                      </button>
+                    </div>
                   )}
-                </div>
-              )}
-
-              <CollectionPackPagination cards={packCards} />
-
-              {!isTcg &&
-                !useLegacy &&
-                catalog.query.isRefetchError &&
-                tokens.length > 0 && (
-                  <p role="alert" className="mt-5 text-sm text-muted">
-                    Prices could not be refreshed. The displayed results are
-                    from the last successful check.
-                  </p>
-                )}
-              {!isTcg && tokensQuery.isFetchNextPageError && (
-                <div
-                  role="alert"
-                  className="mt-5 rounded-card border border-line p-4 text-sm"
-                >
-                  <p>
-                    The next page could not be loaded. Existing results are
-                    still shown.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={refreshCatalog}
-                    className="mt-3 rounded-full border border-line px-4 py-2 font-bold focus-visible:ring-2 focus-visible:ring-ethereum"
-                  >
-                    Refresh collection
-                  </button>
-                </div>
-              )}
-              {!isTcg && !catalogError && tokensQuery.hasNextPage && (
-                <div className="mt-9 text-center">
-                  <button
-                    type="button"
-                    disabled={tokensQuery.isFetchingNextPage}
-                    onClick={() => void tokensQuery.fetchNextPage()}
-                    className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white shadow-cta transition hover:-translate-y-0.5 hover:opacity-90 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-4"
-                  >
-                    {tokensQuery.isFetchingNextPage ? (
-                      <Loader2
-                        aria-hidden="true"
-                        className="animate-spin"
-                        size={16}
-                      />
-                    ) : (
-                      <ArrowRight aria-hidden="true" size={16} />
-                    )}
-                    {tokensQuery.isFetchingNextPage
-                      ? "Loading…"
-                      : selectedChain === "solana"
-                        ? "Load more Exomon"
-                        : "Load more Yunipals"}
-                  </button>
-                </div>
+                </TokenVersionProvider>
               )}
             </div>
           </div>

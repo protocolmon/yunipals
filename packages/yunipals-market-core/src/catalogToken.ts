@@ -1,4 +1,5 @@
 import { zeroAddress } from "viem";
+import { parseMonsterVersionInfo } from "./monsterVersions";
 import { parseMarketAssetId } from "./marketOrder";
 import {
   address,
@@ -61,6 +62,14 @@ export function parseCatalogToken(value: unknown) {
         );
   return {
     ...asset,
+    ...(data.versionInfo
+      ? {
+          versionInfo: parseMonsterVersionInfo(data.versionInfo, {
+            ...asset,
+            lifecycle: integer(data.lifecycle)
+          })
+        }
+      : {}),
     owner,
     hidden: false,
     burned: false,

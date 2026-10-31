@@ -1,10 +1,16 @@
 import { Link } from "react-router-dom";
 
 import { TokenArtwork } from "@/components/TokenArtwork";
+import {
+  TokenOriginBadge,
+  useTokenVersion,
+  versionReferenceLabel
+} from "@/components/TokenVersions";
 import { formatDecimal, shortAddress } from "@/lib/format";
 import type { ExomonToken } from "@/lib/solanaIndexer";
 
 export function ExomonCard({ token }: { token: ExomonToken }) {
+  const info = useTokenVersion(token);
   return (
     <article className="overflow-hidden rounded-card border border-line bg-white shadow-sm transition hover:shadow-lg">
       <Link
@@ -24,6 +30,7 @@ export function ExomonCard({ token }: { token: ExomonToken }) {
           >
             {token.name ?? "Exomon"}
           </h3>
+          <TokenOriginBadge info={info} />
           <p className="text-xs font-semibold text-muted">
             Rarity{" "}
             {token.rarityPointsCapped
@@ -32,6 +39,26 @@ export function ExomonCard({ token }: { token: ExomonToken }) {
           </p>
         </div>
       </Link>
+      {info && (
+        <div className="border-t border-line px-4 py-3 text-xs">
+          {info.versions
+            .filter((v) => v.chain !== "solana" || v.tokenId !== token.tokenId)
+            .map((v) => (
+              <Link
+                key={`${v.chain}:${v.tokenId}`}
+                to={`/collection/${v.chain}/${v.tokenId}`}
+                className="block rounded py-1 font-bold text-badge focus-visible:ring-2 focus-visible:ring-badge"
+              >
+                View {versionReferenceLabel(v)}
+                {v.unavailable
+                  ? " · Ownership unavailable"
+                  : v.burned
+                    ? " · Burned"
+                    : ""}
+              </Link>
+            ))}
+        </div>
+      )}
       <div className="border-t border-line px-4 py-3 text-xs font-medium text-muted">
         {token.burned ? (
           "Burned"

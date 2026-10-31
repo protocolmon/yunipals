@@ -1,3 +1,4 @@
+import { versionFixture } from "./monsterVersions";
 import { createHash } from "node:crypto";
 import type { Plugin } from "vite";
 
@@ -96,6 +97,8 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
     body: { error: "fixture_unavailable", message }
   });
   if (method !== "GET") return error(405, "Fixtures are read-only.");
+  const versions = versionFixture(url, fixtureTokens);
+  if (versions) return versions;
   const solana = solanaFixtureResponse(url);
   if (solana) return solana;
   if (url.pathname === "/__fixtures/indexer/v1/collector-capabilities")
