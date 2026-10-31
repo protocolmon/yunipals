@@ -44,7 +44,8 @@
     "./animeArenaAbi": "./src/animeArenaAbi.ts",
     "./anime": "./src/anime.ts",
     "./arenaV2Abi": "./src/arenaV2Abi.ts",
-    "./arenaProtocol": "./src/arenaProtocol.ts"
+    "./arenaProtocol": "./src/arenaProtocol.ts",
+    "./monsterVersions": "./src/monsterVersions.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

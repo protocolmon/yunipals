@@ -15,7 +15,8 @@ const initialState: PagingState = { cursors: [""], position: 0, pageNumber: 1 };
 /** Keeps at most five page cursors and query responses for each view. */
 export function useExomonPagination<T extends CursorPage>(
   identity: string,
-  fetchPage: (cursor: string | undefined, signal: AbortSignal) => Promise<T>
+  fetchPage: (cursor: string | undefined, signal: AbortSignal) => Promise<T>,
+  enabled = true
 ) {
   const queryClient = useQueryClient();
   const [state, setState] = useState<PagingState>(initialState);
@@ -25,6 +26,7 @@ export function useExomonPagination<T extends CursorPage>(
     [identity, cursor]
   );
   const query = useQuery({
+    enabled,
     queryKey: key,
     queryFn: ({ signal }) => fetchPage(cursor || undefined, signal),
     staleTime: 60_000,

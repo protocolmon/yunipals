@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-10-31T15:49:39.875Z",
+  "hostname": "yunipals-main",
+  "readOnly": true,
+  "metadataReleaseId": "metadata-20260921-v1",
+  "groups": 51402,
+  "members": 102816,
+  "roles": {
+    "original": 51402,
+    "airdrop": 51402,
+    "version": 12
+  },
+  "solanaOriginals": 2652,
+  "threeVersionGroups": 12,
+  "checkedBaseMints": 51402,
+  "checkedSolanaOrigins": 2652,
+  "observedSolanaOriginals": 2651,
+  "unavailableSolanaOriginals": 1,
+  "publishedSolanaRun": "2388",
+  "auditSha256": "21e29ea715912703ac426102cea6e784b7cdde6fada1ae90ad11d4a44576652d",
+  "manifestSha256": "54b1f60c624eb1c09db8b41bd0dfd72bae57940002ebd33155b8f421af9bec78",
+  "auditPath": "/tmp/yunipals-base-initial-owners-20261031-v5.jsonl",
+  "manifestPath": "/tmp/yunipals-monster-versions-solana-20261031-v1.json",
+  "activated": false
+}

@@ -22,7 +22,8 @@ export function useCollectorTokens(
   validOwner: boolean,
   visibility: "visible" | "hidden",
   filters: CollectorFilters,
-  filterError: string | null
+  filterError: string | null,
+  enabled = true
 ) {
   const client = useQueryClient();
   const capabilities = useQuery({
@@ -70,6 +71,7 @@ export function useCollectorTokens(
   const tokensQuery = useQuery<OwnerTokenPage | CollectorPage>({
     queryKey,
     enabled:
+      enabled &&
       validOwner &&
       !capabilities.isPending &&
       !filterError &&

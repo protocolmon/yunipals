@@ -107,7 +107,10 @@
     "test:unified:service": "node scripts/test-unified-service.mjs",
     "test:unified:arena:postgres": "UNIFIED_TEST_ARENA_ENABLED=true node --import tsx scripts/test-unified-ownership.mjs && node --import tsx scripts/test-unified-arena-reader.mjs",
     "test:unified:native-metadata:postgres": "node --import tsx scripts/test-unified-ownership.mjs && node --import tsx scripts/test-native-base-metadata.mjs",
-    "start:booster-api": "tsx lib/api/booster-server.ts"
+    "start:booster-api": "tsx lib/api/booster-server.ts",
+    "versions:import": "tsx scripts/import-monster-versions.ts",
+    "versions:audit-initial-owners": "tsx scripts/audit-base-initial-owners.ts",
+    "versions:solana": "tsx scripts/extend-monster-versions-solana.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",
@@ -121,7 +124,8 @@
     "zod": "3.24.2",
     "@polkamon/util-essentials": "file:vendor/polkamon-util-essentials-27.3.3.tgz",
     "@polkamon/web3-util-core": "file:vendor/polkamon-web3-util-core-30.8.3.tgz",
-    "@polkamon/web3-util-pmons": "file:vendor/polkamon-web3-util-pmons-31.15.1.tgz"
+    "@polkamon/web3-util-pmons": "file:vendor/polkamon-web3-util-pmons-31.15.1.tgz",
+    "@protopals/yunipals-market-core": "workspace:^"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.2.13",

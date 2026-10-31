@@ -1,3 +1,4 @@
+import { registerMonsterVersionRoutes } from "../versions/routes.js";
 import { assertDerivedOwnership } from "../ownership/derived-snapshot.js";
 import {
   metadataReadRelation,
@@ -1436,6 +1437,8 @@ app.get("/v1/tokens/:tokenId", async (c) => {
     lifecycles: lifecycles.rows
   });
 });
+
+registerMonsterVersionRoutes(app, { pool, resolveOwner: requireResolvedOwner });
 
 registerCollectorRoutes(app, {
   pool,

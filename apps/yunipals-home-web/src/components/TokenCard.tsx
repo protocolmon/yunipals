@@ -3,6 +3,11 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 import { TokenArtwork } from "@/components/TokenArtwork";
+import {
+  TokenOriginBadge,
+  useTokenVersion,
+  versionReferenceLabel
+} from "@/components/TokenVersions";
 import { ChainBadge } from "@/components/ui/ChainBadge";
 import { formatDecimal, shortAddress } from "@/lib/format";
 import type { CollectionToken } from "@/lib/collectionBrowser";
@@ -16,6 +21,7 @@ type TokenCardProps = {
 };
 
 export function TokenCard({ token, eager, action, market }: TokenCardProps) {
+  const versionInfo = useTokenVersion(token);
   const type = getTokenAttribute(token, "Type");
   const rarity = getDisplayedRarity(token);
   const special = getTokenAttribute(token, "Special");
@@ -64,6 +70,7 @@ export function TokenCard({ token, eager, action, market }: TokenCardProps) {
             )}
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
+            <TokenOriginBadge info={versionInfo} />
             {typeof type === "string" && (
               <span className="rounded-full bg-line/60 px-2 py-1 text-[11px] font-semibold text-ink/65">
                 {type}
@@ -82,6 +89,28 @@ export function TokenCard({ token, eager, action, market }: TokenCardProps) {
           </div>
         </div>
       </Link>
+      {versionInfo && versionInfo.versions.length > 1 && (
+        <div className="border-t border-line px-4 py-3 text-xs">
+          {versionInfo.versions
+            .filter(
+              (v) => v.chain !== token.chain || v.tokenId !== token.tokenId
+            )
+            .map((v) => (
+              <Link
+                key={`${v.chain}:${v.tokenId}`}
+                to={`/collection/${v.chain}/${v.tokenId}`}
+                className="block rounded py-1 font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"
+              >
+                View {versionReferenceLabel(v)}
+                {v.unavailable
+                  ? " · Ownership unavailable"
+                  : v.burned
+                    ? " · Burned"
+                    : ""}
+              </Link>
+            ))}
+        </div>
+      )}
       {market && <div className="border-t border-line p-4">{market}</div>}
       {action && (
         <div className="absolute right-2.5 top-2.5 z-10">{action}</div>

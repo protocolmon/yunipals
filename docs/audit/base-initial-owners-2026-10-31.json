@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-31T10:24:41.487Z",
+  "hostname": "yunipals-main",
+  "readOnlyAudit": true,
+  "nfts": 440194,
+  "statuses": {
+    "original_not_indexed": 391432,
+    "matched": 48762
+  },
+  "missingInitialOwners": 0,
+  "duplicateIds": 0,
+  "maxLifecycle": 1,
+  "originalIdentityCounts": {
+    "archiveFound": 440194,
+    "archiveMissing": 0,
+    "archivedSameId": 437542,
+    "pairedSameId": 48762,
+    "unmatchedArchiveMinted": {
+      "true": 4647,
+      "false": 386785
+    },
+    "matchedChains": {
+      "ethereum": 2121,
+      "bnb": 42571,
+      "polygon": 4070
+    },
+    "unmatchedOriginTypes": {
+      "GEN1_UKRAINIAN_UNIDONKEY": 79,
+      "GEN1_BOOSTER": 385915,
+      "GEN1_EXOMON_DROP": 2640,
+      "GEN1_GHOST_BOOSTER": 870,
+      "GEN1_BSC_BABY_MYSTERY_BOX": 1926,
+      "GEN1_NFB": 2
+    }
+  },
+  "groups": 48762,
+  "mappedBaseNfts": 48762,
+  "auditSha256": "21e29ea715912703ac426102cea6e784b7cdde6fada1ae90ad11d4a44576652d",
+  "manifestSha256": "766cc62e978ae9add7960e4dc8f35e2439d115f7c3861792ea50dc517f985c93",
+  "metadataReleaseId": "metadata-20260921-v1",
+  "auditPath": "/tmp/yunipals-base-initial-owners-20261031-v5.jsonl",
+  "manifestPath": "/tmp/yunipals-monster-versions-20261031-v5.json",
+  "identityEnrichment": {
+    "sourceAuditPath": "/tmp/yunipals-base-initial-owners-20261031-v3.jsonl",
+    "sourceAuditSha256": "8668438d03cc862993201847b55dca0014e77a6e3325819c88c078185de111f7",
+    "changes": "Include Solana and older monster-family originals; reverify exceptional NFT counterparts using both original and Base token IDs. Initial mint and owner observations are unchanged."
+  },
+  "supersedes": {
+    "auditPath": "/tmp/yunipals-base-initial-owners-20261031-v2.jsonl",
+    "reason": "Search all original chains and report archived originals separately from indexed NFT counterparts."
+  }
+}

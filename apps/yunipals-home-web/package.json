@@ -37,7 +37,9 @@
     "build:www": "node --experimental-strip-types --import ./scripts/register-typescript.mjs scripts/boosters/build-www.mjs",
     "test:boosters": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/boosters.test.ts",
     "test:boosters:ui": "node --experimental-strip-types scripts/test-boosters-ui.mjs",
-    "test:boosters:daily-reveal-ui": "node scripts/test-daily-reveal-ui.mjs"
+    "test:boosters:daily-reveal-ui": "node scripts/test-daily-reveal-ui.mjs",
+    "test:versions": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/monsterVersions.test.ts",
+    "test:versions:ui": "node scripts/test-monster-versions-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

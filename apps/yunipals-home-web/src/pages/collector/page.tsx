@@ -35,6 +35,12 @@ import { CollectorIslands } from "./components/CollectorIslands";
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
+import { MonsterGroups } from "@/components/MonsterGroups";
+import { MonsterViewToggle } from "@/components/MonsterViewToggle";
+import {
+  TokenVersionProvider,
+  useVersionCapabilities
+} from "@/components/TokenVersions";
 import { TokenCard } from "@/components/TokenCard";
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { chainDetails } from "@/data/chains";
@@ -186,10 +192,31 @@ function YunipalsCollectorPage() {
         collection: "yunipals",
         filter: "filters"
       });
-      setSearchParams(serializeCollectorFilters(next));
+      const params = serializeCollectorFilters(next);
+      if (searchParams.has("view"))
+        params.set("view", searchParams.get("view")!);
+      setSearchParams(params);
     },
-    [setSearchParams]
+    [setSearchParams, searchParams]
   );
+  const versionCapabilities = useVersionCapabilities();
+  const groupingAvailable =
+    environment.monsterGroupingEnabled && versionCapabilities.data?.grouping;
+  const requestedView =
+    searchParams.get("view") ??
+    (environment.groupedMonstersDefault ? "grouped" : "nfts");
+  const grouped = Boolean(
+    groupingAvailable && requestedView === "grouped" && !filterState.error
+  );
+  const groupParams = new URLSearchParams();
+  filters.chains.forEach((chain) => groupParams.append("chain", chain));
+  filters.types.forEach((value) => groupParams.append("t.Type", value));
+  filters.colors.forEach((value) => groupParams.append("t.Color", value));
+  if (filters.rarityMin) groupParams.set("rarityCappedMin", filters.rarityMin);
+  if (filters.rarityMax) groupParams.set("rarityCappedMax", filters.rarityMax);
+  if (filters.search) groupParams.set("q", filters.search);
+  groupParams.set("sort", filters.sort);
+  groupParams.set("owner", ownerInput);
   const validOwner = isOwnerInput(ownerInput);
   const inputIsEns = validOwner && !isEthereumAddress(ownerInput);
   const connectedAddressNormalized = connectedAddress?.toLowerCase();
@@ -234,12 +261,14 @@ function YunipalsCollectorPage() {
   const activeVisibility: VisibilityView = isOwnCollection
     ? visibilityView
     : "visible";
+  groupParams.set("visibility", activeVisibility);
   const collection = useCollectorTokens(
     ownerInput,
     validOwner,
     activeVisibility,
     filters,
-    filterState.error
+    filterState.error,
+    !grouped
   );
   const { tokensQuery } = collection;
   const facetsQuery = useQuery({
@@ -581,8 +610,14 @@ function YunipalsCollectorPage() {
                     : "Active Yunipals"}
               </h2>
               <p className="mt-2 text-sm font-medium text-muted">
-                Showing {formatInteger(gridItems.length)} {activeVisibility}{" "}
-                results on this page
+                {grouped ? (
+                  "Explore the versions held by this collector"
+                ) : (
+                  <>
+                    Showing {formatInteger(gridItems.length)} {activeVisibility}{" "}
+                    results on this page
+                  </>
+                )}
                 {isOwnCollection && activeVisibility === "visible" && (
                   <> · Hidden NFTs still count toward your score</>
                 )}
@@ -635,6 +670,18 @@ function YunipalsCollectorPage() {
             )}
           </div>
 
+          {groupingAvailable && (
+            <div className="mt-5">
+              <MonsterViewToggle
+                grouped={grouped}
+                onChange={(view) => {
+                  const next = new URLSearchParams(searchParams);
+                  next.set("view", view);
+                  setSearchParams(next);
+                }}
+              />
+            </div>
+          )}
           {collection.supported && (
             <CollectorControls
               key={ownerInput}
@@ -727,188 +774,235 @@ function YunipalsCollectorPage() {
                   "Some original collection results could not be loaded."}
               </p>
             )}
-          <div
-            className="mt-7"
-            aria-busy={
-              collection.loading ||
-              tokensQuery.isFetching ||
-              packCards.query.isFetching
-            }
-          >
-            {collection.viewError &&
-            gridItems.length === 0 ? null : (collection.loading ||
-                (packCards.enabled && packCards.query.isPending)) &&
-              gridItems.length === 0 ? (
-              <TokenGridSkeleton count={12} />
-            ) : (tokensQuery.isError ||
-                (packCards.enabled && packCards.query.isError)) &&
-              gridItems.length === 0 ? (
-              <QueryError
-                message={
-                  collection.cursorError
-                    ? "This page has expired. Refresh to start from the first page."
-                    : collectorErrorMessage(tokensQuery.error)
-                }
-                onRetry={() =>
-                  collection.cursorError
-                    ? void collection.restart()
-                    : void tokensQuery.refetch()
+          {grouped && versionCapabilities.data ? (
+            <div className="mt-7 space-y-5">
+              <MonsterGroups
+                params={groupParams}
+                revision={versionCapabilities.data.revision}
+                collector={isOwnCollection ? "you" : "collector"}
+                actionForVersion={(token) =>
+                  canManageToken(token) ? (
+                    <button
+                      type="button"
+                      disabled={visibilityMutation.isPending}
+                      onClick={() => {
+                        visibilityMutation.clearFeedback();
+                        setVisibilityAction({
+                          token,
+                          hidden: activeVisibility === "visible"
+                        });
+                      }}
+                      className="rounded-full border border-line px-3 py-2 text-xs font-bold disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ethereum"
+                    >
+                      {activeVisibility === "visible"
+                        ? "Hide this NFT"
+                        : "Unhide this NFT"}
+                    </button>
+                  ) : null
                 }
               />
-            ) : gridItems.length === 0 ? (
-              <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
-                {activeVisibility === "hidden" ? (
-                  <EyeOff
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                ) : (
-                  <Eye
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                )}
-                <p className="mt-3 font-bold text-ink">
-                  {packCards.query.hasNextPage
-                    ? "No matches in the loaded cards yet."
-                    : hasCollectorFilters(filters)
-                      ? "No matches"
-                      : activeVisibility === "hidden"
-                        ? "No hidden NFTs"
-                        : "No visible Yunipals"}
-                </p>
-                <p className="mx-auto mt-1 max-w-lg text-sm text-muted">
-                  {hasCollectorFilters(filters)
-                    ? "Try a different search or clear your filters to see more Yunipals."
-                    : activeVisibility === "hidden"
-                      ? "NFTs you hide from public Yunipals views will appear here so you can unhide them."
-                      : "This wallet does not currently have any publicly visible Yunipals."}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                {gridItems.map((item, index) =>
-                  item.kind === "pack" ? (
-                    <CollectionPackCard
-                      key={collectionGridIdentity(item)}
-                      monster={item.monster}
-                    />
-                  ) : (
-                    (() => {
-                      const token = item.token;
-                      return (
-                        <TokenCard
-                          key={collectionGridIdentity(item)}
-                          token={token}
-                          eager={index < 6}
-                          action={
-                            canManageToken(token) ? (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  visibilityMutation.clearFeedback();
-                                  setVisibilityAction({
-                                    token,
-                                    hidden: activeVisibility === "visible"
-                                  });
-                                }}
-                                disabled={
-                                  visibilityMutation.isPending ||
-                                  tokensQuery.isFetching
-                                }
-                                className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
-                                aria-label={`${
-                                  activeVisibility === "visible"
-                                    ? "Hide"
-                                    : "Unhide"
-                                } ${token.name || `Yunipal #${token.tokenId}`}`}
-                                title={
-                                  activeVisibility === "visible"
-                                    ? "Hide NFT"
-                                    : "Unhide NFT"
-                                }
-                              >
-                                {visibilityMutation.isPending &&
-                                visibilityMutation.pendingTokenKey ===
-                                  tokenKey(token) ? (
-                                  <Loader2
-                                    aria-hidden="true"
-                                    className="animate-spin"
-                                    size={15}
-                                  />
-                                ) : activeVisibility === "visible" ? (
-                                  <EyeOff aria-hidden="true" size={15} />
-                                ) : (
-                                  <Eye aria-hidden="true" size={15} />
-                                )}
-                              </button>
-                            ) : undefined
-                          }
-                        />
-                      );
-                    })()
-                  )
-                )}
-              </div>
-            )}
-          </div>
-
-          <CollectionPackPagination cards={packCards} />
-          {!collection.viewError && !collection.loading && (
-            <nav
-              className="mt-7 flex flex-wrap items-center justify-center gap-3"
-              aria-label="Original collection pages"
-            >
-              <button
-                type="button"
-                onClick={collection.previous}
-                disabled={
-                  !collection.hasPrevious ||
-                  tokensQuery.isFetching ||
-                  visibilityMutation.isPending
-                }
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-sm font-bold text-ink disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                <ChevronLeft aria-hidden="true" size={16} /> Previous
-              </button>
-              <button
-                type="button"
-                onClick={() => void collection.restart()}
-                disabled={
-                  tokensQuery.isFetching || visibilityMutation.isPending
-                }
-                className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-3 text-sm font-bold text-ink disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                <RefreshCw
-                  aria-hidden="true"
-                  size={15}
-                  className={cn(tokensQuery.isFetching && "animate-spin")}
-                />{" "}
-                Refresh
-              </button>
-              <button
-                type="button"
-                onClick={collection.next}
-                disabled={
-                  !collection.hasNext ||
-                  tokensQuery.isFetching ||
-                  visibilityMutation.isPending
-                }
-                className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-              >
-                Next <ChevronRight aria-hidden="true" size={16} />
-              </button>
-              {tokensQuery.isError && tokens.length > 0 && (
-                <p
-                  role="alert"
-                  className="w-full text-center text-sm text-red-700"
-                >
-                  Could not refresh this page. Your previous results are shown.
-                </p>
+              {packCards.items.length > 0 && (
+                <div>
+                  <h3 className="mb-3 font-bold text-ink">TCG cards</h3>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                    {packCards.items.map((monster) => (
+                      <CollectionPackCard
+                        key={`${monster.collection}:${monster.tokenId}`}
+                        monster={monster}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
-            </nav>
+              <CollectionPackPagination cards={packCards} />
+            </div>
+          ) : (
+            <TokenVersionProvider tokens={tokens}>
+              <div
+                className="mt-7"
+                aria-busy={
+                  collection.loading ||
+                  tokensQuery.isFetching ||
+                  packCards.query.isFetching
+                }
+              >
+                {collection.viewError &&
+                gridItems.length === 0 ? null : (collection.loading ||
+                    (packCards.enabled && packCards.query.isPending)) &&
+                  gridItems.length === 0 ? (
+                  <TokenGridSkeleton count={12} />
+                ) : (tokensQuery.isError ||
+                    (packCards.enabled && packCards.query.isError)) &&
+                  gridItems.length === 0 ? (
+                  <QueryError
+                    message={
+                      collection.cursorError
+                        ? "This page has expired. Refresh to start from the first page."
+                        : collectorErrorMessage(tokensQuery.error)
+                    }
+                    onRetry={() =>
+                      collection.cursorError
+                        ? void collection.restart()
+                        : void tokensQuery.refetch()
+                    }
+                  />
+                ) : gridItems.length === 0 ? (
+                  <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
+                    {activeVisibility === "hidden" ? (
+                      <EyeOff
+                        aria-hidden="true"
+                        className="mx-auto text-muted"
+                        size={28}
+                      />
+                    ) : (
+                      <Eye
+                        aria-hidden="true"
+                        className="mx-auto text-muted"
+                        size={28}
+                      />
+                    )}
+                    <p className="mt-3 font-bold text-ink">
+                      {packCards.query.hasNextPage
+                        ? "No matches in the loaded cards yet."
+                        : hasCollectorFilters(filters)
+                          ? "No matches"
+                          : activeVisibility === "hidden"
+                            ? "No hidden NFTs"
+                            : "No visible Yunipals"}
+                    </p>
+                    <p className="mx-auto mt-1 max-w-lg text-sm text-muted">
+                      {hasCollectorFilters(filters)
+                        ? "Try a different search or clear your filters to see more Yunipals."
+                        : activeVisibility === "hidden"
+                          ? "NFTs you hide from public Yunipals views will appear here so you can unhide them."
+                          : "This wallet does not currently have any publicly visible Yunipals."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                    {gridItems.map((item, index) =>
+                      item.kind === "pack" ? (
+                        <CollectionPackCard
+                          key={collectionGridIdentity(item)}
+                          monster={item.monster}
+                        />
+                      ) : (
+                        (() => {
+                          const token = item.token;
+                          return (
+                            <TokenCard
+                              key={collectionGridIdentity(item)}
+                              token={token}
+                              eager={index < 6}
+                              action={
+                                canManageToken(token) ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      visibilityMutation.clearFeedback();
+                                      setVisibilityAction({
+                                        token,
+                                        hidden: activeVisibility === "visible"
+                                      });
+                                    }}
+                                    disabled={
+                                      visibilityMutation.isPending ||
+                                      tokensQuery.isFetching
+                                    }
+                                    className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
+                                    aria-label={`${
+                                      activeVisibility === "visible"
+                                        ? "Hide"
+                                        : "Unhide"
+                                    } ${token.name || `Yunipal #${token.tokenId}`}`}
+                                    title={
+                                      activeVisibility === "visible"
+                                        ? "Hide NFT"
+                                        : "Unhide NFT"
+                                    }
+                                  >
+                                    {visibilityMutation.isPending &&
+                                    visibilityMutation.pendingTokenKey ===
+                                      tokenKey(token) ? (
+                                      <Loader2
+                                        aria-hidden="true"
+                                        className="animate-spin"
+                                        size={15}
+                                      />
+                                    ) : activeVisibility === "visible" ? (
+                                      <EyeOff aria-hidden="true" size={15} />
+                                    ) : (
+                                      <Eye aria-hidden="true" size={15} />
+                                    )}
+                                  </button>
+                                ) : undefined
+                              }
+                            />
+                          );
+                        })()
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <CollectionPackPagination cards={packCards} />
+              {!collection.viewError && !collection.loading && (
+                <nav
+                  className="mt-7 flex flex-wrap items-center justify-center gap-3"
+                  aria-label="Original collection pages"
+                >
+                  <button
+                    type="button"
+                    onClick={collection.previous}
+                    disabled={
+                      !collection.hasPrevious ||
+                      tokensQuery.isFetching ||
+                      visibilityMutation.isPending
+                    }
+                    className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-sm font-bold text-ink disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                  >
+                    <ChevronLeft aria-hidden="true" size={16} /> Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void collection.restart()}
+                    disabled={
+                      tokensQuery.isFetching || visibilityMutation.isPending
+                    }
+                    className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-3 text-sm font-bold text-ink disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                  >
+                    <RefreshCw
+                      aria-hidden="true"
+                      size={15}
+                      className={cn(tokensQuery.isFetching && "animate-spin")}
+                    />{" "}
+                    Refresh
+                  </button>
+                  <button
+                    type="button"
+                    onClick={collection.next}
+                    disabled={
+                      !collection.hasNext ||
+                      tokensQuery.isFetching ||
+                      visibilityMutation.isPending
+                    }
+                    className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                  >
+                    Next <ChevronRight aria-hidden="true" size={16} />
+                  </button>
+                  {tokensQuery.isError && tokens.length > 0 && (
+                    <p
+                      role="alert"
+                      className="w-full text-center text-sm text-red-700"
+                    >
+                      Could not refresh this page. Your previous results are
+                      shown.
+                    </p>
+                  )}
+                </nav>
+              )}
+            </TokenVersionProvider>
           )}
         </div>
       </section>

@@ -47,6 +47,7 @@ export type TokenAttribute = {
 };
 
 export type YunipalToken = {
+  versionInfo?: import("@protopals/yunipals-market-core/monsterVersions").MonsterVersionInfo;
   chain: IndexedChain;
   chainId: number;
   contractAddress: EvmAddress;
