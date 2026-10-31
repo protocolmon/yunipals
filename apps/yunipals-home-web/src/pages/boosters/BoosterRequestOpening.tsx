@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { X } from "lucide-react";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
@@ -28,6 +28,8 @@ type Props = { onClose: () => void } & (
 
 export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
   const deployment = boosterAddresses();
+  const queries = useQueryClient();
+  const refreshed = useRef(false);
   const client = usePublicClient({ chainId: 8453 });
   const titleId = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -141,6 +143,22 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
     }
   }
   const ready = Boolean(pulls?.[0] && (!forfeited || acceptForfeited));
+  useEffect(() => {
+    if (!ready || refreshed.current) return;
+    refreshed.current = true;
+    // Confirmation precedes VRF and indexing. Refresh ownership/credits again
+    // when the actual cards arrive, without disturbing the active reveal.
+    for (const resource of [
+      "originals",
+      "original",
+      "normal-collection",
+      "monsters",
+      "recent-openings"
+    ])
+      void queries.invalidateQueries({
+        queryKey: [...boosterQueryKey, resource]
+      });
+  }, [ready, queries]);
   const errored =
     !validGroup ||
     aggregationError ||
