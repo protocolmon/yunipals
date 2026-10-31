@@ -200,6 +200,7 @@ import {BoosterPackOpening} from '/src/pages/boosters/BoosterPackOpening';
 import {BoosterTransactions} from '/src/pages/boosters/BoosterTransactions';
 import {BoosterPackSection} from '/src/pages/boosters/BoosterPackSection';
 import {BoosterOriginalControls} from '/src/pages/boosters/BoosterOriginalControls';
+import {BoosterOpeningProvider} from '/src/providers/BoosterOpeningProvider';
 import {fixtureArtwork,boosterAddresses,fetchBoosterOriginal} from '${ids.boosters}';
 import '/src/globals.css';
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
@@ -214,9 +215,9 @@ function Harness(){
  const mode=new URLSearchParams(location.search).get('mode')||(new URLSearchParams(location.search).has('opening')?'transactions':'opening');
  const [open,setOpen]=useState(false),[closed,setClosed]=useState(0);
  const [submitted,setSubmitted]=useState(mode==='submitted'?'0x'+'a'.repeat(64):null);
- return <Router initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><main>
+ return <Router initialEntries={[location.pathname+location.search]}><QueryClientProvider client={query}><BoosterOpeningProvider><main>
   {mode==='opening'||mode==='batch'?<><button onClick={()=>setOpen(true)}>Start local opening</button><output aria-label="Close count">{closed}</output>{open&&(mode==='batch'?<BoosterPackOpening collection={boosterAddresses().monsters} tokenId="7" additionalCards={[{collection:boosterAddresses().monsters,tokenId:'21'},{collection:boosterAddresses().monsters,tokenId:'99'}]} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>:<BoosterPackOpening mode="demo" artwork={fixtureArtwork} onClose={()=>{setOpen(false);setClosed(n=>n+1);}}/>)}</>:mode==='pack'?<BoosterPackSection/>:mode==='detail'?<Routes><Route path="/boosters" element={<BoosterPackSection/>}/><Route path="*" element={<OriginalDetailFixture/>}/></Routes>:<BoosterTransactions autoOpenHash={submitted} onOpeningClosed={()=>setSubmitted(null)}/>}
- </main></QueryClientProvider></Router>;
+ </main></BoosterOpeningProvider></QueryClientProvider></Router>;
 }
 createRoot(document.getElementById('root')).render(<Harness/>);`;
 const modules = {

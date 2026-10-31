@@ -8,6 +8,7 @@ import { App } from "@/App";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { registerLazyLoadRecovery } from "@/lib/lazyLoadRecovery";
 import { AppProviders } from "@/providers/AppProviders";
+import { BoosterOpeningProvider } from "@/providers/BoosterOpeningProvider";
 
 import "@/globals.css";
 
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <AppProviders>
         <AppErrorBoundary>
-          <App />
+          <BoosterOpeningProvider>
+            <App />
+          </BoosterOpeningProvider>
         </AppErrorBoundary>
       </AppProviders>
     </BrowserRouter>
