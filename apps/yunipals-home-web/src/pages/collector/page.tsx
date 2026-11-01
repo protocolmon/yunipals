@@ -202,9 +202,7 @@ function YunipalsCollectorPage() {
   const versionCapabilities = useVersionCapabilities();
   const groupingAvailable =
     environment.monsterGroupingEnabled && versionCapabilities.data?.grouping;
-  const requestedView =
-    searchParams.get("view") ??
-    (environment.groupedMonstersDefault ? "grouped" : "nfts");
+  const requestedView = searchParams.get("view") ?? "nfts";
   const grouped = Boolean(
     groupingAvailable && requestedView === "grouped" && !filterState.error
   );

@@ -544,12 +544,7 @@ function CollectionExplorer() {
     versionCapabilities.data?.grouping &&
     (!includesSolana(filters) || versionCapabilities.data.solanaGrouping);
   const requestedView =
-    collectionQuery.get("view") === "nfts"
-      ? "nfts"
-      : collectionQuery.get("view") === "grouped" ||
-          environment.groupedMonstersDefault
-        ? "grouped"
-        : "nfts";
+    collectionQuery.get("view") === "grouped" ? "grouped" : "nfts";
   const marketFiltered = hasMarketFilters(filters);
   const grouped = Boolean(
     !isTcg &&

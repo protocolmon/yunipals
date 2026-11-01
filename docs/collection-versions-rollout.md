@@ -86,13 +86,12 @@ Deploy the backward-compatible API routes and frontend code before changing the 
 | `VITE_MONSTER_VERSIONS_ENABLED=true` | Enables batched origin badges and counterpart links in the frontend. |
 | `API_MONSTER_GROUPING_ENABLED=true` | Enables grouped API reads independently of labels. |
 | `VITE_MONSTER_GROUPING_ENABLED=true` | Enables the view toggle when the backend advertises grouping support. |
-| `VITE_GROUPED_MONSTERS_DEFAULT=true` | Makes grouped ordinary OG browsing the default for users without an explicit or saved view preference. |
 
-Vite settings take effect in a new frontend build. Start with labels and links, then enable the optional grouped view, then its default. The capability endpoint is `/v1/monster-version-capabilities`. A missing mapping, disabled setting, or changed metadata archive keeps the capability unavailable.
+Vite settings take effect in a new frontend build. Start with labels and links, then enable the optional grouped view. All NFTs remains the default in the collection and EVM/Solana collector views. Grouping requires a user choice, a saved collection preference, or an explicit `view=grouped` link; there is no deployment setting to make it the default. The capability endpoint is `/v1/monster-version-capabilities`. A missing mapping, disabled setting, or changed metadata archive keeps the capability unavailable.
 
 Individual NFT browsing continues through the existing catalog and collector APIs. Grouped browsing reads `/v1/monster-groups` directly from the indexer, avoiding changes to marketplace listing snapshots or purchase execution. `/v1/monster-versions` enriches existing NFT cards in batches of up to 48 identities. Group pages contain at most 24 groups. Solana and EVM results use the same server grouping/count query and keyset cursors in both directions. A relationship is grouped before pagination even when its members use different ID formats. Cursors expire on a new published Solana scan or manifest, as well as on EVM ownership or relationship changes. The frontend retains at most five cached pages.
 
-Before making grouping the default, measure group/count query plans and latency on the real allocation, common trait filters, deep pages, and the largest wallet. Grouped SQL has a one-second statement deadline. Keep grouping disabled if the real query plans cannot meet that limit. Synthetic fixtures prove correctness, not production capacity.
+Before enabling optional grouping, measure group/count query plans and latency on the real allocation, common trait filters, deep pages, and the largest wallet. Grouped SQL has a one-second statement deadline. Keep grouping disabled if the real query plans cannot meet that limit. Synthetic fixtures prove correctness, not production capacity.
 
 **Verification**
 

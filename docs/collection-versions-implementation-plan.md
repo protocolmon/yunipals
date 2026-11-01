@@ -14,7 +14,7 @@ Apply this to the OG monster collection, its NFT detail pages, and collector pro
 | NFT detail | Show the relationship, links to the other versions, and a short explanation of independent ownership. |
 | Grouped collection | Show the artwork once, a “2 versions” control, and expandable rows for each matching NFT. Support more than two versions in the data model. |
 | Personal collection | Show which versions the viewed collector currently owns, using “You own both” only when that collector is the connected user. |
-| View selector | Offer “Grouped monsters” and “All NFTs.” Default ordinary OG browsing to grouped mode after rollout checks pass. |
+| View selector | Default to “All NFTs” and offer “Grouped monsters” as an optional view. Preserve an explicit or saved user choice. |
 | Sale and price filters | Use All NFTs for the first release so each result and purchase refers to one asset. Explain the view change and preserve the filters. |
 
 Keep chain-specific NFT URLs working. Selecting an individual version opens its existing detail page. The grouped card's primary control opens its version list; it must not silently pick an NFT to buy.
@@ -138,7 +138,7 @@ Test pagination at 23/24/25 groups and on deep pages, including pairs that previ
 
 Browser checks should cover desktop and mobile, keyboard expansion, direct counterpart links, URL history, saved preferences, mode changes under market filters, visibility changes, and a purchase of only one version. Run relevant existing collector, collection browser, marketplace, Islands, and pack-grid regressions alongside the new tests, followed by workspace type checks and builds.
 
-Benchmark grouped page and count queries separately against representative data and the largest observed wallet. Inspect query plans and add indexes based on those plans. Record latency, query count, response size, and deep-page behavior against the current collection baseline. Require fixed page sizes, bounded version hydration, and compliance with existing request deadlines; establish numeric latency budgets from the baseline before enabling grouped mode by default.
+Benchmark grouped page and count queries separately against representative data and the largest observed wallet. Inspect query plans and add indexes based on those plans. Record latency, query count, response size, and deep-page behavior against the current collection baseline. Require fixed page sizes, bounded version hydration, and compliance with existing request deadlines; establish numeric latency budgets from the baseline before enabling optional grouped mode.
 
 Deliver in four reviewable increments:
 
@@ -149,4 +149,4 @@ Deliver in four reviewable increments:
 
 Before each production change, verify the target host and deployed service versions. Use low-rate smoke checks for known original/Base pairs, a split-owner pair, a large wallet, and Base NFTs with only an archived original. If grouping fails, disable it while preserving the labels and links. Keep additive schema and evidence records for diagnosis; rollback should not require deleting relationship data.
 
-The first increment can ship independently. The mapping can be reconstructed from canonical Base mint recipients and verified original NFT identities; an old snapshot is needed only for historical eligibility claims. The grouped default additionally depends on complete pagination, ownership/visibility behavior, and acceptable query performance.
+The first increment can ship independently. The mapping can be reconstructed from canonical Base mint recipients and verified original NFT identities; an old snapshot is needed only for historical eligibility claims. Optional grouping additionally depends on complete pagination, ownership/visibility behavior, and acceptable query performance. All NFTs remains the default after rollout.

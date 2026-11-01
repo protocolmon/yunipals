@@ -44,14 +44,41 @@ const count = async (n) => {
   );
 };
 try {
-  await page.goto(
-    `${app.origin}/?edition=og&chain=ethereum&chain=base&view=grouped`
-  );
+  await page.goto(`${app.origin}/?edition=og&chain=ethereum&chain=base`);
   const browseOnly = page.getByRole("button", {
     name: "Browse only",
     exact: true
   });
   if (await browseOnly.isVisible()) await browseOnly.click();
+  const solanaMint = "1".repeat(31) + "2";
+  const solanaOwner = "1".repeat(31) + "Z";
+  for (const [path, expectedCount] of [
+    ["/?edition=og&chain=ethereum&chain=base", 24],
+    ["/collector/0x0000000000000000000000000000000000000001", 24],
+    [`/collector/solana/${solanaOwner}`, 18]
+  ]) {
+    await page.goto(`${app.origin}${path}`);
+    await page
+      .getByRole("button", { name: "All NFTs", exact: true, pressed: true })
+      .waitFor();
+    await page
+      .getByRole("button", {
+        name: "Grouped monsters",
+        exact: true,
+        pressed: false
+      })
+      .waitFor();
+    await count(expectedCount);
+  }
+  assert.equal(
+    requests.some((request) =>
+      new URL(request).pathname.endsWith("/monster-groups")
+    ),
+    false
+  );
+  await page.goto(
+    `${app.origin}/?edition=og&chain=ethereum&chain=base&view=grouped`
+  );
   await page.getByText("18 groups · 24 NFTs.", { exact: false }).waitFor();
   await count(18);
   const controlId = await cards
@@ -88,8 +115,6 @@ try {
     .getByText("Collector owns 2 matching versions", { exact: true })
     .first()
     .waitFor();
-  const solanaMint = "1".repeat(31) + "2";
-  const solanaOwner = "1".repeat(31) + "Z";
   await page.goto(
     `${app.origin}/?edition=og&chain=base&chain=polygon&chain=solana&view=grouped`
   );
@@ -207,6 +232,8 @@ try {
     JSON.stringify({
       passed: true,
       checks: [
+        "All NFTs default in collection and EVM/Solana collector views",
+        "no grouped reads before opting in",
         "group counts",
         "keyboard expansion",
         "labels",

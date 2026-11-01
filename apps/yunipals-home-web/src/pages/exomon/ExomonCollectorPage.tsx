@@ -36,9 +36,7 @@ function CollectorContent({ address }: { address: string }) {
     versions.data?.grouping &&
     versions.data.solanaGrouping;
   const grouped = Boolean(
-    available &&
-      (params.get("view") ??
-        (environment.groupedMonstersDefault ? "grouped" : "nfts")) === "grouped"
+    available && params.get("view") === "grouped"
   );
   const groupParams = new URLSearchParams({
     chain: "solana",

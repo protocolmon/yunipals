@@ -17,8 +17,8 @@ export function MonsterViewToggle({
     >
       {(
         [
-          ["grouped", "Grouped monsters"],
-          ["nfts", "All NFTs"]
+          ["nfts", "All NFTs"],
+          ["grouped", "Grouped monsters"]
         ] as const
       ).map(([value, label]) => (
         <button

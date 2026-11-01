@@ -9,8 +9,6 @@ export const environment = {
     import.meta.env?.VITE_MONSTER_VERSIONS_ENABLED === "true",
   monsterGroupingEnabled:
     import.meta.env?.VITE_MONSTER_GROUPING_ENABLED === "true",
-  groupedMonstersDefault:
-    import.meta.env?.VITE_GROUPED_MONSTERS_DEFAULT === "true",
   collectionOnly: import.meta.env?.VITE_COLLECTION_ONLY === "true",
   analytics: analyticsConfigFromEnv(import.meta.env ?? {}),
   // Enable only against a deployed API implementing the marketplace contract.
