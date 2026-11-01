@@ -15,7 +15,6 @@ vi.mock("../lib/metadata/read-source.js", () => ({
   metadataSearchReadRelation: "metadata.token_search",
   metadataTraitReadRelation: "metadata.token_trait"
 }));
-import { buildVersionQuery, parseVersionQuery } from "../lib/versions/query.js";
 import { parseVersionManifest } from "../lib/versions/manifest.js";
 import { monsterVersionMigrations } from "../lib/versions/schema.js";
 import { collections } from "../lib/constants.js";
@@ -75,17 +74,7 @@ describe("verified relationship import", () => {
   });
 });
 
-type GroupRow = {
-  id: string;
-  members: {
-    chain: string;
-    tokenId: string;
-    owner: string;
-    lifecycle: number;
-  }[];
-  position: { score: string | null; tokenId: string; chain: string };
-};
-describe("grouped queries on PostgreSQL", () => {
+describe("relationship reads on PostgreSQL", () => {
   let db: PGlite;
   beforeAll(async () => {
     db = new PGlite();
@@ -123,133 +112,7 @@ describe("grouped queries on PostgreSQL", () => {
   afterAll(async () => {
     await db?.close();
   });
-  async function page(
-    params = "",
-    owners: Record<string, string> = {},
-    rev = revision,
-    now = 1000
-  ) {
-    const statement = buildVersionQuery(
-      parseVersionQuery(new URLSearchParams(params)),
-      rev,
-      owners,
-      "ownership",
-      now
-    );
-    const result = (
-      await db.query<{
-        groupTotal: number;
-        nftTotal: number;
-        groups: GroupRow[];
-      }>(statement.text, statement.values)
-    ).rows[0]!;
-    return { ...result, ...statement.page(result.groups) };
-  }
-  it.each([
-    "token-id-asc",
-    "token-id-desc",
-    "rarity-capped-asc",
-    "rarity-capped-desc",
-    "rarity-asc",
-    "rarity-desc"
-  ])(
-    "groups before pagination and traverses both ways with ties and nulls: %s",
-    async (sort) => {
-      const pages = [await page(`sort=${sort}&limit=7`)];
-      while (pages.at(-1)!.nextCursor) {
-        expect(pages.length).toBeLessThan(15);
-        pages.push(
-          await page(`sort=${sort}&limit=7&cursor=${pages.at(-1)!.nextCursor}`)
-        );
-      }
-      const groups = pages.flatMap((p) => p.groups);
-      expect(groups).toHaveLength(60);
-      expect(new Set(groups.map((g) => g.id)).size).toBe(60);
-      expect(groups.flatMap((g) => g.members)).toHaveLength(70);
-      expect(groups.filter((g) => g.members.length === 2)).toHaveLength(10);
-      expect(pages[0]).toMatchObject({ groupTotal: 60, nftTotal: 70 });
-      let current = pages.at(-1)!;
-      for (let i = pages.length - 2; i >= 0; i--) {
-        current = await page(
-          `sort=${sort}&limit=7&cursor=${current.previousCursor}`
-        );
-        expect(current.groups.map((g) => g.id)).toEqual(
-          pages[i]!.groups.map((g) => g.id)
-        );
-      }
-      expect(current.previousCursor).toBeNull();
-    }
-  );
-  it("applies chain, owner, and all traits to the same NFT before grouping", async () => {
-    expect((await page("chain=base&t.Type=Water&t.Color=Blue")).nftTotal).toBe(
-      0
-    );
-    expect((await page("t.Type=Water&t.Color=Blue")).nftTotal).toBe(0);
-    expect((await page("chain=base")).groupTotal).toBe(35);
-    const owned = await page(`owner=${bob}`, { base: bob, ethereum: bob });
-    expect(owned.groups).toHaveLength(1);
-    expect(owned.groups[0]!.members).toEqual([
-      expect.objectContaining({ chain: "base", tokenId: "2", owner: bob })
-    ]);
-    expect((await page("q=35")).nftTotal).toBe(2);
-  });
-  it("binds cursors to mapping revision, filters and ownership and expires them", async () => {
-    const first = await page("limit=1");
-    for (const suffix of ["&chain=base", "&t.Type=Water", "&sort=token-id-asc"])
-      await expect(
-        page(`limit=1&cursor=${first.nextCursor}${suffix}`)
-      ).rejects.toThrow();
-    await expect(
-      page(`limit=1&cursor=${first.nextCursor}`, {}, "f".repeat(64))
-    ).rejects.toThrow();
-    await expect(
-      page(`limit=1&cursor=${first.nextCursor}`, {}, revision, 901001)
-    ).rejects.toThrow();
-  });
-  it("excludes hidden peers before grouping and never reuses a reminted member", async () => {
-    await db.exec(
-      `INSERT INTO versions_evm.transfer_event VALUES('anchor','base','1',1,'old','${alice}',1,0,0); INSERT INTO metadata.token_visibility VALUES('base',1,'${alice}',1,'anchor',1,0,0);`
-    );
-    try {
-      expect((await page("q=1")).nftTotal).toBe(1);
-      const hidden = await page(`owner=${alice}&visibility=hidden`, {
-        base: alice,
-        ethereum: alice
-      });
-      expect(hidden.groups[0]!.members).toHaveLength(1);
-      expect(hidden.groups[0]!.members[0]!.chain).toBe("base");
-    } finally {
-      await db.exec(
-        "DELETE FROM metadata.token_visibility; DELETE FROM versions_evm.transfer_event WHERE id='anchor';"
-      );
-    }
-    await db.exec(
-      "UPDATE versions_evm.token SET lifecycle=2 WHERE collection='base' AND token_id='3'"
-    );
-    try {
-      expect((await page("q=3")).groupTotal).toBe(2);
-    } finally {
-      await db.exec(
-        "UPDATE versions_evm.token SET lifecycle=1 WHERE collection='base' AND token_id='3'"
-      );
-    }
-  });
-  it("rejects unsupported and unbounded input", () => {
-    for (const p of [
-      "limit=25",
-      "limit=0",
-      "limit=1&limit=2",
-      "chain=unsupported",
-      "sort=price-asc",
-      "sale=listed",
-      "visibility=hidden",
-      "rarityMin=abc",
-      "metadata=bogus",
-      "q=x"
-    ])
-      expect(() => parseVersionQuery(new URLSearchParams(p))).toThrow();
-  });
-  it("serves validated summaries and grouped pages through the real read-only API", async () => {
+  it("serves validated summaries through the real read-only API", async () => {
     const app = new Hono();
     app.onError((error, c) => {
       throw error;
@@ -265,30 +128,15 @@ describe("grouped queries on PostgreSQL", () => {
       })
     } as unknown as Pick<Pool, "connect">;
     registerMonsterVersionRoutes(app, {
-      pool,
-      resolveOwner: async (input) => ({
-        input,
-        normalizedName: null,
-        addresses: { base: bob, ethereum: bob }
-      })
+      pool
     });
     vi.stubEnv("API_MONSTER_VERSIONS_ENABLED", "true");
-    vi.stubEnv("API_MONSTER_GROUPING_ENABLED", "true");
     try {
       const capability = await app.request("/v1/monster-version-capabilities");
       expect(await capability.json()).toMatchObject({
         enabled: true,
         revision
       });
-      const result = await app.request("/v1/monster-groups?chain=base&limit=1");
-      expect(result.status).toBe(200);
-      const body = await result.json();
-      expect(body).toMatchObject({
-        groupTotal: 35,
-        nftTotal: 35,
-        query: "chain=base&limit=1"
-      });
-      expect(body.groups).toHaveLength(1);
       const summary = await app.request(
         `/v1/monster-versions?asset=base:${collections.base.address}:1:1`
       );
@@ -302,15 +150,14 @@ describe("grouped queries on PostgreSQL", () => {
       expect(statements).toContain(
         "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
       );
-      expect(statements).toContain("SET LOCAL statement_timeout='1000ms'");
-      expect((await app.request("/v1/monster-groups?limit=100")).status).toBe(
-        400
-      );
+      expect(
+        (await app.request("/v1/monster-versions?asset=invalid")).status
+      ).toBe(400);
+      expect((await app.request("/v1/monster-groups")).status).toBe(404);
       vi.stubEnv("API_MONSTER_VERSIONS_ENABLED", "false");
       expect(
         await (await app.request("/v1/monster-version-capabilities")).json()
       ).toMatchObject({ enabled: false });
-      expect((await app.request("/v1/monster-groups")).status).toBe(503);
     } finally {
       vi.unstubAllEnvs();
     }

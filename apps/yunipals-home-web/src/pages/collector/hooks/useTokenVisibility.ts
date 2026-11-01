@@ -239,13 +239,7 @@ export function useTokenVisibility(ownerInput: string) {
       setNotice(
         hidden ? "NFT hidden successfully." : "NFT unhidden successfully."
       );
-      await Promise.all([
-        invalidateTokenQueries(token),
-        queryClient.invalidateQueries({ queryKey: ["monster-groups"] }),
-        queryClient.invalidateQueries({
-          queryKey: ["monster-version-summaries"]
-        })
-      ]);
+      await invalidateTokenQueries(token);
     },
     onError: async (error, { token }) => {
       setNotice(visibilityErrorMessage(error));

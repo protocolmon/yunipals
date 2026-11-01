@@ -1,5 +1,4 @@
 import { environment } from "@/environment";
-import type { MonsterVersionInfo } from "@protopals/yunipals-market-core/monsterVersions";
 
 export const solanaCacheVersion = "exomon-v1";
 export const solanaMetrics = [
@@ -25,7 +24,6 @@ export type ExomonAttribute = {
   display_type?: string;
 };
 export type ExomonToken = {
-  versionInfo?: MonsterVersionInfo;
   chain: "solana";
   tokenId: string;
   owner: string | null;

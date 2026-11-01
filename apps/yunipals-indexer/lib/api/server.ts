@@ -1438,7 +1438,7 @@ app.get("/v1/tokens/:tokenId", async (c) => {
   });
 });
 
-registerMonsterVersionRoutes(app, { pool, resolveOwner: requireResolvedOwner });
+registerMonsterVersionRoutes(app, { pool });
 
 registerCollectorRoutes(app, {
   pool,

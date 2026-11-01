@@ -6,6 +6,7 @@ export type CollectionChain = (typeof indexedChains)[number] | "solana";
 export type CollectionSort = evm.CollectionSort;
 export type CollectionFilters = Omit<evm.CollectionFilters, "chains"> & {
   chains: CollectionChain[];
+  excludedChains: CollectionChain[];
 };
 export const collectionChains: readonly CollectionChain[] = [
   ...indexedChains,
@@ -13,18 +14,29 @@ export const collectionChains: readonly CollectionChain[] = [
 ];
 export const isPriceSort = evm.isPriceSort;
 
+/** Resolve exclusions before asking an API for pages, counts or facets. */
+export function effectiveCollectionChains(filters: CollectionFilters) {
+  return collectionChains.filter(
+    (chain) =>
+      (chain !== "solana" || environment.exomonEnabled) &&
+      (!filters.chains.length || filters.chains.includes(chain)) &&
+      !(filters.excludedChains ?? []).includes(chain)
+  );
+}
+
 /** Marketplace and wallet clients retain their EVM-only types. */
 export function toEvmCollectionFilters(
   filters: CollectionFilters
 ): evm.CollectionFilters {
-  return { ...filters, chains: filters.chains.filter(isIndexedChain) };
+  const chains = effectiveCollectionChains(filters).filter(isIndexedChain);
+  return {
+    ...filters,
+    chains: chains.length === indexedChains.length ? [] : chains
+  };
 }
 
 export function includesSolana(filters: CollectionFilters) {
-  return (
-    environment.exomonEnabled &&
-    (!filters.chains.length || filters.chains.includes("solana"))
-  );
+  return effectiveCollectionChains(filters).includes("solana");
 }
 
 export function parseCollectionFilters(
@@ -35,7 +47,10 @@ export function parseCollectionFilters(
   );
   return {
     ...evm.parseCollectionFilters(params),
-    chains: selected.length === collectionChains.length ? [] : selected
+    chains: selected.length === collectionChains.length ? [] : selected,
+    excludedChains: collectionChains.filter((chain) =>
+      params.getAll("excludeChain").includes(chain)
+    )
   };
 }
 
@@ -47,6 +62,10 @@ export function serializeCollectionFilters(filters: CollectionFilters) {
   // Canonical order keeps equivalent multi-chain selections in one query cache.
   for (const chain of collectionChains) {
     if (filters.chains.includes(chain)) params.append("chain", chain);
+  }
+  for (const chain of collectionChains) {
+    if ((filters.excludedChains ?? []).includes(chain))
+      params.append("excludeChain", chain);
   }
   return params;
 }
@@ -60,14 +79,18 @@ export function cloneCollectionFilters(
 ): CollectionFilters {
   return {
     ...evm.cloneCollectionFilters(toEvmCollectionFilters(filters)),
-    chains: [...filters.chains]
+    chains: [...filters.chains],
+    excludedChains: [...(filters.excludedChains ?? [])]
   };
 }
 
 export function clearCollectionFilters(
   filters: CollectionFilters
 ): CollectionFilters {
-  return evm.clearCollectionFilters(toEvmCollectionFilters(filters));
+  return {
+    ...evm.clearCollectionFilters(toEvmCollectionFilters(filters)),
+    excludedChains: []
+  };
 }
 
 export function clearMarketFilters(
@@ -75,7 +98,8 @@ export function clearMarketFilters(
 ): CollectionFilters {
   return {
     ...evm.clearMarketFilters(toEvmCollectionFilters(filters)),
-    chains: filters.chains
+    chains: filters.chains,
+    excludedChains: filters.excludedChains
   };
 }
 
@@ -83,7 +107,11 @@ export function updateCollectionChains(
   current: CollectionFilters,
   next: CollectionFilters
 ): CollectionFilters {
-  if (current.chains.join(",") === next.chains.join(",")) return next;
+  if (
+    effectiveCollectionChains(current).join(",") ===
+    effectiveCollectionChains(next).join(",")
+  )
+    return next;
   const updated = {
     ...next,
     currency: "all" as const,
@@ -104,11 +132,10 @@ export function priceCurrencyForFilters(filters: CollectionFilters) {
 
 export function countCollectionFilters(filters: CollectionFilters) {
   return (
-    evm.countCollectionFilters(toEvmCollectionFilters(filters)) +
-    (filters.chains.length > 0 &&
-    filters.chains.every((chain) => chain === "solana")
-      ? 1
-      : 0)
+    evm.countCollectionFilters({
+      ...toEvmCollectionFilters(filters),
+      chains: []
+    }) + (filters.chains.length || filters.excludedChains?.length ? 1 : 0)
   );
 }
 
@@ -116,6 +143,7 @@ export function countCollectionFilters(filters: CollectionFilters) {
 export function exomonCollectionRedirect(search: string) {
   const params = new URLSearchParams(search);
   params.delete("chain");
+  params.delete("excludeChain");
   params.delete("collection");
   params.append("chain", "solana");
   for (const bound of ["Min", "Max"]) {

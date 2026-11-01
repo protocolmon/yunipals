@@ -1,13 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import { environment } from "@/environment";
-import { MonsterGroups } from "@/components/MonsterGroups";
-import { MonsterViewToggle } from "@/components/MonsterViewToggle";
-import {
-  TokenVersionProvider,
-  useVersionCapabilities
-} from "@/components/TokenVersions";
+import { Link, useParams } from "react-router-dom";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
@@ -29,20 +22,6 @@ import { ExomonCard } from "@/pages/exomon/ExomonCard";
 import { useExomonPagination } from "@/pages/exomon/useExomonPagination";
 
 function CollectorContent({ address }: { address: string }) {
-  const [params, setParams] = useSearchParams();
-  const versions = useVersionCapabilities();
-  const available =
-    environment.monsterGroupingEnabled &&
-    versions.data?.grouping &&
-    versions.data.solanaGrouping;
-  const grouped = Boolean(
-    available && params.get("view") === "grouped"
-  );
-  const groupParams = new URLSearchParams({
-    chain: "solana",
-    owner: address,
-    sort: "rarity-capped-desc"
-  });
   const stats = useQuery({
     queryKey: [solanaCacheVersion, "owner-stats", address],
     queryFn: ({ signal }) => fetchExomonOwnerStats(address, signal),
@@ -50,10 +29,8 @@ function CollectorContent({ address }: { address: string }) {
     retry: retrySolanaQuery
   });
   const { query, next, previous, canPrevious, pageNumber } =
-    useExomonPagination(
-      `owner:${address}`,
-      (cursor, signal) => fetchExomonOwnerTokens(address, cursor, signal),
-      !grouped
+    useExomonPagination(`owner:${address}`, (cursor, signal) =>
+      fetchExomonOwnerTokens(address, cursor, signal)
     );
   return (
     <>
@@ -116,25 +93,7 @@ function CollectorContent({ address }: { address: string }) {
             />
           </div>
         )}
-      {available && (
-        <div className="mb-5">
-          <MonsterViewToggle
-            grouped={grouped}
-            onChange={(view) => {
-              const next = new URLSearchParams(params);
-              next.set("view", view);
-              setParams(next);
-            }}
-          />
-        </div>
-      )}
-      {grouped && versions.data ? (
-        <MonsterGroups
-          params={groupParams}
-          revision={versions.data.revision}
-          collector="collector"
-        />
-      ) : query.isPending ? (
+      {query.isPending ? (
         <TokenGridSkeleton />
       ) : query.isError ? (
         <QueryError
@@ -149,13 +108,11 @@ function CollectorContent({ address }: { address: string }) {
               Page {pageNumber}
             </p>
           </div>
-          <TokenVersionProvider tokens={query.data.items}>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {query.data.items.map((token) => (
-                <ExomonCard key={token.tokenId} token={token} />
-              ))}
-            </div>
-          </TokenVersionProvider>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {query.data.items.map((token) => (
+              <ExomonCard key={token.tokenId} token={token} />
+            ))}
+          </div>
           <div className="mt-6 flex justify-center gap-3">
             <button
               type="button"
@@ -180,7 +137,7 @@ function CollectorContent({ address }: { address: string }) {
           This wallet has no active Exomon in the latest scan.
         </div>
       )}
-      {!grouped && query.data?.ownershipObservedAt && (
+      {query.data?.ownershipObservedAt && (
         <p className="mt-5 text-center text-xs text-muted">
           Ownership {formatUpdatedAt(query.data.ownershipObservedAt)}
         </p>

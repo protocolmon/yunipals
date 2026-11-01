@@ -8,6 +8,7 @@ export function resolveCollectionQuery(
   saved: string | null
 ) {
   const query = new URLSearchParams(params.size > 0 ? params : (saved ?? ""));
+  if (params.size === 0 && !saved) query.set("excludeChain", "base");
   query.set("edition", query.get("edition") === "tcg" ? "tcg" : "og");
   return query;
 }

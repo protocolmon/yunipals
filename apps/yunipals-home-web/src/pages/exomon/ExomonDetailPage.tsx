@@ -4,10 +4,6 @@ import { Link, useParams } from "react-router-dom";
 
 import { QueryError } from "@/components/QueryState";
 import { TokenArtwork } from "@/components/TokenArtwork";
-import {
-  TokenVersionProvider,
-  TokenVersionInfo
-} from "@/components/TokenVersions";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { useCollectibleAnalytics } from "@/hooks/useCollectibleAnalytics";
 import { formatDecimal, formatUpdatedAt, shortAddress } from "@/lib/format";
@@ -181,9 +177,6 @@ export function ExomonDetailPage() {
             </a>
           </div>
         </div>
-        <TokenVersionProvider tokens={[token]}>
-          <TokenVersionInfo token={token} />
-        </TokenVersionProvider>
         <div className="mt-10 grid gap-8 lg:grid-cols-2">
           <section>
             <h2 className="display text-2xl text-ink">Traits</h2>

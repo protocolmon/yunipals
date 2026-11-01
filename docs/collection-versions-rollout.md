@@ -1,10 +1,10 @@
 # Collection versions activation and rollback
 
-The collection now supports verified origin badges, links between NFT versions, expandable grouped cards, separate group and NFT counts, and grouped collector holdings. Sale and price filters use individual NFTs. The feature is disabled until a verified relationship mapping is published and the application settings are enabled.
+The landing page defaults to individual NFTs with Base excluded when there are no saved filters. Chain exclusions work through existing collection APIs. Base detail pages can show a verified link to the original NFT once the relationship mapping and settings below are enabled. Grouped cards and the grouped browsing API have been removed.
 
 **Reconstruct the mapping from indexed mints**
 
-An old ownership snapshot is optional for grouping. The read-only audit uses the first canonical zero-address Transfer for each Base NFT to establish its initial recipient, then checks the original NFT across all three configured original chains using both the Base token ID and archived monster ID, shared metadata identity, and current lifecycle binding. The archived chain field is not used to restrict the search. The current owner is recorded separately and does not have to match the initial recipient.
+An old ownership snapshot is optional for reconstructing NFT relationships. The read-only audit uses the first canonical zero-address Transfer for each Base NFT to establish its initial recipient, then checks the original NFT across all three configured original chains using both the Base token ID and archived monster ID, shared metadata identity, and current lifecycle binding. The archived chain field is not used to restrict the search. The current owner is recorded separately and does not have to match the initial recipient.
 
 Run from `apps/yunipals-indexer` with the deployed database and ownership selectors:
 
@@ -74,7 +74,7 @@ Solana reads use the existing `solana_indexer.manifest`, `manifest_asset`, `asse
 
 The API identities need SELECT access to the two new `metadata.monster_version_*` tables and the existing `metadata_source.archive_release` and `metadata_source.lifecycle_binding` relations, alongside their existing ownership and published metadata reads. Check and grant only the necessary relations through the existing database administration workflow. The importer requires the corresponding writer privileges. Do not grant the API blanket access to archived source payloads.
 
-**Enable labels and then grouping**
+**Enable Base original links**
 
 Deploy the backward-compatible API routes and frontend code before changing the settings:
 
@@ -83,19 +83,15 @@ Deploy the backward-compatible API routes and frontend code before changing the 
 | `API_MONSTER_VERSIONS_ENABLED=true` | Exposes the active, validated relationship revision and bounded version summaries. |
 | `SOLANA_API_ENABLED=true` | Enables Solana version reads against the existing published ownership source. |
 | `VITE_EXOMON_ENABLED=true` | Exposes Solana collection, detail, and collector surfaces in the frontend. |
-| `VITE_MONSTER_VERSIONS_ENABLED=true` | Enables batched origin badges and counterpart links in the frontend. |
-| `API_MONSTER_GROUPING_ENABLED=true` | Enables grouped API reads independently of labels. |
-| `VITE_MONSTER_GROUPING_ENABLED=true` | Enables the view toggle when the backend advertises grouping support. |
+| `VITE_MONSTER_VERSIONS_ENABLED=true` | Enables original-NFT links on individual Base detail pages. |
 
-Vite settings take effect in a new frontend build. Start with labels and links, then enable the optional grouped view. All NFTs remains the default in the collection and EVM/Solana collector views. Grouping requires a user choice, a saved collection preference, or an explicit `view=grouped` link; there is no deployment setting to make it the default. The capability endpoint is `/v1/monster-version-capabilities`. A missing mapping, disabled setting, or changed metadata archive keeps the capability unavailable.
+Vite settings take effect in a new frontend build. Chain exclusions do not require relationship settings or a mapping import. Enable original links after validating and publishing the mapping. The capability endpoint is `/v1/monster-version-capabilities`; `/v1/monster-versions` supplies bounded relationship summaries. The frontend calls these only on Base NFT detail pages.
 
-Individual NFT browsing continues through the existing catalog and collector APIs. Grouped browsing reads `/v1/monster-groups` directly from the indexer, avoiding changes to marketplace listing snapshots or purchase execution. `/v1/monster-versions` enriches existing NFT cards in batches of up to 48 identities. Group pages contain at most 24 groups. Solana and EVM results use the same server grouping/count query and keyset cursors in both directions. A relationship is grouped before pagination even when its members use different ID formats. Cursors expire on a new published Solana scan or manifest, as well as on EVM ownership or relationship changes. The frontend retains at most five cached pages.
-
-Before enabling optional grouping, measure group/count query plans and latency on the real allocation, common trait filters, deep pages, and the largest wallet. Grouped SQL has a one-second statement deadline. Keep grouping disabled if the real query plans cannot meet that limit. Synthetic fixtures prove correctness, not production capacity.
+Before enabling original links, check summary-query latency for real Ethereum and Solana counterparts and verify the exact destination NFT. Existing NFT APIs continue to handle collection counts, sorting and pagination.
 
 **Verification**
 
-The focused backend suite exercises import validation and atomic publication, actual API responses, counts, all six sort orders, forward/backward pagination with tied/null rarity, same-NFT filter predicates, split ownership, hidden versions, remints, expired cursors, and disabled capabilities. Frontend contract checks reject mismatched filters, revisions, assets, roles, hidden results, and duplicate groups. Browser fixtures cover keyboard expansion, counterpart navigation, view history, collector ownership wording, mixed Exomon pagination, mobile layout, and sale filters.
+Backend tests cover provenance, import validation, atomic publication, read-only summary responses, missing or stale Solana ownership and unavailable counterpart references. Frontend checks cover chain exclusion defaults, serialization, effective API chain selection, empty selections, and original links.
 
 Run the targeted checks with Node 24:
 
@@ -104,10 +100,10 @@ pnpm --filter @protopals/yunipals-indexer exec vitest run test/monster-versions.
 pnpm --filter @protopals/yunipals-home-web test:versions
 ```
 
-For the browser fixture, start the existing fixture server on its configured port, 5177, with all three frontend settings enabled, then run `pnpm --filter @protopals/yunipals-home-web test:versions:ui`. The script accepts `--playwright`, `--chromium`, and `--url` to select installed local tooling. Also run workspace type checks/builds and the existing collector, Solana, and marketplace regressions for changes to shared behavior.
+For the browser fixture, start the fixture server on port 5177 with `VITE_MONSTER_VERSIONS_ENABLED=true`, then run `pnpm --filter @protopals/yunipals-home-web test:versions:ui`. The script accepts `--playwright`, `--chromium`, and `--url` for installed local tooling. Run workspace type checks/builds and existing collection, Solana and marketplace regressions.
 
-Production smoke checks should cover verified original/Base pairs from each supported source chain, split ownership, Solana originals with different numeric Base IDs, a three-version Solana/Polygon/Base group, an unavailable Solana original, Base NFTs with only an archived original, a hidden version, and a large collector. Check the exact NFT detail target before any trading action. Grouped results must not show an unowned or hidden counterpart as a matching holding.
+Production smoke checks should cover a fresh landing page, removing Not Base, selecting Base explicitly, exclusion combinations, and original links on Base NFTs. Include an Ethereum original, a Solana original with a different numeric Base ID, a split-owner pair, and an unavailable original. NFTs with no verified original must not show a guessed link.
 
 **Rollback**
 
-Set `API_MONSTER_GROUPING_ENABLED=false` to stop grouped queries while keeping origin labels available. Refresh the frontend capability state; individual NFT browsing remains available through the view control. Disable the frontend grouping setting in the next build if necessary. Set `API_MONSTER_VERSIONS_ENABLED=false` to stop all relationship reads. Keep the evidence and additive tables for diagnosis. A new metadata release requires a newly checked relationship publication; existing mappings do not silently carry across it.
+Set `API_MONSTER_VERSIONS_ENABLED=false` to stop relationship reads, or disable `VITE_MONSTER_VERSIONS_ENABLED` in the next frontend build. Individual NFT browsing and exclusions continue to work. Keep the evidence and additive tables for diagnosis. A new metadata release requires a newly checked relationship publication; existing mappings do not silently carry across it.

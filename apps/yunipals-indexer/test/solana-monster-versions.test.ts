@@ -19,7 +19,6 @@ import { collections, ZERO_ADDRESS } from "../lib/constants.js";
 import { solanaSchemaStatements } from "../lib/solana/schema.js";
 import { parseVersionManifest } from "../lib/versions/manifest.js";
 import { storeVersionManifest } from "../lib/versions/import.js";
-import { buildVersionQuery, parseVersionQuery } from "../lib/versions/query.js";
 import {
   versionSolanaSnapshot,
   versionSummaries
@@ -104,18 +103,6 @@ const manifestInput = () => ({
     };
   })
 });
-type GroupRow = {
-  id: string;
-  members: {
-    chain: string;
-    tokenId: string;
-    owner: string;
-    contractAddress: string | null;
-    lifecycle: number;
-  }[];
-  position: { score: string | null; tokenId: string; chain: string };
-};
-
 describe("Solana and EVM monster versions", () => {
   let db: PGlite;
   let adapter: Parameters<typeof storeVersionManifest>[0];
@@ -232,130 +219,28 @@ describe("Solana and EVM monster versions", () => {
     await db?.close();
     vi.unstubAllEnvs();
   });
-  async function page(
-    params = "",
-    owners: Record<string, string> = {},
-    snapshot = "evm:solana-1"
-  ) {
-    const q = buildVersionQuery(
-      parseVersionQuery(new URLSearchParams(params)),
-      revision,
-      owners,
-      snapshot
-    );
-    const row = (
-      await db.query<{
-        groupTotal: number;
-        nftTotal: number;
-        groups: GroupRow[];
-      }>(q.text, q.values)
-    ).rows[0]!;
-    return { ...row, ...q.page(row.groups) };
-  }
-  it("groups Solana, Polygon, and Base together before pagination", async () => {
-    const all = await page("limit=24");
-    expect(all).toMatchObject({ groupTotal: 33, nftTotal: 64 });
-    const group = all.groups.find((g) => g.members.length === 3)!;
-    expect(group.members.map((m) => m.chain).sort()).toEqual([
-      "base",
-      "polygon",
-      "solana"
-    ]);
-    expect(group.members.find((m) => m.chain === "solana")?.tokenId).toBe(
-      key(1)
-    );
-    const info = await versionSummaries(
-      adapter,
-      revision,
-      group.members.map(parseMonsterAsset)
-    );
-    expect(Object.values(info)).toHaveLength(3);
-    expect(
-      info[monsterAssetKey({ chain: "solana", tokenId: key(1) })]
-    ).toMatchObject({
-      role: "original",
-      versions: expect.arrayContaining([
-        expect.objectContaining({ chain: "polygon", role: "version" }),
-        expect.objectContaining({ chain: "base", role: "airdrop" })
-      ])
-    });
-  });
-  it.each([
-    "token-id-asc",
-    "token-id-desc",
-    "rarity-asc",
-    "rarity-desc",
-    "rarity-capped-asc",
-    "rarity-capped-desc"
-  ])(
-    "pages through mixed and Solana-only groups in both directions: %s",
-    async (sort) => {
-      for (const chain of ["", "&chain=solana"]) {
-        const params = `sort=${sort}&limit=7${chain}`;
-        const pages = [await page(params)];
-        while (pages.at(-1)!.nextCursor) {
-          expect(pages.length).toBeLessThan(8);
-          pages.push(
-            await page(`${params}&cursor=${pages.at(-1)!.nextCursor}`)
-          );
-        }
-        const ids = pages.flatMap((p) => p.groups.map((g) => g.id));
-        expect(ids).toHaveLength(chain ? 30 : 33);
-        expect(new Set(ids).size).toBe(ids.length);
-        for (let n = pages.length - 1; n > 0; n--) {
-          const previous = await page(
-            `${params}&cursor=${pages[n]!.previousCursor}`
-          );
-          expect(previous.groups.map((g) => g.id)).toEqual(
-            pages[n - 1]!.groups.map((g) => g.id)
-          );
-        }
+  it("links a Base NFT to its Solana original and Polygon version", async () => {
+    const info = await versionSummaries(adapter, revision, [
+      {
+        chain: "base",
+        contractAddress: collections.base.address,
+        tokenId: baseId(1),
+        lifecycle: 1
       }
-    }
-  );
-  it("keeps ownership, mint search, and trait filters on the same NFT", async () => {
-    const owner = await page(`chain=solana&owner=${solanaOwner}`, {
-      solana: solanaOwner
-    });
-    expect(owner).toMatchObject({ groupTotal: 29, nftTotal: 29 });
-    expect(
-      (
-        await page(`chain=solana&owner=${otherSolanaOwner}`, {
-          solana: otherSolanaOwner
-        })
-      ).nftTotal
-    ).toBe(1);
-    expect(
-      (await page(`chain=solana&q=${key(1)}`)).groups[0]!.members
-    ).toHaveLength(1);
-    expect((await page("t.Type=Water&t.Color=Blue")).groups).toEqual([]);
-    expect((await page("chain=solana&t.Type=Water&t.Color=Red")).nftTotal).toBe(
-      30
+    ]);
+    expect(info[`base:${collections.base.address}:${baseId(1)}`]).toMatchObject(
+      {
+        role: "airdrop",
+        versions: expect.arrayContaining([
+          expect.objectContaining({
+            chain: "solana",
+            tokenId: key(1),
+            role: "original"
+          }),
+          expect.objectContaining({ chain: "polygon", role: "version" })
+        ])
+      }
     );
-    expect((await page("chain=solana&metadata=missing")).nftTotal).toBe(0);
-    expect(
-      (await page("chain=solana&rarityCappedMin=3&rarityCappedMax=3")).nftTotal
-    ).toBe(7);
-    expect((await page("chain=solana&q=Exomon%203")).nftTotal).toBe(2);
-    expect(
-      (await page(`chain=solana&q=${key(9).toLowerCase()}`)).nftTotal
-    ).toBe(0);
-    expect(
-      (
-        await page(`owner=${alice}`, {
-          ethereum: alice,
-          base: alice,
-          polygon: alice
-        })
-      ).nftTotal
-    ).toBe(34);
-    expect(
-      (
-        await page(`chain=solana&owner=${solanaOwner}&visibility=hidden`, {
-          solana: solanaOwner
-        })
-      ).nftTotal
-    ).toBe(0);
   });
   it("omits hidden and burned holdings while retaining a burned counterpart reference", async () => {
     await db.exec("BEGIN");
@@ -368,8 +253,6 @@ describe("Solana and EVM monster versions", () => {
         "UPDATE solana_indexer.token SET burnt=true WHERE mint=$1",
         [key(2)]
       );
-      const groups = await page();
-      expect(groups.nftTotal).toBe(62);
       const info = await versionSummaries(adapter, revision, [
         {
           chain: "solana",
@@ -400,19 +283,11 @@ describe("Solana and EVM monster versions", () => {
       await db.exec("ROLLBACK");
     }
   });
-  it("reports incomplete Solana coverage and rejects stale snapshots and cursors from another scan", async () => {
+  it("reports incomplete Solana coverage and rejects stale snapshots", async () => {
     expect(await versionSolanaSnapshot(adapter)).toEqual({
       fingerprint: "checksum:1",
       unavailableNfts: 0
     });
-    const first = await page("chain=solana&limit=7");
-    await expect(
-      page(
-        `chain=solana&limit=7&cursor=${first.nextCursor}`,
-        {},
-        "evm:solana-2"
-      )
-    ).rejects.toThrow("expired");
     await db.exec("BEGIN");
     try {
       await db.exec("UPDATE solana_indexer.scan_run SET missing_count=1");
@@ -460,13 +335,6 @@ describe("Solana and EVM monster versions", () => {
         key(3)
       ]);
       await db.exec("UPDATE solana_indexer.scan_run SET missing_count=1");
-      const result = await page();
-      expect(result.nftTotal).toBe(63);
-      expect(
-        result.groups
-          .flatMap((g) => g.members)
-          .some((m) => m.chain === "solana" && m.tokenId === key(3))
-      ).toBe(false);
       const info = await versionSummaries(adapter, revision, [
         {
           chain: "base",
@@ -570,8 +438,7 @@ describe("Solana and EVM monster versions", () => {
       solanaVersionCandidates(adapter, "archive", [wrong])
     ).rejects.toThrow("canonical evidence");
   });
-  it("serves Solana summaries and collector groups through read-only API snapshots", async () => {
-    vi.stubEnv("API_MONSTER_GROUPING_ENABLED", "true");
+  it("serves Solana summaries through read-only API snapshots", async () => {
     const statements: string[] = [];
     const pool = {
       connect: async () => ({
@@ -586,22 +453,7 @@ describe("Solana and EVM monster versions", () => {
     app.onError((e) => {
       throw e;
     });
-    const resolveOwner = vi.fn(async (input: string) => ({
-      input,
-      normalizedName: null,
-      addresses: { base: alice as `0x${string}` }
-    }));
-    registerMonsterVersionRoutes(app, { pool, resolveOwner });
-    const response = await app.request(
-      `/v1/monster-groups?chain=solana&owner=${solanaOwner}&limit=7`
-    );
-    expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({
-      nftTotal: 29,
-      groupTotal: 29,
-      resolvedAddresses: { solana: solanaOwner }
-    });
-    expect(resolveOwner).not.toHaveBeenCalled();
+    registerMonsterVersionRoutes(app, { pool });
     const summary = await app.request(
       `/v1/monster-versions?asset=solana:${key(1)}:1`
     );
@@ -622,17 +474,28 @@ describe("Solana and EVM monster versions", () => {
       [key(30)]
     );
     try {
-      const partial = await app.request("/v1/monster-groups?chain=solana");
+      const partial = await app.request(
+        `/v1/monster-versions?asset=base:${collections.base.address}:${baseId(30)}:1`
+      );
       expect(partial.status).toBe(200);
       expect(await partial.json()).toMatchObject({
-        unavailableNfts: 1,
-        nftTotal: 29
+        items: {
+          [`base:${collections.base.address}:${baseId(30)}`]: {
+            versions: expect.arrayContaining([
+              expect.objectContaining({ chain: "solana", unavailable: true })
+            ])
+          }
+        }
       });
       await db.exec(
         "UPDATE solana_indexer.scan_run SET completed_at=now()-interval '25 hours' WHERE id=1"
       );
       expect(
-        (await app.request("/v1/monster-groups?chain=solana")).status
+        (
+          await app.request(
+            `/v1/monster-versions?asset=base:${collections.base.address}:${baseId(1)}:1`
+          )
+        ).status
       ).toBe(503);
     } finally {
       await db.exec(

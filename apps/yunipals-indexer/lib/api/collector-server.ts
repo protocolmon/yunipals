@@ -70,10 +70,7 @@ app.get("/ready", async (c) => {
     metadata.ready ? 200 : 503
   );
 });
-registerMonsterVersionRoutes(app, {
-  pool: apiPool,
-  resolveOwner: async (input, chains) => resolveOwner(input, chains)
-});
+registerMonsterVersionRoutes(app, { pool: apiPool });
 registerCollectorRoutes(app, {
   pool: apiPool,
   resolveOwner: async (input, chains) => {

@@ -359,3 +359,97 @@ test("Facets merge shared trait counts and retain Solana-only types", async () =
   assert.ok(type?.kind === "categorical");
   assert.equal(type.values.length, 2);
 });
+
+test("landing excludes Base only without an explicit URL or saved choice", async () => {
+  const { resolveCollectionQuery } = await import("@/lib/collectionEdition");
+  assert.equal(
+    resolveCollectionQuery(new URLSearchParams(), null).get("excludeChain"),
+    "base"
+  );
+  assert.equal(
+    resolveCollectionQuery(new URLSearchParams("chain=base"), null).has(
+      "excludeChain"
+    ),
+    false
+  );
+  assert.equal(
+    resolveCollectionQuery(new URLSearchParams(), "edition=og").has(
+      "excludeChain"
+    ),
+    false
+  );
+  assert.equal(
+    resolveCollectionQuery(new URLSearchParams("edition=tcg"), null).has(
+      "excludeChain"
+    ),
+    false
+  );
+});
+
+test("chain exclusions survive serialization and constrain pages, counts and facets", async () => {
+  const {
+    effectiveCollectionChains,
+    toEvmCollectionFilters,
+    clearCollectionFilters,
+    countCollectionFilters
+  } = await import("@/lib/collectionBrowserFilters");
+  const filters = parseCollectionFilters(
+    new URLSearchParams(
+      "excludeChain=base&excludeChain=solana&excludeChain=base"
+    )
+  );
+  assert.deepEqual(filters.excludedChains, ["base", "solana"]);
+  assert.deepEqual(effectiveCollectionChains(filters), [
+    "ethereum",
+    "polygon",
+    "bnb"
+  ]);
+  assert.deepEqual(toEvmCollectionFilters(filters).chains, [
+    "ethereum",
+    "polygon",
+    "bnb"
+  ]);
+  assert.equal(includesSolana(filters), false);
+  assert.deepEqual(
+    parseCollectionFilters(serializeCollectionFilters(filters)),
+    filters
+  );
+  assert.equal(countCollectionFilters(clearCollectionFilters(filters)), 0);
+  const urls: URL[] = [];
+  globalThis.fetch = (async (input) => {
+    const url = new URL(String(input));
+    urls.push(url);
+    return Response.json(
+      url.pathname.endsWith("/traits")
+        ? {
+            items: [],
+            metadata: { available: 0, missing: 0 },
+            updatedAt: "2026-01-01T00:00:00Z"
+          }
+        : { items: [], total: 0, nextCursor: null }
+    );
+  }) as typeof fetch;
+  await fetchCollectionPage(filters);
+  await fetchCollectionFacets(effectiveCollectionChains(filters));
+  assert.equal(urls.length, 2);
+  for (const url of urls)
+    assert.deepEqual(url.searchParams.getAll("chain"), [
+      "ethereum",
+      "polygon",
+      "bnb"
+    ]);
+  const none = parseCollectionFilters(
+    new URLSearchParams("chain=base&excludeChain=base")
+  );
+  assert.deepEqual(await fetchCollectionPage(none), {
+    items: [],
+    total: 0,
+    nextCursor: null
+  });
+  await fetchCollectionFacets([], undefined, true);
+  assert.equal(
+    urls.length,
+    2,
+    "empty selections must never request all chains"
+  );
+});

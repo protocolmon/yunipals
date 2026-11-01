@@ -30,236 +30,143 @@ await context.route("**/*", (route) =>
     : route.abort()
 );
 const page = await context.newPage();
-const errors = [];
-const requests = [];
+const errors = [],
+  requests = [];
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("request", (r) => {
-  if (r.url().includes("monster-")) requests.push(r.url());
+  if (r.url().includes("/__fixtures/")) requests.push(new URL(r.url()));
 });
 const cards = page.locator("main article");
-const count = async (n) => {
-  await page.waitForFunction(
+const count = (n) =>
+  page.waitForFunction(
     (n) => document.querySelectorAll("main article").length === n,
     n
   );
-};
 try {
-  await page.goto(`${app.origin}/?edition=og&chain=ethereum&chain=base`);
-  const browseOnly = page.getByRole("button", {
-    name: "Browse only",
-    exact: true
-  });
-  if (await browseOnly.isVisible()) await browseOnly.click();
-  const solanaMint = "1".repeat(31) + "2";
-  const solanaOwner = "1".repeat(31) + "Z";
-  for (const [path, expectedCount] of [
-    ["/?edition=og&chain=ethereum&chain=base", 24],
-    ["/collector/0x0000000000000000000000000000000000000001", 24],
-    [`/collector/solana/${solanaOwner}`, 18]
-  ]) {
-    await page.goto(`${app.origin}${path}`);
-    await page
-      .getByRole("button", { name: "All NFTs", exact: true, pressed: true })
-      .waitFor();
-    await page
-      .getByRole("button", {
-        name: "Grouped monsters",
-        exact: true,
-        pressed: false
-      })
-      .waitFor();
-    await count(expectedCount);
-  }
-  assert.equal(
-    requests.some((request) =>
-      new URL(request).pathname.endsWith("/monster-groups")
-    ),
-    false
-  );
-  await page.goto(
-    `${app.origin}/?edition=og&chain=ethereum&chain=base&view=grouped`
-  );
-  await page.getByText("18 groups · 24 NFTs.", { exact: false }).waitFor();
-  await count(18);
-  const controlId = await cards
-    .filter({ has: page.getByRole("button", { name: /View 2 versions/ }) })
-    .filter({ hasText: "Ethereum" })
-    .first()
-    .getByRole("button")
-    .first()
-    .getAttribute("aria-controls");
-  const expand = page.locator(`[aria-controls="${controlId}"]`);
-  const pair = cards.filter({ has: expand });
-  await expand.focus();
-  await page.keyboard.press("Enter");
-  assert.equal(await expand.getAttribute("aria-expanded"), "true");
-  await pair.getByText("Original", { exact: true }).waitFor();
-  await pair.getByText("Base airdrop", { exact: true }).waitFor();
-  assert.equal(await pair.getByRole("link", { name: /View #/ }).count(), 2);
-  await page.getByRole("button", { name: "All NFTs", exact: true }).click();
+  await page.goto(app.origin);
+  const browse = page.getByRole("button", { name: "Browse only", exact: true });
+  if (await browse.isVisible()) await browse.click();
+  await page
+    .getByRole("button", { name: "Remove Base exclusion", exact: true })
+    .waitFor();
   await count(24);
-  await page.getByText("Base airdrop", { exact: true }).first().waitFor();
-  assert(new URL(page.url()).searchParams.get("view") === "nfts");
-  await page.goBack();
-  await count(18);
-  await page.goto(`${app.origin}/collection/base/1`);
-  await page.getByRole("region", { name: "Monster versions" }).waitFor();
-  await page
-    .getByRole("link", { name: "View Ethereum original #1", exact: true })
-    .waitFor();
-  await page.goto(
-    `${app.origin}/collector/0x0000000000000000000000000000000000000001?view=grouped`
-  );
-  await page.getByText("20 groups · 24 NFTs.", { exact: false }).waitFor();
-  await page
-    .getByText("Collector owns 2 matching versions", { exact: true })
-    .first()
-    .waitFor();
-  await page.goto(
-    `${app.origin}/?edition=og&chain=base&chain=polygon&chain=solana&view=grouped`
-  );
-  await page.getByText("57 groups · 60 NFTs.", { exact: false }).waitFor();
-  const three = cards
-    .filter({
-      has: page.getByRole("button", { name: /(View|Hide) 3 versions/ })
-    })
-    .first();
-  await three.getByRole("button").first().click();
-  await three.getByText("Original", { exact: true }).waitFor();
-  await three.getByText("Version", { exact: true }).waitFor();
-  await three.getByText("Base airdrop", { exact: true }).waitFor();
-  assert.equal(
-    await three.locator(`a[href="/collection/solana/${solanaMint}"]`).count(),
-    1
-  );
-  await three.locator(`a[href="/collection/solana/${solanaMint}"]`).click();
-  const solanaVersions = page.getByRole("region", { name: "Monster versions" });
-  await solanaVersions
-    .getByRole("link", { name: "View Base airdrop #7", exact: true })
-    .waitFor();
-  await solanaVersions
-    .getByRole("link", { name: "View Polygon version #7", exact: true })
-    .waitFor();
-  await solanaVersions
-    .getByRole("link", { name: "View Base airdrop #7", exact: true })
-    .click();
-  await page
-    .getByRole("region", { name: "Monster versions" })
-    .getByRole("link", { name: "View Solana original", exact: true })
-    .waitFor();
-  await page.goto(`${app.origin}/collector/solana/${solanaOwner}?view=grouped`);
-  await page.getByText("18 groups · 18 NFTs.", { exact: false }).waitFor();
-  await page
-    .getByText("Collector owns 1 matching version", { exact: true })
-    .first()
-    .waitFor();
+  await page.getByText("72 OG Yunipals", { exact: false }).waitFor();
+  assert.equal(new URL(page.url()).searchParams.get("excludeChain"), "base");
   assert.equal(
     await page
-      .getByText("Collector owns 2 matching versions", { exact: true })
+      .getByRole("button", { name: "Grouped monsters", exact: true })
       .count(),
     0
   );
-  await page.goto(`${app.origin}/?edition=og&view=grouped`);
-  await page.getByText(/groups · .* NFTs/).waitFor();
+  for (const request of requests.filter((u) =>
+    /\/v1\/(tokens|traits)$/.test(u.pathname)
+  )) {
+    assert(!request.searchParams.getAll("chain").includes("base"));
+    assert(request.searchParams.has("chain"));
+  }
+  assert(
+    !requests.some((u) => u.pathname.includes("monster-version")),
+    "collection must not fetch relationship data"
+  );
+  await page
+    .getByRole("button", { name: "Remove Base exclusion", exact: true })
+    .click();
   await count(24);
-  const next = page.getByRole("button", { name: "Next", exact: true });
-  assert.equal(await next.isEnabled(), true);
-  await next.click();
-  await page.getByRole("button", { name: "Previous", exact: true }).click();
+  assert(!new URL(page.url()).searchParams.has("excludeChain"));
+  await page.reload();
+  assert(!new URL(page.url()).searchParams.has("excludeChain"));
+  await page.goto(app.origin);
   await count(24);
-  await page.setViewportSize({ width: 390, height: 844 });
+  assert(
+    !new URL(page.url()).searchParams.has("excludeChain"),
+    "saved All choice survives a bare visit"
+  );
+  await page.getByRole("button", { name: "Base", exact: true }).click();
+  await count(12);
+  assert.equal(new URL(page.url()).searchParams.get("chain"), "base");
+  await page.getByRole("button", { name: "Exclude Base", exact: true }).click();
+  await page
+    .getByText("No Yunipals match this combination.", { exact: false })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Remove Base exclusion", exact: true })
+    .click();
+  await count(12);
+  await page
+    .getByRole("button", { name: "Exclude Solana", exact: true })
+    .click();
+  await count(12);
+  assert.equal(new URL(page.url()).searchParams.get("excludeChain"), "solana");
+  await page.goto(`${app.origin}/?edition=og&chain=base&excludeChain=base`);
+  await page
+    .getByText("No Yunipals match this combination.", { exact: false })
+    .waitFor();
+  assert.equal(await cards.count(), 0);
+  await page.goto(`${app.origin}/?edition=tcg`);
+  assert(!new URL(page.url()).searchParams.has("excludeChain"));
+  await page.goto(`${app.origin}/collection/base/1`);
+  await page
+    .getByRole("region", { name: "Original NFT" })
+    .getByRole("link", { name: "View Ethereum original #1", exact: true })
+    .click();
+  assert.equal(new URL(page.url()).pathname, "/collection/ethereum/1");
+  await page.goto(`${app.origin}/collection/base/7`);
+  await page
+    .getByRole("region", { name: "Original NFT" })
+    .getByRole("link", { name: "View Solana original", exact: true })
+    .click();
   assert.equal(
+    new URL(page.url()).pathname,
+    `/collection/solana/${"1".repeat(31)}2`
+  );
+  await page.goto(
+    `${app.origin}/collector/0x0000000000000000000000000000000000000001`
+  );
+  await count(24);
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Grouped monsters", exact: true })
+      .count(),
+    0
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${app.origin}/?excludeChain=base&excludeChain=polygon`);
+  await count(24);
+  assert(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth
-    ),
-    true
-  );
-  await page.goto(
-    `${app.origin}/?edition=og&view=grouped&chain=base&sale=listed`
+    )
   );
   await page
-    .getByText("Sale and price filters show individual NFTs.", { exact: true })
-    .waitFor();
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Grouped monsters", exact: true })
-      .isDisabled(),
-    true
-  );
-  assert.equal(new URL(page.url()).searchParams.get("view"), "nfts");
-  await page.route("**/v1/monster-version-capabilities", (route) =>
-    route.fulfill({
-      json: {
-        version: 1,
-        enabled: true,
-        groupingEnabled: false,
-        revision: "a".repeat(64)
-      }
-    })
-  );
-  await page.goto(
-    `${app.origin}/?edition=og&chain=ethereum&chain=base&view=grouped`
-  );
-  await count(24);
-  await page.getByText("Base airdrop", { exact: true }).first().waitFor();
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Grouped monsters", exact: true })
-      .count(),
-    0
-  );
-  await page.unroute("**/v1/monster-version-capabilities");
-  await page.route("**/v1/monster-version-capabilities", (route) =>
-    route.fulfill({
-      json: {
-        version: 1,
-        enabled: false,
-        groupingEnabled: false,
-        revision: null
-      }
-    })
-  );
-  await page.goto(
-    `${app.origin}/?edition=og&chain=ethereum&chain=base&view=grouped`
-  );
-  await count(24);
-  assert.equal(
-    await page.getByText("Base airdrop", { exact: true }).count(),
-    0
-  );
+    .getByRole("button", { name: "Remove Base exclusion", exact: true })
+    .click();
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("excludeChain"), [
+    "polygon"
+  ]);
+  assert(!requests.some((u) => u.pathname.endsWith("/monster-groups")));
   assert.deepEqual(errors, []);
   console.log(
     JSON.stringify({
       passed: true,
       checks: [
-        "All NFTs default in collection and EVM/Solana collector views",
-        "no grouped reads before opting in",
-        "group counts",
-        "keyboard expansion",
-        "labels",
-        "view history",
-        "detail links",
-        "collector ownership",
-        "three-version Solana lineage",
-        "Solana and Base detail links",
-        "Solana collector counts",
-        "mixed Exomon pagination",
-        "mobile layout",
-        "sale filters",
-        "independent grouping rollback",
-        "disabled mapping"
-      ],
-      versionRequests: requests.length
+        "default Not Base",
+        "server chain selection",
+        "saved All choice",
+        "explicit Base view",
+        "multiple exclusions",
+        "empty selection",
+        "TCG unchanged",
+        "Ethereum original link",
+        "Solana original link",
+        "ordinary collector",
+        "mobile exclusions",
+        "no grouped reads"
+      ]
     })
   );
 } catch (error) {
-  console.log(
-    JSON.stringify({
-      errors,
-      text: (await page.locator("body").innerText()).slice(0, 3000)
-    })
-  );
-  await page.screenshot({ path: "/tmp/yunipals-versions-error.png" });
+  console.log((await page.locator("body").innerText()).slice(0, 3500));
+  await page.screenshot({ path: "/tmp/yunipals-simple-versions-error.png" });
   throw error;
 } finally {
   await browser.close();
