@@ -283,9 +283,11 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
                 transaction
               </p>
               <p className="mt-1 text-xs text-muted">
-                {wrap.pendingNotFound
-                  ? "Transaction not found on Base. Check your wallet for a replacement or cancellation."
-                  : "Check its status before continuing."}
+                {wrap.approvalReady
+                  ? "Your PMON allowance already covers this approval."
+                  : wrap.pendingNotFound
+                    ? "Transaction not found on Base. Check your wallet for a replacement or cancellation."
+                    : "Check its status before continuing."}
               </p>
             </div>
             <a
@@ -308,22 +310,28 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
             <RefreshCw size={13} aria-hidden="true" />
             Check pending transaction
           </button>
-          {wrap.pendingNotFound && wrap.pending.kind === "approve" && (
-            <div className="mt-3 border-t border-lavender/50 pt-3">
-              <p className="text-xs leading-relaxed text-muted">
-                You can clear this saved approval and review a fresh action.
-                Clearing it does not cancel a wallet transaction or wrap PMON.
-              </p>
-              <button
-                type="button"
-                disabled={!wrap.canClearMissingApproval}
-                onClick={wrap.clearMissingApproval}
-                className="mt-3 rounded-full border border-grape/20 bg-white px-4 py-2 text-xs font-bold text-grape hover:bg-lavender/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-40"
-              >
-                Clear saved approval
-              </button>
-            </div>
-          )}
+          {wrap.pending.kind === "approve" &&
+            (wrap.pendingNotFound || wrap.approvalReady) && (
+              <div className="mt-3 border-t border-lavender/50 pt-3">
+                <p className="text-xs leading-relaxed text-muted">
+                  {wrap.approvalReady
+                    ? "Continue using your existing PMON allowance. No additional approval is needed."
+                    : "You can clear this saved approval and review a fresh action."}{" "}
+                  This only clears the saved record. It does not cancel a wallet
+                  transaction or wrap PMON.
+                </p>
+                <button
+                  type="button"
+                  disabled={!wrap.canRecoverApproval}
+                  onClick={wrap.recoverApproval}
+                  className="mt-3 rounded-full border border-grape/20 bg-white px-4 py-2 text-xs font-bold text-grape hover:bg-lavender/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-40"
+                >
+                  {wrap.approvalReady
+                    ? "Use existing approval"
+                    : "Clear saved approval"}
+                </button>
+              </div>
+            )}
           {wrap.pendingNotFound && wrap.pending.kind === "wrap" && (
             <p className="mt-3 text-xs leading-relaxed text-muted">
               Confirm the final status in your wallet before wrapping again.

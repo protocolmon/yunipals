@@ -432,22 +432,35 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
         record = pending.current.value;
       if (!record || pending.current.key !== key || !client)
         throw Error("No saved transaction is available for this wallet.");
+      if (record.kind === "approve") {
+        const actual = await readYpalWrapBalances(
+          client,
+          deployment,
+          record.owner
+        );
+        if (!mounted.current || latest.current.storageKey !== key) return;
+        queries.setQueryData(
+          ["ypal-wrap", deploymentKey, record.owner.toLowerCase()],
+          actual
+        );
+      }
       await complete(record, key);
     });
   }
-  function clearMissingApproval() {
+  function recoverApproval() {
     const key = latest.current.storageKey,
       record = pending.current.value,
       stamp = version.current;
+    const useExisting = approvalReady;
     void run(async () => {
       if (
         !record ||
         record.kind !== "approve" ||
         pending.current.key !== key ||
-        notFound?.key !== key ||
-        notFound.hash !== record.hash
+        (!useExisting &&
+          (notFound?.key !== key || notFound.hash !== record.hash))
       )
-        throw Error("Check the saved approval before clearing it.");
+        throw Error("Check the saved approval before recovering it.");
       currentWallet(stamp, key, record.owner);
       const actual = await readYpalWrapBalances(
         client!,
@@ -455,9 +468,20 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
         record.owner
       );
       currentWallet(stamp, key, record.owner);
-      // Recheck on the user's explicit recovery action. A transaction that has
-      // become visible or confirmed must follow the normal receipt handling.
-      if ((await complete(record, key)) !== "not-found") return;
+      const sufficient = actual.allowance >= BigInt(record.amountRaw);
+      queries.setQueryData(
+        ["ypal-wrap", deploymentKey, record.owner.toLowerCase()],
+        actual
+      );
+      if (!sufficient) {
+        if (useExisting)
+          throw Error(
+            "Your PMON allowance changed. Check the saved approval again."
+          );
+        // Insufficient allowance cannot prove readiness. Only the explicitly
+        // requested missing-approval recovery may forget an unavailable hash.
+        if ((await complete(record, key)) !== "not-found") return;
+      }
       currentWallet(stamp, key, record.owner);
       const saved = localStorage.getItem(key);
       if (
@@ -466,18 +490,16 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
           record.hash
       )
         throw Error("The saved transaction changed. Reload before continuing.");
-      // Approval recovery only forgets a local record. A missing wrap must stay
-      // blocked because its late confirmation could otherwise wrap twice.
+      // Fresh allowance proves wrapping readiness, not success of the saved
+      // hash. Never apply this recovery to wraps or emit receipt confirmation.
       localStorage.removeItem(key);
       remember(key, null);
       setNotFound(null);
       dismissReview();
-      queries.setQueryData(
-        ["ypal-wrap", deploymentKey, record.owner.toLowerCase()],
-        actual
-      );
       setMessage(
-        "Saved approval cleared. Review a fresh action using your current PMON allowance."
+        sufficient
+          ? "Your existing PMON allowance is sufficient. Review the wrap action separately."
+          : "Saved approval cleared. Review a fresh action using your current PMON allowance."
       );
     });
   }
@@ -487,6 +509,11 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
     currentPending &&
       notFound?.key === storageKey &&
       notFound.hash === currentPending.hash
+  );
+  const approvalReady = Boolean(
+    currentPending?.kind === "approve" &&
+      balances.data &&
+      balances.data.allowance >= BigInt(currentPending.amountRaw)
   );
   const insufficient =
     parsedAmount !== null &&
@@ -509,9 +536,10 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
     review,
     pending: currentPending,
     pendingNotFound,
-    canClearMissingApproval: Boolean(
+    approvalReady,
+    canRecoverApproval: Boolean(
       connected &&
-        pendingNotFound &&
+        (pendingNotFound || approvalReady) &&
         currentPending?.kind === "approve" &&
         !busy
     ),
@@ -535,7 +563,7 @@ export function useYpalWrap(deployment: YpalWrapDeployment) {
     confirm,
     dismissReview,
     resolvePending,
-    clearMissingApproval,
+    recoverApproval,
     refresh: () => balances.refetch()
   };
 }

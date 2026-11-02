@@ -51,7 +51,7 @@ const ids = {
   environment: "virtual:ypal-wrap-environment.ts"
 };
 const fixture = `
-import {encodeAbiParameters,encodeEventTopics,decodeFunctionData,erc20Abi,hashDomain,parseAbiParameters} from 'viem';
+import {encodeAbiParameters,encodeEventTopics,encodeFunctionData,decodeFunctionData,erc20Abi,hashDomain,parseAbiParameters} from 'viem';
 import {validateYpalLaunchPackage,ypalRuntime} from '/src/lib/boosterYpalDeployment';
 import {ypalWrapAbi,ypalWrapManifestSha256,ypalWrapPmon,ypalWrapToken} from '/src/lib/ypalWrap';
 const bundle=validateYpalLaunchPackage(${JSON.stringify(pkg)});
@@ -77,8 +77,8 @@ function refreshWallet(){wallet={account:{address:identity.address},chain:{id:id
   const approval=input.to.toLowerCase()===ypalWrapPmon.toLowerCase(),decoded=decodeFunctionData({abi:approval?erc20Abi:ypalWrapAbi,data:input.data});
   if(decoded.functionName!==(approval?'approve':'wrap'))throw Error('Unexpected function');
   if(approval&&decoded.args[0].toLowerCase()!==ypalWrapToken.toLowerCase())throw Error('Wrong spender');
-  const amount=decoded.args[approval?1:0];const hash='0x'+(++state.sequence).toString(16).padStart(64,'0');
-  const record={hash,kind:approval?'approve':'wrap',amount:String(amount),input:input.data,to:input.to,cancel:scenario==='cancel',revert:scenario==='revert'};
+  let amount=decoded.args[approval?1:0],sentData=input.data;if(scenario==='approval-edited'&&approval){amount=577402578661881770328n;sentData=encodeFunctionData({abi:erc20Abi,functionName:'approve',args:[ypalWrapToken,amount]});}const hash='0x'+(++state.sequence).toString(16).padStart(64,'0');
+  const record={hash,kind:approval?'approve':'wrap',amount:String(amount),input:sentData,to:input.to,cancel:scenario==='cancel',revert:scenario==='revert'};
   persistRecord(record);if(scenario!=='pending'&&(!missingScenario||state.settled))apply(record);return hash;
  }};}
 refreshWallet();
@@ -304,7 +304,9 @@ try {
       return;
     if (
       values.filter === "receipt" &&
-      !/^(Pending hash|Mined receipt|Transient receipt|Missing)/.test(name)
+      !/^(Pending hash|Mined receipt|Transient receipt|Missing|Confirmed approval)/.test(
+        name
+      )
     )
       return;
     await action();
@@ -642,7 +644,7 @@ try {
         if (scenario === "allowance") {
           await page
             .getByText(
-              "Saved approval cleared. Review a fresh action using your current PMON allowance.",
+              "Your existing PMON allowance is sufficient. Review the wrap action separately.",
               { exact: true }
             )
             .waitFor();
@@ -701,6 +703,125 @@ try {
           )
         ),
         true
+      );
+      await context.close();
+    }
+  );
+  for (const allowance of ["available", "revoked"])
+    await check(
+      "Confirmed approval with a wallet-edited amount rechecks " +
+        allowance +
+        " allowance",
+      async () => {
+        const { page, context } = await visit("approval-edited");
+        await review(page, "approve").click();
+        await confirm(page, "approve").click();
+        await page
+          .getByRole("alert")
+          .getByText(
+            "The confirmed transaction differs from the exact reviewed wrapping action.",
+            { exact: true }
+          )
+          .waitFor();
+        const saved = await page.evaluate(() =>
+          Object.entries(localStorage).find(([key]) =>
+            key.startsWith("yunipals/ypal-wrap/v1/")
+          )
+        );
+        assert(saved);
+        assert.equal(JSON.parse(saved[1]).amountRaw, "1000000000000000000");
+        await page
+          .getByRole("button", { name: "Check pending transaction" })
+          .click();
+        await page.getByRole("alert").waitFor();
+        const useExisting = page.getByRole("button", {
+          name: "Use existing approval",
+          exact: true
+        });
+        await useExisting.waitFor();
+        assert.equal(await review(page, "wrap").isDisabled(), true);
+        if (allowance === "revoked")
+          await page.evaluate(() => window.__wrapSetAllowance("0"));
+        await useExisting.click();
+        if (allowance === "revoked") {
+          await page
+            .getByRole("alert")
+            .getByText(
+              "Your PMON allowance changed. Check the saved approval again.",
+              { exact: true }
+            )
+            .waitFor();
+          assert.deepEqual(
+            await page.evaluate(() =>
+              Object.entries(localStorage).find(([key]) =>
+                key.startsWith("yunipals/ypal-wrap/v1/")
+              )
+            ),
+            saved
+          );
+          assert.equal(await review(page, "approve").isDisabled(), true);
+        } else {
+          await page
+            .getByText(
+              "Your existing PMON allowance is sufficient. Review the wrap action separately.",
+              { exact: true }
+            )
+            .waitFor();
+          assert.equal(await review(page, "wrap").isEnabled(), true);
+          assert.equal(
+            await page.evaluate(() =>
+              Object.keys(localStorage).some((key) =>
+                key.startsWith("yunipals/ypal-wrap/v1/")
+              )
+            ),
+            false
+          );
+          assert.equal(
+            await page
+              .getByText(
+                "PMON approval confirmed. Review the wrap action separately.",
+                { exact: true }
+              )
+              .count(),
+            0
+          );
+        }
+        assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+        await context.close();
+      }
+    );
+  await check(
+    "Confirmed approval recovery uses sufficient allowance when the saved hash is unavailable",
+    async () => {
+      const { page, context } = await visit("missing-allowance");
+      await review(page, "approve").click();
+      await confirm(page, "approve").click();
+      await page.getByRole("alert").waitFor();
+      await page.evaluate(() =>
+        window.__wrapSetAllowance("1000000000000000000")
+      );
+      await page
+        .getByRole("button", { name: "Check pending transaction" })
+        .click();
+      await page
+        .getByRole("button", { name: "Use existing approval", exact: true })
+        .click();
+      await page
+        .getByText(
+          "Your existing PMON allowance is sufficient. Review the wrap action separately.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(await review(page, "wrap").isEnabled(), true);
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+      assert.equal(
+        await page
+          .getByText(
+            "PMON approval confirmed. Review the wrap action separately.",
+            { exact: true }
+          )
+          .count(),
+        0
       );
       await context.close();
     }
