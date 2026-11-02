@@ -145,6 +145,7 @@ export async function runOpenSeaStreamSession(input: {
       );
     };
     const processMessage = async (raw: string) => {
+      if (settled) return;
       const value = frame(raw);
       if (value.event === "phx_reply") {
         if (!successfulReply(value.payload))
@@ -163,6 +164,7 @@ export async function runOpenSeaStreamSession(input: {
             joining = true;
             if (!(await markOpenSeaStreamConnected(input.pool, input.lease)))
               throw new StreamSessionError("stream_lease_lost");
+            if (settled) return;
             joined = true;
             joining = false;
             if (joinTimeout) clearTimeout(joinTimeout);
@@ -227,8 +229,13 @@ export async function runOpenSeaStreamSession(input: {
     };
     const onError = () => fail("stream_connection_error");
     const onClose = () => {
-      if (input.signal.aborted) void processing.finally(() => finish());
-      else fail("stream_connection_closed");
+      // Drain already queued persistence before the worker records the gap or
+      // reconnects. Otherwise a late join can create a timer after cleanup and
+      // overwrite the disconnected state from the replacement session.
+      void processing.finally(() => {
+        if (input.signal.aborted) finish();
+        else fail("stream_connection_closed");
+      });
     };
     const onAbort = () => {
       try {

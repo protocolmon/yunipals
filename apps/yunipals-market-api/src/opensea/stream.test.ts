@@ -17,6 +17,7 @@ import {
   releaseOpenSeaStreamLease
 } from "@/opensea/stream";
 import {
+  runOpenSeaStreamSession,
   runOpenSeaStreamWorker,
   type OpenSeaStreamSocket
 } from "@/opensea/streamTransport";
@@ -313,4 +314,56 @@ test("an unexpected disconnect persists a scan gap before reconnecting", async (
   });
   stop.abort();
   assert.deepEqual(await running, { leaseClaims: 1, connections: 2, gaps: 1 });
+});
+
+test("disconnect waits for an in-flight join before cleanup and reconnect", async () => {
+  const lease = await claimOpenSeaStreamLease(streamPool, 30000);
+  assert.ok(lease);
+  const blocker = await db.owner.connect();
+  let outcome: Promise<string> | undefined;
+  try {
+    await blocker.query("BEGIN");
+    await blocker.query(
+      "SELECT singleton FROM yunipals_market.opensea_stream_state WHERE singleton FOR UPDATE"
+    );
+    let closed = false;
+    let finished = false;
+    outcome = runOpenSeaStreamSession({
+      pool: streamPool,
+      lease,
+      apiKey: "fixture-key",
+      signal: new AbortController().signal,
+      socketFactory() {
+        const socket = new FakeSocket(true);
+        socket.addEventListener("close", () => {
+          closed = true;
+        });
+        return socket;
+      }
+    }).then(
+      () => {
+        finished = true;
+        return "resolved";
+      },
+      (error: unknown) => {
+        finished = true;
+        return error instanceof Error ? error.message : "unknown";
+      }
+    );
+    for (let tries = 0; !closed && tries < 100; tries++) await delay(10);
+    assert.equal(closed, true);
+    await delay(20);
+    assert.equal(
+      finished,
+      false,
+      "the closed session must drain its blocked join before cleanup"
+    );
+    await blocker.query("COMMIT");
+    assert.equal(await outcome, "stream_connection_closed");
+    assert.equal(await releaseOpenSeaStreamLease(streamPool, lease), true);
+  } finally {
+    await blocker.query("ROLLBACK");
+    blocker.release();
+    if (outcome) await outcome;
+  }
 });

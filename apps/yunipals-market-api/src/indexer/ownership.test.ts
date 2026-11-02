@@ -821,10 +821,14 @@ test(
       releaseId: release.id,
       readSchema: mirror
     };
-    // postgres_fdw executes inside this disposable PostgreSQL container, whose
-    // listener is 5432; the test runner reaches that same listener via 56967.
+    // FDW executes at the database's listener, which may differ from the test
+    // runner's forwarded port. Query the disposable server instead of assuming
+    // its internal port is 5432.
     const fdwUrl = new URL(sourceUrl!);
-    fdwUrl.port = "5432";
+    const internalPort = (await source.query<{ port: string }>("SHOW port"))
+      .rows[0]!.port;
+    assert.match(internalPort, /^[1-9][0-9]{0,4}$/);
+    fdwUrl.port = internalPort;
     await closeMarketplaceOwnershipIndexer();
     configureMarketplaceOwnershipIndexer(
       { ...sourceConfig, databaseUrl: fdwUrl.toString() },
@@ -833,7 +837,7 @@ test(
     const literal = (value: string) => `'${value.replaceAll("'", "''")}'`;
     try {
       await local.query(`CREATE EXTENSION IF NOT EXISTS postgres_fdw;
-      CREATE SERVER ${server} FOREIGN DATA WRAPPER postgres_fdw OPTIONS(host '127.0.0.1',port '5432',dbname 'yunipals_ponder_dependency_test',updatable 'false');
+      CREATE SERVER ${server} FOREIGN DATA WRAPPER postgres_fdw OPTIONS(host '127.0.0.1',port ${literal(internalPort)},dbname 'yunipals_ponder_dependency_test',updatable 'false');
       CREATE USER MAPPING FOR CURRENT_USER SERVER ${server} OPTIONS(user ${literal(decodeURIComponent(fdwUrl.username))},password ${literal(decodeURIComponent(fdwUrl.password))},password_required 'false');
       CREATE SCHEMA ${mirror};
       IMPORT FOREIGN SCHEMA ${mirror} LIMIT TO(token,token_lifecycle,transfer_event,source_status,_unified_read_release) FROM SERVER ${server} INTO ${mirror};`);
