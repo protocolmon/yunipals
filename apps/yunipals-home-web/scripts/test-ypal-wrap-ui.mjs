@@ -57,11 +57,12 @@ import {ypalWrapAbi,ypalWrapManifestSha256,ypalWrapPmon,ypalWrapToken} from '/sr
 const bundle=validateYpalLaunchPackage(${JSON.stringify(pkg)});
 export const deployment={confirmed:true,manifestSha256:ypalWrapManifestSha256,chainId:8453,ypal:ypalWrapToken,pmon:ypalWrapPmon};
 export const scenario=new URLSearchParams(location.search).get('scenario')||'normal';
+const missingScenario=scenario.startsWith('missing-');
 const owner='0x1111111111111111111111111111111111111111',zero='0x0000000000000000000000000000000000000000';
 const blockHash='0x'+'cd'.repeat(32),runtime=ypalRuntime(bundle.artifacts.ypal,ypalWrapToken,ypalWrapPmon);
 const types={EIP712Domain:[{name:'name',type:'string'},{name:'version',type:'string'},{name:'chainId',type:'uint256'},{name:'verifyingContract',type:'address'}]};
 const saved=JSON.parse(sessionStorage.getItem('wrap-fixture')||'null');
-const state=saved||{allowance:scenario==='allowance'||scenario.startsWith('defer')?'100000000000000000000':'0',pmon:'100000000000000000000',ypal:'0',records:[],sequence:0,settled:false};
+const state=saved||{allowance:scenario==='allowance'||scenario==='missing-wrap'||scenario.startsWith('defer')?'100000000000000000000':'0',pmon:'100000000000000000000',ypal:'0',records:[],sequence:0,settled:false};
 const save=()=>sessionStorage.setItem('wrap-fixture',JSON.stringify(state));
 let identity={address:owner,chainId:8453},wallet;const listeners=new Set();let deferred=null;
 window.__wrapSends=[];window.__wrapReads=0;window.__wrapHooks=0;window.__wrapContextReads=0;
@@ -78,7 +79,7 @@ function refreshWallet(){wallet={account:{address:identity.address},chain:{id:id
   if(approval&&decoded.args[0].toLowerCase()!==ypalWrapToken.toLowerCase())throw Error('Wrong spender');
   const amount=decoded.args[approval?1:0];const hash='0x'+(++state.sequence).toString(16).padStart(64,'0');
   const record={hash,kind:approval?'approve':'wrap',amount:String(amount),input:input.data,to:input.to,cancel:scenario==='cancel',revert:scenario==='revert'};
-  persistRecord(record);if(scenario!=='pending')apply(record);return hash;
+  persistRecord(record);if(scenario!=='pending'&&(!missingScenario||state.settled))apply(record);return hash;
  }};}
 refreshWallet();
 export const subscribe=listener=>{listeners.add(listener);return()=>listeners.delete(listener);};
@@ -87,6 +88,8 @@ export function setIdentity(chainId,address=owner){identity={chainId,address};re
 window.__wrapIdentity=setIdentity;
 window.__wrapRelease=()=>{const resolve=deferred;deferred=null;window.__wrapDefer=false;resolve?.();};
 window.__wrapSettle=()=>{state.settled=true;for(const record of state.records)apply(record);save();};
+window.__wrapResume=()=>{state.settled=true;save();};
+window.__wrapSetAllowance=value=>{state.allowance=value;save();};
 function record(hash){const value=state.records.find(x=>x.hash===hash);if(!value)throw Error('Unknown synthetic transaction');return value;}
 function transaction(value){return{hash:value.hash,blockHash,blockNumber:100n,chainId:8453,from:owner,to:value.cancel?owner:value.to,input:value.cancel?'0x':value.input,value:0n,nonce:5};}
 function receipt(value){const amount=BigInt(value.amount);let n=0;const log=(address,topics)=>({address,topics,data:encodeAbiParameters(parseAbiParameters('uint256'),[amount]),blockHash,blockNumber:100n,transactionHash:value.hash,transactionIndex:0,logIndex:n++,removed:false});
@@ -100,16 +103,18 @@ export const client={
  estimateFeesPerGas:async()=>({maxFeePerGas:1000000000n,maxPriorityFeePerGas:100000000n}),estimateGas:async()=>100000n,getBalance:async()=>10n**20n,
  call:async()=>{await barrier('call');return{data:'0x'};},
  getTransaction:async({hash})=>{
+  if(missingScenario&&!state.settled&&!window.__wrapVisible){const e=Error('Not found');e.name='TransactionNotFoundError';throw e;}
   const value=transaction(record(hash));
+  if(missingScenario&&!state.settled)return{...value,blockHash:null,blockNumber:null};
   if(scenario==='receipt-stale'||scenario==='receipt-transient'){
    window.__wrapContextReads++;
    if(!state.settled&&(scenario==='receipt-stale'||window.__wrapContextReads<=2))return{...value,blockHash:null,blockNumber:null};
   }
   return value;
  },
- getTransactionReceipt:async({hash})=>{if(scenario==='pending'&&!state.settled){const e=Error('Pending');e.name='TransactionReceiptNotFoundError';throw e;}return receipt(record(hash));},
+ getTransactionReceipt:async({hash})=>{await barrier('receipt');if(window.__wrapRpcFailure)throw Error('Base connection unavailable');if((scenario==='pending'||missingScenario)&&!state.settled){const e=Error('Pending');e.name='TransactionReceiptNotFoundError';throw e;}return receipt(record(hash));},
  waitForTransactionReceipt:async({hash,onReplaced})=>{
-  if(scenario==='pending'&&!state.settled)throw Error('Synthetic timeout; hash retained');
+  if((scenario==='pending'||missingScenario)&&!state.settled)throw Error('Synthetic timeout; hash retained');
   if(scenario==='repriced'||scenario==='cancel'){const prior=record(hash),next={...prior,hash:'0x'+(++state.sequence).toString(16).padStart(64,'0')};persistRecord(next);
    onReplaced?.({reason:scenario==='cancel'?'cancelled':'repriced',replacedTransaction:{...transaction(prior),to:prior.to,input:prior.input},transaction:transaction(next),transactionReceipt:receipt(next)});return receipt(next);}
   return receipt(record(hash));}
@@ -299,7 +304,7 @@ try {
       return;
     if (
       values.filter === "receipt" &&
-      !/^(Pending hash|Mined receipt|Transient receipt)/.test(name)
+      !/^(Pending hash|Mined receipt|Transient receipt|Missing)/.test(name)
     )
       return;
     await action();
@@ -503,6 +508,200 @@ try {
         )
         .waitFor();
       assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      await context.close();
+    }
+  );
+  await check(
+    "Missing approval survives reload and clears only after an explicit recheck without sending",
+    async () => {
+      const { page, context } = await visit("missing-approval");
+      await review(page, "approve").click({ noWaitAfter: true });
+      await confirm(page, "approve").click({ noWaitAfter: true });
+      await page
+        .getByRole("button", { name: "Check pending transaction" })
+        .waitFor();
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForFunction(() => window.__wrapReady === true);
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Clear saved approval" })
+          .count(),
+        0
+      );
+      assert.equal(await review(page, "approve").isDisabled(), true);
+      await page
+        .getByRole("button", { name: "Check pending transaction" })
+        .click();
+      const clear = page.getByRole("button", {
+        name: "Clear saved approval",
+        exact: true
+      });
+      await clear.waitFor();
+      assert.equal(
+        await page
+          .getByText("Confirming on Base. Your transaction hash is saved.", {
+            exact: true
+          })
+          .count(),
+        0
+      );
+      await page.setViewportSize({ width: 390, height: 844 });
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+      );
+      const screenshot = "/tmp/yunipals-missing-approval-recovery.png";
+      await page.screenshot({ path: screenshot, fullPage: true });
+      report.screenshots.push(screenshot);
+      await clear.click();
+      await page
+        .getByText(
+          "Saved approval cleared. Review a fresh action using your current PMON allowance.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      assert.equal(
+        await page.evaluate(() =>
+          Object.keys(localStorage).some((key) =>
+            key.startsWith("yunipals/ypal-wrap/v1/")
+          )
+        ),
+        false
+      );
+      assert.equal(await review(page, "approve").isEnabled(), true);
+      // Only a new review and confirmation may enter the signing wallet.
+      await page.evaluate(() => window.__wrapResume());
+      await review(page, "approve").click();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 0);
+      await confirm(page, "approve").click();
+      await page
+        .getByText(
+          "PMON approval confirmed. Review the wrap action separately.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+      await context.close();
+    }
+  );
+  for (const scenario of ["allowance", "visible", "rpc-error", "account"])
+    await check(
+      "Missing approval recovery rechecks " + scenario + " before clearing",
+      async () => {
+        const { page, context } = await visit("missing-" + scenario);
+        await review(page, "approve").click();
+        await confirm(page, "approve").click();
+        await page.getByRole("alert").waitFor();
+        await page
+          .getByRole("button", { name: "Check pending transaction" })
+          .click();
+        const clear = page.getByRole("button", {
+          name: "Clear saved approval",
+          exact: true
+        });
+        await clear.waitFor();
+        const saved = await page.evaluate(() =>
+          Object.entries(localStorage).find(([key]) =>
+            key.startsWith("yunipals/ypal-wrap/v1/")
+          )
+        );
+        assert(saved);
+        if (scenario === "allowance")
+          await page.evaluate(() =>
+            window.__wrapSetAllowance("1000000000000000000")
+          );
+        if (scenario === "visible")
+          await page.evaluate(() => {
+            window.__wrapVisible = true;
+          });
+        if (scenario === "rpc-error")
+          await page.evaluate(() => {
+            window.__wrapRpcFailure = true;
+          });
+        if (scenario === "account")
+          await page.evaluate(() => {
+            window.__wrapDefer = "receipt";
+          });
+        await clear.click();
+        if (scenario === "account") {
+          await page.waitForFunction(() => window.__wrapReached);
+          await page.evaluate(() =>
+            window.__wrapIdentity(
+              8453,
+              "0x2222222222222222222222222222222222222222"
+            )
+          );
+          await page.waitForTimeout(50);
+          await page.evaluate(() => window.__wrapIdentity(8453));
+          await page.waitForTimeout(50);
+          await page.evaluate(() => window.__wrapRelease());
+        }
+        if (scenario === "allowance") {
+          await page
+            .getByText(
+              "Saved approval cleared. Review a fresh action using your current PMON allowance.",
+              { exact: true }
+            )
+            .waitFor();
+          assert.equal(await review(page, "wrap").isEnabled(), true);
+        } else {
+          if (scenario === "visible")
+            await page
+              .getByText(
+                "Confirming on Base. Your transaction hash is saved.",
+                { exact: true }
+              )
+              .waitFor();
+          else await page.getByRole("alert").waitFor();
+          assert.deepEqual(
+            await page.evaluate(() =>
+              Object.entries(localStorage).find(([key]) =>
+                key.startsWith("yunipals/ypal-wrap/v1/")
+              )
+            ),
+            saved
+          );
+          assert.equal(await review(page, "approve").isDisabled(), true);
+        }
+        assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+        await context.close();
+      }
+    );
+  await check(
+    "Missing wrap remains blocked to prevent duplicate wrapping",
+    async () => {
+      const { page, context } = await visit("missing-wrap");
+      await review(page, "wrap").click();
+      await confirm(page, "wrap").click();
+      await page.getByRole("alert").waitFor();
+      await page
+        .getByRole("button", { name: "Check pending transaction" })
+        .click();
+      await page
+        .getByText(
+          "Transaction not found on Base. Check your wallet for a replacement or cancellation.",
+          { exact: true }
+        )
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Clear saved approval" })
+          .count(),
+        0
+      );
+      assert.equal(await review(page, "wrap").isDisabled(), true);
+      assert.equal(await page.evaluate(() => window.__wrapSends.length), 1);
+      assert.equal(
+        await page.evaluate(() =>
+          Object.keys(localStorage).some((key) =>
+            key.startsWith("yunipals/ypal-wrap/v1/")
+          )
+        ),
+        true
+      );
       await context.close();
     }
   );

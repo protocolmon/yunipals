@@ -273,9 +273,17 @@ export async function resolveYpalWrapReceipt(
   try {
     receipt = await client.getTransactionReceipt({ hash: pending.hash });
   } catch (error) {
-    if (resultMissing(error, "TransactionReceiptNotFoundError"))
-      return { status: "pending" as const };
-    throw error;
+    if (!resultMissing(error, "TransactionReceiptNotFoundError")) throw error;
+    // A missing receipt alone does not distinguish a pending transaction from
+    // a hash that was dropped, replaced, or never broadcast by the wallet.
+    try {
+      await client.getTransaction({ hash: pending.hash });
+    } catch (transactionError) {
+      if (resultMissing(transactionError, "TransactionNotFoundError"))
+        return { status: "not-found" as const };
+      throw transactionError;
+    }
+    return { status: "pending" as const };
   }
   let transaction;
   try {
