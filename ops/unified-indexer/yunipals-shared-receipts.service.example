@@ -1,0 +1,29 @@
+[Unit]
+Description=Bounded receipt enrichment for the canonical Yunipals source
+After=postgresql@16-main.service yunipals-indexer.service yunipals-indexer-observer.service
+ConditionPathExists=/etc/yunipals-unified/shared-production/qualified.json
+
+[Service]
+Type=oneshot
+User=yunipals_unified_support
+Group=yunipals_unified_support
+WorkingDirectory=/opt/yunipals-unified/shared-support
+EnvironmentFile=/etc/yunipals-unified/shared-production/observer.selectors.env
+Environment=UNIFIED_INDEXER_DATABASE_URL=postgresql:///yunipals_backfill?host=/var/run/postgresql&port=5432&user=yunipals_unified_support
+Environment=UNIFIED_SUPPORT_POOL_MAX=3
+ExecStart=/opt/node-v24.18.1/bin/node /opt/yunipals-unified/shared-support/dist/shared-receipts.mjs receipts-once
+TimeoutStartSec=90
+TimeoutStopSec=30
+KillMode=control-group
+MemoryMax=536870912
+TasksMax=32
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077

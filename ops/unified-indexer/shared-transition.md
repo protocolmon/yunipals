@@ -1,0 +1,174 @@
+# Completing the shared source transition
+
+Use the detailed [transition plan](../../docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md)
+for production gates, backups, consumer inventory and rollback. Commands below
+prepare artifacts; they do not authorize activation or establish native readiness.
+Run indexer commands from `apps/yunipals-indexer` with Node 24 and the reviewed
+public source configuration loaded. Keep private credentials on the server.
+
+## Final source and identity
+
+The manifest must enable exactly eleven retained non-Arena sources, the fighter
+registry and one `YunipalsArenaV2` source. Both modes use that contract. The old
+video and standalone Anime contracts are absent from continuous ingestion.
+Registered booster ingestion ABIs and per-contract deployment blocks must remain
+identical even when the wallet SDK adds contract helpers.
+
+The production marketplace retains depth-20 sale policies for Ethereum and
+Polygon. Include `UNIFIED_OWNERSHIP_DEPTHS_JSON='{"ethereum":[20],"polygon":[20]}'`
+when preparing this release. The specification records these explicit additions
+to the existing latest/finalized policies. Baseline validation permits only those
+declared additions; addresses, ABIs, start blocks, receipt history and existing
+policies still have to match exactly. This allows the marketplace consumers to
+move off legacy scanning without weakening or renaming their confirmation rules.
+
+`scripts/build-shared-indexer.mjs --schema SCHEMA --output /absolute/fresh-build.json`
+uses Ponder's real compiler with stubbed headers and no database or provider
+connections. It verifies every enabled address, deployment block and handler.
+Its build identity must match the subsequent running Ponder build. Production
+preflight remains mandatory.
+
+Prepare a fresh deployment specification with:
+
+```sh
+node --import tsx scripts/prepare-shared-indexer.ts \
+  --baseline /absolute/current-manifest.json \
+  --arena-baseline /absolute/previous-shared-arena-manifest.json \
+  --profile /absolute/reviewed-rpc-profile.json \
+  --schema FRESH_SCHEMA --build-id ACTUAL_BUILD \
+  --read-schema FRESH_OWNERSHIP_VIEW \
+  --output /absolute/fresh-deployment.json
+```
+
+This specification binds the schema, actual build, complete manifest, ownership
+view and four reviewed relay endpoints. Registration still uses
+`unified-control.ts register` against actual native framework metadata. Never
+relabel the previous source schema or overwrite its registration.
+
+## RPC service lifecycle
+
+Migration 30 adds explicit `temporary` and `service` approvals. Existing approvals
+remain temporary with their original expiry. New production service approvals
+require a fresh `profile.reviewId`, `lifecycle: "service"` and `expiresAt: null`.
+The database stores positive infinity so existing relay expiry predicates remain
+compatible. They remain revocable and subject to the same coordinator and budgets.
+
+Run `apps/yunipals-market-api/scripts/review-unified-rpc-policy.ts --file INPUT`
+with the restricted operator connection, inspect the policy and review hash,
+then apply that exact hash. Use a new identity instead of trying to renew an old
+insert-only approval. No budget, allocation or usage counter is reset. Every
+paid replay permit still needs a finite expiry, explicit range and CU maximum;
+the service lifecycle grants no paid replay authority. Normal operation uses
+`UNIFIED_RPC_FREE_ONLY=true` and no replay permit IDs.
+
+Expired/disabled profile readiness returns a bounded error code such as
+`rpc_profile_expired`; provider credentials are never included in that response.
+
+## Consumer settings and observer
+
+Use the same validated deployment file for the observer, readers and each v2
+mode. `scripts/configure-shared-consumer.ts` replaces the frozen, release-specific
+reader configuration path for this transition:
+
+```sh
+node --import tsx scripts/configure-shared-consumer.ts \
+  --deployment /absolute/deployment.json --consumer reader \
+  --output /absolute/fresh-reader.selectors.env
+```
+
+`reader` sets the physical schema, immutable ownership view, release and native
+metadata/generation mode. `publisher` also updates the four projection-anchor RPC
+routes and their reviewed profile. `booster` selects its public source schema.
+`marketplace-ownership`, `marketplace-sales`, `marketplace-bnb-discovery` and
+`marketplace-bnb-sales` emit their respective explicit source selectors, retaining
+private connection files and requiring reviewed operational consumer selection.
+`arena` emits only its three source selectors, keeping
+mode configuration and private operational work intact. `observer` also requires
+`--profile /absolute/profile.json` and emits its RPC and deployment settings.
+The generator writes a new public overlay; it does not edit service files, grant
+database privileges, switch Arena epochs or restart workers. Retain the installed
+application artifacts and their private inputs unless a compatible rebuild is
+required. In particular, preserve current monster-version functionality.
+
+Install the overlay after existing service environment files, checking both
+systemd's environment and Node's `--env-file` layers. The inherited process
+environment overrides Node env files. For the new source, remove obsolete Arena
+aliases and all replay permit IDs from its private base before applying public
+settings. Changing `active_release` alone does not migrate explicit consumers.
+
+`scripts/shared-indexer-observer.ts inspect|health|observe-once|worker` checks the exact
+registered build/manifest/profile, holds a singleton observation lease and runs
+independent bounded loops for all four chains. It performs observation support,
+not log ingestion or provider generation. Use automatic recovery from the
+observer unit example. The receipt service/timer examples reuse the reviewed
+`unified-control.ts receipts-once` command with a bounded pool and batches, after
+qualification. Existing receipt evidence is keyed by chain/block/transaction and
+is reused across releases; it is not blindly regenerated or reset. Preserve its
+restricted control-table grants. Neither support task performs log ingestion.
+
+## Qualification, handover and retirement
+
+Create immutable ownership views, native metadata adoption and complete derived
+cache generations before publishing reader selectors. Require current
+source-specific readiness on all chains. Run:
+
+```sh
+node --import tsx scripts/verify-shared-indexer.ts \
+  --deployment /absolute/deployment.json --baseline-release REGISTERED_ID \
+  --output /absolute/fresh-parity.json
+```
+
+Canonical comparison runs in a read-only repeatable snapshot and streams every
+retained event at common hash-verified boundaries, including decoded arguments,
+timestamps and raw log evidence. It uses native ordering indexes and paginates
+within dense blocks. Topic arrays use the existing receipt verifier's strict
+decoder: Ponder's trailing empty historical slots compare with their realtime
+form, while changed topics or invalid/interior padding fail verification.
+After hashing, it checks current readiness and the compared
+headers in a fresh transaction, so a held snapshot cannot hide a reorg or a
+stopped source. Use `--archived-arena-baseline` only for the registry/v2 comparison.
+If the new source lacks an old quiet-block header, that mode requires the exact
+`UNIFIED_RPC_PROFILE_FILE` and bounded free canonical point checks before and
+after comparison. It never inserts historical headers or framework checkpoints.
+Row counts alone are insufficient. Verify current collection/metadata/booster/Islands/marketplace
+responses as well as existing v2 films, tasks, transactions and credits.
+
+The optional qualification service/timer runs `qualify-shared-indexer.ts` with
+the inspected main and previous shared-Arena release IDs. It waits for native
+health, performs both complete comparisons and writes protected reports. Its
+`qualified.json` covers **public source ingestion only**. It never switches a
+reader, changes private jobs, submits a transaction or enables admissions. The
+actual cutover still requires current checks, native metadata adoption, complete
+derived generations and each reviewed operational source epoch. Disable the
+qualification timer when transferring ownership to the canonical service.
+
+For encrypted Arena recovery, set
+`YUNIPALS_SHARED_INDEXER_BACKUP_CONFIGURATION` and
+`YUNIPALS_SHARED_INDEXER_BACKUP_RELEASE` together to protected canonical config
+and source-artifact directories. This replaces the old candidate source/relay/
+observer directory requirements. Both roots must exist and contain no symlinks;
+private files remain inside the encrypted backup flow.
+
+Stop the qualification candidate before transferring its qualified schema and
+artifact to `yunipals-indexer.service`. Configure
+`YUNIPALS_INDEXER_LOCK_FILE=/run/yunipals-indexer/ingestion.lock`, preserve the
+existing Solana directory/private settings and reset obsolete source bind mounts.
+Exit 78 prevents duplicate supervisors. Transient child failures restart with
+bounded backoff; process-group shutdown drains both adapters.
+
+Gate v2 work and use `ArenaSourceSwitch` review/exact-hash application separately
+for video and anime. Preserve immutable epoch history and nondecreasing
+operational block/hash floors. Never edit `source_selection` directly or reset
+provider tasks and signed transaction records.
+
+Retire the old video/standalone Anime workers and extra source/observer/relay
+sets, including boot dependencies and monitors. The old tournaments were personal
+tests: no historical UI, settlement worker or claims interface is required. The
+user handles any old contract claims directly onchain. Keep protected rollback
+backups; do not submit owner transactions, claims or refunds during retirement.
+
+Verify effective selectors and one Ponder process after restart, both managed
+children, fresh observations, representative product reads, source advancement,
+unchanged budget limits and no duplicate provider submissions. Record actual
+acceptance and outstanding observation windows separately; a prepared artifact
+does not establish a completed production cutover.

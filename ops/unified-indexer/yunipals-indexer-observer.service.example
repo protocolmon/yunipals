@@ -1,0 +1,31 @@
+[Unit]
+Description=Yunipals canonical shared source observations
+After=network-online.target postgresql@16-main.service yunipals-indexer.service yunipals-shared-rpc@ethereum.service yunipals-shared-rpc@base.service yunipals-shared-rpc@polygon.service yunipals-shared-rpc@bnb.service
+Wants=network-online.target yunipals-indexer.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=yunipals_unified_support
+Group=yunipals_unified_support
+EnvironmentFile=/etc/yunipals-unified/shared-observer.env
+ExecStart=/opt/node-v24.18.1/bin/node /opt/yunipals-unified/shared-observer/dist/shared-observer.mjs worker
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=30
+KillMode=control-group
+MemoryMax=536870912
+TasksMax=32
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

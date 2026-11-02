@@ -20,6 +20,7 @@ const pathSettings = new Set([
 ]);
 const settings = new Set([
   ...pathSettings,
+  "YUNIPALS_INDEXER_LOCK_FILE",
   "UNIFIED_SOLANA_ENABLED",
   "UNIFIED_PONDER_PORT",
   "UNIFIED_PONDER_SCHEMA",
@@ -59,6 +60,14 @@ export async function loadLaunchConfiguration(file) {
     "YUNIPALS_INDEXER_SOLANA_ENV_FILE"
   ]) {
     if (!values[name]) throw new Error(`Missing service setting: ${name}.`);
+  }
+  if (values.YUNIPALS_INDEXER_LOCK_FILE) {
+    values.YUNIPALS_INDEXER_LOCK_FILE = resolve(
+      dirname(configFile),
+      values.YUNIPALS_INDEXER_LOCK_FILE
+    );
+    if (!(await stat(dirname(values.YUNIPALS_INDEXER_LOCK_FILE))).isDirectory())
+      throw new Error("Indexer lock must have an existing parent directory.");
   }
   values.YUNIPALS_INDEXER_NODE ??= process.execPath;
   values.YUNIPALS_INDEXER_PONDER_DIRECTORY ??= application;

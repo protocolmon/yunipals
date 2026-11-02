@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh canonical Yunipals receipt evidence
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=5s
+AccuracySec=1s
+Unit=yunipals-shared-receipts.service
+
+[Install]
+WantedBy=timers.target
