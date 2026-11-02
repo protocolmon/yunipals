@@ -12,6 +12,18 @@ import {
 } from "../../../packages/yunipals-indexer-server/src/rpc-policy";
 import { alchemyComputeUnits } from "@/opensea/rpcComputeBudget";
 
+export class UnifiedRpcPolicyUnavailable extends Error {
+  constructor(
+    readonly code:
+      | "rpc_profile_unavailable"
+      | "rpc_profile_disabled"
+      | "rpc_profile_expired"
+      | "rpc_budget_unavailable"
+  ) {
+    super(code);
+  }
+}
+
 export type UnifiedRpcPolicyGate = {
   profile: UnifiedRpcProfile;
   chainId: number;
@@ -94,8 +106,24 @@ export function createUnifiedRpcPolicyGate(
           workload
         ]
       );
-      if (result.rowCount !== 1)
-        throw new Error("Unified RPC profile/budget is not approved.");
+      if (result.rowCount !== 1) {
+        const marker = (
+          await pool.query<{ enabled: boolean; expired: boolean }>(
+            `SELECT enabled,expires_at<=clock_timestamp() AS expired
+           FROM yunipals_market.unified_rpc_profile WHERE profile_id=$1 AND scope=$2`,
+            [id, scope]
+          )
+        ).rows[0];
+        throw new UnifiedRpcPolicyUnavailable(
+          !marker
+            ? "rpc_profile_unavailable"
+            : !marker.enabled
+              ? "rpc_profile_disabled"
+              : marker.expired
+                ? "rpc_profile_expired"
+                : "rpc_budget_unavailable"
+        );
+      }
     },
     async reservePaid(permit, calls) {
       if (!permit || !/^0x[0-9a-f]{64}$/.test(permit))
