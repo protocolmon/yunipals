@@ -38,6 +38,7 @@
     "test:rarity:postgres": "node --import tsx scripts/test-rarity-pagination.mjs && node --import tsx scripts/test-trait-counts.mjs",
     "test:legacy:offline": "node --import tsx scripts/test-legacy-offline.mjs",
     "test:ponder:postgres": "node --import tsx scripts/test-ponder-dependencies.mjs",
+    "test:shared:parity:postgres": "node --import tsx scripts/test-shared-parity.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && pnpm test:legacy:offline && pnpm test:islands:ponder && pnpm test:unified:ponder",
     "test:unified:ponder": "node --import tsx scripts/test-unified-ponder.mjs",

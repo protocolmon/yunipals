@@ -5,7 +5,7 @@ import {
   boosterPacksAbi,
   packRegistryAbi,
   yunipalMonstersAbi
-} from "../../../packages/yunipals-market-core/src/boosterAbi.js";
+} from "../lib/boosters/ingestion-abi.js";
 
 if (
   process.env.PONDER_ISLANDS_ONLY !== "true" &&
