@@ -26,6 +26,16 @@ Canonical recovery archives preserve the exact source/dependencies, Node executa
 
 The new production monitor passed at **15:21 UTC**, covering all thirteen sources, one Ponder plus Solana, 48 services, current schedules, local/public reads and existing budget policy hashes. Three obsolete monitors that expected retired services/artifact paths are masked with rollback definitions retained. The source and budget probes run as existing accounts using Unix sockets, read-only SQL and no capabilities. The main monitor has no user-switch capabilities. Its observation window resets after a failure, reboot, configuration change, reversed clock or gap over three minutes. Five regression tests cover window continuity and stale/foreign probe rejection, and run in CI.
 
+The first host reboot verified a new boot and recovered all thirteen sources and
+Arena automatically. It exposed two Marketplace startup gaps: continuous sale
+readers had no boot registration, and five-second publisher retries exhausted
+the existing five-start/two-minute limit during source recovery. The three
+already-continuous read-only sale readers are now enabled for boot, and all
+thirteen Marketplace API/worker services retry failures thirty seconds apart.
+Existing restart limits, source checks, private configuration, schedules and
+financial controls are unchanged. A further reboot will verify this correction
+before the formal stability watch starts.
+
 ## Acceptance still required
 
 - Refresh the final recovery set and verify the current source/control and publication restore point.

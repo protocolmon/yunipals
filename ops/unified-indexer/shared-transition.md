@@ -211,6 +211,14 @@ tests: no historical UI, settlement worker or claims interface is required. The
 user handles any old contract claims directly onchain. Keep protected rollback
 backups; do not submit owner transactions, claims or refunds during retirement.
 
+Verify boot registration for the continuous Marketplace sale readers, rather
+than relying on their current running state. Retain their existing continuous
+configuration, chain policies, budgets and ordinary RPC dependencies. The
+Marketplace services' five-start/two-minute limit must remain unchanged; space
+failure retries thirty seconds apart so a cold shared source cannot exhaust that
+limit before recovery. Do not weaken application startup/source checks. Prove
+automatic recovery with a reboot after installing these settings.
+
 Verify effective selectors and one Ponder process after restart, both managed
 children, fresh observations, representative product reads, source advancement,
 unchanged budget limits and no duplicate provider submissions. Record actual
