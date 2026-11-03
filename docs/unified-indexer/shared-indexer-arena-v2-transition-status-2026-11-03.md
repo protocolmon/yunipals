@@ -1,6 +1,6 @@
 # Shared indexer production checkpoint 2026 11 03
 
-The canonical indexer and application consumers now use the qualified shared source. The catalog correction is deployed, all current workers run successfully and the replacement production monitor passes. Final recovery-set refresh, host reboot recovery and the 90-minute/24-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
+The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. All thirteen sources and 48 checked services are healthy. The continuous 90-minute/24-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
 
 ## Source and consumer handover
 
@@ -8,7 +8,7 @@ The final source is `unified_shared_20261102_v2`, native build `157acd243f`, rel
 
 At **13:32 UTC**, ingestion transferred to `yunipals-indexer.service` using the exact qualified artifact, schema and source settings. Its supervisor manages one Ponder process and the preserved Solana adapter. The Solana directory and protected settings are unchanged. Duplicate supervisor exclusion passed. The temporary candidate, obsolete combined observer and old combined relays are stopped, disabled and masked. The old main RPC profile is disabled; the final service profile retains the existing budgets and has no paid permits. Ordinary application RPC routes remain in use.
 
-Generation **127** was published through the official coordinator at **12:18:23 UTC**, retaining generation 114 as previous. The generation contains 1,072,868 search/revision rows and 11,811,997 trait rows; the coordinated publication includes 512,350 wallet rows and the prepared four-chain read caches. A prior attempt stopped before its transaction intent because Base cache revision changed. The successful retry retained all freshness and publication-lock checks.
+Generation **127** was published through the official coordinator at **12:18:23 UTC**, retaining generation 114 as previous. The generation contains 1,072,868 search/revision rows and 11,811,997 trait rows; the coordinated publication includes 512,350 wallet rows and the prepared four-chain read caches. A prior attempt stopped before its transaction intent because Base cache revision changed. The successful retry retained all freshness and publication-lock checks. Normal publication subsequently advanced to **129**, with **127** as previous, at 15:08 UTC. Its source release/read identity and ready state were verified after both reboots; generation IDs are not frozen during normal operation.
 
 Main API, collector, metadata, Islands, leaderboard, read cache and booster consumers now select the final source. Ethereum Islands ownership and metadata matched all 898 active tokens. Its staking support retains the existing role, 500-token/128-RPC/120-second limits and schedule. The booster artwork queue timer is restored.
 
@@ -22,7 +22,9 @@ The explicitly approved tablespace permission is applied. Five backup/recovery w
 
 Native Base approval now has a separate bounded refresh timer so long metadata publication scans cannot prevent its two-minute proof from being renewed. It uses the existing metadata writer identity and advisory lock, with ordinary production Base point reads. The full metadata scan batch is 100; its former source-specific Base relay was replaced with the existing ordinary production endpoint. Approval expiry, source checks and financial authority are unchanged.
 
-Canonical recovery archives preserve the exact source/dependencies, Node executable, preserved Solana/core artifacts, deployed support/workers and protected service inputs. The encrypted restore drill completed at **14:24 UTC** and verified private keys, encrypted strategies, unfinished provider IDs, quarantined restoration and recovery binaries. It made zero provider requests and broadcast zero transactions. A consistent post-handover source/metadata dump is complete (approximately 6.9 GB); its current-source/control restore and complete archive-stream validation are finishing. The fresh Marketplace operational backup restored all 43 tables and verified all five current source selections in a Unix-only cluster with placeholder roles set to NOLOGIN. Final artifact/configuration refresh remains outstanding. Large immutable metadata is backed up; it has not been fully materialized in a second database.
+Canonical recovery archives preserve the exact source/dependencies, Node executable, preserved Solana/core artifacts, deployed support/workers and protected service inputs. The encrypted restore drill completed at **14:24 UTC** and verified private keys, encrypted strategies, unfinished provider IDs, quarantined restoration and recovery binaries. It made zero provider requests and broadcast zero transactions. The consistent post-handover source/metadata dump restored 2,218,332 canonical events, generation 127, seventeen mutable metadata control tables and the exact immutable read binding; every compressed data stream decoded successfully. The fresh Marketplace backup restored all 43 tables and verified all five current selections in a Unix-only cluster with NOLOGIN placeholder roles. The independent Solana snapshot restored with its original manifest. Large immutable metadata is backed up and its archive streams verified; it has not been fully materialized in a second database.
+
+The final recovery set contains nineteen artifacts totaling approximately 7.46 GB, plus its manifest. Every current artifact/hash and the manifest were found in the completed encrypted backup cache before reboot. The final boot-setting refresh completed encrypted backup at **16:22 UTC**. Both disposable restore clusters are stopped, with protected fixtures retained. A post-reboot read-only capacity check passed for generation and leaderboard builds under the unchanged reserves: root had 54.69 GB free against at most 49.84 GB required; the extra volume had 83.64 GB free against at most 80.74 GB required.
 
 The new production monitor passed at **15:21 UTC**, covering all thirteen sources, one Ponder plus Solana, 48 services, current schedules, local/public reads and existing budget policy hashes. Three obsolete monitors that expected retired services/artifact paths are masked with rollback definitions retained. The source and budget probes run as existing accounts using Unix sockets, read-only SQL and no capabilities. The main monitor has no user-switch capabilities. Its observation window resets after a failure, reboot, configuration change, reversed clock or gap over three minutes. Five regression tests cover window continuity and stale/foreign probe rejection, and run in CI.
 
@@ -33,13 +35,25 @@ the existing five-start/two-minute limit during source recovery. The three
 already-continuous read-only sale readers are now enabled for boot, and all
 thirteen Marketplace API/worker services retry failures thirty seconds apart.
 Existing restart limits, source checks, private configuration, schedules and
-financial controls are unchanged. A further reboot will verify this correction
-before the formal stability watch starts.
+financial controls are unchanged. A second host reboot verified this correction
+with no manual application starts after boot. Canonical Ponder and observer
+restart counts are zero; one Ponder plus the preserved Solana child own ingestion.
+Arena epochs, Marketplace selections, private record counts and both protected
+source/Solana configuration hashes match the pre-reboot proof. The existing
+50,665,222-byte anime film still matches its original publication checksum.
+
+Staking's strict finalized-header proof briefly became unavailable as finality
+crossed the native-header restart gap. Its existing scheduled task recovered
+without fabricated headers, relaxed verification or a changed schedule. The
+continuous acceptance window restarted at **16:50:52 UTC**. If every subsequent
+check stays healthy, the ninety-minute marker is due at **18:20:52 UTC** and the
+24-hour marker at **2026-11-04 16:50:52 UTC**. The authoritative ongoing evidence is
+`/var/lib/yunipals-unified-shared/production-health/latest.json` and its protected
+history; any new failure, reboot, configuration change or monitoring gap resets
+the window.
 
 ## Acceptance still required
 
-- Refresh the final recovery set and verify the current source/control and publication restore point.
-- Reboot the host, then verify boot ownership, one Ponder plus Solana, all thirteen sources, public reads, private job recovery and unchanged budgets.
 - Complete the 90-minute and 24-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
 
-Catalog correction commit `c6a4bd0f` passed CI. Indexer verification passed 503 tests with two skipped; actual PostgreSQL publication/cache verification passed 24 groups with the production single-connection pool. Rarity checks passed 336 pagination and 144 trait cases. The native catalog regression passed all 15 ownership integration tests, and its API TypeScript check passed. The full API run passed 888 tests; its sole failure was a test-admin URL selecting the wrong disposable database. All three tests in that integration file then passed with the required database selected, including the restricted sale-worker grant test. All 889 cases are covered by those runs.
+Implementation commit `03e956ca` passed CI, including the startup configuration and monitor checks. Indexer verification passed 503 tests with two skipped; actual PostgreSQL publication/cache verification passed 24 groups with the production single-connection pool. Rarity checks passed 336 pagination and 144 trait cases. The native catalog regression passed all 15 ownership integration tests, and its API TypeScript check passed. The full API run passed 888 tests; its sole failure was a test-admin URL selecting the wrong disposable database. All three tests in that integration file then passed with the required database selected, including the restricted sale-worker grant test. All 889 cases are covered by those runs.
