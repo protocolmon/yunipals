@@ -20,7 +20,10 @@ const profiles = {
   "shared-observer": "scripts/shared-indexer-observer.ts",
   "shared-parity": "scripts/verify-shared-indexer.ts",
   "shared-receipts": "scripts/unified-control.ts",
-  "shared-qualify": "scripts/qualify-shared-indexer.ts"
+  "shared-qualify": "scripts/qualify-shared-indexer.ts",
+  "projection-capacity": "scripts/check-projection-capacity.ts",
+  "projection-prepare": "scripts/prepare-native-generation.ts",
+  "native-base-metadata": "scripts/unified-base-metadata.ts"
 };
 const args = process.argv.slice(2);
 assert(
@@ -29,7 +32,7 @@ assert(
     Object.hasOwn(profiles, args[1]) &&
     args[2] === "--outdir" &&
     args[3],
-  "Usage: build-application-worker.mjs --worker main-api|read-cache|verify-islands|islands-metadata|shared-observer|shared-parity|shared-receipts|shared-qualify --outdir FRESH_DIRECTORY"
+  "Usage: build-application-worker.mjs --worker WORKER_PROFILE --outdir FRESH_DIRECTORY"
 );
 assert(Number(process.versions.node.split(".")[0]) >= 24, "Node 24 required");
 const profile = args[1];

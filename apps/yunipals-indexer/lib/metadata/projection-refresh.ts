@@ -27,6 +27,7 @@ import {
   type ProjectionSourceSnapshot
 } from "./projection-snapshot.js";
 import { retainProjectionAnchors } from "./projection-anchors.js";
+import { assertRoutedProjectionCapacity } from "./projection-capacity-layout.js";
 export { retainProjectionAnchors } from "./projection-anchors.js";
 
 const scopes = Array.from(
@@ -107,6 +108,18 @@ export async function assertProjectionBuildCapacity(
         ) * 1.5
       )
     : 0;
+  if (process.env.PROJECTION_STORAGE_LAYOUT_FILE) {
+    const budgets = await assertRoutedProjectionCapacity(client, {
+      layoutFile: process.env.PROJECTION_STORAGE_LAYOUT_FILE,
+      reserveBytes: bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9),
+      backupPeakBytes: bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9),
+      generationBytes: nextGeneration,
+      snapshotBytes: snapshotInputs,
+      phase
+    });
+    console.info("Projection filesystem capacity verified", { budgets });
+    return;
+  }
   const required =
     bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9) +
     bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9) +
@@ -394,8 +407,8 @@ export async function refreshProjectionGeneration(
       await client.query(
         "SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))"
       );
-    await cleanupGenerations(client);
     await assertProjectionBuildCapacity(client);
+    await cleanupGenerations(client);
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
     // Large generation inserts and facets spill heavily at PostgreSQL's 4 MB default.
     await client.query("SET LOCAL work_mem = '64MB'");
