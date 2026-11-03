@@ -16,6 +16,7 @@ import {
 import type { RegisteredRelease } from "@protopals/yunipals-indexer-server/readers";
 
 import { bindDiscoveredBnbLifecycles } from "@/bnb/discoveryLifecycle";
+import { BnbOrderError } from "@/bnb/orders";
 import {
   fixture as bnbFixture,
   policy as bnbPolicy
@@ -777,6 +778,25 @@ test(
     assert.throws(() =>
       indexedTokenHiddenSqlFor("t;drop table", context.transferRelation)
     );
+    await source.query(
+      `UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE release_id=$1 AND chain_id=56`,
+      [release.id]
+    );
+    try {
+      assert.equal(
+        (await marketplaceOwnershipSqlContext(source, ["base"])).mode,
+        "unified"
+      );
+      for (const selected of [["bnb"], ["base", "bnb"]] as const)
+        await assert.rejects(marketplaceOwnershipSqlContext(source, selected), {
+          code: "indexer_unavailable"
+        });
+    } finally {
+      await source.query(
+        `UPDATE yunipals_indexer_control.chain_status SET halted=false WHERE release_id=$1 AND chain_id=56`,
+        [release.id]
+      );
+    }
   }
 );
 
@@ -881,6 +901,66 @@ test(
         );
         assert.equal(result.total, 1);
         assert.equal(result.items[0]?.token.tokenId, tokenId);
+        // A BNB outage must not prevent a new Base snapshot from opening.
+        const isolated = new CatalogService(
+          local,
+          new pg.Pool({ connectionString: marketUrl, max: 4 }),
+          {
+            projectionMode: "legacy",
+            readSources: async (_db, _now, selected) => {
+              if (!selected || selected.includes("bnb"))
+                throw new BnbOrderError("indexer_unavailable", 503);
+              await marketplaceOwnershipSqlContext(_db, selected);
+              assert.deepEqual(selected, ["base"]);
+              return {
+                statuses: {
+                  bnb: "unavailable",
+                  base: "unavailable",
+                  ethereum: "unavailable",
+                  polygon: "unavailable"
+                },
+                provenance: {}
+              };
+            }
+          }
+        );
+        try {
+          const [unavailable, available] = await Promise.allSettled([
+            isolated.tokensV2(new URLSearchParams({ chain: "bnb" })),
+            isolated.tokensV2(
+              new URLSearchParams({ chain: "base", sort: "token-id-asc" })
+            )
+          ]);
+          assert.ok(unavailable.status === "rejected");
+          assert.equal(unavailable.reason.code, "indexer_unavailable");
+          assert.ok(available.status === "fulfilled");
+          const base = available.value;
+          assert.equal(base.items[0]?.token.tokenId, tokenId);
+          for (const chains of [["bnb"], ["base", "bnb"]]) {
+            await assert.rejects(
+              isolated.tokensV2(
+                new URLSearchParams(chains.map((chain) => ["chain", chain]))
+              ),
+              { code: "indexer_unavailable" }
+            );
+          }
+          const retained = await isolated.tokensV2(
+            new URLSearchParams({ chain: "base", sort: "token-id-asc" })
+          );
+          assert.equal(retained.snapshot.id, base.snapshot.id);
+          await assert.rejects(
+            isolated.tokensV2(
+              new URLSearchParams({
+                chain: "bnb",
+                snapshot: base.snapshot.id,
+                cursor: "AA"
+              })
+            ),
+            { code: "snapshot_refresh_required" }
+          );
+        } finally {
+          await isolated.close();
+        }
         for (const sort of [
           "rarity-desc",
           "rarity-asc",

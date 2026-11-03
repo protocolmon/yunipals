@@ -269,3 +269,26 @@ holding shared epoch/set row locks through COMMIT. Native observation and approv
 TTLs are unchanged. `check-projection-capacity.ts --phase generation|leaderboard`
 can inspect a single read-only phase; its default checks both. WAL budgeting
 credits allocated segment blocks once against the same 150% peak target.
+
+## Shared RPC failover and catalog readiness
+
+The four dedicated shared-source RPC units load a final public environment-file
+overlay setting `MARKET_RPC_PROXY_FREE_TIMEOUT_MS=2000` and
+`MARKET_RPC_PROXY_FREE_ORDER_TIMEOUT_MS=2000`.
+
+Each free-provider attempt must leave time for failover within Ponder's
+ten-second request deadline. A ten-second provider attempt consumed that entire
+deadline during a slow response, causing retries and BNB ingestion lag. The
+two-second attempts retain the same endpoint pools, request pacing, concurrency,
+byte limits, source policies, profile, budget counters and disabled paid
+fallback. Ordinary application RPC units do not load this overlay.
+
+Catalog snapshots validate the chains requested by a query. Additional chains
+can qualify against the same held marketplace/source snapshots; their checks
+run through the existing bounded read lanes and roll back to savepoints on
+refusal. An unavailable chain cannot retire an otherwise usable snapshot.
+The existing three-generation and connection limits remain unchanged.
+Fresh ownership and canonical checks still apply to every requested chain,
+including empty result pages. Pagination cannot introduce a chain that was not
+qualified in its snapshot. Reset the production acceptance window after
+deploying either runtime correction.
