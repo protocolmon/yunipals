@@ -1,0 +1,11 @@
+[Unit]
+Description=Record shared-source and product acceptance every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=60s
+AccuracySec=1s
+Unit=yunipals-shared-production-health.service
+
+[Install]
+WantedBy=timers.target

@@ -154,12 +154,44 @@ actual cutover still requires current checks, native metadata adoption, complete
 derived generations and each reviewed operational source epoch. Disable the
 qualification timer when transferring ownership to the canonical service.
 
+Use `production-health.py` with a root-owned public configuration for the final
+observation. Record the exact source deployment, thirteen source IDs, source
+health command, preserved adapter directories, current services/timers, retired
+units and representative local/public API assertions. Budget policy checks are
+read-only hashes of the existing policy rows, not mutable usage counters. Reuse
+the official observer's `health` command under its existing support identity;
+it validates all thirteen sources without RPC calls or database writes.
+The source and budget probes run as the existing support/Postgres accounts in
+separate oneshots, with Unix sockets only and no capabilities. The main monitor
+requests both probes before each check, then validates their successful service
+result, owner, configuration hash and two-minute freshness. Probe output exposes
+only public source health and policy-match booleans. It contains no raw policy
+rows or credentials. The main monitor has no user-switch capabilities.
+Replace obsolete monitor dependencies and artifact paths while retaining the
+current product checks. Keep unrelated provider failures visible.
+
+The minute timer retains a protected history and resets its continuous window
+after a failed check, reboot, configuration change, reversed clock or a gap
+greater than three minutes. Its 90-minute and 24-hour markers therefore require
+continuous successful evidence for the final deployment. A source-only check
+or earlier qualification cannot establish full product acceptance.
+
 For encrypted Arena recovery, set
 `YUNIPALS_SHARED_INDEXER_BACKUP_CONFIGURATION` and
 `YUNIPALS_SHARED_INDEXER_BACKUP_RELEASE` together to protected canonical config
 and source-artifact directories. This replaces the old candidate source/relay/
 observer directory requirements. Both roots must exist and contain no symlinks;
 private files remain inside the encrypted backup flow.
+
+Include data for the final immutable read schema's `_unified_read_release`
+binding as well as its DDL, physical source, control state and mutable metadata
+publication pointers. A schema-only read-view backup omits that provenance row
+and cannot pass consumer validation after restore. Keep an immutable binding
+artifact explicitly bound to the qualified release/identity when it is captured
+separately from the consistent mutable-data snapshot. Restore the exact binding
+and verify its source/build before any worker starts. Refresh Marketplace's
+operational backup after all five source selections have moved, and retain the
+review/application journals in the encrypted recovery set.
 
 Stop the qualification candidate before transferring its qualified schema and
 artifact to `yunipals-indexer.service`. Configure
