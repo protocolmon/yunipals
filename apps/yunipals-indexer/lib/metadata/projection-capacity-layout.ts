@@ -1,4 +1,4 @@
-import { readFile, realpath, stat, statfs } from "node:fs/promises";
+import { readdir, readFile, realpath, stat, statfs } from "node:fs/promises";
 import { isAbsolute, join } from "node:path";
 import type { PoolClient } from "pg";
 
@@ -9,6 +9,51 @@ export type FilesystemBudget = StorageObservation & {
   requiredBytes: number;
   charges: Array<{ name: string; bytes: number }>;
 };
+
+/** Existing WAL files already occupy disk space and can be recycled. Charge
+ * the remaining growth to the same 150% peak, rather than reserving that peak
+ * again on top of it. Retained slots keep their additional allowance. */
+export function remainingWalHeadroom(
+  maximum: number,
+  retained: number,
+  allocated: number
+) {
+  if (
+    [maximum, retained, allocated].some(
+      (value) => !Number.isSafeInteger(value) || value < 0
+    ) ||
+    !Number.isSafeInteger(Math.ceil(maximum * 1.5) + retained)
+  )
+    throw new Error("Invalid WAL storage observation");
+  return Math.max(0, Math.ceil(maximum * 1.5) + retained - allocated);
+}
+
+async function allocatedWalBytes(directory: string) {
+  let allocated = 0;
+  const device = (await stat(directory)).dev;
+  for (const name of await readdir(directory)) {
+    if (!/^[0-9A-F]{24}(?:\.partial)?$/.test(name)) continue;
+    try {
+      const file = await stat(join(directory, name));
+      if (!file.isFile() || file.dev !== device)
+        throw new Error("Unexpected WAL segment storage");
+      allocated += file.blocks * 512;
+    } catch (error) {
+      // Checkpoints can remove a segment during this bounded observation.
+      // A missing file receives no reusable-space credit.
+      if (
+        !(
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === "ENOENT"
+        )
+      )
+        throw error;
+    }
+  }
+  return allocated;
+}
 
 /** Charge each real filesystem once for its free-space reserve. Multiple
  * components on the same device share a budget rather than borrowing space
@@ -182,13 +227,16 @@ export async function assertRoutedProjectionCapacity(
       throw new Error(
         "Projection table or index uses an unreviewed filesystem"
       );
-  const walHeadroom =
-    Math.ceil(Number(settings.wal_bytes) * 1.5) +
-    Number(settings.retained_bytes);
+  const walDirectory = join(layout.databaseDirectory, "pg_wal");
+  const walHeadroom = remainingWalHeadroom(
+    Number(settings.wal_bytes),
+    Number(settings.retained_bytes),
+    await allocatedWalBytes(walDirectory)
+  );
   const charges: StorageCharge[] = [
     {
       name: "database WAL headroom",
-      path: join(layout.databaseDirectory, "pg_wal"),
+      path: walDirectory,
       bytes: walHeadroom
     }
   ];

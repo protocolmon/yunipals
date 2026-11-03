@@ -1,14 +1,24 @@
 import { pool, apiPool } from "../lib/offchain/db.js";
 import { assertProjectionBuildCapacity } from "../lib/metadata/projection-refresh.js";
+import { parseArgs } from "node:util";
+const { values } = parseArgs({
+  options: { phase: { type: "string", default: "all" } }
+});
 const client = await pool.connect();
 try {
+  const phase = values.phase;
+  if (phase !== "all" && phase !== "generation" && phase !== "leaderboard")
+    throw new Error("projection_invalid_capacity_phase");
+  const phases: Array<"generation" | "leaderboard"> =
+    phase === "all" ? ["generation", "leaderboard"] : [phase];
   await client.query("BEGIN READ ONLY");
-  await assertProjectionBuildCapacity(client);
-  await assertProjectionBuildCapacity(client, "leaderboard");
+  for (const selected of phases)
+    await assertProjectionBuildCapacity(client, selected);
   await client.query("ROLLBACK");
   console.log(
     JSON.stringify({
       event: "projection_capacity_verified",
+      phase,
       productionWrites: 0
     })
   );

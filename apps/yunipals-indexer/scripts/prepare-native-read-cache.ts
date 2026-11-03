@@ -8,6 +8,7 @@ import {
 } from "../lib/metadata/read-cache.js";
 import { refreshNativeBaseMetadata } from "../lib/metadata/native-base.js";
 import { baseMetadataPointRpc } from "../lib/metadata/unified-runtime.js";
+import { renewReadCachePreparation } from "../lib/metadata/read-cache-preparation.js";
 
 const { values } = parseArgs({ options: { generation: { type: "string" } } });
 const client = await pool.connect();
@@ -45,6 +46,7 @@ try {
     "base"
   ] as const) {
     await refreshNativeBaseMetadata(pool, rpc);
+    await renewReadCachePreparation(client, id);
     const rows = await buildReadCache(client, id, chain);
     console.log(
       JSON.stringify({
@@ -56,6 +58,7 @@ try {
     );
   }
   await refreshNativeBaseMetadata(pool, rpc);
+  await client.query("SELECT metadata_projection.analyze_read_cache()");
   const proof = await client.query<{ fresh: boolean }>(
     `SELECT ${preparedReadCacheFreshSql(id, collectionSlugs)} AS fresh`
   );

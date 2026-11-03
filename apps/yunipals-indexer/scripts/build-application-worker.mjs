@@ -26,6 +26,7 @@ const profiles = {
   "projection-publish": "scripts/publish-native-generation.ts",
   "read-cache-prepare": "scripts/prepare-native-read-cache.ts",
   "read-cache-schema": "scripts/migrate-read-cache.ts",
+  leaderboard: "lib/leaderboard/worker.ts",
   "native-base-metadata": "scripts/unified-base-metadata.ts"
 };
 const args = process.argv.slice(2);

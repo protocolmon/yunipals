@@ -581,10 +581,10 @@ try {
     `GRANT USAGE ON SCHEMA ${physical},${logical},yunipals_indexer_control,metadata,metadata_source,metadata_projection TO "${reader}"`
   );
   await db.query(
-    `GRANT SELECT ON ${physical}._ponder_meta,${physical}._ponder_checkpoint,${physical}.indexer_source,${physical}.chain_block,${physical}.canonical_event TO "${reader}"`
+    `GRANT SELECT ON ${physical}._ponder_meta,${physical}._ponder_checkpoint,${physical}.indexer_source,${physical}.chain_block,${physical}.canonical_event,${physical}.transfer_event TO "${reader}"`
   );
   await db.query(
-    `GRANT SELECT ON yunipals_indexer_control.release,yunipals_indexer_control.chain_status TO "${reader}"`
+    `GRANT SELECT ON yunipals_indexer_control.release,yunipals_indexer_control.chain_status,yunipals_indexer_control.chain_anchor TO "${reader}"`
   );
   await db.query(
     `GRANT SELECT ON ALL TABLES IN SCHEMA ${logical},metadata,metadata_source TO "${reader}"`
@@ -699,7 +699,202 @@ try {
     "actual_cleanup_keeps_explicit_capsule_predecessor_payload_and_cleans_unretained_candidate"
   );
 
+  const { installReadCache } = await import(
+    "../lib/metadata/read-cache-schema.ts"
+  );
+  const { readCacheFreshSql } = await import("../lib/metadata/read-cache.ts");
+  const { prepareGenerationReadCache } = await import(
+    "../lib/metadata/read-cache-preparation.ts"
+  );
+  await installReadCache(db);
+  process.env.PROJECTION_PREPARE_READ_CACHE = "true";
+  const warm = await refreshProjectionGeneration({ publish: false });
+  assert.equal(
+    (
+      await db.query(
+        `SELECT ${readCacheFreshSql(warm.generationId, collectionSlugs)} AS fresh`
+      )
+    ).rows[0].fresh,
+    false
+  );
+  assert.equal(
+    (
+      await db.query(
+        `SELECT ${readCacheFreshSql(warm.generationId, collectionSlugs, { preparing: true })} AS fresh`
+      )
+    ).rows[0].fresh,
+    true
+  );
+  await db.query(
+    "UPDATE metadata_projection.search SET rarity_points=rarity_points+1 WHERE generation_id=$1 AND collection='ethereum'",
+    [warm.generationId]
+  );
+  await assert.rejects(
+    publishGeneration(
+      db,
+      warm.generationId,
+      "fixture-archive",
+      warm.predecessor
+    ),
+    /projection_publication_source_changed/
+  );
+  assert.equal(
+    (await db.query("SELECT current_id FROM metadata_projection.active"))
+      .rows[0].current_id,
+    warm.predecessor
+  );
+  await prepareGenerationReadCache(db, warm.generationId);
+  await db.query(`SET ROLE "${reader}"`);
+  await publishGeneration(
+    db,
+    warm.generationId,
+    "fixture-archive",
+    warm.predecessor
+  );
+  assert.equal(
+    (
+      await db.query(
+        `SELECT ${readCacheFreshSql(warm.generationId, collectionSlugs)} AS fresh`
+      )
+    ).rows[0].fresh,
+    true
+  );
+  assert.equal(
+    (
+      await db.query(
+        "SELECT count(*)::int AS n FROM metadata_projection.read_preparation WHERE generation_id=$1",
+        [warm.generationId]
+      )
+    ).rows[0].n,
+    0
+  );
+  await db.query("RESET ROLE");
+  delete process.env.PROJECTION_PREPARE_READ_CACHE;
+  checks.push(
+    "prepublication_cache_remains_private_refuses_changed_cache_and_promotes_only_after_revalidation"
+  );
+
+  Object.assign(process.env, {
+    YUNIPALS_READ_CACHE: "1",
+    API_ISLANDS_ENABLED: "false",
+    SOLANA_API_ENABLED: "false"
+  });
+  const { app } = await import("../lib/api/server.ts");
+  for (const sort of [
+    "rarity-capped-desc",
+    "rarity-capped-asc",
+    "rarity-desc",
+    "rarity-asc"
+  ]) {
+    const response = await app.request(
+      `/v1/tokens?limit=2&burned=false&metadata=all&sort=${sort}`
+    );
+    assert.equal(response.status, 200);
+    const page = await response.json();
+    assert.equal(page.total, 4);
+    assert.equal(page.items.length, 2);
+    assert(page.nextCursor);
+    const next = await app.request(
+      `/v1/tokens?limit=2&burned=false&metadata=all&sort=${sort}&cursor=${encodeURIComponent(page.nextCursor)}`
+    );
+    assert.equal(next.status, 200);
+    const continuation = await next.json();
+    assert.equal(continuation.total, 4);
+    assert.equal(continuation.items.length, 2);
+    const keys = new Set(
+      page.items.map((item) => item.chain + ":" + item.tokenId)
+    );
+    assert(
+      continuation.items.every(
+        (item) => !keys.has(item.chain + ":" + item.tokenId)
+      )
+    );
+  }
+  checks.push(
+    "actual_http_api_returns_exact_totals_and_nonoverlapping_pages_after_prepared_cache_promotion"
+  );
+
   const { refreshLeaderboard } = await import("../lib/leaderboard/refresh.ts");
+  const { publishPreparedGeneration } = await import(
+    "../lib/metadata/coordinated-publication.ts"
+  );
+  process.env.PROJECTION_PREPARE_READ_CACHE = "true";
+  const coordinated = await refreshProjectionGeneration({ publish: false });
+  const publicationState = async () =>
+    (
+      await other.query(`SELECT jsonb_build_object(
+    'pointer',(SELECT to_jsonb(a) FROM metadata_projection.active a),
+    'wallets',(SELECT jsonb_agg(to_jsonb(s) ORDER BY scope,owner) FROM leaderboard.wallet_stats s),
+    'stamps',(SELECT jsonb_agg(to_jsonb(s) ORDER BY name) FROM metadata.derived_snapshot s)) AS value`)
+    ).rows[0].value;
+  const beforeCoordinated = await publicationState();
+  const failedSession = new pg.Client({ connectionString: base + database });
+  await failedSession.connect();
+  try {
+    await assert.rejects(
+      publishPreparedGeneration(failedSession, {
+        generationId: coordinated.generationId,
+        predecessor: coordinated.predecessor,
+        refreshApproval: async () => {},
+        record: async (phase) => {
+          if (phase === "publication_intent")
+            throw Error("fixture_journal_failure");
+        }
+      }),
+      /fixture_journal_failure/
+    );
+    assert.deepEqual(await publicationState(), beforeCoordinated);
+    assert.equal(
+      (
+        await other.query(
+          "SELECT published_at FROM metadata_projection.generation WHERE id=$1",
+          [coordinated.generationId]
+        )
+      ).rows[0].published_at,
+      null
+    );
+  } finally {
+    await failedSession.end();
+  }
+  checks.push(
+    "coordinator_journal_failure_rolls_back_pointer_wallets_and_both_stamps_on_real_postgres"
+  );
+  const coordinatedSession = new pg.Client({
+    connectionString: base + database
+  });
+  await coordinatedSession.connect();
+  const coordinatedPhases = [];
+  try {
+    await publishPreparedGeneration(coordinatedSession, {
+      generationId: coordinated.generationId,
+      predecessor: coordinated.predecessor,
+      refreshApproval: async () => {},
+      record: async (phase) => {
+        coordinatedPhases.push(phase);
+        if (phase === "publication_intent")
+          assert.deepEqual(await publicationState(), beforeCoordinated);
+      }
+    });
+    assert.deepEqual(coordinatedPhases, [
+      "wallet_prepared",
+      "publication_intent",
+      "publication_committed"
+    ]);
+    const after = await publicationState();
+    assert.equal(String(after.pointer.current_id), coordinated.generationId);
+    assert.equal(String(after.pointer.previous_id), coordinated.predecessor);
+    assert(
+      after.stamps
+        .filter((stamp) => ["traits", "leaderboard"].includes(stamp.name))
+        .every((stamp) => stamp.ownership_release_id === plan.sourceRelease)
+    );
+  } finally {
+    await coordinatedSession.end();
+  }
+  delete process.env.PROJECTION_PREPARE_READ_CACHE;
+  checks.push(
+    "coordinator_keeps_all_global_staging_invisible_until_one_commit_on_real_postgres"
+  );
   const selected = (
     await db.query("SELECT current_id FROM metadata_projection.active")
   ).rows[0].current_id;

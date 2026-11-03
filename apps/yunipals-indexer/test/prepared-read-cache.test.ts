@@ -20,8 +20,9 @@ beforeAll(async () => {
   await db.exec(`CREATE SCHEMA metadata_projection;
     CREATE TABLE metadata_projection.active(current_id bigint,previous_id bigint);
     CREATE TABLE metadata_projection.generation(id bigint,state text,source_mode text,published_at timestamptz);
+    CREATE TABLE metadata_projection.read_preparation(generation_id bigint,expires_at timestamptz);
     CREATE TABLE metadata_projection.read_epoch(collection text,revision bigint);
-    CREATE TABLE metadata_projection.read_set(generation_id bigint,collection text,revision bigint,guard_count integer,source_mode text);
+    CREATE TABLE metadata_projection.read_set(generation_id bigint,collection text,revision bigint,guard_count integer,source_mode text,member_count bigint,burned_count bigint);
     CREATE TABLE metadata_projection.read_guard(collection text,relation text,relation_oid oid);
     CREATE TABLE metadata_projection.source(id integer);
     CREATE FUNCTION metadata_projection.dirty() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RETURN NULL; END$$;
@@ -32,13 +33,21 @@ beforeAll(async () => {
     INSERT INTO metadata_projection.active VALUES(114,113);
     INSERT INTO metadata_projection.generation VALUES(115,'ready','legacy',NULL);
     INSERT INTO metadata_projection.read_epoch VALUES('ethereum',1);
-    INSERT INTO metadata_projection.read_set VALUES(115,'ethereum',1,1,'legacy-http');
+    INSERT INTO metadata_projection.read_set VALUES(115,'ethereum',1,1,'legacy-http',1,0);
+    INSERT INTO metadata_projection.read_preparation VALUES(115,now()+interval '20 minutes');
     INSERT INTO metadata_projection.read_guard VALUES('ethereum','metadata_projection.source','metadata_projection.source'::regclass);`);
 });
 afterAll(() => db.close());
 it("keeps unpublished candidates unavailable to runtime readers while checking their full cache proof", async () => {
   expect(await proof(true)).toBe(true);
   expect(await proof(false)).toBe(false);
+  await db.exec(
+    "UPDATE metadata_projection.read_preparation SET expires_at=now()-interval '1 second'"
+  );
+  expect(await proof(true)).toBe(false);
+  await db.exec(
+    "UPDATE metadata_projection.read_preparation SET expires_at=now()+interval '20 minutes'"
+  );
   await db.exec("UPDATE metadata_projection.read_epoch SET revision=2");
   expect(await proof(true)).toBe(false);
   await db.exec(

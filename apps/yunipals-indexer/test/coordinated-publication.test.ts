@@ -8,6 +8,10 @@ vi.mock("../lib/metadata/projection-snapshot.js", () => ({
 vi.mock("../lib/metadata/read-cache.js", () => ({
   preparedReadCacheFreshSql: () => "candidate_cache_proof"
 }));
+vi.mock("../lib/metadata/read-cache-preparation.js", () => ({
+  prepublishReadCacheEnabled: () => true,
+  renewReadCachePreparation: async () => state.calls.push("renew")
+}));
 vi.mock("../lib/metadata/projection-refresh.js", () => ({
   retainProjectionAnchors: async () => state.calls.push("retain"),
   publishGenerationInTransaction: async () => {

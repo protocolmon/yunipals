@@ -10,6 +10,10 @@ import {
 } from "./projection-refresh.js";
 import { projectionSourceSnapshot } from "./projection-snapshot.js";
 import { preparedReadCacheFreshSql } from "./read-cache.js";
+import {
+  prepublishReadCacheEnabled,
+  renewReadCachePreparation
+} from "./read-cache-preparation.js";
 
 type Receipt = Record<string, unknown>;
 
@@ -35,6 +39,7 @@ export async function publishPreparedGeneration(
   const validId = (id: string) =>
     /^[1-9][0-9]{0,18}$/.test(id) && BigInt(id) <= 9223372036854775807n;
   if (
+    !prepublishReadCacheEnabled() ||
     !validId(input.generationId) ||
     !validId(input.predecessor) ||
     input.generationId === input.predecessor
@@ -55,6 +60,7 @@ export async function publishPreparedGeneration(
     for (const lock of [
       { name: "yunipals:trait-refresh", shared: false },
       { name: "yunipals:leaderboard-refresh", shared: false },
+      { name: "yunipals:read-cache", shared: false },
       { name: "metadata:chain-recovery", shared: true }
     ]) {
       const result = await client.query<{ acquired: boolean }>(
@@ -79,6 +85,7 @@ export async function publishPreparedGeneration(
       throw new Error("projection_predecessor_changed");
     await retainProjectionAnchors(client, snapshot);
     await input.refreshApproval();
+    await renewReadCachePreparation(client, input.generationId);
     await assertCache();
     await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
     transactionOpen = true;
@@ -92,6 +99,7 @@ export async function publishPreparedGeneration(
     await retainProjectionAnchors(client, snapshot);
     await retainProjectionAnchors(client, handle.sourceSnapshot);
     await input.refreshApproval();
+    await renewReadCachePreparation(client, input.generationId);
     await assertCache();
     await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
     transactionOpen = true;

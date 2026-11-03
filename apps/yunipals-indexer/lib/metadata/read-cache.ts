@@ -42,24 +42,8 @@ function chainsSql(chains: readonly CollectionSlug[]) {
 }
 export function readCacheFreshSql(
   id: string,
-  chains: readonly CollectionSlug[]
-) {
-  return readCacheProofSql(id, chains, false);
-}
-
-/** Operator-only proof for a complete, unpublished candidate. Runtime readers
- * continue to require the current/previous publication pointer. */
-export function preparedReadCacheFreshSql(
-  id: string,
-  chains: readonly CollectionSlug[]
-) {
-  return readCacheProofSql(id, chains, true);
-}
-
-function readCacheProofSql(
-  id: string,
   chains: readonly CollectionSlug[],
-  unpublished: boolean
+  options: { preparing?: boolean } = {}
 ) {
   const generation = idSql(id);
   const list = chainsSql(selected(chains));
@@ -93,8 +77,14 @@ function readCacheProofSql(
       AND s.revision=e.revision AND s.source_mode='${metadataSourceMode()}'
       AND ${generationOwnershipProof("g")} ${ownershipProof} ${nativeMetadataProof}
       AND g.state='ready' AND g.source_mode=CASE WHEN s.source_mode='legacy-http' THEN 'legacy' ELSE s.source_mode END
-      AND ${unpublished ? "g.published_at IS NULL AND NOT" : ""} EXISTS(SELECT 1 FROM metadata_projection.active a
+      AND (EXISTS(SELECT 1 FROM metadata_projection.active a
         WHERE s.generation_id IN(a.current_id,a.previous_id))
+        ${
+          options.preparing
+            ? `OR EXISTS(SELECT 1 FROM metadata_projection.read_preparation p
+          WHERE p.generation_id=s.generation_id AND p.expires_at>statement_timestamp())`
+            : ""
+        })
       AND s.guard_count=(SELECT count(*) FROM metadata_projection.read_guard guard WHERE guard.collection=s.collection)
       AND NOT EXISTS(SELECT 1 FROM metadata_projection.read_guard guard
         LEFT JOIN pg_catalog.pg_trigger trigger ON trigger.tgrelid=guard.relation_oid
@@ -108,6 +98,22 @@ function readCacheProofSql(
               WHERE extra.tgrelid=guard.relation_oid AND extra.tgenabled='A'
                 AND extra.tgname IN('read_cache_dirty_update','read_cache_dirty_delete'))<>2)
           OR guard.relation_oid IS DISTINCT FROM to_regclass(guard.relation)::oid)))`;
+}
+/** Operator proof: normal preparation lease and freshness checks, plus an
+ * unpublished candidate and the complete count fields used by runtime readers. */
+export function preparedReadCacheFreshSql(
+  id: string,
+  chains: readonly CollectionSlug[]
+) {
+  const generation = idSql(id);
+  selected(chains);
+  return `(${readCacheFreshSql(id, chains, { preparing: true })}
+    AND EXISTS(SELECT 1 FROM metadata_projection.generation g WHERE g.id=${generation}
+      AND g.published_at IS NULL AND NOT EXISTS(SELECT 1 FROM metadata_projection.active a
+        WHERE g.id IN(a.current_id,a.previous_id)))
+    AND (SELECT count(*)=${chains.length} FROM metadata_projection.read_set s
+      WHERE s.generation_id=${generation} AND s.collection=ANY(${chainsSql(chains)})
+        AND s.member_count IS NOT NULL AND s.burned_count IS NOT NULL))`;
 }
 export function cachedSearchReadRelationFor(
   schema: string,
@@ -291,9 +297,9 @@ export async function buildReadCache(
     );
     const inserted = await db.query(
       `INSERT INTO metadata_projection.read_member
-      (generation_id,collection,token_id,lifecycle,has_search,metadata_available,rarity_points,rarity_points_capped)
+      (generation_id,collection,token_id,lifecycle,has_search,metadata_available,rarity_points,rarity_points_capped,burned)
       SELECT $1::bigint,t.collection,t.token_id::numeric,t.lifecycle,s.token_id IS NOT NULL,
-        COALESCE(s.metadata_available,false),s.rarity_points,s.rarity_points_capped
+        COALESCE(s.metadata_available,false),s.rarity_points,s.rarity_points_capped,t.burned
       FROM ${schema}.token t LEFT JOIN ${original} s
         ON s.collection=t.collection AND s.token_id=t.token_id::numeric AND s.lifecycle=t.lifecycle
       WHERE t.collection=$2`,
@@ -301,8 +307,10 @@ export async function buildReadCache(
     );
     await db.query(
       `INSERT INTO metadata_projection.read_set(generation_id,collection,revision,guard_count,source_mode,
-        ownership_release_id,ownership_read_identity,ownership_boundary,ownership_boundary_hash,ownership_policy)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        ownership_release_id,ownership_read_identity,ownership_boundary,ownership_boundary_hash,ownership_policy,
+        member_count,burned_count)
+      SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,count(*),count(*) FILTER(WHERE burned)
+      FROM metadata_projection.read_member WHERE generation_id=$1 AND collection=$2`,
       [
         id,
         chain,

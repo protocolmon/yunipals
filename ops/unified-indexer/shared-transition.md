@@ -208,3 +208,12 @@ A journal failure before COMMIT rolls back global staging. A lost COMMIT respons
 stops with `projection_publication_commit_unconfirmed`: inspect the actual pointer,
 transaction and protected journal before any retry. Never rerun the operation
 blindly or replace its official publication function with a direct pointer write.
+
+The publisher retains production's existing cache-preparation lease and final
+publication-lock protocol from `3c3d0655`; do not replace it with only a preflight
+cache check. Preparation renews a twenty-minute lease, and cache cleanup retains
+leased generations. The final pointer statement rechecks cache proofs while
+holding shared epoch/set row locks through COMMIT. Native observation and approval
+TTLs are unchanged. `check-projection-capacity.ts --phase generation|leaderboard`
+can inspect a single read-only phase; its default checks both. WAL budgeting
+credits allocated segment blocks once against the same 150% peak target.

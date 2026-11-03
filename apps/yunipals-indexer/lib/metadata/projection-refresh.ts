@@ -27,6 +27,12 @@ import {
   type ProjectionSourceSnapshot
 } from "./projection-snapshot.js";
 import { retainProjectionAnchors } from "./projection-anchors.js";
+import { readCacheFreshSql } from "./read-cache.js";
+import {
+  prepublishReadCacheEnabled,
+  prepareGenerationReadCache,
+  renewReadCachePreparation
+} from "./read-cache-preparation.js";
 import { assertRoutedProjectionCapacity } from "./projection-capacity-layout.js";
 export { retainProjectionAnchors } from "./projection-anchors.js";
 
@@ -124,7 +130,19 @@ export async function assertProjectionBuildCapacity(
     bytes(process.env.PROJECTION_MIN_FREE_BYTES, 25e9) +
     bytes(process.env.PROJECTION_BACKUP_PEAK_BYTES, 65e9) +
     nextGeneration +
-    snapshotInputs;
+    snapshotInputs +
+    (prepublishReadCacheEnabled()
+      ? Math.ceil(
+          Number(
+            (
+              await client.query<{ bytes: string }>(
+                `SELECT pg_total_relation_size('metadata_projection.read_member')/
+            GREATEST((SELECT count(DISTINCT generation_id) FROM metadata_projection.read_set),1) AS bytes`
+              )
+            ).rows[0]?.bytes ?? 0
+          ) * 1.5
+        )
+      : 0);
   if (free < required) {
     throw new Error(
       `projection_capacity_insufficient: free=${free} required=${required}`
@@ -279,6 +297,13 @@ export async function publishGenerationInTransaction(
       additional.baseMetadataFrontier !== sourceSnapshot.baseMetadataFrontier)
   )
     throw new Error("projection_additional_snapshot_binding_changed");
+  if (prepublishReadCacheEnabled()) {
+    // Keep invalidation and cache replacement outside the pointer commit.
+    await client.query(
+      "SELECT metadata_projection.lock_read_cache_publication($1)",
+      [id]
+    );
+  }
   const publication = await client.query(
     `UPDATE metadata_projection.active
     SET current_id=$1,previous_id=current_id,updated_at=now() WHERE singleton
@@ -291,6 +316,7 @@ export async function publishGenerationInTransaction(
       ${archiveMode ? "AND EXISTS(SELECT 1 FROM metadata_source.archive_release WHERE state='active' AND release_id=$2)" : ""}
       ${sourceSnapshot ? `AND ${projectionPublicationSourcePredicate("$4")}` : ""}
       ${additional ? `AND ${projectionPublicationSourcePredicate("$5")}` : ""}
+      ${prepublishReadCacheEnabled() ? `AND ${readCacheFreshSql(id, collectionSlugs, { preparing: true })}` : ""}
     RETURNING current_id`,
     sourceSnapshot
       ? [
@@ -304,6 +330,11 @@ export async function publishGenerationInTransaction(
   );
   if (publication.rowCount !== 1)
     throw new Error("projection_publication_source_changed");
+  if (prepublishReadCacheEnabled())
+    await client.query(
+      "DELETE FROM metadata_projection.read_preparation WHERE generation_id=$1",
+      [id]
+    );
   await client.query(
     "UPDATE metadata_projection.generation SET published_at=now() WHERE id=$1",
     [id]
@@ -364,6 +395,12 @@ async function cleanupGenerations(client: PoolClient) {
         AND id NOT IN (SELECT current_id FROM metadata_projection.active WHERE current_id IS NOT NULL
           UNION SELECT previous_id FROM metadata_projection.active WHERE previous_id IS NOT NULL)
         AND NOT(id=ANY($1::bigint[]))
+        ${
+          prepublishReadCacheEnabled()
+            ? `AND NOT EXISTS(SELECT 1 FROM metadata_projection.read_preparation p
+          WHERE p.generation_id=g.id AND p.expires_at>statement_timestamp())`
+            : ""
+        }
       RETURNING id`,
       [preserved]
     );
@@ -434,6 +471,8 @@ export async function refreshProjectionGeneration(
       [archiveMode ? "archive" : "legacy", release]
     );
     id = created.rows[0]!.id;
+    if (prepublishReadCacheEnabled())
+      await renewReadCachePreparation(client, id);
     const ownership = await ownershipReadIdentity(client);
     if (ownership)
       await client.query(
@@ -563,6 +602,8 @@ export async function refreshProjectionGeneration(
         client,
         projectionSourceSnapshot(validation.sourceSnapshot)
       );
+    if (prepublishReadCacheEnabled())
+      await prepareGenerationReadCache(client, id);
     if (options.publish === false) {
       // Reader ownership identities share the active pointer and derived
       // stamps. Preparation must leave them untouched until coordinated cutover.
