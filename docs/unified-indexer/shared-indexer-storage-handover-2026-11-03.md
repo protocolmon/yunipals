@@ -54,7 +54,15 @@ The prepared metadata/publisher routed environment files retain private credenti
 
 ## Remaining handover
 
-The final source candidate resumed and all thirteen sources passed a fresh native health check. Fresh full qualification completed on November 3 at 06:55 UTC, matching 2,218,259 retained events and 35 registry/v2 events, with current native readiness rechecked. Reports are under `/var/lib/yunipals-unified-shared/qualification-20261103`. The encrypted backup through the relocated workspace also passed. After the permission and storage checks passed, the temporary source, four free-only relays and observer resumed. All thirteen sources subsequently passed fresh readiness, and native metadata adoption passed its full legacy-event comparison. Generation 127 completed validation at 11:21 UTC with 1,072,868 search/revision records, 11,811,997 traits, all fifteen scopes and no missing revision links. It remains unpublished; current/previous are still 114/113. Repeat source qualification passed at 11:00 UTC. The old generation publisher is drained. The cache writer was also drained for concurrent index maintenance, which preserves its rows and index definitions. Complete cache preparation and coordinated publication, then follow the reviewed source/consumer handover and recovery gates. The existing main indexer and readers continue serving, and Arena epochs remain unchanged. PR #15 remains a draft until those gates are satisfied.
+The final source candidate resumed and all thirteen sources passed fresh native health. Full qualification at 11:00 UTC on November 3 matched 2,218,277 retained events and 35 registry/v2 events, rechecking current readiness. The encrypted backup through the relocated workspace passed. Native metadata adoption passed its full legacy-event comparison.
+
+Generation 127 completed validation at 11:21 UTC with 1,072,868 search/revision records, 11,811,997 traits, all fifteen scopes and no missing revision links. All four complete caches were prepared: Ethereum 36,686 members, Polygon 15,970, BNB 580,093 and Base 440,194. The first publication attempt refused a changed Base revision before its commit intent; global pointers remained 114/113. After draining metadata writes, the second attempt committed at 12:18:23 UTC with 512,350 wallet rows. The active/previous pointers are now 127/114, and both derived stamps identify the final source. The fsynced journal is `/var/lib/yunipals-unified-shared/handover-20261103/publication-127-v2`.
+
+Eight core services now select the shared source: main API, Collector, Islands API, both metadata workers, cache, leaderboard and booster API. Their live selectors were checked. Representative collections, tokens, Base tokens, leaderboards and booster types/openings returned 200. Installed application artifacts were retained except the corrected leaderboard worker. Ethereum Islands ownership was independently verified against all 898 onchain owners and metadata records; its release-specific activation marker and restricted staking support now use the final source. Islands readiness, tokens and staking status returned 200.
+
+Marketplace's complete operational database was backed up and restored into a private isolated PostgreSQL instance: 43 tables, no network listener. All five consumer selections then passed their exact official reviews and were applied on November 3: BNB discovery, BNB sales, and collection sales on Ethereum, Base and Polygon. Private orders matched before and after. The existing source reader received SELECT access to the replacement public dataset; no source writes, schema creation or administrator privileges were granted. The new foreign read schema uses existing service mappings. The API responds 200 at `/health/ready`. Worker recovery and qualification are still being checked. Sale workers retain the database's exact owner-configured policies and the existing budget coordinator; old read-worker builds require the updated migration history.
+
+Both Arena v2 operational epochs, the canonical supervisor transfer, required receipt support, canonical encrypted backup roots and restart/reboot checks remain pending. The booster artwork timer was temporarily paused for publication and must be restored after its existing queue is checked. Keep PR #15 in draft until these steps and the 90-minute/24-hour observation gates pass.
 
 The successor publisher preserves the already-deployed cache safeguards from
 commit `3c3d0655`: twenty-minute renewable preparation leases, retained candidate
@@ -78,4 +86,12 @@ The corrected operator reuses its dedicated connection for native approval betwe
 transactions, and publication/leaderboard completion also reuse held connections
 for pointer inspection and counts. The full 503-test suite and all 24 actual
 PostgreSQL groups pass with the production one-connection limit. Generation 127
-remains unpublished while its replacement cache is prepared.
+has now been published through the corrected one-connection operator.
+
+
+The CI rarity regression script had retained an outdated expectation that burning a
+token leaves its cached membership valid. The trigger correctly invalidates burns.
+The script now separately verifies that an ordinary owner transfer keeps the proof
+valid and a burn uses the canonical fallback. Actual PostgreSQL verification passed
+336 pagination cases and 144 trait-count cases. This correction does not weaken
+the source or cache checks.

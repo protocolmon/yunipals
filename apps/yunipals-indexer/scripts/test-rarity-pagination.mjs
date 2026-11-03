@@ -597,7 +597,19 @@ try {
         await writer.query("ROLLBACK");
       }
     }
-    // Ownership changes remain live without rebuilding metadata membership.
+    // Transfers between live owners keep the metadata membership proof valid.
+    await writer.query("BEGIN");
+    await writer.query(
+      `UPDATE rarity_bnb.token SET owner='0x2222222222222222222222222222222222222222' WHERE token_id='1'`
+    );
+    assert.equal(
+      (await writer.query(`SELECT ${readCacheFreshSql("2", ["bnb"])} AS fresh`))
+        .rows[0].fresh,
+      true
+    );
+    await verifyProofs(writer);
+    await writer.query("ROLLBACK");
+    // A burn changes cached burned membership and must use the live proof path.
     await writer.query("BEGIN");
     await writer.query(
       `UPDATE rarity_bnb.token SET owner='${zero}',burned=true WHERE token_id='1'`
@@ -605,7 +617,7 @@ try {
     assert.equal(
       (await writer.query(`SELECT ${readCacheFreshSql("2", ["bnb"])} AS fresh`))
         .rows[0].fresh,
-      true
+      false
     );
     await verifyProofs(writer);
     await writer.query("ROLLBACK");
