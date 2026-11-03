@@ -23,6 +23,9 @@ const profiles = {
   "shared-qualify": "scripts/qualify-shared-indexer.ts",
   "projection-capacity": "scripts/check-projection-capacity.ts",
   "projection-prepare": "scripts/prepare-native-generation.ts",
+  "projection-publish": "scripts/publish-native-generation.ts",
+  "read-cache-prepare": "scripts/prepare-native-read-cache.ts",
+  "read-cache-schema": "scripts/migrate-read-cache.ts",
   "native-base-metadata": "scripts/unified-base-metadata.ts"
 };
 const args = process.argv.slice(2);

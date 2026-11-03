@@ -44,6 +44,23 @@ export function readCacheFreshSql(
   id: string,
   chains: readonly CollectionSlug[]
 ) {
+  return readCacheProofSql(id, chains, false);
+}
+
+/** Operator-only proof for a complete, unpublished candidate. Runtime readers
+ * continue to require the current/previous publication pointer. */
+export function preparedReadCacheFreshSql(
+  id: string,
+  chains: readonly CollectionSlug[]
+) {
+  return readCacheProofSql(id, chains, true);
+}
+
+function readCacheProofSql(
+  id: string,
+  chains: readonly CollectionSlug[],
+  unpublished: boolean
+) {
   const generation = idSql(id);
   const list = chainsSql(selected(chains));
   const nativeMetadataProof =
@@ -76,7 +93,7 @@ export function readCacheFreshSql(
       AND s.revision=e.revision AND s.source_mode='${metadataSourceMode()}'
       AND ${generationOwnershipProof("g")} ${ownershipProof} ${nativeMetadataProof}
       AND g.state='ready' AND g.source_mode=CASE WHEN s.source_mode='legacy-http' THEN 'legacy' ELSE s.source_mode END
-      AND EXISTS(SELECT 1 FROM metadata_projection.active a
+      AND ${unpublished ? "g.published_at IS NULL AND NOT" : ""} EXISTS(SELECT 1 FROM metadata_projection.active a
         WHERE s.generation_id IN(a.current_id,a.previous_id))
       AND s.guard_count=(SELECT count(*) FROM metadata_projection.read_guard guard WHERE guard.collection=s.collection)
       AND NOT EXISTS(SELECT 1 FROM metadata_projection.read_guard guard

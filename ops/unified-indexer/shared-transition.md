@@ -172,3 +172,39 @@ children, fresh observations, representative product reads, source advancement,
 unchanged budget limits and no duplicate provider submissions. Record actual
 acceptance and outstanding observation windows separately; a prepared artifact
 does not establish a completed production cutover.
+
+## Coordinated generation publication
+
+For this transition, keep the old generation publisher stopped while preparing
+its replacement. Use the routed storage environment and `projection-prepare`
+worker to build an unpublished generation. Preserve the actual current/previous
+generation IDs. The storage preflight must pass as the application role, and
+native metadata adoption/approval must belong to the final source.
+
+Before building the replacement read cache, drain the old cache worker and
+coordinate the reader maintenance interval. The existing `migrate-read-cache.ts`
+command installs the final source's invalidation guards in one transaction; this
+invalidates existing cache proofs. Run it with the existing schema owner, using
+only explicit public source selectors and its established database connection.
+Never install guards on a guessed source or keep an old cache writer running
+while it would remove the unpublished candidate's rows.
+
+Build worker profiles `read-cache-schema`, `read-cache-prepare` and
+`projection-publish` with `scripts/build-application-worker.mjs`. Then run the
+prepared cache worker with `--generation ACTUAL_ID`, followed by the publication
+worker with `--generation ACTUAL_ID --predecessor ACTUAL_CURRENT_ID --journal
+/absolute/fresh/protected-directory`. Use the reviewed private routed environment;
+the cache build timeout remains bounded by the existing maximum of 900000 ms.
+The candidate cache check uses all normal freshness, identity, canonical-boundary
+and invalidation proofs while requiring that the generation is unpublished.
+Ordinary HTTP readers still require the current/previous publication pointer.
+
+The publication coordinator holds the existing writer/recovery locks, prepares
+wallet statistics privately in repeatable read, refreshes native approval and
+retains both sets of canonical anchors. It stages wallet rows and stamps together
+with the official generation compare-and-swap in one read-committed transaction.
+It fsyncs the transaction intent before COMMIT and records its acknowledgement.
+A journal failure before COMMIT rolls back global staging. A lost COMMIT response
+stops with `projection_publication_commit_unconfirmed`: inspect the actual pointer,
+transaction and protected journal before any retry. Never rerun the operation
+blindly or replace its official publication function with a direct pointer write.
