@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep the existing native Base metadata proof current during long publication scans
+
+[Timer]
+OnBootSec=20s
+OnUnitInactiveSec=15s
+AccuracySec=1s
+Unit=yunipals-native-metadata-approval.service
+
+[Install]
+WantedBy=timers.target

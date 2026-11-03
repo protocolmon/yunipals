@@ -1,5 +1,7 @@
 # Shared indexer transition checkpoint 2026 11 02
 
+This is the historical preparation checkpoint. See the [2026-11-03 production checkpoint](shared-indexer-arena-v2-transition-status-2026-11-03.md) for the completed source handover and remaining acceptance checks.
+
 The replacement source is qualified and retained for handover. Production readers and Arena v2 source epochs have **not** moved. The temporary candidate and its support processes are stopped; the existing main Ponder process and managed Solana worker continue running. This checkpoint does not establish a completed production transition.
 
 The implementation is on `codex/shared-indexer-arena-v2`, based on main commit `4c669216`. The [implementation plan](shared-indexer-arena-v2-transition-plan-2026-11-02.md) and [handover runbook](../../ops/unified-indexer/shared-transition.md) govern the remaining work.

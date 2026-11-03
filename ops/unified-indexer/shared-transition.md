@@ -106,6 +106,18 @@ qualification. Existing receipt evidence is keyed by chain/block/transaction and
 is reused across releases; it is not blindly regenerated or reset. Preserve its
 restricted control-table grants. Neither support task performs log ingestion.
 
+Native Base metadata approval must also remain fresh while the full metadata
+worker runs lengthy publication scans. Install the separate native-approval
+service/timer using the existing `native-base-metadata` worker profile and the
+same protected metadata writer configuration. Its `native-refresh` command
+checks the adopted frontier and implementation with bounded point reads; it
+does not adopt, scan logs or generate media. The existing advisory lock prevents
+overlap with the full worker. Keep the two-minute approval expiry and all source
+checks. Route these point reads through the ordinary production Base endpoint
+at port 19202, rather than a retired source-specific relay. No provider, wallet
+or spending authorization is changed. The example uses the existing root-run
+metadata service identity and limits network access to localhost.
+
 ## Qualification, handover and retirement
 
 Create immutable ownership views, native metadata adoption and complete derived

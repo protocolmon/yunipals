@@ -857,6 +857,11 @@ test(
       });
       assert.equal(asset.owner.toLowerCase(), alice);
       assert.equal(asset.lifecycle, 1);
+      await local.query(
+        `INSERT INTO metadata.token_search(collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped)
+        VALUES('base',$1,1,true,12,9)`,
+        [tokenId]
+      );
       const keepers = new pg.Pool({ connectionString: marketUrl, max: 4 });
       const catalog = new CatalogService(local, keepers, {
         projectionMode: "legacy",
@@ -876,6 +881,19 @@ test(
         );
         assert.equal(result.total, 1);
         assert.equal(result.items[0]?.token.tokenId, tokenId);
+        for (const sort of [
+          "rarity-desc",
+          "rarity-asc",
+          "rarity-capped-desc",
+          "rarity-capped-asc"
+        ]) {
+          const ranked = await catalog.tokens(
+            new URLSearchParams({ chain: "base", sort })
+          );
+          assert.equal(ranked.total, 1);
+          assert.equal(ranked.items[0]?.token.tokenId, tokenId);
+          assert.equal(ranked.items[0]?.token.owner.toLowerCase(), alice);
+        }
         await source.query(
           `UPDATE ${schema}.chain_block SET block_hash=$1 WHERE chain_id=8453 AND block_number=100`,
           [hash(707)]
@@ -887,6 +905,10 @@ test(
           { code: "catalog_indexer_unavailable" }
         );
       } finally {
+        await local.query(
+          "DELETE FROM metadata.token_search WHERE collection='base' AND token_id=$1",
+          [tokenId]
+        );
         await source.query(
           `UPDATE ${schema}.chain_block SET block_hash=$1 WHERE chain_id=8453 AND block_number=100`,
           [blockHash(8453, 100n)]
