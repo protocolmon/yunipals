@@ -902,6 +902,10 @@ test(
         assert.equal(result.total, 1);
         assert.equal(result.items[0]?.token.tokenId, tokenId);
         // A BNB outage must not prevent a new Base snapshot from opening.
+        await source.query(
+          `UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE release_id=$1 AND chain_id=56`,
+          [release.id]
+        );
         const isolated = new CatalogService(
           local,
           new pg.Pool({ connectionString: marketUrl, max: 4 }),
@@ -915,7 +919,7 @@ test(
               return {
                 statuses: {
                   bnb: "unavailable",
-                  base: "unavailable",
+                  base: "available",
                   ethereum: "unavailable",
                   polygon: "unavailable"
                 },
@@ -948,6 +952,15 @@ test(
             new URLSearchParams({ chain: "base", sort: "token-id-asc" })
           );
           assert.equal(retained.snapshot.id, base.snapshot.id);
+          const empty = await isolated.tokensV2(
+            new URLSearchParams({ chain: "base", rarityMin: "999999" })
+          );
+          assert.equal(empty.total, 0);
+          assert.equal(empty.snapshot.id, base.snapshot.id);
+          for (const sale of ["listed", "unlisted"])
+            await isolated.tokensV2(
+              new URLSearchParams({ chain: "base", sale })
+            );
           await assert.rejects(
             isolated.tokensV2(
               new URLSearchParams({
@@ -959,6 +972,10 @@ test(
             { code: "snapshot_refresh_required" }
           );
         } finally {
+          await source.query(
+            `UPDATE yunipals_indexer_control.chain_status SET halted=false WHERE release_id=$1 AND chain_id=56`,
+            [release.id]
+          );
           await isolated.close();
         }
         for (const sort of [

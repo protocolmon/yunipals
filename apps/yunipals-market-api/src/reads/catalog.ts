@@ -704,8 +704,8 @@ export class CatalogService {
     const changed = await this.pool.query<{ changed: boolean }>(
       `SELECT EXISTS(
       SELECT 1 FROM jsonb_to_recordset($1::jsonb) AS a(chain text,token_id text,owner text,lifecycle integer)
-      LEFT JOIN ${source.tokenRelation} t ON t.collection=a.chain AND t.token_id=a.token_id
-      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSqlFor("t", source.transferRelation)}) AS changed`,
+      LEFT JOIN ${source.tokenRelation} t ON t.collection=ANY($2::text[]) AND t.collection=a.chain AND t.token_id=a.token_id
+      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSqlFor("t", source.transferRelation, selected)}) AS changed`,
       [
         JSON.stringify(
           items.map(({ token }) => ({
@@ -714,7 +714,8 @@ export class CatalogService {
             owner: token.owner,
             lifecycle: token.lifecycle
           }))
-        )
+        ),
+        selected
       ]
     );
     if (changed.rows[0]?.changed) {

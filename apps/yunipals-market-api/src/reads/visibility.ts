@@ -20,16 +20,28 @@ export const indexedTokenHiddenSql = `EXISTS(SELECT 1 FROM metadata.token_visibi
 /** Runtime-selected history relation, after ownershipSqlContext validated it. */
 export function indexedTokenHiddenSqlFor(
   alias = "t",
-  transferRelation = "yunipals_read_v4.transfer_event"
+  transferRelation = "yunipals_read_v4.transfer_event",
+  collections?: readonly string[]
 ) {
   if (
     !/^[a-z][a-z0-9_]*$/.test(alias) ||
     !/^(?:[a-z_][a-z0-9_]*|"[a-z_][a-z0-9_]*")\.transfer_event$/.test(
       transferRelation
-    )
+    ) ||
+    (collections !== undefined &&
+      (!collections.length ||
+        collections.length > 32 ||
+        collections.some(
+          (collection) => !/^[a-z][a-z0-9-]{0,63}$/.test(collection)
+        )))
   )
     throw new Error("Invalid ownership visibility SQL scope.");
+  // A local visibility join cannot always be pushed through postgres_fdw.
+  // Give the remote history scan its own constant collection restriction.
+  const history = collections
+    ? `(SELECT * FROM ${transferRelation} WHERE collection IN (${[...new Set(collections)].map((collection) => `'${collection}'`).join(",")}))`
+    : transferRelation;
   return indexedTokenHiddenSql
-    .replaceAll("yunipals_read_v4.transfer_event", transferRelation)
+    .replaceAll("yunipals_read_v4.transfer_event", history)
     .replaceAll("t.", `${alias}.`);
 }

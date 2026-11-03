@@ -377,7 +377,8 @@ export function catalogSql(
       SELECT t.collection,t.token_id FROM metadata.token_visibility visibility
       JOIN LATERAL (SELECT current.* FROM ${ownership.tokenRelation} current
         WHERE current.collection=visibility.collection AND current.token_id=pg_catalog.textin(pg_catalog.numeric_out(visibility.token_id)) LIMIT 1) t ON true
-      WHERE ${indexedTokenHiddenSqlFor("t", ownership.transferRelation)}),
+      WHERE visibility.collection=ANY($2::text[])
+        AND ${indexedTokenHiddenSqlFor("t", ownership.transferRelation, query.chains)}),
     candidates AS ${phase === "null-missing" || combineFirstPage ? "MATERIALIZED" : ""} (
       SELECT t.collection,t.chain_id,t.contract_address,t.token_id,${indexedScore ? "s.token_id" : indexedTokenNumberSql} AS id_number,t.owner,t.lifecycle,
         t.mint_block,t.last_transfer_block,s.metadata_available,

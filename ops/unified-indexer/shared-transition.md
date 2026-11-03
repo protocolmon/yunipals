@@ -289,6 +289,9 @@ run through the existing bounded read lanes and roll back to savepoints on
 refusal. An unavailable chain cannot retire an otherwise usable snapshot.
 The existing three-generation and connection limits remain unchanged.
 Fresh ownership and canonical checks still apply to every requested chain,
-including empty result pages. Pagination cannot introduce a chain that was not
+including empty result pages. Visibility and final ownership SQL explicitly
+restrict both token and transfer-history scans to the selected collections,
+so postgres_fdw cannot evaluate an unrelated chain's failing boundary function.
+Pagination cannot introduce a chain that was not
 qualified in its snapshot. Reset the production acceptance window after
 deploying either runtime correction.

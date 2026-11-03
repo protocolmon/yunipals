@@ -1,6 +1,6 @@
 # Shared indexer production checkpoint 2026 11 03
 
-The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. All thirteen sources and 48 checked services are healthy. The continuous 90-minute/24-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
+The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/24-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
 
 ## Source and consumer handover
 
@@ -45,12 +45,39 @@ source/Solana configuration hashes match the pre-reboot proof. The existing
 Staking's strict finalized-header proof briefly became unavailable as finality
 crossed the native-header restart gap. Its existing scheduled task recovered
 without fabricated headers, relaxed verification or a changed schedule. The
-continuous acceptance window restarted at **16:50:52 UTC**. If every subsequent
-check stays healthy, the ninety-minute marker is due at **18:20:52 UTC** and the
-24-hour marker at **2026-11-04 16:50:52 UTC**. The authoritative ongoing evidence is
+first acceptance window restarted at **16:50:52 UTC** and was subsequently
+invalidated by the Marketplace failures. Its previously estimated completion
+times no longer apply.
+
+## Marketplace stability correction
+
+The dedicated shared-source RPC services now use two-second free-provider
+attempts, leaving time for failover inside Ponder's ten-second request deadline.
+The prior ten-second provider attempt could exhaust the caller's deadline before
+a fallback succeeded. BNB subsequently caught up and source reads recovered.
+Existing endpoint pools, pacing, concurrency, response limits, source policies,
+profile and monetary controls are unchanged; paid calls remained zero. Ordinary
+application RPC units do not load the new timeout overlay.
+
+Catalog source checks now qualify only requested chains against the same held
+snapshots and existing bounded read lanes. Qualification uses savepoints so a
+refused chain cannot abort other verified chains' snapshots. Visibility and final
+ownership queries explicitly restrict token/history scans to the selected
+collections, including foreign-table scans. Empty pages still require source
+proof; pagination cannot introduce an unqualified chain. The three-generation
+and connection limits are unchanged.
+
+Regression verification includes a real halted BNB source in the disposable
+PostgreSQL fixture: Base catalog, listing filters and empty pages remain usable;
+BNB and combined requests are refused; concurrent Base reads and existing
+snapshots survive the refusal. Native ownership/catalog regressions passed,
+alongside the existing RPC proxy cases, API build and TypeScript checks.
+
+The authoritative acceptance record is
 `/var/lib/yunipals-unified-shared/production-health/latest.json` and its protected
-history; any new failure, reboot, configuration change or monitoring gap resets
-the window.
+history. Use its new `healthySinceUnix` after deploying the correction; any
+failure, reboot, configuration change or monitoring gap resets the window. The
+PR description records the deployed artifact and current observation start.
 
 ## Acceptance still required
 
