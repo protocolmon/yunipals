@@ -6,7 +6,7 @@ import {
   buildReadCache,
   preparedReadCacheFreshSql
 } from "../lib/metadata/read-cache.js";
-import { refreshNativeBaseMetadata } from "../lib/metadata/native-base.js";
+import { refreshNativeBaseMetadataOnClient } from "../lib/metadata/native-base.js";
 import { baseMetadataPointRpc } from "../lib/metadata/unified-runtime.js";
 import { renewReadCachePreparation } from "../lib/metadata/read-cache-preparation.js";
 
@@ -45,7 +45,7 @@ try {
     ...collectionSlugs.filter((chain) => chain !== "base"),
     "base"
   ] as const) {
-    await refreshNativeBaseMetadata(pool, rpc);
+    await refreshNativeBaseMetadataOnClient(client, rpc);
     await renewReadCachePreparation(client, id);
     const rows = await buildReadCache(client, id, chain);
     console.log(
@@ -57,7 +57,7 @@ try {
       })
     );
   }
-  await refreshNativeBaseMetadata(pool, rpc);
+  await refreshNativeBaseMetadataOnClient(client, rpc);
   await client.query("SELECT metadata_projection.analyze_read_cache()");
   const proof = await client.query<{ fresh: boolean }>(
     `SELECT ${preparedReadCacheFreshSql(id, collectionSlugs)} AS fresh`

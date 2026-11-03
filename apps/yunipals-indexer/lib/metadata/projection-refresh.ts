@@ -621,7 +621,7 @@ export async function refreshProjectionGeneration(
         await publishGeneration(client, id, release, predecessor);
         break;
       } catch (error) {
-        const pointer = await pool.query<{ current_id: string | null }>(
+        const pointer = await client.query<{ current_id: string | null }>(
           "SELECT current_id FROM metadata_projection.active WHERE singleton"
         );
         if (pointer.rows[0]?.current_id === id) break;

@@ -64,3 +64,18 @@ with the installed artifact manifest before porting. The PR keeps the existing
 main API and metadata-worker artifacts. The expanded real PostgreSQL rehearsal
 passed 24 groups, including coordinator journal-failure rollback and invisible
 global staging until one commit; the indexer suite passed 503 tests with two skips.
+
+Concurrent cache-index maintenance recovered 6,966,894,592 bytes (the table's
+physical size fell from 8,918,958,080 to 1,952,063,488 bytes), preserving generation
+row counts, table identity, all four index definitions and valid indexes. Both
+capacity phases and all thirteen source readiness checks passed afterward. Final
+source cache guards are installed transactionally.
+
+The first cache-preparation attempt waited on the deployment's one-connection
+worker pool before any candidate cache rows were written. It was stopped and the
+existing cache service resumed; a representative collection endpoint returned 200.
+The corrected operator reuses its dedicated connection for native approval between
+transactions, and publication/leaderboard completion also reuse held connections
+for pointer inspection and counts. The full 503-test suite and all 24 actual
+PostgreSQL groups pass with the production one-connection limit. Generation 127
+remains unpublished while its replacement cache is prepared.

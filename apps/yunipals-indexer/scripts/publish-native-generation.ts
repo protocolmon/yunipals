@@ -1,8 +1,9 @@
 import { mkdir, open } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
+import type { PoolClient } from "pg";
 import { pool, apiPool } from "../lib/offchain/db.js";
-import { refreshNativeBaseMetadata } from "../lib/metadata/native-base.js";
+import { refreshNativeBaseMetadataOnClient } from "../lib/metadata/native-base.js";
 import { baseMetadataPointRpc } from "../lib/metadata/unified-runtime.js";
 import { publishPreparedGeneration } from "../lib/metadata/coordinated-publication.js";
 
@@ -13,7 +14,7 @@ const { values } = parseArgs({
     journal: { type: "string" }
   }
 });
-let client;
+let client: PoolClient | undefined;
 try {
   if (
     !values.generation ||
@@ -31,11 +32,12 @@ try {
     await directory.close();
   }
   client = await pool.connect();
+  const connected = client;
   const rpc = baseMetadataPointRpc();
   const result = await publishPreparedGeneration(client, {
     generationId: values.generation,
     predecessor: values.predecessor,
-    refreshApproval: () => refreshNativeBaseMetadata(pool, rpc),
+    refreshApproval: () => refreshNativeBaseMetadataOnClient(connected, rpc),
     record: async (phase, receipt) => {
       const file = await open(
         join(values.journal!, `${phase}.json`),

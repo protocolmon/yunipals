@@ -93,7 +93,7 @@ try {
     METADATA_SOURCE_MODE: "archive",
     BASE_METADATA_INGESTION: "native",
     PROJECTION_TEST_BYPASS_CAPACITY: "1",
-    OFFCHAIN_DB_POOL_MAX: "2"
+    OFFCHAIN_DB_POOL_MAX: "1"
   });
   globalThis.fetch = async () => {
     throw Error("No RPC permitted");
@@ -818,6 +818,14 @@ try {
   const { publishPreparedGeneration } = await import(
     "../lib/metadata/coordinated-publication.ts"
   );
+  const { refreshNativeBaseMetadataOnClient } = await import(
+    "../lib/metadata/native-base.ts"
+  );
+  const approvalRpc = {
+    chainId: async () => 8453,
+    blockHash: async (block) => hash(8453, block),
+    implementation: async () => "0x4ad380760abb9fad95cd48ef2d7c46ed5a072fca"
+  };
   process.env.PROJECTION_PREPARE_READ_CACHE = "true";
   const coordinated = await refreshProjectionGeneration({ publish: false });
   const publicationState = async () =>
@@ -835,7 +843,8 @@ try {
       publishPreparedGeneration(failedSession, {
         generationId: coordinated.generationId,
         predecessor: coordinated.predecessor,
-        refreshApproval: async () => {},
+        refreshApproval: () =>
+          refreshNativeBaseMetadataOnClient(failedSession, approvalRpc),
         record: async (phase) => {
           if (phase === "publication_intent")
             throw Error("fixture_journal_failure");
@@ -868,7 +877,8 @@ try {
     await publishPreparedGeneration(coordinatedSession, {
       generationId: coordinated.generationId,
       predecessor: coordinated.predecessor,
-      refreshApproval: async () => {},
+      refreshApproval: () =>
+        refreshNativeBaseMetadataOnClient(coordinatedSession, approvalRpc),
       record: async (phase) => {
         coordinatedPhases.push(phase);
         if (phase === "publication_intent")
