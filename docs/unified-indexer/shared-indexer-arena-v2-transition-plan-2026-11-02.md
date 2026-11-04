@@ -217,7 +217,7 @@ Required verification before declaring the transition complete:
 - A restart with delayed database or relay readiness recovers automatically. A permanent mismatch remains visibly unhealthy without starting paid/provider work.
 - A controlled supervisor restart preserves Ponder checkpoints, Solana lock/schedule behavior, source observations and application readiness. A planned host reboot then proves that retired units stay down and the complete service order recovers.
 - Browser/API checks exercise both v2 modes, fighter eligibility, existing tournament history, film playback, credits/claims and current mode configuration. Use the completed production artifacts for live verification and local fixtures for destructive scenarios. A new paid battle or signed owner action is a separately identified execution step when needed, not an automatic smoke test.
-- Observe at least 90 minutes of healthy operation after cutover and an uninterrupted 8-hour period, using the verified scheduled-job and budget-rollover evidence before closing the transition.
+- Observe at least 90 minutes of healthy operation after cutover and an uninterrupted 4-hour period, using the verified scheduled-job and budget-rollover evidence before closing the transition.
 
 Monitor source lag per chain, observation age, release agreement across consumers, RPC denials/profile state, process restarts, duplicate Ponder processes, Solana snapshot freshness, database connections, disk/WAL growth and provider/transaction queues. Health must distinguish a running process from current usable data.
 
@@ -242,7 +242,7 @@ Temporary overlap during recovery is recorded and removed before the transition 
 | Observer and supervision | `apps/yunipals-indexer/scripts/unified-observer.ts`, `ops/unified-indexer/run-indexer.sh`, managed/support unit templates | Validated configurable identities, readiness ordering, automatic recovery and one-writer enforcement. |
 | Consumer transition | Reader-service rendering, ownership-view creation, publisher/cache selectors, feature-specific APIs/workers | Per-consumer shadow reads, current grants, preserved generations and product checks. |
 | Arena cutover and retirement | `src/arena/live/sourceSwitch.ts`, `sourceSwitchCli.ts`, mode units, frontend `arenaDeployment.tsx`, route/environment configuration | Both v2 modes share the new source; private work and claims preserved; v1 tournament routes and services retired. |
-| Operations and completion | Indexer/Arena runbooks, health checks, backup/restore and transition controller | Repeatable review/apply/status/rollback operation, successful restart/reboot, 8-hour observation and retired-unit audit. |
+| Operations and completion | Indexer/Arena runbooks, health checks, backup/restore and transition controller | Repeatable review/apply/status/rollback operation, successful restart/reboot, 4-hour observation and retired-unit audit. |
 
 Use a new transition record tied to the current deployment. Reuse verified libraries and existing migration/source-switch mechanisms; do not modify historical accepted artifacts or run old scripts with hard-coded source identities against the new deployment.
 

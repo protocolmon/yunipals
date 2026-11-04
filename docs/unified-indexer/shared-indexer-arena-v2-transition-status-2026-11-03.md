@@ -1,6 +1,6 @@
 # Shared indexer production checkpoint 2026 11 03
 
-The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/8-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
+The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/4-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
 
 ## Source and consumer handover
 
@@ -81,10 +81,10 @@ PR description records the deployed artifact and current observation start.
 
 ## Acceptance still required
 
-- Complete the 90-minute and 8-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
+- Complete the 90-minute and 4-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
 
-The owner shortened the final acceptance period from 24 to eight hours on
-November 4 UTC. The monitor now reports `eightHoursPassed`; all health checks,
+The owner shortened the final acceptance period from eight to four hours on
+November 4. The monitor now reports `fourHoursPassed`; all health checks,
 failure/reboot/gap reset rules and retained history remain unchanged. A
 threshold-only change retains continuous evidence already collected.
 

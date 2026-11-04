@@ -185,10 +185,10 @@ current product checks. Keep unrelated provider failures visible.
 
 The minute timer retains a protected history and resets its continuous window
 after a failed check, reboot, configuration change, reversed clock or a gap
-greater than three minutes. Its 90-minute and 8-hour markers therefore require
+greater than three minutes. Its 90-minute and 4-hour markers therefore require
 continuous successful evidence for the final deployment. A source-only check
 or earlier qualification cannot establish full product acceptance.
-The owner shortened the final duration from 24 hours to eight hours. This
+The owner shortened the final duration to four hours. This
 threshold-only change preserves genuine continuous evidence already collected;
 it does not change health checks, failure resets or the retained history.
 
