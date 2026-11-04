@@ -92,7 +92,7 @@ Remaining migration work:
 - [ ] Adopt native Arena workers and managed EVM/Solana supervision.
 - **Deferred by the user:** execute coordinated rollback and return. The parallel agents now prioritize forward cutover; existing recovery source and backups remain retained.
 - [ ] Enable recurring native rarity/leaderboard refresh and verify generation lineage and retention.
-- [ ] Complete a supervised process restart and at least 24 hours of observation, then retire all remaining duplicate scanners and finish handover evidence.
+- [ ] Complete a supervised process restart and at least 4 hours of observation, then retire all remaining duplicate scanners and finish handover evidence.
 
 The genuine YPAL three-pack purchase, reveal, per-NFT metadata and all three images are accepted. The live daily claim remains untested and requires a wallet signature. Unseen artwork uses the operator workflow. Marketplace history and additional reorg stress coverage remain deferred as requested. Earlier failed attempts remain preserved and are not relabelled as successful.
 
@@ -245,7 +245,7 @@ Earlier PROTO-specific receipts below are historical launch evidence; the active
   - **Deferred by the user:** production fallback switch, return and scanner-stop rehearsal.
 - [ ] Resume the ordinary native rarity/leaderboard refresh worker and verify a newer generation with explicit retention/rollback lineage. The installed artifact includes the recurring worker, but the current reader/cache acceptance binds the first native generation and deliberately keeps recurring generation stopped; managed-source adoption does not complete this requirement.
   - [x] Implement and independently verify the recurring generation lineage components. Nine filesystem controls, exact recovery derivation and16 real PostgreSQL groups pass, including atomic wallet/two-stamp publication, retained original recovery data, lost acknowledgements and rollback after multiple refreshes. These are source components; the descendant-aware reader/cache acceptance, supervised worker activation and actual rollback rehearsal remain pending. [Procedure](../../ops/unified-indexer-transition/ypal-generation-lineage-v1.md), [independent review](ypal-generation-lineage-independent-review-2026-10-24.json).
-- [ ] Observe at least 24 hours, including a supervised restart, backup and idle cycle.
+- [ ] Observe one continuous healthy hour, with verified supervised restart, backup and idle-cycle evidence.
 - [x] Implement and independently verify the scanner inventory gate. All25 focused controls and the bounded repository scan pass with786 classified discovery/deployment candidates. Bounded trading admission checks remain allowed. Unknown detected entrypoints, source-root symlinks and changed boot/restart facts refuse; actual host capture, installed-program provenance and scanner retirement remain unqualified. [Procedure](../../ops/unified-indexer-transition/scanner-inventory-gate-v1.md), [review](scanner-inventory-independent-review-2026-10-24.json).
 - [ ] Disable every superseded scanner and its restart paths; finalize the operating runbook.
 

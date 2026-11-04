@@ -27,9 +27,12 @@ if (
 }
 const databaseUrl = process.env.UNIFIED_INDEXER_DATABASE_URL;
 if (!databaseUrl) throw new Error("UNIFIED_INDEXER_DATABASE_URL is required.");
+const poolMax = process.env.UNIFIED_SUPPORT_POOL_MAX ?? "8";
+if (!/^[2-8]$/.test(poolMax))
+  throw new Error("UNIFIED_SUPPORT_POOL_MAX must be between 2 and 8.");
 const pool = new pg.Pool({
   connectionString: databaseUrl,
-  max: 8,
+  max: Number(poolMax),
   connectionTimeoutMillis: 5000
 });
 let stopping = false;

@@ -9,7 +9,7 @@ const db = createBnbTestDatabase();
 before(db.initialize);
 after(async () => {
   await db.owner.query(
-    "DELETE FROM yunipals_market.checkpoint WHERE chain_id IN (1,8453) AND name IN ('opensea-order-worker','opensea-publication-worker')"
+    "DELETE FROM yunipals_market.checkpoint WHERE chain_id IN (1,8453,137) AND name IN ('opensea-order-worker','opensea-publication-worker')"
   );
   await db.clear();
   await db.close();
@@ -18,7 +18,9 @@ after(async () => {
 test("capability health requires every fresh worker checkpoint and fails stale sources independently", async () => {
   await db.clear();
   await db.owner.query(
-    `INSERT INTO yunipals_market.checkpoint(source,chain_id,name,state,checked_at)
+    `DELETE FROM yunipals_market.checkpoint WHERE chain_id IN (1,8453,137)
+      AND name IN ('opensea-order-worker','opensea-publication-worker');
+    INSERT INTO yunipals_market.checkpoint(source,chain_id,name,state,checked_at)
     VALUES
       ('chain',1,'opensea-order-worker','available',clock_timestamp()),
       ('indexer',1,'opensea-order-worker','available',clock_timestamp()),

@@ -1,10 +1,10 @@
 [Unit]
-Description=Unified Yunipals YPAL EVM and Solana ingestion
-After=network-online.target postgresql.service yunipals-combined-rpc@ethereum.service yunipals-combined-rpc@base.service yunipals-combined-rpc@polygon.service yunipals-combined-rpc@bnb.service
-Wants=network-online.target
-Conflicts=yunipals-ypal-combined-source.service yunipals-unified-source6-free-v2.service yunipals-solana.service yunipals-booster-ypal-source.service yunipals-booster-launch.service yunipals-bnb.service yunipals-islands-indexer.service yunipals-base-islands-v2.service
-StartLimitIntervalSec=600
-StartLimitBurst=3
+Description=Unified Yunipals shared EVM and Solana ingestion
+After=network-online.target postgresql@16-main.service yunipals-shared-rpc@ethereum.service yunipals-shared-rpc@base.service yunipals-shared-rpc@polygon.service yunipals-shared-rpc@bnb.service
+Wants=network-online.target yunipals-shared-rpc@ethereum.service yunipals-shared-rpc@base.service yunipals-shared-rpc@polygon.service yunipals-shared-rpc@bnb.service
+Requires=postgresql@16-main.service
+Conflicts=yunipals-ypal-combined-source.service yunipals-unified-source6-free-v2.service yunipals-solana.service yunipals-booster-ypal-source.service yunipals-booster-launch.service yunipals-bnb.service yunipals-islands-indexer.service yunipals-base-islands-v2.service yunipals-anime-native-source.service yunipals-arena-modes-source.service yunipals-shared-transition-candidate.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -16,9 +16,12 @@ EnvironmentFile=
 UnsetEnvironment=DATABASE_URL DATABASE_PRIVATE_URL HELIUS_API_KEY
 ExecStart=/opt/node-v24.18.1/bin/node /opt/yunipals-unified/indexer/scripts/start-indexer.mjs --env-file=/etc/yunipals-unified/indexer.service.env
 Restart=on-failure
-RestartPreventExitStatus=75
+RestartPreventExitStatus=78
 RestartSec=10
+RestartSteps=5
+RestartMaxDelaySec=300
 RuntimeMaxSec=infinity
+RuntimeDirectory=yunipals-indexer
 TimeoutStopSec=60
 KillMode=control-group
 MemoryMax=6442450944
@@ -36,10 +39,9 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 IPAddressDeny=any
 IPAddressAllow=localhost
 IPAddressAllow=104.18.36.169/32 172.64.151.87/32 2606:4700:440d::6812:24a9/128 2a06:98c1:3104::ac40:9757/128
-ReadWritePaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache
+ReadWritePaths=/var/lib/yunipals-unified-shared
 BindReadOnlyPaths=
-BindReadOnlyPaths=/opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/ponder.config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder.config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-combined-source-v1-stage/booster-config.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/boosters/config.ts /opt/yunipals-unified/operations/free-replay-20261020/ypal-rpc-deadline-host-build-v1/rpc-preflight.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/lib/unified/rpc-preflight.ts
-BindPaths=/var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.ponder:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/.ponder /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/.vite-temp:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/node_modules/.vite-temp /var/lib/yunipals-unified-ypal/combined-v1-source008/cache/ponder-env.d.ts:/var/lib/yunipals-booster-launch/20261022-source008/apps/yunipals-indexer/ponder-env.d.ts
+BindPaths=
 UMask=0077
 
 [Install]

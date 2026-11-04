@@ -3,6 +3,22 @@
 # snapshot adapter. Node loads each child's private env file without sourcing it.
 set -euo pipefail
 
+if [[ -n "${YUNIPALS_INDEXER_LOCK_FILE:-}" ]]; then
+  if [[ "$YUNIPALS_INDEXER_LOCK_FILE" != /* ]]; then
+    echo 'Indexer lock path must be absolute.' >&2
+    exit 1
+  fi
+  if [[ -L "$YUNIPALS_INDEXER_LOCK_FILE" ]]; then
+    echo 'Indexer lock must not be a symbolic link.' >&2
+    exit 1
+  fi
+  exec 9>>"$YUNIPALS_INDEXER_LOCK_FILE"
+  if ! flock --nonblock 9; then
+    echo 'Another managed indexer owns the ingestion lock.' >&2
+    exit 78
+  fi
+fi
+
 indexer_node="${YUNIPALS_INDEXER_NODE:-node}"
 "$indexer_node" -e 'if(Number(process.versions.node.split(".")[0])<24){console.error("Node 24 or newer is required.");process.exit(1)}'
 ponder_env="${YUNIPALS_INDEXER_PONDER_ENV_FILE:?Configure the Ponder environment file}"

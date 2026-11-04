@@ -456,10 +456,96 @@ test("review CLI requires the current hash and repeated approval never resets pe
       ).rows[0].spent_cu,
       "60"
     );
+    const serviceProfile = { ...profile, reviewId: randomUUID() };
+    await writeFile(
+      path,
+      JSON.stringify({
+        profile: serviceProfile,
+        lifecycle: "service",
+        expiresAt: null,
+        permits: []
+      })
+    );
+    const serviceReview = await execute();
+    assert.equal(serviceReview.code, 0);
+    const serviceHash = JSON.parse(serviceReview.output.trim()).reviewHash;
+    assert.equal((await execute(serviceHash)).code, 0);
+    assert.equal((await execute(serviceHash)).code, 0);
+    await createUnifiedRpcPolicyGate(
+      runtime,
+      profile.scope,
+      serviceProfile,
+      8453
+    ).ready("unified_source");
+    const approved = (
+      await owner.query(
+        "SELECT lifecycle,expires_at='infinity'::timestamptz AS permanent FROM yunipals_market.unified_rpc_profile WHERE profile_id=$1",
+        [unifiedRpcProfileId(serviceProfile)]
+      )
+    ).rows[0];
+    assert.deepEqual(approved, { lifecycle: "service", permanent: true });
+    assert.equal(
+      (
+        await owner.query(
+          "SELECT spent_cu::text FROM yunipals_market.unified_rpc_replay_permit WHERE permit_id=$1",
+          [permit]
+        )
+      ).rows[0].spent_cu,
+      "60"
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
 });
+test("service profile survives calendar expiry without inheriting paid authority and remains revocable", async () => {
+  const { profile, permit, scope } = await setup();
+  const serviceProfile = { ...profile, reviewId: randomUUID() };
+  const id = unifiedRpcProfileId(serviceProfile);
+  await owner.query(
+    `INSERT INTO yunipals_market.unified_rpc_profile(profile_id,scope,manifest_hash,policy,enabled,expires_at,lifecycle)
+      VALUES($1,$2,$3,$4,true,'infinity','service')`,
+    [
+      id,
+      scope,
+      unifiedRpcManifestId(serviceProfile),
+      JSON.stringify(serviceProfile)
+    ]
+  );
+  const gate = createUnifiedRpcPolicyGate(runtime, scope, serviceProfile, 8453);
+  await gate.ready("unified_source");
+  assert.equal(
+    (
+      await owner.query(
+        "SELECT expires_at>clock_timestamp()+interval '10 years' AS valid FROM yunipals_market.unified_rpc_profile WHERE profile_id=$1",
+        [id]
+      )
+    ).rows[0].valid,
+    true
+  );
+  await assert.rejects(gate.reservePaid(undefined, [logs]));
+  await assert.rejects(gate.reservePaid(permit, [logs]));
+  await assert.rejects(
+    owner.query(
+      "UPDATE yunipals_market.unified_rpc_profile SET expires_at=clock_timestamp()+interval '1 hour' WHERE profile_id=$1",
+      [id]
+    )
+  );
+  await owner.query(
+    "UPDATE yunipals_market.unified_rpc_profile SET enabled=false WHERE profile_id=$1",
+    [id]
+  );
+  await assert.rejects(gate.ready("unified_source"));
+  assert.equal(
+    (
+      await owner.query(
+        "SELECT spent_cu::text FROM yunipals_market.unified_rpc_replay_permit WHERE permit_id=$1",
+        [permit]
+      )
+    ).rows[0].spent_cu,
+    "0"
+  );
+});
+
 test("opt-in proxy frees reviewed source logs while bounded paid history and distinct budgets persist", async () => {
   const { gate, profile, permit, scope } = await setup(60);
   const routes: string[] = [];

@@ -528,9 +528,9 @@ describe("exact indexed action evidence", () => {
       }
     }
   );
-  it("does not relabel a historical journal ABI as the current compatible event ABI", async () => {
+  it("does not relabel a registered journal ABI as a newer compatible wallet ABI", async () => {
     const f = fixture("booster-request-created");
-    f.event.abi_hash = boosterSourceAbiHashes.e8145098.boosterPacks;
+    f.event.abi_hash = boosterSourceAbiHashes.current.boosterPacks;
     expect((await f.read()).reason).toBe("canonical_event_invalid");
   });
   it("does not accept a different transaction, order hash or offerer just because its receipt block is covered", async () => {

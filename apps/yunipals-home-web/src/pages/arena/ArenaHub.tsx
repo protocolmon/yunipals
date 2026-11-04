@@ -102,19 +102,6 @@ export function ArenaHub() {
         pays the island draw fee, shown before confirmation. Unused draw-fee ETH
         is returned automatically.
       </p>
-      <details className="mt-10 border-t border-line pt-5 text-sm text-muted">
-        <summary className="cursor-pointer rounded font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
-          Previous video Arena
-        </summary>
-        <div className="mt-4 flex flex-wrap gap-5">
-          <Link className="font-semibold underline" to="/arena/history">
-            Earlier battles
-          </Link>
-          <Link className="font-semibold underline" to="/arena/rewards">
-            Earlier rewards & claims
-          </Link>
-        </div>
-      </details>
     </main>
   );
 }

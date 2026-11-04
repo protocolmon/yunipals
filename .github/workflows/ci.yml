@@ -64,6 +64,8 @@ jobs:
         run: python3 -m unittest discover -s scripts/anime -p fetch_assets_test.py -v
       - name: Request monitor tests
         run: python3 -m unittest discover -s apps/yunipals-indexer/scripts -p 'test_request_monitor.py' -v
+      - name: Shared production acceptance monitor
+        run: python3 -m unittest discover -s ops/unified-indexer -p 'test_production_health.py' -v
 
   build:
     name: Build
@@ -173,6 +175,10 @@ jobs:
         env:
           PONDER_DEPENDENCY_TEST_DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_ponder_dependency_test
         run: pnpm --filter @protopals/yunipals-indexer test:ponder:postgres
+      - name: Shared canonical journal comparison
+        env:
+          PONDER_DEPENDENCY_TEST_DATABASE_URL: postgresql://indexer_test_owner:indexer-local-test-only@127.0.0.1:55437/yunipals_ponder_dependency_test
+        run: pnpm --filter @protopals/yunipals-indexer test:shared:parity:postgres
       - name: Exomon snapshots and API
         run: pnpm test:solana:postgres
 

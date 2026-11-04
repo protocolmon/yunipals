@@ -1,0 +1,5 @@
+# Apply to the existing long-running Marketplace API/worker services.
+# Their existing five-start/two-minute limit is unchanged. A thirty-second
+# retry interval lets the shared source recover without exhausting that limit.
+[Service]
+RestartSec=30s

@@ -52,13 +52,12 @@ async function pointCheck(rpc: BaseMetadataPointRpc, boundary: NativeFrame) {
     throw new Error("Native Base metadata boundary changed during code check.");
 }
 
-async function withNativeWriter<T>(
-  pool: Pool,
+async function withNativeClientWriter<T>(
+  db: PoolClient,
   task: (db: PoolClient) => Promise<T>
 ) {
   if (!nativeBaseMetadataReads())
     throw new Error("Native Base metadata mode is required.");
-  const db = await pool.connect();
   let acquired = false;
   try {
     acquired =
@@ -71,10 +70,21 @@ async function withNativeWriter<T>(
     return await task(db);
   } finally {
     if (acquired)
-      await db
-        .query("SELECT pg_advisory_unlock(hashtext('metadata:base-replay'))")
-        .finally(() => db.release());
-    else db.release();
+      await db.query(
+        "SELECT pg_advisory_unlock(hashtext('metadata:base-replay'))"
+      );
+  }
+}
+
+async function withNativeWriter<T>(
+  pool: Pool,
+  task: (db: PoolClient) => Promise<T>
+) {
+  const db = await pool.connect();
+  try {
+    return await withNativeClientWriter(db, task);
+  } finally {
+    db.release();
   }
 }
 
@@ -195,86 +205,106 @@ export async function refreshNativeBaseMetadata(
   pool: Pool,
   rpc: BaseMetadataPointRpc
 ) {
-  return withNativeWriter(pool, async (db) => {
-    const identity = await ownershipReadIdentity(db);
-    if (!identity)
-      throw new Error("Native Base metadata read identity unavailable.");
-    await db.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
-    let transactionOpen = true;
-    try {
-      const boundary = await frame(db);
-      const state = (
-        await db.query(
-          `SELECT a.*,a.checked_at>statement_timestamp()-interval '60 seconds'
+  return withNativeWriter(pool, (db) =>
+    refreshNativeBaseMetadataUnlocked(db, rpc)
+  );
+}
+
+/** Reuse a caller's dedicated, idle connection between its transactions. This
+ * keeps cache/publication operations compatible with a one-connection pool.
+ * Never call inside a caller-owned transaction: refresh owns its transactions.
+ */
+export async function refreshNativeBaseMetadataOnClient(
+  db: PoolClient,
+  rpc: BaseMetadataPointRpc
+) {
+  return withNativeClientWriter(db, (client) =>
+    refreshNativeBaseMetadataUnlocked(client, rpc)
+  );
+}
+
+async function refreshNativeBaseMetadataUnlocked(
+  db: PoolClient,
+  rpc: BaseMetadataPointRpc
+) {
+  const identity = await ownershipReadIdentity(db);
+  if (!identity)
+    throw new Error("Native Base metadata read identity unavailable.");
+  await db.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+  let transactionOpen = true;
+  try {
+    const boundary = await frame(db);
+    const state = (
+      await db.query(
+        `SELECT a.*,a.checked_at>statement_timestamp()-interval '60 seconds'
         AND a.checked_at<=statement_timestamp() AND a.checked_block<=$2
         AND EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block b WHERE b.chain_id=8453
           AND b.block_number=a.checked_block AND b.block_hash=a.checked_hash) AS fresh
         FROM metadata_source.native_base_metadata_state a
         JOIN metadata_source.chain_metadata_scan s ON s.name='base_metadata_v1' AND s.ingestion_mode='native'
         WHERE a.release_id=$1`,
-          [identity.release_id, boundary.block_number]
-        )
-      ).rows[0];
-      if (!state || state.read_identity !== identity.identity)
-        throw new Error("Native Base metadata requires explicit adoption.");
-      if (
-        state.state === "ready" &&
-        state.frontier === boundary.frontier &&
-        state.implementation === approvedBaseMetadataImplementation &&
-        state.fresh
-      ) {
-        await db.query("COMMIT");
-        return {
-          checked: false,
-          blockNumber: boundary.block_number,
-          frontier: boundary.frontier
-        };
-      }
-      await db.query("COMMIT");
-      transactionOpen = false;
-      await pointCheck(rpc, boundary);
-      // Point RPC calls do not hold an MVCC transaction open. Check the new
-      // database snapshot before granting approval for the captured frontier.
-      await db.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
-      transactionOpen = true;
-      const current = await frame(db);
-      const stillCanonical =
-        (
-          await db.query(
-            `SELECT 1 FROM ${physicalPonderSchema}.chain_block
-        WHERE chain_id=8453 AND block_number=$1 AND block_hash=$2`,
-            [boundary.block_number, boundary.block_hash]
-          )
-        ).rowCount === 1;
-      const stillAdopted =
-        (
-          await db.query(`SELECT 1 FROM metadata_source.chain_metadata_scan
-        WHERE name='base_metadata_v1' AND ingestion_mode='native'`)
-        ).rowCount === 1;
-      if (
-        current.frontier !== boundary.frontier ||
-        BigInt(current.block_number) < BigInt(boundary.block_number) ||
-        !stillCanonical ||
-        !stillAdopted
+        [identity.release_id, boundary.block_number]
       )
-        throw new Error("Native Base metadata changed during approval.");
-      await approve(db, identity, boundary);
+    ).rows[0];
+    if (!state || state.read_identity !== identity.identity)
+      throw new Error("Native Base metadata requires explicit adoption.");
+    if (
+      state.state === "ready" &&
+      state.frontier === boundary.frontier &&
+      state.implementation === approvedBaseMetadataImplementation &&
+      state.fresh
+    ) {
       await db.query("COMMIT");
       return {
-        checked: true,
+        checked: false,
         blockNumber: boundary.block_number,
         frontier: boundary.frontier
       };
-    } catch (error) {
-      if (transactionOpen) await db.query("ROLLBACK");
-      await db.query(
-        `UPDATE metadata_source.native_base_metadata_state SET state='blocked',error_code='native_base_check_failed'
-        WHERE release_id=$1 AND read_identity=$2 AND (state<>'blocked' OR error_code IS DISTINCT FROM 'native_base_check_failed')`,
-        [identity.release_id, identity.identity]
-      );
-      throw error;
     }
-  });
+    await db.query("COMMIT");
+    transactionOpen = false;
+    await pointCheck(rpc, boundary);
+    // Point RPC calls do not hold an MVCC transaction open. Check the new
+    // database snapshot before granting approval for the captured frontier.
+    await db.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+    transactionOpen = true;
+    const current = await frame(db);
+    const stillCanonical =
+      (
+        await db.query(
+          `SELECT 1 FROM ${physicalPonderSchema}.chain_block
+        WHERE chain_id=8453 AND block_number=$1 AND block_hash=$2`,
+          [boundary.block_number, boundary.block_hash]
+        )
+      ).rowCount === 1;
+    const stillAdopted =
+      (
+        await db.query(`SELECT 1 FROM metadata_source.chain_metadata_scan
+        WHERE name='base_metadata_v1' AND ingestion_mode='native'`)
+      ).rowCount === 1;
+    if (
+      current.frontier !== boundary.frontier ||
+      BigInt(current.block_number) < BigInt(boundary.block_number) ||
+      !stillCanonical ||
+      !stillAdopted
+    )
+      throw new Error("Native Base metadata changed during approval.");
+    await approve(db, identity, boundary);
+    await db.query("COMMIT");
+    return {
+      checked: true,
+      blockNumber: boundary.block_number,
+      frontier: boundary.frontier
+    };
+  } catch (error) {
+    if (transactionOpen) await db.query("ROLLBACK");
+    await db.query(
+      `UPDATE metadata_source.native_base_metadata_state SET state='blocked',error_code='native_base_check_failed'
+        WHERE release_id=$1 AND read_identity=$2 AND (state<>'blocked' OR error_code IS DISTINCT FROM 'native_base_check_failed')`,
+      [identity.release_id, identity.identity]
+    );
+    throw error;
+  }
 }
 
 /** Optional bounded migration step after adoption. Stamp only publications

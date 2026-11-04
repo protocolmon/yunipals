@@ -1,67 +1,62 @@
-# Shared Arena deployment and cutover
+# Shared Arena v2 operations
 
-Deploy one `YunipalsArenaV2` through `/arena/setup`. The frozen public package is
-`apps/yunipals-home-web/public/arena/shared-arena-deployment-v2.json`, SHA256
-`3234c6116adecd55b5db04c754c12cd0c72c0406bbeec092e07dcb9fe61053bd`.
-The browser verifies the confirmed creation, runtime, roles and initially paused
-modes before producing its deployment record. Reuse registry
-`0xdbcab53a8e32d43997de252fd49c43ab8df290bf`; keep its four fighter approvals and
-applications open as requested. No reserve deposit is required.
+Video and anime use the existing `YunipalsArenaV2` contract
+`0xf34fb0a9ecf31bf7516098105036aba7ed4adda9`, deployed at Base block 53,261,777.
+Keep the fighter registry `0xdbcab53a8e32d43997de252fd49c43ab8df290bf` and its
+four approved fighters. The previous video and standalone Anime tournaments were
+personal tests. Retire their gameplay, services and product history; the user
+handles any old claims directly onchain. Do not submit claims, refunds or owner
+transactions during this transition.
 
-The following actions require the confirmed address and block. They must not be
-performed using predicted addresses or invented source readiness:
+Use [the shared source transition guide](../unified-indexer/shared-transition.md)
+and [implementation plan](../../docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md).
+One canonical Ponder process serves the whole project, the registry and both v2
+modes. Do not install an independent Arena indexer as a permanent dependency.
+The main managed indexer retains its Solana child and all non-Arena sources.
 
-1. Verify SSH hostname `yunipals-main` at `root@168.119.172.10`. Preserve the old
-   video contract's 2 USDC liability, claims, canonical source and private jobs.
-   The old video owner differs from the new admin; disabling old admissions is
-   separate from an onchain pause by that owner. Do not sweep any claim funds.
-2. Stage a native Ponder candidate retaining every existing source and start
-   block. Add only `UNIFIED_SHARED_ARENA` and
-   `UNIFIED_SHARED_ARENA_START_BLOCK` for the confirmed new deployment. Register
-   its actual manifest/build, catch up canonical coverage and review the binding.
-   Keep the existing global source and other consumers running.
-3. Build the API and package the frozen anime engine, recipes, backgrounds,
-   rules, island profiles and media dependencies together. Install the immutable
-   release at `/srv/yunipals-arena-modes/releases/RELEASE` and retain its exact
-   archive for encrypted backup/restore. Review all archive paths and hashes.
-4. Create separate operational rows `8453:ADDRESS:video` and `:anime`, initially
-   halted, and review their immutable source epochs with `arena-source-switch`.
-   Use distinct least-privilege database login identities per mode and worker,
-   cloned from corresponding reviewed roles, and separate read-only source
-   credentials. Review role connection limits and total pool capacity before
-   adding services. Shared signing workers (`lobby` and `settlement`) require
-   three operational connections for their source lease, nonce lock and checks;
-   other workers use two. Match the four signing login limits to three and keep
-   source pools at two. No owner key belongs in a worker.
-5. Prepare `/etc/yunipals-arena-modes/{video,anime}/runtime.env` and `roles/*.env`.
-   Required differences from existing mode configuration: `ARENA_CONTRACT_VERSION=2`,
-   common confirmed contract and block, each package rules hash,
-   `ARENA_MEDIA_KIND`, `ARENA_INDEXER_MODE=unified`, source kind/release, public
-   origin, unique API ports 53915/53916 and media directories
-   `/var/lib/yunipals-arena-modes/MODE/media`. Anime alone sets the registry.
-   Keep `ARENA_ENTRIES_ENABLED=false`, `ARENA_NEW_LOBBIES_ENABLED=false` and the
-   existing pilot wallet allowlist until readiness review. Provider keys remain
-   in their existing protected files; do not print or copy them into artifacts.
-6. Run `python3 ops/arena-modes/render_units.py --output /tmp/NEW_REVIEW_DIR`.
-   Review/install those exact units, whose systemd credential names are explicitly
-   allowlisted. API gets admission signing only; lobby gets operator signing;
-   settlement gets referee signing. Referee alone receives OpenAI, video media
-   and capacity receive Runware, anime media and capacity receive OpenRouter.
-   Provider env files precede mode settings to avoid overriding the deployment.
-7. Add `/api/arena-v2/video/` and `/api/arena-v2/anime/` proxy locations, preserving
-   old API routes. Prove health, both mode configs, assets, source binding,
-   admission filtering, nonces and refund receipt tracking. Extend encrypted
-   backup and restore coverage to the new configuration, release and private media.
-8. Disable old admissions and lobby creation, retaining old claims/settlement and
-   transaction tracking. Expire any old short-lived permits before declaring
-   cutover complete; obtain the old owner's pause signature when available.
-   Set `VITE_SHARED_ARENA_API_URL=https://api.yunipals.com/api/arena-v2` only when
-   both new mode APIs are ready. Historical video routes and claims remain on
-   the old API. No old anime battles exist to migrate.
-9. Enable only reviewed pilot services/settings, then request browser-signed
-   per-mode unpauses from the new admin. Run the four-entry anime pilot: first
-   entrant's approved ETH quote, one oracle request, subsequent zero draw fees,
-   strategies/loadouts, real production API tasks, film, settlement and claims.
-   Record exact provider receipts/costs and ETH actually spent, excluding
-   refundable buffer and network gas. Unique artwork for 898 islands remains
-   deferred; the single reviewed background stays in use for this acceptance.
+Each operational deployment remains separate:
+
+| Mode | Deployment key | API prefix | Private settings |
+| --- | --- | --- | --- |
+| Video | `8453:0xf34fb0a9ecf31bf7516098105036aba7ed4adda9:video` | `/api/arena-v2/video` | `/etc/yunipals-arena-modes/video` |
+| Anime | `8453:0xf34fb0a9ecf31bf7516098105036aba7ed4adda9:anime` | `/api/arena-v2/anime` | `/etc/yunipals-arena-modes/anime` |
+
+Preserve existing runtime artifacts, database identities, provider request IDs,
+cost reservations, ciphertext, frozen inputs, signed transactions and ready
+films. Migrating the public source does not recreate private work. Reconcile any
+ambiguous provider result before resubmitting a request.
+
+Generate the new public Arena source overlay from the same validated shared
+deployment specification used by the main indexer and observer. Gate new work,
+stop/drain each mode's workers and halt its operational deployment before using
+`arena-source-switch` to review and apply the exact current source epoch and
+accepted block/hash floor. Do not edit `source_selection` directly. Start reads
+first, verify existing tournaments and films, then restore the previous reviewed
+availability. Existing owner-wallet pause controls remain in force.
+
+`render_units.py --output /tmp/FRESH_REVIEW_DIRECTORY` prepares the separate
+application units; it installs nothing. Keep the restricted operational and
+read-only source roles, pool/connection limits and credential allowlists. Shared
+signing workers need three operational connections; other workers use two,
+with source pools of two. No owner key belongs in a worker.
+
+Only referee workers receive OpenAI access. Video media/capacity use Runware;
+anime media/capacity use OpenRouter. Retain protected provider files and supply
+provider settings before mode settings. Verify credential presence without
+printing values. Retain the packaged engine, recipes, backgrounds, rules and
+island profiles, including the existing shared background for the 898 islands.
+
+The browser uses `VITE_SHARED_ARENA_API_URL=https://api.yunipals.com/api/arena-v2`
+for both modes. Obsolete general Arena URLs redirect to v2; old tournament detail
+URLs return to the hub. No previous-deployment history or claim interface is
+required. The frozen deployment package remains available through `/arena/setup`
+for explicit future admin deployments; this transition reuses the confirmed
+contract above.
+
+Keep encrypted backups of both modes, their private records, media, exact runtime
+artifacts and the canonical source recovery configuration. Run isolated restore
+tests without worker startup or provider access. Verify one steady-state Ponder
+process, both managed ingestion children, current source observations, mode
+source epochs, API health and absence of duplicate provider submissions after
+restart. Record actual production acceptance and any pending replay/observation
+window separately.

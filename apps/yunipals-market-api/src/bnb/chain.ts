@@ -94,14 +94,16 @@ export async function inspectBnbAdmission(
       args: [summary.tokenId],
       blockNumber: block.number
     }),
-    client.getLogs({
-      address: input.asset.contractAddress,
-      event: transferEvent,
-      args: { tokenId: summary.tokenId },
-      fromBlock: indexed.checkpoint.number + 1n,
-      toBlock: block.number,
-      strict: true
-    })
+    indexed.checkpoint.number < block.number
+      ? client.getLogs({
+          address: input.asset.contractAddress,
+          event: transferEvent,
+          args: { tokenId: summary.tokenId },
+          fromBlock: indexed.checkpoint.number + 1n,
+          toBlock: block.number,
+          strict: true
+        })
+      : Promise.resolve([])
   ]);
   if (
     cursor.hash?.toLowerCase() !== indexed.checkpoint.hash.toLowerCase() ||
@@ -168,7 +170,8 @@ export async function inspectBnbAdmission(
       throw new BnbOrderError("offer_funding_required");
   }
   if (
-    input.signature && input.signature !== "0x" &&
+    input.signature &&
+    input.signature !== "0x" &&
     !(await verifySeaportOrderMaker(
       client,
       "bnb",

@@ -166,6 +166,50 @@ for (const action of ["SIGTERM", "SIGINT", "fatal-child", "shutdown-timeout"]) {
   });
 }
 
+test("one ingestion lock excludes a second supervisor before either child starts", async () => {
+  const files = await fixture();
+  let first;
+  let second;
+  try {
+    await writeFile(
+      files.file,
+      `${files.publicSettings}YUNIPALS_INDEXER_LOCK_FILE=./ingestion.lock\n`
+    );
+    first = spawn(process.execPath, [launcher, `--env-file=${files.file}`], {
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    const firstExited = once(first, "exit");
+    const deadline = Date.now() + 10000;
+    while ((await records(files.log)).length < 2 && Date.now() < deadline)
+      await delay(20);
+    assert.equal(
+      (await records(files.log)).filter((row) => row.event === "started")
+        .length,
+      2
+    );
+    second = spawn(process.execPath, [launcher, `--env-file=${files.file}`], {
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let errors = "";
+    second.stderr.on("data", (data) => {
+      errors += data;
+    });
+    assert.equal((await once(second, "exit"))[0], 78);
+    assert.match(errors, /Another managed indexer/);
+    assert.equal(
+      (await records(files.log)).filter((row) => row.event === "started")
+        .length,
+      2
+    );
+    first.kill("SIGTERM");
+    assert.equal((await firstExited)[0], 0);
+  } finally {
+    if (first?.exitCode === null) first.kill("SIGKILL");
+    if (second?.exitCode === null) second.kill("SIGKILL");
+    await rm(files.root, { recursive: true, force: true });
+  }
+});
+
 test("service settings reject credentials, disabled Solana, aliases and missing child files before startup", async () => {
   const files = await fixture();
   try {
