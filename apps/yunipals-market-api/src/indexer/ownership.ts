@@ -101,18 +101,17 @@ export function marketplaceOwnershipDefinition(
     throw new CanonicalSourceUnavailable(
       "Marketplace ownership deployment mismatch."
     );
-  const depths = source.policies.filter((policy) => policy.kind === "depth");
-  if (
-    collection === "bnb" &&
-    (depths.length !== 1 || depths[0]!.subsequentBlocks > 1000)
-  )
+  if (!source.policies.some((policy) => policy.kind === "latest"))
     throw new CanonicalSourceUnavailable(
-      "BNB ownership confirmation policy requires review."
+      "Marketplace ownership source must support latest indexed reads."
     );
+  // Browsing uses the latest complete indexed prefix on every chain. Trading
+  // separately verifies current ownership, transfer confirmations and order
+  // state against RPC; a moving head-depth target must not gate these reads.
   return {
     collection,
     sourceId,
-    policy: collection === "bnb" ? depths[0]! : { kind: "latest" }
+    policy: { kind: "latest" }
   };
 }
 

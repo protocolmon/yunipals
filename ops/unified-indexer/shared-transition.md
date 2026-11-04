@@ -82,6 +82,19 @@ routes and their reviewed profile. `booster` selects its public source schema.
 `marketplace-ownership`, `marketplace-sales`, `marketplace-bnb-discovery` and
 `marketplace-bnb-sales` emit their respective explicit source selectors, retaining
 private connection files and requiring reviewed operational consumer selection.
+For `marketplace-ownership`, pass `--ownership-read-schema` explicitly. Marketplace
+ownership uses `latest` on all chains: the most recent complete indexed prefix,
+without requiring BNB coverage to reach the moving head-minus-20 target.
+Create a fresh immutable view schema over the existing shared release with
+`scripts/unified-ownership-views.ts` and `UNIFIED_INDEXER_BNB_READ_POLICY=latest`,
+then apply the existing restricted source grants and import its five read
+relations into the marketplace FDW database before selecting it. Existing
+project read schemas keep their original policies; never rewrite their markers.
+This changes SQL views only and requires no new Ponder instance or historical
+replay. Rebuild the marketplace API and BNB worker together. Trading retains its
+separate confirmation, current-owner, transfer-gap, approval, order-state and
+simulation checks. Halted/stale sources and changed canonical branches still
+reject reads, including held catalog pages.
 `arena` emits only its three source selectors, keeping
 mode configuration and private operational work intact. `observer` also requires
 `--profile /absolute/profile.json` and emits its RPC and deployment settings.

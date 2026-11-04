@@ -22,7 +22,11 @@ export type SharedIndexerConsumer = (typeof sharedIndexerConsumers)[number];
 export function sharedConsumerSettings(
   value: SharedIndexerDeployment,
   consumer: SharedIndexerConsumer,
-  files: { deployment?: string; profile?: string } = {}
+  files: {
+    deployment?: string;
+    profile?: string;
+    ownershipReadSchema?: string;
+  } = {}
 ): Record<string, string> {
   const deployment = validateSharedIndexerDeployment(value);
   const common = sharedIndexerConsumerSettings(deployment);
@@ -40,6 +44,15 @@ export function sharedConsumerSettings(
   if (consumer === "booster")
     return { BOOSTER_DATABASE_SCHEMA: deployment.schema };
   if (consumer.startsWith("marketplace-")) {
+    if (
+      consumer === "marketplace-ownership" &&
+      (!files.ownershipReadSchema ||
+        !/^[a-z_][a-z0-9_]{0,62}$/.test(files.ownershipReadSchema) ||
+        files.ownershipReadSchema === deployment.schema)
+    )
+      throw new Error(
+        "Select the marketplace ownership schema created with the latest BNB read policy."
+      );
     const prefix = (
       {
         "marketplace-ownership": "MARKET_OWNERSHIP_INDEXER",
@@ -53,7 +66,7 @@ export function sharedConsumerSettings(
       [`${prefix}_MODE`]: "unified",
       [`${prefix}_RELEASE_ID`]: deployment.releaseId,
       ...(consumer === "marketplace-ownership"
-        ? { [`${prefix}_READ_SCHEMA`]: deployment.ownershipReadSchema }
+        ? { [`${prefix}_READ_SCHEMA`]: files.ownershipReadSchema! }
         : {})
     };
   }

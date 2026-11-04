@@ -126,7 +126,10 @@ function fixture() {
           chainId: 56,
           address: collection.toLowerCase(),
           abiHash: manifestDigest(collectionAbi),
-          policies: [{ kind: "depth", subsequentBlocks: 20 }]
+          policies: [
+            { kind: "latest" },
+            { kind: "depth", subsequentBlocks: 20 }
+          ]
         }
       ]
     }
@@ -155,7 +158,7 @@ function fixture() {
         {
           collection: "bnb",
           sourceId: "ownership:bnb",
-          policy: { kind: "depth", subsequentBlocks: 20 }
+          policy: { kind: "latest" }
         }
       ]
     },
@@ -165,7 +168,7 @@ function fixture() {
         source_id: "ownership:bnb",
         release_id: release.id,
         manifest_hash: release.manifestHash,
-        policy: "depth:20",
+        policy: "latest",
         ready: true,
         block_number: "350"
       }
@@ -607,7 +610,8 @@ test("missing ownership readiness, history or provenance cannot complete validat
     const f = fixture();
     if (change === "marker") f.state.marker.definitions = [];
     else if (change === "status") f.state.ownershipStatus[0]!.ready = false;
-    else if (change === "policy") f.state.ownershipStatus[0]!.policy = "latest";
+    else if (change === "policy")
+      f.state.ownershipStatus[0]!.policy = "depth:20";
     else if (change === "release")
       f.state.ownershipStatus[0]!.release_id = hash(99);
     else if (change === "behind")

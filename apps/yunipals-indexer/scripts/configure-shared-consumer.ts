@@ -13,6 +13,7 @@ const { values } = parseArgs({
     deployment: { type: "string" },
     consumer: { type: "string" },
     profile: { type: "string" },
+    "ownership-read-schema": { type: "string" },
     output: { type: "string" }
   }
 });
@@ -31,7 +32,11 @@ try {
   const settings = sharedConsumerSettings(
     deployment,
     values.consumer as SharedIndexerConsumer,
-    { deployment: values.deployment, profile: values.profile }
+    {
+      deployment: values.deployment,
+      profile: values.profile,
+      ownershipReadSchema: values["ownership-read-schema"]
+    }
   );
   await writeFile(values.output, encodeSharedConsumerSettings(settings), {
     flag: "wx",

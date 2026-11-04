@@ -13,7 +13,10 @@ import {
   sourceManifestHash,
   manifestDigest
 } from "@protopals/yunipals-indexer-server/identity";
-import type { RegisteredRelease } from "@protopals/yunipals-indexer-server/readers";
+import {
+  createIndexerReader,
+  type RegisteredRelease
+} from "@protopals/yunipals-indexer-server/readers";
 
 import { bindDiscoveredBnbLifecycles } from "@/bnb/discoveryLifecycle";
 import { BnbOrderError } from "@/bnb/orders";
@@ -377,12 +380,11 @@ after(async () => {
 });
 
 test(
-  "shared ownership preserves BNB depth, event-position lifecycles and away/back transfer gaps",
+  "shared ownership serves recent BNB transfers while preserving event-position lifecycles and away/back gaps",
   { skip: !enabled },
   async () => {
     await transfer("bnb", zeroAddress, alice, 10, 1);
     await transfer("bnb", alice, bob, 70, 2);
-    await transfer("bnb", bob, alice, 90, 3);
     const asset = {
       chain: "bnb" as const,
       chainId: 56 as const,
@@ -391,7 +393,7 @@ test(
     };
     const before = await readIndexedBnbAsset(local, asset);
     assert.equal(before.owner.toLowerCase(), bob);
-    assert.equal(before.checkpoint.number, 80n);
+    assert.equal(before.checkpoint.number, 100n);
     assert.equal(before.lastTransfer.transactionHash, hash(2));
     const shared = marketplaceOwnershipIndexer()!;
     assert.equal(
@@ -416,24 +418,14 @@ test(
     );
     await assert.rejects(
       shared.lifecycleBefore("bnb", tokenId, {
-        blockNumber: "81",
+        blockNumber: "101",
         transactionIndex: 0,
         logIndex: 0
       }),
       /beyond ownership coverage/
     );
-    await source.query(
-      `UPDATE ${schema}.transfer_event SET block_number=79 WHERE collection='bnb' AND transaction_hash=$1`,
-      [hash(3)]
-    );
-    await source.query(
-      `UPDATE ${schema}.canonical_event SET block_number=79,block_hash=$2 WHERE source_id='ownership:bnb' AND transaction_hash=$1`,
-      [hash(3), blockHash(56, 79n)]
-    );
-    await source.query(
-      `UPDATE ${schema}.token SET last_transfer_block=79 WHERE collection='bnb' AND token_id=$1`,
-      [tokenId]
-    );
+    // This transfer is newer than head minus 20 and must already be visible.
+    await transfer("bnb", bob, alice, 90, 3);
     const batch = await readIndexedTransfers({} as never, "bnb", [
       tokenId,
       tokenId
@@ -447,18 +439,62 @@ test(
       (await readIndexedBnbAsset(local, asset)).owner.toLowerCase(),
       alice
     );
-    await transfer("bnb", alice, zeroAddress, 79, 4);
-    await transfer("bnb", zeroAddress, bob, 80, 5, 2);
+    await transfer("bnb", alice, zeroAddress, 91, 4);
+    await transfer("bnb", zeroAddress, bob, 92, 5, 2);
     const remint = await readIndexedBnbAsset(local, asset);
     assert.equal(remint.lifecycle, 2);
     assert.equal(remint.owner.toLowerCase(), bob);
     const past = await shared.lifecycleBefore("bnb", tokenId, {
-      blockNumber: "80",
+      blockNumber: "92",
       transactionIndex: 0,
       logIndex: 5
     });
     assert.equal(past.transfer?.lifecycle, 1);
     assert.equal(past.transfer?.to, zeroAddress);
+  }
+);
+
+test(
+  "BNB browsing serves the complete indexed prefix when the head moves ahead, but still rejects a halted source",
+  { skip: !enabled },
+  async () => {
+    const reader = await createIndexerReader(source, {
+      releaseId: release.id,
+      now: () => now
+    });
+    await source.query(
+      `UPDATE yunipals_indexer_control.chain_status SET head_number=200,head_hash=$2 WHERE release_id=$1 AND chain_id=56`,
+      [release.id, blockHash(56, 200n)]
+    );
+    try {
+      const confirmed = await reader.status("ownership:bnb", {
+        kind: "depth",
+        subsequentBlocks: 20
+      });
+      assert.equal(confirmed.readiness.reason, "catching_up");
+      assert.equal(confirmed.readiness.ready, false);
+      const context = await marketplaceOwnershipSqlContext(source, ["bnb"]);
+      assert.equal(context.anchors?.bnb?.number, "100");
+      const rows = await source.query(
+        `SELECT owner,lifecycle,last_transfer_block FROM ${context.tokenRelation} WHERE collection='bnb' AND token_id=$1`,
+        [tokenId]
+      );
+      assert.equal(rows.rows[0]?.owner, bob);
+      assert.equal(rows.rows[0]?.lifecycle, 2);
+      assert.equal(String(rows.rows[0]?.last_transfer_block), "92");
+      await source.query(
+        `UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE release_id=$1 AND chain_id=56`,
+        [release.id]
+      );
+      await assert.rejects(marketplaceOwnershipSqlContext(source, ["bnb"]), {
+        code: "indexer_unavailable"
+      });
+    } finally {
+      await source.query(
+        `UPDATE yunipals_indexer_control.chain_status SET head_number=100,head_hash=$2,halted=false WHERE release_id=$1 AND chain_id=56`,
+        [release.id, blockHash(56, 100n)]
+      );
+    }
   }
 );
 
@@ -681,8 +717,8 @@ test(
       { bound: 1, pending: false }
     );
     assert.equal(writes[0]?.[2], 1);
-    assert.equal(writes[0]?.[4], "80");
-    assert.equal(writes[0]?.[5], blockHash(56, 80n));
+    assert.equal(writes[0]?.[4], "100");
+    assert.equal(writes[0]?.[5], blockHash(56, 100n));
     wrong = true;
     await assert.rejects(
       bindDiscoveredBnbLifecycles(
@@ -756,7 +792,7 @@ test(
           JSON.stringify(
             original.map((row: { collection: string }) =>
               row.collection === "bnb"
-                ? { ...row, policy: { kind: "latest" } }
+                ? { ...row, policy: { kind: "depth", subsequentBlocks: 20 } }
                 : row
             )
           )
@@ -901,6 +937,29 @@ test(
         );
         assert.equal(result.total, 1);
         assert.equal(result.items[0]?.token.tokenId, tokenId);
+        await local.query(
+          `INSERT INTO metadata.token_search(collection,token_id,lifecycle,metadata_available,rarity_points,rarity_points_capped)
+          VALUES('bnb',$1,2,true,12,9)`,
+          [tokenId]
+        );
+        await source.query(
+          `UPDATE yunipals_indexer_control.chain_status SET head_number=200,head_hash=$2 WHERE release_id=$1 AND chain_id=56`,
+          [release.id, blockHash(56, 200n)]
+        );
+        try {
+          const bnb = await catalog.tokens(
+            new URLSearchParams({ chain: "bnb", sort: "token-id-asc" })
+          );
+          assert.equal(bnb.total, 1);
+          assert.equal(bnb.items[0]?.token.tokenId, tokenId);
+          assert.equal(bnb.items[0]?.token.owner.toLowerCase(), bob);
+          assert.equal(bnb.items[0]?.token.lifecycle, 2);
+        } finally {
+          await source.query(
+            `UPDATE yunipals_indexer_control.chain_status SET head_number=100,head_hash=$2 WHERE release_id=$1 AND chain_id=56`,
+            [release.id, blockHash(56, 100n)]
+          );
+        }
         // A BNB outage must not prevent a new Base snapshot from opening.
         await source.query(
           `UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE release_id=$1 AND chain_id=56`,
@@ -1003,7 +1062,7 @@ test(
         );
       } finally {
         await local.query(
-          "DELETE FROM metadata.token_search WHERE collection='base' AND token_id=$1",
+          "DELETE FROM metadata.token_search WHERE collection IN ('base','bnb') AND token_id=$1",
           [tokenId]
         );
         await source.query(

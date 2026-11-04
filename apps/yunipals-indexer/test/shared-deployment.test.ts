@@ -19,6 +19,7 @@ import {
 } from "../../../packages/yunipals-market-core/src/boosterSourceAbi.e8145098.js";
 import { manifestDigest } from "../lib/unified/sources.js";
 import { ownershipDepthPolicies } from "../lib/unified/sources.js";
+import { ownershipReadDefinitions } from "../lib/unified/ownership-config.js";
 import {
   encodeSharedConsumerSettings,
   sharedConsumerSettings
@@ -124,9 +125,13 @@ describe("shared deployment", () => {
       deployment.rpcProfile.endpoints![137]
     );
     expect(
+      sharedConsumerSettings(deployment, "marketplace-ownership", {
+        ownershipReadSchema: "marketplace_latest"
+      }).MARKET_OWNERSHIP_INDEXER_READ_SCHEMA
+    ).toBe("marketplace_latest");
+    expect(() =>
       sharedConsumerSettings(deployment, "marketplace-ownership")
-        .MARKET_OWNERSHIP_INDEXER_READ_SCHEMA
-    ).toBe(deployment.ownershipReadSchema);
+    ).toThrow("latest BNB read policy");
     expect(
       sharedConsumerSettings(deployment, "marketplace-sales")
         .MARKET_SALE_INDEXER_RELEASE_ID
@@ -139,6 +144,22 @@ describe("shared deployment", () => {
       sharedConsumerSettings(deployment, "marketplace-bnb-discovery")
         .MARKET_BNB_DISCOVERY_INDEXER_RELEASE_ID
     ).toBe(deployment.releaseId);
+  });
+  it("creates latest BNB marketplace views without changing existing confirmed-view definitions", () => {
+    const deployment = specification();
+    const release = { ...deployment, id: deployment.releaseId };
+    const retained = ownershipReadDefinitions(release);
+    const latest = ownershipReadDefinitions(release, { bnbPolicy: "latest" });
+    expect(retained.find((item) => item.collection === "bnb")?.policy).toEqual({
+      kind: "depth",
+      subsequentBlocks: 20
+    });
+    expect(latest.find((item) => item.collection === "bnb")?.policy).toEqual({
+      kind: "latest"
+    });
+    expect(latest.filter((item) => item.collection !== "bnb")).toEqual(
+      retained.filter((item) => item.collection !== "bnb")
+    );
   });
   it("preserves marketplace depth requirements only with declared manifest extensions", () => {
     const nextEnv = {
