@@ -396,14 +396,6 @@ export function ArenaRewardsPage() {
           </section>
         </>
       )}
-      {deployment.shared && deployment.kind === "video" && (
-        <p className="mt-10 border-t border-line pt-5 text-sm text-muted">
-          Looking for an earlier video Arena balance?{" "}
-          <Link to="/arena/rewards" className="font-semibold underline">
-            Previous rewards & claims
-          </Link>
-        </p>
-      )}
     </main>
   );
 }

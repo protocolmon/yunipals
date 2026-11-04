@@ -20,6 +20,7 @@ import {
   type MarketplaceChain
 } from "@/lib/marketplace/registry";
 import { assertMarketReceipt } from "@/lib/marketplace/transactionIntent";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 const collapsedKey = "yunipals.marketplace.receipts.collapsed";
 function defaultPanelOpen() {
@@ -98,6 +99,10 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
   useEffect(() => {
     if (query.data?.status === "confirmed") {
       analyticsOperations.confirmed(
+        record.expectation.chainId,
+        query.data.receipt.transactionHash
+      );
+      onchainAnalytics.confirmed(
         record.expectation.chainId,
         query.data.receipt.transactionHash
       );

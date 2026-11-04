@@ -65,6 +65,24 @@ if __name__ == '__main__':
 
 
 class AnimeBackupPolicyTest(unittest.TestCase):
+    def test_canonical_source_recovery_replaces_retired_source_requirements(self):
+        from unittest.mock import patch
+        import backup_policy
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config, release = root / 'shared-config', root / 'shared-release'
+            settings = {'YUNIPALS_SHARED_INDEXER_BACKUP_CONFIGURATION': str(config),
+                        'YUNIPALS_SHARED_INDEXER_BACKUP_RELEASE': str(release)}
+            with patch.dict('os.environ', settings), patch.object(backup_policy, 'anime_backup_files', return_value={}) as collect:
+                backup_policy.shared_arena_backup_files()
+                selected = collect.call_args.args[0]
+                self.assertEqual(selected['sourceConfiguration'], str(config))
+                self.assertEqual(selected['sourceRelease'], str(release))
+                self.assertNotIn('sourceRpc', selected)
+                self.assertNotIn('sourceObserver', selected)
+            with patch.dict('os.environ', {**settings, 'YUNIPALS_SHARED_INDEXER_BACKUP_RELEASE': ''}):
+                with self.assertRaises(AssertionError): backup_policy.shared_arena_backup_files()
+
     def test_shared_modes_require_both_media_roots_and_the_release_after_setup(self):
         from backup_policy import shared_arena_backup_files
         with tempfile.TemporaryDirectory() as temporary:

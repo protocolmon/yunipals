@@ -5,8 +5,14 @@ import type { AnalyticsAdapterFactory } from "@/lib/analytics/client";
 let instanceNumber = 0;
 export const createMixpanelAdapter: AnalyticsAdapterFactory = (
   config,
-  filter
+  filter,
+  profileFilter
 ) => {
+  // The runtime supports this people hook; the pinned SDK's declarations omit it.
+  const hooks = {
+    before_send_events: filter,
+    before_send_people: profileFilter
+  };
   const instance = mixpanel.init(
     config.token,
     {
@@ -30,13 +36,22 @@ export const createMixpanelAdapter: AnalyticsAdapterFactory = (
       store_google: false,
       skip_first_touch_marketing: true,
       stop_utm_persistence: true,
-      hooks: { before_send_events: filter }
+      hooks
     },
     `yunipals_${++instanceNumber}`
   );
   // Suppress the SDK's automatic opt-in event; our preference is stored locally.
   instance.opt_in_tracking({ track: () => {} });
+  // identify() emits an automatic $identify event with skip_hooks in this SDK.
+  // Disable it; our allowlisted Wallet Identified event carries both identity
+  // properties required by Simplified ID Merge without leaking default fields.
+  instance.disable(["$identify"]);
   return {
+    identify: (deviceId, userId, profile) => {
+      instance.register({ distinct_id: deviceId, $device_id: deviceId });
+      instance.identify(userId);
+      instance.people.set(profile);
+    },
     track: (event, properties) => {
       instance.track(event, properties);
     },

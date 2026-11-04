@@ -29,6 +29,7 @@ type Operation = z.infer<typeof recordSchema>;
 type OperationIntent = {
   chainId: number;
   kind: string;
+  account?: string;
   orderHash?: string;
   order?: { offer: readonly { itemType: number }[] };
 };
@@ -39,7 +40,8 @@ export function createAnalyticsOperations(
   storage: () => AnalyticsStorage | null,
   visitor: () => string | null,
   track: typeof trackAnalyticsEvent,
-  uuid: () => string
+  uuid: () => string,
+  matchesWallet: (address: string) => boolean = () => true
 ) {
   function read(): Record<string, Operation> {
     try {
@@ -71,6 +73,7 @@ export function createAnalyticsOperations(
     const owner = visitor();
     const chain = analyticsChainFromId(intent.chainId);
     if (
+      (intent.account !== undefined && !matchesWallet(intent.account)) ||
       !owner ||
       !chain ||
       !["buy", "accept-offer", "cancel", "validate"].includes(intent.kind)
@@ -144,11 +147,13 @@ export function createAnalyticsOperations(
   function published(
     chainId: number,
     orderHash: string,
-    orderType: "listing" | "offer"
+    orderType: "listing" | "offer",
+    account?: string
   ) {
     const owner = visitor();
     const chain = analyticsChainFromId(chainId);
-    if (!owner || !chain) return;
+    if (!owner || !chain || (account !== undefined && !matchesWallet(account)))
+      return;
     const records = read();
     const key = `order:${chainId}:${orderHash.toLowerCase()}`;
     if (records[key]?.visitor === owner && records[key]?.confirmed) return;
@@ -183,7 +188,8 @@ export const analyticsOperations = createAnalyticsOperations(
   analyticsStorage,
   analytics.visitor,
   trackAnalyticsEvent,
-  () => crypto.randomUUID()
+  () => crypto.randomUUID(),
+  analytics.matchesWallet
 );
 export function analyticsTradeProperties(
   chainId: number,

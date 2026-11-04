@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { zeroAddress } from "viem";
 import { seaportDeployment } from "@protopals/yunipals-market-core/registry";
 import { seaportSigningData } from "@protopals/yunipals-market-core/seaport";
+import { inspectBnbAdmission } from "@/bnb/chain";
 import {
   BnbOrderError,
   checkBnbOrder,
@@ -87,6 +88,39 @@ test("stalled and noncanonical checkpoints reject signing even if ownerOf agrees
     item.inspect(),
     rejectsCode("indexer_checkpoint_invalid")
   );
+});
+
+test("latest indexed ownership still requires the trading confirmation and fresh chain checks", async () => {
+  const item = await fixture();
+  const inspect = () =>
+    inspectBnbAdmission(item.client, item.input, item.summary, item.indexed, {
+      confirmations: 1n,
+      indexerMaxAgeMs: 360000,
+      now: () => now
+    });
+  item.indexed.lastTransfer.blockNumber = 121n;
+  await assert.rejects(
+    inspect(),
+    rejectsCode("indexer_not_finalized_or_stale")
+  );
+  item.indexed.lastTransfer.blockNumber = 100n;
+  await inspect();
+  // When Ponder is fully current there is no transfer gap to query. The
+  // fixture rejects any log range other than 101..121, catching an inverted
+  // 122..121 request while still checking the current owner and block hash.
+  item.indexed.checkpoint = {
+    number: 121n,
+    hash: headHash,
+    updatedAt: new Date(now)
+  };
+  await inspect();
+  item.indexed.checkpoint.number = 100n;
+  item.indexed.checkpoint.hash = cursorHash;
+  item.state.transfers = true;
+  await assert.rejects(inspect(), rejectsCode("asset_still_syncing"));
+  item.state.transfers = false;
+  item.state.cancelled = true;
+  await assert.rejects(inspect(), rejectsCode("order_invalidated"));
 });
 
 test("cancellation, counter changes, revoked approval and offer shortfalls reject admission", async () => {

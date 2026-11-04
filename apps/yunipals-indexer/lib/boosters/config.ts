@@ -3,7 +3,7 @@ import {
   boosterPacksAbi,
   packRegistryAbi,
   yunipalMonstersAbi
-} from "../../../../packages/yunipals-market-core/src/boosterAbi.js";
+} from "./ingestion-abi.js";
 
 export type BoosterDeployment = {
   registry: Address;

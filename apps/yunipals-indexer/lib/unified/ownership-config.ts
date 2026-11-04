@@ -8,8 +8,12 @@ import {
 } from "../constants.js";
 
 export function ownershipReadDefinitions(
-  release: RegisteredRelease
+  release: RegisteredRelease,
+  options: { bnbPolicy?: "latest" | "depth" } = {}
 ): OwnershipReadDefinition[] {
+  const bnbPolicy = options.bnbPolicy ?? "depth";
+  if (bnbPolicy !== "latest" && bnbPolicy !== "depth")
+    throw new Error("Unsupported BNB ownership read policy.");
   const definitions: OwnershipReadDefinition[] = [
     ...Object.values(collections).map((collection) => {
       const sourceId = `ownership:${collection.slug}`;
@@ -28,6 +32,7 @@ export function ownershipReadDefinitions(
       );
       if (
         collection.slug === "bnb" &&
+        bnbPolicy === "depth" &&
         (depths.length !== 1 || depths[0]!.subsequentBlocks > 1000)
       )
         throw new Error("BNB confirmation policy requires review.");
@@ -35,7 +40,9 @@ export function ownershipReadDefinitions(
         collection: collection.slug,
         sourceId,
         policy:
-          collection.slug === "bnb" ? depths[0]! : ({ kind: "latest" } as const)
+          collection.slug === "bnb" && bnbPolicy === "depth"
+            ? depths[0]!
+            : ({ kind: "latest" } as const)
       };
     }),
     {

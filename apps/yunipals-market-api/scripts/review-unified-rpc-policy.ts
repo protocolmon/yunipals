@@ -3,70 +3,23 @@ import { parseArgs } from "node:util";
 import pg from "pg";
 import {
   unifiedRpcManifestId,
-  unifiedRpcProfileId,
-  validateUnifiedRpcProfile
+  unifiedRpcProfileId
 } from "../../../packages/yunipals-indexer-server/src/rpc-policy.js";
 import { manifestDigest } from "../../../packages/yunipals-indexer-server/src/identity.js";
+import { validateUnifiedRpcApproval } from "../src/unifiedRpcApproval.js";
 
 const { values } = parseArgs({
   options: { file: { type: "string" }, apply: { type: "string" } }
 });
 if (!values.file?.startsWith("/"))
   throw new Error("Use --file with an absolute reviewed policy input path.");
-const input = JSON.parse(await readFile(values.file, "utf8"));
-if (
-  Object.keys(input).sort().join() !==
-  ["profile", "expiresAt", "permits"].sort().join()
-)
-  throw new Error("Invalid RPC review input.");
-const profile = validateUnifiedRpcProfile(input.profile);
+const input = validateUnifiedRpcApproval(
+  JSON.parse(await readFile(values.file, "utf8"))
+);
+const profile = input.profile;
 const profileId = unifiedRpcProfileId(profile);
-const now = Date.now();
-const expiry = (value: unknown, maximum: number) => {
-  if (
-    typeof value !== "string" ||
-    new Date(value).toISOString() !== value ||
-    Date.parse(value) <= now ||
-    Date.parse(value) > now + maximum
-  )
-    throw new Error("Invalid RPC approval expiry.");
-};
-expiry(input.expiresAt, 30 * 86400000);
-if (!Array.isArray(input.permits) || input.permits.length > 4)
-  throw new Error("Invalid replay permit count.");
-const chains = new Set<number>();
-for (const permit of input.permits) {
-  if (
-    Object.keys(permit).sort().join() !==
-      [
-        "permitId",
-        "chainId",
-        "fromBlock",
-        "throughBlock",
-        "maximumCu",
-        "expiresAt"
-      ]
-        .sort()
-        .join() ||
-    !/^0x[0-9a-f]{64}$/.test(permit.permitId) ||
-    chains.has(permit.chainId) ||
-    !/^(0|[1-9][0-9]*)$/.test(permit.fromBlock) ||
-    !/^(0|[1-9][0-9]*)$/.test(permit.throughBlock) ||
-    BigInt(permit.throughBlock) < BigInt(permit.fromBlock) ||
-    BigInt(permit.throughBlock) > 9223372036854775807n ||
-    !Number.isSafeInteger(permit.maximumCu) ||
-    permit.maximumCu < 1 ||
-    permit.maximumCu > 1000000000 ||
-    !profile.manifest.sources.some(
-      (source) => source.enabled && source.chainId === permit.chainId
-    )
-  )
-    throw new Error("Invalid bounded RPC permit.");
-  expiry(permit.expiresAt, 86400000);
-  if (Date.parse(permit.expiresAt) > Date.parse(input.expiresAt))
-    throw new Error("Permit outlives profile.");
-  chains.add(permit.chainId);
-}
+const profileExpiry =
+  input.lifecycle === "service" ? "infinity" : input.expiresAt;
 const connectionString = process.env.UNIFIED_RPC_REVIEW_DATABASE_URL;
 if (!connectionString)
   throw new Error(
@@ -109,6 +62,8 @@ try {
       profileId,
       manifestHash: unifiedRpcManifestId(profile),
       policy,
+      lifecycle: input.lifecycle,
+      expiresAt: input.expiresAt,
       permits: input.permits,
       applied: false
     })
@@ -124,19 +79,20 @@ try {
       await client.query("SELECT pg_advisory_xact_lock(178858,9028)");
       // INSERT-only approval. Reusing an identity never resets its counters.
       await client.query(
-        `INSERT INTO yunipals_market.unified_rpc_profile(profile_id,scope,manifest_hash,policy,enabled,expires_at)
-        VALUES($1,$2,$3,$4::jsonb,true,$5) ON CONFLICT DO NOTHING`,
+        `INSERT INTO yunipals_market.unified_rpc_profile(profile_id,scope,manifest_hash,policy,enabled,expires_at,lifecycle)
+        VALUES($1,$2,$3,$4::jsonb,true,$5,$6) ON CONFLICT DO NOTHING`,
         [
           profileId,
           profile.scope,
           unifiedRpcManifestId(profile),
           JSON.stringify(profile),
-          input.expiresAt
+          profileExpiry,
+          input.lifecycle
         ]
       );
       const retained = (
         await client.query(
-          "SELECT scope,manifest_hash,policy,enabled,expires_at FROM yunipals_market.unified_rpc_profile WHERE profile_id=$1 FOR UPDATE",
+          "SELECT scope,manifest_hash,policy,enabled,lifecycle,CASE WHEN isfinite(expires_at) THEN expires_at ELSE NULL END AS expires_at FROM yunipals_market.unified_rpc_profile WHERE profile_id=$1 FOR UPDATE",
           [profileId]
         )
       ).rows[0];
@@ -145,7 +101,8 @@ try {
         retained.scope !== profile.scope ||
         !retained.enabled ||
         unifiedRpcProfileId(retained.policy) !== profileId ||
-        retained.expires_at.toISOString() !== input.expiresAt
+        retained.lifecycle !== input.lifecycle ||
+        (retained.expires_at?.toISOString() ?? null) !== input.expiresAt
       )
         throw new Error(
           "Existing profile approval differs; use a newly reviewed identity."

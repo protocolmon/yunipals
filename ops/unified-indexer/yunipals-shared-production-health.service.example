@@ -1,0 +1,24 @@
+[Unit]
+Description=Verify shared ingestion, current product reads and continuous acceptance windows
+After=postgresql@16-main.service yunipals-indexer.service yunipals-indexer-observer.service
+Wants=yunipals-shared-source-health.service yunipals-shared-budget-health.service
+After=yunipals-shared-source-health.service yunipals-shared-budget-health.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 -B /opt/yunipals-unified/shared-health/production-health.py --configuration /etc/yunipals-unified/shared-production/health.public.json --state-directory /var/lib/yunipals-unified-shared/production-health
+TimeoutStartSec=180
+TimeoutStopSec=10
+MemoryMax=536870912
+TasksMax=64
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/yunipals-unified-shared/production-health
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077

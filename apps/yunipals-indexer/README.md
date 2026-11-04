@@ -2,6 +2,12 @@
 
 One managed service runs the Ponder EVM indexer and the Solana snapshot worker. Ponder indexes Ethereum, Base, Polygon and BNB, including the configured collection, Islands, marketplace and Arena sources. Both children start together; a fatal child exit stops the service so its supervisor can restart it.
 
+The [shared source transition guide](../../ops/unified-indexer/shared-transition.md)
+defines the final 13-source release and validated consumer settings. Arena v2
+video and anime share one indexed contract and source release. The previous
+video and standalone Anime deployments have no continuing tournament UI or
+dedicated ingestion service; old claims are handled directly onchain.
+
 ## Setup
 
 Use Node 24, pnpm 9.12 and Bash 4.3 or newer on Linux or macOS (WSL on Windows). On macOS, install a current Bash and put it on PATH. Install PostgreSQL with its client tools before starting. The database and RPC setup below is required once per installation. The Solana database also needs its metadata archive and Exomon manifest; startup preserves these records.
@@ -71,7 +77,7 @@ pnpm --filter @protopals/yunipals-indexer exec node --env-file=.env --import tsx
   --output "$PWD/ops/unified-indexer/rpc-profile.json"
 ```
 
-This prints `profileId` and writes a draft; it does not approve paid requests. Create an absolute policy input JSON file with exactly `{ "profile": <the generated JSON object>, "expiresAt": <UTC ISO timestamp>, "permits": [...] }`. The [policy review command](../yunipals-market-api/scripts/review-unified-rpc-policy.ts) validates the expiry and each explicit replay permit's chain, block range, maximum CU and expiry. Inspect it first, then repeat with the returned `--apply 0x<reviewHash>`:
+This prints `profileId` and writes a draft; it does not approve paid requests. Temporary approval inputs use `{ "profile": <the generated JSON object>, "lifecycle": "temporary", "expiresAt": <UTC ISO timestamp>, "permits": [...] }` (omitting lifecycle retains the temporary default). Production service approvals use `lifecycle: "service"`, `expiresAt: null` and a fresh profile review ID. They remain revocable and constrained by the same budgets. Every paid replay permit still requires its own finite expiry, block range and maximum CU. The [policy review command](../yunipals-market-api/scripts/review-unified-rpc-policy.ts) validates these fields without resetting existing counters. Inspect it first, then repeat with the returned `--apply 0x<reviewHash>`:
 
 ```sh
 pnpm --filter @protopals/yunipals-market-api exec node --env-file=/absolute/rpc-owner.env --import tsx \

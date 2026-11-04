@@ -83,12 +83,26 @@ def anime_backup_files(roots=None):
 def shared_arena_backup_files(roots=None):
     # Optional until shared configuration exists, then require every recovery
     # root together. Reuse the same traversal and symlink checks as anime.
-    return anime_backup_files(roots or {
+    if roots is not None:
+        return anime_backup_files(roots)
+    selected = {
         'configuration': '/etc/yunipals-arena-modes',
         'release': '/srv/yunipals-arena-modes/recovery',
-        'sourceConfiguration': '/etc/yunipals-arena-modes-source',
-        'sourceRpc': '/etc/yunipals-arena-modes-source-rpc',
-        'sourceObserver': '/etc/yunipals-arena-modes-source-observer',
         'videoMedia': '/var/lib/yunipals-arena-modes/video/media',
         'animeMedia': '/var/lib/yunipals-arena-modes/anime/media'
-    })
+    }
+    canonical = os.environ.get('YUNIPALS_SHARED_INDEXER_BACKUP_CONFIGURATION')
+    recovery = os.environ.get('YUNIPALS_SHARED_INDEXER_BACKUP_RELEASE')
+    assert bool(canonical) == bool(recovery), 'Canonical source configuration and recovery artifact are required together'
+    if canonical:
+        from pathlib import Path
+        assert all(Path(value).is_absolute() and len(Path(value).parts) >= 3
+                   for value in (canonical, recovery)), 'Absolute canonical recovery roots required'
+        selected.update(sourceConfiguration=canonical, sourceRelease=recovery)
+    else:
+        # Existing deployments retain their backup until the reviewed canonical
+        # recovery roots are installed; never silently omit their source files.
+        selected.update(sourceConfiguration='/etc/yunipals-arena-modes-source',
+                        sourceRpc='/etc/yunipals-arena-modes-source-rpc',
+                        sourceObserver='/etc/yunipals-arena-modes-source-observer')
+    return anime_backup_files(selected)

@@ -3,6 +3,7 @@ import { pool, apiPool } from "../offchain/db.js";
 import { collectionSlugs } from "../constants.js";
 import { buildReadCache, readCacheFreshSql } from "./read-cache.js";
 import { assertOwnershipSourceSelection } from "../ownership/readiness.js";
+import { retainedReadCacheGenerationsSql } from "./read-cache-preparation.js";
 
 await assertOwnershipSourceSelection(pool);
 
@@ -33,7 +34,10 @@ while (!stopped) {
           if (stopped) break;
           const fresh = (
             await client.query<{ fresh: boolean }>(
-              `SELECT ${readCacheFreshSql(id, [chain])} AS fresh`
+              `SELECT ${readCacheFreshSql(id, [chain])} AND EXISTS(
+                SELECT 1 FROM metadata_projection.read_set WHERE generation_id=$1
+                  AND collection=$2 AND member_count IS NOT NULL AND burned_count IS NOT NULL) AS fresh`,
+              [id, chain]
             )
           ).rows[0]?.fresh;
           if (!fresh) {
@@ -52,15 +56,13 @@ while (!stopped) {
         }
       }
       await client.query(`DELETE FROM metadata_projection.read_set
-        WHERE generation_id NOT IN (SELECT current_id FROM metadata_projection.active WHERE current_id IS NOT NULL
-          UNION SELECT previous_id FROM metadata_projection.active WHERE previous_id IS NOT NULL)`);
+        WHERE generation_id NOT IN (${retainedReadCacheGenerationsSql})`);
       // Small batches keep maintenance bounded and avoid a large deletion transaction.
       const orphan = (
         await client.query<{
           id: string;
         }>(`SELECT g.id FROM metadata_projection.generation g
-        WHERE g.id NOT IN(SELECT current_id FROM metadata_projection.active WHERE current_id IS NOT NULL
-          UNION SELECT previous_id FROM metadata_projection.active WHERE previous_id IS NOT NULL)
+        WHERE g.id NOT IN(${retainedReadCacheGenerationsSql})
         AND EXISTS(SELECT 1 FROM metadata_projection.read_member m WHERE m.generation_id=g.id) LIMIT 1`)
       ).rows[0];
       if (orphan)

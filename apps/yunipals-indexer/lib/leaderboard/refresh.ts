@@ -446,7 +446,7 @@ export async function refreshLeaderboard(expectedGenerationId?: string) {
       updatedAt,
       wallets: Number(
         (
-          await pool.query(
+          await client.query(
             "SELECT count(*) FROM leaderboard.wallet_stats WHERE scope='all'"
           )
         ).rows[0].count

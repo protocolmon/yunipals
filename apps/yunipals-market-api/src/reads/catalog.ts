@@ -48,6 +48,7 @@ type Counts = {
 type IndexerLane = { client: PoolClient; active: number };
 type Generation = {
   id: string;
+  chains: readonly MarketplaceChain[];
   projectionGenerationId: string | null;
   projectionMetadataReleaseId: string | null;
   observedAt: Date;
@@ -227,10 +228,10 @@ function decodeCursor(
   }
 }
 
-/** Catalog MVCC views are shared by all filters, never copied per visitor. */
+/** Catalog MVCC views are shared by filters within their verified chain set. */
 export class CatalogService {
   private readonly generations = new Map<string, Generation>();
-  private opening?: Promise<Generation>;
+  private opening?: { key: string; promise: Promise<Generation> };
   private stopped = false;
   private readonly lifetimeMs: number;
   private readonly reuseMs: number;
@@ -294,16 +295,17 @@ export class CatalogService {
   }
   async close() {
     this.stopped = true;
-    if (this.opening) await this.opening.catch(() => {});
+    if (this.opening) await this.opening.promise.catch(() => {});
     for (const generation of this.generations.values())
       this.invalidate(generation, "shutdown");
     await this.keepers.end();
     await this.options.indexerKeepers?.end();
   }
-  async assertIndexerReady() {
+  async assertIndexerReady(chains?: readonly MarketplaceChain[]) {
     if (!this.options.indexerKeepers) return;
     const source = await marketplaceOwnershipSqlContext(
-      this.options.indexerKeepers
+      this.options.indexerKeepers,
+      chains
     );
     const required =
       source.mode === "unified"
@@ -335,11 +337,19 @@ export class CatalogService {
     if (!generation.live || Date.now() >= generation.expiresAt)
       throw new BnbOrderError("snapshot_refresh_required", 409);
   }
-  private async acquire(id?: string): Promise<Generation> {
+  private async acquire(
+    selected: readonly MarketplaceChain[],
+    id?: string
+  ): Promise<Generation> {
     if (this.stopped) throw new BnbOrderError("market_unavailable", 503);
+    const chains = [...new Set(selected)].sort();
+    const key = chains.join(",");
     if (id) {
       const generation = this.generations.get(id);
-      if (!generation)
+      if (
+        !generation ||
+        chains.some((chain) => !generation.chains.includes(chain))
+      )
         throw new BnbOrderError("snapshot_refresh_required", 409);
       this.assertLive(generation);
       return generation;
@@ -350,13 +360,19 @@ export class CatalogService {
     const current = [...this.generations.values()].at(-1);
     if (current && Date.now() - current.createdAt < this.reuseMs)
       return current;
-    if (this.opening) return this.opening;
+    if (this.opening) {
+      if (this.opening.key === key) return this.opening.promise;
+      // Serialize snapshot creation so different chain sets share the existing
+      // connection bound, while an unavailable chain cannot reject another set.
+      await this.opening.promise.catch(() => {});
+      return this.acquire(chains);
+    }
     if (this.generations.size >= catalogLimits.generations)
       throw new BnbOrderError("catalog_snapshot_capacity", 503);
-    this.opening = (async () => {
+    const opening = (async () => {
       // Scope indexer readiness to catalog work; retained-order recovery must
       // still start and operate when this separate read connection is unavailable.
-      await this.assertIndexerReady();
+      await this.assertIndexerReady(chains);
       const client = await this.keepers.connect();
       const indexers: PoolClient[] = [];
       const markets = [client];
@@ -400,7 +416,8 @@ export class CatalogService {
         );
         const sources = await (this.options.readSources ?? readOrderSources)(
           client,
-          row.now
+          row.now,
+          chains
         );
         if (this.options.indexerKeepers) {
           const indexer = await this.options.indexerKeepers.connect();
@@ -434,7 +451,8 @@ export class CatalogService {
           }
         }
         const ownership = await marketplaceOwnershipSqlContext(
-          indexers[0] ?? client
+          indexers[0] ?? client,
+          chains
         );
         const projection = this.projectionGenerationMode
           ? (
@@ -453,6 +471,7 @@ export class CatalogService {
         const fingerprint = await visibilityFingerprint(indexers[0] ?? client);
         generation = {
           id: randomUUID(),
+          chains,
           projectionGenerationId,
           projectionMetadataReleaseId: projection?.metadata_release_id ?? null,
           observedAt: row.now,
@@ -492,10 +511,11 @@ export class CatalogService {
         throw error;
       }
     })();
+    this.opening = { key, promise: opening };
     try {
-      return await this.opening;
+      return await opening;
     } finally {
-      this.opening = undefined;
+      if (this.opening?.promise === opening) this.opening = undefined;
     }
   }
   private async heldRead<T>(
@@ -558,6 +578,78 @@ export class CatalogService {
       if (!generation.live) this.releaseGeneration(generation);
     }
   }
+  private async qualifyChains(
+    generation: Generation,
+    selected: readonly MarketplaceChain[]
+  ) {
+    const missing = selected.filter(
+      (chain) => !generation.chains.includes(chain)
+    );
+    if (!missing.length) return;
+    const result = await this.heldRead(
+      generation,
+      generation.indexers.length ? 1 : 0,
+      async (db, indexers) => {
+        const clients = [db, ...indexers];
+        for (const client of clients)
+          await client.query("SAVEPOINT catalog_source_qualification");
+        try {
+          const sources = await (this.options.readSources ?? readOrderSources)(
+            db,
+            generation.observedAt,
+            missing
+          );
+          const ownership = await marketplaceOwnershipSqlContext(
+            indexers[0] ?? db,
+            missing
+          );
+          return { ok: true, sources, ownership } as const;
+        } catch (error) {
+          // Restore the held transactions before returning a refused chain.
+          // Existing qualified chains keep their snapshot and connection bound.
+          for (const client of clients)
+            await client.query(
+              "ROLLBACK TO SAVEPOINT catalog_source_qualification"
+            );
+          return { ok: false, error } as const;
+        } finally {
+          for (const client of clients)
+            await client.query(
+              "RELEASE SAVEPOINT catalog_source_qualification"
+            );
+        }
+      },
+      "source_qualification"
+    );
+    if (!result.ok) throw result.error;
+    generation.sources = {
+      ...generation.sources,
+      statuses: {
+        ...generation.sources.statuses,
+        ...Object.fromEntries(
+          missing.map((chain) => [chain, result.sources.statuses[chain]])
+        )
+      },
+      ...(result.sources.availability
+        ? {
+            availability: {
+              ...generation.sources.availability,
+              ...Object.fromEntries(
+                missing.map((chain) => [
+                  chain,
+                  result.sources.availability![chain]
+                ])
+              )
+            } as NonNullable<CatalogSources["availability"]>
+          }
+        : {})
+    };
+    generation.ownershipAnchors = {
+      ...generation.ownershipAnchors,
+      ...result.ownership.anchors
+    };
+    generation.chains = [...new Set([...generation.chains, ...missing])];
+  }
   private books(
     generation: Generation,
     db: PoolClient,
@@ -577,7 +669,11 @@ export class CatalogService {
     }
     return pending;
   }
-  private async currentAssets(generation: Generation, items: CatalogRow[]) {
+  private async currentAssets(
+    generation: Generation,
+    items: CatalogRow[],
+    selected: readonly MarketplaceChain[]
+  ) {
     const indexer = marketplaceOwnershipIndexer();
     if (generation.ownershipReleaseId !== indexer?.releaseId) {
       this.invalidate(generation);
@@ -585,20 +681,21 @@ export class CatalogService {
     }
     if (indexer && generation.ownershipAnchors) {
       try {
-        for (const [chain, anchor] of Object.entries(
-          generation.ownershipAnchors
-        ))
+        for (const chain of selected) {
+          const anchor = generation.ownershipAnchors[chain];
+          if (!anchor) throw new Error("Missing verified catalog chain.");
           await indexer.assertCheckpoint(chain, {
-            number: BigInt(anchor!.number),
-            hash: anchor!.hash
+            number: BigInt(anchor.number),
+            hash: anchor.hash
           });
+        }
       } catch {
         this.invalidate(generation, "failed");
         throw new BnbOrderError("catalog_indexer_unavailable", 503);
       }
     }
     if (!items.length) {
-      if (indexer) await marketplaceOwnershipSqlContext(this.pool);
+      if (indexer) await marketplaceOwnershipSqlContext(this.pool, selected);
       return;
     }
     const source = await marketplaceOwnershipSqlContext(this.pool, [
@@ -607,8 +704,8 @@ export class CatalogService {
     const changed = await this.pool.query<{ changed: boolean }>(
       `SELECT EXISTS(
       SELECT 1 FROM jsonb_to_recordset($1::jsonb) AS a(chain text,token_id text,owner text,lifecycle integer)
-      LEFT JOIN ${source.tokenRelation} t ON t.collection=a.chain AND t.token_id=a.token_id
-      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSqlFor("t", source.transferRelation)}) AS changed`,
+      LEFT JOIN ${source.tokenRelation} t ON t.collection=ANY($2::text[]) AND t.collection=a.chain AND t.token_id=a.token_id
+      WHERE t.owner IS NULL OR lower(t.owner)<>lower(a.owner) OR t.lifecycle<>a.lifecycle OR t.burned OR ${indexedTokenHiddenSqlFor("t", source.transferRelation, selected)}) AS changed`,
       [
         JSON.stringify(
           items.map(({ token }) => ({
@@ -617,7 +714,8 @@ export class CatalogService {
             owner: token.owner,
             lifecycle: token.lifecycle
           }))
-        )
+        ),
+        selected
       ]
     );
     if (changed.rows[0]?.changed) {
@@ -649,12 +747,14 @@ export class CatalogService {
         .slice(0, 16),
       sort: query.filters.sort
     });
-    let generation = await this.acquire(query.page.snapshot);
+    let generation = await this.acquire(query.chains, query.page.snapshot);
+    await this.qualifyChains(generation, query.chains);
     if ((await visibilityFingerprint(this.pool)) !== generation.fingerprint) {
       for (const old of this.generations.values()) this.invalidate(old);
       if (query.page.snapshot)
         throw new BnbOrderError("snapshot_refresh_required", 409);
-      generation = await this.acquire();
+      generation = await this.acquire(query.chains);
+      await this.qualifyChains(generation, query.chains);
     }
     const financial =
       query.filters.sale !== "all" ||
@@ -819,7 +919,7 @@ export class CatalogService {
       }
       page = await pending;
     }
-    await this.currentAssets(generation, page.items);
+    await this.currentAssets(generation, page.items, query.chains);
     if ((await visibilityFingerprint(this.pool)) !== generation.fingerprint) {
       for (const old of this.generations.values()) this.invalidate(old);
       throw new BnbOrderError("snapshot_refresh_required", 409);

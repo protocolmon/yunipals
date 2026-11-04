@@ -34,6 +34,7 @@ import {
 import {
   createUnifiedRpcPolicyGate,
   readUnifiedRpcPolicyEnvironment,
+  UnifiedRpcPolicyUnavailable,
   type UnifiedRpcPolicyGate
 } from "@/unifiedRpcPolicy";
 
@@ -2080,6 +2081,8 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
           String(Math.max(1, Math.ceil(budget.retryAfterMs / 1000)))
         );
         response(output, 429, { error: "rpc_budget_exhausted" });
+      } else if (error instanceof UnifiedRpcPolicyUnavailable) {
+        response(output, 503, { error: error.code });
       } else response(output, 502, { error: "rpc_proxy_failed" });
     } finally {
       if (cancelSourceRequest) output.off("close", cancelSourceRequest);

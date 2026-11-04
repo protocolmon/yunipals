@@ -2,6 +2,8 @@
 Description=Yunipals shared EVM and Solana indexer
 After=network-online.target postgresql.service
 Wants=network-online.target
+Conflicts=yunipals-anime-native-source.service yunipals-arena-modes-source.service
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -13,7 +15,10 @@ WorkingDirectory=/opt/yunipals-unified/indexer
 Environment=PATH=/usr/local/bin:/usr/bin:/bin
 ExecStart=/usr/bin/env node /opt/yunipals-unified/indexer/scripts/start-indexer.mjs --env-file=/etc/yunipals-unified/indexer.service.env
 Restart=on-failure
+RestartPreventExitStatus=78
 RestartSec=10
+RestartSteps=5
+RestartMaxDelaySec=300
 KillMode=control-group
 TimeoutStopSec=120
 NoNewPrivileges=true
@@ -22,6 +27,7 @@ UMask=0027
 ProtectSystem=strict
 ProtectHome=true
 StateDirectory=yunipals-unified
+RuntimeDirectory=yunipals-indexer
 # Provision .ponder before enabling this unit, or symlink it into StateDirectory.
 ReadWritePaths=/var/lib/yunipals-unified
 ReadWritePaths=/opt/yunipals-unified/indexer/apps/yunipals-indexer/.ponder

@@ -1,0 +1,29 @@
+[Unit]
+Description=Qualify Yunipals shared public source without switching consumers
+After=postgresql@16-main.service yunipals-indexer-observer.service
+ConditionPathExists=!/var/lib/yunipals-unified-shared/qualification/qualified.json
+
+[Service]
+Type=oneshot
+User=yunipals_unified_support
+Group=yunipals_unified_support
+EnvironmentFile=/etc/yunipals-unified/shared-production/observer.selectors.env
+# Replace both baseline operands with the inspected registered release IDs.
+ExecStart=/opt/node-v24.18.1/bin/node /opt/yunipals-unified/shared-support/dist/shared-qualify.mjs --output-directory /var/lib/yunipals-unified-shared/qualification --baseline-release BASELINE_RELEASE_ID --arena-baseline-release PREVIOUS_SHARED_ARENA_RELEASE_ID
+TimeoutStartSec=60min
+TimeoutStopSec=30
+KillMode=control-group
+MemoryMax=1073741824
+CPUQuota=100%
+TasksMax=32
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/yunipals-unified-shared/qualification
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077

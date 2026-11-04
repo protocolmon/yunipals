@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Yunipals shared source qualification after historical replay
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=5min
+AccuracySec=10s
+Unit=yunipals-shared-qualification.service
+
+[Install]
+WantedBy=timers.target

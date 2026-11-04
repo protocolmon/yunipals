@@ -70,6 +70,21 @@ try {
 }
 await mkdir(output, { recursive: true });
 await cp(release, join(output, "static"), { recursive: true });
+const countryFunction = join(output, "functions/api/analytics-country.func");
+await mkdir(countryFunction, { recursive: true });
+await cp(
+  join(app, "server/analytics-country.mjs"),
+  join(countryFunction, "index.mjs")
+);
+await writeFile(
+  join(countryFunction, ".vc-config.json"),
+  JSON.stringify({
+    runtime: "nodejs24.x",
+    handler: "index.mjs",
+    launcherType: "Nodejs",
+    maxDuration: 5
+  }) + "\n"
+);
 const config = {
   version: 3,
   routes: [
@@ -79,7 +94,7 @@ const config = {
       continue: true
     },
     {
-      src: "/(?!assets/).*",
+      src: "/(?!assets/|api/).*",
       headers: { "Cache-Control": "public, max-age=0, must-revalidate" },
       continue: true
     },

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { analyticsCountry, analyticsWalletId } from "@/lib/analytics/identity";
+
 export const analyticsChainSchema = z.enum([
   "ethereum",
   "base",
@@ -7,6 +9,29 @@ export const analyticsChainSchema = z.enum([
   "bnb",
   "solana"
 ]);
+export const analyticsOnchainAction = z.enum([
+  "buy",
+  "accept-offer",
+  "cancel-order",
+  "publish-order",
+  "approve-nft",
+  "approve-currency",
+  "wrap-currency",
+  "wrap-ypal",
+  "booster-open",
+  "booster-claim",
+  "booster-recover",
+  "booster-burn",
+  "booster-refund",
+  "island-unstake",
+  "arena-approve",
+  "arena-enter",
+  "arena-claim",
+  "arena-refund",
+  "arena-register",
+  "contract-configure"
+]);
+const onchain = { action: analyticsOnchainAction, chain: analyticsChainSchema };
 const collection = z.enum(["yunipals", "islands", "exomon"]);
 const page = z.enum([
   "collection",
@@ -17,7 +42,13 @@ const page = z.enum([
   "order-recovery",
   "activity",
   "privacy",
-  "terms"
+  "terms",
+  "boosters",
+  "wrap",
+  "arena",
+  "monster",
+  "contracts",
+  "brandkit"
 ]);
 const entryPoint = z.enum([
   "navigation",
@@ -34,6 +65,13 @@ const trade = {
   marketplace: z.enum(["opensea", "yunipals"])
 };
 export const analyticsEventSchemas = {
+  "Wallet Identified": z.object({ identity_type: z.literal("wallet") }),
+  "Onchain Action Submitted": z.object(onchain),
+  "Onchain Action Confirmed": z.object(onchain),
+  "Onchain Action Failed": z.object({
+    ...onchain,
+    reason: z.enum(["reverted", "cancelled", "unexpected-replacement"])
+  }),
   "Page Viewed": z.object({
     page,
     route: z.enum([
@@ -47,7 +85,19 @@ export const analyticsEventSchemas = {
       "/orders/recovery",
       "/orders/activity",
       "/privacy",
-      "/terms"
+      "/terms",
+      "/boosters",
+      "/boosters/:section",
+      "/boosters/setup/:section",
+      "/wrap",
+      "/arena",
+      "/arena/:section",
+      "/arena/:id",
+      "/arena/:kind",
+      "/arena/:kind/:section",
+      "/monsters/:collection/:tokenId",
+      "/contracts",
+      "/brandkit"
     ]),
     collection: collection.optional(),
     chain: analyticsChainSchema.optional()
@@ -135,7 +185,8 @@ export function analyticsChainFromId(
 export function sanitizeAnalyticsPayload(
   payload: AnalyticsPayload,
   token: string,
-  visitorId: string
+  visitorId: string,
+  context: { userId?: string; country?: string } = {}
 ): AnalyticsPayload | null {
   if (
     !Object.hasOwn(analyticsEventSchemas, payload.event) ||
@@ -148,10 +199,17 @@ export function sanitizeAnalyticsPayload(
   const properties: Record<string, unknown> = {
     ...result.data,
     token,
-    distinct_id: visitorId,
+    distinct_id:
+      context.userId && analyticsWalletId.test(context.userId)
+        ? context.userId
+        : visitorId,
     $device_id: visitorId,
-    schema_version: 1
+    schema_version: 2
   };
+  if (context.userId && analyticsWalletId.test(context.userId))
+    properties.$user_id = context.userId;
+  const country = analyticsCountry(context.country);
+  if (country) properties.country = country;
   const env = payload.properties.environment;
   if (env === "production" || env === "preview" || env === "development")
     properties.environment = env;
@@ -177,6 +235,40 @@ export function analyticsPage(
 ): AnalyticsProperties<"Page Viewed"> | null {
   const parts = pathname.split("/").filter(Boolean);
   const params = new URLSearchParams(search);
+  if (parts[0] === "boosters" && parts.length <= 3)
+    return {
+      page: "boosters",
+      route:
+        parts.length === 1
+          ? "/boosters"
+          : parts.length === 3
+            ? "/boosters/setup/:section"
+            : "/boosters/:section"
+    };
+  if (pathname === "/wrap") return { page: "wrap", route: "/wrap" };
+  if (parts[0] === "arena" && parts.length <= 3)
+    return {
+      page: "arena",
+      route:
+        parts.length === 1
+          ? "/arena"
+          : parts.length === 3
+            ? "/arena/:kind/:section"
+            : ["anime", "video"].includes(parts[1])
+              ? "/arena/:kind"
+              : /^\d+$/.test(parts[1])
+                ? "/arena/:id"
+                : "/arena/:section"
+    };
+  if (parts[0] === "monsters" && parts.length === 3)
+    return {
+      page: "monster",
+      route: "/monsters/:collection/:tokenId",
+      chain: "base"
+    };
+  if (pathname === "/contracts")
+    return { page: "contracts", route: "/contracts" };
+  if (pathname === "/brandkit") return { page: "brandkit", route: "/brandkit" };
   if (!parts.length)
     return {
       page: "collection",

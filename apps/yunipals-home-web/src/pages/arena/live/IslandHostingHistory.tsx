@@ -2,7 +2,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import type { ArenaIslandHistory } from "@protopals/yunipals-market-core/arenaViews";
 import { formatUnits } from "viem";
-import { environment } from "@/environment";
 import {
   ArenaDeploymentProvider,
   useArenaDeployment,
@@ -19,46 +18,39 @@ type HistoryProps = {
   tokenId: string;
 };
 export function IslandHostingHistory(props: HistoryProps) {
-  const [mode, setMode] = useState<"video" | "anime" | "previous">("video");
-  const shared = !!environment.sharedArenaApiUrl;
+  const [mode, setMode] = useState<"video" | "anime">("video");
   return (
-    <ArenaDeploymentProvider
-      kind={mode === "anime" ? "anime" : "video"}
-      shared={shared && mode !== "previous"}
-    >
+    <ArenaDeploymentProvider kind={mode === "anime" ? "anime" : "video"}>
       <IslandModeHostingHistory
         {...props}
         picker={
-          shared ? (
-            <div
-              className="my-4 flex flex-wrap gap-2"
-              role="group"
-              aria-label="Arena history mode"
-            >
-              {(
-                [
-                  ["video", "Video"],
-                  ["anime", "Anime"],
-                  ["previous", "Previous arena"]
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  type="button"
-                  key={value}
-                  aria-pressed={mode === value}
-                  onClick={() => setMode(value)}
-                  className={cn(
-                    "rounded-full border px-4 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape",
-                    mode === value
-                      ? "border-ink bg-ink text-white"
-                      : "border-line bg-white text-ink"
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          ) : null
+          <div
+            className="my-4 flex flex-wrap gap-2"
+            role="group"
+            aria-label="Arena history mode"
+          >
+            {(
+              [
+                ["video", "Video"],
+                ["anime", "Anime"]
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                type="button"
+                key={value}
+                aria-pressed={mode === value}
+                onClick={() => setMode(value)}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape",
+                  mode === value
+                    ? "border-ink bg-ink text-white"
+                    : "border-line bg-white text-ink"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         }
       />
     </ArenaDeploymentProvider>

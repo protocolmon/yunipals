@@ -34,6 +34,35 @@ export type ArenaSourceDeployment = {
   startBlock: number;
 };
 
+/** Explicit application confirmation requirements, in addition to the existing
+ * latest/finalized policies. This changes no address, ABI or ingestion range. */
+export function ownershipDepthPolicies(env: Environment = process.env) {
+  let input: unknown;
+  try {
+    input = JSON.parse(env.UNIFIED_OWNERSHIP_DEPTHS_JSON ?? "{}");
+  } catch {
+    throw new Error("Invalid ownership depth policies JSON.");
+  }
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    throw new Error("Invalid ownership depth policies.");
+  const result: Record<string, number[]> = {};
+  for (const [chain, depths] of Object.entries(input)) {
+    if (
+      !Object.hasOwn(collections, chain) ||
+      !Array.isArray(depths) ||
+      !depths.length ||
+      depths.length > 16 ||
+      new Set(depths).size !== depths.length ||
+      depths.some(
+        (depth) => !Number.isSafeInteger(depth) || depth < 1 || depth > 10000
+      )
+    )
+      throw new Error("Invalid ownership depth policy.");
+    result[chain] = [...depths].sort((a, b) => a - b);
+  }
+  return result;
+}
+
 export function sharedArenaSource(env: Environment = process.env) {
   const address = env.UNIFIED_SHARED_ARENA?.toLowerCase();
   const start = env.UNIFIED_SHARED_ARENA_START_BLOCK;
@@ -177,6 +206,7 @@ export function buildSourceManifest(
   env: Environment = process.env
 ): SourceManifest {
   const policies = [{ kind: "latest" }, { kind: "finalized" }] as const;
+  const depths = ownershipDepthPolicies(env);
   const baseIslandsEnabled = env.UNIFIED_BASE_ISLANDS_V2_ENABLED ?? "false";
   if (!["true", "false"].includes(baseIslandsEnabled))
     throw new Error("Invalid UNIFIED_BASE_ISLANDS_V2_ENABLED.");
@@ -190,15 +220,18 @@ export function buildSourceManifest(
         collectionAbi,
         collection.address,
         collection.deploymentBlock,
-        chain === "bnb"
-          ? [
-              ...policies,
-              {
-                kind: "depth",
-                subsequentBlocks: Number(env.BNB_CONFIRMATIONS ?? 20)
-              }
-            ]
-          : policies,
+        [
+          ...policies,
+          ...[
+            ...new Set([
+              ...(chain === "bnb" ? [Number(env.BNB_CONFIRMATIONS ?? 20)] : []),
+              ...(depths[chain] ?? [])
+            ])
+          ].map((subsequentBlocks) => ({
+            kind: "depth" as const,
+            subsequentBlocks
+          }))
+        ],
         "full"
       )
   );

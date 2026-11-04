@@ -63,6 +63,7 @@ import {
   type ArenaEntryTarget,
   type PendingArenaTransaction
 } from "@/lib/arenaTransactions";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 export type ArenaApprovalEntries = 1 | 4 | 10;
 
@@ -339,6 +340,7 @@ export function useArenaWallet(
       const started = Date.now();
       while (valid()) {
         if (latest.state === "indexed") {
+          onchainAnalytics.confirmed(8453, latest.hash);
           // Query invalidation waits for active views to refetch before showing success.
           await refresh();
           if (!valid()) throw new IndexingPending();
@@ -394,7 +396,13 @@ export function useArenaWallet(
       const session = await arenaRequest<{ wallet: string }>("/me");
       if (session.wallet.toLowerCase() !== value.wallet.toLowerCase()) return;
       if (value.action.kind === "approval")
-        await confirmed(value.hash, value.action, value.fighter);
+        await confirmed(
+          value.hash,
+          value.action,
+          value.fighter,
+          undefined,
+          false
+        );
       else await indexed(value);
     } catch {
       /* Explicit status checking can renew an expired session. */
@@ -416,7 +424,7 @@ export function useArenaWallet(
       setCalls(null);
   }
 
-  async function finishCalls(value: PendingArenaCalls) {
+  async function finishCalls(value: PendingArenaCalls, newlySubmitted = false) {
     if (!walletClient)
       throw new Error(
         "Reconnect the same wallet to check your combined entry."
@@ -462,7 +470,8 @@ export function useArenaWallet(
             "Your entry is retained in your wallet. Check its status to finish updating the page."
           );
         clearCalls(value);
-      }
+      },
+      newlySubmitted
     );
   }
 
@@ -470,9 +479,20 @@ export function useArenaWallet(
     hash: Hex,
     action: ArenaTransactionAction,
     fighter?: ArenaEntryTarget,
-    recorded?: (value: PendingArenaTransaction) => void
+    recorded?: (value: PendingArenaTransaction) => void,
+    newlySubmitted = true
   ) {
     if (!address || !config) throw new Error("Connect your wallet first.");
+    const analyticsAction =
+      action.kind === "approval"
+        ? "arena-approve"
+        : action.kind === "entry"
+          ? "arena-enter"
+          : action.asset === "randomness-refund"
+            ? "arena-refund"
+            : "arena-claim";
+    if (newlySubmitted)
+      onchainAnalytics.submitted(8453, analyticsAction, hash, address);
     if (currentScope.current === scope) setTransaction(hash);
     let value = {
       ...newArenaTransaction(
@@ -492,6 +512,11 @@ export function useArenaWallet(
       hash,
       onReplaced: (replacement) => {
         cancelled = replacement.reason === "cancelled";
+        onchainAnalytics.replace(
+          8453,
+          value.hash,
+          replacement.transactionReceipt.transactionHash
+        );
         value = {
           ...value,
           hash: replacement.transactionReceipt.transactionHash
@@ -500,6 +525,11 @@ export function useArenaWallet(
       }
     });
     if (receipt.status !== "success" || cancelled) {
+      onchainAnalytics.failed(
+        8453,
+        receipt.transactionHash,
+        cancelled ? "cancelled" : "reverted"
+      );
       remember({ ...value, state: "failed" });
       throw new Error(
         cancelled
@@ -507,6 +537,7 @@ export function useArenaWallet(
           : "Transaction reverted. This action did not complete."
       );
     }
+    onchainAnalytics.confirmed(8453, receipt.transactionHash);
     value = { ...value, hash: receipt.transactionHash, state: "indexing" };
     remember(value);
     if (currentScope.current !== scope) throw new IndexingPending();
@@ -553,7 +584,9 @@ export function useArenaWallet(
           await confirmed(
             visibleOperation.hash,
             visibleOperation.action,
-            visibleOperation.fighter
+            visibleOperation.fighter,
+            undefined,
+            false
           );
         else await indexed(visibleOperation);
       }),
@@ -740,7 +773,7 @@ export function useArenaWallet(
           assertCurrent();
           setCalls(submitted);
           setBusy("Confirming your entry on Base");
-          await finishCalls(submitted);
+          await finishCalls(submitted, true);
           return;
         }
         if (allowance < BigInt(config.entryFee)) {

@@ -43,6 +43,7 @@ import {
   boosterEthAbi,
   type EthPackQuote
 } from "@/lib/boosterEth";
+import { onchainAnalytics } from "@/lib/analytics/onchain";
 
 export type BoosterAction =
   | {
@@ -712,6 +713,17 @@ export function useBoosterActions() {
       const kind = current.approval
         ? ("approval" as const)
         : current.action.kind;
+      const analyticsAction = (
+        {
+          approval: "approve-currency",
+          open: "booster-open",
+          claim: "booster-claim",
+          recover: "booster-recover",
+          burn: "booster-burn",
+          refund: "booster-refund"
+        } as const
+      )[kind];
+      onchainAnalytics.submitted(8453, analyticsAction, hash, current.account);
       const expectation = current.approval
         ? {}
         : current.action.kind === "open"
@@ -743,6 +755,7 @@ export function useBoosterActions() {
         confirmations: 1,
         onReplaced: ({ transaction, reason }) => {
           cancelled = reason === "cancelled";
+          onchainAnalytics.replace(8453, trackedHash, transaction.hash);
           saveBoosterTransaction(
             current.account,
             deployment.engine,
@@ -762,6 +775,11 @@ export function useBoosterActions() {
             onSubmitted?.(trackedHash, replacedHash);
         }
       });
+      if (cancelled)
+        onchainAnalytics.failed(8453, receipt.transactionHash, "cancelled");
+      else if (receipt.status !== "success")
+        onchainAnalytics.failed(8453, receipt.transactionHash, "reverted");
+      else onchainAnalytics.confirmed(8453, receipt.transactionHash);
       if (cancelled)
         throw new Error("The transaction was cancelled in your wallet.");
       if (receipt.status !== "success")

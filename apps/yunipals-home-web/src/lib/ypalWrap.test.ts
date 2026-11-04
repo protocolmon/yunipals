@@ -87,6 +87,8 @@ function fixture(kind: YpalWrapKind = "wrap") {
       types
     }),
     pending: false,
+    transactionError: null as Error | null,
+    receiptError: null as Error | null,
     canonical: true,
     pmonBalance: 10n ** 20n,
     ypalBalance: 0n,
@@ -210,6 +212,7 @@ function fixture(kind: YpalWrapKind = "wrap") {
       }
     },
     async getTransactionReceipt() {
+      if (options.receiptError) throw options.receiptError;
       if (options.pending) {
         const e = Error("pending");
         e.name = "TransactionReceiptNotFoundError";
@@ -218,6 +221,7 @@ function fixture(kind: YpalWrapKind = "wrap") {
       return receipt;
     },
     async getTransaction() {
+      if (options.transactionError) throw options.transactionError;
       return transaction;
     }
   } as unknown as PublicClient;
@@ -332,6 +336,49 @@ test("pending receipts remain pending and neither imply approval nor minting", a
     await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
     { status: "pending" }
   );
+});
+test("missing receipts and transactions are distinguished from visible pending transactions", async () => {
+  for (const kind of ["approve", "wrap"] as const) {
+    const f = fixture(kind);
+    f.options.pending = true;
+    const missing = Error("Transaction not found");
+    missing.name = "TransactionNotFoundError";
+    f.options.transactionError = Object.assign(Error("RPC wrapper"), {
+      cause: missing
+    });
+    assert.deepEqual(
+      await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+      { status: "not-found" }
+    );
+    f.options.transactionError = null;
+    Object.assign(f.transaction, { blockHash: null, blockNumber: null });
+    assert.deepEqual(
+      await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+      { status: "pending" }
+    );
+    f.options.pending = false;
+    Object.assign(f.transaction, { blockHash, blockNumber: 100n });
+    assert.equal(
+      (await resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record))
+        .status,
+      "success"
+    );
+  }
+});
+test("RPC outages cannot classify a transaction as missing", async () => {
+  for (const stage of ["receipt", "transaction"] as const) {
+    const f = fixture();
+    const outage = Error("Base connection unavailable");
+    if (stage === "receipt") f.options.receiptError = outage;
+    else {
+      f.options.pending = true;
+      f.options.transactionError = outage;
+    }
+    await assert.rejects(
+      resolveYpalWrapReceipt(f.client, wrapFixtureDeployment, f.record),
+      (error) => error === outage
+    );
+  }
 });
 test("approval and one-to-one wrap require their actual contract-scoped events", async () => {
   for (const kind of ["approve", "wrap"] as const) {

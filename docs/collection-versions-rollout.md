@@ -48,7 +48,7 @@ This command only reads the database and creates a new output file. It verifies 
 
 The production candidate covers all 2,652 Solana originals: 2,640 new pairs and 12 expanded Solana/Polygon/Base groups. The combined candidate contains 51,402 groups and 102,816 NFT versions. An independent validation checked every mapped Base mint against the complete audit and every Solana source hash against its archived original. [Combined audit totals and artifact hashes](audit/solana-monster-versions-2026-10-31.json) identify the exact file. The candidate has not been activated.
 
-Relationship identity and current ownership are independent. A verified Solana manifest member can remain a related reference even if the ownership service cannot currently observe it. Such references say “Ownership unavailable” and never become matching holdings. Grouped reads include only Solana tokens observed in the current published scan; their response reports `unavailableNfts` separately. During validation, two Solana NFTs were unobserved overall, including one linked original. Burned originals remain labeled burned references. A published scan outside the existing ownership freshness limit, or an unavailable scan, returns a recoverable unavailable response.
+Relationship identity and current ownership are independent. A verified Solana manifest member can remain a related reference even if the ownership service cannot currently observe it. Such references say “Ownership unavailable” and never become matching holdings. During validation, two Solana NFTs were unobserved overall, including one linked original. Burned originals remain labeled burned references. A published scan outside the existing ownership freshness limit, or an unavailable scan, returns a recoverable unavailable response.
 
 **Check and publish the mapping**
 
@@ -103,6 +103,16 @@ pnpm --filter @protopals/yunipals-home-web test:versions
 For the browser fixture, start the fixture server on port 5177 with `VITE_MONSTER_VERSIONS_ENABLED=true`, then run `pnpm --filter @protopals/yunipals-home-web test:versions:ui`. The script accepts `--playwright`, `--chromium`, and `--url` for installed local tooling. Run workspace type checks/builds and existing collection, Solana and marketplace regressions.
 
 Production smoke checks should cover a fresh landing page, removing Not Base, selecting Base explicitly, exclusion combinations, and original links on Base NFTs. Include an Ethereum original, a Solana original with a different numeric Base ID, a split-owner pair, and an unavailable original. NFTs with no verified original must not show a guessed link.
+
+**Refresh after the shared-indexer merge — 4 November 2026**
+
+PR #13 was refreshed with `main` at `febd5ea874adef1af8a4497f0fc7aab2cbc75c74`, including PRs #14 and #15. The merge required no conflict resolution. Relationship reads and the importer already select the configured ownership views rather than a fixed historical source schema.
+
+Validation on the combined branch passed workspace type checks, the production frontend build, all existing web test groups, fixture tests, the frontend relationship test, 22 focused relationship/ownership tests, 13 shared-deployment/parity tests, and all 12 browser checks. The browser checks use synthetic data; they do not establish production mapping readiness.
+
+A hostname-verified, read-only check as the production API identity confirmed that its unified ownership view matches the selected release. Neither relationship table is installed. The audit and combined manifest are no longer present at the `/tmp` paths recorded in the October audit summaries, so the full production manifest check could not be rerun. Those summaries are historical evidence, not a current import approval.
+
+Before enabling original links, restore the exact audit and manifest and verify their recorded SHA-256 hashes, or regenerate them using the current reader selectors and active metadata archive. Retain the resulting evidence in durable storage, rerun `versions:import ... --check`, and then follow the publication and permission steps above. The refresh does not activate settings or change production data. Chain exclusions require no reindex; preparing relationship evidence uses existing indexed history and does not require replaying the chains.
 
 **Rollback**
 

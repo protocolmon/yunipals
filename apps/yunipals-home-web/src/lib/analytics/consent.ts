@@ -1,10 +1,11 @@
-export const analyticsConsentKey = "yunipals.analytics.consent.v1";
-export const analyticsVisitorKey = "yunipals.analytics.visitor.v1";
-export const analyticsOperationsKey = "yunipals.analytics.operations.v1";
+export const analyticsConsentKey = "yunipals.analytics.consent.v2";
+export const analyticsVisitorKey = "yunipals.analytics.visitor.v2";
+export const analyticsOperationsKey = "yunipals.analytics.operations.v2";
+export const analyticsOnchainKey = "yunipals.analytics.onchain.v2";
 export const analyticsPreferenceLifetime = 180 * 24 * 60 * 60 * 1000;
 export type AnalyticsChoice = "unknown" | "accepted" | "declined";
 export type AnalyticsConsent = {
-  version: 1;
+  version: 2;
   choice: Exclude<AnalyticsChoice, "unknown">;
   updatedAt: number;
   expiresAt: number;
@@ -20,13 +21,31 @@ export function readAnalyticsConsent(
   now = Date.now()
 ): AnalyticsConsent | null {
   try {
-    const value: unknown = JSON.parse(
-      storage?.getItem(analyticsConsentKey) ?? "null"
-    );
+    const current = storage?.getItem(analyticsConsentKey);
+    const value: unknown = JSON.parse(current ?? "null");
+    if (!current) {
+      const legacy: unknown = JSON.parse(
+        storage?.getItem("yunipals.analytics.consent.v1") ?? "null"
+      );
+      // A previous refusal remains a refusal. Previous permission does not cover
+      // wallet-linked profiles and country; request the expanded permission.
+      if (legacy && typeof legacy === "object") {
+        const old = legacy as Record<string, unknown>;
+        if (
+          old.version === 1 &&
+          old.choice === "declined" &&
+          typeof old.updatedAt === "number" &&
+          old.updatedAt <= now &&
+          old.expiresAt === old.updatedAt + analyticsPreferenceLifetime &&
+          old.expiresAt > now
+        )
+          return { ...old, version: 2 } as AnalyticsConsent;
+      }
+    }
     if (!value || typeof value !== "object") return null;
     const record = value as Record<string, unknown>;
     if (
-      record.version !== 1 ||
+      record.version !== 2 ||
       (record.choice !== "accepted" && record.choice !== "declined") ||
       typeof record.updatedAt !== "number" ||
       typeof record.expiresAt !== "number" ||
@@ -43,7 +62,13 @@ export function readAnalyticsConsent(
 }
 
 export function clearAnalyticsData(storage: AnalyticsStorage | null) {
-  for (const key of [analyticsVisitorKey, analyticsOperationsKey]) {
+  for (const key of [
+    analyticsVisitorKey,
+    analyticsOperationsKey,
+    analyticsOnchainKey,
+    "yunipals.analytics.visitor.v1",
+    "yunipals.analytics.operations.v1"
+  ]) {
     try {
       storage?.removeItem(key);
     } catch {
@@ -63,12 +88,13 @@ export function writeAnalyticsConsent(
     storage.setItem(
       analyticsConsentKey,
       JSON.stringify({
-        version: 1,
+        version: 2,
         choice,
         updatedAt: now,
         expiresAt: now + analyticsPreferenceLifetime
       })
     );
+    storage.removeItem("yunipals.analytics.consent.v1");
     return true;
   } catch {
     clearAnalyticsData(storage);

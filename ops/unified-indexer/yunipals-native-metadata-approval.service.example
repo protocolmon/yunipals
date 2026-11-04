@@ -1,0 +1,24 @@
+[Unit]
+Description=Refresh the shared native Base metadata proof independently of publication scans
+After=postgresql@16-main.service yunipals-indexer.service yunipals-indexer-observer.service
+
+[Service]
+Type=oneshot
+User=root
+EnvironmentFile=/etc/yunipals-unified/shared-production/metadata.routed.env
+ExecStart=/opt/node-v24.18.1/bin/node --env-file=/etc/yunipals-unified/shared-production/metadata.routed.env /opt/yunipals-unified/shared-support/dist/native-base-metadata.mjs --env-file /etc/yunipals-unified/shared-production/metadata.routed.env --command native-refresh
+TimeoutStartSec=45
+TimeoutStopSec=10
+MemoryMax=536870912
+TasksMax=32
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077

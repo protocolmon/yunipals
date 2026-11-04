@@ -254,8 +254,8 @@ export function SharedArenaSetupPage() {
           required.
         </p>
         <p className="text-sm text-muted">
-          Previous arenas remain available for their films, outstanding payouts
-          and claims. This deployment does not move those funds.
+          Video and anime battles share this Arena deployment and the existing
+          fighter registry.
         </p>
         {bundle.data && (
           <p className="break-all text-sm">

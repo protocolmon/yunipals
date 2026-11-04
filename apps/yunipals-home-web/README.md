@@ -169,9 +169,43 @@ expiring browser identifier, and no events are queued before consent. Network
 connections still expose the request IP address to Mixpanel. A strict final
 payload allowlist excludes URLs, referrers, titles, search text, wallet addresses,
 ENS names, signatures, transaction/order hashes, raw errors and automatic
-marketing attribution. Unique visitors represent consenting browsers.
+marketing attribution. Consenting browsers have a random device ID. Connected EVM wallets use a stable
+namespaced SHA-256 pseudonym as `$user_id` and `distinct_id`, linking activity
+across consenting devices through Simplified ID Merge. This is not anonymous
+and does not authenticate wallet ownership. Changing/disconnecting wallets
+rotates the browser ID so two wallets never share an identity cluster. Raw
+addresses never leave through analytics. `Wallet Identified` carries the two
+IDs; the SDK's automatic `$identify` event is disabled because it bypasses hooks.
+A final `before_send_people` allowlist restricts profile updates to identity type,
+environment, schema version and optional country. Profile and event IDs agree.
+
+Consent version 2 requires new permission from visitors who previously accepted
+browser-only analytics. Previous declines stay declined. Withdrawal stops all
+requests and clears local identifiers but does not delete stored profiles or ID
+clusters. Reconnecting the same wallet after a new opt-in reuses its stable ID.
+
+Country comes only from the same-origin `/api/analytics-country` function after
+consent. It returns Vercel's approximate two-letter country code, or null, with
+`private, no-store` caching. No locale guess, external geo service, IP address,
+city or coordinates are sent to Mixpanel. The canonical `build:www` output
+packages this Node.js function alongside the static app. Plain Vite/self-hosted
+deployments may omit the endpoint; analytics then omits country. Country is
+session-local; user profiles show the latest known country. Profile retention is
+separate from the project's two-year event retention: profiles/links persist
+until deletion, as disclosed in the notice.
 
 ### Events and initial reports
+
+`Wallet Identified` creates the wallet/device identity link and profile.
+`Onchain Action Submitted`, `Onchain Action Confirmed`, and `Onchain Action Failed`
+record action category and chain for marketplace settlements, order publication
+and cancellation, approvals, currency/YPAL wrapping, booster opening/claiming/
+recovery/burning/refunds, island unstaking, arena registration/entry/claims/refunds.
+Only actual submissions create records; confirmed outcomes require successful
+receipt validation. Replacements share a local ID, replayed receipt checks are
+deduplicated, and historical transactions are not backfilled. Analytics failures
+cannot interrupt signing or receipt recovery. These events intentionally omit
+hashes, wallet/token/recipient identifiers, quantities and monetary amounts.
 
 | Event                                                   | Meaning                                                                                       |
 | ------------------------------------------------------- | --------------------------------------------------------------------------------------------- |

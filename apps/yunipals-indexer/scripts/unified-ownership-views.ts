@@ -4,6 +4,9 @@ import { ownershipReadDefinitions } from "../lib/unified/ownership-config.js";
 import { loadIndexerRelease } from "../lib/unified/releases.js";
 
 const env = process.env;
+const bnbPolicy = env.UNIFIED_INDEXER_BNB_READ_POLICY ?? "depth";
+if (bnbPolicy !== "latest" && bnbPolicy !== "depth")
+  throw new Error("UNIFIED_INDEXER_BNB_READ_POLICY must be latest or depth.");
 if (
   !env.UNIFIED_INDEXER_DATABASE_URL ||
   !env.UNIFIED_INDEXER_RELEASE_ID ||
@@ -28,7 +31,7 @@ try {
     pool,
     release,
     env.UNIFIED_INDEXER_READ_SCHEMA,
-    ownershipReadDefinitions(release)
+    ownershipReadDefinitions(release, { bnbPolicy })
   );
   console.log(
     JSON.stringify({ event: "unified_ownership_candidate_created", ...result })

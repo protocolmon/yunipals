@@ -1,3 +1,9 @@
+import {
+  analyticsCountry,
+  analyticsWalletId,
+  normalizeAnalyticsWallet,
+  walletAnalyticsId
+} from "@/lib/analytics/identity";
 import type { AnalyticsConfig } from "@/lib/analytics/config";
 import {
   analyticsVisitorKey,
@@ -15,13 +21,27 @@ import {
   type AnalyticsProperties
 } from "@/lib/analytics/events";
 
+export type AnalyticsProfile = {
+  identity_type: "wallet";
+  environment: AnalyticsConfig["environment"];
+  schema_version: 2;
+  country?: string;
+};
 export type AnalyticsAdapter = {
+  identify?: (
+    deviceId: string,
+    userId: string,
+    profile: AnalyticsProfile
+  ) => void;
   track: (event: string, properties: Record<string, unknown>) => void;
   stop: () => void;
 };
 export type AnalyticsAdapterFactory = (
   config: AnalyticsConfig,
-  filter: (payload: AnalyticsPayload) => AnalyticsPayload | null
+  filter: (payload: AnalyticsPayload) => AnalyticsPayload | null,
+  profileFilter: (
+    payload: Record<string, unknown>
+  ) => Record<string, unknown> | null
 ) => AnalyticsAdapter;
 type ClientDependencies = {
   storage: () => AnalyticsStorage | null;
@@ -29,6 +49,10 @@ type ClientDependencies = {
   load: () => Promise<AnalyticsAdapterFactory>;
   uuid: () => string;
   now?: () => number;
+  withIdentityLock?: (task: () => void) => Promise<void>;
+  linkAnonymous?: boolean;
+  country?: () => Promise<unknown>;
+  walletId?: typeof walletAnalyticsId;
   deviceType?: () => "mobile" | "desktop";
 };
 
@@ -41,6 +65,9 @@ export function createAnalyticsClient(
   let pending: Promise<void> | null = null;
   let generation = 0;
   let visitorId: string | null = null;
+  let userId: string | undefined;
+  let country: string | undefined;
+  let wallet: string | null = null;
   let lastPage: string | null = null;
   let lastConsent = "";
   let storageReady = true;
@@ -60,6 +87,8 @@ export function createAnalyticsClient(
     pending = null;
     lastPage = null;
     visitorId = null;
+    userId = undefined;
+    country = undefined;
     try {
       adapter?.stop();
     } catch {
@@ -69,6 +98,13 @@ export function createAnalyticsClient(
   }
   function refresh(): AnalyticsChoice {
     const record = consent();
+    if (!record) {
+      try {
+        dependencies.storage()?.removeItem("yunipals.analytics.consent.v1");
+      } catch {
+        /* Stay off. */
+      }
+    }
     const fingerprint = record
       ? `${record.choice}:${record.updatedAt}`
       : "unknown";
@@ -91,6 +127,7 @@ export function createAnalyticsClient(
     if (!allowed() || adapter) return;
     if (pending) return pending;
     const epoch = generation;
+    const sessionWallet = wallet;
     const record = consent();
     if (!record) return;
     function sessionAllowed() {
@@ -104,38 +141,90 @@ export function createAnalyticsClient(
     }
     const task = (async () => {
       try {
-        const factory = await dependencies.load();
+        const [factory, nextUser, nextCountry] = await Promise.all([
+          dependencies.load(),
+          sessionWallet
+            ? (dependencies.walletId ?? walletAnalyticsId)(
+                sessionWallet,
+                config.environment
+              )
+            : undefined,
+          dependencies.country?.().catch(() => undefined)
+        ]);
+        if (nextUser && !analyticsWalletId.test(nextUser)) return;
         if (!sessionAllowed()) return;
-        const storage = dependencies.storage();
-        const stored: unknown = JSON.parse(
-          storage?.getItem(analyticsVisitorKey) ?? "null"
-        );
-        const previous =
-          stored && typeof stored === "object"
-            ? (stored as Record<string, unknown>)
-            : null;
-        const id =
-          previous &&
-          previous.expiresAt === record.expiresAt &&
-          typeof previous.id === "string" &&
-          analyticsUuid.test(previous.id)
-            ? previous.id
-            : dependencies.uuid();
-        if (!storage || !analyticsUuid.test(id)) return;
-        storage.setItem(
-          analyticsVisitorKey,
-          JSON.stringify({ id, expiresAt: record.expiresAt })
-        );
-        visitorId = id;
-        adapter = factory(config, (payload) =>
-          sessionAllowed()
-            ? sanitizeAnalyticsPayload(payload, config.token, id)
-            : null
-        );
+        await (
+          dependencies.withIdentityLock ?? (async (task: () => void) => task())
+        )(() => {
+          if (!sessionAllowed()) return;
+          const storage = dependencies.storage();
+          const stored: unknown = JSON.parse(
+            storage?.getItem(analyticsVisitorKey) ?? "null"
+          );
+          const previous =
+            stored && typeof stored === "object"
+              ? (stored as Record<string, unknown>)
+              : null;
+          const id =
+            previous &&
+            previous.expiresAt === record.expiresAt &&
+            (!previous.userId || previous.userId === nextUser) &&
+            !(
+              nextUser &&
+              !previous.userId &&
+              dependencies.linkAnonymous === false
+            ) &&
+            typeof previous.id === "string" &&
+            analyticsUuid.test(previous.id)
+              ? previous.id
+              : dependencies.uuid();
+          if (!storage || !analyticsUuid.test(id)) return;
+          if (previous?.id && previous.id !== id) clearAnalyticsData(storage);
+          storage.setItem(
+            analyticsVisitorKey,
+            JSON.stringify({
+              id,
+              userId: nextUser,
+              expiresAt: record.expiresAt
+            })
+          );
+          visitorId = id;
+          userId = nextUser;
+          country = analyticsCountry(nextCountry);
+          const context = { userId, country };
+          const profile: AnalyticsProfile = {
+            identity_type: "wallet",
+            environment: config.environment,
+            schema_version: 2,
+            ...(country ? { country } : {})
+          };
+          adapter = factory(
+            config,
+            (payload) =>
+              sessionAllowed()
+                ? sanitizeAnalyticsPayload(payload, config.token, id, context)
+                : null,
+            (payload) =>
+              sessionAllowed() && nextUser && payload.$distinct_id === nextUser
+                ? {
+                    $token: config.token,
+                    $distinct_id: nextUser,
+                    $device_id: id,
+                    $user_id: nextUser,
+                    $ip: "0",
+                    $set: profile
+                  }
+                : null
+          );
+          if (nextUser) {
+            adapter.identify?.(id, nextUser, profile);
+            track("Wallet Identified", { identity_type: "wallet" });
+          }
+        });
       } catch {
         if (generation === epoch) {
+          stop();
           clearAnalyticsData(dependencies.storage());
-          visitorId = null;
         }
       }
     })();
@@ -162,7 +251,8 @@ export function createAnalyticsClient(
           }
         },
         config.token,
-        visitorId
+        visitorId,
+        { userId, country }
       );
       if (!payload) return false;
       adapter.track(payload.event, payload.properties);
@@ -175,7 +265,20 @@ export function createAnalyticsClient(
     if (key === lastPage) return;
     if (track("Page Viewed", properties)) lastPage = key;
   }
+  function setWallet(address?: string | null) {
+    const next = normalizeAnalyticsWallet(address);
+    if (wallet !== next) {
+      stop(); // Block callbacks synchronously before hashing or initializing another wallet.
+      wallet = next;
+    }
+  }
   return {
+    setWallet,
+    matchesWallet: (address: string) =>
+      allowed() &&
+      wallet !== null &&
+      normalizeAnalyticsWallet(address) === wallet,
+    user: () => (allowed() ? userId : undefined),
     start,
     stop,
     refresh,

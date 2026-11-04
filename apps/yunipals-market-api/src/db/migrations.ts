@@ -1081,5 +1081,21 @@ CREATE TABLE yunipals_market.legacy_sale_receipt_qualification (
 REVOKE ALL ON yunipals_market.marketplace_source_review,
   yunipals_market.marketplace_legacy_selection,yunipals_market.legacy_sale_receipt_qualification FROM PUBLIC;
 `
+  },
+  {
+    version: 30,
+    name: "unified_rpc_service_approval_lifecycle",
+    sql: `
+ALTER TABLE yunipals_market.unified_rpc_profile
+  ADD COLUMN lifecycle text NOT NULL DEFAULT 'temporary'
+    CHECK(lifecycle IN ('temporary','service')),
+  ADD CONSTRAINT unified_rpc_profile_lifecycle_expiry CHECK (
+    (lifecycle='temporary' AND isfinite(expires_at)) OR
+    (lifecycle='service' AND expires_at='infinity'::timestamptz)
+  );
+-- Infinity preserves the existing expiry predicate in deployed proxies and in
+-- reserve_unified_rpc_replay. Every paid replay permit still has its own expiry,
+-- range, maximum and spent counter. No budget or usage row changes here.
+`
   }
 ] as const;

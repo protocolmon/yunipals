@@ -8,6 +8,9 @@ import { collectionSlugs } from "../constants.js";
 import { nativeBaseMetadataReads } from "./base-mode.js";
 
 export const readCacheSchemaStatements = [
+  `CREATE TABLE IF NOT EXISTS metadata_projection.read_preparation (
+    generation_id bigint PRIMARY KEY REFERENCES metadata_projection.generation(id),
+    expires_at timestamptz NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.read_epoch (
     collection text PRIMARY KEY, revision bigint NOT NULL DEFAULT 0)`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.read_guard (
@@ -21,6 +24,8 @@ export const readCacheSchemaStatements = [
   `ALTER TABLE metadata_projection.read_set ADD COLUMN IF NOT EXISTS ownership_release_id text,
     ADD COLUMN IF NOT EXISTS ownership_read_identity text, ADD COLUMN IF NOT EXISTS ownership_boundary bigint,
     ADD COLUMN IF NOT EXISTS ownership_boundary_hash text, ADD COLUMN IF NOT EXISTS ownership_policy text`,
+  `ALTER TABLE metadata_projection.read_set ADD COLUMN IF NOT EXISTS member_count bigint,
+    ADD COLUMN IF NOT EXISTS burned_count bigint`,
   `CREATE TABLE IF NOT EXISTS metadata_projection.read_member (
     generation_id bigint NOT NULL REFERENCES metadata_projection.generation(id),
     collection text NOT NULL, token_id numeric NOT NULL, lifecycle integer NOT NULL,
@@ -32,11 +37,29 @@ export const readCacheSchemaStatements = [
   `CREATE INDEX IF NOT EXISTS read_member_missing_idx
     ON metadata_projection.read_member(generation_id,collection,token_id)
     INCLUDE(lifecycle) WHERE NOT has_search`,
+  `ALTER TABLE metadata_projection.read_member ADD COLUMN IF NOT EXISTS burned boolean`,
   `CREATE INDEX IF NOT EXISTS read_member_available_idx
     ON metadata_projection.read_member(generation_id,collection,metadata_available,token_id,lifecycle)`,
   `CREATE INDEX IF NOT EXISTS read_member_search_proof_idx
     ON metadata_projection.read_member(generation_id,collection,token_id,lifecycle)
     WHERE has_search`,
+  // These tables may be owned by the operations role. Expose only fixed
+  // statistics/row-lock operations, without granting runtimes cache ownership.
+  `CREATE OR REPLACE FUNCTION metadata_projection.analyze_read_cache() RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
+    BEGIN
+      ANALYZE metadata_projection.read_set;
+      ANALYZE metadata_projection.read_member;
+    END $$`,
+  `REVOKE ALL ON FUNCTION metadata_projection.analyze_read_cache() FROM PUBLIC`,
+  `CREATE OR REPLACE FUNCTION metadata_projection.lock_read_cache_publication(selected_generation bigint) RETURNS void
+    LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
+    BEGIN
+      PERFORM collection FROM metadata_projection.read_epoch ORDER BY collection FOR SHARE;
+      PERFORM collection FROM metadata_projection.read_set
+        WHERE generation_id=selected_generation ORDER BY collection FOR SHARE;
+    END $$`,
+  `REVOKE ALL ON FUNCTION metadata_projection.lock_read_cache_publication(bigint) FROM PUBLIC`,
   `CREATE OR REPLACE FUNCTION metadata_projection.read_cache_dirty()
     RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
     SET search_path=pg_catalog,metadata_projection AS $$
@@ -69,8 +92,8 @@ export const readCacheSchemaStatements = [
               THEN RETURN NULL; END IF;
           END IF;
         END IF;
-        IF kind='token' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle)
-          IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle) THEN RETURN NULL; END IF; END IF;
+        IF kind='token' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle,OLD.burned)
+          IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.burned) THEN RETURN NULL; END IF; END IF;
         IF kind='document' THEN IF (OLD.collection,OLD.token_id,OLD.lifecycle,OLD.document,OLD.content_hash,OLD.fetch_status)
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.document,NEW.content_hash,NEW.fetch_status)
           THEN RETURN NULL; END IF; END IF;
@@ -118,25 +141,62 @@ export const readCacheSchemaStatements = [
         UPDATE metadata_projection.read_epoch e SET revision=revision+1
         WHERE e.collection IN (SELECT changed.collection FROM new_rows changed
           JOIN metadata_projection.read_set s ON s.generation_id=changed.generation_id
-          JOIN metadata_projection.active a ON s.generation_id IN(a.current_id,a.previous_id));
+          WHERE s.generation_id IN (SELECT current_id FROM metadata_projection.active
+            UNION SELECT previous_id FROM metadata_projection.active
+            UNION SELECT generation_id FROM metadata_projection.read_preparation WHERE expires_at>statement_timestamp()));
       ELSIF TG_OP='DELETE' THEN
         UPDATE metadata_projection.read_epoch e SET revision=revision+1
         WHERE e.collection IN (SELECT changed.collection FROM old_rows changed
           JOIN metadata_projection.read_set s ON s.generation_id=changed.generation_id
-          JOIN metadata_projection.active a ON s.generation_id IN(a.current_id,a.previous_id));
+          WHERE s.generation_id IN (SELECT current_id FROM metadata_projection.active
+            UNION SELECT previous_id FROM metadata_projection.active
+            UNION SELECT generation_id FROM metadata_projection.read_preparation WHERE expires_at>statement_timestamp()));
       ELSE
         UPDATE metadata_projection.read_epoch e SET revision=revision+1
         WHERE e.collection IN (SELECT changed.collection FROM (
           SELECT generation_id,collection FROM old_rows UNION SELECT generation_id,collection FROM new_rows) changed
           JOIN metadata_projection.read_set s ON s.generation_id=changed.generation_id
-          JOIN metadata_projection.active a ON s.generation_id IN(a.current_id,a.previous_id));
+          WHERE s.generation_id IN (SELECT current_id FROM metadata_projection.active
+            UNION SELECT previous_id FROM metadata_projection.active
+            UNION SELECT generation_id FROM metadata_projection.read_preparation WHERE expires_at>statement_timestamp()));
       END IF;
       RETURN NULL;
     END $$`
 ] as const;
 
-export async function installReadCache(db: Pick<PoolClient, "query">) {
+/** Add columns/functions without replacing source triggers or dirtying every cache. */
+export async function upgradeReadCache(db: Pick<PoolClient, "query">) {
   for (const sql of readCacheSchemaStatements) await db.query(sql);
+  const grants = await db.query<{ sql: string }>(`SELECT DISTINCT format(
+    'GRANT SELECT ON metadata_projection.read_preparation TO %I',role.rolname) AS sql
+    FROM pg_catalog.pg_class relation CROSS JOIN LATERAL aclexplode(COALESCE(relation.relacl,acldefault('r',relation.relowner))) acl
+    JOIN pg_catalog.pg_roles role ON role.oid=acl.grantee
+    WHERE relation.oid='metadata_projection.search'::regclass AND acl.privilege_type='SELECT'
+    UNION SELECT DISTINCT format(
+    'GRANT SELECT,INSERT,UPDATE,DELETE ON metadata_projection.read_preparation TO %I',role.rolname)
+    FROM pg_catalog.pg_class relation CROSS JOIN LATERAL aclexplode(COALESCE(relation.relacl,acldefault('r',relation.relowner))) acl
+    JOIN pg_catalog.pg_roles role ON role.oid=acl.grantee
+    WHERE relation.oid='metadata_projection.generation'::regclass AND acl.privilege_type='INSERT'`);
+  for (const row of grants.rows) await db.query(row.sql);
+  const publishers = await db.query<{
+    role: string;
+  }>(`SELECT DISTINCT role.rolname AS role
+    FROM pg_catalog.pg_class relation CROSS JOIN LATERAL aclexplode(COALESCE(relation.relacl,acldefault('r',relation.relowner))) acl
+    JOIN pg_catalog.pg_roles role ON role.oid=acl.grantee
+    WHERE relation.oid='metadata_projection.generation'::regclass AND acl.privilege_type='INSERT'`);
+  for (const { role } of publishers.rows) {
+    const quoted = '"' + role.replaceAll('"', '""') + '"';
+    await db.query(
+      `GRANT SELECT,INSERT,DELETE ON metadata_projection.read_set,metadata_projection.read_member TO ${quoted}`
+    );
+    await db.query(
+      `GRANT EXECUTE ON FUNCTION metadata_projection.analyze_read_cache(),metadata_projection.lock_read_cache_publication(bigint) TO ${quoted}`
+    );
+  }
+}
+
+export async function installReadCache(db: Pick<PoolClient, "query">) {
+  await upgradeReadCache(db);
   await db.query(
     `INSERT INTO metadata_projection.read_epoch(collection)
     SELECT unnest($1::text[]) ON CONFLICT DO NOTHING`,

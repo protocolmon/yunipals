@@ -274,7 +274,7 @@ test("expired, corrupt, future, and unknown-version preferences fail closed", as
     "invalid",
     '{"version":2}',
     JSON.stringify({
-      version: 1,
+      version: 2,
       choice: "accepted",
       updatedAt: Date.now() + 10_000,
       expiresAt: Date.now() + analyticsPreferenceLifetime + 10_000

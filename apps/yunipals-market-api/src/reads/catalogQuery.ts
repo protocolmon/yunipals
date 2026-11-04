@@ -258,6 +258,18 @@ export function catalogSql(
         : query.chains.every((chain) => chain !== "bnb")
           ? "yunipals_indexer_v3.token"
           : "yunipals_read_v4.token";
+  // The qualified unified view has one row per collection/token. Keep this
+  // lookup correlated with the score candidate so PostgreSQL can retain score
+  // index order and stop at the page limit. Flattening the UNION view into a
+  // merge join sorts the full ownership and score populations first.
+  const indexedTokenJoin =
+    ownership.mode === "unified"
+      ? `JOIN LATERAL (SELECT candidate.* FROM ${tokens} candidate
+          WHERE candidate.collection=s.collection
+            AND candidate.token_id=pg_catalog.textin(pg_catalog.numeric_out(s.token_id))
+            AND candidate.lifecycle=s.lifecycle LIMIT 1) t ON true`
+      : `JOIN ${tokens} t ON t.collection=s.collection
+          AND t.token_id=pg_catalog.textin(pg_catalog.numeric_out(s.token_id)) AND t.lifecycle=s.lifecycle`;
   const score = isPriceSort(query.filters.sort)
     ? "price"
     : query.filters.sort.startsWith("rarity-capped")
@@ -365,17 +377,14 @@ export function catalogSql(
       SELECT t.collection,t.token_id FROM metadata.token_visibility visibility
       JOIN LATERAL (SELECT current.* FROM ${ownership.tokenRelation} current
         WHERE current.collection=visibility.collection AND current.token_id=pg_catalog.textin(pg_catalog.numeric_out(visibility.token_id)) LIMIT 1) t ON true
-      WHERE ${indexedTokenHiddenSqlFor("t", ownership.transferRelation)}),
+      WHERE visibility.collection=ANY($2::text[])
+        AND ${indexedTokenHiddenSqlFor("t", ownership.transferRelation, query.chains)}),
     candidates AS ${phase === "null-missing" || combineFirstPage ? "MATERIALIZED" : ""} (
       SELECT t.collection,t.chain_id,t.contract_address,t.token_id,${indexedScore ? "s.token_id" : indexedTokenNumberSql} AS id_number,t.owner,t.lifecycle,
         t.mint_block,t.last_transfer_block,s.metadata_available,
         s.rarity_points,s.rarity_points_capped,${available.length ? "b.price,b.listings" : "NULL::numeric AS price,NULL::jsonb AS listings"}
       FROM ${
-        indexedScore
-          ? `${searchTable} s
-        JOIN ${tokens} t ON t.collection=s.collection
-          AND t.token_id=pg_catalog.textin(pg_catalog.numeric_out(s.token_id)) AND t.lifecycle=s.lifecycle`
-          : `${tokens} t`
+        indexedScore ? `${searchTable} s ${indexedTokenJoin}` : `${tokens} t`
       }
       ${indexedScore ? "" : `LEFT JOIN ${searchTable} s ON ${generationCondition}s.collection=ANY($2::text[]) AND s.collection=t.collection AND s.token_id=${indexedTokenNumberSql} AND s.lifecycle=t.lifecycle`}
       ${traitJoins.join("\n")}

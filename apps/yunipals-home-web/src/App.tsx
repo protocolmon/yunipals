@@ -75,16 +75,6 @@ const AnimeStudioPage = lazy(() =>
     default: module.AnimeStudioPage
   }))
 );
-const AnimeSetupPage = lazy(() =>
-  import("@/pages/arena/anime/AnimeSetupPage").then((module) => ({
-    default: module.AnimeSetupPage
-  }))
-);
-const AnimePilotPage = lazy(() =>
-  import("@/pages/arena/anime/AnimePilotPage").then((module) => ({
-    default: module.AnimePilotPage
-  }))
-);
 const LiveArenaPage = lazy(() =>
   import("@/pages/arena/live/LiveArenaPage").then((module) => ({
     default: module.LiveArenaPage
@@ -280,10 +270,7 @@ function AppContent() {
           <Route
             path="/arena/anime"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaQueuePage />
               </ArenaDeploymentProvider>
             }
@@ -291,10 +278,7 @@ function AppContent() {
           <Route
             path="/arena/anime/rewards"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaRewardsPage />
               </ArenaDeploymentProvider>
             }
@@ -302,10 +286,7 @@ function AppContent() {
           <Route
             path="/arena/anime/watch"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaWatchPage />
               </ArenaDeploymentProvider>
             }
@@ -313,10 +294,7 @@ function AppContent() {
           <Route
             path="/arena/anime/me"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaDashboard role="entrant" />
               </ArenaDeploymentProvider>
             }
@@ -324,10 +302,7 @@ function AppContent() {
           <Route
             path="/arena/anime/hosting"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaDashboard role="host" />
               </ArenaDeploymentProvider>
             }
@@ -335,10 +310,7 @@ function AppContent() {
           <Route
             path="/arena/anime/rules"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <ArenaRulesPage />
               </ArenaDeploymentProvider>
             }
@@ -346,54 +318,45 @@ function AppContent() {
           <Route
             path="/arena/anime/studio"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <AnimeStudioPage />
               </ArenaDeploymentProvider>
             }
           />
           <Route
             path="/arena/anime/setup"
-            element={
-              environment.sharedArenaApiUrl ? (
-                <Navigate to="/arena/setup" replace />
-              ) : (
-                <AnimeSetupPage />
-              )
-            }
+            element={<Navigate to="/arena/setup" replace />}
           />
           <Route
             path="/arena/anime/pilot"
-            element={
-              environment.sharedArenaApiUrl ? (
-                <Navigate to="/arena/anime" replace />
-              ) : (
-                <AnimePilotPage />
-              )
-            }
+            element={<Navigate to="/arena/anime" replace />}
           />
           <Route
             path="/arena/anime/:id"
             element={
-              <ArenaDeploymentProvider
-                kind="anime"
-                shared={!!environment.sharedArenaApiUrl}
-              >
+              <ArenaDeploymentProvider kind="anime">
                 <LiveArenaPage />
               </ArenaDeploymentProvider>
             }
           />
           <Route path="/arena" element={<ArenaHub />} />
           <Route path="/arena/setup" element={<SharedArenaSetupPage />} />
-          <Route path="/arena/history" element={<ArenaWatchPage />} />
-          <Route path="/arena/watch" element={<ArenaWatchPage />} />
-          <Route path="/arena/rewards" element={<ArenaRewardsPage />} />
+          <Route
+            path="/arena/history"
+            element={<Navigate to="/arena/video/watch" replace />}
+          />
+          <Route
+            path="/arena/watch"
+            element={<Navigate to="/arena/video/watch" replace />}
+          />
+          <Route
+            path="/arena/rewards"
+            element={<Navigate to="/arena/video/rewards" replace />}
+          />
           <Route
             path="/arena/video"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaQueuePage />
               </ArenaDeploymentProvider>
             }
@@ -401,7 +364,7 @@ function AppContent() {
           <Route
             path="/arena/video/:id"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <LiveArenaPage />
               </ArenaDeploymentProvider>
             }
@@ -409,7 +372,7 @@ function AppContent() {
           <Route
             path="/arena/video/rewards"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaRewardsPage />
               </ArenaDeploymentProvider>
             }
@@ -417,7 +380,7 @@ function AppContent() {
           <Route
             path="/arena/video/watch"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaWatchPage />
               </ArenaDeploymentProvider>
             }
@@ -425,7 +388,7 @@ function AppContent() {
           <Route
             path="/arena/video/me"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaDashboard role="entrant" />
               </ArenaDeploymentProvider>
             }
@@ -433,7 +396,7 @@ function AppContent() {
           <Route
             path="/arena/video/hosting"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaDashboard role="host" />
               </ArenaDeploymentProvider>
             }
@@ -441,18 +404,24 @@ function AppContent() {
           <Route
             path="/arena/video/rules"
             element={
-              <ArenaDeploymentProvider kind="video" shared>
+              <ArenaDeploymentProvider kind="video">
                 <ArenaRulesPage />
               </ArenaDeploymentProvider>
             }
           />
-          <Route path="/arena/me" element={<ArenaDashboard role="entrant" />} />
+          <Route
+            path="/arena/me"
+            element={<Navigate to="/arena/video/me" replace />}
+          />
           <Route
             path="/arena/hosting"
-            element={<ArenaDashboard role="host" />}
+            element={<Navigate to="/arena/video/hosting" replace />}
           />
-          <Route path="/arena/rules" element={<ArenaRulesPage />} />
-          <Route path="/arena/:id" element={<LiveArenaPage />} />
+          <Route
+            path="/arena/rules"
+            element={<Navigate to="/arena/video/rules" replace />}
+          />
+          <Route path="/arena/:id" element={<Navigate to="/arena" replace />} />
           {environment.arenaLab && (
             <Route path="/arena-lab" element={<ArenaPage />} />
           )}

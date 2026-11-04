@@ -28,10 +28,12 @@ const browser = await chromium.launch({
 });
 const requests = [];
 const payloads = [];
+const profiles = [];
+let countryRequests = 0;
 const errors = [];
 const tests = [];
-const consentKey = "yunipals.analytics.consent.v1";
-const visitorKey = "yunipals.analytics.visitor.v1";
+const consentKey = "yunipals.analytics.consent.v2";
+const visitorKey = "yunipals.analytics.visitor.v2";
 const sensitive = "0x1234567890123456789012345678901234567890";
 let blockMixpanel = false;
 
@@ -49,7 +51,7 @@ async function context(init) {
     if (url.hostname.endsWith(".mixpanel.com")) {
       requests.push({ url: url.href, referrer: request.headers().referer });
       assert.equal(url.hostname, "api-eu.mixpanel.com");
-      assert.equal(url.pathname, "/track/");
+      assert.ok(["/track/", "/engage/"].includes(url.pathname));
       assert.equal(url.searchParams.get("ip"), "0");
       const body = request.postData() ?? "";
       let data;
@@ -65,6 +67,22 @@ async function context(init) {
       }
       const events = Array.isArray(data) ? data : [data];
       for (const event of events) {
+        if (url.pathname === "/engage/") {
+          assert.equal(event.$token, "analytics-test");
+          assert.match(event.$distinct_id, /^wallet:evm:[0-9a-f]{64}$/);
+          assert.equal(event.$distinct_id, event.$user_id);
+          assert.equal(event.$ip, "0");
+          assert.deepEqual(Object.keys(event.$set).sort(), [
+            "country",
+            "environment",
+            "identity_type",
+            "schema_version"
+          ]);
+          assert.equal(event.$set.country, "DE");
+          assert.equal(JSON.stringify(event).includes(sensitive), false);
+          profiles.push(event);
+          continue;
+        }
         assert.equal(
           event.properties.token,
           "analytics-test",
@@ -84,6 +102,14 @@ async function context(init) {
       });
     }
     if (url.origin !== app.origin) return route.abort();
+    if (url.pathname === "/api/analytics-country") {
+      countryRequests++;
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ country: "DE" })
+      });
+    }
     if (url.pathname.startsWith("/__fixtures/")) {
       const result = fixtureResponse(url, request.method());
       return route.fulfill({
@@ -134,6 +160,7 @@ try {
     .waitFor();
   await settle(page);
   assert.equal(requests.length, 0);
+  assert.equal(countryRequests, 0);
   assert.equal(sdkLoads.length, 0);
   assert.equal(
     await page.evaluate((key) => localStorage.getItem(key), visitorKey),
@@ -143,7 +170,7 @@ try {
   await page
     .getByText(
       "Analytics events are retained for 2 years under the Mixpanel project policy.",
-      { exact: true }
+      { exact: false }
     )
     .waitFor();
   assert.equal(
@@ -159,6 +186,7 @@ try {
     .getByRole("heading", { name: "How Yunipals handles information" })
     .waitFor();
   assert.equal(requests.length, 0);
+  assert.equal(countryRequests, 0);
   assert.equal(sdkLoads.length, 0);
   tests.push("Decline persists across reload");
   let dialog = await settings(page);
@@ -235,9 +263,7 @@ try {
   const requestCount = requests.length;
   blockMixpanel = true;
   await page.getByRole("link", { name: "Terms of Use", exact: true }).click();
-  await page
-    .getByRole("heading", { name: "Yunipals Terms of Use" })
-    .waitFor();
+  await page.getByRole("heading", { name: "Yunipals Terms of Use" }).waitFor();
   await settle(page);
   assert.ok(requests.length > requestCount);
   tests.push("Blocked analytics requests leave navigation functional");
@@ -282,6 +308,111 @@ try {
   );
   tests.push("Unavailable preference storage keeps analytics off");
   await storageCtx.close();
+  const profileCtx = await context();
+  const profilePage = await profileCtx.newPage();
+  await profilePage.goto(`${app.origin}/privacy`);
+  async function setConnectedWallet(wallet) {
+    await profilePage.evaluate(async (wallet) => {
+      const { walletConfig } = await import("/src/lib/wallet.ts");
+      const connector = walletConfig.connectors[0];
+      if (!connector)
+        throw new Error(
+          "Expected a browser connector in the isolated non-fixture app."
+        );
+      walletConfig.setState((state) => ({
+        ...state,
+        status: wallet ? "connected" : "disconnected",
+        current: wallet ? connector.uid : null,
+        connections: wallet
+          ? new Map([
+              [connector.uid, { accounts: [wallet], chainId: 8453, connector }]
+            ])
+          : new Map()
+      }));
+    }, wallet);
+  }
+  async function waitProfiles(count) {
+    const end = Date.now() + 15000;
+    while (profiles.length < count && Date.now() < end)
+      await profilePage.waitForTimeout(50);
+    assert.equal(profiles.length, count);
+  }
+  const before = {
+    requests: requests.length,
+    country: countryRequests,
+    profiles: profiles.length
+  };
+  await setConnectedWallet(sensitive);
+  await settle(profilePage);
+  assert.equal(requests.length, before.requests);
+  assert.equal(countryRequests, before.country);
+  await profilePage
+    .getByRole("button", { name: "Allow analytics", exact: true })
+    .click();
+  await waitProfiles(before.profiles + 1);
+  const firstProfile = profiles.at(-1);
+  const firstDevice = firstProfile.$device_id;
+  assert.equal(firstProfile.$set.country, "DE");
+  tests.push(
+    "A connected wallet remains untracked before consent, then creates a sanitized country-bearing profile"
+  );
+  await setConnectedWallet("0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  await waitProfiles(before.profiles + 2);
+  assert.notEqual(profiles.at(-1).$device_id, firstDevice);
+  assert.notEqual(profiles.at(-1).$distinct_id, firstProfile.$distinct_id);
+  await setConnectedWallet(null);
+  await settle(profilePage);
+  await setConnectedWallet(sensitive);
+  await waitProfiles(before.profiles + 3);
+  assert.equal(profiles.at(-1).$distinct_id, firstProfile.$distinct_id);
+  assert.notEqual(profiles.at(-1).$device_id, firstDevice);
+  tests.push(
+    "Wallet changes and disconnect rotate device identities; reconnecting uses the same stable profile ID"
+  );
+  const beforeChain = payloads.length;
+  await profilePage.evaluate(async () => {
+    const { onchainAnalytics } = await import("/src/lib/analytics/onchain.ts");
+    onchainAnalytics.submitted(8453, "booster-open", "local-test-hash");
+    onchainAnalytics.replace(8453, "local-test-hash", "local-test-replacement");
+    onchainAnalytics.confirmed(8453, "local-test-replacement");
+    onchainAnalytics.confirmed(8453, "local-test-hash");
+  });
+  await waitEvents(beforeChain + 2);
+  const chainEvents = payloads
+    .slice(beforeChain)
+    .filter((event) => event.event.startsWith("Onchain Action"));
+  assert.deepEqual(
+    chainEvents.map((event) => event.event),
+    ["Onchain Action Submitted", "Onchain Action Confirmed"]
+  );
+  assert.ok(
+    chainEvents.every(
+      (event) =>
+        event.properties.$user_id === firstProfile.$distinct_id &&
+        event.properties.country === "DE"
+    )
+  );
+  assert.equal(JSON.stringify(chainEvents).includes("local-test-hash"), false);
+  tests.push(
+    "Actual SDK sends one submitted and confirmed on-chain event with wallet identity and country, without hashes"
+  );
+  dialog = await settings(profilePage);
+  await dialog
+    .getByRole("button", { name: "Turn analytics off", exact: true })
+    .click();
+  const afterWithdrawal = requests.length;
+  await setConnectedWallet("0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+  await settle(profilePage);
+  assert.equal(requests.length, afterWithdrawal);
+  tests.push("Withdrawal stops profile updates and wallet identity events");
+  assert.equal(
+    payloads.some((event) => event.event === "$identify"),
+    false
+  );
+  tests.push(
+    "SDK automatic identify event is suppressed so default sensitive properties cannot bypass the allowlist"
+  );
+  await profileCtx.close();
   assert.deepEqual(errors, []);
   await writeFile(
     values.output,

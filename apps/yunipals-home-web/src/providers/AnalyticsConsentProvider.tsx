@@ -36,7 +36,7 @@ function AnalyticsObserver({
   revision: string;
 }) {
   const { pathname, search } = useLocation();
-  const { isConnected, chainId, connector } = useAccount();
+  const { address, isConnected, chainId, connector, status } = useAccount();
   const previouslyConnected = useRef(isConnected);
   useEffect(() => {
     if (isConnected && !previouslyConnected.current)
@@ -45,17 +45,19 @@ function AnalyticsObserver({
   }, [chainId, connector?.id, isConnected]);
   useEffect(() => {
     let active = true;
+    analytics.setWallet(isConnected ? address : null);
+    if (status === "connecting" || status === "reconnecting") return;
     const page = analyticsPage(pathname, search);
-    if (choice === "accepted" && page)
+    if (choice === "accepted")
       void analytics.start().then(() => {
         // The real path is a local deduplication key and is never sent to Mixpanel.
-        if (active)
+        if (active && page)
           analytics.page(`${pathname}:${page.collection ?? ""}`, page);
       });
     return () => {
       active = false;
     };
-  }, [choice, pathname, search, revision]);
+  }, [choice, pathname, search, revision, address, isConnected, status]);
   return null;
 }
 
@@ -132,7 +134,7 @@ export function AnalyticsConsentProvider({
           privacySignal={privacySignal}
           accepted={choice === "accepted"}
           storageError={storageError}
-          privacyId={analytics.visitor()}
+          privacyId={analytics.user() ?? analytics.visitor()}
           onAccept={() => choose("accepted")}
           onDecline={() => choose("declined")}
           onClose={() => {
