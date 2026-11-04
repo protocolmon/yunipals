@@ -1,6 +1,6 @@
 # Shared indexer production checkpoint 2026 11 03
 
-The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/24-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
+The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/8-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
 
 ## Source and consumer handover
 
@@ -81,6 +81,18 @@ PR description records the deployed artifact and current observation start.
 
 ## Acceptance still required
 
-- Complete the 90-minute and 24-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
+- Complete the 90-minute and 8-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
+
+The owner shortened the final acceptance period from 24 to eight hours on
+November 4 UTC. The monitor now reports `eightHoursPassed`; all health checks,
+failure/reboot/gap reset rules and retained history remain unchanged. A
+threshold-only change retains continuous evidence already collected.
+
+Follow-up logs identified `market_prod_source_read` exhausting its existing
+32-connection cap. The Marketplace foreign server now releases its source
+connection when a local transaction ends. Real read-only checks verified the
+connection stays available during the transaction and closes afterward. The
+guarded recovery SQL preserves source mapping, ownership and grants; the cap is
+unchanged. This runtime correction starts a fresh configuration-bound window.
 
 Implementation commit `03e956ca` passed CI, including the startup configuration and monitor checks. Indexer verification passed 503 tests with two skipped; actual PostgreSQL publication/cache verification passed 24 groups with the production single-connection pool. Rarity checks passed 336 pagination and 144 trait cases. The native catalog regression passed all 15 ownership integration tests, and its API TypeScript check passed. The full API run passed 888 tests; its sole failure was a test-admin URL selecting the wrong disposable database. All three tests in that integration file then passed with the required database selected, including the restricted sale-worker grant test. All 889 cases are covered by those runs.

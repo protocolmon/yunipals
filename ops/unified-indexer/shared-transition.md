@@ -172,9 +172,22 @@ current product checks. Keep unrelated provider failures visible.
 
 The minute timer retains a protected history and resets its continuous window
 after a failed check, reboot, configuration change, reversed clock or a gap
-greater than three minutes. Its 90-minute and 24-hour markers therefore require
+greater than three minutes. Its 90-minute and 8-hour markers therefore require
 continuous successful evidence for the final deployment. A source-only check
 or earlier qualification cannot establish full product acceptance.
+The owner shortened the final duration from 24 hours to eight hours. This
+threshold-only change preserves genuine continuous evidence already collected;
+it does not change health checks, failure resets or the retained history.
+
+The Marketplace foreign server uses `keep_connections=false`. Apply
+`marketplace-fdw-connection-policy.sql` with the existing database owner on the
+production operational cluster, including after restoring its schema. The
+guarded, idempotent script preserves source mapping, owner and grants. Remote
+connections stay open for the local transaction and close when it ends.
+Keeping idle foreign connections previously exhausted the existing
+`market_prod_source_read` limit of 32; do not increase that limit to compensate.
+The connection-policy runtime correction starts a new observation window.
+See [PostgreSQL connection management](https://www.postgresql.org/docs/16/postgres-fdw.html#POSTGRES-FDW-OPTIONS-CONNECTION-MANAGEMENT).
 
 For encrypted Arena recovery, set
 `YUNIPALS_SHARED_INDEXER_BACKUP_CONFIGURATION` and

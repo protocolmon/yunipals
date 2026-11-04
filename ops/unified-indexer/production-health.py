@@ -27,7 +27,7 @@ def acceptance(previous, now, boot_id, healthy):
         "healthySinceUnix": since if healthy else None,
         "healthySeconds": int(elapsed),
         "ninetyMinutesPassed": healthy and elapsed >= 5400,
-        "twentyFourHoursPassed": healthy and elapsed >= 86400
+        "eightHoursPassed": healthy and elapsed >= 8 * 60 * 60
     }
 
 
@@ -200,8 +200,8 @@ def main():
         temporary = state / "latest.next"
         temporary.write_text(encoded)
         temporary.replace(latest)
-        if previous.get("failures") != failures or previous.get("twentyFourHoursPassed") != record["twentyFourHoursPassed"]:
-            print(json.dumps({key: record[key] for key in ["checkedAt", "healthy", "failures", "healthySeconds", "ninetyMinutesPassed", "twentyFourHoursPassed"]}))
+        if previous.get("failures") != failures or previous.get("eightHoursPassed") != record["eightHoursPassed"]:
+            print(json.dumps({key: record[key] for key in ["checkedAt", "healthy", "failures", "healthySeconds", "ninetyMinutesPassed", "eightHoursPassed"]}))
         return 0 if healthy else 1
 
 
