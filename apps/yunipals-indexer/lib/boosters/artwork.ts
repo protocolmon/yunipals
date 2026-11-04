@@ -186,6 +186,48 @@ export function registerBoosterArtworkRoutes(
   app: Hono,
   store: BoosterArtworkStore
 ) {
+  app.get("/v1/boosters/art-previews/v1/:file", async (c) => {
+    c.header("Cache-Control", "no-store");
+    const file = c.req.param("file");
+    if (!/^[a-f0-9]{64}\.webp$/.test(file))
+      return c.json({ error: "invalid_preview" }, 400);
+    const sourceSha256 = file.slice(0, -5);
+    const directory = path.join(store.directory, "previews", "v1");
+    try {
+      const [data, rawManifest] = await Promise.all([
+        readFile(path.join(directory, file)),
+        readFile(path.join(directory, `${sourceSha256}.json`), "utf8")
+      ]);
+      const manifest = JSON.parse(rawManifest);
+      if (
+        manifest.version !== 1 ||
+        manifest.sourceSha256 !== sourceSha256 ||
+        manifest.sha256 !== createHash("sha256").update(data).digest("hex") ||
+        manifest.bytes !== data.length ||
+        !Number.isInteger(manifest.width) ||
+        !Number.isInteger(manifest.height) ||
+        manifest.width <= 0 ||
+        manifest.width > 520 ||
+        manifest.height <= 0 ||
+        manifest.height > 780 ||
+        data.toString("ascii", 0, 4) !== "RIFF" ||
+        data.toString("ascii", 8, 12) !== "WEBP"
+      )
+        throw new Error("Preview fingerprint mismatch");
+      c.header("Content-Type", "image/webp");
+      c.header("Cache-Control", "public, max-age=31536000, immutable");
+      c.header("ETag", `"${manifest.sha256}"`);
+      c.header("X-Content-Type-Options", "nosniff");
+      if (c.req.header("If-None-Match") === `"${manifest.sha256}"`)
+        return c.body(null, 304);
+      return c.body(data);
+    } catch (error) {
+      return c.json(
+        { error: "artwork_preview_unavailable" },
+        missing(error) ? 404 : 503
+      );
+    }
+  });
   app.get("/v1/boosters/art/:catalog/:file", async (c) => {
     const slug = c.req.param("catalog"),
       file = c.req.param("file");

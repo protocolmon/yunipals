@@ -794,6 +794,7 @@ function YunipalsCollectorPage() {
                     <CollectionPackCard
                       key={collectionGridIdentity(item)}
                       monster={item.monster}
+                      eager={index < 4}
                     />
                   ) : (
                     (() => {

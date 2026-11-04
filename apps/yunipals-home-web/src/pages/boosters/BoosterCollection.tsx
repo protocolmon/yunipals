@@ -11,16 +11,21 @@ import {
   fetchMonsterArtwork
 } from "@/lib/boosters";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
+import { BoosterCardThumbnail } from "@/components/BoosterCardThumbnail";
 import { BoosterCardLightbox } from "./BoosterCardLightbox";
 
 export function BoosterArtwork({
   uri,
   label,
-  interactive = false
+  interactive = false,
+  display = "full",
+  eager = false
 }: {
   uri: string;
   label: string;
   interactive?: boolean;
+  display?: "full" | "thumbnail";
+  eager?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const query = useQuery({
@@ -31,6 +36,14 @@ export function BoosterArtwork({
     refetchInterval: (query) =>
       query.state.data && query.state.data.status !== "ready" ? 5000 : false
   });
+  if (query.data?.image && display === "thumbnail")
+    return (
+      <BoosterCardThumbnail
+        image={query.data.image}
+        alt={label}
+        eager={eager}
+      />
+    );
   if (query.data?.image)
     return (
       <>
@@ -123,7 +136,7 @@ export function BoosterCollection({ owner }: { owner: string }) {
         </p>
       )}
       <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-4">
-        {items.map((monster) => (
+        {items.map((monster, index) => (
           <Link
             key={monster.id}
             to={`/monsters/${monster.collection}/${monster.tokenId}`}
@@ -132,6 +145,8 @@ export function BoosterCollection({ owner }: { owner: string }) {
             <BoosterArtwork
               uri={monster.metadataUri}
               label={`Yunipal #${monster.tokenId}`}
+              display="thumbnail"
+              eager={index < 4}
             />
             <p className="mt-3 font-bold">Yunipal #{monster.tokenId}</p>
             <p className="text-xs text-muted">

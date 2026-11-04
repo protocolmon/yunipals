@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import subprocess
 from urllib.parse import urlparse
+from art_previews import publish_preview
 from art_lab import DEFAULT_LAB, DICTIONARY, ROOT, RECIPE_VERSION, asset, digest, locked, next_stage, prepare, read_json, run_path, snapshot, variant_traits, write_json
 
 DEFAULT_DIRECTORY=ROOT/'docs/boosters/artwork-runtime'
@@ -99,6 +100,7 @@ def publish(lab,directory,slug,run_id,stage=None):
     target=catalog/'variants'/f'{rank}.json'
     with locked(directory):
         if target.exists() and read_json(target)!=metadata:raise ValueError('Variant artwork is already published and cannot be replaced')
+        publish_preview(directory, source, sha)
         write_json(target,metadata)
     return {'variantId':rank,'metadata':str(target),'sha256':sha}
 
