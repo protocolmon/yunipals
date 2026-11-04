@@ -83,9 +83,9 @@ Deploy the backward-compatible API routes and frontend code before changing the 
 | `API_MONSTER_VERSIONS_ENABLED=true` | Exposes the active, validated relationship revision and bounded version summaries. |
 | `SOLANA_API_ENABLED=true` | Enables Solana version reads against the existing published ownership source. |
 | `VITE_EXOMON_ENABLED=true` | Exposes Solana collection, detail, and collector surfaces in the frontend. |
-| `VITE_MONSTER_VERSIONS_ENABLED=true` | Enables original-NFT links on individual Base detail pages. |
+| `VITE_MONSTER_VERSIONS_ENABLED` | Original-NFT links are enabled by default on individual Base detail pages. Set explicitly to `false` to disable them. |
 
-Vite settings take effect in a new frontend build. Chain exclusions do not require relationship settings or a mapping import. Enable original links after validating and publishing the mapping. The capability endpoint is `/v1/monster-version-capabilities`; `/v1/monster-versions` supplies bounded relationship summaries. The frontend calls these only on Base NFT detail pages.
+Vite settings take effect in a new frontend build. No frontend opt-in setting is required for original links. The frontend checks backend capabilities and only shows a link when the active mapping supplies a verified original. Chain exclusions do not require relationship settings or a mapping import. Enable backend relationship reads after validating and publishing the mapping. The capability endpoint is `/v1/monster-version-capabilities`; `/v1/monster-versions` supplies bounded relationship summaries. The frontend calls these only on Base NFT detail pages.
 
 Before enabling original links, check summary-query latency for real Ethereum and Solana counterparts and verify the exact destination NFT. Existing NFT APIs continue to handle collection counts, sorting and pagination.
 
@@ -100,7 +100,7 @@ pnpm --filter @protopals/yunipals-indexer exec vitest run test/monster-versions.
 pnpm --filter @protopals/yunipals-home-web test:versions
 ```
 
-For the browser fixture, start the fixture server on port 5177 with `VITE_MONSTER_VERSIONS_ENABLED=true`, then run `pnpm --filter @protopals/yunipals-home-web test:versions:ui`. The script accepts `--playwright`, `--chromium`, and `--url` for installed local tooling. Run workspace type checks/builds and existing collection, Solana and marketplace regressions.
+For the browser fixture, start the fixture server on port 5177 with `VITE_MONSTER_VERSIONS_ENABLED` unset to exercise the frontend default, then run `pnpm --filter @protopals/yunipals-home-web test:versions:ui`. The script accepts `--playwright`, `--chromium`, and `--url` for installed local tooling. Run workspace type checks/builds and existing collection, Solana and marketplace regressions.
 
 Production smoke checks should cover a fresh landing page, removing Not Base, selecting Base explicitly, exclusion combinations, and original links on Base NFTs. Include an Ethereum original, a Solana original with a different numeric Base ID, a split-owner pair, and an unavailable original. NFTs with no verified original must not show a guessed link.
 
@@ -134,8 +134,8 @@ Store audit and manifest files in a durable, access-restricted directory such as
 
 After successful full validation, activate the mapping and grant the existing API identities only the required reads described above. Enable relationship reads on the private previews first. Verify actual Ethereum, BNB, Polygon and Solana originals, split owners, unavailable references, and bounded query latency. Then update the public main and collector API entrypoints to the verified artifacts, preserving their existing configuration, and enable the backend flag through a separate public settings overlay. Restart and check those two read services; ingestion and metadata workers keep their existing releases.
 
-Record the deployed commit and artifact digests, evidence hashes/counts, permission changes, service override paths and smoke-check results. Rollback restores the captured API entrypoints and disables the relationship overlay. Frontend original links remain a separate build setting and should be enabled only after these backend checks pass.
+Record the deployed commit and artifact digests, evidence hashes/counts, permission changes, service override paths and smoke-check results. Rollback restores the captured API entrypoints and disables the relationship overlay. Frontend original links are enabled by default and appear once the backend advertises the active mapping. An explicit `VITE_MONSTER_VERSIONS_ENABLED=false` remains available for frontend rollback.
 
 **Rollback**
 
-Set `API_MONSTER_VERSIONS_ENABLED=false` to stop relationship reads, or disable `VITE_MONSTER_VERSIONS_ENABLED` in the next frontend build. Individual NFT browsing and exclusions continue to work. Keep the evidence and additive tables for diagnosis. A new metadata release requires a newly checked relationship publication; existing mappings do not silently carry across it.
+Set `API_MONSTER_VERSIONS_ENABLED=false` to stop relationship reads, or set `VITE_MONSTER_VERSIONS_ENABLED=false` in the next frontend build. Unsetting the frontend variable restores the enabled default. Individual NFT browsing and exclusions continue to work. Keep the evidence and additive tables for diagnosis. A new metadata release requires a newly checked relationship publication; existing mappings do not silently carry across it.
