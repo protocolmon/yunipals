@@ -1,6 +1,6 @@
 # Shared indexer production checkpoint 2026 11 03
 
-The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous 90-minute/4-hour observation windows remain open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
+The shared-source handover, final encrypted recovery backup and automatic host reboot recovery are verified. Later stability checks exposed BNB ingestion lag and catalog queries depending on unrelated chains. The corrections and new acceptance requirements are recorded below. The continuous one-hour observation window remains open. [PR #15](https://github.com/protocolmon/yunipals/pull/15) remains a draft.
 
 ## Source and consumer handover
 
@@ -81,12 +81,20 @@ PR description records the deployed artifact and current observation start.
 
 ## Acceptance still required
 
-- Complete the 90-minute and 4-hour healthy observation windows. The earlier candidate qualification and encrypted restore drill do not satisfy these windows.
+- Complete one continuous healthy hour. The earlier candidate qualification and encrypted restore drill do not satisfy this window.
 
-The owner shortened the final acceptance period from eight to four hours on
-November 4. The monitor now reports `fourHoursPassed`; all health checks,
+The owner shortened the final acceptance period to one hour on November 4,
+replacing both the four-hour period and the older 90-minute checkpoint.
+The monitor now reports `oneHourPassed`; all health checks,
 failure/reboot/gap reset rules and retained history remain unchanged. A
 threshold-only change retains continuous evidence already collected.
+
+Public connectivity failures on November 4 reset the previous window. Internal
+checks stayed healthy, but external requests also saw intermittent connection
+timeouts. Fifteen follow-up public requests passed, with external recovery
+confirmed at 10:14 a.m. EST. Require one healthy hour after that recovery as well
+as the monitor marker; further failures reset acceptance again. The connection
+failure cause remains unconfirmed.
 
 Follow-up logs identified `market_prod_source_read` exhausting its existing
 32-connection cap. The Marketplace foreign server now releases its source

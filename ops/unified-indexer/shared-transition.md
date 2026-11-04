@@ -185,12 +185,15 @@ current product checks. Keep unrelated provider failures visible.
 
 The minute timer retains a protected history and resets its continuous window
 after a failed check, reboot, configuration change, reversed clock or a gap
-greater than three minutes. Its 90-minute and 4-hour markers therefore require
+greater than three minutes. Its `oneHourPassed` marker therefore requires
 continuous successful evidence for the final deployment. A source-only check
 or earlier qualification cannot establish full product acceptance.
-The owner shortened the final duration to four hours. This
+The owner replaced both the four-hour period and the 90-minute checkpoint with
+one continuous healthy hour. This
 threshold-only change preserves genuine continuous evidence already collected;
 it does not change health checks, failure resets or the retained history.
+An independently observed public failure also invalidates the window. Require
+one healthy hour after confirmed external recovery as well as the monitor marker.
 
 The Marketplace foreign server uses `keep_connections=false`. Apply
 `marketplace-fdw-connection-policy.sql` with the existing database owner on the

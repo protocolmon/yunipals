@@ -12,37 +12,37 @@ spec.loader.exec_module(health)
 
 class AcceptanceTests(unittest.TestCase):
     def previous(self, **changes):
-        return {"healthy": True, "bootId": "boot", "checkedAtUnix": 14440, "healthySinceUnix": 100, **changes}
+        return {"healthy": True, "bootId": "boot", "checkedAtUnix": 3640, "healthySinceUnix": 100, **changes}
 
-    def test_continuous_samples_reach_both_windows(self):
-        result = health.acceptance(self.previous(), 14500, "boot", True)
-        self.assertTrue(result["ninetyMinutesPassed"])
-        self.assertTrue(result["fourHoursPassed"])
+    def test_one_hour_replaces_both_previous_time_gates(self):
+        result = health.acceptance(self.previous(ninetyMinutesPassed=False, fourHoursPassed=False), 3700, "boot", True)
+        self.assertTrue(result["oneHourPassed"])
+        self.assertNotIn("ninetyMinutesPassed", result)
+        self.assertNotIn("fourHoursPassed", result)
 
-    def test_four_hour_boundary_preserves_existing_healthy_evidence(self):
-        previous = self.previous(eightHoursPassed=False)
-        for now, passed in [(14499, False), (14500, True)]:
+    def test_one_hour_boundary_preserves_existing_healthy_evidence(self):
+        previous = self.previous(fourHoursPassed=False)
+        for now, passed in [(3699, False), (3700, True)]:
             with self.subTest(now=now):
                 result = health.acceptance(previous, now, "boot", True)
                 self.assertEqual(result["healthySinceUnix"], 100)
-                self.assertEqual(result["fourHoursPassed"], passed)
+                self.assertEqual(result["oneHourPassed"], passed)
 
     def test_failure_clears_observation_window(self):
-        result = health.acceptance(self.previous(), 14500, "boot", False)
+        result = health.acceptance(self.previous(), 3700, "boot", False)
         self.assertIsNone(result["healthySinceUnix"])
-        self.assertFalse(result["ninetyMinutesPassed"])
-        self.assertFalse(result["fourHoursPassed"])
+        self.assertFalse(result["oneHourPassed"])
 
     def test_reboot_gap_or_clock_reversal_requires_a_new_window(self):
-        for now, boot in [(14500, "new-boot"), (14621, "boot"), (14400, "boot")]:
+        for now, boot in [(3700, "new-boot"), (3821, "boot"), (3600, "boot")]:
             with self.subTest(now=now, boot=boot):
                 result = health.acceptance(self.previous(), now, boot, True)
                 self.assertEqual(result["healthySeconds"], 0)
-                self.assertFalse(result["fourHoursPassed"])
+                self.assertFalse(result["oneHourPassed"])
 
     def test_recovery_after_failure_starts_from_current_sample(self):
-        result = health.acceptance(self.previous(healthy=False, healthySinceUnix=None), 14500, "boot", True)
-        self.assertEqual(result["healthySinceUnix"], 14500)
+        result = health.acceptance(self.previous(healthy=False, healthySinceUnix=None), 3700, "boot", True)
+        self.assertEqual(result["healthySinceUnix"], 3700)
 
     def test_probe_requires_current_configuration_owner_and_fresh_timestamp(self):
         with tempfile.TemporaryDirectory() as directory:
