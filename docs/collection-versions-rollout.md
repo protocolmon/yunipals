@@ -114,6 +114,28 @@ A hostname-verified, read-only check as the production API identity confirmed th
 
 Before enabling original links, restore the exact audit and manifest and verify their recorded SHA-256 hashes, or regenerate them using the current reader selectors and active metadata archive. Retain the resulting evidence in durable storage, rerun `versions:import ... --check`, and then follow the publication and permission steps above. The refresh does not activate settings or change production data. Chain exclusions require no reindex; preparing relationship evidence uses existing indexed history and does not require replaying the chains.
 
+**Backend artifacts and deployment**
+
+Build the API services and mapping tools from one clean, reviewed commit on `main`. From `apps/yunipals-indexer`, use the repository builder with fresh output directories:
+
+```sh
+node scripts/build-application-worker.mjs --worker main-api --outdir /absolute/release/main-api
+node scripts/build-application-worker.mjs --worker collector-api --outdir /absolute/release/collector-api
+node scripts/build-application-worker.mjs --worker versions-audit --outdir /absolute/release/versions-audit
+node scripts/build-application-worker.mjs --worker versions-solana --outdir /absolute/release/versions-solana
+node scripts/build-application-worker.mjs --worker versions-import --outdir /absolute/release/versions-import
+```
+
+Each manifest records its builder, compiler, input hashes and artifact digest. Workspace source is bundled; external dependencies must match the manifest's recorded versions. Record the Git commit alongside the manifests and verify all file hashes after transfer. Keep the preceding immutable API artifacts and service overrides for rollback.
+
+Stage both APIs on unused localhost ports with their existing service identities, private environment-file paths and current shared-indexer selectors. Keep `API_MONSTER_VERSIONS_ENABLED=false` initially. Compare readiness, collection counts and metadata across all five chains, and collector results, against the running services. A different artifact hash is not evidence that a production fix is absent from `main`; resolve the source difference and verify behavior before cutover.
+
+Store audit and manifest files in a durable, access-restricted directory such as `/var/lib/yunipals-monster-versions/YYYYMMDD`, and retain their hashes and aggregate validation output. Run a small read-only audit and import check before the complete check. Imports use point lookups for each batch's NFT identities, disable JIT for the transaction and retain the ten-second statement deadline. Summary reads validate only requested relationship groups and perform point lookups for ownership. PostgreSQL execution-plan regressions cover unrelated collection growth alongside the existing provenance tests; do not increase the production query deadlines to hide a full scan.
+
+After successful full validation, activate the mapping and grant the existing API identities only the required reads described above. Enable relationship reads on the private previews first. Verify actual Ethereum, BNB, Polygon and Solana originals, split owners, unavailable references, and bounded query latency. Then update the public main and collector API entrypoints to the verified artifacts, preserving their existing configuration, and enable the backend flag through a separate public settings overlay. Restart and check those two read services; ingestion and metadata workers keep their existing releases.
+
+Record the deployed commit and artifact digests, evidence hashes/counts, permission changes, service override paths and smoke-check results. Rollback restores the captured API entrypoints and disables the relationship overlay. Frontend original links remain a separate build setting and should be enabled only after these backend checks pass.
+
 **Rollback**
 
 Set `API_MONSTER_VERSIONS_ENABLED=false` to stop relationship reads, or disable `VITE_MONSTER_VERSIONS_ENABLED` in the next frontend build. Individual NFT browsing and exclusions continue to work. Keep the evidence and additive tables for diagnosis. A new metadata release requires a newly checked relationship publication; existing mappings do not silently carry across it.

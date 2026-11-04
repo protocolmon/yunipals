@@ -97,19 +97,21 @@ export async function versionRevision(db: Pick<PoolClient, "query">) {
   }
 }
 
-/** Lifecycle and metadata evidence are rechecked at read time, including remints. */
-export function versionMembership(revision: string) {
+/** Recheck lifecycle/metadata evidence only for the requested groups. */
+function requestedVersionMembership(revision: string) {
   if (!/^\$[1-9][0-9]*$/.test(revision))
     throw new Error("Invalid SQL parameter.");
   const evm = `SELECT v.* FROM metadata.monster_version_member v
+    JOIN requested_groups requested_group ON requested_group.group_id=v.group_id
     JOIN metadata.monster_version_release r ON r.revision=v.revision AND r.active
     JOIN metadata_source.archive_release a ON a.release_id=r.metadata_release_id AND a.state='active'
     JOIN metadata_source.lifecycle_binding b ON b.release_id=a.release_id AND b.chain_id=(CASE v.collection WHEN 'base' THEN '8453' WHEN 'ethereum' THEN '1' WHEN 'polygon' THEN '137' ELSE '56' END)
       AND b.contract_address=v.contract_address AND b.token_id=v.token_id
       AND b.mint_transaction_hash=v.mint_transaction_hash AND b.mint_log_index=v.mint_log_index AND b.asset_key=v.asset_key
-    WHERE v.revision=${revision} AND v.collection<>'solana' AND EXISTS(SELECT 1 FROM (${versionLifecycleSource()}) l WHERE l.collection=v.collection AND l.token_id=v.token_id AND l.lifecycle=v.lifecycle AND l.mint_transaction_hash=v.mint_transaction_hash)`;
+    WHERE v.revision=${revision} AND v.collection<>'solana' AND EXISTS(SELECT 1 FROM (${versionLifecycleSource()}) l WHERE l.collection=v.collection AND l.token_id=v.token_id AND l.lifecycle=v.lifecycle AND l.mint_transaction_hash=v.mint_transaction_hash OFFSET 0)`;
   return solanaVersionReadsEnabled()
     ? `${evm} UNION ALL SELECT v.* FROM metadata.monster_version_member v
+    JOIN requested_groups requested_group ON requested_group.group_id=v.group_id
     JOIN metadata.monster_version_release r ON r.revision=v.revision AND r.active
     JOIN metadata_source.archive_release archive ON archive.release_id=r.metadata_release_id AND archive.state='active'
     JOIN solana_indexer.manifest m ON m.singleton AND m.release_id=archive.release_id
@@ -124,15 +126,20 @@ export async function versionSummaries(
   assets: ReturnType<typeof parseMonsterAsset>[]
 ) {
   const rows = await db.query<{ key: string; info: unknown }>(
-    `WITH tokens AS (${versionTokenSource()}), membership AS (${versionMembership("$1")}), requested AS (
+    `WITH requested AS MATERIALIZED (
     SELECT * FROM jsonb_to_recordset($2::jsonb) AS a(chain text,"contractAddress" text,"tokenId" text,lifecycle integer)
-  ) SELECT CASE WHEN a.chain='solana' THEN 'solana:'||a."tokenId" ELSE a.chain||':'||a."contractAddress"||':'||a."tokenId" END AS key,
+    ), requested_groups AS MATERIALIZED (
+      SELECT DISTINCT v.group_id FROM requested a
+      JOIN metadata.monster_version_member v ON v.revision=$1 AND v.collection=a.chain
+        AND v.contract_address=COALESCE(a."contractAddress",'') AND v.token_id=a."tokenId" AND v.lifecycle=a.lifecycle
+    ), tokens AS NOT MATERIALIZED (${versionTokenSource()}), membership AS MATERIALIZED (${requestedVersionMembership("$1")})
+    SELECT CASE WHEN a.chain='solana' THEN 'solana:'||a."tokenId" ELSE a.chain||':'||a."contractAddress"||':'||a."tokenId" END AS key,
     jsonb_build_object('groupId',v.group_id,'revision',$1::text,'role',v.role,'snapshotDate',v.snapshot_date::text,
       'versions',jsonb_agg(jsonb_build_object('chain',related.collection,'contractAddress',NULLIF(related.contract_address,''),'tokenId',related.token_id,'lifecycle',related.lifecycle,'role',related.role,'burned',COALESCE(peer.burned,false),'unavailable',peer.token_id IS NULL) ORDER BY CASE related.role WHEN 'original' THEN 0 WHEN 'version' THEN 1 ELSE 2 END,related.collection,related.token_id)) AS info
-    FROM requested a JOIN tokens own ON own.collection=a.chain AND lower(own.contract_address)=COALESCE(a."contractAddress",'') AND own.token_id=a."tokenId" AND own.lifecycle=a.lifecycle
+    FROM requested a JOIN LATERAL(SELECT * FROM tokens own WHERE own.collection=a.chain AND lower(own.contract_address)=COALESCE(a."contractAddress",'') AND own.token_id=a."tokenId" AND own.lifecycle=a.lifecycle OFFSET 0) own ON true
     JOIN membership v ON v.collection=own.collection AND v.contract_address=lower(own.contract_address) AND v.token_id=own.token_id AND v.lifecycle=own.lifecycle
     JOIN membership related ON related.group_id=v.group_id
-    LEFT JOIN tokens peer ON peer.collection=related.collection AND lower(peer.contract_address)=related.contract_address AND peer.token_id=related.token_id AND peer.lifecycle=related.lifecycle
+    LEFT JOIN LATERAL(SELECT * FROM tokens peer WHERE peer.collection=related.collection AND lower(peer.contract_address)=related.contract_address AND peer.token_id=related.token_id AND peer.lifecycle=related.lifecycle OFFSET 0) peer ON true
     WHERE related.collection='solana' OR (peer.token_id IS NOT NULL AND ((peer.collection=own.collection AND peer.token_id=own.token_id) OR NOT ${versionVisibility("peer")}))
     GROUP BY a.chain,a."contractAddress",a."tokenId",v.group_id,v.role,v.snapshot_date`,
     [revision, JSON.stringify(assets)]
