@@ -20,6 +20,29 @@ import { monsterVersionMigrations } from "../lib/versions/schema.js";
 import { collections } from "../lib/constants.js";
 import { registerMonsterVersionRoutes } from "../lib/versions/routes.js";
 import { storeVersionManifest } from "../lib/versions/import.js";
+import { versionSummaries } from "../lib/versions/read.js";
+
+type Plan = {
+  "Relation Name"?: string;
+  "Actual Rows"?: number;
+  "Actual Loops"?: number;
+  "Rows Removed by Filter"?: number;
+  Plans?: Plan[];
+};
+function visitedRows(plan: Plan, relation: string): number {
+  const current =
+    plan["Relation Name"] === relation
+      ? ((plan["Actual Rows"] ?? 0) + (plan["Rows Removed by Filter"] ?? 0)) *
+        (plan["Actual Loops"] ?? 1)
+      : 0;
+  return (
+    current +
+    (plan.Plans ?? []).reduce(
+      (total, child) => total + visitedRows(child, relation),
+      0
+    )
+  );
+}
 
 const revision = "a".repeat(64),
   alice = `0x${"1".repeat(40)}` as `0x${string}`,
@@ -286,5 +309,115 @@ describe("relationship reads on PostgreSQL", () => {
     expect(() => parseVersionManifest(missing)).toThrow(
       "initial mint recipient"
     );
+  });
+
+  it("checks a small import without scanning unrelated NFT lifecycles", async () => {
+    const raw = allocation();
+    for (const member of raw.groups[0]!.members)
+      member.assetKey = "1".padStart(64, "0");
+    let lifecycleRowsVisited = 0;
+    await db.exec("BEGIN");
+    try {
+      await db.exec(`
+        CREATE INDEX version_lifecycle_lookup ON versions_evm.token_lifecycle(collection,token_id,lifecycle);
+        INSERT INTO versions_evm.token_lifecycle
+          SELECT 'base',id::text,1,'${alice}','${hash}',1 FROM generate_series(1000,10999) id;
+        ANALYZE versions_evm.token_lifecycle;
+      `);
+      const client = {
+        query: async (sql: string, values?: unknown[]) => {
+          if (sql.startsWith("WITH input AS")) {
+            const explained = await db.query<{
+              "QUERY PLAN": { Plan: Plan }[];
+            }>("EXPLAIN (ANALYZE, FORMAT JSON) " + sql, values);
+            lifecycleRowsVisited += visitedRows(
+              explained.rows[0]!["QUERY PLAN"][0]!.Plan,
+              "token_lifecycle"
+            );
+          }
+          return db.query(sql, values);
+        }
+      } as unknown as Parameters<typeof storeVersionManifest>[0];
+      await storeVersionManifest(
+        client,
+        parseVersionManifest(raw),
+        "f".repeat(64),
+        "c".repeat(64),
+        false
+      );
+      expect(lifecycleRowsVisited).toBeGreaterThan(0);
+      expect(lifecycleRowsVisited).toBeLessThan(100);
+    } finally {
+      await db.exec("ROLLBACK");
+    }
+  });
+
+  it("reads only requested groups and point-lookups ownership in a large collection", async () => {
+    let tokenRowsVisited = 0;
+    await db.exec("BEGIN");
+    try {
+      await db.exec(`
+        CREATE INDEX version_token_lookup ON versions_evm.token(collection,token_id,lifecycle);
+        CREATE INDEX version_lifecycle_lookup ON versions_evm.token_lifecycle(collection,token_id,lifecycle);
+        INSERT INTO versions_evm.token
+          SELECT 'base',8453,'${collections.base.address}',id::text,'${alice}',false,1,1,1 FROM generate_series(1000,10999) id;
+        ANALYZE versions_evm.token;
+      `);
+      const client = {
+        query: async (sql: string, values?: unknown[]) => {
+          const explained = await db.query<{
+            "QUERY PLAN": { Plan: Plan }[];
+          }>("EXPLAIN (ANALYZE, FORMAT JSON) " + sql, values);
+          tokenRowsVisited += visitedRows(
+            explained.rows[0]!["QUERY PLAN"][0]!.Plan,
+            "token"
+          );
+          return db.query(sql, values);
+        }
+      } as unknown as Parameters<typeof versionSummaries>[0];
+      const result = await versionSummaries(client, revision, [
+        {
+          chain: "base",
+          contractAddress: collections.base.address,
+          tokenId: "1",
+          lifecycle: 1
+        },
+        {
+          chain: "base",
+          contractAddress: collections.base.address,
+          tokenId: "2",
+          lifecycle: 1
+        },
+        {
+          chain: "base",
+          contractAddress: collections.base.address,
+          tokenId: "3",
+          lifecycle: 2
+        },
+        {
+          chain: "base",
+          contractAddress: collections.base.address,
+          tokenId: "1000",
+          lifecycle: 1
+        }
+      ]);
+      expect(Object.keys(result).sort()).toEqual([
+        `base:${collections.base.address}:1`,
+        `base:${collections.base.address}:2`
+      ]);
+      for (const tokenId of ["1", "2"])
+        expect(
+          result[`base:${collections.base.address}:${tokenId}`]
+        ).toMatchObject({
+          versions: [
+            { chain: "ethereum", tokenId, role: "original" },
+            { chain: "base", tokenId, role: "airdrop" }
+          ]
+        });
+      expect(tokenRowsVisited).toBeGreaterThan(0);
+      expect(tokenRowsVisited).toBeLessThan(100);
+    } finally {
+      await db.exec("ROLLBACK");
+    }
   });
 });

@@ -76,14 +76,18 @@ export async function storeVersionManifest(
     const evm = batch.filter((m) => m.chain !== "solana");
     if (!evm.length) continue;
     const result = await client.query<{ matched: number }>(
-      `WITH input AS (SELECT * FROM jsonb_to_recordset($2::jsonb) AS m(chain text,"chainId" text,"contractAddress" text,"tokenId" text,lifecycle integer,"mintTransactionHash" text,"mintLogIndex" integer,"assetKey" text,role text,reconstructed boolean,"initialRecipient" text)), tokens AS (${versionTokenSource()}), lifecycles AS (${versionLifecycleSource()}), transfers AS (${versionTransferSource()})
-      SELECT count(*)::int AS matched FROM input m JOIN tokens t ON t.collection=m.chain AND lower(t.contract_address)=m."contractAddress" AND t.token_id=m."tokenId" AND t.lifecycle=m.lifecycle
+      // Keep identity predicates inside the ownership views. Materializing the
+      // reused lifecycle CTE scans every NFT before checking a bounded batch.
+      `WITH input AS (SELECT * FROM jsonb_to_recordset($2::jsonb) AS m(chain text,"chainId" text,"contractAddress" text,"tokenId" text,lifecycle integer,"mintTransactionHash" text,"mintLogIndex" integer,"assetKey" text,role text,reconstructed boolean,"initialRecipient" text)), tokens AS NOT MATERIALIZED (${versionTokenSource(false)}), lifecycles AS NOT MATERIALIZED (${versionLifecycleSource()}), transfers AS NOT MATERIALIZED (${versionTransferSource()})
+      SELECT count(*)::int AS matched FROM input m
+      JOIN LATERAL(SELECT * FROM tokens t WHERE t.collection=m.chain AND lower(t.contract_address)=m."contractAddress" AND t.token_id=m."tokenId" AND t.lifecycle=m.lifecycle OFFSET 0) t ON true
       JOIN metadata_source.lifecycle_binding b ON b.release_id=$1 AND b.chain_id=m."chainId" AND b.contract_address=m."contractAddress" AND b.token_id=m."tokenId" AND b.mint_transaction_hash=m."mintTransactionHash" AND b.mint_log_index=m."mintLogIndex" AND b.asset_key=m."assetKey"
-      WHERE EXISTS(SELECT 1 FROM lifecycles l JOIN transfers e ON e.collection=l.collection AND e.token_id=l.token_id AND e.lifecycle=l.lifecycle AND e.block_number=l.mint_block
+      WHERE EXISTS(SELECT 1 FROM lifecycles l
+        JOIN LATERAL(SELECT * FROM transfers e WHERE e.collection=l.collection AND e.token_id=l.token_id AND e.lifecycle=l.lifecycle AND e.block_number=l.mint_block
+          AND e.chain_id::text=m."chainId" AND lower(e.contract_address)=m."contractAddress" AND e."from"='0x0000000000000000000000000000000000000000'
+          AND e.transaction_hash=m."mintTransactionHash" AND e.log_index=m."mintLogIndex" OFFSET 0) e ON true
         WHERE l.collection=m.chain AND l.token_id=m."tokenId" AND l.lifecycle=m.lifecycle AND l.mint_transaction_hash=m."mintTransactionHash"
-        AND e.chain_id::text=m."chainId" AND lower(e.contract_address)=m."contractAddress" AND e."from"='0x0000000000000000000000000000000000000000'
-        AND e.transaction_hash=m."mintTransactionHash" AND e.log_index=m."mintLogIndex"
-        AND (NOT m.reconstructed OR m.role<>'airdrop' OR (lower(e."to")=m."initialRecipient" AND lower(l.minted_to)=m."initialRecipient" AND NOT EXISTS(SELECT 1 FROM lifecycles prior WHERE prior.collection=l.collection AND prior.token_id=l.token_id AND prior.lifecycle<l.lifecycle))))
+        AND (NOT m.reconstructed OR m.role<>'airdrop' OR (lower(e."to")=m."initialRecipient" AND lower(l.minted_to)=m."initialRecipient" AND NOT EXISTS(SELECT 1 FROM lifecycles prior WHERE prior.collection=l.collection AND prior.token_id=l.token_id AND prior.lifecycle<l.lifecycle OFFSET 0))) OFFSET 0)
       AND (NOT m.reconstructed OR m.role='airdrop' OR EXISTS(SELECT 1 FROM metadata_source.source_record r WHERE r.release_id=$1 AND r.asset_key=m."assetKey" AND r.issue IS NULL))`,
       [manifest.metadataReleaseId, JSON.stringify(evm)]
     );

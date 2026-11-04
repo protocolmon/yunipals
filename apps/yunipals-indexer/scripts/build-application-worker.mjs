@@ -14,6 +14,10 @@ const require = createRequire(path.join(project, "package.json"));
 const compiler = createRequire(require.resolve("tsx/package.json"))("esbuild");
 const profiles = {
   "main-api": "lib/api/server.ts",
+  "collector-api": "lib/api/collector-server.ts",
+  "versions-audit": "scripts/audit-base-initial-owners.ts",
+  "versions-solana": "scripts/extend-monster-versions-solana.ts",
+  "versions-import": "scripts/import-monster-versions.ts",
   "read-cache": "lib/metadata/read-cache-worker.ts",
   "verify-islands": "scripts/verify-islands.ts",
   "islands-metadata": "lib/islands/worker.ts",
@@ -46,7 +50,11 @@ const sha = (raw) => createHash("sha256").update(raw).digest("hex");
 const encode = (value) => Buffer.from(JSON.stringify(value, null, 2) + "\n");
 const packageRaw = readFileSync(path.join(project, "package.json"));
 const { dependencies } = JSON.parse(packageRaw);
-const externalPackages = Object.keys(dependencies).sort();
+// Workspace source must be bundled so artifacts do not depend on whichever
+// workspace checkout happens to supply the installed third-party packages.
+const externalPackages = Object.keys(dependencies)
+  .filter((name) => !dependencies[name].startsWith("workspace:"))
+  .sort();
 const filename = "dist/" + profile + ".mjs";
 const result = await compiler.build({
   absWorkingDir: project,

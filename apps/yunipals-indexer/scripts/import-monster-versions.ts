@@ -34,6 +34,7 @@ try {
       : "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
   );
   await client.query("SET LOCAL statement_timeout='10s'");
+  await client.query("SET LOCAL jit=off");
   if (action === "--activate")
     await client.query(
       "SELECT pg_advisory_xact_lock(hashtext('monster-version-publication'))"
