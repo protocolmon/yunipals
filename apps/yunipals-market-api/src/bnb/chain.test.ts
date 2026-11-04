@@ -105,6 +105,17 @@ test("latest indexed ownership still requires the trading confirmation and fresh
   );
   item.indexed.lastTransfer.blockNumber = 100n;
   await inspect();
+  // When Ponder is fully current there is no transfer gap to query. The
+  // fixture rejects any log range other than 101..121, catching an inverted
+  // 122..121 request while still checking the current owner and block hash.
+  item.indexed.checkpoint = {
+    number: 121n,
+    hash: headHash,
+    updatedAt: new Date(now)
+  };
+  await inspect();
+  item.indexed.checkpoint.number = 100n;
+  item.indexed.checkpoint.hash = cursorHash;
   item.state.transfers = true;
   await assert.rejects(inspect(), rejectsCode("asset_still_syncing"));
   item.state.transfers = false;
