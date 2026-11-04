@@ -6,7 +6,7 @@ const boosterLaunchId =
 
 export const environment = {
   monsterVersionsEnabled:
-    import.meta.env?.VITE_MONSTER_VERSIONS_ENABLED === "true",
+    import.meta.env?.VITE_MONSTER_VERSIONS_ENABLED !== "false",
   collectionOnly: import.meta.env?.VITE_COLLECTION_ONLY === "true",
   analytics: analyticsConfigFromEnv(import.meta.env ?? {}),
   // Enable only against a deployed API implementing the marketplace contract.
