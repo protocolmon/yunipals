@@ -1,6 +1,7 @@
 import { environment } from "@/environment";
 import {
   collectionFiltersKey,
+  effectiveCollectionChains,
   hasMarketFilters,
   includesSolana,
   toEvmCollectionFilters,
@@ -63,7 +64,7 @@ async function solanaRequest<T>(
 
 function sourcesFor(filters: CollectionFilters): Source[] {
   return [
-    ...(!filters.chains.length || filters.chains.some(isIndexedChain)
+    ...(effectiveCollectionChains(filters).some(isIndexedChain)
       ? ["evm" as const]
       : []),
     ...(includesSolana(filters) ? ["solana" as const] : [])
@@ -150,6 +151,8 @@ export async function fetchCollectionPage(
   cursor?: CollectionContinuation,
   signal?: AbortSignal
 ): Promise<CollectionPage> {
+  if (!effectiveCollectionChains(filters).length)
+    return { items: [], total: 0, nextCursor: null };
   if (hasMarketFilters(filters))
     throw new Error("Select an EVM chain to use sale and price filters.");
   const filtersKey = collectionFiltersKey(filters);
@@ -207,9 +210,16 @@ export async function fetchCollectionPage(
 
 export async function fetchCollectionFacets(
   chains: CollectionChain[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  empty = false
 ): Promise<CollectionFacets> {
   const requests: Promise<CollectionFacets>[] = [];
+  if (empty)
+    return {
+      items: [],
+      metadata: { available: 0, missing: 0 },
+      updatedAt: new Date().toISOString()
+    };
   if (!chains.length || chains.some(isIndexedChain))
     requests.push(fetchTraitFacets(chains.filter(isIndexedChain), signal));
   if (

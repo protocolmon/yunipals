@@ -41,6 +41,7 @@ import {
   MobileFilterDrawer
 } from "@/components/CollectionFilters";
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
+import { TokenVersionInfo } from "@/components/TokenVersions";
 import { TokenArtwork } from "@/components/TokenArtwork";
 import { TokenCard } from "@/components/TokenCard";
 import { TradeReviewDialog } from "@/components/marketplace/TradeReviewDialog";
@@ -84,6 +85,7 @@ import {
   serializeCollectionFilters,
   updateCollectionChains,
   includesSolana,
+  effectiveCollectionChains,
   toEvmCollectionFilters,
   type CollectionChain,
   type CollectionSort,
@@ -256,6 +258,7 @@ function TokenDetail({
             <h1 className="display mt-3 text-4xl text-ink sm:text-6xl">
               {token.name || "Unknown Yunipal"}
             </h1>
+            <TokenVersionInfo token={token} />
             {description && (
               <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/65">
                 {description}
@@ -538,21 +541,25 @@ function CollectionExplorer() {
       setSearchParams(canonicalSearch, { replace: true });
   }, [canonicalSearch, searchParams, setSearchParams]);
   const filtersKey = collectionFiltersKey(filters);
+  const visibleChains = useMemo(
+    () => effectiveCollectionChains(filters),
+    [filters]
+  );
   const currencyLabel =
-    filters.chains.length === 1 && isIndexedChain(filters.chains[0])
-      ? catalogCurrencies(filters.chains[0]).find(
+    visibleChains.length === 1 && isIndexedChain(visibleChains[0])
+      ? catalogCurrencies(visibleChains[0]).find(
           (currency) => currency.key === filters.currency
         )?.symbol
       : undefined;
   const activeFilterCount = countCollectionFilters(filters);
   const selectedChain =
-    filters.chains.length === 1 ? filters.chains[0] : undefined;
+    visibleChains.length === 1 ? visibleChains[0] : undefined;
   const presentation = useMemo<CollectionPresentation>(() => {
-    if (filters.chains.length <= 1) {
-      return COLLECTION_PRESENTATION[filters.chains[0] ?? "all"];
+    if (visibleChains.length <= 1) {
+      return COLLECTION_PRESENTATION[visibleChains[0] ?? "all"];
     }
 
-    const labels = filters.chains.map((chain) => chainDetails[chain].label);
+    const labels = visibleChains.map((chain) => chainDetails[chain].label);
     const labelList = labels.join(", ");
     return {
       ...COLLECTION_PRESENTATION.all,
@@ -562,7 +569,7 @@ function CollectionExplorer() {
       pageTitle: `${labels.join(", ")} Collection — Yunipals`,
       pageDescription: `Browse active Yunipals across ${labelList}, inspect traits, and find collections by wallet.`
     };
-  }, [filters.chains]);
+  }, [visibleChains]);
   const [lookup, setLookup] = useState("");
   const [lookupError, setLookupError] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -573,10 +580,11 @@ function CollectionExplorer() {
   const withSolana = !isTcg && includesSolana(filters);
   const catalog = useMarketCatalog(
     toEvmCollectionFilters(filters),
-    !isTcg && !withSolana
+    !isTcg && !withSolana && visibleChains.length > 0
   );
   const marketFiltered = hasMarketFilters(filters);
   const useLegacy =
+    visibleChains.length === 0 ||
     withSolana ||
     (!marketFiltered &&
       !catalog.validationError &&
@@ -626,13 +634,15 @@ function CollectionExplorer() {
       "collection",
       collectionBrowserCacheVersion,
       "trait-facets",
-      filters.chains
+      visibleChains
     ],
-    queryFn: ({ signal }) => fetchCollectionFacets(filters.chains, signal),
+    queryFn: ({ signal }) =>
+      fetchCollectionFacets(visibleChains, signal, visibleChains.length === 0),
     staleTime: 60_000
   });
   const legacyTokensQuery = useInfiniteQuery({
-    enabled: !isTcg && useLegacy && !marketFiltered,
+    enabled:
+      !isTcg && useLegacy && (!marketFiltered || visibleChains.length === 0),
     queryKey: [
       "collection",
       collectionBrowserCacheVersion,
@@ -1045,6 +1055,25 @@ function CollectionExplorer() {
                     className={`h-3.5 w-3.5 ${chainDetails[chain].badgeClassName}`}
                   />
                   {chainDetails[chain].label}
+                  <X aria-hidden="true" size={12} />
+                </button>
+              ))}
+              {filters.excludedChains.map((chain) => (
+                <button
+                  key={`exclude:${chain}`}
+                  type="button"
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      excludedChains: filters.excludedChains.filter(
+                        (value) => value !== chain
+                      )
+                    })
+                  }
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-line/35 px-3 py-1.5 text-xs font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
+                  aria-label={`Remove ${chainDetails[chain].label} exclusion`}
+                >
+                  Not {chainDetails[chain].label}
                   <X aria-hidden="true" size={12} />
                 </button>
               ))}

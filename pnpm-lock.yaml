@@ -170,6 +170,9 @@ importers:
       '@polkamon/web3-util-pmons':
         specifier: file:vendor/polkamon-web3-util-pmons-31.15.1.tgz
         version: file:apps/yunipals-indexer/vendor/polkamon-web3-util-pmons-31.15.1.tgz(@polkamon/util-essentials@file:apps/yunipals-indexer/vendor/polkamon-util-essentials-27.3.3.tgz(tslib@2.6.0))(@polkamon/web3-util-core@file:apps/yunipals-indexer/vendor/polkamon-web3-util-core-30.8.3.tgz(@polkamon/util-essentials@file:apps/yunipals-indexer/vendor/polkamon-util-essentials-27.3.3.tgz(tslib@2.6.0))(tslib@2.6.0))(tslib@2.6.0)
+      '@protopals/yunipals-market-core':
+        specifier: workspace:^
+        version: link:../../packages/yunipals-market-core
       drizzle-orm:
         specifier: 0.45.2
         version: 0.45.2(@electric-sql/pglite@0.2.13)(@opentelemetry/api@1.9.1)(@types/pg@8.11.11)(kysely@0.28.17)(pg@8.23.0)

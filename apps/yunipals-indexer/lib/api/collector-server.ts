@@ -1,3 +1,4 @@
+import { registerMonsterVersionRoutes } from "../versions/routes.js";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -69,6 +70,7 @@ app.get("/ready", async (c) => {
     metadata.ready ? 200 : 503
   );
 });
+registerMonsterVersionRoutes(app, { pool: apiPool });
 registerCollectorRoutes(app, {
   pool: apiPool,
   resolveOwner: async (input, chains) => {

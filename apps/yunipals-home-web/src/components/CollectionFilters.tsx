@@ -103,7 +103,7 @@ export function ChainFilter({
 }: Pick<FilterPanelProps, "filters" | "onChange" | "className">) {
   function selectChain(chain: CollectionChain | "all") {
     if (chain === "all") {
-      onChange({ ...filters, chains: [] });
+      onChange({ ...filters, chains: [], excludedChains: [] });
       return;
     }
 
@@ -118,6 +118,7 @@ export function ChainFilter({
             );
     onChange({
       ...filters,
+      excludedChains: filters.excludedChains.filter((value) => value !== chain),
       chains:
         nextSelection.length === collectionChains.length ? [] : nextSelection
     });
@@ -135,7 +136,7 @@ export function ChainFilter({
         <div>
           <p className="text-base font-black text-ink">Chains</p>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            Combine one or more networks.
+            Show only selected networks, or exclude them.
           </p>
         </div>
         {filters.chains.length > 0 && (
@@ -148,7 +149,8 @@ export function ChainFilter({
         {CHAIN_OPTIONS.map((option) => {
           const selected =
             option.value === "all"
-              ? filters.chains.length === 0
+              ? filters.chains.length === 0 &&
+                filters.excludedChains.length === 0
               : filters.chains.includes(option.value);
           const indexedChain = option.value === "all" ? null : option.value;
 
@@ -179,6 +181,35 @@ export function ChainFilter({
             </button>
           );
         })}
+      </div>
+      <div className="mt-4 border-t border-line pt-3">
+        <p className="mb-2 text-xs font-bold text-muted">Exclude chains</p>
+        <div className="flex flex-wrap gap-2">
+          {collectionChains.map((chain) => (
+            <button
+              key={chain}
+              type="button"
+              aria-label={`Exclude ${chainDetails[chain].label}`}
+              aria-pressed={filters.excludedChains.includes(chain)}
+              onClick={() =>
+                onChange({
+                  ...filters,
+                  excludedChains: filters.excludedChains.includes(chain)
+                    ? filters.excludedChains.filter((value) => value !== chain)
+                    : [...filters.excludedChains, chain]
+                })
+              }
+              className={cn(
+                "min-h-11 rounded-full border px-3 py-2 text-xs font-bold focus-visible:ring-2 focus-visible:ring-ink",
+                filters.excludedChains.includes(chain)
+                  ? "border-ink bg-ink text-white"
+                  : "border-line bg-white text-muted"
+              )}
+            >
+              Not {chainDetails[chain].label}
+            </button>
+          ))}
+        </div>
       </div>
     </fieldset>
   );
@@ -680,7 +711,13 @@ export function CollectionFilterPanel({
       {marketEnabled && (
         <CatalogFilters
           filters={toEvmCollectionFilters(filters)}
-          onChange={onChange}
+          onChange={(next) =>
+            onChange({
+              ...next,
+              chains: filters.chains,
+              excludedChains: filters.excludedChains
+            })
+          }
           priceMode={priceMode}
         />
       )}

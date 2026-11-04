@@ -1,3 +1,4 @@
+import { versionFixture } from "./monsterVersions";
 import { createHash } from "node:crypto";
 import type { Plugin } from "vite";
 
@@ -96,6 +97,8 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
     body: { error: "fixture_unavailable", message }
   });
   if (method !== "GET") return error(405, "Fixtures are read-only.");
+  const versions = versionFixture(url, fixtureTokens);
+  if (versions) return versions;
   const solana = solanaFixtureResponse(url);
   if (solana) return solana;
   if (url.pathname === "/__fixtures/indexer/v1/collector-capabilities")
@@ -144,8 +147,18 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
         ])
       )
     });
-  if (path === "/__fixtures/market/v2/market/tokens") {
-    const filters = parseCollectionFilters(params);
+  if (
+    path === "/__fixtures/market/v2/market/tokens" ||
+    path === "/__fixtures/indexer/v1/tokens"
+  ) {
+    const isIndexer = path === "/__fixtures/indexer/v1/tokens";
+    const filterParams = new URLSearchParams(params);
+    if (isIndexer)
+      params.getAll("traitType").forEach((type, index) => {
+        const value = params.getAll("traitValue")[index];
+        if (value !== undefined) filterParams.append(`t.${type}`, value);
+      });
+    const filters = parseCollectionFilters(filterParams);
     try {
       validateCatalogFilters(filters);
     } catch {
@@ -153,7 +166,7 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
     }
     const query = collectionFiltersKey(filters);
     const id = `fixture_${createHash("sha256").update(query).digest("hex").slice(0, 24)}`;
-    if (offset && params.get("snapshot") !== id)
+    if (!isIndexer && offset && params.get("snapshot") !== id)
       return error(409, "Restart the fixture catalog after changing filters.");
     const rows = tokens
       .filter((token) => {
@@ -193,6 +206,8 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
           a.chain.localeCompare(b.chain)
         );
       });
+    if (isIndexer)
+      return ok({ ...selection, total: rows.length, ...page(rows) });
     const coverage = {
       status: "complete",
       completedAt: updatedAt,
@@ -252,8 +267,18 @@ export function fixtureResponse(url: URL, method = "GET"): FixtureResponse {
           traitType: "Color",
           kind: "categorical",
           values: [
-            { value: "Blue", count: 24 },
-            { value: "Red", count: 24 }
+            {
+              value: "Blue",
+              count: tokens.filter(
+                (token) => token.attributes?.[1]?.value === "Blue"
+              ).length
+            },
+            {
+              value: "Red",
+              count: tokens.filter(
+                (token) => token.attributes?.[1]?.value === "Red"
+              ).length
+            }
           ]
         },
         {
