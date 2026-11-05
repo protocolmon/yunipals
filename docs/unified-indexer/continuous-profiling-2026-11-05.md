@@ -232,9 +232,7 @@ In the 12 minutes after deployment, all 107 Base observations succeeded on the f
   tenth of the time it did:
   - **Reorg depth: accepted.** Ponder's Base finality of 30 blocks is now 6 seconds, and depth
     policies such as 20 subsequent blocks now mean 4 seconds. Yunipals holds no funds in
-    custody, so reorg risk is accepted and these stay as they are. A reorg deeper than 30 blocks
-    makes Ponder stop with `Encountered unrecoverable reorg` and recover after a restart. The health monitor alerts only if recovery takes more than about
-    5 minutes, so that normal restarts do not page anyone.
+    custody, so reorg risk is accepted and these stay as they are. A reorg deeper than 30 blocks makes Ponder log `Encountered unrecoverable reorg` and retry on the next poll; only repeated failures stop the indexer. Both such warnings from 2026-11-01 to 2026-11-05, Base at 19:12:51 UTC and BNB on 2026-11-02, were stale provider responses, not reorgs: the block received was older than Ponder's finalized block. `yunipals-reorg-report` counts reorgs from then on; see [reorg tracking](../../apps/yunipals-indexer/docs/indexer-health-monitoring.md#reorg-tracking).
   - **Paid RPC use: check.** `MARKET_RPC_PROXY_FREE_RECENT_BLOCKS=32768` now covers under 2 hours
     instead of 18. Paid calls on `yunipals-market-production-rpc@base` rose from 230 to 240
     between 20:28 and 20:50 UTC, faster than its average since 2026-11-03. That sample is too

@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import time
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import indexer_health_monitor as monitor
 
@@ -66,6 +66,7 @@ class Harness:
         self.health = "current"
         self.deliver = Mock()
         self.now = NOW
+        self.reorgs = Mock(return_value=[])
 
     def check(self, config=CONFIG):
         self.production.now = self.now
@@ -73,7 +74,7 @@ class Harness:
         if health == "current":
             health = {"checkedAt": iso(self.now), "healthy": True, "failures": []}
         report = monitor.cycle(config, self.directory, health, read=self.production.read,
-                               deliver=self.deliver, now=self.now)
+                               deliver=self.deliver, now=self.now, reorgs=self.reorgs)
         self.now += 60
         return report
 
@@ -306,6 +307,154 @@ class ConfigAndQueryTests(unittest.TestCase):
             change(config)
             with self.assertRaises(ValueError):
                 monitor.validate_config(config)
+
+
+def journal_line(message, cursor, moment=NOW):
+    return json.dumps({"MESSAGE": message, "__CURSOR": cursor,
+                       "__REALTIME_TIMESTAMP": str(int(moment * 1_000_000))})
+
+
+# Formats copied from the production indexer journal on 2026-11-05.
+PRODUCTION_LINES = [
+    journal_line("19:12:42.352 INFO  Reorged block chain=base number=53577908 (256ms)", "a"),
+    journal_line("19:12:51.504 WARN  Encountered unrecoverable reorg chain=base "
+                 "finalized_block=53577916 (12ms)", "b"),
+    journal_line("19:12:51.505 WARN  Failed to fetch latest block chain=base number=53577910 "
+                 "hash=0x5005905571e6ab334bcbcd6ff6e24442839d04c56e13d51be9e19e25ff124326 "
+                 "retry_count=0", "h"),
+    journal_line("Error: Encountered unrecoverable 'base' reorg beyond finalized block 53577916", "c"),
+    journal_line(json.dumps({"event": "yunipals_indexer_reorg", "chainId": 1, "depth": 45,
+                             "commonAncestorBlock": 26300000}), "d"),
+    journal_line(json.dumps({"event": "yunipals_indexer_reorg", "chainId": 1, "depth": 10,
+                             "commonAncestorBlock": 26300100}), "e"),
+    journal_line("08:01:00.000 WARN  Encountered unrecoverable reorg chain=polygon "
+                 "finalized_block=96000000 (5ms)", "f"),
+    journal_line("08:02:00.000 INFO  Reorged block chain=unknown number=1 (1ms)", "g"),
+    "not json",
+]
+
+
+class ReorgTrackingTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.directory = Path(self.temporary.name)
+        self.addCleanup(self.temporary.cleanup)
+
+    def run_with(self, stdout="", returncode=0, stderr=""):
+        return Mock(return_value=subprocess.CompletedProcess([], returncode, stdout=stdout,
+                                                             stderr=stderr))
+
+    def test_production_messages_are_classified(self):
+        run = self.run_with("\n".join(PRODUCTION_LINES))
+        events = monitor.journal_reorgs(CONFIG, self.directory, run=run)
+        found = [(e["chain"], e["kind"], e["depth"], e["deep"]) for e in events]
+        self.assertEqual(found, [
+            ("base", "reorg", None, False),
+            # Production's 19:12:51 event: the received block was older than finality.
+            ("base", "stale_provider_response", None, False),
+            ("mainnet", "reorg_depth", 45, True),
+            ("mainnet", "reorg_depth", 10, False),
+            ("polygon", "beyond_ponder_window", None, True),
+        ])
+        self.assertEqual(events[1]["block"], 53577916)
+        self.assertEqual(events[1]["receivedBlock"], 53577910)
+        # Polygon's warning had no following line, so it stays a deep reorg.
+        self.assertIsNone(events[4]["receivedBlock"])
+
+    def test_a_newer_received_block_is_a_real_deep_reorg(self):
+        lines = [
+            journal_line("x WARN  Encountered unrecoverable reorg chain=bnb finalized_block=100 (0ms)", "1"),
+            journal_line("x WARN  Failed to fetch latest block chain=bnb number=140 hash=0x1 retry_count=0", "2"),
+            journal_line("x WARN  Failed to fetch latest block chain=bnb number=150 hash=0x2 retry_count=1", "3"),
+        ]
+        events = monitor.journal_reorgs(CONFIG, self.directory, run=self.run_with("\n".join(lines)))
+        self.assertEqual([(e["kind"], e["deep"], e["receivedBlock"]) for e in events],
+                         [("beyond_ponder_window", True, 140)])
+
+    def test_reads_are_incremental_and_a_first_read_is_bounded(self):
+        run = self.run_with()
+        monitor.journal_reorgs(CONFIG, self.directory, run=run)
+        arguments = run.call_args.args[0]
+        self.assertIn("-5min", arguments)
+        self.assertIn(f"--cursor-file={self.directory / 'journal.cursor'}", arguments)
+        (self.directory / "journal.cursor").write_text("s=1")
+        monitor.journal_reorgs(CONFIG, self.directory, run=run)
+        self.assertNotIn("--since", run.call_args.args[0])
+        monitor.journal_reorgs(CONFIG, self.directory, since="2026-11-01", run=run)
+        backfill = run.call_args.args[0]
+        self.assertIn("2026-11-01", backfill)
+        self.assertFalse(any(item.startswith("--cursor-file") for item in backfill))
+
+    def test_no_matching_entries_is_not_an_error(self):
+        self.assertEqual(monitor.journal_reorgs(CONFIG, self.directory,
+                                                run=self.run_with(returncode=1)), [])
+        for result in (self.run_with(returncode=1, stderr="Failed to open journal"),
+                       self.run_with(returncode=2)):
+            with self.assertRaises(RuntimeError):
+                monitor.journal_reorgs(CONFIG, self.directory, run=result)
+
+    def test_records_are_kept_once_and_privately(self):
+        events = monitor.journal_reorgs(CONFIG, self.directory,
+                                        run=self.run_with("\n".join(PRODUCTION_LINES)))
+        self.assertEqual(monitor.record_reorgs(self.directory, events), 5)
+        self.assertEqual(monitor.record_reorgs(self.directory, events), 0)
+        path = self.directory / "reorgs.jsonl"
+        self.assertEqual(len(path.read_text().splitlines()), 5)
+        summary = monitor.reorg_summary(self.directory, NOW)
+        self.assertEqual(summary["chains"]["base"]["all"], {"reorgs": 1, "deep": 0, "stale": 1})
+        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_summary_windows_and_depth_records(self):
+        lines = [
+            journal_line("x INFO  Reorged block chain=bnb number=1 (1ms)", "1", NOW - 3600),
+            journal_line("x INFO  Reorged block chain=bnb number=2 (1ms)", "2", NOW - 2 * 86400),
+            journal_line("x WARN  Encountered unrecoverable reorg chain=bnb finalized_block=3 (1ms)",
+                         "3", NOW - 10 * 86400),
+            journal_line("x INFO  Reorged block chain=mainnet number=4 (1ms)", "4", NOW - 40 * 86400),
+            journal_line(json.dumps({"event": "yunipals_indexer_reorg", "chainId": 1, "depth": 40,
+                                     "commonAncestorBlock": 4}), "5", NOW - 40 * 86400),
+        ]
+        monitor.record_reorgs(self.directory, monitor.journal_reorgs(
+            CONFIG, self.directory, run=self.run_with("\n".join(lines))))
+        summary = monitor.reorg_summary(self.directory, NOW)
+        bnb = summary["chains"]["bnb"]
+        self.assertEqual(bnb["24h"], {"reorgs": 1, "deep": 0, "stale": 0})
+        self.assertEqual(bnb["7d"], {"reorgs": 2, "deep": 0, "stale": 0})
+        self.assertEqual(bnb["30d"], {"reorgs": 3, "deep": 1, "stale": 0})
+        # A depth record describes a reorg already counted from its own log line.
+        self.assertEqual(summary["chains"]["mainnet"]["all"], {"reorgs": 1, "deep": 1, "stale": 0})
+        self.assertEqual(len(summary["latestDeep"]), 2)
+
+    def test_report_prints_counts(self):
+        monitor.record_reorgs(self.directory, monitor.journal_reorgs(
+            CONFIG, self.directory, run=self.run_with("\n".join(PRODUCTION_LINES))))
+        with patch("builtins.print") as output:
+            monitor.print_reorg_report(monitor.reorg_summary(self.directory, NOW))
+        text = "\n".join(" ".join(map(str, call.args)) for call in output.call_args_list)
+        self.assertIn("base", text)
+        self.assertIn("beyond Ponder's finality window", text)
+        self.assertIn("depth 45", text)
+        self.assertIn("received 53577910, finalized 53577916", text)
+
+    def test_unreadable_journal_alerts_only_when_persistent(self):
+        harness = Harness(self.directory)
+        harness.reorgs = Mock(side_effect=RuntimeError("no access"))
+        for _ in range(14):
+            report = harness.check()
+        harness.deliver.assert_not_called()
+        self.assertEqual(report["failing"], ["reorg-tracking"])
+        self.assertIsNone(report["metrics"]["newReorgs"])
+        harness.check()
+        self.assertIn("reorg-tracking", harness.mail()[0])
+        self.assertIn("systemd-journal", harness.mail()[1])
+
+    def test_new_reorgs_are_recorded_during_checks(self):
+        harness = Harness(self.directory)
+        harness.reorgs = Mock(side_effect=lambda config, directory: monitor.journal_reorgs(
+            config, directory, run=self.run_with("\n".join(PRODUCTION_LINES))))
+        self.assertEqual(harness.check()["metrics"]["newReorgs"], 5)
+        self.assertEqual(harness.check()["metrics"]["newReorgs"], 0)
+        harness.deliver.assert_not_called()
 
 
 if __name__ == "__main__":

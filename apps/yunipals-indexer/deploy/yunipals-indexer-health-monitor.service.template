@@ -8,6 +8,8 @@ Type=oneshot
 # Peer authentication as postgres is needed to see every session's snapshot age.
 User=postgres
 Group=postgres
+# Read access to the indexer journal, to count reorgs.
+SupplementaryGroups=systemd-journal
 StateDirectory=yunipals-indexer-health-monitor
 StateDirectoryMode=0700
 WorkingDirectory=@RELEASE_DIR@

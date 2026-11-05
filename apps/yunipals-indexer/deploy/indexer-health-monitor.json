@@ -4,13 +4,31 @@
   "maximum_check_gap_seconds": 180,
   "ponder_url": "http://127.0.0.1:9035",
   "release_id": "0x7cd1dada15b9b5fdb141c654e5ab24c976a607e00bd739816f4917ff291ad62b",
-  "indexer_database": { "name": "yunipals_backfill", "port": 5432 },
-  "market_database": { "name": "yunipals_market_production", "port": 15438 },
+  "indexer_database": {
+    "name": "yunipals_backfill",
+    "port": 5432
+  },
+  "market_database": {
+    "name": "yunipals_market_production",
+    "port": 15438
+  },
   "chains": {
-    "bnb": { "chain_id": 56, "max_lag_seconds": 120 },
-    "base": { "chain_id": 8453, "max_lag_seconds": 120 },
-    "mainnet": { "chain_id": 1, "max_lag_seconds": 300 },
-    "polygon": { "chain_id": 137, "max_lag_seconds": 300 }
+    "bnb": {
+      "chain_id": 56,
+      "max_lag_seconds": 120
+    },
+    "base": {
+      "chain_id": 8453,
+      "max_lag_seconds": 120
+    },
+    "mainnet": {
+      "chain_id": 1,
+      "max_lag_seconds": 300
+    },
+    "polygon": {
+      "chain_id": 137,
+      "max_lag_seconds": 300
+    }
   },
   "max_transaction_seconds": 1200,
   "max_dead_rows": {
@@ -22,8 +40,14 @@
   "max_observation_age_seconds": 300,
   "max_production_health_age_seconds": 600,
   "market_checkpoints": [
-    { "chain_id": 56, "name": "bnb-sales" },
-    { "chain_id": 8453, "name": "seaport-sales" }
+    {
+      "chain_id": 56,
+      "name": "bnb-sales"
+    },
+    {
+      "chain_id": 8453,
+      "name": "seaport-sales"
+    }
   ],
   "failure_checks": {
     "indexer-ready": 5,
@@ -33,6 +57,17 @@
     "metadata-worker": 3,
     "observation": 5,
     "market": 10,
-    "production-health": 15
+    "production-health": 15,
+    "reorg-tracking": 15
+  },
+  "reorg_tracking": {
+    "unit": "yunipals-indexer.service",
+    "deep_blocks": 30,
+    "ponder_finality_blocks": {
+      "bnb": 30,
+      "base": 30,
+      "mainnet": 65,
+      "polygon": 200
+    }
   }
 }

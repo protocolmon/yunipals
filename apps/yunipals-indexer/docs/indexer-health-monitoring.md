@@ -6,16 +6,17 @@ records failures but does not notify anyone, and it also reported healthy during
 stall. This monitor covers that gap. It checks every minute, and emails the request
 monitor's recipient when a problem persists and again when it recovers.
 
-| Condition             | Problem when                                         | Checks to alert |
-| --------------------- | ---------------------------------------------------- | --------------- |
-| `indexer-ready`       | Ponder's `/ready` is not 200                         | 5               |
-| `lag-<chain>`         | BNB or Base over 120s behind, others over 300s       | 5               |
-| `oldest-transaction`  | A snapshot has been open over 20 minutes             | 3               |
-| `dead-rows-<table>`   | `pg_attribute` over 200,000, checkpoints over 10,000 | 3               |
-| `metadata-worker`     | No worker heartbeat for 15 minutes                   | 3               |
-| `observation-<chain>` | A chain observation has an error or is 5 minutes old | 5               |
-| `market-<checkpoint>` | A sales checkpoint is not `available`                | 10              |
-| `production-health`   | The existing report is unhealthy or 10 minutes old   | 15              |
+| Condition             | Problem when                                          | Checks to alert |
+| --------------------- | ----------------------------------------------------- | --------------- |
+| `indexer-ready`       | Ponder's `/ready` is not 200                          | 5               |
+| `lag-<chain>`         | BNB or Base over 120s behind, others over 300s        | 5               |
+| `oldest-transaction`  | A snapshot has been open over 20 minutes              | 3               |
+| `dead-rows-<table>`   | `pg_attribute` over 200,000, checkpoints over 10,000  | 3               |
+| `metadata-worker`     | No worker heartbeat for 15 minutes                    | 3               |
+| `observation-<chain>` | A chain observation has an error or is 5 minutes old  | 5               |
+| `market-<checkpoint>` | A sales checkpoint is not `available`                 | 10              |
+| `production-health`   | The existing report is unhealthy or 10 minutes old    | 15              |
+| `reorg-tracking`      | The indexer journal cannot be read for reorg counting | 15              |
 
 Two healthy checks close an incident. A value that cannot be read counts as a problem, so
 an unreachable database cannot look healthy.
@@ -35,6 +36,32 @@ Each check is appended to `/var/lib/yunipals-indexer-health-monitor/samples-<dat
 and kept for 7 days. If BNB falls behind, compare `metrics.oldest` and `metrics.dead` with
 `index_block` in the `yunipals_indexer_profile` journal records. Rising dead rows with slow
 indexing points to a blocked vacuum, and normal values point somewhere else.
+
+## Reorg tracking
+
+Each check also reads new indexer journal lines and records every reorg Ponder saw in
+`/var/lib/yunipals-indexer-health-monitor/reorgs.jsonl`. That file is kept indefinitely,
+because the journal only keeps a few days. These records never send email. To see how often
+reorgs happen, run `yunipals-reorg-report` as root on the server.
+
+| Record                    | Source                                                           | Deeper than 30 blocks                      |
+| ------------------------- | ---------------------------------------------------------------- | ------------------------------------------ |
+| `reorg`                   | Ponder's `Reorged block` line, for a reorg it handled            | No depth recorded                          |
+| `beyond_ponder_window`    | `Encountered unrecoverable reorg`                                | Yes, when the window is at least 30 blocks |
+| `stale_provider_response` | The same warning, but the received block was older than finality | No: not a reorg                            |
+| `reorg_depth`             | A `yunipals_indexer_reorg` profiler line with the exact depth    | When the depth is over 30                  |
+
+Ponder's finality window is 30 blocks on Base and BNB, 65 on Ethereum and 200 on Polygon, so
+reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, are only counted as deep from
+`reorg_depth` records. The current profiler does not emit those yet.
+
+Both "unrecoverable reorgs" in the journal from 2026-11-01 to 2026-11-05 were stale provider
+responses: on Base the received block was 6 blocks older than Ponder's finalized block, and on
+BNB 16,431 blocks older. Shallow `reorg` records can also come from providers briefly
+disagreeing, not only from real chain reorgs.
+
+To import older journal entries once, run the monitor with `--backfill-reorgs <date>`. Records
+are keyed by journal cursor, so repeated imports add nothing twice.
 
 ## Installation
 

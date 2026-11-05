@@ -16,6 +16,12 @@ from request_monitor import advance, atomic_json, pending_event, send_email
 
 IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)?$")
 HEX_IDENTIFIER = re.compile(r"^0x[0-9a-f]{64}$")
+REORG_PATTERN = ("Reorged block|Encountered unrecoverable reorg|Failed to fetch latest block"
+                 "|yunipals_indexer_reorg")
+REORGED = re.compile(r"\bINFO\s+Reorged block chain=([a-z0-9_]+) number=(\d+)")
+UNRECOVERABLE = re.compile(
+    r"\bWARN\s+Encountered unrecoverable reorg chain=([a-z0-9_]+) finalized_block=(\d+)")
+FAILED_LATEST = re.compile(r"\bWARN\s+Failed to fetch latest block chain=([a-z0-9_]+) number=(\d+)")
 FAILURE_ALERT_INTERVAL_SECONDS = 3600
 HINTS = {
     "indexer-ready": "Check yunipals-indexer.service. Ponder reports not ready during recovery.",
@@ -27,6 +33,8 @@ HINTS = {
     "observation": "Check yunipals-indexer-observer.service. Readiness depends on it.",
     "market": "Sales history reports a warning until this checkpoint is available.",
     "production-health": "See /var/lib/yunipals-unified-shared/production-health/latest.json.",
+    "reorg-tracking": "Reorg counting cannot read the indexer journal. Check the monitor's "
+                      "SupplementaryGroups=systemd-journal setting.",
 }
 
 
@@ -60,8 +68,17 @@ def validate_config(config):
             raise ValueError("Invalid database name")
         if not isinstance(database.get("port", 5432), int):
             raise ValueError("Invalid database port")
+    tracking = config.get("reorg_tracking")
+    if not tracking or not re.match(r"^[a-z0-9@_.-]+\.service$", tracking.get("unit", "")):
+        raise ValueError("reorg_tracking needs the indexer unit")
+    if not isinstance(tracking.get("deep_blocks"), int) or tracking["deep_blocks"] < 1:
+        raise ValueError("reorg_tracking.deep_blocks must be a positive integer")
+    windows = tracking.get("ponder_finality_blocks", {})
+    if set(windows) != set(config["chains"]) or not all(
+            isinstance(value, int) and value >= 1 for value in windows.values()):
+        raise ValueError("reorg_tracking.ponder_finality_blocks must cover every chain")
     expected = {"indexer-ready", "lag", "oldest-transaction", "dead-rows", "metadata-worker",
-                "observation", "market", "production-health"}
+                "observation", "market", "production-health", "reorg-tracking"}
     checks = config.get("failure_checks", {})
     if set(checks) != expected or not all(isinstance(v, int) and v >= 1 for v in checks.values()):
         raise ValueError("failure_checks must set a positive count for every family")
@@ -242,6 +259,130 @@ def collect(config, now, production_health=None, query=query_json, status=http_s
     return samples, families, {"lag": lag, "oldest": oldest, "dead": dead, "workerAge": age}
 
 
+def journal_reorgs(config, directory, since=None, run=subprocess.run, timeout=60):
+    """Return reorg events logged by the indexer since the last read.
+
+    The cursor file makes each read incremental. Without one, only recent entries
+    are read so that a first run cannot scan days of journal within the timeout.
+    """
+    tracking = config["reorg_tracking"]
+    cursor = directory / "journal.cursor"
+    arguments = ["journalctl", "-u", tracking["unit"], "--no-pager", "-o", "json",
+                 "--output-fields=MESSAGE,__REALTIME_TIMESTAMP,__CURSOR",
+                 "--grep", REORG_PATTERN]
+    if since is not None:
+        arguments += ["--since", since]
+    else:
+        if not cursor.exists():
+            arguments += ["--since", "-5min"]
+        arguments += [f"--cursor-file={cursor}"]
+    result = run(arguments, capture_output=True, text=True, timeout=timeout, check=False)
+    # journalctl exits 1 without an error message when no entry matches.
+    if result.returncode not in (0, 1) or (result.returncode == 1 and result.stderr.strip()):
+        raise RuntimeError("Journal read failed")
+    windows = tracking["ponder_finality_blocks"]
+    names = {chain["chain_id"]: name for name, chain in config["chains"].items()}
+    events = []
+    pending = {}
+    for line in result.stdout.splitlines():
+        try:
+            entry = json.loads(line)
+            message = entry["MESSAGE"]
+            at = datetime.datetime.fromtimestamp(
+                int(entry["__REALTIME_TIMESTAMP"]) / 1e6, datetime.timezone.utc).isoformat()
+        except (ValueError, KeyError, TypeError):
+            continue
+        event = None
+        match = FAILED_LATEST.search(message)
+        if match and match.group(1) in pending:
+            # Ponder logs the block it received right after the warning. A block
+            # older than Ponder's finalized block is a stale provider response:
+            # a real reorg past finality would deliver a newer block.
+            unrecoverable = pending.pop(match.group(1))
+            unrecoverable["receivedBlock"] = int(match.group(2))
+            if unrecoverable["receivedBlock"] < unrecoverable["block"]:
+                unrecoverable.update(kind="stale_provider_response", deep=False)
+            continue
+        match = REORGED.search(message)
+        if match:
+            event = {"chain": match.group(1), "kind": "reorg", "block": int(match.group(2)),
+                     "depth": None}
+        match = UNRECOVERABLE.search(message)
+        if match:
+            event = {"chain": match.group(1), "kind": "beyond_ponder_window",
+                     "block": int(match.group(2)), "depth": None}
+        if event is None and message.startswith("{"):
+            try:
+                record = json.loads(message)
+            except ValueError:
+                record = {}
+            if (record.get("event") == "yunipals_indexer_reorg"
+                    and record.get("chainId") in names and isinstance(record.get("depth"), int)):
+                event = {"chain": names[record["chainId"]], "kind": "reorg_depth",
+                         "block": record.get("commonAncestorBlock"), "depth": record["depth"]}
+        if event is None or event["chain"] not in windows:
+            continue
+        # A reorg past Ponder's finality window is deeper than that window, so it
+        # counts as deep when the window is at least the tracked depth.
+        event["deep"] = (
+            event["kind"] == "beyond_ponder_window" and windows[event["chain"]] >= tracking["deep_blocks"]
+        ) or (event["depth"] is not None and event["depth"] > tracking["deep_blocks"])
+        event.update(at=at, cursor=entry.get("__CURSOR"))
+        if event["kind"] == "beyond_ponder_window":
+            event["receivedBlock"] = None
+            pending[event["chain"]] = event
+        events.append(event)
+    return events
+
+
+def record_reorgs(directory, events):
+    """Append new events to the long-term record, skipping ones already stored."""
+    path = directory / "reorgs.jsonl"
+    known = set()
+    if path.exists():
+        for line in path.read_text().splitlines():
+            try:
+                known.add(json.loads(line).get("cursor"))
+            except ValueError:
+                continue
+    added = [event for event in events if event["cursor"] not in known]
+    if added:
+        with path.open("a") as output:
+            path.chmod(0o600)
+            for event in added:
+                output.write(json.dumps(event) + "\n")
+    return len(added)
+
+
+def reorg_summary(directory, now):
+    path = directory / "reorgs.jsonl"
+    events = []
+    if path.exists():
+        for line in path.read_text().splitlines():
+            try:
+                events.append(json.loads(line))
+            except ValueError:
+                continue
+    windows = {"24h": 86400, "7d": 7 * 86400, "30d": 30 * 86400}
+    summary = {}
+    for event in events:
+        moment = datetime.datetime.fromisoformat(event["at"]).timestamp()
+        chain = summary.setdefault(event["chain"], {
+            name: {"reorgs": 0, "deep": 0, "stale": 0} for name in (*windows, "all")})
+        for name, seconds in (*windows.items(), ("all", None)):
+            if seconds is None or now - moment <= seconds:
+                if event["kind"] == "stale_provider_response":
+                    chain[name]["stale"] += 1
+                    continue
+                if event["kind"] != "reorg_depth":
+                    chain[name]["reorgs"] += 1
+                chain[name]["deep"] += 1 if event["deep"] else 0
+    first = min((event["at"] for event in events), default=None)
+    deep = [event for event in events if event["deep"]]
+    stale = [event for event in events if event["kind"] == "stale_provider_response"]
+    return {"since": first, "chains": summary, "latestDeep": deep[-10:], "latestStale": stale[-5:]}
+
+
 def rule(config, family):
     return {"failure_checks": config["failure_checks"][family],
             "recovery_checks": config["recovery_checks"],
@@ -267,12 +408,20 @@ def notification(events, states, families, metrics):
     return f"[Yunipals] {kind}: indexer health: {names}", "\n".join(lines)
 
 
-def cycle(config, directory, production_health=None, read=collect, deliver=send_email, now=None):
+def cycle(config, directory, production_health=None, read=collect, deliver=send_email, now=None,
+          reorgs=journal_reorgs):
     now = time.time() if now is None else now
     state_file = directory / "state.json"
     # A corrupt existing state is an error, not an excuse to send duplicate alerts.
     previous = json.loads(state_file.read_text()) if state_file.exists() else {}
     samples, families, metrics = read(config, now, production_health)
+    try:
+        metrics["newReorgs"] = record_reorgs(directory, reorgs(config, directory))
+        samples["reorg-tracking"] = good("Indexer journal read")
+    except Exception:
+        metrics["newReorgs"] = None
+        samples["reorg-tracking"] = read_failed("Indexer journal could not be read")
+    families["reorg-tracking"] = "reorg-tracking"
     states = {}
     events = []
     for identifier, sample in samples.items():
@@ -329,20 +478,60 @@ def read_production_health(path):
         return None
 
 
+def print_reorg_report(summary):
+    print("Reorgs the indexer saw, per chain, as 'all (deeper than 30 blocks)'. Shallow ones can")
+    print("include providers briefly disagreeing, not only real chain reorgs.")
+    print(f"Records start: {summary['since'] or 'none yet'}\n")
+    print(f"{'chain':10} {'24h':>12} {'7 days':>12} {'30 days':>12} {'all':>12}  stale provider blocks (all)")
+    for chain, counts in sorted(summary["chains"].items()):
+        cells = [f"{counts[w]['reorgs']} ({counts[w]['deep']})" for w in ("24h", "7d", "30d", "all")]
+        print(f"{chain:10} " + " ".join(f"{cell:>12}" for cell in cells) + f"  {counts['all']['stale']}")
+    if not summary["chains"]:
+        print("No reorgs recorded.")
+    print("\nLatest deep reorgs:")
+    for event in summary["latestDeep"]:
+        detail = f"depth {event['depth']}" if event["depth"] else "beyond Ponder's finality window"
+        print(f"  {event['at'][:19]}  {event['chain']}  block {event['block']}  {detail}")
+    if not summary["latestDeep"]:
+        print("  none")
+    print("\nLatest stale provider blocks (Ponder reported an unrecoverable reorg, but the block it")
+    print("received was older than its finalized block, so this was not a reorg):")
+    for event in summary["latestStale"]:
+        print(f"  {event['at'][:19]}  {event['chain']}  received {event['receivedBlock']}, "
+              f"finalized {event['block']}")
+    if not summary["latestStale"]:
+        print("  none")
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", required=True)
+    parser.add_argument("--config")
     parser.add_argument("--state-dir", required=True)
-    parser.add_argument("--production-health", required=True)
+    parser.add_argument("--production-health")
     parser.add_argument("--test-email", action="store_true")
+    parser.add_argument("--reorg-report", action="store_true")
+    parser.add_argument("--backfill-reorgs", metavar="SINCE")
     args = parser.parse_args()
-    config = validate_config(json.loads(Path(args.config).read_text()))
     directory = Path(args.state_dir)
+    if args.reorg_report:
+        print_reorg_report(reorg_summary(directory, time.time()))
+        return
+    if not args.config:
+        parser.error("--config is required")
+    if not args.production_health and not (args.backfill_reorgs or args.test_email):
+        parser.error("--production-health is required for checks")
+    config = validate_config(json.loads(Path(args.config).read_text()))
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     with (directory / "run.lock").open("w") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
+            return
+        if args.backfill_reorgs:
+            # Days of journal take minutes to scan, unlike the per-minute incremental reads.
+            added = record_reorgs(directory, journal_reorgs(config, directory, args.backfill_reorgs,
+                                                            timeout=1800))
+            print(json.dumps({"backfilledReorgs": added}))
             return
         if args.test_email:
             if not config["email_enabled"]:
