@@ -143,8 +143,12 @@ try {
         nextEnqueue = Date.now() + enqueueIntervalMs;
       }
       if (role === "full" && Date.now() >= nextUri) {
-        await auditArchiveUris(pool, readSchemaName, resolveUri);
-        nextUri = Date.now() + 60000;
+        try {
+          await auditArchiveUris(pool, readSchemaName, resolveUri);
+        } finally {
+          // A failed audit must wait too, or the worker repeats it every 2 seconds.
+          nextUri = Date.now() + 60000;
+        }
       }
       const jobs = await claimPublications(pool, concurrency);
       const results = await Promise.allSettled(

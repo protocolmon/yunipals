@@ -106,6 +106,7 @@
     "test:solana:postgres": "node --import tsx scripts/test-solana-postgres.mjs",
     "solana:migrate": "tsx scripts/migrate-solana.ts",
     "test:unified:service": "node scripts/test-unified-service.mjs",
+    "test:metadata:bounded-read:postgres": "node --import tsx scripts/test-metadata-bounded-read-postgres.mjs",
     "test:unified:observer:finality:postgres": "node --import tsx scripts/test-observer-finality-coverage-postgres.mjs",
     "test:ponder:runtime": "node --test lib/ponder-fixes/fixes.test.mjs lib/profiling/runtime.test.mjs",
     "test:unified:arena:postgres": "UNIFIED_TEST_ARENA_ENABLED=true node --import tsx scripts/test-unified-ownership.mjs && node --import tsx scripts/test-unified-arena-reader.mjs",
