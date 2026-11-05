@@ -64,6 +64,8 @@ jobs:
         run: python3 -m unittest discover -s scripts/anime -p fetch_assets_test.py -v
       - name: Request monitor tests
         run: python3 -m unittest discover -s apps/yunipals-indexer/scripts -p 'test_request_monitor.py' -v
+      - name: Indexer health monitor tests
+        run: python3 -m unittest discover -s apps/yunipals-indexer/scripts -p 'test_indexer_health_monitor.py' -v
       - name: Shared production acceptance monitor
         run: python3 -m unittest discover -s ops/unified-indexer -p 'test_production_health.py' -v
 

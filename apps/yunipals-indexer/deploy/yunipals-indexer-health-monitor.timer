@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Yunipals indexer health every minute
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+AccuracySec=5
+Unit=yunipals-indexer-health-monitor.service
+
+[Install]
+WantedBy=timers.target
