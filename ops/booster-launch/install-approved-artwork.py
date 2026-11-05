@@ -74,6 +74,25 @@ def plan(source, target, slug, rank, allow_unrevealed=False):
         if destination.exists():
             require(read(destination) == data, "Existing immutable asset differs")
         assets[filename] = data
+    previews = {}
+    preview_name = y["artworkSha256"]
+    preview_folder = source / "previews" / "v1"
+    preview_image = preview_folder / f"{preview_name}.webp"
+    preview_manifest = preview_folder / f"{preview_name}.json"
+    if preview_image.exists() or preview_manifest.exists():
+        preview_data = read(preview_image)
+        manifest_bytes = read(preview_manifest)
+        manifest = json.loads(manifest_bytes)
+        require(manifest.get("version") == 1 and manifest.get("sourceSha256") == preview_name
+                and manifest.get("sha256") == sha(preview_data) and manifest.get("bytes") == len(preview_data)
+                and type(manifest.get("width")) is int and 0 < manifest["width"] <= 520
+                and type(manifest.get("height")) is int and 0 < manifest["height"] <= 780
+                and preview_data[:4] == b"RIFF" and preview_data[8:12] == b"WEBP", "Invalid artwork preview")
+        for name, data in [(preview_image.name, preview_data), (preview_manifest.name, manifest_bytes)]:
+            destination = target / "previews" / "v1" / name
+            if destination.exists():
+                require(read(destination) == data, "Existing immutable preview differs")
+            previews[name] = data
     destination = target / relative / "variants" / f"{rank}.json"
     existing = destination.exists()
     if existing:
@@ -87,7 +106,7 @@ def plan(source, target, slug, rank, allow_unrevealed=False):
     return destination, metadata_bytes, assets, {"catalog": slug, "variantId": rank,
         "alreadyPublished": existing, "allowUnrevealed": allow_unrevealed,
         "artworkSha256": y["artworkSha256"],
-        "metadataSha256": sha(metadata_bytes), "assets": sorted(assets)}
+        "metadataSha256": sha(metadata_bytes), "assets": sorted(assets), "previews": sorted(previews)}, previews
 
 
 def exclusive_file(destination, data):
@@ -118,9 +137,11 @@ def install(source, target, slug, rank, apply=False, allow_unrevealed=False):
         return {"status": "REVIEWED", **plan(source, target, slug, rank, allow_unrevealed)[3]}
     with (target / ".generation.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        destination, metadata, assets, proof = plan(source, target, slug, rank, allow_unrevealed)
+        destination, metadata, assets, proof, previews = plan(source, target, slug, rank, allow_unrevealed)
         for filename, data in assets.items():
             exclusive_file(target / "assets" / filename, data)
+        for filename, data in previews.items():
+            exclusive_file(target / "previews" / "v1" / filename, data)
         if not proof["alreadyPublished"]:
             exclusive_file(destination, metadata)
         return {"status": "ALREADY_PUBLISHED" if proof["alreadyPublished"] else "INSTALLED", **proof}

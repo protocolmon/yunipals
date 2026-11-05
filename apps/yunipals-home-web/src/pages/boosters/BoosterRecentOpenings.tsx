@@ -193,6 +193,7 @@ export function BoosterRecentOpenings() {
                         <BoosterArtwork
                           uri={monster.metadataUri}
                           label={`${traits.Type} #${monster.tokenId}`}
+                          display="thumbnail"
                         />
                       </div>
                     </Link>

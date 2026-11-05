@@ -1270,6 +1270,7 @@ function CollectionExplorer() {
                       <CollectionPackCard
                         key={collectionGridIdentity(item)}
                         monster={item.monster}
+                        eager={index < 4}
                       />
                     ) : (
                       (() => {

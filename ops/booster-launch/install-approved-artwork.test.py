@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/boosters"))
 import art_lab
 import art_runtime
+from art_previews import publish_preview
 
 spec = importlib.util.spec_from_file_location("art_installer", Path(__file__).with_name("install-approved-artwork.py"))
 m = importlib.util.module_from_spec(spec)
@@ -79,6 +80,21 @@ class ApprovedArtworkTransferTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Missing regular artifact"):
             m.install(self.source, self.target, SLUG, RANK, True)
         self.assertFalse(self.destination.exists())
+
+    def test_preview_transfers_for_new_and_already_published_artwork(self):
+        m.install(self.source, self.target, SLUG, RANK, True)
+        before = self.destination.read_bytes()
+        metadata = json.loads(self.metadata.read_text())
+        sha = metadata["yunipals"]["artworkSha256"]
+        publish_preview(self.source, self.source / "assets" / f"{sha}.png", sha)
+        result = m.install(self.source, self.target, SLUG, RANK, True)
+        self.assertEqual(len(result["previews"]), 2)
+        self.assertEqual(self.destination.read_bytes(), before)
+        for filename in result["previews"]:
+            self.assertEqual((self.target / "previews/v1" / filename).read_bytes(), (self.source / "previews/v1" / filename).read_bytes())
+        (self.source / "previews/v1" / f"{sha}.webp").write_bytes(b"changed")
+        with self.assertRaisesRegex(RuntimeError, "Invalid artwork preview"):
+            m.install(self.source, self.target, SLUG, RANK, True)
 
     def test_explicit_prepublishing_allows_missing_job_and_remains_immutable(self):
         self.job.unlink()

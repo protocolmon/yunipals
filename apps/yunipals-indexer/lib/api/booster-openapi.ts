@@ -103,6 +103,19 @@ export const boosterOpenApiPaths = {
       }
     }
   },
+  "/v1/boosters/art-previews/v1/{asset}": {
+    get: {
+      tags: ["Boosters"],
+      summary: "Read a cached WebP thumbnail by its original PNG SHA256",
+      parameters: [pathParameter("asset")],
+      responses: {
+        ...response,
+        "404": {
+          description: "Preview is not published; response is not cached."
+        }
+      }
+    }
+  },
   "/v1/boosters/art-assets/{asset}": {
     get: {
       tags: ["Boosters"],

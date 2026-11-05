@@ -108,6 +108,55 @@ test("published variants and hashed masks are served immutably; corrupted assets
   ).toBe(503);
   expect((await app.request("/v1/boosters/art/demo/01.json")).status).toBe(400);
 });
+test("previews are source-bound and cacheable only after complete verified publication", async () => {
+  const { directory, app } = await fixture();
+  const source = "b".repeat(64);
+  const url = `/v1/boosters/art-previews/v1/${source}.webp`;
+  const unavailable = await app.request(url);
+  expect(unavailable.status).toBe(404);
+  expect(unavailable.headers.get("cache-control")).toBe("no-store");
+  expect((await app.request(url.replace(source, "invalid"))).status).toBe(400);
+  const folder = path.join(directory, "previews/v1");
+  await mkdir(folder, { recursive: true });
+  const data = Buffer.from("RIFF0000WEBPpreview");
+  const sha256 = createHash("sha256").update(data).digest("hex");
+  await writeFile(path.join(folder, `${source}.webp`), data);
+  expect((await app.request(url)).status).toBe(404);
+  const manifest = {
+    version: 1,
+    sourceSha256: source,
+    sha256,
+    width: 520,
+    height: 780,
+    bytes: data.length
+  };
+  const manifestPath = path.join(folder, `${source}.json`);
+  await writeFile(manifestPath, JSON.stringify(manifest));
+  const response = await app.request(url);
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toBe("image/webp");
+  expect(response.headers.get("cache-control")).toContain("immutable");
+  expect(Buffer.from(await response.arrayBuffer())).toEqual(data);
+  expect(
+    (await app.request(url, { headers: { "If-None-Match": `"${sha256}"` } }))
+      .status
+  ).toBe(304);
+  const head = await app.request(url, { method: "HEAD" });
+  expect(head.status).toBe(200);
+  expect(await head.text()).toBe("");
+  await writeFile(
+    manifestPath,
+    JSON.stringify({ ...manifest, sourceSha256: "c".repeat(64) })
+  );
+  const mismatched = await app.request(url);
+  expect(mismatched.status).toBe(503);
+  expect(mismatched.headers.get("cache-control")).toBe("no-store");
+  await writeFile(manifestPath, JSON.stringify(manifest));
+  await writeFile(path.join(folder, `${source}.webp`), "corrupted");
+  const corrupted = await app.request(url);
+  expect(corrupted.status).toBe(503);
+  expect(corrupted.headers.get("cache-control")).toBe("no-store");
+});
 test("worker only queues configured indexed variants and rejects trait mismatches", async () => {
   const { store } = await fixture();
   const pool = {

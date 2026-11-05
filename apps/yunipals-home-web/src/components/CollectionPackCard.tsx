@@ -6,7 +6,13 @@ import { CollectionDailyClaimBadge } from "@/components/CollectionDailyPulls";
 import { packGridTraits } from "@/lib/boosterCollectionGrid";
 import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 
-export function CollectionPackCard({ monster }: { monster: BoosterMonster }) {
+export function CollectionPackCard({
+  monster,
+  eager = false
+}: {
+  monster: BoosterMonster;
+  eager?: boolean;
+}) {
   const traits = packGridTraits(monster);
   return (
     <article
@@ -23,6 +29,8 @@ export function CollectionPackCard({ monster }: { monster: BoosterMonster }) {
             <BoosterArtwork
               uri={monster.metadataUri}
               label={`${traits.Type} #${monster.tokenId}`}
+              display="thumbnail"
+              eager={eager}
             />
           </div>
           <ChainBadge

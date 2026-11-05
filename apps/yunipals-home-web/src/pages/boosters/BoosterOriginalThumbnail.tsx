@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { BoosterOriginal } from "@protopals/yunipals-market-core/boosters";
 
+import { BoosterCardThumbnail } from "@/components/BoosterCardThumbnail";
 import {
   boosterQueryKey,
   fetchBoosterMonster,
@@ -13,7 +13,6 @@ export function BoosterOriginalThumbnail({
 }: {
   original: BoosterOriginal;
 }) {
-  const [failedImage, setFailedImage] = useState<string | null>(null);
   const monster = useQuery({
     queryKey: [
       ...boosterQueryKey,
@@ -42,18 +41,8 @@ export function BoosterOriginalThumbnail({
       aria-hidden="true"
       className="flex h-14 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-line bg-lavender/20"
     >
-      {image && image !== failedImage ? (
-        <img
-          src={image}
-          alt=""
-          width={40}
-          height={56}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          className="h-full w-full object-contain"
-          onError={() => setFailedImage(image)}
-        />
+      {image ? (
+        <BoosterCardThumbnail image={image} alt="" />
       ) : (
         <img
           src="/images/yunipals-logo.webp"

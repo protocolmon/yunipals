@@ -10,6 +10,31 @@ import {
   visibleBoosterTypes
 } from "./boosters";
 import { boosterSetupOwner } from "./boosterSetup";
+import { boosterArtworkPreviewUrl } from "./boosterArtworkPreview";
+
+test("preview URLs preserve the API origin and prefix and only match canonical PNG assets", () => {
+  const sha = "a".repeat(64);
+  for (const base of [
+    "https://api.yunipals.com/yunipals-indexer",
+    "http://127.0.0.1:59985"
+  ]) {
+    assert.equal(
+      boosterArtworkPreviewUrl(`${base}/v1/boosters/art-assets/${sha}.png`),
+      `${base}/v1/boosters/art-previews/v1/${sha}.webp`
+    );
+  }
+  for (const url of [
+    null,
+    "https://example.test/card.png",
+    `https://example.test/v1/boosters/art-assets/${sha}.svg`,
+    `https://example.test/v1/boosters/art-assets/${sha}.png?token=private`,
+    `https://example.test/v1/boosters/art-assets/${sha}.png#fragment`,
+    `https://user:password@example.test/v1/boosters/art-assets/${sha}.png`,
+    `http://example.test/v1/boosters/art-assets/${sha}.png`
+  ]) {
+    assert.equal(boosterArtworkPreviewUrl(url), null);
+  }
+});
 
 test("the capped test offer stays hidden for every wallet, including the owner; ordinary packs stay public", () => {
   const smoke = {
