@@ -507,6 +507,7 @@ function CollectionExplorer() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [savedFilters, setSavedFilters] = useState(readSavedCollectionFilters);
+  const editionFilters = useRef<Partial<Record<CollectionEdition, string>>>({});
   const collectionQuery = useMemo(
     () => resolveCollectionQuery(searchParams, savedFilters),
     [searchParams, savedFilters]
@@ -535,11 +536,12 @@ function CollectionExplorer() {
   canonicalQuery.set("edition", edition);
   const canonicalSearch = canonicalQuery.toString();
   useEffect(() => {
+    editionFilters.current[edition] = canonicalSearch;
     saveCollectionFilters(canonicalSearch);
     setSavedFilters(canonicalSearch);
     if (searchParams.toString() !== canonicalSearch)
       setSearchParams(canonicalSearch, { replace: true });
-  }, [canonicalSearch, searchParams, setSearchParams]);
+  }, [canonicalSearch, edition, searchParams, setSearchParams]);
   const filtersKey = collectionFiltersKey(filters);
   const visibleChains = useMemo(
     () => effectiveCollectionChains(filters),
@@ -614,15 +616,16 @@ function CollectionExplorer() {
   const setEdition = useCallback(
     (nextEdition: CollectionEdition) => {
       if (nextEdition === edition) return;
-      const next = serializeCollectionFilters({
-        ...clearCollectionFilters(filters),
-        sort: nextEdition === "og" ? "rarity-capped-desc" : "token-id-asc"
-      });
+      const next = new URLSearchParams(
+        editionFilters.current[nextEdition] ??
+          readSavedCollectionFilters(nextEdition) ??
+          ""
+      );
       next.set("edition", nextEdition);
       setSelectedTrade(null);
       setSearchParams(next, { replace: false });
     },
-    [edition, filters, setSearchParams]
+    [edition, setSearchParams]
   );
   const closeMobileFilters = useCallback(() => setMobileFiltersOpen(false), []);
 
