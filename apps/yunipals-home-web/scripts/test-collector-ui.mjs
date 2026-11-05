@@ -60,8 +60,48 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const report = { tests: [], errors, requests: 0 };
 try {
   await page.goto(route);
-  await page.getByRole("button", { name: "Browse only", exact: true }).click();
+  const browseOnly = page.getByRole("button", {
+    name: "Browse only",
+    exact: true
+  });
+  if (await browseOnly.isVisible()) await browseOnly.click();
   await expectCards(24);
+  const notBase = page.getByRole("button", {
+    name: "Exclude Base",
+    exact: true
+  });
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
+    .waitFor();
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), [
+    "ethereum",
+    "polygon",
+    "bnb"
+  ]);
+  assert.ok((await hrefs()).every((href) => !href.includes("/base/")));
+  assert.ok(
+    requests.every(
+      (request) =>
+        !new URL(request).searchParams.getAll("chain").includes("base")
+    )
+  );
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
+    .waitFor();
+  await notBase.click();
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
+    .waitFor();
+  await page.goto(route);
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
+    .waitFor();
+  await expectCards(24);
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), []);
+  report.tests.push(
+    "first-visit Not Base, server-side exclusion, reload and saved opt-out"
+  );
   await page.getByText("Rank #1", { exact: true }).first().waitFor();
   const initial = await hrefs();
   await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -148,6 +188,19 @@ try {
     name: "Filters",
     exact: true
   });
+  await notBase.click();
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
+    .waitFor();
+  await expectCards(24);
+  assert.ok((await hrefs()).every((href) => !href.includes("/base/")));
+  await page
+    .getByRole("button", { name: "Remove Not Base filter", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
+    .waitFor();
+  report.tests.push("mobile Not Base toggle and removable filter chip");
   await filterButton.click();
   await dialog.waitFor();
   const typeTab = dialog.getByRole("tab", { name: "Type", exact: true });
@@ -255,8 +308,17 @@ try {
   await oldPage.goto(
     `${app.origin}/collector/0x0000000000000000000000000000000000000001`
   );
+  const oldBrowseOnly = oldPage.getByRole("button", {
+    name: "Browse only",
+    exact: true
+  });
+  if (await oldBrowseOnly.isVisible()) await oldBrowseOnly.click();
   await oldPage
-    .getByRole("button", { name: "Browse only", exact: true })
+    .getByText(/These collection filters are temporarily unavailable/)
+    .waitFor();
+  assert.equal(await oldPage.locator("main article").count(), 0);
+  await oldPage
+    .getByRole("button", { name: "Clear filters", exact: true })
     .click();
   await oldPage.waitForFunction(
     () => document.querySelectorAll("main article").length === 24

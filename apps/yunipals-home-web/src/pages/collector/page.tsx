@@ -69,6 +69,11 @@ import {
 import { CollectorControls } from "@/pages/collector/components/CollectorControls";
 import { useCollectorTokens } from "@/pages/collector/hooks/useCollectorTokens";
 import {
+  readSavedCollectorFilters,
+  resolveCollectorQuery,
+  saveCollectorFilters
+} from "@/lib/collectorPreferences";
+import {
   defaultCollectorFilters,
   hasCollectorFilters,
   parseCollectorFilters,
@@ -168,9 +173,15 @@ function YunipalsCollectorPage() {
   const { address: connectedAddress, isConnected } = useAccount();
   const ownerInput = address.trim();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [savedFilters, setSavedFilters] = useState(readSavedCollectorFilters);
   const filterState = useMemo(() => {
     try {
-      return { filters: parseCollectorFilters(searchParams), error: null };
+      return {
+        filters: parseCollectorFilters(
+          resolveCollectorQuery(searchParams, savedFilters)
+        ),
+        error: null
+      };
     } catch (error) {
       return {
         filters: defaultCollectorFilters,
@@ -178,7 +189,7 @@ function YunipalsCollectorPage() {
           error instanceof Error ? error.message : "Invalid collection filters."
       };
     }
-  }, [searchParams]);
+  }, [searchParams, savedFilters]);
   const { filters } = filterState;
   const setFilters = useCallback(
     (next: CollectorFilters) => {
@@ -191,6 +202,20 @@ function YunipalsCollectorPage() {
     [setSearchParams]
   );
   const validOwner = isOwnerInput(ownerInput);
+  const canonicalSearch = serializeCollectorFilters(filters).toString();
+  useEffect(() => {
+    if (!validOwner || filterState.error) return;
+    saveCollectorFilters(canonicalSearch);
+    setSavedFilters(canonicalSearch);
+    if (searchParams.toString() !== canonicalSearch)
+      setSearchParams(canonicalSearch, { replace: true });
+  }, [
+    canonicalSearch,
+    filterState.error,
+    validOwner,
+    searchParams,
+    setSearchParams
+  ]);
   const inputIsEns = validOwner && !isEthereumAddress(ownerInput);
   const connectedAddressNormalized = connectedAddress?.toLowerCase();
   const [copied, setCopied] = useState(false);

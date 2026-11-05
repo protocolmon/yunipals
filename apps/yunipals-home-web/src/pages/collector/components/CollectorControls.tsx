@@ -20,6 +20,10 @@ import {
 } from "@/lib/collector";
 import { cn } from "@/lib/utils";
 import {
+  collectorNotBaseChains,
+  isCollectorNotBase
+} from "@/lib/collectorPreferences";
+import {
   indexedChains,
   type CategoricalTraitFacet,
   type TraitFacets
@@ -147,20 +151,28 @@ export function CollectorControls({
     selectTrait(activeTrait === "types" ? "colors" : "types", true);
   }
 
+  const notBase = isCollectorNotBase(filters);
   const activeCount =
     filters.types.length +
     filters.colors.length +
-    filters.chains.length +
+    (notBase ? 1 : filters.chains.length) +
     (filters.rarityMin || filters.rarityMax ? 1 : 0);
   const activeChips = [
-    ...filters.chains.map((value) => ({
-      label: chainDetails[value].label,
-      clear: () =>
-        onChange({
-          ...filters,
-          chains: filters.chains.filter((item) => item !== value)
-        })
-    })),
+    ...(notBase
+      ? [
+          {
+            label: "Not Base",
+            clear: () => onChange({ ...filters, chains: [] })
+          }
+        ]
+      : filters.chains.map((value) => ({
+          label: chainDetails[value].label,
+          clear: () =>
+            onChange({
+              ...filters,
+              chains: filters.chains.filter((item) => item !== value)
+            })
+        }))),
     ...(filters.rarityMin || filters.rarityMax
       ? [
           {
@@ -253,6 +265,23 @@ export function CollectorControls({
             Rarity: lowest first
           </SelectItem>
         </Select>
+        <button
+          type="button"
+          aria-label="Exclude Base"
+          aria-pressed={notBase}
+          onClick={() =>
+            onChange({
+              ...filters,
+              chains: notBase ? [] : [...collectorNotBaseChains]
+            })
+          }
+          className={cn(
+            controlClass,
+            notBase && "border-ink bg-ink text-white"
+          )}
+        >
+          Not Base
+        </button>
         <button
           type="button"
           onClick={() => {
