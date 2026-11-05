@@ -187,17 +187,13 @@ minutes. The audit is awaited in the worker's main loop, so the worker's other t
 were also blocked during those hours. No publication backlog remained afterwards.
 
 `lib/metadata/bounded-read.ts` now limits the audit's read to 5 minutes, and a failed
-audit waits 60 seconds rather than repeating every 2. These two changes are in the
-repository but were **not deployed** when this was written.
+audit waits 60 seconds rather than repeating every 2. These were deployed at 16:24:21 UTC by restarting only `yunipals-metadata.service`, and audits kept completing afterwards. The new test passes against both the source and the deployed bundle's helper. `metadata:publisher:check` gets past the audit's calls, then fails at line 159 in unrelated metadata read code. It fails the same way without this change, so that failure was already there and is still unexplained.
 
 ### Still open
 
 - **Why the audit stuck.** It began during the profiling restarts. It was the only stall
   over 42 minutes in at least three days of audit history, and the retry ran normally.
-- **The morning slowdown from 06:59 to 08:39 UTC.** This audit is not the cause: it ran
-  normally throughout that period. Another long transaction could have had the same
+- **The morning slowdown from 06:59 to 08:39 UTC.** This audit is not the cause: it ran normally throughout that period. System activity history shows no CPU or disk spike then, and no job fits. Another long transaction could have had the same
   effect, but none was recorded. An earlier idea that gateway pacing capped BNB at 2.5
   batches per second was wrong, because pacing is per endpoint and the pool rotates.
-- **No alert for long-open transactions.** Other jobs on the worker pool are meant to run
-  long, so another one could cause the same slowdown. Compare `index_block` with the age
-  of the oldest snapshot in `pg_stat_activity` if BNB falls behind again.
+- **The new monitor is not installed.** [Indexer health monitoring](../../apps/yunipals-indexer/docs/indexer-health-monitoring.md) alerts on sustained lag, long-open transactions and dead rows. It was written and tested, and a one-off run read all 17 conditions from production, but installing a permanent timer needs explicit permission, so nothing would alert on a repeat until it is installed. With its thresholds, that day's stuck query would have alerted at about 12:16 UTC, roughly 2.5 hours before BNB fell behind.

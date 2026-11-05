@@ -23,8 +23,7 @@ using any of it.
 
 5. A stuck URI audit query held a database snapshot open for almost 4 hours. Vacuum
    could not remove dead rows, so block indexing slowed until BNB fell 885 seconds
-   behind. Cancelling that query cleared it. The audit's new 5-minute limit in
-   `lib/metadata/uri-audit.ts` was not deployed when this was written.
+   behind. Cancelling that query cleared it. The audit's read now has a 5-minute limit (`lib/metadata/uri-audit.ts`), deployed at 16:24 UTC.
 
 The first two are fixed by
 [`lib/ponder-fixes`](../../../apps/yunipals-indexer/lib/ponder-fixes/README.md). The
@@ -33,15 +32,16 @@ finality policy or readiness rule changed.
 
 ## What is installed
 
-| File here                                                               | Location on `yunipals-main`                                                    |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `systemd/yunipals-indexer.service.d/90-profiling.conf`                  | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
-| `systemd/yunipals-indexer.service.d/91-ponder-fixes.conf`               | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
-| `systemd/yunipals-indexer-observer.service.d/90-finality-coverage.conf` | `/etc/systemd/system/yunipals-indexer-observer.service.d/`                     |
-| `systemd/yunipals-shared-rpc@base.service.d/90-startup-fallback.conf`   | `/etc/systemd/system/yunipals-shared-rpc@base.service.d/`                      |
-| `systemd/yunipals-shared-rpc@.service.d/z-free-deadline-20261103.conf`  | `/etc/systemd/system/yunipals-shared-rpc@.service.d/`                          |
-| `base-startup-fallback.public.env.example`                              | `/opt/yunipals-unified/profiling-20261105-v1/base-startup-fallback.public.env` |
-| `source-timeouts.public.env.example`                                    | `/etc/yunipals-unified/shared-20261102-v2/rpc/source-timeouts.public.env`      |
+| File here                                                                                    | Location on `yunipals-main`                                                    |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `systemd/yunipals-indexer.service.d/90-profiling.conf`                                       | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
+| `systemd/yunipals-indexer.service.d/91-ponder-fixes.conf`                                    | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
+| `systemd/yunipals-indexer-observer.service.d/90-finality-coverage.conf`                      | `/etc/systemd/system/yunipals-indexer-observer.service.d/`                     |
+| `systemd/yunipals-shared-rpc@base.service.d/90-startup-fallback.conf`                        | `/etc/systemd/system/yunipals-shared-rpc@base.service.d/`                      |
+| `systemd/yunipals-shared-rpc@.service.d/z-free-deadline-20261103.conf`                       | `/etc/systemd/system/yunipals-shared-rpc@.service.d/`                          |
+| `systemd/yunipals-metadata.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-audit-limit-20261105.conf` | `/etc/systemd/system/yunipals-metadata.service.d/`                             |
+| `base-startup-fallback.public.env.example`                                                   | `/opt/yunipals-unified/profiling-20261105-v1/base-startup-fallback.public.env` |
+| `source-timeouts.public.env.example`                                                         | `/etc/yunipals-unified/shared-20261102-v2/rpc/source-timeouts.public.env`      |
 
 Release directories on the server:
 
@@ -53,6 +53,7 @@ Release directories on the server:
   with one setting changed:
   `YUNIPALS_INDEXER_PONDER_PROFILER=<release>/apps/yunipals-indexer/lib/ponder-fixes/preload-with-profiling.mjs`.
 - `/opt/yunipals-unified/shared-observer-v3-20261105`: the observer bundle.
+- `/opt/yunipals-unified/metadata-worker-audit-limit-20261105`: the metadata worker bundle.
 
 ## The observer bundle
 
@@ -70,11 +71,22 @@ OBSERVER_TEST_ARTIFACT=/path/to/bundle-with-observeIndexerChain-exported.mjs \
 The next observer built from `main` includes the fix through `observer.ts`, so this
 script and `shared-observer-v3-20261105` can then be retired.
 
+The metadata worker bundle was patched the same way, for the same reason, with
+`patch-metadata-worker-bundle.py`.
+
+## Monitoring
+
+`install-indexer-health-monitor.sh` installs
+[indexer health monitoring](../../../apps/yunipals-indexer/docs/indexer-health-monitoring.md).
+**It has not been run**, so no alert covers these failures until it is. Review the script
+first, because it adds a permanent timer on production and sends one test email.
+
 ## Rolling back
 
 Each script removes one drop-in and restarts one service. Run them from the matching
 release directory on the server, where they are also installed as `rollback.sh`.
 
+- `rollback-metadata-worker.sh`: restarts only the metadata worker. The URI audit then has no time limit again.
 - `rollback-observer.sh`: restarts only the observer. `bnb-sales` stays `syncing`
   again.
 - `rollback-ponder-fixes.sh`: restarts the indexer. Both Ponder bugs return, and the
