@@ -78,8 +78,7 @@ The metadata worker bundle was patched the same way, for the same reason, with
 
 `install-indexer-health-monitor.sh` installs
 [indexer health monitoring](../../../apps/yunipals-indexer/docs/indexer-health-monitoring.md).
-**It has not been run**, so no alert covers these failures until it is. Review the script
-first, because it adds a permanent timer on production and sends one test email.
+It was run at 16:40 UTC from commit `e8aa443f`, into `/opt/yunipals-indexer-health-monitor/releases/`. It adds a permanent timer on production and sends one test email. The end of the script shows how to remove it.
 
 ## Rolling back
 
