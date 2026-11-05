@@ -227,11 +227,18 @@ In the 12 minutes after deployment, all 107 Base observations succeeded on the f
 
 ### Still open
 
-- **Base moved to 200 ms blocks at 17:59:53 UTC** (block 53,556,123), from 2-second blocks. The indexer keeps up, mostly 2 to 4 seconds behind, but block-count settings now cover a tenth of the time they did. Review them:
-  - Ponder's default Base finality of 30 blocks is now 6 seconds, not 60.
-  - Depth policies such as 20 subsequent blocks now mean 4 seconds, not 40.
-  - The gateways' `MARKET_RPC_PROXY_FREE_RECENT_BLOCKS=32768` now covers under 2 hours instead of 18.
-
+- **Base moved to 200 ms blocks at 17:59:53 UTC** (block 53,556,123), from 2-second blocks. The
+  indexer keeps up, mostly 2 to 4 seconds behind, but every block-count setting now covers a
+  tenth of the time it did:
+  - **Reorg depth: accepted.** Ponder's Base finality of 30 blocks is now 6 seconds, and depth
+    policies such as 20 subsequent blocks now mean 4 seconds. Yunipals holds no funds in
+    custody, so reorg risk is accepted and these stay as they are. A reorg deeper than 30 blocks
+    makes Ponder stop with `Encountered unrecoverable reorg` and recover after a restart; the
+    health monitor alerts on that.
+  - **Paid RPC use: check.** `MARKET_RPC_PROXY_FREE_RECENT_BLOCKS=32768` now covers under 2 hours
+    instead of 18. Paid calls on `yunipals-market-production-rpc@base` rose from 230 to 240
+    between 20:28 and 20:50 UTC, faster than its average since 2026-11-03. That sample is too
+    short to attribute to the block-time change.
 - **Why the audit stuck.** It began during the profiling restarts. It was the only stall
   over 42 minutes in at least three days of audit history, and the retry ran normally.
 - **The morning slowdown from 06:59 to 08:39 UTC.** This audit is not the cause: it ran normally throughout that period. System activity history shows no CPU or disk spike then, and no job fits. Another long transaction could have had the same
