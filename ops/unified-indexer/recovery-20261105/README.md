@@ -21,6 +21,11 @@ using any of it.
    finalized block. BNB finalizes 4 to 6 blocks behind head, so the position was
    always below the answer, and `bnb-sales` could never become `available`.
 
+5. A stuck URI audit query held a database snapshot open for almost 4 hours. Vacuum
+   could not remove dead rows, so block indexing slowed until BNB fell 885 seconds
+   behind. Cancelling that query cleared it. The audit's new 5-minute limit in
+   `lib/metadata/uri-audit.ts` was not deployed when this was written.
+
 The first two are fixed by
 [`lib/ponder-fixes`](../../../apps/yunipals-indexer/lib/ponder-fixes/README.md). The
 fourth is fixed in `apps/yunipals-indexer/lib/unified/observer.ts`. No RPC budget,

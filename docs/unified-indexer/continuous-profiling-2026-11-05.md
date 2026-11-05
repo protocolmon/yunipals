@@ -157,10 +157,47 @@ those chains as unavailable. Their `seaport-sales` checkpoints record
 `unsupported_sale_events`, with 68 and 35 excluded `unsupported_collection_sale`
 events. The newest are months old, so this predates and is unrelated to this incident.
 
+### BNB fell behind again at about 14:51 UTC
+
+The first soak stopped itself at 15:15 UTC, after BNB had been over 120 seconds behind
+for 10 minutes. Lag peaked at 885 seconds at 15:46 UTC, and `bnb-sales` correctly went
+back to `syncing`. The profiler isolated the stage: provider wait stayed at 1 to 3 ms,
+while `index_block` rose from about 50 ms at 13:26 UTC to about 220 ms at 14:30 UTC and
+300 to 390 ms by 15:10 UTC. BNB then processed 1.4 to 1.7 blocks per second against the
+2.22 it produces.
+
+The cause was a URI audit `SELECT` from `yunipals-metadata.service`, running since
+11:53:44 UTC. It normally finishes in seconds. The worker's pool deliberately has no
+statement timeout, so nothing stopped it, and its open snapshot prevented vacuum from
+removing dead rows across the database. Live indexing creates dead rows with every
+block, so `_ponder_checkpoint` reached 4 live rows and 29,502 dead, and `pg_attribute`
+24,092 live and 550,321 dead, even though autovacuum was running every 30 seconds.
+
+Cancelling that one query at 15:46:14 UTC confirmed this:
+
+|                                | Before cancel   | One minute later |
+| ------------------------------ | --------------- | ---------------- |
+| `pg_attribute` dead rows       | 550,321         | 16,198           |
+| `_ponder_checkpoint` dead rows | 29,502 at 15:41 | 578              |
+| `index_block` mean             | 394 ms          | 78 ms            |
+
+BNB caught up from 885 seconds to 2 seconds by 15:54 UTC, and `bnb-sales` returned to
+`available`. The retried audit ran normally, with 640 rows completed in the next 8
+minutes. The audit is awaited in the worker's main loop, so the worker's other tasks
+were also blocked during those hours. No publication backlog remained afterwards.
+
+`lib/metadata/bounded-read.ts` now limits the audit's read to 5 minutes, and a failed
+audit waits 60 seconds rather than repeating every 2. These two changes are in the
+repository but were **not deployed** when this was written.
+
 ### Still open
 
-The original BNB throughput deficit from 06:59 to 08:39 UTC is unexplained. An earlier
-idea that gateway pacing capped BNB at 2.5 batches per second was wrong: pacing is per
-endpoint, and the pool rotates. The limiter cannot be ruled out either, because its
-warning only fires after a 15-second wait. Since going live, BNB's head queue has stayed
-at 0 to 1 and its provider wait at 1 to 3 ms.
+- **Why the audit stuck.** It began during the profiling restarts. It was the only stall
+  over 42 minutes in at least three days of audit history, and the retry ran normally.
+- **The morning slowdown from 06:59 to 08:39 UTC.** This audit is not the cause: it ran
+  normally throughout that period. Another long transaction could have had the same
+  effect, but none was recorded. An earlier idea that gateway pacing capped BNB at 2.5
+  batches per second was wrong, because pacing is per endpoint and the pool rotates.
+- **No alert for long-open transactions.** Other jobs on the worker pool are meant to run
+  long, so another one could cause the same slowdown. Compare `index_block` with the age
+  of the oldest snapshot in `pg_stat_activity` if BNB falls behind again.
