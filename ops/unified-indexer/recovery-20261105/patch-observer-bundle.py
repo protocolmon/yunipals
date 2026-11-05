@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-"""Apply the finality coverage wait to the deployed shared observer bundle.
+"""Apply the observer fixes to the deployed shared observer bundle.
+
+1. Wait up to 6 seconds for indexer coverage of the observed finalized block.
+2. Keep the proven finalized block when a provider reports an older one, and
+   log which check reports provider lag.
 
 Usage: patch-observer-bundle.py INPUT OUTPUT
 
 INPUT is /opt/yunipals-unified/shared-observer-v2-20261102/dist/shared-observer.mjs.
-The logic matches coverageThrough in apps/yunipals-indexer/lib/unified/observer.ts.
+The logic matches apps/yunipals-indexer/lib/unified/observer.ts.
 """
 
 import hashlib
 import sys
 
 INPUT_SHA256 = "d0d23391ae40e8423939bdce486e0b9416309afd8e211363890ec9991ffca16a"
-OUTPUT_SHA256 = "866e55d100006afa18a1e74f976808a1c5eb578a93c334ccf35e7529cc6f3bae"
+OUTPUT_SHA256 = "8670d5e0a892cbd063a1c971cede6d8e2c9ebf86459b56bd3c74548c0db065c3"
 
 HELPER = """var finalityCoveragePollMs = 250;
 var finalityCoveragePolls = 24;
@@ -67,6 +71,29 @@ REPLACEMENTS = [
         "  const initialIndexed = chain.completeThroughBlock < initialWitness.blockNumber ? chain.completeThroughBlock : initialWitness.blockNumber;\n  const commitProviderLag",
     ),
     (HEAD, CALL + HEAD),
+    (
+        "  const commitProviderLag = async () => {\n",
+        "  const commitProviderLag = async (check) => {\n"
+        '    console.warn(JSON.stringify({ event: "shared_chain_provider_lag", chainId, check }));\n',
+    ),
+    (
+        "head.number < BigInt(read.previous.head_number))\n      return commitProviderLag();",
+        'head.number < BigInt(read.previous.head_number))\n      return commitProviderLag("head_behind_previous");',
+    ),
+    (
+        """      if (read.previous?.finalized_number !== null && read.previous?.finalized_number !== void 0) {
+        if (finalized.number < BigInt(read.previous.finalized_number))
+          return commitProviderLag();
+      }
+""",
+        """      if (read.previous?.finalized_number !== null && read.previous?.finalized_number !== void 0 && finalized.number < BigInt(read.previous.finalized_number))
+        finalized = await blockAt(BigInt(read.previous.finalized_number));
+""",
+    ),
+    (
+        "if (indexed > head.number || witness.blockNumber > head.number)\n      return commitProviderLag();",
+        'if (indexed > head.number || witness.blockNumber > head.number)\n      return commitProviderLag("witness_ahead_of_head");',
+    ),
 ]
 
 

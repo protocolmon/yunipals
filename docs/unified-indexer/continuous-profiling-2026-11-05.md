@@ -221,14 +221,16 @@ about Base's `finalized` block, although the logs do not record which check fail
 The observer fell back on retained observations for much of 08:00 to 11:59 UTC, briefly before 17:28, and
 208 times from 19:00 to 19:59 UTC, so it can happen again.
 
-A fix was proposed but not applied: when a provider returns an older finalized block, keep the block
-already proven instead of failing, because finality only moves forward. It does not claim anything more
-final than a provider reported. An existing test deliberately expects the current behavior, so this
-changes a previous design decision.
+The fix was deployed at 20:25:09 UTC by restarting only the observer. When a provider returns an older finalized block, the observer now keeps the block it has already proven instead of failing, because finality only moves forward. Nothing is treated as more final than a provider reported. This reverses an earlier design decision, so `test-observer-retained-prefix-postgres.mjs` now expects the new behavior. The observer also logs `shared_chain_provider_lag` with the failing check.
+
+In the 12 minutes after deployment, all 107 Base observations succeeded on the first try, against 41% falling back on a retained observation in the 30 minutes before. The stored finalized block never decreased and advanced twice, and no provider-lag check fired.
 
 ### Still open
 
-- **Base finalized disagreement.** See the outage above. It is still occurring, and the proposed fix is not applied.
+- **Base moved to 200 ms blocks at 17:59:53 UTC** (block 53,556,123), from 2-second blocks. The indexer keeps up, mostly 2 to 4 seconds behind, but block-count settings now cover a tenth of the time they did. Review them:
+  - Ponder's default Base finality of 30 blocks is now 6 seconds, not 60.
+  - Depth policies such as 20 subsequent blocks now mean 4 seconds, not 40.
+  - The gateways' `MARKET_RPC_PROXY_FREE_RECENT_BLOCKS=32768` now covers under 2 hours instead of 18.
 
 - **Why the audit stuck.** It began during the profiling restarts. It was the only stall
   over 42 minutes in at least three days of audit history, and the retry ran normally.

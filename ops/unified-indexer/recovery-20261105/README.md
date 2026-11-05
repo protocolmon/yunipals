@@ -37,6 +37,7 @@ finality policy or readiness rule changed.
 | `systemd/yunipals-indexer.service.d/90-profiling.conf`                                       | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
 | `systemd/yunipals-indexer.service.d/91-ponder-fixes.conf`                                    | `/etc/systemd/system/yunipals-indexer.service.d/`                              |
 | `systemd/yunipals-indexer-observer.service.d/90-finality-coverage.conf`                      | `/etc/systemd/system/yunipals-indexer-observer.service.d/`                     |
+| `systemd/yunipals-indexer-observer.service.d/91-finalized-retention.conf`                    | `/etc/systemd/system/yunipals-indexer-observer.service.d/`                     |
 | `systemd/yunipals-shared-rpc@base.service.d/90-startup-fallback.conf`                        | `/etc/systemd/system/yunipals-shared-rpc@base.service.d/`                      |
 | `systemd/yunipals-shared-rpc@.service.d/z-free-deadline-20261103.conf`                       | `/etc/systemd/system/yunipals-shared-rpc@.service.d/`                          |
 | `systemd/yunipals-metadata.service.d/zzzzzzzzzzzzzzzzzzzzzzzzzzzz-audit-limit-20261105.conf` | `/etc/systemd/system/yunipals-metadata.service.d/`                             |
@@ -52,7 +53,7 @@ Release directories on the server:
   `lib/ponder-fixes`, and `indexer.service.env`. That env file is the previous one
   with one setting changed:
   `YUNIPALS_INDEXER_PONDER_PROFILER=<release>/apps/yunipals-indexer/lib/ponder-fixes/preload-with-profiling.mjs`.
-- `/opt/yunipals-unified/shared-observer-v3-20261105`: the observer bundle.
+- `/opt/yunipals-unified/shared-observer-v4-20261105`: the observer bundle in use. `shared-observer-v3-20261105` had only the finality coverage wait.
 - `/opt/yunipals-unified/metadata-worker-audit-limit-20261105`: the metadata worker bundle.
 
 ## The observer bundle
@@ -69,7 +70,7 @@ OBSERVER_TEST_ARTIFACT=/path/to/bundle-with-observeIndexerChain-exported.mjs \
 ```
 
 The next observer built from `main` includes the fix through `observer.ts`, so this
-script and `shared-observer-v3-20261105` can then be retired.
+script and the `shared-observer-v3` and `v4` directories can then be retired. The script now produces v4, which adds the finalized retention fix.
 
 The metadata worker bundle was patched the same way, for the same reason, with
 `patch-metadata-worker-bundle.py`.
@@ -86,6 +87,7 @@ Each script removes one drop-in and restarts one service. Run them from the matc
 release directory on the server, where they are also installed as `rollback.sh`.
 
 - `rollback-metadata-worker.sh`: restarts only the metadata worker. The URI audit then has no time limit again.
+- `rollback-observer-finalized-retention.sh`: restarts only the observer, returning to v3. An older finalized answer fails Base observations again.
 - `rollback-observer.sh`: restarts only the observer. `bnb-sales` stays `syncing`
   again.
 - `rollback-ponder-fixes.sh`: restarts the indexer. Both Ponder bugs return, and the

@@ -150,7 +150,11 @@ export async function observeIndexerChain(
     chain.completeThroughBlock < initialWitness.blockNumber
       ? chain.completeThroughBlock
       : initialWitness.blockNumber;
-  const commitProviderLag = async () => {
+  const commitProviderLag = async (check: string) => {
+    // Record which check failed, so that provider lag can be explained later.
+    console.warn(
+      JSON.stringify({ event: "shared_chain_provider_lag", chainId, check })
+    );
     const previous = read.previous;
     const maximumAge = Math.min(options.maxHeadAgeMs ?? 180000, 180000);
     const unsigned = (value: unknown): value is string =>
@@ -305,7 +309,7 @@ export async function observeIndexerChain(
       read.previous?.head_number !== undefined &&
       head.number < BigInt(read.previous.head_number)
     )
-      return commitProviderLag();
+      return commitProviderLag("head_behind_previous");
     if (
       read.previous?.finalized_number !== null &&
       read.previous?.finalized_number !== undefined &&
@@ -323,15 +327,17 @@ export async function observeIndexerChain(
         return commitError("provider_inconsistent");
       if (
         read.previous?.finalized_number !== null &&
-        read.previous?.finalized_number !== undefined
-      ) {
-        if (finalized.number < BigInt(read.previous.finalized_number))
-          return commitProviderLag();
-      }
+        read.previous?.finalized_number !== undefined &&
+        finalized.number < BigInt(read.previous.finalized_number)
+      )
+        // Providers can disagree about finality by many minutes. Finality only
+        // moves forward, so keep the block already proven above instead of
+        // failing; nothing is treated as more final than a provider reported.
+        finalized = await blockAt(BigInt(read.previous.finalized_number));
       cache.set(finalized.number, finalized);
     }
     if (indexed > head.number || witness.blockNumber > head.number)
-      return commitProviderLag();
+      return commitProviderLag("witness_ahead_of_head");
     if ((await blockAt(witness.blockNumber)).hash !== witness.blockHash)
       return commitError("indexer_branch_mismatch");
     const heights = new Set<bigint>([indexed]);
