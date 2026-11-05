@@ -189,7 +189,46 @@ were also blocked during those hours. No publication backlog remained afterwards
 `lib/metadata/bounded-read.ts` now limits the audit's read to 5 minutes, and a failed
 audit waits 60 seconds rather than repeating every 2. These were deployed at 16:24:21 UTC by restarting only `yunipals-metadata.service`, and audits kept completing afterwards. The new test passes against both the source and the deployed bundle's helper. `metadata:publisher:check` gets past the audit's calls, then fails at line 159 in unrelated metadata read code. It fails the same way without this change, so that failure was already there and is still unexplained.
 
+### Second soak, 15:55 to 18:21 UTC
+
+The sampler stopped when its session ended, after 146 one-minute samples, or 2 hours 26 minutes of the
+planned 3 hours. BNB stayed within 5 seconds of head and readiness was 200 throughout. The oldest snapshot
+peaked at 90 seconds, `pg_attribute` dead rows at 23,161, and `index_block` at 65 ms. `bnb-sales` was
+`available` in 145 of 146 samples. The health monitor, running since 16:40 UTC, showed the same picture
+through 20:15 UTC apart from the Base outage below.
+
+Afternoon results do not test the morning window, so the original BNB slowdown is not ruled out. Compare
+the monitor's history for 06:59 to 08:39 UTC on 2026-11-06.
+
+### Base outage, 17:28 to 17:36 UTC
+
+The main EVM collection page failed 9 of 13 request-monitor checks between 17:25 and 17:40 UTC, and several
+readiness endpoints went unhealthy. The health monitor alerted at 17:32:56 and recovered at 17:38:10. The
+indexer was unaffected: Base stayed within 6 seconds of head.
+
+The observer could not record a Base observation. The best-supported explanation is that providers disagree
+about Base's `finalized` block, although the logs do not record which check failed:
+
+- Repeated PublicNode requests returned finalized blocks from 188 blocks ahead of Base's official endpoint
+  to 580 behind, about 25 minutes apart, apparently from different backends. Provider heads agreed within
+  1 to 2 blocks.
+- The observer stores the highest finalized block it has seen and treats any lower answer as provider lag.
+  It reuses its last observation for 3 minutes, then reports an error, and every read that needs Base
+  readiness fails closed, including the main collection page.
+- PublicNode is first in the pool that evidence reads use, and the gateway only moves to another provider
+  after an error.
+
+The observer fell back on retained observations for much of 08:00 to 11:59 UTC, briefly before 17:28, and
+208 times from 19:00 to 19:59 UTC, so it can happen again.
+
+A fix was proposed but not applied: when a provider returns an older finalized block, keep the block
+already proven instead of failing, because finality only moves forward. It does not claim anything more
+final than a provider reported. An existing test deliberately expects the current behavior, so this
+changes a previous design decision.
+
 ### Still open
+
+- **Base finalized disagreement.** See the outage above. It is still occurring, and the proposed fix is not applied.
 
 - **Why the audit stuck.** It began during the profiling restarts. It was the only stall
   over 42 minutes in at least three days of audit history, and the retry ran normally.
