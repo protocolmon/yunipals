@@ -4,6 +4,11 @@ Scope
 - Applies to the entire repository unless a more specific AGENTS.md exists in a subdirectory.
 - These rules guide code style, structure, and UI patterns for changes in this repo.
 
+Deployment-Specific Details
+- Anyone can run Yunipals on their own infrastructure, so this repository stays deployment-neutral. Do not commit server addresses, hostnames, SSH destinations, credential file locations, production receipts or other operator-specific records.
+- Operators keep those details in an untracked `AGENTS.local.md` at the repository root, which `.gitignore` excludes. Read it before any production check or change when it exists; without it, assume there is no production access.
+- Never print secret values. Check only whether credentials are present.
+
 Stack Assumptions
 - Tooling: Vite + React 18 + TypeScript, TailwindCSS, Radix UI primitives, class-variance-authority (CVA), tailwind-merge, Prettier.
 - Routing: react-router-dom. Use `Link` for in-app navigation.

@@ -93,3 +93,6 @@ docs/boosters/artwork-runtime/.generation.lock
 /docs/unified-indexer/*-20??-??-??.json
 /docs/unified-indexer/source-publication-*/*.tar.gz
 /ops/unified-indexer-transition/frozen-baseline-source/**/source.tar.gz
+
+# Operator-specific agent notes; see AGENTS.md
+AGENTS.local.md

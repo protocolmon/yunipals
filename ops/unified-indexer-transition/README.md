@@ -1,10 +1,9 @@
 # Unified indexer rollout entry points
 
-> On 2026-11-06 the production records in this folder (receipts, proposals, acceptance
-> evidence, handovers and host-specific operators) moved to the private
-> [`protocolmon/yunipals-ops`](https://github.com/protocolmon/yunipals-ops) repository, at the
-> same paths. The files left here are the ones public code and tests import or read. Put new
-> production records in `yunipals-ops`, not here.
+> On 2026-11-06 the Yunipals maintainers moved their production records from this folder
+> (receipts, proposals, acceptance evidence, handovers and host-specific operators) to a private
+> operations repository, at the same paths. The files left here are the ones public code and tests
+> import or read. Keep deployment-specific records out of this repository; see `AGENTS.md`.
 
 This directory retains the reviewed production operators and their historical predecessors. The [indexer setup guide](../../apps/yunipals-indexer/README.md) documents supported configuration and startup; the [current checklist](https://github.com/protocolmon/yunipals-ops/blob/main/docs/unified-indexer/CHECKLIST.md) records actual completion. Preparation, successful local tests and inactive installation do not establish a production cutover.
 
