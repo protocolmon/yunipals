@@ -238,9 +238,7 @@ them. Importing the journal back to 2026-11-01 gave these counts up to 02:45 UTC
 | Polygon  | 0           | 0                     | 0                     |
 
 No reorg deeper than 30 blocks was seen. Shallow counts can include providers briefly
-disagreeing. Reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, are counted as
-deep only once the profiler records reorg depth, which needs a profiler change and an indexer
-restart.
+disagreeing. Since 2026-11-06 the profiler records each reorg's exact depth, so reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, also count as deep from then on.
 
 ### Still open
 
