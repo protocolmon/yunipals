@@ -169,7 +169,9 @@ describe("projection canonical anchor retention", () => {
       expect(call.headers.get("x-yunipals-unified-rpc-profile")).toBe(
         env.UNIFIED_RPC_PROFILE_ID
       );
-      expect(call.headers.get("x-yunipals-rpc-workload")).toBe("unified_evidence");
+      expect(call.headers.get("x-yunipals-rpc-workload")).toBe(
+        "unified_evidence"
+      );
     }
     expect(
       (
@@ -364,6 +366,91 @@ describe("projection canonical anchor retention", () => {
     await expect(
       retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
     ).rejects.toThrow("witness_changed");
+    expect(
+      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
+    ).toHaveLength(0);
+  });
+
+  it("retains with a newer canonical witness when the observer moves it during the header check", async () => {
+    const newerHash = `0x${"88".repeat(32)}`;
+    const rpc = rpcFixture({
+      result: (method, params) =>
+        method === "eth_getBlockByNumber" && params[0] === "0x6f"
+          ? { number: "0x6f", hash: newerHash }
+          : undefined,
+      beforeResponse: async (_method, _params, sequence) => {
+        if (sequence === 3) {
+          await query(
+            "INSERT INTO projection_anchor_source.chain_block VALUES(56,111,$1)",
+            [newerHash]
+          );
+          await query(
+            "UPDATE yunipals_indexer_control.chain_status SET witness_number=111,witness_hash=$1 WHERE chain_id=56",
+            [newerHash]
+          );
+        }
+      }
+    });
+    expect(
+      await retainProjectionAnchors(client, snapshot(), {
+        env,
+        fetch: rpc.fetch
+      })
+    ).toEqual({ anchors: 4, physical: 3, retained: 1, rpcCalls: 4 });
+    expect(rpc.calls.map(({ method, params }) => [method, params])).toEqual([
+      ["eth_chainId", []],
+      ["eth_getBlockByNumber", ["0x64", false]],
+      ["eth_getBlockByNumber", ["0x6e", false]],
+      ["eth_getBlockByNumber", ["0x6f", false]]
+    ]);
+    expect(
+      (
+        await query(
+          "SELECT block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor"
+        )
+      ).rows
+    ).toEqual([
+      {
+        block_number: "100",
+        block_hash: oldHash,
+        witness_number: "111",
+        witness_hash: newerHash
+      }
+    ]);
+  });
+
+  it("stops retrying when the witness keeps moving and inserts nothing", async () => {
+    let witnessNumber = 110;
+    const hashOf = (number: number) =>
+      `0x${number.toString(16).padStart(2, "0").repeat(32)}`;
+    const rpc = rpcFixture({
+      result: (method, params) =>
+        method === "eth_getBlockByNumber" && params[0] !== "0x64"
+          ? {
+              number: params[0],
+              hash:
+                params[0] === "0x6e"
+                  ? witnessHash
+                  : hashOf(Number(BigInt(String(params[0]))))
+            }
+          : undefined,
+      beforeResponse: async (method, params) => {
+        if (method !== "eth_getBlockByNumber" || params[0] === "0x64") return;
+        witnessNumber++;
+        await query(
+          "INSERT INTO projection_anchor_source.chain_block VALUES(56,$1,$2)",
+          [witnessNumber, hashOf(witnessNumber)]
+        );
+        await query(
+          "UPDATE yunipals_indexer_control.chain_status SET witness_number=$1,witness_hash=$2 WHERE chain_id=56",
+          [witnessNumber, hashOf(witnessNumber)]
+        );
+      }
+    });
+    await expect(
+      retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
+    ).rejects.toThrow("witness_changed");
+    expect(rpc.calls).toHaveLength(6);
     expect(
       (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
     ).toHaveLength(0);
