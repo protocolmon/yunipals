@@ -214,7 +214,7 @@ covers chain-change review invalidation, both steps, reload recovery, pending ha
 retention and mobile layout; four validation tests cover package tampering,
 creation identity, altered runtime and orphaned receipts.
 
-The assets hostname now resolves to `168.119.172.10`, has a valid HTTPS certificate,
+The assets hostname now resolves to `yunipals-main`, has a valid HTTPS certificate,
 and serves the frozen engine, recipe-v2 assets and all four reviewed pilot fighters.
 The user supplied browser deployment receipts; both creations were independently
 verified against the pinned package. The closed API is running on the real
