@@ -4,6 +4,12 @@ Scope
 - Applies to the entire repository unless a more specific AGENTS.md exists in a subdirectory.
 - These rules guide code style, structure, and UI patterns for changes in this repo.
 
+Server Access
+- The production Yunipals indexer runs on a separate server, `yunipals-main`. Connect with `ssh yunipals-main`, an SSH host alias. The address and alias setup are in the private `protocolmon/yunipals-ops` repository; never write the server address into this public repository.
+- Do not assume the current development workspace is the indexer server. Verify the remote hostname before production checks or changes.
+- Existing video arena provider configuration is on that server: OpenAI in `/etc/yunipals-arena/arena.env`, Runware in `/etc/yunipals-arena/runware.env`. Check credential presence without printing secret values.
+- Production records (receipts, acceptance evidence, server inventories, rollback scripts and host-specific runbooks) go in `protocolmon/yunipals-ops` at the path they would have here, not in this repository.
+
 Stack Assumptions
 - Tooling: Vite + React 18 + TypeScript, TailwindCSS, Radix UI primitives, class-variance-authority (CVA), tailwind-merge, Prettier.
 - Routing: react-router-dom. Use `Link` for in-app navigation.
