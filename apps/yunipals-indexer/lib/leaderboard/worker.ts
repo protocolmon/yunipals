@@ -1,15 +1,23 @@
 import { pool } from "../offchain/db.js";
-import { refreshLeaderboard, refreshTraitIndex } from "./refresh.js";
+import {
+  refreshLeaderboard,
+  refreshLeaderboardFromCurrentData,
+  refreshTraitIndex
+} from "./refresh.js";
+import { leaderboardSource } from "./source.js";
 import { refreshLeaderboardEns } from "../ens/refresh.js";
 import { rarityReadSource } from "../rarity/read-source.js";
 import { assertOwnershipSourceSelection } from "../ownership/readiness.js";
 
 await assertOwnershipSourceSelection(pool);
 
+const source = leaderboardSource();
 const refreshMs = Number(process.env.LEADERBOARD_REFRESH_MS ?? 3_600_000);
 let stopping = false;
 let nextEnsRefreshAt = 0;
-console.log(`Leaderboard rarity source=${rarityReadSource}`);
+console.log(
+  `Leaderboard rarity source=${rarityReadSource} input source=${source}`
+);
 process.on("SIGTERM", () => {
   stopping = true;
 });
@@ -33,10 +41,17 @@ while (!stopping) {
   if (stopping) break;
   const started = Date.now();
   try {
-    await refreshTraitIndex();
-    const result = await refreshLeaderboard();
+    let result: { wallets: number };
+    if (source === "current") {
+      // The leaderboard alone, from current data. Projection generations
+      // (search and traits) are not rebuilt in this mode.
+      result = await refreshLeaderboardFromCurrentData();
+    } else {
+      await refreshTraitIndex();
+      result = await refreshLeaderboard();
+    }
     console.log(
-      `Refreshed leaderboard wallets=${result.wallets} duration_ms=${Date.now() - started}`
+      `Refreshed leaderboard source=${source} wallets=${result.wallets} duration_ms=${Date.now() - started}`
     );
     if (Date.now() >= nextEnsRefreshAt) {
       const ens = await refreshLeaderboardEns();

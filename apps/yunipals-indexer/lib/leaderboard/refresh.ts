@@ -320,6 +320,88 @@ export async function populatePrivateWalletStats(
   );
 }
 
+/** Replaces the public wallet stats with the rows computed in next_wallet_stats. */
+async function replaceWalletStats(client: PoolClient) {
+  await client.query("DELETE FROM leaderboard.wallet_stats");
+  await client.query(`INSERT INTO leaderboard.wallet_stats(scope, owner, monster_count, total_rarity,
+      unique_types, special_count, glitter_count, collector_score, score_version, updated_at)
+      SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
+        collector_score, score_version, updated_at FROM next_wallet_stats`);
+}
+
+/**
+ * Recomputes the leaderboard from the current ownership and metadata reads,
+ * independent of projection generations. One statement computes all scopes in
+ * a few minutes; that snapshot is short enough not to hold back vacuum the way
+ * a half-hour generation build does. The read relations stamp the result with
+ * the current ownership identity, as the API requires.
+ */
+export async function refreshLeaderboardFromCurrentData(
+  db: Pick<typeof pool, "connect"> = pool
+) {
+  const client = await db.connect();
+  const updatedAt = new Date();
+  let refreshLocked = false;
+  let recoveryLocked = false;
+  try {
+    refreshLocked = (
+      await client.query<{ acquired: boolean }>(
+        "SELECT pg_try_advisory_lock(hashtext('yunipals:leaderboard-refresh')) AS acquired"
+      )
+    ).rows[0]!.acquired;
+    if (!refreshLocked) throw new Error("leaderboard_refresh_busy");
+    if (archiveMode) {
+      await client.query(
+        "SELECT pg_advisory_lock_shared(hashtext('metadata:chain-recovery'))"
+      );
+      recoveryLocked = true;
+    }
+    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
+    await client.query(
+      "SELECT set_config('statement_timeout','20min',true), set_config('lock_timeout','30s',true)"
+    );
+    await assertOwnershipAvailable(client, collectionSlugs);
+    if (archiveMode) await assertChainReady(client, collectionSlugs);
+    const release = archiveMode
+      ? (
+          await client.query<{ release_id: string }>(
+            "SELECT release_id FROM metadata_source.archive_release WHERE state='active' FOR SHARE"
+          )
+        ).rows[0]?.release_id
+      : null;
+    if (archiveMode && !release) throw new Error("archive_unavailable");
+    await populatePrivateWalletStats(client, null, updatedAt);
+    await replaceWalletStats(client);
+    await stampDerivedSnapshot(client, "leaderboard", release ?? null);
+    const wallets = Number(
+      (
+        await client.query<{ count: string }>(
+          "SELECT count(*) FROM leaderboard.wallet_stats WHERE scope='all'"
+        )
+      ).rows[0]!.count
+    );
+    await client.query("COMMIT");
+    return { updatedAt, wallets };
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    if (recoveryLocked)
+      await client
+        .query(
+          "SELECT pg_advisory_unlock_shared(hashtext('metadata:chain-recovery'))"
+        )
+        .catch(() => undefined);
+    if (refreshLocked)
+      await client
+        .query(
+          "SELECT pg_advisory_unlock(hashtext('yunipals:leaderboard-refresh'))"
+        )
+        .catch(() => undefined);
+    client.release();
+  }
+}
+
 export async function refreshLeaderboard(expectedGenerationId?: string) {
   if (
     expectedGenerationId !== undefined &&
@@ -427,11 +509,7 @@ export async function refreshLeaderboard(expectedGenerationId?: string) {
       if (accepted.rowCount !== 1)
         throw new Error("leaderboard_publication_source_changed");
     }
-    await client.query("DELETE FROM leaderboard.wallet_stats");
-    await client.query(`INSERT INTO leaderboard.wallet_stats(scope, owner, monster_count, total_rarity,
-      unique_types, special_count, glitter_count, collector_score, score_version, updated_at)
-      SELECT scope, owner, monster_count, total_rarity, unique_types, special_count, glitter_count,
-        collector_score, score_version, updated_at FROM next_wallet_stats`);
+    await replaceWalletStats(client);
     if (input)
       await client.query(
         `INSERT INTO metadata.derived_snapshot

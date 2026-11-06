@@ -129,6 +129,19 @@ Optional Ponder overlay files load after its private base file in this order: `Y
 
 RPC policy enforcement stays enabled. Set `UNIFIED_RPC_PROFILE_FILE` and `UNIFIED_RPC_PROFILE_ID` to the profile installed by the budget coordinator and use the four proxy URLs in the example. Historical replay also needs the coordinator's bounded replay allowances. A missing or mismatched profile stops startup. Optional sources must match that profile.
 
+### Leaderboard source
+
+The leaderboard worker (`lib/leaderboard/worker.ts`) refreshes every `LEADERBOARD_REFRESH_MS`
+(default one hour). `LEADERBOARD_SOURCE` selects its inputs:
+
+- `projection` (default): rebuild a projection generation (search, traits and a leaderboard bound to
+  it) and publish it. A build copies the whole projection and keeps one database snapshot open for
+  its duration, about half an hour on a large deployment. That long snapshot holds back vacuum and
+  can slow the indexer.
+- `current`: recompute only the leaderboard from current ownership and metadata, in one statement
+  of a few minutes, and stamp it with the current ownership identity. Projection generations are
+  not rebuilt in this mode, so collection search and traits keep the last published generation.
+
 ## Collection snapshots and storage
 
 Application snapshot publication uses the existing `yunipals_indexer_control.chain_anchor` table when a build outlives Ponder's short block-header cache. The publisher role needs `SELECT`, `INSERT` and `UPDATE` on that table. It verifies the captured block and a current Ponder witness through the budget proxy before retaining evidence; a conflicting physical block still rejects publication.
