@@ -87,6 +87,7 @@ updating, and `BACKFILL_REORGS_SINCE=<date>` to import older reorg records.
 | ---------------- | ---------- | ---------------------------------------------------------------------------- |
 | 2026-11-05 16:40 | `e8aa443f` | First install, with one test email                                           |
 | 2026-11-06 02:45 | `9064c2ec` | Reorg tracking and journal access; 81 reorg records imported from 2026-11-01 |
+| 2026-11-06 02:51 | `d0b0b663` | Manual imports wait for the lock; installed release in use                   |
 
 Run `yunipals-reorg-report` as root on the server for reorg counts.
 
