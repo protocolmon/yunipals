@@ -22,7 +22,7 @@ treasury, preserving existing tournament allocations and already claimable rewar
 
 ## Deployment wallet
 
-Foundry **v1.8.5** is installed on `yunipals-main` (`168.119.172.10`) in
+Foundry **v1.8.5** is installed on `yunipals-main` in
 `/opt/foundry/v1.8.5`, with `cast`, `forge`, `anvil` in `/usr/local/bin`.
 The official Linux amd64 archive was verified against release SHA-256
 `6c66ffcc55fa4249197721baa3098bc208014ea1d8aa04b2ed50ac6bccffb226`.
@@ -30,7 +30,7 @@ The official Linux amd64 archive was verified against release SHA-256
 In the user's own SSH terminal:
 
 ```sh
-ssh root@168.119.172.10
+ssh root@<yunipals-main address>
 umask 077
 cast wallet import yunipals-arena-deployer --interactive
 ```

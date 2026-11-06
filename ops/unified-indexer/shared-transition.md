@@ -1,6 +1,6 @@
 # Completing the shared source transition
 
-Use the detailed [transition plan](../../docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md)
+Use the detailed [transition plan](https://github.com/protocolmon/yunipals-ops/blob/main/docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md)
 for production gates, backups, consumer inventory and rollback. Commands below
 prepare artifacts; they do not authorize activation or establish native readiness.
 Run indexer commands from `apps/yunipals-indexer` with Node 24 and the reviewed

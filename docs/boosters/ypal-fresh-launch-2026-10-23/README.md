@@ -98,8 +98,8 @@ Wrapping is part of the same app at [/wrap](https://www.yunipals.com/wrap).
 The [first genuine three-pack purchase](https://basescan.org/tx/0x62e4c5d0792f1dc955b28601debabaa9240d9aeb596479a9e1f297adcb03e8a7)
 completed Chainlink reveal and per-NFT metadata for NFTs 1–3, variants 171/244/178.
 All three card artworks and the glitter mask are published. The
-[public acceptance](frontend-combined-www-independent-readonly-acceptance.json)
-and [artwork acceptance](first-live-artwork-production.json) record the actual
+[public acceptance](https://github.com/protocolmon/yunipals-ops/blob/main/docs/boosters/ypal-fresh-launch-2026-10-23/frontend-combined-www-independent-readonly-acceptance.json)
+and [artwork acceptance](https://github.com/protocolmon/yunipals-ops/blob/main/docs/boosters/ypal-fresh-launch-2026-10-23/first-live-artwork-production.json) record the actual
 checks, including the complete batch replay link.
 
 The first genuine elapsed daily claim was verified on 27 October 2026.
@@ -115,7 +115,7 @@ committed daily credits.
 All three daily-claim card artworks are now published. The live replay decoded
 the real images for NFTs #4–6 on desktop and mobile, completed the slower tear
 animation and reported no browser errors. See the
-[daily-claim artwork acceptance](daily-claim-artwork-acceptance.json).
+[daily-claim artwork acceptance](https://github.com/protocolmon/yunipals-ops/blob/main/docs/boosters/ypal-fresh-launch-2026-10-23/daily-claim-artwork-acceptance.json).
 
 The entire 264-variant catalog is also generated, visually reviewed and
 prepublished. All 264 public metadata responses and all 660 PNG/SVG assets passed
