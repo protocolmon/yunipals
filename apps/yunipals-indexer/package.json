@@ -40,7 +40,7 @@
     "test:ponder:postgres": "node --import tsx scripts/test-ponder-dependencies.mjs",
     "test:shared:parity:postgres": "node --import tsx scripts/test-shared-parity.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && pnpm test:legacy:offline && pnpm test:islands:ponder && pnpm test:unified:ponder",
+    "test": "vitest run --exclude 'lib/profiling/**' --exclude 'lib/ponder-fixes/**' && pnpm test:ponder:runtime && pnpm test:legacy:offline && pnpm test:islands:ponder && pnpm test:unified:ponder",
     "test:unified:ponder": "node --import tsx scripts/test-unified-ponder.mjs",
     "test:unified:rpc-sync": "node --import tsx scripts/test-unified-rpc-sync.mjs",
     "test:unified:support:postgres": "node --import tsx scripts/test-unified-support.mjs",
