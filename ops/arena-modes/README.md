@@ -9,7 +9,7 @@ handles any old claims directly onchain. Do not submit claims, refunds or owner
 transactions during this transition.
 
 Use [the shared source transition guide](../unified-indexer/shared-transition.md)
-and [implementation plan](../../docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md).
+and [implementation plan](https://github.com/protocolmon/yunipals-ops/blob/main/docs/unified-indexer/shared-indexer-arena-v2-transition-plan-2026-11-02.md).
 One canonical Ponder process serves the whole project, the registry and both v2
 modes. Do not install an independent Arena indexer as a permanent dependency.
 The main managed indexer retains its Solana child and all non-Arena sources.

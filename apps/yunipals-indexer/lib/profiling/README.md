@@ -44,6 +44,10 @@ Filter the service journal for `event=yunipals_indexer_profile` (JSON field) and
   time, including any upstream gateway pacing; `rpc_total.*`: whole request time
   including queueing, provider waits, retries and backoff.
 - `rpc_attempt_errors.*`, `rpc_errors.*`, `rpc_retry_backoff`: retry/failure evidence.
+- `counts.reorgs` and `yunipals_indexer_reorg` lines: Ponder logs reorg depth at debug
+  level only, so each reconciled reorg is also written as its own line with `chainId`,
+  `depth` and `commonAncestorBlock`. Indexer health monitoring reads these to count reorgs
+  deeper than 30 blocks.
 - `latestReceivedBlockAgeMs`: age of the most recently polled block, which helps
   distinguish stale source data from a local processing backlog.
 - `receivedToIndexedBlocks`: latest received head minus last indexed block; this

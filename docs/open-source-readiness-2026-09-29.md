@@ -18,7 +18,7 @@ publication and from the ongoing 24-hour query observation.
   filename inventory. These checks do not prove absence of every possible secret.
 - The real PostgreSQL parity and catalog checks and both API typechecks passed
   during implementation; see the
-  [deployment record](query-reliability-rollout-2026-09-29.md).
+  [deployment record](https://github.com/protocolmon/yunipals-ops/blob/main/docs/query-reliability-rollout-2026-09-29.md).
 
 ## Dependency remediation
 

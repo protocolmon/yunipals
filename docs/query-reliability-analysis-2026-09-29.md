@@ -7,7 +7,7 @@ read-only query experiments. The recommendations below describe the initial
 plan; subsequent deployment results are linked below.
 
 Implementation and deployment results are recorded in
-[the rollout record](query-reliability-rollout-2026-09-29.md).
+[the rollout record](https://github.com/protocolmon/yunipals-ops/blob/main/docs/query-reliability-rollout-2026-09-29.md).
 
 ## Findings and confidence
 

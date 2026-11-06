@@ -12,7 +12,7 @@ Read the verified relationship only when opening an individual Base NFT. Show th
 
 ## Relationship data and rollout
 
-Keep the existing provenance audits, immutable identity checks, relationship storage and import tools. The verified candidate covers 51,402 relationships, including 2,652 Solana originals. Current ownership does not define the relationship. See [rollout instructions](collection-versions-rollout.md) for candidate hashes, validation and publication.
+Keep the existing provenance audits, immutable identity checks, relationship storage and import tools. The verified candidate covers 51,402 relationships, including 2,652 Solana originals. Current ownership does not define the relationship. See [rollout instructions](https://github.com/protocolmon/yunipals-ops/blob/main/docs/collection-versions-rollout.md) for candidate hashes, validation and publication.
 
 Chain exclusions need only the frontend change and existing filtered NFT APIs. Original links additionally require the relationship import and enabled API/frontend settings. No full ownership reindex is required.
 

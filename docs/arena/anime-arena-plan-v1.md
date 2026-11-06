@@ -352,8 +352,7 @@ onchain hash, before use (same pattern as `verifyPublicationFile`).
   published engine build used by the website's live mode.
 - Published by the studio `publish` command as root via rsync, files 0644. Add the
   directory to `ops/arena/backup_policy.py` so it is in the encrypted storage-box backup.
-- DNS: point the A record at the production indexer server, `yunipals-main`
-  (`168.119.172.10`). Add AAAA only after verifying that server's IPv6 address.
+- DNS: point the A record at the production indexer server, `yunipals-main`. Add AAAA only after verifying that server's IPv6 address.
   The development/preview server is separate.
 
 ### 7.5 Signature attack kits and the player loadout

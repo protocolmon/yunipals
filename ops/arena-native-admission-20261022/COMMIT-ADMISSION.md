@@ -7,7 +7,7 @@ create only the nine fresh NOLOGIN roles from those pinned inputs. It does not
 set passwords, enable LOGIN, write private connection files, migrate a schema,
 change a source selector, stop/start a service or call a provider.
 
-The [actual production read-only review](../../docs/unified-indexer/arena-current-role-production-rehearsal-review-2026-10-23.json)
+The [actual production read-only review](https://github.com/protocolmon/yunipals-ops/blob/main/docs/unified-indexer/arena-current-role-production-rehearsal-review-2026-10-23.json)
 and [actual two-database rollback result](../../docs/unified-indexer/arena-current-role-production-rollback-rehearsal-2026-10-23.json)
 passed with roles8+1 absent again, unchanged scoped ACLs and unchanged original
 actors/private inputs. The companion requires these acknowledged bytes, not a

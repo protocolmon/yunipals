@@ -53,7 +53,7 @@ reorgs happen, run `yunipals-reorg-report` as root on the server.
 
 Ponder's finality window is 30 blocks on Base and BNB, 65 on Ethereum and 200 on Polygon, so
 reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, are only counted as deep from
-`reorg_depth` records. The current profiler does not emit those yet.
+`reorg_depth` records. The profiler emits one `yunipals_indexer_reorg` line per reorg with its exact depth, from 2026-11-06.
 
 Both "unrecoverable reorgs" in the journal from 2026-11-01 to 2026-11-05 were stale provider
 responses: on Base the received block was 6 blocks older than Ponder's finalized block, and on
@@ -65,9 +65,9 @@ are keyed by journal cursor, so repeated imports add nothing twice.
 
 ## Installation
 
-`ops/unified-indexer/recovery-20261105/install-indexer-health-monitor.sh` performs these
-steps from the repository root. Review it first: it adds a permanent timer on production
-and sends one test email.
+`deploy/install-indexer-health-monitor.sh` performs these steps from the repository root, over
+SSH to the destination in `YUNIPALS_INDEXER_SSH`. Review it first: it adds a permanent timer on
+production and sends one test email.
 
 The monitor runs as `postgres`, like `yunipals-shared-budget-health`, because only that role
 can see every session's snapshot age. It connects through a local socket without stored
@@ -102,7 +102,8 @@ Commit the change first, because the release directory is named after the commit
 the installer from the repository root without the test email:
 
 ```sh
-SKIP_TEST_EMAIL=1 bash ops/unified-indexer/recovery-20261105/install-indexer-health-monitor.sh
+YUNIPALS_INDEXER_SSH=root@<yunipals-main address> SKIP_TEST_EMAIL=1 \
+  bash apps/yunipals-indexer/deploy/install-indexer-health-monitor.sh
 ```
 
 It installs a new release beside the old ones, rewrites the unit, timer, configuration and
