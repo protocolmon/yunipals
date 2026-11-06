@@ -163,6 +163,7 @@ test("actual Ponder logger and RPC queue produce profiles with logging disabled"
     assert.equal(await rpc.request({method:"eth_chainId",params:[]}),"0x38");
     logger.debug({msg:"Fetched block data",chain_id:56,duration:12,hash:"SECRET"});
     logger.info({msg:"Indexed block",chain_id:56,number:123,duration:5});
+    logger.debug({msg:"Reconciled reorg in local chain",chain_id:56,reorg_depth:4,common_ancestor_block:120,duration:3});
     const block = (number) => ({number:"0x"+number.toString(16),hash:"0x"+number.toString(16).padStart(64,"0"),parentHash:"0x"+(number-1).toString(16).padStart(64,"0"),timestamp:"0x6553f100",logsBloom:"0x01",transactions:[]});
     const timers = [];
     const originalTimeout = globalThis.setTimeout;
@@ -214,4 +215,36 @@ test("actual Ponder logger and RPC queue produce profiles with logging disabled"
   assert.equal(completed.queue.activeHeads, 0);
   assert.equal(completed.counts.heads_rejected, 1);
   assert.equal(row.counts.blocks_indexed, 1);
+  // Debug-level reorg logs reach the profiler even with logging disabled.
+  const reorg = rows.find((row) => row.event === "yunipals_indexer_reorg");
+  assert.deepEqual(
+    {
+      chainId: reorg.chainId,
+      depth: reorg.depth,
+      commonAncestorBlock: reorg.commonAncestorBlock
+    },
+    { chainId: 56, depth: 4, commonAncestorBlock: 120 }
+  );
+  assert.equal(row.counts.reorgs, 1);
+});
+
+test("reorg lines carry only bounded numeric fields", () => {
+  const { profile, rows } = fixture();
+  profile.log({
+    msg: "Reconciled reorg in local chain",
+    chain_id: 8453,
+    reorg_depth: 31,
+    common_ancestor_block: 53577900,
+    hash: "SECRET"
+  });
+  profile.log({
+    msg: "Reconciled reorg in local chain",
+    chain_id: 999,
+    reorg_depth: 2
+  });
+  profile.log({ msg: "Reconciled reorg in local chain", chain_id: 56 });
+  const reorgs = rows.filter((row) => row.event === "yunipals_indexer_reorg");
+  assert.equal(reorgs.length, 1);
+  assert.equal(reorgs[0].depth, 31);
+  assert.doesNotMatch(JSON.stringify(rows), /SECRET/);
 });

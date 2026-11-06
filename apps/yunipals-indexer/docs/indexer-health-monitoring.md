@@ -53,7 +53,7 @@ reorgs happen, run `yunipals-reorg-report` as root on the server.
 
 Ponder's finality window is 30 blocks on Base and BNB, 65 on Ethereum and 200 on Polygon, so
 reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, are only counted as deep from
-`reorg_depth` records. The current profiler does not emit those yet.
+`reorg_depth` records. The profiler emits one `yunipals_indexer_reorg` line per reorg with its exact depth, from 2026-11-06.
 
 Both "unrecoverable reorgs" in the journal from 2026-11-01 to 2026-11-05 were stale provider
 responses: on Base the received block was 6 blocks older than Ponder's finalized block, and on

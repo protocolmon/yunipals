@@ -208,6 +208,30 @@ export function createProfiler({
         count(s, "blocks_indexed");
       }
       if (event.msg === "Fetched missing blocks") count(s, "gap_fetches");
+      if (
+        event.msg === "Reconciled reorg in local chain" &&
+        Number.isSafeInteger(event.reorg_depth)
+      ) {
+        count(s, "reorgs");
+        // Ponder logs reorg depth at debug level only. Record each reorg as its
+        // own line, so that reorg tracking can count the deep ones exactly.
+        try {
+          write({
+            event: "yunipals_indexer_reorg",
+            schemaVersion: 1,
+            observedAt: new Date(wall()).toISOString(),
+            chainId: event.chain_id,
+            depth: event.reorg_depth,
+            commonAncestorBlock: Number.isSafeInteger(
+              event.common_ancestor_block
+            )
+              ? event.common_ancestor_block
+              : null
+          });
+        } catch {
+          droppedWindows++;
+        }
+      }
       if (event.msg === "Sent JSON-RPC request")
         observe(
           s,
