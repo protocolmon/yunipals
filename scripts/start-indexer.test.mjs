@@ -25,7 +25,7 @@ const tsx = await realpath(
   )
 );
 const stub = `const fs = require("node:fs");
-const record = event => fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({event,pid:process.pid,role:process.env.FIXTURE_ROLE,database:process.env.DATABASE_URL,provider:process.env.HELIUS_API_KEY,overlay:process.env.FIXTURE_OVERLAY,policy:process.env.UNIFIED_RPC_POLICY_REQUIRED,argv:process.argv.slice(2)})+"\\n");
+const record = event => fs.appendFileSync(process.env.FIXTURE_LOG, JSON.stringify({event,pid:process.pid,role:process.env.FIXTURE_ROLE,profile:process.env.FIXTURE_PROFILE,database:process.env.DATABASE_URL,provider:process.env.HELIUS_API_KEY,overlay:process.env.FIXTURE_OVERLAY,policy:process.env.UNIFIED_RPC_POLICY_REQUIRED,argv:process.argv.slice(2)})+"\\n");
 record("started");
 process.on("SIGTERM",()=>{if(process.env.FIXTURE_IGNORE_STOP==="true")return;record("stopped");process.exit(0)});
 process.on("SIGINT",()=>{record("stopped");process.exit(0)});
@@ -77,12 +77,28 @@ async function records(log) {
   }
 }
 
-for (const action of ["SIGTERM", "SIGINT", "fatal-child", "shutdown-timeout"]) {
+for (const action of [
+  "SIGTERM",
+  "SIGINT",
+  "fatal-child",
+  "shutdown-timeout",
+  "profile"
+]) {
   test(`managed startup ${action} drains both sources and isolates child credentials`, async () => {
     const files = await fixture(action === "fatal-child");
     let child;
     let watchdog;
     try {
+      if (action === "profile") {
+        await writeFile(
+          join(files.root, "profile.mjs"),
+          'process.env.FIXTURE_PROFILE="enabled";'
+        );
+        await writeFile(
+          files.file,
+          `${files.publicSettings}YUNIPALS_INDEXER_PONDER_PROFILER=./profile.mjs\n`
+        );
+      }
       if (action === "shutdown-timeout") {
         for (const name of ["ponder.env", "solana.env"]) {
           const path = join(files.root, name);
@@ -116,7 +132,9 @@ for (const action of ["SIGTERM", "SIGINT", "fatal-child", "shutdown-timeout"]) {
         for (let i = 0; i < 300 && (await records(files.log)).length < 2; i++)
           await delay(20);
         assert.equal((await records(files.log)).length, 2, errors);
-        child.kill(action === "shutdown-timeout" ? "SIGTERM" : action);
+        child.kill(
+          ["shutdown-timeout", "profile"].includes(action) ? "SIGTERM" : action
+        );
       }
       const [code, signal] = await exited;
       assert.equal(signal, null, errors);
@@ -136,6 +154,8 @@ for (const action of ["SIGTERM", "SIGINT", "fatal-child", "shutdown-timeout"]) {
       assert.equal(starts.length, 2);
       const evm = starts.find((row) => row.role === "ponder");
       const solana = starts.find((row) => row.role === "solana");
+      assert.equal(evm.profile, action === "profile" ? "enabled" : undefined);
+      assert.equal(solana.profile, undefined);
       assert.equal(evm.database, "fixture-evm-only");
       assert.equal(evm.provider, undefined);
       assert.equal(evm.overlay, "replay");
@@ -221,7 +241,8 @@ test("service settings reject credentials, disabled Solana, aliases and missing 
       "UNIFIED_PONDER_PORT=0",
       "UNIFIED_PONDER_PORT=65536",
       "YUNIPALS_INDEXER_SOLANA_ENV_FILE=./ponder.env",
-      "YUNIPALS_INDEXER_PONDER_ENV_FILE=./missing.env"
+      "YUNIPALS_INDEXER_PONDER_ENV_FILE=./missing.env",
+      "YUNIPALS_INDEXER_PONDER_PROFILER=./missing.mjs"
     ]) {
       await writeFile(files.file, `${files.publicSettings}${addition}\n`);
       await assert.rejects(loadLaunchConfiguration(files.file));

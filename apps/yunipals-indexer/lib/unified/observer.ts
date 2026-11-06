@@ -32,12 +32,72 @@ const anchor = (block: EvidenceBlock): StoredAnchor => ({
   timestamp: String(block.timestamp)
 });
 
+const finalityCoveragePollMs = 250;
+const finalityCoveragePolls = 24;
+
+type RuntimeWitness = Awaited<
+  ReturnType<typeof readBoundRuntime>
+>["witnesses"][number];
+
+// BNB finalizes a block within seconds of producing it, so an indexer position
+// read before the finality request is normally below the answer. Wait briefly
+// for the indexer to reach that block so its coverage can be proven. Readiness
+// and finality rules are unchanged: if the wait expires, the source stays
+// catching up, and the commit below still rechecks the runtime.
+async function coverageThrough(
+  pool: Pool,
+  release: RegisteredRelease,
+  chainId: number,
+  target: bigint | undefined,
+  initial: { indexed: bigint; witness: RuntimeWitness },
+  polls: number,
+  sleep: (milliseconds: number) => Promise<void>
+) {
+  let position = initial;
+  for (
+    let poll = 0;
+    target !== undefined && position.indexed < target && poll < polls;
+    poll++
+  ) {
+    await sleep(finalityCoveragePollMs);
+    const runtime = await indexerTransaction(
+      pool,
+      (db) => readBoundRuntime(db, release),
+      true
+    );
+    const chain = runtime.chains.find((chain) => chain.chainId === chainId);
+    const witness = runtime.witnesses.find(
+      (witness) => witness.chainId === chainId
+    );
+    if (
+      !runtime.running ||
+      chain?.completeThroughBlock === null ||
+      chain?.completeThroughBlock === undefined ||
+      !witness
+    )
+      break;
+    position = {
+      indexed:
+        chain.completeThroughBlock < witness.blockNumber
+          ? chain.completeThroughBlock
+          : witness.blockNumber,
+      witness
+    };
+  }
+  return position;
+}
+
 export async function observeIndexerChain(
   pool: Pool,
   release: RegisteredRelease,
   chainId: number,
   rpc: EvidenceRpc,
-  options: { now?: () => number; maxHeadAgeMs?: number } = {}
+  options: {
+    now?: () => number;
+    maxHeadAgeMs?: number;
+    finalityCoveragePolls?: number;
+    sleep?: (milliseconds: number) => Promise<void>;
+  } = {}
 ): Promise<
   "observed" | "waiting" | "waiting_retained" | "superseded" | "halted"
 > {
@@ -60,7 +120,7 @@ export async function observeIndexerChain(
   const revision = read.previous?.revision ?? "0";
   if (read.previous?.halted) return "halted";
   const chain = read.runtime.chains.find((chain) => chain.chainId === chainId);
-  const witness = read.runtime.witnesses.find(
+  const initialWitness = read.runtime.witnesses.find(
     (witness) => witness.chainId === chainId
   );
   const commitError = async (code: string, halt = false) => {
@@ -80,17 +140,21 @@ export async function observeIndexerChain(
   if (
     !chain ||
     chain.completeThroughBlock === null ||
-    !witness ||
+    !initialWitness ||
     !read.runtime.running ||
     now() - read.runtime.observedAtMs > 180000 ||
     read.runtime.observedAtMs > now()
   )
     return commitError("indexer_not_ready");
-  const indexed =
-    chain.completeThroughBlock < witness.blockNumber
+  const initialIndexed =
+    chain.completeThroughBlock < initialWitness.blockNumber
       ? chain.completeThroughBlock
-      : witness.blockNumber;
-  const commitProviderLag = async () => {
+      : initialWitness.blockNumber;
+  const commitProviderLag = async (check: string) => {
+    // Record which check failed, so that provider lag can be explained later.
+    console.warn(
+      JSON.stringify({ event: "shared_chain_provider_lag", chainId, check })
+    );
     const previous = read.previous;
     const maximumAge = Math.min(options.maxHeadAgeMs ?? 180000, 180000);
     const unsigned = (value: unknown): value is string =>
@@ -215,6 +279,17 @@ export async function observeIndexerChain(
     } catch {
       finalityError = "finality_unavailable";
     }
+    const { indexed, witness } = await coverageThrough(
+      pool,
+      release,
+      chainId,
+      finalized?.number,
+      { indexed: initialIndexed, witness: initialWitness },
+      options.finalityCoveragePolls ?? finalityCoveragePolls,
+      options.sleep ??
+        ((milliseconds) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds)))
+    );
     const head = validBlock(await rpc.block("latest"));
     const cache = new Map<bigint, EvidenceBlock>([[head.number, head]]);
     const blockAt = async (number: bigint) => {
@@ -234,7 +309,7 @@ export async function observeIndexerChain(
       read.previous?.head_number !== undefined &&
       head.number < BigInt(read.previous.head_number)
     )
-      return commitProviderLag();
+      return commitProviderLag("head_behind_previous");
     if (
       read.previous?.finalized_number !== null &&
       read.previous?.finalized_number !== undefined &&
@@ -252,15 +327,17 @@ export async function observeIndexerChain(
         return commitError("provider_inconsistent");
       if (
         read.previous?.finalized_number !== null &&
-        read.previous?.finalized_number !== undefined
-      ) {
-        if (finalized.number < BigInt(read.previous.finalized_number))
-          return commitProviderLag();
-      }
+        read.previous?.finalized_number !== undefined &&
+        finalized.number < BigInt(read.previous.finalized_number)
+      )
+        // Providers can disagree about finality by many minutes. Finality only
+        // moves forward, so keep the block already proven above instead of
+        // failing; nothing is treated as more final than a provider reported.
+        finalized = await blockAt(BigInt(read.previous.finalized_number));
       cache.set(finalized.number, finalized);
     }
     if (indexed > head.number || witness.blockNumber > head.number)
-      return commitProviderLag();
+      return commitProviderLag("witness_ahead_of_head");
     if ((await blockAt(witness.blockNumber)).hash !== witness.blockHash)
       return commitError("indexer_branch_mismatch");
     const heights = new Set<bigint>([indexed]);

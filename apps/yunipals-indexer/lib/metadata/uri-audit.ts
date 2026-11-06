@@ -6,18 +6,21 @@ import { selectedRelease } from "./resolve.js";
 import type { UriResolver } from "./publish.js";
 import { metadataError } from "./publication.js";
 import { chainReadiness } from "./chain-readiness.js";
+import { boundedRead } from "./bounded-read.js";
 
 /** URI observations are evidence, never instructions to fetch metadata over HTTP. */
 export async function auditArchiveUris(pool: Pool, readSchema: string, resolveUri: UriResolver, limit = 128) {
   if(!Number.isInteger(limit)||limit<1||limit>512)throw new Error('Invalid URI audit limit');
   const release=await selectedRelease(pool),schema=sqlIdentifier(readSchema);
-  const rows=(await pool.query(`SELECT m.collection,m.token_id::text,m.lifecycle,p.asset_key,m.token_uri
+  // This normally takes seconds. A run that stuck for almost 4 hours on 2026-11-05 stopped
+  // vacuum across the database and put BNB indexing 15 minutes behind.
+  const rows=await boundedRead(pool,'5min',async client=>(await client.query(`SELECT m.collection,m.token_id::text,m.lifecycle,p.asset_key,m.token_uri
     FROM metadata.token_metadata m JOIN metadata.token_publication p USING(collection,token_id,lifecycle)
     JOIN ${schema}.token t ON t.collection=m.collection AND t.token_id=m.token_id::text AND t.lifecycle=m.lifecycle
     WHERE p.release_id=$1 AND p.asset_key IS NOT NULL AND NOT t.burned
       AND NOT EXISTS(SELECT 1 FROM metadata.chain_readiness recovery WHERE recovery.collection=m.collection AND recovery.state<>'ready')
       AND (m.uri_checked_at IS NULL OR m.uri_checked_at<now()-interval '7 days')
-    ORDER BY m.uri_checked_at NULLS FIRST,m.collection,m.token_id LIMIT $2`,[release,limit])).rows;
+    ORDER BY m.uri_checked_at NULLS FIRST,m.collection,m.token_id LIMIT $2`,[release,limit])).rows);
   async function audit(row: typeof rows[number]){
     let uri:string;
     try{uri=await resolveUri(row.collection,row.token_id);}catch{return;}

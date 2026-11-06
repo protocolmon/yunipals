@@ -334,10 +334,28 @@ try {
   );
   rpcHead = head;
   rpcFinalized = head - 21n;
-  await retained();
-  checks.push(
-    "finalized provider regression retains original finality and observation fields"
+  const beforeRegression = await status();
+  now += 1000;
+  assert.equal(await observe(), "observed");
+  const afterRegression = await status();
+  assert.equal(afterRegression.error_code, null);
+  assert.equal(
+    afterRegression.finalized_number,
+    beforeRegression.finalized_number
   );
+  assert.equal(afterRegression.finalized_hash, beforeRegression.finalized_hash);
+  assert.ok(
+    BigInt(afterRegression.observed_at_ms) >
+      BigInt(beforeRegression.observed_at_ms)
+  );
+  checks.push(
+    "an older finalized answer keeps the proven finality and still records a fresh observation"
+  );
+  rpcFinalized = BigInt(beforeRegression.finalized_number) + 1n;
+  now += 1000;
+  assert.equal(await observe(), "observed");
+  assert.equal((await status()).finalized_number, String(rpcFinalized));
+  checks.push("finality still advances when a provider reports a newer block");
   await reset();
   await db.query(
     `UPDATE ${c.schema}._ponder_checkpoint SET safe_checkpoint=$1,latest_checkpoint=$1 WHERE chain_id=8453`,

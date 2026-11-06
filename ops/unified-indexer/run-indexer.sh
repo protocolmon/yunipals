@@ -35,6 +35,14 @@ if [[ "$ponder_directory" != /* || ! -d "$ponder_directory" || "$solana_director
   exit 1
 fi
 ponder_environment=(--env-file="$ponder_env")
+ponder_imports=()
+if [[ -v YUNIPALS_INDEXER_PONDER_PROFILER ]]; then
+  if [[ "$YUNIPALS_INDEXER_PONDER_PROFILER" != /* || ! -r "$YUNIPALS_INDEXER_PONDER_PROFILER" ]]; then
+    echo 'Ponder profiler must be an absolute readable path.' >&2
+    exit 1
+  fi
+  ponder_imports+=(--import "$YUNIPALS_INDEXER_PONDER_PROFILER")
+fi
 for setting in YUNIPALS_INDEXER_PONDER_RUNTIME_ENV_FILE YUNIPALS_INDEXER_PONDER_OVERRIDE_ENV_FILE YUNIPALS_INDEXER_PONDER_REPLAY_ENV_FILE; do
   if [[ -v "$setting" ]]; then
     file="${!setting}"
@@ -90,7 +98,7 @@ trap 'stop_children; exit 130' INT
 
 (
   cd "$ponder_directory"
-  exec env UNIFIED_RPC_POLICY_REQUIRED=true "$indexer_node" --max-old-space-size=4096 "${ponder_environment[@]}" node_modules/ponder/dist/esm/bin/ponder.js start "${ponder_options[@]}"
+  exec env UNIFIED_RPC_POLICY_REQUIRED=true "$indexer_node" --max-old-space-size=4096 "${ponder_environment[@]}" "${ponder_imports[@]}" node_modules/ponder/dist/esm/bin/ponder.js start "${ponder_options[@]}"
 ) &
 children+=("$!")
 if [[ "$solana_enabled" == true ]]; then

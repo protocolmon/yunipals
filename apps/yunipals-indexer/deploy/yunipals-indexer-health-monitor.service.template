@@ -1,0 +1,28 @@
+[Unit]
+Description=Yunipals indexer lag, vacuum and readiness monitoring
+After=network-online.target postgresql@16-main.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Peer authentication as postgres is needed to see every session's snapshot age.
+User=postgres
+Group=postgres
+# Read access to the indexer journal, to count reorgs.
+SupplementaryGroups=systemd-journal
+StateDirectory=yunipals-indexer-health-monitor
+StateDirectoryMode=0700
+WorkingDirectory=@RELEASE_DIR@
+EnvironmentFile=/etc/yunipals-indexer/request-monitor.env
+LoadCredential=monitor-config:/etc/yunipals-indexer/indexer-health-monitor.json
+LoadCredential=production-health:/var/lib/yunipals-unified-shared/production-health/latest.json
+ExecStart=/usr/bin/python3 -B @RELEASE_DIR@/scripts/indexer_health_monitor.py --config ${CREDENTIALS_DIRECTORY}/monitor-config --production-health ${CREDENTIALS_DIRECTORY}/production-health --state-dir /var/lib/yunipals-indexer-health-monitor
+TimeoutStartSec=120
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+CapabilityBoundingSet=
+MemoryMax=128M
+CPUQuota=25%

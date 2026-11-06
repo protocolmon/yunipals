@@ -13,3 +13,6 @@ and [the implementation plan](../../docs/unified-indexer/shared-indexer-arena-v2
 There is one canonical Ponder process for all four EVM chains and both Arena v2
 modes. Additional Arena source services are qualification tools to retire after
 handover, not permanent deployments. The existing managed Solana child remains.
+
+The [2026-11-05 recovery](recovery-20261105/README.md) records the live Ponder
+fixes, observer change, and server-only configuration for this deployment.
