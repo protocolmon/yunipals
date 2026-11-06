@@ -9,6 +9,8 @@ const hash = /^0x[0-9a-f]{64}$/;
 const quantity = /^0x(?:0|[1-9a-f][0-9a-f]*)$/;
 const decimal = /^(0|[1-9][0-9]{0,18})$/;
 const maximumBlock = 9223372036854775807n;
+/** Header checks for newer witnesses after the witness moved during retention. */
+const witnessRetries = 3;
 const maximumResponseBytes = 262144;
 
 function proxyUrl(chainId: number, env: NodeJS.ProcessEnv) {
@@ -53,7 +55,10 @@ export async function retainProjectionAnchors(
     if (!profileId || !hash.test(profileId))
       throw new Error("projection_anchor_rpc_profile_required");
     const remaining = Math.ceil(deadline - performance.now());
-    if (remaining <= 0 || rpcCalls >= proof.anchors.length * 3)
+    if (
+      remaining <= 0 ||
+      rpcCalls >= proof.anchors.length * (3 + witnessRetries)
+    )
       throw new Error("projection_anchor_rpc_bound");
     const id = ++rpcCalls;
     let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
@@ -129,9 +134,10 @@ export async function retainProjectionAnchors(
       physical++;
       continue;
     }
-    const witness = (
-      await db.query<{ witness_number: string; witness_hash: string }>(
-        `SELECT s.witness_number::text,s.witness_hash
+    const readWitness = async () =>
+      (
+        await db.query<{ witness_number: string; witness_hash: string }>(
+          `SELECT s.witness_number::text,s.witness_hash
        FROM yunipals_indexer_control.chain_status s
        JOIN ${physicalPonderSchema}.chain_block b ON b.chain_id=s.chain_id
          AND b.block_number=s.witness_number AND b.block_hash=s.witness_hash
@@ -139,19 +145,26 @@ export async function retainProjectionAnchors(
          AND NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block conflicting
            WHERE conflicting.chain_id=s.chain_id AND conflicting.block_number=s.witness_number
              AND conflicting.block_hash<>s.witness_hash)`,
-        [proof.releaseId, anchor.chain_id]
-      )
-    ).rows;
-    const current = witness[0];
-    if (
-      witness.length !== 1 ||
-      !current ||
-      !decimal.test(current.witness_number) ||
-      BigInt(current.witness_number) > maximumBlock ||
-      BigInt(current.witness_number) < BigInt(anchor.block_number) ||
-      !hash.test(current.witness_hash)
-    )
+          [proof.releaseId, anchor.chain_id]
+        )
+      ).rows;
+    const usable = (
+      rows: Array<{ witness_number: string; witness_hash: string }>
+    ) => {
+      const row = rows[0];
+      return !(
+        rows.length !== 1 ||
+        !row ||
+        !decimal.test(row.witness_number) ||
+        BigInt(row.witness_number) > maximumBlock ||
+        BigInt(row.witness_number) < BigInt(anchor.block_number) ||
+        !hash.test(row.witness_hash)
+      );
+    };
+    let witness = await readWitness();
+    if (!usable(witness))
       throw new Error("projection_anchor_witness_unavailable");
+    let current = witness[0]!;
     const url = proxyUrl(anchor.chain_id, env);
     if (
       (await rpc(url, "eth_chainId", [])) !==
@@ -159,9 +172,14 @@ export async function retainProjectionAnchors(
     )
       throw new Error("projection_anchor_chain_changed");
     await header(url, anchor.block_number, anchor.block_hash);
-    await header(url, current.witness_number, current.witness_hash);
-    const saved = await db.query(
-      `INSERT INTO yunipals_indexer_control.chain_anchor
+    // The observer moves the witness every few seconds, so a newer canonical
+    // witness can replace it during the header check. Retain the anchor with
+    // that newer witness after checking its header too. A reorg, a halted or
+    // non-canonical witness, or a witness that did not move still fails.
+    for (let attempt = 0; ; attempt++) {
+      await header(url, current.witness_number, current.witness_hash);
+      const saved = await db.query(
+        `INSERT INTO yunipals_indexer_control.chain_anchor
        (release_id,chain_id,block_number,block_hash,witness_number,witness_hash)
        SELECT $1,$2,$3::bigint,$4,$5::bigint,$6
        WHERE NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block old
@@ -178,17 +196,28 @@ export async function retainProjectionAnchors(
          SET witness_number=EXCLUDED.witness_number,witness_hash=EXCLUDED.witness_hash
          WHERE chain_anchor.block_hash=EXCLUDED.block_hash
        RETURNING block_number`,
-      [
-        proof.releaseId,
-        anchor.chain_id,
-        anchor.block_number,
-        anchor.block_hash,
-        current.witness_number,
-        current.witness_hash
-      ]
-    );
-    if (saved.rowCount !== 1)
-      throw new Error("projection_anchor_witness_changed");
+        [
+          proof.releaseId,
+          anchor.chain_id,
+          anchor.block_number,
+          anchor.block_hash,
+          current.witness_number,
+          current.witness_hash
+        ]
+      );
+      if (saved.rowCount === 1) break;
+      witness = await readWitness();
+      const next = witness[0];
+      if (
+        attempt >= witnessRetries ||
+        !usable(witness) ||
+        !next ||
+        (next.witness_number === current.witness_number &&
+          next.witness_hash === current.witness_hash)
+      )
+        throw new Error("projection_anchor_witness_changed");
+      current = next;
+    }
     retained++;
   }
   return { anchors: proof.anchors.length, physical, retained, rpcCalls };
