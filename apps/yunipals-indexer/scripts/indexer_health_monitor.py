@@ -523,8 +523,11 @@ def main():
     config = validate_config(json.loads(Path(args.config).read_text()))
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     with (directory / "run.lock").open("w") as lock:
+        # Scheduled checks skip a run that overlaps another. A manual import or test
+        # email waits instead: a check takes seconds, and skipping would do nothing.
+        manual = bool(args.backfill_reorgs or args.test_email)
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(lock, fcntl.LOCK_EX if manual else fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return
         if args.backfill_reorgs:

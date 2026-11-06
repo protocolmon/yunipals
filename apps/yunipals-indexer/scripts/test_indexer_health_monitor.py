@@ -457,5 +457,42 @@ class ReorgTrackingTests(unittest.TestCase):
         harness.deliver.assert_not_called()
 
 
+class LockTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.directory = Path(self.temporary.name)
+        self.addCleanup(self.temporary.cleanup)
+        self.config = self.directory / "config.json"
+        self.config.write_text(json.dumps(CONFIG))
+
+    def run_main(self, *arguments):
+        import fcntl
+        import sys
+        import threading
+        lock = (self.directory / "run.lock").open("w")
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        releaser = threading.Timer(0.3, lambda: (fcntl.flock(lock, fcntl.LOCK_UN), lock.close()))
+        releaser.start()
+        argv = ["monitor", "--config", str(self.config), "--state-dir", str(self.directory), *arguments]
+        with patch.object(sys, "argv", argv), patch("builtins.print") as output, \
+                patch.object(monitor, "journal_reorgs", return_value=[]) as journal, \
+                patch.object(monitor, "cycle") as checks:
+            monitor.main()
+        releaser.join()
+        return output, journal, checks
+
+    def test_manual_import_waits_for_a_running_check(self):
+        output, journal, _ = self.run_main("--backfill-reorgs=2026-11-01")
+        journal.assert_called_once()
+        output.assert_called_once_with(json.dumps({"backfilledReorgs": 0}))
+
+    def test_scheduled_check_still_skips_an_overlapping_run(self):
+        health = self.directory / "health.json"
+        health.write_text("{}")
+        output, _, checks = self.run_main("--production-health", str(health))
+        checks.assert_not_called()
+        output.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()

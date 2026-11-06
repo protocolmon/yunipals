@@ -78,8 +78,17 @@ The metadata worker bundle was patched the same way, for the same reason, with
 ## Monitoring
 
 `install-indexer-health-monitor.sh` installs
-[indexer health monitoring](../../../apps/yunipals-indexer/docs/indexer-health-monitoring.md).
-It was run at 16:40 UTC from commit `e8aa443f`, into `/opt/yunipals-indexer-health-monitor/releases/`. It adds a permanent timer on production and sends one test email. The end of the script shows how to remove it.
+[indexer health monitoring](../../../apps/yunipals-indexer/docs/indexer-health-monitoring.md)
+into `/opt/yunipals-indexer-health-monitor/releases/<commit>`. It adds a permanent timer on
+production; the end of the script shows how to remove it. Use `SKIP_TEST_EMAIL=1` when
+updating, and `BACKFILL_REORGS_SINCE=<date>` to import older reorg records.
+
+| When (UTC)       | Commit     | What                                                                         |
+| ---------------- | ---------- | ---------------------------------------------------------------------------- |
+| 2026-11-05 16:40 | `e8aa443f` | First install, with one test email                                           |
+| 2026-11-06 02:45 | `9064c2ec` | Reorg tracking and journal access; 81 reorg records imported from 2026-11-01 |
+
+Run `yunipals-reorg-report` as root on the server for reorg counts.
 
 ## Rolling back
 

@@ -225,6 +225,23 @@ The fix was deployed at 20:25:09 UTC by restarting only the observer. When a pro
 
 In the 12 minutes after deployment, all 107 Base observations succeeded on the first try, against 41% falling back on a retained observation in the 30 minutes before. The stored finalized block never decreased and advanced twice, and no provider-lag check fired.
 
+### Reorg tracking, from 2026-11-06
+
+The health monitor records every reorg Ponder logs, and `yunipals-reorg-report` summarizes
+them. Importing the journal back to 2026-11-01 gave these counts up to 02:45 UTC on 2026-11-06:
+
+| Chain    | Reorgs seen | Deeper than 30 blocks | Stale provider blocks |
+| -------- | ----------- | --------------------- | --------------------- |
+| Base     | 24          | 0                     | 1                     |
+| BNB      | 40          | 0                     | 1                     |
+| Ethereum | 15          | 0                     | 0                     |
+| Polygon  | 0           | 0                     | 0                     |
+
+No reorg deeper than 30 blocks was seen. Shallow counts can include providers briefly
+disagreeing. Reorgs of 31 to 65 blocks on Ethereum, or 31 to 200 on Polygon, are counted as
+deep only once the profiler records reorg depth, which needs a profiler change and an indexer
+restart.
+
 ### Still open
 
 - **Base moved to 200 ms blocks at 17:59:53 UTC** (block 53,556,123), from 2-second blocks. The

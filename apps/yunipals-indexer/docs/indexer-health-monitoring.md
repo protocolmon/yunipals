@@ -92,6 +92,36 @@ journalctl -u yunipals-indexer-health-monitor.service --since '1 hour ago'
 Stop checks with `systemctl disable --now yunipals-indexer-health-monitor.timer`. Setting
 `email_enabled` to `false` keeps the history but sends nothing.
 
+The monitor needs read access to the indexer journal for reorg tracking, which the service
+template grants with `SupplementaryGroups=systemd-journal`. Without it, `reorg-tracking`
+alerts after 15 checks instead of silently reporting no reorgs.
+
+## Updating
+
+Commit the change first, because the release directory is named after the commit. Then run
+the installer from the repository root without the test email:
+
+```sh
+SKIP_TEST_EMAIL=1 bash ops/unified-indexer/recovery-20261105/install-indexer-health-monitor.sh
+```
+
+It installs a new release beside the old ones, rewrites the unit, timer, configuration and
+`yunipals-reorg-report`, and runs one check. Older releases stay on disk; the unit only
+points at the newest. The history, state and reorg records in
+`/var/lib/yunipals-indexer-health-monitor` are kept.
+
+To import older reorg records, add `BACKFILL_REORGS_SINCE=<date>`. Scanning several days of
+journal takes a few minutes, and scheduled checks skip their runs until it finishes. It
+prints `{"backfilledReorgs": N}`. Records are keyed by journal cursor, so a repeat adds
+nothing. To run it directly, pass relative times with an equals sign, for example
+`--backfill-reorgs=-2h`.
+
+## Reading reorg counts
+
+Run `yunipals-reorg-report` as root on the server. It prints reorgs seen per chain in the
+last 24 hours, 7 days, 30 days and in total, with the number deeper than 30 blocks in
+brackets, then the latest deep reorgs and stale provider blocks.
+
 ## Limits
 
 This runs on the server it monitors, so a whole-server outage sends no alert. If a check
