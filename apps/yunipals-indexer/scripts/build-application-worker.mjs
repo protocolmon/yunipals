@@ -19,6 +19,7 @@ const profiles = {
   "versions-solana": "scripts/extend-monster-versions-solana.ts",
   "versions-import": "scripts/import-monster-versions.ts",
   "read-cache": "lib/metadata/read-cache-worker.ts",
+  "metadata-worker": "lib/metadata/worker.ts",
   "verify-islands": "scripts/verify-islands.ts",
   "islands-metadata": "lib/islands/worker.ts",
   "shared-observer": "scripts/shared-indexer-observer.ts",

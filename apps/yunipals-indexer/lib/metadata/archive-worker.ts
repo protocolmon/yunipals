@@ -21,16 +21,20 @@ import {
   unifiedBaseRuntime
 } from "./unified-runtime.js";
 import { refreshNativeBaseMetadata } from "./native-base.js";
+import { startNativeApproval, type NativeApproval } from "./native-approval.js";
 
 let stopping = false,
   nextBase = 0,
   nextUri = 0,
   nextEnqueue = 0;
+let nativeApproval: NativeApproval | undefined;
 process.on("SIGTERM", () => {
   stopping = true;
+  nativeApproval?.requestStop();
 });
 process.on("SIGINT", () => {
   stopping = true;
+  nativeApproval?.requestStop();
 });
 const role = process.env.METADATA_WORKER_ROLE ?? "full";
 if (role !== "full" && role !== "publish-only")
@@ -92,37 +96,52 @@ const resolveUri = async (collection: CollectionSlug, tokenId: string) =>
     args: [BigInt(tokenId)]
   });
 
+async function checkBase(work: () => Promise<unknown>) {
+  try {
+    await work();
+    await pool.query(
+      "UPDATE metadata.publication_runtime SET base_error=NULL,base_checked_at=now() WHERE singleton"
+    );
+  } catch (error) {
+    await pool.query(
+      "UPDATE metadata.publication_runtime SET base_error='base_replay_unavailable',base_checked_at=now() WHERE singleton"
+    );
+    console.error("Base metadata replay deferred", safeErrorMessage(error));
+  }
+}
+
+// Native approval runs as its own task, so its RPC calls and freshness checks
+// never hold up publication discovery, the URI audit or publication below.
+if (nativeBase)
+  nativeApproval = startNativeApproval(
+    () => checkBase(() => refreshNativeBaseMetadata(pool, nativeBase)),
+    {
+      onError: (error) =>
+        console.error(
+          "Metadata archive worker deferred",
+          safeErrorMessage(error)
+        )
+    }
+  );
+
 try {
   while (!stopping) {
     try {
-      if (role === "full" && Date.now() >= nextBase) {
-        try {
-          if (nativeBase) await refreshNativeBaseMetadata(pool, nativeBase);
-          else if (unifiedBase)
-            await consumeBaseMetadataPage(
-              pool,
-              await unifiedBase.reader(),
-              unifiedBase.rpc
-            );
-          else
-            await replayBaseMetadata(pool, process.env, {
-              advance: true,
-              maxRanges: 2,
-              stopping: () => stopping
-            });
-          await pool.query(
-            "UPDATE metadata.publication_runtime SET base_error=NULL,base_checked_at=now() WHERE singleton"
-          );
-        } catch (error) {
-          await pool.query(
-            "UPDATE metadata.publication_runtime SET base_error='base_replay_unavailable',base_checked_at=now() WHERE singleton"
-          );
-          console.error(
-            "Base metadata replay deferred",
-            safeErrorMessage(error)
-          );
-        }
-        nextBase = Date.now() + (nativeBase ? 2000 : 15000);
+      if (role === "full" && !nativeBase && Date.now() >= nextBase) {
+        await checkBase(async () =>
+          unifiedBase
+            ? consumeBaseMetadataPage(
+                pool,
+                await unifiedBase.reader(),
+                unifiedBase.rpc
+              )
+            : replayBaseMetadata(pool, process.env, {
+                advance: true,
+                maxRanges: 2,
+                stopping: () => stopping
+              })
+        );
+        nextBase = Date.now() + 15000;
       }
       if (role === "full" && Date.now() >= nextEnqueue) {
         if (nativeBase) {
@@ -174,6 +193,10 @@ try {
     }
   }
 } finally {
-  await unifiedBase?.close();
-  await pool.end();
+  try {
+    await nativeApproval?.stop();
+  } finally {
+    await unifiedBase?.close();
+    await pool.end();
+  }
 }
