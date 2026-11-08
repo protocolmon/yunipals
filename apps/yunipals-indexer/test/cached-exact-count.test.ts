@@ -34,6 +34,10 @@ beforeAll(async () => {
       "from" text,"to" text,block_number bigint,transaction_index int,log_index int);
     CREATE TABLE metadata_projection.read_member(generation_id bigint,collection text,token_id numeric,
       lifecycle int,metadata_available boolean,rarity_points_capped numeric);
+    CREATE TABLE metadata_projection.read_set(generation_id bigint,collection text,
+      member_count bigint,burned_count bigint);
+    INSERT INTO metadata_projection.read_set VALUES
+      (1,'ethereum',4,2),(1,'bnb',3,1),(2,'bnb',1,0);
     CREATE TABLE metadata.token_visibility(collection text,token_id numeric,owner text,lifecycle int,
       anchor_event_id text,anchor_block bigint,anchor_transaction_index int,anchor_log_index int);
     INSERT INTO count_ethereum.token VALUES
@@ -102,6 +106,72 @@ it("matches live-token joins for burn, metadata, rarity and visibility filters",
         }
       }
     }
+  }
+});
+
+const countInput = (filters: string[], burned?: boolean) => ({
+  chains: ["ethereum", "bnb"] as CollectionSlug[],
+  generation: "1",
+  relations: ["count_source.token"],
+  filters,
+  burned,
+  fallback: "SELECT 77::int AS total"
+});
+
+it("reads stored totals when only collections are filtered", async () => {
+  const sql = cachedExactCountSql(
+    countInput(["t.collection = ANY($1::text[])", "t.burned = $2"], false)
+  );
+  expect(sql).toContain("sum(s.member_count)");
+  expect(sql).toContain("sum(s.burned_count)");
+  expect(sql).not.toContain("burned_tokens");
+  expect(sql).not.toMatch(
+    /count\(\*\) FROM metadata_projection\.read_member s/
+  );
+  // 7 members minus 3 burned, minus visible hidden tokens: bnb 7 was hidden by
+  // an owner who still holds it, and ethereum 3 is hidden by its owner.
+  const expected = (
+    await db.query<{ total: number }>(
+      `SELECT count(*)::int AS total FROM count_source.token t
+       WHERE t.collection=ANY($1::text[]) AND t.burned=$2 AND NOT ${activeVisibilityPredicate()}`,
+      [["ethereum", "bnb"], false]
+    )
+  ).rows;
+  expect((await db.query(sql, [["ethereum", "bnb"], false])).rows).toEqual(
+    expected
+  );
+});
+
+it("counts members when another filter applies", () => {
+  const sql = cachedExactCountSql(
+    countInput([
+      "t.collection = ANY($1::text[])",
+      "COALESCE(s.metadata_available,false)=$2"
+    ])
+  );
+  expect(sql).not.toContain("member_count");
+  expect(sql).toMatch(/count\(\*\) FROM metadata_projection\.read_member s/);
+});
+
+it("uses the canonical fallback when a stored total is missing", async () => {
+  const sql = cachedExactCountSql(
+    countInput(["t.collection = ANY($1::text[])"])
+  );
+  await db.exec(
+    "UPDATE metadata_projection.read_set SET burned_count=NULL WHERE generation_id=1 AND collection='bnb'"
+  );
+  try {
+    expect((await db.query(sql, [["ethereum", "bnb"]])).rows).toEqual([
+      { total: 77 }
+    ]);
+    // Another collection's missing total does not affect this count.
+    expect((await db.query(sql, [["ethereum"]])).rows).not.toEqual([
+      { total: 77 }
+    ]);
+  } finally {
+    await db.exec(
+      "UPDATE metadata_projection.read_set SET burned_count=1 WHERE generation_id=1 AND collection='bnb'"
+    );
   }
 });
 
