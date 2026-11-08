@@ -219,6 +219,85 @@ export async function stageReadCacheOwnership(
   await db.query("ANALYZE pg_temp.transfer_event");
 }
 
+/** Renew a read set's boundary proof once its witness is this many blocks old.
+ * The proof expires at 4,096 blocks: Ponder then prunes the boundary's header
+ * and the observer prunes the anchor. Renewal leaves room for a worker that is
+ * busy rebuilding another chain.
+ */
+const readCacheAnchorRenewalBlocks = 1024;
+
+/** Keep a read set provable for as long as its data is unchanged. Otherwise its
+ * proof expires by block count alone, which forces a full rebuild every 4,096
+ * blocks, or every 14 minutes on a chain with 200 ms blocks. chain_block holds
+ * only Ponder's canonical branch, so a boundary proven here is an ancestor of
+ * the current witness, without an RPC call. A reorg still invalidates the read
+ * set: a reverted boundary or witness leaves chain_block.
+ */
+export async function renewReadCacheAnchor(
+  db: Pick<PoolClient, "query">,
+  id: string,
+  chain: CollectionSlug
+) {
+  if (!unifiedOwnershipReads) return 0;
+  selected([chain]);
+  const result = await db.query(
+    `INSERT INTO yunipals_indexer_control.chain_anchor
+      (release_id,chain_id,block_number,block_hash,witness_number,witness_hash)
+    SELECT s.ownership_release_id,status.chain_id,s.ownership_boundary,s.ownership_boundary_hash,
+      status.witness_number,status.witness_hash
+    FROM metadata_projection.read_set s
+    JOIN LATERAL ${ponderSchema}.source_boundary(s.collection) ownership_source
+      ON ownership_source.release_id=s.ownership_release_id
+    JOIN yunipals_indexer_control.chain_status status
+      ON status.release_id=s.ownership_release_id AND status.chain_id=ownership_source.chain_id
+    JOIN ${nativeOwnershipSchema}.chain_block witness ON witness.chain_id=status.chain_id
+      AND witness.block_number=status.witness_number AND witness.block_hash=status.witness_hash
+    LEFT JOIN yunipals_indexer_control.chain_anchor held
+      ON held.release_id=s.ownership_release_id AND held.chain_id=status.chain_id
+        AND held.block_number=s.ownership_boundary AND held.block_hash=s.ownership_boundary_hash
+    WHERE s.generation_id=${idSql(id)} AND s.collection=$1
+      AND s.ownership_release_id='${ownershipReadConfig.releaseId}'
+      AND NOT status.halted AND status.error_code IS NULL
+      AND COALESCE(held.witness_number,s.ownership_boundary)<status.witness_number-${readCacheAnchorRenewalBlocks}
+      AND (EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.chain_block boundary
+          WHERE boundary.chain_id=status.chain_id AND boundary.block_number=s.ownership_boundary
+            AND boundary.block_hash=s.ownership_boundary_hash)
+        OR EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.chain_block previous
+          WHERE previous.chain_id=held.chain_id AND previous.block_number=held.witness_number
+            AND previous.block_hash=held.witness_hash))
+    ON CONFLICT(release_id,chain_id,block_number) DO UPDATE
+      SET witness_number=EXCLUDED.witness_number,witness_hash=EXCLUDED.witness_hash
+      WHERE chain_anchor.block_hash=EXCLUDED.block_hash
+        AND chain_anchor.witness_number<EXCLUDED.witness_number
+    RETURNING block_number`,
+    [chain]
+  );
+  return result.rows.length;
+}
+
+/** Renewal only saves a rebuild, so it must never stop the worker. If it fails,
+ * the proof expires and the worker rebuilds the read set. An unavailable source
+ * is not reported as a failure: the freshness check that follows reports it.
+ */
+export async function tryRenewReadCacheAnchor(
+  db: Pick<PoolClient, "query">,
+  id: string,
+  chain: CollectionSlug
+): Promise<{ renewed: boolean; failure: string | null }> {
+  try {
+    return {
+      renewed: (await renewReadCacheAnchor(db, id, chain)) > 0,
+      failure: null
+    };
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String(error.code)
+        : "renewal_failed";
+    return { renewed: false, failure: code === "YI001" ? null : code };
+  }
+}
+
 /** Build one chain's exact proof set under one MVCC snapshot, off the HTTP path. */
 export async function buildReadCache(
   db: PoolClient,

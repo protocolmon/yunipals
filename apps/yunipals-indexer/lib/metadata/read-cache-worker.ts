@@ -1,13 +1,18 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { pool, apiPool } from "../offchain/db.js";
 import { collectionSlugs } from "../constants.js";
-import { buildReadCache, readCacheFreshSql } from "./read-cache.js";
+import {
+  buildReadCache,
+  readCacheFreshSql,
+  tryRenewReadCacheAnchor
+} from "./read-cache.js";
 import { assertOwnershipSourceSelection } from "../ownership/readiness.js";
 import { retainedReadCacheGenerationsSql } from "./read-cache-preparation.js";
 
 await assertOwnershipSourceSelection(pool);
 
 let stopped = false;
+const reportedRenewalFailures = new Set<string>();
 for (const signal of ["SIGINT", "SIGTERM"] as const)
   process.on(signal, () => {
     stopped = true;
@@ -32,6 +37,28 @@ while (!stopped) {
           ...collectionSlugs.filter((chain) => chain !== "bnb")
         ] as const) {
           if (stopped) break;
+          const renewal = await tryRenewReadCacheAnchor(client, id, chain);
+          if (renewal.renewed)
+            console.info(
+              JSON.stringify({
+                event: "read_cache_anchor_renewed",
+                generation: id,
+                chain
+              })
+            );
+          // A missing grant would repeat every few seconds, so report each code once.
+          if (
+            renewal.failure &&
+            !reportedRenewalFailures.has(renewal.failure)
+          ) {
+            reportedRenewalFailures.add(renewal.failure);
+            console.error(
+              JSON.stringify({
+                event: "read_cache_anchor_renewal_failed",
+                code: renewal.failure
+              })
+            );
+          }
           const fresh = (
             await client.query<{ fresh: boolean }>(
               `SELECT ${readCacheFreshSql(id, [chain])} AND EXISTS(

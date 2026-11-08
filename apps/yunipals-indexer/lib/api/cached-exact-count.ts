@@ -6,6 +6,11 @@ import { activeVisibilityRowPredicate } from "./visibility-query.js";
  * Broad counts can count that membership directly and subtract live hidden
  * identities. Burn filtering checks only the burned subset against current
  * token state; owner and trait filters keep the normal current-token join.
+ *
+ * A count filtered only by collection reads the totals stored with the read
+ * set. Any token change invalidates that read set, so they are exact when the
+ * cache is fresh, and scanning millions of index entries for them would take
+ * seconds on every request.
  */
 export function cachedExactCountSql(input: {
   chains: readonly CollectionSlug[];
@@ -31,7 +36,20 @@ export function cachedExactCountSql(input: {
           "s.metadata_available"
         )
     );
-  const total = `(SELECT count(*) FROM metadata_projection.read_member s
+  const storedCounts =
+    memberFilters.length === 1 &&
+    /^s\.collection\s*=\s*ANY\(\$\d+::text\[\]\)$/.test(memberFilters[0]!);
+  const storedCount = (column: "member_count" | "burned_count") =>
+    `(SELECT sum(s.${column}) FROM metadata_projection.read_set s
+    WHERE s.generation_id=${generation} AND ${memberFilters.join(" AND ")})`;
+  const storedCountsComplete = storedCounts
+    ? `AND NOT EXISTS(SELECT 1 FROM metadata_projection.read_set s
+      WHERE s.generation_id=${generation} AND ${memberFilters.join(" AND ")}
+        AND (s.member_count IS NULL OR s.burned_count IS NULL))`
+    : "";
+  const total = storedCounts
+    ? storedCount("member_count")
+    : `(SELECT count(*) FROM metadata_projection.read_member s
     WHERE s.generation_id=${generation} AND ${memberFilters.join(" AND ")})`;
   const hidden = input.relations.map(
     (relation) => `EXISTS(SELECT 1 FROM ${relation} t
@@ -41,7 +59,9 @@ export function cachedExactCountSql(input: {
     WHERE t.collection=visibility.collection AND t.token_id::numeric=visibility.token_id
       AND ${activeVisibilityRowPredicate("t")} AND ${input.filters.join(" AND ")} OFFSET 0)`
   );
-  const burned = `(SELECT count(*) FROM (
+  const burned = storedCounts
+    ? storedCount("burned_count")
+    : `(SELECT count(*) FROM (
     ${input.relations
       .map(
         (
@@ -60,7 +80,7 @@ export function cachedExactCountSql(input: {
       : input.burned
         ? burned
         : `(${total} - ${burned})`;
-  return `SELECT CASE WHEN ${fresh} THEN (${selectedTotal} -
+  return `SELECT CASE WHEN ${fresh} ${storedCountsComplete} THEN (${selectedTotal} -
     (SELECT count(*) FROM metadata.token_visibility visibility WHERE ${hidden.join(" OR ")}))::int
     ELSE (SELECT total FROM (${input.fallback}) original_count) END AS total`;
 }
