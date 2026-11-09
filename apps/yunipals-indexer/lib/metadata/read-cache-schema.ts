@@ -73,8 +73,10 @@ export const readCacheSchemaStatements = [
       END IF;
       IF TG_OP='UPDATE' THEN
         IF kind='native_base_approval' THEN
-          IF (OLD.read_identity,OLD.state,OLD.frontier,OLD.implementation,OLD.error_code)
-            IS NOT DISTINCT FROM (NEW.read_identity,NEW.state,NEW.frontier,NEW.implementation,NEW.error_code) THEN RETURN NULL; END IF;
+          -- A read set depends on these alone. A failed check changes no data, and
+          -- base_metadata_frame(true) already refuses readers until a check passes.
+          IF (OLD.read_identity,OLD.frontier,OLD.implementation)
+            IS NOT DISTINCT FROM (NEW.read_identity,NEW.frontier,NEW.implementation) THEN RETURN NULL; END IF;
         END IF;
         IF kind='base' AND TG_TABLE_SCHEMA='metadata_source'
           AND TG_TABLE_NAME='chain_metadata_scan' THEN

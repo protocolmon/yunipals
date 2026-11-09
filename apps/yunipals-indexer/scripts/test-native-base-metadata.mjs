@@ -513,6 +513,28 @@ try {
   assert.equal((await refreshNativeBaseMetadata(pool, rpc)).checked, true);
   assert.equal(await epoch(), beforeQuiet);
   assert.equal(await cacheFresh(), true);
+  // A failed check blocks readers, but changes no data the read set holds.
+  await pool.query(
+    "UPDATE metadata_source.native_base_metadata_state SET checked_at=now()-interval '61 seconds'"
+  );
+  await assert.rejects(
+    refreshNativeBaseMetadata(pool, {
+      ...rpc,
+      chainId: async () => {
+        throw new Error("HTTP request failed.");
+      }
+    }),
+    /HTTP request failed/
+  );
+  assert.equal(await probe(), false);
+  await assert.rejects(cacheFresh(), (error) => error.code === "YI001");
+  assert.equal(await epoch(), beforeQuiet);
+  assert.equal((await refreshNativeBaseMetadata(pool, rpc)).checked, true);
+  assert.equal(await probe(), true);
+  assert.equal(await epoch(), beforeQuiet);
+  assert.equal(await cacheFresh(), true);
+  assert.equal(await apiCount(), 1);
+  passed.push("failed approval check blocks readers and keeps the read set");
   const update = {
     ...mint,
     eventName: "Update",
