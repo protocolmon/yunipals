@@ -107,7 +107,9 @@ export const readCacheSchemaStatements = [
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.source_kind,NEW.release_id,
           NEW.publication_status,NEW.publication_content_hash,NEW.mint_transaction_hash,NEW.mint_log_index,NEW.chain_event_key,NEW.chain_event_block_hash)
           THEN RETURN NULL; END IF; END IF;
-        IF kind='runtime' THEN IF OLD.base_error IS NOT DISTINCT FROM NEW.base_error THEN RETURN NULL; END IF; END IF;
+        -- base_error gates freshness directly and no read set is built while it
+        -- is set, so a failed Base check and its recovery leave read sets valid.
+        IF kind='runtime' THEN RETURN NULL; END IF;
         IF OLD IS NOT DISTINCT FROM NEW THEN RETURN NULL; END IF;
       END IF;
       IF kind='native_base_event' THEN

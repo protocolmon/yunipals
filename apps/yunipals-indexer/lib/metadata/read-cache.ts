@@ -40,6 +40,8 @@ function selected(chains: readonly CollectionSlug[], schema?: string) {
 function chainsSql(chains: readonly CollectionSlug[]) {
   return `ARRAY[${chains.map((chain) => `'${chain}'`).join(",")}]::text[]`;
 }
+const baseRuntimeErrorSql =
+  "metadata.publication_runtime WHERE singleton AND base_error IS NOT NULL";
 export function readCacheFreshSql(
   id: string,
   chains: readonly CollectionSlug[],
@@ -51,6 +53,11 @@ export function readCacheFreshSql(
     nativeBaseMetadataReads() && chains.includes("base")
       ? `AND EXISTS(SELECT 1 FROM ${ponderSchema}.base_metadata_frame(true))`
       : "";
+  // While a Base check has failed, readers use the live path, which reports
+  // Base metadata as unavailable. buildReadCache refuses this state.
+  const baseRuntimeProof = chains.includes("base")
+    ? `AND NOT EXISTS(SELECT 1 FROM ${baseRuntimeErrorSql})`
+    : "";
   const ownershipJoin = unifiedOwnershipReads
     ? `JOIN LATERAL ${ponderSchema}.source_boundary(s.collection) ownership_source ON true
     JOIN ${ponderSchema}._unified_read_release ownership_release ON ownership_release.singleton`
@@ -75,7 +82,7 @@ export function readCacheFreshSql(
     ${ownershipJoin}
     WHERE s.generation_id=${generation} AND s.collection=ANY(${list})
       AND s.revision=e.revision AND s.source_mode='${metadataSourceMode()}'
-      AND ${generationOwnershipProof("g")} ${ownershipProof} ${nativeMetadataProof}
+      AND ${generationOwnershipProof("g")} ${ownershipProof} ${nativeMetadataProof} ${baseRuntimeProof}
       AND g.state='ready' AND g.source_mode=CASE WHEN s.source_mode='legacy-http' THEN 'legacy' ELSE s.source_mode END
       AND (EXISTS(SELECT 1 FROM metadata_projection.active a
         WHERE s.generation_id IN(a.current_id,a.previous_id))
@@ -354,6 +361,13 @@ export async function buildReadCache(
     ).rows[0];
     if (!epoch || epoch.guard_count < 8)
       throw new Error("read_cache_guards_missing");
+    // Built now, every Base token would be stored as unavailable, and the set
+    // would stay fresh after the error clears.
+    if (
+      chain === "base" &&
+      (await db.query(`SELECT 1 FROM ${baseRuntimeErrorSql}`)).rowCount
+    )
+      throw new Error("base_replay_unavailable");
     await db.query(
       "DELETE FROM metadata_projection.read_set WHERE generation_id=$1 AND collection=$2",
       [id, chain]

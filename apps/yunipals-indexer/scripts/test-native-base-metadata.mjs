@@ -526,15 +526,35 @@ try {
     }),
     /HTTP request failed/
   );
+  // The metadata worker's checkBase records the same failure (archive-worker.ts).
+  await pool.query(
+    "UPDATE metadata.publication_runtime SET base_error='base_replay_unavailable',base_checked_at=now() WHERE singleton"
+  );
   assert.equal(await probe(), false);
   await assert.rejects(cacheFresh(), (error) => error.code === "YI001");
   assert.equal(await epoch(), beforeQuiet);
   assert.equal((await refreshNativeBaseMetadata(pool, rpc)).checked, true);
   assert.equal(await probe(), true);
   assert.equal(await epoch(), beforeQuiet);
+  // Approved again but the worker's error not yet cleared: live path, Base unavailable.
+  assert.equal(await cacheFresh(), false);
+  assert.equal(await apiCount(), 0);
+  const blockedBuild = await pool.connect();
+  try {
+    await assert.rejects(
+      buildReadCache(blockedBuild, "1", "base"),
+      /base_replay_unavailable/
+    );
+  } finally {
+    blockedBuild.release();
+  }
+  await pool.query(
+    "UPDATE metadata.publication_runtime SET base_error=NULL,base_checked_at=now() WHERE singleton"
+  );
+  assert.equal(await epoch(), beforeQuiet);
   assert.equal(await cacheFresh(), true);
   assert.equal(await apiCount(), 1);
-  passed.push("failed approval check blocks readers and keeps the read set");
+  passed.push("failed Base check blocks readers and keeps the read set");
   const update = {
     ...mint,
     eventName: "Update",

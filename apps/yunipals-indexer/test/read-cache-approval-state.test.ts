@@ -29,7 +29,13 @@ beforeAll(async () => {
       checked_at timestamptz,error_code text);
     ${dirty};
     CREATE TRIGGER read_cache_dirty AFTER INSERT OR DELETE OR UPDATE ON ${state} FOR EACH ROW
-      EXECUTE FUNCTION metadata_projection.read_cache_dirty('native_base_approval');`);
+      EXECUTE FUNCTION metadata_projection.read_cache_dirty('native_base_approval');
+    CREATE SCHEMA metadata;
+    CREATE TABLE metadata.publication_runtime(singleton boolean PRIMARY KEY,
+      last_worker_at timestamptz,base_error text,base_checked_at timestamptz);
+    INSERT INTO metadata.publication_runtime(singleton) VALUES(true);
+    CREATE TRIGGER read_cache_dirty AFTER INSERT OR DELETE OR UPDATE ON metadata.publication_runtime
+      FOR EACH ROW EXECUTE FUNCTION metadata_projection.read_cache_dirty('runtime');`);
 });
 beforeEach(async () => {
   await db.exec(`ALTER TABLE ${state} DISABLE TRIGGER read_cache_dirty;
@@ -48,6 +54,17 @@ it("keeps the read set when a failed check blocks and a later one restores", asy
   expect(await revision()).toBe(1);
   await db.exec(
     `UPDATE ${state} SET state='ready',error_code=NULL,checked_block=2,checked_hash='next',checked_at=now()`
+  );
+  expect(await revision()).toBe(1);
+});
+
+it("keeps the read set when the metadata worker records a failed Base check", async () => {
+  await db.exec(
+    `UPDATE metadata.publication_runtime SET base_error='base_replay_unavailable',base_checked_at=now()`
+  );
+  expect(await revision()).toBe(1);
+  await db.exec(
+    `UPDATE metadata.publication_runtime SET base_error=NULL,base_checked_at=now(),last_worker_at=now()`
   );
   expect(await revision()).toBe(1);
 });
