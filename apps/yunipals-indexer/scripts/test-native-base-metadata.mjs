@@ -582,7 +582,7 @@ try {
   );
 
   await pool.query(
-    "UPDATE metadata_source.native_base_metadata_state SET checked_at=now()-interval '91 seconds'"
+    "UPDATE metadata_source.native_base_metadata_state SET checked_at=now()-interval '121 seconds'"
   );
   assert.equal(await probe(), false);
   implementation = "0x" + "f".repeat(40);
