@@ -73,8 +73,10 @@ export const readCacheSchemaStatements = [
       END IF;
       IF TG_OP='UPDATE' THEN
         IF kind='native_base_approval' THEN
-          IF (OLD.read_identity,OLD.state,OLD.frontier,OLD.implementation,OLD.error_code)
-            IS NOT DISTINCT FROM (NEW.read_identity,NEW.state,NEW.frontier,NEW.implementation,NEW.error_code) THEN RETURN NULL; END IF;
+          -- A read set depends on these alone. A failed check changes no data, and
+          -- base_metadata_frame(true) already refuses readers until a check passes.
+          IF (OLD.read_identity,OLD.frontier,OLD.implementation)
+            IS NOT DISTINCT FROM (NEW.read_identity,NEW.frontier,NEW.implementation) THEN RETURN NULL; END IF;
         END IF;
         IF kind='base' AND TG_TABLE_SCHEMA='metadata_source'
           AND TG_TABLE_NAME='chain_metadata_scan' THEN
@@ -105,7 +107,9 @@ export const readCacheSchemaStatements = [
           IS NOT DISTINCT FROM (NEW.collection,NEW.token_id,NEW.lifecycle,NEW.source_kind,NEW.release_id,
           NEW.publication_status,NEW.publication_content_hash,NEW.mint_transaction_hash,NEW.mint_log_index,NEW.chain_event_key,NEW.chain_event_block_hash)
           THEN RETURN NULL; END IF; END IF;
-        IF kind='runtime' THEN IF OLD.base_error IS NOT DISTINCT FROM NEW.base_error THEN RETURN NULL; END IF; END IF;
+        -- base_error gates freshness directly and no read set is built while it
+        -- is set, so a failed Base check and its recovery leave read sets valid.
+        IF kind='runtime' THEN RETURN NULL; END IF;
         IF OLD IS NOT DISTINCT FROM NEW THEN RETURN NULL; END IF;
       END IF;
       IF kind='native_base_event' THEN
