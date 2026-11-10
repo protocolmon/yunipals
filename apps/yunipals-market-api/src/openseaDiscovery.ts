@@ -6,16 +6,39 @@ import {
   readOpenSeaDiscoveryEnvironment,
   readOpenSeaProbeEnvironment
 } from "@/environment";
-import { OpenSeaClient } from "@/opensea/client";
+import { OpenSeaClient, OpenSeaError } from "@/opensea/client";
 import { createOpenSeaRequestBudget } from "@/opensea/requestBudget";
 import { OpenSeaSharedPolicyResolver } from "@/opensea/sharedPolicy";
+import { OpenSeaPolicyError } from "@/opensea/policy";
 import {
+  OpenSeaDiscoveryError,
   claimOpenSeaDiscovery,
   isOpenSeaDiscoveryDue,
   processOpenSeaDiscoveryPage,
   readOpenSeaDiscoveryStatus,
   pruneOpenSeaDiscoveryPages
 } from "@/opensea/discovery";
+
+// Only fixed codes and numbers from our own error types; never a raw error,
+// which could carry a credential or a provider response.
+function failureFields(error: unknown) {
+  if (error instanceof OpenSeaDiscoveryError)
+    return {
+      code: error.code,
+      detail: error.detail ?? null,
+      retryMs: error.retryMs ?? null
+    };
+  if (error instanceof OpenSeaError)
+    return {
+      code: error.code,
+      detail: error.detail ?? null,
+      httpStatus: error.httpStatus ?? null,
+      retryMs: error.retryAfterMs ?? null
+    };
+  if (error instanceof OpenSeaPolicyError)
+    return { code: error.code, detail: null };
+  return { code: "unclassified", detail: null };
+}
 
 // Explicitly bounded, resumable provider GET ingestion. This executable never
 // constructs a publication-authorized client or sends an onchain transaction.
@@ -104,7 +127,15 @@ async function main() {
           );
           pages++;
           if (result.completed) complete.add(side);
-        } catch {
+        } catch (error) {
+          console.error(
+            JSON.stringify({
+              event: "opensea_discovery_page_failed",
+              chain: config.chain,
+              side,
+              ...failureFields(error)
+            })
+          );
           failed = true;
           break;
         }
@@ -135,7 +166,13 @@ async function main() {
 }
 try {
   await main();
-} catch {
+} catch (error) {
+  console.error(
+    JSON.stringify({
+      event: "opensea_discovery_failed",
+      ...failureFields(error)
+    })
+  );
   console.error(
     "OpenSea discovery configuration or execution failed; credentials and raw errors suppressed."
   );

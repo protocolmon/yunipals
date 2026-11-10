@@ -295,7 +295,9 @@ test("browse policy refreshes every five minutes and retains a nonactionable sta
   await assert.rejects(
     service.resolveCurrentBrowsePolicy("base"),
     (error: unknown) =>
-      error instanceof OpenSeaError && error.code === "provider_busy"
+      error instanceof OpenSeaError &&
+      error.code === "provider_busy" &&
+      error.detail === "policy_not_current"
   );
   assert.equal(calls, 2);
 });

@@ -327,7 +327,9 @@ test("timeouts include body reads, concurrency is bounded and oversized streams 
   await assert.rejects(
     client.getCollection("yunipals"),
     (error: unknown) =>
-      error instanceof OpenSeaError && error.code === "provider_busy"
+      error instanceof OpenSeaError &&
+      error.code === "provider_busy" &&
+      error.detail === "client_concurrency"
   );
   await assert.rejects(
     hanging,
@@ -445,6 +447,14 @@ test("quota reservations precede HTTP and distinguish unsent publication from lo
   assert.deepEqual(kinds, ["read", "fulfillment", "publication"]);
   assert.deepEqual(observed, [200, 200, 200]);
   deny = true;
+  await assert.rejects(
+    client.getCollection("yunipals"),
+    (error: unknown) =>
+      error instanceof OpenSeaError &&
+      error.code === "provider_busy" &&
+      error.detail === "local_quota" &&
+      error.retryAfterMs === 7200000
+  );
   const unsent = await client.publish(candidate);
   assert.equal(unsent.state, "not_sent");
   assert.ok("retryAfterMs" in unsent);
@@ -497,6 +507,13 @@ test("budget outages and cancellation during reservation never dispatch HTTP", a
   const result = await client.publish(publicationFixture());
   assert.equal(result.state, "not_sent");
   assert.equal(JSON.stringify(result).includes("private"), false);
+  await assert.rejects(
+    client.getCollection("yunipals"),
+    (error: unknown) =>
+      error instanceof OpenSeaError &&
+      error.code === "provider_busy" &&
+      error.detail === "budget_unavailable"
+  );
   offline = false;
   const abort = new AbortController();
   const request = client.getCollection("yunipals", abort.signal);
@@ -506,7 +523,9 @@ test("budget outages and cancellation during reservation never dispatch HTTP", a
   await assert.rejects(
     request,
     (error: unknown) =>
-      error instanceof OpenSeaError && error.code === "provider_busy"
+      error instanceof OpenSeaError &&
+      error.code === "provider_busy" &&
+      error.detail === "caller_aborted"
   );
   assert.equal(calls, 0);
 });
