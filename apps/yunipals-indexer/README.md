@@ -132,7 +132,10 @@ RPC policy enforcement stays enabled. Set `UNIFIED_RPC_PROFILE_FILE` and `UNIFIE
 ### Leaderboard source
 
 The leaderboard worker (`lib/leaderboard/worker.ts`) refreshes every `LEADERBOARD_REFRESH_MS`
-(default one hour). `LEADERBOARD_SOURCE` selects its inputs:
+(default one hour), counted from the start of the previous refresh. A failed refresh is retried
+after `LEADERBOARD_RETRY_MS` (default one hour, never longer than the refresh interval). Both take
+whole milliseconds of at least 60000. A failed ENS name update does not count as a failed refresh;
+it is retried after the next one. `LEADERBOARD_SOURCE` selects its inputs:
 
 - `projection` (default): rebuild a projection generation (search, traits and a leaderboard bound to
   it) and publish it. A build copies the whole projection and keeps one database snapshot open for
