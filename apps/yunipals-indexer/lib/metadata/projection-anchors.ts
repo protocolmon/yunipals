@@ -32,10 +32,54 @@ function proxyUrl(chainId: number, env: NodeJS.ProcessEnv) {
   return url.href;
 }
 
+/** Save an anchor with the current witness when the database alone proves it:
+ * the anchor's header is still in chain_block, or an earlier saved witness
+ * still is. chain_block holds only Ponder's canonical branch, so the anchor is
+ * then an ancestor of the current witness, with no RPC call. A reorg still
+ * fails: a changed anchor header or a non-canonical witness saves nothing.
+ */
+async function saveFromDatabase(
+  db: Pick<PoolClient, "query">,
+  releaseId: string,
+  anchor: ProjectionSourceSnapshot["anchors"][number]
+) {
+  const saved = await db.query(
+    `INSERT INTO yunipals_indexer_control.chain_anchor
+     (release_id,chain_id,block_number,block_hash,witness_number,witness_hash)
+     SELECT $1,$2,$3::bigint,$4,s.witness_number,s.witness_hash
+     FROM yunipals_indexer_control.chain_status s
+     JOIN ${physicalPonderSchema}.chain_block witness ON witness.chain_id=s.chain_id
+       AND witness.block_number=s.witness_number AND witness.block_hash=s.witness_hash
+     WHERE s.release_id=$1 AND s.chain_id=$2 AND NOT s.halted AND s.error_code IS NULL
+       AND s.witness_number>=$3::bigint
+       AND NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block conflicting
+         WHERE conflicting.chain_id=$2 AND conflicting.block_number=s.witness_number
+           AND conflicting.block_hash<>s.witness_hash)
+       AND NOT EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block changed
+         WHERE changed.chain_id=$2 AND changed.block_number=$3::bigint AND changed.block_hash<>$4)
+       AND (EXISTS(SELECT 1 FROM ${physicalPonderSchema}.chain_block present
+           WHERE present.chain_id=$2 AND present.block_number=$3::bigint AND present.block_hash=$4)
+         OR EXISTS(SELECT 1 FROM yunipals_indexer_control.chain_anchor held
+           JOIN ${physicalPonderSchema}.chain_block previous ON previous.chain_id=held.chain_id
+             AND previous.block_number=held.witness_number AND previous.block_hash=held.witness_hash
+           WHERE held.release_id=$1 AND held.chain_id=$2 AND held.block_number=$3::bigint
+             AND held.block_hash=$4))
+     ON CONFLICT(release_id,chain_id,block_number) DO UPDATE
+       SET witness_number=EXCLUDED.witness_number,witness_hash=EXCLUDED.witness_hash
+       WHERE chain_anchor.block_hash=EXCLUDED.block_hash
+         AND chain_anchor.witness_number<=EXCLUDED.witness_number
+     RETURNING block_number`,
+    [releaseId, anchor.chain_id, anchor.block_number, anchor.block_hash]
+  );
+  return saved.rowCount === 1;
+}
+
 /** Refresh durable old-header evidence using the existing canonical-witness
  * table. A physical header always wins, including a physical reorg mismatch.
- * RPC observations alone never authorize publication: the INSERT also checks
- * the current Ponder witness in its own database statement snapshot.
+ * Each anchor is saved with the current witness, so its proof outlives
+ * Ponder's recent-block window; calling this again renews that proof. RPC
+ * observations alone never authorize publication: the INSERT also checks the
+ * current Ponder witness in its own database statement snapshot.
  */
 export async function retainProjectionAnchors(
   db: Pick<PoolClient, "query">,
@@ -48,6 +92,7 @@ export async function retainProjectionAnchors(
   const deadline = performance.now() + 60000;
   let rpcCalls = 0;
   let physical = 0;
+  let renewed = 0;
   let retained = 0;
   const rpc = async (url: string, method: string, params: unknown[]) => {
     const profileId =
@@ -131,7 +176,15 @@ export async function retainProjectionAnchors(
     if (direct.rows.length) {
       if (direct.rows.some((row) => row.block_hash !== anchor.block_hash))
         throw new Error("projection_anchor_physical_changed");
+      // The header proves the anchor for now. Saving it keeps the proof once
+      // Ponder prunes the header, which on a fast chain can happen before
+      // publication. Without a usable witness yet, the header still counts.
+      await saveFromDatabase(db, proof.releaseId, anchor);
       physical++;
+      continue;
+    }
+    if (await saveFromDatabase(db, proof.releaseId, anchor)) {
+      renewed++;
       continue;
     }
     const readWitness = async () =>
@@ -220,5 +273,11 @@ export async function retainProjectionAnchors(
     }
     retained++;
   }
-  return { anchors: proof.anchors.length, physical, retained, rpcCalls };
+  return {
+    anchors: proof.anchors.length,
+    physical,
+    renewed,
+    retained,
+    rpcCalls
+  };
 }

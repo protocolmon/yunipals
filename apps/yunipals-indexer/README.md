@@ -143,7 +143,29 @@ it is retried after the next one. `LEADERBOARD_SOURCE` selects its inputs:
   can slow the indexer.
 - `current`: recompute only the leaderboard from current ownership and metadata, in one statement
   of a few minutes, and stamp it with the current ownership identity. Projection generations are
-  not rebuilt in this mode, so collection search and traits keep the last published generation.
+  not rebuilt by this step, so collection search and traits keep the last published generation
+  unless `PROJECTION_REFRESH` rebuilds them.
+
+`PROJECTION_REFRESH=changed` rebuilds search and traits only when needed. It requires
+`LEADERBOARD_SOURCE=current`, `YUNIPALS_PROJECTION_MODE=generation` and
+`METADATA_SOURCE_MODE=archive`. The default, `off`, never rebuilds them.
+
+- **Every hour, on the hour:** the worker checks that readers still accept the live generation. A
+  new indexer release or archive release makes them reject it, and search and traits fail until a
+  new generation is published, so the worker builds one at once.
+- **Once a day, in the hour `PROJECTION_BUILD_HOUR_UTC` (default 2):** the check also compares every
+  token's metadata, availability, rarity points and burned state with the live generation, and
+  builds a new one if anything differs. The comparison reads every token's metadata, minutes on a
+  large deployment. Ownership is not part of a generation, so transfers alone never start a build.
+
+To build and publish one generation now, for example right after an indexer release, run the
+worker's entrypoint once with `--build-projection` and the same environment. It exits when the
+generation is published. Builds are serialized by an advisory lock, so this is safe while the
+worker runs.
+
+A build saves every chain's anchor with the indexer's current witness, so the anchor stays provable
+after Ponder prunes its header from the recent-block window. Each publication attempt renews those
+proofs first, and an attempt that fails because a proof expired is retried.
 
 ## Collection snapshots and storage
 

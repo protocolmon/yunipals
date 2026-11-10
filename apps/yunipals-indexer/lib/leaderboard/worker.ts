@@ -1,9 +1,22 @@
 import { pool } from "../offchain/db.js";
 import {
+  checkProjectionAvailable,
+  checkProjectionInputs
+} from "../metadata/projection-check.js";
+import { projectionMode } from "../metadata/projection-mode.js";
+import { refreshProjectionGeneration } from "../metadata/projection-refresh.js";
+import { metadataSourceMode } from "../metadata/publication.js";
+import {
   refreshLeaderboard,
   refreshLeaderboardFromCurrentData,
   refreshTraitIndex
 } from "./refresh.js";
+import {
+  nextProjectionCheckAt as nextCheckAfter,
+  projectionBuildDue,
+  projectionCheckComparesInputs,
+  projectionRefreshSetting
+} from "./projection-schedule.js";
 import { leaderboardSchedule, nextLeaderboardRefreshAt } from "./schedule.js";
 import { leaderboardSource } from "./source.js";
 import { refreshLeaderboardEns } from "../ens/refresh.js";
@@ -14,10 +27,39 @@ await assertOwnershipSourceSelection(pool);
 
 const source = leaderboardSource();
 const schedule = leaderboardSchedule();
+const projection = projectionRefreshSetting({
+  source,
+  projectionMode: projectionMode(),
+  metadataMode: metadataSourceMode()
+});
+
+// One-off operator command: build and publish a generation now, then exit.
+// For example after an indexer release, before the next hourly check.
+if (process.argv.includes("--build-projection")) {
+  if (projectionMode() !== "generation")
+    throw new Error(
+      "--build-projection requires YUNIPALS_PROJECTION_MODE=generation"
+    );
+  const started = Date.now();
+  const built = await refreshProjectionGeneration();
+  console.log(
+    JSON.stringify({
+      event: "projection_built",
+      reason: "operator",
+      generationId: built.generationId,
+      durationMs: Date.now() - started
+    })
+  );
+  await pool.end();
+  process.exit(0);
+}
+
 let stopping = false;
 let nextEnsRefreshAt = 0;
 console.log(
-  `Leaderboard rarity source=${rarityReadSource} input source=${source}`
+  `Leaderboard rarity source=${rarityReadSource} input source=${source} projection refresh=${
+    projection.enabled ? `changed at ${projection.buildHourUtc}:00 UTC` : "off"
+  }`
 );
 process.on("SIGTERM", () => {
   stopping = true;
@@ -32,21 +74,19 @@ const latest = await pool.query<{ updated_at: Date | null }>(
 let nextRefreshAt = latest.rows[0]?.updated_at
   ? latest.rows[0].updated_at.getTime() + schedule.refreshMs
   : 0;
+// The first check runs at startup, so a restart builds at once when readers
+// reject the live generation.
+let nextProjectionCheckAt = projection.enabled ? 0 : Infinity;
 
-while (!stopping) {
-  while (!stopping && Date.now() < nextRefreshAt) {
-    await new Promise((resolve) =>
-      setTimeout(resolve, Math.min(1_000, nextRefreshAt - Date.now()))
-    );
-  }
-  if (stopping) break;
+async function refreshLeaderboardOnce() {
   const started = Date.now();
   let succeeded = false;
   try {
     let result: { wallets: number };
     if (source === "current") {
       // The leaderboard alone, from current data. Projection generations
-      // (search and traits) are not rebuilt in this mode.
+      // (search and traits) are rebuilt separately, if PROJECTION_REFRESH
+      // is set.
       result = await refreshLeaderboardFromCurrentData();
     } else {
       await refreshTraitIndex();
@@ -79,5 +119,57 @@ while (!stopping) {
     console.error(
       `Retrying the leaderboard refresh at ${new Date(nextRefreshAt).toISOString()}`
     );
+}
+
+async function refreshProjectionIfNeeded() {
+  if (!projection.enabled) return;
+  const checkedAt = Date.now();
+  try {
+    const check = projectionCheckComparesInputs(
+      checkedAt,
+      projection.buildHourUtc
+    )
+      ? await checkProjectionInputs(pool)
+      : await checkProjectionAvailable(pool);
+    // The hourly availability check stays quiet while the generation is fine.
+    if (check.state !== "available")
+      console.log(
+        JSON.stringify({
+          event: "projection_checked",
+          ...check,
+          durationMs: Date.now() - checkedAt
+        })
+      );
+    if (projectionBuildDue(check)) {
+      const started = Date.now();
+      const built = await refreshProjectionGeneration();
+      console.log(
+        JSON.stringify({
+          event: "projection_built",
+          reason: check.state,
+          generationId: built.generationId,
+          durationMs: Date.now() - started
+        })
+      );
+    }
+  } catch (error) {
+    // The next hourly check tries again: at once for a rejected generation,
+    // at the next build hour for changed data.
+    console.error("Projection refresh failed", error);
+  }
+  nextProjectionCheckAt = nextCheckAfter(Date.now());
+}
+
+while (!stopping) {
+  const due = Math.min(nextRefreshAt, nextProjectionCheckAt);
+  while (!stopping && Date.now() < due) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(1_000, due - Date.now()))
+    );
+  }
+  if (stopping) break;
+  if (Date.now() >= nextRefreshAt) await refreshLeaderboardOnce();
+  if (!stopping && Date.now() >= nextProjectionCheckAt)
+    await refreshProjectionIfNeeded();
 }
 await pool.end();

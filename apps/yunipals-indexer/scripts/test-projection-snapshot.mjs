@@ -574,6 +574,134 @@ try {
   checks.push(
     "ordinary_head_advance_preserving_metadata_frontier_and_all_canonical_anchors_succeeds"
   );
+  // Generation 133: BNB's anchor was still inside Ponder's recent-block window
+  // at retention, so nothing was saved, and its header was pruned before
+  // publication. Retention now saves it with the current witness.
+  const pruned = await refreshProjectionGeneration({ publish: false });
+  const bnbAnchor = projectionSourceSnapshot(
+    pruned.validation.sourceSnapshot
+  ).anchors.find((anchor) => anchor.collection === "bnb");
+  const bnbStatus = (
+    await db.query(
+      "SELECT head_number,head_hash,anchors FROM yunipals_indexer_control.chain_status WHERE chain_id=56"
+    )
+  ).rows[0];
+  const bnbCheckpoint = (
+    await db.query(
+      `SELECT latest_checkpoint FROM ${physical}._ponder_checkpoint WHERE chain_id=56`
+    )
+  ).rows[0].latest_checkpoint;
+  await db.query(
+    `UPDATE ${physical}._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=56`,
+    [checkpoint(56, head + 1)]
+  );
+  await db.query(
+    "UPDATE yunipals_indexer_control.chain_status SET head_number=$1,head_hash=$2,anchors=anchors||$3::jsonb,observed_at_ms=$4 WHERE chain_id=56",
+    [
+      head + 1,
+      hash(56, head + 1),
+      JSON.stringify({
+        [head + 1]: {
+          number: String(head + 1),
+          hash: hash(56, head + 1),
+          timestamp: String(head + 1)
+        }
+      }),
+      Date.now()
+    ]
+  );
+  const prunedHeader = (
+    await db.query(
+      `DELETE FROM ${physical}.chain_block WHERE chain_id=56 AND block_number=$1 RETURNING *`,
+      [bnbAnchor.block_number]
+    )
+  ).rows[0];
+  assert(prunedHeader);
+  await publishGeneration(
+    db,
+    pruned.generationId,
+    "fixture-archive",
+    pruned.predecessor
+  );
+  assert.equal(
+    (await db.query("SELECT current_id FROM metadata_projection.active"))
+      .rows[0].current_id,
+    pruned.generationId
+  );
+  checks.push(
+    "anchor_pruned_after_retention_still_publishes_from_saved_witness"
+  );
+
+  const { checkProjectionInputs } = await import(
+    "../lib/metadata/projection-check.ts"
+  );
+  const unchanged = {
+    state: "current",
+    generationId: pruned.generationId,
+    metadataChanges: 0,
+    tokenChanges: 0
+  };
+  assert.deepEqual(await checkProjectionInputs(appPools.pool), unchanged);
+  await db.query(
+    "UPDATE metadata.token_metadata SET content_hash='fixture-hash-2' WHERE collection='ethereum'"
+  );
+  await db.query(
+    "UPDATE metadata.token_publication SET publication_content_hash='fixture-hash-2' WHERE collection='ethereum'"
+  );
+  assert.deepEqual(await checkProjectionInputs(appPools.pool), {
+    ...unchanged,
+    state: "changed",
+    metadataChanges: 1
+  });
+  await db.query(
+    "UPDATE metadata.token_metadata SET content_hash='fixture-hash' WHERE collection='ethereum'"
+  );
+  await db.query(
+    "UPDATE metadata.token_publication SET publication_content_hash='fixture-hash' WHERE collection='ethereum'"
+  );
+  await db.query(
+    `UPDATE ${physical}.token SET burned=true WHERE collection='polygon'`
+  );
+  assert.deepEqual(await checkProjectionInputs(appPools.pool), {
+    ...unchanged,
+    state: "changed",
+    tokenChanges: 1
+  });
+  await db.query(
+    `UPDATE ${physical}.token SET burned=false WHERE collection='polygon'`
+  );
+  await db.query(`UPDATE ${logical}._unified_read_release SET identity=$1`, [
+    hash(1, 999)
+  ]);
+  assert.deepEqual(await checkProjectionInputs(appPools.pool), {
+    state: "unavailable"
+  });
+  await db.query(`UPDATE ${logical}._unified_read_release SET identity=$1`, [
+    plan.readIdentity
+  ]);
+  assert.deepEqual(await checkProjectionInputs(appPools.pool), unchanged);
+  checks.push(
+    "input_check_matches_a_fresh_build_and_reports_metadata_burn_and_identity_changes"
+  );
+  await db.query(
+    `INSERT INTO ${physical}.chain_block VALUES($1,$2,$3,$4,$5,$6)`,
+    [
+      prunedHeader.id,
+      prunedHeader.chain_id,
+      prunedHeader.block_number,
+      prunedHeader.block_hash,
+      prunedHeader.parent_hash,
+      prunedHeader.timestamp
+    ]
+  );
+  await db.query(
+    `UPDATE ${physical}._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=56`,
+    [bnbCheckpoint]
+  );
+  await db.query(
+    "UPDATE yunipals_indexer_control.chain_status SET head_number=$1,head_hash=$2,anchors=$3,observed_at_ms=$4 WHERE chain_id=56",
+    [bnbStatus.head_number, bnbStatus.head_hash, bnbStatus.anchors, Date.now()]
+  );
   // Exercise the real invoker guards with operational DML but no native UPDATE.
   await admin.query(`CREATE ROLE "${reader}" NOLOGIN`);
   readerCreated = true;
@@ -708,7 +836,27 @@ try {
   );
   await installReadCache(db);
   process.env.PROJECTION_PREPARE_READ_CACHE = "true";
+  // A build that never published leaves its expired lease behind.
+  const abandoned = (
+    await db.query(
+      "INSERT INTO metadata_projection.generation(source_mode,metadata_release_id,state,started_at)VALUES('archive','fixture-archive','ready',now()-interval '1 hour')RETURNING id"
+    )
+  ).rows[0].id;
+  await db.query(
+    "INSERT INTO metadata_projection.read_preparation(generation_id,expires_at)VALUES($1,now()-interval '1 minute')",
+    [abandoned]
+  );
   const warm = await refreshProjectionGeneration({ publish: false });
+  assert.deepEqual(
+    (
+      await db.query(
+        "SELECT g.state,(SELECT count(*)::int FROM metadata_projection.read_preparation p WHERE p.generation_id=g.id)AS leases FROM metadata_projection.generation g WHERE g.id=$1",
+        [abandoned]
+      )
+    ).rows[0],
+    { state: "retired", leases: 0 }
+  );
+  checks.push("cleanup_retires_an_abandoned_candidate_and_drops_its_lease");
   assert.equal(
     (
       await db.query(
