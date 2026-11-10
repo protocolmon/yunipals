@@ -1,0 +1,469 @@
+/* Opening lab: pack-opening concepts sharing one stage. */
+.olab-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  overflow: hidden;
+  background: #05040a;
+  color: white;
+}
+.olab-stage {
+  --olab-w: min(290px, 60vw, 33dvh);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--olab-bg);
+  user-select: none;
+}
+.olab-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 55%, #000a 100%);
+}
+.olab-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.olab-bg {
+  z-index: 1;
+}
+.olab-gl {
+  z-index: 1;
+}
+.olab-fx {
+  z-index: 6;
+}
+.olab-world {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  perspective: 1200px;
+}
+.olab-pack,
+.olab-card {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  aspect-ratio: 2 / 3;
+}
+.olab-pack {
+  z-index: 3;
+  width: calc(var(--olab-w) * 1.08);
+  height: calc(var(--olab-w) * 1.62);
+  pointer-events: none;
+}
+.olab-pack-art {
+  width: 100%;
+  height: 100%;
+  background: var(--olab-pack) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 26px 30px #000a)
+    drop-shadow(
+      0 0 34px color-mix(in srgb, var(--olab-accent) 45%, transparent)
+    );
+}
+.olab-stage[data-phase="sealed"] .olab-pack-art {
+  animation: olab-float 3.2s ease-in-out infinite;
+}
+.olab-card {
+  z-index: 2;
+  width: var(--olab-w);
+  height: calc(var(--olab-w) * 1.5);
+  opacity: 0;
+}
+.olab-card::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--olab-accent) 70%, transparent),
+    color-mix(in srgb, var(--olab-accent-2) 30%, transparent) 55%,
+    transparent
+  );
+  filter: blur(18px);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.olab-stage[data-phase="revealed"] .olab-card::before {
+  opacity: 0.85;
+  animation: olab-aura 3.4s ease-in-out infinite;
+}
+.olab-stage:not([data-phase="revealed"]) .olab-card {
+  pointer-events: none;
+}
+.olab-card-flip,
+.olab-card-front,
+.olab-card-back-face {
+  position: absolute;
+  inset: 0;
+}
+.olab-card-back-face {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Fit the shared card viewer to the stage card box in both of its modes. */
+.olab-card .booster-card-viewer .tilt-viewer {
+  --viewer-height: calc(var(--olab-w) * 1.5);
+  --viewer-padding: 0px;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+}
+.olab-card .booster-card-viewer .tilt-card {
+  width: 100%;
+}
+.olab-card-back {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #ffffffb0;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 46%, #ffffff40, transparent 46%),
+    repeating-conic-gradient(
+      from 0deg at 50% 46%,
+      #ffffff12 0 9deg,
+      transparent 9deg 18deg
+    ),
+    linear-gradient(140deg, #4c1d95, #7c3aed 48%, #312e81);
+  box-shadow:
+    inset 0 0 0 7px #ffffff1f,
+    0 22px 40px #0009;
+  font-size: 1.25rem;
+  text-align: center;
+}
+.olab-card-back img {
+  width: 34%;
+  height: auto;
+  filter: drop-shadow(0 6px 12px #0006);
+}
+.olab-sheen {
+  position: absolute;
+  inset: 1.5%;
+  overflow: hidden;
+  border-radius: 7% / 4.7%;
+  pointer-events: none;
+}
+.olab-sheen::before {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(
+    105deg,
+    transparent 45%,
+    #ffffffb3 50%,
+    transparent 55%
+  );
+  opacity: 0;
+  transform: translateX(-45%);
+}
+.olab-sheen.is-running::before {
+  animation: olab-sheen 0.8s ease-out 0.05s both;
+}
+.olab-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.olab-piece {
+  position: absolute;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  backface-visibility: visible;
+  will-change: transform, opacity;
+}
+.olab-scanbar {
+  position: absolute;
+  z-index: 6;
+  height: 5px;
+  border-radius: 999px;
+  background: #ecfeff;
+  box-shadow:
+    0 0 14px 4px #22d3ee,
+    0 0 46px 14px #22d3ee88;
+}
+.olab-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  opacity: 0;
+  pointer-events: none;
+}
+.olab-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  margin: auto;
+  width: calc(var(--olab-w) * 1.3);
+  height: calc(var(--olab-w) * 1.8);
+  border-radius: 28px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.olab-trigger:disabled {
+  display: none;
+}
+.olab-trigger:focus-visible {
+  outline: 2px solid #ffffff59;
+  outline-offset: 2px;
+}
+
+.olab-top,
+.olab-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  padding: clamp(0.75rem, 2.4dvh, 1.5rem) 1rem;
+  pointer-events: none;
+}
+.olab-top > *,
+.olab-bottom > * {
+  pointer-events: auto;
+}
+.olab-top {
+  top: 0;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  padding-right: 4rem;
+  padding-left: 4rem;
+}
+.olab-title {
+  width: min(30rem, 100%);
+  text-align: center;
+  text-shadow: 0 2px 14px #000c;
+}
+.olab-title h1 {
+  font-size: clamp(1.4rem, 3.6dvh, 2.4rem);
+}
+.olab-count {
+  margin-bottom: 0.3rem;
+  color: var(--olab-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+.olab-tagline {
+  margin-top: 0.45rem;
+  color: #ffffffc0;
+  font-size: clamp(0.75rem, 1.7dvh, 0.9rem);
+}
+.olab-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid #ffffff40;
+  border-radius: 999px;
+  background: #ffffff14;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s;
+}
+.olab-icon:hover {
+  background: #ffffff30;
+}
+.olab-close {
+  position: absolute;
+  top: clamp(0.75rem, 2.4dvh, 1.5rem);
+  right: 1rem;
+}
+.olab-bottom {
+  bottom: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+.olab-hint {
+  min-height: 1.4em;
+  font-size: clamp(0.85rem, 1.9dvh, 1rem);
+  font-weight: 700;
+  text-shadow: 0 2px 12px #000c;
+}
+.olab-stage[data-phase="sealed"] .olab-hint {
+  animation: olab-pulse 1.5s ease-in-out infinite;
+}
+.olab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.4s ease 0.25s,
+    transform 0.4s ease 0.25s;
+}
+.olab-actions[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+.olab-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #ffffff59;
+  border-radius: 999px;
+  padding: 0.6rem 1.15rem;
+  background: #ffffff1a;
+  backdrop-filter: blur(8px);
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.olab-action:hover {
+  background: #ffffff33;
+}
+.olab-action.is-primary {
+  border-color: transparent;
+  background: white;
+  color: #17112f;
+}
+.olab-action.is-primary:hover {
+  background: #ffffffd9;
+}
+.olab-icon:focus-visible,
+.olab-action:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+/* Round two pieces */
+.olab-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+.olab-surface:active {
+  cursor: grabbing;
+}
+.olab-surface:focus-visible {
+  outline: 1px solid #ffffff33;
+  outline-offset: -8px;
+}
+.olab-foil {
+  position: absolute;
+  border-radius: 6% / 4%;
+  box-shadow: 0 18px 34px #0008;
+}
+
+/* Light stages (paper) use dark ink for the overlay text and controls. */
+.olab-stage[data-theme="light"] {
+  color: #1e1b4b;
+}
+.olab-stage[data-theme="light"]::after {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 55%,
+    #7c5a1e40 100%
+  );
+}
+.olab-stage[data-theme="light"] .olab-title,
+.olab-stage[data-theme="light"] .olab-hint {
+  text-shadow: 0 1px 10px #ffffffb0;
+}
+.olab-stage[data-theme="light"] .olab-tagline {
+  color: #1e1b4bb8;
+}
+.olab-stage[data-theme="light"] .olab-icon,
+.olab-stage[data-theme="light"] .olab-action {
+  border-color: #1e1b4b4d;
+  background: #1e1b4b14;
+}
+.olab-stage[data-theme="light"] .olab-action.is-primary {
+  background: #1e1b4b;
+  color: white;
+}
+
+/* Gallery tiles */
+.olab-tile-art {
+  background: var(--olab-bg);
+}
+.olab-tile-art img {
+  filter: drop-shadow(0 14px 16px #0009)
+    drop-shadow(
+      0 0 22px color-mix(in srgb, var(--olab-accent) 60%, transparent)
+    );
+  transition: transform 0.35s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+.olab-tile:hover .olab-tile-art img,
+.olab-tile:focus-visible .olab-tile-art img {
+  transform: translateY(-6px) rotate(-4deg) scale(1.06);
+}
+
+@keyframes olab-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(1.2deg);
+  }
+}
+@keyframes olab-aura {
+  0%,
+  100% {
+    transform: scale(0.96);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes olab-sheen {
+  0% {
+    opacity: 1;
+    transform: translateX(-45%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(45%);
+  }
+}
+@keyframes olab-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (max-width: 640px) {
+  /* The tagline would wrap onto the pack on narrow screens. */
+  .olab-tagline {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .olab-stage *,
+  .olab-stage *::before {
+    animation: none !important;
+  }
+}

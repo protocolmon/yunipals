@@ -1,0 +1,68 @@
+/* Decorative hero art for the proposals catalog. */
+.pa-art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  container-type: inline-size;
+}
+.pa-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@keyframes pa-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  40%,
+  86% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes pa-bob {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate(-2cqw, 2cqw) rotate(6deg);
+  }
+}
+
+.pa-draw {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pa-draw 9s ease-in-out infinite;
+}
+.pa-bob {
+  animation: pa-bob 3s ease-in-out infinite;
+}
+.pa-paper {
+  background-color: #fff;
+  background-image:
+    linear-gradient(rgb(199 201 249 / 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(199 201 249 / 0.45) 1px, transparent 1px);
+  background-size: 6.25% 6.25%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-art *,
+  .pa-art *::after {
+    animation: none !important;
+  }
+  .pa-draw {
+    stroke-dashoffset: 0;
+  }
+}
