@@ -253,15 +253,29 @@ export async function runOpenSeaStreamSession(input: {
   });
 }
 
+export type OpenSeaStreamGapReport = {
+  event: "opensea_stream_gap";
+  reason: string;
+  // Failed sessions since this worker started.
+  gaps: number;
+};
+
 export async function runOpenSeaStreamWorker(input: {
   pool: Pool;
   apiKey: string;
   signal: AbortSignal;
   socketFactory?: OpenSeaStreamSocketFactory;
+  // Reports a failed session, at most once a minute, so a long outage stays
+  // visible without flooding the log.
+  onGap?: (report: OpenSeaStreamGapReport) => void;
 }) {
   let connections = 0;
   let gaps = 0;
   let leaseClaims = 0;
+  let gapReportedAt = 0;
+  const onGap =
+    input.onGap ??
+    ((report: OpenSeaStreamGapReport) => console.error(JSON.stringify(report)));
   const pause = async (ms: number, signal: AbortSignal) => {
     try {
       await delay(ms, undefined, { signal });
@@ -307,6 +321,10 @@ export async function runOpenSeaStreamWorker(input: {
           }
           gaps++;
           failures++;
+          if (Date.now() - gapReportedAt >= 60000) {
+            gapReportedAt = Date.now();
+            onGap({ event: "opensea_stream_gap", reason, gaps });
+          }
           const ceiling = Math.min(
             30000,
             1000 * 2 ** Math.min(failures - 1, 5)

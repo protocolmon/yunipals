@@ -22,6 +22,7 @@ import {
   processOpenSeaDiscoveryPage,
   readOpenSeaDiscoveryStatus,
   DiscoveryLeaseLostError,
+  OpenSeaDiscoveryError,
   pruneOpenSeaDiscoveryPages
 } from "@/opensea/discovery";
 
@@ -624,6 +625,35 @@ test("only a complete subsequent scan marks absence; reappearance preserves the 
   )!;
   assert.equal(returned.present, true);
   assert.equal(returned.signature, "0x1234");
+});
+
+test("a local quota rejection is reported apart from the stored code", async () => {
+  const scan = await claim();
+  await assert.rejects(
+    processOpenSeaDiscoveryPage(
+      db.runtime,
+      {
+        async listCollectionOrders() {
+          throw new OpenSeaError(
+            "provider_busy",
+            undefined,
+            64000,
+            "local_quota"
+          );
+        }
+      },
+      "ethereum",
+      scan
+    ),
+    (error: unknown) =>
+      error instanceof OpenSeaDiscoveryError &&
+      error.code === "provider_busy" &&
+      error.detail === "local_quota" &&
+      error.retryMs === 64000
+  );
+  const status = (await readOpenSeaDiscoveryStatus(db.runtime, "ethereum"))
+    .scans[0]!;
+  assert.equal(status.last_error_code, "provider_busy");
 });
 
 test("provider rate limiting preserves the cursor with persisted retry timing", async () => {

@@ -144,7 +144,12 @@ export class OpenSeaSharedPolicyResolver {
   async resolveCurrentBrowsePolicy(chain: OpenSeaChain) {
     const observation = await this.resolveBrowse(chain);
     if (observation.freshness !== "current")
-      throw new OpenSeaError("provider_busy", undefined, 30000);
+      throw new OpenSeaError(
+        "provider_busy",
+        undefined,
+        30000,
+        "policy_not_current"
+      );
     return observation.policy;
   }
 
@@ -290,7 +295,10 @@ export class OpenSeaSharedPolicyResolver {
           throw new OpenSeaError(
             "provider_busy",
             undefined,
-            Math.ceil(action.row.retry_ms)
+            Math.ceil(action.row.retry_ms),
+            /^[a-z][a-z0-9_]{0,63}$/.test(reason ?? "")
+              ? `policy_${reason}`
+              : "policy_unexpected_error"
           );
         }
         if (action.type === "wait") {
@@ -374,8 +382,12 @@ export class OpenSeaSharedPolicyResolver {
       timing.outcome = "error";
       if (error instanceof OpenSeaError || error instanceof OpenSeaPolicyError)
         throw error;
+      if (controller.signal.aborted) throw new OpenSeaError("provider_timeout");
       throw new OpenSeaError(
-        controller.signal.aborted ? "provider_timeout" : "provider_busy"
+        "provider_busy",
+        undefined,
+        undefined,
+        "policy_unexpected_error"
       );
     } finally {
       clearTimeout(timer);

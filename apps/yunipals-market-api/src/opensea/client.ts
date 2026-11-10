@@ -36,11 +36,24 @@ type FailureCode =
   | "publication_disabled"
   | "publication_not_authorized";
 
+// provider_busy covers several local causes and none of them is a provider
+// response. The detail names the one that applied; it is for logs only, and
+// stored codes and callers keep using the code.
+export type OpenSeaBusyDetail =
+  | "client_concurrency"
+  | "local_quota"
+  | "budget_unavailable"
+  | "caller_aborted"
+  | "policy_not_current"
+  | "policy_unexpected_error"
+  | `policy_${string}`;
+
 export class OpenSeaError extends Error {
   constructor(
     readonly code: FailureCode,
     readonly httpStatus?: number,
-    readonly retryAfterMs?: number
+    readonly retryAfterMs?: number,
+    readonly detail?: OpenSeaBusyDetail
   ) {
     super(code);
     this.name = "OpenSeaError";
@@ -164,7 +177,12 @@ export class OpenSeaClient {
   ) {
     if (signal?.aborted) throw new OpenSeaError("provider_timeout");
     if (this.inFlight >= this.maxConcurrent)
-      throw new OpenSeaError("provider_busy");
+      throw new OpenSeaError(
+        "provider_busy",
+        undefined,
+        undefined,
+        "client_concurrency"
+      );
     this.inFlight++;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -185,7 +203,10 @@ export class OpenSeaClient {
           throw new OpenSeaError(
             "provider_busy",
             undefined,
-            error instanceof OpenSeaBudgetError ? error.retryAfterMs : 1000
+            error instanceof OpenSeaBudgetError ? error.retryAfterMs : 1000,
+            error instanceof OpenSeaBudgetError
+              ? "local_quota"
+              : "budget_unavailable"
           );
         }
       }
@@ -195,7 +216,12 @@ export class OpenSeaClient {
       // before dispatch. The durable reservation is still recorded internally
       // as aborted by the catch block below.
       if (signal?.aborted)
-        throw new OpenSeaError("provider_busy", undefined, 1000);
+        throw new OpenSeaError(
+          "provider_busy",
+          undefined,
+          1000,
+          "caller_aborted"
+        );
       response = await fetch(`${this.origin}${path}`, {
         method,
         headers: {

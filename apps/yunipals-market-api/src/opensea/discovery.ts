@@ -30,7 +30,10 @@ const cursorHash = (cursor: string | null) => digest(JSON.stringify(cursor));
 export class OpenSeaDiscoveryError extends Error {
   constructor(
     readonly code: string,
-    readonly restart = false
+    readonly restart = false,
+    // For logs: what lay behind the code, and how long the scan backs off.
+    readonly detail?: string,
+    readonly retryMs?: number
   ) {
     super(code);
   }
@@ -296,7 +299,12 @@ export async function processOpenSeaDiscoveryPage(
         randomUUID()
       ]
     );
-    throw new OpenSeaDiscoveryError(code);
+    throw new OpenSeaDiscoveryError(
+      code,
+      false,
+      error instanceof OpenSeaError ? error.detail : undefined,
+      retryMs
+    );
   }
 }
 

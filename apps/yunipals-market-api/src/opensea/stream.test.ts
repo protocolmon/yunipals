@@ -283,6 +283,7 @@ class FakeSocket implements OpenSeaStreamSocket {
 test("an unexpected disconnect persists a scan gap before reconnecting", async () => {
   const stop = new AbortController();
   let sockets = 0;
+  const reported: unknown[] = [];
   const running = runOpenSeaStreamWorker({
     pool: streamPool,
     apiKey: randomUUID(),
@@ -290,7 +291,8 @@ test("an unexpected disconnect persists a scan gap before reconnecting", async (
     socketFactory() {
       sockets++;
       return new FakeSocket(sockets === 1);
-    }
+    },
+    onGap: (report) => reported.push(report)
   });
   for (let attempt = 0; attempt < 100; attempt++) {
     const state = (
@@ -314,6 +316,9 @@ test("an unexpected disconnect persists a scan gap before reconnecting", async (
   });
   stop.abort();
   assert.deepEqual(await running, { leaseClaims: 1, connections: 2, gaps: 1 });
+  assert.deepEqual(reported, [
+    { event: "opensea_stream_gap", reason: "stream_connection_closed", gaps: 1 }
+  ]);
 });
 
 test("disconnect waits for an in-flight join before cleanup and reconnect", async () => {
