@@ -10,8 +10,17 @@ import { OpeningLabStage } from "./OpeningLabStage";
 import type { OpeningVariant } from "./variants";
 import "./opening-lab.css";
 
-// The same sample cards the public "Try the opening" preview uses.
-const SAMPLE_CARDS = [81, 80, 83].map(
+/** Highest card id the public booster art endpoint serves for this set. */
+const LAST_SAMPLE_ID = 262;
+
+/** Three different random cards from the set, picked once per page load. */
+function randomSampleIds() {
+  const ids = new Set<number>();
+  while (ids.size < 3) ids.add(1 + Math.floor(Math.random() * LAST_SAMPLE_ID));
+  return [...ids];
+}
+
+const SAMPLE_CARDS = randomSampleIds().map(
   (id) =>
     `${environment.yunipalsIndexerUrl}/v1/boosters/art/base-mainnet-standard-v1/${id}.json`
 );

@@ -11,7 +11,7 @@ export const proposal: ProposalDefinition = {
     name: "Exochick Arno",
     avatar
   },
-  publishedAt: "2026-11-10",
+  publishedAt: "2026-11-11",
   cover: "/images/boosters/yunipals-pack-v1.png",
   optionCount: 11,
   Landing: lazy(() =>
