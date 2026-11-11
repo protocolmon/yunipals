@@ -164,6 +164,12 @@ function StageRun({
 
   const nextCard = () => {
     if (!scene.current || !hasMore) return;
+    // Reduced motion: swap the card in place, with no slide, flip or flash.
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      scene.current.advanceCard();
+      scene.current.reveal();
+      return;
+    }
     revealNextCard(scene.current, variant).catch((error: unknown) => {
       if (!isAbort(error)) console.error(error);
     });

@@ -17,6 +17,20 @@ function plural(count: number, unit: string) {
   return `${count} ${unit}${count === 1 ? "" : "s"}`;
 }
 
+/** The same moment `count` calendar months later, clamped to the month's end. */
+function addMonths(date: Date, count: number) {
+  const target = new Date(date);
+  target.setDate(1);
+  target.setMonth(target.getMonth() + count);
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth() + 1,
+    0
+  ).getDate();
+  target.setDate(Math.min(date.getDate(), lastDay));
+  return target;
+}
+
 /**
  * Relative time spelled out: years, months and days ("5 years 7 months 10 days
  * ago"); within the last two days, hours and minutes too ("1 day 2 hours 14
@@ -37,17 +51,21 @@ export function formatRelative(timestamp: number, now = Date.now()) {
     if (hours) parts.push(plural(hours, "hour"));
     if (minutes) parts.push(plural(minutes, "minute"));
   } else {
-    let years = to.getFullYear() - from.getFullYear();
-    let months = to.getMonth() - from.getMonth();
-    let days = to.getDate() - from.getDate();
-    if (days < 0) {
-      months -= 1;
-      days += new Date(to.getFullYear(), to.getMonth(), 0).getDate();
+    // Whole calendar months first (a month-end date is clamped to the
+    // shorter month, so January 31 plus one month is February 28), then the
+    // days that remain. The remainder can never be negative.
+    let total =
+      (to.getFullYear() - from.getFullYear()) * 12 +
+      to.getMonth() -
+      from.getMonth();
+    let anchor = addMonths(from, total);
+    if (anchor > to) {
+      total -= 1;
+      anchor = addMonths(from, total);
     }
-    if (months < 0) {
-      years -= 1;
-      months += 12;
-    }
+    const years = Math.floor(total / 12);
+    const months = total % 12;
+    const days = Math.floor((to.getTime() - anchor.getTime()) / DAY);
     if (years) parts.push(plural(years, "year"));
     if (months) parts.push(plural(months, "month"));
     if (days) parts.push(plural(days, "day"));

@@ -322,6 +322,10 @@ export function YunipalPage({
   // The decimal part (with its dot) is set smaller so it is not read as
   // thousands: 15,071.506 must not look like fifteen million.
   const [whole, fraction] = (yunipal.rarityPoints ?? "").split(".");
+  // Scores are stored formatted ("15,071.506"), so drop the separators first.
+  const level = rarityLevel(
+    Number((yunipal.rarityPoints ?? "0").replace(/,/g, ""))
+  );
   const longName = yunipal.name.length > 16;
   const orders = burned ? 0 : orderCount(yunipal, market);
 
@@ -388,7 +392,7 @@ export function YunipalPage({
           <div className="ml-auto shrink-0 pt-3 text-right">
             {yunipal.rarityPoints && (
               <p
-                title={`Rarity level ${rarityLevel(Number(yunipal.rarityPoints))} of 8`}
+                title={`Rarity level ${level} of 8`}
                 className="relative inline-block whitespace-nowrap pb-1.5 text-lg font-extrabold leading-none tabular-nums text-ink"
               >
                 {whole}
@@ -408,13 +412,11 @@ export function YunipalPage({
                   <span
                     className="block h-full rounded-full bg-ink"
                     style={{
-                      width: `${(rarityLevel(Number(yunipal.rarityPoints)) / 8) * 100}%`
+                      width: `${(level / 8) * 100}%`
                     }}
                   />
                 </span>
-                <span className="sr-only">
-                  , level {rarityLevel(Number(yunipal.rarityPoints))} of 8
-                </span>
+                <span className="sr-only">, level {level} of 8</span>
               </p>
             )}
             {yunipal.rarityRaw && (

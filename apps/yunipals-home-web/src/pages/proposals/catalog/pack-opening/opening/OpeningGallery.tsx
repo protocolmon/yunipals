@@ -53,6 +53,9 @@ export function OpeningGallery({
       staleTime: Infinity
     }))
   });
+  // The stage picks artwork by position, so it only opens once every request
+  // has settled; the list cannot change in the middle of an opening.
+  const settled = cards.every((query) => !query.isPending);
   const ready = cards.flatMap((query) => (query.data ? [query.data] : []));
   const open = (index: number | null) =>
     setSearch(
@@ -137,7 +140,15 @@ export function OpeningGallery({
           </ul>
         </section>
       ))}
-      {active >= 0 && (
+      {active >= 0 && !settled && (
+        <div
+          role="status"
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/90 text-sm font-bold text-white"
+        >
+          Loading sample cards…
+        </div>
+      )}
+      {active >= 0 && settled && (
         <OpeningLabStage
           variant={OPENING_VARIANTS[active]}
           index={active}
