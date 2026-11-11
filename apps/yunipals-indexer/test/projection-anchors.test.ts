@@ -57,6 +57,15 @@ const query = async (sql: string, params?: unknown[]) => {
   return { ...result, rowCount: result.affectedRows ?? result.rows.length };
 };
 const client = { query } as unknown as Pick<PoolClient, "query">;
+// BNB's anchor is outside the recent-block window in these fixtures, so only
+// RPC header checks can prove it. The other anchors are saved from the database.
+const bnbAnchors = () =>
+  query(
+    "SELECT * FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
+  );
+const noRpc = (async () => {
+  throw new Error("No RPC permitted");
+}) as typeof fetch;
 const env = {
   PONDER_RPC_URL_56: "http://127.0.0.1:19204/unified",
   UNIFIED_RPC_PROFILE_ID: `0x${"77".repeat(32)}`
@@ -133,7 +142,7 @@ beforeEach(async () => {
 afterAll(async () => db.close());
 
 describe("projection canonical anchor retention", () => {
-  it("leaves physical canonical anchors alone without RPC or writes", async () => {
+  it("saves physical canonical anchors with the current witness, without RPC", async () => {
     await query(
       "INSERT INTO projection_anchor_source.chain_block VALUES(56,100,$1)",
       [oldHash]
@@ -144,11 +153,148 @@ describe("projection canonical anchor retention", () => {
         env: {},
         fetch: rpc.fetch
       })
-    ).toEqual({ anchors: 4, physical: 4, retained: 0, rpcCalls: 0 });
+    ).toEqual({
+      anchors: 4,
+      physical: 4,
+      renewed: 0,
+      retained: 0,
+      rpcCalls: 0
+    });
     expect(rpc.calls).toHaveLength(0);
     expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+      (
+        await query(
+          "SELECT chain_id,block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor ORDER BY chain_id"
+        )
+      ).rows
+    ).toEqual(
+      [1, 56, 137, 8453].map((chain_id) => ({
+        chain_id,
+        block_number: "100",
+        block_hash: oldHash,
+        witness_number: "110",
+        witness_hash: witnessHash
+      }))
+    );
+  });
+
+  it("keeps the proof after Ponder prunes the header, renewing it from the database", async () => {
+    // Generation 133: BNB's anchor was inside the window at retention and
+    // outside it at publication, with nothing saved.
+    await query(
+      "INSERT INTO projection_anchor_source.chain_block VALUES(56,100,$1)",
+      [oldHash]
+    );
+    await retainProjectionAnchors(client, snapshot(), {
+      env: {},
+      fetch: noRpc
+    });
+    const newerHash = `0x${"99".repeat(32)}`;
+    await query(
+      "DELETE FROM projection_anchor_source.chain_block WHERE block_number=100"
+    );
+    for (const anchor of snapshot().anchors) {
+      await query(
+        "INSERT INTO projection_anchor_source.chain_block VALUES($1,120,$2)",
+        [anchor.chain_id, newerHash]
+      );
+      await query(
+        "UPDATE yunipals_indexer_control.chain_status SET witness_number=120,witness_hash=$2 WHERE chain_id=$1",
+        [anchor.chain_id, newerHash]
+      );
+    }
+    expect(
+      await retainProjectionAnchors(client, snapshot(), {
+        env: {},
+        fetch: noRpc
+      })
+    ).toEqual({
+      anchors: 4,
+      physical: 0,
+      renewed: 4,
+      retained: 0,
+      rpcCalls: 0
+    });
+    expect(
+      (
+        await query(
+          "SELECT DISTINCT witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor"
+        )
+      ).rows
+    ).toEqual([{ witness_number: "120", witness_hash: newerHash }]);
+  });
+
+  it("renews from a saved witness only while that witness is still canonical", async () => {
+    await query(
+      "INSERT INTO yunipals_indexer_control.chain_anchor VALUES($1,56,100,$2,105,$3)",
+      [release, oldHash, changedHash]
+    );
+    // Witness 105 is not in chain_block, so it proves nothing and the anchor
+    // needs the RPC header checks again.
+    const rpc = rpcFixture();
+    expect(
+      await retainProjectionAnchors(client, snapshot(), {
+        env,
+        fetch: rpc.fetch
+      })
+    ).toEqual({
+      anchors: 4,
+      physical: 3,
+      renewed: 0,
+      retained: 1,
+      rpcCalls: 3
+    });
+  });
+
+  it("still accepts a physical anchor while no usable witness exists", async () => {
+    await query(
+      "INSERT INTO projection_anchor_source.chain_block VALUES(56,100,$1)",
+      [oldHash]
+    );
+    await query(
+      "UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE chain_id=1"
+    );
+    expect(
+      await retainProjectionAnchors(client, snapshot(), {
+        env: {},
+        fetch: noRpc
+      })
+    ).toEqual({
+      anchors: 4,
+      physical: 4,
+      renewed: 0,
+      retained: 0,
+      rpcCalls: 0
+    });
+    expect(
+      (
+        await query(
+          "SELECT chain_id FROM yunipals_indexer_control.chain_anchor ORDER BY chain_id"
+        )
+      ).rows
+    ).toEqual([{ chain_id: 56 }, { chain_id: 137 }, { chain_id: 8453 }]);
+  });
+
+  it("saves nothing for a physical anchor whose saved hash conflicts", async () => {
+    await query(
+      "INSERT INTO projection_anchor_source.chain_block VALUES(56,100,$1)",
+      [oldHash]
+    );
+    await query(
+      "INSERT INTO yunipals_indexer_control.chain_anchor VALUES($1,56,100,$2,90,$2)",
+      [release, changedHash]
+    );
+    await retainProjectionAnchors(client, snapshot(), {
+      env: {},
+      fetch: noRpc
+    });
+    expect(
+      (
+        await query(
+          "SELECT block_hash,witness_number::text FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
+        )
+      ).rows
+    ).toEqual([{ block_hash: changedHash, witness_number: "90" }]);
   });
 
   it("verifies old and current witness headers on the exact chain, then inserts real guarded evidence", async () => {
@@ -157,7 +303,13 @@ describe("projection canonical anchor retention", () => {
     const rpc = rpcFixture();
     expect(
       await retainProjectionAnchors(client, proof, { env, fetch: rpc.fetch })
-    ).toEqual({ anchors: 4, physical: 3, retained: 1, rpcCalls: 3 });
+    ).toEqual({
+      anchors: 4,
+      physical: 3,
+      renewed: 0,
+      retained: 1,
+      rpcCalls: 3
+    });
     expect(proof).toEqual(original);
     expect(rpc.calls.map(({ method, params }) => [method, params])).toEqual([
       ["eth_chainId", []],
@@ -176,7 +328,7 @@ describe("projection canonical anchor retention", () => {
     expect(
       (
         await query(
-          "SELECT release_id,chain_id,block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor"
+          "SELECT release_id,chain_id,block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
         )
       ).rows
     ).toEqual([
@@ -211,7 +363,7 @@ describe("projection canonical anchor retention", () => {
     expect(
       (
         await query(
-          "SELECT block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor"
+          "SELECT block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
         )
       ).rows[0]
     ).toEqual({
@@ -259,10 +411,7 @@ describe("projection canonical anchor retention", () => {
         retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
       ).rejects.toThrow(/chain_changed|header_changed/);
       expect(rpc.calls.length).toBeLessThanOrEqual(3);
-      expect(
-        (await query("SELECT * FROM yunipals_indexer_control.chain_anchor"))
-          .rows
-      ).toHaveLength(0);
+      expect((await bnbAnchors()).rows).toHaveLength(0);
     }
   });
 
@@ -302,7 +451,13 @@ describe("projection canonical anchor retention", () => {
         env: settings,
         fetch: rpc.fetch
       })
-    ).toEqual({ anchors: 4, physical: 3, retained: 1, rpcCalls: 3 });
+    ).toEqual({
+      anchors: 4,
+      physical: 3,
+      renewed: 0,
+      retained: 1,
+      rpcCalls: 3
+    });
     expect(rpc.calls.map((call) => call.url)).toEqual(
       Array(3).fill(settings.PROJECTION_ANCHOR_RPC_URL_56)
     );
@@ -320,9 +475,7 @@ describe("projection canonical anchor retention", () => {
       ).rejects.toThrow("rpc_profile_required");
       expect(rpc.calls).toHaveLength(0);
     }
-    expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+    expect((await bnbAnchors()).rows).toHaveLength(0);
   });
 
   it("rejects an external dedicated URL instead of falling back to an allowed Ponder proxy", async () => {
@@ -337,9 +490,7 @@ describe("projection canonical anchor retention", () => {
       })
     ).rejects.toThrow("loopback_proxy_required");
     expect(rpc.calls).toHaveLength(0);
-    expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+    expect((await bnbAnchors()).rows).toHaveLength(0);
   });
 
   it("requires a live unhalted canonical Ponder witness before RPC", async () => {
@@ -366,9 +517,7 @@ describe("projection canonical anchor retention", () => {
     await expect(
       retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
     ).rejects.toThrow("witness_changed");
-    expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+    expect((await bnbAnchors()).rows).toHaveLength(0);
   });
 
   it("retains with a newer canonical witness when the observer moves it during the header check", async () => {
@@ -396,7 +545,13 @@ describe("projection canonical anchor retention", () => {
         env,
         fetch: rpc.fetch
       })
-    ).toEqual({ anchors: 4, physical: 3, retained: 1, rpcCalls: 4 });
+    ).toEqual({
+      anchors: 4,
+      physical: 3,
+      renewed: 0,
+      retained: 1,
+      rpcCalls: 4
+    });
     expect(rpc.calls.map(({ method, params }) => [method, params])).toEqual([
       ["eth_chainId", []],
       ["eth_getBlockByNumber", ["0x64", false]],
@@ -406,7 +561,7 @@ describe("projection canonical anchor retention", () => {
     expect(
       (
         await query(
-          "SELECT block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor"
+          "SELECT block_number::text,block_hash,witness_number::text,witness_hash FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
         )
       ).rows
     ).toEqual([
@@ -451,9 +606,7 @@ describe("projection canonical anchor retention", () => {
       retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
     ).rejects.toThrow("witness_changed");
     expect(rpc.calls).toHaveLength(6);
-    expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+    expect((await bnbAnchors()).rows).toHaveLength(0);
   });
 
   it("rejects a physical reorg appearing after RPC and preserves any conflicting retained hash", async () => {
@@ -469,9 +622,7 @@ describe("projection canonical anchor retention", () => {
     await expect(
       retainProjectionAnchors(client, snapshot(), { env, fetch: rpc.fetch })
     ).rejects.toThrow("witness_changed");
-    expect(
-      (await query("SELECT * FROM yunipals_indexer_control.chain_anchor")).rows
-    ).toHaveLength(0);
+    expect((await bnbAnchors()).rows).toHaveLength(0);
     await query(
       "DELETE FROM projection_anchor_source.chain_block WHERE chain_id=56 AND block_number=100"
     );
@@ -488,7 +639,7 @@ describe("projection canonical anchor retention", () => {
     expect(
       (
         await query(
-          "SELECT block_hash,witness_number::text FROM yunipals_indexer_control.chain_anchor"
+          "SELECT block_hash,witness_number::text FROM yunipals_indexer_control.chain_anchor WHERE chain_id=56"
         )
       ).rows[0]
     ).toEqual({ block_hash: changedHash, witness_number: "90" });

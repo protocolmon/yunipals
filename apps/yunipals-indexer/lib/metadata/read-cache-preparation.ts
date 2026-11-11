@@ -1,7 +1,11 @@
 import type { PoolClient } from "pg";
 
 import { collectionSlugs } from "../constants.js";
-import { buildReadCache, readCacheFreshSql } from "./read-cache.js";
+import {
+  buildReadCache,
+  readCacheFreshSql,
+  tryRenewReadCacheAnchor
+} from "./read-cache.js";
 
 export function prepublishReadCacheEnabled() {
   const value = process.env.PROJECTION_PREPARE_READ_CACHE ?? "false";
@@ -36,6 +40,10 @@ export async function prepareGenerationReadCache(db: PoolClient, id: string) {
     for (let attempt = 0; attempt < 3; attempt++) {
       for (const chain of collectionSlugs) {
         await renewReadCachePreparation(db, id);
+        // An unpublished candidate gets no renewal from the read-cache worker.
+        // Renew its boundary proof here so an unchanged chain is not rebuilt.
+        // A failed renewal only means the freshness check below rebuilds it.
+        await tryRenewReadCacheAnchor(db, id, chain);
         const fresh = (
           await db.query<{ fresh: boolean }>(
             `SELECT ${readCacheFreshSql(id, [chain], { preparing: true })} AS fresh`

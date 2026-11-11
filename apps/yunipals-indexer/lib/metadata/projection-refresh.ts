@@ -405,6 +405,13 @@ async function cleanupGenerations(client: PoolClient) {
       [preserved]
     );
     retired = rows.rows.map((row) => row.id);
+    if (prepublishReadCacheEnabled())
+      // Publication removes its own lease; a build that never published left
+      // one behind. A retired generation is never prepared again.
+      await client.query(
+        `DELETE FROM metadata_projection.read_preparation p USING metadata_projection.generation g
+        WHERE g.id=p.generation_id AND g.state='retired'`
+      );
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -597,11 +604,10 @@ export async function refreshProjectionGeneration(
       SET state='ready',completed_at=now(),validation=$2::jsonb WHERE id=$1 AND state='building'`,
       [id, JSON.stringify(validation)]
     );
-    if (nativeProjectionSnapshotEnabled())
-      await retainProjectionAnchors(
-        client,
-        projectionSourceSnapshot(validation.sourceSnapshot)
-      );
+    const proof = nativeProjectionSnapshotEnabled()
+      ? projectionSourceSnapshot(validation.sourceSnapshot)
+      : null;
+    if (proof) await retainProjectionAnchors(client, proof);
     if (prepublishReadCacheEnabled())
       await prepareGenerationReadCache(client, id);
     if (options.publish === false) {
@@ -617,6 +623,12 @@ export async function refreshProjectionGeneration(
     }
     const publicationStarted = performance.now();
     for (let attempt = 0; attempt < 3; attempt++) {
+      // Preparing the read cache can outlast a fast chain's 4,096-block
+      // window, so renew the anchor proofs right before the pointer statement.
+      // A retry first rebuilds any chain whose prepared cache went stale.
+      if (attempt > 0 && prepublishReadCacheEnabled())
+        await prepareGenerationReadCache(client, id);
+      if (proof) await retainProjectionAnchors(client, proof);
       try {
         await publishGeneration(client, id, release, predecessor);
         break;
@@ -629,7 +641,13 @@ export async function refreshProjectionGeneration(
           typeof error === "object" && error !== null && "code" in error
             ? String(error.code)
             : "";
-        if (attempt === 2 || !["55P03", "57014"].includes(code)) throw error;
+        // A changed source fails the pointer statement as a whole. Renewal
+        // fixes an expired proof; a real change fails again and stops here.
+        const retryable =
+          ["55P03", "57014"].includes(code) ||
+          (error instanceof Error &&
+            error.message === "projection_publication_source_changed");
+        if (attempt === 2 || !retryable) throw error;
         await new Promise((resolve) =>
           setTimeout(resolve, 150 * (attempt + 1))
         );
