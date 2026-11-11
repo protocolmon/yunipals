@@ -1,0 +1,146 @@
+name: Codex PR review
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    paths:
+      - ".github/workflows/codex-review.yml"
+      - ".github/scripts/codex-review*"
+      - ".github/codex/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/codex-review.yml"
+      - ".github/scripts/codex-review*"
+      - ".github/codex/**"
+
+permissions: {}
+
+# An unrelated/unauthorized comment cannot cancel an authorized review.
+concurrency:
+  group: codex-review-${{ github.event.comment.id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.event_name != 'issue_comment'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - run: node --test .github/scripts/codex-review.test.cjs
+
+  authorize:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      github.event.comment.user.type == 'User' &&
+      contains(github.event.comment.body, '@codex review')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      authorized: ${{ steps.request.outputs.authorized }}
+      number: ${{ steps.request.outputs.number }}
+      head: ${{ steps.request.outputs.head }}
+      base: ${{ steps.request.outputs.base }}
+      merge_base: ${{ steps.request.outputs.merge_base }}
+    steps:
+      # issue_comment's SHA is on the default branch, never the fork.
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        id: request
+        env:
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        with:
+          script: |
+            const { authorize } = require('./.github/scripts/codex-review.cjs');
+            await authorize({ github, context, core }, process.env.TRIGGERING_ACTOR);
+
+  review:
+    needs: authorize
+    if: needs.authorize.outputs.authorized == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      message: ${{ steps.codex.outputs.final-message }}
+    env:
+      PR_HEAD_SHA: ${{ needs.authorize.outputs.head }}
+      PR_BASE_SHA: ${{ needs.authorize.outputs.base }}
+      PR_MERGE_BASE_SHA: ${{ needs.authorize.outputs.merge_base }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify API secret is configured
+        env:
+          HAS_OPENAI_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          if [ "$HAS_OPENAI_KEY" != "true" ]; then
+            echo '::error::Add the OPENAI_API_KEY repository Actions secret.'
+            exit 1
+          fi
+      - name: Fetch immutable PR objects without checking them out
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          git fetch --no-tags --depth=1 origin "$PR_HEAD_SHA" "$PR_MERGE_BASE_SHA"
+      - name: Save maintainer focus as data
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const { writeRequest } = require('./.github/scripts/codex-review.cjs');
+            writeRequest(context, 'codex-review-request.json');
+      # Last step: no later code runs on the agent's runner. Publication uses
+      # a separate runner/token, and PR scripts/config are never checked out.
+      - name: Review with Codex
+        id: codex
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1.13
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/review.md
+          permission-profile: ":read-only"
+          safety-strategy: drop-sudo
+          model: ${{ vars.CODEX_REVIEW_MODEL }}
+          codex-args: '["--ephemeral"]'
+
+  publish:
+    needs: [authorize, review]
+    if: >-
+      always() && !cancelled() &&
+      needs.authorize.outputs.authorized == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          PR_NUMBER: ${{ needs.authorize.outputs.number }}
+          PR_HEAD_SHA: ${{ needs.authorize.outputs.head }}
+          PR_BASE_SHA: ${{ needs.authorize.outputs.base }}
+          REVIEW_RESULT: ${{ needs.review.result }}
+          REVIEW_MESSAGE: ${{ needs.review.outputs.message }}
+        with:
+          script: |
+            const { publish } = require('./.github/scripts/codex-review.cjs');
+            await publish({ github, context }, process.env);
