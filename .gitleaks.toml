@@ -1728,3 +1728,10 @@ paths = [
   "(^|/)ops/unified\\-indexer\\-transition/booster\\-feature\\-handover\\-v7\\.py$",
 ]
 regexes = ["^f2da78b49f1566ebca881c763328012aee1f1e48070862ed835ab22d8aa1ff3e$"]
+
+[[rules.allowlists]]
+description = "Public demo Solana token ID in collection-card proposal"
+condition = "AND"
+regexTarget = "secret"
+paths = ['''(^|/)apps/yunipals-home-web/src/pages/proposals/catalog/collection-card/states\.ts$''']
+regexes = ['''^7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU$''']
