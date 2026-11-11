@@ -29,6 +29,16 @@ const ContractsPage = lazy(() =>
     default: module.ContractsPage
   }))
 );
+const ProposalsPage = lazy(() =>
+  import("@/pages/proposals/page").then((module) => ({
+    default: module.ProposalsPage
+  }))
+);
+const ProposalPage = lazy(() =>
+  import("@/pages/proposals/ProposalPage").then((module) => ({
+    default: module.ProposalPage
+  }))
+);
 const BoosterPhilosophyPage = lazy(() =>
   import("@/pages/boosters/BoosterPhilosophyPage").then((module) => ({
     default: module.BoosterPhilosophyPage
@@ -441,6 +451,8 @@ function AppContent() {
           />
           <Route path="/collection/:tokenId" element={<CollectionPage />} />
           <Route path="/leaderboard" element={<LeaderboardRoute />} />
+          <Route path="/proposals" element={<ProposalsPage />} />
+          <Route path="/proposals/:slug" element={<ProposalPage />} />
           <Route path="/brandkit" element={<BrandkitPage />} />
           <Route path="/contracts" element={<ContractsPage />} />
           <Route path="/terms" element={<TermsPage />} />

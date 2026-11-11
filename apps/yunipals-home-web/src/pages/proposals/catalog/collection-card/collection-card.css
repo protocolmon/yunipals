@@ -1,0 +1,21 @@
+/* Effects for the collection card proposal. */
+@keyframes cc-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+.cc-twinkle {
+  animation: cc-twinkle 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-twinkle {
+    animation: none;
+  }
+}
