@@ -6,6 +6,7 @@ on:
       - "scripts/boosters/check-storage.py"
       - "apps/yunipals-home-web/src/lib/booster*"
       - "apps/yunipals-home-web/src/lib/fixtures/eth-payment-package.json"
+      - "apps/yunipals-home-web/src/lib/fixtures/eth-payment-package-source.json"
       - "apps/yunipals-home-web/src/hooks/useBoosterActions.ts"
       - "apps/yunipals-home-web/src/pages/boosters/**"
       - ".github/workflows/booster-eth.yml"
@@ -29,6 +30,24 @@ jobs:
         run: |
           /tmp/yunipals-forge/node_modules/@foundry-rs/forge-linux-amd64/bin/forge test --root contracts/boosters
           python3 scripts/boosters/check-storage.py
+      - name: Check out the frozen ETH launch candidate
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: 2901de5e13b2e706a165f55ff4917d22e61cc93a
+          path: .eth-reviewed
+          persist-credentials: false
+      - name: Compile the reviewed package source without changing its bytes
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          source = json.load(open("apps/yunipals-home-web/src/lib/fixtures/eth-payment-package-source.json"))
+          actual = subprocess.check_output(["git", "-C", ".eth-reviewed", "rev-parse", "HEAD"], text=True).strip()
+          assert actual == source["commit"], "Reviewed ETH package source changed"
+          PY
+          python3 .eth-reviewed/contracts/boosters/install-dependencies.py
+          /tmp/yunipals-forge/node_modules/@foundry-rs/forge-linux-amd64/bin/forge build --root .eth-reviewed/contracts/boosters --skip test --skip script
       - name: Payment quotes, receipt validation and deployment package
+        env:
+          BOOSTER_ETH_REVIEW_ARTIFACT_DIRECTORY: ${{ github.workspace }}/.eth-reviewed/contracts/boosters/out
         working-directory: apps/yunipals-home-web
         run: node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/boosterEth.test.ts src/lib/boosterEthSetup.test.ts src/lib/boosterPurchase.test.ts src/lib/boosterPermit.test.ts src/lib/boosterReveal.test.ts

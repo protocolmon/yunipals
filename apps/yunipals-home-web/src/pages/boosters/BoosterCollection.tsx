@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { isAddress } from "viem";
 import { Sparkles } from "lucide-react";
@@ -7,9 +7,9 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import {
   boosterAddresses,
   boosterQueryKey,
-  fetchBoosterOwner,
-  fetchMonsterArtwork
+  fetchBoosterOwner
 } from "@/lib/boosters";
+import { useBoosterArtwork, type ArtworkCard } from "@/hooks/useBoosterArtwork";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
 import { BoosterCardThumbnail } from "@/components/BoosterCardThumbnail";
 import { BoosterCardLightbox } from "./BoosterCardLightbox";
@@ -19,23 +19,18 @@ export function BoosterArtwork({
   label,
   interactive = false,
   display = "full",
-  eager = false
+  eager = false,
+  card
 }: {
   uri: string;
   label: string;
   interactive?: boolean;
   display?: "full" | "thumbnail";
   eager?: boolean;
+  card?: ArtworkCard;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const query = useQuery({
-    queryKey: [...boosterQueryKey, "artwork", uri],
-    queryFn: ({ signal }) => fetchMonsterArtwork(uri, signal),
-    staleTime: Infinity,
-    retry: 1,
-    refetchInterval: (query) =>
-      query.state.data && query.state.data.status !== "ready" ? 5000 : false
-  });
+  const query = useBoosterArtwork(uri, card);
   if (query.data?.image && display === "thumbnail")
     return (
       <BoosterCardThumbnail
@@ -144,6 +139,7 @@ export function BoosterCollection({ owner }: { owner: string }) {
           >
             <BoosterArtwork
               uri={monster.metadataUri}
+              card={monster}
               label={`Yunipal #${monster.tokenId}`}
               display="thumbnail"
               eager={index < 4}

@@ -28,6 +28,11 @@ export const environment = {
     import.meta.env?.MODE === "fixtures" ||
     import.meta.env?.VITE_EXOMON_ENABLED === "true",
   boostersEnabled: import.meta.env?.VITE_BOOSTERS_ENABLED === "true",
+  portalsEnabled: import.meta.env?.VITE_PORTALS_ENABLED === "true",
+  portalApiUrl:
+    import.meta.env?.VITE_PORTALS_API_URL?.replace(/\/$/, "") || null,
+  portalGrading: import.meta.env?.VITE_PORTALS_GRADING_ADDRESS?.trim() || "",
+  portalChainId: Number(import.meta.env?.VITE_PORTALS_CHAIN_ID || "8453"),
   boosterLaunchId,
   boosterPaymentSymbol:
     import.meta.env?.VITE_BOOSTER_PAYMENT_SYMBOL?.trim() || "PROTO",

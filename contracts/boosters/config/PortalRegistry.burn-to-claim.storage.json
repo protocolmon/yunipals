@@ -1,0 +1,330 @@
+[
+  {
+    "label": "wrapper",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IVRFV2PlusWrapper",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "confirmations",
+    "slot": "0",
+    "offset": 20,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    }
+  },
+  {
+    "label": "randomnessPaused",
+    "slot": "0",
+    "offset": 22,
+    "type": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    }
+  },
+  {
+    "label": "randomRequests",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalRandomness.RandomRequest)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalRandomness.RandomRequest",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "seed",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "requested",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "received",
+            "slot": "1",
+            "offset": 1,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "refundCredits",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "totalRefundLiability",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "rules",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PortalRules",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "collection",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PortalCollection",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "round",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "struct PortalRegistry.Round",
+      "numberOfBytes": "64",
+      "members": [
+        {
+          "label": "id",
+          "slot": "0",
+          "offset": 0,
+          "type": {
+            "encoding": "inplace",
+            "label": "uint64",
+            "numberOfBytes": "8"
+          }
+        },
+        {
+          "label": "startsAt",
+          "slot": "0",
+          "offset": 8,
+          "type": {
+            "encoding": "inplace",
+            "label": "uint64",
+            "numberOfBytes": "8"
+          }
+        },
+        {
+          "label": "endsAt",
+          "slot": "0",
+          "offset": 16,
+          "type": {
+            "encoding": "inplace",
+            "label": "uint64",
+            "numberOfBytes": "8"
+          }
+        },
+        {
+          "label": "portalId",
+          "slot": "1",
+          "offset": 0,
+          "type": {
+            "encoding": "inplace",
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "label": "pendingRotation",
+    "slot": "8",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "rotations",
+    "slot": "9",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalRegistry.Rotation)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalRegistry.Rotation",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "label": "roundId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "poolSize",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "excludedIndexPlusOne",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "selections",
+    "slot": "10",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalRegistry.Selection)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalRegistry.Selection",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "kindId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "poolSize",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "rotationPoolRevision",
+    "slot": "11",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint48)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint48",
+        "numberOfBytes": "6"
+      }
+    }
+  },
+  {
+    "label": "selectionPoolRevision",
+    "slot": "12",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint48)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint48",
+        "numberOfBytes": "6"
+      }
+    }
+  }
+]

@@ -443,15 +443,22 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         Original storage s = originals[r.originalId];
         require(r.status == Status.Seeded && !s.burned, "invalid execution");
         address recipient = r.opening ? r.payer : monsters.ownerOf(r.originalId);
+        uint32 mintedAfter = s.minted + r.quantity;
         for (uint256 i; i < r.quantity; ++i) {
             bytes32 entropy =
                 keccak256(abi.encode(r.seed, block.chainid, address(this), id, r.originalId, r.ruleHash, i));
             uint32 variantId = _pools[r.originalId].draw(s.remaining, entropy);
             --s.remaining;
-            if (r.opening) monsters.mintOriginal(r.originalId, recipient, variantId);
-            else monsters.mintOffspring(r.originalId, recipient, variantId);
+            if (r.opening) {
+                monsters.mintOriginal(r.originalId, recipient, variantId);
+            } else {
+                uint32 sequence;
+                // mintedAfter was checked above, and i is strictly less than quantity.
+                unchecked { sequence = s.minted + uint32(i); }
+                monsters.mintOffspringWithSequence(r.originalId, recipient, variantId, sequence);
+            }
         }
-        s.minted += r.quantity;
+        s.minted = mintedAfter;
         s.pendingRequest = 0;
         r.status = Status.Completed;
         if (r.opening) emit OriginalRevealed(r.originalId, s.packTypeId, s.revealedAt, s.remaining + 1);

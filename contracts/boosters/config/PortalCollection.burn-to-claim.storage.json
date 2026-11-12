@@ -1,0 +1,740 @@
+[
+  {
+    "label": "wrapper",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IVRFV2PlusWrapper",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "confirmations",
+    "slot": "0",
+    "offset": 20,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    }
+  },
+  {
+    "label": "randomnessPaused",
+    "slot": "0",
+    "offset": 22,
+    "type": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    }
+  },
+  {
+    "label": "randomRequests",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalRandomness.RandomRequest)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalRandomness.RandomRequest",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "seed",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "requested",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "received",
+            "slot": "1",
+            "offset": 1,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "refundCredits",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "totalRefundLiability",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "rules",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PortalRules",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "kindCount",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "_kinds",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalCollection.Kind)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalCollection.Kind",
+        "numberOfBytes": "288",
+        "members": [
+          {
+            "label": "definition",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PortalCollection.KindDefinition",
+              "numberOfBytes": "224",
+              "members": [
+                {
+                  "label": "name",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "imageURI",
+                  "slot": "1",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "artworkHash",
+                  "slot": "2",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "bytes32",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "cap",
+                  "slot": "3",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint16",
+                    "numberOfBytes": "2"
+                  }
+                },
+                {
+                  "label": "odds",
+                  "slot": "4",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "struct PortalGates.Odds",
+                    "numberOfBytes": "96",
+                    "members": [
+                      {
+                        "label": "originalBps",
+                        "slot": "0",
+                        "offset": 0,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "glitterBps",
+                        "slot": "0",
+                        "offset": 2,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "diamondBps",
+                        "slot": "0",
+                        "offset": 4,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "length1Bps",
+                        "slot": "0",
+                        "offset": 6,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "length10Bps",
+                        "slot": "0",
+                        "offset": 8,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "length100Bps",
+                        "slot": "0",
+                        "offset": 10,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16",
+                          "numberOfBytes": "2"
+                        }
+                      },
+                      {
+                        "label": "colorWeights",
+                        "slot": "1",
+                        "offset": 0,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16[6]",
+                          "numberOfBytes": "32",
+                          "base": {
+                            "encoding": "inplace",
+                            "label": "uint16",
+                            "numberOfBytes": "2"
+                          }
+                        }
+                      },
+                      {
+                        "label": "typeWeights",
+                        "slot": "2",
+                        "offset": 0,
+                        "type": {
+                          "encoding": "inplace",
+                          "label": "uint16[11]",
+                          "numberOfBytes": "32",
+                          "base": {
+                            "encoding": "inplace",
+                            "label": "uint16",
+                            "numberOfBytes": "2"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "configurationHash",
+            "slot": "7",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "allocated",
+            "slot": "8",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "frozen",
+            "slot": "8",
+            "offset": 2,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_mints",
+    "slot": "7",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalCollection.MintRequest)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalCollection.MintRequest",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "label": "kindId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "firstSerial",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "processed",
+            "slot": "1",
+            "offset": 2,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "recipients",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "address[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "address",
+                "numberOfBytes": "20"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "tokenKind",
+    "slot": "8",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "_gates",
+    "slot": "9",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGates.Gates)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGates.Gates",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "label": "sequenceStart",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "sequenceLength",
+            "slot": "0",
+            "offset": 2,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "colorGate",
+            "slot": "0",
+            "offset": 4,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "typeGate",
+            "slot": "0",
+            "offset": 5,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "originalOnly",
+            "slot": "0",
+            "offset": 6,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "glitterGate",
+            "slot": "0",
+            "offset": 7,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "diamondGate",
+            "slot": "0",
+            "offset": 8,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_allPortals",
+    "slot": "10",
+    "offset": 0,
+    "type": {
+      "encoding": "dynamic_array",
+      "label": "uint256[]",
+      "numberOfBytes": "32",
+      "base": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "_kindPortals",
+    "slot": "11",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256[])",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32",
+        "base": {
+          "encoding": "inplace",
+          "label": "uint256",
+          "numberOfBytes": "32"
+        }
+      }
+    }
+  },
+  {
+    "label": "globalIndexPlusOne",
+    "slot": "12",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "claimController",
+    "slot": "13",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "poolRevision",
+    "slot": "13",
+    "offset": 20,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint48",
+      "numberOfBytes": "6"
+    }
+  },
+  {
+    "label": "_livePools",
+    "slot": "14",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalPool.Pool)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalPool.Pool",
+        "numberOfBytes": "128",
+        "members": [
+          {
+            "label": "tokens",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "uint256[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint256",
+                "numberOfBytes": "32"
+              }
+            }
+          },
+          {
+            "label": "indexPlusOne",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "mapping",
+              "key": {
+                "encoding": "inplace",
+                "label": "uint256",
+                "numberOfBytes": "32"
+              },
+              "label": "mapping(uint256 => uint256)",
+              "numberOfBytes": "32",
+              "value": {
+                "encoding": "inplace",
+                "label": "uint256",
+                "numberOfBytes": "32"
+              }
+            }
+          },
+          {
+            "label": "positions",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "mapping",
+              "key": {
+                "encoding": "inplace",
+                "label": "uint256",
+                "numberOfBytes": "32"
+              },
+              "label": "mapping(uint256 => struct PortalPool.Checkpoint[])",
+              "numberOfBytes": "32",
+              "value": {
+                "encoding": "dynamic_array",
+                "label": "struct PortalPool.Checkpoint[]",
+                "numberOfBytes": "32",
+                "base": {
+                  "encoding": "inplace",
+                  "label": "struct PortalPool.Checkpoint",
+                  "numberOfBytes": "32",
+                  "members": [
+                    {
+                      "label": "revision",
+                      "slot": "0",
+                      "offset": 0,
+                      "type": {
+                        "encoding": "inplace",
+                        "label": "uint48",
+                        "numberOfBytes": "6"
+                      }
+                    },
+                    {
+                      "label": "value",
+                      "slot": "0",
+                      "offset": 6,
+                      "type": {
+                        "encoding": "inplace",
+                        "label": "uint208",
+                        "numberOfBytes": "26"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "label": "counts",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "dynamic_array",
+              "label": "struct PortalPool.Checkpoint[]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "struct PortalPool.Checkpoint",
+                "numberOfBytes": "32",
+                "members": [
+                  {
+                    "label": "revision",
+                    "slot": "0",
+                    "offset": 0,
+                    "type": {
+                      "encoding": "inplace",
+                      "label": "uint48",
+                      "numberOfBytes": "6"
+                    }
+                  },
+                  {
+                    "label": "value",
+                    "slot": "0",
+                    "offset": 6,
+                    "type": {
+                      "encoding": "inplace",
+                      "label": "uint208",
+                      "numberOfBytes": "26"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+]

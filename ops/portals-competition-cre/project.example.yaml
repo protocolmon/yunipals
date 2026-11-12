@@ -1,0 +1,9 @@
+# Copy the required target into the operator's private CRE project.yaml.
+staging-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia-base-1
+      url: ${BASE_SEPOLIA_RPC_URL}
+production-settings:
+  rpcs:
+    - chain-name: ethereum-mainnet-base-1
+      url: ${BASE_RPC_URL}

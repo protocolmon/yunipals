@@ -1,0 +1,266 @@
+[
+  {
+    "label": "grading",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "usdc",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IERC20",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "entryCount",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "totalLiability",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "_entries",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGradingCompetition.Entry)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGradingCompetition.Entry",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "requestId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "submitter",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "score",
+            "slot": "1",
+            "offset": 20,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "completed",
+            "slot": "1",
+            "offset": 22,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_batches",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGradingCompetition.Batch)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGradingCompetition.Batch",
+        "numberOfBytes": "192",
+        "members": [
+          {
+            "label": "rubric",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "funded",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "completed",
+            "slot": "1",
+            "offset": 2,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "settled",
+            "slot": "1",
+            "offset": 4,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "leaders",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256[3]",
+              "numberOfBytes": "96",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint256",
+                "numberOfBytes": "32"
+              }
+            }
+          },
+          {
+            "label": "paid",
+            "slot": "5",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool[3]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "bool",
+                "numberOfBytes": "1"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "entryForRequest",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "_readyBatches",
+    "slot": "7",
+    "offset": 0,
+    "type": {
+      "encoding": "dynamic_array",
+      "label": "uint256[]",
+      "numberOfBytes": "32",
+      "base": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "_pendingBatches",
+    "slot": "8",
+    "offset": 0,
+    "type": {
+      "encoding": "dynamic_array",
+      "label": "uint256[]",
+      "numberOfBytes": "32",
+      "base": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "_pendingIndex",
+    "slot": "9",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+]

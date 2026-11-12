@@ -1,0 +1,19 @@
+{
+  "name": "yunipals-competition-cre",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test planner.test.ts",
+    "build": "bun node_modules/@chainlink/cre-sdk/bin/cre-compile.ts main.ts dist/workflow.wasm"
+  },
+  "dependencies": {
+    "@chainlink/cre-sdk": "1.23.0",
+    "viem": "2.55.13",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.4",
+    "typescript": "5.9.3"
+  }
+}

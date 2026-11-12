@@ -1,3 +1,4 @@
+import { registerPortalRoutes } from "../portals/routes.js";
 import { registerMonsterVersionRoutes } from "../versions/routes.js";
 import { assertDerivedOwnership } from "../ownership/derived-snapshot.js";
 import {
@@ -362,6 +363,7 @@ registerBoosterRoutes(app, {
   schemaName:
     process.env.BOOSTER_DATABASE_SCHEMA?.trim() || physicalPonderSchemaName
 });
+registerPortalRoutes(app);
 registerActionEvidenceRoutes(app, {
   pool,
   selection: () =>
@@ -394,8 +396,7 @@ app.use("/v1/*", async (c, next) => {
       /^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//
     )?.[1] ??
       (/^\/v1\/tokens\/[0-9]+$/.test(c.req.path) ? "ethereum" : undefined)) as
-      | CollectionSlug
-      | undefined;
+      CollectionSlug | undefined;
     const selected = specific
       ? [specific]
       : (chainSelection(c.req.url)?.chains ?? collectionSlugs);
@@ -412,8 +413,7 @@ app.use("*", async (c, next) => {
     /^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//
   )?.[1] ??
     (/^\/v1\/tokens\/[0-9]+$/.test(c.req.path) ? "ethereum" : undefined)) as
-    | CollectionSlug
-    | undefined;
+    CollectionSlug | undefined;
   const islands = c.req.path.startsWith("/v2/collections/ethereum-islands");
   const diagnostic =
     ["/v1/status", "/v1/indexing-status"].includes(c.req.path) ||

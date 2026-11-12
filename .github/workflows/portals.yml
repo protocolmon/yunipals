@@ -1,0 +1,70 @@
+name: Portal release checks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portals-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portals:
+    name: Portal contracts, indexing and browser flow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: portal_test_owner
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: portal_test
+        ports: ["55439:5432"]
+        options: >-
+          --health-cmd "pg_isready -U portal_test_owner -d portal_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      CI: "true"
+      FOUNDRY_PROFILE: permit
+      PORTALS_TEST_DATABASE_URL: postgresql://portal_test_owner:local-test-only@127.0.0.1:55439/portal_test
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Install pinned local test tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/portal-tools" --ignore-scripts --no-audit --no-fund @foundry-rs/forge-linux-amd64@1.7.1 @foundry-rs/anvil-linux-amd64@1.7.1 playwright-core@1.65.0
+          node "$RUNNER_TEMP/portal-tools/node_modules/playwright-core/cli.js" install --with-deps chromium
+          python3 contracts/boosters/install-dependencies.py
+          echo "$RUNNER_TEMP/portal-tools/node_modules/@foundry-rs/forge-linux-amd64/bin" >> "$GITHUB_PATH"
+          echo "PORTALS_TEST_ANVIL=$RUNNER_TEMP/portal-tools/node_modules/@foundry-rs/anvil-linux-amd64/bin/anvil" >> "$GITHUB_ENV"
+          echo "PORTALS_TEST_PLAYWRIGHT=$RUNNER_TEMP/portal-tools/node_modules/playwright-core/index.mjs" >> "$GITHUB_ENV"
+      - name: Release contracts, storage, size and ABI
+        run: |
+          forge test --root contracts/boosters
+          python3 scripts/portals/check-storage.py
+          python3 scripts/portals/check-release.py
+          python3 scripts/portals/export-abi.py --check
+      - name: Portal unit and recovery tests
+        run: pnpm --filter @protopals/yunipals-indexer test:portals
+      - name: PostgreSQL roles, concurrent recovery and restore
+        run: pnpm --filter @protopals/yunipals-indexer test:portals:postgres
+      - name: Browser to API to ledger to contracts, 111-entry challenge
+        run: pnpm --filter @protopals/yunipals-indexer test:portals:local
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: portal-browser-evidence
+          path: |
+            /tmp/yunipals-portals-*.png
+            /tmp/yunipals-portal-*.png
+          if-no-files-found: ignore
+          retention-days: 14

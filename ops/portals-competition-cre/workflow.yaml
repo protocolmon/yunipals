@@ -1,0 +1,14 @@
+staging-settings:
+  user-workflow:
+    workflow-name: "yunipals-prizes"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.staging.local.json"
+    secrets-path: ""
+production-settings:
+  user-workflow:
+    workflow-name: "yunipals-prizes"
+  workflow-artifacts:
+    workflow-path: "./main.ts"
+    config-path: "./config.production.local.json"
+    secrets-path: ""
