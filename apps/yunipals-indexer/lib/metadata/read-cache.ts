@@ -55,10 +55,15 @@ const baseRuntimeErrorSql =
 function membershipTransferSql(alias: string) {
   return `(${alias}."from"='${ZERO_ADDRESS}' OR ${alias}."to"='${ZERO_ADDRESS}')`;
 }
+/** `allowChanged` leaves out the two checks that say the tokens or their
+ * metadata changed since the set was built. Every check of the set's identity
+ * stays, so it tells a set that is waiting for its rebuild from one that must
+ * not be used.
+ */
 export function readCacheFreshSql(
   id: string,
   chains: readonly CollectionSlug[],
-  options: { preparing?: boolean } = {}
+  options: { preparing?: boolean; allowChanged?: boolean } = {}
 ) {
   const generation = idSql(id);
   const list = chainsSql(selected(chains));
@@ -86,16 +91,20 @@ export function readCacheFreshSql(
         ON b.chain_id=a.chain_id AND b.block_number=a.witness_number AND b.block_hash=a.witness_hash
         WHERE a.release_id=s.ownership_release_id AND a.chain_id=ownership_source.chain_id
           AND a.block_number=s.ownership_boundary AND a.block_hash=s.ownership_boundary_hash))
-    AND NOT EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.transfer_event changed WHERE changed.collection=s.collection
+    ${
+      options.allowChanged
+        ? ""
+        : `AND NOT EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.transfer_event changed WHERE changed.collection=s.collection
       AND changed.block_number>s.ownership_boundary AND changed.block_number<=ownership_source.block_number
       AND ${membershipTransferSql("changed")})`
+    }`
     : `AND COALESCE(to_jsonb(s)->>'ownership_release_id','')=''`;
   return `(SELECT count(*)=${chains.length} FROM metadata_projection.read_set s
     JOIN metadata_projection.read_epoch e USING(collection)
     JOIN metadata_projection.generation g ON g.id=s.generation_id
     ${ownershipJoin}
     WHERE s.generation_id=${generation} AND s.collection=ANY(${list})
-      AND s.revision=e.revision AND s.source_mode='${metadataSourceMode()}'
+      ${options.allowChanged ? "" : "AND s.revision=e.revision"} AND s.source_mode='${metadataSourceMode()}'
       AND ${generationOwnershipProof("g")} ${ownershipProof} ${nativeMetadataProof} ${baseRuntimeProof}
       AND g.state='ready' AND g.source_mode=CASE WHEN s.source_mode='legacy-http' THEN 'legacy' ELSE s.source_mode END
       AND (EXISTS(SELECT 1 FROM metadata_projection.active a

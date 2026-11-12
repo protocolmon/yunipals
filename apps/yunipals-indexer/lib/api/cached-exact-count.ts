@@ -11,6 +11,10 @@ import { activeVisibilityRowPredicate } from "./visibility-query.js";
  * set. Any token change invalidates that read set, so they are exact when the
  * cache is fresh, and scanning millions of index entries for them would take
  * seconds on every request.
+ *
+ * With `rebuilding`, a read set whose tokens or metadata changed is still
+ * counted while the worker rebuilds it. The total can then be behind by those
+ * changes; the caller limits for how long.
  */
 export function cachedExactCountSql(input: {
   chains: readonly CollectionSlug[];
@@ -19,8 +23,11 @@ export function cachedExactCountSql(input: {
   filters: string[];
   fallback: string;
   burned?: boolean;
+  rebuilding?: boolean;
 }) {
-  const fresh = readCacheFreshSql(input.generation, input.chains);
+  const fresh = readCacheFreshSql(input.generation, input.chains, {
+    allowChanged: input.rebuilding
+  });
   const generation = `${input.generation}::bigint`;
   const burnFilter = /^t\.burned\s*=\s*\$\d+$/;
   const burnFilters = input.filters.filter((filter) => burnFilter.test(filter));

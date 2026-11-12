@@ -37,6 +37,7 @@ try {
     YUNIPALS_PROJECTION_MODE: "generation",
     METADATA_SOURCE_MODE: "legacy-http",
     YUNIPALS_READ_CACHE: "1",
+    API_EXACT_COUNT_CACHE_TTL_MS: "0",
     API_COLLECTOR_FILTERS_ENABLED: "true",
     API_COLLECTOR_NAME_SEARCH_ENABLED: "true",
     API_COLLECTOR_RARITY_RANGE_ENABLED: "true",
@@ -637,10 +638,27 @@ try {
       "SELECT burned_count::int AS burned FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
     )
   ).rows[0].burned;
+  const unburned = async () => {
+    const response = await app.request(
+      "/v1/tokens?chain=bnb&burned=false&limit=100"
+    );
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    return { total: body.total, ids: body.items.map((item) => item.tokenId) };
+  };
+  const beforeBurn = await unburned();
+  assert.ok(beforeBurn.ids.includes("6"));
+  assert.equal(beforeBurn.total, beforeBurn.ids.length);
   await moveBnbHead(burnBlock + 20n);
   assert.equal(await bnbRevision(), burnRevision);
   assert.equal(await bnbFresh(), false);
   assert.equal(await bnbCachedCount(), 7);
+  // The page is exact at once. The total comes from the changed read set
+  // until the worker has rebuilt it.
+  const duringRebuild = await unburned();
+  assert.ok(!duringRebuild.ids.includes("6"));
+  assert.equal(duringRebuild.ids.length, beforeBurn.ids.length - 1);
+  assert.equal(duringRebuild.total, beforeBurn.total);
   const rebuild = await db.connect();
   try {
     await buildReadCache(rebuild, "2", "bnb");
@@ -656,6 +674,7 @@ try {
     ).rows[0].burned,
     burnedBefore + 1
   );
+  assert.equal((await unburned()).total, beforeBurn.total - 1);
   const cachedHash = (
     await db.query(
       "SELECT ownership_boundary_hash FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
@@ -775,6 +794,7 @@ try {
         "planner settings isolated across count/page reads",
         "cache kept when the eligible boundary crosses a transfer between owners",
         "cache invalidation when the eligible boundary crosses a burn without dirty writes",
+        "exact page and stored total while a changed cache waits for its rebuild",
         "read identity mismatch and canonical fallback",
         "unavailable empty collection returns 503 while other chains remain readable",
         "diagnostic status reports unavailable counts explicitly",
