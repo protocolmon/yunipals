@@ -28,6 +28,7 @@ export function CollectionPackCard({
           <div className="mx-auto h-full w-2/3">
             <BoosterArtwork
               uri={monster.metadataUri}
+              card={monster}
               label={`${traits.Type} #${monster.tokenId}`}
               display="thumbnail"
               eager={eager}

@@ -16,6 +16,7 @@ const navigation = [
     ? [{ label: "Packs", to: "/boosters" }]
     : []),
   { label: "Leaderboard", to: "/leaderboard" },
+  ...(environment.portalsEnabled ? [{ label: "Portals", to: "/portals" }] : []),
   { label: "Arena", to: "/arena" }
 ];
 

@@ -24,10 +24,11 @@ const chainConfig = {
       "https://ethereum-rpc.publicnode.com",
       "https://eth.drpc.org"
     ]),
-    [base.id]: rpcTransport([
-      "https://base-rpc.publicnode.com",
-      "https://base.drpc.org"
-    ]),
+    [base.id]: rpcTransport(
+      environment.baseRpcUrl
+        ? [environment.baseRpcUrl]
+        : ["https://base-rpc.publicnode.com", "https://base.drpc.org"]
+    ),
     [polygon.id]: rpcTransport([
       "https://polygon.drpc.org",
       "https://polygon-bor-rpc.publicnode.com"

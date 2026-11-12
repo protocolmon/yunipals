@@ -192,6 +192,7 @@ export function BoosterRecentOpenings() {
                       <div className="aspect-[2/3]">
                         <BoosterArtwork
                           uri={monster.metadataUri}
+                          card={monster}
                           label={`${traits.Type} #${monster.tokenId}`}
                           display="thumbnail"
                         />

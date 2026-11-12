@@ -24,6 +24,36 @@ const BrandkitPage = lazy(() =>
     default: module.BrandkitPage
   }))
 );
+const PortalTransactionStatus = lazy(() =>
+  import("@/pages/portals/PortalTransactionStatus").then((module) => ({
+    default: module.PortalTransactionStatus
+  }))
+);
+const PortalPage = lazy(() =>
+  import("@/pages/portals/PortalPage").then((module) => ({
+    default: module.PortalPage
+  }))
+);
+const PortalAdminPage = lazy(() =>
+  import("@/pages/portals/PortalAdminPage").then((module) => ({
+    default: module.PortalAdminPage
+  }))
+);
+const PortalOwnerPage = lazy(() =>
+  import("@/pages/portals/PortalOwnerPage").then((module) => ({
+    default: module.PortalOwnerPage
+  }))
+);
+const PortalTokenPage = lazy(() =>
+  import("@/pages/portals/PortalTokenPage").then((module) => ({
+    default: module.PortalTokenPage
+  }))
+);
+const PortalCardHistory = lazy(() =>
+  import("@/pages/portals/PortalCardHistory").then((module) => ({
+    default: module.PortalCardHistory
+  }))
+);
 const ContractsPage = lazy(() =>
   import("@/pages/contracts/page").then((module) => ({
     default: module.ContractsPage
@@ -211,6 +241,7 @@ function AppContent() {
           </main>
         }
       >
+        {pathname.startsWith("/portals") && <PortalTransactionStatus />}
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
@@ -454,6 +485,17 @@ function AppContent() {
           <Route path="/proposals" element={<ProposalsPage />} />
           <Route path="/proposals/:slug" element={<ProposalPage />} />
           <Route path="/brandkit" element={<BrandkitPage />} />
+          <Route path="/portals" element={<PortalPage />} />
+          <Route path="/portals/mine" element={<PortalOwnerPage />} />
+          <Route
+            path="/portals/tokens/:portalId"
+            element={<PortalTokenPage />}
+          />
+          <Route path="/portals/admin" element={<PortalAdminPage />} />
+          <Route
+            path="/portals/cards/:tokenId"
+            element={<PortalCardHistory />}
+          />
           <Route path="/contracts" element={<ContractsPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

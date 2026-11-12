@@ -6,9 +6,9 @@ import {
   boosterAddresses,
   boosterQueryKey,
   fetchBoosterMonster,
-  fetchBoosterOriginal,
-  fetchMonsterArtwork
+  fetchBoosterOriginal
 } from "@/lib/boosters";
+import { useBoosterArtwork } from "@/hooks/useBoosterArtwork";
 import { shortAddress } from "@/lib/format";
 import { BoosterPackSection } from "./BoosterPackSection";
 import { BoosterArtwork } from "./BoosterCollection";
@@ -54,15 +54,7 @@ export function BoosterMonsterPage() {
     refetchInterval: 10_000
   });
   const monster = query.data?.item;
-  const artwork = useQuery({
-    queryKey: [...boosterQueryKey, "artwork", monster?.metadataUri],
-    enabled: Boolean(monster),
-    queryFn: ({ signal }) => fetchMonsterArtwork(monster!.metadataUri, signal),
-    staleTime: Infinity,
-    retry: 1,
-    refetchInterval: (query) =>
-      query.state.data && query.state.data.status !== "ready" ? 5000 : false
-  });
+  const artwork = useBoosterArtwork(monster?.metadataUri, monster);
   const original = useQuery({
     queryKey: [...boosterQueryKey, "original", collection, tokenId],
     enabled: Boolean(monster?.isOriginal),
@@ -101,6 +93,7 @@ export function BoosterMonsterPage() {
         <div className="mt-7 grid gap-8 md:grid-cols-2">
           <BoosterArtwork
             uri={monster.metadataUri}
+            card={monster}
             label={`Yunipal #${monster.tokenId}`}
             interactive
           />
@@ -140,6 +133,24 @@ export function BoosterMonsterPage() {
               collection={monster.collection}
               tokenId={monster.tokenId}
             />
+            {artwork.portalCard && (
+              <div className="mt-5 flex flex-wrap gap-4 text-sm font-bold">
+                {!monster.burned && (
+                  <Link
+                    className="underline"
+                    to={`/portals?card=${monster.tokenId}`}
+                  >
+                    Cast a spell with this card
+                  </Link>
+                )}
+                <Link
+                  className="underline"
+                  to={`/portals/cards/${monster.tokenId}`}
+                >
+                  Artwork and grading history
+                </Link>
+              </div>
+            )}
             {!monster.burned && (
               <div className="mt-5 text-sm">
                 <p className="mb-2 text-muted">Owner</p>

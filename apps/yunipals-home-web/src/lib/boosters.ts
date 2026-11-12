@@ -154,6 +154,7 @@ export function boosterAssetUrl(uri: string): string | null {
 }
 
 export type MonsterArtwork = {
+  portalVersion?: string;
   name: string | null;
   image: string | null;
   attributes: Record<string, string>;
@@ -228,7 +229,17 @@ export async function fetchMonsterArtwork(
           : image
             ? "ready"
             : "missing";
-  return { name, image, attributes, status, holo };
+  return {
+    name,
+    image,
+    attributes,
+    status,
+    holo,
+    ...(typeof extension?.version === "string" &&
+    /^\d+$/.test(extension.version)
+      ? { portalVersion: extension.version }
+      : {})
+  };
 }
 
 export type StoredBoosterTransaction = {
