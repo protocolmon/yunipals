@@ -1,3 +1,7 @@
+import {
+  portalAdmissionHash,
+  portalIntakeSigningData
+} from "@protopals/yunipals-market-core/portals";
 /** Historical V1 overlapping-batch fixture; archived release artifacts only. */
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -81,6 +85,13 @@ async function main() {
   const player = account("PORTALS_REHEARSAL_PLAYER_PRIVATE_KEY");
   const buyer = account("PORTALS_REHEARSAL_BUYER_PRIVATE_KEY");
   const grader = account("PORTALS_GRADER_PRIVATE_KEY");
+  const intake = account("PORTALS_INTAKE_PRIVATE_KEY");
+  assert(
+    ![deployer, player, buyer, grader].some(
+      (a) => a.address === intake.address
+    ),
+    "Use a separate intake fixture signer."
+  );
   const directory = required("PORTALS_COMPETITION_REHEARSAL_DIRECTORY");
   const previous = JSON.parse(
     await readFile(
@@ -276,6 +287,10 @@ async function main() {
       (state.observations.legacyBindings as string[])[index]
     );
   }
+  await call("authorize-intake", grading, portalGradingAbi, "grantRole", [
+    keccak256(toHex("INTAKE_ROLE")),
+    intake.address
+  ]);
   const poolImplementation = await deploy("PortalGradingCompetition");
   const pool = await deploy(
     "ERC1967Proxy",
@@ -650,12 +665,32 @@ async function main() {
         spellCommitment: saved.spellCommitment as Hex,
         nonce: BigInt(saved.nonce)
       };
+      // This accounting-only fixture retains its synthetic spell in the private checkpoint.
+      // Live application intake must use the durable authenticated upload/API path.
+      await run.observe(`${label}-fixture-spell`, {
+        spell: `deterministic competition rehearsal ${ordinal}`
+      });
+      const expiresAt = (await client.getBlock()).timestamp + 300n;
+      const intakeReceipt = {
+        expiresAt,
+        signature: await intake.signTypedData(
+          portalIntakeSigningData({
+            chainId: 84532,
+            grading,
+            submitter: signer.address,
+            admissionHash: portalAdmissionHash(admission),
+            competition: pool,
+            competitionQuote: rules,
+            expiresAt
+          })
+        )
+      };
       const receipt = await call(
         label,
         grading,
         portalGradingAbi,
         "admitCompetition",
-        [admission, pool, rules],
+        [admission, pool, rules, intakeReceipt],
         signer
       );
       const accepted = parseEventLogs({

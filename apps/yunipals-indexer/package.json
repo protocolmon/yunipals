@@ -118,7 +118,7 @@
     "portals:migrate": "tsx scripts/portal-worker.ts --migrate",
     "portals:worker": "tsx scripts/portal-worker.ts",
     "portals:policy": "tsx scripts/portal-worker.ts --policy",
-    "test:portals": "vitest run test/portals.test.ts test/portal-provider.test.ts test/portal-backfill.test.ts test/portal-ledger.test.ts test/portal-rehearsal.test.ts test/portal-theme.test.ts test/portal-transactions.test.ts test/portal-rpc.test.ts test/portal-index-evidence.test.ts test/portal-slab.test.ts",
+    "test:portals": "vitest run test/portals.test.ts test/portal-provider.test.ts test/portal-backfill.test.ts test/portal-ledger.test.ts test/portal-rehearsal.test.ts test/portal-theme.test.ts test/portal-transactions.test.ts test/portal-rpc.test.ts test/portal-index-evidence.test.ts test/portal-slab.test.ts test/portal-intake.test.ts test/portal-theme-validation.test.ts",
     "test:portals:local": "tsx scripts/test-portals-local.ts",
     "portals:prepare": "tsx scripts/prepare-portals.ts",
     "portals:backfill": "tsx scripts/backfill-portal-card-facts.ts",

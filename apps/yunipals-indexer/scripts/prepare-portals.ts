@@ -65,6 +65,7 @@ async function main() {
     const setup = preparePortalSetup({
       ...deployment,
       grader: address("PORTALS_GRADER_ADDRESS"),
+      intakeSigner: address("PORTALS_INTAKE_ADDRESS"),
       competition: address("PORTALS_COMPETITION_ADDRESS"),
       aiRecipient: address("PORTALS_AI_RECIPIENT"),
       rainbowURI: setting("PORTALS_RAINBOW_ART_URI"),

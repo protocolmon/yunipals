@@ -20,6 +20,7 @@ import {
 } from "@protopals/yunipals-market-core/portalAbi";
 import {
   portalSpellCommitment,
+  portalAdmissionHash,
   portalSpellSigningData
 } from "@protopals/yunipals-market-core/portals";
 import { readPortalContracts } from "@/lib/portalClaims";
@@ -29,6 +30,7 @@ import {
   portalAdmission,
   portalDeploymentMatches,
   portalRequest,
+  portalSpellReceiptSchema,
   type ActivePortalStatus,
   type PortalQuote
 } from "@/lib/portals";
@@ -177,21 +179,26 @@ export function usePortals(status: ActivePortalStatus | null) {
       });
       guard(id, account);
       const commitment = portalSpellCommitment(input);
-      await portalRequest("/spells", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          submitter: account,
-          tokenId: fresh.tokenId,
-          artVersion: fresh.artVersion,
-          nonce: fresh.nonce,
-          spell: review.spell,
-          salt,
-          expiresAt: expires.toString(),
-          signature
-        })
-      });
       const admission = portalAdmission(fresh, commitment);
+      const uploadSpell = async () =>
+        portalSpellReceiptSchema.parse(
+          await portalRequest("/spells", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              submitter: account,
+              tokenId: fresh.tokenId,
+              artVersion: fresh.artVersion,
+              nonce: fresh.nonce,
+              spell: review.spell,
+              salt,
+              expiresAt: expires.toString(),
+              signature,
+              admissionHash: portalAdmissionHash(admission)
+            })
+          })
+        );
+      await uploadSpell();
       const allowance = await client.readContract({
         address: fresh.deployment.usdc as Address,
         abi: erc20Abi,
@@ -226,6 +233,16 @@ export function usePortals(status: ActivePortalStatus | null) {
           throw new Error("The USDC approval was not completed.");
         guard(id, account);
       }
+      // Refresh after approval so wallet delays cannot silently reuse an old quote/receipt.
+      setPhase("Verifying your saved spell…");
+      const acknowledged = await uploadSpell();
+      if (acknowledged.commitment.toLowerCase() !== commitment.toLowerCase())
+        throw new Error("The saved spell does not match this submission.");
+      const intakeReceipt = {
+        expiresAt: BigInt(acknowledged.receipt.expiresAt),
+        signature: acknowledged.receipt.signature as Hex
+      };
+      guard(id, account);
       setPhase("Confirm your spell submission…");
       const data = fresh.competition
         ? encodeFunctionData({
@@ -234,13 +251,14 @@ export function usePortals(status: ActivePortalStatus | null) {
             args: [
               admission,
               fresh.competition.address as Address,
-              fresh.competition.admissionHash as Hex
+              fresh.competition.admissionHash as Hex,
+              intakeReceipt
             ]
           })
         : encodeFunctionData({
             abi: portalGradingAbi,
             functionName: "admit",
-            args: [admission]
+            args: [admission, intakeReceipt]
           });
       let hash: Hex;
       if (fresh.competition) {
@@ -252,7 +270,8 @@ export function usePortals(status: ActivePortalStatus | null) {
           args: [
             admission,
             fresh.competition.address as Address,
-            fresh.competition.admissionHash as Hex
+            fresh.competition.admissionHash as Hex,
+            intakeReceipt
           ]
         });
         guard(id, account);
@@ -266,7 +285,7 @@ export function usePortals(status: ActivePortalStatus | null) {
           address: fresh.deployment.grading as Address,
           abi: portalGradingAbi,
           functionName: "admit",
-          args: [admission]
+          args: [admission, intakeReceipt]
         });
         guard(id, account);
         hash = await signer.writeContract({

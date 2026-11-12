@@ -37,6 +37,11 @@ async function main() {
     throw new Error("Configure exact portal frontend origins.");
   const runtime = await createPortalRuntime();
   try {
+    if (!runtime.intake)
+      throw new Error(
+        "Configure a dedicated portal intake signer before accepting spells."
+      );
+    await runtime.intake.assertAuthority(runtime.chain);
     await access(runtime.assets.directory, constants.R_OK | constants.X_OK);
     await runtime.ledger.cursor();
     await runtime.store.cursor();

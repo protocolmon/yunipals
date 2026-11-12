@@ -11,6 +11,7 @@ import {YunipalMonsters} from "../src/YunipalMonsters.sol";
 import {PortalCollection} from "../src/PortalCollection.sol";
 import {PortalRegistry} from "../src/PortalRegistry.sol";
 import {PortalGrading} from "../src/PortalGrading.sol";
+import {PortalGradingValidator} from "../src/PortalGradingValidator.sol";
 import {PortalGradingCompetition} from "../src/PortalGradingCompetition.sol";
 import {PortalGates} from "../src/PortalGates.sol";
 import {PortalRules} from "../src/PortalRules.sol";
@@ -99,6 +100,7 @@ contract PortalsTest is Test {
     address private constant BOB = address(0xb0b);
     address private constant AI_WALLET = address(0xa100);
     address private constant PORTAL_WALLET = address(0xb100);
+    uint256 private constant INTAKE_KEY = 0x1A7A;
     bytes32 private constant RUBRIC = keccak256("rubric-v1");
     bytes32 private constant MODELS = keccak256("models-v1");
     bytes32 private constant INPUT = keccak256("original image");
@@ -234,6 +236,7 @@ contract PortalsTest is Test {
         usdc.mint(ALICE, 100_000_000);
         vm.prank(ALICE);
         usdc.approve(address(grading), type(uint256).max);
+        grading.grantRole(grading.INTAKE_ROLE(), vm.addr(INTAKE_KEY));
         _rotate();
     }
 
@@ -270,10 +273,30 @@ contract PortalsTest is Test {
         );
     }
 
+    function _receipt(PortalGrading.Admission memory a) private returns (PortalGradingValidator.Receipt memory) {
+        return _receiptFor(a, address(0), bytes32(0), ALICE);
+    }
+
+    function _receiptFor(PortalGrading.Admission memory a, address pool, bytes32 quote, address submitter)
+        private returns (PortalGradingValidator.Receipt memory r)
+    {
+        r.expiresAt = uint64(block.timestamp + 300);
+        bytes32 domain = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256("YunipalsPortalIntake"), keccak256("1"), block.chainid, address(grading)
+        ));
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domain, keccak256(abi.encode(
+            keccak256("StoredSpell(address submitter,bytes32 admissionHash,address competition,bytes32 competitionQuote,uint64 expiresAt)"),
+            submitter, keccak256(abi.encode(a)), pool, quote, r.expiresAt
+        ))));
+        (uint8 v, bytes32 rr, bytes32 ss) = vm.sign(INTAKE_KEY, digest);
+        r.signature = abi.encodePacked(rr, ss, v);
+    }
+
     function _admit() private returns (uint256 id) {
         PortalGrading.Admission memory admission = _admission();
         vm.prank(ALICE);
-        id = grading.admit(admission);
+        id = grading.admit(admission, _receipt(admission));
     }
 
     function _result(uint256 id, bool copied) private view returns (PortalGrading.Result memory result) {
@@ -298,7 +321,7 @@ contract PortalsTest is Test {
         uint256 balance = usdc.balanceOf(ALICE);
         vm.expectRevert("portal window closed or changed");
         vm.prank(ALICE);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         assertEq(usdc.balanceOf(ALICE), balance);
     }
 
@@ -383,7 +406,7 @@ contract PortalsTest is Test {
         PortalGrading.Admission memory admission = _admission();
         vm.expectRevert("card has pending job");
         vm.prank(ALICE);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         grading.complete(id, _result(id, false));
         uint256 second = _admit();
         PortalGrading.Request memory request = grading.getRequest(second);
@@ -399,11 +422,11 @@ contract PortalsTest is Test {
         grading.setPaymentPolicy(1, 300_000, 245_000, AI_WALLET);
         vm.expectRevert("price policy changed");
         vm.prank(ALICE);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         admission.paymentVersion = 2;
         vm.expectRevert("fee exceeds quote");
         vm.prank(ALICE);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         assertEq(usdc.balanceOf(ALICE), 100_000_000);
         assertEq(grading.nonces(ALICE), 0);
     }
@@ -759,7 +782,7 @@ contract PortalsTest is Test {
         PortalGrading.Admission memory admission = _admission();
         vm.expectRevert("incorrect portal deposit");
         vm.prank(ALICE);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         assertEq(usdc.balanceOf(AI_WALLET), 0);
         assertEq(usdc.balanceOf(ALICE), 100_000_000);
         assertEq(grading.totalPortalLiability(), 0);
@@ -773,7 +796,7 @@ contract PortalsTest is Test {
         admission.paymentVersion = 2;
         admission.maximumFee = 0;
         vm.prank(ALICE);
-        uint256 job = grading.admit(admission);
+        uint256 job = grading.admit(admission, _receipt(admission));
         assertEq(usdc.balanceOf(ALICE), 100_000_000);
         _claim(admission.portalId, ALICE);
         grading.complete(job, _result(job, false));
@@ -793,7 +816,7 @@ contract PortalsTest is Test {
         admission.paymentVersion = 2;
         admission.maximumFee = 500_001;
         vm.prank(ALICE);
-        uint256 second = grading.admit(admission);
+        uint256 second = grading.admit(admission, _receipt(admission));
         assertEq(grading.totalPortalLiability(), 745_000);
         assertEq(usdc.balanceOf(address(grading)), 745_000);
         _claim(firstPortal, ALICE);
@@ -827,7 +850,7 @@ contract PortalsTest is Test {
         admission.maximumFee = 990_000;
         uint256 before = usdc.balanceOf(ALICE);
         vm.prank(ALICE);
-        uint256 id = grading.admitCompetition(admission, address(pool), rules);
+        uint256 id = grading.admitCompetition(admission, address(pool), rules, _receiptFor(admission, address(pool), rules, ALICE));
         assertEq(before - usdc.balanceOf(ALICE), 990_000);
         assertEq(usdc.balanceOf(AI_WALLET), 245_000);
         assertEq(grading.claimable(admission.portalId), 245_000);
@@ -853,7 +876,7 @@ contract PortalsTest is Test {
         for(uint256 i; i<111; ++i) {
             PortalGrading.Admission memory a=_admission(); a.maximumFee=990_000;
             vm.prank(ALICE);
-            uint256 id=grading.admitCompetition(a,address(pool),quote);
+            uint256 id=grading.admitCompetition(a, address(pool), quote, _receiptFor(a, address(pool), quote, ALICE));
             grading.complete(id,_result(id,false));
         }
         PortalGrading.Admission memory next=_admission(); next.maximumFee=990_000;
@@ -861,18 +884,18 @@ contract PortalsTest is Test {
         uint256 portalBalance=grading.totalPortalLiability();
         bytes32 waiting=pool.admissionHash();
         vm.prank(ALICE); vm.expectRevert("next theme pending");
-        grading.admitCompetition(next,address(pool),waiting);
+        grading.admitCompetition(next, address(pool), waiting, _receiptFor(next, address(pool), waiting, ALICE));
         assertEq(usdc.balanceOf(ALICE),balance);
         assertEq(pool.totalLiability(),55_500_000);
         assertEq(grading.totalPortalLiability(),portalBalance);
         assertEq(grading.requestCount(),111);
         pool.publishTheme(2,pool.themeSourcesHash(2),keccak256("a"),keccak256("p"),"Guardians","Create your own guardian.","https://example.test/theme");
         vm.prank(ALICE); vm.expectRevert(PortalGrading.CompetitionQuote.selector);
-        grading.admitCompetition(next,address(pool),quote);
+        grading.admitCompetition(next, address(pool), quote, _receiptFor(next, address(pool), quote, ALICE));
         assertEq(usdc.balanceOf(ALICE),balance);
         bytes32 fresh=pool.admissionHash();
         vm.prank(ALICE);
-        grading.admitCompetition(next,address(pool),fresh);
+        grading.admitCompetition(next, address(pool), fresh, _receiptFor(next, address(pool), fresh, ALICE));
         assertEq(pool.getBatch(2).funded,1);
         assertEq(balance-usdc.balanceOf(ALICE),990_000);
     }
@@ -883,21 +906,21 @@ contract PortalsTest is Test {
         PortalGrading.Admission memory admission = _admission();
         uint256 before = usdc.balanceOf(ALICE);
         vm.expectRevert(PortalGrading.InternalAdmissionOnly.selector);
-        grading.admitFor(admission, ALICE);
+        grading.admitFor(admission, ALICE, _receipt(admission));
         vm.prank(ALICE);
         vm.expectRevert(PortalGrading.CompetitionQuote.selector);
-        grading.admit(admission);
+        grading.admit(admission, _receipt(admission));
         vm.prank(ALICE);
         vm.expectRevert("fee exceeds quote");
-        grading.admitCompetition(admission, address(pool), rules);
+        grading.admitCompetition(admission, address(pool), rules, _receiptFor(admission, address(pool), rules, ALICE));
         admission.maximumFee = 990_000;
         vm.prank(ALICE);
         vm.expectRevert(PortalGrading.CompetitionQuote.selector);
-        grading.admitCompetition(admission, address(pool), bytes32(0));
+        grading.admitCompetition(admission, address(pool), bytes32(0), _receiptFor(admission, address(pool), bytes32(0), ALICE));
         usdc.setShortRecipient(address(pool));
         vm.prank(ALICE);
         vm.expectRevert(PortalGrading.CompetitionDeposit.selector);
-        grading.admitCompetition(admission, address(pool), rules);
+        grading.admitCompetition(admission, address(pool), rules, _receiptFor(admission, address(pool), rules, ALICE));
         assertEq(usdc.balanceOf(ALICE), before);
         assertEq(grading.requestCount(), 0);
         assertEq(pool.entryCount(), 0);
@@ -920,7 +943,7 @@ contract PortalsTest is Test {
         PortalGrading.Admission memory admission = _admission();
         admission.maximumFee = 990_000;
         vm.prank(ALICE);
-        uint256 id = grading.admitCompetition(admission, address(pool), rules);
+        uint256 id = grading.admitCompetition(admission, address(pool), rules, _receiptFor(admission, address(pool), rules, ALICE));
         vm.expectRevert(PortalGrading.CompetitionPolicyFrozen.selector);
         grading.configureRubric(keccak256("next"), MODELS, 20, "ipfs://next-rubric");
         vm.mockCallRevert(
@@ -933,6 +956,103 @@ contract PortalsTest is Test {
         vm.prank(BOB);
         pool.recordCompleted(id);
         assertEq(pool.getBatch(1).completed, 1);
+    }
+
+    function testIntakeRejectsMissingExpiredAndRevokedReceiptsWithoutCharging() public {
+        PortalGrading.Admission memory a = _admission();
+        uint256 balance = usdc.balanceOf(ALICE);
+        PortalGradingValidator.Receipt memory missing;
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admit(a, missing);
+        PortalGradingValidator.Receipt memory r = _receipt(a);
+        vm.warp(block.timestamp + 301);
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admit(a, r);
+        r = _receipt(a);
+        grading.revokeRole(grading.INTAKE_ROLE(), vm.addr(INTAKE_KEY));
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admit(a, r);
+        assertEq(usdc.balanceOf(ALICE), balance);
+        assertEq(grading.requestCount(), 0);
+        assertEq(grading.totalPortalLiability(), 0);
+    }
+
+    function testIntakeBindsEveryAdmissionFieldAndWallet() public {
+        PortalGrading.Admission memory original = _admission();
+        PortalGradingValidator.Receipt memory r = _receipt(original);
+        uint256 balance = usdc.balanceOf(ALICE);
+        for (uint256 i; i < 10; ++i) {
+            PortalGrading.Admission memory a = abi.decode(abi.encode(original), (PortalGrading.Admission));
+            if (i == 0) a.tokenId++;
+            if (i == 1) a.portalId++;
+            if (i == 2) a.roundId++;
+            if (i == 3) a.paymentVersion++;
+            if (i == 4) a.artVersion++;
+            if (i == 5) a.rubricId = keccak256("other rubric");
+            if (i == 6) a.maximumFee++;
+            if (i == 7) a.inputHash = keccak256("other image");
+            if (i == 8) a.spellCommitment = keccak256("other spell");
+            if (i == 9) a.nonce++;
+            vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+            vm.prank(ALICE); grading.admit(a, r);
+        }
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(BOB); grading.admit(original, r);
+        vm.chainId(block.chainid + 1);
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admit(original, r);
+        assertEq(usdc.balanceOf(ALICE), balance);
+        assertEq(grading.requestCount(), 0);
+    }
+
+    function testIntakeBindsCompetitionAndCannotReplayOrBypass() public {
+        PortalGrading.Admission memory a = _admission();
+        PortalGradingValidator.Receipt memory legacy = _receipt(a);
+        PortalGradingCompetition pool = _competition();
+        a.maximumFee = 990_000;
+        bytes32 quote = pool.admissionHash();
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admitCompetition(a, address(pool), quote, legacy);
+        PortalGradingValidator.Receipt memory wrong = _receiptFor(a, address(pool), bytes32(0), ALICE);
+        vm.expectRevert(PortalGradingValidator.InvalidIntakeReceipt.selector);
+        vm.prank(ALICE); grading.admitCompetition(a, address(pool), quote, wrong);
+        PortalGradingValidator.Receipt memory r = _receiptFor(a, address(pool), quote, ALICE);
+        vm.expectRevert(PortalGrading.InternalAdmissionOnly.selector);
+        vm.prank(ALICE); grading.admitFor(a, ALICE, r);
+        vm.prank(ALICE);
+        (bool bypass,) = address(grading).call(abi.encodeWithSignature(
+            "admitCompetition((uint256,uint256,uint64,uint64,uint64,bytes32,uint256,bytes32,bytes32,uint256),address,bytes32)", a, address(pool), quote
+        ));
+        assertFalse(bypass);
+        vm.prank(ALICE); uint256 id = grading.admitCompetition(a, address(pool), quote, r);
+        grading.complete(id, _result(id, false));
+        vm.expectRevert(bytes("invalid spell or nonce"));
+        vm.prank(ALICE); grading.admitCompetition(a, address(pool), quote, r);
+        assertEq(grading.requestCount(), 1);
+        assertEq(pool.entryCount(), 1);
+        assertEq(usdc.balanceOf(address(pool)), 500_000);
+    }
+
+    function testCompetitionSpansIndependentElevenMinutePortals() public {
+        PortalGradingCompetition pool = _competition();
+        bytes32 quote = pool.admissionHash();
+        PortalGrading.Admission memory a = _admission(); a.maximumFee = 990_000;
+        vm.prank(ALICE);
+        uint256 first = grading.admitCompetition(a, address(pool), quote, _receiptFor(a, address(pool), quote, ALICE));
+        grading.complete(first, _result(first, false));
+        (PortalRegistry.Round memory previous,) = registry.activePortal();
+        vm.warp(previous.endsAt);
+        uint256 next = _rotate();
+        assertTrue(next != previous.portalId);
+        a = _admission(); a.maximumFee = 990_000;
+        vm.prank(ALICE);
+        uint256 second = grading.admitCompetition(a, address(pool), quote, _receiptFor(a, address(pool), quote, ALICE));
+        assertEq(pool.batchOf(pool.entryForRequest(first)), 1);
+        assertEq(pool.batchOf(pool.entryForRequest(second)), 1);
+        assertEq(pool.getBatch(1).funded, 2);
+        assertTrue(pool.admissionsOpen());
+        (PortalRegistry.Round memory current,) = registry.activePortal();
+        assertEq(current.endsAt - current.startsAt, 660);
     }
 
     function testFuzzCircularRangesHaveExactCoverage(uint16 startSeed, uint8 lengthSeed) public {

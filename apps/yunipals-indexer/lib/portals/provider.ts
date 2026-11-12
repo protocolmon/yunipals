@@ -13,6 +13,7 @@ import {
   resolvePortalGradingCase
 } from "./prompts.js";
 import { applyPortalGradingCase } from "./grading.js";
+import { assertSafePortalTheme } from "./theme-validation.js";
 
 const score = z.number().int().min(1).max(100);
 const gradingSchema = z
@@ -388,6 +389,7 @@ export class OpenAIPortalAI implements PortalAI {
       )
     )
       throw new Error("Theme extraction omitted a winning spell.");
+    assertSafePortalTheme(theme);
     return { ...theme, model: result.model, usage: result.usage };
   }
 

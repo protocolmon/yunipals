@@ -17,6 +17,89 @@ export type {
 } from "./portalGrading";
 
 export const portalWindowSeconds = 660;
+export const portalIntakeLifetimeSeconds = 300;
+export const portalIntakeRole = keccak256(toHex("INTAKE_ROLE"));
+
+export type PortalAdmissionData = {
+  tokenId: bigint;
+  portalId: bigint;
+  roundId: bigint;
+  paymentVersion: bigint;
+  artVersion: bigint;
+  rubricId: Hex;
+  maximumFee: bigint;
+  inputHash: Hex;
+  spellCommitment: Hex;
+  nonce: bigint;
+};
+
+/** Matches Solidity keccak256(abi.encode(PortalGrading.Admission)). */
+export function portalAdmissionHash(admission: PortalAdmissionData): Hex {
+  return keccak256(
+    encodeAbiParameters(
+      [
+        { type: "uint256" },
+        { type: "uint256" },
+        { type: "uint64" },
+        { type: "uint64" },
+        { type: "uint64" },
+        { type: "bytes32" },
+        { type: "uint256" },
+        { type: "bytes32" },
+        { type: "bytes32" },
+        { type: "uint256" }
+      ],
+      [
+        admission.tokenId,
+        admission.portalId,
+        admission.roundId,
+        admission.paymentVersion,
+        admission.artVersion,
+        admission.rubricId,
+        admission.maximumFee,
+        admission.inputHash,
+        admission.spellCommitment,
+        admission.nonce
+      ]
+    )
+  );
+}
+
+export function portalIntakeSigningData(input: {
+  chainId: number;
+  grading: Address;
+  submitter: Address;
+  admissionHash: Hex;
+  competition: Address;
+  competitionQuote: Hex;
+  expiresAt: bigint;
+}) {
+  return {
+    domain: {
+      name: "YunipalsPortalIntake",
+      version: "1",
+      chainId: input.chainId,
+      verifyingContract: input.grading
+    },
+    primaryType: "StoredSpell" as const,
+    types: {
+      StoredSpell: [
+        { name: "submitter", type: "address" },
+        { name: "admissionHash", type: "bytes32" },
+        { name: "competition", type: "address" },
+        { name: "competitionQuote", type: "bytes32" },
+        { name: "expiresAt", type: "uint64" }
+      ]
+    },
+    message: {
+      submitter: input.submitter,
+      admissionHash: input.admissionHash,
+      competition: input.competition,
+      competitionQuote: input.competitionQuote,
+      expiresAt: input.expiresAt
+    }
+  } as const;
+}
 export const portalEconomicsVersion = 2;
 export const portalColorNames = [
   "Yellow",

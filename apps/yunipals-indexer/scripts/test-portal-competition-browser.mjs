@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { PortalThemeWorker } from "../lib/portals/theme-worker.js";
 import {
   portalModels,
-  portalSpellCommitment
+  portalSpellCommitment,
+  portalAdmissionHash
 } from "@protopals/yunipals-market-core/portals";
 import { encodeFunctionData, erc20Abi, parseAbi, zeroHash } from "viem";
 import {
@@ -27,7 +28,8 @@ export async function verifyCompetitionBrowser({
   ledger,
   alice,
   store,
-  assets
+  assets,
+  intake
 }) {
   const rpcCall = async (method, params = []) => {
     const response = await fetch(rpc, {
@@ -70,31 +72,48 @@ export async function verifyCompetitionBrowser({
       salt: zeroHash
     };
     const commitment = portalSpellCommitment(spell);
-    if (id === 2n || id === 111n)
-      await store.saveSpell({
-        ...spell,
-        commitment,
-        submitter: bob.toLowerCase(),
-        tokenId: tokenId.toString(),
-        artVersion: input[1].toString(),
-        nonce: nonce.toString()
-      });
+    await store.saveSpell({
+      ...spell,
+      commitment,
+      submitter: bob.toLowerCase(),
+      tokenId: tokenId.toString(),
+      artVersion: input[1].toString(),
+      nonce: nonce.toString()
+    });
+    const admission = {
+      tokenId,
+      portalId: active.round.portalId,
+      roundId: active.round.id,
+      paymentVersion: active.portal.payment.version,
+      artVersion: input[1],
+      rubricId: active.rubricId,
+      maximumFee: 990000n,
+      inputHash: input[0].hash,
+      spellCommitment: commitment,
+      nonce: nonce++
+    };
+    const current = await chain.active();
+    const receipt = await intake.issue(chain, store, {
+      ...spell,
+      commitment,
+      expiresAt: BigInt(current.now + 300),
+      admissionHash: portalAdmissionHash(admission)
+    });
     await send(grading, portalGradingAbi, "admitCompetition", [
-      {
-        tokenId,
-        portalId: active.round.portalId,
-        roundId: active.round.id,
-        paymentVersion: active.portal.payment.version,
-        artVersion: input[1],
-        rubricId: active.rubricId,
-        maximumFee: 990000n,
-        inputHash: input[0].hash,
-        spellCommitment: commitment,
-        nonce: nonce++
-      },
+      admission,
       pool,
-      (await chain.active()).competition.admissionHash
+      current.competition.admissionHash,
+      receipt
     ]);
+    // Model the ingestor's confirmed accepted-job record; these uploads are no longer unsubmitted.
+    const accepted = await chain.request(id);
+    await store.enqueue({
+      requestId: id.toString(),
+      commitment,
+      binding: await chain.binding(id),
+      acceptedBlock: accepted.acceptedBlock.toString(),
+      acceptedAt: Number(accepted.acceptedAt)
+    });
     return id;
   }
   async function complete(id, score) {

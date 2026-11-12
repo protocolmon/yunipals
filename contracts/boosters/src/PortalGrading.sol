@@ -15,6 +15,7 @@ import {PortalCollection} from "./PortalCollection.sol";
 import {PortalRegistry} from "./PortalRegistry.sol";
 import {PortalGates} from "./PortalGates.sol";
 import {PortalGradingCompetition} from "./PortalGradingCompetition.sol";
+import {PortalGradingValidator} from "./PortalGradingValidator.sol";
 
 contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -25,7 +26,9 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
     error InternalAdmissionOnly();
     error CompetitionNotificationGas();
     bytes32 public constant GRADER_ROLE = keccak256("GRADER_ROLE");
+    bytes32 public constant INTAKE_ROLE = keccak256("INTAKE_ROLE");
     bytes32 public constant SPELL_DOMAIN = keccak256("YunipalsPortalSpellV1");
+    PortalGradingValidator private immutable _validator = new PortalGradingValidator();
 
     struct Asset {
         string uri;
@@ -391,31 +394,38 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         );
     }
 
-    function admit(Admission calldata admission) external returns (uint256 id) {
+    function intakeVersion() external pure returns (uint256) { return 1; }
+
+    function admit(Admission calldata admission, PortalGradingValidator.Receipt calldata receipt)
+        external returns (uint256 id)
+    {
         require(address(competition) == address(0), CompetitionQuote());
-        return this.admitFor(admission, msg.sender);
+        return this.admitFor(admission, msg.sender, receipt);
     }
 
     function admitCompetition(
         Admission calldata admission,
         address expectedCompetition,
-        bytes32 expectedRules
+        bytes32 expectedRules,
+        PortalGradingValidator.Receipt calldata receipt
     ) external returns (uint256 id) {
         require(
             expectedCompetition != address(0) && expectedCompetition == address(competition),
             CompetitionQuote()
         );
         require(expectedRules == competition.admissionHash(), CompetitionQuote());
-        return this.admitFor(admission, msg.sender);
+        return this.admitFor(admission, msg.sender, receipt);
     }
 
     /// @dev Self-call keeps one admission implementation in deployed bytecode and preserves the payer.
-    function admitFor(Admission calldata admission, address submitter)
+    function admitFor(Admission calldata admission, address submitter, PortalGradingValidator.Receipt calldata receipt)
         external
         nonReentrant
         returns (uint256 id)
     {
         require(msg.sender == address(this), InternalAdmissionOnly());
+        _validator.verify(submitter, keccak256(abi.encode(admission)), address(competition),
+            address(competition) == address(0) ? bytes32(0) : competition.admissionHash(), receipt);
         require(!admissionsPaused, "admission paused");
         require(registry.collection().claimController() == address(this), "claim controller unbound");
         (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
@@ -503,20 +513,7 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         Rubric storage policy = _rubrics[request.rubricId];
         require(result.requestBinding == this.requestBinding(id), "request binding mismatch");
         require(result.modelsHash == policy.modelPolicy, "model policy mismatch");
-        require(result.reportHash != bytes32(0), "missing report hash");
-        _validateURI(result.reportURI);
-        _validateURI(result.spellURI);
-        _validateAsset(result.artwork);
-        for (uint256 i; i < 4; ++i) {
-            require(result.scores[i] >= 1 && result.scores[i] <= 100, "invalid score");
-        }
-        require(result.baseCreativity >= 1 && result.baseCreativity <= 100, "invalid base creativity");
-        uint8 creativity = result.baseCreativity;
-        if (result.copied) {
-            require(result.evidenceHash != bytes32(0), "missing copying evidence");
-            if (creativity > policy.copyCap) creativity = policy.copyCap;
-        }
-        require(result.scores[0] == creativity, "originality cap mismatch");
+        _validator.validateResult(abi.encode(result), policy.copyCap);
         _results[id] = result;
         _results[id].completedAt = uint64(block.timestamp);
         completedBy[id] = msg.sender;
@@ -551,21 +548,11 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
             artVersion[tokenId] == 0 ? "" : string.concat(metadataBaseURI, Strings.toString(tokenId), ".json");
     }
 
-    function _validateAsset(Asset memory asset) private pure {
-        require(asset.hash != bytes32(0), "missing asset hash");
-        _validateURI(asset.uri);
+    function _validateAsset(Asset memory asset) private view {
+        _validator.validateAsset(asset.uri, asset.hash);
     }
 
-    function _validateURI(string memory value) private pure {
-        bytes memory uri = bytes(value);
-        require(uri.length >= 8 && uri.length <= 1024, "invalid URI length");
-        bool https = uri.length > 8 && bytes8(uri) == bytes8("https://");
-        bool ipfs = bytes7(uri) == bytes7("ipfs://");
-        require(https || ipfs, "URI scheme");
-        for (uint256 i; i < uri.length; ++i) {
-            require(
-                uint8(uri[i]) > 32 && uint8(uri[i]) < 127 && uri[i] != '"' && uri[i] != "\\", "URI character"
-            );
-        }
+    function _validateURI(string memory value) private view {
+        _validator.validateURI(value);
     }
 }

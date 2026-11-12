@@ -108,6 +108,7 @@ describe("reviewable portal launch calls", () => {
     grading: address,
     cards: address,
     grader: address,
+    intakeSigner: "0x3333333333333333333333333333333333333333" as const,
     aiRecipient: "0x2222222222222222222222222222222222222222" as const,
     rainbowURI: "ipfs://rainbow/image.png",
     rainbowHash: hash,

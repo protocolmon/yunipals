@@ -4,6 +4,7 @@ import { PortalAssets } from "./assets.js";
 import { PortalLedgerStore } from "./ledger-store.js";
 import { PortalStore } from "./store.js";
 import { portalDatabaseOptions } from "./database.js";
+import { configuredPortalIntake } from "./intake.js";
 
 export async function createPortalRuntime(
   env: NodeJS.ProcessEnv = process.env
@@ -36,9 +37,10 @@ export async function createPortalRuntime(
     env.PORTALS_IPFS_GATEWAY,
     env.PORTALS_ASSET_SHARED_READ === "true"
   );
-  return { chain, store, assets, ledger, db, close: () => db.end() };
+  const intake = configuredPortalIntake(env);
+  return { chain, store, assets, ledger, intake, db, close: () => db.end() };
 }
 export type PortalRuntime = Omit<
   Awaited<ReturnType<typeof createPortalRuntime>>,
-  "db"
->;
+  "db" | "intake"
+> & { intake?: ReturnType<typeof configuredPortalIntake> };

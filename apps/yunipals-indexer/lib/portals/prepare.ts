@@ -70,6 +70,7 @@ export function preparePortalSetup(input: {
   grading: Address;
   cards: Address;
   grader: Address;
+  intakeSigner: Address;
   aiRecipient: Address;
   rainbowURI: string;
   rainbowHash: Hex;
@@ -77,6 +78,11 @@ export function preparePortalSetup(input: {
   baseArt: z.infer<typeof launchArtworkSchema>;
   competition?: Address;
 }) {
+  if (
+    /^0x0{40}$/i.test(input.intakeSigner) ||
+    input.intakeSigner.toLowerCase() === input.grader.toLowerCase()
+  )
+    throw new Error("Use a separate nonzero portal intake signer.");
   if (
     /^0x0{40}$/i.test(input.aiRecipient) ||
     input.aiRecipient.toLowerCase() === input.grading.toLowerCase()
@@ -173,6 +179,15 @@ export function preparePortalSetup(input: {
       abi: portalGradingAbi,
       functionName: "grantRole",
       args: [keccak256(toHex("GRADER_ROLE")), input.grader]
+    })
+  );
+  add(
+    "Authorize dedicated private-spell intake signer",
+    input.grading,
+    encodeFunctionData({
+      abi: portalGradingAbi,
+      functionName: "grantRole",
+      args: [keccak256(toHex("INTAKE_ROLE")), input.intakeSigner]
     })
   );
   if (input.competition)

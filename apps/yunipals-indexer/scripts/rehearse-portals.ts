@@ -1,3 +1,5 @@
+import { configuredPortalIntake } from "../lib/portals/intake.js";
+import { portalAdmissionHash } from "@protopals/yunipals-market-core/portals";
 /** Isolated Base Sepolia rehearsal. No production addresses or operator paths belong here. */
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
@@ -87,6 +89,11 @@ async function main() {
   const player = account("PORTALS_REHEARSAL_PLAYER_PRIVATE_KEY");
   const buyer = account("PORTALS_REHEARSAL_BUYER_PRIVATE_KEY");
   const grader = account("PORTALS_GRADER_PRIVATE_KEY");
+  const intake = configuredPortalIntake(env);
+  assert(
+    intake,
+    "Configure a separate portal intake signer for this rehearsal."
+  );
   assert.equal(
     grader.address.toLowerCase(),
     required("PORTALS_GRADER_ADDRESS").toLowerCase(),
@@ -345,6 +352,11 @@ async function main() {
   await call("authorize-grader", grading, portalGradingAbi, "grantRole", [
     keccak256(toHex("GRADER_ROLE")),
     grader.address
+  ]);
+
+  await call("authorize-intake", grading, portalGradingAbi, "grantRole", [
+    keccak256(toHex("INTAKE_ROLE")),
+    intake.account.address
   ]);
   const rubricId = keccak256(toHex(portalModels.rubric));
   await call("configure-rubric", grading, portalGradingAbi, "configureRubric", [
@@ -634,6 +646,7 @@ async function main() {
         store,
         assets,
         ledger: ledgerStore,
+        intake,
         close: async () => {}
       })
     });
@@ -851,6 +864,17 @@ async function main() {
           nonce: BigInt(stored.nonce)
         };
       }
+      const intakeReceipt = state.transactions[label]
+        ? { expiresAt: 0n, signature: "0x" as Hex }
+        : await intake!.issue(chain, store, {
+            submitter: signer.address,
+            tokenId: admission.tokenId,
+            artVersion: admission.artVersion,
+            nonce: admission.nonce,
+            commitment: admission.spellCommitment,
+            expiresAt: (await client.getBlock()).timestamp + 300n,
+            admissionHash: portalAdmissionHash(admission)
+          });
       if (!state.transactions[label]) {
         await assert.rejects(
           client.simulateContract({
@@ -858,7 +882,7 @@ async function main() {
             address: grading,
             abi: portalGradingAbi,
             functionName: "admit",
-            args: [{ ...admission, tokenId: wrong!.tokenId! }]
+            args: [{ ...admission, tokenId: wrong!.tokenId! }, intakeReceipt]
           })
         );
         assert.equal(
@@ -883,7 +907,7 @@ async function main() {
         grading,
         portalGradingAbi,
         "admit",
-        [admission],
+        [admission, intakeReceipt],
         signer
       );
       const event = parseEventLogs({

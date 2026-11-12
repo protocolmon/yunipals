@@ -32,6 +32,7 @@ import { createServer } from "../../yunipals-home-web/node_modules/vite/dist/nod
 import { PortalAssets } from "../lib/portals/assets.js";
 import { PortalLedgerStore } from "../lib/portals/ledger-store.js";
 import { PortalLedger } from "../lib/portals/ledger.js";
+import { PortalIntakeSigner } from "../lib/portals/intake.js";
 import { PortalStore } from "../lib/portals/store.js";
 import { PortalChain } from "../lib/portals/chain.js";
 import { PortalWorker } from "../lib/portals/worker.js";
@@ -55,6 +56,11 @@ const admin = privateKeyToAccount(
 );
 const alice = privateKeyToAccount(
   "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+);
+const intake = new PortalIntakeSigner(
+  privateKeyToAccount(
+    keccak256(toHex("local fixture intake key, never use on a public network"))
+  )
 );
 const bob = "0x3333333333333333333333333333333333333333" as Address;
 const anvil = spawn(
@@ -252,6 +258,10 @@ try {
     keccak256(toHex("GRADER_ROLE")),
     admin.address
   ]);
+  await call(grading, "PortalGrading", "grantRole", [
+    keccak256(toHex("INTAKE_ROLE")),
+    intake.account.address
+  ]);
   await call(grading, "PortalGrading", "registerBaseArt", [[0], [original]]);
   await call(grading, "PortalGrading", "configureRubric", [
     keccak256(toHex(portalModels.rubric)),
@@ -326,6 +336,7 @@ try {
       assets,
       store,
       ledger: ledgerStore,
+      intake,
       close: async () => {}
     })
   });
@@ -372,6 +383,7 @@ try {
         image,
         root,
         alice,
+        intake,
         aliceWallet,
         publicClient,
         chain,
@@ -422,6 +434,7 @@ try {
       bob,
       ledger,
       alice,
+      intake,
       store,
       assets
     });

@@ -6,6 +6,13 @@ const uint = z.string().regex(/^\d+$/);
 const address = z.string().refine((value) => isAddress(value));
 const hash = z.string().regex(/^0x[0-9a-fA-F]{64}$/);
 const asset = z.object({ uri: z.string(), hash });
+export const portalSpellReceiptSchema = z.object({
+  commitment: hash,
+  receipt: z.object({
+    expiresAt: uint,
+    signature: z.string().regex(/^0x[0-9a-fA-F]{130}$/)
+  })
+});
 const gate = z.object({
   sequenceStart: z.number().int().min(0).max(263),
   sequenceLength: z.union([z.literal(1), z.literal(10), z.literal(100)]),

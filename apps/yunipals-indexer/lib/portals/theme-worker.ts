@@ -21,6 +21,7 @@ import type { PortalChain } from "./chain.js";
 import type { PortalStore } from "./store.js";
 import type { PortalAssets } from "./assets.js";
 import type { OpenAIPortalAI } from "./provider.js";
+import { validatedThemeOutput } from "./theme-validation.js";
 
 export type ThemePublication = {
   pool: Address;
@@ -140,7 +141,14 @@ export class PortalThemeWorker {
     }, 60000);
     heartbeat.unref();
     try {
-      const sources = [];
+      const sources: {
+        entryId: string;
+        requestId: string;
+        spell: string;
+        commitment: Hex;
+        reportHash: Hex;
+        requestBinding: Hex;
+      }[] = [];
       for (const id of previous.leaders) {
         const entry = await client.readContract({
           address: pool,
@@ -181,14 +189,13 @@ export class PortalThemeWorker {
         job.progress.sourceDigest !== sourceDigest
       )
         throw new Error("Winning source evidence changed.");
-      if (!job.progress.output) {
-        job.progress.output = await this.ai.theme(sources);
-        job.progress.sourceDigest = sourceDigest;
-        await this.jobs.save(job);
-      }
-      const output = job.progress.output as Awaited<
-        ReturnType<OpenAIPortalAI["theme"]>
-      >;
+      job.progress.sourceDigest = sourceDigest;
+      const output = await validatedThemeOutput(
+        job.progress,
+        sources,
+        () => this.ai.theme(sources),
+        () => this.jobs.save(job)
+      );
       const artifact = await this.assets.putJson({
         chainId: this.chain.deployment.chainId,
         pool,

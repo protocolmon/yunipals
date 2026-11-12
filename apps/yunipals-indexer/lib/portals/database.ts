@@ -23,7 +23,7 @@ export function portalDatabaseOptions(env: NodeJS.ProcessEnv): PoolConfig {
   const schema = portalDatabaseSchema(env);
   return {
     connectionString: env.PORTALS_DATABASE_URL,
-    options: `-c search_path=${schema},pg_catalog`,
+    options: `-c search_path=${schema},pg_catalog -c synchronous_commit=on`,
     max: 4,
     connectionTimeoutMillis: 5000,
     statement_timeout: 20000

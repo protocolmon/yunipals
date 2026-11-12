@@ -131,6 +131,10 @@ try {
   const workerStore = new PortalStore(worker, deployment);
   const indexerStore = new PortalLedgerStore(indexer, deployment);
   assert.equal(
+    (await api.query("SHOW synchronous_commit")).rows[0].synchronous_commit,
+    "on"
+  );
+  assert.equal(
     (await api.query("SELECT current_schema() AS schema")).rows[0].schema,
     schema
   );

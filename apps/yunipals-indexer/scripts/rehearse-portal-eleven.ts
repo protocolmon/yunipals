@@ -1,3 +1,5 @@
+import { configuredPortalIntake } from "../lib/portals/intake.js";
+import { portalAdmissionHash } from "@protopals/yunipals-market-core/portals";
 /** Fresh Base Sepolia challenge: 11 actual AI edits/grades and winner-driven settlement. */
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
@@ -104,6 +106,11 @@ async function main() {
   const player = account("PORTALS_REHEARSAL_PLAYER_PRIVATE_KEY");
   const buyer = account("PORTALS_REHEARSAL_BUYER_PRIVATE_KEY");
   const grader = account("PORTALS_GRADER_PRIVATE_KEY");
+  const intake = configuredPortalIntake(env);
+  assert(
+    intake,
+    "Configure a separate portal intake signer for this rehearsal."
+  );
   const signers = [player, buyer, deployer];
   const wallets = {
     deployer: deployer.address,
@@ -403,6 +410,11 @@ async function main() {
     keccak256(toHex("GRADER_ROLE")),
     grader.address
   ]);
+
+  await call("authorize-intake", grading, portalGradingAbi, "grantRole", [
+    keccak256(toHex("INTAKE_ROLE")),
+    intake.account.address
+  ]);
   await call("configure-rubric", grading, portalGradingAbi, "configureRubric", [
     keccak256(toHex(portalModels.rubric)),
     portalModelPolicyHash(),
@@ -640,6 +652,7 @@ async function main() {
       store,
       assets,
       ledger: ledgerStore,
+      intake,
       close: async () => {}
     })
   });
@@ -802,6 +815,12 @@ async function main() {
         spellCommitment: portalSpellCommitment(input),
         nonce: quote.nonce
       };
+      const intakeReceipt = await intake.issue(chain, store, {
+        ...input,
+        commitment: admission.spellCommitment,
+        expiresAt,
+        admissionHash: portalAdmissionHash(admission)
+      });
       await run.observe(label, {
         ...input,
         commitment: admission.spellCommitment,
@@ -812,7 +831,7 @@ async function main() {
         grading,
         portalGradingAbi,
         "admitCompetition",
-        [admission, pool, quote.competition.admissionHash],
+        [admission, pool, quote.competition.admissionHash, intakeReceipt],
         signer
       );
       const event = parseEventLogs({

@@ -1,3 +1,4 @@
+import type { PortalIntakeSigner } from "../lib/portals/intake.js";
 import { PGlite } from "@electric-sql/pglite";
 import { Hono } from "hono";
 import {
@@ -180,7 +181,7 @@ describe("durable portal queue and public archive", () => {
 });
 
 describe("portal API private spell intake", () => {
-  function application(owner = alice.address) {
+  function application(owner = alice.address, intake?: PortalIntakeSigner) {
     const client = {
       getBlock: async () => ({ timestamp: BigInt(now) }),
       verifyTypedData: (input: Parameters<typeof verifyTypedData>[0]) =>
@@ -204,6 +205,7 @@ describe("portal API private spell intake", () => {
         store,
         assets,
         ledger: new PortalLedgerStore(db as never, "test"),
+        intake,
         close: async () => {}
       })
     });
@@ -252,6 +254,42 @@ describe("portal API private spell intake", () => {
       body: JSON.stringify({ ...body, spell: "Changed after signing" })
     });
     expect(bad.status).toBe(400);
+  });
+  it("issues acknowledgement only after storage succeeds and refuses it without a signer", async () => {
+    const issue = vi.fn(
+      async (_chain, saved: PortalStore, input: { commitment: string }) => {
+        expect(await saved.spell(input.commitment)).not.toBeNull();
+        return {
+          expiresAt: BigInt(now + 300),
+          signature: `0x${"12".repeat(65)}`
+        };
+      }
+    );
+    const { app } = application(alice.address, {
+      issue
+    } as unknown as PortalIntakeSigner);
+    const { commitment, ...body } = await signed();
+    const request = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, admissionHash: digest })
+    };
+    vi.spyOn(store, "saveSpell").mockRejectedValueOnce(
+      new Error("Storage write failed")
+    );
+    expect((await app.request("/v1/portals/spells", request)).status).toBe(503);
+    expect(issue).not.toHaveBeenCalled();
+    const success = await app.request("/v1/portals/spells", request);
+    expect(success.status).toBe(200);
+    expect(await success.json()).toMatchObject({
+      commitment,
+      receipt: { expiresAt: String(now + 300) }
+    });
+    expect(issue).toHaveBeenCalledTimes(1);
+    const unconfigured = application().app;
+    expect(
+      (await unconfigured.request("/v1/portals/spells", request)).status
+    ).toBe(503);
   });
   it("rejects an upload from a wallet that no longer owns the card", async () => {
     const { app } = application(bob);

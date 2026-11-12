@@ -52,7 +52,8 @@ const upload = z
     salt: hash,
     expiresAt: uint64,
     signature,
-    requestId: uint.optional()
+    requestId: uint.optional(),
+    admissionHash: hash.optional()
   })
   .strict();
 const json = (value: unknown, status = 200) =>
@@ -233,7 +234,12 @@ export function registerPortalRoutes(
   });
   router.post("/v1/portals/spells", async (c) => {
     const data = upload.parse(await c.req.json());
-    const { chain, store } = await get();
+    const { chain, store, intake } = await get();
+    if (data.admissionHash && (data.requestId || !intake))
+      throw new PortalUserError(
+        "Private spell acknowledgements are unavailable. Please try again later.",
+        503
+      );
     const now = Number((await chain.client.getBlock()).timestamp);
     const expires = Number(data.expiresAt);
     if (expires <= now || expires > now + 900)
@@ -291,7 +297,15 @@ export function registerPortalRoutes(
       spell: data.spell,
       salt: data.salt
     });
-    return json({ commitment });
+    const receipt = data.admissionHash
+      ? await intake!.issue(chain, store, {
+          ...input,
+          commitment,
+          expiresAt: BigInt(data.expiresAt),
+          admissionHash: data.admissionHash as Hex
+        })
+      : undefined;
+    return json({ commitment, ...(receipt ? { receipt } : {}) });
   });
   router.post("/v1/portals/authors/link", async (c) => {
     const data = z
