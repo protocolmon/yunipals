@@ -26,10 +26,20 @@ export class PortalLedger {
     const head = await this.chain.client.getBlockNumber({ cacheTime: 0 });
     if (head < this.confirmations) return;
     const safe = head - this.confirmations;
+    const { collection, grading, registry } = this.chain.deployment;
+    // Initialization events can precede the transaction binding this address.
+    // Resolve the confirmed binding before replaying its earlier history.
+    const competition = await this.chain.client.readContract({
+      address: grading,
+      abi: portalGradingAbi,
+      functionName: "competition",
+      blockNumber: safe
+    });
     let cursor = await this.store.cursor();
     if (
       cursor &&
       ((await this.store.requiresReplay()) ||
+        cursor.competition?.toLowerCase() !== competition.toLowerCase() ||
         (
           await this.chain.client.getBlock({
             blockNumber: BigInt(cursor.block)
@@ -39,7 +49,15 @@ export class PortalLedger {
       // Invalidate public projections immediately, then replay independently of AI jobs.
       const before = this.startBlock - 1n;
       const block = await this.chain.client.getBlock({ blockNumber: before });
-      await this.store.apply([], before.toString(), block.hash, cursor, true);
+      await this.store.apply(
+        [],
+        before.toString(),
+        block.hash,
+        cursor,
+        true,
+        undefined,
+        competition
+      );
       cursor = await this.store.cursor();
     }
     const from = cursor ? BigInt(cursor.block) + 1n : this.startBlock;
@@ -48,15 +66,15 @@ export class PortalLedger {
       from + this.logBlockRange - 1n < safe
         ? from + this.logBlockRange - 1n
         : safe;
-    const { collection, grading, registry } = this.chain.deployment;
-    const competition = await this.chain.client.readContract({
-      address: grading,
-      abi: portalGradingAbi,
-      functionName: "competition",
-      blockNumber: to
-    });
-    const competitionRules =
+    const competitionCode =
       competition === zeroAddress
+        ? undefined
+        : await this.chain.client.getCode({
+            address: competition,
+            blockNumber: to
+          });
+    const competitionRules =
+      !competitionCode || competitionCode === "0x"
         ? undefined
         : {
             batchSize: await this.chain.client.readContract({
@@ -162,7 +180,8 @@ export class PortalLedger {
       block.hash,
       cursor,
       false,
-      competitionRules
+      competitionRules,
+      competition
     );
   }
 }

@@ -27,6 +27,8 @@ For an existing deployment, prepare a separately reviewed **grading implementati
 
 Portal rotation remains independent: each activated portal lasts 660 seconds; a competition collects 111 admissions across any number of portal windows/kinds. A new portal does not reset a batch. A full batch waits for grading/theme readiness, while portal rotation can continue. Do not switch to submission-count rotation or dynamically change the batch size.
 
+The ledger records the competition address used for each cursor. It resolves the confirmed binding before scanning earlier ranges, including the opening theme emitted during competition initialization. A newly linked competition or an old cursor without this source identity triggers a canonical replay. Run the migration before restarting the API/ledger, and wait for their indexed readiness checks; accepted spells and worker jobs are preserved.
+
 ## Theme publication checks
 
 Generated and resumed theme titles, briefs and contribution explanations must be printable creative text with no links, markup, addresses, credential requests or wallet/payment instructions. The publisher validates again before creating/signing a publication. Unsafe unsigned saved output is discarded and regenerated; after three validation rejections, inspect the private job and winning sources instead of repeatedly calling the model. Never delete a saved transaction: already submitted unsafe output is retained for reconciliation and operator review. Published onchain themes remain immutable. The check is deliberately deterministic and does not change the committed extraction prompt, grading rubric or model policy.
