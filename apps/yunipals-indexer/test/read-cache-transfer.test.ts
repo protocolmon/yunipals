@@ -1,0 +1,215 @@
+import { PGlite } from "@electric-sql/pglite";
+import type { PoolClient } from "pg";
+import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
+
+const release = `0x${"22".repeat(32)}`;
+vi.hoisted(() => {
+  Object.assign(process.env, {
+    DATABASE_SCHEMA: "transfer_source",
+    READ_DATABASE_SCHEMA: "transfer_read",
+    OWNERSHIP_READ_SCHEMA: "transfer_read",
+    OWNERSHIP_READ_MODE: "unified",
+    OWNERSHIP_RELEASE_ID: `0x${"22".repeat(32)}`,
+    METADATA_SOURCE_MODE: "archive",
+    YUNIPALS_PROJECTION_MODE: "generation"
+  });
+});
+
+import {
+  advanceReadCacheBoundary,
+  readCacheFreshSql,
+  tryAdvanceReadCacheBoundary
+} from "../lib/metadata/read-cache.js";
+
+const db = new PGlite();
+const client = db as unknown as Pick<PoolClient, "query">;
+const hash = (block: number) => `0x${block.toString(16).padStart(64, "0")}`;
+const zero = `0x${"00".repeat(20)}`;
+const alice = `0x${"aa".repeat(20)}`;
+const bob = `0x${"bb".repeat(20)}`;
+const boundary = 5000;
+
+const fresh = async () =>
+  (
+    await db.query<{ fresh: boolean }>(
+      `SELECT ${readCacheFreshSql("134", ["bnb"])} AS fresh`
+    )
+  ).rows[0]!.fresh;
+const advance = () => advanceReadCacheBoundary(client, "134", "bnb");
+const readSet = async () =>
+  (
+    await db.query<Record<string, unknown>>(
+      `SELECT ownership_boundary::int AS boundary,ownership_boundary_hash AS hash,revision::int AS revision,
+        guard_count,source_mode,ownership_policy,member_count::int AS members,burned_count::int AS burned,
+        completed_at::text AS completed_at
+       FROM metadata_projection.read_set WHERE generation_id=134 AND collection='bnb'`
+    )
+  ).rows[0]!;
+const transfer = (block: number, from: string, to: string) =>
+  db.query(
+    `INSERT INTO transfer_source.transfer_event VALUES('bnb',$1,$2,$3)`,
+    [block, from, to]
+  );
+/** Move the source's confirmation boundary to a block Ponder has indexed. */
+const sourceAt = async (block: number, blockHash = hash(block)) => {
+  await db.query(`INSERT INTO transfer_source.chain_block VALUES(56,$1,$2)`, [
+    block,
+    hash(block)
+  ]);
+  await db.query(
+    `UPDATE yunipals_indexer_control.chain_status SET witness_number=$1,witness_hash=$2`,
+    [block, blockHash]
+  );
+};
+
+beforeAll(async () => {
+  await db.exec(`
+    CREATE SCHEMA transfer_source;
+    CREATE SCHEMA transfer_read;
+    CREATE SCHEMA metadata_projection;
+    CREATE SCHEMA yunipals_indexer_control;
+    CREATE TABLE transfer_source.chain_block(chain_id int,block_number numeric,block_hash text);
+    CREATE TABLE transfer_source.transfer_event(collection text,block_number numeric,"from" text,"to" text);
+    CREATE TABLE transfer_read._unified_read_release(singleton boolean,release_id text,identity text);
+    CREATE TABLE yunipals_indexer_control.chain_status(release_id text,chain_id int,
+      witness_number bigint,witness_hash text,halted boolean,error_code text);
+    CREATE FUNCTION transfer_read.source_boundary(selected text)
+      RETURNS TABLE(release_id text,chain_id int,policy text,block_number bigint,block_hash text)
+      LANGUAGE sql STABLE AS $$
+        SELECT '${release}'::text,56,'latest'::text,witness_number,witness_hash
+        FROM yunipals_indexer_control.chain_status $$;
+    CREATE TABLE yunipals_indexer_control.chain_anchor(release_id text,chain_id int,block_number bigint,
+      block_hash text,witness_number bigint,witness_hash text,
+      PRIMARY KEY(release_id,chain_id,block_number));
+    CREATE TABLE metadata_projection.active(current_id bigint,previous_id bigint);
+    CREATE TABLE metadata_projection.generation(id bigint,state text,source_mode text,
+      ownership_release_id text,ownership_read_identity text);
+    CREATE TABLE metadata_projection.read_epoch(collection text,revision bigint);
+    CREATE TABLE metadata_projection.read_guard(collection text,relation text,relation_oid oid);
+    CREATE TABLE metadata_projection.read_set(generation_id bigint,collection text,revision bigint,
+      guard_count int,source_mode text,completed_at timestamptz NOT NULL DEFAULT now(),
+      ownership_release_id text,ownership_read_identity text,
+      ownership_boundary bigint,ownership_boundary_hash text,ownership_policy text,
+      member_count bigint,burned_count bigint,PRIMARY KEY(generation_id,collection));
+    INSERT INTO transfer_read._unified_read_release VALUES(true,'${release}','identity');
+    INSERT INTO metadata_projection.active VALUES(134,130);
+    INSERT INTO metadata_projection.generation VALUES(134,'ready','archive','${release}','identity');
+    INSERT INTO metadata_projection.read_epoch VALUES('bnb',3);
+    INSERT INTO yunipals_indexer_control.chain_status VALUES('${release}',56,NULL,NULL,false,NULL);
+  `);
+});
+afterAll(() => db.close());
+beforeEach(async () => {
+  await db.exec(`
+    DELETE FROM transfer_source.chain_block;
+    DELETE FROM transfer_source.transfer_event;
+    DELETE FROM metadata_projection.read_set;
+    UPDATE metadata_projection.read_epoch SET revision=3;
+    INSERT INTO metadata_projection.read_set VALUES(134,'bnb',3,0,'archive','2026-11-11 15:23:13+00',
+      '${release}','identity',${boundary},'${hash(boundary)}','latest',580093,61545);
+  `);
+  await sourceAt(boundary);
+});
+
+it("stays fresh when the boundary crosses a transfer between owners", async () => {
+  await transfer(boundary + 10, alice, bob);
+  await sourceAt(boundary + 20);
+  expect(await fresh()).toBe(true);
+});
+
+it("goes stale when the boundary crosses a mint", async () => {
+  await transfer(boundary + 10, zero, alice);
+  await sourceAt(boundary + 20);
+  expect(await fresh()).toBe(false);
+});
+
+it("goes stale when the boundary crosses a burn", async () => {
+  await transfer(boundary + 10, alice, zero);
+  await sourceAt(boundary + 20);
+  expect(await fresh()).toBe(false);
+});
+
+it("ignores a mint the boundary has not reached", async () => {
+  await transfer(boundary + 30, zero, alice);
+  await sourceAt(boundary + 20);
+  expect(await fresh()).toBe(true);
+  await sourceAt(boundary + 30);
+  expect(await fresh()).toBe(false);
+});
+
+it("moves the boundary past transfers between owners and keeps everything else", async () => {
+  const before = await readSet();
+  await transfer(boundary + 10, alice, bob);
+  await transfer(boundary + 15, bob, alice);
+  await sourceAt(boundary + 20);
+  expect(await advance()).toBe(1);
+  expect(await readSet()).toEqual({
+    ...before,
+    boundary: boundary + 20,
+    hash: hash(boundary + 20)
+  });
+  expect(await fresh()).toBe(true);
+  // Nothing lies after the new boundary, so there is nothing to move past.
+  await sourceAt(boundary + 40);
+  expect(await advance()).toBe(0);
+  expect((await readSet()).boundary).toBe(boundary + 20);
+});
+
+it("still finds a mint after the boundary has moved", async () => {
+  await transfer(boundary + 10, alice, bob);
+  await sourceAt(boundary + 20);
+  await advance();
+  await transfer(boundary + 30, zero, bob);
+  await sourceAt(boundary + 40);
+  expect(await fresh()).toBe(false);
+  expect(await advance()).toBe(0);
+  expect((await readSet()).boundary).toBe(boundary + 20);
+});
+
+it("leaves the boundary alone without a transfer", async () => {
+  await sourceAt(boundary + 20);
+  expect(await advance()).toBe(0);
+  expect((await readSet()).boundary).toBe(boundary);
+});
+
+it("does not move a stale read set", async () => {
+  await transfer(boundary + 10, alice, bob);
+  await transfer(boundary + 12, alice, zero);
+  await sourceAt(boundary + 20);
+  expect(await advance()).toBe(0);
+  await db.exec("DELETE FROM transfer_source.transfer_event");
+  await transfer(boundary + 10, alice, bob);
+  await db.exec("UPDATE metadata_projection.read_epoch SET revision=4");
+  expect(await advance()).toBe(0);
+  expect((await readSet()).boundary).toBe(boundary);
+});
+
+it("does not move to a block Ponder does not hold with that hash", async () => {
+  await transfer(boundary + 10, alice, bob);
+  await sourceAt(boundary + 20, hash(999_999));
+  expect(await fresh()).toBe(true);
+  expect(await advance()).toBe(0);
+  expect((await readSet()).boundary).toBe(boundary);
+});
+
+it("reports a failed move without throwing", async () => {
+  await transfer(boundary + 10, alice, bob);
+  await sourceAt(boundary + 20);
+  await db.exec(
+    "ALTER TABLE metadata_projection.read_set RENAME COLUMN member_count TO members"
+  );
+  try {
+    expect(await tryAdvanceReadCacheBoundary(client, "134", "bnb")).toEqual({
+      advanced: false,
+      failure: "42703"
+    });
+  } finally {
+    await db.exec(
+      "ALTER TABLE metadata_projection.read_set RENAME COLUMN members TO member_count"
+    );
+  }
+  expect(await tryAdvanceReadCacheBoundary(client, "134", "bnb")).toEqual({
+    advanced: true,
+    failure: null
+  });
+});

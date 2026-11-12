@@ -62,7 +62,7 @@ beforeAll(async () => {
     CREATE SCHEMA metadata_projection;
     CREATE SCHEMA yunipals_indexer_control;
     CREATE TABLE renewal_source.chain_block(chain_id int,block_number numeric,block_hash text);
-    CREATE TABLE renewal_source.transfer_event(collection text,block_number numeric);
+    CREATE TABLE renewal_source.transfer_event(collection text,block_number numeric,"from" text,"to" text);
     CREATE TABLE renewal_read._unified_read_release(singleton boolean,release_id text,identity text);
     CREATE TABLE yunipals_indexer_control.chain_status(release_id text,chain_id int,
       witness_number bigint,witness_hash text,halted boolean,error_code text);

@@ -4,6 +4,7 @@ import { collectionSlugs } from "../constants.js";
 import {
   buildReadCache,
   readCacheFreshSql,
+  tryAdvanceReadCacheBoundary,
   tryRenewReadCacheAnchor
 } from "./read-cache.js";
 import { assertOwnershipSourceSelection } from "../ownership/readiness.js";
@@ -12,7 +13,13 @@ import { retainedReadCacheGenerationsSql } from "./read-cache-preparation.js";
 await assertOwnershipSourceSelection(pool);
 
 let stopped = false;
-const reportedRenewalFailures = new Set<string>();
+const reportedFailures = new Set<string>();
+// A missing grant would repeat every few seconds, so report each code once.
+function reportOnce(event: string, code: string | null) {
+  if (!code || reportedFailures.has(`${event}:${code}`)) return;
+  reportedFailures.add(`${event}:${code}`);
+  console.error(JSON.stringify({ event, code }));
+}
 for (const signal of ["SIGINT", "SIGTERM"] as const)
   process.on(signal, () => {
     stopped = true;
@@ -46,19 +53,19 @@ while (!stopped) {
                 chain
               })
             );
-          // A missing grant would repeat every few seconds, so report each code once.
-          if (
-            renewal.failure &&
-            !reportedRenewalFailures.has(renewal.failure)
-          ) {
-            reportedRenewalFailures.add(renewal.failure);
-            console.error(
+          reportOnce("read_cache_anchor_renewal_failed", renewal.failure);
+          // Transfers between owners leave the set valid. Moving its boundary
+          // past them keeps the freshness check short.
+          const advance = await tryAdvanceReadCacheBoundary(client, id, chain);
+          if (advance.advanced)
+            console.info(
               JSON.stringify({
-                event: "read_cache_anchor_renewal_failed",
-                code: renewal.failure
+                event: "read_cache_boundary_advanced",
+                generation: id,
+                chain
               })
             );
-          }
+          reportOnce("read_cache_boundary_advance_failed", advance.failure);
           const fresh = (
             await client.query<{ fresh: boolean }>(
               `SELECT ${readCacheFreshSql(id, [chain])} AND EXISTS(
