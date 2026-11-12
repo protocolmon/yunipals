@@ -1,5 +1,4 @@
 import { PGlite } from "@electric-sql/pglite";
-import type { PoolClient } from "pg";
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
 
 const release = `0x${"22".repeat(32)}`;
@@ -15,14 +14,9 @@ vi.hoisted(() => {
   });
 });
 
-import {
-  advanceReadCacheBoundary,
-  readCacheFreshSql,
-  tryAdvanceReadCacheBoundary
-} from "../lib/metadata/read-cache.js";
+import { readCacheFreshSql } from "../lib/metadata/read-cache.js";
 
 const db = new PGlite();
-const client = db as unknown as Pick<PoolClient, "query">;
 const hash = (block: number) => `0x${block.toString(16).padStart(64, "0")}`;
 const zero = `0x${"00".repeat(20)}`;
 const alice = `0x${"aa".repeat(20)}`;
@@ -35,30 +29,20 @@ const fresh = async () =>
       `SELECT ${readCacheFreshSql("134", ["bnb"])} AS fresh`
     )
   ).rows[0]!.fresh;
-const advance = () => advanceReadCacheBoundary(client, "134", "bnb");
-const readSet = async () =>
-  (
-    await db.query<Record<string, unknown>>(
-      `SELECT ownership_boundary::int AS boundary,ownership_boundary_hash AS hash,revision::int AS revision,
-        guard_count,source_mode,ownership_policy,member_count::int AS members,burned_count::int AS burned,
-        completed_at::text AS completed_at
-       FROM metadata_projection.read_set WHERE generation_id=134 AND collection='bnb'`
-    )
-  ).rows[0]!;
 const transfer = (block: number, from: string, to: string) =>
   db.query(
     `INSERT INTO transfer_source.transfer_event VALUES('bnb',$1,$2,$3)`,
     [block, from, to]
   );
 /** Move the source's confirmation boundary to a block Ponder has indexed. */
-const sourceAt = async (block: number, blockHash = hash(block)) => {
+const sourceAt = async (block: number) => {
   await db.query(`INSERT INTO transfer_source.chain_block VALUES(56,$1,$2)`, [
     block,
     hash(block)
   ]);
   await db.query(
     `UPDATE yunipals_indexer_control.chain_status SET witness_number=$1,witness_hash=$2`,
-    [block, blockHash]
+    [block, hash(block)]
   );
 };
 
@@ -135,81 +119,4 @@ it("ignores a mint the boundary has not reached", async () => {
   expect(await fresh()).toBe(true);
   await sourceAt(boundary + 30);
   expect(await fresh()).toBe(false);
-});
-
-it("moves the boundary past transfers between owners and keeps everything else", async () => {
-  const before = await readSet();
-  await transfer(boundary + 10, alice, bob);
-  await transfer(boundary + 15, bob, alice);
-  await sourceAt(boundary + 20);
-  expect(await advance()).toBe(1);
-  expect(await readSet()).toEqual({
-    ...before,
-    boundary: boundary + 20,
-    hash: hash(boundary + 20)
-  });
-  expect(await fresh()).toBe(true);
-  // Nothing lies after the new boundary, so there is nothing to move past.
-  await sourceAt(boundary + 40);
-  expect(await advance()).toBe(0);
-  expect((await readSet()).boundary).toBe(boundary + 20);
-});
-
-it("still finds a mint after the boundary has moved", async () => {
-  await transfer(boundary + 10, alice, bob);
-  await sourceAt(boundary + 20);
-  await advance();
-  await transfer(boundary + 30, zero, bob);
-  await sourceAt(boundary + 40);
-  expect(await fresh()).toBe(false);
-  expect(await advance()).toBe(0);
-  expect((await readSet()).boundary).toBe(boundary + 20);
-});
-
-it("leaves the boundary alone without a transfer", async () => {
-  await sourceAt(boundary + 20);
-  expect(await advance()).toBe(0);
-  expect((await readSet()).boundary).toBe(boundary);
-});
-
-it("does not move a stale read set", async () => {
-  await transfer(boundary + 10, alice, bob);
-  await transfer(boundary + 12, alice, zero);
-  await sourceAt(boundary + 20);
-  expect(await advance()).toBe(0);
-  await db.exec("DELETE FROM transfer_source.transfer_event");
-  await transfer(boundary + 10, alice, bob);
-  await db.exec("UPDATE metadata_projection.read_epoch SET revision=4");
-  expect(await advance()).toBe(0);
-  expect((await readSet()).boundary).toBe(boundary);
-});
-
-it("does not move to a block Ponder does not hold with that hash", async () => {
-  await transfer(boundary + 10, alice, bob);
-  await sourceAt(boundary + 20, hash(999_999));
-  expect(await fresh()).toBe(true);
-  expect(await advance()).toBe(0);
-  expect((await readSet()).boundary).toBe(boundary);
-});
-
-it("reports a failed move without throwing", async () => {
-  await transfer(boundary + 10, alice, bob);
-  await sourceAt(boundary + 20);
-  await db.exec(
-    "ALTER TABLE metadata_projection.read_set RENAME COLUMN member_count TO members"
-  );
-  try {
-    expect(await tryAdvanceReadCacheBoundary(client, "134", "bnb")).toEqual({
-      advanced: false,
-      failure: "42703"
-    });
-  } finally {
-    await db.exec(
-      "ALTER TABLE metadata_projection.read_set RENAME COLUMN members TO member_count"
-    );
-  }
-  expect(await tryAdvanceReadCacheBoundary(client, "134", "bnb")).toEqual({
-    advanced: true,
-    failure: null
-  });
 });

@@ -69,7 +69,6 @@ try {
     "../lib/metadata/read-cache-schema.ts"
   );
   const {
-    advanceReadCacheBoundary,
     buildReadCache,
     readCacheFreshSql,
     cachedSearchReadRelationFor
@@ -574,8 +573,7 @@ try {
   const bnbBoundary = async () =>
     (
       await db.query(
-        `SELECT s.ownership_boundary::text AS cached,s.ownership_boundary_hash AS cached_hash,
-          source.block_number::text AS source,source.block_hash AS source_hash
+        `SELECT s.ownership_boundary::text AS cached,source.block_number::text AS source
         FROM metadata_projection.read_set s,"${readSchema}".source_boundary('bnb') source
         WHERE s.collection='bnb' AND s.generation_id=2`
       )
@@ -584,34 +582,9 @@ try {
   assert.equal(await bnbRevision(), beforeRevision);
   assert.equal(await bnbFresh(), true);
   assert.equal(await bnbCachedCount(), 7);
-  // The worker moves the boundary past the transfer, so later freshness
-  // checks do not scan it again. Everything else in the set stays.
-  let boundary = await bnbBoundary();
-  assert.ok(BigInt(boundary.cached) < next && BigInt(boundary.source) >= next);
-  const setBefore = (
-    await db.query(
-      "SELECT * FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
-    )
-  ).rows[0];
-  assert.equal(await advanceReadCacheBoundary(db, "2", "bnb"), 1);
-  boundary = await bnbBoundary();
-  assert.equal(boundary.cached, boundary.source);
-  assert.equal(boundary.cached_hash, boundary.source_hash);
-  assert.deepEqual(
-    (
-      await db.query(
-        "SELECT * FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
-      )
-    ).rows[0],
-    {
-      ...setBefore,
-      ownership_boundary: boundary.source,
-      ownership_boundary_hash: boundary.source_hash
-    }
-  );
-  assert.equal(await bnbFresh(), true);
-  assert.equal(await bnbCachedCount(), 7);
-  assert.equal(await advanceReadCacheBoundary(db, "2", "bnb"), 0);
+  // The boundary crossed the transfer and the set is still the one in use.
+  const crossed = await bnbBoundary();
+  assert.ok(BigInt(crossed.cached) < next && BigInt(crossed.source) >= next);
 
   // Crossing an already-indexed burn invalidates the cache even though no
   // native dirty trigger fires at the later confirmation boundary.
@@ -667,7 +640,6 @@ try {
   await moveBnbHead(burnBlock + 20n);
   assert.equal(await bnbRevision(), burnRevision);
   assert.equal(await bnbFresh(), false);
-  assert.equal(await advanceReadCacheBoundary(db, "2", "bnb"), 0);
   assert.equal(await bnbCachedCount(), 7);
   const rebuild = await db.connect();
   try {
@@ -801,7 +773,7 @@ try {
         "release-qualified cursors and generation rejection",
         "lazy same-snapshot request proofs and read-only writes rejected",
         "planner settings isolated across count/page reads",
-        "cache kept and its boundary moved across a transfer between owners",
+        "cache kept when the eligible boundary crosses a transfer between owners",
         "cache invalidation when the eligible boundary crosses a burn without dirty writes",
         "read identity mismatch and canonical fallback",
         "unavailable empty collection returns 503 while other chains remain readable",

@@ -311,72 +311,11 @@ export async function tryRenewReadCacheAnchor(
       failure: null
     };
   } catch (error) {
-    const code = failureCode(error, "renewal_failed");
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String(error.code)
+        : "renewal_failed";
     return { renewed: false, failure: code === "YI001" ? null : code };
-  }
-}
-function failureCode(error: unknown, fallback: string) {
-  return error && typeof error === "object" && "code" in error
-    ? String(error.code)
-    : fallback;
-}
-
-/** Move a fresh read set's boundary to the source's current boundary once a
- * transfer between owners lies in between. The set is fresh, so no mint or
- * burn lies in between and its rows are exactly what a rebuild at the new
- * boundary would store. Every freshness check scans the transfers after the
- * boundary; without this, a chain with trades and no mints would make each
- * API request scan a growing history. The row is replaced, not updated, so the
- * worker needs no privilege beyond those a rebuild already uses.
- */
-export async function advanceReadCacheBoundary(
-  db: Pick<PoolClient, "query">,
-  id: string,
-  chain: CollectionSlug
-) {
-  if (!unifiedOwnershipReads) return 0;
-  selected([chain]);
-  const result = await db.query(
-    `WITH moved AS (
-      DELETE FROM metadata_projection.read_set s
-      USING ${ponderSchema}.source_boundary($1) target
-      WHERE s.generation_id=${idSql(id)} AND s.collection=$1
-        AND target.block_number>s.ownership_boundary
-        AND EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.transfer_event transfer
-          WHERE transfer.collection=s.collection AND transfer.block_number>s.ownership_boundary
-            AND transfer.block_number<=target.block_number)
-        AND EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.chain_block b WHERE b.chain_id=target.chain_id
-          AND b.block_number=target.block_number AND b.block_hash=target.block_hash)
-        AND ${readCacheFreshSql(id, [chain])}
-      RETURNING s.generation_id,s.collection,s.revision,s.guard_count,s.source_mode,s.completed_at,
-        s.ownership_release_id,s.ownership_read_identity,target.block_number AS boundary,
-        target.block_hash AS boundary_hash,s.ownership_policy,s.member_count,s.burned_count
-    )
-    INSERT INTO metadata_projection.read_set(generation_id,collection,revision,guard_count,source_mode,
-      completed_at,ownership_release_id,ownership_read_identity,ownership_boundary,ownership_boundary_hash,
-      ownership_policy,member_count,burned_count)
-    SELECT generation_id,collection,revision,guard_count,source_mode,completed_at,ownership_release_id,
-      ownership_read_identity,boundary,boundary_hash,ownership_policy,member_count,burned_count
-    FROM moved RETURNING ownership_boundary`,
-    [chain]
-  );
-  return result.rows.length;
-}
-
-/** Like renewal, advancing only saves work and must never stop the worker. */
-export async function tryAdvanceReadCacheBoundary(
-  db: Pick<PoolClient, "query">,
-  id: string,
-  chain: CollectionSlug
-): Promise<{ advanced: boolean; failure: string | null }> {
-  try {
-    return {
-      advanced: (await advanceReadCacheBoundary(db, id, chain)) > 0,
-      failure: null
-    };
-  } catch (error) {
-    const code = failureCode(error, "advance_failed");
-    return { advanced: false, failure: code === "YI001" ? null : code };
   }
 }
 
