@@ -80,6 +80,13 @@ Networking & State Libraries
 - Use libraries already present (wagmi/viem for chain, react-query if adopted in a module) rather than introducing new state/network libs.
 - Centralize environment-derived values in `src/environment.ts`; for Vite, envs must be prefixed with `VITE_` to be injected.
 
+Visual Storytelling
+- Make every customer-facing page feel like Yunipals: use relevant artwork, character images, cards, or illustrated scenes as a core part of the design, including empty and pre-launch states. Avoid text-only feature pages and walls of dashboard panels.
+- Lead with an inviting visual and a clear action; keep long rules and technical explanations secondary or progressively disclosed.
+- Prefer actual Yunipals collection artwork and approved transformation examples. Clearly label examples and previews so they cannot be mistaken for live NFTs, grades, balances, or active portals.
+- Carry the brand through color, composition, typography and restrained motion. Respect reduced-motion preferences, readable contrast, meaningful alt text and mobile layouts.
+- Optimize images, reserve their dimensions and lazy-load images below the fold. Keep artwork visible and useful without making the page slow.
+
 Assets
 - Store static assets in `public/images` and `public/videos`. Reference via absolute paths (`/images/...`) so Vite serves them correctly.
 - Optimize heavy assets (videos, large images) and prefer modern formats when available.

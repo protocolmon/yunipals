@@ -59,6 +59,33 @@ Take an initial database dump, copy artifacts, then take a final database dump a
 
 `pnpm --filter @protopals/yunipals-indexer test:portals:postgres` performs a disposable real PostgreSQL drill covering repeat migrations, restricted runtime users, concurrent leases, signer advisory locks, crash persistence, atomic ledger rollback and `pg_dump`/`pg_restore`. It accepts only a loopback test database named `portal_test`; use `PORTALS_TEST_DATABASE_URL`. It must never be pointed at a production database. The test also needs `pg_dump` and `pg_restore` of a compatible major version (or its explicit test-container option).
 
+## Guided airdrop
+
+`/portals/airdrop` guides the admin through recipient review, mint commitments, VRF readiness, delivery in groups of up to 32, and the first portal rotation. `/portals/admin` retains the other configuration actions and links to this guide. Every step waits for confirmed, indexed events before enabling the next action.
+
+Prepare an operator-owned JSON allocation with these fields:
+
+```json
+{
+  "version": 1,
+  "title": "Portal holder airdrop",
+  "chainId": 8453,
+  "collection": "<collection proxy address>",
+  "admin": "<admin wallet address>",
+  "kindId": "1",
+  "kindConfigurationHash": "<current getKind configurationHash>",
+  "snapshotAt": "<ownership snapshot ISO timestamp>",
+  "expectedAllocated": 0,
+  "batches": [{ "recipients": ["<recipient address>"] }]
+}
+```
+
+Use current, verified ownership and staking beneficiaries. Preserve repeated addresses: each entry receives one NFT. Each batch allows at most 100 entries; the full allocation must fit the kind's remaining lifetime cap. `expectedAllocated` is the kind's allocation before the first commitment, not its delivered supply. The guide binds every batch to its exact serial range and ordered recipients and refuses unexpected allocation or configuration changes.
+
+Import the JSON in the browser, or publish it as an immutable public file on the app origin or configured portal API origin. Link to `/portals/airdrop?manifest=<URL-encoded file URL>&sha256=<SHA-256 of exact file bytes>`. The URL checksum is mandatory; redirects are rejected. Only public allocation data belongs in this file. Keep actual recipients, deployment addresses, snapshots and transaction evidence in private operator records, outside this repository.
+
+The guide saves a wallet intent before requesting a signature and resumes from onchain requests plus indexed progress after reload. A rejected signature unlocks the step; an ambiguous wallet response keeps it locked. Use **Check saved transaction** with the original transaction hash to reconcile an unresolved attempt. The transaction must match the saved sender, target, nonce and calldata. Do not clear browser storage or start a replacement allocation to bypass an unresolved request. If its hash cannot be recovered, reconcile the wallet's activity and chain state before any further mint commitment. Separate browsers or devices do not share this local signing lock; use one admin signing session at a time.
+
 ## Recovery and rollback
 
 If a service fails, preserve its data and restart the same release/configuration after fixing the cause. Persisted signer attempts prevent another operation from taking an unresolved nonce. The worker's exact signed bytes can be rebroadcast; timeout and RPC denial are not failure receipts. A higher-fee replacement requires a reviewed operator recovery procedure matching the original intent and reconciliation of the journal before resuming. Do not manually delete rows to make a nonce available.

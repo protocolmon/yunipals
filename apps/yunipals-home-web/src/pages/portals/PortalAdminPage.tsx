@@ -21,6 +21,7 @@ import { fetchPortalStatus, portalPrice, portalRequest } from "@/lib/portals";
 import { usePortals } from "@/hooks/usePortals";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { cn } from "@/lib/utils";
+import { PortalAirdropLink } from "./PortalArtwork";
 
 const inputClass =
   "mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 text-sm focus-visible:outline-grape";
@@ -279,6 +280,9 @@ export function PortalAdminPage() {
       <p className="mt-3 text-muted">
         Create portal kinds, airdrop NFTs and set the fee split.
       </p>
+      <div className="mt-5">
+        <PortalAirdropLink />
+      </div>
       {status && (
         <div className="mt-5 rounded-card border border-line p-5 text-sm">
           <p>
