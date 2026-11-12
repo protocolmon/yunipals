@@ -4,11 +4,13 @@ import {
 } from "./ledger-application.js";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
+import { zeroAddress } from "viem";
 
 export interface PortalLedgerCursor {
   block: string;
   hash: string;
   generation: string;
+  competition?: string | null;
 }
 export interface PortalLedgerEvent {
   type: string;
@@ -28,6 +30,7 @@ CREATE TABLE IF NOT EXISTS portal_v2_ledger_cursor (
  block_hash text NOT NULL, generation text NOT NULL
 );
 ALTER TABLE portal_v2_ledger_cursor ADD COLUMN IF NOT EXISTS projection_version integer NOT NULL DEFAULT 2;
+ALTER TABLE portal_v2_ledger_cursor ADD COLUMN IF NOT EXISTS competition text;
 CREATE TABLE IF NOT EXISTS portal_v2_ledger_event (
  deployment text NOT NULL, transaction_hash text NOT NULL, log_index integer NOT NULL,
  block_number numeric(20,0) NOT NULL, block_hash text NOT NULL,
@@ -79,7 +82,7 @@ export class PortalLedgerStore {
 
   async requiresReplay() {
     const result = await this.db.query(
-      "SELECT 1 FROM portal_v2_ledger_cursor WHERE deployment=$1 AND projection_version<>5",
+      "SELECT 1 FROM portal_v2_ledger_cursor WHERE deployment=$1 AND (projection_version<>5 OR competition IS NULL)",
       [this.deployment]
     );
     return result.rows.length > 0;
@@ -87,7 +90,7 @@ export class PortalLedgerStore {
 
   async cursor(): Promise<PortalLedgerCursor | null> {
     const result = await this.db.query<PortalLedgerCursor>(
-      "SELECT block_number::text AS block,block_hash AS hash,generation FROM portal_v2_ledger_cursor WHERE deployment=$1",
+      "SELECT block_number::text AS block,block_hash AS hash,generation,competition FROM portal_v2_ledger_cursor WHERE deployment=$1",
       [this.deployment]
     );
     return result.rows[0] ?? null;
@@ -100,7 +103,8 @@ export class PortalLedgerStore {
     hash: string,
     expected: PortalLedgerCursor | null,
     reset = false,
-    competitionRules = { batchSize: 111n, contribution: 500_000n }
+    competitionRules = { batchSize: 111n, contribution: 500_000n },
+    competition = expected?.competition ?? zeroAddress
   ) {
     if (
       competitionRules.batchSize < 3n ||
@@ -108,6 +112,8 @@ export class PortalLedgerStore {
       competitionRules.contribution <= 0n
     )
       throw new Error("Invalid onchain competition rules.");
+    if (!/^0x[0-9a-fA-F]{40}$/.test(competition))
+      throw new Error("Invalid competition source.");
     const connection =
       "connect" in this.db ? await (this.db as Pool).connect() : null;
     const tx = connection ?? this.db;
@@ -118,14 +124,15 @@ export class PortalLedgerStore {
           this.deployment
         ]);
       const current = await tx.query<PortalLedgerCursor>(
-        "SELECT block_number::text AS block,block_hash AS hash,generation FROM portal_v2_ledger_cursor WHERE deployment=$1",
+        "SELECT block_number::text AS block,block_hash AS hash,generation,competition FROM portal_v2_ledger_cursor WHERE deployment=$1",
         [this.deployment]
       );
       const observed = current.rows[0] ?? null;
       if (
         observed?.block !== expected?.block ||
         observed?.hash !== expected?.hash ||
-        observed?.generation !== expected?.generation
+        observed?.generation !== expected?.generation ||
+        (observed?.competition ?? null) !== (expected?.competition ?? null)
       )
         throw new Error("Portal ledger cursor changed; retry.");
       if (reset) {
@@ -294,13 +301,14 @@ export class PortalLedgerStore {
         }
       }
       await tx.query(
-        `INSERT INTO portal_v2_ledger_cursor(deployment,block_number,block_hash,generation,projection_version) VALUES($1,$2,$3,$4,5)
-        ON CONFLICT(deployment) DO UPDATE SET block_number=excluded.block_number,block_hash=excluded.block_hash,generation=excluded.generation,projection_version=excluded.projection_version`,
+        `INSERT INTO portal_v2_ledger_cursor(deployment,block_number,block_hash,generation,projection_version,competition) VALUES($1,$2,$3,$4,5,$5)
+        ON CONFLICT(deployment) DO UPDATE SET block_number=excluded.block_number,block_hash=excluded.block_hash,generation=excluded.generation,projection_version=excluded.projection_version,competition=excluded.competition`,
         [
           this.deployment,
           block,
           hash,
-          reset || !observed ? randomUUID() : observed.generation
+          reset || !observed ? randomUUID() : observed.generation,
+          competition.toLowerCase()
         ]
       );
       await tx.query("COMMIT");

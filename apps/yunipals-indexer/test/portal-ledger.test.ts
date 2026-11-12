@@ -31,10 +31,148 @@ const store = new PortalLedgerStore(db as never, "ledger-test");
 beforeAll(() => store.migrate());
 beforeEach(() =>
   db.exec(
-    "TRUNCATE portal_v2_ledger_event,portal_v2_ledger_cursor,portal_v2_token,portal_v3_competition_entry,portal_v3_competition_batch,portal_v3_competition_prize"
+    "TRUNCATE portal_v2_ledger_event,portal_v2_ledger_cursor,portal_v2_token,portal_v3_competition_entry,portal_v3_competition_batch,portal_v3_competition_prize,portal_v5_request,portal_v5_mint,portal_v5_state"
   )
 );
 afterAll(() => db.close());
+
+describe("competition initialization discovery", () => {
+  function discovery(initialHead: bigint) {
+    let head = initialHead;
+    const client = {
+      getBlockNumber: async () => head,
+      getBlock: async ({ blockNumber }: { blockNumber: bigint }) => ({
+        number: blockNumber,
+        hash
+      }),
+      getCode: async ({ blockNumber }: { blockNumber: bigint }) =>
+        blockNumber < 20n ? undefined : "0x1234",
+      readContract: vi.fn(
+        async ({
+          functionName,
+          blockNumber
+        }: {
+          functionName: string;
+          blockNumber: bigint;
+        }) => {
+          if (functionName === "competition")
+            return blockNumber >= 30n ? alice : zero;
+          expect(blockNumber).toBeGreaterThanOrEqual(20n);
+          if (functionName === "BATCH_SIZE") return 111n;
+          if (functionName === "CONTRIBUTION") return 500000n;
+          throw new Error("Unexpected contract read");
+        }
+      ),
+      getLogs: async ({
+        address,
+        fromBlock,
+        toBlock
+      }: {
+        address: string[];
+        fromBlock: bigint;
+        toBlock: bigint;
+      }) =>
+        address.includes(alice) && fromBlock <= 20n && toBlock >= 20n
+          ? [
+              {
+                address: alice,
+                topics: encodeEventTopics({
+                  abi: parseAbi([
+                    "event ThemePublished(uint256 indexed batchId, bytes32 indexed themeHash, bytes32 sourcesHash)"
+                  ]),
+                  eventName: "ThemePublished",
+                  args: { batchId: 1n, themeHash: hash }
+                }),
+                data: `0x${"0".repeat(64)}`,
+                blockNumber: 20n,
+                blockHash: hash,
+                transactionHash: otherHash,
+                transactionIndex: 0,
+                logIndex: 0
+              }
+            ]
+          : []
+    };
+    const chain = new PortalChain(client as unknown as PublicClient, {
+      chainId: 8453,
+      collection,
+      grading,
+      registry: grading,
+      cards: grading,
+      usdc: grading
+    });
+    return {
+      chain,
+      head: (value: bigint) => {
+        head = value;
+      }
+    };
+  }
+
+  it("indexes the opening theme before its binding and skips reads before deployment", async () => {
+    const { chain } = discovery(35n);
+    const ledger = new PortalLedger(chain, store, 10n, 0n, 10n);
+    await ledger.tick();
+    expect((await store.cursor())?.block).toBe("19");
+    await ledger.tick();
+    const themes = await db.query<{
+      value: { batchId: string; themeHash: string };
+    }>("SELECT value FROM portal_v5_state WHERE component='theme'");
+    expect(themes.rows).toEqual([
+      {
+        value: {
+          batchId: "1",
+          themeHash: hash,
+          sourcesHash: `0x${"0".repeat(64)}`
+        }
+      }
+    ]);
+    expect(await store.requiresReplay()).toBe(false);
+  });
+
+  it("replays once when a late binding reveals earlier events and survives a restart", async () => {
+    const fixture = discovery(24n);
+    const ledger = new PortalLedger(fixture.chain, store, 10n, 0n, 10n);
+    await ledger.tick();
+    await ledger.tick();
+    const before = (await store.cursor())!;
+    expect(before.block).toBe("24");
+    fixture.head(35n);
+    await ledger.tick();
+    const replay = (await store.cursor())!;
+    expect(replay.block).toBe("19");
+    expect(replay.competition).toBe(alice);
+    expect(replay.generation).not.toBe(before.generation);
+    const restarted = new PortalLedger(fixture.chain, store, 10n, 0n, 10n);
+    await restarted.tick();
+    await restarted.tick();
+    expect(await store.cursor()).toMatchObject({
+      block: "35",
+      generation: replay.generation,
+      competition: alice
+    });
+    expect(
+      (
+        await db.query(
+          "SELECT * FROM portal_v2_ledger_event WHERE event_type='ThemePublished'"
+        )
+      ).rows
+    ).toHaveLength(1);
+  });
+
+  it("requires replay for old cursors without a recorded competition source", async () => {
+    await store.apply([], "24", hash, null);
+    await db.exec("UPDATE portal_v2_ledger_cursor SET competition=NULL");
+    expect(await store.requiresReplay()).toBe(true);
+    const { chain } = discovery(35n);
+    await new PortalLedger(chain, store, 10n, 0n, 10n).tick();
+    expect(await store.cursor()).toMatchObject({
+      block: "19",
+      competition: alice
+    });
+    expect(await store.requiresReplay()).toBe(false);
+  });
+});
 
 function event(
   type: string,
