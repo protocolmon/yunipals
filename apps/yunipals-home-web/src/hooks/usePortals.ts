@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
   BaseError,
+  UserRejectedRequestError,
   erc20Abi,
   encodeFunctionData,
   decodeFunctionData,
@@ -331,7 +332,18 @@ export function usePortals(status: ActivePortalStatus | null) {
     });
   }
 
-  async function send(to: Address, data: Hex, value = 0n) {
+  async function send(
+    to: Address,
+    data: Hex,
+    value = 0n,
+    intent?: {
+      actionKey: string;
+      validate: () => Promise<void>;
+      onWalletRequest: () => void;
+      onWalletRejected: () => void;
+      onSubmitted: (hash: Hex) => void;
+    }
+  ) {
     return perform(async () => {
       const { account, client, signer, status } = await checkedContracts();
       const id = generation.current;
@@ -344,7 +356,8 @@ export function usePortals(status: ActivePortalStatus | null) {
       )
         throw new Error("Unrecognized portal contract.");
       if (!tracker) throw new Error("Transaction tracking is unavailable.");
-      const actionKey = `${to.toLowerCase()}:${keccak256(data)}`;
+      const actionKey =
+        intent?.actionKey ?? `${to.toLowerCase()}:${keccak256(data)}`;
       tracker.assertAvailable(actionKey);
       const decoded = decodeFunctionData({
         abi: [
@@ -362,15 +375,34 @@ export function usePortals(status: ActivePortalStatus | null) {
         requestRotation: "Request next portal",
         activateNext: "Activate next portal"
       };
+      if (intent) await intent.validate();
       guard(id, account);
+      tracker.assertAvailable(actionKey);
       setPhase("Confirm in your wallet…");
-      const hash = await signer.sendTransaction({
-        account,
-        chain: client.chain,
-        to,
-        data,
-        value
-      });
+      intent?.onWalletRequest();
+      let hash: Hex;
+      try {
+        hash = await signer.sendTransaction({
+          account,
+          chain: client.chain,
+          to,
+          data,
+          value
+        });
+      } catch (error) {
+        const rejected =
+          error instanceof BaseError &&
+          error.walk((cause) => cause instanceof UserRejectedRequestError);
+        const cancelled =
+          rejected instanceof UserRejectedRequestError ||
+          (error as { code?: unknown })?.code === 4001;
+        if (cancelled) intent?.onWalletRejected();
+        else if (intent)
+          throw new Error(
+            "The wallet did not return a transaction hash. The batch is saved; check its status before continuing."
+          );
+        throw error;
+      }
       setPhase("Waiting for confirmation…");
       const tracked = tracker.add(hash, {
         to,
@@ -379,6 +411,7 @@ export function usePortals(status: ActivePortalStatus | null) {
         actionKey,
         label: labels[decoded.functionName] ?? "Portal administration"
       });
+      intent?.onSubmitted(hash);
       const receipt = await tracker.wait(tracked.id, (value) => {
         if (generation.current === id) setPhase(value);
       });

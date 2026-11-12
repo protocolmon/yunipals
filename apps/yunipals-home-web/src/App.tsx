@@ -39,6 +39,11 @@ const PortalAdminPage = lazy(() =>
     default: module.PortalAdminPage
   }))
 );
+const PortalAirdropPage = lazy(() =>
+  import("@/pages/portals/PortalAirdropPage").then((module) => ({
+    default: module.PortalAirdropPage
+  }))
+);
 const PortalOwnerPage = lazy(() =>
   import("@/pages/portals/PortalOwnerPage").then((module) => ({
     default: module.PortalOwnerPage
@@ -492,6 +497,7 @@ function AppContent() {
             element={<PortalTokenPage />}
           />
           <Route path="/portals/admin" element={<PortalAdminPage />} />
+          <Route path="/portals/airdrop" element={<PortalAirdropPage />} />
           <Route
             path="/portals/cards/:tokenId"
             element={<PortalCardHistory />}

@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { PortalCompetitions } from "./PortalCompetitions";
+import { PortalHero, PortalStory } from "./PortalArtwork";
 
 export function PortalPage() {
   const [search] = useSearchParams();
@@ -77,18 +78,7 @@ export function PortalPage() {
   }
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div className="mb-8">
-        <p className="text-sm font-bold uppercase tracking-widest text-grape">
-          Yunipals portals
-        </p>
-        <h1 className="mt-2 font-display text-3xl text-ink sm:text-5xl">
-          Cast your next chapter
-        </h1>
-        <p className="mt-4 max-w-2xl text-muted">
-          One portal opens at a time. Bring a matching card and a spell to
-          transform its latest artwork and receive four grades.
-        </p>
-      </div>
+      <PortalHero />
       <div className="mb-6 flex flex-wrap items-center gap-5 text-sm font-semibold">
         <Link className="underline" to="/portals/mine">
           My portals · balances &amp; claims
@@ -99,9 +89,7 @@ export function PortalPage() {
           </span>
         )}
       </div>
-      {(status?.competition || environment.portalGrading) && (
-        <PortalCompetitions />
-      )}
+      <div id="portal-cast" className="scroll-mt-24" />
       {query.isPending ? (
         <div
           role="status"
@@ -236,12 +224,34 @@ export function PortalPage() {
                 )}
               </>
             ) : (
-              <h2
-                id="active-portal-title"
-                className="my-12 font-display text-2xl"
-              >
-                The first portal is waiting to open
-              </h2>
+              <div className="my-8 flex flex-col items-center gap-5 sm:flex-row">
+                <img
+                  src="/images/portals/rainbow-portal-card.webp"
+                  width={1024}
+                  height={1536}
+                  alt="Rainbow Portal card preview"
+                  className="w-28 -rotate-3 rounded-xl shadow-card sm:w-36"
+                  loading="lazy"
+                />
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-grape">
+                    A glimpse of the magic
+                  </p>
+                  <h2
+                    id="active-portal-title"
+                    className="mt-3 font-display text-2xl"
+                  >
+                    The first portal is waiting to open
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">
+                    Meet the Rainbow Portal. A new world of color for your
+                    Yunipal, while keeping a little of its original hue.
+                  </p>
+                  <p className="mt-3 text-xs text-muted">
+                    Artwork preview · entry opens with an active portal.
+                  </p>
+                </div>
+              </div>
             )}
             <div className="mt-6 border-t border-lavender pt-5">
               <p className="text-sm text-muted">
@@ -286,6 +296,16 @@ export function PortalPage() {
             <h2 id="cast-spell-title" className="mt-3 font-display text-2xl">
               Your card, your spell
             </h2>
+            {status.competition?.theme && (
+              <div className="mt-4 rounded-2xl bg-lavender/15 p-4 text-sm">
+                <p className="font-bold text-grape">
+                  This challenge · {status.competition.theme.title}
+                </p>
+                <p className="mt-2 leading-relaxed text-muted">
+                  {status.competition.theme.brief}
+                </p>
+              </div>
+            )}
             <form className="mt-6 space-y-5" onSubmit={submit}>
               <div>
                 <label
@@ -414,6 +434,10 @@ export function PortalPage() {
             )}
           </section>
         </div>
+      )}
+      <PortalStory />
+      {(status?.competition || environment.portalGrading) && (
+        <PortalCompetitions />
       )}
       <dialog
         ref={dialog}

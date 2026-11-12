@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { verifyGuidedAirdrop } from "./test-portal-airdrop-browser.mjs";
 
 /** Real local receipts; keep the indexer stopped between each wallet action
  * and its success notice, including both delivery chunks of one mint request. */
@@ -28,6 +29,12 @@ export async function verifyPortalAdminBrowser({
   });
   const page = await context.newPage();
   const owner = adminWallet.account.address;
+  const walletBehavior = {
+    rejectNext: false,
+    forgetNext: false,
+    sends: 0,
+    lastHash: null
+  };
   try {
     await page.exposeFunction(
       "portalAdminWallet",
@@ -43,12 +50,23 @@ export async function verifyPortalAdminBrowser({
           return [{ parentCapability: "eth_accounts" }];
         if (method === "eth_sendTransaction") {
           assert.equal(params[0].from.toLowerCase(), owner.toLowerCase());
-          return adminWallet.sendTransaction({
+          if (walletBehavior.rejectNext) {
+            walletBehavior.rejectNext = false;
+            return { fixtureRejected: true };
+          }
+          walletBehavior.sends++;
+          const hash = await adminWallet.sendTransaction({
             to: params[0].to,
             data: params[0].data,
             value: BigInt(params[0].value ?? "0x0"),
             ...(params[0].gas ? { gas: BigInt(params[0].gas) } : {})
           });
+          walletBehavior.lastHash = hash;
+          if (walletBehavior.forgetNext) {
+            walletBehavior.forgetNext = false;
+            return { fixtureForgot: true };
+          }
+          return hash;
         }
         const response = await fetch(rpc, {
           method: "POST",
@@ -64,7 +82,16 @@ export async function verifyPortalAdminBrowser({
       const listeners = new Map();
       window.ethereum = {
         isMetaMask: true,
-        request: (input) => window.portalAdminWallet(input),
+        request: async (input) => {
+          const result = await window.portalAdminWallet(input);
+          if (result?.fixtureRejected)
+            throw Object.assign(new Error("User rejected the request"), {
+              code: 4001
+            });
+          if (result?.fixtureForgot)
+            throw new Error("Wallet connection lost after submission");
+          return result;
+        },
         on: (name, listener) => listeners.set(name, listener),
         removeListener: (name) => listeners.delete(name)
       };
@@ -294,6 +321,16 @@ export async function verifyPortalAdminBrowser({
     assert.equal(after.round.id, before.round.id + 1n);
     assert.equal(after.round.endsAt - after.round.startsAt, 660n);
     assert.notEqual(after.round.portalId, before.round.portalId);
+    await verifyGuidedAirdrop({
+      page,
+      origin,
+      chain,
+      call,
+      wrapper,
+      ledger,
+      owner,
+      walletBehavior
+    });
   } catch (error) {
     console.error(
       "Admin browser alerts:",
