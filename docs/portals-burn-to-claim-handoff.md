@@ -13,7 +13,7 @@ An active burn closes entry immediately while retaining the round's scheduled en
 ## Where to continue
 
 - [Implementation specification](portals-burn-to-claim-plan.md), [overall status](portals-implementation-status.md) and [release runbook](portals-runbook.md).
-- [Updated system graphic](artwork/portal-system-overview-v3.png). It was made with the built-in image generation tool using the prior diagram plus the actual Rainbow Portal and Blue Yunidragon card references. The exact [prompt](artwork/portal-system-overview-v3.prompt.txt) and [source/hash record](artwork/portal-system-overview-v3.sources.json) are retained.
+- The updated system graphic, exact generation prompt and source/hash record are retained in the private review archive. It used the prior diagram plus the actual Rainbow Portal and Blue Yunidragon card references.
 - Reuse the supplied admin/grader/AI-payout settings from private operator configuration. `PORTALS_FEE_RECIPIENT` is obsolete and ignored. Read untracked `AGENTS.local.md` before any production check or change; recipient reports and operator-specific evidence remain private.
 
 ## Code map

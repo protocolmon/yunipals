@@ -8,7 +8,7 @@ Create an upgradeable ERC-721 portal collection and a global registry that opens
 
 Each portal NFT accumulates the portal component of payments made through it. Its current owner can claim that accumulated USDC only by permanently burning the portal NFT. The balance follows the NFT through transfers and sales. Each redemption reduces the live portal supply; admin minting remains possible within the original lifetime caps.
 
-The [illustrated system overview](artwork/portal-system-overview-v3.png) shows fee accumulation, owner redemption, the grading flow and model roles. It uses the actual Rainbow Portal and Blue Yunidragon TCG images as generation references. The edited monster card is illustrative and does not represent a completed grading result. Its prompt and sources are retained beside the image. Earlier diagrams showing a direct portal-wallet payout are superseded.
+The historical illustrated system overview in the private review archive shows fee accumulation, owner redemption, the grading flow and model roles. It uses the actual Rainbow Portal and Blue Yunidragon TCG images as generation references. The edited monster card is illustrative and does not represent a completed grading result. Its prompt and sources are retained in that archive. Earlier diagrams showing a direct portal-wallet payout are superseded.
 
 **1. Portal collection and admin minting**
 
