@@ -29,6 +29,13 @@ const fresh = async () =>
       `SELECT ${readCacheFreshSql("134", ["bnb"])} AS fresh`
     )
   ).rows[0]!.fresh;
+/** Valid apart from changed data, so only waiting for its rebuild. */
+const usable = async () =>
+  (
+    await db.query<{ usable: boolean }>(
+      `SELECT ${readCacheFreshSql("134", ["bnb"], { allowChanged: true })} AS usable`
+    )
+  ).rows[0]!.usable;
 const transfer = (block: number, from: string, to: string) =>
   db.query(
     `INSERT INTO transfer_source.transfer_event VALUES('bnb',$1,$2,$3)`,
@@ -119,4 +126,28 @@ it("ignores a mint the boundary has not reached", async () => {
   expect(await fresh()).toBe(true);
   await sourceAt(boundary + 30);
   expect(await fresh()).toBe(false);
+});
+
+it("stays usable while a mint or a metadata change waits for its rebuild", async () => {
+  await transfer(boundary + 10, zero, alice);
+  await sourceAt(boundary + 20);
+  expect(await fresh()).toBe(false);
+  expect(await usable()).toBe(true);
+  await db.exec("DELETE FROM transfer_source.transfer_event");
+  await db.exec("UPDATE metadata_projection.read_epoch SET revision=4");
+  expect(await fresh()).toBe(false);
+  expect(await usable()).toBe(true);
+});
+
+it("is not usable when it belongs to another release or its block is gone", async () => {
+  await db.exec(
+    "UPDATE metadata_projection.read_set SET ownership_read_identity='other'"
+  );
+  expect(await usable()).toBe(false);
+  await db.exec(
+    "UPDATE metadata_projection.read_set SET ownership_read_identity='identity'"
+  );
+  expect(await usable()).toBe(true);
+  await db.exec("DELETE FROM transfer_source.chain_block");
+  expect(await usable()).toBe(false);
 });

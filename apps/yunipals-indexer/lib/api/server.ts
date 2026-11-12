@@ -77,6 +77,7 @@ import {
 } from "../ownership/readiness.js";
 import { cachedExactCountSql } from "./cached-exact-count.js";
 import { ExactCountCache } from "./exact-count-cache.js";
+import { RebuildGrace } from "./rebuild-grace.js";
 import { nativeBaseMetadataReads } from "../metadata/base-mode.js";
 import {
   rarityPageQueries,
@@ -106,6 +107,9 @@ const port = Number(process.env.API_PORT ?? 9011);
 const exactCountCache = new ExactCountCache(
   Number(process.env.API_EXACT_COUNT_CACHE_TTL_MS ?? 15_000),
   Number(process.env.API_EXACT_COUNT_CACHE_MAX ?? 1_000)
+);
+const countRebuildGrace = new RebuildGrace(
+  Number(process.env.API_COUNT_REBUILD_GRACE_MS ?? 300_000)
 );
 
 const isDatabaseUnavailable = (error: unknown) => {
@@ -901,35 +905,45 @@ app.get("/v1/tokens", async (c) => {
     : `SELECT COALESCE(sum(total), 0)::int AS total FROM (${filteredCountSql}) filtered_counts`;
   const cachedCountEligible =
     cachedProofs && !ownerResolution && traitGroups.size === 0;
-  const countSql = cachedCountEligible
-    ? cachedExactCountSql({
-        chains,
-        generation: projectionId!,
-        relations: selectedRelations,
-        filters: countWithoutVisibility,
-        fallback: canonicalCountSql,
-        burned: burned === undefined ? undefined : burned === "true"
-      })
-    : canonicalCountSql;
+  const countSql = (rebuilding = false) =>
+    cachedCountEligible
+      ? cachedExactCountSql({
+          chains,
+          generation: projectionId!,
+          relations: selectedRelations,
+          filters: countWithoutVisibility,
+          fallback: canonicalCountSql,
+          burned: burned === undefined ? undefined : burned === "true",
+          rebuilding
+        })
+      : canonicalCountSql;
   // A cold exact count validates every publication and chain anchor. Give that
   // bounded read-only query its own budget; ordinary API reads retain 10 s.
   const queryExactCount = async () => {
     if (simpleExactCount && !cachedCountEligible)
-      return Number((await pool.query(countSql, countParams)).rows[0].total);
+      return Number((await pool.query(countSql(), countParams)).rows[0].total);
     return apiReadTransaction(pool, async (client) => {
+      let rebuilding = false;
       await client.query("SET LOCAL statement_timeout = '30s'");
       await client.query("SET LOCAL work_mem = '32MB'");
       await client.query("SET LOCAL jit = off");
       if (!ownerResolution && (traitGroups.size === 0 || broadTraits)) {
         await client.query("SET LOCAL work_mem = '64MB'");
-        const cachedCountReady =
-          cachedCountEligible &&
-          unifiedOwnershipReads &&
-          (
-            await client.query<{ fresh: boolean }>(
-              `SELECT ${readCacheFreshSql(projectionId!, chains)} AS fresh`
-            )
-          ).rows[0]?.fresh === true;
+        const cache =
+          cachedCountEligible && unifiedOwnershipReads
+            ? (
+                await client.query<{ fresh: boolean; usable: boolean }>(
+                  `SELECT ${readCacheFreshSql(projectionId!, chains)} AS fresh,
+                    ${readCacheFreshSql(projectionId!, chains, { allowChanged: true })} AS usable`
+                )
+              ).rows[0]
+            : undefined;
+        // A changed read set makes the exact count validate every token, which
+        // takes far longer than the rebuild that is already on its way.
+        rebuilding = cache
+          ? countRebuildGrace.allows(`${projectionId}:${chains.join()}`, cache)
+          : false;
+        const cachedCountReady = cache?.fresh === true || rebuilding;
         await client.query(
           cachedCountReady
             ? "SET LOCAL enable_nestloop = on"
@@ -941,7 +955,9 @@ app.get("/v1/tokens", async (c) => {
         await client.query("SET LOCAL join_collapse_limit = 1");
         await client.query("SET LOCAL from_collapse_limit = 1");
       }
-      return Number((await client.query(countSql, countParams)).rows[0].total);
+      return Number(
+        (await client.query(countSql(rebuilding), countParams)).rows[0].total
+      );
     });
   };
   const countPromise = (async () => {
