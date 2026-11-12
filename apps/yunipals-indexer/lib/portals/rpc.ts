@@ -6,6 +6,13 @@ import {
   type Hex
 } from "viem";
 
+export function portalLogBlockRange(env: NodeJS.ProcessEnv) {
+  const value = env.PORTALS_LOG_BLOCK_RANGE ?? "2000";
+  if (!/^[1-9][0-9]{0,3}$/.test(value) || Number(value) > 2000)
+    throw new Error("PORTALS_LOG_BLOCK_RANGE must be between 1 and 2000.");
+  return BigInt(value);
+}
+
 export function portalRpcUrls(env: NodeJS.ProcessEnv) {
   const values = [
     env.PORTALS_RPC_URL,
@@ -88,6 +95,7 @@ export type PortalRpcPreflightInput = {
   startBlock: bigint;
   knownTransaction: Hex;
   absentTransaction: Hex;
+  logBlockRange?: bigint;
 };
 
 /** Read-only: no database, provider inference, wallet signing or broadcast. */
@@ -95,9 +103,12 @@ export async function preflightPortalRpc(
   urls: readonly string[],
   input: PortalRpcPreflightInput
 ) {
+  const range = input.logBlockRange ?? 2000n;
   if (
     input.startBlock < 1n ||
-    input.absentTransaction === input.knownTransaction
+    input.absentTransaction === input.knownTransaction ||
+    range < 1n ||
+    range > 2000n
   )
     throw new Error("Invalid RPC probe inputs.");
   const reports = [];
@@ -160,7 +171,9 @@ export async function preflightPortalRpc(
         const head = await client.getBlockNumber({ cacheTime: 0 });
         if (head < input.startBlock) return false;
         const end =
-          head < input.startBlock + 1999n ? head : input.startBlock + 1999n;
+          head < input.startBlock + range - 1n
+            ? head
+            : input.startBlock + range - 1n;
         const before = await client.getBlock({ blockNumber: end });
         const logs = await client.getLogs({
           address: input.grading,

@@ -1,7 +1,11 @@
 import { randomBytes } from "node:crypto";
 import { loadEnvFile } from "node:process";
 import { isAddress, isHash, toHex } from "viem";
-import { portalRpcUrls, preflightPortalRpc } from "../lib/portals/rpc.js";
+import {
+  portalRpcUrls,
+  preflightPortalRpc,
+  portalLogBlockRange
+} from "../lib/portals/rpc.js";
 
 async function main() {
   if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
@@ -29,6 +33,7 @@ async function main() {
     chainId,
     grading,
     startBlock: BigInt(start),
+    logBlockRange: portalLogBlockRange(process.env),
     knownTransaction,
     absentTransaction: toHex(randomBytes(32))
   });

@@ -16,7 +16,11 @@ import { PortalWorker } from "../lib/portals/worker.js";
 import { PortalThemeWorker } from "../lib/portals/theme-worker.js";
 import { portalCompetitionAbi } from "@protopals/yunipals-market-core/portalAbi";
 import { configuredPortalWorkerPolicy } from "../lib/portals/policy.js";
-import { portalRpcTransport, portalRpcUrls } from "../lib/portals/rpc.js";
+import {
+  portalRpcTransport,
+  portalRpcUrls,
+  portalLogBlockRange
+} from "../lib/portals/rpc.js";
 import {
   PgPortalTransactionJournal,
   PortalTransactionSender
@@ -190,7 +194,8 @@ async function main() {
                 args: [id, result]
               })
             })
-        : undefined
+        : undefined,
+      portalLogBlockRange(process.env)
     );
     const themes = new PortalThemeWorker(
       runtime.chain,

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createPublicClient, type Hex } from "viem";
 import {
   portalRpcTransport,
+  portalLogBlockRange,
   portalRpcUrls,
   preflightPortalRpc,
   verifyPortalRpcChains
@@ -48,6 +49,24 @@ function rpc(
   return methods;
 }
 describe("portal RPC compatibility", () => {
+  it("bounds configured historical log ranges without changing the default", () => {
+    expect(portalLogBlockRange({})).toBe(2000n);
+    expect(portalLogBlockRange({ PORTALS_LOG_BLOCK_RANGE: "1000" })).toBe(
+      1000n
+    );
+    for (const value of [
+      "",
+      "0",
+      "-1",
+      "2001",
+      "1.5",
+      "1e3",
+      "99999999999999999"
+    ])
+      expect(() =>
+        portalLogBlockRange({ PORTALS_LOG_BLOCK_RANGE: value })
+      ).toThrow("between 1 and 2000");
+  });
   it("validates endpoints without leaking credentials and restricts insecure local overrides", () => {
     expect(
       portalRpcUrls({
@@ -98,7 +117,12 @@ describe("portal RPC compatibility", () => {
       if (method === "eth_getCode") return "0x6000";
       if (method === "eth_getTransactionByHash") return null;
       if (method === "eth_blockNumber") return "0x800";
-      if (method === "eth_getLogs") return [];
+      if (method === "eth_getLogs") {
+        const range = params[0] as { fromBlock: Hex; toBlock: Hex };
+        if (BigInt(range.toBlock) - BigInt(range.fromBlock) >= 1000n)
+          return new Error("provider permits at most 1000 blocks");
+        return [];
+      }
       if (method === "eth_getBlockByNumber")
         return { number: params[0], hash, timestamp: "0x10", transactions: [] };
       if (method === "eth_getTransactionReceipt") {
@@ -123,7 +147,8 @@ describe("portal RPC compatibility", () => {
       grading,
       startBlock: 20n,
       knownTransaction: hash,
-      absentTransaction: absent
+      absentTransaction: absent,
+      logBlockRange: 1000n
     });
     expect(report.ready).toBe(false);
     expect(report.reports[0].checks).toEqual({
@@ -134,7 +159,7 @@ describe("portal RPC compatibility", () => {
       missingReceipt: false,
       historicalLogs: true
     });
-    expect(report.reports[0].blockNumber).toBe("2019");
+    expect(report.reports[0].blockNumber).toBe("1019");
     expect(methods.every((method) => !/send|sign/.test(method))).toBe(true);
   });
 });
