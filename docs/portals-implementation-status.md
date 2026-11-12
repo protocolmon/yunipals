@@ -1,0 +1,53 @@
+# Portals implementation status
+
+Engineering status: 12 November 2026. The implementation is integrated with the current application base in an isolated portal branch. This is a source and validation record, not a deployment inventory. Actual addresses, signed setup receipts, service state and the frozen external-audit archive remain in private operator records. Reconcile those records before deployment; do not repeat already completed setup transactions.
+
+See the [product specification](portals-implementation-plan.md), [completion plan](portals-pr-completion-plan.md), [release runbook](portals-runbook.md) and [runtime packaging guide](../ops/portals/README.md).
+
+## Player and owner behavior
+
+- Portal NFTs use the existing TCG presentation, one shared approved artwork per kind, lifetime ranges of 1,000 IDs and immutable per-NFT gates. Admins commit recipient lists, receive Chainlink VRF randomness and deliver in chunks. Repeated recipient addresses are preserved.
+- One global portal accepts cards for exactly 660 seconds. Permissionless VRF request, fulfillment and activation are separate stages. Indexing or AI delays never extend the window. Retirement closes admission immediately; the last live portal can repeat.
+- Onchain eligibility uses immutable card traits and family sequence. `originalOnly` overrides sequence only. Rainbow's versioned effect recolors the creature while retaining its original base color. Players submit a signed private spell against the latest completed raw artwork.
+- Initial Rainbow pricing is 0.99 USDC: 0.245 to the AI wallet, 0.245 credited to the exact portal used, and 0.50 deposited into the competition pool. Versioned admin pricing changes future AI/portal fees. The current portal owner can burn that NFT to claim its accrued balance; transfers carry the balance.
+- Grading records Creativity, Harmony, Craft and Impact on a 1–100 scale, with per-kind rubrics, evidence and conservative copying penalties. A card can transfer while grading; accepted work has no timeout/refund and regrading is unlimited. Only one request per card is pending at a time.
+- Admission-order challenges contain 111 paid submissions. Final scores rank the top three, ties favor earlier entries, and submitting wallets receive 50/30/20 payouts. Any wallet can settle or retry a deferred prize; the contract determines payees and amounts. Prize reserves remain separate from operator funds.
+- After admission #111, entry pauses until all grades complete and the three winning spells produce the next immutable theme. Individual results publish as they finish. Theme interpretation affects Harmony; shared theme ideas are exempt from copying penalties. Ready prizes remain settleable during this pause.
+
+## Completed application and runtime work
+
+The existing TCG collection, collector and token-detail artwork uses the canonical graded metadata once ready, while ungraded cards retain their original artwork and foil layers. Token details link to preselected spell entry and grading history. The app includes active portal entry, card history and slab downloads, owner inventory/detail/claim flows, competition standings and direct settlement, and role-controlled kind/mint/pricing administration. Exact transaction intent and identity survive navigation and reload, scoped to chain, deployment and wallet. Success waits for a canonical receipt **and matching applied portal-ledger projections**. The portal ledger has its own source identity and replay generation; another indexer's head cannot satisfy completion.
+
+Indexed evidence covers admission/competition entries, completion/publication, fee credits and burns, observed transfers, randomness/round activation, mint commitments and delivery chunks, competition payouts, themes and admin changes. Delays retain the submitted hash and show a status retry; replacement/cancellation and reorgs invalidate obsolete evidence. USDC approval uses a successful receipt plus a fresh allowance read. Live ownership, round expiry, input version, fee version and theme are rechecked before payment.
+
+The worker signs into a durable transaction journal before broadcasting. A PostgreSQL signer lock coordinates grades, themes and deferred result notifications. Recovery reconciles the same nonce, intent and signed bytes; provider authorization errors do not imply absence. Compatible primary/fallback RPCs are checked separately by a read-only preflight. Unexplained nonce consumption stops automatic sends for investigation.
+
+Dedicated portal schema selection and separate migration/API/worker/ledger grants avoid access to unrelated application data. Worker and ledger enablement are explicit. Generic service templates document startup, graceful shutdown, immutable releases, runtime roles, backup/restore and rollback. Public health reports canonical ledger/worker progress, queue age/retries, publication delay, reserve liabilities, challenge phase and optional signer balance without private spells or credentials.
+
+Confirmed card metadata uses a deterministic, content-addressed PNG slab with bundled fonts and a renderer manifest binding the raw artwork, card/version/kind and four final scores. The raw edited image remains the next AI input. History, spells, reports, display images and theme evidence require canonical indexed publication. Older publications are requeued only for display reconstruction, preserving their original copying-cutoff timestamps and saved AI results. Burned-card history remains available independently of live ERC721 metadata.
+
+## Reproducible verification
+
+The portal CI workflow uses pinned Foundry/Anvil and browser tooling, a disposable PostgreSQL service, deterministic AI/VRF fixtures and real local transaction receipts. No paid provider or public-chain sends occur in default checks.
+
+- Release-profile contracts: 160 tests passed, nine opt-in checks skipped; storage layout, runtime bytecode size and generated ABI consistency passed. The current main-branch mint engine's payment-adapter integration is preserved. Its 24,573-byte runtime leaves only three bytes below EIP-170, so any later Solidity change requires fresh size validation.
+- Portal backend/recovery/evidence/slab tests: 82 passed. Coverage includes RPC access failures, durable signed attempts, lease fencing, exact receipt/event/projection identity, reload/replacement/reorg recovery, policy compatibility and deterministic publication.
+- Genuine PostgreSQL tests cover repeat migration, least-privilege grants, concurrent claims and signer locks, crash recovery, atomic ledger rollback and dump/restore of queued work, provider checkpoints, signed attempts and cursors.
+- The local browser runner covers admission/payment with delayed indexing, reload recovery, funded and zero-value burn/claim, grading after portal retirement/card transfer, canonical PNG metadata, a complete 111-entry challenge, exact payouts and entry #112 after durable winner-theme publication. Additional admin coverage includes a 35-NFT repeated-recipient list delivered in two chunks, reload restoration, future pricing and staged VRF activation.
+- Repository type checks and build pass. Existing indexer, frontend and booster regressions are also exercised. The frontend's existing bundle-size warning remains; required CI results are attached to the PR's exact revision.
+
+## Historical live evidence
+
+Earlier isolated Base Sepolia rehearsals verified real direct-funded Chainlink fulfillment, signed private intake, actual image/embedding/grading calls, USDC accounting, owner redemption and an eleven-entry live-AI challenge with permissionless exact payouts. A separate 112-entry fixture established admission-order membership using deterministic scores. Those runs predate sequential winner themes and must not be presented as current-version live acceptance.
+
+The private artwork review retains the original examples, stronger pose/gesture transformations, per-kind rubric cases and graded slab previews. Bounded originality checks covered copying, paraphrase, translation, generic language, same-author reuse, remix and prompt injection. A live theme extraction sample verified provider compatibility. These samples are not broad scoring calibration or a guarantee of future AI costs.
+
+The optional CRE receiver/workflow remains available, with authenticated forwarder/workflow domains and deterministic planner tests. Default settlement does not use it. Live DON delivery is unverified and is not a launch dependency.
+
+## External review and activation
+
+No audit findings have been supplied to this implementation task. Preserve the frozen audit archive and review the source delta before public activation. Contract upgrade authority and the current AI grader/theme publisher remain trust dependencies; permissionless settlement does not decentralize scoring.
+
+The application PR does not activate services, send new mainnet transactions or perform the airdrop. Operators must reconcile existing setup/verification receipts, configure a compatible RPC and dedicated database/artifact access, catch up the ledger, validate retained policies and worker roles, and complete audit review. Remaining controlled live acceptance is on mainnet, following the user's selected launch path.
+
+The airdrop rule is one new Rainbow Portal per eligible live OG Rainbow or Ghost Portal NFT, including verified staking beneficiaries. Refresh ownership at execution, preserve repeated wallet entries, resolve classification exceptions, and verify each actual delivery. Provisional recipient counts are not an execution snapshot. Keep recipient lists, credentials and execution receipts outside Git.
