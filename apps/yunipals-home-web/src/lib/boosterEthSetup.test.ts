@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { resolve } from "node:path";
 import { encodeAbiParameters, parseAbiParameters, type Hex } from "viem";
 import { ethSetupBundle, matchesEthRuntime } from "./boosterEthSetup";
+import source from "./fixtures/eth-payment-package-source.json" with { type: "json" };
 
 test("deployment runtime checks allow only declared immutable spans", () => {
   const template = `0x${"00".repeat(32)}aabb`;
@@ -17,34 +20,32 @@ test("deployment runtime checks allow only declared immutable spans", () => {
   assert.equal(matchesEthRuntime(`${deployed}00`, template, refs), false);
 });
 
-test("review package is generated from exactly the compiled candidates", async (context) => {
-  const root = new URL("../../../../", import.meta.url);
-  let engine, adapter;
-  try {
-    engine = JSON.parse(
-      await readFile(
-        new URL(
-          "contracts/boosters/out/BoosterPacks.sol/BoosterPacks.json",
-          root
-        ),
-        "utf8"
-      )
+test("the reviewed ETH launch package is preserved across later engine releases", async () => {
+  const bytes = await readFile(
+    new URL("./fixtures/eth-payment-package.json", import.meta.url)
+  );
+  assert.equal(
+    createHash("sha256").update(bytes).digest("hex"),
+    source.packageSha256
+  );
+});
+
+test("review package matches contracts compiled from its pinned source", async (context) => {
+  // A newer engine can add portal mint facts without silently rewriting a
+  // previously reviewed deployment package. CI compiles this exact source.
+  const root = process.env.BOOSTER_ETH_REVIEW_ARTIFACT_DIRECTORY;
+  if (!root)
+    return context.skip(
+      `Compile source ${source.commit} and set BOOSTER_ETH_REVIEW_ARTIFACT_DIRECTORY (see booster-eth.yml).`
     );
-    adapter = JSON.parse(
-      await readFile(
-        new URL(
-          "contracts/boosters/out/BoosterEthPayment.sol/BoosterEthPayment.json",
-          root
-        ),
-        "utf8"
-      )
+  const artifact = async (name: string) =>
+    JSON.parse(
+      await readFile(resolve(root, `${name}.sol/${name}.json`), "utf8")
     );
-  } catch {
-    context.skip(
-      "Build the Solidity contracts to compare the compiled package."
-    );
-    return;
-  }
+  const [engine, adapter] = await Promise.all([
+    artifact("BoosterPacks"),
+    artifact("BoosterEthPayment")
+  ]);
   assert.equal(ethSetupBundle.engineCreation, engine.bytecode.object);
   assert.equal(ethSetupBundle.engineRuntime, engine.deployedBytecode.object);
   assert.ok((ethSetupBundle.engineRuntime.length - 2) / 2 <= 24576);
