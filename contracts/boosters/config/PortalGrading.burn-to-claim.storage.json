@@ -1,0 +1,798 @@
+[
+  {
+    "label": "cards",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract YunipalMonsters",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "registry",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PortalRegistry",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "usdc",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IERC20",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "packTypeId",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "catalogHash",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "bytes32",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "metadataBaseURI",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "bytes",
+      "label": "string",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "admissionsPaused",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    }
+  },
+  {
+    "label": "activeRubric",
+    "slot": "7",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "bytes32",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "requestCount",
+    "slot": "8",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "_baseArt",
+    "slot": "9",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "label": "mapping(uint32 => struct PortalGrading.Asset)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGrading.Asset",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "uri",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "bytes",
+              "label": "string",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "hash",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "paymentPolicies",
+    "slot": "10",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGrading.PaymentPolicy)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGrading.PaymentPolicy",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "label": "aiFee",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint128",
+              "numberOfBytes": "16"
+            }
+          },
+          {
+            "label": "portalFee",
+            "slot": "0",
+            "offset": 16,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint128",
+              "numberOfBytes": "16"
+            }
+          },
+          {
+            "label": "aiRecipient",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "portalRecipient",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "version",
+            "slot": "2",
+            "offset": 20,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_rubrics",
+    "slot": "11",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(bytes32 => struct PortalGrading.Rubric)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGrading.Rubric",
+        "numberOfBytes": "128",
+        "members": [
+          {
+            "label": "modelPolicy",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "copyCap",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "uri",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "bytes",
+              "label": "string",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "configured",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_requests",
+    "slot": "12",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGrading.Request)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGrading.Request",
+        "numberOfBytes": "448",
+        "members": [
+          {
+            "label": "tokenId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "portalId",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "kindId",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "submitter",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "roundId",
+            "slot": "3",
+            "offset": 20,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "acceptedAt",
+            "slot": "4",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "acceptedBlock",
+            "slot": "4",
+            "offset": 8,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "artVersion",
+            "slot": "4",
+            "offset": 16,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "spellCommitment",
+            "slot": "5",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "rubricId",
+            "slot": "6",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "input",
+            "slot": "7",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PortalGrading.Asset",
+              "numberOfBytes": "64",
+              "members": [
+                {
+                  "label": "uri",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "hash",
+                  "slot": "1",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "bytes32",
+                    "numberOfBytes": "32"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "payment",
+            "slot": "9",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PortalGrading.PaymentPolicy",
+              "numberOfBytes": "96",
+              "members": [
+                {
+                  "label": "aiFee",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint128",
+                    "numberOfBytes": "16"
+                  }
+                },
+                {
+                  "label": "portalFee",
+                  "slot": "0",
+                  "offset": 16,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint128",
+                    "numberOfBytes": "16"
+                  }
+                },
+                {
+                  "label": "aiRecipient",
+                  "slot": "1",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "address",
+                    "numberOfBytes": "20"
+                  }
+                },
+                {
+                  "label": "portalRecipient",
+                  "slot": "2",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "address",
+                    "numberOfBytes": "20"
+                  }
+                },
+                {
+                  "label": "version",
+                  "slot": "2",
+                  "offset": 20,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint64",
+                    "numberOfBytes": "8"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "nonce",
+            "slot": "12",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "completed",
+            "slot": "13",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "_results",
+    "slot": "13",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalGrading.Result)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalGrading.Result",
+        "numberOfBytes": "352",
+        "members": [
+          {
+            "label": "requestBinding",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "artwork",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct PortalGrading.Asset",
+              "numberOfBytes": "64",
+              "members": [
+                {
+                  "label": "uri",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "bytes",
+                    "label": "string",
+                    "numberOfBytes": "32"
+                  }
+                },
+                {
+                  "label": "hash",
+                  "slot": "1",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "bytes32",
+                    "numberOfBytes": "32"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "label": "scores",
+            "slot": "3",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8[4]",
+              "numberOfBytes": "32",
+              "base": {
+                "encoding": "inplace",
+                "label": "uint8",
+                "numberOfBytes": "1"
+              }
+            }
+          },
+          {
+            "label": "baseCreativity",
+            "slot": "4",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "copied",
+            "slot": "4",
+            "offset": 1,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "evidenceHash",
+            "slot": "5",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "reportHash",
+            "slot": "6",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "modelsHash",
+            "slot": "7",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bytes32",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "reportURI",
+            "slot": "8",
+            "offset": 0,
+            "type": {
+              "encoding": "bytes",
+              "label": "string",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "spellURI",
+            "slot": "9",
+            "offset": 0,
+            "type": {
+              "encoding": "bytes",
+              "label": "string",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "completedAt",
+            "slot": "10",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "pendingRequest",
+    "slot": "14",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "artVersion",
+    "slot": "15",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint64)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  {
+    "label": "_history",
+    "slot": "16",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256[])",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32",
+        "base": {
+          "encoding": "inplace",
+          "label": "uint256",
+          "numberOfBytes": "32"
+        }
+      }
+    }
+  },
+  {
+    "label": "nonces",
+    "slot": "17",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "completedBy",
+    "slot": "18",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => address)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      }
+    }
+  },
+  {
+    "label": "portalBalances",
+    "slot": "19",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "totalPortalLiability",
+    "slot": "20",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  }
+]

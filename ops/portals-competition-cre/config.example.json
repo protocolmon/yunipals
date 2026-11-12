@@ -1,0 +1,10 @@
+{
+  "chainId": 84532,
+  "chainSelectorName": "ethereum-testnet-sepolia-base-1",
+  "isTestnet": true,
+  "competition": "0x0000000000000000000000000000000000000000",
+  "receiver": "0x0000000000000000000000000000000000000000",
+  "rulesHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "schedule": "0 * * * * *",
+  "gasLimit": "1200000"
+}

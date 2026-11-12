@@ -115,7 +115,7 @@ abstract contract BoosterProofRecovery is VRF {
         }
     }
 
-    function _requestBlockhash(ProofContext memory context) private view returns (bytes32 hash) {
+    function _requestBlockhash(ProofContext memory context) internal view returns (bytes32 hash) {
         require(context.requestBlock != 0 && context.chainId == block.chainid, "missing proof context");
         hash = blockhash(context.requestBlock);
         if (hash == bytes32(0)) hash = checkpointedBlockhash(context.requestBlock);
@@ -131,7 +131,12 @@ abstract contract BoosterProofRecovery is VRF {
         require(hash != bytes32(0), "checkpoint request block first");
     }
 
-    function _verifyRequestProof(uint256 id, Proof calldata proof) internal view returns (uint256 word) {
+    function _verifyRequestProof(uint256 id, Proof calldata proof)
+        internal
+        view
+        virtual
+        returns (uint256 word)
+    {
         ProofContext memory context = proofContext(id);
         require(context.requestBlock != 0 && context.chainId == block.chainid, "missing proof context");
         require(block.number >= uint256(context.requestBlock) + context.confirmations, "wait confirmations");

@@ -15,6 +15,10 @@ interface IOriginalBurn {
     function onOriginalBurned(uint256 tokenId) external;
 }
 
+interface IGradedCardMetadata {
+    function metadataURI(uint256 tokenId) external view returns (string memory);
+}
+
 contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
     struct Provenance {
         uint256 packTypeId;
@@ -24,13 +28,24 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         bool isOriginal;
     }
 
+    struct CardFacts {
+        uint32 sequence;
+        uint64 mintedAt;
+        bool initialized;
+    }
+
     PackRegistry public registry;
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public reservedType;
     mapping(uint256 => Provenance) public provenance;
     // Optional token-ID metadata. Existing proxies default to frozen variant metadata.
     string public tokenMetadataBaseURI;
-    uint256[45] private __gap;
+    mapping(uint256 => CardFacts) public cardFacts;
+    bool public cardFactsImportClosed;
+    address public gradingRegistry;
+    // A bitmap prevents duplicate sequence imports without a fresh storage slot per offspring.
+    mapping(uint256 => mapping(uint32 => uint256)) private _recordedSequences;
+    uint256[42] private __gap;
 
     event MonsterMinted(
         uint256 indexed tokenId,
@@ -46,6 +61,9 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
     );
     event OriginalBurned(uint256 indexed tokenId, uint256 indexed packTypeId);
     event TokenMetadataBaseURISet(string previousURI, string newURI);
+    event CardFactsRecorded(uint256 indexed tokenId, uint32 sequence, uint64 mintedAt, bool imported);
+    event CardFactsImportClosed();
+    event GradingRegistrySet(address indexed gradingRegistry);
 
     constructor() {
         _disableInitializers();
@@ -76,6 +94,23 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         external
         returns (uint256 id)
     {
+        return _mintOffspring(originalId, recipient, variantId);
+    }
+
+    function mintOffspringWithSequence(
+        uint256 originalId,
+        address recipient,
+        uint32 variantId,
+        uint32 sequence
+    ) external {
+        uint256 id = _mintOffspring(originalId, recipient, variantId);
+        _writeCardFacts(id, sequence, uint64(block.timestamp), false);
+    }
+
+    function _mintOffspring(uint256 originalId, address recipient, uint32 variantId)
+        private
+        returns (uint256 id)
+    {
         Provenance storage parent = provenance[originalId];
         _checkEngine(parent.packTypeId);
         require(parent.isOriginal && ownerOf(originalId) == recipient, "invalid parent or owner");
@@ -96,12 +131,71 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
+        if (gradingRegistry != address(0)) {
+            string memory graded = IGradedCardMetadata(gradingRegistry).metadataURI(tokenId);
+            if (bytes(graded).length != 0) return graded;
+        }
         if (bytes(tokenMetadataBaseURI).length != 0) {
             return string.concat(tokenMetadataBaseURI, Strings.toString(tokenId), ".json");
         }
         Provenance storage p = provenance[tokenId];
         PackRegistry.Pack memory pack = registry.getPack(p.packTypeId);
         return string.concat(pack.rules.metadataBaseURI, Strings.toString(p.variantId), ".json");
+    }
+
+    /// @notice Called atomically by the mint engine with its pre-batch cumulative count.
+    function recordMintFacts(uint256 tokenId, uint32 sequence) external {
+        _checkEngine(provenance[tokenId].packTypeId);
+        _writeCardFacts(tokenId, sequence, uint64(block.timestamp), false);
+    }
+
+    /// @notice Direct, write-once historical import. Burned cards retain their provenance.
+    function importCardFacts(uint256[] calldata ids, uint32[] calldata sequences, uint64[] calldata times)
+        external
+        onlyRole(CONFIG_ROLE)
+    {
+        require(!cardFactsImportClosed && ids.length > 0 && ids.length <= 200, "import unavailable");
+        require(ids.length == sequences.length && ids.length == times.length, "length mismatch");
+        for (uint256 i; i < ids.length; ++i) {
+            _writeCardFacts(ids[i], sequences[i], times[i], true);
+        }
+    }
+
+    function closeCardFactsImport() external onlyRole(CONFIG_ROLE) {
+        require(!cardFactsImportClosed, "import closed");
+        cardFactsImportClosed = true;
+        emit CardFactsImportClosed();
+    }
+
+    function setGradingRegistry(address grading) external onlyRole(CONFIG_ROLE) {
+        require(grading.code.length != 0, "invalid grading registry");
+        gradingRegistry = grading;
+        emit GradingRegistrySet(grading);
+        if (nextTokenId > 1) emit BatchMetadataUpdate(1, nextTokenId - 1);
+    }
+
+    function notifyGradingUpdate(uint256 tokenId) external {
+        require(msg.sender == gradingRegistry, "grading registry only");
+        if (_ownerOf(tokenId) != address(0)) emit MetadataUpdate(tokenId);
+    }
+
+    function _writeCardFacts(uint256 tokenId, uint32 sequence, uint64 mintedAt, bool imported) private {
+        Provenance storage p = provenance[tokenId];
+        require(p.originalTokenId != 0 && !cardFacts[tokenId].initialized, "unknown or recorded card");
+        require(mintedAt != 0 && mintedAt <= block.timestamp, "invalid mint time");
+        require(p.isOriginal == (sequence == 0), "invalid sequence origin");
+        require(sequence < registry.getPack(p.packTypeId).totalVariants, "sequence outside family");
+        uint32 page = sequence >> 8;
+        uint256 mask = uint256(1) << (sequence & 255);
+        require(_recordedSequences[p.originalTokenId][page] & mask == 0, "family sequence already assigned");
+        CardFacts memory previous = cardFacts[tokenId];
+        require(previous.mintedAt == 0 || previous.mintedAt == mintedAt, "mint time mismatch");
+        if (!p.isOriginal && cardFacts[p.originalTokenId].initialized) {
+            require(mintedAt >= cardFacts[p.originalTokenId].mintedAt, "mint precedes original");
+        }
+        cardFacts[tokenId] = CardFacts(sequence, mintedAt, true);
+        _recordedSequences[p.originalTokenId][page] |= mask;
+        emit CardFactsRecorded(tokenId, sequence, mintedAt, imported);
     }
 
     /// @notice Configure token-specific metadata without editing any activated pack rules.
@@ -169,6 +263,8 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         provenance[id] = Provenance(packTypeId, parent, variantId, traits, original);
         // Oracle callbacks must never execute arbitrary ERC721Receiver code.
         _mint(recipient, id);
+        if (original) _writeCardFacts(id, 0, uint64(block.timestamp), false);
+        else cardFacts[id].mintedAt = uint64(block.timestamp);
         emit MonsterMinted(
             id,
             parent,

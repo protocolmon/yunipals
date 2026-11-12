@@ -4,6 +4,7 @@ pragma solidity 0.8.30;
 import {AuditFixture, AuditWrapper} from "./AuditPoC.t.sol";
 import {BoosterPacks} from "../src/BoosterPacks.sol";
 import {BoosterProofRecovery} from "../src/BoosterProofRecovery.sol";
+import {PortalRules} from "../src/PortalRules.sol";
 import {VRF} from "@chainlink/contracts/src/v0.8/vrf/VRF.sol";
 
 contract ProofEngineV2 is BoosterPacks {}
@@ -56,6 +57,17 @@ contract BoosterProofRecoveryTest is AuditFixture {
         vm.setBlockhash(f.number, f.hash);
     }
 
+    function testPortalHelperVerifiesSameFourRealProofsAndRejectsWrongRequest() public {
+        PortalRules rules = new PortalRules();
+        for (uint256 i; i < 4; ++i) {
+            Fixture memory f = fixture(i);
+            uint256 actualSeed = uint256(keccak256(abi.encodePacked(f.proof.seed, f.hash)));
+            assertEq(rules.verifyProof(f.id, f.proof, actualSeed), f.word);
+            vm.expectRevert("proof request mismatch");
+            rules.verifyProof(f.id + 1, f.proof, actualSeed);
+        }
+    }
+
     function testFourRealBaseProofsRestoreExactWordThenMint() public {
         for (uint256 i; i < 4; ++i) {
             Fixture memory f = fixture(i);
@@ -63,19 +75,19 @@ contract BoosterProofRecoveryTest is AuditFixture {
             uint256 supply = proto.totalSupply();
             uint256 feeBalance = address(wrapper).balance;
             confirmed(f);
-            vm.warp(block.timestamp + 10 days);
+            vm.warp(vm.getBlockTimestamp() + 10 days);
             vm.prank(bob); // Anyone may restore; it never redirects the opening.
             engine.restoreRandomness(f.id, f.proof);
             assertEq(engine.getRequest(f.id).seed, f.word);
             assertEq(uint256(engine.getRequest(f.id).status), uint256(BoosterPacks.Status.Seeded));
-            assertEq(engine.getOriginal(original).revealedAt, block.timestamp);
+            assertEq(engine.getOriginal(original).revealedAt, vm.getBlockTimestamp());
             assertEq(engine.claimable(original), 0);
             engine.recover(f.id);
             assertEq(monsters.ownerOf(original), alice);
             assertEq(engine.getOriginal(original).pendingRequest, 0);
             assertEq(proto.totalSupply(), supply);
             assertEq(address(wrapper).balance, feeBalance);
-            vm.warp(block.timestamp + 1 days);
+            vm.warp(vm.getBlockTimestamp() + 1 days);
             assertEq(engine.claimable(original), 1);
         }
     }
