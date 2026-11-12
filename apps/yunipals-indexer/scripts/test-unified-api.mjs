@@ -68,8 +68,11 @@ try {
   const { installReadCache } = await import(
     "../lib/metadata/read-cache-schema.ts"
   );
-  const { buildReadCache, readCacheFreshSql, cachedSearchReadRelationFor } =
-    await import("../lib/metadata/read-cache.ts");
+  const {
+    buildReadCache,
+    readCacheFreshSql,
+    cachedSearchReadRelationFor
+  } = await import("../lib/metadata/read-cache.ts");
   const {
     unifiedOwnershipStatus,
     assertOwnershipAvailable,
@@ -453,8 +456,8 @@ try {
     [JSON.stringify(buildId)]
   );
 
-  // Crossing an already-indexed transfer invalidates the cache even though no
-  // native dirty trigger fires at the later confirmation boundary.
+  // A read set stores no owner, so crossing an already-indexed transfer
+  // between owners keeps the cache.
   let head = BigInt(
     (
       await db.query(
@@ -509,31 +512,7 @@ try {
       .rows[0].fresh,
     true
   );
-  head = next + 20n;
-  await db.query(
-    `UPDATE ${schema}._ponder_meta SET value=jsonb_set(value,'{heartbeat_at}',$1::jsonb) WHERE key='app'`,
-    [String(Date.now())]
-  );
-  await db.query(
-    `UPDATE ${schema}._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=56`,
-    [checkpoint(56, head)]
-  );
   const timestamp = String(Math.floor(Date.now() / 1000));
-  await db.query(
-    `UPDATE ${schema}.chain_checkpoint SET block_number=$1,block_hash=$2,parent_hash=$3,timestamp=$4 WHERE chain_id=56`,
-    [String(head), hash(56, head), hash(56, head - 1n), timestamp]
-  );
-  for (let number = head - 50n; number <= head; number++)
-    await db.query(
-      `INSERT INTO ${schema}.chain_block VALUES($1,56,$2,$3,$4,$5) ON CONFLICT(id) DO NOTHING`,
-      [
-        `56:${number}`,
-        String(number),
-        hash(56, number),
-        hash(56, number - 1n),
-        timestamp
-      ]
-    );
   const rpc = {
     providerId: "local-api-test",
     chainId: async () => 56,
@@ -548,38 +527,134 @@ try {
       };
     }
   };
-  assert.equal(await observeIndexerChain(db, release, 56, rpc), "observed");
-  assert.equal(
+  /** Index and observe BNB up to a new head, moving the confirmation boundary. */
+  const moveBnbHead = async (to) => {
+    head = to;
+    await db.query(
+      `UPDATE ${schema}._ponder_meta SET value=jsonb_set(value,'{heartbeat_at}',$1::jsonb) WHERE key='app'`,
+      [String(Date.now())]
+    );
+    await db.query(
+      `UPDATE ${schema}._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=56`,
+      [checkpoint(56, head)]
+    );
+    await db.query(
+      `UPDATE ${schema}.chain_checkpoint SET block_number=$1,block_hash=$2,parent_hash=$3,timestamp=$4 WHERE chain_id=56`,
+      [String(head), hash(56, head), hash(56, head - 1n), timestamp]
+    );
+    for (let number = head - 50n; number <= head; number++)
+      await db.query(
+        `INSERT INTO ${schema}.chain_block VALUES($1,56,$2,$3,$4,$5) ON CONFLICT(id) DO NOTHING`,
+        [
+          `56:${number}`,
+          String(number),
+          hash(56, number),
+          hash(56, number - 1n),
+          timestamp
+        ]
+      );
+    assert.equal(await observeIndexerChain(db, release, 56, rpc), "observed");
+  };
+  const bnbRevision = async () =>
     (
       await db.query(
         "SELECT revision::text FROM metadata_projection.read_epoch WHERE collection='bnb'"
       )
-    ).rows[0].revision,
-    beforeRevision
-  );
-  assert.equal(
+    ).rows[0].revision;
+  const bnbFresh = async () =>
     (await db.query(`SELECT ${readCacheFreshSql("2", ["bnb"])} AS fresh`))
-      .rows[0].fresh,
-    false
-  );
-  assert.equal(
+      .rows[0].fresh;
+  const bnbCachedCount = async () =>
     (
       await db.query(
         `SELECT count(*)::int AS count FROM ${cachedSearchReadRelationFor(`"${readSchema}"`, ["bnb"], "2")} s`
       )
-    ).rows[0].count,
-    7
+    ).rows[0].count;
+  const bnbBoundary = async () =>
+    (
+      await db.query(
+        `SELECT s.ownership_boundary::text AS cached,source.block_number::text AS source
+        FROM metadata_projection.read_set s,"${readSchema}".source_boundary('bnb') source
+        WHERE s.collection='bnb' AND s.generation_id=2`
+      )
+    ).rows[0];
+  await moveBnbHead(next + 20n);
+  assert.equal(await bnbRevision(), beforeRevision);
+  assert.equal(await bnbFresh(), true);
+  assert.equal(await bnbCachedCount(), 7);
+  // The boundary crossed the transfer and the set is still the one in use.
+  const crossed = await bnbBoundary();
+  assert.ok(BigInt(crossed.cached) < next && BigInt(crossed.source) >= next);
+
+  // Crossing an already-indexed burn invalidates the cache even though no
+  // native dirty trigger fires at the later confirmation boundary.
+  const burnBlock = head + 10n;
+  const burnTx = hash(56, burnBlock + 90000n),
+    zero = `0x${"00".repeat(20)}`;
+  await db.query(
+    `UPDATE ${schema}.token SET owner=$1,burned=true,last_transfer_block=$2,last_transfer_timestamp=$2,last_transaction_hash=$3 WHERE collection='bnb' AND token_id='6'`,
+    [zero, String(burnBlock), burnTx]
   );
+  await db.query(
+    `UPDATE ${schema}.token_lifecycle SET burned_at_block=$1,burned_at_timestamp=$1,burn_transaction_hash=$2 WHERE collection='bnb' AND token_id='6' AND lifecycle=1`,
+    [String(burnBlock), burnTx]
+  );
+  await db.query(
+    `INSERT INTO ${schema}.transfer_event VALUES($1,'bnb',56,$2,'6',1,$3,$4,$5,$5,$6,0,0)`,
+    [`bnb:${burnTx}:0`, contract, bob, zero, String(burnBlock), burnTx]
+  );
+  await db.query(
+    `INSERT INTO ${schema}.canonical_event VALUES($1,'ownership:bnb',56,$2,'Transfer',$3,$4,$5,$6,$5,$7,0,0,'[]','0x')`,
+    [
+      `56:${contract}:${burnTx}:0`,
+      contract,
+      JSON.stringify({ from: bob, to: zero, tokenId: "6" }),
+      transferSource.abiHash,
+      String(burnBlock),
+      hash(56, burnBlock),
+      burnTx
+    ]
+  );
+  await db.query(
+    `UPDATE ${schema}._ponder_checkpoint SET latest_checkpoint=$1 WHERE chain_id=56`,
+    [checkpoint(56, burnBlock)]
+  );
+  // Indexing the burn fired the dirty trigger. The rebuilt set records that
+  // revision, while the boundary still shows the token unburned.
+  assert.notEqual(await bnbRevision(), beforeRevision);
+  assert.equal(await bnbFresh(), false);
+  const burnBuilder = await db.connect();
+  try {
+    await buildReadCache(burnBuilder, "2", "bnb");
+  } finally {
+    burnBuilder.release();
+  }
+  const burnRevision = await bnbRevision();
+  assert.equal(await bnbFresh(), true);
+  assert.ok(BigInt((await bnbBoundary()).cached) < burnBlock);
+  const burnedBefore = (
+    await db.query(
+      "SELECT burned_count::int AS burned FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
+    )
+  ).rows[0].burned;
+  await moveBnbHead(burnBlock + 20n);
+  assert.equal(await bnbRevision(), burnRevision);
+  assert.equal(await bnbFresh(), false);
+  assert.equal(await bnbCachedCount(), 7);
   const rebuild = await db.connect();
   try {
     await buildReadCache(rebuild, "2", "bnb");
   } finally {
     rebuild.release();
   }
+  assert.equal(await bnbFresh(), true);
   assert.equal(
-    (await db.query(`SELECT ${readCacheFreshSql("2", ["bnb"])} AS fresh`))
-      .rows[0].fresh,
-    true
+    (
+      await db.query(
+        "SELECT burned_count::int AS burned FROM metadata_projection.read_set WHERE collection='bnb' AND generation_id=2"
+      )
+    ).rows[0].burned,
+    burnedBefore + 1
   );
   const cachedHash = (
     await db.query(
@@ -698,7 +773,8 @@ try {
         "release-qualified cursors and generation rejection",
         "lazy same-snapshot request proofs and read-only writes rejected",
         "planner settings isolated across count/page reads",
-        "cache invalidation on eligible-boundary crossing without dirty writes",
+        "cache kept when the eligible boundary crosses a transfer between owners",
+        "cache invalidation when the eligible boundary crosses a burn without dirty writes",
         "read identity mismatch and canonical fallback",
         "unavailable empty collection returns 503 while other chains remain readable",
         "diagnostic status reports unavailable counts explicitly",

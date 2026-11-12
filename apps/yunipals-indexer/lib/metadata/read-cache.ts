@@ -1,5 +1,9 @@
 import type { PoolClient } from "pg";
-import { collectionSlugs, type CollectionSlug } from "../constants.js";
+import {
+  collectionSlugs,
+  ZERO_ADDRESS,
+  type CollectionSlug
+} from "../constants.js";
 import {
   ownershipBnbSchema as bnbSchema,
   ownershipPonderSchema as physicalPonderSchema,
@@ -42,6 +46,15 @@ function chainsSql(chains: readonly CollectionSlug[]) {
 }
 const baseRuntimeErrorSql =
   "metadata.publication_runtime WHERE singleton AND base_error IS NOT NULL";
+/** A read set stores each token's identity, lifecycle, burned state and
+ * metadata proof, and no owner. Among transfers, only a mint or a burn changes
+ * those. The dirty triggers fire when Ponder indexes a transfer, which can be
+ * before the confirmation boundary reaches its block, so a mint or burn that
+ * the boundary crosses later is found here instead.
+ */
+function membershipTransferSql(alias: string) {
+  return `(${alias}."from"='${ZERO_ADDRESS}' OR ${alias}."to"='${ZERO_ADDRESS}')`;
+}
 export function readCacheFreshSql(
   id: string,
   chains: readonly CollectionSlug[],
@@ -74,7 +87,8 @@ export function readCacheFreshSql(
         WHERE a.release_id=s.ownership_release_id AND a.chain_id=ownership_source.chain_id
           AND a.block_number=s.ownership_boundary AND a.block_hash=s.ownership_boundary_hash))
     AND NOT EXISTS(SELECT 1 FROM ${nativeOwnershipSchema}.transfer_event changed WHERE changed.collection=s.collection
-      AND changed.block_number>s.ownership_boundary AND changed.block_number<=ownership_source.block_number)`
+      AND changed.block_number>s.ownership_boundary AND changed.block_number<=ownership_source.block_number
+      AND ${membershipTransferSql("changed")})`
     : `AND COALESCE(to_jsonb(s)->>'ownership_release_id','')=''`;
   return `(SELECT count(*)=${chains.length} FROM metadata_projection.read_set s
     JOIN metadata_projection.read_epoch e USING(collection)
