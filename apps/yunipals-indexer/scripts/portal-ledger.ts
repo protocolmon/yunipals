@@ -5,6 +5,7 @@ import { connectPortalChain } from "../lib/portals/chain.js";
 import { PortalLedgerStore } from "../lib/portals/ledger-store.js";
 import { PortalLedger } from "../lib/portals/ledger.js";
 import { portalDatabaseOptions } from "../lib/portals/database.js";
+import { portalLogBlockRange } from "../lib/portals/rpc.js";
 
 if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
 
@@ -33,7 +34,13 @@ async function main() {
       throw new Error(
         "Configure the earliest verified portal-stack block and confirmations."
       );
-    const ledger = new PortalLedger(chain, store, start, confirmations);
+    const ledger = new PortalLedger(
+      chain,
+      store,
+      start,
+      confirmations,
+      portalLogBlockRange(process.env)
+    );
     if (process.argv.includes("--once")) {
       await ledger.tick();
       return;
