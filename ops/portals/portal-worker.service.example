@@ -1,0 +1,24 @@
+[Unit]
+Description=Yunipals portal grading and theme worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=portal-worker
+Group=portal-artifacts
+WorkingDirectory=@RELEASE_DIRECTORY@/apps/yunipals-indexer
+EnvironmentFile=@SERVICE_ENV_FILE@
+ExecStart=@NODE_BINARY@ --import tsx scripts/portal-worker.ts
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=1200
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=@ARTIFACT_DIRECTORY@
+
+[Install]
+WantedBy=multi-user.target

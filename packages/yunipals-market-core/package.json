@@ -45,7 +45,11 @@
     "./anime": "./src/anime.ts",
     "./arenaV2Abi": "./src/arenaV2Abi.ts",
     "./arenaProtocol": "./src/arenaProtocol.ts",
-    "./monsterVersions": "./src/monsterVersions.ts"
+    "./monsterVersions": "./src/monsterVersions.ts",
+    "./portals": "./src/portals.ts",
+    "./portalAbi": "./src/portalAbi.ts",
+    "./portalSlab": "./src/portalSlab.ts",
+    "./portalIndex": "./src/portalIndex.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

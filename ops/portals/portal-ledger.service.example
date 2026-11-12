@@ -1,0 +1,23 @@
+[Unit]
+Description=Yunipals portal canonical event ledger
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=portal-ledger
+Group=portal-ledger
+WorkingDirectory=@RELEASE_DIRECTORY@/apps/yunipals-indexer
+EnvironmentFile=@SERVICE_ENV_FILE@
+ExecStart=@NODE_BINARY@ --import tsx scripts/portal-ledger.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
