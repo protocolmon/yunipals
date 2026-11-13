@@ -11,6 +11,8 @@ public source configuration loaded. Keep private credentials on the server.
 The manifest must enable exactly eleven retained non-Arena sources, the fighter
 registry and one `YunipalsArenaV2` source. Both modes use that contract. The old
 video and standalone Anime contracts are absent from continuous ingestion.
+When `UNIFIED_PORTALS_JSON` is configured, the manifest additionally requires all four portal sources (17 enabled sources in total). Follow the [portal migration plan](../../docs/unified-indexer/portals-migration-plan.md) for portal views, private-consumer handover and parity.
+
 Registered booster ingestion ABIs and per-contract deployment blocks must remain
 identical even when the wallet SDK adds contract helpers.
 

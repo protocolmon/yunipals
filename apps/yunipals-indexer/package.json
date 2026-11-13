@@ -118,7 +118,7 @@
     "portals:migrate": "tsx scripts/portal-worker.ts --migrate",
     "portals:worker": "tsx scripts/portal-worker.ts",
     "portals:policy": "tsx scripts/portal-worker.ts --policy",
-    "test:portals": "vitest run test/portals.test.ts test/portal-provider.test.ts test/portal-backfill.test.ts test/portal-ledger.test.ts test/portal-rehearsal.test.ts test/portal-theme.test.ts test/portal-transactions.test.ts test/portal-rpc.test.ts test/portal-index-evidence.test.ts test/portal-slab.test.ts test/portal-intake.test.ts test/portal-theme-validation.test.ts test/portal-airdrop.test.ts test/portal-randomness-fees.test.ts",
+    "test:portals": "vitest run test/portals.test.ts test/portal-provider.test.ts test/portal-backfill.test.ts test/portal-ledger.test.ts test/portal-rehearsal.test.ts test/portal-theme.test.ts test/portal-transactions.test.ts test/portal-rpc.test.ts test/portal-index-evidence.test.ts test/portal-slab.test.ts test/portal-intake.test.ts test/portal-theme-validation.test.ts test/portal-airdrop.test.ts test/portal-randomness-fees.test.ts test/portal-shared.test.ts",
     "test:portals:local": "tsx scripts/test-portals-local.ts",
     "portals:prepare": "tsx scripts/prepare-portals.ts",
     "portals:backfill": "tsx scripts/backfill-portal-card-facts.ts",
@@ -135,7 +135,10 @@
     "portals:review-eleven": "tsx scripts/review-portal-eleven.ts",
     "portals:preflight-rpc": "node --import tsx scripts/preflight-portals-rpc.ts",
     "test:portals:postgres": "node --import tsx scripts/test-portals-postgres.ts",
-    "portals:api": "node --import tsx scripts/portal-api.ts"
+    "portals:api": "node --import tsx scripts/portal-api.ts",
+    "test:portals:shared": "node --import tsx scripts/test-portal-shared-ponder.mjs",
+    "portals:shared:prepare": "tsx scripts/prepare-portal-shared.ts",
+    "portals:shared:compare": "tsx scripts/compare-portal-shared.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",

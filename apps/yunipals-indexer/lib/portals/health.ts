@@ -20,11 +20,18 @@ export async function portalHealth(
       min(accepted_at) FILTER (WHERE NOT completed)::float8 AS oldest FROM portal_v1_job WHERE deployment=$1`,
       [store.deployment]
     ),
-    ledger.db.query<{ count: number }>(
-      `SELECT count(*)::int AS count FROM portal_v5_request r WHERE r.deployment=$1 AND r.completed_version IS NOT NULL
-      AND NOT EXISTS (SELECT 1 FROM portal_v1_publication p WHERE p.deployment=$2 AND p.request_id=r.request_id)`,
-      [ledger.deployment, store.deployment]
-    )
+    (async () => {
+      const ids = (
+        await store.db.query<{ id: string }>(
+          "SELECT request_id::text AS id FROM portal_v1_publication WHERE deployment=$1",
+          [store.deployment]
+        )
+      ).rows.map((row) => row.id);
+      return ledger.db.query<{ count: number }>(
+        "SELECT count(*)::int AS count FROM portal_v5_request WHERE deployment=$1 AND completed_version IS NOT NULL AND NOT (request_id::text=ANY($2::text[]))",
+        [ledger.deployment, ids]
+      );
+    })()
   ]);
   const canonical =
     !!cursor &&

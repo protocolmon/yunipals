@@ -1,3 +1,4 @@
+import { portalPonderContracts } from "./lib/unified/portal-sources.js";
 import { createConfig } from "ponder";
 import { collectionAbi, islandsAbi, baseIslandsAbi } from "./lib/abi.js";
 import {
@@ -88,6 +89,7 @@ export default createConfig({
   },
   contracts: {
     ...boosterContracts(),
+    ...portalPonderContracts(),
     YunipalsBnb: {
       chain: "bnb",
       abi: collectionAbi,

@@ -1,8 +1,16 @@
 # Portals implementation status
 
-Engineering status: 12 November 2026. The implementation is integrated with the current application base in an isolated portal branch. This is a source and validation record, not a deployment inventory. Actual addresses, signed setup receipts, service state and the frozen external-audit archive remain in private operator records. Reconcile those records before deployment; do not repeat already completed setup transactions.
+Engineering status: 13 November 2026. The implementation is integrated with the current application base in an isolated portal branch. This is a source and validation record, not a deployment inventory. Actual addresses, signed setup receipts, service state and the frozen external-audit archive remain in private operator records. Reconcile those records before deployment; do not repeat already completed setup transactions.
 
 See the [product specification](portals-implementation-plan.md), [completion plan](portals-pr-completion-plan.md), [release runbook](portals-runbook.md) and [runtime packaging guide](../ops/portals/README.md).
+
+## Shared-indexer migration
+
+The migration implementation registers all four portal contracts in the existing Ponder source manifest, journals their canonical events and full-receipt candidates, and maintains rollback-managed current and historical projections. Confirmed SQL views feed the existing API under one validated read snapshot. Private spells, jobs, AI results, signatures and publication records stay in the private database. The grading consumer atomically enqueues confirmed requests and advances its durable position; release replay preserves existing job output.
+
+`PORTALS_INDEXER_MODE=unified` requires an explicit database, release, read schema and competition binding. It never falls back to a standalone scanner. The legacy mode is temporary rehearsal/rollback support and its ledger entrypoint refuses to run in unified mode. See the [migration plan](unified-indexer/portals-migration-plan.md) and [operations procedure](../ops/portals/README.md) for fresh views, grants, same-boundary parity, candidate qualification and coordinated consumer cutover.
+
+Validation completed locally: 110 portal tests, 47 retained shared-source tests, both application type checks, the canonical frontend build, native Ponder/PostgreSQL rollback and restricted-reader tests, and the browser/contracts flow including 111 entries. PostgreSQL testing also verifies atomic cursor recovery, saved AI output on release replay, and detection of an intentionally corrupted balance. These results do **not** establish production replay, cutover or completion of the rollback observation window; record those gates separately in private operator evidence.
 
 ## Player and owner behavior
 
@@ -16,7 +24,7 @@ See the [product specification](portals-implementation-plan.md), [completion pla
 
 ## Completed application and runtime work
 
-The existing TCG collection, collector and token-detail artwork uses the canonical graded metadata once ready, while ungraded cards retain their original artwork and foil layers. Token details link to preselected spell entry and grading history. The app includes active portal entry, card history and slab downloads, owner inventory/detail/claim flows, competition standings and direct settlement, and role-controlled kind/mint/pricing administration. Exact transaction intent and identity survive navigation and reload, scoped to chain, deployment and wallet. Success waits for a canonical receipt **and matching applied portal-ledger projections**. The portal ledger has its own source identity and replay generation; another indexer's head cannot satisfy completion.
+The existing TCG collection, collector and token-detail artwork uses the canonical graded metadata once ready, while ungraded cards retain their original artwork and foil layers. Token details link to preselected spell entry and grading history. The app includes active portal entry, card history and slab downloads, owner inventory/detail/claim flows, competition standings and direct settlement, and role-controlled kind/mint/pricing administration. Exact transaction intent and identity survive navigation and reload, scoped to chain, deployment and wallet. Success waits for a canonical receipt **and matching applied portal projections**. The shared-indexer migration binds these projections to the registered global release, immutable read identity and confirmed observation. A bare global head is insufficient evidence. Version 1 remains compatible during handover; version 2 carries the shared identity.
 
 Indexed evidence covers admission/competition entries, completion/publication, fee credits and burns, observed transfers, randomness/round activation, mint commitments and delivery chunks, competition payouts, themes and admin changes. Delays retain the submitted hash and show a status retry; replacement/cancellation and reorgs invalidate obsolete evidence. USDC approval uses a successful receipt plus a fresh allowance read. Live ownership, round expiry, input version, fee version and theme are rechecked before payment.
 

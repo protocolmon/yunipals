@@ -1,3 +1,4 @@
+import type { PortalJobSource } from "./indexed-jobs.js";
 import { publishPortalSlab } from "./slab.js";
 import { keccak256, toHex, TransactionNotFoundError, type Hex } from "viem";
 import { z } from "zod";
@@ -31,13 +32,15 @@ export class PortalWorker {
     readonly startBlock: bigint,
     readonly confirmations: bigint,
     readonly submit?: (id: bigint, result: PortalCompletion) => Promise<Hex>,
-    readonly logBlockRange = 2000n
+    readonly logBlockRange = 2000n,
+    readonly indexedJobs?: PortalJobSource
   ) {
     if (logBlockRange < 1n || logBlockRange > 2000n)
       throw new Error("Invalid worker log range.");
   }
 
   async ingest() {
+    if (this.indexedJobs) return this.indexedJobs.ingest();
     const head = await this.chain.client.getBlockNumber();
     if (head < this.confirmations) return;
     const safe = head - this.confirmations;
@@ -91,6 +94,7 @@ export class PortalWorker {
   }
 
   async process(job: PortalJob) {
+    await this.indexedJobs?.verify(job);
     const id = BigInt(job.requestId);
     const [request, binding] = await Promise.all([
       this.chain.request(id),
@@ -167,6 +171,7 @@ export class PortalWorker {
     resolvePortalGradingCase(this.policy, job.progress.portalContext);
     if (!job.progress.embedding) {
       await this.store.heartbeat(job);
+      await this.indexedJobs?.verify(job);
       job.progress.embedding = await this.ai.embed(spell.spell);
       await this.store.save(job);
     }
@@ -185,6 +190,7 @@ export class PortalWorker {
     );
     if (!job.progress.image) {
       await this.store.heartbeat(job);
+      await this.indexedJobs?.verify(job);
       const generated = await this.ai.edit(
         spell.spell,
         before,
@@ -230,6 +236,7 @@ export class PortalWorker {
     );
     if (!job.progress.grading) {
       await this.store.heartbeat(job);
+      await this.indexedJobs?.verify(job);
       job.progress.grading = await this.ai.grade(
         spell.spell,
         before,
@@ -344,6 +351,7 @@ export class PortalWorker {
     }
     if (!job.progress.transactionHash) {
       const result = completionFromProgress(job.progress.completion);
+      await this.indexedJobs?.verify(job);
       job.progress.transactionHash = await this.submit(id, result);
       job.progress.transactionSubmittedAt = Date.now();
       await this.store.save(job);
@@ -365,6 +373,7 @@ export class PortalWorker {
   }
 
   private async publish(job: PortalJob, spell: string) {
+    await this.indexedJobs?.verify(job);
     const id = BigInt(job.requestId);
     const head = await this.chain.client.getBlock();
     if (head.number < this.confirmations)

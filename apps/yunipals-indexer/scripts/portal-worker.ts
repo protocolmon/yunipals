@@ -1,3 +1,5 @@
+import { SharedPortalLedger } from "../lib/portals/shared-ledger.js";
+import { IndexedPortalJobs } from "../lib/portals/indexed-jobs.js";
 import { loadEnvFile } from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
 import {
@@ -29,7 +31,8 @@ import { portalGradingAbi } from "@protopals/yunipals-market-core/portalAbi";
 import {
   createPortalSchema,
   portalDatabaseSchema,
-  grantPortalRoles
+  grantPortalRoles,
+  grantPortalPrivateRoles
 } from "../lib/portals/database.js";
 
 if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
@@ -69,17 +72,22 @@ async function main() {
         ledger: process.env.PORTALS_LEDGER_DATABASE_ROLE ?? ""
       };
       if (
-        Object.values(roles).some(
-          (role) => !/^[a-z][a-z0-9_]{0,62}$/.test(role)
-        )
+        (runtime.ledger instanceof SharedPortalLedger
+          ? [roles.api, roles.worker]
+          : Object.values(roles)
+        ).some((role) => !/^[a-z][a-z0-9_]{0,62}$/.test(role))
       )
         throw new Error(
           "Configure the three portal runtime role names before migration."
         );
       await createPortalSchema(runtime.db, schema);
       await runtime.store.migrate();
-      await runtime.ledger.migrate();
-      await grantPortalRoles(runtime.db, schema, roles);
+      if (runtime.ledger instanceof SharedPortalLedger)
+        await grantPortalPrivateRoles(runtime.db, schema, roles);
+      else {
+        await runtime.ledger.migrate();
+        await grantPortalRoles(runtime.db, schema, roles);
+      }
       console.log("Portal database tables are ready.");
       return;
     }
@@ -195,7 +203,15 @@ async function main() {
               })
             })
         : undefined,
-      portalLogBlockRange(process.env)
+      portalLogBlockRange(process.env),
+      runtime.ledger instanceof SharedPortalLedger
+        ? new IndexedPortalJobs(
+            runtime.ledger,
+            runtime.db,
+            runtime.store,
+            runtime.chain
+          )
+        : undefined
     );
     const themes = new PortalThemeWorker(
       runtime.chain,
@@ -243,7 +259,8 @@ async function main() {
               data: encodeFunctionData(request)
             });
           }
-        : undefined
+        : undefined,
+      runtime.ledger instanceof SharedPortalLedger ? runtime.ledger : undefined
     );
     if (process.argv.includes("--once") || prepare) {
       await worker.tick();

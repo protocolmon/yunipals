@@ -1,5 +1,7 @@
 # Portal app completion through pull request
 
+The [shared-indexer migration plan](unified-indexer/portals-migration-plan.md) supersedes this document's original standalone public-ledger architecture. Production must select the shared portal projections and indexed job consumer after qualification. Keep the separate database for private operational state; the legacy scanner is temporary rollback/rehearsal support only.
+
 Plan date: 12 November 2026.
 
 Complete the portal experience across contracts, API, workers, indexing, artwork, wallet flows and the existing TCG frontend, then open a tested pull request. This plan builds on the implemented [product specification](portals-implementation-plan.md), [burn-to-claim specification](portals-burn-to-claim-plan.md) and [operation runbook](portals-runbook.md). Preserve their agreed product behavior.

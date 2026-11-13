@@ -4,6 +4,22 @@ These files are generic examples. Replace every `@PLACEHOLDER@` before installin
 
 Prepare an immutable checkout and run `pnpm install --frozen-lockfile`. Run services from `apps/yunipals-indexer`; the `node --import tsx` entry points use the checked-in TypeScript and shared workspace packages. An upgrade must retain those packages, font files, the artifact directory and database.
 
+## Shared indexer deployment
+
+Production portal events belong to the existing shared Ponder release. Configure `UNIFIED_PORTALS_JSON` on that ingestor with exactly four keys (`collection`, `registry`, `grading`, `competition`), each containing a public `address` and its verified numeric `startBlock`. Include the competition's initialization history, even if binding to grading happened later. Extend the existing shared release/RPC profile; keep all retained sources unchanged. The source contains no provider or signing credentials.
+
+Use `PORTALS_INDEXER_MODE=unified` in both portal API and worker configurations. Set `PORTALS_INDEXER_RELEASE_ID`, `PORTALS_INDEXER_READ_SCHEMA`, `PORTALS_COMPETITION` and a read-only `PORTALS_INDEXER_DATABASE_URL`. Keep the private `PORTALS_DATABASE_URL` for spells, jobs and signing journals. The shared source reader validates the release and source observations, then reads confirmed projection versions in one database snapshot. Its public URLs remain unchanged.
+
+Prepare a new immutable shared release using the existing shared build/registration procedure. Add the required shared database control/runtime SELECT grants using the existing reader-role procedure. With a migration login, run `portals:shared:prepare --operation read-views --reader-roles <api-reader>,<worker-reader>` to create a fresh, release-bound portal read schema. `DATABASE_URL` is the shared migration connection for this command. The command refuses to replace an existing schema. Ordinary API/worker startup never creates or repoints views.
+
+For an existing private portal database, run `portals:shared:prepare --operation private-consumer` with its migration login and `PORTALS_WORKER_DATABASE_ROLE`. This only adds the durable consumer position and saved job revisions. On a fresh installation, `portals:migrate` in unified mode prepares private state and API/worker grants without creating a public ledger. Keep migration credentials out of services.
+
+Before switching readers, run `portals:shared:compare` with both read connections. It compares the old ledger and shared views in stable snapshots at the same canonical block, hashes every row in all eight public domains, and exits unsuccessfully on any discrepancy. Its report contains counts/digests, not private spells. Candidate ingestion must also pass retained-product parity and the readiness observation window described in `docs/unified-indexer/portals-migration-plan.md`.
+
+Deploy the compatible API/frontend before cutover. Old evidence clients retain version 1 support; new clients negotiate version 2 and bind the shared release/read identity. Pause new worker leases, reconcile in-flight work, switch the shared release and all pinned readers, then resume indexed job consumption. Saved transactions must be rechecked, not resent. Stop and disable the standalone portal ledger after acceptance; its entrypoint refuses unified mode. Retain its release/data for the documented rollback window, without a running scanner.
+
+The legacy instructions below support isolated rehearsals and temporary rollback only. Explicitly select `PORTALS_INDEXER_MODE=legacy` for those environments. Do not install a second ledger in a new shared production deployment. Cleanup must remove the legacy service from startup and verify one EVM ingestor after restart.
+
 ## Separate process configuration
 
 Use `apps/yunipals-indexer/portals.env.example` as a settings catalog, not as one shared credentials file. Give each process its own environment:

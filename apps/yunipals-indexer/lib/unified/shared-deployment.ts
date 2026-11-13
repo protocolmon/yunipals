@@ -1,3 +1,4 @@
+import { portalContracts } from "./portal-sources.js";
 import {
   validateSourceManifest,
   type SourceManifest
@@ -49,8 +50,25 @@ export function assertSharedIndexerManifest(manifest: SourceManifest) {
   const registry = enabled.filter(
     (source) => source.feature === "anime-registry"
   );
+  const portals = enabled.filter((source) => source.feature === "portals");
   if (
-    enabled.length !== 13 ||
+    portals.length !== 0 &&
+    (portals.length !== 4 ||
+      Object.entries(portalContracts).some(
+        ([kind, name]) =>
+          !portals.some(
+            (row) =>
+              row.id === `portals:8453:${kind}` &&
+              row.contractName === name &&
+              row.chainId === 8453
+          )
+      ))
+  )
+    throw new Error(
+      "Shared portal ingestion requires exactly four reviewed sources."
+    );
+  if (
+    enabled.length !== 13 + portals.length ||
     arena.length !== 1 ||
     arena[0]!.contractName !== "YunipalsArenaV2" ||
     arena[0]!.chainId !== 8453 ||
@@ -95,7 +113,14 @@ export function assertRetainedIndexerSources(
           source.contractName === "YunipalsArenaV2")
     )
     .map((source) => source.id);
-  for (const id of [...retainedIds, ...existingArenaSources]) {
+  const existingPortalSources = baseline.sources
+    .filter((source) => source.enabled && source.feature === "portals")
+    .map((source) => source.id);
+  for (const id of [
+    ...retainedIds,
+    ...existingArenaSources,
+    ...existingPortalSources
+  ]) {
     const oldSource = baseline.sources.find((source) => source.id === id);
     const nextSource = target.sources.find((source) => source.id === id);
     const additional =
@@ -133,6 +158,7 @@ export function assertRetainedIndexerSources(
         source.enabled &&
         source.feature !== "arena" &&
         source.feature !== "anime-registry" &&
+        source.feature !== "portals" &&
         !retainedIds.some((id) => source.id === id)
     )
   )

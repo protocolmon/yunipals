@@ -63,7 +63,7 @@ try {
       event: "shared_indexer_prepared",
       releaseId: deployment.releaseId,
       profileId: deployment.rpcProfileId,
-      enabledSources: 13,
+      enabledSources: manifest.sources.filter((source) => source.enabled).length,
       activated: false,
       output: values.output
     })

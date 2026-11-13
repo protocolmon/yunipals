@@ -1,3 +1,7 @@
+import {
+  PortalRequestError,
+  portalRetryAfter
+} from "../../yunipals-home-web/src/lib/portalRetry.js";
 import { PGlite } from "@electric-sql/pglite";
 import {
   afterAll,
@@ -330,7 +334,7 @@ describe("saved frontend portal transaction lifecycle", () => {
               runtime,
               portalEvidenceRequestSchema.parse(JSON.parse(String(init.body)))
             )
-          : portalIndexSelection(runtime)
+          : portalIndexSelection(runtime, path.includes("version=2") ? 2 : 1)
     );
     const deps = {
       client: client as unknown as PublicClient,
@@ -355,6 +359,28 @@ describe("saved frontend portal transaction lifecycle", () => {
     tracker.add(txHash, intent);
     return { tracker, deps, scope, request, changed, intent };
   }
+  it("honors rate-limit cooldown without rechecking receipts or losing the saved intent", async () => {
+    await ledger.apply([event], "20", blockHash, null);
+    const { tracker, request } = trackerFixture();
+    const now = vi.spyOn(Date, "now").mockReturnValue(100000);
+    request.mockRejectedValueOnce(new PortalRequestError("Busy", 429, 60000));
+    try {
+      await tracker.check(txHash);
+      const calls = client.waitForTransactionReceipt.mock.calls.length;
+      await tracker.check(txHash);
+      expect(client.waitForTransactionReceipt.mock.calls).toHaveLength(calls);
+      expect(request).toHaveBeenCalledTimes(1);
+      expect(tracker.getSnapshot()[0].state).toBe("delayed");
+      expect(() => tracker.assertAvailable("configure:1")).toThrow();
+      now.mockReturnValue(160001);
+      expect(await tracker.check(txHash)).toBe(receipt);
+    } finally {
+      now.mockRestore();
+    }
+    expect(portalRetryAfter("60", 0)).toBe(60000);
+    expect(portalRetryAfter("Thu, 01 Jan 1970 00:01:00 GMT", 0)).toBe(60000);
+    expect(portalRetryAfter("invalid", 0)).toBe(0);
+  });
   it("persists confirmation/indexing across reload and completes only after projection", async () => {
     await ledger.apply([], "20", blockHash, null);
     const { tracker, scope, deps } = trackerFixture();
@@ -373,6 +399,60 @@ describe("saved frontend portal transaction lifecycle", () => {
         deps
       ).getSnapshot()
     ).toHaveLength(0);
+  });
+  it("rebinds a saved transaction to shared v2 evidence without another send", async () => {
+    await ledger.apply([event], "20", blockHash, null);
+    const { tracker, scope, deps, request } = trackerFixture();
+    const shared = {
+      releaseId: hash(7),
+      readIdentity: hash(8),
+      observationRevision: "1"
+    };
+    const identity = vi.spyOn(ledger, "sourceIdentity").mockReturnValue(shared);
+    try {
+      const restored = new PortalTransactionTracker(scope, deps);
+      expect(await restored.check(txHash)).toBe(receipt);
+      expect(restored.getSnapshot()[0].state).toBe("indexed");
+      const post = request.mock.calls.find(
+        ([, init]) => init?.method === "POST"
+      )!;
+      expect(JSON.parse(String(post[1]?.body))).toMatchObject({
+        version: 2,
+        shared: { releaseId: hash(7), readIdentity: hash(8) }
+      });
+      const oldSelection = await portalIndexSelection(runtime, 1);
+      expect(oldSelection.version).toBe(1);
+      expect(oldSelection.shared).toBeUndefined();
+      expect(tracker.getSnapshot()[0].hash).toBe(txHash);
+    } finally {
+      identity.mockRestore();
+    }
+  });
+  it("rejects v2 evidence if the shared release changes during a response", async () => {
+    await ledger.apply([event], "20", blockHash, null);
+    const { tracker, request } = trackerFixture();
+    let shared = {
+      releaseId: hash(7),
+      readIdentity: hash(8),
+      observationRevision: "1"
+    };
+    const identity = vi
+      .spyOn(ledger, "sourceIdentity")
+      .mockImplementation(() => shared);
+    const original = request.getMockImplementation()!;
+    request.mockImplementation(async (path, init) => {
+      const result = await original(path, init);
+      if (init?.method === "POST")
+        shared = { ...shared, readIdentity: hash(9) };
+      return result;
+    });
+    try {
+      await tracker.check(txHash);
+      expect(tracker.getSnapshot()[0].state).toBe("delayed");
+      expect(() => tracker.assertAvailable("configure:1")).toThrow();
+    } finally {
+      identity.mockRestore();
+    }
   });
   it("keeps ambiguous RPC and indexing failures saved without allowing duplicate payment", async () => {
     const { tracker } = trackerFixture();

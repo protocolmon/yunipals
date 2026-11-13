@@ -68,6 +68,16 @@ CREATE TABLE IF NOT EXISTS portal_v3_competition_prize (
 `;
 
 export class PortalLedgerStore {
+  async snapshot<T>(read: () => Promise<T>): Promise<T> {
+    return read();
+  }
+  sourceIdentity(): {
+    releaseId: string;
+    readIdentity: string;
+    observationRevision: string;
+  } | null {
+    return null;
+  }
   constructor(
     readonly db: Pick<Pool, "query">,
     readonly deployment: string
