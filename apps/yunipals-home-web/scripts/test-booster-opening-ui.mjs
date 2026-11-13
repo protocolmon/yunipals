@@ -108,11 +108,10 @@ if (!values["saved-opening-only"]) {
     "Normal collection includes global pack pagination"
   );
   const navText = await readFile(`${root}/src/components/Nav.tsx`, "utf8");
-  assert(/<ScanSearch\b/.test(navText), "Grading uses the inspection icon");
-  assert(navText.includes("Grading is coming soon"));
+  assert(!navText.includes("Grading"), "Grading is included in Portals");
   assert(!navText.includes("Battles are coming soon"));
   report.checks.push({
-    name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; Grading uses ScanSearch",
+    name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; navbar omits Grading",
     passed: true
   });
 }

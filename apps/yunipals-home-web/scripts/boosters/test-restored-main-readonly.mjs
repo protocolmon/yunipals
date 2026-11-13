@@ -227,7 +227,7 @@ try {
           href
         );
       }
-      assert(await nav.getByTitle("Grading is coming soon").isVisible());
+      assert.equal(await nav.getByText(/Grading/).count(), 0);
       const tabs = page.getByRole("navigation", {
         name: "Collections",
         exact: true
@@ -552,7 +552,7 @@ try {
     });
     for (const name of ["Collection", "Leaderboard", "Arena", "Packs"])
       await nav.getByRole("link", { name, exact: true }).waitFor();
-    await nav.getByText("Grading · Coming soon", { exact: true }).waitFor();
+    assert.equal(await nav.getByText(/Grading/).count(), 0);
     await nav.getByRole("link", { name: "Leaderboard", exact: true }).click();
     await page.waitForURL(origin + "/leaderboard");
     assert.equal(

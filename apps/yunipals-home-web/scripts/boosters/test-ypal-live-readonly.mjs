@@ -234,7 +234,7 @@ try {
     const response=await waiting; assert.equal(response.status(),200);const body=await response.json();assert(body.items.length>0);
     const nav=page.getByRole("navigation",{name:"Primary navigation",exact:true});
     for (const [name,href]of[["Collection","/"],["Packs","/boosters"],["Leaderboard","/leaderboard"],["Arena","/arena"]]) assert.equal(await nav.getByRole("link",{name,exact:true}).getAttribute("href"),href);
-    assert(await nav.getByTitle("Grading is coming soon").isVisible());
+    assert.equal(await nav.getByText(/Grading/).count(),0);
     const first=body.items[0], card=page.locator(`a[href="/collection/ethereum/${first.tokenId}"]`).first();await card.waitFor();
     await card.locator("img").first().evaluate((img)=>img.decode());
     assert(await card.locator("img").first().evaluate((img)=>img.naturalWidth>0));

@@ -576,7 +576,7 @@ try {
             .getAttribute("href"),
           href
         );
-      assert(await nav.getByTitle("Grading is coming soon").isVisible());
+      assert.equal(await nav.getByText(/Grading/).count(), 0);
       const first = body.items[0],
         card = page
           .locator(`a[href="/collection/ethereum/${first.tokenId}"]`)

@@ -1,4 +1,4 @@
-import { ScanSearch, Menu, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { FormEvent, useId, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -177,13 +177,6 @@ export function Nav() {
               {item.label}
             </Link>
           ))}
-          <span
-            title="Grading is coming soon"
-            className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-line whitespace-nowrap bg-line/25 px-3 py-2 text-sm font-semibold text-muted"
-          >
-            <ScanSearch aria-hidden="true" size={14} />
-            Grading
-          </span>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -191,17 +184,18 @@ export function Nav() {
             type="button"
             onClick={() => setSearchOpen((open) => !open)}
             className="hidden items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-bold text-white shadow-cta transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 xl:flex"
+            aria-label="Search collectors"
             aria-expanded={searchOpen}
             aria-controls="desktop-collector-search"
           >
             <Search aria-hidden="true" size={15} />
-            Find collector
+            Search
           </button>
           <button
             type="button"
             onClick={() => setSearchOpen((open) => !open)}
             className="hidden h-10 w-10 place-items-center rounded-full bg-ink text-white shadow-cta transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 lg:grid xl:hidden"
-            aria-label="Find collector"
+            aria-label="Search collectors"
             aria-expanded={searchOpen}
             aria-controls="desktop-collector-search"
           >
@@ -259,10 +253,6 @@ export function Nav() {
                 {item.label}
               </Link>
             ))}
-            <div className="flex items-center gap-2 rounded-2xl bg-line/30 px-4 py-3 font-semibold text-muted">
-              <ScanSearch aria-hidden="true" size={16} />
-              Grading · Coming soon
-            </div>
             <div className="mt-2 border-t border-line pt-4">
               <CollectorSearch onNavigate={() => setMobileMenuOpen(false)} />
             </div>
