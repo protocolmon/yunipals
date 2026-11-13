@@ -247,12 +247,14 @@ export function portalEvidenceMatches(
     BigInt(coverage.completeThroughBlock) >= BigInt(request.blockNumber) &&
     evidence.proof?.events.length === request.events.length &&
     request.events.length > 0 &&
-    request.events.every(
-      (event, i) =>
-        evidence.proof?.events[i].id ===
+    request.events.every((event, i) => {
+      const observed = evidence.proof?.events[i];
+      return (
+        observed?.id ===
           `${request.transactionHash.toLowerCase()}:${event.logIndex}` &&
-        evidence.proof.events[i].name === event.name &&
-        evidence.proof.events[i].logIndex === event.logIndex
-    )
+        observed.name === event.name &&
+        observed.logIndex === event.logIndex
+      );
+    })
   );
 }
