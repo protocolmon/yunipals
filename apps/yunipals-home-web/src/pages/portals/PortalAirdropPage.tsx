@@ -29,6 +29,7 @@ import {
 } from "@/lib/portalAirdrop";
 import { cn } from "@/lib/utils";
 import { readAirdrop } from "@/lib/portalAirdropState";
+import { preparePortalRandomness } from "@/lib/portalRandomness";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 
 function readFence(plan: PortalAirdrop, index: number): AirdropFence | null {
@@ -175,14 +176,10 @@ export function PortalAirdropPage() {
   async function commit(index: number) {
     if (!plan || !actions.client || !ready || reviewed !== planKey) return;
     const task = async () => {
-      const gas = await actions.client!.getGasPrice();
-      const quote = await actions.client!.readContract({
-        address: plan.collection as Address,
-        abi: portalCollectionAbi,
-        functionName: "quoteRandomness",
-        args: [gas]
-      });
-      const maximum = (quote * 125n) / 100n;
+      const { maximum, fees } = await preparePortalRandomness(
+        actions.client!,
+        plan.collection as Address
+      );
       const data = encodeFunctionData({
         abi: portalCollectionAbi,
         functionName: "mintBatch",
@@ -193,51 +190,64 @@ export function PortalAirdropPage() {
         ]
       });
       let fence: AirdropFence;
-      await actions.send(plan.collection as Address, data, maximum, {
-        actionKey: airdropBatchKey(plan, index),
-        validate: async () => {
-          if (readFence(plan, index))
-            throw new Error(
-              "This batch already has a wallet request. Resume it below."
-            );
-          if (
-            airdropPendingTransaction(plan, index, tracker?.getSnapshot() ?? [])
-          )
-            throw new Error(
-              "This batch already has a submitted transaction. Wait for indexing."
-            );
-          const fresh = await readAirdrop(actions.client as PublicClient, plan);
-          if (
-            fresh.kind.allocated !== airdropFirstSerial(plan, index) - 1 ||
-            !fresh.batches.slice(0, index).every((b) => b.complete)
-          )
-            throw new Error(
-              "Wait for the previous batch to be fully delivered and indexed."
-            );
-          const [nonce, pendingNonce] = await Promise.all(
-            ["latest", "pending"].map((blockTag) =>
-              actions.client!.getTransactionCount({
-                address: plan.admin as Address,
-                blockTag: blockTag as "latest" | "pending"
-              })
+      await actions.send(
+        plan.collection as Address,
+        data,
+        maximum,
+        {
+          actionKey: airdropBatchKey(plan, index),
+          validate: async () => {
+            if (readFence(plan, index))
+              throw new Error(
+                "This batch already has a wallet request. Resume it below."
+              );
+            if (
+              airdropPendingTransaction(
+                plan,
+                index,
+                tracker?.getSnapshot() ?? []
+              )
             )
-          );
-          if (nonce !== pendingNonce)
-            throw new Error(
-              "Your admin wallet already has a pending transaction. Wait for it before starting this batch."
+              throw new Error(
+                "This batch already has a submitted transaction. Wait for indexing."
+              );
+            const fresh = await readAirdrop(
+              actions.client as PublicClient,
+              plan
             );
-          fence = {
-            version: 1,
-            hash: null,
-            createdAt: Date.now(),
-            nonce,
-            dataHash: keccak256(data)
-          };
+            if (
+              fresh.kind.allocated !== airdropFirstSerial(plan, index) - 1 ||
+              !fresh.batches.slice(0, index).every((b) => b.complete)
+            )
+              throw new Error(
+                "Wait for the previous batch to be fully delivered and indexed."
+              );
+            const [nonce, pendingNonce] = await Promise.all(
+              ["latest", "pending"].map((blockTag) =>
+                actions.client!.getTransactionCount({
+                  address: plan.admin as Address,
+                  blockTag: blockTag as "latest" | "pending"
+                })
+              )
+            );
+            if (nonce !== pendingNonce)
+              throw new Error(
+                "Your admin wallet already has a pending transaction. Wait for it before starting this batch."
+              );
+            fence = {
+              version: 1,
+              hash: null,
+              createdAt: Date.now(),
+              nonce,
+              dataHash: keccak256(data)
+            };
+          },
+          onWalletRequest: () => saveFence(index, fence),
+          onWalletRejected: () => saveFence(index, null),
+          onSubmitted: (hash) => saveFence(index, { ...fence, hash })
         },
-        onWalletRequest: () => saveFence(index, fence),
-        onWalletRejected: () => saveFence(index, null),
-        onSubmitted: (hash) => saveFence(index, { ...fence, hash })
-      });
+        fees
+      );
     };
     if (!navigator.locks)
       throw new Error(

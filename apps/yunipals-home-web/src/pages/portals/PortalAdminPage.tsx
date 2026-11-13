@@ -21,6 +21,7 @@ import { fetchPortalStatus, portalPrice, portalRequest } from "@/lib/portals";
 import { usePortals } from "@/hooks/usePortals";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { cn } from "@/lib/utils";
+import { preparePortalRandomness } from "@/lib/portalRandomness";
 import { PortalAirdropLink } from "./PortalArtwork";
 
 const inputClass =
@@ -201,13 +202,10 @@ export function PortalAdminPage() {
     const list = recipients.split(/[\s,]+/).filter(Boolean);
     if (!list.length || list.length > 100 || !list.every((a) => isAddress(a)))
       throw new Error("Enter 1–100 recipient wallet addresses.");
-    const quote = await actions.client.readContract({
-      address: status.deployment.collection as Address,
-      abi: portalCollectionAbi,
-      functionName: "quoteRandomness",
-      args: [await actions.client.getGasPrice()]
-    });
-    const maximum = (quote * 125n) / 100n;
+    const { maximum, fees } = await preparePortalRandomness(
+      actions.client,
+      status.deployment.collection as Address
+    );
     const receipt = await actions.send(
       status.deployment.collection as Address,
       encodeFunctionData({
@@ -215,7 +213,9 @@ export function PortalAdminPage() {
         functionName: "mintBatch",
         args: [BigInt(mintKind), list as Address[], maximum]
       }),
-      maximum
+      maximum,
+      undefined,
+      fees
     );
     if (receipt) {
       const event = parseEventLogs({

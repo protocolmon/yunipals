@@ -1,4 +1,9 @@
 import assert from "node:assert/strict";
+import { decodeFunctionData } from "viem";
+import {
+  portalCollectionAbi,
+  portalRegistryAbi
+} from "@protopals/yunipals-market-core/portalAbi";
 import { verifyGuidedAirdrop } from "./test-portal-airdrop-browser.mjs";
 
 /** Real local receipts; keep the indexer stopped between each wallet action
@@ -50,6 +55,41 @@ export async function verifyPortalAdminBrowser({
           return [{ parentCapability: "eth_accounts" }];
         if (method === "eth_sendTransaction") {
           assert.equal(params[0].from.toLowerCase(), owner.toLowerCase());
+          const tx = params[0];
+          if (
+            [chain.deployment.collection, chain.deployment.registry].some(
+              (address) => address.toLowerCase() === tx.to.toLowerCase()
+            )
+          ) {
+            const decoded = decodeFunctionData({
+              abi: [...portalCollectionAbi, ...portalRegistryAbi],
+              data: tx.data
+            });
+            if (
+              ["mintBatch", "requestRotation"].includes(decoded.functionName)
+            ) {
+              assert(
+                tx.maxFeePerGas,
+                "VRF requests must bind the wallet fee cap to their quote"
+              );
+              assert(
+                tx.maxPriorityFeePerGas,
+                "VRF requests must include the wallet priority fee"
+              );
+              assert.equal(tx.gasPrice, undefined);
+              assert(
+                BigInt(tx.maxFeePerGas) >= BigInt(tx.maxPriorityFeePerGas)
+              );
+              const quote = await chain.client.readContract({
+                address: tx.to,
+                abi: portalCollectionAbi,
+                functionName: "quoteRandomness",
+                args: [BigInt(tx.maxFeePerGas)]
+              });
+              assert(BigInt(tx.value) >= quote);
+              assert.equal(decoded.args.at(-1), BigInt(tx.value));
+            }
+          }
           if (walletBehavior.rejectNext) {
             walletBehavior.rejectNext = false;
             return { fixtureRejected: true };
@@ -59,6 +99,12 @@ export async function verifyPortalAdminBrowser({
             to: params[0].to,
             data: params[0].data,
             value: BigInt(params[0].value ?? "0x0"),
+            ...(tx.maxFeePerGas
+              ? {
+                  maxFeePerGas: BigInt(tx.maxFeePerGas),
+                  maxPriorityFeePerGas: BigInt(tx.maxPriorityFeePerGas)
+                }
+              : {}),
             ...(params[0].gas ? { gas: BigInt(params[0].gas) } : {})
           });
           walletBehavior.lastHash = hash;

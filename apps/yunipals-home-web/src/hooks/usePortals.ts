@@ -25,6 +25,11 @@ import {
   portalSpellSigningData
 } from "@protopals/yunipals-market-core/portals";
 import { readPortalContracts } from "@/lib/portalClaims";
+import {
+  preparePortalRandomness,
+  preparePortalRandomnessSend,
+  type PortalRandomnessFees
+} from "@/lib/portalRandomness";
 import { environment } from "@/environment";
 import {
   fetchPortalQuote,
@@ -342,7 +347,8 @@ export function usePortals(status: ActivePortalStatus | null) {
       onWalletRequest: () => void;
       onWalletRejected: () => void;
       onSubmitted: (hash: Hex) => void;
-    }
+    },
+    randomnessFees?: PortalRandomnessFees
   ) {
     return perform(async () => {
       const { account, client, signer, status } = await checkedContracts();
@@ -375,6 +381,18 @@ export function usePortals(status: ActivePortalStatus | null) {
         requestRotation: "Request next portal",
         activateNext: "Activate next portal"
       };
+      const needsRandomness =
+        decoded.functionName === "mintBatch" ||
+        decoded.functionName === "requestRotation";
+      if (needsRandomness && !randomnessFees)
+        throw new Error("Refresh the randomness fee before signing.");
+      const request = randomnessFees
+        ? await preparePortalRandomnessSend(
+            client,
+            { account, to, data, value },
+            randomnessFees
+          )
+        : { account, to, data, value };
       if (intent) await intent.validate();
       guard(id, account);
       tracker.assertAvailable(actionKey);
@@ -383,11 +401,8 @@ export function usePortals(status: ActivePortalStatus | null) {
       let hash: Hex;
       try {
         hash = await signer.sendTransaction({
-          account,
-          chain: client.chain,
-          to,
-          data,
-          value
+          ...request,
+          chain: client.chain
         });
       } catch (error) {
         const rejected =
@@ -437,14 +452,10 @@ export function usePortals(status: ActivePortalStatus | null) {
       return;
     }
     try {
-      const gasPrice = await client.getGasPrice();
-      const estimate = await client.readContract({
-        address: status.deployment.registry as Address,
-        abi: portalRegistryAbi,
-        functionName: "quoteRandomness",
-        args: [gasPrice]
-      });
-      const maximum = (estimate * 125n) / 100n;
+      const { maximum, fees } = await preparePortalRandomness(
+        client,
+        status.deployment.registry as Address
+      );
       return send(
         status.deployment.registry as Address,
         encodeFunctionData({
@@ -452,7 +463,9 @@ export function usePortals(status: ActivePortalStatus | null) {
           functionName: "requestRotation",
           args: [maximum]
         }),
-        maximum
+        maximum,
+        undefined,
+        fees
       );
     } catch {
       setError("Could not estimate the next portal's randomness fee.");
