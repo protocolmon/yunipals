@@ -381,6 +381,31 @@ describe("saved frontend portal transaction lifecycle", () => {
     expect(portalRetryAfter("Thu, 01 Jan 1970 00:01:00 GMT", 0)).toBe(60000);
     expect(portalRetryAfter("invalid", 0)).toBe(0);
   });
+  it("removes indexed actions from fast background polling while preserving manual and reorg checks", async () => {
+    await ledger.apply([event], "20", blockHash, null);
+    const { tracker, request } = trackerFixture();
+    const now = vi.spyOn(Date, "now").mockReturnValue(100000);
+    try {
+      expect(await tracker.check(txHash)).toBe(receipt);
+      const calls = request.mock.calls.length;
+      const receipts = client.waitForTransactionReceipt.mock.calls.length;
+      for (let tick = 1; tick <= 10; tick++) {
+        now.mockReturnValue(100000 + tick * 5000);
+        await tracker.check(txHash, { background: true });
+      }
+      expect(request).toHaveBeenCalledTimes(calls);
+      expect(client.waitForTransactionReceipt).toHaveBeenCalledTimes(receipts);
+      expect(await tracker.check(txHash)).toBe(receipt);
+      expect(request.mock.calls.length).toBeGreaterThan(calls);
+      now.mockReturnValue(210001);
+      client.getBlock.mockResolvedValue({ hash: hash(9), number: 10n });
+      await tracker.check(txHash, { background: true });
+      expect(tracker.getSnapshot()[0].state).toBe("confirming");
+      expect(() => tracker.assertAvailable("configure:1")).toThrow();
+    } finally {
+      now.mockRestore();
+    }
+  });
   it("persists confirmation/indexing across reload and completes only after projection", async () => {
     await ledger.apply([], "20", blockHash, null);
     const { tracker, scope, deps } = trackerFixture();

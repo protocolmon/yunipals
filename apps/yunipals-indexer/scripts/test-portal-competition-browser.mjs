@@ -266,9 +266,25 @@ export async function verifyCompetitionBrowser({
   await page
     .getByRole("button", { name: "Settle competition", exact: true })
     .waitFor();
+  // Other saved actions can show the same pending text. Wait for this exact
+  // settlement's receipt/evidence before advancing the deliberately paused ledger.
+  const pendingSettlement = page.waitForResponse(async (response) => {
+    if (
+      !response.url().endsWith("/action-evidence") ||
+      response.request().method() !== "POST" ||
+      response.status() !== 200
+    )
+      return false;
+    const expected = response.request().postDataJSON();
+    return (
+      expected.events?.some((event) => event.name === "CompetitionSettled") &&
+      (await response.json()).state === "awaiting_indexing"
+    );
+  });
   await page
     .getByRole("button", { name: "Settle competition", exact: true })
     .click();
+  await pendingSettlement;
   await page
     .getByText(
       "Confirmed. The data update is still pending; your transaction is saved.",

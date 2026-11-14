@@ -146,6 +146,7 @@ export class PortalTransactionTracker {
   private checks = new Map<string, Promise<TransactionReceipt | undefined>>();
   private unavailableUntil = 0;
   private unavailableAttempts = 0;
+  private nextBackgroundVerification = new Map<string, number>();
   constructor(
     scope: { chainId: number; wallet: string; grading: string },
     deps: Dependencies
@@ -242,9 +243,17 @@ export class PortalTransactionTracker {
     this.persist();
     return value;
   }
-  check(id: string) {
+  check(id: string, options: { background?: boolean } = {}) {
     const active = this.checks.get(id);
     if (active) return active;
+    // Completed actions leave the fast polling loop. Retain a bounded reorg
+    // check while explicit status checks and pending waits remain responsive.
+    if (
+      options.background &&
+      this.values.find((value) => value.id === id)?.state === "indexed" &&
+      Date.now() < (this.nextBackgroundVerification.get(id) ?? 0)
+    )
+      return Promise.resolve(undefined);
     if (Date.now() < this.unavailableUntil) return Promise.resolve(undefined);
     const promise = this.checkOnce(id).finally(() => this.checks.delete(id));
     this.checks.set(id, promise);
@@ -388,6 +397,7 @@ export class PortalTransactionTracker {
           generation: selection.generation,
           message: "Confirmed and indexed."
         });
+        this.nextBackgroundVerification.set(id, Date.now() + 60000);
         return receipt;
       }
       this.update(id, {
