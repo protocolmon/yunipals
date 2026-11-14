@@ -51,26 +51,57 @@ async function coverageThrough(
   target: bigint | undefined,
   initial: { indexed: bigint; witness: RuntimeWitness },
   polls: number,
-  sleep: (milliseconds: number) => Promise<void>
+  sleep: (milliseconds: number) => Promise<void>,
+  ceiling: bigint
 ) {
   let position = initial;
-  // Provider chain/finality reads can outlive a fast chain's confirmation
-  // window. Refresh even when finality is already covered, so the following
-  // head is paired with current native coverage rather than the pre-RPC read.
+  // Provider reads can outlive a fast chain's confirmation window. Refresh
+  // even when the target was already covered before those reads.
   for (let poll = 0; poll <= polls; poll++) {
     if (poll > 0) {
       if (target === undefined || position.indexed >= target) break;
       await sleep(finalityCoveragePollMs);
     }
-    const runtime = await indexerTransaction(
+    const { runtime, cappedWitness } = await indexerTransaction(
       pool,
-      (db) => readBoundRuntime(db, release),
+      async (db) => {
+        const runtime = await readBoundRuntime(db, release);
+        const current = runtime.witnesses.find(
+          (value) => value.chainId === chainId
+        );
+        let cappedWitness: RuntimeWitness | undefined;
+        if (current && current.blockNumber > ceiling) {
+          const row = (
+            await db.query<{
+              block_number: string;
+              block_hash: string;
+              parent_hash: string;
+              timestamp: string;
+            }>(
+              `SELECT block_number::text,block_hash,parent_hash,timestamp::text
+               FROM ${sqlIdentifier(release.schema)}.chain_block
+               WHERE chain_id=$1 AND block_number<=$2::bigint
+               ORDER BY block_number DESC LIMIT 1`,
+              [chainId, String(ceiling)]
+            )
+          ).rows[0];
+          if (row)
+            cappedWitness = {
+              chainId,
+              blockNumber: BigInt(row.block_number),
+              blockHash: row.block_hash,
+              parentHash: row.parent_hash,
+              timestamp: BigInt(row.timestamp)
+            };
+        }
+        return { runtime, cappedWitness };
+      },
       true
     );
     const chain = runtime.chains.find((chain) => chain.chainId === chainId);
-    const witness = runtime.witnesses.find(
-      (witness) => witness.chainId === chainId
-    );
+    const witness =
+      cappedWitness ??
+      runtime.witnesses.find((witness) => witness.chainId === chainId);
     if (
       !runtime.running ||
       chain?.completeThroughBlock === null ||
@@ -281,17 +312,6 @@ export async function observeIndexerChain(
     } catch {
       finalityError = "finality_unavailable";
     }
-    const { indexed, witness } = await coverageThrough(
-      pool,
-      release,
-      chainId,
-      finalized?.number,
-      { indexed: initialIndexed, witness: initialWitness },
-      options.finalityCoveragePolls ?? finalityCoveragePolls,
-      options.sleep ??
-        ((milliseconds) =>
-          new Promise((resolve) => setTimeout(resolve, milliseconds)))
-    );
     const head = validBlock(await rpc.block("latest"));
     const cache = new Map<bigint, EvidenceBlock>([[head.number, head]]);
     const blockAt = async (number: bigint) => {
@@ -338,6 +358,36 @@ export async function observeIndexerChain(
         finalized = await blockAt(BigInt(read.previous.finalized_number));
       cache.set(finalized.number, finalized);
     }
+    // Use coverage read after all moving-tag RPC calls. Wait for the strictest
+    // configured confirmation target, without treating a newer native witness
+    // as evidence for a head that the provider has not reported yet.
+    const targets = finalized ? [finalized.number] : [];
+    for (const source of release.manifest.sources) {
+      if (!source.enabled || source.chainId !== chainId) continue;
+      for (const policy of source.policies) {
+        if (policy.kind !== "depth") continue;
+        let target = head.number - BigInt(policy.subsequentBlocks);
+        if (source.endBlock !== null && target > BigInt(source.endBlock))
+          target = BigInt(source.endBlock);
+        if (source.startBlock !== null && target >= BigInt(source.startBlock))
+          targets.push(target);
+      }
+    }
+    const target = targets.length
+      ? targets.reduce((a, b) => (a > b ? a : b))
+      : undefined;
+    const { indexed, witness } = await coverageThrough(
+      pool,
+      release,
+      chainId,
+      target,
+      { indexed: initialIndexed, witness: initialWitness },
+      options.finalityCoveragePolls ?? finalityCoveragePolls,
+      options.sleep ??
+        ((milliseconds) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds))),
+      head.number
+    );
     if (indexed > head.number || witness.blockNumber > head.number)
       return commitProviderLag("witness_ahead_of_head");
     if ((await blockAt(witness.blockNumber)).hash !== witness.blockHash)

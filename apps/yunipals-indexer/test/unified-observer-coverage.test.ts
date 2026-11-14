@@ -54,13 +54,25 @@ const release: RegisteredRelease = {
     ]
   }
 };
-async function observe(advance: boolean, branchMatches = true) {
+async function observe(
+  advance: boolean | "head" | "past-head",
+  branchMatches = true
+) {
   let saved: unknown[] | undefined;
   const query = vi.fn(async (sql: string, values?: unknown[]) => {
     if (sql.includes("INSERT INTO yunipals_indexer_control.chain_status"))
       saved = values;
     return {
-      rows: [],
+      rows: sql.includes("ORDER BY block_number DESC")
+        ? [
+            {
+              block_number: "100",
+              block_hash: hash(100n),
+              parent_hash: hash(99n),
+              timestamp: "1000"
+            }
+          ]
+        : [],
       rowCount: sql.includes("SELECT 1 FROM") && !branchMatches ? 0 : 1
     };
   });
@@ -75,7 +87,9 @@ async function observe(advance: boolean, branchMatches = true) {
       providerId: "fixture",
       chainId: async () => 8453,
       block: async (tag) => {
-        if (tag === "finalized" && advance) state.indexed = 99n;
+        if (tag === "finalized" && advance === true) state.indexed = 99n;
+        if (tag === "latest" && advance === "head") state.indexed = 99n;
+        if (tag === "latest" && advance === "past-head") state.indexed = 105n;
         const number =
           tag === "latest" ? 100n : tag === "finalized" ? 80n : tag;
         return {
@@ -101,6 +115,18 @@ beforeEach(() => {
   state.running = true;
 });
 describe("observer coverage after provider reads", () => {
+  it("refreshes progress made during the latest-head RPC", async () => {
+    const { result, saved } = await observe("head");
+    expect(result).toBe("observed");
+    expect(saved?.[8]).toBe("99");
+    expect(JSON.parse(String(saved?.[12]))["88"].hash).toBe(hash(88n));
+  });
+  it("uses a stored native witness no later than the recorded head", async () => {
+    const { result, saved } = await observe("past-head");
+    expect(result).toBe("observed");
+    expect(saved?.[8]).toBe("100");
+    expect(JSON.parse(String(saved?.[12]))["88"].hash).toBe(hash(88n));
+  });
   it("uses indexing progress made during finalized RPC even when finality was already covered", async () => {
     const { result, saved, sleep } = await observe(true);
     expect(result).toBe("observed");
@@ -138,10 +164,11 @@ describe("observer coverage after provider reads", () => {
     ).toBe(true);
   });
   it("does not invent coverage when the indexer remains behind the confirmation boundary", async () => {
-    const { result, saved } = await observe(false);
+    const { result, saved, sleep } = await observe(false);
     expect(result).toBe("observed");
     expect(saved?.[8]).toBe("86");
     expect(JSON.parse(String(saved?.[12]))["88"]).toBeUndefined();
+    expect(sleep).toHaveBeenCalledTimes(24);
   });
   it("still refuses a refreshed witness that disappeared before commit", async () => {
     const { result } = await observe(true, false);
