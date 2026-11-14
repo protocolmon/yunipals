@@ -54,12 +54,14 @@ async function coverageThrough(
   sleep: (milliseconds: number) => Promise<void>
 ) {
   let position = initial;
-  for (
-    let poll = 0;
-    target !== undefined && position.indexed < target && poll < polls;
-    poll++
-  ) {
-    await sleep(finalityCoveragePollMs);
+  // Provider chain/finality reads can outlive a fast chain's confirmation
+  // window. Refresh even when finality is already covered, so the following
+  // head is paired with current native coverage rather than the pre-RPC read.
+  for (let poll = 0; poll <= polls; poll++) {
+    if (poll > 0) {
+      if (target === undefined || position.indexed >= target) break;
+      await sleep(finalityCoveragePollMs);
+    }
     const runtime = await indexerTransaction(
       pool,
       (db) => readBoundRuntime(db, release),
