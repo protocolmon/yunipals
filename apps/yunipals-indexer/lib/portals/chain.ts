@@ -580,8 +580,7 @@ export async function connectPortalChain(env: NodeJS.ProcessEnv = process.env) {
   const grading = env.PORTALS_GRADING_ADDRESS;
   if (!grading || !isAddress(grading) || !env.PORTALS_RPC_URL)
     throw new Error("Portal grading address and RPC URL are required.");
-  const urls = portalRpcUrls(env);
-  await verifyPortalRpcChains(urls, chainId);
+  const urls = await verifyPortalRpcChains(portalRpcUrls(env), chainId);
   const client = createPublicClient({ transport: portalRpcTransport(urls) });
   if ((await client.getChainId()) !== chainId)
     throw new Error("Portal RPC chain mismatch.");
