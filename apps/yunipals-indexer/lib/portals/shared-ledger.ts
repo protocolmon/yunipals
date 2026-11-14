@@ -1,6 +1,7 @@
 import { PortalSourceError } from "./errors.js";
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { Pool, PoolClient, QueryResultRow } from "pg";
+import { getAddress } from "viem";
 import {
   indexerTransaction,
   sqlIdentifier
@@ -22,6 +23,24 @@ type Frame = {
   identity: string;
   revision: string;
 };
+
+// Ponder normalizes decoded addresses to lowercase. The existing portal API
+// uses viem's checksummed decoded arguments, including in saved v1 evidence.
+// Restore that representation only in decoded argument/state JSON, leaving
+// canonical storage and normalized ownership/source columns unchanged.
+function legacyDecodedAddresses(value: unknown): unknown {
+  if (typeof value === "string" && /^0x[0-9a-fA-F]{40}$/.test(value))
+    return getAddress(value.toLowerCase());
+  if (Array.isArray(value)) return value.map(legacyDecodedAddresses);
+  if (value && typeof value === "object")
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [
+        key,
+        legacyDecodedAddresses(item)
+      ])
+    );
+  return value;
+}
 export type SharedPortalBinding = {
   releaseId: string;
   readSchema: string;
@@ -44,7 +63,14 @@ export class SharedPortalLedger extends PortalLedgerStore {
       const frame = frames.getStore();
       if (!frame)
         throw new Error("Portal shared read requires a source snapshot.");
-      return frame.db.query<R>(text, values);
+      const result = await frame.db.query<R>(text, values);
+      for (const row of result.rows)
+        for (const column of ["args", "value"])
+          if (Object.hasOwn(row, column))
+            (row as QueryResultRow)[column] = legacyDecodedAddresses(
+              row[column]
+            );
+      return result;
     };
     super(
       { query } as Pick<Pool, "query">,

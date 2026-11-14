@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { eq, isTable } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/pg-core";
+import { getAddress } from "viem";
 import {
   buildSourceManifest,
   sourceManifestHash,
@@ -38,7 +39,7 @@ const contracts = {
   collection: address(1),
   registry: address(2),
   grading: address(3),
-  competition: address(4)
+  competition: address("d")
 };
 process.env.UNIFIED_PORTALS_JSON = JSON.stringify(
   Object.fromEntries(
@@ -98,8 +99,8 @@ const result = (value) => {
   return value.result;
 };
 const hash = `0x${"a".repeat(64)}`,
-  owner = address(5),
-  buyer = address(6),
+  owner = address("a"),
+  buyer = address("b"),
   zero = address(0);
 try {
   await db.query("DROP SCHEMA IF EXISTS portal_shared_private CASCADE");
@@ -216,6 +217,11 @@ try {
     });
   }
   await dispatch(10, [
+    [
+      "grading",
+      "CompetitionConfigured",
+      { competition: contracts.competition }
+    ],
     [
       "collection",
       "MintCommitted",
@@ -399,6 +405,28 @@ try {
           )
         ).rows
     );
+    assert.equal(
+      journal.find((event) => event.type === "GradingRequested").args.submitter,
+      getAddress(owner)
+    );
+    assert.equal(
+      journal.find((event) => event.type === "CompetitionConfigured").args
+        .competition,
+      getAddress(contracts.competition)
+    );
+    await reader.snapshot(async () => {
+      const state = (
+        await reader.db.query(
+          "SELECT value FROM portal_v5_state WHERE component='CompetitionConfigured'"
+        )
+      ).rows[0];
+      assert.equal(state.value.competition, getAddress(contracts.competition));
+      assert.equal(
+        (await reader.db.query("SELECT owner FROM portal_v2_token")).rows[0]
+          .owner,
+        owner
+      );
+    });
     await legacy.apply(
       journal,
       "10",
@@ -479,7 +507,7 @@ try {
   assert.equal(
     (await db.query("SELECT count(*) FROM portal_shared_check.canonical_event"))
       .rows[0].count,
-    "4"
+    "5"
   );
   assert.equal(
     (
@@ -501,6 +529,7 @@ try {
         "duplicate delivery",
         "native DDL and receipt scheduling",
         "confirmed version views",
+        "checksummed legacy arguments with normalized ownership columns",
         "shared source binding and outage",
         "real Ponder reorg and replay",
         "atomic job cursor crash recovery",
