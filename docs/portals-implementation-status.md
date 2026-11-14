@@ -12,6 +12,8 @@ The migration implementation registers all four portal contracts in the existing
 
 Validation completed locally: 110 portal tests, 47 retained shared-source tests, both application type checks, the canonical frontend build, native Ponder/PostgreSQL rollback and restricted-reader tests, and the browser/contracts flow including 111 entries. PostgreSQL testing also verifies atomic cursor recovery, saved AI output on release replay, and detection of an intentionally corrupted balance. These results do **not** establish production replay, cutover or completion of the rollback observation window; record those gates separately in private operator evidence.
 
+Additional migration checks preserve checksummed decoded addresses in existing API proofs while retaining normalized addresses in canonical storage. The real PostgreSQL fixture covers this representation difference. Historical portal rule reads use the shared RPC's validated free-provider route; 69 RPC policy/routing tests verify that this does not authorize paid fallback or expand deployment bounds. Compiled portal API/worker and Islands API profiles are available through the existing application artifact builder, avoiding a runtime TypeScript compiler dependency during handover.
+
 ## Player and owner behavior
 
 - Portal NFTs use the existing TCG presentation, one shared approved artwork per kind, lifetime ranges of 1,000 IDs and immutable per-NFT gates. Admins commit recipient lists, receive Chainlink VRF randomness and deliver in chunks. Repeated recipient addresses are preserved.

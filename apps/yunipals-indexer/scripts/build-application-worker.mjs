@@ -15,6 +15,9 @@ const compiler = createRequire(require.resolve("tsx/package.json"))("esbuild");
 const profiles = {
   "main-api": "lib/api/server.ts",
   "collector-api": "lib/api/collector-server.ts",
+  "islands-api": "lib/api/islands-server.ts",
+  "portal-api": "scripts/portal-api.ts",
+  "portal-worker": "scripts/portal-worker.ts",
   "versions-audit": "scripts/audit-base-initial-owners.ts",
   "versions-solana": "scripts/extend-monster-versions-solana.ts",
   "versions-import": "scripts/import-monster-versions.ts",
@@ -89,6 +92,19 @@ inputs.push({
 });
 inputs.sort((a, b) => a.path.localeCompare(b.path));
 const raw = result.outputFiles[0].contents;
+// Bundling moves import.meta.url to dist/. Keep the slab renderer's pinned
+// fonts beside the bundle so publication never depends on host system fonts.
+const assets = inputs.some((input) =>
+  input.path.endsWith("/lib/portals/slab.ts")
+)
+  ? ["DejaVuSans.ttf", "DejaVuSans-Bold.ttf", "LICENSE.txt"].map((name) => {
+      const source = "apps/yunipals-indexer/lib/portals/fonts/" + name;
+      const bytes = readFileSync(path.join(root, source));
+      inputs.push({ path: source, bytes: bytes.length, sha256: sha(bytes) });
+      return { path: "dist/fonts/" + name, bytes };
+    })
+  : [];
+inputs.sort((a, b) => a.path.localeCompare(b.path));
 const binding = {
   format: "yunipals-application-worker-runtime-v1",
   profile,
@@ -99,12 +115,26 @@ const binding = {
   externalPackages,
   dependencyVersions: dependencies,
   inputs,
-  files: [{ path: filename, bytes: raw.length, sha256: sha(raw) }]
+  files: [
+    { path: filename, bytes: raw.length, sha256: sha(raw) },
+    ...assets.map((asset) => ({
+      path: asset.path,
+      bytes: asset.bytes.length,
+      sha256: sha(asset.bytes)
+    }))
+  ]
 };
 const manifest = { ...binding, artifactDigest: sha(encode(binding)) };
 mkdirSync(output, { mode: 0o755 });
 mkdirSync(path.join(output, "dist"), { mode: 0o755 });
 writeFileSync(path.join(output, filename), raw, { mode: 0o644, flag: "wx" });
+for (const asset of assets) {
+  mkdirSync(path.dirname(path.join(output, asset.path)), { recursive: true });
+  writeFileSync(path.join(output, asset.path), asset.bytes, {
+    mode: 0o644,
+    flag: "wx"
+  });
+}
 writeFileSync(path.join(output, "manifest.json"), encode(manifest), {
   mode: 0o644,
   flag: "wx"
@@ -114,7 +144,7 @@ console.log(
     profile,
     artifactDigest: manifest.artifactDigest,
     manifestSha256: sha(encode(manifest)),
-    files: 1,
+    files: binding.files.length,
     sourceFiles: inputs.length
   })
 );
