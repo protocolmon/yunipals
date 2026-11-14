@@ -69,24 +69,46 @@ export function portalRpcTransport(urls: readonly string[]) {
   );
 }
 
+/** A startup failure caused by an RPC endpoint. Its message names the endpoint
+ * by position only, so it is safe to log. */
+export class PortalRpcStartupError extends Error {}
+
+/** Confirms the chain of every configured endpoint and returns the endpoints
+ * to use. The primary endpoint must answer. A fallback that does not answer is
+ * left out until the next start instead of stopping the service: it was not
+ * verified, so it must not serve reads later either. An endpoint that answers
+ * for another chain is a configuration error and always stops the start. */
 export async function verifyPortalRpcChains(
   urls: readonly string[],
-  chainId: number
+  chainId: number,
+  report: (message: string) => void = (message) => console.warn(message)
 ) {
+  const verified: string[] = [];
   for (const [index, url] of urls.entries()) {
+    let found: number;
     try {
       const client = createPublicClient({
         transport: http(url, { retryCount: 0, timeout: 15_000 })
       });
-      if ((await client.getChainId()) !== chainId)
-        throw new Error("wrong chain");
+      found = await client.getChainId();
     } catch {
       // Endpoint URLs can contain API keys. Do not forward transport errors.
-      throw new Error(
-        `Portal RPC ${index + 1} is unavailable or on the wrong chain.`
+      if (index === 0)
+        throw new PortalRpcStartupError("Portal RPC 1 is unavailable.");
+      report(
+        `Portal RPC ${index + 1} is unavailable and stays unused until the next start.`
       );
+      continue;
     }
+    if (found !== chainId)
+      throw new PortalRpcStartupError(
+        `Portal RPC ${index + 1} is on the wrong chain.`
+      );
+    verified.push(url);
   }
+  if (!verified.length)
+    throw new PortalRpcStartupError("A portal RPC endpoint is required.");
+  return verified;
 }
 
 export type PortalRpcPreflightInput = {

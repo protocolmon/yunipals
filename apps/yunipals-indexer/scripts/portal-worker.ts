@@ -19,7 +19,8 @@ import { configuredPortalWorkerPolicy } from "../lib/portals/policy.js";
 import {
   portalRpcTransport,
   portalRpcUrls,
-  portalLogBlockRange
+  portalLogBlockRange,
+  verifyPortalRpcChains
 } from "../lib/portals/rpc.js";
 import {
   PgPortalTransactionJournal,
@@ -108,7 +109,13 @@ async function main() {
       ? createWalletClient({
           account: privateKeyToAccount(privateKey as Hex),
           chain: network,
-          transport: portalRpcTransport(portalRpcUrls(process.env))
+          // Sign through verified endpoints only, like the reads above.
+          transport: portalRpcTransport(
+            await verifyPortalRpcChains(
+              portalRpcUrls(process.env),
+              runtime.chain.deployment.chainId
+            )
+          )
         })
       : null;
     const feeCeiling = process.env.PORTALS_MAX_EXECUTION_FEE_WEI;

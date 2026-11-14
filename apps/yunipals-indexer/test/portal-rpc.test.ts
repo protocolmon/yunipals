@@ -4,6 +4,7 @@ import {
   portalRpcTransport,
   portalLogBlockRange,
   portalRpcUrls,
+  PortalRpcStartupError,
   preflightPortalRpc,
   verifyPortalRpcChains
 } from "../lib/portals/rpc.js";
@@ -110,6 +111,34 @@ describe("portal RPC compatibility", () => {
         8453
       )
     ).rejects.toThrow("RPC 2");
+  });
+  it("starts without a fallback that does not answer, and leaves it unused", async () => {
+    rpc((host) =>
+      host === "one.test" ? "0x2105" : new Error("rate limit exceeded")
+    );
+    const warnings: string[] = [];
+    expect(
+      await verifyPortalRpcChains(
+        ["https://one.test", "https://two.test/secret-key"],
+        8453,
+        (message) => warnings.push(message)
+      )
+    ).toEqual(["https://one.test"]);
+    expect(warnings).toEqual([
+      "Portal RPC 2 is unavailable and stays unused until the next start."
+    ]);
+  });
+  it("does not start when the primary endpoint does not answer", async () => {
+    rpc((host) =>
+      host === "two.test" ? "0x2105" : new Error("rate limit exceeded")
+    );
+    const failure = await verifyPortalRpcChains(
+      ["https://one.test/secret-key", "https://two.test"],
+      8453,
+      () => {}
+    ).catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(PortalRpcStartupError);
+    expect((failure as Error).message).toBe("Portal RPC 1 is unavailable.");
   });
   it("performs only read operations and flags incompatible missing-receipt behavior", async () => {
     const methods = rpc((_host, method, params) => {
