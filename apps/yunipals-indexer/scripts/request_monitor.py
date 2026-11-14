@@ -10,8 +10,12 @@ import smtplib
 import ssl
 import subprocess
 import time
+import re
+import tempfile
 from email.message import EmailMessage
 from urllib.parse import urlsplit
+
+from maintenance_contract import DEFAULT_PATH, expected_maintenance, load_maintenance
 
 
 MAX_BODY_BYTES = 2 * 1024 * 1024
@@ -70,23 +74,48 @@ def probe(route, config, run=subprocess.run, clock=time.monotonic):
     started = clock()
     status = 0
     reason = "request_failed"
+    diagnostics = {}
     try:
-        result = run([
+        with tempfile.TemporaryDirectory(prefix="yunipals-probe-") as temporary:
+            headers = Path(temporary) / "headers"
+            result = run([
             "curl", "--silent", "--show-error", "--proto", "=https",
             "--connect-timeout", "5", "--max-time", str(config["timeout_seconds"]),
             "--max-filesize", str(MAX_BODY_BYTES),
+            "--dump-header", str(headers),
             "--header", "Accept: application/json",
             "--header", "Origin: https://www.yunipals.com",
             "--user-agent", "Yunipals-Request-Monitor/1.0",
             "--write-out", "\n%{http_code}", route["url"]
-        ], capture_output=True, timeout=config["timeout_seconds"] + 2)
+            ], capture_output=True, timeout=config["timeout_seconds"] + 2)
+            selected = {}
+            if headers.exists():
+                for line in headers.read_text(errors="replace").splitlines():
+                    key, separator, value = line.partition(":")
+                    if separator and key.lower() in ("content-type", "server-timing", "x-yunipals-maintenance"):
+                        selected[key.lower()] = value.strip()
+            for header, field, pattern in [
+                ("content-type", "contentType", r"[A-Za-z0-9/;=._ -]{1,160}"),
+                ("server-timing", "serverTiming", r"[A-Za-z0-9/;=._ ,\"-]{1,400}"),
+                ("x-yunipals-maintenance", "maintenanceId", r"[A-Za-z0-9_-]{1,80}")
+            ]:
+                if re.fullmatch(pattern, selected.get(header, "")):
+                    diagnostics[field] = selected[header]
         raw, code = result.stdout.rsplit(b"\n", 1)
         status = int(code)
+        body = None
+        if len(raw) <= MAX_BODY_BYTES:
+            try:
+                body = json.loads(raw)
+            except (ValueError, TypeError):
+                pass
+        if isinstance(body, dict) and isinstance(body.get("error"), str) and re.fullmatch(r"[a-z0-9_]{1,80}", body["error"]):
+            diagnostics["errorCode"] = body["error"]
         if result.returncode:
             reason = "timeout" if result.returncode == 28 else "request_failed"
         elif status != 200:
             reason = "http_error"
-        elif len(raw) > MAX_BODY_BYTES or not valid_response(route["kind"], json.loads(raw)):
+        elif len(raw) > MAX_BODY_BYTES or not valid_response(route["kind"], body):
             reason = "invalid_or_unready_response"
         else:
             reason = None
@@ -97,7 +126,7 @@ def probe(route, config, run=subprocess.run, clock=time.monotonic):
     elapsed = round(clock() - started, 3)
     if reason is None and elapsed > config["slow_seconds"]:
         reason = "slow_response"
-    return {"ok": reason is None, "seconds": elapsed, "status": status, "reason": reason}
+    return {"ok": reason is None, "seconds": elapsed, "status": status, "reason": reason, **diagnostics}
 
 
 def advance(previous, sample, now, config):
@@ -105,6 +134,11 @@ def advance(previous, sample, now, config):
     if now - state.get("checked_at", now) > config["maximum_check_gap_seconds"]:
         state["bad"] = state["good"] = 0
     state.update(checked_at=now, latest=sample)
+    if sample.get("plannedMaintenance"):
+        # A maintenance response proves neither failure nor recovery. Preserve
+        # existing incidents and require fresh consecutive checks afterwards.
+        state["bad"] = state["good"] = 0
+        return state
     if sample["ok"]:
         state["bad"] = 0
         state["good"] = state.get("good", 0) + 1
@@ -119,6 +153,8 @@ def advance(previous, sample, now, config):
 
 
 def pending_event(state, config):
+    if state.get("latest", {}).get("plannedMaintenance"):
+        return None
     if state.get("active") and not state.get("notified"):
         return "alert"
     if (not state.get("active") and state.get("notified")
@@ -177,6 +213,12 @@ def notification(events, routes, states, config):
         lines.extend([f"{event.upper()}: {labels[route_id]['name']}", labels[route_id]["url"],
                       f"Latest: {sample['seconds']:.3f}s, HTTP {sample['status']}, "
                       f"{sample['reason'] or 'healthy'}", ""])
+        opened = state.get("opened_at")
+        if opened is not None:
+            lines.append("Incident began: " + datetime.datetime.fromtimestamp(opened, datetime.timezone.utc).isoformat())
+        for field in ("contentType", "errorCode", "serverTiming", "maintenanceId"):
+            if sample.get(field):
+                lines.append(f"{field}: {sample[field]}")
     lines.append("Check the API logs and database query timings. No automatic changes were made.")
     kind = "ALERT" if any(event == "alert" for _, event in events) else "RECOVERED"
     return f"[Yunipals] {kind}: public collection requests", "\n".join(lines)
@@ -187,10 +229,17 @@ def cycle(config, directory, sample_route=probe, deliver=send_email, now=None):
     state_file = directory / "state.json"
     # A corrupt existing state is an error, not an excuse to send duplicate alerts.
     states = json.loads(state_file.read_text()) if state_file.exists() else {}
+    maintenance_error = False
+    try:
+        maintenance = load_maintenance(config.get("maintenance_file", DEFAULT_PATH))
+    except (OSError, ValueError, TypeError):
+        maintenance = None
+        maintenance_error = True
     samples = {}
     for route in config["routes"]:
         route_id = route["id"]
         samples[route_id] = sample_route(route, config)
+        samples[route_id]["plannedMaintenance"] = expected_maintenance(maintenance, route, samples[route_id], now)
         states[route_id] = advance(states.get(route_id, {}), samples[route_id], now, config)
     events = [(route["id"], pending_event(states[route["id"]], config)) for route in config["routes"]]
     events = [(route_id, event) for route_id, event in events if event]
@@ -210,6 +259,8 @@ def cycle(config, directory, sample_route=probe, deliver=send_email, now=None):
             delivery = "sent"
     report = {"checkedAt": datetime.datetime.fromtimestamp(now, datetime.timezone.utc).isoformat(),
               "samples": samples, "pendingEvents": events, "emailDelivery": delivery}
+    if maintenance_error:
+        report["maintenanceConfigurationError"] = True
     atomic_json(directory / "latest.json", report)
     # Bounded per-day timing history; never save response bodies or private headers.
     history = directory / f"samples-{report['checkedAt'][:10]}.jsonl"
