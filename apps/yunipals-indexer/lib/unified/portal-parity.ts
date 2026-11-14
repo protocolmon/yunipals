@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { setTimeout as sleep } from "node:timers/promises";
+import { PortalSourceError } from "../portals/errors.js";
 import type { Pool } from "pg";
 import { indexerTransaction } from "../../../../packages/yunipals-indexer-server/src/database.js";
 import { PortalLedgerStore } from "../portals/ledger-store.js";
@@ -58,16 +60,40 @@ export async function comparePortalSources(
   legacyPool: Pool,
   shared: SharedPortalLedger
 ) {
-  return shared.transactionSnapshot(() =>
-    indexerTransaction(
-      legacyPool,
-      async (db) => {
-        const legacy = new PortalLedgerStore(db, shared.deployment);
-        const before = await legacy.cursor(),
-          available = await shared.cursor();
+  return indexerTransaction(
+    legacyPool,
+    async (db) => {
+      const legacy = new PortalLedgerStore(db, shared.deployment);
+      const before = await legacy.cursor();
+      if (!before || (await legacy.requiresReplay()))
+        throw new Error(
+          "Portal sources do not have a comparable complete boundary."
+        );
+      // Freeze the mutable legacy projections first. The shared reader can
+      // then catch this fixed block while the legacy scanner keeps advancing.
+      const deadline = Date.now() + 30_000;
+      for (;;) {
+        try {
+          const available = await shared.cursor();
+          if (before.competition !== available.competition)
+            throw new Error("Portal competition bindings differ.");
+          if (BigInt(available.block) >= BigInt(before.block)) break;
+        } catch (error) {
+          if (
+            !(error instanceof PortalSourceError) ||
+            error.code !== "source_unavailable"
+          )
+            throw error;
+        }
+        if (Date.now() >= deadline)
+          throw new Error(
+            "Portal sources do not have a comparable complete boundary."
+          );
+        await sleep(500);
+      }
+      return shared.transactionSnapshot(async () => {
+        const available = await shared.cursor();
         if (
-          !before ||
-          (await legacy.requiresReplay()) ||
           BigInt(available.block) < BigInt(before.block) ||
           before.competition !== available.competition
         )
@@ -112,8 +138,8 @@ export async function comparePortalSources(
           matches: comparisons.every((row) => row.matches),
           comparisons
         };
-      },
-      true
-    )
+      });
+    },
+    true
   );
 }
