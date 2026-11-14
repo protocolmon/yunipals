@@ -77,7 +77,9 @@ export async function recordCanonicalEvent(
     source.receiptRequirement === "full" &&
     event.block.number >=
       BigInt(source.receiptStartBlock ?? source.startBlock) &&
-    (name === "Transfer" || source.feature === "marketplace")
+    (name === "Transfer" ||
+      source.feature === "marketplace" ||
+      source.feature === "portals")
   ) {
     await context.db
       .insert(schema.transactionCandidate)

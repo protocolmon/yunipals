@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { formatUnits, isAddress, type Hex } from "viem";
 import { environment } from "@/environment";
+import { PortalRequestError, portalRetryAfter } from "./portalRetry";
 
 const uint = z.string().regex(/^\d+$/);
 const address = z.string().refine((value) => isAddress(value));
@@ -264,13 +265,15 @@ export async function portalRequest(path: string, init?: RequestInit) {
       ? AbortSignal.any([init.signal, AbortSignal.timeout(20000)])
       : AbortSignal.timeout(20000)
   });
-  const value: unknown = await response.json();
+  const value: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     const parsed = z.object({ error: z.string().max(300) }).safeParse(value);
-    throw new Error(
+    throw new PortalRequestError(
       parsed.success
         ? parsed.data.error
-        : "Portals are temporarily unavailable."
+        : "Portals are temporarily unavailable.",
+      response.status,
+      portalRetryAfter(response.headers.get("Retry-After"))
     );
   }
   return value;

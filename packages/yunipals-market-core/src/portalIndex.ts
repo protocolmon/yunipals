@@ -160,14 +160,17 @@ export function portalReceiptEvents(
     })
     .sort((a, b) => a.logIndex - b.logIndex);
 }
+export type PortalSharedIdentity = { releaseId: string; readIdentity: string };
 export type PortalIndexSelection = {
-  version: 1;
+  version: 1 | 2;
+  shared?: PortalSharedIdentity;
   sourceId: string;
   generation: string | null;
   deployment: PortalIndexDeployment;
 };
 export type PortalIndexRequest = {
-  version: 1;
+  version: 1 | 2;
+  shared?: PortalSharedIdentity;
   sourceId: string;
   generation: string | null;
   chainId: number;
@@ -178,7 +181,8 @@ export type PortalIndexRequest = {
   events: PortalIndexEvent[];
 };
 export type PortalIndexEvidence = {
-  version: 1;
+  version: 1 | 2;
+  shared?: PortalSharedIdentity & { observationRevision: string };
   expectationHash: string;
   state: IndexedActionState;
   reason: IndexedActionReason;
@@ -192,6 +196,9 @@ export function portalIndexExpectationHash(request: PortalIndexRequest) {
     stringToHex(
       JSON.stringify([
         request.version,
+        ...(request.version === 2
+          ? [request.shared?.releaseId, request.shared?.readIdentity]
+          : []),
         request.sourceId,
         request.generation,
         request.chainId,
@@ -210,15 +217,20 @@ export function portalIndexExpectationHash(request: PortalIndexRequest) {
   );
 }
 
-/** Same canonical-event/coverage convention as indexedAction, with a distinct
- * source identity for the independent portal ledger. Never use the main indexer's head. */
+/** Exact portal event/projection evidence. Shared reads also bind the selected
+ * immutable release; unrelated source coverage never proves a portal action. */
 export function portalEvidenceMatches(
   request: PortalIndexRequest,
   evidence: PortalIndexEvidence
 ): boolean {
   const coverage = evidence.coverage;
   return (
-    evidence.version === 1 &&
+    evidence.version === request.version &&
+    (request.version === 1 ||
+      (!!request.shared &&
+        evidence.shared?.releaseId === request.shared.releaseId &&
+        evidence.shared?.readIdentity === request.shared.readIdentity &&
+        !!evidence.shared?.observationRevision)) &&
     evidence.expectationHash === portalIndexExpectationHash(request) &&
     evidence.state === "indexed" &&
     evidence.reason === "action_indexed" &&
@@ -235,12 +247,14 @@ export function portalEvidenceMatches(
     BigInt(coverage.completeThroughBlock) >= BigInt(request.blockNumber) &&
     evidence.proof?.events.length === request.events.length &&
     request.events.length > 0 &&
-    request.events.every(
-      (event, i) =>
-        evidence.proof?.events[i].id ===
+    request.events.every((event, i) => {
+      const observed = evidence.proof?.events[i];
+      return (
+        observed?.id ===
           `${request.transactionHash.toLowerCase()}:${event.logIndex}` &&
-        evidence.proof.events[i].name === event.name &&
-        evidence.proof.events[i].logIndex === event.logIndex
-    )
+        observed.name === event.name &&
+        observed.logIndex === event.logIndex
+      );
+    })
   );
 }

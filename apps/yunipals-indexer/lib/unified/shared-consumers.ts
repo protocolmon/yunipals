@@ -6,6 +6,7 @@ import {
 
 export const sharedIndexerConsumers = [
   "reader",
+  "portal",
   "publisher",
   "booster",
   "arena",
@@ -26,10 +27,29 @@ export function sharedConsumerSettings(
     deployment?: string;
     profile?: string;
     ownershipReadSchema?: string;
+    portalReadSchema?: string;
   } = {}
 ): Record<string, string> {
   const deployment = validateSharedIndexerDeployment(value);
   const common = sharedIndexerConsumerSettings(deployment);
+  if (consumer === "portal") {
+    const source = deployment.manifest.sources.find(
+      (row) => row.id === "portals:8453:competition" && row.enabled
+    );
+    if (
+      !source?.address ||
+      !files.portalReadSchema ||
+      !/^[a-z_][a-z0-9_]{0,62}$/.test(files.portalReadSchema) ||
+      files.portalReadSchema === deployment.schema
+    )
+      throw new Error("A portal source and separate read schema are required.");
+    return {
+      PORTALS_INDEXER_MODE: "unified",
+      PORTALS_INDEXER_RELEASE_ID: deployment.releaseId,
+      PORTALS_INDEXER_READ_SCHEMA: files.portalReadSchema,
+      PORTALS_COMPETITION: source.address
+    };
+  }
   if (consumer === "publisher")
     return {
       ...sharedConsumerSettings(deployment, "reader"),

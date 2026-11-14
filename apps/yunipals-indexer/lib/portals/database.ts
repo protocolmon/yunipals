@@ -36,7 +36,9 @@ export const portalDatabaseTables = {
     "portal_v1_job",
     "portal_v1_publication",
     "portal_v1_cursor",
-    "portal_v4_theme_job"
+    "portal_v4_theme_job",
+    "portal_v6_consumer",
+    "portal_v6_job_revision"
   ],
   signing: ["portal_v5_transaction"],
   ledger: [
@@ -102,5 +104,46 @@ export async function grantPortalRoles(
   );
   await db.query(
     `GRANT SELECT,INSERT,UPDATE,DELETE ON ${qualified(ledger)} TO ${portalSqlIdentifier(roles.ledger)}`
+  );
+}
+
+/** Shared ingestion owns public projections. Private runtime roles have no write
+ * access to that database and need no legacy ledger grant on a fresh install. */
+export async function grantPortalPrivateRoles(
+  db: Pick<Pool, "query">,
+  schema: string,
+  roles: { api: string; worker: string }
+) {
+  if (roles.api === roles.worker)
+    throw new Error("Separate portal API and worker roles required.");
+  const prefix = portalSqlIdentifier(schema);
+  const qualified = (tables: readonly string[]) =>
+    tables.map((table) => `${prefix}.${portalSqlIdentifier(table)}`).join(",");
+  const { intake, jobs, signing } = portalDatabaseTables;
+  for (const role of Object.values(roles)) {
+    await db.query(
+      `GRANT USAGE ON SCHEMA ${prefix} TO ${portalSqlIdentifier(role)}`
+    );
+    await db.query(
+      `REVOKE ALL ON ${qualified([...intake, ...jobs, ...signing])} FROM ${portalSqlIdentifier(role)}`
+    );
+  }
+  await db.query(
+    `REVOKE ALL ON ${qualified([...intake, ...jobs, ...signing])} FROM PUBLIC`
+  );
+  await db.query(
+    `GRANT SELECT ON ${qualified([...intake, ...jobs])} TO ${portalSqlIdentifier(roles.api)}`
+  );
+  await db.query(
+    `GRANT INSERT ON ${qualified(intake)} TO ${portalSqlIdentifier(roles.api)}`
+  );
+  await db.query(
+    `GRANT SELECT ON ${qualified(intake)} TO ${portalSqlIdentifier(roles.worker)}`
+  );
+  await db.query(
+    `GRANT SELECT,INSERT,UPDATE,DELETE ON ${qualified(jobs)} TO ${portalSqlIdentifier(roles.worker)}`
+  );
+  await db.query(
+    `GRANT SELECT,INSERT,UPDATE ON ${qualified(signing)} TO ${portalSqlIdentifier(roles.worker)}`
   );
 }

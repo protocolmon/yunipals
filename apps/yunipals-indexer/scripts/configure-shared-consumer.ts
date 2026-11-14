@@ -14,6 +14,7 @@ const { values } = parseArgs({
     consumer: { type: "string" },
     profile: { type: "string" },
     "ownership-read-schema": { type: "string" },
+    "portal-read-schema": { type: "string" },
     output: { type: "string" }
   }
 });
@@ -35,7 +36,8 @@ try {
     {
       deployment: values.deployment,
       profile: values.profile,
-      ownershipReadSchema: values["ownership-read-schema"]
+      ownershipReadSchema: values["ownership-read-schema"],
+      portalReadSchema: values["portal-read-schema"]
     }
   );
   await writeFile(values.output, encodeSharedConsumerSettings(settings), {

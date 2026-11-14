@@ -22,6 +22,7 @@ import type { PortalStore } from "./store.js";
 import type { PortalAssets } from "./assets.js";
 import type { OpenAIPortalAI } from "./provider.js";
 import { validatedThemeOutput } from "./theme-validation.js";
+import type { SharedPortalLedger } from "./shared-ledger.js";
 
 export type ThemePublication = {
   pool: Address;
@@ -46,13 +47,33 @@ export class PortalThemeWorker {
     readonly policy: PortalModelPolicy,
     readonly confirmations: bigint,
     readonly publish?: (theme: ThemePublication) => Promise<Hex>,
-    readonly recover?: (pool: Address, request: bigint) => Promise<Hex>
+    readonly recover?: (pool: Address, request: bigint) => Promise<Hex>,
+    readonly indexed?: SharedPortalLedger
   ) {
     this.jobs = new PortalThemeStore(store.db, store.deployment);
   }
   async tick() {
     if (!this.policy.competitionThemes) return false;
-    const head = await this.chain.client.getBlockNumber({ cacheTime: 0 });
+    const indexed = this.indexed
+      ? await this.indexed.snapshot(async () => {
+          const cursor = await this.indexed!.cursor();
+          const count = (
+            await this.indexed!.db.query<{ count: string }>(
+              "SELECT count(*)::text AS count FROM portal_v3_competition_entry WHERE deployment=$1",
+              [this.indexed!.deployment]
+            )
+          ).rows[0]!.count;
+          return {
+            block: BigInt(cursor.block),
+            hash: cursor.hash,
+            pool: cursor.competition,
+            count: BigInt(count)
+          };
+        })
+      : null;
+    const head = indexed
+      ? indexed.block + this.confirmations
+      : await this.chain.client.getBlockNumber({ cacheTime: 0 });
     if (head < this.confirmations) return false;
     const blockNumber = head - this.confirmations;
     const pool = await this.chain.client.readContract({
@@ -62,6 +83,13 @@ export class PortalThemeWorker {
       blockNumber
     });
     if (pool === zeroAddress) return false;
+    if (
+      indexed &&
+      (indexed.pool !== pool.toLowerCase() ||
+        (await this.chain.client.getBlock({ blockNumber })).hash !==
+          indexed.hash)
+    )
+      throw new Error("Indexed theme source changed.");
     const client = this.chain.client;
     const [count, size] = await Promise.all([
       client.readContract({
@@ -77,6 +105,8 @@ export class PortalThemeWorker {
         blockNumber
       })
     ]);
+    if (indexed && count !== indexed.count)
+      throw new Error("Competition entries are not fully indexed.");
     if (!count || count % size !== 0n) return false;
     const batchId = count / size + 1n;
     const existing = await client.readContract({

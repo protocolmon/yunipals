@@ -1790,10 +1790,11 @@ export function createRpcBudgetProxy(options: RpcBudgetProxyOptions) {
             isFreeRpcCall(call, observedHead, recentBlocks) ||
             // Unified calls have already passed the reviewed source/address,
             // deployment and range limits above. Permit those bounded source
-            // scans on the existing paced pool without changing legacy reads
-            // or the separate paid-fallback/permit admission below.
+            // scans and block-pinned contract reads (for example historical
+            // portal competition rules) on the existing paced pool. Legacy reads
+            // and the separate paid-fallback/permit admission remain unchanged.
             (unifiedWorkload === "unified_source" &&
-              call.method === "eth_getLogs") ||
+              (call.method === "eth_getLogs" || call.method === "eth_call")) ||
             // Complete historical receipts require bytecode at that exact
             // block. The policy above already restricts code reads to reviewed
             // addresses and deployment bounds. Keep this exception within the

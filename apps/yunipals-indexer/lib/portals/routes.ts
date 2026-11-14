@@ -21,7 +21,7 @@ import {
   portalAuthorLinkSigningData
 } from "@protopals/yunipals-market-core/portals";
 import { portalJson, portalCardAbi } from "./chain.js";
-import { PortalUserError } from "./errors.js";
+import { PortalSourceError, PortalUserError } from "./errors.js";
 import { createPortalRuntime, type PortalRuntime } from "./runtime.js";
 import { registerPortalOwnerRoutes } from "./owner-routes.js";
 import { readCompetition, readCompetitionBatch } from "./competition.js";
@@ -70,15 +70,31 @@ export function registerPortalRoutes(
   } = {}
 ) {
   const router = new Hono();
-  router.onError((error) => {
+  router.onError((error, c) => {
     if (error instanceof PortalUserError)
       return json({ error: error.message }, error.status);
     if (error instanceof z.ZodError)
       return json({ error: "Invalid portal request." }, 400);
-    return json(
-      { error: "Portals are temporarily unavailable. Please try again." },
+    const code =
+      error instanceof PortalSourceError
+        ? error.code
+        : "dependency_unavailable";
+    // Never log RPC URLs, SQL parameters, provider responses or private spells.
+    console.error(
+      JSON.stringify({
+        event: "portal_read_unavailable",
+        code,
+        method: c.req.method,
+        path: c.req.path
+      })
+    );
+    const response = json(
+      { error: "Portals are temporarily unavailable. Please try again.", code },
       503
     );
+    response.headers.set("Retry-After", "5");
+    response.headers.set("Access-Control-Expose-Headers", "Retry-After");
+    return response;
   });
   let runtime: Promise<PortalRuntime> | undefined;
   const enabled =
@@ -96,9 +112,19 @@ export function registerPortalRoutes(
     })
   );
   router.use("/v1/portals/*", async (c, next) => {
+    if (c.req.method === "GET" && c.req.path === "/v1/portals") return next();
     if (!enabled())
       return c.json({ error: "Portals are being prepared." }, 503);
-    await next();
+    if (c.req.method === "GET" && c.req.path === "/v1/portals/health")
+      return next();
+    // Private intake remains available while shared indexing catches up.
+    if (
+      c.req.method === "POST" &&
+      ["/v1/portals/spells", "/v1/portals/authors/link"].includes(c.req.path)
+    )
+      return next();
+    const value = await get();
+    await value.ledger.snapshot(next);
   });
   registerPortalOwnerRoutes(router, get);
   registerPortalMintRoutes(router, get);

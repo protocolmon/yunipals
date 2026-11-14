@@ -118,7 +118,7 @@ try {
     schema: values.schema,
     buildId: compiled.buildId,
     manifest,
-    enabledSources: 13,
+    enabledSources: manifest.sources.filter((source) => source.enabled).length,
     stubbedHeaderCalls: headers,
     providerCalls: 0,
     databaseConnections: 0,
@@ -132,7 +132,7 @@ try {
     JSON.stringify({
       event: "shared_source_compiled",
       buildId: compiled.buildId,
-      enabledSources: 13,
+      enabledSources: result.enabledSources,
       providerCalls: 0,
       databaseConnections: 0
     })

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PortalRequestError } from "./portalRetry";
 import {
   type Address,
   type Hex,
@@ -54,8 +55,10 @@ export type PortalTransactionIntent = Pick<
 >;
 export const portalTransactionPending = (value: PortalTransaction) =>
   !["indexed", "failed"].includes(value.state);
+const sharedIdentitySchema = z.object({ releaseId: hash, readIdentity: hash });
 const selectionSchema = z.object({
-  version: z.literal(1),
+  version: z.union([z.literal(1), z.literal(2)]),
+  shared: sharedIdentitySchema.optional(),
   sourceId: hash,
   generation: z.string().uuid().nullable(),
   deployment: z.object({
@@ -67,7 +70,10 @@ const selectionSchema = z.object({
   })
 });
 const evidenceSchema = z.object({
-  version: z.literal(1),
+  version: z.union([z.literal(1), z.literal(2)]),
+  shared: sharedIdentitySchema
+    .extend({ observationRevision: z.string() })
+    .optional(),
   expectationHash: hash,
   state: z.enum([
     "indexed",
@@ -138,6 +144,9 @@ export class PortalTransactionTracker {
   private values: PortalTransaction[] = [];
   private listeners = new Set<() => void>();
   private checks = new Map<string, Promise<TransactionReceipt | undefined>>();
+  private unavailableUntil = 0;
+  private unavailableAttempts = 0;
+  private nextBackgroundVerification = new Map<string, number>();
   constructor(
     scope: { chainId: number; wallet: string; grading: string },
     deps: Dependencies
@@ -234,9 +243,25 @@ export class PortalTransactionTracker {
     this.persist();
     return value;
   }
-  check(id: string) {
+  check(
+    id: string,
+    options: { background?: boolean; automatic?: boolean } = {}
+  ) {
     const active = this.checks.get(id);
     if (active) return active;
+    // Completed actions leave the fast polling loop. Retain a bounded reorg
+    // check while explicit status checks and pending waits remain responsive.
+    if (
+      options.background &&
+      this.values.find((value) => value.id === id)?.state === "indexed" &&
+      Date.now() < (this.nextBackgroundVerification.get(id) ?? 0)
+    )
+      return Promise.resolve(undefined);
+    if (
+      (options.background || options.automatic) &&
+      Date.now() < this.unavailableUntil
+    )
+      return Promise.resolve(undefined);
     const promise = this.checkOnce(id).finally(() => this.checks.delete(id));
     this.checks.set(id, promise);
     return promise;
@@ -317,7 +342,7 @@ export class PortalTransactionTracker {
           message: "Confirmed. Waiting for indexed data…"
         });
       const selection = selectionSchema.parse(
-        await request("/action-evidence")
+        await request("/action-evidence?version=2")
       );
       if (
         selection.deployment.chainId !== saved.chainId ||
@@ -335,7 +360,8 @@ export class PortalTransactionTracker {
         return;
       }
       const expected: PortalIndexRequest = {
-        version: 1,
+        version: selection.version,
+        ...(selection.shared ? { shared: selection.shared } : {}),
         sourceId: selection.sourceId,
         generation: selection.generation,
         chainId: saved.chainId,
@@ -351,6 +377,7 @@ export class PortalTransactionTracker {
         body: JSON.stringify(expected)
       });
       const evidence = evidenceSchema.parse(raw) as PortalIndexEvidence;
+      this.unavailableAttempts = 0;
       if (portalEvidenceMatches(expected, evidence)) {
         // Verify again after the API read; a delayed response from an old block
         // must not turn a reorged transaction into success.
@@ -360,11 +387,13 @@ export class PortalTransactionTracker {
         )
           throw new Error("Inclusion changed during indexing.");
         const currentSelection = selectionSchema.parse(
-          await request("/action-evidence")
+          await request("/action-evidence?version=2")
         );
         if (
           currentSelection.generation !== selection.generation ||
           currentSelection.sourceId !== selection.sourceId ||
+          JSON.stringify(currentSelection.shared) !==
+            JSON.stringify(selection.shared) ||
           this.values.find((v) => v.id === id)?.hash.toLowerCase() !==
             receipt.transactionHash.toLowerCase()
         )
@@ -375,6 +404,7 @@ export class PortalTransactionTracker {
           generation: selection.generation,
           message: "Confirmed and indexed."
         });
+        this.nextBackgroundVerification.set(id, Date.now() + 60000);
         return receipt;
       }
       this.update(id, {
@@ -389,7 +419,22 @@ export class PortalTransactionTracker {
             ? "The chain or index changed. Rechecking saved transaction…"
             : "Confirmed. The data update is still pending; your transaction is saved."
       });
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof PortalRequestError &&
+        [429, 503].includes(error.status)
+      ) {
+        const backoff = Math.min(
+          30000,
+          2500 * 2 ** Math.min(this.unavailableAttempts++, 4)
+        );
+        this.unavailableUntil =
+          Date.now() +
+          Math.min(
+            60000,
+            Math.max(error.retryAfterMs, backoff + Math.random() * 1000)
+          );
+      }
       this.update(id, {
         state: "delayed",
         message:
@@ -399,13 +444,18 @@ export class PortalTransactionTracker {
   }
   async wait(id: string, onProgress?: (message: string) => void) {
     const end = Date.now() + 120000;
+    let attempt = 0;
     while (Date.now() < end) {
-      const receipt = await this.check(id);
+      const receipt = await this.check(id, { automatic: true });
       const saved = this.values.find((v) => v.id === id)!;
       onProgress?.(saved.message);
       if (receipt && saved.state === "indexed") return receipt;
       if (saved.state === "failed") throw new Error(saved.message);
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      const delay =
+        Math.min(15000, 2500 * 1.5 ** attempt++) + Math.random() * 500;
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.min(end - Date.now(), delay))
+      );
     }
     throw new Error(
       "Your transaction is saved. Confirmation or indexing is still pending; use Check status instead of submitting again."

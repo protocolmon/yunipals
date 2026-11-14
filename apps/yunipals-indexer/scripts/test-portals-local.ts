@@ -437,6 +437,20 @@ try {
       intake,
       store,
       assets
+    }).catch(async (error: unknown) => {
+      console.error(
+        "Competition browser alerts:",
+        await page.getByRole("alert").allTextContents()
+      );
+      console.error(
+        "Competition browser status:",
+        await page.getByRole("status").allTextContents()
+      );
+      await page.screenshot({
+        path: "/tmp/yunipals-portal-competition-failure.png",
+        fullPage: true
+      });
+      throw error;
     });
   }
   const { verifyPortalAdminBrowser } = await import(

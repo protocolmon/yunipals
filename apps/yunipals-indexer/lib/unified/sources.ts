@@ -1,3 +1,4 @@
+import { portalSources } from "./portal-sources.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 export {
   manifestDigest,
@@ -366,6 +367,7 @@ export function buildSourceManifest(
       "full"
     )
   );
+  sources.push(...portalSources(env));
   if (env.UNIFIED_RECEIPT_HISTORY_JSON !== undefined) {
     let input: unknown;
     try {

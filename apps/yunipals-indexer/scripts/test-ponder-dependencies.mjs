@@ -78,8 +78,15 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 22);
-  assert.ok(tables.some((table) => getTableConfig(table).name === "anime_fighter"));
+  assert.equal(tables.length, 25);
+  assert.ok(
+    tables.some(
+      (table) => getTableConfig(table).name === "portal_competition_rules"
+    )
+  );
+  assert.ok(
+    tables.some((table) => getTableConfig(table).name === "anime_fighter")
+  );
   const database = createDatabase({ common, namespace, preBuild, schemaBuild });
   await database.migrateSync();
   await database.migrate({
@@ -298,6 +305,29 @@ try {
         await db
           .insert(schema.chainBlock)
           .values({ ...witness, id: `8453:${block}` });
+        const portalEntity = `portal-token:1`;
+        const portalValue = {
+          token_id: "1",
+          owner: initial ? owner : changedOwner,
+          balance: initial ? "245000" : "490000"
+        };
+        await db
+          .insert(schema.portalProjection)
+          .values({ id: portalEntity, value: portalValue })
+          .onConflictDoUpdate({
+            target: schema.portalProjection.id,
+            set: { value: portalValue }
+          });
+        await db.insert(schema.portalProjectionVersion).values({
+          id: `${portalEntity}:${block}`,
+          entity: portalEntity,
+          deployment,
+          domain: "token",
+          value: portalValue,
+          blockNumber: BigInt(block),
+          transactionIndex: 0,
+          logIndex: block
+        });
         if (initial) {
           await db.insert(schema.indexerSource).values({
             id: "arena:base",
@@ -418,7 +448,8 @@ try {
     "arena_seat",
     "canonical_event",
     "transaction_candidate",
-    "chain_block"
+    "chain_block",
+    "portal_projection_version"
   ]) {
     assert.equal(
       Number(
@@ -442,6 +473,11 @@ try {
     retained
   );
   await reader.query("ROLLBACK");
+  assert.deepEqual(
+    (await client.query("SELECT value FROM dependency_check.portal_projection"))
+      .rows[0].value,
+    { token_id: "1", owner, balance: "245000" }
+  );
   assert.equal(
     (
       await client.query(

@@ -13,6 +13,10 @@ import {
 if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
 
 async function main() {
+  if (process.env.PORTALS_INDEXER_MODE === "unified")
+    throw new Error(
+      "Shared portal ingestion is enabled; do not start the retired ledger scanner."
+    );
   if (
     !process.argv.includes("--migrate") &&
     process.env.PORTALS_LEDGER_ENABLED !== "true"

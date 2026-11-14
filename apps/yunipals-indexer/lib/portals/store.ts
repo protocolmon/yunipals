@@ -1,3 +1,4 @@
+import { portalConsumerSchema } from "./consumer-schema.js";
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import {
@@ -104,6 +105,10 @@ export class PortalStore {
 
   async migrate() {
     await this.db.query(portalTransactionSchema);
+    for (const statement of portalConsumerSchema
+      .split(";")
+      .filter((sql) => sql.trim()))
+      await this.db.query(statement);
     await this.db.query(portalThemeSchema);
     for (const statement of portalSchema
       .split(";")

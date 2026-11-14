@@ -23,6 +23,7 @@ import {
   type UnifiedRpcProfile
 } from "../../../packages/yunipals-indexer-server/src/rpc-policy";
 import { arenaAbi } from "../../../packages/yunipals-market-core/src/arenaAbi";
+import { portalCompetitionAbi } from "../../../packages/yunipals-market-core/src/portalAbi";
 import { seaportDeployment } from "../../../packages/yunipals-market-core/src/registry";
 
 const address = "0xebd141b6ae36f74fe70b9139b262ee9771b72aca";
@@ -233,7 +234,15 @@ afterEach(async () => {
       .map((server) => new Promise<void>((done) => server.close(() => done())))
   );
 });
-async function fixture(options: { ready?: boolean; denied?: boolean } = {}) {
+async function fixture(
+  options: {
+    ready?: boolean;
+    denied?: boolean;
+    head?: string;
+    profile?: UnifiedRpcProfile;
+  } = {}
+) {
+  const selectedProfile = options.profile ?? profile;
   const seen: Array<{ url: string; body: Request | Request[] }> = [];
   const counts = { free: 0, paid: 0, permit: 0 };
   const budget: RpcComputeBudget = {
@@ -279,7 +288,7 @@ async function fixture(options: { ready?: boolean; denied?: boolean } = {}) {
     budget,
     workloadBudgets: { unified_source: budget, unified_evidence: budget },
     unifiedPolicy: {
-      profile,
+      profile: selectedProfile,
       chainId: 8453,
       ready: async () => {
         if (options.ready === false)
@@ -301,19 +310,26 @@ async function fixture(options: { ready?: boolean; denied?: boolean } = {}) {
         id: request.id,
         result:
           request.method === "eth_blockNumber"
-            ? "0x64"
+            ? (options.head ?? "0x64")
             : request.method === "eth_call"
-              ? (request.params[0] as { data: string }).data === tournamentData
+              ? options.profile
                 ? encodeFunctionResult({
-                    abi: arenaAbi,
-                    functionName: "tournament",
-                    result: tournament
+                    abi: portalCompetitionAbi,
+                    functionName: "BATCH_SIZE",
+                    result: 111n
                   })
-                : encodeFunctionResult({
-                    abi: arenaAbi,
-                    functionName: "automaticStrategyMask",
-                    result: 0
-                  })
+                : (request.params[0] as { data: string }).data ===
+                    tournamentData
+                  ? encodeFunctionResult({
+                      abi: arenaAbi,
+                      functionName: "tournament",
+                      result: tournament
+                    })
+                  : encodeFunctionResult({
+                      abi: arenaAbi,
+                      functionName: "automaticStrategyMask",
+                      result: 0
+                    })
               : []
       });
       return Response.json(Array.isArray(body) ? body.map(reply) : reply(body));
@@ -326,7 +342,7 @@ async function fixture(options: { ready?: boolean; denied?: boolean } = {}) {
   const url = `http://127.0.0.1:${bound.port}/unified`;
   const headers = {
     "x-yunipals-rpc-workload": "unified_evidence",
-    [unifiedRpcProfileHeader]: unifiedRpcProfileId(profile)
+    [unifiedRpcProfileHeader]: unifiedRpcProfileId(selectedProfile)
   };
   const post = (body: unknown, extra: Record<string, string> = {}) =>
     fetch(url, {
@@ -385,6 +401,61 @@ test("actual proxy forwards viem's two Arena readContract calls without changing
   );
   assert.deepEqual(f.counts, { free: 3, paid: 0, permit: 0 });
   assert.ok(f.seen.every(({ url }) => url === "https://free.invalid/fixture"));
+});
+
+test("historical portal rule reads use the reviewed free source pool without a paid permit", async () => {
+  const portalProfile: UnifiedRpcProfile = {
+    ...profile,
+    manifest: {
+      ...profile.manifest,
+      sources: [
+        {
+          ...profile.manifest.sources[0]!,
+          id: "portals:8453:competition",
+          feature: "portals",
+          contractName: "PortalGradingCompetition",
+          events: ["CompetitionEntered"]
+        }
+      ]
+    }
+  };
+  const f = await fixture({ head: "0x186a0", profile: portalProfile });
+  const headers = { ...f.headers, "x-yunipals-rpc-workload": "unified_source" };
+  const client = createPublicClient({
+    transport: http(f.url, { retryCount: 0, fetchOptions: { headers } })
+  });
+  assert.equal(await client.getBlockNumber(), 100000n);
+  assert.equal(
+    await client.readContract({
+      address,
+      abi: portalCompetitionAbi,
+      functionName: "BATCH_SIZE",
+      blockNumber: 100n
+    }),
+    111n
+  );
+  assert.deepEqual(f.counts, { free: 2, paid: 0, permit: 0 });
+  assert.ok(f.seen.every(({ url }) => url === "https://free.invalid/fixture"));
+  const data = encodeFunctionData({
+    abi: portalCompetitionAbi,
+    functionName: "BATCH_SIZE"
+  });
+  for (const params of [
+    [{ to: address, data }, "0x63"],
+    [{ to: disabled, data }, "0x64"],
+    [{ to: address, data }, "latest"]
+  ]) {
+    assert.equal(
+      (
+        await f.post(
+          { jsonrpc: "2.0", id: 1, method: "eth_call", params },
+          headers
+        )
+      ).status,
+      400
+    );
+  }
+  assert.deepEqual(f.counts, { free: 2, paid: 0, permit: 0 });
 });
 
 test("actual proxy rejects malformed or mixed contract calls before any provider or budget dispatch", async () => {

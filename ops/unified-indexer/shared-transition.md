@@ -11,6 +11,8 @@ public source configuration loaded. Keep private credentials on the server.
 The manifest must enable exactly eleven retained non-Arena sources, the fighter
 registry and one `YunipalsArenaV2` source. Both modes use that contract. The old
 video and standalone Anime contracts are absent from continuous ingestion.
+When `UNIFIED_PORTALS_JSON` is configured, the manifest additionally requires all four portal sources (17 enabled sources in total). Follow the [portal migration plan](../../docs/unified-indexer/portals-migration-plan.md) for portal views, private-consumer handover and parity.
+
 Registered booster ingestion ABIs and per-contract deployment blocks must remain
 identical even when the wallet SDK adds contract helpers.
 
@@ -324,3 +326,11 @@ so postgres_fdw cannot evaluate an unrelated chain's failing boundary function.
 Pagination cannot introduce a chain that was not
 qualified in its snapshot. Reset the production acceptance window after
 deploying either runtime correction.
+
+## Coordinating a portal migration merge
+
+Treat the portal source/schema/gateway merge and shared-indexer handover as one release operation. Compile and qualify the reviewed PR tree first; keep the PR in draft until full parity and the required healthy observation window pass. Record the current integration base and rebuild if shared inputs change. Do not merge merely to unlock ordinary per-service deployments.
+
+Before the agreed window, inventory every service whose deploy-tool compatibility check depends on the shared-indexer commit, prepare its exact artifact/configuration and rollback selection, and complete native metadata/read-cache preparation. At merge, compare the merged tree/build identity with the qualified tree; any difference in ingestion inputs requires a new qualification. Rebuild or stamp artifacts through the normal release tool with the actual merge revision, then hand the qualified schema to the canonical indexer at that revision before releasing dependent services. Preserve the existing Solana child and single-writer lock. Never bypass the deploy tool's indexer-commit check to update dependents individually.
+
+Keep all consumers pinned to their reviewed source identities during the coordinated handover, verify public HTTP acceptance and queued work, and only then disable the legacy portal scanner. Retain the rollback source data without a second steady-state scanner. Schedule the merge/cutover separately from a host reboot; recheck source freshness and parity after any intervening restart. Operator-specific service inventories, proposed windows and receipts stay in private operations records.

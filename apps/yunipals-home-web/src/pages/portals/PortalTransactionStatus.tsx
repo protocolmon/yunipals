@@ -18,7 +18,7 @@ export function PortalTransactionStatus() {
           portalTransactionPending(value) ||
           Date.now() - value.createdAt < 3600000
         )
-          await tracker.check(value.id);
+          await tracker.check(value.id, { background: true });
       }
       if (!stopped) timer = setTimeout(() => void check(), 5000);
     };

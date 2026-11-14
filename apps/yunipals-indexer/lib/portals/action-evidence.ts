@@ -29,7 +29,11 @@ const address = z
   .transform((v) => v.toLowerCase());
 export const portalEvidenceRequestSchema = z
   .object({
-    version: z.literal(1),
+    version: z.union([z.literal(1), z.literal(2)]),
+    shared: z
+      .object({ releaseId: hash, readIdentity: hash })
+      .strict()
+      .optional(),
     sourceId: hash,
     generation: z.string().uuid().nullable(),
     chainId: z.number().int().positive(),
@@ -56,23 +60,36 @@ export const portalEvidenceRequestSchema = z
   })
   .strict()
   .refine((v) =>
+    v.version === 1 ? v.shared === undefined : v.shared !== undefined
+  )
+  .refine((v) =>
     v.events.every(
       (event, i) => i === 0 || event.logIndex > v.events[i - 1].logIndex
     )
   );
 
 export async function portalIndexSelection(
-  runtime: PortalRuntime
+  runtime: PortalRuntime,
+  version: 1 | 2 = 1
 ): Promise<PortalIndexSelection> {
   const { chain, ledger } = runtime;
-  const competition = await chain.client.readContract({
+  const shared = ledger.sourceIdentity();
+  const competition = shared ? (await ledger.cursor())!.competition! : await chain.client.readContract({
     address: chain.deployment.grading,
     abi: portalGradingAbi,
     functionName: "competition"
   });
   const deployment = { ...chain.deployment, competition };
   return {
-    version: 1,
+    version: shared ? version : 1,
+    ...(shared && version === 2
+      ? {
+          shared: {
+            releaseId: shared.releaseId,
+            readIdentity: shared.readIdentity
+          }
+        }
+      : {}),
     sourceId: portalIndexSourceId(deployment),
     generation: (await ledger.cursor())?.generation ?? null,
     deployment
@@ -84,7 +101,7 @@ export async function readPortalActionEvidence(
   request: PortalIndexRequest
 ): Promise<PortalIndexEvidence> {
   const base: PortalIndexEvidence = {
-    version: 1,
+    version: request.version,
     expectationHash: portalIndexExpectationHash(request),
     state: "source_unavailable",
     reason: "source_read_unavailable",
@@ -104,7 +121,16 @@ export async function readPortalActionEvidence(
   ) => ({ ...base, state, reason });
   try {
     const { chain, ledger, store, assets } = runtime;
-    const selected = await portalIndexSelection(runtime);
+    const selected = await portalIndexSelection(runtime, request.version);
+    const shared = ledger.sourceIdentity();
+    if (shared) base.shared = shared;
+    if (
+      request.version === 2 &&
+      (!shared ||
+        request.shared?.releaseId !== shared.releaseId ||
+        request.shared?.readIdentity !== shared.readIdentity)
+    )
+      return answer("unsupported", "source_selection_changed");
     if (
       selected.deployment.chainId !== request.chainId ||
       selected.sourceId !== request.sourceId
@@ -252,7 +278,12 @@ export function registerPortalEvidenceRoutes(
 ) {
   router.get("/v1/portals/action-evidence", async (c) => {
     c.header("Cache-Control", "no-store");
-    return c.json(await portalIndexSelection(await get()));
+    return c.json(
+      await portalIndexSelection(
+        await get(),
+        c.req.query("version") === "2" ? 2 : 1
+      )
+    );
   });
   router.post("/v1/portals/action-evidence", async (c) => {
     c.header("Cache-Control", "no-store");
