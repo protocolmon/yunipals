@@ -78,7 +78,12 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 24);
+  assert.equal(tables.length, 25);
+  assert.ok(
+    tables.some(
+      (table) => getTableConfig(table).name === "portal_competition_rules"
+    )
+  );
   assert.ok(
     tables.some((table) => getTableConfig(table).name === "anime_fighter")
   );
@@ -313,18 +318,16 @@ try {
             target: schema.portalProjection.id,
             set: { value: portalValue }
           });
-        await db
-          .insert(schema.portalProjectionVersion)
-          .values({
-            id: `${portalEntity}:${block}`,
-            entity: portalEntity,
-            deployment,
-            domain: "token",
-            value: portalValue,
-            blockNumber: BigInt(block),
-            transactionIndex: 0,
-            logIndex: block
-          });
+        await db.insert(schema.portalProjectionVersion).values({
+          id: `${portalEntity}:${block}`,
+          entity: portalEntity,
+          deployment,
+          domain: "token",
+          value: portalValue,
+          blockNumber: BigInt(block),
+          transactionIndex: 0,
+          logIndex: block
+        });
         if (initial) {
           await db.insert(schema.indexerSource).values({
             id: "arena:base",
