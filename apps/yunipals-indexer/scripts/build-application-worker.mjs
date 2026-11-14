@@ -25,6 +25,7 @@ const profiles = {
   "metadata-worker": "lib/metadata/worker.ts",
   "verify-islands": "scripts/verify-islands.ts",
   "islands-metadata": "lib/islands/worker.ts",
+  "islands-api": "lib/api/islands-server.ts",
   "shared-observer": "scripts/shared-indexer-observer.ts",
   "shared-parity": "scripts/verify-shared-indexer.ts",
   "shared-receipts": "scripts/unified-control.ts",

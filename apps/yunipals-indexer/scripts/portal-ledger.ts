@@ -5,7 +5,10 @@ import { connectPortalChain } from "../lib/portals/chain.js";
 import { PortalLedgerStore } from "../lib/portals/ledger-store.js";
 import { PortalLedger } from "../lib/portals/ledger.js";
 import { portalDatabaseOptions } from "../lib/portals/database.js";
-import { portalLogBlockRange } from "../lib/portals/rpc.js";
+import {
+  portalLogBlockRange,
+  PortalRpcStartupError
+} from "../lib/portals/rpc.js";
 
 if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
 
@@ -66,9 +69,11 @@ async function main() {
     await db.end();
   }
 }
-main().catch(() => {
+main().catch((error) => {
   console.error(
-    "Portal accounting index could not start. Check private configuration."
+    error instanceof PortalRpcStartupError
+      ? `Portal accounting index could not start. ${error.message}`
+      : "Portal accounting index could not start. Check private configuration."
   );
   process.exitCode = 1;
 });

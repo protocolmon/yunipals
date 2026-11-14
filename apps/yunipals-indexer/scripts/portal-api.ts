@@ -6,6 +6,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createPortalRuntime } from "../lib/portals/runtime.js";
 import { registerPortalRoutes } from "../lib/portals/routes.js";
+import { PortalRpcStartupError } from "../lib/portals/rpc.js";
 
 if (process.env.PORTALS_ENV_FILE) loadEnvFile(process.env.PORTALS_ENV_FILE);
 
@@ -76,9 +77,11 @@ async function main() {
     await runtime.close();
   }
 }
-main().catch(() => {
+main().catch((error) => {
   console.error(
-    "Portal API could not start. Check its isolated configuration, database and artifact permissions."
+    error instanceof PortalRpcStartupError
+      ? `Portal API could not start. ${error.message}`
+      : "Portal API could not start. Check its isolated configuration, database and artifact permissions."
   );
   process.exitCode = 1;
 });
