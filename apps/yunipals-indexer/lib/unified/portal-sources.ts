@@ -4,13 +4,30 @@ import {
   portalGradingAbi,
   portalCompetitionAbi
 } from "../../../../packages/yunipals-market-core/src/portalAbi.js";
-import type { Address } from "viem";
+import type { AbiEvent, Address } from "viem";
 import {
   portalEventAbis,
   type PortalEventSource
 } from "../../../../packages/yunipals-market-core/src/portalIndex.js";
 import type { SourceDefinition } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
+
+// Upgrade events are ingestion controls, not legacy portal action evidence.
+// They invalidate rollback-managed competition constants without changing v1 proofs.
+export const sharedPortalEventAbis = {
+  ...portalEventAbis,
+  competition: [
+    ...portalEventAbis.competition,
+    ...portalCompetitionAbi.filter(
+      (
+        event
+      ): event is Extract<
+        (typeof portalCompetitionAbi)[number],
+        { type: "event"; name: "Upgraded" }
+      > => event.type === "event" && event.name === "Upgraded"
+    )
+  ]
+} satisfies Record<PortalEventSource, readonly AbiEvent[]>;
 
 export const portalContracts = {
   collection: "PortalCollection",
@@ -65,8 +82,8 @@ export function portalSources(
       address,
       startBlock: String(value.startBlock),
       endBlock: null,
-      abiHash: manifestDigest(portalEventAbis[kind]),
-      events: portalEventAbis[kind].map((event) => event.name).sort(),
+      abiHash: manifestDigest(sharedPortalEventAbis[kind]),
+      events: sharedPortalEventAbis[kind].map((event) => event.name).sort(),
       receiptRequirement: "full",
       policies: [
         { kind: "latest" },
@@ -87,7 +104,7 @@ export function portalPonderContracts(
     );
     return {
       chain: "base" as const,
-      abi: portalEventAbis[kind],
+      abi: sharedPortalEventAbis[kind],
       address: source ? (source.address as Address) : ([] as Address[]),
       startBlock: source ? Number(source.startBlock) : 0
     };

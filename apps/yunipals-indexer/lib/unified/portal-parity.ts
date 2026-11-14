@@ -8,8 +8,9 @@ const tables = {
   portal_v2_ledger_event: "block_number,transaction_index,log_index",
   portal_v2_token: "token_id",
   portal_v5_request: "request_id",
-  portal_v5_mint: "source,request_id",
-  portal_v5_state: "source,component,entity_id",
+  portal_v5_mint: 'source COLLATE "C",request_id',
+  portal_v5_state:
+    'source COLLATE "C",component COLLATE "C",entity_id COLLATE "C"',
   portal_v3_competition_entry: "entry_id",
   portal_v3_competition_batch: "batch_id",
   portal_v3_competition_prize: "batch_id,rank"
@@ -57,7 +58,7 @@ export async function comparePortalSources(
   legacyPool: Pool,
   shared: SharedPortalLedger
 ) {
-  return shared.snapshot(() =>
+  return shared.transactionSnapshot(() =>
     indexerTransaction(
       legacyPool,
       async (db) => {

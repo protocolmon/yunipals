@@ -1,9 +1,28 @@
+import { PortalSourceError } from "./errors.js";
 import type { PortalRuntime } from "./runtime.js";
 import type { PortalChain } from "./chain.js";
 
 /** Keep admission checks live at the current block, while requiring its round,
  * price and theme to be indexed before presenting a payable application state. */
 export async function portalReadiness(
+  runtime: PortalRuntime,
+  status: Awaited<ReturnType<PortalChain["active"]>>
+) {
+  try {
+    return await runtime.ledger.snapshot(() =>
+      indexedReadiness(runtime, status)
+    );
+  } catch (error) {
+    if (!(error instanceof PortalSourceError)) throw error;
+    return {
+      indexing: true,
+      rotationIndexed: false,
+      indexedThroughBlock: null,
+      sourceError: error.code
+    };
+  }
+}
+async function indexedReadiness(
   runtime: PortalRuntime,
   status: Awaited<ReturnType<PortalChain["active"]>>
 ) {

@@ -306,3 +306,65 @@ it("binds v2 requests to the shared release while retaining v1 hashes", () => {
     portalEvidenceRequestSchema.parse({ ...request, shared: next.shared })
   ).toThrow();
 });
+
+describe("portal readiness during source catch-up", () => {
+  it("keeps status, health diagnostics and private intake reachable", async () => {
+    const { Hono } = await import("hono");
+    const { registerPortalRoutes } = await import("../lib/portals/routes.js");
+    const { PortalSourceError } = await import("../lib/portals/errors.js");
+    const { zeroAddress } = await import("viem");
+    const runtime = {
+      ledger: {
+        snapshot: async () => {
+          throw new PortalSourceError("source_unavailable", "Catching up");
+        },
+        requiresReplay: async () => false
+      },
+      chain: {
+        deployment: { chainId: 8453, grading: alice, usdc: bob },
+        active: async () => ({ round: { id: 1n }, asOfBlock: 100n }),
+        client: {
+          getBlock: async () => ({ number: 100n, timestamp: 1000n }),
+          readContract: async ({ functionName }: { functionName: string }) =>
+            functionName === "competition" ? zeroAddress : 0n
+        }
+      },
+      store: {
+        cursor: async () => null,
+        db: { query: async () => ({ rows: [] }) }
+      }
+    } as unknown as import("../lib/portals/runtime.js").PortalRuntime;
+    const app = new Hono();
+    registerPortalRoutes(app, {
+      enabled: () => true,
+      runtime: async () => runtime
+    });
+    const status = await app.request("/v1/portals");
+    expect(status.status).toBe(200);
+    expect(await status.json()).toMatchObject({
+      enabled: true,
+      indexing: true,
+      sourceError: "source_unavailable"
+    });
+    const health = await app.request("/v1/portals/health");
+    expect(health.status).toBe(503);
+    expect(await health.json()).toMatchObject({
+      ready: false,
+      ledger: { sourceError: "source_unavailable" },
+      worker: { queued: 0 }
+    });
+    const intake = await app.request("/v1/portals/spells", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: "{}"
+    });
+    expect(intake.status).toBe(400); // Validation reached; not intercepted by source readiness.
+    const unavailable = await app.request("/v1/portals/owned");
+    expect(unavailable.status).toBe(503);
+    const disabled = new Hono();
+    registerPortalRoutes(disabled, { enabled: () => false });
+    expect(await (await disabled.request("/v1/portals")).json()).toEqual({
+      enabled: false
+    });
+  });
+});

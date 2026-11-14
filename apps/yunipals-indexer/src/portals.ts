@@ -1,11 +1,11 @@
 import { ponder } from "ponder:registry";
 import schema from "ponder:schema";
 import { portalCompetitionAbi } from "../../../packages/yunipals-market-core/src/portalAbi.js";
+import { type PortalEventSource } from "../../../packages/yunipals-market-core/src/portalIndex.js";
 import {
-  portalEventAbis,
-  type PortalEventSource
-} from "../../../packages/yunipals-market-core/src/portalIndex.js";
-import { portalContracts } from "../lib/unified/portal-sources.js";
+  portalContracts,
+  sharedPortalEventAbis
+} from "../lib/unified/portal-sources.js";
 import {
   applySharedPortalEvent,
   type PortalRows,
@@ -28,7 +28,7 @@ if (
   process.env.PONDER_BOOSTERS_ONLY !== "true"
 ) {
   for (const kind of Object.keys(portalContracts) as PortalEventSource[]) {
-    for (const item of portalEventAbis[kind]) {
+    for (const item of sharedPortalEventAbis[kind]) {
       ponder.on(
         `${portalContracts[kind]}:${item.name}` as PortalEventName,
         async ({ event, context }) => {
@@ -115,27 +115,45 @@ if (
               String(value)
             ])
           );
-          const rules =
+          if (kind === "competition" && item.name === "Upgraded") {
+            await context.db.delete(schema.portalCompetitionRules, {
+              id: deployment
+            });
+          }
+          let rules = { batchSize: 111n, contribution: 500000n };
+          if (
             item.name.startsWith("Competition") &&
             ![
               "CompetitionConfigured",
               "CompetitionNotificationDeferred"
             ].includes(item.name)
-              ? {
-                  batchSize: await context.client.readContract({
-                    address: competition.address as Address,
-                    abi: portalCompetitionAbi,
-                    functionName: "BATCH_SIZE",
-                    blockNumber: event.block.number
-                  }),
-                  contribution: await context.client.readContract({
-                    address: competition.address as Address,
-                    abi: portalCompetitionAbi,
-                    functionName: "CONTRIBUTION",
-                    blockNumber: event.block.number
-                  })
-                }
-              : { batchSize: 111n, contribution: 500000n };
+          ) {
+            const cached = await context.db.find(
+              schema.portalCompetitionRules,
+              { id: deployment }
+            );
+            if (cached) rules = cached;
+            else {
+              const [batchSize, contribution] = await Promise.all([
+                context.client.readContract({
+                  address: competition.address as Address,
+                  abi: portalCompetitionAbi,
+                  functionName: "BATCH_SIZE",
+                  blockNumber: event.block.number
+                }),
+                context.client.readContract({
+                  address: competition.address as Address,
+                  abi: portalCompetitionAbi,
+                  functionName: "CONTRIBUTION",
+                  blockNumber: event.block.number
+                })
+              ]);
+              rules = { batchSize, contribution };
+              await context.db
+                .insert(schema.portalCompetitionRules)
+                .values({ id: deployment, ...rules });
+            }
+          }
           await applySharedPortalEvent(
             store,
             {

@@ -3,7 +3,9 @@ import { sqlIdentifier } from "../../../../packages/yunipals-indexer-server/src/
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 import type { RegisteredRelease } from "../../../../packages/yunipals-indexer-server/src/releases.js";
 
-export const portalViewVersion = 1;
+import { portalProjectionKeys } from "./portal-keys.js";
+
+export const portalViewVersion = 2;
 export function portalReadIdentity(
   release: RegisteredRelease,
   readSchema: string
@@ -85,12 +87,23 @@ export async function createPortalReadViews(
   const ceiling =
     "nullif(current_setting('yunipals.portal_boundary', true),'')::bigint";
   for (const [name, [domain, columns]] of Object.entries(fields)) {
+    const keys = portalProjectionKeys[domain];
+    const expressions = Object.entries(keys).map(
+      ([key, type]) => `(value::jsonb->>'${key}')::${type}`
+    );
+    const keyColumns = Object.keys(keys);
+    const remaining = columns
+      .split(", ")
+      .filter((column) => !keyColumns.includes(column.split(" ")[0]!))
+      .join(", ");
     await db.query(`CREATE VIEW ${read}.${sqlIdentifier(name)} AS
-      SELECT v.deployment, r.* FROM (
-        SELECT DISTINCT ON (entity) deployment,value FROM ${physical}.portal_projection_version
+      SELECT v.deployment,${keyColumns.map((key) => `v.${key}`).join(",")},r.* FROM (
+        SELECT DISTINCT ON (deployment,${expressions.join(",")}) deployment,
+          ${expressions.map((expression, i) => `${expression} AS ${keyColumns[i]}`).join(",")},value
+        FROM ${physical}.portal_projection_version
         WHERE domain='${domain}' AND block_number<=${ceiling}
-        ORDER BY entity,block_number DESC,transaction_index DESC,log_index DESC
-      ) v CROSS JOIN LATERAL jsonb_to_record(v.value::jsonb) AS r(${columns})`);
+        ORDER BY deployment,${expressions.join(",")},block_number DESC,transaction_index DESC,log_index DESC
+      ) v CROSS JOIN LATERAL jsonb_to_record(v.value::jsonb) AS r(${remaining})`);
   }
   await db.query(`CREATE VIEW ${read}.portal_v2_ledger_event AS
     SELECT '${deployment}'::text AS deployment, e.transaction_hash, e.log_index,
@@ -99,7 +112,7 @@ export async function createPortalReadViews(
       (SELECT jsonb_object_agg(k, CASE WHEN jsonb_typeof(v)='array' THEN
         (SELECT string_agg(item,',' ORDER BY n) FROM jsonb_array_elements_text(v) WITH ORDINALITY a(item,n)) ELSE v #>> '{}' END)
         FROM jsonb_each(e.args::jsonb) a(k,v)) AS args
-    FROM ${physical}.canonical_event e WHERE e.source_id IN ('portals:8453:collection','portals:8453:registry','portals:8453:grading','portals:8453:competition') AND e.block_number<=${ceiling}`);
+    FROM ${physical}.canonical_event e WHERE e.source_id IN ('portals:8453:collection','portals:8453:registry','portals:8453:grading','portals:8453:competition') AND e.name<>'Upgraded' AND e.block_number<=${ceiling}`);
   for (const role of roles) {
     await db.query(
       `GRANT USAGE ON SCHEMA ${physical},yunipals_indexer_control TO ${sqlIdentifier(role)}`

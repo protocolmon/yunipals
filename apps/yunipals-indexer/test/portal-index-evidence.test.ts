@@ -367,7 +367,8 @@ describe("saved frontend portal transaction lifecycle", () => {
     try {
       await tracker.check(txHash);
       const calls = client.waitForTransactionReceipt.mock.calls.length;
-      await tracker.check(txHash);
+      await tracker.check(txHash, { background: true });
+      await tracker.check(txHash, { automatic: true });
       expect(client.waitForTransactionReceipt.mock.calls).toHaveLength(calls);
       expect(request).toHaveBeenCalledTimes(1);
       expect(tracker.getSnapshot()[0].state).toBe("delayed");
@@ -380,6 +381,26 @@ describe("saved frontend portal transaction lifecycle", () => {
     expect(portalRetryAfter("60", 0)).toBe(60000);
     expect(portalRetryAfter("Thu, 01 Jan 1970 00:01:00 GMT", 0)).toBe(60000);
     expect(portalRetryAfter("invalid", 0)).toBe(0);
+  });
+  it("caps server cooldowns and lets an explicit check recover immediately", async () => {
+    await ledger.apply([event], "20", blockHash, null);
+    const { tracker, request } = trackerFixture();
+    const now = vi.spyOn(Date, "now").mockReturnValue(100000);
+    try {
+      request.mockRejectedValueOnce(
+        new PortalRequestError("Busy", 503, 3600000)
+      );
+      await tracker.check(txHash);
+      expect(await tracker.check(txHash)).toBe(receipt);
+      request.mockRejectedValueOnce(
+        new PortalRequestError("Busy", 503, 3600000)
+      );
+      await tracker.check(txHash);
+      now.mockReturnValue(160001);
+      expect(await tracker.check(txHash, { automatic: true })).toBe(receipt);
+    } finally {
+      now.mockRestore();
+    }
   });
   it("removes indexed actions from fast background polling while preserving manual and reorg checks", async () => {
     await ledger.apply([event], "20", blockHash, null);

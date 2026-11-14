@@ -91,6 +91,8 @@ const common = {
 const pool = new pg.Pool({ connectionString });
 const readerPool = new pg.Pool({
   connectionString,
+  max: 4,
+  connectionTimeoutMillis: 1000,
   options: "-c role=portal_shared_fixture_reader"
 });
 const db = await pool.connect();
@@ -145,6 +147,8 @@ try {
         "up"
       )
     );
+  let ruleCalls = 0;
+  let contribution = 500000n;
   async function dispatch(block, events) {
     await database.userQB.transaction(async (tx) => {
       await tx.wrap((d) =>
@@ -156,13 +160,16 @@ try {
         const context = {
           chain: { id: 8453 },
           client: {
-            readContract: async ({ functionName }) =>
-              functionName === "BATCH_SIZE" ? 111n : 500000n
+            readContract: async ({ functionName }) => {
+              ruleCalls++;
+              return functionName === "BATCH_SIZE" ? 111n : contribution;
+            }
           },
           db: {
             find: async (table, key) =>
               (await d.select().from(table).where(eq(table.id, key.id)))[0] ??
               null,
+            delete: (table, key) => d.delete(table).where(eq(table.id, key.id)),
             insert: (table) => ({
               values: (row) => ({
                 then: (yes, no) => d.insert(table).values(row).then(yes, no),
@@ -379,6 +386,7 @@ try {
     "UPDATE yunipals_indexer_control.chain_status SET error_code='fixture_unavailable' WHERE release_id=$1",
     [release.id]
   );
+  await reader.validate(); // API startup must not require source readiness.
   await assert.rejects(
     reader.snapshot(async () => {}),
     /unavailable/
@@ -386,6 +394,60 @@ try {
   await db.query(
     "UPDATE yunipals_indexer_control.chain_status SET error_code=NULL WHERE release_id=$1",
     [release.id]
+  );
+  let entered = 0;
+  let releaseWait;
+  let allEntered;
+  const slowRpc = new Promise((resolve) => {
+    releaseWait = resolve;
+  });
+  const ready = new Promise((resolve) => {
+    allEntered = resolve;
+  });
+  const requests = Array.from({ length: 24 }, () =>
+    reader.snapshot(async () => {
+      await reader.db.query(
+        "SELECT token_id FROM portal_v2_token WHERE deployment=$1 AND token_id=1",
+        [reader.deployment]
+      );
+      if (++entered === 24) allEntered();
+      await slowRpc;
+      return reader.db.query(
+        "SELECT token_id FROM portal_v2_token WHERE deployment=$1 AND token_id=1",
+        [reader.deployment]
+      );
+    })
+  );
+  let timer;
+  try {
+    await Promise.race([
+      ready,
+      new Promise((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error("Readers held connections during RPC waits")),
+          3000
+        );
+      })
+    ]);
+    assert.equal(readerPool.waitingCount, 0);
+    assert.equal(readerPool.idleCount, readerPool.totalCount);
+  } finally {
+    clearTimeout(timer);
+    releaseWait();
+  }
+  await Promise.all(requests);
+  await assert.rejects(
+    reader.snapshot(async () => {
+      await db.query(
+        "UPDATE portal_shared_check.chain_block SET block_hash=$1 WHERE block_number=11",
+        [`0x${"f".repeat(64)}`]
+      );
+    }),
+    /unavailable/
+  );
+  await db.query(
+    "UPDATE portal_shared_check.chain_block SET block_hash=$1 WHERE block_number=11",
+    [hash]
   );
   await db.query("CREATE SCHEMA portal_shared_private");
   const privatePool = new pg.Pool({
@@ -417,10 +479,13 @@ try {
     await reader.snapshot(async () => {
       const state = (
         await reader.db.query(
-          "SELECT value FROM portal_v5_state WHERE component='CompetitionConfigured'"
+          "SELECT value AS configuration FROM portal_v5_state WHERE component='CompetitionConfigured'"
         )
       ).rows[0];
-      assert.equal(state.value.competition, getAddress(contracts.competition));
+      assert.equal(
+        state.configuration.competition,
+        getAddress(contracts.competition)
+      );
       assert.equal(
         (await reader.db.query("SELECT owner FROM portal_v2_token")).rows[0]
           .owner,
@@ -446,12 +511,16 @@ try {
       false
     );
     await privatePool.query("UPDATE portal_v2_token SET balance=0");
-    chain.request = async () => ({
-      acceptedAt: 1010n,
-      acceptedBlock: 10n,
-      spellCommitment: hash,
-      rubricId: hash
-    });
+    let requestReads = 0;
+    chain.request = async () => {
+      requestReads++;
+      return {
+        acceptedAt: 1010n,
+        acceptedBlock: 10n,
+        spellCommitment: hash,
+        rubricId: hash
+      };
+    };
     chain.binding = async () => hash;
     chain.rubric = async () => ({ modelPolicy: hash });
     const consumer = new IndexedPortalJobs(reader, privatePool, jobs, chain);
@@ -476,7 +545,13 @@ try {
     await privatePool.query(
       "UPDATE portal_v6_consumer SET identity='previous-release'"
     );
+    const beforeHandover = requestReads;
     await consumer.ingest();
+    assert.equal(
+      requestReads,
+      beforeHandover,
+      "canonical handover must not rescan historical requests"
+    );
     const retainedJob = (
       await privatePool.query("SELECT progress,attempts FROM portal_v1_job")
     ).rows;
@@ -485,6 +560,47 @@ try {
       progress: { savedImage: "fixture" },
       attempts: 4
     });
+    await privatePool.query("UPDATE portal_v1_job SET completed=true");
+    await privatePool.query(
+      `INSERT INTO portal_v1_publication(deployment,request_id,token_id,submitter,spell,normalized,embedding,publication_block,publication_timestamp,result,artifact_hashes)
+      VALUES($1,1,1,$2,'fixture','fixture','{}',11,1011,'{}','{}')`,
+      [jobs.deployment, owner]
+    );
+    const orphanHash = `0x${"f".repeat(64)}`;
+    await privatePool.query("UPDATE portal_v6_consumer SET block_hash=$1", [
+      orphanHash
+    ]);
+    await consumer.ingest();
+    assert.equal(
+      (await privatePool.query("SELECT completed FROM portal_v1_job")).rows[0]
+        .completed,
+      false
+    );
+    assert.equal(
+      (await privatePool.query("SELECT count(*) FROM portal_v1_publication"))
+        .rows[0].count,
+      "0"
+    );
+    chain.binding = async () => orphanHash;
+    await privatePool.query("UPDATE portal_v6_consumer SET block_hash=$1", [
+      orphanHash
+    ]);
+    await consumer.ingest();
+    assert.deepEqual(
+      (await privatePool.query("SELECT progress FROM portal_v1_job")).rows[0]
+        .progress,
+      {}
+    );
+    chain.binding = async () => hash;
+    await privatePool.query("UPDATE portal_v6_consumer SET block_hash=$1", [
+      orphanHash
+    ]);
+    await consumer.ingest();
+    assert.deepEqual(
+      (await privatePool.query("SELECT progress FROM portal_v1_job")).rows[0]
+        .progress,
+      { savedImage: "fixture" }
+    );
     await consumer.verify({ requestId: "1", commitment: hash, binding: hash });
     await assert.rejects(
       consumer.verify({ requestId: "999", commitment: hash, binding: hash }),
@@ -521,6 +637,84 @@ try {
     ["collection", "Transfer", { tokenId: 1n, from: owner, to: buyer }]
   ]);
   assert.equal((await readAt(11))[0].owner, buyer);
+  await dispatch(
+    12,
+    Array.from({ length: 111 }, (_, i) => [
+      "competition",
+      "CompetitionEntered",
+      {
+        entryId: BigInt(i + 1),
+        batchId: 1n,
+        requestId: BigInt(i + 1),
+        submitter: owner,
+        amount: 500000n
+      }
+    ])
+  );
+  await dispatch(
+    13,
+    Array.from({ length: 111 }, (_, i) => [
+      "competition",
+      "CompetitionResult",
+      {
+        entryId: BigInt(i + 1),
+        batchId: 1n,
+        requestId: BigInt(i + 1),
+        score: 100
+      }
+    ])
+  );
+  assert.equal(
+    ruleCalls,
+    2,
+    "one constant pair for all 222 competition events"
+  );
+  contribution = 600000n;
+  await dispatch(14, [
+    ["competition", "Upgraded", { implementation: buyer }],
+    ["competition", "CompetitionPrizeDeferred", { batchId: 1n, rank: 0 }]
+  ]);
+  assert.equal(ruleCalls, 4);
+  await database.userQB.transaction(async (tx) => {
+    await setReorgTriggersEnabled(tx, targets, namespace.schema, false);
+    await revertMultichain(tx, { checkpoint: checkpoint(13), tables });
+    await setReorgTriggersEnabled(tx, targets, namespace.schema, true);
+  });
+  assert.equal(
+    (
+      await db.query(
+        "SELECT contribution::text FROM portal_shared_check.portal_competition_rules"
+      )
+    ).rows[0].contribution,
+    "500000"
+  );
+  await dispatch(14, [
+    ["competition", "CompetitionPrizeDeferred", { batchId: 1n, rank: 0 }]
+  ]);
+  assert.equal(
+    ruleCalls,
+    4,
+    "rollback restores the cached rules without another RPC read"
+  );
+  await db.query("BEGIN");
+  await db.query("ANALYZE portal_shared_check.portal_projection_version");
+  await db.query("SET LOCAL enable_seqscan=off");
+  await db.query("SELECT set_config('yunipals.portal_boundary','14',true)");
+  const plan = (
+    await db.query(
+      "EXPLAIN (ANALYZE,FORMAT JSON) SELECT * FROM portal_shared_reads.portal_v3_competition_entry WHERE deployment=$1 AND entry_id=110",
+      [reader.deployment]
+    )
+  ).rows[0]["QUERY PLAN"][0].Plan;
+  const nodes = (p) => [p, ...(p.Plans ?? []).flatMap(nodes)];
+  assert.ok(
+    nodes(plan).some(
+      (p) =>
+        /entry_id.*110/.test(p["Index Cond"] ?? "") && p["Actual Rows"] <= 2
+    ),
+    `point lookup must bound history through the typed key index: ${JSON.stringify(plan)}`
+  );
+  await db.query("ROLLBACK");
   console.log(
     JSON.stringify({
       event: "portal_shared_ponder_verified",
@@ -534,7 +728,12 @@ try {
         "real Ponder reorg and replay",
         "atomic job cursor crash recovery",
         "release replay preserves saved AI output",
-        "same-boundary full-state parity detects balance corruption"
+        "same-boundary full-state parity detects balance corruption",
+        "24 concurrent readers release connections during RPC waits",
+        "canonical handover avoids historical request RPC reads",
+        "reorg reopens completed work and restores saved binding revisions",
+        "typed point lookup uses a selective history index",
+        "222 competition events reuse two constant reads with upgrade rollback"
       ],
       productionWrites: 0,
       providerCalls: 0

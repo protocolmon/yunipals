@@ -243,7 +243,10 @@ export class PortalTransactionTracker {
     this.persist();
     return value;
   }
-  check(id: string, options: { background?: boolean } = {}) {
+  check(
+    id: string,
+    options: { background?: boolean; automatic?: boolean } = {}
+  ) {
     const active = this.checks.get(id);
     if (active) return active;
     // Completed actions leave the fast polling loop. Retain a bounded reorg
@@ -254,7 +257,11 @@ export class PortalTransactionTracker {
       Date.now() < (this.nextBackgroundVerification.get(id) ?? 0)
     )
       return Promise.resolve(undefined);
-    if (Date.now() < this.unavailableUntil) return Promise.resolve(undefined);
+    if (
+      (options.background || options.automatic) &&
+      Date.now() < this.unavailableUntil
+    )
+      return Promise.resolve(undefined);
     const promise = this.checkOnce(id).finally(() => this.checks.delete(id));
     this.checks.set(id, promise);
     return promise;
@@ -423,7 +430,10 @@ export class PortalTransactionTracker {
         );
         this.unavailableUntil =
           Date.now() +
-          Math.max(error.retryAfterMs, backoff + Math.random() * 1000);
+          Math.min(
+            60000,
+            Math.max(error.retryAfterMs, backoff + Math.random() * 1000)
+          );
       }
       this.update(id, {
         state: "delayed",
@@ -436,7 +446,7 @@ export class PortalTransactionTracker {
     const end = Date.now() + 120000;
     let attempt = 0;
     while (Date.now() < end) {
-      const receipt = await this.check(id);
+      const receipt = await this.check(id, { automatic: true });
       const saved = this.values.find((v) => v.id === id)!;
       onProgress?.(saved.message);
       if (receipt && saved.state === "indexed") return receipt;

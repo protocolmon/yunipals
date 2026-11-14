@@ -37,15 +37,20 @@ export class IndexedPortalJobs implements PortalJobSource {
             [this.store.deployment]
           )
         ).rows[0];
-        const valid =
-          previous?.identity === identity &&
-          BigInt(previous.block) <= BigInt(boundary.block) &&
+        const canonical =
+          previous &&
           (
             await this.chain.client.getBlock({
               blockNumber: BigInt(previous.block)
             })
           ).hash === previous.hash;
-        const after = valid
+        // A release/read-view handover is not a chain reorg. Wait for the new
+        // source to reach the durable position instead of replaying paid work.
+        if (canonical && BigInt(previous.block) > BigInt(boundary.block))
+          return;
+        const target = new PortalStore(db, this.store.deployment);
+        if (previous && !canonical) await target.rewind(0n);
+        const after = canonical
           ? [previous.block, previous.tx, previous.log]
           : ["0", -1, -1];
         const events = (
@@ -63,7 +68,6 @@ export class IndexedPortalJobs implements PortalJobSource {
             [this.ledger.deployment, ...after]
           )
         ).rows;
-        const target = new PortalStore(db, this.store.deployment);
         for (const event of events) {
           const id = BigInt(event.args.requestId);
           const [request, binding] = await Promise.all([
@@ -85,6 +89,13 @@ export class IndexedPortalJobs implements PortalJobSource {
             ON CONFLICT(deployment,request_id,binding) DO UPDATE SET job=excluded.job,saved_at=now()`,
             [this.store.deployment, id.toString(), binding]
           );
+          const changed =
+            (
+              await db.query<{ binding: string }>(
+                "SELECT binding FROM portal_v1_job WHERE deployment=$1 AND request_id=$2",
+                [this.store.deployment, id.toString()]
+              )
+            ).rows[0]?.binding !== binding;
           await target.enqueue({
             requestId: id.toString(),
             commitment: request.spellCommitment,
@@ -93,6 +104,15 @@ export class IndexedPortalJobs implements PortalJobSource {
             acceptedAt: Number(request.acceptedAt),
             modelPolicy: rubric.modelPolicy
           });
+          if (changed)
+            await db.query(
+              `UPDATE portal_v1_job j SET progress=r.job->'progress',
+             attempts=(r.job->>'attempts')::int,completed=false,retry_at=now(),lease_token=NULL,lease_until=NULL
+             FROM portal_v6_job_revision r WHERE j.deployment=$1 AND j.request_id=$2
+             AND r.deployment=j.deployment AND r.request_id=j.request_id AND r.binding=j.binding
+             AND r.job->>'commitment'=j.commitment AND r.job->>'model_policy' IS NOT DISTINCT FROM j.model_policy`,
+              [this.store.deployment, id.toString()]
+            );
         }
         const last =
           events.length === 100

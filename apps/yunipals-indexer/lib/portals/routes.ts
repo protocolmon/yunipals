@@ -112,8 +112,11 @@ export function registerPortalRoutes(
     })
   );
   router.use("/v1/portals/*", async (c, next) => {
+    if (c.req.method === "GET" && c.req.path === "/v1/portals") return next();
     if (!enabled())
       return c.json({ error: "Portals are being prepared." }, 503);
+    if (c.req.method === "GET" && c.req.path === "/v1/portals/health")
+      return next();
     // Private intake remains available while shared indexing catches up.
     if (
       c.req.method === "POST" &&

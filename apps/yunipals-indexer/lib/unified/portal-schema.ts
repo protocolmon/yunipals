@@ -1,4 +1,5 @@
-import { index, onchainTable } from "ponder";
+import { portalProjectionKeys } from "./portal-keys.js";
+import { index, onchainTable, sql } from "ponder";
 
 export const portalProjection = onchainTable("portal_projection", (t) => ({
   id: t.text().primaryKey(),
@@ -19,6 +20,23 @@ export const portalProjectionVersion = onchainTable(
     logIndex: t.integer("log_index").notNull()
   }),
   (t) => ({
+    ...Object.fromEntries(
+      Object.entries(portalProjectionKeys).map(([domain, keys]) => [
+        domain,
+        index(`portal_${domain}_point_idx`)
+          .on(
+            t.deployment,
+            ...Object.entries(keys).map(
+              ([key, type]) =>
+                sql`((${t.value}::jsonb->>${sql.raw("'" + key + "'")})::${sql.raw(type)})`
+            ),
+            t.blockNumber,
+            t.transactionIndex,
+            t.logIndex
+          )
+          .where(sql`${t.domain}=${sql.raw("'" + domain + "'")}`)
+      ])
+    ),
     history: index().on(
       t.deployment,
       t.domain,
@@ -27,5 +45,16 @@ export const portalProjectionVersion = onchainTable(
       t.transactionIndex,
       t.logIndex
     )
+  })
+);
+
+// Rules are cached in rollback-managed state, scoped to a competition proxy's
+// upgrade history. A reorg restores the previous incarnation automatically.
+export const portalCompetitionRules = onchainTable(
+  "portal_competition_rules",
+  (t) => ({
+    id: t.text().primaryKey(),
+    batchSize: t.bigint("batch_size").notNull(),
+    contribution: t.bigint().notNull()
   })
 );
