@@ -48,6 +48,19 @@ const fields = {
   ]
 } as const;
 
+export const portalRuntimeTables = [
+  "_ponder_meta",
+  "_ponder_checkpoint",
+  "chain_checkpoint",
+  "chain_block",
+  "indexer_source"
+] as const;
+export const portalReadTables = [
+  "_portal_read_release",
+  "portal_v2_ledger_event",
+  ...Object.keys(fields)
+];
+
 /** Explicit release operation. A unique read schema is never repointed in place. */
 export async function createPortalReadViews(
   db: PoolClient,
@@ -118,7 +131,7 @@ export async function createPortalReadViews(
       `GRANT USAGE ON SCHEMA ${physical},yunipals_indexer_control TO ${sqlIdentifier(role)}`
     );
     await db.query(
-      `GRANT SELECT ON ${physical}._ponder_meta,${physical}._ponder_checkpoint,${physical}.chain_checkpoint,${physical}.chain_block,${physical}.indexer_source,yunipals_indexer_control.release,yunipals_indexer_control.chain_status TO ${sqlIdentifier(role)}`
+      `GRANT SELECT ON ${portalRuntimeTables.map((table) => `${physical}.${sqlIdentifier(table)}`).join(",")},yunipals_indexer_control.release,yunipals_indexer_control.chain_status TO ${sqlIdentifier(role)}`
     );
     await db.query(`GRANT USAGE ON SCHEMA ${read} TO ${sqlIdentifier(role)}`);
     await db.query(

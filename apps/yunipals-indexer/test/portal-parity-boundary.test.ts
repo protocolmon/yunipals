@@ -1,5 +1,6 @@
 import type { Pool } from "pg";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
+import { PortalSourceError } from "../lib/portals/errors.js";
 import { comparePortalSources } from "../lib/unified/portal-parity.js";
 import type { SharedPortalLedger } from "../lib/portals/shared-ledger.js";
 
@@ -49,4 +50,39 @@ it("compares a frozen legacy snapshot while both readers advance", async () => {
   expect(report.comparisons).toHaveLength(8);
   expect(checks).toBeGreaterThanOrEqual(3);
   expect(released).toBe(true);
+});
+
+it("retains the source readiness reason when the parity coverage wait expires", async () => {
+  const unavailable = new PortalSourceError(
+    "source_unavailable",
+    "Observer is catching up."
+  );
+  const query = async (sql: string) => ({
+    rows: sql.includes("block_number::text AS block")
+      ? [{ block: "10", hash: "fixture", competition: "fixture" }]
+      : [],
+    rowCount: 0
+  });
+  const legacy = {
+    connect: async () => ({ query, release() {} })
+  } as unknown as Pool;
+  const shared = {
+    deployment: "fixture",
+    cursor: async () => {
+      throw unavailable;
+    }
+  } as unknown as SharedPortalLedger;
+  const time = vi
+    .spyOn(Date, "now")
+    .mockReturnValueOnce(0)
+    .mockReturnValue(30_000);
+  try {
+    await expect(comparePortalSources(legacy, shared)).rejects.toMatchObject({
+      code: "source_unavailable",
+      cause: unavailable,
+      message: "Portal parity coverage wait timed out: Observer is catching up."
+    });
+  } finally {
+    time.mockRestore();
+  }
 });

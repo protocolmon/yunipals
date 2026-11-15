@@ -10,6 +10,7 @@ export interface PortalJobSource {
 }
 
 export class IndexedPortalJobs implements PortalJobSource {
+  private catchupNotice?: { key: string; time: number };
   constructor(
     readonly ledger: SharedPortalLedger,
     readonly privatePool: Pool,
@@ -46,8 +47,35 @@ export class IndexedPortalJobs implements PortalJobSource {
           ).hash === previous.hash;
         // A release/read-view handover is not a chain reorg. Wait for the new
         // source to reach the durable position instead of replaying paid work.
-        if (canonical && BigInt(previous.block) > BigInt(boundary.block))
+        if (canonical && BigInt(previous.block) > BigInt(boundary.block)) {
+          const key = JSON.stringify([
+            identity,
+            previous.identity,
+            previous.block
+          ]);
+          const time = Date.now();
+          if (
+            this.catchupNotice?.key !== key ||
+            time - this.catchupNotice.time >= 60_000
+          ) {
+            this.catchupNotice = { key, time };
+            console.warn(
+              JSON.stringify({
+                event: "portal_source_catching_up",
+                deployment: this.store.deployment,
+                readIdentity: identity,
+                durableReadIdentity: previous.identity,
+                indexedThroughBlock: boundary.block,
+                durablePositionBlock: previous.block,
+                lagBlocks: (
+                  BigInt(previous.block) - BigInt(boundary.block)
+                ).toString()
+              })
+            );
+          }
           return;
+        }
+        this.catchupNotice = undefined;
         const target = new PortalStore(db, this.store.deployment);
         if (previous && !canonical) await target.rewind(0n);
         const after = canonical

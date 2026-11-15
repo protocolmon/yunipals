@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   applySharedPortalEvent,
   type PortalRows,
@@ -313,6 +313,10 @@ describe("portal readiness during source catch-up", () => {
     const { registerPortalRoutes } = await import("../lib/portals/routes.js");
     const { PortalSourceError } = await import("../lib/portals/errors.js");
     const { zeroAddress } = await import("viem");
+    const accountingRead = vi.fn(
+      async ({ functionName }: { functionName: string }) =>
+        functionName === "competition" ? zeroAddress : 0n
+    );
     const runtime = {
       ledger: {
         snapshot: async () => {
@@ -325,8 +329,7 @@ describe("portal readiness during source catch-up", () => {
         active: async () => ({ round: { id: 1n }, asOfBlock: 100n }),
         client: {
           getBlock: async () => ({ number: 100n, timestamp: 1000n }),
-          readContract: async ({ functionName }: { functionName: string }) =>
-            functionName === "competition" ? zeroAddress : 0n
+          readContract: accountingRead
         }
       },
       store: {
@@ -353,6 +356,16 @@ describe("portal readiness during source catch-up", () => {
       ledger: { sourceError: "source_unavailable" },
       worker: { queued: 0 }
     });
+    expect((await app.request("/v1/portals", { method: "HEAD" })).status).toBe(
+      200
+    );
+    accountingRead.mockClear();
+    const headHealth = await app.request("/v1/portals/health", {
+      method: "HEAD"
+    });
+    expect(headHealth.status).toBe(503);
+    expect(await headHealth.text()).toBe("");
+    expect(accountingRead).toHaveBeenCalled();
     const intake = await app.request("/v1/portals/spells", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -366,5 +379,56 @@ describe("portal readiness during source catch-up", () => {
     expect(await (await disabled.request("/v1/portals")).json()).toEqual({
       enabled: false
     });
+    expect(
+      (await disabled.request("/v1/portals", { method: "HEAD" })).status
+    ).toBe(200);
   });
+});
+
+it("reports durable source catch-up without repeating the warning every tick", async () => {
+  const { IndexedPortalJobs } = await import("../lib/portals/indexed-jobs.js");
+  const hash = `0x${"a".repeat(64)}`;
+  const query = vi.fn(async (sql: string) => ({
+    rows: sql.includes("FOR UPDATE")
+      ? [{ identity: "old-read", block: "20", hash, tx: 1, log: 2 }]
+      : []
+  }));
+  const ledger = {
+    snapshot: async (read: () => Promise<void>) => read(),
+    cursor: async () => ({ block: "19", hash }),
+    sourceIdentity: () => ({ readIdentity: "new-read" })
+  };
+  const pool = { connect: async () => ({ query, release() {} }) };
+  const store = { deployment: "fixture" };
+  const chain = { client: { getBlock: async () => ({ hash }) } };
+  const jobs = new IndexedPortalJobs(
+    ledger as never,
+    pool as never,
+    store as never,
+    chain as never
+  );
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
+  try {
+    await jobs.ingest();
+    await jobs.ingest();
+    expect(warning).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(warning.mock.calls[0]![0])).toMatchObject({
+      event: "portal_source_catching_up",
+      readIdentity: "new-read",
+      durableReadIdentity: "old-read",
+      indexedThroughBlock: "19",
+      durablePositionBlock: "20",
+      lagBlocks: "1"
+    });
+    now.mockReturnValue(61_000);
+    await jobs.ingest();
+    expect(warning).toHaveBeenCalledTimes(2);
+    expect(
+      query.mock.calls.some(([sql]) => /INSERT|UPDATE portal|DELETE/.test(sql))
+    ).toBe(false);
+  } finally {
+    warning.mockRestore();
+    now.mockRestore();
+  }
 });

@@ -299,6 +299,7 @@ function fixture(
       },
       anchor: { number: "1000", hash: hash(13), timestamp: "2000" },
       observationRevision: "7",
+      witness: { number: "1000", hash: hash(13) },
       errorCode: null
     }
   };

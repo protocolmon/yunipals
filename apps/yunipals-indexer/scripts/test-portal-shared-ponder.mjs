@@ -3,13 +3,20 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { eq, isTable } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/pg-core";
-import { getAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
+import { Hono } from "hono";
+import { registerPortalRoutes } from "../lib/portals/routes.ts";
+import { PortalSourceError } from "../lib/portals/errors.ts";
 import {
   buildSourceManifest,
   sourceManifestHash,
   manifestDigest
 } from "../lib/unified/sources.ts";
-import { createPortalReadViews } from "../lib/unified/portal-views.ts";
+import {
+  createPortalReadViews,
+  portalReadTables,
+  portalRuntimeTables
+} from "../lib/unified/portal-views.ts";
 import { SharedPortalLedger } from "../lib/portals/shared-ledger.ts";
 import { PortalLedgerStore } from "../lib/portals/ledger-store.ts";
 import { comparePortalSources } from "../lib/unified/portal-parity.ts";
@@ -380,6 +387,152 @@ try {
     readerPool.query("DELETE FROM portal_shared_check.canonical_event"),
     /permission denied/
   );
+  await reader.validate();
+  const requiredRelations = [
+    "yunipals_indexer_control.release",
+    "yunipals_indexer_control.chain_status",
+    ...portalRuntimeTables.map((name) => `portal_shared_check.${name}`),
+    ...portalReadTables.map((name) => `portal_shared_reads.${name}`)
+  ];
+  for (const relation of requiredRelations) {
+    await db.query(`REVOKE SELECT ON ${relation} FROM ${role}`);
+    try {
+      await assert.rejects(reader.validate(), /permission denied/, relation);
+    } finally {
+      await db.query(`GRANT SELECT ON ${relation} TO ${role}`);
+    }
+  }
+  for (const schema of [
+    "yunipals_indexer_control",
+    "portal_shared_check",
+    "portal_shared_reads"
+  ]) {
+    await db.query(`REVOKE USAGE ON SCHEMA ${schema} FROM ${role}`);
+    try {
+      await assert.rejects(reader.validate(), /permission denied/, schema);
+    } finally {
+      await db.query(`GRANT USAGE ON SCHEMA ${schema} TO ${role}`);
+    }
+  }
+  const diagnosticRuntime = {
+    ledger: reader,
+    chain: {
+      deployment: chain.deployment,
+      active: async () => ({ round: { id: 0n }, asOfBlock: 22n }),
+      client: {
+        getBlock: async () => ({ number: 22n, timestamp: 1022n, hash }),
+        readContract: async ({ functionName }) =>
+          functionName === "competition" ? zeroAddress : 0n
+      }
+    },
+    store: {
+      cursor: async () => null,
+      db: { query: async () => ({ rows: [] }) }
+    }
+  };
+  const diagnosticApp = new Hono();
+  registerPortalRoutes(diagnosticApp, {
+    enabled: () => true,
+    runtime: async () => diagnosticRuntime
+  });
+  const assertDiagnostics = async () => {
+    const status = await diagnosticApp.request("/v1/portals");
+    assert.equal(status.status, 200);
+    assert.equal((await status.json()).sourceError, "source_unavailable");
+    const health = await diagnosticApp.request("/v1/portals/health");
+    assert.equal(health.status, 503);
+    const body = await health.json();
+    assert.equal(body.ready, false);
+    assert.equal(body.ledger.sourceError, "source_unavailable");
+    assert.equal(body.worker.queued, 0);
+    assert.equal(body.accounting.portalLiability, "0");
+  };
+  await db.query(
+    "UPDATE portal_shared_check._ponder_meta SET value=value || '{\"build_id\":\"changed\"}'::jsonb WHERE key='app'"
+  );
+  await assertDiagnostics();
+  await db.query(
+    "UPDATE portal_shared_check._ponder_meta SET value=value || $1::jsonb WHERE key='app'",
+    [{ build_id: release.buildId }]
+  );
+  const removedSource = (
+    await db.query(
+      "DELETE FROM portal_shared_check.indexer_source WHERE id=$1 RETURNING *",
+      [manifest.sources[0].id]
+    )
+  ).rows[0];
+  await assertDiagnostics();
+  await db.query(
+    "INSERT INTO portal_shared_check.indexer_source(id,chain_id,manifest_hash,definition) VALUES($1,$2,$3,$4)",
+    [
+      removedSource.id,
+      removedSource.chain_id,
+      removedSource.manifest_hash,
+      removedSource.definition
+    ]
+  );
+  await db.query(
+    `REVOKE SELECT ON yunipals_indexer_control.chain_status FROM ${role}`
+  );
+  await assertDiagnostics();
+  await db.query(
+    `GRANT SELECT ON yunipals_indexer_control.chain_status TO ${role}`
+  );
+  const occupied = await Promise.all(
+    Array.from({ length: 4 }, () => readerPool.connect())
+  );
+  try {
+    await assertDiagnostics();
+  } finally {
+    occupied.forEach((client) => client.release());
+  }
+  await assert.rejects(
+    reader.snapshot(() => reader.db.query("SELECT pg_sleep(10)")),
+    (error) =>
+      error instanceof PortalSourceError &&
+      error.code === "source_unavailable" &&
+      error.cause?.code === "57014"
+  );
+  const handlerError = new Error("Fixture handler error");
+  await assert.rejects(
+    reader.snapshot(async () => {
+      throw handlerError;
+    }),
+    (error) => error === handlerError
+  );
+  let roundTrips = 0;
+  const measured = new SharedPortalLedger(
+    {
+      connect: async () => {
+        const client = await readerPool.connect();
+        return {
+          query: (...args) => {
+            roundTrips++;
+            return client.query(...args);
+          },
+          release: () => client.release()
+        };
+      }
+    },
+    reader.binding,
+    chain
+  );
+  await measured.validate();
+  roundTrips = 0;
+  await measured.snapshot(async () => {
+    await measured.db.query("SELECT token_id FROM portal_v2_token");
+    await measured.db.query("SELECT request_id FROM portal_v5_request");
+  });
+  assert.ok(
+    roundTrips <= 26,
+    `Two-query snapshot used ${roundTrips} round trips`
+  );
+  console.log(
+    JSON.stringify({
+      twoQuerySnapshotRoundTrips: roundTrips,
+      requiredRelationGrants: requiredRelations.length
+    })
+  );
   await assert.rejects(reader.apply(), /Only shared/);
   await assert.rejects(reader.db.query("SELECT 1"), /snapshot/);
   await db.query(
@@ -505,6 +658,35 @@ try {
       (await comparePortalSources(privatePool, reader)).matches,
       true
     );
+    // A short operator session idle timeout must not kill the frozen snapshot
+    // while the shared reader catches up. The override stays transaction-local.
+    const shortIdlePool = new pg.Pool({
+      connectionString,
+      max: 1,
+      options:
+        "-c search_path=portal_shared_private,pg_catalog -c idle_in_transaction_session_timeout=200"
+    });
+    const realCursor = reader.cursor.bind(reader);
+    let parityChecks = 0;
+    reader.cursor = async () => {
+      const cursor = await realCursor();
+      return ++parityChecks === 1 ? { ...cursor, block: "9" } : cursor;
+    };
+    try {
+      assert.equal(
+        (await comparePortalSources(shortIdlePool, reader)).matches,
+        true
+      );
+      assert.equal(
+        (await shortIdlePool.query("SHOW idle_in_transaction_session_timeout"))
+          .rows[0].idle_in_transaction_session_timeout,
+        "200ms"
+      );
+    } finally {
+      reader.cursor = realCursor;
+      await shortIdlePool.end();
+    }
+
     await privatePool.query("UPDATE portal_v2_token SET balance=1");
     assert.equal(
       (await comparePortalSources(privatePool, reader)).matches,
@@ -725,6 +907,10 @@ try {
         "confirmed version views",
         "checksummed legacy arguments with normalized ownership columns",
         "shared source binding and outage",
+        "startup checks all 16 relation grants and three schema grants during catch-up",
+        "build, source, permission, pool and timeout failures retain HTTP diagnostics",
+        "two-query snapshot stays within 26 database round trips",
+        "parity wait survives a 200ms session idle timeout without changing session defaults",
         "real Ponder reorg and replay",
         "atomic job cursor crash recovery",
         "release replay preserves saved AI output",

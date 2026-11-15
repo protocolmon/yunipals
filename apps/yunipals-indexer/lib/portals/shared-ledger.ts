@@ -14,7 +14,11 @@ import { readIndexerSourceStatus } from "../../../../packages/yunipals-indexer-s
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 import { type PortalEventSource } from "../../../../packages/yunipals-market-core/src/portalIndex.js";
 import { sharedPortalEventAbis } from "../unified/portal-sources.js";
-import { portalReadIdentity } from "../unified/portal-views.js";
+import {
+  portalReadIdentity,
+  portalReadTables,
+  portalRuntimeTables
+} from "../unified/portal-views.js";
 import { PortalLedgerStore, type PortalLedgerCursor } from "./ledger-store.js";
 import type { PortalChain } from "./chain.js";
 
@@ -73,14 +77,10 @@ export class SharedPortalLedger extends PortalLedgerStore {
         throw new Error("Portal shared read requires a source snapshot.");
       const result = frame.db
         ? await frame.db.query<R>(text, values)
-        : await indexerTransaction(
-            this.pool,
-            async (db) => {
-              await this.prepareQuery(db, frame);
-              return db.query<R>(text, values);
-            },
-            true
-          );
+        : await this.sourceTransaction(async (db) => {
+            await this.prepareQuery(db, frame);
+            return db.query<R>(text, values);
+          });
       for (const row of result.rows)
         for (const { name: column, dataTypeID } of result.fields)
           if (dataTypeID === 114 || dataTypeID === 3802)
@@ -165,131 +165,150 @@ export class SharedPortalLedger extends PortalLedgerStore {
     this.definition = { release, identity, expires: Date.now() + 30000 };
     return this.definition;
   }
+  /** Source failures become safe diagnostics; exceptions from handlers stay intact. */
+  private async sourceTransaction<T>(read: (db: PoolClient) => Promise<T>) {
+    try {
+      return await indexerTransaction(this.pool, read, true);
+    } catch (cause) {
+      if (cause instanceof PortalSourceError) throw cause;
+      throw new PortalSourceError(
+        "source_unavailable",
+        "Portal shared source is unavailable.",
+        { cause }
+      );
+    }
+  }
   /** Startup checks configuration and grants, independently of indexing progress. */
-  async validate() {
+  override async validate() {
     await indexerTransaction(
       this.pool,
       async (db) => {
-        await this.definitionAt(db);
+        const { release } = await this.definitionAt(db);
+        const relations = [
+          ["yunipals_indexer_control", "release"],
+          ["yunipals_indexer_control", "chain_status"],
+          ...portalRuntimeTables.map((table) => [release.schema, table]),
+          ...portalReadTables.map((table) => [this.binding.readSchema, table])
+        ];
+        // LIMIT 0 still checks relation/column grants, without reading readiness
+        // state or scanning projections. A cached definition cannot bypass this.
+        for (const [schema, table] of relations)
+          await db.query(
+            `SELECT * FROM ${sqlIdentifier(schema!)}.${sqlIdentifier(table!)} LIMIT 0`
+          );
       },
       true
     );
   }
-  private async openFrame(): Promise<Frame> {
-    return indexerTransaction(
-      this.pool,
-      async (db) => {
-        const { release, identity } = await this.definitionAt(db);
-        const status = await readIndexerSourceStatus(
-          db,
-          release,
-          "portals:8453:collection",
-          { kind: "depth", subsequentBlocks: this.binding.confirmations }
-        );
-        const anchor = status.anchor;
-        if (
-          !status.readiness.ready ||
-          !anchor ||
-          release.manifest.sources
-            .filter((source) => source.feature === "portals" && source.enabled)
-            .some(
-              (source) =>
-                source.startBlock === null ||
-                BigInt(source.startBlock) > BigInt(anchor.number) ||
-                (source.endBlock !== null &&
-                  BigInt(source.endBlock) < BigInt(anchor.number))
-            )
-        )
-          throw new PortalSourceError(
-            "source_unavailable",
-            `Portal shared source unavailable: ${status.readiness.reason}.`
-          );
-        // Compatibility generation identifies the immutable read release. Reorgs are
-        // checked through source observations and exact receipt/block hashes, not UUIDs.
-        const hex = identity.slice(2, 34);
-        const generation = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20)}`;
-        const cursor = {
-          block: anchor.number,
-          hash: anchor.hash,
-          generation,
-          competition: this.binding.competition
-        };
-        const witness = (
-          await db.query<{ number: string; hash: string }>(
-            "SELECT witness_number::text AS number,witness_hash AS hash FROM yunipals_indexer_control.chain_status WHERE release_id=$1 AND chain_id=$2",
-            [release.id, this.chain.deployment.chainId]
-          )
-        ).rows[0];
-        if (!witness)
-          throw new PortalSourceError(
-            "source_unavailable",
-            "Portal source witness is unavailable."
-          );
-        const frame: Frame = {
-          release,
-          cursor,
-          witness,
-          identity,
-          revision: String(status.observationRevision)
-        };
-        await this.prepareQuery(db, frame);
-        const configured = (
-          await db.query<{ competition: string }>(
-            "SELECT value->>'competition' AS competition FROM portal_v5_state WHERE deployment=$1 AND source=$2 AND component='CompetitionConfigured' AND entity_id='current'",
-            [this.deployment, this.chain.deployment.grading.toLowerCase()]
-          )
-        ).rows[0];
-        if (
-          configured &&
-          configured.competition.toLowerCase() !== this.binding.competition
-        )
-          throw new PortalSourceError(
-            "competition_unregistered",
-            "The bound competition is not registered in this shared release."
-          );
-        return frame;
-      },
-      true
+  private async openFrame(db: PoolClient, previous?: Frame): Promise<Frame> {
+    const { release, identity } = await this.definitionAt(db);
+    const status = await readIndexerSourceStatus(
+      db,
+      release,
+      "portals:8453:collection",
+      { kind: "depth", subsequentBlocks: this.binding.confirmations }
     );
+    const anchor = status.anchor;
+    if (
+      !status.readiness.ready ||
+      !anchor ||
+      release.manifest.sources
+        .filter((source) => source.feature === "portals" && source.enabled)
+        .some(
+          (source) =>
+            source.startBlock === null ||
+            BigInt(source.startBlock) > BigInt(anchor.number) ||
+            (source.endBlock !== null &&
+              BigInt(source.endBlock) < BigInt(anchor.number))
+        )
+    )
+      throw new PortalSourceError(
+        "source_unavailable",
+        `Portal shared source unavailable: ${status.readiness.reason}.`
+      );
+    // Compatibility generation identifies the immutable read release. Reorgs are
+    // checked through source observations and exact receipt/block hashes, not UUIDs.
+    const hex = identity.slice(2, 34);
+    const generation = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20)}`;
+    const cursor = {
+      block: anchor.number,
+      hash: anchor.hash,
+      generation,
+      competition: this.binding.competition
+    };
+    const witness = status.witness;
+    if (!witness)
+      throw new PortalSourceError(
+        "source_unavailable",
+        "Portal source witness is unavailable."
+      );
+    const frame: Frame = {
+      release,
+      cursor,
+      witness,
+      identity,
+      revision: String(status.observationRevision)
+    };
+    await this.prepareQuery(db, frame);
+    const configured = (
+      await db.query<{ competition: string }>(
+        "SELECT value->>'competition' AS competition FROM portal_v5_state WHERE deployment=$1 AND source=$2 AND component='CompetitionConfigured' AND entity_id='current'",
+        [this.deployment, this.chain.deployment.grading.toLowerCase()]
+      )
+    ).rows[0];
+    if (
+      configured &&
+      configured.competition.toLowerCase() !== this.binding.competition
+    )
+      throw new PortalSourceError(
+        "competition_unregistered",
+        "The bound competition is not registered in this shared release."
+      );
+    if (previous) {
+      if (previous.identity !== identity)
+        throw new PortalSourceError(
+          "source_identity_mismatch",
+          "Portal shared read identity changed."
+        );
+      await this.prepareQuery(db, previous);
+    }
+    return previous ?? frame;
   }
   private async prepareQuery(db: PoolClient, frame: Frame) {
-    await db.query("SET LOCAL statement_timeout='5000ms'");
     const anchor = await db.query(
-      `SELECT 1 FROM ${sqlIdentifier(frame.release.schema)}.chain_block
+      `SELECT set_config('statement_timeout','5000ms',true),
+         set_config('yunipals.portal_boundary',$4,true),
+         set_config('search_path',$5,true)
+       FROM ${sqlIdentifier(frame.release.schema)}.chain_block
        WHERE chain_id=$1 AND block_number=$2::bigint AND block_hash=$3`,
-      [this.chain.deployment.chainId, frame.witness.number, frame.witness.hash]
+      [
+        this.chain.deployment.chainId,
+        frame.witness.number,
+        frame.witness.hash,
+        frame.cursor.block,
+        `${sqlIdentifier(this.binding.readSchema)},pg_catalog`
+      ]
     );
     if (anchor.rowCount !== 1)
       throw new PortalSourceError(
         "source_unavailable",
         "Portal read boundary changed."
       );
-    await db.query("SELECT set_config('yunipals.portal_boundary',$1,true)", [
-      frame.cursor.block
-    ]);
-    await db.query(
-      `SET LOCAL search_path=${sqlIdentifier(this.binding.readSchema)},pg_catalog`
-    );
   }
   async snapshot<T>(read: () => Promise<T>): Promise<T> {
     if (this.frames.getStore()) return read();
-    const frame = await this.openFrame();
+    const frame = await this.sourceTransaction((db) => this.openFrame(db));
     const result = await this.frames.run(frame, read);
     // RPC/file work never holds a pool connection. Reject a response whose
     // canonical boundary or source readiness changed while it was assembled.
-    await this.openFrame();
-    await indexerTransaction(
-      this.pool,
-      (db) => this.prepareQuery(db, frame),
-      true
-    );
+    await this.sourceTransaction((db) => this.openFrame(db, frame));
     return result;
   }
   /** Streaming parity cursors explicitly need one repeatable-read transaction. */
   async transactionSnapshot<T>(read: () => Promise<T>): Promise<T> {
     if (this.frames.getStore())
       throw new Error("Nested portal transaction snapshot.");
-    const frame = await this.openFrame();
+    const frame = await this.sourceTransaction((db) => this.openFrame(db));
     return indexerTransaction(
       this.pool,
       async (db) => {

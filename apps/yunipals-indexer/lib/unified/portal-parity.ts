@@ -63,6 +63,9 @@ export async function comparePortalSources(
   return indexerTransaction(
     legacyPool,
     async (db) => {
+      // The bounded coverage wait intentionally holds a frozen legacy snapshot.
+      // Give only this transaction enough idle time; preserve session defaults.
+      await db.query("SET LOCAL idle_in_transaction_session_timeout='60s'");
       const legacy = new PortalLedgerStore(db, shared.deployment);
       const before = await legacy.cursor();
       if (!before || (await legacy.requiresReplay()))
@@ -72,22 +75,30 @@ export async function comparePortalSources(
       // Freeze the mutable legacy projections first. The shared reader can
       // then catch this fixed block while the legacy scanner keeps advancing.
       const deadline = Date.now() + 30_000;
+      let waiting: PortalSourceError | undefined;
       for (;;) {
         try {
           const available = await shared.cursor();
           if (before.competition !== available.competition)
             throw new Error("Portal competition bindings differ.");
           if (BigInt(available.block) >= BigInt(before.block)) break;
+          waiting = new PortalSourceError(
+            "source_unavailable",
+            `Shared coverage ${available.block} has not reached legacy block ${before.block}.`
+          );
         } catch (error) {
           if (
             !(error instanceof PortalSourceError) ||
             error.code !== "source_unavailable"
           )
             throw error;
+          waiting = error;
         }
         if (Date.now() >= deadline)
-          throw new Error(
-            "Portal sources do not have a comparable complete boundary."
+          throw new PortalSourceError(
+            "source_unavailable",
+            `Portal parity coverage wait timed out: ${waiting?.message ?? "shared source unavailable"}`,
+            { cause: waiting }
           );
         await sleep(500);
       }

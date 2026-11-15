@@ -194,3 +194,16 @@ After the 48-hour window and healthy readiness/parity review:
 Use reviewable commits in dependency order and keep transitional paths explicitly selected. The PR must include the migration and rollback procedure, expected source diff, compatibility behavior and test evidence. Do not merge a source switch merely because code compiles: source replay and parity are separate deployment gates.
 
 No product decisions are needed to start implementation. Remaining engineering discoveries are the live source inventory, historical ABI/configuration coverage, supported cache reuse and measured replay cost. Resolve these in the baseline/rehearsal phases and record their effect before scheduling production cutover.
+
+## 12 Read-path review and follow-up work
+
+Before cutover, validate every required schema/table/view grant with the real reader role while the source is catching up. Exercise health/status over GET and HEAD during missing metadata, changed builds, missing source definitions, permission errors, query timeouts and pool exhaustion. These source failures must preserve safe ledger/worker/accounting diagnostics. A source behind the durable worker position must emit a throttled diagnostic showing both positions and read identities, without rewinding canonical work.
+
+Keep one transaction for the final snapshot check and combine witness validation with transaction-local query settings. The native PostgreSQL fixture caps a warmed snapshot containing two ledger queries at 26 round trips and checks that 24 concurrent requests release connections during RPC waits. Parity freezes the legacy snapshot with an explicit transaction-local idle allowance for its bounded coverage wait; a wait timeout retains the source readiness reason.
+
+Track these separate follow-ups after cutover:
+
+- **Aggregate read cost:** benchmark keyless competition-entry and unpublished-completion counts at representative history sizes, including query plans, buffer usage and concurrent probes. Evaluate versioned aggregate projections and history indexes matching the view's descending event order. Any replacement must return the same result at older confirmed boundaries and after Ponder rollback; do not substitute unconfirmed latest rows. Schema/index changes require their own build identity and replay qualification.
+- **Bounded reorg recovery:** retain canonical consumer checkpoint history, locate a verified common ancestor, and rewind only affected discovery, jobs and publications. Include completions after the fork for requests accepted before it, changed request incarnations and deep reorgs beyond retained history. Preserve matching AI artifacts and signed-transaction recovery, and fall back to full reconciliation when no ancestor can be proven. Validate shallow/deep forks, repeated restarts and 1,000 completed publications before replacing the current conservative full rewind. Per-publication read validation alone does not repair durable job state.
+
+Keep rehearsal evidence tied to its exact tested revision. Subsequent read-path changes need their own regression checks and fresh shadow HTTP/readiness acceptance before source handover; an earlier healthy-window receipt is not evidence that a later reader revision was exercised.

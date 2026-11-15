@@ -124,6 +124,10 @@ export async function readIndexerSourceStatus(
     readiness,
     anchor: anchorMissing ? null : anchor,
     observationRevision: status?.revision ?? null,
+    witness:
+      status?.witness_number != null && status.witness_hash
+        ? { number: status.witness_number, hash: status.witness_hash }
+        : null,
     errorCode:
       status?.error_code ??
       (!branchMatches

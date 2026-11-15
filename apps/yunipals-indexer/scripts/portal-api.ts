@@ -4,7 +4,6 @@ import { constants } from "node:fs";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { SharedPortalLedger } from "../lib/portals/shared-ledger.js";
 import { createPortalRuntime } from "../lib/portals/runtime.js";
 import { registerPortalRoutes } from "../lib/portals/routes.js";
 import { PortalRpcStartupError } from "../lib/portals/rpc.js";
@@ -45,9 +44,7 @@ async function main() {
       );
     await runtime.intake.assertAuthority(runtime.chain);
     await access(runtime.assets.directory, constants.R_OK | constants.X_OK);
-    if (runtime.ledger instanceof SharedPortalLedger)
-      await runtime.ledger.validate();
-    else await runtime.ledger.cursor();
+    await runtime.ledger.validate();
     await runtime.store.cursor();
     const app = new Hono();
     app.use(

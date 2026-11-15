@@ -68,6 +68,10 @@ CREATE TABLE IF NOT EXISTS portal_v3_competition_prize (
 `;
 
 export class PortalLedgerStore {
+  /** Validate reader access without requiring an indexed cursor to exist. */
+  async validate(): Promise<void> {
+    await this.cursor();
+  }
   async snapshot<T>(read: () => Promise<T>): Promise<T> {
     return read();
   }
