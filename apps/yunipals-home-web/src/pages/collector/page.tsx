@@ -570,23 +570,37 @@ function YunipalsCollectorPage() {
               />
             </div>
           ) : (
-            <p className="mt-6 text-sm text-muted" role="status">
-              {profileQuery.isLoading
-                ? "Loading rankings…"
-                : profileQuery.error instanceof IndexerError &&
+            <div className="mt-6 max-w-xl text-sm text-muted">
+              <div role="status">
+                <p className="font-bold text-ink">
+                  {profileQuery.isLoading
+                    ? "Loading rankings…"
+                    : profileQuery.error instanceof IndexerError &&
+                        profileQuery.error.status === 404
+                      ? "No rankings available for this wallet yet."
+                      : "We couldn’t load rankings."}
+                </p>
+                {!profileQuery.isLoading && (
+                  <p className="mt-1">
+                    {profileQuery.error instanceof IndexerError &&
                     profileQuery.error.status === 404
-                  ? "Rankings are updating."
-                  : "Rankings are temporarily unavailable."}
+                      ? "Rankings are based on active Yunipals and may take time to reflect collection changes."
+                      : "Please try again in a moment."}{" "}
+                    We check again automatically every minute.
+                  </p>
+                )}
+              </div>
               {profileQuery.isError && (
                 <button
                   type="button"
-                  className="ml-2 rounded-full font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"
+                  className="mt-3 rounded-full font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum disabled:cursor-wait disabled:opacity-60"
+                  disabled={profileQuery.isFetching}
                   onClick={() => void profileQuery.refetch()}
                 >
-                  Try again
+                  {profileQuery.isFetching ? "Checking…" : "Check rankings"}
                 </button>
               )}
-            </p>
+            </div>
           )}
         </div>
       </section>
