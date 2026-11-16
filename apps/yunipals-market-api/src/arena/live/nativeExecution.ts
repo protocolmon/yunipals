@@ -1,12 +1,26 @@
 import { nextArenaTournamentId } from "@protopals/yunipals-market-core/arenaProtocol";
 import type { Address } from "viem";
 import { ARENA_RESOLUTION_SECONDS } from "@protopals/yunipals-market-core/arena";
-import { ArenaIntake } from "./intake";
+import { ArenaIntake, ArenaRequestError } from "./intake";
 import type { NativeArenaControl } from "./nativeControl";
 import type { NativeArenaSettlement } from "./nativeSettlement";
 import type { NativeIntent, NativeIntentPurpose } from "./nativeTransactions";
 
+/** Names a failed tick for the log without its message: provider and database
+ * errors can carry endpoints or statements. Arena's own refusals are public
+ * text and are included. */
+export function describeNativeExecutionError(error: unknown) {
+  return {
+    type: error instanceof Error ? error.name : typeof error,
+    ...(error instanceof ArenaRequestError
+      ? { status: error.status, reason: error.message }
+      : {})
+  };
+}
+
 export class NativeArenaExecution {
+  /** Set by the last tick: why the lobby role is waiting, or null. */
+  waiting: string | null = null;
   constructor(
     private readonly service: ArenaIntake,
     private readonly signer: Address,
@@ -27,6 +41,7 @@ export class NativeArenaExecution {
       : this.control.advanceIntent(intent);
   }
   async tick() {
+    this.waiting = null;
     await this.service.ready();
     const pending = (
       await this.service.pool.query<NativeIntent>(
@@ -49,6 +64,10 @@ export class NativeArenaExecution {
       if (!["confirmed", "reverted"].includes(result.state)) return result;
     }
     if (this.role === "lobby") {
+      // An open lobby with free seats, or paused capacity, is the normal
+      // waiting state. Settle it from cached capacity before any chain read.
+      this.waiting = await this.control.lobbyWaitReason();
+      if (this.waiting) return null;
       const source = this.service.nativeSource!;
       if (!source.list)
         throw new Error("Native lobby coverage is unavailable.");
