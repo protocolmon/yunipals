@@ -55,6 +55,15 @@ class AcceptanceTests(unittest.TestCase):
                     with self.assertRaises(AssertionError):
                         health.probe_report(path, owner, configuration, kind, now)
 
+    def test_source_ids_follow_the_release_instead_of_a_fixed_count(self):
+        for count in [13, 17]:
+            with self.subTest(count=count):
+                health.validate_source_ids({"sourceIds": [f"source:{index}" for index in range(count)]})
+        for invalid in [[], ["a", "a"], ["a", ""], ["a", 1], "a", None]:
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(AssertionError):
+                    health.validate_source_ids({"sourceIds": invalid})
+
 
 if __name__ == "__main__":
     unittest.main()

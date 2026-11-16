@@ -30,6 +30,18 @@ def acceptance(previous, now, boot_id, healthy):
     }
 
 
+def validate_source_ids(config):
+    """Require a non-empty list of distinct source IDs.
+
+    The number of sources belongs to the deployed release, so it is not fixed here. The source
+    check separately requires the live report to contain exactly this set.
+    """
+    source_ids = config["sourceIds"]
+    assert isinstance(source_ids, list) and source_ids
+    assert all(isinstance(value, str) and value for value in source_ids)
+    assert len(set(source_ids)) == len(source_ids)
+
+
 def command(arguments, timeout=40):
     return subprocess.run(arguments, capture_output=True, text=True, timeout=timeout)
 
@@ -173,7 +185,7 @@ def main():
     config = json.loads(configuration.read_text())
     configuration_hash = hashlib.sha256(configuration.read_bytes()).hexdigest()
     config["configurationSha256"] = configuration_hash
-    assert len(config["sourceIds"]) == 13 and len(set(config["sourceIds"])) == 13
+    validate_source_ids(config)
     state = Path(args.state_directory)
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
     with (state / "check.lock").open("a") as lock:
