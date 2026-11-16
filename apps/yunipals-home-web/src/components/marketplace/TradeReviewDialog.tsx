@@ -9,6 +9,7 @@ import {
 import { getAddress } from "viem";
 import { useAccount } from "wagmi";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
 import { useBnbTrade } from "@/hooks/marketplace/useBnbTrade";
@@ -21,7 +22,7 @@ import {
 import type { MarketOrder } from "@/lib/marketplace/marketApi";
 
 const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2";
+  "inline-flex items-center justify-center gap-2 rounded-full bg-grape px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2";
 
 export function TradeReviewDialog({
   order,
@@ -91,24 +92,24 @@ export function TradeReviewDialog({
   }, [returnFocus, fallbackFocus]);
 
   return (
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      className="m-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-white p-6 text-ink shadow-cardHover backdrop:bg-ink/50 sm:p-8"
+      size="lg"
     >
       <div className="flex items-start justify-between gap-5">
-        <h2 id={titleId} className="display text-2xl">
+        <h2 id={titleId} className="font-display text-2xl leading-tight">
           {buying ? "Review purchase" : "Review offer acceptance"}
         </h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close trade review"
-          className="rounded-full p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+          className="rounded-full p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
         >
           <X aria-hidden="true" size={20} />
         </button>
@@ -119,7 +120,7 @@ export function TradeReviewDialog({
       <p className="mt-1 text-sm text-muted">
         {chainDetails[order.asset.chain].label}
       </p>
-      <dl className="mt-6 space-y-3 text-sm">
+      <dl className="mt-6 space-y-4 rounded-2xl border border-lavender/50 bg-lavender/10 p-4 text-sm [&_dt]:text-muted">
         <div className="flex justify-between gap-4">
           <dt>{buying ? "Seller" : "Buyer"}</dt>
           <dd className="font-bold" title={order.maker}>
@@ -251,11 +252,11 @@ export function TradeReviewDialog({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+          className="rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
         >
           Close
         </button>
       </div>
-    </dialog>
+    </DialogSurface>
   );
 }

@@ -169,8 +169,12 @@ try {
     .click();
   await p.getByRole("button", { name: "Choose 3 packs", exact: true }).click();
   await p.getByRole("button", { name: "Open 3 packs", exact: true }).click();
-  const d = p.getByRole("dialog", { name: "Review transaction", exact: true });
+  const d = p.getByRole("dialog", {
+    name: "Your pack is almost ready",
+    exact: true
+  });
   await d.waitFor();
+  await d.getByText("Payment details", { exact: true }).click();
   await d.getByText("Estimated ETH pack price", { exact: true }).waitFor();
   await d.getByText("Conversion details", { exact: true }).click();
   assert((await d.innerText()).includes("0.5%"));
@@ -183,12 +187,12 @@ try {
   );
   await p.screenshot({ path: "/tmp/yunipals-eth-review.png" });
   await p.evaluate(() => (window.__ethTest.cancelNext = true));
-  await d.getByRole("button", { name: "Confirm", exact: true }).click();
+  await d.getByRole("button", { name: "Open packs", exact: true }).click();
   await d
     .getByText("Transaction cancelled in your wallet.", { exact: true })
     .waitFor();
   report.checks.push("Wallet cancellation leaves a recoverable review");
-  await d.getByRole("button", { name: "Confirm", exact: true }).click();
+  await d.getByRole("button", { name: "Open packs", exact: true }).click();
   await p
     .getByText(
       /Waiting for randomness|Waiting for the random draw|Waiting for Chainlink|Getting your pack|Transaction confirmed/

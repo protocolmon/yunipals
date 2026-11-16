@@ -8,6 +8,7 @@ import {
   type KeyboardEvent
 } from "react";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { chainDetails } from "@/data/chains";
 import {
@@ -329,11 +330,11 @@ export function CollectorControls({
         </div>
       )}
 
-      <dialog
+      <DialogSurface
         ref={dialog}
         onClose={() => setOpen(false)}
         aria-labelledby={`${id}-title`}
-        className="m-auto max-h-[85dvh] w-full max-w-lg overflow-hidden rounded-3xl border border-line bg-white p-0 text-ink shadow-cardHover backdrop:bg-ink/45 backdrop:backdrop-blur-sm"
+        className="max-h-[85dvh] overflow-hidden p-0 sm:p-0"
       >
         {open && (
           <form
@@ -572,7 +573,7 @@ export function CollectorControls({
             </div>
           </form>
         )}
-      </dialog>
+      </DialogSurface>
     </div>
   );
 }

@@ -4,6 +4,12 @@ import { useAccount, useSwitchChain } from "wagmi";
 import { formatEther, formatUnits, type Hex } from "viem";
 import { Loader2 } from "lucide-react";
 import type { BoosterOriginal } from "@protopals/yunipals-market-core/boosters";
+import {
+  DialogSurface,
+  DialogHeader,
+  DialogDetails,
+  dialogButtonVariants
+} from "@/components/ui/dialog";
 import { YunipalsLoader } from "@/components/YunipalsLoader";
 import {
   useBoosterActions,
@@ -90,26 +96,102 @@ export function BoosterActionButton({
           Could not switch networks. Select Base in your wallet.
         </p>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby={titleId}
-        className="w-full max-w-md rounded-card bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+        size="md"
         onCancel={(event) => {
           event.preventDefault();
           if (!busy) actions.dismiss();
         }}
       >
-        <h2 id={titleId} className="text-xl font-bold">
-          {action.kind === "claim"
-            ? "Your daily pack"
-            : review?.permitApproval && !review.permitSigned
-              ? "Approve and open"
-              : review?.approval
-                ? "Approve pack payment"
-                : action.kind === "burn"
-                  ? "Burn this Yunipal?"
-                  : "Review transaction"}
-        </h2>
+        <DialogHeader
+          id={titleId}
+          eyebrow={
+            action.kind === "burn" ? "Permanent action" : "Your next pal awaits"
+          }
+          title={
+            action.kind === "claim"
+              ? "Your daily pack"
+              : review?.permitApproval && !review.permitSigned
+                ? "Approve and open"
+                : review?.approval
+                  ? "Approve pack payment"
+                  : action.kind === "burn"
+                    ? "Burn this Yunipal?"
+                    : action.kind === "open"
+                      ? "Your pack is almost ready"
+                      : "Review transaction"
+          }
+          onClose={actions.dismiss}
+          busy={busy}
+        />
+        {review?.action.kind === "open" && (
+          <div className="my-5 flex items-center gap-4 rounded-2xl border border-lavender/50 bg-panel-polygon p-4">
+            <img
+              src="/images/boosters/yunipals-pack-v1.png"
+              alt="Yunipals booster pack"
+              width={64}
+              height={96}
+              className="h-24 w-16 shrink-0 -rotate-6 rounded-lg object-cover"
+            />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-grape">
+                {review.action.quantity ?? 1}{" "}
+                {(review.action.quantity ?? 1) === 1 ? "pack" : "packs"} · Base
+              </p>
+              <p className="mt-1 break-words text-2xl font-bold tracking-tight">
+                {review.ethQuote
+                  ? formatRoundedAmount(review.ethQuote.price, 18, "ETH")
+                  : `${formatUnits(review.tokenPrice, review.tokenDecimals)} ${review.tokenSymbol}`}
+              </p>
+              <p className="mt-1 text-xs text-muted">
+                Pack price · network fees below
+              </p>
+            </div>
+          </div>
+        )}
+        {review && !claimReview && (
+          <div className="my-5 space-y-3 text-sm">
+            {review.approvalAmount > 0n && (
+              <p className="rounded-xl bg-lavender/20 px-4 py-3 text-grape">
+                {review.permitSigned
+                  ? "Approved amount: "
+                  : "You’re approving exactly "}
+                <strong className="break-all">
+                  {formatUnits(review.approvalAmount, review.tokenDecimals)}{" "}
+                  {review.tokenSymbol}
+                </strong>
+              </p>
+            )}
+            {!review.approval && review.value > 0n && (
+              <div className="flex flex-wrap justify-between gap-2">
+                <span className="text-muted">Maximum ETH sent, before gas</span>
+                <strong
+                  className="break-all"
+                  title={`${formatEther(review.value)} ETH`}
+                >
+                  {formatRoundedAmount(review.value, 18, "ETH")}
+                </strong>
+              </div>
+            )}
+            <div className="flex flex-wrap justify-between gap-2">
+              <span className="text-muted">Estimated network fee</span>
+              <strong
+                className="break-all"
+                title={
+                  review.networkFee === null
+                    ? undefined
+                    : `${formatEther(review.networkFee)} ETH`
+                }
+              >
+                {review.networkFee === null
+                  ? "After approval signature"
+                  : formatRoundedAmount(review.networkFee, 18, "ETH")}
+              </strong>
+            </div>
+          </div>
+        )}
         {review && claimReview ? (
           <>
             <div className="my-6 flex items-center gap-4 rounded-2xl bg-lavender/25 p-4">
@@ -172,106 +254,114 @@ export function BoosterActionButton({
         ) : (
           review && (
             <>
-              <dl className="my-5 space-y-3 text-sm">
-                {review.action.kind === "open" && (
+              <DialogDetails label="Payment details">
+                <dl className="space-y-3 text-xs [&_dt]:text-muted [&_dd]:break-words [&_dd]:text-right">
+                  {review.action.kind === "open" && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Originals requested</dt>
+                      <dd>{review.action.quantity ?? 1}</dd>
+                    </div>
+                  )}
+                  {review.action.kind === "claim" && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Mints requested</dt>
+                      <dd>{review.action.quantity}</dd>
+                    </div>
+                  )}
+                  {review.ethQuote && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Estimated ETH pack price</dt>
+                      <dd title={`${formatEther(review.ethQuote.price)} ETH`}>
+                        {formatRoundedAmount(review.ethQuote.price, 18, "ETH")}
+                      </dd>
+                    </div>
+                  )}
+                  {review.tokenPrice > 0n && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Total pack price</dt>
+                      <dd>
+                        {formatUnits(review.tokenPrice, review.tokenDecimals)}{" "}
+                        {review.tokenSymbol}
+                      </dd>
+                    </div>
+                  )}
+                  {review.tokenBalance !== null && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Your {review.tokenSymbol} balance</dt>
+                      <dd
+                        className="text-right"
+                        title={`${formatUnits(review.tokenBalance, review.tokenDecimals)} ${review.tokenSymbol}`}
+                      >
+                        {formatDecimal(
+                          formatUnits(
+                            review.tokenBalance,
+                            review.tokenDecimals
+                          ),
+                          4
+                        )}{" "}
+                        {review.tokenSymbol}
+                      </dd>
+                    </div>
+                  )}
+                  {review.approvalAmount > 0n && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Approval amount</dt>
+                      <dd
+                        className="text-right"
+                        title={`${formatUnits(review.approvalAmount, review.tokenDecimals)} ${review.tokenSymbol}`}
+                      >
+                        {formatDecimal(
+                          formatUnits(
+                            review.approvalAmount,
+                            review.tokenDecimals
+                          )
+                        )}{" "}
+                        {review.tokenSymbol}
+                      </dd>
+                    </div>
+                  )}
+                  {!review.approval && review.vrfPrice > 0n && (
+                    <div className="flex justify-between gap-4">
+                      <dt>VRF quote</dt>
+                      <dd
+                        className="text-right"
+                        title={`${formatEther(review.vrfPrice)} ETH`}
+                      >
+                        {formatRoundedAmount(review.vrfPrice, 18, "ETH")}
+                      </dd>
+                    </div>
+                  )}
+                  {!review.approval && review.value > 0n && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Maximum ETH sent</dt>
+                      <dd
+                        className="text-right"
+                        title={`${formatEther(review.value)} ETH`}
+                      >
+                        {formatRoundedAmount(review.value, 18, "ETH")}
+                      </dd>
+                    </div>
+                  )}
                   <div className="flex justify-between gap-4">
-                    <dt>Originals requested</dt>
-                    <dd>{review.action.quantity ?? 1}</dd>
-                  </div>
-                )}
-                {review.action.kind === "claim" && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Mints requested</dt>
-                    <dd>{review.action.quantity}</dd>
-                  </div>
-                )}
-                {review.ethQuote && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Estimated ETH pack price</dt>
-                    <dd title={`${formatEther(review.ethQuote.price)} ETH`}>
-                      {formatRoundedAmount(review.ethQuote.price, 18, "ETH")}
-                    </dd>
-                  </div>
-                )}
-                {review.tokenPrice > 0n && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Total pack price</dt>
-                    <dd>
-                      {formatUnits(review.tokenPrice, review.tokenDecimals)}{" "}
-                      {review.tokenSymbol}
-                    </dd>
-                  </div>
-                )}
-                {review.tokenBalance !== null && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Your {review.tokenSymbol} balance</dt>
+                    <dt>Network gas estimate</dt>
                     <dd
                       className="text-right"
-                      title={`${formatUnits(review.tokenBalance, review.tokenDecimals)} ${review.tokenSymbol}`}
+                      title={
+                        review.networkFee === null
+                          ? undefined
+                          : `${formatEther(review.networkFee)} ETH`
+                      }
                     >
-                      {formatDecimal(
-                        formatUnits(review.tokenBalance, review.tokenDecimals),
-                        4
-                      )}{" "}
-                      {review.tokenSymbol}
+                      {review.networkFee === null
+                        ? "Calculated after signing"
+                        : formatRoundedAmount(review.networkFee, 18, "ETH")}
                     </dd>
                   </div>
-                )}
-                {review.approvalAmount > 0n && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Approval amount</dt>
-                    <dd
-                      className="text-right"
-                      title={`${formatUnits(review.approvalAmount, review.tokenDecimals)} ${review.tokenSymbol}`}
-                    >
-                      {formatDecimal(
-                        formatUnits(review.approvalAmount, review.tokenDecimals)
-                      )}{" "}
-                      {review.tokenSymbol}
-                    </dd>
-                  </div>
-                )}
-                {!review.approval && review.vrfPrice > 0n && (
-                  <div className="flex justify-between gap-4">
-                    <dt>VRF quote</dt>
-                    <dd
-                      className="text-right"
-                      title={`${formatEther(review.vrfPrice)} ETH`}
-                    >
-                      {formatRoundedAmount(review.vrfPrice, 18, "ETH")}
-                    </dd>
-                  </div>
-                )}
-                {!review.approval && review.value > 0n && (
-                  <div className="flex justify-between gap-4">
-                    <dt>Maximum ETH sent</dt>
-                    <dd
-                      className="text-right"
-                      title={`${formatEther(review.value)} ETH`}
-                    >
-                      {formatRoundedAmount(review.value, 18, "ETH")}
-                    </dd>
-                  </div>
-                )}
-                <div className="flex justify-between gap-4">
-                  <dt>Network gas estimate</dt>
-                  <dd
-                    className="text-right"
-                    title={
-                      review.networkFee === null
-                        ? undefined
-                        : `${formatEther(review.networkFee)} ETH`
-                    }
-                  >
-                    {review.networkFee === null
-                      ? "After approval signature"
-                      : formatRoundedAmount(review.networkFee, 18, "ETH")}
-                  </dd>
-                </div>
-              </dl>
+                </dl>
+              </DialogDetails>
               {review.ethQuote ? (
                 <>
-                  <p className="text-sm text-muted">
+                  <p className="mt-4 text-sm leading-relaxed text-muted">
                     One transaction converts ETH to YPAL and opens your packs.
                     Unused ETH is returned automatically, or saved for
                     withdrawal if your wallet cannot receive it. Cards arrive
@@ -292,12 +382,12 @@ export function BoosterActionButton({
                   </details>
                 </>
               ) : review.permitApproval && !review.permitSigned ? (
-                <p className="text-sm text-muted">
+                <p className="mt-4 text-sm leading-relaxed text-muted">
                   Sign a gas-free approval, then review one transaction that
                   includes the approval and opens your packs.
                 </p>
               ) : review.approval ? (
-                <p className="text-sm text-muted">
+                <p className="mt-4 text-sm leading-relaxed text-muted">
                   Approve{" "}
                   {formatDecimal(
                     formatUnits(review.approvalAmount, review.tokenDecimals)
@@ -307,17 +397,13 @@ export function BoosterActionButton({
                   opening transaction.
                 </p>
               ) : action.kind === "open" ? (
-                <p className="text-sm text-muted">
-                  The full price is burned when this transaction succeeds, even
-                  if reveal is delayed indefinitely. Excess ETH is returned
-                  immediately. The VRF charge includes callback minting and is
-                  spent once requested.
-                  {review.action.kind === "open" &&
-                    (review.action.quantity ?? 1) > 1 &&
-                    " Each purchased pack creates its own original and randomness request. All cards appear in one opening."}
+                <p className="mt-4 text-sm leading-relaxed text-muted">
+                  The pack price is burned when the transaction succeeds.
+                  Reveals can be delayed indefinitely, and spent randomness fees
+                  are not refunded. Unused ETH is returned immediately.
                 </p>
               ) : action.kind === "claim" ? (
-                <p className="text-sm text-muted">
+                <p className="mt-4 text-sm leading-relaxed text-muted">
                   These pending mints follow your original if you transfer it
                   before they finish. Excess ETH is returned immediately.
                 </p>
@@ -337,7 +423,7 @@ export function BoosterActionButton({
                   </span>
                 </label>
               ) : action.kind === "recover" ? (
-                <p className="text-sm text-muted">
+                <p className="mt-4 text-sm leading-relaxed text-muted">
                   Finish the saved VRF result. This uses the same randomness and
                   sends offspring to the original’s current owner.
                 </p>
@@ -374,15 +460,20 @@ export function BoosterActionButton({
           )
         )}
         {actions.error && (
-          <p role="alert" className="my-4 break-words text-sm text-muted">
+          <p
+            role="alert"
+            className="my-4 break-words rounded-xl bg-red-50 p-3 text-sm text-red-700"
+          >
             {actions.error}
           </p>
         )}
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col gap-2 border-t border-line pt-5 sm:flex-row sm:flex-wrap">
           {review && (
             <button
               type="button"
-              className={boosterButtonClass}
+              className={dialogButtonVariants({
+                variant: action.kind === "burn" ? "destructive" : "primary"
+              })}
               disabled={busy || (action.kind === "burn" && !burnAcknowledged)}
               onClick={async () => {
                 const hash = await actions.confirm(
@@ -404,34 +495,38 @@ export function BoosterActionButton({
                     : "Sign approval"
                   : review.approval
                     ? "Approve payment"
-                    : "Confirm"}
+                    : action.kind === "open"
+                      ? "Open packs"
+                      : "Confirm"}
             </button>
           )}
           {actions.error && !busy && !actions.submittedHash && (
             <button
               type="button"
-              className={boosterButtonClass}
+              className={dialogButtonVariants({
+                variant: action.kind === "burn" ? "destructive" : "primary"
+              })}
               onClick={() => void actions.prepare(action)}
             >
               Refresh review
             </button>
           )}
           {actions.error && actions.submittedHash && (
-            <p className="text-sm text-muted">
+            <p className="mt-4 text-sm leading-relaxed text-muted">
               Check recent transactions for the submitted request before trying
               again.
             </p>
           )}
           <button
             type="button"
-            className="rounded-full border border-line px-5 py-3 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ink"
+            className={dialogButtonVariants({ variant: "secondary" })}
             disabled={busy}
             onClick={actions.dismiss}
           >
             Close
           </button>
         </div>
-      </dialog>
+      </DialogSurface>
     </>
   );
 }

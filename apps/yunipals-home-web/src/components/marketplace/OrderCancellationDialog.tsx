@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress } from "viem";
 import { useAccount } from "wagmi";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { chainDetails } from "@/data/chains";
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
 import { useOrderCancellation } from "@/hooks/marketplace/useOrderCancellation";
@@ -47,7 +48,7 @@ function CancelAction({ record }: { record: RecoverableOrder }) {
           )
         }
         onClick={() => void action.cancel()}
-        className="mt-5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white focus-visible:ring-2 focus-visible:ring-ink disabled:opacity-50"
+        className="mt-5 rounded-full bg-grape px-5 py-2.5 text-sm font-bold text-white focus-visible:ring-2 focus-visible:ring-grape disabled:opacity-50"
       >
         {busy ? "Cancellation in progress…" : "Confirm cancellation"}
       </button>
@@ -142,24 +143,24 @@ export function OrderCancellationDialog({
     };
   }, [returnFocus, fallbackFocus]);
   return (
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={title}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      className="m-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-white p-6 text-ink shadow-cardHover backdrop:bg-ink/50 sm:p-8"
+      size="lg"
     >
       <div className="flex items-start justify-between gap-5">
-        <h2 id={title} className="display text-2xl">
+        <h2 id={title} className="font-display text-2xl leading-tight">
           Cancel {order.side}
         </h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close cancellation review"
-          className="rounded-full p-1 focus-visible:ring-2 focus-visible:ring-ink"
+          className="rounded-full p-1 focus-visible:ring-2 focus-visible:ring-grape"
         >
           <X aria-hidden="true" size={20} />
         </button>
@@ -197,7 +198,7 @@ export function OrderCancellationDialog({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:ring-2 focus-visible:ring-ink"
+          className="rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:ring-2 focus-visible:ring-grape"
         >
           Close
         </button>
@@ -209,6 +210,6 @@ export function OrderCancellationDialog({
           Order recovery
         </Link>
       </div>
-    </dialog>
+    </DialogSurface>
   );
 }

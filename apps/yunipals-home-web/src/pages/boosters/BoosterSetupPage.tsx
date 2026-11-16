@@ -18,6 +18,7 @@ import {
 import { estimateL1Fee } from "viem/op-stack";
 import { packRegistryAbi } from "@protopals/yunipals-market-core/boosterAbi";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import { boosterAddresses, boosterQueryKey } from "@/lib/boosters";
 import {
@@ -516,10 +517,10 @@ export function BoosterSetupPage({
           )}
         </section>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby="booster-setup-review-title"
-        className="w-full max-w-md rounded-card bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+        size="md"
         onCancel={(event) => {
           event.preventDefault();
           if (!busy) setReview(null);
@@ -573,7 +574,7 @@ export function BoosterSetupPage({
             Close
           </button>
         </div>
-      </dialog>
+      </DialogSurface>
     </main>
   );
 }

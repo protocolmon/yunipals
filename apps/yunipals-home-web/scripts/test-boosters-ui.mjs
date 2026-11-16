@@ -246,12 +246,10 @@ try {
   await page.getByRole("heading", { name: "Approve pack payment" }).waitFor();
   await confirm("Approve payment");
   await page
-    .getByRole("heading", { name: "Review transaction", exact: true })
+    .getByRole("heading", { name: "Your pack is almost ready", exact: true })
     .waitFor();
-  await page
-    .getByText("The full pack price is burned", { exact: false })
-    .waitFor();
-  await confirm("Confirm");
+  await page.getByText("The pack price is burned", { exact: false }).waitFor();
+  await confirm("Open packs");
   await page.getByText("Awaiting randomness", { exact: true }).waitFor();
   report.checks.push(
     "wallet connection, exact approval, fee review, successful opening request"

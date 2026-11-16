@@ -9,6 +9,7 @@ import {
   portalTypeNames,
   portalCountdown
 } from "@protopals/yunipals-market-core/portals";
+import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import { usePortals } from "@/hooks/usePortals";
 import {
@@ -439,14 +440,14 @@ export function PortalPage() {
       {(status?.competition || environment.portalGrading) && (
         <PortalCompetitions />
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby="portal-review-title"
         onCancel={(event) => {
           event.preventDefault();
           actions.dismiss();
         }}
-        className="w-full max-w-lg rounded-card bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+        size="lg"
       >
         <h2 id="portal-review-title" className="font-display text-2xl">
           Review your spell
@@ -507,7 +508,7 @@ export function PortalPage() {
         )}
         <div className="mt-6 flex flex-wrap gap-3">
           <button
-            className={boosterButtonClass}
+            className={dialogButtonVariants()}
             disabled={actions.busy}
             onClick={() => void actions.confirm()}
           >
@@ -521,7 +522,7 @@ export function PortalPage() {
             Close
           </button>
         </div>
-      </dialog>
+      </DialogSurface>
     </main>
   );
 }

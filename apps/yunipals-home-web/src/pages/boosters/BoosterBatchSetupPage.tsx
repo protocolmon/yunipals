@@ -18,6 +18,7 @@ import {
 } from "viem";
 import { estimateL1Fee } from "viem/op-stack";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { boosterSetupOwner } from "@/lib/boosterSetup";
 import { cn } from "@/lib/utils";
 import {
@@ -712,10 +713,10 @@ export function BoosterBatchSetupPage() {
           </section>
         </>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby="batch-review-title"
-        className="w-full max-w-xl rounded-card bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+        size="xl"
         onCancel={(event) => {
           event.preventDefault();
           if (!busy) setReview(null);
@@ -796,7 +797,7 @@ export function BoosterBatchSetupPage() {
             </div>
           </>
         )}
-      </dialog>
+      </DialogSurface>
     </main>
   );
 }

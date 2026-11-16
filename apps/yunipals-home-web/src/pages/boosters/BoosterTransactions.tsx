@@ -12,6 +12,7 @@ import {
   Play,
   X
 } from "lucide-react";
+import { DialogSurface } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import { boosterEthAddress, boosterEthAbi } from "@/lib/boosterEth";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
@@ -71,10 +72,10 @@ function SubmittedOpening({
     };
   }, []);
   return createPortal(
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
-      className="w-full max-w-md rounded-card bg-white p-7 text-ink shadow-card backdrop:bg-ink/70"
+      size="md"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -122,7 +123,7 @@ function SubmittedOpening({
           </button>
         </div>
       )}
-    </dialog>,
+    </DialogSurface>,
     document.body
   );
 }

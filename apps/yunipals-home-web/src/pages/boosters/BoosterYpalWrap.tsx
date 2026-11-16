@@ -11,6 +11,12 @@ import {
   Wallet
 } from "lucide-react";
 
+import {
+  DialogSurface,
+  DialogHeader,
+  DialogDetails,
+  dialogButtonVariants
+} from "@/components/ui/dialog";
 import { useYpalWrap } from "@/hooks/useYpalWrap";
 import { formatRoundedAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -356,67 +362,131 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
           {failure}
         </p>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby="ypal-wrap-review-title"
         onCancel={(event) => {
           event.preventDefault();
           wrap.dismissReview();
         }}
-        className="w-full max-w-lg rounded-card border border-line bg-white p-6 text-ink backdrop:bg-black/60"
+        size="lg"
       >
-        <h3
+        <DialogHeader
           id="ypal-wrap-review-title"
-          className="font-display text-xl text-ink"
-        >
-          {review?.kind === "approve"
-            ? "Review exact PMON approval"
-            : "Review PMON wrapping"}
-        </h3>
+          eyebrow={
+            review?.kind === "approve"
+              ? "Step 1 · Allow access"
+              : "Step 2 · Get your YPAL"
+          }
+          title={
+            review?.kind === "approve"
+              ? "Approve your PMON"
+              : "Ready for a little magic?"
+          }
+          onClose={wrap.dismissReview}
+        />
         {review && (
-          <div className="mt-4 space-y-4">
-            <dl className="space-y-2 text-sm">
-              <div>
-                <dt>Network</dt>
-                <dd>Base mainnet</dd>
-              </div>
-              <div>
-                <dt>Wallet</dt>
-                <dd className="break-all">{review.owner}</dd>
-              </div>
-              <div>
-                <dt>
-                  {review.kind === "approve"
-                    ? "Approve exactly"
-                    : "Wrap exactly"}
-                </dt>
-                <dd>
-                  {formatUnits(review.amount, 18)} PMON
-                  {review.kind === "wrap"
-                    ? ` → ${formatUnits(review.amount, 18)} YPAL`
-                    : " for the YPAL contract"}
-                </dd>
-              </div>
-              <div>
-                <dt>Contract</dt>
-                <dd className="break-all">{review.to}</dd>
-              </div>
-              <div>
-                <dt>Estimated network fee</dt>
-                <dd title={`${formatEther(review.networkFee)} ETH`}>
+          <>
+            <div className="relative mt-6 overflow-hidden rounded-2xl border border-lavender/50 bg-panel-polygon p-5">
+              <img
+                src="/images/yunipals-logo.webp"
+                alt=""
+                width={56}
+                height={56}
+                className="mb-4 h-14 w-14 object-contain"
+              />
+              <span className="absolute right-4 top-4 rounded-full bg-white/80 px-3 py-1 text-xs font-bold text-basechain">
+                Base
+              </span>
+              <p className="text-xs font-semibold text-muted">
+                {review.kind === "approve"
+                  ? "Allow YPAL to use exactly"
+                  : "You wrap"}
+              </p>
+              <p className="mt-1 break-words text-3xl font-bold tracking-tight text-ink">
+                {formatUnits(review.amount, 18)}{" "}
+                <span className="text-lg">PMON</span>
+              </p>
+              {review.kind === "wrap" && (
+                <div className="mt-4 flex items-start gap-2 border-t border-grape/10 pt-4 text-grape">
+                  <ArrowDown
+                    size={18}
+                    className="mt-1 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold">You receive</p>
+                    <p className="break-words text-2xl font-bold">
+                      {formatUnits(review.amount, 18)} YPAL
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              {review.kind === "approve"
+                ? "First, allow YPAL to use this amount of PMON. You’ll review and confirm wrapping separately."
+                : "Your PMON is held in the YPAL contract, and the same amount of YPAL arrives in your wallet. You’re one step closer to your next pal."}
+            </p>
+            <dl className="mt-5 text-sm">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <dt className="text-muted">Estimated network fee</dt>
+                <dd
+                  className="break-all font-semibold"
+                  title={`${formatEther(review.networkFee)} ETH`}
+                >
                   {formatRoundedAmount(review.networkFee, 18, "ETH")}
                 </dd>
               </div>
             </dl>
-            <p className="text-sm text-muted">
-              {review.kind === "approve"
-                ? "Approval does not wrap tokens. Review the separate wrap transaction after it confirms."
-                : "Your PMON moves to the confirmed YPAL wrapper and the same amount of YPAL is minted to your wallet."}{" "}
+            <DialogDetails>
+              <dl className="space-y-4 text-xs">
+                <div>
+                  <dt className="text-muted">Network</dt>
+                  <dd className="mt-1 font-semibold">Base mainnet</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Your wallet</dt>
+                  <dd className="mt-1 break-all font-mono">{review.owner}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">
+                    {review.kind === "approve"
+                      ? "PMON token contract"
+                      : "YPAL contract"}
+                  </dt>
+                  <dd className="mt-1 break-all font-mono">{review.to}</dd>
+                </div>
+                {review.kind === "approve" && (
+                  <div>
+                    <dt className="text-muted">Allowed to use your PMON</dt>
+                    <dd className="mt-1 break-all font-mono">
+                      {deployment.ypal}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </DialogDetails>
+            <p className="mt-3 text-xs text-muted">
               This review expires after two minutes.
             </p>
-            <div className="flex flex-wrap gap-3">
+            {failure && (
+              <p
+                role="alert"
+                className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700"
+              >
+                {failure}
+              </p>
+            )}
+            {wrap.busy && (
+              <p role="status" className="mt-3 text-sm text-muted">
+                Follow the request in your wallet…
+              </p>
+            )}
+            <div className="mt-6 flex flex-col gap-2 border-t border-line pt-5 sm:flex-row">
               <button
-                className={cn(boosterButtonClass)}
+                type="button"
+                className={cn(dialogButtonVariants(), "sm:flex-1")}
                 disabled={wrap.busy}
                 onClick={wrap.confirm}
               >
@@ -425,15 +495,16 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
                   : "Confirm wrap"}
               </button>
               <button
-                className="rounded-full border border-line px-4 py-2"
+                type="button"
+                className={dialogButtonVariants({ variant: "secondary" })}
                 onClick={wrap.dismissReview}
               >
                 Cancel review
               </button>
             </div>
-          </div>
+          </>
         )}
-      </dialog>
+      </DialogSurface>
     </section>
   );
 }

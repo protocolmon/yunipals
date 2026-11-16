@@ -1,9 +1,18 @@
 // Real purchase controls, review hook and calldata; local fixtures only.
 import assert from "node:assert/strict";
+import { parseArgs } from "node:util";
 import { writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createServer, transformWithEsbuild } from "vite";
 
+const { values } = parseArgs({
+  options: {
+    playwright: { type: "string" },
+    chromium: { type: "string" }
+  }
+});
+if (!values.playwright)
+  throw new Error("Pass --playwright PATH to the installed Playwright module.");
 const root = fileURLToPath(new URL("..", import.meta.url));
 const ids = {
   entry: "virtual:purchase-entry.tsx",
@@ -93,9 +102,9 @@ export const save=(wallet,engine,row)=>window.__purchase.saved.push(row);
 const modules = {
   [ids.fixture]: fixture,
   [ids.wagmi]: `import {account,client,wallet} from '${ids.fixture}';export const useAccount=()=>({address:account,isConnected:true,chainId:8453});export const usePublicClient=()=>client;export const useWalletClient=()=>({data:wallet});export const useSwitchChain=()=>({isPending:false});`,
-  [ids.boosters]: `import {pack,engine,save} from '${ids.fixture}';export const boosterQueryKey=['local-purchase-fixture'];export const boosterAddresses=()=>({registry:pack.registry,engine,monsters:'0x105319be2182018c31fb10b1be198c3cf238a146'});export const saveBoosterTransaction=save;`,
-  [ids.rainbow]: `export const useConnectModal=()=>({});`,
-  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterPurchaseOptions}from'/src/pages/boosters/BoosterPurchaseOptions';import{useBoosterActions}from'/src/hooks/useBoosterActions';import{pack}from'${ids.fixture}';import'/src/globals.css';function HookProbe(){window.__purchaseHook=useBoosterActions();return null;}const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});const app=createRoot(document.getElementById('root'));window.__unmountPurchase=()=>app.unmount();app.render(<QueryClientProvider client={query}><HookProbe/><main className="mx-auto max-w-xl p-6"><BoosterPurchaseOptions pack={pack} paused={false} onConfirmed={hash=>window.__purchase.confirmed.push(hash)} onSubmitted={new URLSearchParams(location.search).get("handoff")?hash=>window.__purchase.submitted.push(hash):undefined} onPreview={quantity=>window.__preview=quantity}/></main></QueryClientProvider>);`
+  [ids.boosters]: `import {pack,engine,save} from '${ids.fixture}';export const boosterQueryKey=['local-purchase-fixture'];export const boosterAddresses=()=>({registry:pack.registry,engine,monsters:'0x105319be2182018c31fb10b1be198c3cf238a146'});export const saveBoosterTransaction=save;export const boosterAssetUrl=uri=>uri;export const fetchBoosterMonster=async()=>{throw Error("Unexpected artwork lookup");};export const fetchMonsterArtwork=async()=>{throw Error("Unexpected artwork lookup");};`,
+  [ids.rainbow]: `export const useConnectModal=()=>({});export const useAccountModal=()=>({});`,
+  [ids.entry]: `import React from 'react';import{createRoot}from'react-dom/client';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{BoosterPurchaseOptions}from'/src/pages/boosters/BoosterPurchaseOptions';import{WalletCollectionButton}from'/src/components/WalletCollectionButton';import{MemoryRouter}from'react-router-dom';import{useBoosterActions}from'/src/hooks/useBoosterActions';import{pack}from'${ids.fixture}';import'/src/globals.css';function HookProbe(){window.__purchaseHook=useBoosterActions();return null;}const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});const app=createRoot(document.getElementById('root'));window.__unmountPurchase=()=>app.unmount();app.render(<MemoryRouter><QueryClientProvider client={query}><HookProbe/><div className="p-6"><WalletCollectionButton/></div><main className="mx-auto max-w-xl p-6"><BoosterPurchaseOptions pack={pack} paused={false} onConfirmed={hash=>window.__purchase.confirmed.push(hash)} onSubmitted={new URLSearchParams(location.search).get("handoff")?hash=>window.__purchase.submitted.push(hash):undefined} onPreview={quantity=>window.__preview=quantity}/></main></QueryClientProvider></MemoryRouter>);`
 };
 const server = await createServer({
   root,
@@ -153,13 +162,9 @@ const report = {
   errors: []
 };
 await server.listen();
-const { chromium } = await import(
-  pathToFileURL("/tmp/yunipals-foundry/node_modules/playwright-core/index.mjs")
-    .href
-);
+const { chromium } = await import(pathToFileURL(values.playwright).href);
 const browser = await chromium.launch({
-  executablePath:
-    "/root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome",
+  executablePath: values.chromium,
   args: ["--no-sandbox"]
 });
 try {
@@ -176,6 +181,43 @@ try {
   const visit = (scenario) =>
     page.goto(`http://127.0.0.1:5199/__purchase?scenario=${scenario}`);
   await visit("batch");
+  const collection = page.getByRole("button", { name: /^View my collection/ });
+  await collection.click();
+  assert.equal(
+    await collection.evaluate((el) => getComputedStyle(el).outlineStyle),
+    "none"
+  );
+  await page.keyboard.press("Tab");
+  const accountMenu = page.getByRole("button", {
+    name: "Account menu",
+    exact: true
+  });
+  assert.equal(
+    await accountMenu.evaluate((el) => el === document.activeElement),
+    true
+  );
+  assert.deepEqual(
+    await accountMenu.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return [
+        style.outlineStyle,
+        style.outlineWidth,
+        style.outlineColor,
+        style.getPropertyValue("--tw-ring-shadow").trim()
+      ];
+    }),
+    ["solid", "2px", "rgb(126, 34, 206)", "0 0 #0000"]
+  );
+  await page.keyboard.press("Enter");
+  assert.equal(await accountMenu.getAttribute("aria-expanded"), "true");
+  await page.keyboard.press("Escape");
+  assert.equal(
+    await accountMenu.evaluate((el) => el === document.activeElement),
+    true
+  );
+  report.checks.push(
+    "Pointer focus is clean; keyboard focus has one purple outline and account menu returns focus on Escape"
+  );
   await page
     .getByRole("button", { name: "Choose 3 packs", exact: true })
     .click();
@@ -184,9 +226,39 @@ try {
     .last()
     .click();
   const dialog = page.getByRole("dialog");
+  await dialog.getByText("Payment details", { exact: true }).waitFor();
+  assert.equal(
+    await dialog.locator("details").first().getAttribute("open"),
+    null
+  );
+  assert.match(await dialog.innerText(), /3 packs/);
+  for (const width of [320, 390, 1100]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert.equal(
+      await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth),
+      true
+    );
+    const bounds = await dialog.boundingBox();
+    assert(bounds.x >= 15 && bounds.x + bounds.width <= width - 15);
+    assert(bounds.y >= 15 && bounds.y + bounds.height <= 829);
+  }
+  await page.screenshot({ path: "/tmp/yunipals-pack-review-desktop.png" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: "/tmp/yunipals-pack-review-mobile.png" });
+  await page.setViewportSize({ width: 1100, height: 1000 });
+  // Keyboard users can reveal exact amounts without signing or sending.
+  await dialog.getByText("Payment details", { exact: true }).focus();
+  await page.keyboard.press("Enter");
   await dialog.getByText("Total pack price", { exact: true }).waitFor();
   assert.match(await dialog.innerText(), /Originals requested\s+3/);
   assert.match(await dialog.innerText(), /3 PROTO/);
+  async function openPaymentDetails() {
+    const details = dialog
+      .locator("details")
+      .filter({ has: page.getByText("Payment details", { exact: true }) });
+    if (!(await details.evaluate((el) => el.open)))
+      await dialog.getByText("Payment details", { exact: true }).click();
+  }
   const reviewValue = (label) =>
     dialog.getByText(label, { exact: true }).locator("..").locator("dd");
   assert.equal(
@@ -205,7 +277,7 @@ try {
     await reviewValue("Network gas estimate").getAttribute("title"),
     "0.0000000000024002 ETH"
   );
-  await dialog.getByRole("button", { name: "Confirm", exact: true }).click();
+  await dialog.getByRole("button", { name: "Open packs", exact: true }).click();
   await page.waitForFunction(() => window.__purchase.confirmed.length === 1);
   let result = await page.evaluate(() => window.__purchase);
   assert.equal(result.sends.length, 1);
@@ -226,6 +298,7 @@ try {
     .getByRole("button", { name: "Open 5 packs", exact: true })
     .last()
     .click();
+  await dialog.getByText("Payment details", { exact: true }).click();
   await reviewValue("Approval amount").waitFor();
   assert.equal(await reviewValue("Approval amount").innerText(), "1,000 PROTO");
   assert.equal(
@@ -233,13 +306,16 @@ try {
     "1,000,000,000,000 PROTO"
   );
   await dialog.getByRole("button", { name: "Approve payment" }).click();
-  await dialog.getByRole("button", { name: "Confirm", exact: true }).waitFor();
+  await dialog
+    .getByRole("button", { name: "Open packs", exact: true })
+    .waitFor();
   assert.equal(
     await dialog.getByText("Approval amount", { exact: true }).count(),
     0
   );
+  await openPaymentDetails();
   await reviewValue("Your PROTO balance").waitFor();
-  await dialog.getByRole("button", { name: "Confirm", exact: true }).click();
+  await dialog.getByRole("button", { name: "Open packs", exact: true }).click();
   await page.waitForFunction(() => window.__purchase.confirmed.length === 1);
   result = await page.evaluate(() => window.__purchase);
   assert.deepEqual(
@@ -314,7 +390,7 @@ try {
     true
   );
   await page.getByRole("button", { name: "Open pack", exact: true }).click();
-  await dialog.getByRole("button", { name: "Confirm", exact: true }).click();
+  await dialog.getByRole("button", { name: "Open packs", exact: true }).click();
   await page.waitForFunction(() => window.__purchase.confirmed.length === 1);
   result = await page.evaluate(() => window.__purchase);
   assert.equal(result.sends[0].functionName, "openPack");
@@ -359,6 +435,7 @@ try {
     await dialog
       .getByRole("button", { name: "Sign approval", exact: true })
       .waitFor();
+    await dialog.getByText("Payment details", { exact: true }).click();
   }
   async function signPermitReview() {
     await dialog
@@ -367,6 +444,7 @@ try {
     await dialog
       .getByRole("button", { name: "Open packs", exact: true })
       .waitFor();
+    await openPaymentDetails();
   }
   for (const quantity of [1, 3]) {
     await startPermitReview("permit", quantity);
@@ -476,7 +554,9 @@ try {
   }
   await visit("permit-allowance");
   await page.getByRole("button", { name: "Open pack", exact: true }).click();
-  await dialog.getByRole("button", { name: "Confirm", exact: true }).waitFor();
+  await dialog
+    .getByRole("button", { name: "Open packs", exact: true })
+    .waitFor();
   assert.equal(
     await dialog
       .getByRole("button", { name: "Sign approval", exact: true })

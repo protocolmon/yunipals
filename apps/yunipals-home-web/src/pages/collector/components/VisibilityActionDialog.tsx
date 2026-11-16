@@ -98,7 +98,7 @@ export function VisibilityActionDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
-        className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-cardHover sm:p-7"
+        className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-card border border-lavender/60 bg-white p-5 shadow-cardHover sm:p-7"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="grid h-12 w-12 place-items-center rounded-full bg-ethereum/10 text-ethereum">

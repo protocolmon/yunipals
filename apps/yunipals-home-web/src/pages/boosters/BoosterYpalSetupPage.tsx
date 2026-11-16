@@ -12,6 +12,7 @@ import { BaseError, formatEther, type Address, type Hex } from "viem";
 import { base } from "viem/chains";
 import { estimateL1Fee } from "viem/op-stack";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { boosterSetupOwner } from "@/lib/boosterSetup";
 import { formatRoundedAmount } from "@/lib/format";
@@ -647,14 +648,14 @@ function BoosterYpalLaunchPage() {
           Download verified deployment manifest
         </button>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         onCancel={(e) => {
           e.preventDefault();
           dismiss();
         }}
         aria-labelledby="ypal-review-title"
-        className="w-full max-w-xl rounded-2xl border border-border bg-background p-6 text-foreground backdrop:bg-black/60"
+        size="xl"
       >
         <h2 id="ypal-review-title" className="text-xl font-bold">
           Review {review ? ypalStepLabels[review.step] : "launch transaction"}
@@ -716,7 +717,7 @@ function BoosterYpalLaunchPage() {
             </div>
           </div>
         )}
-      </dialog>
+      </DialogSurface>
     </main>
   );
 }

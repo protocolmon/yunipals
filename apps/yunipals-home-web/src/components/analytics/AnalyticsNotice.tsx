@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useId, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 type AnalyticsNoticeProps = {
@@ -130,7 +131,7 @@ export function AnalyticsNotice(props: AnalyticsNoticeProps) {
     </>
   );
   return props.settings ? (
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
@@ -138,10 +139,10 @@ export function AnalyticsNotice(props: AnalyticsNoticeProps) {
         event.preventDefault();
         props.onClose();
       }}
-      className="m-auto max-h-[90dvh] w-11/12 max-w-lg overflow-y-auto rounded-card border border-line bg-white p-6 text-ink shadow-cardHover backdrop:bg-ink/50"
+      size="lg"
     >
       {content}
-    </dialog>
+    </DialogSurface>
   ) : (
     <section
       aria-labelledby={titleId}

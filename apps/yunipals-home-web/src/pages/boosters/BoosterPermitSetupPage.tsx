@@ -18,6 +18,7 @@ import {
 } from "viem";
 import { estimateL1Fee } from "viem/op-stack";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { boosterSetupOwner } from "@/lib/boosterSetup";
 import { cn } from "@/lib/utils";
 import {
@@ -749,10 +750,10 @@ export function BoosterPermitSetupPage() {
           </section>
         </>
       )}
-      <dialog
+      <DialogSurface
         ref={dialog}
         aria-labelledby="permit-review-title"
-        className="w-full max-w-xl rounded-card bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+        size="xl"
         onCancel={(event) => {
           event.preventDefault();
           if (!busy) setActiveReview(null);
@@ -833,7 +834,7 @@ export function BoosterPermitSetupPage() {
             </div>
           </>
         )}
-      </dialog>
+      </DialogSurface>
     </main>
   );
 }

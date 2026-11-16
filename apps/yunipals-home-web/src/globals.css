@@ -32,6 +32,24 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* One keyboard focus treatment, without stacking browser outlines and rings. */
+:is(button, [role="button"], a):focus-visible {
+  outline: 2px solid theme("colors.grape");
+  outline-offset: 3px;
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+}
+
+:is(button, [role="button"], a):focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  :is(button, [role="button"], a):focus-visible {
+    outline-color: Highlight;
+  }
+}
+
 .display {
   font-family: "Archivo Black", "Arial Black", sans-serif;
   font-weight: 900;

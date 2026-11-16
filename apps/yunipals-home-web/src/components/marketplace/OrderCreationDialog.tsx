@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress, zeroAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
@@ -28,7 +29,7 @@ import { parseOrderPrice } from "@/lib/marketplace/orderPublication";
 import { cn } from "@/lib/utils";
 
 const button =
-  "rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink disabled:cursor-not-allowed disabled:opacity-50";
+  "rounded-full border border-line px-5 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape disabled:cursor-not-allowed disabled:opacity-50";
 
 export function OrderCreationDialog({
   asset,
@@ -168,24 +169,24 @@ export function OrderCreationDialog({
               ? `Approve ${formatUnits(prerequisite.amount, 18)} ${currency}`
               : `${creation.bnbOnchain ? "Publish on chain" : "Sign and publish"} ${side === "listing" ? "listing" : "offer"}`;
   return (
-    <dialog
+    <DialogSurface
       ref={element}
       aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      className="m-auto max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-white p-6 text-ink shadow-cardHover backdrop:bg-ink/50 sm:p-8"
+      size="lg"
     >
       <div className="flex items-start justify-between gap-5">
-        <h2 id={titleId} className="display text-2xl">
+        <h2 id={titleId} className="font-display text-2xl leading-tight">
           {title}
         </h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close order review"
-          className="rounded-full p-1 focus-visible:ring-2 focus-visible:ring-ink"
+          className="rounded-full p-1 focus-visible:ring-2 focus-visible:ring-grape"
         >
           <X aria-hidden="true" size={20} />
         </button>
@@ -230,7 +231,7 @@ export function OrderCreationDialog({
                 <button
                   type="button"
                   onClick={() => void activePolicy.refetch()}
-                  className="ml-2 rounded-full font-bold focus-visible:ring-2 focus-visible:ring-ink"
+                  className="ml-2 rounded-full font-bold focus-visible:ring-2 focus-visible:ring-grape"
                 >
                   Retry
                 </button>
@@ -255,7 +256,7 @@ export function OrderCreationDialog({
                   onValueChange={(value) =>
                     setSelectedCurrency(value as Address)
                   }
-                  className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:ring-2 focus-visible:ring-ink"
+                  className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:ring-2 focus-visible:ring-grape"
                 >
                   {policy.data.listingCurrencies.map((token) => (
                     <SelectItem key={token} value={token}>
@@ -279,7 +280,7 @@ export function OrderCreationDialog({
               maxLength={80}
               placeholder="0.1"
               disabled={busy}
-              className="mt-2 w-full rounded-2xl border border-line px-4 py-3 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+              className="mt-2 w-full rounded-2xl border border-line px-4 py-3 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
             />
           </div>
           <div>
@@ -292,7 +293,7 @@ export function OrderCreationDialog({
               placeholder="Loading durations…"
               onValueChange={(value) => setDuration(value)}
               disabled={busy || !durationOptions.length}
-              className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+              className="mt-2 w-full rounded-2xl border border-line bg-white px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
             >
               {durationOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
@@ -315,7 +316,7 @@ export function OrderCreationDialog({
               activePolicy.isError ||
               (viaOpenSea && (!policy.data || !selectedPayment))
             }
-            className={cn(button, "bg-ink text-white")}
+            className={cn(button, "bg-grape text-white")}
           >
             Review {side === "listing" ? "listing" : "offer"}
           </button>
@@ -323,7 +324,7 @@ export function OrderCreationDialog({
       ) : (
         summary && (
           <>
-            <dl className="mt-6 space-y-3 text-sm">
+            <dl className="mt-6 space-y-4 rounded-2xl border border-lavender/50 bg-lavender/10 p-4 text-sm [&_dt]:text-muted">
               <div className="flex justify-between gap-4">
                 <dt>{side === "listing" ? "Buyer pays" : "Your offer"}</dt>
                 <dd className="break-all text-right font-bold">
@@ -430,7 +431,7 @@ export function OrderCreationDialog({
                     busy || !address || creation.stage === "needs-confirmation"
                   }
                   onClick={() => void creation.act()}
-                  className={cn(button, "bg-ink text-white")}
+                  className={cn(button, "bg-grape text-white")}
                 >
                   {action}
                 </button>
@@ -499,6 +500,6 @@ export function OrderCreationDialog({
           Order recovery
         </Link>
       </div>
-    </dialog>
+    </DialogSurface>
   );
 }

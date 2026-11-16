@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { Link } from "react-router-dom";
+import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import type { usePortalClaim } from "@/hooks/usePortalClaim";
 import { portalPrice } from "@/lib/portals";
@@ -96,11 +97,11 @@ export function PortalClaimDialog({ claim }: { claim: PortalClaimActions }) {
     if (!token) dialog.current?.close();
   }, [token]);
   return (
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby="portal-claim-title"
       aria-describedby="portal-claim-warning"
-      className="w-full max-w-lg rounded-3xl border border-line bg-white p-6 text-ink shadow-card backdrop:bg-ink/50"
+      size="lg"
       onCancel={(event) => {
         event.preventDefault();
         claim.dismiss();
@@ -162,7 +163,7 @@ export function PortalClaimDialog({ claim }: { claim: PortalClaimActions }) {
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
-              className={boosterButtonClass}
+              className={dialogButtonVariants({ variant: "destructive" })}
               disabled={!acknowledged || claim.busy}
               onClick={() => void claim.confirm()}
             >
@@ -179,6 +180,6 @@ export function PortalClaimDialog({ claim }: { claim: PortalClaimActions }) {
           </div>
         </>
       )}
-    </dialog>
+    </DialogSurface>
   );
 }

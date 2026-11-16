@@ -99,11 +99,11 @@ export function WalletCollectionButton() {
 
   return (
     <div ref={menuContainer} className="relative shrink-0">
-      <div className="flex h-10 overflow-hidden rounded-full bg-ink text-white shadow-cta">
+      <div className="flex h-10 rounded-full bg-ink text-white shadow-cta">
         <button
           type="button"
           onClick={() => navigate(collectionPath)}
-          className="inline-flex min-w-0 items-center gap-2 px-3 text-sm font-bold transition hover:bg-white/10 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white sm:px-4"
+          className="inline-flex min-w-0 items-center gap-2 rounded-l-full px-3 text-sm font-bold transition hover:bg-white/10 focus-visible:z-10 sm:px-4"
           aria-label={`View my collection for ${address}`}
         >
           <WalletCards aria-hidden="true" className="shrink-0" size={16} />
@@ -116,7 +116,7 @@ export function WalletCollectionButton() {
           ref={menuTrigger}
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className="grid w-9 shrink-0 place-items-center border-l border-white/15 transition hover:bg-white/10 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+          className="grid w-9 shrink-0 place-items-center rounded-r-full border-l border-white/15 transition hover:bg-white/10 focus-visible:z-10"
           aria-label="Account menu"
           aria-haspopup="menu"
           aria-expanded={menuOpen}

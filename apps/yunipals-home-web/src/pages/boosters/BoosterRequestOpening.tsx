@@ -4,6 +4,7 @@ import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { X } from "lucide-react";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
+import { DialogSurface } from "@/components/ui/dialog";
 import {
   combinedBoosterPulls,
   confirmedBoosterPulls,
@@ -190,10 +191,10 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
       />
     );
   return createPortal(
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
-      className="w-full max-w-md rounded-card bg-white p-7 text-ink shadow-card backdrop:bg-ink/70"
+      size="md"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
@@ -289,7 +290,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
           linkLabel="Return to this opening"
         />
       )}
-    </dialog>,
+    </DialogSurface>,
     document.body
   );
 }

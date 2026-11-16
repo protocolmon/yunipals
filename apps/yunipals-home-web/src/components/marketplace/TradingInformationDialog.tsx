@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { DialogSurface } from "@/components/ui/dialog";
 import { TradingInformationContent } from "@/components/marketplace/TradingInformationContent";
 import { tradingTermsVersion } from "@/lib/marketplace/tradingInformation";
 
@@ -32,7 +33,7 @@ export function TradingInformationDialog({
   }, []);
 
   return (
-    <dialog
+    <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
@@ -40,17 +41,17 @@ export function TradingInformationDialog({
         event.preventDefault();
         onClose();
       }}
-      className="m-auto max-h-[90dvh] w-11/12 max-w-lg overflow-y-auto rounded-card border border-line bg-white p-6 text-ink shadow-cardHover backdrop:bg-ink/50 sm:p-8"
+      size="lg"
     >
       <div className="flex items-start justify-between gap-4">
-        <h2 id={titleId} className="display text-2xl">
+        <h2 id={titleId} className="font-display text-2xl leading-tight">
           Buying and selling on Yunipals
         </h2>
         <button
           type="button"
           aria-label="Close buying and selling information"
           onClick={onClose}
-          className="shrink-0 rounded-full p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+          className="shrink-0 rounded-full p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
         >
           <X size={20} aria-hidden="true" />
         </button>
@@ -95,7 +96,7 @@ export function TradingInformationDialog({
             type="button"
             autoFocus
             onClick={onClose}
-            className="mt-5 w-full rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+            className="mt-5 w-full rounded-full bg-grape px-5 py-3 text-sm font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
           >
             Close
           </button>
@@ -124,7 +125,7 @@ export function TradingInformationDialog({
               type="button"
               disabled={!confirmed}
               onClick={onAccept}
-              className="rounded-full bg-ink px-5 py-3 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 sm:flex-1"
+              className="rounded-full bg-grape px-5 py-3 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2 sm:flex-1"
             >
               Accept and continue
             </button>
@@ -132,13 +133,13 @@ export function TradingInformationDialog({
               type="button"
               autoFocus
               onClick={onClose}
-              className="rounded-full border border-line px-5 py-3 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+              className="rounded-full border border-line px-5 py-3 text-sm font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
             >
               Browse only
             </button>
           </div>
         </>
       )}
-    </dialog>
+    </DialogSurface>
   );
 }
