@@ -385,6 +385,61 @@ describe("portal readiness during source catch-up", () => {
   });
 });
 
+describe("portal health freshness", () => {
+  async function healthFor(cursorTimestamp: bigint) {
+    const { Hono } = await import("hono");
+    const { registerPortalRoutes } = await import("../lib/portals/routes.js");
+    const { zeroAddress } = await import("viem");
+    const runtime = {
+      ledger: {
+        snapshot: async <T>(read: () => Promise<T>) => read(),
+        cursor: async () => ({ block: "40", hash }),
+        requiresReplay: async () => false,
+        db: { query: async () => ({ rows: [{ count: 0 }] }) }
+      },
+      chain: {
+        deployment: { chainId: 8453, grading: alice, usdc: bob },
+        client: {
+          // Base-like block time: 48 blocks behind the safe head.
+          getBlock: async (args?: { blockNumber?: bigint }) =>
+            args?.blockNumber === 40n
+              ? { number: 40n, hash, timestamp: cursorTimestamp }
+              : { number: 100n, hash, timestamp: 1000n },
+          readContract: async ({ functionName }: { functionName: string }) =>
+            functionName === "competition" ? zeroAddress : 0n
+        }
+      },
+      store: {
+        deployment: "fixture",
+        cursor: async () => null,
+        db: { query: async () => ({ rows: [] }) }
+      }
+    } as unknown as import("../lib/portals/runtime.js").PortalRuntime;
+    const app = new Hono();
+    registerPortalRoutes(app, {
+      enabled: () => true,
+      runtime: async () => runtime
+    });
+    const response = await app.request("/v1/portals/health");
+    return { status: response.status, body: await response.json() };
+  }
+
+  it("judges the indexed source by age in seconds, not by block count", async () => {
+    const fresh = await healthFor(990n);
+    expect(fresh.status).toBe(200);
+    expect(fresh.body).toMatchObject({
+      ready: true,
+      ledger: { canonical: true, lagBlocks: "48", lagSeconds: "10" }
+    });
+    const stale = await healthFor(700n);
+    expect(stale.status).toBe(503);
+    expect(stale.body).toMatchObject({
+      ready: false,
+      ledger: { lagBlocks: "48", lagSeconds: "300" }
+    });
+  });
+});
+
 it("reports durable source catch-up without repeating the warning every tick", async () => {
   const { IndexedPortalJobs } = await import("../lib/portals/indexed-jobs.js");
   const hash = `0x${"a".repeat(64)}`;

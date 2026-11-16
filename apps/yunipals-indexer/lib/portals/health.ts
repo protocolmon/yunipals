@@ -4,6 +4,9 @@ import { portalGradingAbi } from "@protopals/yunipals-market-core/portalAbi";
 import { readCompetition } from "./competition.js";
 import type { PortalRuntime } from "./runtime.js";
 
+/** Same limit the shared source observer applies to chain observations. */
+export const PORTAL_SOURCE_MAX_AGE_SECONDS = 180n;
+
 /** Aggregates only. Never expose spell bodies, provider output, signed bytes,
  * connection strings, job errors or secret-bearing RPC URLs. */
 export async function portalHealth(
@@ -43,16 +46,25 @@ export async function portalHealth(
     );
   }
   const { cursor, unpublished } = indexed;
-  const canonical =
-    !!cursor &&
-    (await chain.client.getBlock({ blockNumber: BigInt(cursor.block) }))
-      .hash === cursor.hash;
+  const cursorBlock = cursor
+    ? await chain.client.getBlock({ blockNumber: BigInt(cursor.block) })
+    : null;
+  const canonical = !!cursor && cursorBlock?.hash === cursor.hash;
   const confirmations = BigInt(env.PORTALS_CONFIRMATIONS ?? "12");
   const safe = head.number > confirmations ? head.number - confirmations : 0n;
   const lag =
     cursor && safe > BigInt(cursor.block)
       ? safe - BigInt(cursor.block)
       : cursor
+        ? 0n
+        : null;
+  // Freshness is judged in time, not blocks, like every other shared-source
+  // consumer: block counts depend on the chain's block time, and the shared
+  // reader trails by up to one observer cycle (~40 Base blocks at 200 ms).
+  const lagSeconds =
+    cursorBlock && head.timestamp > cursorBlock.timestamp
+      ? head.timestamp - cursorBlock.timestamp
+      : cursorBlock
         ? 0n
         : null;
   const gas =
@@ -81,8 +93,8 @@ export async function portalHealth(
   return {
     ready:
       canonical &&
-      lag !== null &&
-      lag <= 30n &&
+      lagSeconds !== null &&
+      lagSeconds <= PORTAL_SOURCE_MAX_AGE_SECONDS &&
       portalReserves >= portalLiability &&
       !(await ledger.requiresReplay()),
     chainId: chain.deployment.chainId,
@@ -91,7 +103,8 @@ export async function portalHealth(
       canonical,
       sourceError: "error" in indexed ? indexed.error : null,
       indexedThroughBlock: cursor?.block ?? null,
-      lagBlocks: lag?.toString() ?? null
+      lagBlocks: lag?.toString() ?? null,
+      lagSeconds: lagSeconds?.toString() ?? null
     },
     worker: {
       scannedThroughBlock: workerCursor?.block.toString() ?? null,
