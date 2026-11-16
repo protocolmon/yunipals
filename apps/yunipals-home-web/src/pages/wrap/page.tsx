@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { isAddress } from "viem";
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Copy, Sparkles } from "lucide-react";
 
 import { environment } from "@/environment";
 import {
@@ -24,6 +25,28 @@ const deployment: YpalWrapDeployment | null =
     : null;
 
 export function YpalWrapPage() {
+  const [copiedToken, setCopiedToken] = useState<"PMON" | "YPAL" | null>(null);
+  const [copyMessage, setCopyMessage] = useState("");
+  const confirmedDeployment = isConfirmedYpalWrapDeployment(deployment)
+    ? deployment
+    : null;
+
+  async function copyAddress(token: "PMON" | "YPAL") {
+    if (!confirmedDeployment) return;
+    const address =
+      token === "PMON" ? confirmedDeployment.pmon : confirmedDeployment.ypal;
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedToken(token);
+      setCopyMessage(`${token} contract address copied.`);
+    } catch {
+      setCopiedToken(null);
+      setCopyMessage(
+        `Could not copy. Select and copy the ${token} address manually: ${address}`
+      );
+    }
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <Link
@@ -48,12 +71,43 @@ export function YpalWrapPage() {
               Turn your PMON into YPAL, the token for opening Yunipals packs.
               Same amount. A whole world of pals to discover.
             </p>
-            <div className="mt-6 flex items-center gap-3 text-sm font-bold text-ink">
-              <span className="rounded-full bg-white/80 px-4 py-2">1 PMON</span>
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-sm font-bold text-ink">
+              <button
+                type="button"
+                disabled={!confirmedDeployment}
+                onClick={() => void copyAddress("PMON")}
+                aria-label="Copy PMON contract address on Base"
+                title={confirmedDeployment?.pmon}
+                className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                1 PMON
+                {copiedToken === "PMON" ? (
+                  <Check size={14} aria-hidden="true" />
+                ) : (
+                  <Copy size={14} aria-hidden="true" />
+                )}
+              </button>
               <ArrowRight size={18} className="text-grape" aria-hidden="true" />
-              <span className="rounded-full bg-white/80 px-4 py-2">1 YPAL</span>
+              <button
+                type="button"
+                disabled={!confirmedDeployment}
+                onClick={() => void copyAddress("YPAL")}
+                aria-label="Copy YPAL contract address on Base"
+                title={confirmedDeployment?.ypal}
+                className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                1 YPAL
+                {copiedToken === "YPAL" ? (
+                  <Check size={14} aria-hidden="true" />
+                ) : (
+                  <Copy size={14} aria-hidden="true" />
+                )}
+              </button>
               <span className="text-xs font-medium text-muted">On Base</span>
             </div>
+            <p role="status" className="mt-2 break-all text-xs text-muted">
+              {copyMessage}
+            </p>
           </header>
           <img
             src="/images/yunipals-base-banner.webp"
@@ -64,8 +118,8 @@ export function YpalWrapPage() {
           />
         </div>
         <div className="min-w-0 space-y-4">
-          {isConfirmedYpalWrapDeployment(deployment) ? (
-            <BoosterYpalWrap deployment={deployment} />
+          {confirmedDeployment ? (
+            <BoosterYpalWrap deployment={confirmedDeployment} />
           ) : (
             <p className="rounded-card border border-line bg-white p-6 text-muted">
               YPAL wrapping is temporarily unavailable. Please try again
