@@ -25,7 +25,7 @@ import type { ArenaTournament } from "@protopals/yunipals-market-core/arena";
 import { transaction } from "@/db/pool";
 import { canonicalJson, sha256 } from "../draw";
 import { migrateArena } from "./schema";
-import { ArenaIntake } from "./intake";
+import { ArenaIntake, ArenaRequestError } from "./intake";
 import { StrategyCipher } from "./crypto";
 import { arenaPrivateTables } from "./identitySchema";
 import type { NativeArenaObservation } from "./nativeSource";
@@ -35,7 +35,10 @@ import { NativeArenaSettlement } from "./nativeSettlement";
 import { ArenaSettlement } from "./settlement";
 import { ArenaCapacity } from "./capacity";
 import type { ArenaInputCompiler } from "./input";
-import { NativeArenaExecution } from "./nativeExecution";
+import {
+  describeNativeExecutionError,
+  NativeArenaExecution
+} from "./nativeExecution";
 import { mediaFolder } from "./media";
 import { publishedPayoutFilm } from "./payout";
 import {
@@ -877,6 +880,80 @@ test("native execution schedules control and resumes its durable pending intent 
   } finally {
     await f.cleanup();
   }
+});
+
+test("native lobby execution waits without chain reads or signing while the open lobby has free seats", async () => {
+  const f = await fixture();
+  try {
+    const untouched = new Proxy(
+      {},
+      {
+        get(_target, property) {
+          throw new Error(`Unexpected chain read: ${String(property)}`);
+        }
+      }
+    ) as unknown as PublicClient;
+    const control = new NativeArenaControl(
+      f.service,
+      {} as ArenaInputCompiler,
+      untouched,
+      f.account,
+      1000000000000n,
+      f.capacity
+    );
+    const work = new NativeArenaExecution(
+      f.service,
+      f.account.address,
+      "lobby",
+      control,
+      new NativeArenaSettlement(
+        f.service,
+        untouched,
+        f.account,
+        1000000000000n
+      )
+    );
+    assert.equal(await work.tick(), null);
+    assert.match(work.waiting ?? "", /must progress/);
+    assert.equal(
+      (
+        await f.pool.query(
+          "SELECT 1 FROM yunipals_arena.transaction_intent WHERE deployment=$1",
+          [f.service.deployment]
+        )
+      ).rowCount,
+      0
+    );
+    assert.equal(f.broadcasts.length, 0);
+    // A refusal that is not a capacity pause still fails the tick.
+    await f.pool.query(
+      "UPDATE yunipals_arena.capacity SET snapshot=snapshot-'diskFreeBytes' WHERE deployment=$1",
+      [f.service.deployment]
+    );
+    await assert.rejects(work.tick(), /Invalid arena funding snapshot/);
+    assert.equal(work.waiting, null);
+  } finally {
+    await f.cleanup();
+  }
+});
+
+test("native execution errors are named without their message unless Arena refused publicly", () => {
+  assert.deepEqual(
+    describeNativeExecutionError(
+      new ArenaRequestError(503, "New entries are paused.")
+    ),
+    { type: "Error", status: 503, reason: "New entries are paused." }
+  );
+  class ProviderError extends Error {
+    override name = "ProviderError";
+  }
+  assert.deepEqual(
+    describeNativeExecutionError(
+      new ProviderError("https://rpc.example/secret-key failed")
+    ),
+    { type: "ProviderError" }
+  );
+  assert.deepEqual(describeNativeExecutionError("text"), { type: "string" });
 });
 
 test("native capacity counts a replacement opening's new obligations and retains orphaned spending", async () => {

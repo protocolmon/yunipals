@@ -10,7 +10,11 @@ import { ARENA_RESOLUTION_SECONDS } from "@protopals/yunipals-market-core/arena"
 import type { ControlPurpose } from "./control";
 import type { ArenaCapacity } from "./capacity";
 import type { ArenaInputCompiler } from "./input";
-import { ArenaIntake, type ArenaTournamentContext } from "./intake";
+import {
+  ArenaIntake,
+  ArenaRequestError,
+  type ArenaTournamentContext
+} from "./intake";
 import {
   NativeArenaTransactions,
   type NativeActionHead,
@@ -47,6 +51,21 @@ export class NativeArenaControl {
       (context, head) => this.data(purpose, id, context, head),
       expectedIncarnation
     );
+  }
+  /** Why another lobby cannot open yet, judged from cached capacity alone,
+   * or null when one may. A refusal is the normal waiting state, so the caller
+   * can stop before any chain read. Signing repeats the same check. */
+  async lobbyWaitReason() {
+    if (!this.capacity || this.capacity.indexerMode !== "unified")
+      throw new Error("Native lobby creation requires native capacity checks.");
+    try {
+      await this.capacity.check(true);
+      return null;
+    } catch (error) {
+      if (error instanceof ArenaRequestError && error.status === 503)
+        return error.message;
+      throw error;
+    }
   }
   async advance(
     purpose: ControlPurpose,

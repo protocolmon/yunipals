@@ -3,7 +3,10 @@ import { arenaSigner } from "./config";
 import { arenaRuntime } from "./runtime";
 import { NativeArenaControl } from "./nativeControl";
 import { NativeArenaSettlement } from "./nativeSettlement";
-import { NativeArenaExecution } from "./nativeExecution";
+import {
+  describeNativeExecutionError,
+  NativeArenaExecution
+} from "./nativeExecution";
 import { arenaNativeConfiguration } from "./nativeSource";
 
 async function run() {
@@ -64,9 +67,21 @@ async function run() {
       control,
       settlement
     );
+    let waiting: string | null = null;
     while (!stopped) {
       try {
         const result = await work.tick();
+        // Report a waiting lobby once per change instead of on every tick.
+        if (work.waiting !== waiting) {
+          waiting = work.waiting;
+          console.log(
+            JSON.stringify({
+              event: "arena_native_execution_waiting",
+              role,
+              reason: waiting
+            })
+          );
+        }
         if (result)
           console.log(
             JSON.stringify({
@@ -77,9 +92,16 @@ async function run() {
               transactionHash: result.tx_hash
             })
           );
-      } catch {
+      } catch (error) {
         console.error(
           "Native Arena execution needs reconciliation; saved signed transactions and receipt history retained."
+        );
+        console.error(
+          JSON.stringify({
+            event: "arena_native_execution_error",
+            role,
+            ...describeNativeExecutionError(error)
+          })
         );
       }
       if (!stopped) await setTimeout(2000);
