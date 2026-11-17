@@ -222,7 +222,9 @@ describe("recent completed packs use real SQL and exact journal provenance", () 
       (await items()).map((item: { requestId: string }) => item.requestId)
     ).toEqual(["1", "2", "999"]);
     expect(
-      query.mock.calls.every(([sql]) => sql.trimStart().startsWith("SELECT "))
+      query.mock.calls.every(([sql]) =>
+        /^(SELECT|WITH)\b/.test(sql.trimStart())
+      )
     ).toBe(true);
     expect((await app.request(url)).headers.get("cache-control")).toBe(
       "no-store"
@@ -445,6 +447,35 @@ describe("recent completed packs use real SQL and exact journal provenance", () 
       error: "booster_index_unavailable"
     });
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+  it("omits a daily batch if just one mint witness is missing", async () => {
+    await request("1", ["1"], { block: 450 });
+    await request("2", ["2", "3"], { opening: false, original: "1" });
+    await db.exec(`DELETE FROM recent_source.booster_event
+      WHERE name='MonsterMinted' AND args::jsonb->>'tokenId'='3'`);
+    expect(
+      (await items()).map((row: { requestId: string }) => row.requestId)
+    ).toEqual(["1"]);
+  });
+  it("counts old duplicate completions but ignores witnesses beyond the ready prefix", async () => {
+    await request("1", ["1"]);
+    await event("RequestCompleted", { requestId: "1" }, 501, "1", 101);
+    expect(await items()).toHaveLength(1);
+    await event("RequestCompleted", { requestId: "1" }, 49, "1", 101);
+    expect(await items()).toEqual([]);
+  });
+  it("returns the latest verified openings with a substantial event history", async () => {
+    for (let i = 1; i <= 80; i++)
+      await request(String(i), [String(i)], { block: 400 + i });
+    // Other journal events must not multiply completion or mint witnesses.
+    await db.exec(`INSERT INTO recent_source.booster_event
+      SELECT 'other-' || n, '${engine}', 'RequestReceived', '{"requestId":"1"}',
+        450, '${blockHash(450)}', 1800000450, '${txHash("1")}', n
+      FROM generate_series(1, 2000) n`);
+    expect(
+      (await items()).map((row: { requestId: string }) => row.requestId)
+    ).toEqual(Array.from({ length: 12 }, (_, i) => String(80 - i)));
+    expect(query).toHaveBeenCalledTimes(1);
   });
   it("returns honest empty history using one bounded SQL statement", async () => {
     expect(await items()).toEqual([]);

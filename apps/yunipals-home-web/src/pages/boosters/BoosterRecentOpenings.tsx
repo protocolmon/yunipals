@@ -19,7 +19,7 @@ export function BoosterRecentOpenings() {
     enabled: deployment !== null,
     staleTime: 10_000,
     refetchInterval: 15_000,
-    retry: 1
+    retry: false
   });
   const items = query.data?.items ?? [];
   const scroller = useRef<HTMLUListElement>(null);
@@ -114,19 +114,28 @@ export function BoosterRecentOpenings() {
             )}
           </div>
         </div>
-        {query.isPending && (
+        {query.isPending && query.fetchStatus !== "paused" && (
           <div
             role="status"
             aria-label="Loading recent openings"
-            className="mt-7 flex gap-5 overflow-hidden"
+            className="mt-7"
           >
-            {[0, 1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="h-96 w-60 shrink-0 animate-pulse rounded-card bg-lavender/20 sm:w-64"
-              />
-            ))}
+            <p className="mb-4 text-sm text-muted">Loading recent openings…</p>
+            <div aria-hidden="true" className="flex gap-5 overflow-hidden">
+              {[0, 1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="h-96 w-60 shrink-0 motion-safe:animate-pulse rounded-card bg-lavender/20 sm:w-64"
+                />
+              ))}
+            </div>
           </div>
+        )}
+        {query.fetchStatus === "paused" && (
+          <p role="status" className="mt-6 text-sm text-muted">
+            Waiting for a connection. Recent openings will load when you’re back
+            online.
+          </p>
         )}
         {query.error && (
           <p role="alert" className="mt-6 text-sm text-muted">
@@ -135,8 +144,9 @@ export function BoosterRecentOpenings() {
               type="button"
               className="rounded font-bold text-grape underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
               onClick={() => void query.refetch()}
+              disabled={query.isFetching || query.fetchStatus === "paused"}
             >
-              Try again
+              {query.isFetching ? "Trying again…" : "Try again"}
             </button>
           </p>
         )}

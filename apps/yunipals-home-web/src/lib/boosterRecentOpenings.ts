@@ -81,7 +81,12 @@ export function parseRecentBoosterOpenings(value: unknown) {
 export async function fetchRecentBoosterOpenings(signal?: AbortSignal) {
   const response = await fetch(
     `${environment.yunipalsIndexerUrl}/v1/boosters/recent-openings?limit=12`,
-    { signal, cache: "no-store" }
+    {
+      signal: signal
+        ? AbortSignal.any([signal, AbortSignal.timeout(10_000)])
+        : AbortSignal.timeout(10_000),
+      cache: "no-store"
+    }
   );
   if (!response.ok)
     throw new Error("Recent openings are temporarily unavailable.");

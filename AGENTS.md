@@ -8,6 +8,7 @@ Deployment-Specific Details
 - Anyone can run Yunipals on their own infrastructure, so this repository stays deployment-neutral. Do not commit server addresses, hostnames, SSH destinations, credential file locations, production receipts or other operator-specific records.
 - Operators keep those details in an untracked `AGENTS.local.md` at the repository root, which `.gitignore` excludes. Read it before any production check or change when it exists; without it, assume there is no production access.
 - Never print secret values. Check only whether credentials are present.
+- Use the deployment and operations tools in the private `yunipals-ops` repository for production releases. Keep that repository private; never copy its operator scripts, configuration, secrets, receipts or other private contents into this public repository. Store production evidence and rollback records there, and keep only deployment-neutral guidance here.
 
 Stack Assumptions
 - Tooling: Vite + React 18 + TypeScript, TailwindCSS, Radix UI primitives, class-variance-authority (CVA), tailwind-merge, Prettier.

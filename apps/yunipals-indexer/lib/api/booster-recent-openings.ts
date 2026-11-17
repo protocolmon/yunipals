@@ -88,48 +88,53 @@ export async function recentBoosterOpenings(
 ): Promise<BoosterRecentOpening[]> {
   // One SQL statement sees one MVCC snapshot. All completion/mint witnesses
   // must be inside the previously proven ready prefix, including full batches.
+  // Materialize witnesses once: correlated journal scans grow quadratically
+  // with history, and can exhaust the API statement timeout before LIMIT runs.
   const result = await pool.query<Row>(
-    `SELECT r.id AS "requestKey",r.request_id AS "requestId",r.opening,r.quantity,
+    `WITH completions AS MATERIALIZED (
+       SELECT e.*,e.args::jsonb->>'requestId' AS request_id,
+         count(*) OVER (PARTITION BY e.args::jsonb->>'requestId') AS witnesses
+       FROM ${schema}.booster_event e
+       WHERE e.name='RequestCompleted' AND e.address=$1 AND e.block_number<=$4::bigint
+     ), mints AS MATERIALIZED (
+       SELECT w.args::jsonb->>'tokenId' AS token_id,w.block_number,
+         jsonb_agg(${journal("w")} ORDER BY w.log_index) AS events
+       FROM ${schema}.booster_event w
+       WHERE w.name='MonsterMinted' AND w.address=$2 AND w.block_number<=$4::bigint
+       GROUP BY w.args::jsonb->>'tokenId',w.block_number
+     )
+     SELECT r.id AS "requestKey",r.request_id AS "requestId",r.opening,r.quantity,
       r.original_key AS "originalKey",o.token_id AS "originalId",p.pack_type_id AS "packTypeId",p.max_batch AS "maxBatch",
-      r.recipient,${journal("e")} AS completed,batch.pulls
-     FROM ${schema}.booster_event e
+      r.recipient,${journal("e")} AS completed,
+      jsonb_agg(jsonb_build_object('monster',row_to_json(item),'events',mint.events)
+        ORDER BY m.token_id::numeric,m.id) AS pulls
+     FROM completions e
      JOIN ${schema}.booster_request r ON r.engine=$1 AND r.wrapper=$8 AND r.status='completed'
-       AND r.id='8453:'||$1||':'||r.request_id AND e.args::jsonb->>'requestId'=r.request_id
+       AND r.id='8453:'||$1||':'||e.request_id AND e.request_id=r.request_id
      JOIN ${schema}.booster_original o ON o.id=r.original_key AND o.collection=$2
        AND o.id='8453:'||$2||':'||o.token_id AND o.engine=$1
      JOIN ${schema}.booster_type p ON p.id=o.type_key AND p.registry=$3 AND p.engine=$1
        AND p.id='8453:'||$3||':'||p.pack_type_id AND p.rule_hash=r.rule_hash
-     JOIN LATERAL (
-       SELECT jsonb_agg(jsonb_build_object('monster',row_to_json(item),'events',mint.events)
-         ORDER BY m.token_id::numeric,m.id) AS pulls
-       FROM ${schema}.booster_monster m
-       CROSS JOIN LATERAL (SELECT ${monsterColumns}) item
-       CROSS JOIN LATERAL (
-         SELECT coalesce(jsonb_agg(${journal("w")}),'[]'::jsonb) AS events
-         FROM (SELECT * FROM ${schema}.booster_event
-           WHERE name='MonsterMinted' AND address=$2 AND block_number=m.mint_block
-             AND block_number<=$4::bigint AND args::jsonb->>'tokenId'=m.token_id
-           ORDER BY log_index LIMIT 2) w
-       ) mint
-       WHERE m.request_key=r.id
-       HAVING count(*)=r.quantity AND bool_and(
-         m.collection=$2 AND m.id='8453:'||$2||':'||m.token_id
-         AND m.original_key=o.id AND m.type_key=p.id AND m.is_original=r.opening
-         AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
-         AND m.minted_to=r.recipient AND m.mint_block=e.block_number
-         AND m.mint_block>=$6::bigint AND m.mint_block<=$4::bigint
-         AND jsonb_array_length(mint.events)=1)
-     ) batch ON true
+     JOIN ${schema}.booster_monster m ON m.request_key=r.id
+     CROSS JOIN LATERAL (SELECT ${monsterColumns}) item
+     LEFT JOIN mints mint ON mint.token_id=m.token_id AND mint.block_number=m.mint_block
      WHERE e.name='RequestCompleted' AND e.address=$1 AND p.max_batch BETWEEN 1 AND 32 AND r.quantity BETWEEN 1 AND p.max_batch
        AND (NOT r.opening OR r.quantity=1)
        AND e.block_number BETWEEN $6::bigint AND $4::bigint
        AND e.timestamp>0 AND e.timestamp<=$5::bigint
        AND e.args::jsonb->>'originalId'=o.token_id
        AND lower(e.args::jsonb->>'recipient')=r.recipient
-       AND (SELECT count(*) FROM ${schema}.booster_event duplicate
-         WHERE duplicate.name='RequestCompleted' AND duplicate.address=$1
-           AND duplicate.block_number<=$4::bigint
-           AND duplicate.args::jsonb->>'requestId'=r.request_id)=1
+       AND e.witnesses=1
+     GROUP BY r.id,r.request_id,r.opening,r.quantity,r.original_key,r.recipient,
+       o.id,o.token_id,p.id,p.pack_type_id,p.max_batch,
+       e.id,e.args,e.block_number,e.block_hash,e.timestamp,e.transaction_hash,e.log_index
+     HAVING count(*)=r.quantity AND bool_and(
+       m.collection=$2 AND m.id='8453:'||$2||':'||m.token_id
+       AND m.original_key=o.id AND m.type_key=p.id AND m.is_original=r.opening
+       AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
+       AND m.minted_to=r.recipient AND m.mint_block=e.block_number
+       AND m.mint_block>=$6::bigint AND m.mint_block<=$4::bigint
+       AND coalesce(jsonb_array_length(mint.events),0)=1)
      ORDER BY e.block_number DESC,e.log_index DESC,e.id DESC LIMIT $7`,
     [
       deployment.engine,
