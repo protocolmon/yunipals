@@ -64,7 +64,7 @@ export function PortalActivityList({
               title={
                 <Link
                   className="rounded text-grape hover:underline focus-visible:ring-2 focus-visible:ring-grape"
-                  to={`/portals/tokens/${event.tokenId}`}
+                  to={`/grading/tokens/${event.tokenId}`}
                 >
                   Portal #{event.tokenId}
                 </Link>

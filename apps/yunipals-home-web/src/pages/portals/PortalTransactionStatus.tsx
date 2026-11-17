@@ -101,7 +101,7 @@ export function PortalTransactionStatus() {
       className="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6"
     >
       <TransactionHistory
-        title="Your portal activity"
+        title="Your grading activity"
         count={visible.length}
         icon={Sparkles}
         open={historyOpen}
@@ -136,7 +136,7 @@ export function PortalTransactionStatus() {
                     {value.actionKey.startsWith("grade:") && (
                       <Link
                         className={transactionActionVariants()}
-                        to={`/portals/cards/${value.actionKey.slice(6)}`}
+                        to={`/grading/cards/${value.actionKey.slice(6)}`}
                       >
                         Card history
                       </Link>

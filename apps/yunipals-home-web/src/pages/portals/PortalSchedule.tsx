@@ -33,8 +33,9 @@ export function PortalSchedule({
         </p>
       </div>
       <p className="mt-3 text-sm text-muted">
-        Each window lasts 11 minutes and opens automatically. Times are shown in
-        your local time zone. Refill the schedule above to reveal more windows.
+        Each portal opens an 11-minute window to submit eligible cards for
+        grading. Windows open automatically; times are shown in your local time
+        zone. Refill the schedule above to reveal more windows.
       </p>
       {upcoming.length === 0 ? (
         <div className="mt-5 flex items-center gap-5 rounded-2xl bg-lavender/40 p-5">

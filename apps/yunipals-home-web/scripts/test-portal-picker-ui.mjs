@@ -139,7 +139,7 @@ environment.portalApiUrl=new URL('/fixture',location.href).href;
 environment.yunipalsIndexerUrl=new URL('/fixture',location.href).href;
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
 window.__refresh=()=>query.invalidateQueries({queryKey:['portals','active']});
-createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter initialEntries={['/portals?card=4']}><QueryClientProvider client={query}><PortalPage/></QueryClientProvider></MemoryRouter></React.StrictMode>);`
+createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter initialEntries={['/grading?card=4']}><QueryClientProvider client={query}><PortalPage/></QueryClientProvider></MemoryRouter></React.StrictMode>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "portal-picker-vite-"));
 const server = await createServer({

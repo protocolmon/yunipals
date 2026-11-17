@@ -189,7 +189,7 @@ try {
     await portal
       .getByRole("link", { name: "Card history" })
       .getAttribute("href"),
-    "/portals/cards/42"
+    "/grading/cards/42"
   );
   await portal.locator("summary").click();
   await page.evaluate((row) => window.update({ portals: [row] }), {

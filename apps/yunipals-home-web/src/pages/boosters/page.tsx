@@ -139,14 +139,14 @@ export function BoosterMonsterPage() {
                 {!monster.burned && (
                   <Link
                     className="underline"
-                    to={`/portals?card=${monster.tokenId}`}
+                    to={`/grading?card=${monster.tokenId}`}
                   >
-                    Cast a spell with this card
+                    Grade this card through a portal
                   </Link>
                 )}
                 <Link
                   className="underline"
-                  to={`/portals/cards/${monster.tokenId}`}
+                  to={`/grading/cards/${monster.tokenId}`}
                 >
                   Artwork and grading history
                 </Link>

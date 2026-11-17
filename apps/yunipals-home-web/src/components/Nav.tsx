@@ -15,8 +15,8 @@ const navigation = [
   environment.boosterLaunchId === "base-ypal-v1"
     ? [{ label: "Packs", to: "/boosters" }]
     : []),
+  ...(environment.portalsEnabled ? [{ label: "Grading", to: "/grading" }] : []),
   { label: "Leaderboard", to: "/leaderboard" },
-  ...(environment.portalsEnabled ? [{ label: "Portals", to: "/portals" }] : []),
   { label: "Arena", to: "/arena" }
 ];
 

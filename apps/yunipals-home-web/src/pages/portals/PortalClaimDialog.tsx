@@ -77,7 +77,7 @@ export function PortalClaimStatus({ claim }: { claim: PortalClaimActions }) {
           actions={
             <Link
               className={transactionActionVariants()}
-              to={`/portals/tokens/${claim.success.tokenId}`}
+              to={`/grading/tokens/${claim.success.tokenId}`}
             >
               Portal history
             </Link>

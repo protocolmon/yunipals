@@ -35,11 +35,11 @@ export function PortalTokenPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap gap-5">
-        <Link className="font-semibold underline" to="/portals/mine">
+        <Link className="font-semibold underline" to="/grading/mine">
           ← My portals
         </Link>
-        <Link className="font-semibold underline" to="/portals">
-          Active portal
+        <Link className="font-semibold underline" to="/grading">
+          Grading
         </Link>
       </div>
       <h1 className="mt-6 font-display text-3xl">

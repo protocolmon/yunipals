@@ -192,6 +192,16 @@ function ScrollManager() {
   return null;
 }
 
+function GradingRedirect() {
+  const { pathname, search, hash } = useLocation();
+  return (
+    <Navigate
+      to={`/grading${pathname.slice("/portals".length)}${search}${hash}`}
+      replace
+    />
+  );
+}
+
 function CollectionRedirect() {
   const { search, hash } = useLocation();
   return <Navigate to={`/${search}${hash}`} replace />;
@@ -246,7 +256,9 @@ function AppContent() {
           </main>
         }
       >
-        {pathname.startsWith("/portals") && <PortalTransactionStatus />}
+        {(pathname === "/grading" || pathname.startsWith("/grading/")) && (
+          <PortalTransactionStatus />
+        )}
         <Routes>
           <Route path="/" element={<CollectionPage />} />
           <Route path="/boosters" element={<BoosterPage />} />
@@ -490,16 +502,17 @@ function AppContent() {
           <Route path="/proposals" element={<ProposalsPage />} />
           <Route path="/proposals/:slug" element={<ProposalPage />} />
           <Route path="/brandkit" element={<BrandkitPage />} />
-          <Route path="/portals" element={<PortalPage />} />
-          <Route path="/portals/mine" element={<PortalOwnerPage />} />
+          <Route path="/portals/*" element={<GradingRedirect />} />
+          <Route path="/grading" element={<PortalPage />} />
+          <Route path="/grading/mine" element={<PortalOwnerPage />} />
           <Route
-            path="/portals/tokens/:portalId"
+            path="/grading/tokens/:portalId"
             element={<PortalTokenPage />}
           />
-          <Route path="/portals/admin" element={<PortalAdminPage />} />
-          <Route path="/portals/airdrop" element={<PortalAirdropPage />} />
+          <Route path="/grading/admin" element={<PortalAdminPage />} />
+          <Route path="/grading/airdrop" element={<PortalAirdropPage />} />
           <Route
-            path="/portals/cards/:tokenId"
+            path="/grading/cards/:tokenId"
             element={<PortalCardHistory />}
           />
           <Route path="/contracts" element={<ContractsPage />} />

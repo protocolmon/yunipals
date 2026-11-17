@@ -107,7 +107,7 @@ export function PortalPage() {
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <PortalHero />
       <div className="mb-6 flex flex-wrap items-center gap-5 text-sm font-semibold">
-        <Link className="underline" to="/portals/mine">
+        <Link className="underline" to="/grading/mine">
           My portals · balances &amp; claims
         </Link>
         {status && (
@@ -140,9 +140,10 @@ export function PortalPage() {
         </p>
       ) : !status ? (
         <div className="rounded-card bg-hero-lav p-8">
-          <h2 className="font-display text-2xl">Portals are being prepared</h2>
+          <h2 className="font-display text-2xl">Grading is being prepared</h2>
           <p className="mt-3 text-muted">
-            Your cards will be able to travel soon.
+            Portals will open for grading soon. Each one brings a transformation
+            theme and its own card entry requirements.
           </p>
         </div>
       ) : (
@@ -478,7 +479,7 @@ export function PortalPage() {
                 </p>
                 <Link
                   className="mt-2 inline-block text-sm font-bold underline"
-                  to={`/portals/cards/${actions.submitted.tokenId}`}
+                  to={`/grading/cards/${actions.submitted.tokenId}`}
                 >
                   Follow its artwork and grades
                 </Link>

@@ -7,31 +7,32 @@ export function PortalHero() {
       <div className="grid lg:grid-cols-2">
         <div className="relative z-10 px-6 py-10 sm:px-10 sm:py-14 lg:pr-0">
           <p className="inline-flex items-center gap-2 rounded-full border border-lavender/30 bg-lavender/10 px-3 py-2 text-xs font-bold uppercase tracking-widest text-sky">
-            <Sparkles size={14} aria-hidden="true" /> Yunipals portals
+            <Sparkles size={14} aria-hidden="true" /> Yunipals grading
           </p>
           <h1 className="mt-6 max-w-lg font-display text-4xl leading-tight sm:text-5xl xl:text-6xl">
-            Cast your next <span className="text-sky">chapter.</span>
+            Your next grade <span className="text-sky">starts here.</span>
           </h1>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-white/80">
-            A tiny spell. A wild new look. Send your Yunipal through a portal
-            and turn your imagination into a card that is unmistakably yours.
+            Send your Yunipal through a portal with a spell of your own. Reveal
+            new artwork and see how your idea comes to life in four grades:
+            Creativity, Harmony, Craft and Impact.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
               href="#portal-cast"
               className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-bold text-ink shadow-cta transition hover:bg-sky focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky"
             >
-              Explore the portal <ArrowDown size={16} aria-hidden="true" />
+              Find a card to grade <ArrowDown size={16} aria-hidden="true" />
             </a>
             <a
               href="#portal-story"
               className="rounded-full px-2 py-3 text-sm font-semibold text-white underline decoration-white/40 underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky"
             >
-              See a transformation
+              How grading works
             </a>
           </div>
           <p className="mt-8 text-sm text-white/65">
-            One portal at a time. Eleven minutes of possibility.
+            One portal at a time. Eleven minutes to enter your spell.
           </p>
         </div>
         <div className="relative min-h-80 lg:min-h-full">
@@ -66,33 +67,33 @@ export function PortalStory() {
       <div className="grid items-center gap-10 lg:grid-cols-2">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-grape">
-            Imagine a different side
+            How portals power grading
           </p>
           <h2
             id="portal-story-title"
             className="mt-3 font-display text-3xl leading-tight sm:text-4xl"
           >
-            Same soul.
-            <br />
-            Wilder possibilities.
+            A portal. A spell.
+            <br />A new grade.
           </h2>
           <p className="mt-5 max-w-md leading-relaxed text-muted">
-            Give your gentle dragon a fearless new stance. Paint its scales with
-            a rainbow. The next chapter starts with your words.
+            Each portal sets a transformation theme and the requirements for
+            entering a card. Choose an eligible Yunipal, describe your idea in a
+            spell, and receive new artwork with a grade in each category.
           </p>
           <ol className="mt-7 space-y-4">
             {[
               [
                 "Choose your Yunipal",
-                "Match your card to the open portal's gates."
+                "The active portal’s gates determine which cards can enter for grading."
               ],
               [
                 "Write a spell",
-                "Describe the pose, mood and magic you imagine."
+                "Describe the pose, mood and magic you imagine within the portal’s theme."
               ],
               [
-                "Reveal a new chapter",
-                "Receive new artwork and grades for Creativity, Harmony, Craft and Impact."
+                "Reveal your artwork and grades",
+                "Your spell and finished artwork are assessed for Creativity, Harmony, Craft and Impact."
               ]
             ].map(([title, detail], i) => (
               <li key={title} className="flex gap-3">
@@ -162,7 +163,7 @@ export function PortalStory() {
 export function PortalAirdropLink() {
   return (
     <Link
-      to="/portals/airdrop"
+      to="/grading/airdrop"
       className="inline-flex items-center gap-2 rounded-full border border-lavender px-5 py-3 text-sm font-bold text-grape transition hover:bg-lavender/20"
     >
       Guided airdrop <ArrowRight size={16} aria-hidden="true" />

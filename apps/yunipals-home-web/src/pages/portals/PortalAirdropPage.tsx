@@ -317,7 +317,7 @@ export function PortalAirdropPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <Link
-        to="/portals/admin"
+        to="/grading/admin"
         className="text-sm font-semibold text-grape underline"
       >
         All portal settings
@@ -635,7 +635,7 @@ export function PortalAirdropPage() {
             </div>
             {status?.open ? (
               <Link
-                to="/portals"
+                to="/grading"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-ink"
               >
                 Visit the open portal{" "}

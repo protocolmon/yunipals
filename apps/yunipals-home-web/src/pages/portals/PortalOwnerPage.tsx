@@ -41,12 +41,12 @@ export function PortalOwnerPage() {
   function lookup(event: FormEvent) {
     event.preventDefault();
     if (/^[1-9][0-9]*$/.test(portalId) && BigInt(portalId) < 2n ** 256n)
-      navigate(`/portals/tokens/${portalId}`);
+      navigate(`/grading/tokens/${portalId}`);
   }
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <Link className="font-semibold underline" to="/portals">
-        ← Active portal
+      <Link className="font-semibold underline" to="/grading">
+        ← Grading
       </Link>
       <h1 className="mt-5 font-display text-3xl sm:text-5xl">My portals</h1>
       <p className="mt-4 max-w-2xl text-muted">
@@ -97,7 +97,7 @@ export function PortalOwnerPage() {
                   key={token.id}
                   className="rounded-card border border-line bg-white p-5 shadow-card"
                 >
-                  <Link to={`/portals/tokens/${token.id}`}>
+                  <Link to={`/grading/tokens/${token.id}`}>
                     <img
                       src={portalImage(token.imageURI)}
                       alt={`${token.name} #${token.id}`}
@@ -106,7 +106,7 @@ export function PortalOwnerPage() {
                     />
                   </Link>
                   <h2 className="mt-4 font-display text-xl">
-                    <Link to={`/portals/tokens/${token.id}`}>
+                    <Link to={`/grading/tokens/${token.id}`}>
                       {token.name} #{token.id}
                     </Link>
                   </h2>
@@ -134,7 +134,7 @@ export function PortalOwnerPage() {
                   </button>
                   <Link
                     className="mt-3 inline-block text-sm font-semibold underline"
-                    to={`/portals/tokens/${token.id}`}
+                    to={`/grading/tokens/${token.id}`}
                   >
                     Gates and history
                   </Link>
