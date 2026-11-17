@@ -11,6 +11,7 @@ import {
   portalCountdown
 } from "@protopals/yunipals-market-core/portals";
 import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
+import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { environment } from "@/environment";
 import { usePortals } from "@/hooks/usePortals";
 import {
@@ -118,13 +119,11 @@ export function PortalPage() {
       </div>
       <div id="portal-cast" className="scroll-mt-24" />
       {query.isPending ? (
-        <div
-          role="status"
-          className="h-64 animate-pulse rounded-card bg-lavender/25"
-        >
-          {" "}
-          <span className="sr-only">Finding the active portal…</span>
-        </div>
+        <YunipalsLoader
+          label="Finding the active portal…"
+          detail="Loading the current grading challenge and card requirements."
+          className="min-h-64 justify-center rounded-card bg-lavender/25 p-6 sm:p-8"
+        />
       ) : query.error ? (
         <p
           role="alert"
@@ -177,14 +176,11 @@ export function PortalPage() {
               </span>
             </div>
             {status.indexing && (
-              <p
-                role="status"
+              <YunipalsLoader
+                label="Updating portal data…"
+                detail="The portal is confirmed onchain. Its data is being indexed before new spells can be reviewed. The eleven-minute window continues to run."
                 className="mt-4 rounded-2xl bg-white/70 p-4 text-sm"
-              >
-                The portal is confirmed onchain. Its data is being indexed
-                before new spells can be reviewed. The eleven-minute window
-                continues to run.
-              </p>
+              />
             )}
             {status.statusReason === "retired" && (
               <p className="mt-4 font-semibold">
@@ -462,9 +458,10 @@ export function PortalPage() {
               the latest completed artwork.
             </p>
             {actions.phase !== "idle" && (
-              <p role="status" className="mt-4 text-sm font-semibold">
-                {actions.phase}
-              </p>
+              <YunipalsLoader
+                label={actions.phase}
+                className="mt-4 rounded-2xl bg-lavender/15 p-4 text-sm"
+              />
             )}
             {actions.error && (
               <p role="alert" className="mt-4 break-words text-sm text-grape">
@@ -567,9 +564,10 @@ export function PortalPage() {
           </>
         )}
         {actions.busy && (
-          <p role="status" className="mt-4 text-sm">
-            {actions.phase}
-          </p>
+          <YunipalsLoader
+            label={actions.phase}
+            className="mt-4 rounded-2xl bg-lavender/15 p-4 text-sm"
+          />
         )}
         {actions.error && (
           <p role="alert" className="mt-4 text-sm text-grape">

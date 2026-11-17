@@ -5,6 +5,7 @@ import type { Address, PublicClient } from "viem";
 import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 
 import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
+import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { fetchPackGridPage, packGridTraits } from "@/lib/boosterCollectionGrid";
 import { eligiblePortalCards } from "@/lib/portalCardPicker";
 import {
@@ -173,12 +174,11 @@ export function PortalCardPicker({
         })}
       </div>
       {query.isFetching && (
-        <p
-          role="status"
-          className="mt-4 animate-pulse text-sm motion-reduce:animate-none"
-        >
-          Checking your cards…
-        </p>
+        <YunipalsLoader
+          label="Checking your cards…"
+          detail="Finding cards in your wallet that meet this portal’s requirements."
+          className="mt-4 rounded-2xl bg-lavender/15 p-4 text-sm"
+        />
       )}
       {query.isError && (
         <div role="alert" className="mt-4 text-sm">
