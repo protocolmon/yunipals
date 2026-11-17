@@ -176,6 +176,36 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     ]);
   });
 
+  it("scopes owner pagination by deployment, owner and indexed prefix before limit", async () => {
+    await mint("1", alice);
+    await mint("1", alice, { collection: other });
+    await mint("2", bob);
+    await mint("3", alice, { status: "pending" });
+    await mint("4", alice, { block: 501 });
+    await mint("5", alice, { burned: true });
+    await mint("6", alice, { originalId: "1" });
+    const first = await (
+      await app.request(`/v1/owners/${alice}/booster-monsters?limit=1`)
+    ).json();
+    expect(
+      first.items.map((item: { tokenId: string }) => item.tokenId)
+    ).toEqual(["1"]);
+    expect(first.nextCursor).toBe("1");
+    const second = await (
+      await app.request(`/v1/owners/${alice}/booster-monsters?limit=1&after=1`)
+    ).json();
+    expect(
+      second.items.map((item: { tokenId: string }) => item.tokenId)
+    ).toEqual(["6"]);
+    expect(second.items[0].owner).toBe(alice);
+    expect(second.items[0].collection).toBe(collection);
+    expect(second.nextCursor).toBeNull();
+    ready = false;
+    expect(
+      (await app.request(`/v1/owners/${alice}/booster-monsters`)).status
+    ).toBe(503);
+  });
+
   it("walks limit+1 pages without lexicographic gaps, repeated NFTs or a spurious terminal cursor", async () => {
     for (const id of ["99", "10", "1", "9", "2"]) await mint(id);
     const ids: string[] = [];

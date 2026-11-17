@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { collectorHref } from "@/lib/collectionEdition";
 import { packGridTraits } from "@/lib/boosterCollectionGrid";
 import { fetchRecentBoosterOpenings } from "@/lib/boosterRecentOpenings";
 import { boosterAddresses, boosterQueryKey } from "@/lib/boosters";
@@ -222,7 +223,7 @@ export function BoosterRecentOpenings() {
                       <p className="mt-3 text-xs text-muted">
                         Collected by{" "}
                         <Link
-                          to={`/collector/${monster.mintedTo}`}
+                          to={collectorHref(monster.mintedTo, "tcg")}
                           title={monster.mintedTo}
                           className="rounded font-semibold text-ink hover:text-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
                         >

@@ -17,20 +17,28 @@ import {
   Trophy,
   WalletCards
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  memo,
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
-import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import { environment } from "@/environment";
-import { CollectionPackCard } from "@/components/CollectionPackCard";
-import { CollectionDailyPulls } from "@/components/CollectionDailyPulls";
-import { CollectionPackPagination } from "@/components/CollectionPackPagination";
-import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
+import { CollectionEditionNav } from "@/components/CollectionEditionNav";
+import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import {
-  collectionGridIdentity,
-  mergeCollectionGrid,
-  packGridFilters
-} from "@/lib/boosterCollectionGrid";
+  collectionDefinitions,
+  collectionEdition,
+  collectionMigrationNotice,
+  matchesOriginalEdition,
+  collectionViewQuery,
+  type CollectionEdition
+} from "@/lib/collectionEdition";
+import { TcgCollector } from "./components/TcgCollector";
 import { CollectorIslands } from "./components/CollectorIslands";
 
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
@@ -56,6 +64,7 @@ import { VisibilityActionDialog } from "@/pages/collector/components/VisibilityA
 import { useTokenVisibility } from "@/pages/collector/hooks/useTokenVisibility";
 import {
   fetchOwnerLeaderboard,
+  fetchOwnerResolution,
   fetchTraitFacets,
   indexedChains,
   indexedCollectionCacheVersion,
@@ -72,7 +81,8 @@ import { useCollectorTokens } from "@/pages/collector/hooks/useCollectorTokens";
 import {
   readSavedCollectorFilters,
   resolveCollectorQuery,
-  saveCollectorFilters
+  saveCollectorFilters,
+  personalCollectionHref
 } from "@/lib/collectorPreferences";
 import {
   defaultCollectorFilters,
@@ -96,7 +106,12 @@ type VisibilityAction = {
   hidden: boolean;
 };
 
-function MetricCard({ label, value, rank, icon: Icon }: MetricCardProps) {
+const MetricCard = memo(function MetricCard({
+  label,
+  value,
+  rank,
+  icon: Icon
+}: MetricCardProps) {
   return (
     <div className="rounded-2xl border border-ethereum/10 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -111,7 +126,7 @@ function MetricCard({ label, value, rank, icon: Icon }: MetricCardProps) {
       </p>
     </div>
   );
-}
+});
 
 function collectorErrorMessage(error: unknown) {
   if (!(error instanceof IndexerError)) {
@@ -135,46 +150,57 @@ function collectorErrorMessage(error: unknown) {
 export function CollectorPage() {
   const { address = "" } = useParams();
   const [params] = useSearchParams();
+  const resolvedQuery = resolveCollectorQuery(
+    params,
+    readSavedCollectorFilters()
+  );
+  const edition = collectionEdition(resolvedQuery);
+  const [migrationNotice] = useState(() => collectionMigrationNotice(params));
   const islands =
     environment.islandStakingEnabled && params.get("collection") === "islands";
   return (
     <>
-      {environment.islandStakingEnabled && (
-        <nav
-          aria-label="Collector collections"
-          className="mx-auto flex max-w-6xl gap-3 px-4 pt-6"
-        >
-          <Link
-            to={`/collector/${encodeURIComponent(address)}`}
-            aria-current={!islands ? "page" : undefined}
-            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
-          >
-            Yunipals
-          </Link>
-          <Link
-            to={`/collector/${encodeURIComponent(address)}?collection=islands`}
-            aria-current={islands ? "page" : undefined}
-            className="rounded-full border border-line px-5 py-2 font-bold text-ink aria-[current=page]:bg-mint/40"
-          >
-            Islands
-          </Link>
-        </nav>
-      )}
+      <div className="mx-auto max-w-6xl px-4 pt-6">
+        {!islands && migrationNotice && (
+          <p role="status" className="mb-4 text-sm text-muted">
+            {migrationNotice}
+          </p>
+        )}
+        <CollectionEditionNav
+          edition={islands ? "islands" : edition}
+          href={(next) => personalCollectionHref(address, next)}
+          islandsHref={
+            environment.islandStakingEnabled
+              ? `/collector/${encodeURIComponent(address)}?collection=islands`
+              : null
+          }
+        />
+      </div>
       {islands ? (
         <CollectorIslands ownerInput={address.trim()} />
+      ) : edition === "tcg" ? (
+        <TcgCollector key={address} ownerInput={address.trim()} />
       ) : (
-        <YunipalsCollectorPage />
+        <YunipalsCollectorPage key={address} edition={edition} />
       )}
     </>
   );
 }
 
-function YunipalsCollectorPage() {
+function YunipalsCollectorPage({
+  edition
+}: {
+  edition: Exclude<CollectionEdition, "tcg">;
+}) {
+  const definition = collectionDefinitions[edition];
   const { address = "" } = useParams();
   const { address: connectedAddress, isConnected } = useAccount();
   const ownerInput = address.trim();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [savedFilters, setSavedFilters] = useState(readSavedCollectorFilters);
+  const savedFilters = useMemo(
+    () => (searchParams.size ? null : readSavedCollectorFilters()),
+    [searchParams]
+  );
   const filterState = useMemo(() => {
     try {
       return {
@@ -185,12 +211,12 @@ function YunipalsCollectorPage() {
       };
     } catch (error) {
       return {
-        filters: defaultCollectorFilters,
+        filters: { ...defaultCollectorFilters, chains: definition.chains },
         error:
           error instanceof Error ? error.message : "Invalid collection filters."
       };
     }
-  }, [searchParams, savedFilters]);
+  }, [searchParams, savedFilters, definition]);
   const { filters } = filterState;
   const setFilters = useCallback(
     (next: CollectorFilters) => {
@@ -198,16 +224,24 @@ function YunipalsCollectorPage() {
         collection: "yunipals",
         filter: "filters"
       });
-      setSearchParams(serializeCollectorFilters(next));
+      const query = serializeCollectorFilters(next);
+      query.set("edition", edition);
+      startTransition(() => setSearchParams(collectionViewQuery(query)));
     },
-    [setSearchParams]
+    [setSearchParams, edition]
   );
   const validOwner = isOwnerInput(ownerInput);
-  const canonicalSearch = serializeCollectorFilters(filters).toString();
+  const canonicalQuery = serializeCollectorFilters(filters);
+  canonicalQuery.set("edition", edition);
+  const canonicalSearch = collectionViewQuery(canonicalQuery).toString();
+  const filtered = hasCollectorFilters({
+    ...filters,
+    chains:
+      filters.chains.length === definition.chains.length ? [] : filters.chains
+  });
   useEffect(() => {
     if (!validOwner || filterState.error) return;
     saveCollectorFilters(canonicalSearch);
-    setSavedFilters(canonicalSearch);
     if (searchParams.toString() !== canonicalSearch)
       setSearchParams(canonicalSearch, { replace: true });
   }, [
@@ -220,8 +254,12 @@ function YunipalsCollectorPage() {
   const inputIsEns = validOwner && !isEthereumAddress(ownerInput);
   const connectedAddressNormalized = connectedAddress?.toLowerCase();
   const [copied, setCopied] = useState(false);
-  const [visibilityView, setVisibilityView] =
-    useState<VisibilityView>("visible");
+  const [visibilityViews, setVisibilityViews] = useState<
+    Record<"og" | "airdrop", VisibilityView>
+  >({ og: "visible", airdrop: "visible" });
+  const visibilityView = visibilityViews[edition];
+  const setVisibilityView = (view: VisibilityView) =>
+    setVisibilityViews((current) => ({ ...current, [edition]: view }));
   const [visibilityAction, setVisibilityAction] =
     useState<VisibilityAction | null>(null);
   const visibilityMutation = useTokenVisibility(ownerInput);
@@ -241,10 +279,19 @@ function YunipalsCollectorPage() {
       !(error instanceof IndexerError && error.status === 404) && count < 1,
     refetchInterval: 60_000
   });
+  const identity = useQuery({
+    queryKey: ["collector-identity", ownerInput, edition],
+    queryFn: ({ signal }) =>
+      fetchOwnerResolution(ownerInput, signal, definition.chains),
+    enabled: inputIsEns,
+    staleTime: 60_000,
+    retry: 1
+  });
   const profileOwner =
     profileQuery.data?.owner ??
     (isEthereumAddress(ownerInput) ? ownerInput : "");
-  const profileResolvedAddresses = profileQuery.data?.resolvedAddresses;
+  const profileResolvedAddresses =
+    identity.data?.resolvedAddresses ?? profileQuery.data?.resolvedAddresses;
   const isOwnCollection = Boolean(
     validOwner &&
       isConnected &&
@@ -265,28 +312,40 @@ function YunipalsCollectorPage() {
     validOwner,
     activeVisibility,
     filters,
-    filterState.error
+    filterState.error,
+    edition
   );
   const { tokensQuery } = collection;
   const facetsQuery = useQuery({
-    queryKey: ["collection", indexedCollectionCacheVersion, "trait-facets", []],
-    queryFn: ({ signal }) => fetchTraitFacets([], signal),
+    queryKey: [
+      "collection",
+      indexedCollectionCacheVersion,
+      "trait-facets",
+      filters.chains
+    ],
+    queryFn: ({ signal }) => fetchTraitFacets(filters.chains, signal),
     enabled: collection.supported,
     staleTime: 10 * 60_000
   });
 
   const ownerTokens = tokensQuery.data;
+  const resolvedAddresses =
+    identity.data?.resolvedAddresses ??
+    ownerTokens?.resolvedAddresses ??
+    profileQuery.data?.resolvedAddresses;
   const canonicalOwner =
-    profileQuery.data?.owner ??
+    definition.chains
+      .map((chain) => resolvedAddresses?.[chain])
+      .find(Boolean) ??
     ownerTokens?.owner ??
+    profileQuery.data?.owner ??
     (isEthereumAddress(ownerInput) ? ownerInput : "");
   const ownerName =
+    identity.data?.ownerName ??
     profileQuery.data?.ensName ??
     profileQuery.data?.ownerName ??
     ownerTokens?.ownerName ??
     (inputIsEns ? ownerInput : null);
-  const resolvedAddresses =
-    profileQuery.data?.resolvedAddresses ?? ownerTokens?.resolvedAddresses;
   const ownerExplorerChain =
     indexedChains.find(
       (chain) =>
@@ -297,7 +356,7 @@ function YunipalsCollectorPage() {
 
   usePageMetadata(
     isOwnCollection
-      ? "Your Yunipals Collection"
+      ? `Your ${definition.label}`
       : validOwner
         ? `${ownerName ?? shortAddress(canonicalOwner || ownerInput)} — Yunipals Collector`
         : "Collector — Yunipals",
@@ -310,16 +369,8 @@ function YunipalsCollectorPage() {
     () => tokensQuery.data?.items ?? [],
     [tokensQuery.data]
   );
-  const tokens = indexedTokens;
-  const packFilters = useMemo(() => packGridFilters(filters), [filters]);
-  const packCards = useBoosterCollectionCards(
-    packFilters,
-    resolvedAddresses?.base ?? canonicalOwner,
-    activeVisibility === "visible"
-  );
-  const gridItems = useMemo(
-    () => mergeCollectionGrid(tokens, packCards.items),
-    [tokens, packCards.items]
+  const tokens = indexedTokens.filter((token) =>
+    matchesOriginalEdition(token, edition)
   );
   const pendingPurchases = useMemo(() => {
     if (activeVisibility !== "visible") return [];
@@ -334,6 +385,7 @@ function YunipalsCollectorPage() {
         const key = `${change.asset.chain}:${change.asset.tokenId}`;
         if (
           change.synced ||
+          !definition.chains.some((chain) => chain === change.asset.chain) ||
           !owners.has(change.to.toLowerCase()) ||
           seen.has(key) ||
           Date.now() - change.confirmedAt > optimisticSettlementLifetimeMs
@@ -347,7 +399,8 @@ function YunipalsCollectorPage() {
     confirmedSettlements,
     canonicalOwner,
     resolvedAddresses,
-    activeVisibility
+    activeVisibility,
+    definition
   ]);
   useEffect(() => {
     syncSettlementsFromOwnerTokens(queries, indexedTokens);
@@ -406,231 +459,239 @@ function YunipalsCollectorPage() {
 
   return (
     <main className="min-h-[70vh]">
-      <section className="bg-gradient-to-b from-lavender/35 to-white px-4 py-12 sm:py-16">
+      <section className="px-4 pb-3">
         <div className="mx-auto max-w-6xl">
-          <div className="flex flex-wrap items-center gap-2">
-            {isOwnCollection && (
-              <Link
-                to="/orders"
-                className="inline-flex items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
-              >
-                Manage my orders
-              </Link>
-            )}
-            <Link
-              to="/leaderboard"
-              className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-            >
-              <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
-            </Link>
-            {connectedAddressNormalized && !isOwnCollection && (
-              <Link
-                to={`/collector/${connectedAddressNormalized}`}
-                className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-              >
-                <WalletCards aria-hidden="true" size={15} /> View my collection
-              </Link>
-            )}
-          </div>
-
-          <div className="mt-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-ethereum">
-                {isOwnCollection
-                  ? "Your multichain collection"
-                  : "Multichain collector"}
-              </p>
-              <h1 className="display mt-3 text-5xl text-ink sm:text-7xl">
-                {isOwnCollection ? "Your collection" : "Collector profile"}
-              </h1>
-              {ownerName && (
-                <p className="mt-5 truncate text-2xl font-black text-ink sm:text-3xl">
-                  {ownerName}
-                </p>
-              )}
-              <div className="mt-5 flex min-w-0 flex-wrap items-center gap-2">
-                <span className="rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:hidden">
-                  {shortAddress(canonicalOwner)}
-                </span>
-                <span className="hidden rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:block">
-                  {canonicalOwner}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => void copyAddress()}
-                  className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-                  aria-label="Copy collector address"
-                >
-                  {copied ? (
-                    <Check aria-hidden="true" size={15} />
-                  ) : (
-                    <Copy aria-hidden="true" size={15} />
-                  )}
-                </button>
-                <a
-                  href={`${ownerExplorerUrl}/address/${canonicalOwner}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-                  aria-label={`View collector in the ${chainDetails[ownerExplorerChain].label} explorer`}
-                >
-                  <ExternalLink aria-hidden="true" size={15} />
-                </a>
-              </div>
-              {resolvedAddresses &&
-                Object.entries(resolvedAddresses).length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {indexedChains.map((chain) => {
-                      const resolvedAddress = resolvedAddresses[chain];
-                      return (
-                        resolvedAddress && (
-                          <span
-                            key={chain}
-                            className="inline-flex items-center gap-2 rounded-full bg-line/40 px-3 py-1.5 text-xs font-bold text-muted"
-                            title={resolvedAddress}
-                          >
-                            <ChainLogo
-                              chainId={chain}
-                              className={`h-3.5 w-3.5 ${chainDetails[chain].badgeClassName}`}
-                            />
-                            {chainDetails[chain].label} ·{" "}
-                            {shortAddress(resolvedAddress)}
-                          </span>
-                        )
-                      );
-                    })}
-                  </div>
-                )}
-            </div>
-
-            {profile && (
-              <section
-                aria-label="Collector score summary"
-                className="rounded-[28px] bg-ink px-6 py-5 text-white shadow-cardHover sm:min-w-72"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold uppercase tracking-wide text-white/55">
-                      Collector score
-                    </p>
-                    <p className="mt-2 text-4xl font-black tabular-nums">
-                      {formatDecimal(profile.collectorScore, 0)}
-                    </p>
-                  </div>
-                  <div
-                    className="grid min-h-14 min-w-14 shrink-0 place-items-center whitespace-nowrap rounded-full bg-white/10 px-4 text-xl font-black tabular-nums"
-                    aria-label={`Collector rank ${formatInteger(profile.collectorScoreRank)}`}
+          <h1 className="sr-only">
+            {isOwnCollection ? `Your ${definition.label}` : definition.label}
+          </h1>
+          <details className="rounded-2xl border border-line px-4">
+            <summary className="min-h-11 cursor-pointer py-3 text-sm text-muted focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-ethereum">
+              <span className="font-semibold text-ink">
+                {ownerName ?? shortAddress(canonicalOwner)}
+              </span>
+              <span className="ml-3">Wallet details &amp; rankings</span>
+            </summary>
+            <div className="pb-4 pt-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {isOwnCollection && (
+                  <Link
+                    to="/orders"
+                    className="inline-flex items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
                   >
-                    #{formatInteger(profile.collectorScoreRank)}
-                  </div>
-                </div>
-                <p className="mt-4 text-xs font-semibold text-white/55">
-                  {formatUpdatedAt(profile.updatedAt)}
-                </p>
-              </section>
-            )}
-          </div>
-
-          {profile ? (
-            <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3">
-              <MetricCard
-                icon={Gem}
-                label="Total rarity"
-                value={formatDecimal(profile.totalRarity, 1)}
-                rank={profile.totalRarityRank}
-              />
-              <MetricCard
-                icon={Layers3}
-                label="Monster count"
-                value={formatInteger(profile.monsterCount)}
-                rank={profile.monsterCountRank}
-              />
-              <MetricCard
-                icon={Trophy}
-                label="Unique types"
-                value={formatInteger(profile.uniqueTypes)}
-                rank={profile.uniqueTypesRank}
-              />
-              <MetricCard
-                icon={Star}
-                label="Special count"
-                value={formatInteger(profile.specialCount)}
-                rank={profile.specialCountRank}
-              />
-              <MetricCard
-                icon={Sparkles}
-                label="Glitter count"
-                value={formatInteger(profile.glitterCount)}
-                rank={profile.glitterCountRank}
-              />
-              <MetricCard
-                icon={Trophy}
-                label="Collector score"
-                value={formatDecimal(profile.collectorScore, 0)}
-                rank={profile.collectorScoreRank}
-              />
-            </div>
-          ) : (
-            <div className="mt-6 max-w-xl text-sm text-muted">
-              <div role="status">
-                <p className="font-bold text-ink">
-                  {profileQuery.isLoading
-                    ? "Loading rankings…"
-                    : profileQuery.error instanceof IndexerError &&
-                        profileQuery.error.status === 404
-                      ? "No rankings available for this wallet yet."
-                      : "We couldn’t load rankings."}
-                </p>
-                {!profileQuery.isLoading && (
-                  <p className="mt-1">
-                    {profileQuery.error instanceof IndexerError &&
-                    profileQuery.error.status === 404
-                      ? "Rankings are based on active Yunipals and may take time to reflect collection changes."
-                      : "Please try again in a moment."}{" "}
-                    We check again automatically every minute.
-                  </p>
+                    Manage my orders
+                  </Link>
+                )}
+                <Link
+                  to="/leaderboard"
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                >
+                  <ArrowLeft aria-hidden="true" size={15} /> Leaderboard
+                </Link>
+                {connectedAddressNormalized && !isOwnCollection && (
+                  <Link
+                    to={personalCollectionHref(
+                      connectedAddressNormalized,
+                      edition
+                    )}
+                    className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                  >
+                    <WalletCards aria-hidden="true" size={15} /> View my
+                    collection
+                  </Link>
                 )}
               </div>
-              {profileQuery.isError && (
-                <button
-                  type="button"
-                  className="mt-3 rounded-full font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum disabled:cursor-wait disabled:opacity-60"
-                  disabled={profileQuery.isFetching}
-                  onClick={() => void profileQuery.refetch()}
-                >
-                  {profileQuery.isFetching ? "Checking…" : "Check rankings"}
-                </button>
+
+              <div className="mt-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+                <div className="min-w-0">
+                  {ownerName && (
+                    <p className="mt-5 truncate text-2xl font-black text-ink sm:text-3xl">
+                      {ownerName}
+                    </p>
+                  )}
+                  <div className="mt-5 flex min-w-0 flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:hidden">
+                      {shortAddress(canonicalOwner)}
+                    </span>
+                    <span className="hidden rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:block">
+                      {canonicalOwner}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => void copyAddress()}
+                      className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                      aria-label="Copy collector address"
+                    >
+                      {copied ? (
+                        <Check aria-hidden="true" size={15} />
+                      ) : (
+                        <Copy aria-hidden="true" size={15} />
+                      )}
+                    </button>
+                    <a
+                      href={`${ownerExplorerUrl}/address/${canonicalOwner}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                      aria-label={`View collector in the ${chainDetails[ownerExplorerChain].label} explorer`}
+                    >
+                      <ExternalLink aria-hidden="true" size={15} />
+                    </a>
+                  </div>
+                  {resolvedAddresses &&
+                    Object.entries(resolvedAddresses).length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {indexedChains.map((chain) => {
+                          const resolvedAddress = resolvedAddresses[chain];
+                          return (
+                            resolvedAddress && (
+                              <span
+                                key={chain}
+                                className="inline-flex items-center gap-2 rounded-full bg-line/40 px-3 py-1.5 text-xs font-bold text-muted"
+                                title={resolvedAddress}
+                              >
+                                <ChainLogo
+                                  chainId={chain}
+                                  className={`h-3.5 w-3.5 ${chainDetails[chain].badgeClassName}`}
+                                />
+                                {chainDetails[chain].label} ·{" "}
+                                {shortAddress(resolvedAddress)}
+                              </span>
+                            )
+                          );
+                        })}
+                      </div>
+                    )}
+                </div>
+
+                {profile && (
+                  <section
+                    aria-label="Collector score summary"
+                    className="rounded-[28px] bg-ink px-6 py-5 text-white shadow-cardHover sm:min-w-72"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold uppercase tracking-wide text-white/55">
+                          Overall collector score
+                        </p>
+                        <p className="mt-2 text-4xl font-black tabular-nums">
+                          {formatDecimal(profile.collectorScore, 0)}
+                        </p>
+                      </div>
+                      <div
+                        className="grid min-h-14 min-w-14 shrink-0 place-items-center whitespace-nowrap rounded-full bg-white/10 px-4 text-xl font-black tabular-nums"
+                        aria-label={`Collector rank ${formatInteger(profile.collectorScoreRank)}`}
+                      >
+                        #{formatInteger(profile.collectorScoreRank)}
+                      </div>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold text-white/55">
+                      {formatUpdatedAt(profile.updatedAt)}
+                    </p>
+                  </section>
+                )}
+              </div>
+
+              <p className="mt-6 text-sm text-muted">
+                Overall scores and rankings cover OG Collection and OG Airdrop
+                holdings. TCG cards are excluded.
+              </p>
+              {profile ? (
+                <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3">
+                  <MetricCard
+                    icon={Gem}
+                    label="Total rarity"
+                    value={formatDecimal(profile.totalRarity, 1)}
+                    rank={profile.totalRarityRank}
+                  />
+                  <MetricCard
+                    icon={Layers3}
+                    label="Overall OG holdings"
+                    value={formatInteger(profile.monsterCount)}
+                    rank={profile.monsterCountRank}
+                  />
+                  <MetricCard
+                    icon={Trophy}
+                    label="Unique types"
+                    value={formatInteger(profile.uniqueTypes)}
+                    rank={profile.uniqueTypesRank}
+                  />
+                  <MetricCard
+                    icon={Star}
+                    label="Special count"
+                    value={formatInteger(profile.specialCount)}
+                    rank={profile.specialCountRank}
+                  />
+                  <MetricCard
+                    icon={Sparkles}
+                    label="Glitter count"
+                    value={formatInteger(profile.glitterCount)}
+                    rank={profile.glitterCountRank}
+                  />
+                  <MetricCard
+                    icon={Trophy}
+                    label="Overall collector score"
+                    value={formatDecimal(profile.collectorScore, 0)}
+                    rank={profile.collectorScoreRank}
+                  />
+                </div>
+              ) : (
+                <div className="mt-6 max-w-xl text-sm text-muted">
+                  <div role="status">
+                    <p className="font-bold text-ink">
+                      {profileQuery.isLoading
+                        ? "Loading rankings…"
+                        : profileQuery.error instanceof IndexerError &&
+                            profileQuery.error.status === 404
+                          ? "No rankings available for this wallet yet."
+                          : "We couldn’t load rankings."}
+                    </p>
+                    {!profileQuery.isLoading && (
+                      <p className="mt-1">
+                        {profileQuery.error instanceof IndexerError &&
+                        profileQuery.error.status === 404
+                          ? "Rankings are based on active Yunipals and may take time to reflect collection changes."
+                          : "Please try again in a moment."}{" "}
+                        We check again automatically every minute.
+                      </p>
+                    )}
+                  </div>
+                  {profileQuery.isError && (
+                    <button
+                      type="button"
+                      className="mt-3 rounded-full font-bold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum disabled:cursor-wait disabled:opacity-60"
+                      disabled={profileQuery.isFetching}
+                      onClick={() => void profileQuery.refetch()}
+                    >
+                      {profileQuery.isFetching ? "Checking…" : "Check rankings"}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </details>
         </div>
       </section>
 
-      <section className="px-4 pb-16 pt-6 sm:pb-20">
+      <section className="px-4 pb-16 pt-2 sm:pb-20">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-ethereum">
-                Holdings
-              </p>
-              <h2 className="display mt-2 text-3xl text-ink sm:text-4xl">
+              <h2 className="sr-only">
                 {activeVisibility === "hidden"
                   ? "Hidden NFTs"
                   : isOwnCollection
-                    ? "Your active Yunipals"
-                    : "Active Yunipals"}
+                    ? `Your ${definition.label}`
+                    : definition.label}
               </h2>
-              <p className="mt-2 text-sm font-medium text-muted">
-                Showing {formatInteger(gridItems.length)} {activeVisibility}{" "}
+              <p className="text-sm font-medium text-muted">
+                Showing {formatInteger(tokens.length)} {activeVisibility}{" "}
                 results on this page
                 {isOwnCollection && activeVisibility === "visible" && (
                   <> · Hidden NFTs still count toward your score</>
                 )}
               </p>
             </div>
-            {isOwnCollection && environment.boostersEnabled && (
-              <CollectionDailyPulls />
-            )}
+
             {isOwnCollection && (
               <div
                 className="inline-flex self-start rounded-full border border-line bg-line/30 p-1 sm:self-auto"
@@ -677,7 +738,8 @@ function YunipalsCollectorPage() {
 
           {collection.supported && (
             <CollectorControls
-              key={ownerInput}
+              key={`${ownerInput}:${edition}`}
+              edition={edition}
               filters={filters}
               facets={facetsQuery.data}
               facetsLoading={facetsQuery.isLoading}
@@ -754,13 +816,7 @@ function YunipalsCollectorPage() {
             </div>
           )}
 
-          {packCards.enabled && (
-            <p className="mt-4 text-xs text-muted">
-              Rankings apply to the original collection. Pack cards match chain,
-              type, color and search; more cards are loaded separately.
-            </p>
-          )}
-          {gridItems.length > 0 &&
+          {tokens.length > 0 &&
             (collection.viewError || tokensQuery.isError) && (
               <p role="alert" className="mt-4 text-sm text-muted">
                 {collection.viewError ??
@@ -769,20 +825,13 @@ function YunipalsCollectorPage() {
             )}
           <div
             className="mt-7"
-            aria-busy={
-              collection.loading ||
-              tokensQuery.isFetching ||
-              packCards.query.isFetching
-            }
+            aria-busy={collection.loading || tokensQuery.isFetching}
           >
             {collection.viewError &&
-            gridItems.length === 0 ? null : (collection.loading ||
-                (packCards.enabled && packCards.query.isPending)) &&
-              gridItems.length === 0 ? (
+            tokens.length === 0 ? null : collection.loading &&
+              tokens.length === 0 ? (
               <TokenGridSkeleton count={12} />
-            ) : (tokensQuery.isError ||
-                (packCards.enabled && packCards.query.isError)) &&
-              gridItems.length === 0 ? (
+            ) : tokensQuery.isError && tokens.length === 0 ? (
               <QueryError
                 message={
                   collection.cursorError
@@ -795,96 +844,78 @@ function YunipalsCollectorPage() {
                     : void tokensQuery.refetch()
                 }
               />
-            ) : gridItems.length === 0 ? (
+            ) : tokens.length === 0 ? (
               <CollectionEmptyState
-                edition="og"
+                edition={edition}
                 title={
-                  packCards.query.hasNextPage
-                    ? "No matches in the loaded cards yet."
-                    : hasCollectorFilters(filters)
-                      ? "No matches"
-                      : activeVisibility === "hidden"
-                        ? "No hidden NFTs"
-                        : "No visible Yunipals"
+                  filtered
+                    ? "No matches"
+                    : activeVisibility === "hidden"
+                      ? "No hidden NFTs"
+                      : `No ${definition.label} holdings`
                 }
                 description={
-                  hasCollectorFilters(filters)
-                    ? "Try a different search or clear your filters to see more Yunipals."
+                  filtered
+                    ? "Try another search or clear your filters."
                     : activeVisibility === "hidden"
-                      ? "NFTs you hide from public Yunipals views will appear here so you can unhide them."
-                      : "This wallet does not currently have any publicly visible Yunipals."
+                      ? "NFTs you hide will appear here so you can unhide them."
+                      : "This wallet has no visible NFTs in this collection. Explore the collection or choose another view."
                 }
               />
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                {gridItems.map((item, index) =>
-                  item.kind === "pack" ? (
-                    <CollectionPackCard
-                      key={collectionGridIdentity(item)}
-                      monster={item.monster}
-                      eager={index < 4}
-                    />
-                  ) : (
-                    (() => {
-                      const token = item.token;
-                      return (
-                        <TokenCard
-                          key={collectionGridIdentity(item)}
-                          token={token}
-                          eager={index < 6}
-                          action={
-                            canManageToken(token) ? (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  visibilityMutation.clearFeedback();
-                                  setVisibilityAction({
-                                    token,
-                                    hidden: activeVisibility === "visible"
-                                  });
-                                }}
-                                disabled={
-                                  visibilityMutation.isPending ||
-                                  tokensQuery.isFetching
-                                }
-                                className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
-                                aria-label={`${
-                                  activeVisibility === "visible"
-                                    ? "Hide"
-                                    : "Unhide"
-                                } ${token.name || `Yunipal #${token.tokenId}`}`}
-                                title={
-                                  activeVisibility === "visible"
-                                    ? "Hide NFT"
-                                    : "Unhide NFT"
-                                }
-                              >
-                                {visibilityMutation.isPending &&
-                                visibilityMutation.pendingTokenKey ===
-                                  tokenKey(token) ? (
-                                  <Loader2
-                                    aria-hidden="true"
-                                    className="animate-spin"
-                                    size={15}
-                                  />
-                                ) : activeVisibility === "visible" ? (
-                                  <EyeOff aria-hidden="true" size={15} />
-                                ) : (
-                                  <Eye aria-hidden="true" size={15} />
-                                )}
-                              </button>
-                            ) : undefined
+                {tokens.map((token, index) => (
+                  <TokenCard
+                    key={tokenKey(token)}
+                    token={token}
+                    eager={index < 6}
+                    action={
+                      canManageToken(token) ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            visibilityMutation.clearFeedback();
+                            setVisibilityAction({
+                              token,
+                              hidden: activeVisibility === "visible"
+                            });
+                          }}
+                          disabled={
+                            visibilityMutation.isPending ||
+                            tokensQuery.isFetching
                           }
-                        />
-                      );
-                    })()
-                  )
-                )}
+                          className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white/95 text-ink shadow-sm backdrop-blur transition hover:bg-white hover:text-ethereum disabled:cursor-wait disabled:opacity-55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2"
+                          aria-label={`${
+                            activeVisibility === "visible" ? "Hide" : "Unhide"
+                          } ${token.name || `Yunipal #${token.tokenId}`}`}
+                          title={
+                            activeVisibility === "visible"
+                              ? "Hide NFT"
+                              : "Unhide NFT"
+                          }
+                        >
+                          {visibilityMutation.isPending &&
+                          visibilityMutation.pendingTokenKey ===
+                            tokenKey(token) ? (
+                            <Loader2
+                              aria-hidden="true"
+                              className="animate-spin"
+                              size={15}
+                            />
+                          ) : activeVisibility === "visible" ? (
+                            <EyeOff aria-hidden="true" size={15} />
+                          ) : (
+                            <Eye aria-hidden="true" size={15} />
+                          )}
+                        </button>
+                      ) : undefined
+                    }
+                  />
+                ))}
               </div>
             )}
           </div>
 
-          <CollectionPackPagination cards={packCards} />
           {!collection.viewError && !collection.loading && (
             <nav
               className="mt-7 flex flex-wrap items-center justify-center gap-3"

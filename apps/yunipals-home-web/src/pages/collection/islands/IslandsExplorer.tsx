@@ -7,7 +7,6 @@ import { Select, SelectItem } from "@/components/ui/select";
 import { environment } from "@/environment";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
-import { ChainBadge } from "@/components/ui/ChainBadge";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
 import { formatInteger, shortAddress } from "@/lib/format";
@@ -145,31 +144,12 @@ export function IslandsExplorer() {
 
   return (
     <main className="min-h-[70vh]">
-      <section className="bg-gradient-to-br from-mint/35 via-sky/30 to-lavender/25 px-4 py-14 sm:py-20">
+      <h1 className="sr-only">Yunipals Islands</h1>
+      <section className="px-4">
         <div className="mx-auto max-w-6xl">
-          <div className="flex gap-2">
-            <ChainBadge chainId="ethereum" variant="soft" />
-            <ChainBadge chainId="base" variant="soft" />
-          </div>
-          <div className="mt-4 grid gap-7 lg:grid-cols-[1fr_380px] lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-ethereum">
-                Grassland Archipelago
-              </p>
-              <h1 className="display mt-3 text-5xl text-ink sm:text-7xl">
-                Yunipals Islands
-              </h1>
-              <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-ink/70 sm:text-lg">
-                Explore original Ethereum islands and their airdropped Base
-                copies. Find your island, discover its artwork, and follow each
-                NFT’s ownership history.
-              </p>
-            </div>
+          <div className="max-w-md">
             <form onSubmit={submitLookup}>
-              <label
-                htmlFor="island-lookup"
-                className="text-xs font-bold uppercase tracking-wide text-muted"
-              >
+              <label htmlFor="island-lookup" className="sr-only">
                 Island token ID or wallet address
               </label>
               <div className="mt-2 flex rounded-full border border-ethereum/20 bg-white p-1.5 shadow-card">
@@ -212,35 +192,40 @@ export function IslandsExplorer() {
             </form>
           </div>
           {stats.data && (
-            <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-4">
-              {[
-                ["NFTs", stats.data.activeSupply],
-                ["Original · Ethereum", stats.data.originals ?? 0],
-                ["Airdropped · Base", stats.data.airdropped ?? 0],
-                ["Collectors", stats.data.holders],
-                ["Genesis", stats.data.genesis],
-                ["Personal", stats.data.personal]
-              ].map(([label, count]) => (
-                <div key={label}>
-                  <dt className="text-xs font-bold text-muted">{label}</dt>
-                  <dd className="mt-1 text-xl font-extrabold text-ink">
-                    {formatInteger(count)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <details className="mt-3 text-sm text-muted">
+              <summary className="w-fit cursor-pointer rounded font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape">
+                Collection statistics
+              </summary>
+              <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-4">
+                {[
+                  ["NFTs", stats.data.activeSupply],
+                  ["Original · Ethereum", stats.data.originals ?? 0],
+                  ["Airdropped · Base", stats.data.airdropped ?? 0],
+                  ["Collectors", stats.data.holders],
+                  ["Genesis", stats.data.genesis],
+                  ["Personal", stats.data.personal]
+                ].map(([label, count]) => (
+                  <div key={label}>
+                    <dt className="text-xs font-bold text-muted">{label}</dt>
+                    <dd className="mt-1 text-xl font-extrabold text-ink">
+                      {formatInteger(count)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
           )}
         </div>
       </section>
 
-      <section id="collection" className="scroll-mt-24 px-4 py-12 sm:py-16">
+      <section
+        id="collection"
+        className="scroll-mt-24 px-4 pb-12 pt-4 sm:pb-16"
+      >
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-ethereum">
-                Collection shelf
-              </p>
-              <h2 className="display mt-2 text-3xl text-ink sm:text-4xl">
+              <h2 className="sr-only">
                 {filters.owner
                   ? "Wallet islands"
                   : filters.holding === "staked" &&

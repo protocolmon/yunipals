@@ -16,10 +16,7 @@ import {
 } from "../../scripts/fixtures/devServer";
 import { collectorFixtureOwner } from "../../scripts/fixtures/collector";
 import { IndexerError } from "@/lib/yunipalsIndexer";
-import {
-  isCollectorNotBase,
-  resolveCollectorQuery
-} from "@/lib/collectorPreferences";
+import { resolveCollectorQuery } from "@/lib/collectorPreferences";
 
 const origin = "http://localhost/__fixtures/indexer";
 const client = createCollectorClient(origin, async (input, init) => {
@@ -29,11 +26,11 @@ const client = createCollectorClient(origin, async (input, init) => {
 const filters = (value: string) =>
   parseCollectorFilters(new URLSearchParams(value));
 
-test("first visits default to Not Base across all pages of a wallet", async () => {
+test("first visits default to OG across all pages of a wallet", async () => {
   const defaults = parseCollectorFilters(
     resolveCollectorQuery(new URLSearchParams(), null)
   );
-  assert.equal(isCollectorNotBase(defaults), true);
+  assert.deepEqual(defaults.chains, ["ethereum", "polygon", "bnb"]);
   const first = await client.page(collectorFixtureOwner, defaults, "visible");
   assert.equal(first.items.length, 24);
   assert.ok(first.items.every((token) => token.chain !== "base"));
@@ -70,13 +67,13 @@ test("first visits default to Not Base across all pages of a wallet", async () =
   assert.ok(items.every((token) => token.chain !== "base"));
 });
 
-test("saved All and explicit collector links override the Not Base default", () => {
+test("saved legacy All becomes OG and explicit links select the Base airdrop", () => {
   const savedAll = "sort=rarity-capped-desc";
   assert.deepEqual(
     parseCollectorFilters(
       resolveCollectorQuery(new URLSearchParams(), savedAll)
     ).chains,
-    []
+    ["ethereum", "polygon", "bnb"]
   );
   const explicit = resolveCollectorQuery(
     new URLSearchParams("chain=base&q=32"),

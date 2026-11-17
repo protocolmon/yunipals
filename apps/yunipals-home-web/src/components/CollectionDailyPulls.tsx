@@ -199,7 +199,7 @@ export function CollectionDailyClaimBadge({
     refetchInterval: enabled ? 15_000 : false,
     retry: 1
   });
-  if (!enabled || !original.data) return null;
+  if (!enabled || !original.data?.item) return null;
   return (
     <div className="absolute right-2.5 top-2.5 z-10">
       <BoosterDailyClaimButton original={original.data.item} variant="badge" />

@@ -360,30 +360,24 @@ test("Facets merge shared trait counts and retain Solana-only types", async () =
   assert.equal(type.values.length, 2);
 });
 
-test("landing excludes Base only without an explicit URL or saved choice", async () => {
+test("collection entry points select explicit OG, airdrop and TCG boundaries", async () => {
   const { resolveCollectionQuery } = await import("@/lib/collectionEdition");
-  assert.equal(
-    resolveCollectionQuery(new URLSearchParams(), null).get("excludeChain"),
-    "base"
+  const first = resolveCollectionQuery(new URLSearchParams(), null);
+  assert.equal(first.get("edition"), "og");
+  assert.deepEqual(first.getAll("chain"), ["ethereum", "polygon", "bnb"]);
+  const airdrop = resolveCollectionQuery(
+    new URLSearchParams("chain=base"),
+    null
   );
-  assert.equal(
-    resolveCollectionQuery(new URLSearchParams("chain=base"), null).has(
-      "excludeChain"
-    ),
-    false
+  assert.equal(airdrop.get("edition"), "airdrop");
+  assert.deepEqual(airdrop.getAll("chain"), ["base"]);
+  const tcg = resolveCollectionQuery(
+    new URLSearchParams("edition=tcg&excludeChain=base"),
+    "edition=og"
   );
-  assert.equal(
-    resolveCollectionQuery(new URLSearchParams(), "edition=og").has(
-      "excludeChain"
-    ),
-    false
-  );
-  assert.equal(
-    resolveCollectionQuery(new URLSearchParams("edition=tcg"), null).has(
-      "excludeChain"
-    ),
-    false
-  );
+  assert.equal(tcg.get("edition"), "tcg");
+  assert.deepEqual(tcg.getAll("chain"), ["base"]);
+  assert.equal(tcg.has("excludeChain"), false);
 });
 
 test("chain exclusions survive serialization and constrain pages, counts and facets", async () => {

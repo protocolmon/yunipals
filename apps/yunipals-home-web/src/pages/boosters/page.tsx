@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { isAddress } from "viem";
 import { ArrowUpRight, UserRound } from "lucide-react";
+import { collectorHref } from "@/lib/collectionEdition";
 import {
   boosterAddresses,
   boosterQueryKey,
@@ -156,7 +157,7 @@ export function BoosterMonsterPage() {
                 <p className="mb-2 text-muted">Owner</p>
                 <Link
                   className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 font-bold transition-colors hover:border-grape/30 hover:bg-lavender/20 focus-visible:ring-2 focus-visible:ring-grape"
-                  to={`/collector/${monster.owner}`}
+                  to={collectorHref(monster.owner, "tcg")}
                   title={monster.owner}
                   aria-label={`View collection owned by ${monster.owner}`}
                 >

@@ -8,11 +8,11 @@ const { values } = parseArgs({
     url: { type: "string", default: "http://127.0.0.1:5198" },
     playwright: {
       type: "string",
-      default: "/tmp/yunipals-foundry/node_modules/playwright-core/index.mjs"
+      default: process.env.PLAYWRIGHT_MODULE
     },
     chromium: {
       type: "string",
-      default: "/root/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome"
+      default: process.env.CHROMIUM_EXECUTABLE
     }
   }
 });
@@ -47,10 +47,13 @@ const packs = [
   pack("2", other, "4"),
   pack("3", owner, "2", "7")
 ];
-const original = (wallet = owner) => ({
-  chain: "base",
-  chainId: 8453,
-  contractAddress: originalContract,
+const original = (wallet = owner, chain = "base") => ({
+  chain,
+  chainId: chain === "base" ? 8453 : 1,
+  contractAddress:
+    chain === "base"
+      ? originalContract
+      : "0x85f0e02cb992aa1f9f47112f815f519ef1a59e2d",
   tokenId: "1",
   owner: wallet,
   burned: false,
@@ -81,7 +84,9 @@ let leak = false;
 const requests = [];
 const external = [];
 const errors = [];
-const { chromium } = await import(pathToFileURL(values.playwright).href);
+const { chromium } = await import(
+  values.playwright ? pathToFileURL(values.playwright).href : "playwright-core"
+);
 const browser = await chromium.launch({
   executablePath: values.chromium,
   args: ["--no-sandbox"]
@@ -109,6 +114,19 @@ await context.route("**/*", async (route) => {
         image: `${api}/card.svg`,
         attributes: [],
         yunipals: { status: "ready" }
+      }
+    });
+  if (url.pathname.startsWith("/v1/boosters/originals/"))
+    return route.fulfill({
+      status: 404,
+      json: { error: "original_not_found" }
+    });
+  if (url.pathname.endsWith("/resolve"))
+    return route.fulfill({
+      json: {
+        ownerInput: "collector.eth",
+        ownerName: "collector.eth",
+        resolvedAddresses: { base: owner }
       }
     });
   if (url.pathname === "/v1/collector-capabilities")
@@ -165,11 +183,9 @@ await context.route("**/*", async (route) => {
     const wallet = walletTokens?.[1] ?? owner;
     const chain = url.searchParams.getAll("chain");
     const items =
-      chain.length && !chain.includes("base")
+      url.searchParams.get("visibility") === "hidden"
         ? []
-        : url.searchParams.get("visibility") === "hidden"
-          ? []
-          : [original(wallet)];
+        : [original(wallet, chain.includes("base") ? "base" : "ethereum")];
     return route.fulfill({
       json: {
         owner: wallet,
@@ -185,209 +201,283 @@ await context.route("**/*", async (route) => {
   }
   return route.fulfill({ json: { items: [], total: 0, nextCursor: null } });
 });
+await context.addInitScript(
+  ({ owner }) => {
+    const listeners = new Map();
+    let connected =
+      localStorage.getItem("collection-test-connected") === "true";
+    window.ethereum = {
+      isMetaMask: true,
+      on: (name, handler) =>
+        listeners.set(name, [...(listeners.get(name) ?? []), handler]),
+      removeListener: (name, handler) =>
+        listeners.set(
+          name,
+          (listeners.get(name) ?? []).filter((entry) => entry !== handler)
+        ),
+      request: async ({ method }) => {
+        if (method === "eth_chainId") return "0x2105";
+        if (method === "eth_accounts") return connected ? [owner] : [];
+        if (method === "eth_requestAccounts") {
+          connected = true;
+          localStorage.setItem("collection-test-connected", "true");
+          for (const handler of listeners.get("accountsChanged") ?? [])
+            handler([owner]);
+          return [owner];
+        }
+        if (
+          method === "wallet_requestPermissions" ||
+          method === "wallet_getPermissions"
+        )
+          return [{ parentCapability: "eth_accounts" }];
+        if (method === "eth_getBalance") return "0x0";
+        if (method === "eth_blockNumber") return "0xc8";
+        return null;
+      }
+    };
+  },
+  { owner }
+);
 const page = await context.newPage();
-page.on("pageerror", (e) => errors.push(e.message));
+page.on("pageerror", (error) => errors.push(error.message));
 const checks = [];
-const packLinks = () =>
+const packsVisible = () =>
   page.locator(`main article a[href^="/monsters/${collection}/"]`);
-const noSeparateGallery = async () => {
-  assert.equal(
-    await page
-      .getByRole("heading", { name: "Booster Yunipals", exact: true })
-      .count(),
-    0
-  );
-  assert.equal(
-    await page
-      .getByText("This wallet has no revealed booster Yunipals yet.", {
-        exact: true
-      })
-      .count(),
-    0
-  );
-};
+const originalVisible = (chain) =>
+  page.locator(`main article a[href="/collection/${chain}/1"]`);
+const editions = () =>
+  page.getByRole("navigation", { name: "Yunipals collections", exact: true });
 try {
   await page.goto(app.href);
-  await page.locator(`main article a[href="/collection/base/1"]`).waitFor();
+  const browseOnly = page.getByRole("button", {
+    name: "Browse only",
+    exact: true
+  });
+  if (await browseOnly.isVisible()) await browseOnly.click();
+  await originalVisible("ethereum").first().waitFor();
+  assert.equal(await packsVisible().count(), 0);
+  assert.equal(await originalVisible("base").count(), 0);
+  await editions()
+    .getByRole("link", { name: "OG Base", exact: true })
+    .click();
+  await originalVisible("base").first().waitFor();
+  assert.equal(await packsVisible().count(), 0);
+  assert.equal(await originalVisible("ethereum").count(), 0);
+  await editions()
+    .getByRole("link", { name: "TCG", exact: true })
+    .click();
   await page
     .locator(`main article a[href="/monsters/${collection}/1"]`)
+    .first()
     .waitFor();
-  await page
-    .locator(`main article a[href="/monsters/${collection}/2"]`)
-    .waitFor();
-  await noSeparateGallery();
   assert.equal(
-    await page.evaluate(
-      ({ collection }) => {
-        const a = document
-          .querySelector('main article a[href="/collection/base/1"]')
-          ?.closest("article")?.parentElement;
-        const b = document
-          .querySelector(`main article a[href="/monsters/${collection}/1"]`)
-          ?.closest("article")?.parentElement;
-        return a === b && a?.classList.contains("grid");
-      },
-      { collection }
-    ),
-    true
+    await page.locator('main article a[href^="/collection/"]').count(),
+    0
   );
-  assert.ok(requests.some((p) => p.startsWith("/v1/boosters/monsters?")));
-  assert.ok(!requests.some((p) => p.includes("/booster-monsters")));
+  await page.getByRole("button", { name: "Load more pack cards" }).click();
+  await page
+    .locator(`main article a[href="/monsters/${collection}/3"]`)
+    .first()
+    .waitFor();
+  checks.push(
+    "public OG, airdrop and TCG membership; same token ID stays distinct; numeric TCG pagination"
+  );
+
+  await page.goto(`${app.origin}/?edition=tcg&t.Type=Yuniturtle`);
+  await page
+    .getByText("No matches in the loaded cards yet.", { exact: true })
+    .waitFor();
+  await page.getByRole("button", { name: "Load more pack cards" }).click();
+  await page
+    .locator(`main article a[href="/monsters/${collection}/3"]`)
+    .first()
+    .waitFor();
+  checks.push("filtered TCG matches on later pages remain discoverable");
+
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "yunipals.collector.filters.v1",
+      "chain=ethereum&chain=polygon&chain=bnb&rarityMin=200"
+    )
+  );
+  await page.goto(`${app.origin}/collector/${owner}?edition=og`);
+  await originalVisible("ethereum").first().waitFor();
+  await editions()
+    .getByRole("link", { name: "TCG", exact: true })
+    .click();
+  await page
+    .locator(`main article a[href="/monsters/${collection}/1"]`)
+    .first()
+    .waitFor();
+  assert.equal(await page.getByText(/rankings/i).count(), 0);
   assert.equal(
     await page
-      .locator(`article[data-collection-contract="${collection}"]`)
-      .filter({ hasText: /\bRP\b|Buy|Arena/ })
+      .getByRole("button", { name: "Hidden NFTs", exact: true })
       .count(),
     0
   );
-  checks.push(
-    "disconnected global collection combines all-owner pack cards and OG token1 in the same normal grid without identity collision, rank or trade controls"
-  );
-  await page
-    .getByRole("button", { name: "Load more pack cards", exact: true })
-    .click();
-  await page
-    .locator(`main article a[href="/monsters/${collection}/3"]`)
-    .waitFor();
-  assert.equal(await packLinks().count(), 3);
   assert.equal(
-    await page.locator(`main article a[href="/collection/base/1"]`).count(),
-    1
+    await page.locator('main article a[href^="/collection/"]').count(),
+    0
   );
-  checks.push(
-    "independent bounded pack continuation adds cards once and preserves OG results"
-  );
-  await page.goto(`${app.origin}/?chain=base&t.Color=Green`);
   await page
-    .getByRole("button", { name: "Load more pack cards", exact: true })
+    .getByRole("searchbox", { name: "Search your TCG collection" })
+    .fill("3");
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await page.getByText("No matches in loaded cards", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Load more pack cards" }).click();
+  await page
+    .locator(`main article a[href="/monsters/${collection}/3"]`)
+    .first()
+    .waitFor();
+  await editions()
+    .getByRole("link", { name: "OG Base", exact: true })
+    .click();
+  await originalVisible("base").first().waitFor();
+  await editions()
+    .getByRole("link", { name: "TCG", exact: true })
     .click();
   await page
     .locator(`main article a[href="/monsters/${collection}/3"]`)
+    .first()
     .waitFor();
-  assert.equal(await packLinks().count(), 1);
-  await page.goto(`${app.origin}/?chain=base&t.Special=Yes`);
-  await page
-    .locator(`main article a[href="/monsters/${collection}/1"]`)
-    .waitFor();
-  assert.ok((await packLinks().count()) >= 2);
-  await page.goto(`${app.origin}/?chain=ethereum`);
-  await page
-    .getByRole("heading", { name: "The original collection.", exact: true })
-    .waitFor();
-  assert.equal(await packLinks().count(), 0);
-  checks.push(
-    "shared color and chain filters apply while unrelated OG special/ranking filters do not silently hide pack cards"
-  );
-  await context.addInitScript(
-    ({ owner }) => {
-      const listeners = new Map();
-      window.ethereum = {
-        isMetaMask: true,
-        isConnected: () => true,
-        on(name, handler) {
-          listeners.set(name, [...(listeners.get(name) ?? []), handler]);
-        },
-        removeListener() {},
-        async request({ method }) {
-          if (method === "eth_accounts" || method === "eth_requestAccounts")
-            return [owner];
-          if (method === "eth_chainId") return "0x2105";
-          if (
-            method === "wallet_requestPermissions" ||
-            method === "wallet_getPermissions"
-          )
-            return [{ parentCapability: "eth_accounts" }];
-          if (method === "wallet_getCapabilities") return {};
-          throw new Error(
-            "No chain calls are used by this collection fixture."
-          );
-        }
-      };
-    },
-    { owner }
+  assert.equal(
+    await page
+      .getByRole("searchbox", { name: "Search your TCG collection" })
+      .inputValue(),
+    "3"
   );
   await page.goto(`${app.origin}/collector/${owner}`);
-  await page
-    .locator(`main article a[href="/monsters/${collection}/1"]`)
-    .waitFor();
   assert.equal(
     await page
-      .locator(`main article a[href="/monsters/${collection}/2"]`)
-      .count(),
-    0
+      .getByRole("searchbox", { name: "Search your TCG collection" })
+      .inputValue(),
+    "3"
   );
-  await noSeparateGallery();
-  await page
-    .getByRole("button", { name: "Load more pack cards", exact: true })
-    .click();
+  await page.getByText("No matches in loaded cards", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Load more pack cards" }).click();
   await page
     .locator(`main article a[href="/monsters/${collection}/3"]`)
+    .first()
     .waitFor();
-  assert.equal(await packLinks().count(), 2);
-  checks.push(
-    "collector uses only the resolved profile owner endpoint and follows that owner's cursor without exposing another owner's cards"
+  await page
+    .getByRole("button", { name: "Clear filters", exact: true })
+    .click();
+  await page.waitForFunction(
+    () =>
+      new URL(location.href).searchParams.get("edition") === "tcg" &&
+      !new URL(location.href).searchParams.has("q")
   );
-  await page
-    .getByRole("button", { name: "Hidden NFTs", exact: true })
-    .waitFor();
-  await page.getByRole("button", { name: "Hidden NFTs", exact: true }).click();
-  await page
-    .getByRole("heading", { name: "Hidden NFTs", exact: true })
-    .waitFor();
-  assert.equal(await packLinks().count(), 0);
-  await page.getByRole("button", { name: "Visible NFTs", exact: true }).click();
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), []);
+  checks.push(
+    "TCG-only holdings survive OG ranking 404; independent saved filters and scoped clear"
+  );
+
+  await page.goBack();
+  await page.waitForFunction(
+    () => new URL(location.href).searchParams.get("q") === "3"
+  );
+  await page.goForward();
+  await page.waitForFunction(
+    () => !new URL(location.href).searchParams.has("q")
+  );
+  await page.goto(`${app.origin}/collector/collector.eth?edition=tcg`);
   await page
     .locator(`main article a[href="/monsters/${collection}/1"]`)
+    .first()
     .waitFor();
-  checks.push(
-    "hidden-only profile view excludes public pack cards and restoring visible view returns them without a separate gallery"
+  assert.ok(
+    requests.some((request) =>
+      request.startsWith("/v1/owners/collector.eth/resolve?chain=base")
+    )
   );
+  checks.push(
+    "browser history and ENS Base resolution independent of OG holdings"
+  );
+
+  await page.goto(`${app.origin}/collector/${owner}?edition=tcg`);
+  await page
+    .locator(`main article a[href="/monsters/${collection}/1"]`)
+    .first()
+    .waitFor();
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await editions().getByRole("link").count(), 4);
+  assert.ok(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth
+    )
+  );
+  await page.screenshot({
+    path: "/tmp/yunipals-collection-tcg-mobile.png",
+    fullPage: true
+  });
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.screenshot({
+    path: "/tmp/yunipals-collection-tcg-desktop.png",
+    fullPage: true
+  });
+  checks.push(
+    "all collection choices visible on mobile without horizontal overflow"
+  );
+
+  await page
+    .getByRole("button", { name: "Connect wallet", exact: true })
+    .click();
+  await page.getByRole("button", { name: /Browser Wallet/i }).click();
+  await page
+    .getByRole("button", { name: "Account menu", exact: true })
+    .waitFor();
+  await page.getByRole("button", { name: "Account menu", exact: true }).click();
+  const menu = page.getByRole("menu", { name: "Account menu" });
+  assert.equal(await menu.getByRole("menuitem").count(), 5);
+  await menu
+    .getByRole("menuitem", { name: "My OG collection", exact: true })
+    .click();
+  await originalVisible("ethereum").first().waitFor();
+  assert.equal(await menu.count(), 0);
+  await page.getByRole("button", { name: "Account menu", exact: true }).click();
+  await menu
+    .getByRole("menuitem", { name: "My TCG collection", exact: true })
+    .click();
+  await page
+    .locator(`main article a[href="/monsters/${collection}/1"]`)
+    .first()
+    .waitFor();
+  assert.equal(await menu.count(), 0);
+  assert.equal(new URL(page.url()).searchParams.get("edition"), "tcg");
+  checks.push(
+    "connected wallet menu exposes three destinations and dismisses on same-page edition changes"
+  );
+
   leak = true;
-  await page.goto(`${app.origin}/collector/${other}`);
+  await page.goto(`${app.origin}/collector/${other}?edition=tcg`);
   await page
     .getByRole("alert")
     .filter({ hasText: /ownership or pagination/ })
     .waitFor();
-  assert.equal(await packLinks().count(), 0);
-  assert.equal(
-    await page.locator(`main article a[href="/collection/base/1"]`).count(),
-    1
-  );
-  checks.push(
-    "wrong-owner API response is refused while the owner's OG grid remains usable"
-  );
-  await noSeparateGallery();
-  await page.setViewportSize({ width: 390, height: 844 });
-  assert.ok(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth
+  assert.equal(await packsVisible().count(), 0);
+  assert.equal(errors.length, 0, errors.join("\n"));
+  checks.push("another wallet’s cards are rejected before rendering");
+  console.log(
+    JSON.stringify(
+      { checks, externalRequestsBlocked: external.length, errors },
+      null,
+      2
     )
   );
-  assert.deepEqual(errors, []);
-  const report = {
-    format: "yunipals-normal-collection-pack-grid-ui-v1",
-    passed: true,
-    checks,
-    externalProviderCalls: 0,
-    blockedUnrelatedRequests: external.length,
-    runtimeErrors: errors,
-    productionActions: 0
-  };
-  await writeFile(
-    "/tmp/yunipals-collection-pack-grid-ui-20261023.json",
-    JSON.stringify(report, null, 2) + "\n"
-  );
-  console.log(JSON.stringify(report, null, 2));
 } catch (error) {
   console.error(
     JSON.stringify({
-      error: error.message,
-      alerts: await page.getByRole("alert").allTextContents(),
-      text: (await page.locator("main").innerText()).slice(-3000),
-      requests,
-      errors
+      url: page.url(),
+      checks,
+      recentRequests: requests.slice(-12),
+      body: (await page.locator("main").innerText()).slice(0, 2500)
     })
   );
+  await page.screenshot({
+    path: "/tmp/yunipals-collection-ui-failure.png",
+    fullPage: true
+  });
   throw error;
 } finally {
   await browser.close();

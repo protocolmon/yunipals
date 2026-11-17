@@ -36,6 +36,29 @@ export function registerCollectorRoutes(
   const rarityRangeEnabled =
     dependencies.rarityRangeEnabled ??
     (() => process.env.API_COLLECTOR_RARITY_RANGE_ENABLED === "true");
+  // Identity resolution must work even for wallets without ranked OG holdings.
+  app.get("/v1/owners/:address/resolve", async (c) => {
+    const requested = [...new Set(c.req.queries("chain") ?? ["base"])];
+    if (
+      !requested.length ||
+      requested.some(
+        (chain) => !["ethereum", "base", "polygon", "bnb"].includes(chain)
+      )
+    )
+      return c.json({ error: "invalid_chain" }, 400);
+    const owner = await dependencies.resolveOwner(
+      c.req.param("address"),
+      requested as CollectionSlug[]
+    );
+    c.header("Cache-Control", "no-store");
+    if (!Object.values(owner.addresses).some(Boolean))
+      return c.json({ error: "owner_name_unresolved" }, 404);
+    return c.json({
+      ownerInput: owner.input,
+      ownerName: owner.normalizedName,
+      resolvedAddresses: owner.addresses
+    });
+  });
   app.get("/v1/collector-capabilities", (c) =>
     c.json({
       version: enabled() ? 1 : 0,

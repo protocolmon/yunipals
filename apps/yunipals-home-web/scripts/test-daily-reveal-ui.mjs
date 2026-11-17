@@ -32,6 +32,7 @@ const registry='0x4444444444444444444444444444444444444444';
 export const hash='0x'+'a'.repeat(64);
 const blockHash='0x'+'b'.repeat(64),zero='0x'+'0'.repeat(64);
 export const boosterQueryKey=['daily-reveal-fixture'];
+export const boosterAssetUrl=uri=>new URL(uri,window.location.origin).href;
 export const boosterAddresses=()=>({engine,monsters,registry});
 export const readBoosterTransactions=()=>[];
 export const readBoosterTransactionReceipt=read=>read();
@@ -45,7 +46,7 @@ export const fetchBoosterMonster=async(_,id)=>({item:{metadataUri:'fixture:'+id}
 export const fetchMonsterArtwork=async uri=>({name:'Yunipal #'+uri.split(':')[1],image:'/card.svg',attributes:{type:'Yunidragon',glitter:'No'},status:'ready',holo:null});
 export const fetchBoosterRequestMonsters=async()=>({items:window.__indexed?['17','41'].map(tokenId=>({
  id:'8453:'+monsters+':'+tokenId,tokenId,collection:monsters,originalKey:'8453:'+monsters+':7',
- requestKey:'8453:'+engine+':9',typeKey:'8453:'+registry+':2',isOriginal:false,metadataUri:'fixture:'+tokenId
+ mintedTo:owner,owner,mintBlock:"1",burned:false,requestKey:'8453:'+engine+':9',typeKey:'8453:'+registry+':2',isOriginal:false,metadataUri:'fixture:'+tokenId
 })):[]});
 export const client={
  async getBlock(){return {timestamp:1792740601n};},
@@ -254,7 +255,15 @@ try {
   await page
     .getByRole("link", { name: "View Yunipal #41", exact: true })
     .waitFor();
-  await page.getByRole("button", { name: "Done", exact: true }).click();
+  const collectionLink = page.getByRole("link", {
+    name: "View my TCG collection",
+    exact: true
+  });
+  assert.equal(
+    await collectionLink.getAttribute("href"),
+    "/collector/0x1111111111111111111111111111111111111111?edition=tcg"
+  );
+  await collectionLink.click();
   assert.equal(await page.locator("dialog[open]").count(), 0);
   assert.equal(await page.evaluate(() => document.body.style.overflow), "");
   console.log(

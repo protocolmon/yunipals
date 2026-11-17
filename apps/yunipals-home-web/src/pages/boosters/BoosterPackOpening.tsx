@@ -1,3 +1,4 @@
+import { useAccount } from "wagmi";
 import {
   useEffect,
   useId,
@@ -8,9 +9,10 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, X } from "lucide-react";
 
+import { collectorHref } from "@/lib/collectionEdition";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
 import {
   boosterQueryKey,
@@ -28,6 +30,7 @@ export type BoosterOpeningCard = {
   artwork?: MonsterArtwork;
 };
 type PackContent = {
+  recipient?: string;
   onClose: () => void;
   packImage?: string;
   metadataUri?: string;
@@ -59,7 +62,13 @@ const PARTICLES = Array.from({ length: 18 }, (_, index) => {
 // Geometry, thresholds, spring and timings are ported from Protobits'
 // ExperimentalPackOpening. This overlay only replays an already revealed NFT.
 export function BoosterPackOpening(props: BoosterPackOpeningProps) {
+  const { address } = useAccount();
+  const queries = useQueryClient();
   const demo = props.mode === "demo";
+  const recipient = props.recipient;
+  const ownCollection = Boolean(
+    recipient && address?.toLowerCase() === recipient.toLowerCase()
+  );
   const packImage = props.packImage ?? "/images/boosters/yunipals-pack-v1.png";
   const [stage, setStage] = useState<Stage>("sealed");
   const [cardIndex, setCardIndex] = useState(0);
@@ -550,10 +559,28 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
               {!hasMoreCards && (
                 <Link
                   className="yunipals-opening-action"
-                  onClick={props.onClose}
-                  to="/collection"
+                  onClick={() => {
+                    if (recipient && !demo && activeCard.collection)
+                      void queries.resetQueries({
+                        queryKey: [
+                          ...boosterQueryKey,
+                          "normal-collection",
+                          activeCard.collection.toLowerCase(),
+                          recipient.toLowerCase()
+                        ],
+                        exact: true
+                      });
+                    props.onClose();
+                  }}
+                  to={
+                    recipient && !demo
+                      ? collectorHref(recipient, "tcg")
+                      : "/?edition=tcg#collection"
+                  }
                 >
-                  View collection
+                  {ownCollection
+                    ? "View my TCG collection"
+                    : "View TCG collection"}
                 </Link>
               )}
               <button

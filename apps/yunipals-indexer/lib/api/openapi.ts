@@ -142,6 +142,7 @@ export const openApiDocument = {
     "/v1/collections": {
       get: { tags: ["Collection"], summary: "List indexed Yunipals and Exomon collections", responses: { "200": { description: "Chain, contract or network, and supply details" } } }
     },
+    "/v1/owners/{address}/resolve": { get: { tags: ["Owners"], summary: "Resolve wallet or ENS addresses independently of holdings and rankings", responses: { "200": { description: "ownerInput, ownerName and resolvedAddresses for the selected chain parameters." }, "404": { description: "No address record on the selected chains." } } } },
     "/v1/collector-capabilities": { get: { tags: ["Owners"], summary: "Collector read rollout capabilities", responses: { "200": { description: "version: 1 enables paginated collector filters; namePrefixSearch and rarityRange advertise independently gated support." } } } },
     "/v2/owners/{address}/tokens": {
       get: {

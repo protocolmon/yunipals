@@ -21,16 +21,16 @@ import {
 } from "@/lib/collector";
 import { cn } from "@/lib/utils";
 import {
-  collectorNotBaseChains,
-  isCollectorNotBase
-} from "@/lib/collectorPreferences";
+  collectionDefinitions,
+  type CollectionEdition
+} from "@/lib/collectionEdition";
 import {
-  indexedChains,
   type CategoricalTraitFacet,
   type TraitFacets
 } from "@/lib/yunipalsIndexer";
 
 type CollectorControlsProps = {
+  edition: Exclude<CollectionEdition, "tcg">;
   filters: CollectorFilters;
   facets?: TraitFacets;
   facetsLoading: boolean;
@@ -56,6 +56,7 @@ function getRarityError(filters: CollectorFilters) {
 }
 
 export function CollectorControls({
+  edition,
   filters,
   facets,
   facetsLoading,
@@ -152,28 +153,20 @@ export function CollectorControls({
     selectTrait(activeTrait === "types" ? "colors" : "types", true);
   }
 
-  const notBase = isCollectorNotBase(filters);
+  const allowedChains = collectionDefinitions[edition].chains;
+  const chainFiltered = filters.chains.length !== allowedChains.length;
   const activeCount =
     filters.types.length +
     filters.colors.length +
-    (notBase ? 1 : filters.chains.length) +
+    (chainFiltered ? 1 : 0) +
     (filters.rarityMin || filters.rarityMax ? 1 : 0);
   const activeChips = [
-    ...(notBase
-      ? [
-          {
-            label: "Not Base",
-            clear: () => onChange({ ...filters, chains: [] })
-          }
-        ]
-      : filters.chains.map((value) => ({
+    ...(chainFiltered
+      ? filters.chains.map((value) => ({
           label: chainDetails[value].label,
-          clear: () =>
-            onChange({
-              ...filters,
-              chains: filters.chains.filter((item) => item !== value)
-            })
-        }))),
+          clear: () => onChange({ ...filters, chains: allowedChains })
+        }))
+      : []),
     ...(filters.rarityMin || filters.rarityMax
       ? [
           {
@@ -268,25 +261,11 @@ export function CollectorControls({
         </Select>
         <button
           type="button"
-          aria-label="Exclude Base"
-          aria-pressed={notBase}
-          onClick={() =>
-            onChange({
-              ...filters,
-              chains: notBase ? [] : [...collectorNotBaseChains]
-            })
-          }
-          className={cn(
-            controlClass,
-            notBase && "border-ink bg-ink text-white"
-          )}
-        >
-          Not Base
-        </button>
-        <button
-          type="button"
           onClick={() => {
-            setDraft(filters);
+            setDraft({
+              ...filters,
+              chains: chainFiltered ? filters.chains : []
+            });
             setOpen(true);
           }}
           className={cn(controlClass, "inline-flex items-center gap-2")}
@@ -294,7 +273,10 @@ export function CollectorControls({
           <Filter aria-hidden="true" size={16} /> Filters
           {activeCount > 0 ? ` (${activeCount})` : ""}
         </button>
-        {(hasCollectorFilters(filters) ||
+        {(hasCollectorFilters({
+          ...filters,
+          chains: chainFiltered ? filters.chains : []
+        }) ||
           filters.sort !== defaultCollectorFilters.sort ||
           search) && (
           <button
@@ -365,38 +347,43 @@ export function CollectorControls({
             </div>
 
             <div className="shrink-0 space-y-4 border-b border-line p-5">
-              <fieldset>
-                <legend className="mb-2 font-extrabold">Chain</legend>
-                <div className="grid grid-cols-2 gap-2">
-                  {indexedChains.map((chain) => (
-                    <label
-                      key={chain}
-                      className="flex items-center gap-2 text-sm font-semibold"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={draft.chains.includes(chain)}
-                        onChange={() =>
-                          setDraft((current) => ({
-                            ...current,
-                            chains: current.chains.includes(chain)
-                              ? current.chains.filter(
-                                  (value) => value !== chain
-                                )
-                              : indexedChains.filter(
-                                  (value) =>
-                                    value === chain ||
-                                    current.chains.includes(value)
-                                )
-                          }))
-                        }
-                        className="h-4 w-4 accent-ethereum"
-                      />
-                      {chainDetails[chain].label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
+              {edition === "og" && (
+                <fieldset>
+                  <legend className="mb-2 font-extrabold">Chain</legend>
+                  <p className="mb-3 text-xs text-muted">
+                    No selection shows all OG networks.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {allowedChains.map((chain) => (
+                      <label
+                        key={chain}
+                        className="flex items-center gap-2 text-sm font-semibold"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={draft.chains.includes(chain)}
+                          onChange={() =>
+                            setDraft((current) => ({
+                              ...current,
+                              chains: current.chains.includes(chain)
+                                ? current.chains.filter(
+                                    (value) => value !== chain
+                                  )
+                                : allowedChains.filter(
+                                    (value) =>
+                                      value === chain ||
+                                      current.chains.includes(value)
+                                  )
+                            }))
+                          }
+                          className="h-4 w-4 accent-ethereum"
+                        />
+                        {chainDetails[chain].label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
 
               {rarityRange && (
                 <fieldset>

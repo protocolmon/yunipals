@@ -33,7 +33,10 @@ import {
   type TokenMetadataFilter
 } from "@/lib/yunipalsIndexer";
 import { cn } from "@/lib/utils";
-import type { CollectionEdition } from "@/lib/collectionEdition";
+import {
+  collectionDefinitions,
+  type CollectionEdition
+} from "@/lib/collectionEdition";
 
 const TRAIT_PRIORITY = [
   "Type",
@@ -52,7 +55,6 @@ const TRAIT_PRIORITY = [
 
 type FilterPanelProps = {
   edition?: CollectionEdition;
-  onEditionChange?: (edition: CollectionEdition) => void;
   filters: CollectionFilters;
   facets?: CollectionFacets;
   facetsLoading?: boolean;
@@ -97,10 +99,23 @@ const chainIconClasses: Record<CollectionChain, string> = {
 };
 
 export function ChainFilter({
-  filters,
+  edition,
+  filters: scopedFilters,
   onChange,
   className
-}: Pick<FilterPanelProps, "filters" | "onChange" | "className">) {
+}: Pick<FilterPanelProps, "edition" | "filters" | "onChange" | "className">) {
+  const allowedChains: readonly string[] = edition
+    ? collectionDefinitions[edition].chains
+    : collectionChains;
+  const allChains =
+    scopedFilters.chains.length === allowedChains.length &&
+    allowedChains.every((chain) =>
+      scopedFilters.chains.some((value) => value === chain)
+    );
+  const filters = {
+    ...scopedFilters,
+    chains: allChains ? [] : scopedFilters.chains
+  };
   function selectChain(chain: CollectionChain | "all") {
     if (chain === "all") {
       onChange({ ...filters, chains: [], excludedChains: [] });
@@ -119,8 +134,7 @@ export function ChainFilter({
     onChange({
       ...filters,
       excludedChains: filters.excludedChains.filter((value) => value !== chain),
-      chains:
-        nextSelection.length === collectionChains.length ? [] : nextSelection
+      chains: nextSelection.length === allowedChains.length ? [] : nextSelection
     });
   }
 
@@ -146,7 +160,10 @@ export function ChainFilter({
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {CHAIN_OPTIONS.map((option) => {
+        {CHAIN_OPTIONS.filter(
+          (option) =>
+            option.value === "all" || allowedChains.includes(option.value)
+        ).map((option) => {
           const selected =
             option.value === "all"
               ? filters.chains.length === 0 &&
@@ -182,35 +199,39 @@ export function ChainFilter({
           );
         })}
       </div>
-      <div className="mt-4 border-t border-line pt-3">
-        <p className="mb-2 text-xs font-bold text-muted">Exclude chains</p>
-        <div className="flex flex-wrap gap-2">
-          {collectionChains.map((chain) => (
-            <button
-              key={chain}
-              type="button"
-              aria-label={`Exclude ${chainDetails[chain].label}`}
-              aria-pressed={filters.excludedChains.includes(chain)}
-              onClick={() =>
-                onChange({
-                  ...filters,
-                  excludedChains: filters.excludedChains.includes(chain)
-                    ? filters.excludedChains.filter((value) => value !== chain)
-                    : [...filters.excludedChains, chain]
-                })
-              }
-              className={cn(
-                "min-h-11 rounded-full border px-3 py-2 text-xs font-bold focus-visible:ring-2 focus-visible:ring-ink",
-                filters.excludedChains.includes(chain)
-                  ? "border-ink bg-ink text-white"
-                  : "border-line bg-white text-muted"
-              )}
-            >
-              Not {chainDetails[chain].label}
-            </button>
-          ))}
+      {!edition && (
+        <div className="mt-4 border-t border-line pt-3">
+          <p className="mb-2 text-xs font-bold text-muted">Exclude chains</p>
+          <div className="flex flex-wrap gap-2">
+            {collectionChains.map((chain) => (
+              <button
+                key={chain}
+                type="button"
+                aria-label={`Exclude ${chainDetails[chain].label}`}
+                aria-pressed={filters.excludedChains.includes(chain)}
+                onClick={() =>
+                  onChange({
+                    ...filters,
+                    excludedChains: filters.excludedChains.includes(chain)
+                      ? filters.excludedChains.filter(
+                          (value) => value !== chain
+                        )
+                      : [...filters.excludedChains, chain]
+                  })
+                }
+                className={cn(
+                  "min-h-11 rounded-full border px-3 py-2 text-xs font-bold focus-visible:ring-2 focus-visible:ring-ink",
+                  filters.excludedChains.includes(chain)
+                    ? "border-ink bg-ink text-white"
+                    : "border-line bg-white text-muted"
+                )}
+              >
+                Not {chainDetails[chain].label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </fieldset>
   );
 }
@@ -610,9 +631,22 @@ function TraitSection({
   );
 }
 
+function countEditionFilters(
+  filters: CollectionFilters,
+  edition?: CollectionEdition
+) {
+  const allowed = edition ? collectionDefinitions[edition].chains : [];
+  const allChains =
+    filters.chains.length === allowed.length &&
+    allowed.every((chain) => filters.chains.includes(chain));
+  return countCollectionFilters({
+    ...filters,
+    chains: allChains ? [] : filters.chains
+  });
+}
+
 export function CollectionFilterPanel({
   edition,
-  onEditionChange,
   filters,
   facets,
   facetsLoading,
@@ -624,7 +658,7 @@ export function CollectionFilterPanel({
   priceMode,
   className
 }: FilterPanelProps) {
-  const activeCount = countCollectionFilters(filters);
+  const activeCount = countEditionFilters(filters, edition);
   const rarityFacet = facets?.items.find(
     (facet): facet is NumericTraitFacet =>
       facet.kind === "numeric" && facet.traitType === "Rarity Points"
@@ -655,30 +689,6 @@ export function CollectionFilterPanel({
         className
       )}
     >
-      {edition && onEditionChange && (
-        <fieldset className="border-b border-line p-4">
-          <legend className="sr-only">Collection edition</legend>
-          <p className="mb-3 text-sm font-black text-ink">Collection</p>
-          <div className="grid grid-cols-2 gap-1 rounded-full bg-lavender/25 p-1">
-            {(["og", "tcg"] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                aria-pressed={edition === value}
-                onClick={() => onEditionChange(value)}
-                className={cn(
-                  "min-h-11 rounded-full px-4 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2",
-                  edition === value
-                    ? "bg-grape text-white shadow-sm"
-                    : "text-muted hover:text-grape"
-                )}
-              >
-                {value.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-      )}
       <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-4">
         <div className="flex items-center gap-2">
           <Filter aria-hidden="true" className="text-ethereum" size={17} />
@@ -700,8 +710,9 @@ export function CollectionFilterPanel({
         )}
       </div>
 
-      {showChainFilter && edition !== "tcg" && (
+      {showChainFilter && (!edition || edition === "og") && (
         <ChainFilter
+          edition={edition}
           filters={filters}
           onChange={onChange}
           className="rounded-none border-x-0 border-t-0 shadow-none"
@@ -799,7 +810,6 @@ type MobileFilterDrawerProps = Omit<
 
 export function MobileFilterDrawer({
   edition,
-  onEditionChange,
   open,
   filters,
   facets,
@@ -883,7 +893,7 @@ export function MobileFilterDrawer({
               Filter collection
             </h2>
             <p className="mt-0.5 text-xs font-medium text-muted">
-              {countCollectionFilters(draft)} active filters
+              {countEditionFilters(draft, edition)} active filters
             </p>
           </div>
           <button
@@ -900,14 +910,12 @@ export function MobileFilterDrawer({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
           <CollectionFilterPanel
             edition={edition}
-            onEditionChange={onEditionChange}
             filters={draft}
             facets={facets}
             facetsLoading={facetsLoading}
             facetsError={facetsError}
             onChange={setDraft}
             onRetryFacets={onRetryFacets}
-            showChainFilter={false}
             marketEnabled={marketEnabled}
             priceMode="draft"
           />

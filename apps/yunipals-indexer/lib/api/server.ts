@@ -392,6 +392,7 @@ if (process.env.BOOSTER_ARTWORK_DIRECTORY)
     new BoosterArtworkStore(process.env.BOOSTER_ARTWORK_DIRECTORY)
   );
 app.use("/v1/*", async (c, next) => {
+  if (/^\/v1\/owners\/[^/]+\/resolve$/.test(c.req.path)) return next();
   if (
     metadataSourceMode() === "archive" &&
     !["/v1/status", "/v1/indexing-status"].includes(c.req.path)
@@ -400,7 +401,8 @@ app.use("/v1/*", async (c, next) => {
       /^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//
     )?.[1] ??
       (/^\/v1\/tokens\/[0-9]+$/.test(c.req.path) ? "ethereum" : undefined)) as
-      CollectionSlug | undefined;
+      | CollectionSlug
+      | undefined;
     const selected = specific
       ? [specific]
       : (chainSelection(c.req.url)?.chains ?? collectionSlugs);
@@ -411,13 +413,15 @@ app.use("/v1/*", async (c, next) => {
   await next();
 });
 app.use("*", async (c, next) => {
+  if (/^\/v1\/owners\/[^/]+\/resolve$/.test(c.req.path)) return next();
   if (!unifiedOwnershipReads || !["GET", "HEAD"].includes(c.req.method))
     return next();
   const specific = (c.req.path.match(
     /^\/v1\/tokens\/(ethereum|base|polygon|bnb)\//
   )?.[1] ??
     (/^\/v1\/tokens\/[0-9]+$/.test(c.req.path) ? "ethereum" : undefined)) as
-    CollectionSlug | undefined;
+    | CollectionSlug
+    | undefined;
   const islands = c.req.path.startsWith("/v2/collections/ethereum-islands");
   const diagnostic =
     ["/v1/status", "/v1/indexing-status"].includes(c.req.path) ||

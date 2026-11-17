@@ -6,9 +6,9 @@ import type { CollectionEdition } from "@/lib/collectionEdition";
 import { cn } from "@/lib/utils";
 
 const collectionLabels = {
-  og: "OG Collection",
-  airdrop: "OG Airdrop",
-  tcg: "TCG Collection"
+  og: "OG",
+  airdrop: "OG Base",
+  tcg: "TCG"
 };
 
 export function CollectionEmptyState({

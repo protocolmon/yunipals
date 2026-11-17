@@ -12,12 +12,21 @@ import { useAccount } from "wagmi";
 
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { environment } from "@/environment";
+import {
+  collectionDefinitions,
+  collectionEdition,
+  collectionEditions
+} from "@/lib/collectionEdition";
+import {
+  personalCollectionHref,
+  readSavedCollectorFilters
+} from "@/lib/collectorPreferences";
 import { shortAddress } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function WalletCollectionButton() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const { address, isConnected, status } = useAccount();
   const { openConnectModal } = useAnalyticsConnectModal("navigation");
   const { openAccountModal } = useAccountModal();
@@ -31,10 +40,10 @@ export function WalletCollectionButton() {
 
     connectionRequested.current = false;
     if (pathname === "/arena" || pathname.startsWith("/arena/")) return;
-    navigate(`/collector/${address.toLowerCase()}`);
+    navigate(personalCollectionHref(address.toLowerCase()));
   }, [address, isConnected, navigate, pathname]);
 
-  useEffect(() => setMenuOpen(false), [address, isConnected, pathname]);
+  useEffect(() => setMenuOpen(false), [address, isConnected, pathname, search]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -91,6 +100,9 @@ export function WalletCollectionButton() {
   }
 
   const collectionPath = `/collector/${address.toLowerCase()}`;
+  const selectedEdition = collectionEdition(
+    new URLSearchParams(search || readSavedCollectorFilters() || "")
+  );
   const accountLinkClass = (active: boolean) =>
     cn(
       "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-badge",
@@ -102,7 +114,9 @@ export function WalletCollectionButton() {
       <div className="flex h-10 rounded-full bg-ink text-white shadow-cta">
         <button
           type="button"
-          onClick={() => navigate(collectionPath)}
+          onClick={() =>
+            navigate(personalCollectionHref(address.toLowerCase()))
+          }
           className="inline-flex min-w-0 items-center gap-2 rounded-l-full px-3 text-sm font-bold transition hover:bg-white/10 focus-visible:z-10 sm:px-4"
           aria-label={`View my collection for ${address}`}
         >
@@ -140,19 +154,28 @@ export function WalletCollectionButton() {
           <p className="px-3 pb-2 pt-1 font-mono text-xs text-muted">
             {shortAddress(address)}
           </p>
-          <Link
-            to={collectionPath}
-            role="menuitem"
-            aria-current={
-              pathname.toLowerCase() === collectionPath ? "page" : undefined
-            }
-            className={accountLinkClass(
-              pathname.toLowerCase() === collectionPath
-            )}
-          >
-            <WalletCards aria-hidden="true" size={17} />
-            My collection
-          </Link>
+          {collectionEditions.map((edition) => {
+            const active =
+              pathname.toLowerCase() === collectionPath &&
+              new URLSearchParams(search).get("collection") !== "islands" &&
+              selectedEdition === edition;
+            return (
+              <Link
+                key={edition}
+                to={personalCollectionHref(address.toLowerCase(), edition)}
+                role="menuitem"
+                aria-current={active ? "page" : undefined}
+                className={accountLinkClass(active)}
+              >
+                <WalletCards aria-hidden="true" size={17} />
+                My{" "}
+                {collectionDefinitions[edition].label.replace(
+                  "Collection",
+                  "collection"
+                )}
+              </Link>
+            );
+          })}
           <Link
             to="/orders"
             role="menuitem"

@@ -50,5 +50,5 @@ export function useBoosterCollectionCards(
       }
     );
   }, [enabled, query.data, filters]);
-  return { query, enabled, items };
+  return { query, enabled, items, collection: deployment?.monsters };
 }

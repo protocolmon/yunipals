@@ -22,7 +22,8 @@ export function useCollectorTokens(
   validOwner: boolean,
   visibility: "visible" | "hidden",
   filters: CollectorFilters,
-  filterError: string | null
+  filterError: string | null,
+  edition: "og" | "airdrop"
 ) {
   const client = useQueryClient();
   const capabilities = useQuery({
@@ -35,18 +36,34 @@ export function useCollectorTokens(
   const supported = capabilities.data?.version === 1;
   const filtersKey = collectorFiltersKey(filters);
   const scope = JSON.stringify([owner, visibility, supported, filtersKey]);
-  const [navigation, setNavigation] = useState({
-    scope,
-    cursor: "",
-    history: [] as string[]
-  });
+  type Navigation = { scope: string; cursor: string; history: string[] };
+  const navigationKey = ["collector-navigation", owner, edition];
+  const [navigation, updateNavigation] = useState<Navigation>(
+    () =>
+      client.getQueryData<Navigation>(navigationKey) ?? {
+        scope,
+        cursor: "",
+        history: []
+      }
+  );
+  const savedNavigation = client.getQueryData<Navigation>(navigationKey);
   const current =
     navigation.scope === scope
       ? navigation
-      : { scope, cursor: "", history: [] as string[] };
+      : savedNavigation?.scope === scope
+        ? savedNavigation
+        : { scope, cursor: "", history: [] };
+  function setNavigation(next: Navigation) {
+    client.setQueryData(navigationKey, next);
+    updateNavigation(next);
+  }
+  useEffect(() => {
+    client.setQueryData(["collector-navigation", owner, edition], current);
+  }, [client, owner, edition, current.scope, current.cursor]);
   const unsupportedFilters =
     !supported &&
-    (hasCollectorFilters(filters) || filters.sort !== "rarity-capped-desc");
+    (hasCollectorFilters({ ...filters, chains: [] }) ||
+      filters.sort !== "rarity-capped-desc");
   const unsupportedName =
     supported &&
     !capabilities.data?.namePrefixSearch &&
@@ -88,6 +105,7 @@ export function useCollectorTokens(
         : fetchOwnerTokens(
             owner,
             {
+              chains: filters.chains,
               limit: collectorPageSize,
               cursor: current.cursor || undefined,
               visibility

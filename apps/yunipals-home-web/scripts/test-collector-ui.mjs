@@ -66,41 +66,38 @@ try {
   });
   if (await browseOnly.isVisible()) await browseOnly.click();
   await expectCards(24);
-  const notBase = page.getByRole("button", {
-    name: "Exclude Base",
+  const editions = page.getByRole("navigation", {
+    name: "Yunipals collections",
     exact: true
   });
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
-    .waitFor();
   assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), [
     "ethereum",
     "polygon",
     "bnb"
   ]);
   assert.ok((await hrefs()).every((href) => !href.includes("/base/")));
-  assert.ok(
-    requests.every(
-      (request) =>
-        !new URL(request).searchParams.getAll("chain").includes("base")
-    )
-  );
   await page.reload();
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
-    .waitFor();
-  await notBase.click();
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
-    .waitFor();
-  await page.goto(route);
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
-    .waitFor();
   await expectCards(24);
-  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), []);
+  await editions.getByRole("link", { name: "OG Airdrop", exact: true }).click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector("main article a")
+      ?.getAttribute("href")
+      ?.includes("/base/")
+  );
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), ["base"]);
+  await editions
+    .getByRole("link", { name: "OG Collection", exact: true })
+    .click();
+  await page.waitForFunction(
+    () =>
+      !document
+        .querySelector("main article a")
+        ?.getAttribute("href")
+        ?.includes("/base/")
+  );
   report.tests.push(
-    "first-visit Not Base, server-side exclusion, reload and saved opt-out"
+    "OG and airdrop boundaries, reload and independent preferences"
   );
   await page.getByText("Rank #1", { exact: true }).first().waitFor();
   const initial = await hrefs();
@@ -147,6 +144,12 @@ try {
   await dialog.getByRole("checkbox", { name: "Water", exact: true }).check();
   await dialog.getByRole("tab", { name: "Color", exact: true }).click();
   await dialog.getByRole("checkbox", { name: "Blue", exact: true }).check();
+  await dialog
+    .getByRole("checkbox", { name: "Ethereum", exact: true })
+    .uncheck();
+  await dialog
+    .getByRole("checkbox", { name: "Polygon", exact: true })
+    .uncheck();
   await dialog.getByRole("checkbox", { name: /BNB/ }).check();
   await dialog.getByRole("textbox", { name: "Minimum RP" }).fill("110.00");
   await dialog.getByRole("textbox", { name: "Maximum RP" }).fill("130");
@@ -169,13 +172,13 @@ try {
   await page
     .getByRole("searchbox", { name: "Search your collection" })
     .pressSequentially("32", { delay: 60 });
-  await expectCards(4);
+  await expectCards(3);
   assert.equal(requests.length - beforeSearch, 1);
   assert.ok((await hrefs()).every((href) => href.endsWith("/32")));
   await page.getByRole("searchbox").fill("no such creature");
   await page.getByText("No matches", { exact: true }).waitFor();
   await page.goBack();
-  await expectCards(4);
+  await expectCards(3);
   assert.equal(await page.getByRole("searchbox").inputValue(), "32");
   report.tests.push("debounced exact ID search, empty state, browser history");
 
@@ -188,19 +191,24 @@ try {
     name: "Filters",
     exact: true
   });
-  await notBase.click();
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: true })
-    .waitFor();
-  await expectCards(24);
-  assert.ok((await hrefs()).every((href) => !href.includes("/base/")));
-  await page
-    .getByRole("button", { name: "Remove Not Base filter", exact: true })
+  await editions.getByRole("link", { name: "OG Airdrop", exact: true }).click();
+  await page.waitForFunction(() =>
+    document
+      .querySelector("main article a")
+      ?.getAttribute("href")
+      ?.includes("/base/")
+  );
+  await editions
+    .getByRole("link", { name: "OG Collection", exact: true })
     .click();
-  await page
-    .getByRole("button", { name: "Exclude Base", exact: true, pressed: false })
-    .waitFor();
-  report.tests.push("mobile Not Base toggle and removable filter chip");
+  await page.waitForFunction(
+    () =>
+      !document
+        .querySelector("main article a")
+        ?.getAttribute("href")
+        ?.includes("/base/")
+  );
+  report.tests.push("mobile collection navigation keeps holdings scoped");
   await filterButton.click();
   await dialog.waitFor();
   const typeTab = dialog.getByRole("tab", { name: "Type", exact: true });
@@ -256,7 +264,7 @@ try {
     (request) => new URL(request.url()).searchParams.get("q") === "water"
   );
   await page.getByRole("searchbox").fill("32");
-  await expectCards(4);
+  await expectCards(3);
   await pause(900);
   assert.ok((await hrefs()).every((href) => href.endsWith("/32")));
   report.tests.push(
@@ -276,7 +284,7 @@ try {
   });
   await page.getByRole("searchbox").fill("sample fire 32");
   await page.waitForURL(/q=sample/);
-  await expectCards(4);
+  await expectCards(3);
   await pause(500);
   const longTasks = await page.evaluate(() => {
     window.collectorTaskObserver.disconnect();
@@ -313,15 +321,8 @@ try {
     exact: true
   });
   if (await oldBrowseOnly.isVisible()) await oldBrowseOnly.click();
-  await oldPage
-    .getByText(/These collection filters are temporarily unavailable/)
-    .waitFor();
-  assert.equal(await oldPage.locator("main article").count(), 0);
-  await oldPage
-    .getByRole("button", { name: "Clear filters", exact: true })
-    .click();
   await oldPage.waitForFunction(
-    () => document.querySelectorAll("main article").length === 24
+    () => document.querySelectorAll("main article").length === 18
   );
   assert.equal(
     await oldPage

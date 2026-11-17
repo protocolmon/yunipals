@@ -33,6 +33,7 @@ app.use(
   })
 );
 app.use("*", async (c, next) => {
+  if (/^\/v1\/owners\/[^/]+\/resolve$/.test(c.req.path)) return next();
   if (!unifiedOwnershipReads || c.req.method !== "GET") return next();
   return withOwnershipRequest(
     apiPool,

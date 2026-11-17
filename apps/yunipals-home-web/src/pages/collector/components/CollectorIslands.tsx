@@ -47,8 +47,8 @@ export function CollectorIslands({ ownerInput }: { ownerInput: string }) {
     "Your Ethereum islands, including islands held in legacy staking."
   );
   return (
-    <main className="mx-auto min-h-[65vh] max-w-6xl px-4 py-12">
-      <h1 className="display text-5xl text-ink">Island collection</h1>
+    <main className="mx-auto min-h-[65vh] max-w-6xl px-4 pb-12 pt-2">
+      <h1 className="sr-only">Island collection</h1>
       <p className="mt-4 break-all text-sm text-muted">{ownerInput}</p>
       <p className="mt-3 text-sm text-muted">
         Includes islands in your wallet and verified staked islands.

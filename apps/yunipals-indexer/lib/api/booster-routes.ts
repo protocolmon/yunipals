@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { Pool } from "pg";
 import { isAddress } from "viem";
 import {
@@ -274,7 +274,7 @@ export function registerBoosterRoutes(
     return c.json({ ...state, items });
   });
 
-  router.get("/boosters/monsters", async (c) => {
+  const listMonsters = async (c: Context, owner?: string) => {
     c.header("Cache-Control", "no-store");
     const cursor = c.req.query("after") ?? "0";
     const requestedLimit = c.req.query("limit") ?? "24";
@@ -301,7 +301,7 @@ export function registerBoosterRoutes(
          AND r.opening=m.is_original
        WHERE m.collection=$3 AND NOT m.burned AND m.mint_block>0
          AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
-         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric
+         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric${owner ? " AND m.owner=$7" : ""}
        ORDER BY m.token_id::numeric,m.id LIMIT $6`,
       [
         deployment.registry,
@@ -309,7 +309,8 @@ export function registerBoosterRoutes(
         deployment.monsters,
         state.indexedBlock,
         cursor,
-        limit + 1
+        limit + 1,
+        ...(owner ? [owner.toLowerCase()] : [])
       ]
     );
     const rows = result.rows;
@@ -329,7 +330,8 @@ export function registerBoosterRoutes(
       items,
       nextCursor: rows.length > limit ? items.at(-1)!.tokenId : null
     });
-  });
+  };
+  router.get("/boosters/monsters", (c) => listMonsters(c));
 
   router.get("/boosters/monsters/:collection/:tokenId", async (c) => {
     const { collection, tokenId } = c.req.param();
@@ -352,6 +354,7 @@ export function registerBoosterRoutes(
     router.get(`/owners/:address/booster-${resource}`, async (c) => {
       const address = c.req.param("address");
       if (!isAddress(address)) return c.json({ error: "invalid_owner" }, 400);
+      if (resource === "monsters") return listMonsters(c, address);
       const cursor = c.req.query("after") ?? "0";
       if (!validId(cursor)) return c.json({ error: "invalid_cursor" }, 400);
       const limit = Number(c.req.query("limit") ?? 50);
@@ -375,14 +378,6 @@ export function registerBoosterRoutes(
           ...row,
           pack: packs.rows.find((pack) => pack.id === row.typeKey)
         }));
-      } else if (resource === "monsters") {
-        const result = await pool.query(
-          `SELECT ${monsterColumns} FROM ${schema}.booster_monster m
-          JOIN ${schema}.booster_type p ON p.id=m.type_key
-          WHERE m.owner=$1 AND NOT m.burned AND m.token_id::numeric>$2::numeric ORDER BY m.token_id::numeric LIMIT $3`,
-          args
-        );
-        items = result.rows;
       } else {
         const result = await pool.query(
           `SELECT ${requestColumns} FROM ${schema}.booster_request

@@ -3,7 +3,9 @@ import { createPortal } from "react-dom";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
 import { X } from "lucide-react";
+import { isAddress } from "viem";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
+import { confirmedBoosterCollectionKey } from "@/lib/confirmedBoosterCollection";
 import { DialogSurface } from "@/components/ui/dialog";
 import {
   combinedBoosterPulls,
@@ -145,9 +147,37 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
     }
   }
   const ready = Boolean(pulls?.[0] && (!forfeited || acceptForfeited));
+  const minted = cards
+    .flatMap((query) => query.data ?? [])
+    .filter(
+      (item) =>
+        typeof item.mintedTo === "string" &&
+        isAddress(item.mintedTo) &&
+        typeof item.mintBlock === "string" &&
+        /^[1-9][0-9]*$/.test(item.mintBlock)
+    );
+  const recipients = [
+    ...new Set(minted.map((item) => item.mintedTo.toLowerCase()))
+  ];
   useEffect(() => {
     if (!ready || refreshed.current) return;
     refreshed.current = true;
+    for (const recipient of recipients) {
+      const received = minted.filter(
+        (item) => item.mintedTo.toLowerCase() === recipient
+      );
+      const indexedBlock = received
+        .reduce(
+          (block, item) =>
+            BigInt(item.mintBlock) > block ? BigInt(item.mintBlock) : block,
+          0n
+        )
+        .toString();
+      queries.setQueryData(confirmedBoosterCollectionKey(recipient), {
+        indexedBlock,
+        tokenIds: received.map((item) => item.tokenId)
+      });
+    }
     // Confirmation precedes VRF and indexing. Refresh ownership/credits again
     // when the actual cards arrive, without disturbing the active reveal.
     for (const resource of [
@@ -160,7 +190,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
       void queries.invalidateQueries({
         queryKey: [...boosterQueryKey, resource]
       });
-  }, [ready, queries]);
+  }, [ready, queries, minted, recipients]);
   const errored =
     !validGroup ||
     aggregationError ||
@@ -185,6 +215,7 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
     return (
       <BoosterPackOpening
         {...pulls[0]}
+        recipient={recipients.length === 1 ? recipients[0] : undefined}
         additionalCards={pulls.slice(1)}
         replayHash={requests?.[0]?.transactionHash}
         onClose={onClose}

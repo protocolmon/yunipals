@@ -236,7 +236,10 @@ export const tokenVisibilities = ["visible", "hidden", "all"] as const;
 
 export type TokenVisibility = (typeof tokenVisibilities)[number];
 
-export type OwnerTokenQuery = Pick<TokenQuery, "chain" | "limit" | "cursor"> & {
+export type OwnerTokenQuery = Pick<
+  TokenQuery,
+  "chain" | "chains" | "limit" | "cursor"
+> & {
   visibility?: TokenVisibility;
 };
 
@@ -398,13 +401,45 @@ export function fetchTokens(query: TokenQuery = {}, signal?: AbortSignal) {
   );
 }
 
+export async function fetchOwnerResolution(
+  owner: string,
+  signal?: AbortSignal,
+  chains: readonly IndexedChain[] = ["base"]
+) {
+  const params = new URLSearchParams();
+  appendChainParams(params, chains);
+  const result = await getJson<OwnerResolution>(
+    `/v1/owners/${encodeURIComponent(owner)}/resolve?${params}`,
+    signal
+  );
+  const addresses = Object.entries(result.resolvedAddresses ?? {});
+  if (
+    !addresses.length ||
+    addresses.some(
+      ([chain, address]) =>
+        !chains.includes(chain as IndexedChain) ||
+        typeof address !== "string" ||
+        !isEthereumAddress(address)
+    )
+  )
+    throw new IndexerError(
+      502,
+      "invalid_owner_resolution",
+      "The wallet address could not be verified."
+    );
+  return result;
+}
+
 export function fetchOwnerTokens(
   address: string,
   query: OwnerTokenQuery = {},
   signal?: AbortSignal
 ) {
+  const { chains, chain, ...options } = query;
+  const params = new URLSearchParams(queryString(options));
+  appendChainParams(params, chains ?? chain);
   return getJson<OwnerTokenPage>(
-    `/v1/owners/${encodeURIComponent(address)}/tokens${queryString(query)}`,
+    `/v1/owners/${encodeURIComponent(address)}/tokens?${params}`,
     signal
   );
 }
