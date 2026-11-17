@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { Link } from "react-router-dom";
+import {
+  TransactionStatus,
+  transactionActionVariants
+} from "@/components/ui/transaction";
 import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import type { usePortalClaim } from "@/hooks/usePortalClaim";
@@ -36,7 +40,7 @@ export function PortalWalletButton({ claim }: { claim: PortalClaimActions }) {
 export function PortalClaimStatus({ claim }: { claim: PortalClaimActions }) {
   return (
     <div className="mt-5 space-y-3" aria-live="polite">
-      {claim.busy && <p role="status">{claim.phase}</p>}
+      {claim.busy && !claim.pending && <p role="status">{claim.phase}</p>}
       {claim.error && (
         <p
           role="alert"
@@ -45,41 +49,45 @@ export function PortalClaimStatus({ claim }: { claim: PortalClaimActions }) {
           {claim.error}
         </p>
       )}
-      {claim.pending && (
-        <a
-          className="font-semibold underline"
+      {claim.pending && !claim.success && (
+        <TransactionStatus
+          title="Portal claim"
+          status={
+            claim.busy
+              ? claim.phase
+              : "Check the saved burn transaction for its current status."
+          }
+          tone={claim.error ? "error" : "pending"}
           href={portalTransactionUrl(claim.pending.hash)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View pending burn transaction
-        </a>
+          linkLabel="View pending burn transaction"
+        />
       )}
       {claim.success && (
-        <div role="status" className="rounded-2xl bg-mint/30 p-5">
-          <p className="font-bold">
-            Portal #{claim.success.tokenId} burned. You received{" "}
-            {portalPrice(claim.success.amount)} USDC.
-          </p>
-          <p className="mt-2 text-sm">
+        <TransactionStatus
+          title="Portal claim confirmed"
+          tone="success"
+          status={
+            <>
+              Portal #{claim.success.tokenId} burned. You received{" "}
+              {portalPrice(claim.success.amount)} USDC.
+            </>
+          }
+          href={portalTransactionUrl(claim.success.hash)}
+          linkLabel="View confirmed claim"
+          actions={
+            <Link
+              className={transactionActionVariants()}
+              to={`/portals/tokens/${claim.success.tokenId}`}
+            >
+              Portal history
+            </Link>
+          }
+        >
+          <p>
             Its balance has been paid and it is permanently removed from future
             portal rounds.
           </p>
-          <a
-            className="mt-2 inline-block font-semibold underline"
-            href={portalTransactionUrl(claim.success.hash)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View confirmed claim
-          </a>
-          <Link
-            className="ml-4 font-semibold underline"
-            to={`/portals/tokens/${claim.success.tokenId}`}
-          >
-            Portal history
-          </Link>
-        </div>
+        </TransactionStatus>
       )}
     </div>
   );

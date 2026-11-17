@@ -4,6 +4,7 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Link } from "react-router-dom";
 import { BaseError, keccak256, type Address, type Hex } from "viem";
 import { estimateL1Fee } from "viem/op-stack";
+import { TransactionLink } from "@/components/ui/transaction";
 import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { cn } from "@/lib/utils";
 import { formatRoundedAmount } from "@/lib/format";
@@ -239,14 +240,14 @@ export function BoosterEthSetupPage() {
               Review step
             </button>
             {receipts[step] && (
-              <a
-                className="ml-4 text-sm text-grape underline"
+              <TransactionLink
+                className="ml-4"
                 target="_blank"
                 rel="noreferrer"
                 href={`https://basescan.org/tx/${receipts[step]}`}
               >
                 View transaction
-              </a>
+              </TransactionLink>
             )}
             <label className="mt-4 block text-xs text-muted">
               Restore transaction hash

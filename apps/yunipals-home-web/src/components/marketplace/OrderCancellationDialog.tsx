@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress } from "viem";
 import { useAccount } from "wagmi";
 
+import { TransactionStatus } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { chainDetails } from "@/data/chains";
 import { marketClient } from "@/hooks/marketplace/useMarketplace";
@@ -31,13 +32,35 @@ function CancelAction({ record }: { record: RecoverableOrder }) {
   ].includes(action.state.stage);
   return (
     <>
-      <p className="mt-4 text-sm" role="status">
-        {action.state.message ??
-          action.status.data ??
-          (busy
-            ? "Confirm the cancellation in your wallet and wait for its receipt."
-            : "Cancellation requires network gas shown by your wallet.")}
-      </p>
+      <TransactionStatus
+        className="mt-4"
+        title="Order cancellation"
+        status={
+          <>
+            {" "}
+            {action.state.message ??
+              action.status.data ??
+              (busy
+                ? "Confirm the cancellation in your wallet and wait for its receipt."
+                : "Cancellation requires network gas shown by your wallet.")}
+          </>
+        }
+        tone={
+          action.state.stage === "confirmed"
+            ? "success"
+            : action.state.stage === "error"
+              ? "error"
+              : busy
+                ? "pending"
+                : "neutral"
+        }
+        href={
+          action.state.hash
+            ? `${chainDetails[record.asset.chain].explorerUrl}/tx/${action.state.hash}`
+            : undefined
+        }
+        linkLabel="View cancellation transaction"
+      />
       <button
         type="button"
         disabled={
@@ -52,16 +75,6 @@ function CancelAction({ record }: { record: RecoverableOrder }) {
       >
         {busy ? "Cancellation in progress…" : "Confirm cancellation"}
       </button>
-      {action.state.hash && (
-        <a
-          className="mt-3 block text-sm font-bold text-ethereum"
-          href={`${chainDetails[record.asset.chain].explorerUrl}/tx/${action.state.hash}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View cancellation transaction
-        </a>
-      )}
     </>
   );
 }

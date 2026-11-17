@@ -2,6 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { TransactionRow } from "@/components/ui/transaction";
 import { QueryError } from "@/components/QueryState";
 import { TokenArtwork } from "@/components/TokenArtwork";
 import { ChainBadge } from "@/components/ui/ChainBadge";
@@ -308,55 +309,57 @@ export function IslandDetail({
                   {transfers.data?.pages
                     .flatMap((page) => page.items)
                     .map((transfer) => (
-                      <li
+                      <TransactionRow
+                        as="li"
                         key={transfer.id}
-                        className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
-                      >
-                        <div>
-                          <p className="text-sm font-extrabold text-ink">
-                            {transfer.from === zeroAddress
-                              ? "Minted"
-                              : transfer.to === zeroAddress
-                                ? "Burned"
-                                : "Transferred"}
-                          </p>
-                          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
-                            {transfer.from === zeroAddress ? (
-                              <span>Mint</span>
-                            ) : (
-                              <Link
-                                to={islandOwnerHref(
-                                  transfer.from,
-                                  collectionId
-                                )}
-                                className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
-                              >
-                                {shortAddress(transfer.from)}
-                              </Link>
-                            )}
-                            <ArrowRight aria-hidden="true" size={12} />
-                            {transfer.to === zeroAddress ? (
-                              <span>Burn</span>
-                            ) : (
-                              <Link
-                                to={islandOwnerHref(transfer.to, collectionId)}
-                                className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
-                              >
-                                {shortAddress(transfer.to)}
-                              </Link>
-                            )}
-                          </p>
-                        </div>
-                        <a
-                          href={`${explorer}/tx/${transfer.transactionHash}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded text-xs font-bold text-muted hover:text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"
-                        >
-                          {transferDate(transfer.blockTimestamp)}{" "}
-                          <ExternalLink aria-hidden="true" size={12} />
-                        </a>
-                      </li>
+                        className="px-5"
+                        title={
+                          transfer.from === zeroAddress
+                            ? "Minted"
+                            : transfer.to === zeroAddress
+                              ? "Burned"
+                              : "Transferred"
+                        }
+                        tone="success"
+                        status={
+                          <>
+                            <p className="mt-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted">
+                              {transfer.from === zeroAddress ? (
+                                <span>Mint</span>
+                              ) : (
+                                <Link
+                                  to={islandOwnerHref(
+                                    transfer.from,
+                                    collectionId
+                                  )}
+                                  className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
+                                >
+                                  {shortAddress(transfer.from)}
+                                </Link>
+                              )}
+                              <ArrowRight aria-hidden="true" size={12} />
+                              {transfer.to === zeroAddress ? (
+                                <span>Burn</span>
+                              ) : (
+                                <Link
+                                  to={islandOwnerHref(
+                                    transfer.to,
+                                    collectionId
+                                  )}
+                                  className="rounded text-ethereum hover:underline focus-visible:ring-2 focus-visible:ring-ethereum"
+                                >
+                                  {shortAddress(transfer.to)}
+                                </Link>
+                              )}
+                            </p>
+                            <p className="mt-1">
+                              {transferDate(transfer.blockTimestamp)}
+                            </p>
+                          </>
+                        }
+                        href={`${explorer}/tx/${transfer.transactionHash}`}
+                        linkLabel="View transfer transaction"
+                      />
                     ))}
                 </ol>
               )}

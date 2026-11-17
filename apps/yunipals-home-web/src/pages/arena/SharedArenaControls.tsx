@@ -9,6 +9,7 @@ import {
 import { BaseError, type Address, type Hex } from "viem";
 import { arenaV2Abi } from "@protopals/yunipals-market-core/arenaV2Abi";
 import { arenaMode } from "@protopals/yunipals-market-core/arenaProtocol";
+import { TransactionStatus } from "@/components/ui/transaction";
 import { environment } from "@/environment";
 import { arenaRequestAt, type ArenaConfig } from "@/lib/arenaLive";
 import { cn } from "@/lib/utils";
@@ -289,15 +290,12 @@ export function SharedArenaControls({
       )}
       {state.error && <p role="alert">{state.error.message}</p>}
       {pending && (
-        <div className="space-y-3">
-          <a
-            className="break-all underline"
-            href={`https://basescan.org/tx/${pending}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View owner transaction
-          </a>
+        <TransactionStatus
+          className="mt-6"
+          title="Arena owner transaction"
+          status="Check the saved transaction before continuing."
+          href={`https://basescan.org/tx/${pending}`}
+        >
           <button
             className={button}
             disabled={busy}
@@ -317,7 +315,7 @@ export function SharedArenaControls({
           >
             Check owner transaction
           </button>
-        </div>
+        </TransactionStatus>
       )}
       {error && <p role="alert">{error}</p>}
     </section>

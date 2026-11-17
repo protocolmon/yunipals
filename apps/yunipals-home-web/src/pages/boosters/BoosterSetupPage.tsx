@@ -18,6 +18,7 @@ import {
 import { estimateL1Fee } from "viem/op-stack";
 import { packRegistryAbi } from "@protopals/yunipals-market-core/boosterAbi";
 
+import { TransactionLink } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { environment } from "@/environment";
 import { boosterAddresses, boosterQueryKey } from "@/lib/boosters";
@@ -506,14 +507,13 @@ export function BoosterSetupPage({
             />
           </label>
           {hash && (
-            <a
+            <TransactionLink
               href={`https://basescan.org/tx/${hash}`}
               target="_blank"
               rel="noreferrer"
-              className="block break-all text-sm underline"
             >
               Last transaction: {hash}
-            </a>
+            </TransactionLink>
           )}
         </section>
       )}

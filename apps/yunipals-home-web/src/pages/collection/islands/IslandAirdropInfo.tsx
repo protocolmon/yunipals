@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { TransactionLink } from "@/components/ui/transaction";
 import { formatInteger, shortAddress } from "@/lib/format";
 import {
   islandDetailHref,
@@ -79,15 +79,14 @@ export function IslandAirdropInfo({ token }: { token: IslandToken }) {
           <p className="mt-2">
             Replacement recipient: {shortAddress(token.replacement.recipient)}
           </p>
-          <a
+          <TransactionLink
             href={`https://basescan.org/tx/${token.replacement.mintTransactionHash}`}
             target="_blank"
             rel="noreferrer"
-            className="mt-2 inline-flex items-center gap-2 font-bold underline focus-visible:ring-2 focus-visible:ring-ethereum"
+            className="mt-2"
           >
             View replacement airdrop{" "}
-            <ExternalLink aria-hidden="true" size={12} />
-          </a>
+          </TransactionLink>
           <a
             href={`https://basescan.org/token/${token.replacement.sourceContract}?a=${token.tokenId}`}
             target="_blank"
@@ -98,14 +97,14 @@ export function IslandAirdropInfo({ token }: { token: IslandToken }) {
           </a>
         </div>
       )}
-      <a
+      <TransactionLink
         href={`https://basescan.org/tx/${token.airdrop.mintTransactionHash}`}
         target="_blank"
         rel="noreferrer"
-        className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-muted underline focus-visible:ring-2 focus-visible:ring-ethereum"
+        className="mt-4"
       >
-        View first Base airdrop <ExternalLink aria-hidden="true" size={12} />
-      </a>
+        View first Base airdrop
+      </TransactionLink>
     </section>
   );
 }

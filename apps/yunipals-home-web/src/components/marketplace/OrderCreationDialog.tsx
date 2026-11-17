@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { formatUnits, getAddress, zeroAddress, type Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { TransactionStatus } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
@@ -449,32 +450,41 @@ export function OrderCreationDialog({
           </>
         )
       )}
-      <div
-        className="mt-4 text-sm font-semibold"
-        role="status"
-        aria-live="polite"
-      >
-        {labels[creation.stage]}
-        {creation.message && <p>{creation.message}</p>}
-        {creation.published && (
-          <p>
-            {creation.published.status === "active"
-              ? `${side === "listing" ? "Listing" : "Offer"} published.`
-              : creation.bnbOnchain
-                ? "Publication confirmed on chain; the order is waiting for indexing."
-                : `Order saved. Current status: ${creation.published.status}.`}
-          </p>
-        )}
-      </div>
-      {creation.hash && (
-        <a
-          href={`${chainDetails[asset.chain].explorerUrl}/tx/${creation.hash}`}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-block text-sm font-bold text-ethereum"
-        >
-          View transaction
-        </a>
+      {(labels[creation.stage] ||
+        creation.message ||
+        creation.published ||
+        creation.hash) && (
+        <TransactionStatus
+          className="mt-4"
+          title={side === "listing" ? "Listing status" : "Offer status"}
+          tone={
+            creation.stage === "error"
+              ? "error"
+              : creation.published?.status === "active"
+                ? "success"
+                : "neutral"
+          }
+          href={
+            creation.hash
+              ? `${chainDetails[asset.chain].explorerUrl}/tx/${creation.hash}`
+              : undefined
+          }
+          status={
+            <>
+              {labels[creation.stage]}
+              {creation.message && <p>{creation.message}</p>}
+              {creation.published && (
+                <p>
+                  {creation.published.status === "active"
+                    ? `${side === "listing" ? "Listing" : "Offer"} published.`
+                    : creation.bnbOnchain
+                      ? "Publication confirmed on chain; the order is waiting for indexing."
+                      : `Order saved. Current status: ${creation.published.status}.`}
+                </p>
+              )}
+            </>
+          }
+        />
       )}
       {!address && (
         <button

@@ -12,6 +12,7 @@ import { BaseError, formatEther, type Address, type Hex } from "viem";
 import { base } from "viem/chains";
 import { estimateL1Fee } from "viem/op-stack";
 
+import { TransactionLink } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { boosterSetupOwner } from "@/lib/boosterSetup";
@@ -541,14 +542,14 @@ function BoosterYpalLaunchPage() {
               </span>
             </div>
             {receipts[step] && (
-              <a
-                className="mt-2 block break-all text-sm underline"
+              <TransactionLink
+                className="mt-2"
                 href={`https://basescan.org/tx/${receipts[step]}`}
                 target="_blank"
                 rel="noreferrer"
               >
                 Transaction {receipts[step]}
-              </a>
+              </TransactionLink>
             )}
             {current?.nextStep === step &&
               !current.pending &&

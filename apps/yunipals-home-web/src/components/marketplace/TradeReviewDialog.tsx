@@ -1,4 +1,4 @@
-import { ExternalLink, Loader2, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import {
   useId,
   useLayoutEffect,
@@ -9,6 +9,7 @@ import {
 import { getAddress } from "viem";
 import { useAccount } from "wagmi";
 
+import { TransactionStatus } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { chainDetails } from "@/data/chains";
@@ -200,25 +201,33 @@ export function TradeReviewDialog({
             : `Approve Seaport to transfer this NFT, then return here to accept the offer. This approval covers token #${order.asset.tokenId}.`}
         </p>
       )}
-      <div
-        className="mt-5 text-sm font-semibold"
-        aria-live="polite"
-        role="status"
-      >
-        {labels[stage]}
-        {trade.state.message && (
-          <p className="text-red-700">{trade.state.message}</p>
-        )}
-      </div>
-      {trade.state.hash && (
-        <a
-          href={`${chainDetails[order.asset.chain].explorerUrl}/tx/${trade.state.hash}`}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-ethereum"
-        >
-          View transaction <ExternalLink aria-hidden="true" size={14} />
-        </a>
+      {(labels[stage] || trade.state.message || trade.state.hash) && (
+        <TransactionStatus
+          className="mt-5"
+          title={buying ? "Purchase status" : "Offer acceptance status"}
+          status={
+            <>
+              {labels[stage]}
+              {trade.state.message && (
+                <p className="text-red-700">{trade.state.message}</p>
+              )}
+            </>
+          }
+          tone={
+            stage === "confirmed" || stage === "approved"
+              ? "success"
+              : stage === "error"
+                ? "error"
+                : busy
+                  ? "pending"
+                  : "neutral"
+          }
+          href={
+            trade.state.hash
+              ? `${chainDetails[order.asset.chain].explorerUrl}/tx/${trade.state.hash}`
+              : undefined
+          }
+        />
       )}
       <div className="mt-6 flex flex-wrap gap-3">
         {!address ? (

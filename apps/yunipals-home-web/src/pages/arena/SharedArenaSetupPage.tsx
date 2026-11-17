@@ -1,3 +1,4 @@
+import { TransactionStatus } from "@/components/ui/transaction";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -313,15 +314,12 @@ export function SharedArenaSetupPage() {
         </section>
       )}
       {hash && (
-        <section className="mt-6 space-y-4 rounded-card border border-line p-5">
-          <a
-            className="break-all underline"
-            href={`https://basescan.org/tx/${hash}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View deployment transaction
-          </a>
+        <TransactionStatus
+          className="mt-6"
+          title="Arena deployment"
+          status="Check the saved transaction before continuing."
+          href={`https://basescan.org/tx/${hash}`}
+        >
           <button
             className={button}
             disabled={busy || result.isFetching}
@@ -376,7 +374,7 @@ export function SharedArenaSetupPage() {
               </details>
             </>
           )}
-        </section>
+        </TransactionStatus>
       )}
       {!hash && (
         <details className="mt-6">

@@ -18,6 +18,7 @@ import {
 } from "viem";
 import { estimateL1Fee } from "viem/op-stack";
 
+import { TransactionLink } from "@/components/ui/transaction";
 import { DialogSurface } from "@/components/ui/dialog";
 import { boosterSetupOwner } from "@/lib/boosterSetup";
 import { cn } from "@/lib/utils";
@@ -570,14 +571,13 @@ export function BoosterBatchSetupPage() {
               </button>
             )}
             {saved.deploymentHash && (
-              <a
+              <TransactionLink
                 href={`https://basescan.org/tx/${saved.deploymentHash}`}
                 target="_blank"
                 rel="noreferrer"
-                className="block break-all text-sm underline"
               >
                 Deployment transaction: {saved.deploymentHash}
-              </a>
+              </TransactionLink>
             )}
           </section>
           <section className="mt-5 space-y-4 rounded-card border border-line p-6">
@@ -701,14 +701,13 @@ export function BoosterBatchSetupPage() {
               </button>
             )}
             {saved.upgradeHash && (
-              <a
+              <TransactionLink
                 href={`https://basescan.org/tx/${saved.upgradeHash}`}
                 target="_blank"
                 rel="noreferrer"
-                className="block break-all text-sm underline"
               >
                 Upgrade transaction: {saved.upgradeHash}
-              </a>
+              </TransactionLink>
             )}
           </section>
         </>

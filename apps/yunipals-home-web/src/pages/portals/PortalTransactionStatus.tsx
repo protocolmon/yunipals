@@ -1,11 +1,41 @@
-import { useEffect } from "react";
+import { Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
+import {
+  TransactionHistory,
+  TransactionRow,
+  transactionActionVariants
+} from "@/components/ui/transaction";
 import { usePortalTransactions } from "@/hooks/usePortalTransactions";
 import { portalTransactionPending } from "@/lib/portalTransactions";
 import { environment } from "@/environment";
 
 export function PortalTransactionStatus() {
   const { tracker, transactions } = usePortalTransactions();
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const visible = transactions
+    .filter(
+      (value) =>
+        portalTransactionPending(value) ||
+        Date.now() - value.createdAt < 3600000
+    )
+    .slice(-8)
+    .reverse();
+  const pendingCount = visible.filter(portalTransactionPending).length;
+  const failedCount = visible.filter(
+    (value) => value.state === "failed"
+  ).length;
+  const attentionKey = visible
+    .filter((value) => value.state !== "indexed")
+    .map(
+      (value) =>
+        `${value.id}:${value.state === "failed" ? "failed" : "pending"}`
+    )
+    .join(",");
+  useEffect(() => {
+    if (attentionKey) setHistoryOpen(true);
+  }, [attentionKey]);
   useEffect(() => {
     if (!tracker) return;
     let stopped = false;
@@ -28,12 +58,6 @@ export function PortalTransactionStatus() {
       clearTimeout(timer);
     };
   }, [tracker]);
-  if (!transactions.length) return null;
-  const visible = transactions
-    .filter(
-      (v) => portalTransactionPending(v) || Date.now() - v.createdAt < 3600000
-    )
-    .slice(-8);
   if (!visible.length) return null;
   const explorer =
     environment.portalChainId === 8453
@@ -44,49 +68,69 @@ export function PortalTransactionStatus() {
   return (
     <section
       aria-label="Saved portal transactions"
-      className="mx-auto mt-6 w-full max-w-6xl rounded-card border border-line bg-white p-4"
+      className="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6"
     >
-      <h2 className="font-semibold">Your portal transactions</h2>
-      <ul className="mt-3 space-y-3">
-        {visible.map((value) => (
-          <li
-            key={value.id}
-            className="flex flex-wrap items-center gap-3 text-sm"
-          >
-            <div className="min-w-0 flex-1">
-              <strong>{value.label}</strong>
-              <p role="status">{value.message}</p>
-            </div>
-            {explorer && (
-              <a
-                className="underline"
-                href={`${explorer}/tx/${value.hash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Transaction
-              </a>
-            )}
-            {value.actionKey.startsWith("grade:") && (
-              <Link
-                className="underline"
-                to={`/portals/cards/${value.actionKey.slice(6)}`}
-              >
-                Card history
-              </Link>
-            )}
-            {portalTransactionPending(value) && (
-              <button
-                type="button"
-                className="rounded-full border border-line px-3 py-2 font-semibold focus-visible:outline focus-visible:outline-2"
-                onClick={() => void tracker?.check(value.id)}
-              >
-                Check status
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+      <TransactionHistory
+        title="Your portal activity"
+        count={visible.length}
+        icon={Sparkles}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        status={[
+          pendingCount > 0 ? `${pendingCount} pending` : null,
+          failedCount > 0 ? `${failedCount} failed` : null
+        ]
+          .filter(Boolean)
+          .join(" · ")}
+      >
+        <ul className="divide-y divide-line">
+          {visible.map((value) => {
+            const pending = portalTransactionPending(value);
+            return (
+              <TransactionRow
+                as="li"
+                key={value.id}
+                title={value.label}
+                status={value.message}
+                tone={
+                  value.state === "failed"
+                    ? "error"
+                    : pending
+                      ? "pending"
+                      : "success"
+                }
+                href={explorer ? `${explorer}/tx/${value.hash}` : undefined}
+                linkLabel={`View ${value.label.toLowerCase()} transaction on BaseScan`}
+                actions={
+                  (value.actionKey.startsWith("grade:") || pending) && (
+                    <>
+                      {value.actionKey.startsWith("grade:") && (
+                        <Link
+                          className={transactionActionVariants()}
+                          to={`/portals/cards/${value.actionKey.slice(6)}`}
+                        >
+                          Card history
+                        </Link>
+                      )}
+                      {pending && (
+                        <button
+                          type="button"
+                          className={transactionActionVariants({
+                            variant: "secondary"
+                          })}
+                          onClick={() => void tracker?.check(value.id)}
+                        >
+                          Check status
+                        </button>
+                      )}
+                    </>
+                  )
+                }
+              />
+            );
+          })}
+        </ul>
+      </TransactionHistory>
     </section>
   );
 }

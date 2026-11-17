@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAddress } from "viem";
 import { useAccount, useConfig } from "wagmi";
+import { TransactionStatus } from "@/components/ui/transaction";
 import { useAnalyticsConnectModal } from "@/hooks/useAnalyticsConnectModal";
 import { getAccount } from "wagmi/actions";
 
@@ -63,20 +64,28 @@ function SavedOrder({ record }: { record: RecoverableOrder }) {
             : (status.data ??
               "Cancellation is available. This check does not establish whether the order can currently fill.")}
       </p>
-      {state.message && (
+      {state.message && !state.hash && (
         <p className="mt-3 text-sm" role="status">
           {state.message}
         </p>
       )}
       {state.hash && (
-        <a
-          className="mt-3 inline-block text-sm font-bold text-ethereum"
+        <TransactionStatus
+          className="mt-3"
+          title="Order cancellation"
+          status={
+            state.message || "Check the transaction for its current status."
+          }
+          tone={
+            state.stage === "confirmed"
+              ? "success"
+              : state.stage === "error"
+                ? "error"
+                : "neutral"
+          }
           href={`${chainDetails[record.asset.chain].explorerUrl}/tx/${state.hash}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View cancellation transaction
-        </a>
+          linkLabel="View cancellation transaction"
+        />
       )}
       {!status.data &&
         state.stage !== "confirmed" &&

@@ -1,3 +1,7 @@
+import {
+  TransactionHistory,
+  TransactionRow
+} from "@/components/ui/transaction";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -88,13 +92,13 @@ export function ArenaEvidence({
       open && !["expired", "settled"].includes(t.phase) ? 15000 : false
   });
   return (
-    <details
-      className="my-6 rounded-card border border-line p-6"
-      onToggle={(e) => setOpen(e.currentTarget.open)}
+    <TransactionHistory
+      title="Timeline & verification"
+      count={timeline.data?.items.length ?? 0}
+      open={open}
+      onOpenChange={setOpen}
+      className="my-6"
     >
-      <summary className="cursor-pointer font-bold">
-        Timeline & verification
-      </summary>
       <p className="my-4 text-sm text-muted">
         Confirmed events from the indexer. VRF verifies the island draw; the
         central referee interprets player strategies.
@@ -116,25 +120,19 @@ export function ArenaEvidence({
       {timeline.data?.items.length === 0 ? (
         <p className="text-muted">No confirmed tournament events yet.</p>
       ) : null}
-      <ol className="space-y-3">
+      <ol className="divide-y divide-line">
         {timeline.data?.items.map((e) => (
-          <li
+          <TransactionRow
+            as="li"
             key={`${e.transactionHash}/${e.logIndex}`}
-            className="flex flex-wrap items-center justify-between gap-2 border-b border-line py-3"
-          >
-            <span>{labels[e.event] ?? e.event}</span>
-            <a
-              className="text-sm font-semibold underline"
-              href={`https://basescan.org/tx/${e.transactionHash}#eventlog`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Block {e.blockNumber} · log {e.logIndex}
-            </a>
-          </li>
+            title={labels[e.event] ?? e.event}
+            status={`Block ${e.blockNumber} · log ${e.logIndex}`}
+            tone="success"
+            href={`https://basescan.org/tx/${e.transactionHash}#eventlog`}
+          />
         ))}
       </ol>
-      <dl className="mt-5 space-y-3 break-all text-xs">
+      <dl className="my-5 space-y-3 break-all text-xs">
         {[
           ["Rules hash", t.rulesHash],
           ["Island pool hash", t.poolHash],
@@ -151,6 +149,6 @@ export function ArenaEvidence({
             </div>
           ))}
       </dl>
-    </details>
+    </TransactionHistory>
   );
 }

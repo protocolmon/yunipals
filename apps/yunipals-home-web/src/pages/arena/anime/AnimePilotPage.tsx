@@ -25,6 +25,7 @@ import {
   verifyPilotManifest,
   pilotOwnsFighters
 } from "@/lib/animePilot";
+import { TransactionStatus } from "@/components/ui/transaction";
 import { arenaRequestAt, type ArenaConfig } from "@/lib/arenaLive";
 import { environment } from "@/environment";
 import { cn } from "@/lib/utils";
@@ -445,19 +446,16 @@ export function AnimePilotPage() {
         )
       )}
       {pending && (
-        <div className="mt-6 space-y-3">
-          <a
-            className="break-all underline"
-            href={`https://basescan.org/tx/${pending}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View pending transaction
-          </a>
+        <TransactionStatus
+          className="mt-6"
+          title="Anime transaction"
+          status="Check the saved transaction before continuing."
+          href={`https://basescan.org/tx/${pending}`}
+        >
           <button className={button} disabled={busy} onClick={() => void run()}>
             Check confirmation
           </button>
-        </div>
+        </TransactionStatus>
       )}
       <p className="mt-4" role="status">
         {message}

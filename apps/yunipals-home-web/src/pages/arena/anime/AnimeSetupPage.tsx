@@ -21,6 +21,7 @@ import {
   type AnimeLaunchReceipts,
   type AnimeLaunchStep
 } from "@/lib/animeDeployment";
+import { TransactionLink } from "@/components/ui/transaction";
 import { cn } from "@/lib/utils";
 import { Select, SelectItem } from "@/components/ui/select";
 
@@ -353,14 +354,14 @@ export function AnimeSetupPage() {
               </p>
             )}
             {hashes[step] && (
-              <a
-                className="mt-3 block break-all font-semibold text-grape underline"
+              <TransactionLink
+                className="mt-3"
                 href={`https://basescan.org/tx/${hashes[step]}`}
                 target="_blank"
                 rel="noreferrer"
               >
                 View transaction
-              </a>
+              </TransactionLink>
             )}
           </li>
         ))}

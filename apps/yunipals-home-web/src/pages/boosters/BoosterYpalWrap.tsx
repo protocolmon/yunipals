@@ -2,14 +2,7 @@ import { useEffect, useRef } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { formatEther, formatUnits } from "viem";
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Check,
-  Coins,
-  RefreshCw,
-  Wallet
-} from "lucide-react";
+import { ArrowDown, Check, Coins, RefreshCw, Wallet } from "lucide-react";
 
 import {
   DialogSurface,
@@ -17,6 +10,10 @@ import {
   DialogDetails,
   dialogButtonVariants
 } from "@/components/ui/dialog";
+import {
+  TransactionStatus,
+  transactionActionVariants
+} from "@/components/ui/transaction";
 import { useYpalWrap } from "@/hooks/useYpalWrap";
 import { formatRoundedAmount } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -280,42 +277,31 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
               : "Checking Base balances and YPAL…"}
       </p>
       {wrap.pending && (
-        <div className="mt-5 rounded-2xl border border-lavender/50 bg-lavender/10 p-4 text-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-ink">
-                Saved{" "}
-                {wrap.pending.kind === "approve" ? "PMON approval" : "wrap"}{" "}
-                transaction
-              </p>
-              <p className="mt-1 text-xs text-muted">
-                {wrap.approvalReady
-                  ? "Your PMON allowance already covers this approval."
-                  : wrap.pendingNotFound
-                    ? "Transaction not found on Base. Check your wallet for a replacement or cancellation."
-                    : "Check its status before continuing."}
-              </p>
-            </div>
-            <a
-              href={`https://basescan.org/tx/${wrap.pending.hash}`}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="View saved transaction on BaseScan"
-              title={wrap.pending.hash}
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg p-1 text-xs font-semibold text-grape underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape"
+        <TransactionStatus
+          className="mt-5"
+          title={`Saved ${wrap.pending.kind === "approve" ? "PMON approval" : "wrap"} transaction`}
+          status={
+            wrap.approvalReady
+              ? "Your PMON allowance already covers this approval."
+              : wrap.pendingNotFound
+                ? "Transaction not found on Base. Check your wallet for a replacement or cancellation."
+                : "Check its status before continuing."
+          }
+          tone={wrap.pendingNotFound ? "error" : "neutral"}
+          href={`https://basescan.org/tx/${wrap.pending.hash}`}
+          linkLabel="View saved transaction on BaseScan"
+          actions={
+            <button
+              type="button"
+              disabled={wrap.busy}
+              onClick={wrap.resolvePending}
+              className={transactionActionVariants({ variant: "secondary" })}
             >
-              BaseScan <ArrowUpRight size={14} aria-hidden="true" />
-            </a>
-          </div>
-          <button
-            type="button"
-            disabled={wrap.busy}
-            onClick={wrap.resolvePending}
-            className="mt-3 inline-flex items-center gap-2 rounded-full border border-grape/20 bg-white px-4 py-2 text-xs font-bold text-grape hover:bg-lavender/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape disabled:opacity-40"
-          >
-            <RefreshCw size={13} aria-hidden="true" />
-            Check pending transaction
-          </button>
+              <RefreshCw size={13} aria-hidden="true" />
+              Check pending transaction
+            </button>
+          }
+        >
           {wrap.pending.kind === "approve" &&
             (wrap.pendingNotFound || wrap.approvalReady) && (
               <div className="mt-3 border-t border-lavender/50 pt-3">
@@ -344,23 +330,23 @@ function YpalWrapForm({ deployment }: { deployment: YpalWrapDeployment }) {
               This saved wrap stays blocked to prevent wrapping twice.
             </p>
           )}
-        </div>
+        </TransactionStatus>
       )}
       {wrap.message && (
-        <p
-          role="status"
-          className="mt-4 rounded-xl bg-mint/40 p-3 text-sm text-ink"
-        >
-          {wrap.message}
-        </p>
+        <TransactionStatus
+          className="mt-4"
+          title="Wrapping status"
+          status={wrap.message}
+          tone={wrap.busy ? "pending" : "neutral"}
+        />
       )}
       {failure && (
-        <p
-          role="alert"
-          className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
-        >
-          {failure}
-        </p>
+        <TransactionStatus
+          className="mt-4"
+          title="Wrapping needs attention"
+          tone="error"
+          status={<span role="alert">{failure}</span>}
+        />
       )}
       <DialogSurface
         ref={dialog}

@@ -1,3 +1,4 @@
+import { TransactionLink, TransactionRow } from "@/components/ui/transaction";
 import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import { AnimeFighterCard } from "@/pages/arena/anime/AnimeFighterCard";
 import {
@@ -355,14 +356,13 @@ function TokenDetail({
                 </a>
               )}
               {transfers.at(-1) && (
-                <a
+                <TransactionLink
                   href={`${explorerUrl}/tx/${transfers.at(-1)?.transaction_hash}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
                 >
-                  Latest transfer <ExternalLink aria-hidden="true" size={14} />
-                </a>
+                  Latest transfer
+                </TransactionLink>
               )}
             </div>
           </div>
@@ -382,24 +382,22 @@ function TokenDetail({
                 .slice()
                 .reverse()
                 .map((transfer) => (
-                  <a
+                  <TransactionRow
                     key={transfer.id}
+                    className="border-b border-line px-5 last:border-0"
+                    title={`${shortAddress(transfer.from)} → ${shortAddress(transfer.to)}`}
+                    status={
+                      <>
+                        {new Date(
+                          Number(transfer.block_timestamp) * 1000
+                        ).toLocaleString()}{" "}
+                        · Block {formatInteger(transfer.block_number)}
+                      </>
+                    }
+                    tone="success"
                     href={`${explorerUrl}/tx/${transfer.transaction_hash}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid gap-2 border-b border-line px-5 py-4 text-sm transition last:border-0 hover:bg-line/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ethereum sm:grid-cols-[1fr_auto]"
-                  >
-                    <span className="min-w-0 font-semibold text-ink">
-                      {shortAddress(transfer.from)} →{" "}
-                      {shortAddress(transfer.to)}
-                    </span>
-                    <span className="text-xs font-medium text-muted">
-                      {new Date(
-                        Number(transfer.block_timestamp) * 1000
-                      ).toLocaleString()}{" "}
-                      · Block {formatInteger(transfer.block_number)}
-                    </span>
-                  </a>
+                    linkLabel="View transfer transaction"
+                  />
                 ))
             )}
           </div>

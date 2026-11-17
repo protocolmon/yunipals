@@ -1,3 +1,4 @@
+import { TransactionRow } from "@/components/ui/transaction";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
@@ -57,18 +58,19 @@ export function PortalActivityList({
       ) : (
         <ul className="mt-4 divide-y divide-line">
           {rows.map((event) => (
-            <li
+            <TransactionRow
+              as="li"
               key={`${event.transactionHash}:${event.logIndex}`}
-              className="flex flex-wrap items-start justify-between gap-3 py-4 text-sm"
-            >
-              <div>
+              title={
                 <Link
-                  className="font-semibold underline"
+                  className="rounded text-grape hover:underline focus-visible:ring-2 focus-visible:ring-grape"
                   to={`/portals/tokens/${event.tokenId}`}
                 >
                   Portal #{event.tokenId}
                 </Link>
-                <p className="mt-1">
+              }
+              status={
+                <>
                   {event.type === "PortalClaimed"
                     ? `Burned and claimed ${portalPrice(event.args.amount)} USDC`
                     : event.type === "PortalFeeAccrued"
@@ -86,17 +88,11 @@ export function PortalActivityList({
                             : event.type === "PortalActivated"
                               ? "Portal window opened"
                               : "Portal revealed"}
-                </p>
-              </div>
-              <a
-                className="font-semibold underline"
-                href={portalTransactionUrl(event.transactionHash)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                View transaction
-              </a>
-            </li>
+                </>
+              }
+              tone="success"
+              href={portalTransactionUrl(event.transactionHash)}
+            />
           ))}
         </ul>
       )}

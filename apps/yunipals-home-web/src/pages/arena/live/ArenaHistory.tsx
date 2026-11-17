@@ -1,3 +1,7 @@
+import {
+  TransactionRow,
+  transactionActionVariants
+} from "@/components/ui/transaction";
 import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
@@ -156,43 +160,40 @@ export function ArenaRewardList({ items }: { items: ArenaRewardRecord[] }) {
   return (
     <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
       {items.map((item) => (
-        <li
+        <TransactionRow
+          as="li"
+          className="px-5"
           key={item.id}
-          className="flex flex-wrap items-center justify-between gap-4 p-5"
-        >
-          <div>
-            <p className="font-semibold">{rewardLabels[item.kind]}</p>
-            <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted">
-              {item.tournamentId ? (
+          title={rewardLabels[item.kind]}
+          tone="success"
+          status={
+            item.tournamentId
+              ? `Battle #${item.tournamentId}`
+              : "Combined wallet balance"
+          }
+          href={`https://basescan.org/tx/${item.transactionHash}`}
+          actions={
+            <>
+              <span
+                className={cn(
+                  "font-bold tabular-nums",
+                  item.kind === "withdrawal" ? "text-muted" : "text-ink"
+                )}
+              >
+                {item.kind === "withdrawal" ? "−" : "+"}
+                {formatUnits(BigInt(item.amount), 6)} USDC
+              </span>
+              {item.tournamentId && (
                 <Link
                   to={`${deployment.basePath}/${item.tournamentId}`}
-                  className="underline"
+                  className={transactionActionVariants()}
                 >
-                  Battle #{item.tournamentId}
+                  View battle
                 </Link>
-              ) : (
-                <span>Combined wallet balance</span>
               )}
-              <a
-                href={`https://basescan.org/tx/${item.transactionHash}`}
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                View transaction
-              </a>
-            </div>
-          </div>
-          <span
-            className={cn(
-              "font-bold tabular-nums",
-              item.kind === "withdrawal" ? "text-muted" : "text-ink"
-            )}
-          >
-            {item.kind === "withdrawal" ? "−" : "+"}
-            {formatUnits(BigInt(item.amount), 6)} USDC
-          </span>
-        </li>
+            </>
+          }
+        />
       ))}
     </ul>
   );

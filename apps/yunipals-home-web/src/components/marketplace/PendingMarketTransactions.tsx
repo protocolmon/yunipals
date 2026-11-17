@@ -1,7 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useConfig } from "wagmi";
+import {
+  TransactionHistory,
+  TransactionRow,
+  transactionActionVariants
+} from "@/components/ui/transaction";
 import { analyticsOperations } from "@/lib/analytics/operations";
 import { getPublicClient } from "wagmi/actions";
 
@@ -151,25 +155,25 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
             ? "Confirmation unavailable"
             : "Awaiting confirmation";
   return (
-    <li className="border-t border-line py-3 text-sm">
-      <p className="font-bold text-ink">
-        {labels[record.expectation.kind]} · {status}
-      </p>
-      <div className="mt-2 flex flex-wrap items-center gap-3">
-        <a
-          href={`${chainDetails[chain].explorerUrl}/tx/${record.hash}`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 rounded-full font-semibold text-ethereum focus-visible:ring-2 focus-visible:ring-ethereum"
-        >
-          {chainDetails[chain].label} transaction{" "}
-          <ExternalLink aria-hidden="true" size={12} />
-        </a>
-        {query.data ? (
+    <TransactionRow
+      as="li"
+      title={labels[record.expectation.kind]}
+      status={status}
+      tone={
+        query.data?.status === "confirmed"
+          ? "success"
+          : query.data || query.isError
+            ? "error"
+            : "pending"
+      }
+      href={`${chainDetails[chain].explorerUrl}/tx/${record.hash}`}
+      linkLabel={`${chainDetails[chain].label} transaction`}
+      actions={
+        query.data ? (
           <button
             type="button"
             onClick={() => dismissPendingTransaction(record.hash)}
-            className="rounded-full px-2 py-1 text-xs font-bold text-muted focus-visible:ring-2 focus-visible:ring-ink"
+            className={transactionActionVariants({ variant: "secondary" })}
           >
             Dismiss
           </button>
@@ -177,13 +181,13 @@ function PendingTransaction({ record }: { record: PendingMarketTransaction }) {
           <button
             type="button"
             onClick={() => void query.refetch()}
-            className="rounded-full px-2 py-1 text-xs font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
+            className={transactionActionVariants()}
           >
             Check again
           </button>
-        ) : null}
-      </div>
-    </li>
+        ) : null
+      }
+    />
   );
 }
 
@@ -208,13 +212,14 @@ export function PendingMarketTransactions() {
   if (!records.length) return null;
   return (
     <aside
-      className="fixed bottom-4 right-4 z-40 max-h-[50vh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line bg-white p-4 shadow-cardHover"
+      className="fixed bottom-4 right-4 z-40 max-h-[50vh] w-80 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl bg-white shadow-cardHover"
       aria-label="Your transactions"
     >
-      <details
+      <TransactionHistory
+        title="Your transactions"
+        count={records.length}
         open={expanded}
-        onToggle={(event) => {
-          const open = event.currentTarget.open;
+        onOpenChange={(open) => {
           setExpanded(open);
           if (!open) {
             try {
@@ -225,15 +230,12 @@ export function PendingMarketTransactions() {
           }
         }}
       >
-        <summary className="cursor-pointer rounded-full text-sm font-extrabold text-ink focus-visible:ring-2 focus-visible:ring-ink">
-          Your transactions ({records.length})
-        </summary>
-        <ul className="mt-3">
+        <ul className="divide-y divide-line">
           {records.map((record) => (
             <PendingTransaction key={record.hash} record={record} />
           ))}
         </ul>
-      </details>
+      </TransactionHistory>
     </aside>
   );
 }

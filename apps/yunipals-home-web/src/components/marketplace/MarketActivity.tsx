@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getAddress } from "viem";
 
+import { TransactionLink } from "@/components/ui/transaction";
 import { chainDetails } from "@/data/chains";
 import { useMarketActivity } from "@/hooks/marketplace/useMarketActivity";
 import { shortAddress } from "@/lib/format";
@@ -23,8 +24,8 @@ export function MarketActivity({ scope }: { scope: ActivityScope }) {
   } catch {
     return (
       <p role="alert" className="mt-8 text-sm text-muted">
-        Sale history is unavailable because the NFT or wallet identity could
-        not be verified.
+        Sale history is unavailable because the NFT or wallet identity could not
+        be verified.
       </p>
     );
   }
@@ -237,14 +238,14 @@ function ActivityForScope({ scope }: { scope: ActivityScope }) {
                       </div>
                     </dl>
                     <div className="mt-4 flex flex-wrap gap-3">
-                      <a
+                      <TransactionLink
                         href={`${chain.explorerUrl}/tx/${sale.transactionHash}`}
                         target="_blank"
                         rel="noreferrer"
                         className={button}
                       >
                         View transaction
-                      </a>
+                      </TransactionLink>
                       {scope.kind === "wallet" &&
                         currentVisibility === "public" && (
                           <Link

@@ -11,6 +11,7 @@ import {
   writeContract
 } from "wagmi/actions";
 
+import { TransactionStatus } from "@/components/ui/transaction";
 import { environment } from "@/environment";
 import {
   assertIslandWithdrawal,
@@ -246,25 +247,33 @@ export function IslandUnstake({ token }: { token: IslandToken }) {
           </p>
         </div>
       )}
-      {notice && (
+      {notice && !hash && (
         <p role="status" className="mt-3 text-sm font-semibold text-ink">
           {notice}
         </p>
       )}
-      {error && (
+      {error && !hash && (
         <p role="alert" className="mt-3 text-sm text-red-700">
           {error}
         </p>
       )}
       {hash && (
-        <a
+        <TransactionStatus
+          className="mt-3"
+          title="Island withdrawal"
+          status={
+            error ? (
+              <span role="alert">{error}</span>
+            ) : (
+              notice ||
+              (confirmed
+                ? "Island returned to your wallet."
+                : "Waiting for confirmation…")
+            )
+          }
+          tone={confirmed ? "success" : error ? "error" : "pending"}
           href={`https://etherscan.io/tx/${hash}`}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 block text-sm font-bold text-ethereum underline"
-        >
-          View transaction
-        </a>
+        />
       )}
       {!confirmed && (
         <div className="mt-4 flex gap-3">
