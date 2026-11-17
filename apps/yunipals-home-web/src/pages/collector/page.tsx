@@ -156,8 +156,7 @@ export function CollectorPage() {
   );
   const edition = collectionEdition(resolvedQuery);
   const [migrationNotice] = useState(() => collectionMigrationNotice(params));
-  const islands =
-    environment.islandStakingEnabled && params.get("collection") === "islands";
+  const islands = params.get("collection") === "islands";
   return (
     <>
       <div className="mx-auto max-w-6xl px-4 pt-6">
@@ -169,11 +168,7 @@ export function CollectorPage() {
         <CollectionEditionNav
           edition={islands ? "islands" : edition}
           href={(next) => personalCollectionHref(address, next)}
-          islandsHref={
-            environment.islandStakingEnabled
-              ? `/collector/${encodeURIComponent(address)}?collection=islands`
-              : null
-          }
+          islandsHref={`/collector/${encodeURIComponent(address)}?collection=islands`}
         />
       </div>
       {islands ? (
