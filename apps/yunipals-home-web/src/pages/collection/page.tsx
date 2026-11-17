@@ -1,3 +1,4 @@
+import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import { AnimeFighterCard } from "@/pages/arena/anime/AnimeFighterCard";
 import {
   useInfiniteQuery,
@@ -12,7 +13,6 @@ import {
   Loader2,
   Search,
   Sparkles,
-  Users,
   X
 } from "lucide-react";
 import {
@@ -1234,38 +1234,38 @@ function CollectionExplorer() {
                   <QueryError onRetry={refreshCatalog} />
                 </div>
               ) : gridItems.length === 0 ? (
-                <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
-                  <Users
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                  <p className="mt-3 font-bold text-ink">
-                    {incompleteEmptyResults
+                <CollectionEmptyState
+                  edition={isTcg ? "tcg" : "og"}
+                  title={
+                    incompleteEmptyResults
                       ? "Listings are temporarily unavailable."
                       : isTcg && packCards.query.hasNextPage
                         ? "No matches in the loaded cards yet."
-                        : "No Yunipals match this combination."}
-                  </p>
-                  <p className="mt-1 text-sm text-muted">
-                    {incompleteEmptyResults
+                        : "No Yunipals match this combination."
+                  }
+                  description={
+                    incompleteEmptyResults
                       ? "Please try again shortly. Your filters are still applied."
                       : isTcg
                         ? "Remove a trait filter to explore more TCG cards."
-                        : "Try another chain, remove a trait, or widen the rarity range."}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={
-                      incompleteEmptyResults
-                        ? refreshCatalog
-                        : () => setFilters(clearCollectionFilters(filters))
-                    }
-                    className="mt-5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-                  >
-                    {incompleteEmptyResults ? "Try again" : "Clear all filters"}
-                  </button>
-                </div>
+                        : "Try another chain, remove a trait, or widen the rarity range."
+                  }
+                  action={
+                    <button
+                      type="button"
+                      onClick={
+                        incompleteEmptyResults
+                          ? refreshCatalog
+                          : () => setFilters(clearCollectionFilters(filters))
+                      }
+                      className="min-h-11 rounded-full bg-grape px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
+                    >
+                      {incompleteEmptyResults
+                        ? "Try again"
+                        : "Clear all filters"}
+                    </button>
+                  }
+                />
               ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
                   {gridItems.map((item, index) =>

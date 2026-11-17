@@ -20,6 +20,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import { environment } from "@/environment";
 import { CollectionPackCard } from "@/components/CollectionPackCard";
 import { CollectionDailyPulls } from "@/components/CollectionDailyPulls";
@@ -795,37 +796,25 @@ function YunipalsCollectorPage() {
                 }
               />
             ) : gridItems.length === 0 ? (
-              <div className="rounded-card border border-dashed border-line px-6 py-14 text-center">
-                {activeVisibility === "hidden" ? (
-                  <EyeOff
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                ) : (
-                  <Eye
-                    aria-hidden="true"
-                    className="mx-auto text-muted"
-                    size={28}
-                  />
-                )}
-                <p className="mt-3 font-bold text-ink">
-                  {packCards.query.hasNextPage
+              <CollectionEmptyState
+                edition="og"
+                title={
+                  packCards.query.hasNextPage
                     ? "No matches in the loaded cards yet."
                     : hasCollectorFilters(filters)
                       ? "No matches"
                       : activeVisibility === "hidden"
                         ? "No hidden NFTs"
-                        : "No visible Yunipals"}
-                </p>
-                <p className="mx-auto mt-1 max-w-lg text-sm text-muted">
-                  {hasCollectorFilters(filters)
+                        : "No visible Yunipals"
+                }
+                description={
+                  hasCollectorFilters(filters)
                     ? "Try a different search or clear your filters to see more Yunipals."
                     : activeVisibility === "hidden"
                       ? "NFTs you hide from public Yunipals views will appear here so you can unhide them."
-                      : "This wallet does not currently have any publicly visible Yunipals."}
-                </p>
-              </div>
+                      : "This wallet does not currently have any publicly visible Yunipals."
+                }
+              />
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {gridItems.map((item, index) =>
