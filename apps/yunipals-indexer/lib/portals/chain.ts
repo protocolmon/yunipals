@@ -1,5 +1,8 @@
 import {
   createPublicClient,
+  BaseError,
+  ContractFunctionRevertedError,
+  ContractFunctionZeroDataError,
   parseAbi,
   erc20Abi,
   zeroAddress,
@@ -323,6 +326,38 @@ export class PortalChain {
       })
     ]);
     const [round, accepting] = state;
+    // Legacy registries have no scheduledRound getter. Do not hide transport failures.
+    const scheduled = await this.client
+      .readContract({
+        address: registry,
+        abi: portalRegistryAbi,
+        functionName: "scheduledRound",
+        ...at
+      })
+      .catch((error: unknown) => {
+        if (error instanceof BaseError) {
+          const cause = error.walk(
+            (cause) =>
+              cause instanceof ContractFunctionRevertedError ||
+              cause instanceof ContractFunctionZeroDataError
+          );
+          if (
+            cause instanceof ContractFunctionRevertedError ||
+            cause instanceof ContractFunctionZeroDataError
+          )
+            return null;
+        }
+        throw error;
+      });
+    const scheduledNext =
+      scheduled && scheduled[0] !== 0n && BigInt(scheduled[1]) > block.timestamp
+        ? {
+            id: scheduled[0],
+            startsAt: scheduled[1],
+            endsAt: scheduled[2],
+            portalId: scheduled[3]
+          }
+        : null;
     const competition = await readCompetition(
       this.client,
       grading,
@@ -376,12 +411,15 @@ export class PortalChain {
       escrow: { reserves, liability },
       rotation: {
         requestId: pendingRotation,
+        automatic: scheduled !== null,
+        scheduled: scheduledNext,
         ready: random?.[2] ?? false,
         canActivate:
           pendingRotation !== 0n &&
           (random?.[2] ?? false) &&
-          block.timestamp >= round.endsAt,
-        canRequest: pendingRotation === 0n && live !== 0n
+          (scheduled !== null || block.timestamp >= round.endsAt),
+        canRequest:
+          pendingRotation === 0n && live !== 0n && scheduledNext === null
       }
     };
     if (!portal) return { ...common, portal: null };

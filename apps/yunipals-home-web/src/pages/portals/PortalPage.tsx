@@ -4,6 +4,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { Link, useSearchParams } from "react-router-dom";
 import { Clock, RefreshCw, Sparkles, Wand2 } from "lucide-react";
+import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import {
   portalColorNames,
   portalTypeNames,
@@ -20,9 +21,13 @@ import {
   type ActivePortalStatus
 } from "@/lib/portals";
 import { cn } from "@/lib/utils";
+import { packGridTraits } from "@/lib/boosterCollectionGrid";
+import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { PortalCompetitions } from "./PortalCompetitions";
 import { PortalHero, PortalStory } from "./PortalArtwork";
+import { PortalCardPicker } from "./PortalCardPicker";
+import { PortalGradingGuide } from "./PortalGradingGuide";
 
 export function PortalPage() {
   const [search] = useSearchParams();
@@ -35,10 +40,29 @@ export function PortalPage() {
   const actions = usePortals(status);
   const { openConnectModal } = useConnectModal();
   const switcher = useSwitchChain();
-  const [tokenId, setTokenId] = useState(() => {
-    const card = search.get("card") ?? "";
-    return /^[1-9][0-9]{0,77}$/.test(card) ? card : "";
-  });
+  const preferredTokenId = /^[1-9][0-9]{0,77}$/.test(search.get("card") ?? "")
+    ? search.get("card")!
+    : undefined;
+  const [selection, setSelection] = useState<{
+    card: BoosterMonster;
+    context: string;
+  } | null>(null);
+  const [pickerContext, setPickerContext] = useState<string | null>(null);
+  const selectionContext = JSON.stringify([
+    actions.address?.toLowerCase(),
+    status?.deployment.chainId,
+    status?.deployment.cards,
+    status?.deployment.grading,
+    status?.round.id,
+    status?.portal?.id
+  ]);
+  const selectedCard =
+    selection?.context === selectionContext ? selection.card : null;
+  const tokenId = selectedCard?.tokenId ?? "";
+  useEffect(() => {
+    setSelection(null);
+    setPickerContext(null);
+  }, [actions.submitted, selectionContext]);
   const [spell, setSpell] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -75,6 +99,7 @@ export function PortalPage() {
       switcher.switchChain({
         chainId: status?.deployment.chainId ?? environment.portalChainId
       });
+    else if (!selectedCard) setPickerContext(selectionContext);
     else void actions.prepare(tokenId, spell);
   }
   return (
@@ -201,28 +226,7 @@ export function PortalPage() {
                     </p>
                   </div>
                 )}
-                {status.portal.gradingCase && (
-                  <details className="mt-4 rounded-2xl bg-white/70 p-4 text-sm">
-                    <summary className="cursor-pointer font-bold">
-                      How this portal grades
-                    </summary>
-                    <p className="mt-3 font-bold">
-                      {status.portal.gradingCase.title}
-                    </p>
-                    <dl className="mt-3 space-y-3">
-                      {Object.entries(status.portal.gradingCase.criteria).map(
-                        ([category, description]) => (
-                          <div key={category}>
-                            <dt className="font-bold capitalize">{category}</dt>
-                            <dd className="mt-1 leading-relaxed text-muted">
-                              {description}
-                            </dd>
-                          </div>
-                        )
-                      )}
-                    </dl>
-                  </details>
-                )}
+                <PortalGradingGuide portal={status.portal} />
               </>
             ) : (
               <div className="my-8 flex flex-col items-center gap-5 sm:flex-row">
@@ -256,10 +260,23 @@ export function PortalPage() {
             )}
             <div className="mt-6 border-t border-lavender pt-5">
               <p className="text-sm text-muted">
-                Anyone can help prepare the next random portal. A randomness
-                request uses ETH; your wallet shows the amount before you
+                {status.rotation.automatic
+                  ? "Request the next random portal with one wallet confirmation. Chainlink opens it automatically when the current window ends, or as soon as the result arrives if it has already ended."
+                  : "Anyone can help prepare the next random portal."}{" "}
+                The request uses ETH; your wallet shows the amount before you
                 confirm.
               </p>
+              {status.rotation.scheduled && (
+                <p role="status" className="mt-3 text-sm font-semibold">
+                  Portal #{status.rotation.scheduled.portalId} opens
+                  automatically in{" "}
+                  {portalCountdown(
+                    Number(status.rotation.scheduled.startsAt),
+                    status.now + elapsed
+                  )}
+                  . No further wallet confirmation is needed.
+                </p>
+              )}
               <button
                 type="button"
                 className={cn(boosterButtonClass, "mt-4")}
@@ -281,11 +298,17 @@ export function PortalPage() {
                 }}
               >
                 <RefreshCw size={16} aria-hidden="true" />
-                {status.rotation.canActivate
-                  ? "Open the next portal"
-                  : status.rotation.requestId !== "0"
-                    ? "Next portal is being prepared"
-                    : "Prepare the next portal"}
+                {status.rotation.scheduled
+                  ? "Next portal scheduled"
+                  : status.rotation.canActivate
+                    ? status.rotation.automatic
+                      ? "Recover portal opening"
+                      : "Open the next portal"
+                    : status.rotation.requestId !== "0"
+                      ? "Waiting for Chainlink…"
+                      : status.rotation.automatic
+                        ? "Request the next portal"
+                        : "Prepare the next portal"}
               </button>
             </div>
           </section>
@@ -309,31 +332,52 @@ export function PortalPage() {
             )}
             <form className="mt-6 space-y-5" onSubmit={submit}>
               <div>
-                <label
-                  className="block text-sm font-bold"
-                  htmlFor="portal-card-id"
-                >
-                  Card number
-                </label>
-                <input
-                  id="portal-card-id"
-                  inputMode="numeric"
-                  pattern="[1-9][0-9]*"
-                  required
-                  value={tokenId}
-                  onChange={(event) => setTokenId(event.target.value)}
-                  disabled={actions.busy}
-                  className="mt-2 w-full rounded-2xl border border-line px-4 py-3 focus-visible:outline-grape"
-                  placeholder="Your TCG token ID"
-                />
-                {actions.address && (
-                  <Link
-                    className="mt-2 inline-block text-sm font-semibold text-grape underline"
-                    to={`/collector/${actions.address}`}
-                  >
-                    Find a card in your collection
-                  </Link>
+                <p className="text-sm font-bold">Your card</p>
+                {selectedCard && (
+                  <div className="mt-3 flex items-center gap-4 rounded-2xl bg-lavender/15 p-3">
+                    <div className="w-20 shrink-0">
+                      <BoosterArtwork
+                        uri={selectedCard.metadataUri}
+                        card={selectedCard}
+                        label={`Selected card #${selectedCard.tokenId}`}
+                        display="thumbnail"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold">
+                        {packGridTraits(selectedCard).Type} #
+                        {selectedCard.tokenId}
+                      </p>
+                      <p className="mt-1 text-sm text-muted">
+                        Selected for this portal
+                      </p>
+                    </div>
+                  </div>
                 )}
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  disabled={actions.busy || !status.portal}
+                  className={cn(
+                    dialogButtonVariants({ variant: "secondary" }),
+                    "mt-3 w-full"
+                  )}
+                  onClick={() =>
+                    actions.address
+                      ? setPickerContext(selectionContext)
+                      : openConnectModal?.()
+                  }
+                >
+                  {!actions.address
+                    ? "Connect wallet to choose a card"
+                    : selectedCard
+                      ? "Change card"
+                      : "Choose a card"}
+                </button>
+                <p className="mt-2 text-sm text-muted">
+                  The picker shows only your cards that meet this portal’s
+                  requirements.
+                </p>
               </div>
               <div>
                 <label
@@ -436,6 +480,23 @@ export function PortalPage() {
           </section>
         </div>
       )}
+      {pickerContext === selectionContext &&
+        status?.portal &&
+        actions.address &&
+        actions.client && (
+          <PortalCardPicker
+            key={selectionContext}
+            status={status}
+            owner={actions.address}
+            client={actions.client}
+            preferredTokenId={preferredTokenId}
+            onClose={() => setPickerContext(null)}
+            onSelect={(card) => {
+              setSelection({ card, context: selectionContext });
+              setPickerContext(null);
+            }}
+          />
+        )}
       <PortalStory />
       {(status?.competition || environment.portalGrading) && (
         <PortalCompetitions />

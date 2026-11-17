@@ -114,6 +114,9 @@ export async function verifyPortalAdminBrowser({
           }
           return hash;
         }
+        const fulfilled = await chain.active();
+        assert.equal(fulfilled.rotation.requestId, 0n);
+        const startsAt = fulfilled.rotation.scheduled?.startsAt;
         const response = await fetch(rpc, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -305,7 +308,7 @@ export async function verifyPortalAdminBrowser({
     });
     await page.goto(`${origin}/portals`);
     await page
-      .getByRole("button", { name: "Prepare the next portal", exact: true })
+      .getByRole("button", { name: "Request the next portal", exact: true })
       .click();
     await pending("Request next portal");
     const before = await chain.active();
@@ -316,18 +319,22 @@ export async function verifyPortalAdminBrowser({
       .filter({ has: page.getByText("Request next portal", { exact: true }) })
       .getByText("Confirmed and indexed.", { exact: true })
       .waitFor();
+    const sendsBeforeCallback = walletBehavior.sends;
     await call(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [
       before.rotation.requestId,
       399n
     ]);
+    const fulfilled = await chain.active();
+    assert.equal(fulfilled.rotation.requestId, 0n);
+    const startsAt = fulfilled.rotation.scheduled?.startsAt;
     const response = await fetch(rpc, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jsonrpc: "2.0",
         id: 1,
-        method: "evm_increaseTime",
-        params: [661]
+        method: "evm_setNextBlockTimestamp",
+        params: [startsAt ? Number(startsAt) : fulfilled.now + 1]
       })
     });
     assert.equal((await response.json()).error, undefined);
@@ -342,27 +349,20 @@ export async function verifyPortalAdminBrowser({
       })
     });
     await page.reload();
-    const activate = page.getByRole("button", {
-      name: "Open the next portal",
-      exact: true
-    });
-    await activate.waitFor();
-    assert.equal(await activate.isDisabled(), true);
     await ledger.tick();
-    await activate.click();
-    await pending("Activate next portal");
+    await page.reload();
+    await page.getByText("Portal open", { exact: true }).waitFor();
+    assert.equal(
+      walletBehavior.sends,
+      sendsBeforeCallback,
+      "Opening requires no second wallet transaction"
+    );
     assert.equal(
       await page
-        .getByRole("button", { name: "Wait for an open portal", exact: true })
-        .isDisabled(),
-      true
+        .getByRole("button", { name: "Open the next portal", exact: true })
+        .count(),
+      0
     );
-    await ledger.tick();
-    await page
-      .getByRole("listitem")
-      .filter({ has: page.getByText("Activate next portal", { exact: true }) })
-      .getByText("Confirmed and indexed.", { exact: true })
-      .waitFor();
     const after = await chain.active();
     assert.equal(after.round.id, before.round.id + 1n);
     assert.equal(after.round.endsAt - after.round.startsAt, 660n);

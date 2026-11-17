@@ -54,6 +54,10 @@ jobs:
           python3 scripts/portals/export-abi.py --check
       - name: Portal unit and recovery tests
         run: pnpm --filter @protopals/yunipals-indexer test:portals
+      - name: Portal card picker and player guide
+        run: |
+          pnpm --filter @protopals/yunipals-home-web test:portals:picker
+          pnpm --filter @protopals/yunipals-home-web test:portals:picker:ui --playwright "$PORTALS_TEST_PLAYWRIGHT"
       - name: PostgreSQL roles, concurrent recovery and restore
         run: pnpm --filter @protopals/yunipals-indexer test:portals:postgres
       - name: Shared portal handlers, views, reorg and worker recovery

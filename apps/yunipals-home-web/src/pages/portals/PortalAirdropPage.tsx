@@ -89,9 +89,10 @@ export function PortalAirdropPage() {
   const actions = usePortals(status);
   const deploymentMatches = Boolean(
     plan &&
-    status &&
-    plan.chainId === status.deployment.chainId &&
-    plan.collection.toLowerCase() === status.deployment.collection.toLowerCase()
+      status &&
+      plan.chainId === status.deployment.chainId &&
+      plan.collection.toLowerCase() ===
+        status.deployment.collection.toLowerCase()
   );
   const progress = useQuery({
     queryKey: ["portals", "airdrop", planKey],
@@ -119,22 +120,22 @@ export function PortalAirdropPage() {
   const pending = transactions.some(portalTransactionPending);
   const correctWallet = Boolean(
     plan &&
-    actions.address?.toLowerCase() === plan.admin.toLowerCase() &&
-    actions.chainId === plan.chainId
+      actions.address?.toLowerCase() === plan.admin.toLowerCase() &&
+      actions.chainId === plan.chainId
   );
   const allComplete = Boolean(
     plan && progress.data?.batches.every((b) => b.complete)
   );
   const ready = Boolean(
     deploymentMatches &&
-    correctWallet &&
-    progress.data &&
-    !progress.isError &&
-    !statusQuery.isError &&
-    !working &&
-    !actions.busy &&
-    !pending &&
-    !fenceError
+      correctWallet &&
+      progress.data &&
+      !progress.isError &&
+      !statusQuery.isError &&
+      !working &&
+      !actions.busy &&
+      !pending &&
+      !fenceError
   );
   const recipients = new Map<string, number>();
   for (const batch of plan?.batches ?? [])
@@ -624,7 +625,9 @@ export function PortalAirdropPage() {
               <h2 className="mt-3 font-display text-2xl">3. Open a portal</h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/75">
                 {allComplete
-                  ? "Every card has found its home. Request a random portal, wait for Chainlink, then open its eleven-minute window."
+                  ? status?.rotation.automatic
+                    ? "Every card has found its home. Request a random portal and Chainlink will open its eleven-minute window automatically."
+                    : "Every card has found its home. Request a random portal, wait for Chainlink, then open its eleven-minute window."
                   : `${delivered} of ${total} cards delivered. Finish the airdrop before opening the first portal.`}
               </p>
             </div>

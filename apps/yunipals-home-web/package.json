@@ -41,7 +41,9 @@
     "test:boosters:daily-reveal-ui": "node scripts/test-daily-reveal-ui.mjs",
     "test:versions": "node --experimental-strip-types --import ./scripts/register-typescript.mjs src/lib/monsterVersions.test.ts",
     "test:versions:ui": "node scripts/test-monster-versions-ui.mjs",
-    "test:collector:collections:ui": "node scripts/test-collection-pack-grid-ui.mjs"
+    "test:collector:collections:ui": "node scripts/test-collection-pack-grid-ui.mjs",
+    "test:portals:picker": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/portalCardPicker.test.ts",
+    "test:portals:picker:ui": "node scripts/test-portal-picker-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

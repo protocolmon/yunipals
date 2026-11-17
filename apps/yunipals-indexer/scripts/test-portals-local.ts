@@ -42,7 +42,7 @@ import { registerPortalRoutes } from "../lib/portals/routes.js";
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const rpc = "http://127.0.0.1:8549",
   origin = "http://127.0.0.1:5191",
-  api = "http://127.0.0.1:8931";
+  api = `http://127.0.0.1:${process.env.PORTALS_TEST_API_PORT ?? "8931"}`;
 const binary = process.env.PORTALS_TEST_ANVIL;
 if (!binary) throw new Error("Set PORTALS_TEST_ANVIL to a local Anvil binary.");
 const browserModule = process.env.PORTALS_TEST_PLAYWRIGHT;
@@ -176,6 +176,18 @@ try {
       params: [base.contracts.multicall3.address, multicallCode]
     })
   });
+  // Pinned-block reads honor Base's recorded Multicall3 deployment height.
+  await fetch(rpc, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "anvil_mine",
+      params: [`0x${base.contracts.multicall3.blockCreated.toString(16)}`]
+    })
+  });
+  const deploymentStart = await publicClient.getBlockNumber({ cacheTime: 0 });
   const packs = await proxy("PackRegistry", [admin.address]);
   const cards = await proxy("YunipalMonsters", [admin.address, packs]);
   const engine = await deploy("Portals.t", "PortalTestEngine", [packs]);
@@ -320,12 +332,15 @@ try {
     100000000000000n
   );
   await call(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [2n, 43n]);
-  await call(registry, "PortalRegistry", "activateNext");
+  assert(
+    (await chain.active()).open,
+    "Chainlink callback opens the first window"
+  );
   const store = new PortalStore(db as never, "local-e2e");
   await store.migrate();
   const ledgerStore = new PortalLedgerStore(db as never, "local-e2e");
   await ledgerStore.migrate();
-  const ledger = new PortalLedger(chain, ledgerStore, 1n, 0n);
+  const ledger = new PortalLedger(chain, ledgerStore, deploymentStart, 0n);
   await ledger.tick();
   const app = new Hono();
   app.use("*", cors({ origin }));
@@ -340,7 +355,11 @@ try {
       close: async () => {}
     })
   });
-  server = serve({ fetch: app.fetch, hostname: "127.0.0.1", port: 8931 });
+  server = serve({
+    fetch: app.fetch,
+    hostname: "127.0.0.1",
+    port: Number(new URL(api).port)
+  });
   Object.assign(process.env, {
     VITE_PORTALS_ENABLED: "true",
     VITE_PORTALS_API_URL: api,

@@ -133,7 +133,7 @@ Unit and invariant tests must cover index reuse, middle/tail burns, same-block r
 
 Store each rotation's pool revision in a new mapping to preserve the existing stored struct layout. Snapshot the live count and the previous portal's live index. Exclude the previous portal when at least two live portals exist; waive that exclusion when it is the only live portal. New requests with no eligible tokens revert before making the paid wrapper call.
 
-`activateNext()` still requires the original request's seed and cannot run before the preceding round's recorded end. Resolve exactly one historical candidate from the committed snapshot:
+The callback resolves exactly one historical candidate from the committed snapshot. It schedules the 660-second window at the later of delivery and the preceding round's recorded end, preserving the previous round until then. `activateNext()` is same-result recovery when callback resolution is deferred; it keeps the recorded delivery time and cannot extend the slot:
 
 - If live, record the normal 660-second round and emit activation.
 - If retired, record its ID and a 660-second closed round starting at settlement, clear the pending request, and emit `PortalRoundUnavailable`. Do not emit a successful activation or try another candidate. The next distinct round can be prepared during this closed interval.
@@ -142,7 +142,7 @@ An active portal burned midway through a round becomes non-accepting immediately
 
 `activePortal()` must require both a valid time window and a live portal. Add an explicit status getter distinguishing `not_started`, `open`, `expired`, and `retired`, together with supply and request readiness, so callers can explain why entry is closed. Record retired selection outcomes separately from later expiry.
 
-Keep VRF callbacks limited to storing their authenticated seed. Burn or mint mutations cannot alter the committed candidate mapping, and no cancellation, substitute entropy or retry with a new seed is introduced. These requirements apply Chainlink's guidance on fixed request inputs, request identity and avoiding rerolls; the empty-slot rule is this application's design choice. [Chainlink VRF security considerations](https://docs.chain.link/vrf/v2-5/security)
+Store the authenticated seed and delivery time before a gas-bounded, failure-isolated resolution attempt. Failed resolution remains recoverable with the same seed and timestamp. Burn or mint mutations cannot alter the committed candidate mapping, and no cancellation, substitute entropy or retry with a new seed is introduced. These requirements apply Chainlink's guidance on fixed request inputs, request identity and avoiding rerolls; the empty-slot rule is this application's design choice. [Chainlink VRF security considerations](https://docs.chain.link/vrf/v2-5/security)
 
 ### Utility selection
 

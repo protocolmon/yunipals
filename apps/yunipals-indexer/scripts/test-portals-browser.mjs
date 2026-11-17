@@ -161,6 +161,41 @@ export async function verifyPortalBrowser(context) {
       return route.fallback();
     return route.abort();
   });
+  // The ownership catalog is a fixture; eligibility and pending spells are read
+  // from the real local contracts by the picker.
+  await page.route("**/v1/owners/*/booster-monsters?*", async (route) => {
+    const indexedBlock = await publicClient.getBlockNumber();
+    return route.fulfill({
+      json: {
+        enabled: true,
+        chainId: 8453,
+        collection: cards,
+        indexedBlock: indexedBlock.toString(),
+        nextCursor: null,
+        items: [
+          {
+            id: `8453:${cards.toLowerCase()}:1`,
+            collection: cards,
+            tokenId: "1",
+            owner: alice.address,
+            mintedTo: alice.address,
+            burned: false,
+            monsterType: "1",
+            color: "1",
+            horn: "1",
+            glitter: "0",
+            variantId: "0",
+            mintBlock: "1",
+            isOriginal: false,
+            originalKey: "fixture-original",
+            requestKey: "fixture-request",
+            typeKey: "fixture-type",
+            metadataUri: "https://portal.test/original-card.json"
+          }
+        ]
+      }
+    });
+  });
   await page.goto(`${origin}/portals`);
   await page.getByRole("heading", { name: "Cast your next chapter" }).waitFor();
   await page.getByText("Portal open", { exact: true }).waitFor();
@@ -179,7 +214,13 @@ export async function verifyPortalBrowser(context) {
   await page
     .getByRole("button", { name: "Review your spell", exact: true })
     .waitFor();
-  await page.getByLabel("Card number", { exact: true }).fill("1");
+  await page
+    .getByRole("button", { name: "Choose a card", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Choose your card" })
+    .getByRole("button", { name: "Choose Yuniair #1", exact: true })
+    .click();
   await page
     .getByLabel("Your spell", { exact: true })
     .fill(
@@ -441,7 +482,7 @@ export async function verifyPortalBrowser(context) {
     assets,
     ai,
     portalModels,
-    0n,
+    ledger.startBlock,
     0n,
     (id, result) => chain.submit(id, result, adminWallet)
   );
@@ -509,10 +550,18 @@ export async function verifyPortalBrowser(context) {
   await page
     .getByRole("link", { name: "Cast a spell with this card", exact: true })
     .click();
-  assert.equal(
-    await page.getByLabel("Card number", { exact: true }).inputValue(),
-    "1"
-  );
+  assert.equal(new URL(page.url()).searchParams.get("card"), "1");
+  await page
+    .getByRole("button", { name: "Choose a card", exact: true })
+    .click();
+  await page
+    .getByText("You arrived from card #1. Choose it below if it qualifies.", {
+      exact: true
+    })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Close card picker", exact: true })
+    .click();
   await page.goto(`${origin}/monsters/${cards}/1`);
   await page
     .getByRole("link", { name: "Artwork and grading history", exact: true })
@@ -554,7 +603,6 @@ export async function verifyPortalBrowser(context) {
     pendingRotation,
     17n
   ]);
-  await call(registry, "PortalRegistry", "activateNext");
   const nextActive = await chain.active();
   assert.equal(nextActive.open, true);
   assert.notEqual(nextActive.round.portalId, request.portalId);

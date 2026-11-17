@@ -6,6 +6,16 @@ For dedicated database roles, service templates, artifact permissions, RPC prefl
 
 Follow the [burn-to-claim implementation and release specification](portals-burn-to-claim-plan.md#configuration-and-release-procedure) for the new controller binding, ledger process, owner claim interface, test coverage and revised deployment prerequisites.
 
+## Automatic registry windows
+
+The registry callback opens or schedules the next window after one user request. Early delivery schedules the next slot at the previous end; late delivery starts a full 660-second slot at delivery. `activePortal()` is authoritative even when no transaction occurs at the scheduled boundary. Existing round events carry scheduled timestamps and remain indexed by round ID.
+
+Build with `FOUNDRY_PROFILE=permit`, run contract tests, `scripts/portals/check-storage.py`, `scripts/portals/check-release.py` and `scripts/portals/export-abi.py --check`. The frozen pre-upgrade registry fixture tests real proxy upgrades with both delivered and undelivered requests. Verify the target's deployed implementation against the reviewed legacy runtime and simulate exact deployment/upgrade calls on a pinned fork before preparing wallet signatures. Keep deployment addresses, package hashes and simulation receipts in the private operations repository.
+
+Upgrade only the registry proxy; the shared randomness hook changes no inherited storage. Its two-slot scheduled round and delivery timestamp consume three reserved slots. Collection minting retains its original callback behavior. Pending legacy requests keep their original callback gas limit and can be recovered with `activateNext()` if necessary. A result already delivered before upgrade can be resolved atomically via `upgradeToAndCall(newImplementation, abi.encodeCall(activateNext, ()))`, after checking the exact pending request and current round. Do not call recovery again after a round has been resolved. Deferred post-upgrade callbacks retain their original window times, even when recovery happens after expiry.
+
+Deploy the backward-compatible API reader before the registry upgrade: it exposes queued windows and disables additional requests until they start. The callback gas quote increases for new registry requests. Keep the old registry implementation as evidence, but do not blindly downgrade after a future round has been scheduled: the old implementation cannot read that queued state.
+
 ## Components
 
 | Component                                               | Responsibility                                                                                                                                             |

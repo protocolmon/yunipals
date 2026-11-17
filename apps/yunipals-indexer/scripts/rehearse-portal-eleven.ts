@@ -746,6 +746,7 @@ async function main() {
         !active.open ||
         active.round.endsAt < (await client.getBlock()).timestamp + 45n
       ) {
+        const previousEnd = active.round.endsAt;
         const rotation = await randomness(
           `rotate-${index + 1}`,
           registry,
@@ -754,22 +755,22 @@ async function main() {
           (maximum) => [maximum]
         );
         void rotation;
-        while (
-          (
-            await client.readContract({
-              address: registry,
-              abi: portalRegistryAbi,
-              functionName: "activePortal"
-            })
-          )[0].endsAt > (await client.getBlock()).timestamp
-        )
+        while (previousEnd > (await client.getBlock()).timestamp)
           await delay(2000);
-        await call(
-          `activate-${index + 1}`,
-          registry,
-          portalRegistryAbi,
-          "activateNext"
-        );
+        if (
+          await client.readContract({
+            address: registry,
+            abi: portalRegistryAbi,
+            functionName: "pendingRotation"
+          })
+        ) {
+          await call(
+            `recover-${index + 1}`,
+            registry,
+            portalRegistryAbi,
+            "activateNext"
+          );
+        }
         active = await chain.active();
       }
       const signer = signers[index % 3];

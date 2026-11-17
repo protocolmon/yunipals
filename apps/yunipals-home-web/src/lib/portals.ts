@@ -116,6 +116,11 @@ const core = z.object({
   rubricId: hash,
   rotation: z.object({
     requestId: uint,
+    automatic: z.boolean().optional(),
+    scheduled: z
+      .object({ id: uint, portalId: uint, startsAt: uint, endsAt: uint })
+      .nullable()
+      .optional(),
     ready: z.boolean(),
     canActivate: z.boolean(),
     canRequest: z.boolean()
@@ -363,11 +368,11 @@ export function portalDeploymentMatches(
 ) {
   return Boolean(
     value.economicsVersion === "2" &&
-    value.portalFeeMode === "accumulate_and_burn" &&
-    environment.portalGrading &&
-    value.deployment.grading.toLowerCase() ===
-      environment.portalGrading.toLowerCase() &&
-    value.deployment.chainId === environment.portalChainId
+      value.portalFeeMode === "accumulate_and_burn" &&
+      environment.portalGrading &&
+      value.deployment.grading.toLowerCase() ===
+        environment.portalGrading.toLowerCase() &&
+      value.deployment.chainId === environment.portalChainId
   );
 }
 export function portalAdmission(value: PortalQuote, commitment: Hex) {

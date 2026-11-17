@@ -128,7 +128,7 @@ export function usePortals(status: ActivePortalStatus | null) {
         spell.length > 6000
       )
         throw new Error(
-          "Enter a card number and a spell of up to 6,000 characters."
+          "Choose a card and write a spell of up to 6,000 characters."
         );
       setPhase("Checking your card…");
       const { account } = requireWallet();

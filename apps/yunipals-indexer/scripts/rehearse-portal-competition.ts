@@ -503,12 +503,15 @@ async function main() {
       });
     }
     for (let tries = 0; ; tries++) {
-      const result = await client.readContract({
-        address: registry,
-        abi: portalRegistryAbi,
-        functionName: "randomRequests",
-        args: [pending]
-      });
+      const result =
+        pending === 0n
+          ? [0n, true, true]
+          : await client.readContract({
+              address: registry,
+              abi: portalRegistryAbi,
+              functionName: "randomRequests",
+              args: [pending]
+            });
       const now = (await client.getBlock()).timestamp;
       if (result[2] && now >= round.endsAt) break;
       assert(
@@ -525,12 +528,20 @@ async function main() {
         );
       await delay(5000);
     }
-    await call(
-      `activate-${pending}`,
-      registry,
-      portalRegistryAbi,
-      "activateNext"
-    );
+    if (
+      await client.readContract({
+        address: registry,
+        abi: portalRegistryAbi,
+        functionName: "pendingRotation"
+      })
+    ) {
+      await call(
+        `recover-${pending}`,
+        registry,
+        portalRegistryAbi,
+        "activateNext"
+      );
+    }
     [round, open] = await client.readContract({
       address: registry,
       abi: portalRegistryAbi,
@@ -610,7 +621,8 @@ async function main() {
       const cardIndex = ordinal === 112 ? 4 : ((ordinal - 1) % 3) + 1;
       const card = state.observations[`card-${cardIndex}`] as { token: string };
       let saved = state.observations[label] as
-        Record<string, string> | undefined;
+        | Record<string, string>
+        | undefined;
       if (!saved) {
         const round = await activeRound();
         const input = await client.readContract({

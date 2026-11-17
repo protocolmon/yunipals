@@ -505,19 +505,26 @@ async function main() {
       (maximum) => [maximum]
     );
     await waitRandomness(registry, firstRotation);
-    const activation = await call(
-      "activate-first-round",
-      registry,
-      portalRegistryAbi,
-      "activateNext"
-    );
-    const firstRound = parseEventLogs({
+    if (
+      await client.readContract({
+        address: registry,
+        abi: portalRegistryAbi,
+        functionName: "pendingRotation"
+      })
+    ) {
+      await call(
+        "recover-first-round",
+        registry,
+        portalRegistryAbi,
+        "activateNext"
+      );
+    }
+    const [firstRound] = await client.readContract({
+      address: registry,
       abi: portalRegistryAbi,
-      logs: activation.logs,
-      eventName: "PortalActivated"
-    })[0];
-    assert(firstRound);
-    const portalId = firstRound.args.portalId;
+      functionName: "activePortal"
+    });
+    const portalId = firstRound.portalId;
     const gates = (
       await client.readContract({
         address: collection,
@@ -799,7 +806,8 @@ async function main() {
       let admission: Input;
       let salt: Hex;
       const stored = state.observations[label] as
-        Record<string, string> | undefined;
+        | Record<string, string>
+        | undefined;
       if (!stored) {
         const quote = await chain.quote(cardId, signer.address);
         assert(quote.portal);
@@ -1123,7 +1131,7 @@ async function main() {
         await metadata.json()
       );
       await waitRandomness(registry, nextId);
-      const end = firstRound.args.endsAt;
+      const end = firstRound.endsAt;
       if ((await client.getBlock()).timestamp < end) {
         await assert.rejects(
           client.simulateContract({
@@ -1154,12 +1162,20 @@ async function main() {
           }
         }
       }
-      await call(
-        "activate-second-round",
-        registry,
-        portalRegistryAbi,
-        "activateNext"
-      );
+      if (
+        await client.readContract({
+          address: registry,
+          abi: portalRegistryAbi,
+          functionName: "pendingRotation"
+        })
+      ) {
+        await call(
+          "recover-second-round",
+          registry,
+          portalRegistryAbi,
+          "activateNext"
+        );
+      }
       const [next, open] = await client.readContract({
         address: registry,
         abi: portalRegistryAbi,
