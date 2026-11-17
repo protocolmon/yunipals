@@ -11,14 +11,44 @@ import { usePortalTransactions } from "@/hooks/usePortalTransactions";
 import { portalTransactionPending } from "@/lib/portalTransactions";
 import { environment } from "@/environment";
 
+const dismissedStorageKey = "yunipals/portals/dismissed-activity/v1";
+
+function readDismissedActivity(): string[] {
+  try {
+    const value: unknown = JSON.parse(
+      sessionStorage.getItem(dismissedStorageKey) ?? "[]"
+    );
+    return Array.isArray(value)
+      ? value
+          .filter((key): key is string => typeof key === "string")
+          .slice(-200)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export function PortalTransactionStatus() {
   const { tracker, transactions } = usePortalTransactions();
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(readDismissedActivity);
+  const dismissalKey = (id: string, state: string) =>
+    `${tracker?.key}/${id}/${state}`;
+  const dismiss = (id: string, state: string) => {
+    const next = [...dismissed, dismissalKey(id, state)].slice(-200);
+    setDismissed(next);
+    try {
+      sessionStorage.setItem(dismissedStorageKey, JSON.stringify(next));
+    } catch {
+      // Dismissal still works when browser storage is unavailable.
+    }
+  };
   const visible = transactions
     .filter(
       (value) =>
         portalTransactionPending(value) ||
-        Date.now() - value.createdAt < 3600000
+        (Date.now() - value.createdAt < 3600000 &&
+          !dismissed.includes(dismissalKey(value.id, value.state)))
     )
     .slice(-8)
     .reverse();
@@ -102,29 +132,37 @@ export function PortalTransactionStatus() {
                 href={explorer ? `${explorer}/tx/${value.hash}` : undefined}
                 linkLabel={`View ${value.label.toLowerCase()} transaction on BaseScan`}
                 actions={
-                  (value.actionKey.startsWith("grade:") || pending) && (
-                    <>
-                      {value.actionKey.startsWith("grade:") && (
-                        <Link
-                          className={transactionActionVariants()}
-                          to={`/portals/cards/${value.actionKey.slice(6)}`}
-                        >
-                          Card history
-                        </Link>
-                      )}
-                      {pending && (
-                        <button
-                          type="button"
-                          className={transactionActionVariants({
-                            variant: "secondary"
-                          })}
-                          onClick={() => void tracker?.check(value.id)}
-                        >
-                          Check status
-                        </button>
-                      )}
-                    </>
-                  )
+                  <>
+                    {value.actionKey.startsWith("grade:") && (
+                      <Link
+                        className={transactionActionVariants()}
+                        to={`/portals/cards/${value.actionKey.slice(6)}`}
+                      >
+                        Card history
+                      </Link>
+                    )}
+                    {pending ? (
+                      <button
+                        type="button"
+                        className={transactionActionVariants({
+                          variant: "secondary"
+                        })}
+                        onClick={() => void tracker?.check(value.id)}
+                      >
+                        Check status
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={transactionActionVariants({
+                          variant: "secondary"
+                        })}
+                        onClick={() => dismiss(value.id, value.state)}
+                      >
+                        Dismiss
+                      </button>
+                    )}
+                  </>
                 }
               />
             );

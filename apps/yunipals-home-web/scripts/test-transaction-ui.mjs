@@ -42,7 +42,7 @@ const mocks = `
 import {useSyncExternalStore} from 'react';
 const subscribe=fn=>{window.addEventListener('fixture',fn);return()=>window.removeEventListener('fixture',fn)};
 const noop=()=>{};
-const tracker={getSnapshot:()=>[],check:async(id)=>window.checks.push(id)};
+const tracker={key:'test-wallet',getSnapshot:()=>[],check:async(id)=>window.checks.push(id)};
 const client={invalidateQueries:noop};
 export function usePortalTransactions(){const state=useSyncExternalStore(subscribe,()=>window.fixture);return {tracker,transactions:state.portals};}
 export const useArenaDeployment=()=>({entry:5});
@@ -145,6 +145,30 @@ try {
     await portal.getByRole("link").getAttribute("href"),
     "https://basescan.org/tx/" + confirmed.hash
   );
+  await portal.getByRole("button", { name: "Dismiss" }).click();
+  await portal.waitFor({ state: "hidden" });
+  assert.equal(
+    await page.evaluate(() => window.fixture.portals.length),
+    1,
+    "Dismissal must not delete tracked receipts"
+  );
+  await page.reload();
+  await page.waitForFunction(() => window.update);
+  await page.evaluate((row) => window.update({ portals: [row] }), confirmed);
+  await portal.waitFor({ state: "hidden" });
+  // If a dismissed receipt needs confirmation again, it must resurface.
+  await page.evaluate((row) => window.update({ portals: [row] }), {
+    ...confirmed,
+    state: "confirming",
+    message: "Checking confirmation again."
+  });
+  await portal
+    .getByRole("button", { name: "Check status" })
+    .waitFor({ state: "visible" });
+  assert.equal(
+    await portal.getByRole("button", { name: "Dismiss" }).count(),
+    0
+  );
   await portal.locator("summary").click();
   const pending = {
     ...confirmed,
@@ -174,7 +198,8 @@ try {
     message: "Transaction reverted."
   });
   await portal.getByText("Transaction reverted.").waitFor({ state: "visible" });
-  assert.equal(await portal.getByRole("button").count(), 0);
+  await portal.getByRole("button", { name: "Dismiss" }).click();
+  await portal.waitFor({ state: "hidden" });
   await page.evaluate((row) => window.update({ portals: [row] }), {
     ...confirmed,
     createdAt: Date.now() - 3600001
@@ -258,7 +283,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: portal history and recovery, keyboard toggles, pack replay action, Arena approval guidance, marketplace pending/error/retry/dismiss states, safe links, 320/390/1280px layouts and reduced motion."
+    "PASS: portal dismissal persists on reload without deleting receipts, reorgs resurface, portal history and recovery, keyboard toggles, pack replay action, Arena approval guidance, marketplace pending/error/retry/dismiss states, safe links, 320/390/1280px layouts and reduced motion."
   );
 } finally {
   await browser.close();
