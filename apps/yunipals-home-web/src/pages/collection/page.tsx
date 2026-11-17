@@ -12,7 +12,6 @@ import {
   Filter,
   Loader2,
   Search,
-  Sparkles,
   X
 } from "lucide-react";
 import {
@@ -846,14 +845,15 @@ function CollectionExplorer() {
               {migrationNotice}
             </p>
           )}
-          <CollectionEditionNav
-            edition={withSolana ? undefined : edition}
-            href={editionHref}
-          />
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <CollectionEditionNav
+              edition={withSolana ? undefined : edition}
+              href={editionHref}
+              className="mb-0 lg:shrink-0 lg:pt-1"
+            />
             <form
               onSubmit={submitLookup}
-              className="w-full min-w-0 sm:max-w-md"
+              className="w-full min-w-0 lg:max-w-md"
             >
               <label htmlFor="collection-lookup" className="sr-only">
                 {environment.exomonEnabled
@@ -898,14 +898,6 @@ function CollectionExplorer() {
                 </p>
               )}
             </form>
-            {environment.boostersEnabled && (
-              <Link
-                to="/boosters"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-bold text-grape focus-visible:ring-2 focus-visible:ring-grape"
-              >
-                <Sparkles aria-hidden="true" size={16} /> Open packs
-              </Link>
-            )}
           </div>
           {environment.exomonEnabled && (
             <Link

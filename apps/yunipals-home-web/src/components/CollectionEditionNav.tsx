@@ -12,10 +12,12 @@ const labels = { og: "OG", airdrop: "OG Base", tcg: "TCG" };
 export function CollectionEditionNav({
   edition,
   href,
+  className,
   islandsHref = islandsCollectionHref
 }: {
   edition?: CollectionEdition | "islands";
   href: (edition: CollectionEdition) => string;
+  className?: string;
   islandsHref?: string | null;
 }) {
   const tabs = [
@@ -29,7 +31,10 @@ export function CollectionEditionNav({
       : [])
   ];
   return (
-    <nav aria-label="Yunipals collections" className="mb-4 flex gap-2">
+    <nav
+      aria-label="Yunipals collections"
+      className={cn("mb-4 flex gap-2", className)}
+    >
       {tabs.map(({ value, label, to }) => (
         <Link
           key={value}
