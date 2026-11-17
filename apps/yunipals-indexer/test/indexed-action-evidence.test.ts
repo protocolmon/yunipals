@@ -459,7 +459,7 @@ describe("exact indexed action evidence", () => {
       }
     }
   );
-  it.each(["e8145098", "current"] as const)(
+  it.each(["e8145098", "cardFacts", "current"] as const)(
     "verifies the exact %s full engine/monsters manifest ABI pair",
     async (version) => {
       const f = fixture("booster-request-created");
@@ -498,7 +498,7 @@ describe("exact indexed action evidence", () => {
       });
     }
   );
-  it.each(["e8145098", "current"] as const)(
+  it.each(["e8145098", "cardFacts", "current"] as const)(
     "recomputes both full %s ABI hashes, refusing content drift even outside event fields",
     async (version) => {
       const hashes = boosterSourceAbiHashes[version];
@@ -741,7 +741,7 @@ describe("exact indexed action evidence", () => {
             return db.query(sql, params);
           }
         } as Pick<PoolClient, "query">;
-        for (const version of ["e8145098", "current"] as const) {
+        for (const version of ["e8145098", "cardFacts", "current"] as const) {
           const f = fixture("booster-request-created", projectionDb);
           const hashes = boosterSourceAbiHashes[version];
           f.source.abiHash = f.event.abi_hash = hashes.boosterPacks;
@@ -766,7 +766,7 @@ describe("exact indexed action evidence", () => {
         expect((await wrongOriginal.read()).reason).toBe(
           "projection_inconsistent"
         );
-        expect(realSelects).toBe(4);
+        expect(realSelects).toBe(5);
       } finally {
         await db.end();
         if (created)
