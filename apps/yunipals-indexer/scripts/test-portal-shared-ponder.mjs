@@ -168,6 +168,24 @@ try {
           chain: { id: 8453 },
           client: {
             readContract: async ({ functionName }) => {
+              if (functionName === "portalRecord")
+                return [
+                  1n,
+                  {
+                    sequenceStart: 260,
+                    sequenceLength: 10,
+                    colorGate: 0,
+                    typeGate: 0,
+                    originalOnly: false,
+                    glitterGate: false,
+                    diamondGate: false
+                  },
+                  owner
+                ];
+              if (functionName === "cards") return address(9);
+              if (functionName === "packTypeId") return 1n;
+              if (functionName === "registry") return contracts.registry;
+              if (functionName === "collection") return contracts.collection;
               ruleCalls++;
               return functionName === "BATCH_SIZE" ? 111n : contribution;
             }
@@ -177,6 +195,10 @@ try {
               (await d.select().from(table).where(eq(table.id, key.id)))[0] ??
               null,
             delete: (table, key) => d.delete(table).where(eq(table.id, key.id)),
+            update: (table, key) => ({
+              set: (values) =>
+                d.update(table).set(values).where(eq(table.id, key.id))
+            }),
             insert: (table) => ({
               values: (row) => ({
                 then: (yes, no) => d.insert(table).values(row).then(yes, no),
@@ -878,6 +900,79 @@ try {
     4,
     "rollback restores the cached rules without another RPC read"
   );
+  // Eligibility projections use the same Ponder rollback journal as ownership.
+  await dispatch(15, [
+    ["grading", "Initialized", { version: 1n }],
+    [
+      "grading",
+      "GradingCompleted",
+      {
+        requestId: 1n,
+        tokenId: 1n,
+        version: 1n,
+        artworkHash: hash,
+        reportHash: hash,
+        scores: [80, 80, 80, 80]
+      }
+    ],
+    [
+      "collection",
+      "PortalRetired",
+      { tokenId: 1n, kindId: 1n, owner: buyer, revision: 1 }
+    ]
+  ]);
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM portal_shared_check.portal_eligibility_config"
+      )
+    ).rows[0].pack_type_id,
+    "1"
+  );
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM portal_shared_check.portal_eligibility_pending"
+      )
+    ).rows.length,
+    0
+  );
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM portal_shared_check.portal_eligibility_portal"
+      )
+    ).rows[0].retired,
+    true
+  );
+  await database.userQB.transaction(async (tx) => {
+    await setReorgTriggersEnabled(tx, targets, namespace.schema, false);
+    await revertMultichain(tx, { checkpoint: checkpoint(14), tables });
+    await setReorgTriggersEnabled(tx, targets, namespace.schema, true);
+  });
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM portal_shared_check.portal_eligibility_config"
+      )
+    ).rows.length,
+    0
+  );
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM portal_shared_check.portal_eligibility_pending"
+      )
+    ).rows[0].request_id,
+    "1"
+  );
+  const gates = (
+    await db.query(
+      "SELECT * FROM portal_shared_check.portal_eligibility_portal"
+    )
+  ).rows[0];
+  assert.equal(gates.retired, false);
+  assert.equal(gates.sequence_start, 260);
   await db.query("BEGIN");
   await db.query("ANALYZE portal_shared_check.portal_projection_version");
   await db.query("SET LOCAL enable_seqscan=off");
@@ -912,6 +1007,7 @@ try {
         "two-query snapshot stays within 26 database round trips",
         "parity wait survives a 200ms session idle timeout without changing session defaults",
         "real Ponder reorg and replay",
+        "eligibility gates, config, pending completions and retirements roll back with Ponder",
         "atomic job cursor crash recovery",
         "release replay preserves saved AI output",
         "same-boundary full-state parity detects balance corruption",

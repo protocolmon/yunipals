@@ -1,5 +1,6 @@
 import type { Abi } from "viem";
 import { boosterPacksAbi, yunipalMonstersAbi } from "./boosterAbi.js";
+import { yunipalMonstersAbiCardFacts } from "./boosterSourceAbi.cardFacts.js";
 import {
   boosterPacksAbiE8145098,
   yunipalMonstersAbiE8145098
@@ -13,6 +14,12 @@ export const boosterSourceAbiHashes = {
       "0x4127c2493eff266363adae3bb24fcf53038b7da4d72af5f517600e2a7920635d",
     yunipalMonsters:
       "0x680148b00be6884d25a426041f93861ac175dfe3535224636c46cdcb3daa3a94"
+  },
+  cardFacts: {
+    boosterPacks:
+      "0x4127c2493eff266363adae3bb24fcf53038b7da4d72af5f517600e2a7920635d",
+    yunipalMonsters:
+      "0x919fcdc77c7ce1b0d105ce77703088067874189d3478a72442096215dcbad497"
   },
   current: {
     boosterPacks:
@@ -49,6 +56,8 @@ export function yunipalMonstersSourceAbi(sourceAbiHash?: string): Abi {
       return yunipalMonstersAbi;
     case boosterSourceAbiHashes.e8145098.yunipalMonsters:
       return yunipalMonstersAbiE8145098;
+    case boosterSourceAbiHashes.cardFacts.yunipalMonsters:
+      return yunipalMonstersAbiCardFacts;
     default:
       throw new UnsupportedBoosterSourceAbi();
   }

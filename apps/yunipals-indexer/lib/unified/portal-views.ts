@@ -5,7 +5,7 @@ import type { RegisteredRelease } from "../../../../packages/yunipals-indexer-se
 
 import { portalProjectionKeys } from "./portal-keys.js";
 
-export const portalViewVersion = 2;
+export const portalViewVersion = 3;
 export function portalReadIdentity(
   release: RegisteredRelease,
   readSchema: string
@@ -125,7 +125,7 @@ export async function createPortalReadViews(
       (SELECT jsonb_object_agg(k, CASE WHEN jsonb_typeof(v)='array' THEN
         (SELECT string_agg(item,',' ORDER BY n) FROM jsonb_array_elements_text(v) WITH ORDINALITY a(item,n)) ELSE v #>> '{}' END)
         FROM jsonb_each(e.args::jsonb) a(k,v)) AS args
-    FROM ${physical}.canonical_event e WHERE e.source_id IN ('portals:8453:collection','portals:8453:registry','portals:8453:grading','portals:8453:competition') AND e.name<>'Upgraded' AND e.block_number<=${ceiling}`);
+    FROM ${physical}.canonical_event e WHERE e.source_id IN ('portals:8453:collection','portals:8453:registry','portals:8453:grading','portals:8453:competition') AND e.name NOT IN ('Upgraded','Initialized') AND e.block_number<=${ceiling}`);
   for (const role of roles) {
     await db.query(
       `GRANT USAGE ON SCHEMA ${physical},yunipals_indexer_control TO ${sqlIdentifier(role)}`

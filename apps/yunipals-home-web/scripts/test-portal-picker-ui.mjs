@@ -139,6 +139,7 @@ environment.portalApiUrl=new URL('/fixture',location.href).href;
 environment.yunipalsIndexerUrl=new URL('/fixture',location.href).href;
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
 window.__refresh=()=>query.invalidateQueries({queryKey:['portals','active']});
+window.__refreshCounts=()=>query.invalidateQueries({queryKey:['portals','matching-cards']});
 createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter initialEntries={['/grading?card=4']}><QueryClientProvider client={query}><PortalPage/></QueryClientProvider></MemoryRouter></React.StrictMode>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "portal-picker-vite-"));
@@ -240,12 +241,44 @@ try {
   page.setDefaultTimeout(15000);
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  let countMode = "normal";
+  let cardRpcChecks = 0;
+  const countRequests = [];
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (url.hostname !== "127.0.0.1") return route.abort();
     if (url.pathname === "/fixture/v1/portals")
       return route.fulfill({ json: status });
+    if (url.pathname === "/fixture/v1/boosters/portal-card-counts") {
+      countRequests.push(url.searchParams.get("portalIds"));
+      if (countMode === "error")
+        return route.fulfill({ status: 503, json: { error: "Unavailable" } });
+      return route.fulfill({
+        json: {
+          owner: url.searchParams.get("owner"),
+          grading,
+          collection: other,
+          cards,
+          chainId: 8453,
+          indexedBlock: "100",
+          items: url.searchParams
+            .get("portalIds")
+            .split(",")
+            .map((portalId, i) => ({
+              portalId,
+              count:
+                countMode === "empty" || url.searchParams.get("owner") !== owner
+                  ? 0
+                  : i === 0
+                    ? 3
+                    : 0,
+              retired: false
+            }))
+        }
+      });
+    }
     if (url.pathname === "/__checks") {
+      cardRpcChecks++;
       if (mode === "error")
         return route.fulfill({ status: 503, body: "unavailable" });
       const contracts = JSON.parse(route.request().postData());
@@ -296,6 +329,19 @@ try {
   const schedule = page.getByRole("region", { name: "Upcoming portals" });
   await schedule.getByText("11 of 11 future windows revealed").waitFor();
   assert.equal(await schedule.getByRole("listitem").count(), 11);
+  await schedule.getByText("3 matching cards", { exact: true }).waitFor();
+  assert.equal(
+    await schedule.getByText("No matching cards", { exact: true }).count(),
+    9
+  );
+  assert.equal(countRequests[0].split(",").length, 10); // retired portal excluded
+  const requestCount = countRequests.length;
+  await page.evaluate(() => window.__refresh());
+  await page.waitForTimeout(3500); // status polling / countdown do not reload counts
+  assert.equal(countRequests.length, requestCount);
+  assert.equal(cardRpcChecks, 0, "badges do not trigger card RPC checks");
+  await schedule.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "/tmp/portal-counts-desktop.png" });
   assert(
     await page
       .getByRole("button", { name: "Schedule full", exact: true })
@@ -446,6 +492,44 @@ try {
   await dialog.getByRole("button", { name: "Close card picker" }).click();
   await schedule.scrollIntoViewIfNeeded();
   await page.screenshot({ path: "/tmp/portal-schedule-mobile.png" });
+  await page.evaluate((value) => window.__wallet(value), other);
+  await page.waitForFunction(
+    () =>
+      !document.querySelector("main").textContent.includes("3 matching cards")
+  );
+  await schedule
+    .getByText("No matching cards", { exact: true })
+    .first()
+    .waitFor();
+  await page.evaluate((value) => window.__wallet(value), owner);
+  await schedule.getByText("3 matching cards", { exact: true }).waitFor();
+  countMode = "error";
+  await page.evaluate(() => window.__refreshCounts());
+  await schedule.getByRole("button", { name: "Retry card counts" }).waitFor();
+  assert.equal(
+    await schedule.getByText("No matching cards", { exact: true }).count(),
+    0
+  );
+  await schedule
+    .getByText("Count unavailable", { exact: true })
+    .first()
+    .waitFor();
+  countMode = "empty";
+  await schedule.getByRole("button", { name: "Retry card counts" }).click();
+  await schedule
+    .getByText("No matching cards", { exact: true })
+    .first()
+    .waitFor();
+  await page.evaluate(() => window.__wallet(undefined));
+  await schedule
+    .getByText(
+      "Connect your wallet to see how many of your cards match each portal."
+    )
+    .waitFor();
+  assert.equal(
+    await schedule.getByText("No matching cards", { exact: true }).count(),
+    0
+  );
   status.rotation.upcoming = [];
   status.rotation.scheduled = null;
   status.rotation.refillCount = 12;

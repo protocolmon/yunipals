@@ -86,3 +86,5 @@ export const contractOwnerEvent = onchainTable("contract_owner_event", (t) => ({
 }), (table) => ({ collectionIdx: index().on(table.collection, table.blockNumber, table.logIndex) }));
 
 export * from "./lib/unified/portal-schema.js";
+
+export * from "./lib/unified/portal-eligibility-schema.js";

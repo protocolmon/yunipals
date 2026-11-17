@@ -1,6 +1,11 @@
 import { ponder } from "ponder:registry";
 import schema from "ponder:schema";
-import { portalCompetitionAbi } from "../../../packages/yunipals-market-core/src/portalAbi.js";
+import {
+  portalCollectionAbi,
+  portalGradingAbi,
+  portalRegistryAbi,
+  portalCompetitionAbi
+} from "../../../packages/yunipals-market-core/src/portalAbi.js";
 import { type PortalEventSource } from "../../../packages/yunipals-market-core/src/portalIndex.js";
 import {
   portalContracts,
@@ -17,6 +22,7 @@ import {
   sourceManifest
 } from "../lib/unified/handlers.js";
 import type { Address } from "viem";
+import { boosterIdentity } from "../../../packages/yunipals-market-core/src/boosters.js";
 
 type PortalEventName = Exclude<
   Extract<Parameters<typeof ponder.on>[0], `Portal${string}:${string}`>,
@@ -115,6 +121,90 @@ if (
               String(value)
             ])
           );
+          // Enrich immutable entry rules during indexing, at the event block.
+          // Badge HTTP reads use only these tables; they never make RPC calls.
+          if (
+            kind === "grading" &&
+            ["Initialized", "Upgraded"].includes(item.name)
+          ) {
+            const [cards, packTypeId, registry] = await Promise.all([
+              context.client.readContract({
+                address: grading.address as Address,
+                abi: portalGradingAbi,
+                functionName: "cards",
+                blockNumber: event.block.number
+              }),
+              context.client.readContract({
+                address: grading.address as Address,
+                abi: portalGradingAbi,
+                functionName: "packTypeId",
+                blockNumber: event.block.number
+              }),
+              context.client.readContract({
+                address: grading.address as Address,
+                abi: portalGradingAbi,
+                functionName: "registry",
+                blockNumber: event.block.number
+              })
+            ]);
+            const registeredCollection = await context.client.readContract({
+              address: registry,
+              abi: portalRegistryAbi,
+              functionName: "collection",
+              blockNumber: event.block.number
+            });
+            if (
+              registeredCollection.toLowerCase() !== collection.address ||
+              packTypeId <= 0n
+            )
+              throw new Error("Eligibility deployment mismatch.");
+            const values = {
+              collection: collection.address as Address,
+              cards: cards.toLowerCase() as Address,
+              packTypeId: packTypeId.toString()
+            };
+            await context.db
+              .insert(schema.portalEligibilityConfig)
+              .values({ id: grading.address as Address, ...values })
+              .onConflictDoUpdate(values);
+          }
+          if (kind === "collection" && item.name === "PortalMinted") {
+            const [, gates] = await context.client.readContract({
+              address: collection.address as Address,
+              abi: portalCollectionAbi,
+              functionName: "portalRecord",
+              args: [BigInt(args.tokenId)],
+              blockNumber: event.block.number
+            });
+            await context.db.insert(schema.portalEligibilityPortal).values({
+              id: boosterIdentity(collection.address, args.tokenId),
+              ...gates,
+              retired: false
+            });
+          }
+          if (kind === "collection" && item.name === "PortalRetired") {
+            await context.db
+              .update(schema.portalEligibilityPortal, {
+                id: boosterIdentity(collection.address, args.tokenId)
+              })
+              .set({ retired: true });
+          }
+          if (kind === "grading" && item.name === "GradingRequested") {
+            await context.db.insert(schema.portalEligibilityPending).values({
+              id: boosterIdentity(grading.address, args.tokenId),
+              requestId: args.requestId
+            });
+          }
+          if (kind === "grading" && item.name === "GradingCompleted") {
+            const id = boosterIdentity(grading.address, args.tokenId);
+            const pending = await context.db.find(
+              schema.portalEligibilityPending,
+              { id }
+            );
+            if (pending?.requestId !== args.requestId)
+              throw new Error("Eligibility request mismatch.");
+            await context.db.delete(schema.portalEligibilityPending, { id });
+          }
           if (kind === "competition" && item.name === "Upgraded") {
             await context.db.delete(schema.portalCompetitionRules, {
               id: deployment

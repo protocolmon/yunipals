@@ -80,7 +80,7 @@ try {
       return false;
     }
   });
-  assert.equal(tables.length, 8);
+  assert.equal(tables.length, 9);
   const state = new Map();
   const keyOf = (table, row) => `${getTableName(table)}:${row.id}`;
   const db = {
@@ -202,6 +202,17 @@ try {
     receivedAt: 1_000_000n
   });
   await mint(1n, alice, true);
+  await dispatch("BoosterMonsters:CardFactsRecorded", {
+    tokenId: 1n,
+    sequence: 0,
+    mintedAt: 1000000n,
+    imported: true
+  });
+  assert.equal(
+    state.get(keyOf(schema.boosterCardFacts, { id: identity(collection, 1) }))
+      .sequence,
+    0
+  );
   await dispatch("BoosterEngine:OriginalRevealed", {
     originalId: 1n,
     packTypeId: 1n,

@@ -78,7 +78,7 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 25);
+  assert.equal(tables.length, 29);
   assert.ok(
     tables.some(
       (table) => getTableConfig(table).name === "portal_competition_rules"

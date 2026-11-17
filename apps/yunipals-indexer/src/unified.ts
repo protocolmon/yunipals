@@ -62,6 +62,7 @@ if (
   ]);
   const monsterDomain = new Set([
     "MonsterMinted",
+    "CardFactsRecorded",
     "Transfer",
     "OriginalBurned"
   ]);
