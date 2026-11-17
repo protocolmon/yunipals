@@ -209,6 +209,13 @@ if (process.env.PONDER_ISLANDS_ONLY !== "true") {
       })
       .set({ pendingRequest: null });
   });
+  ponder.on("BoosterMonsters:CardFactsRecorded", async ({ event, context }) => {
+    if (!(await record("CardFactsRecorded", event, context))) return;
+    await context.db.insert(schema.boosterCardFacts).values({
+      id: originalKey(event.args.tokenId),
+      sequence: event.args.sequence
+    });
+  });
   ponder.on("BoosterMonsters:MonsterMinted", async ({ event, context }) => {
     if (!(await record("MonsterMinted", event, context))) return;
     const a = event.args;

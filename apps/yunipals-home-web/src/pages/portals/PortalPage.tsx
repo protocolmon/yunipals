@@ -502,7 +502,13 @@ export function PortalPage() {
             }}
           />
         )}
-      {status && <PortalSchedule status={status} now={status.now + elapsed} />}
+      {status && (
+        <PortalSchedule
+          status={status}
+          owner={actions.address}
+          now={status.now + elapsed}
+        />
+      )}
       <PortalStory />
       {(status?.competition || environment.portalGrading) && (
         <PortalCompetitions />

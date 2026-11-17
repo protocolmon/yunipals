@@ -1,3 +1,4 @@
+import { registerPortalCardCountRoutes } from "./portal-card-counts.js";
 import { registerPortalRoutes } from "../portals/routes.js";
 import { registerMonsterVersionRoutes } from "../versions/routes.js";
 import { assertDerivedOwnership } from "../ownership/derived-snapshot.js";
@@ -363,6 +364,11 @@ app.use(
   })
 );
 registerBoosterRoutes(app, {
+  pool,
+  schemaName:
+    process.env.BOOSTER_DATABASE_SCHEMA?.trim() || physicalPonderSchemaName
+});
+registerPortalCardCountRoutes(app, {
   pool,
   schemaName:
     process.env.BOOSTER_DATABASE_SCHEMA?.trim() || physicalPonderSchemaName

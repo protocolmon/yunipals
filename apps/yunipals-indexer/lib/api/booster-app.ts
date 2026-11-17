@@ -1,3 +1,4 @@
+import { registerPortalCardCountRoutes } from "./portal-card-counts.js";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Pool } from "pg";
@@ -71,6 +72,11 @@ export function createBoosterApi(dependencies: {
         deployment.engine
       )
   });
+  if (dependencies.pool.connect)
+    registerPortalCardCountRoutes(app, {
+      pool: { connect: dependencies.pool.connect.bind(dependencies.pool) },
+      schemaName: dependencies.schemaName
+    });
   if (dependencies.artworkDirectory) {
     const store = new BoosterArtworkStore(dependencies.artworkDirectory);
     registerBoosterArtworkRoutes(app, store);

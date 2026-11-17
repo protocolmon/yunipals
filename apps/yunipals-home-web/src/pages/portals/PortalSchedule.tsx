@@ -1,7 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   portalColorNames,
   portalTypeNames
 } from "@protopals/yunipals-market-core/portals";
+import { fetchPortalCardCounts } from "@/lib/portalCardCounts";
+import { cn } from "@/lib/utils";
 import {
   portalImage,
   portalRange,
@@ -10,15 +13,47 @@ import {
 
 export function PortalSchedule({
   status,
+  owner,
   now
 }: {
   status: ActivePortalStatus;
+  owner?: string;
   now: number;
 }) {
-  if (status.rotation.queueCapacity !== 11) return null;
   const upcoming = (status.rotation.upcoming ?? []).filter(
     (item) => Number(item.startsAt) > now
   );
+  const portalIds = [
+    ...new Set(
+      upcoming
+        .filter((item) => !item.portal.retired)
+        .map((item) => item.portal.id)
+    )
+  ].sort();
+  const { deployment } = status;
+  const counts = useQuery({
+    queryKey: [
+      "portals",
+      "matching-cards",
+      owner?.toLowerCase(),
+      deployment.chainId,
+      deployment.collection.toLowerCase(),
+      deployment.grading.toLowerCase(),
+      deployment.cards.toLowerCase(),
+      portalIds
+    ],
+    queryFn: ({ signal }) =>
+      fetchPortalCardCounts(owner!, deployment, portalIds, signal),
+    enabled:
+      Boolean(owner) &&
+      deployment.chainId === 8453 &&
+      status.rotation.queueCapacity === 11 &&
+      portalIds.length > 0,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
+    retry: false
+  });
+  if (status.rotation.queueCapacity !== 11) return null;
   return (
     <section
       aria-labelledby="portal-schedule-title"
@@ -37,6 +72,26 @@ export function PortalSchedule({
         grading. Windows open automatically; times are shown in your local time
         zone. Refill the schedule above to reveal more windows.
       </p>
+      {owner && portalIds.length > 0 ? (
+        <p className="mt-2 text-xs text-muted">
+          Matches use your currently indexed cards and exclude spells still
+          processing. Eligibility can change before a window opens.
+          {counts.isError && (
+            <button
+              type="button"
+              disabled={counts.isFetching}
+              onClick={() => void counts.refetch()}
+              className="ml-2 rounded font-bold underline focus-visible:outline-grape disabled:opacity-50"
+            >
+              {counts.isFetching ? "Checking…" : "Retry card counts"}
+            </button>
+          )}
+        </p>
+      ) : !owner && upcoming.length > 0 ? (
+        <p className="mt-2 text-xs text-muted">
+          Connect your wallet to see how many of your cards match each portal.
+        </p>
+      ) : null}
       {upcoming.length === 0 ? (
         <div className="mt-5 flex items-center gap-5 rounded-2xl bg-lavender/40 p-5">
           <img
@@ -57,6 +112,13 @@ export function PortalSchedule({
         <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {upcoming.map((item) => {
             const { portal } = item;
+            const match = counts.data?.items.find(
+              (item) => item.portalId === portal.id
+            );
+            const count =
+              !counts.isError && match && !match.retired
+                ? match.count
+                : undefined;
             const starts = new Date(Number(item.startsAt) * 1000);
             const ends = new Date(Number(item.endsAt) * 1000);
             return (
@@ -93,6 +155,27 @@ export function PortalSchedule({
                       })}
                     </time>
                   </p>
+                  {owner && !portal.retired && (
+                    <p
+                      className={cn(
+                        "mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-bold",
+                        count !== undefined && count > 0
+                          ? "bg-mint text-ink"
+                          : "bg-white/75 text-muted"
+                      )}
+                      aria-live="polite"
+                    >
+                      {counts.isError ||
+                      match?.retired ||
+                      deployment.chainId !== 8453
+                        ? "Count unavailable"
+                        : count === undefined
+                          ? "Checking cards…"
+                          : count === 0
+                            ? "No matching cards"
+                            : `${count.toLocaleString()} matching ${count === 1 ? "card" : "cards"}`}
+                    </p>
+                  )}
                   {portal.retired ? (
                     <p className="mt-2 font-semibold">
                       Redeemed · this window stays closed

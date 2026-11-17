@@ -12,10 +12,23 @@ import {
 import type { SourceDefinition } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 
-// Upgrade events are ingestion controls, not legacy portal action evidence.
-// They invalidate rollback-managed competition constants without changing v1 proofs.
+// Initialization and upgrade events maintain eligibility configuration and
+// competition constants. They are not legacy portal action evidence.
 export const sharedPortalEventAbis = {
   ...portalEventAbis,
+  grading: [
+    ...portalEventAbis.grading,
+    ...portalGradingAbi.filter(
+      (
+        event
+      ): event is Extract<
+        (typeof portalGradingAbi)[number],
+        { type: "event"; name: "Initialized" | "Upgraded" }
+      > =>
+        event.type === "event" &&
+        (event.name === "Initialized" || event.name === "Upgraded")
+    )
+  ],
   competition: [
     ...portalEventAbis.competition,
     ...portalCompetitionAbi.filter(
