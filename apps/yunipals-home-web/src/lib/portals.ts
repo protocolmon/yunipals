@@ -117,6 +117,26 @@ const core = z.object({
   rotation: z.object({
     requestId: uint,
     automatic: z.boolean().optional(),
+    queueCapacity: z.literal(11).nullable().optional(),
+    refillCount: z.number().int().min(0).max(12).nullable().optional(),
+    upcoming: z
+      .array(
+        z.object({
+          id: uint,
+          portalId: uint,
+          startsAt: uint,
+          endsAt: uint,
+          portal: portalTokenSchema.pick({
+            id: true,
+            name: true,
+            imageURI: true,
+            gates: true,
+            retired: true
+          })
+        })
+      )
+      .max(11)
+      .optional(),
     scheduled: z
       .object({ id: uint, portalId: uint, startsAt: uint, endsAt: uint })
       .nullable()

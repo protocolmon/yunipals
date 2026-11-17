@@ -388,6 +388,7 @@ try {
   const page = await launched.newPage({
     viewport: { width: 1280, height: 1000 }
   });
+  page.setDefaultTimeout(30000);
   // Playwright is a temporary verification dependency, loaded from the operator-supplied path.
   if (process.env.PORTALS_TEST_ADMIN_ONLY !== "true") {
     const runBrowser = await import(

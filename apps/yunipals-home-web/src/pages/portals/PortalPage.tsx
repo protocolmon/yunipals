@@ -27,6 +27,7 @@ import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { PortalCompetitions } from "./PortalCompetitions";
 import { PortalHero, PortalStory } from "./PortalArtwork";
 import { PortalCardPicker } from "./PortalCardPicker";
+import { PortalSchedule } from "./PortalSchedule";
 import { PortalGradingGuide } from "./PortalGradingGuide";
 
 export function PortalPage() {
@@ -260,9 +261,11 @@ export function PortalPage() {
             )}
             <div className="mt-6 border-t border-lavender pt-5">
               <p className="text-sm text-muted">
-                {status.rotation.automatic
-                  ? "Request the next random portal with one wallet confirmation. Chainlink opens it automatically when the current window ends, or as soon as the result arrives if it has already ended."
-                  : "Anyone can help prepare the next random portal."}{" "}
+                {status.rotation.queueCapacity === 11
+                  ? "Reveal up to 11 upcoming portals with one wallet confirmation. Each window opens automatically at its scheduled time. Anyone can refill available spaces; if nobody refills, the schedule eventually runs out."
+                  : status.rotation.automatic
+                    ? "Request the next random portal with one wallet confirmation. Chainlink opens it automatically when the current window ends, or as soon as the result arrives if it has already ended."
+                    : "Anyone can help prepare the next random portal."}{" "}
                 The request uses ETH; your wallet shows the amount before you
                 confirm.
               </p>
@@ -298,17 +301,21 @@ export function PortalPage() {
                 }}
               >
                 <RefreshCw size={16} aria-hidden="true" />
-                {status.rotation.scheduled
-                  ? "Next portal scheduled"
-                  : status.rotation.canActivate
-                    ? status.rotation.automatic
-                      ? "Recover portal opening"
-                      : "Open the next portal"
-                    : status.rotation.requestId !== "0"
-                      ? "Waiting for Chainlink…"
-                      : status.rotation.automatic
-                        ? "Request the next portal"
-                        : "Prepare the next portal"}
+                {status.rotation.canActivate
+                  ? status.rotation.automatic
+                    ? "Recover portal schedule"
+                    : "Open the next portal"
+                  : status.rotation.requestId !== "0"
+                    ? "Waiting for Chainlink…"
+                    : status.rotation.queueCapacity === 11
+                      ? status.rotation.refillCount === 0
+                        ? "Schedule full"
+                        : "Refill upcoming portals"
+                      : status.rotation.scheduled
+                        ? "Next portal scheduled"
+                        : status.rotation.automatic
+                          ? "Request the next portal"
+                          : "Prepare the next portal"}
               </button>
             </div>
           </section>
@@ -497,6 +504,7 @@ export function PortalPage() {
             }}
           />
         )}
+      {status && <PortalSchedule status={status} now={status.now + elapsed} />}
       <PortalStory />
       {(status?.competition || environment.portalGrading) && (
         <PortalCompetitions />

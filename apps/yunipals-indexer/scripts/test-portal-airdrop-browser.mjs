@@ -157,7 +157,7 @@ export async function verifyGuidedAirdrop({
     page
       .getByRole("listitem")
       .filter({ has: page.getByText("Deliver portal NFTs", { exact: true }) })
-      .last()
+      .first()
       .getByText(
         "Confirmed. The data update is still pending; your transaction is saved.",
         { exact: true }
@@ -181,7 +181,7 @@ export async function verifyGuidedAirdrop({
   await page
     .getByRole("listitem")
     .filter({ has: page.getByText("Commit portal mint", { exact: true }) })
-    .last()
+    .first()
     .getByText(
       "Confirmed. The data update is still pending; your transaction is saved.",
       { exact: true }

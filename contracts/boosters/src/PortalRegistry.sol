@@ -38,7 +38,20 @@ contract PortalRegistry is PortalRandomness {
     // startsAt without requiring a transaction at that time.
     Round public scheduledRound;
     uint64 public rotationReceivedAt;
-    uint256[39] private __gap;
+    // A fixed array bounds every read, write and callback. Legacy slots above stay put.
+    Round[12] private windows;
+    uint8 private windowCount;
+    bool private queueStarted;
+
+    struct Batch {
+        uint8 count;
+        uint64 afterEnd;
+    }
+    mapping(uint256 => Batch) public rotationBatches;
+    uint256[13] private __gap;
+
+    uint8 public constant MAX_UPCOMING = 11;
+    event RotationBatchRequested(uint256 indexed requestId, uint8 count, uint64 afterEnd);
 
     event RotationRequested(
         uint256 indexed requestId, uint64 indexed roundId, uint256 poolSize, uint256 excludedPortal
@@ -69,12 +82,19 @@ contract PortalRegistry is PortalRandomness {
     function activePortal() public view returns (Round memory current, bool accepting) {
         current =
             scheduledRound.id != 0 && block.timestamp >= scheduledRound.startsAt ? scheduledRound : round;
+        if (queueStarted) {
+            current = round;
+            for (uint256 i; i < windowCount; ++i) {
+                if (windows[i].startsAt > block.timestamp) break;
+                current = windows[i];
+            }
+        }
         accepting = current.id != 0 && block.timestamp >= current.startsAt && block.timestamp < current.endsAt
             && collection.exists(current.portalId);
     }
 
     function CALLBACK_GAS() public pure override returns (uint32) {
-        return 400_000;
+        return 1_600_000;
     }
 
     function _afterRandomness(uint256 id) internal override {
@@ -88,7 +108,7 @@ contract PortalRegistry is PortalRandomness {
             return;
         }
         uint256 budget = remaining - 30_000;
-        if (budget > 250_000) budget = 250_000;
+        if (budget > 1_450_000) budget = 1_450_000;
         try this.resolveRotation{gas: budget}(id) {}
         catch {
             emit RotationResolutionDeferred(id);
@@ -102,22 +122,80 @@ contract PortalRegistry is PortalRandomness {
         _resolveRotation();
     }
 
+    /// @notice Only scheduled rounds strictly after the current block time.
+    function upcomingRounds() external view returns (Round[] memory upcoming) {
+        if (!queueStarted) {
+            bool next = scheduledRound.id != 0 && scheduledRound.startsAt > block.timestamp;
+            upcoming = new Round[](next ? 1 : 0);
+            if (next) upcoming[0] = scheduledRound;
+            return upcoming;
+        }
+        uint256 count;
+        for (uint256 i; i < windowCount; ++i) {
+            if (windows[i].startsAt > block.timestamp) ++count;
+        }
+        upcoming = new Round[](count);
+        uint256 at;
+        for (uint256 i; i < windowCount; ++i) {
+            if (windows[i].startsAt > block.timestamp) upcoming[at++] = windows[i];
+        }
+    }
+
+    /// @notice Fixed number of new windows a request now would commit to.
+    /// An empty schedule needs one current window plus eleven future windows.
+    function refillCount() public view returns (uint8) {
+        uint8 retained;
+        if (!queueStarted) {
+            if (round.id != 0 && round.endsAt > block.timestamp) ++retained;
+            if (scheduledRound.id != 0 && scheduledRound.endsAt > block.timestamp) ++retained;
+        } else {
+            for (uint256 i; i < windowCount; ++i) {
+                if (windows[i].endsAt > block.timestamp) ++retained;
+            }
+        }
+        return 12 - retained;
+    }
+
+    function _compactWindows() private {
+        if (!queueStarted) {
+            queueStarted = true;
+            if (round.id != 0 && round.endsAt > block.timestamp) windows[windowCount++] = round;
+            if (scheduledRound.id != 0) {
+                if (scheduledRound.endsAt > block.timestamp) windows[windowCount++] = scheduledRound;
+                else round = scheduledRound;
+                delete scheduledRound;
+            }
+        }
+        uint8 kept;
+        uint8 oldCount = windowCount;
+        for (uint8 i; i < oldCount; ++i) {
+            Round memory item = windows[i];
+            if (item.startsAt <= block.timestamp) round = item;
+            if (item.endsAt > block.timestamp) windows[kept++] = item;
+        }
+        for (uint8 i = kept; i < oldCount; ++i) {
+            delete windows[i];
+        }
+        windowCount = kept;
+    }
+
     function requestRotation(uint256 maximum) external payable nonReentrant returns (uint256 id) {
         require(pendingRotation == 0, "rotation pending");
-        if (scheduledRound.id != 0) {
-            require(block.timestamp >= scheduledRound.startsAt, "next window scheduled");
-            round = scheduledRound;
-            delete scheduledRound;
-        }
         (uint48 revision, uint256 count) = collection.poolSnapshot(0);
-        uint256 excluded = count <= 1 ? 0 : collection.liveIndexPlusOne(round.portalId);
         require(count != 0, "not enough portals");
+        _compactWindows();
+        uint8 size = 12 - windowCount;
+        require(size != 0, "schedule full");
+        Round memory tail = windowCount == 0 ? round : windows[windowCount - 1];
+        uint256 excluded = count <= 1 ? 0 : collection.liveIndexPlusOne(tail.portalId);
         uint256 paid;
         (id, paid) = _requestRandomness(maximum);
-        rotations[id] = Rotation(round.id + 1, count, excluded);
+        rotations[id] = Rotation(tail.id + 1, count, excluded);
         rotationPoolRevision[id] = revision;
+        rotationBatches[id] = Batch(size, tail.endsAt);
         pendingRotation = id;
-        emit RotationRequested(id, round.id + 1, count, round.portalId);
+        emit RotationRequested(id, tail.id + 1, count, tail.portalId);
+        emit RotationBatchRequested(id, size, tail.endsAt);
         _refundExcess(paid);
     }
 
@@ -129,6 +207,8 @@ contract PortalRegistry is PortalRandomness {
 
     function _resolveRotation() private returns (uint256 portalId) {
         uint256 id = pendingRotation;
+        if (rotationBatches[id].count != 0) return _resolveBatch(id);
+        // An in-flight pre-upgrade request must still resolve its single original draw.
         Rotation memory next = rotations[id];
         require(id != 0 && randomRequests[id].received && next.roundId == round.id + 1, "rotation not ready");
         uint256 eligible = next.poolSize - (next.excludedIndexPlusOne == 0 ? 0 : 1);
@@ -151,6 +231,37 @@ contract PortalRegistry is PortalRandomness {
         } else {
             emit PortalRoundUnavailable(next.roundId, portalId, start, start + WINDOW_SECONDS);
         }
+    }
+
+    function _resolveBatch(uint256 id) private returns (uint256 firstPortal) {
+        require(id != 0 && randomRequests[id].received, "rotation not ready");
+        Batch memory batch = rotationBatches[id];
+        Rotation memory next = rotations[id];
+        _compactWindows();
+        require(uint256(windowCount) + batch.count <= 12, "schedule overflow");
+        uint64 start = rotationReceivedAt > batch.afterEnd ? rotationReceivedAt : batch.afterEnd;
+        uint256 excluded = next.excludedIndexPlusOne;
+        for (uint8 i; i < batch.count; ++i) {
+            uint256 eligible = next.poolSize - (excluded == 0 ? 0 : 1);
+            uint256 index = PortalGates.uniform(
+                keccak256(abi.encode(randomRequests[id].seed, address(this), id, "rotation-batch", i)),
+                eligible
+            );
+            if (excluded != 0 && index >= excluded - 1) ++index;
+            uint256 portalId = collection.portalAtSnapshot(0, rotationPoolRevision[id], index);
+            if (i == 0) firstPortal = portalId;
+            Round memory item = Round(next.roundId + i, start, start + WINDOW_SECONDS, portalId);
+            windows[windowCount++] = item;
+            if (collection.exists(portalId)) {
+                emit PortalActivated(item.id, portalId, item.startsAt, item.endsAt);
+            } else {
+                emit PortalRoundUnavailable(item.id, portalId, item.startsAt, item.endsAt);
+            }
+            excluded = next.poolSize <= 1 ? 0 : index + 1;
+            start = item.endsAt;
+        }
+        rotationReceivedAt = 0;
+        pendingRotation = 0;
     }
 
     /// @notice A utility selection never activates a portal or grants admission.

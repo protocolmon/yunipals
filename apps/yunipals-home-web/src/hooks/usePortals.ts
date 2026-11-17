@@ -448,7 +448,7 @@ export function usePortals(status: ActivePortalStatus | null) {
         })
       );
     if (status.rotation.requestId !== "0") {
-      setError("The next portal is already being prepared.");
+      setError("A portal refill is already being prepared.");
       return;
     }
     try {
@@ -468,7 +468,7 @@ export function usePortals(status: ActivePortalStatus | null) {
         fees
       );
     } catch {
-      setError("Could not estimate the next portal's randomness fee.");
+      setError("Could not estimate the portal refill fee.");
     }
   }
   return {

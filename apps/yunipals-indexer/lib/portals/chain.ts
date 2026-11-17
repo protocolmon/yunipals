@@ -326,6 +326,37 @@ export class PortalChain {
       })
     ]);
     const [round, accepting] = state;
+    const queue = await this.client
+      .readContract({
+        address: registry,
+        abi: portalRegistryAbi,
+        functionName: "upcomingRounds",
+        ...at
+      })
+      .catch((error: unknown) => {
+        if (error instanceof BaseError) {
+          const cause = error.walk(
+            (cause) =>
+              cause instanceof ContractFunctionRevertedError ||
+              cause instanceof ContractFunctionZeroDataError
+          );
+          if (
+            cause instanceof ContractFunctionRevertedError ||
+            cause instanceof ContractFunctionZeroDataError
+          )
+            return null;
+        }
+        throw error;
+      });
+    const refill =
+      queue === null
+        ? null
+        : await this.client.readContract({
+            address: registry,
+            abi: portalRegistryAbi,
+            functionName: "refillCount",
+            ...at
+          });
     // Legacy registries have no scheduledRound getter. Do not hide transport failures.
     const scheduled = await this.client
       .readContract({
@@ -350,14 +381,69 @@ export class PortalChain {
         throw error;
       });
     const scheduledNext =
-      scheduled && scheduled[0] !== 0n && BigInt(scheduled[1]) > block.timestamp
-        ? {
-            id: scheduled[0],
-            startsAt: scheduled[1],
-            endsAt: scheduled[2],
-            portalId: scheduled[3]
+      queue !== null
+        ? (queue[0] ?? null)
+        : scheduled &&
+            scheduled[0] !== 0n &&
+            BigInt(scheduled[1]) > block.timestamp
+          ? {
+              id: scheduled[0],
+              startsAt: scheduled[1],
+              endsAt: scheduled[2],
+              portalId: scheduled[3]
+            }
+          : null;
+    // Only preview metadata is needed here; deduplicate tokens and kind artwork.
+    const futureRecords = await Promise.all(
+      [...new Set((queue ?? []).map((item) => item.portalId))].map(
+        async (id) => ({
+          id,
+          record: await this.client.readContract({
+            address: collection,
+            abi: portalCollectionAbi,
+            functionName: "portalRecord",
+            args: [id],
+            ...at
+          })
+        })
+      )
+    );
+    const kinds = new Map(
+      await Promise.all(
+        [...new Set(futureRecords.map(({ record }) => record[0]))].map(
+          async (id) =>
+            [
+              id,
+              await this.client.readContract({
+                address: collection,
+                abi: portalCollectionAbi,
+                functionName: "getKind",
+                args: [id],
+                ...at
+              })
+            ] as const
+        )
+      )
+    );
+    const futureTokens = new Map(
+      futureRecords.map(({ id, record }) => {
+        const kind = kinds.get(record[0])!;
+        return [
+          id,
+          {
+            id,
+            name: kind.definition.name,
+            imageURI: kind.definition.imageURI,
+            gates: record[1],
+            retired: record[2] === zeroAddress
           }
-        : null;
+        ] as const;
+      })
+    );
+    const upcoming = (queue ?? []).map((item) => ({
+      ...item,
+      portal: futureTokens.get(item.portalId)!
+    }));
     const competition = await readCompetition(
       this.client,
       grading,
@@ -411,15 +497,22 @@ export class PortalChain {
       escrow: { reserves, liability },
       rotation: {
         requestId: pendingRotation,
-        automatic: scheduled !== null,
+        automatic: queue !== null || scheduled !== null,
         scheduled: scheduledNext,
+        queueCapacity: queue === null ? null : 11,
+        refillCount: refill,
+        upcoming,
         ready: random?.[2] ?? false,
         canActivate:
           pendingRotation !== 0n &&
           (random?.[2] ?? false) &&
-          (scheduled !== null || block.timestamp >= round.endsAt),
+          (queue !== null ||
+            scheduled !== null ||
+            block.timestamp >= round.endsAt),
         canRequest:
-          pendingRotation === 0n && live !== 0n && scheduledNext === null
+          pendingRotation === 0n &&
+          live !== 0n &&
+          (refill === null ? scheduledNext === null : refill > 0)
       }
     };
     if (!portal) return { ...common, portal: null };

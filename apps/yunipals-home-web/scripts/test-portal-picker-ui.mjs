@@ -97,6 +97,22 @@ const status = {
     }
   }
 };
+status.rotation.queueCapacity = 11;
+status.rotation.refillCount = 0;
+status.rotation.canRequest = false;
+status.rotation.upcoming = Array.from({ length: 11 }, (_, i) => ({
+  id: String(i + 3),
+  portalId: String(170 + i),
+  startsAt: String(status.now + 660 * (i + 1)),
+  endsAt: String(status.now + 660 * (i + 2)),
+  portal: {
+    ...status.portal,
+    id: String(170 + i),
+    active: false,
+    retired: i === 2
+  }
+}));
+status.rotation.scheduled = status.rotation.upcoming[0];
 const modules = {
   "virtual:portal-wallet.ts": `
 import {useSyncExternalStore} from 'react';
@@ -221,6 +237,7 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1280, height: 1000 }
   });
+  page.setDefaultTimeout(15000);
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.route("**/*", async (route) => {
@@ -276,6 +293,30 @@ try {
   await page
     .getByRole("button", { name: "Choose a card", exact: true })
     .waitFor();
+  const schedule = page.getByRole("region", { name: "Upcoming portals" });
+  await schedule.getByText("11 of 11 future windows revealed").waitFor();
+  assert.equal(await schedule.getByRole("listitem").count(), 11);
+  assert(
+    await page
+      .getByRole("button", { name: "Schedule full", exact: true })
+      .isDisabled()
+  );
+  await schedule.getByText("Redeemed · this window stays closed").waitFor();
+  await schedule
+    .getByText("Entry requirements", { exact: true })
+    .first()
+    .click();
+  await schedule.getByText("Sequence 0–99", { exact: true }).first().waitFor();
+  status.rotation.upcoming.pop();
+  status.rotation.refillCount = 1;
+  status.rotation.canRequest = true;
+  await page.evaluate(() => window.__refresh());
+  await schedule.getByText("10 of 11 future windows revealed").waitFor();
+  assert(
+    await page
+      .getByRole("button", { name: "Refill upcoming portals", exact: true })
+      .isEnabled()
+  );
   await page.getByText("How your card is graded", { exact: true }).click();
   await page
     .getByRole("heading", { name: "Rainbow Portal grading criteria" })
@@ -402,6 +443,17 @@ try {
   await artwork.waitFor();
   await artwork.evaluate((img) => img.decode());
   await page.screenshot({ path: "/tmp/portal-picker-mobile.png" });
+  await dialog.getByRole("button", { name: "Close card picker" }).click();
+  await schedule.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "/tmp/portal-schedule-mobile.png" });
+  status.rotation.upcoming = [];
+  status.rotation.scheduled = null;
+  status.rotation.refillCount = 12;
+  await page.evaluate(() => window.__refresh());
+  await schedule.getByText("0 of 11 future windows revealed").waitFor();
+  await schedule
+    .getByText("The next chapter is still a surprise.", { exact: false })
+    .waitFor();
   assert.deepEqual(errors, []);
   console.log(
     "PASS: grading copy, eligibility, pagination, selection, review, keyboard focus, portal/wallet changes, retry, empty state and mobile layout"

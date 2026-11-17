@@ -10,6 +10,7 @@ import {PackRegistry} from "../src/PackRegistry.sol";
 import {YunipalMonsters} from "../src/YunipalMonsters.sol";
 import {PortalCollection} from "../src/PortalCollection.sol";
 import {PortalRegistry} from "../src/PortalRegistry.sol";
+import {PortalRegistryV2} from "./fixtures/registry-v2/PortalRegistryV2.sol";
 import {PortalRegistryV1} from "./fixtures/registry-v1/PortalRegistryV1.sol";
 import {PortalGrading} from "../src/PortalGrading.sol";
 import {PortalGradingValidator} from "../src/PortalGradingValidator.sol";
@@ -185,7 +186,7 @@ contract PortalsTest is Test {
         registry = PortalRegistry(
             address(
                 new ERC1967Proxy(
-                    address(new PortalRegistry()),
+                    address(new PortalRegistryV2()),
                     abi.encodeCall(PortalRegistry.initialize, (address(this), portals, oracle, uint16(3)))
                 )
             )
@@ -239,6 +240,7 @@ contract PortalsTest is Test {
         usdc.approve(address(grading), type(uint256).max);
         grading.grantRole(grading.INTAKE_ROLE(), vm.addr(INTAKE_KEY));
         _rotate();
+        registry.upgradeToAndCall(address(new PortalRegistry()), "");
     }
 
     function _mintPortals(uint256 kind, uint256 count) private returns (uint256 id) {
@@ -363,7 +365,7 @@ contract PortalsTest is Test {
         (PortalRegistry.Round memory stillCurrent, bool stillAccepting) = registry.activePortal();
         assertEq(stillCurrent.id, previous.id);
         assertTrue(stillAccepting);
-        vm.expectRevert("next window scheduled");
+        vm.expectRevert("schedule full");
         registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
         vm.warp(previous.endsAt);
         (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
@@ -572,11 +574,13 @@ contract PortalsTest is Test {
         assertEq(current.endsAt, block.timestamp + 660);
         assertEq(registry.pendingRotation(), 0);
         assertLt(wrapper.lastGasUsed(), registry.CALLBACK_GAS());
-        vm.warp(current.endsAt);
+        PortalRegistry.Round[] memory upcoming = registry.upcomingRounds();
+        PortalRegistry.Round memory last = upcoming[upcoming.length - 1];
+        vm.warp(last.endsAt);
         wrapper.fulfill(id, 999);
         (PortalRegistry.Round memory expired, bool open) = registry.activePortal();
         assertFalse(open);
-        assertEq(keccak256(abi.encode(expired)), keccak256(abi.encode(current)));
+        assertEq(keccak256(abi.encode(expired)), keccak256(abi.encode(last)));
         vm.expectRevert("rotation not ready");
         registry.activateNext();
     }
@@ -594,10 +598,12 @@ contract PortalsTest is Test {
         (current, accepting) = registry.activePortal();
         assertEq(current.id, previous.id + 1);
         assertTrue(accepting);
+        PortalRegistry.Round[] memory future = registry.upcomingRounds();
+        uint256 tailPortal = future[future.length - 1].portalId;
         uint256 nextId = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
         (, uint256 count, uint256 excluded) = registry.rotations(nextId);
         assertEq(count, 3);
-        assertEq(excluded, portals.liveIndexPlusOne(current.portalId));
+        assertEq(excluded, portals.liveIndexPlusOne(tailPortal));
         wrapper.fulfill(nextId, 4);
         vm.warp(current.endsAt);
         (PortalRegistry.Round memory next, bool nextOpen) = registry.activePortal();
@@ -621,12 +627,12 @@ contract PortalsTest is Test {
         assertEq(registry.pendingRotation(), id);
         assertEq(registry.rotationReceivedAt(), deliveredAt);
         vm.clearMockedCalls();
-        vm.warp(deliveredAt + 700);
+        vm.warp(deliveredAt + 12 * 660 + 40);
         vm.prank(BOB);
         registry.activateNext();
         (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
-        assertEq(current.startsAt, deliveredAt);
-        assertEq(current.endsAt, deliveredAt + 660);
+        assertEq(current.startsAt, deliveredAt + 11 * 660);
+        assertEq(current.endsAt, deliveredAt + 12 * 660);
         assertFalse(accepting); // Recovery cannot buy extra time for a known draw.
     }
 
@@ -682,6 +688,194 @@ contract PortalsTest is Test {
         assertTrue(accepting);
         assertEq(current.id, 1);
         assertEq(upgraded.pendingRotation(), 0);
+    }
+
+    function _freshRegistry() private returns (PortalRegistry) {
+        return PortalRegistry(
+            address(
+                new ERC1967Proxy(
+                    address(new PortalRegistry()),
+                    abi.encodeCall(
+                        PortalRegistry.initialize,
+                        (address(this), portals, IVRFV2PlusWrapper(address(wrapper)), uint16(3))
+                    )
+                )
+            )
+        );
+    }
+
+    function testQueueEmptyBootstrapAndEveryBoundary() public {
+        PortalRegistry fresh = _freshRegistry();
+        assertEq(fresh.refillCount(), 12);
+        uint256 id = fresh.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        wrapper.fulfill(id, 123);
+        assertEq(fresh.pendingRotation(), 0);
+        assertEq(fresh.refillCount(), 0);
+        PortalRegistry.Round[] memory future = fresh.upcomingRounds();
+        assertEq(future.length, 11);
+        (PortalRegistry.Round memory previous, bool accepting) = fresh.activePortal();
+        assertTrue(accepting);
+        assertEq(previous.id, 1);
+        vm.expectRevert("schedule full");
+        fresh.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        for (uint256 i; i < 11; ++i) {
+            assertEq(future[i].startsAt, previous.endsAt);
+            assertEq(future[i].id, previous.id + 1);
+            assertTrue(future[i].portalId != previous.portalId);
+            vm.warp(future[i].startsAt - 1);
+            (PortalRegistry.Round memory beforeBoundary,) = fresh.activePortal();
+            assertEq(beforeBoundary.id, previous.id);
+            vm.warp(future[i].startsAt);
+            (previous, accepting) = fresh.activePortal();
+            assertTrue(accepting);
+            assertEq(previous.id, future[i].id);
+            assertEq(previous.endsAt - previous.startsAt, 660);
+            assertEq(fresh.upcomingRounds().length, 10 - i);
+        }
+        vm.warp(previous.endsAt);
+        (, accepting) = fresh.activePortal();
+        assertFalse(accepting);
+        assertEq(fresh.refillCount(), 12);
+    }
+
+    function testQueueRefillAppendsWithoutChangingPublishedWindows() public {
+        uint256 id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        wrapper.fulfill(id, 12);
+        PortalRegistry.Round[] memory before = registry.upcomingRounds();
+        assertEq(before.length, 11);
+        vm.warp(before[0].startsAt);
+        assertEq(registry.refillCount(), 1);
+        id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        (uint8 count, uint64 afterEnd) = registry.rotationBatches(id);
+        assertEq(count, 1);
+        assertEq(afterEnd, before[10].endsAt);
+        wrapper.fulfill(id, 99);
+        PortalRegistry.Round[] memory afterQueue = registry.upcomingRounds();
+        assertEq(afterQueue.length, 11);
+        for (uint256 i; i < 10; ++i) {
+            assertEq(keccak256(abi.encode(afterQueue[i])), keccak256(abi.encode(before[i + 1])));
+        }
+        assertEq(afterQueue[10].startsAt, before[10].endsAt);
+        assertTrue(afterQueue[10].portalId != before[10].portalId);
+    }
+
+    function testQueueDelayedBatchUsesFixedCountAndFreshFullWindow() public {
+        uint256 id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        (uint8 count,) = registry.rotationBatches(id);
+        assertEq(count, 11);
+        vm.warp(block.timestamp + 50_000);
+        wrapper.fulfill(id, 42);
+        (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
+        assertTrue(accepting);
+        assertEq(current.startsAt, block.timestamp);
+        assertEq(registry.upcomingRounds().length, 10);
+        assertEq(registry.refillCount(), 1);
+    }
+
+    function testQueueSnapshotCannotRerollBurnedSelections() public {
+        uint256 id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        for (uint256 i = 1; i <= 3; ++i) {
+            _claim(i, ALICE);
+        }
+        _mintPortals(1, 3);
+        wrapper.fulfill(id, 12);
+        PortalRegistry.Round[] memory future = registry.upcomingRounds();
+        assertEq(future.length, 11);
+        for (uint256 i; i < future.length; ++i) {
+            assertLe(future[i].portalId, 3);
+            vm.warp(future[i].startsAt);
+            (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
+            assertEq(current.portalId, future[i].portalId);
+            assertFalse(accepting);
+        }
+    }
+
+    function testV2ScheduledAndPendingRequestsSurviveQueueUpgrade() public {
+        PortalRegistryV2 old = PortalRegistryV2(
+            address(
+                new ERC1967Proxy(
+                    address(new PortalRegistryV2()),
+                    abi.encodeCall(
+                        PortalRegistryV2.initialize,
+                        (address(this), portals, IVRFV2PlusWrapper(address(wrapper)), uint16(3))
+                    )
+                )
+            )
+        );
+        uint256 id = old.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        wrapper.fulfill(id, 1);
+        (PortalRegistryV2.Round memory first,) = old.activePortal();
+        id = old.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        assertEq(wrapper.limits(id), 400_000);
+        old.upgradeToAndCall(address(new PortalRegistry()), "");
+        PortalRegistry upgraded = PortalRegistry(address(old));
+        wrapper.fulfill(id, 7);
+        if (upgraded.pendingRotation() != 0) upgraded.activateNext();
+        assertEq(upgraded.upcomingRounds().length, 1);
+        assertEq(upgraded.refillCount(), 10);
+        PortalRegistry.Round memory scheduled = upgraded.upcomingRounds()[0];
+        assertEq(scheduled.startsAt, first.endsAt);
+        id = upgraded.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        wrapper.fulfill(id, 8);
+        PortalRegistry.Round[] memory future = upgraded.upcomingRounds();
+        assertEq(future.length, 11);
+        assertEq(keccak256(abi.encode(future[0])), keccak256(abi.encode(scheduled)));
+        vm.warp(scheduled.startsAt);
+        (PortalRegistry.Round memory active,) = upgraded.activePortal();
+        assertEq(active.id, scheduled.id);
+    }
+
+    function testV2AlreadyScheduledAndDeliveredRecoveryPreserveClock() public {
+        // The current fixture starts with a V2 round, so downgrade only this untouched local queue.
+        registry.upgradeToAndCall(address(new PortalRegistryV2()), "");
+        uint256 id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        vm.mockCallRevert(
+            address(portals), abi.encodeWithSelector(portals.portalAtSnapshot.selector), "unavailable"
+        );
+        wrapper.fulfill(id, 123);
+        uint64 delivered = registry.rotationReceivedAt();
+        vm.clearMockedCalls();
+        registry.upgradeToAndCall(
+            address(new PortalRegistry()), abi.encodeCall(PortalRegistry.activateNext, ())
+        );
+        assertEq(registry.pendingRotation(), 0);
+        assertEq(registry.upcomingRounds().length, 1);
+        assertGt(delivered, 0);
+        PortalRegistry.Round memory scheduled = registry.upcomingRounds()[0];
+        // Upgrade a V2 with an already scheduled round, including one whose window has ended.
+        registry.upgradeToAndCall(address(new PortalRegistryV2()), "");
+        vm.warp(scheduled.endsAt + 1);
+        registry.upgradeToAndCall(address(new PortalRegistry()), "");
+        (PortalRegistry.Round memory expired, bool accepting) = registry.activePortal();
+        assertFalse(accepting);
+        assertEq(expired.id, scheduled.id);
+        id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+        wrapper.fulfill(id, 9);
+        (PortalRegistry.Round memory current,) = registry.activePortal();
+        assertEq(current.id, scheduled.id + 1);
+        assertEq(registry.upcomingRounds().length, 11);
+    }
+
+    function testFuzzQueueBoundAndConsecutiveRounds(uint256 entropy) public {
+        for (uint256 step; step < 20; ++step) {
+            entropy = uint256(keccak256(abi.encode(entropy, step)));
+            if (registry.refillCount() != 0) {
+                uint256 id = registry.requestRotation{value: 0.0001 ether}(0.0001 ether);
+                vm.warp(block.timestamp + entropy % 2000);
+                wrapper.fulfill(id, entropy);
+                assertEq(registry.pendingRotation(), 0);
+            }
+            PortalRegistry.Round[] memory future = registry.upcomingRounds();
+            assertLe(future.length, 11);
+            (PortalRegistry.Round memory previous,) = registry.activePortal();
+            for (uint256 i; i < future.length; ++i) {
+                assertEq(future[i].id, previous.id + 1);
+                assertEq(future[i].startsAt, previous.endsAt);
+                assertTrue(future[i].portalId != previous.portalId);
+                previous = future[i];
+            }
+            vm.warp(block.timestamp + entropy % 10000);
+        }
     }
 
     function _legacyRegistry() private returns (PortalRegistryV1) {
@@ -849,7 +1043,8 @@ contract PortalsTest is Test {
         wrapper.fulfill(requestId, 42);
         (, uint256 count, uint256 excluded) = registry.rotations(requestId);
         uint256 index = PortalGates.uniform(
-            keccak256(abi.encode(uint256(42), address(registry), requestId, "rotation")), count - 1
+            keccak256(abi.encode(uint256(42), address(registry), requestId, "rotation-batch", uint8(0))),
+            count - 1
         );
         if (index >= excluded - 1) ++index;
         uint48 revision = registry.rotationPoolRevision(requestId);

@@ -180,7 +180,7 @@ export async function verifyPortalAdminBrowser({
       page
         .getByRole("listitem")
         .filter({ has: page.getByText(label, { exact: true }) })
-        .last()
+        .first()
         .getByText(
           "Confirmed. The data update is still pending; your transaction is saved.",
           { exact: true }
@@ -306,9 +306,26 @@ export async function verifyPortalAdminBrowser({
       path: "/tmp/yunipals-portal-admin-mobile.png",
       fullPage: true
     });
+    // A full queue becomes refillable when its first upcoming window starts.
+    const queued = await chain.active();
+    if (queued.rotation.refillCount === 0) {
+      const start = queued.rotation.upcoming[0].startsAt;
+      for (const [method, params] of [
+        ["evm_setNextBlockTimestamp", [Number(start)]],
+        ["evm_mine", []]
+      ]) {
+        const response = await fetch(rpc, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
+        });
+        assert.equal((await response.json()).error, undefined);
+      }
+      await ledger.tick();
+    }
     await page.goto(`${origin}/portals`);
     await page
-      .getByRole("button", { name: "Request the next portal", exact: true })
+      .getByRole("button", { name: "Refill upcoming portals", exact: true })
       .click();
     await pending("Request next portal");
     const before = await chain.active();

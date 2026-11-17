@@ -33,6 +33,10 @@ for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks", *new_contracts]:
     if name in new_contracts and extended.exists():
         frozen = json.loads(extended.read_text())
         assert fields[:len(frozen)] == frozen, f"Incompatible burn-to-claim storage change in {name}"
+    automatic = root / "contracts/boosters/config" / f"{name}.automatic-windows.storage.json"
+    if automatic.exists():
+        frozen = json.loads(automatic.read_text())
+        assert fields[:len(frozen)] == frozen, f"Incompatible automatic-window storage change in {name}"
     gap_ends = {"YunipalMonsters": 50, "PortalCollection": 55, "PortalRegistry": 55, "PortalGrading": 48, "PortalGradingCompetition": 50}
     if name in gap_ends:
         gap = next(item for item in layout["storage"] if item["label"] == "__gap")

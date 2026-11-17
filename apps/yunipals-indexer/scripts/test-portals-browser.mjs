@@ -417,7 +417,7 @@ export async function verifyPortalBrowser(context) {
       jsonrpc: "2.0",
       id: 1,
       method: "evm_increaseTime",
-      params: [661]
+      params: [12 * 660 + 1]
     })
   });
   await fetch(rpc, {

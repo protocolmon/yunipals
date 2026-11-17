@@ -625,9 +625,11 @@ export function PortalAirdropPage() {
               <h2 className="mt-3 font-display text-2xl">3. Open a portal</h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/75">
                 {allComplete
-                  ? status?.rotation.automatic
-                    ? "Every card has found its home. Request a random portal and Chainlink will open its eleven-minute window automatically."
-                    : "Every card has found its home. Request a random portal, wait for Chainlink, then open its eleven-minute window."
+                  ? status?.rotation.queueCapacity === 11
+                    ? "Every card has found its home. Request the first portal and reveal up to eleven more windows. They open automatically on schedule."
+                    : status?.rotation.automatic
+                      ? "Every card has found its home. Request a random portal and Chainlink will open its eleven-minute window automatically."
+                      : "Every card has found its home. Request a random portal, wait for Chainlink, then open its eleven-minute window."
                   : `${delivered} of ${total} cards delivered. Finish the airdrop before opening the first portal.`}
               </p>
             </div>
