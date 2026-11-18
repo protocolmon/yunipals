@@ -10,6 +10,7 @@ import {
   portalTypeNames,
   portalCountdown
 } from "@protopals/yunipals-market-core/portals";
+import { ExpandableCardArtwork } from "@/components/ExpandableCardArtwork";
 import { DialogSurface, dialogButtonVariants } from "@/components/ui/dialog";
 import { YunipalsLoader } from "@/components/YunipalsLoader";
 import { environment } from "@/environment";
@@ -204,10 +205,11 @@ export function PortalPage() {
             )}
             {status.portal ? (
               <>
-                <img
-                  className="mx-auto mt-6 max-h-72 rounded-2xl object-contain"
-                  src={portalImage(status.portal.imageURI)}
-                  alt={status.portal.name}
+                <ExpandableCardArtwork
+                  key={status.portal.id}
+                  className="mx-auto mt-6 w-48 max-w-full"
+                  image={portalImage(status.portal.imageURI)}
+                  label={`${status.portal.name} #${status.portal.id}`}
                 />
                 <h2
                   id="active-portal-title"

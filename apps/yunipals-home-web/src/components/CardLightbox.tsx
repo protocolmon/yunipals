@@ -1,15 +1,17 @@
 import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { BoosterCardViewer } from "@/components/BoosterCardViewer";
-import type { MonsterArtwork } from "@/lib/boosters";
+import {
+  BoosterCardViewer,
+  type CardArtwork
+} from "@/components/BoosterCardViewer";
 
-export function BoosterCardLightbox({
+export function CardLightbox({
   artwork,
   label,
   onClose
 }: {
-  artwork: MonsterArtwork;
+  artwork: CardArtwork;
   label: string;
   onClose: () => void;
 }) {

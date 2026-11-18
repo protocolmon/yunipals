@@ -5,6 +5,7 @@ import {
   portalColorNames,
   portalTypeNames
 } from "@protopals/yunipals-market-core/portals";
+import { ExpandableCardArtwork } from "@/components/ExpandableCardArtwork";
 import { environment } from "@/environment";
 import { usePortalClaim } from "@/hooks/usePortalClaim";
 import { readPortalClaim } from "@/lib/portalClaims";
@@ -66,10 +67,11 @@ export function PortalTokenPage() {
       ) : (
         token && (
           <div className="mt-7 grid gap-7 rounded-card border border-line p-5 sm:grid-cols-2 sm:p-8">
-            <img
-              src={portalImage(token.imageURI)}
-              alt={`${token.name} #${token.id}`}
-              className="mx-auto max-h-96 rounded-2xl object-contain"
+            <ExpandableCardArtwork
+              key={token.id}
+              image={portalImage(token.imageURI)}
+              label={`${token.name} #${token.id}`}
+              className="mx-auto w-64 max-w-full self-start"
             />
             <section>
               <h2 className="font-display text-2xl">

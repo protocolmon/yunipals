@@ -12,7 +12,7 @@ import {
 import { useBoosterArtwork, type ArtworkCard } from "@/hooks/useBoosterArtwork";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
 import { BoosterCardThumbnail } from "@/components/BoosterCardThumbnail";
-import { BoosterCardLightbox } from "./BoosterCardLightbox";
+import { CardLightbox } from "@/components/CardLightbox";
 
 export function BoosterArtwork({
   uri,
@@ -48,7 +48,7 @@ export function BoosterArtwork({
           onExpand={interactive ? () => setExpanded(true) : undefined}
         />
         {expanded && (
-          <BoosterCardLightbox
+          <CardLightbox
             artwork={query.data}
             label={label}
             onClose={() => setExpanded(false)}
