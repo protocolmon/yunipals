@@ -34,6 +34,7 @@ import {
 import { PortalUserError } from "./errors.js";
 import { portalModelPolicySchema } from "./policy.js";
 import { readCompetition } from "./competition.js";
+import { readPortalDisplayKind } from "./artwork.js";
 import {
   portalRpcUrls,
   portalRpcTransport,
@@ -208,13 +209,7 @@ export class PortalChain {
         args: [tokenId],
         ...at
       }),
-      this.client.readContract({
-        address: collection,
-        abi: portalCollectionAbi,
-        functionName: "getKind",
-        args: [kindId],
-        ...at
-      }),
+      readPortalDisplayKind(this.client, collection, kindId, block.number),
       this.client.readContract({
         address: grading,
         abi: portalGradingAbi,
@@ -414,13 +409,12 @@ export class PortalChain {
           async (id) =>
             [
               id,
-              await this.client.readContract({
-                address: collection,
-                abi: portalCollectionAbi,
-                functionName: "getKind",
-                args: [id],
-                ...at
-              })
+              await readPortalDisplayKind(
+                this.client,
+                collection,
+                id,
+                block.number
+              )
             ] as const
         )
       )

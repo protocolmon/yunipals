@@ -37,6 +37,10 @@ for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks", *new_contracts]:
     if automatic.exists():
         frozen = json.loads(automatic.read_text())
         assert fields[:len(frozen)] == frozen, f"Incompatible automatic-window storage change in {name}"
+    artwork = root / "contracts/boosters/config" / f"{name}.artwork.storage.json"
+    if artwork.exists():
+        frozen = json.loads(artwork.read_text())
+        assert fields[:len(frozen)] == frozen, f"Incompatible artwork-revision storage change in {name}"
     gap_ends = {"YunipalMonsters": 50, "PortalCollection": 55, "PortalRegistry": 55, "PortalGrading": 48, "PortalGradingCompetition": 50}
     if name in gap_ends:
         gap = next(item for item in layout["storage"] if item["label"] == "__gap")
