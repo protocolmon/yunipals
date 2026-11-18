@@ -3,8 +3,18 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 
 import { ChainBadge } from "@/components/ui/ChainBadge";
 import { CollectionDailyClaimBadge } from "@/components/CollectionDailyPulls";
+import { cn } from "@/lib/utils";
 import { packGridTraits } from "@/lib/boosterCollectionGrid";
 import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
+
+const artworkBackgrounds: Record<string, string> = {
+  Yellow: "from-amber-100 to-amber-50",
+  Green: "from-mint to-emerald-50",
+  Blue: "from-sky to-sky/20",
+  Red: "from-rose-100 to-rose-50",
+  Purple: "from-fuchsia-100 to-violet-50",
+  Black: "from-slate-200 to-slate-100"
+};
 
 export function CollectionPackCard({
   monster,
@@ -24,7 +34,13 @@ export function CollectionPackCard({
         className="block rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-badge"
         aria-label={`View ${traits.Type} #${monster.tokenId}`}
       >
-        <div className="relative aspect-square overflow-hidden bg-lavender/25">
+        <div
+          className={cn(
+            "relative aspect-square overflow-hidden bg-gradient-to-br",
+            artworkBackgrounds[traits.Color] ??
+              "from-lavender/40 to-lavender/10"
+          )}
+        >
           <div className="mx-auto h-full w-2/3">
             <BoosterArtwork
               uri={monster.metadataUri}
