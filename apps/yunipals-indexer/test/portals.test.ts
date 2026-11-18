@@ -594,7 +594,13 @@ describe("portal worker checkpoint recovery", () => {
     await db.exec(`UPDATE portal_v1_publication SET result=jsonb_set(result,'{slab}',(result->'slab')-'cardName'-'namedArtwork');
       UPDATE portal_v1_job SET progress=jsonb_set(progress,'{grading}',(progress->'grading')-'cardName')`);
     const before = (
-      await db.query(
+      await db.query<{
+        publication_block: string;
+        publication_timestamp: string;
+        published_at: Date;
+        canonical: unknown;
+        artifact_hashes: string[];
+      }>(
         "SELECT publication_block,publication_timestamp,published_at,result->'result' AS canonical,artifact_hashes FROM portal_v1_publication"
       )
     ).rows[0];
@@ -617,7 +623,13 @@ describe("portal worker checkpoint recovery", () => {
     await worker.process((await store.claim())!);
     publish.mockRestore();
     const after = (
-      await db.query(
+      await db.query<{
+        publication_block: string;
+        publication_timestamp: string;
+        published_at: Date;
+        canonical: unknown;
+        artifact_hashes: string[];
+      }>(
         "SELECT publication_block,publication_timestamp,published_at,result->'result' AS canonical,artifact_hashes FROM portal_v1_publication"
       )
     ).rows[0];
@@ -625,7 +637,7 @@ describe("portal worker checkpoint recovery", () => {
       before
     );
     expect(after.artifact_hashes).toEqual(
-      expect.arrayContaining(before.artifact_hashes as string[])
+      expect.arrayContaining(before.artifact_hashes)
     );
     expect((await store.publicHistory("1"))[0].result).toHaveProperty(
       "slab.cardName",
