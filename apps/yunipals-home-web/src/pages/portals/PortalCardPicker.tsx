@@ -122,7 +122,8 @@ export function PortalCardPicker({
             className="mt-2 text-sm leading-relaxed text-muted"
           >
             Only cards you own that qualify for {portal?.name} #{portal?.id}{" "}
-            appear here. Cards with a spell already processing are left out.
+            appear here. Already graded cards and cards with a spell processing
+            are left out. Each card can be graded only once.
           </p>
         </div>
         <button

@@ -136,7 +136,7 @@ export function BoosterMonsterPage() {
             />
             {artwork.portalCard && (
               <div className="mt-5 flex flex-wrap gap-4 text-sm font-bold">
-                {!monster.burned && (
+                {!monster.burned && artwork.canGrade && (
                   <Link
                     className="underline"
                     to={`/grading?card=${monster.tokenId}`}

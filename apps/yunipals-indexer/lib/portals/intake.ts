@@ -66,6 +66,10 @@ export class PortalIntakeSigner {
       roundId?: bigint;
     }
   ) {
+    if (input.artVersion !== 0n)
+      throw new PortalUserError(
+        "This card has already been graded. Each card can be graded only once."
+      );
     // Re-read the committed row. Never acknowledge an in-memory or failed upload.
     const spell = await store.spell(input.commitment);
     if (

@@ -66,6 +66,11 @@ export function useBoosterArtwork(uri: string | undefined, card?: ArtworkCard) {
         (!status.data || status.error || portalCard)
     ),
     portalCard,
+    canGrade: Boolean(
+      portalCard &&
+        query.data &&
+        (!query.data.portalVersion || query.data.portalVersion === "0")
+    ),
     refetch: () =>
       Promise.all([
         original.refetch(),

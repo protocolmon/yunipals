@@ -70,6 +70,7 @@ beforeAll(async () => {
     CREATE TABLE eligibility.portal_eligibility_config(id text PRIMARY KEY,collection text,cards text,pack_type_id text);
     CREATE TABLE eligibility.portal_eligibility_portal(id text PRIMARY KEY,sequence_start int,sequence_length int,
       color_gate int,type_gate int,original_only boolean,glitter_gate boolean,diamond_gate boolean,retired boolean);
+    CREATE TABLE eligibility.portal_projection(id text PRIMARY KEY,value jsonb);
     CREATE TABLE eligibility.portal_eligibility_pending(id text PRIMARY KEY,request_id text);
     CREATE TABLE eligibility.indexer_source(id text PRIMARY KEY,definition text);
     CREATE TABLE eligibility.canonical_event(source_id text,block_number bigint,transaction_index int,log_index int);
@@ -86,7 +87,7 @@ beforeEach(async () => {
     vi.stubEnv(name, value);
   await db.exec(`TRUNCATE eligibility.booster_monster,eligibility.booster_type,eligibility.booster_card_facts,
     eligibility.portal_eligibility_config,eligibility.portal_eligibility_portal,eligibility.portal_eligibility_pending,
-    eligibility.indexer_source,eligibility.canonical_event;`);
+    eligibility.indexer_source,eligibility.canonical_event,eligibility.portal_projection;`);
   await db.query("INSERT INTO eligibility.booster_type VALUES($1,'1',$2,$3)", [
     key(registry, 1),
     registry,
@@ -295,3 +296,29 @@ it("bounds work to one wallet even with a large unrelated collection", async () 
     "owner_idx"
   );
 }, 20000);
+
+it("excludes completed grades across portals and owners while keeping first-time cards", async () => {
+  await card(1, 0);
+  await card(2, 0);
+  await card(3, 0);
+  await card(4, 0);
+  for (const [id, version, deploymentKey] of [
+    [1, "1", `8453:${collection}:${grading}`],
+    [2, "3", `8453:${collection}:${grading}`],
+    [3, null, `8453:${collection}:${grading}`],
+    [4, "1", `8453:${collection}:${addr(9)}`]
+  ]) {
+    await db.query("INSERT INTO eligibility.portal_projection VALUES($1,$2)", [
+      `${deploymentKey}:request:${id}`,
+      JSON.stringify({
+        token_id: String(id),
+        completed_version: version,
+        submitter: addr(8),
+        portal_id: "99"
+      })
+    ]);
+  }
+  const response = await request();
+  expect(response.status).toBe(200);
+  expect((await response.json()).items[0].count).toBe(2);
+});
