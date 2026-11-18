@@ -18,6 +18,7 @@ import { usePortalTransactions } from "@/hooks/usePortalTransactions";
 import { cn } from "@/lib/utils";
 import { environment } from "@/environment";
 import { portalPrice, portalRequest } from "@/lib/portals";
+import { PortalCompetitionLeader } from "./PortalCompetitionLeader";
 import { readPortalContracts } from "@/lib/portalClaims";
 
 const uint = z.string().regex(/^\d+$/);
@@ -185,153 +186,244 @@ export function PortalCompetitions() {
   }
   return (
     <section
-      className="mb-8 overflow-hidden rounded-card border border-lavender/40 bg-white shadow-card"
+      id="competition"
+      className="mb-8 scroll-mt-24 overflow-hidden rounded-card border border-lavender/40 bg-white shadow-card"
       aria-labelledby="competition-title"
     >
-      <div className="p-5 sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="max-w-2xl">
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-grape">
-              <Trophy size={16} aria-hidden="true" /> The spell challenge
+      <div className="relative isolate overflow-hidden bg-gradient-to-br from-ink via-ink to-grape px-5 py-7 text-white sm:p-8">
+        <img
+          src="/images/portals/rainbow-portal.webp"
+          width={1024}
+          height={1536}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-2/3 object-cover opacity-20 [mask-image:linear-gradient(to_right,transparent,black)]"
+        />
+        <div className="grid items-center gap-7 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12">
+          <div>
+            <p className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-sky">
+              <span className="flex items-center gap-2">
+                <Trophy size={16} aria-hidden="true" /> Yunipals grading
+              </span>
+              {competition && (
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-white">
+                  {competition.accepting
+                    ? "Open for entries"
+                    : competition.phase === "grading"
+                      ? "Grading in progress"
+                      : "Next theme coming soon"}
+                </span>
+              )}
             </p>
-            <h2
+            <h1
               id="competition-title"
-              className="mt-3 text-balance font-display text-2xl leading-tight text-ink sm:text-3xl"
+              className="mt-4 font-display text-3xl leading-tight sm:text-4xl"
             >
-              Your imagination. A winning spell.
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Create a standout transformation. The three highest grades in each
-              competition share the prize pool.
+              The spell challenge
+            </h1>
+            <p className="mt-3 text-lg font-bold text-sky">
+              {competition?.accepting
+                ? `Competition #${competition.nextBatch} · ${competition.theme.title}`
+                : competition?.phase === "grading"
+                  ? "The final grades are coming in"
+                  : competition
+                    ? "A new challenge is on its way"
+                    : "Your imagination. A winning spell."}
             </p>
-          </div>
-          {batchSize && (
-            <span className="rounded-full border border-lavender/50 bg-lavender/15 px-4 py-2 text-xs font-bold text-grape">
-              {batchSize} spells per competition
-            </span>
-          )}
-        </div>
-
-        <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-lavender/30 via-lavender/10 to-sky/25 p-5 sm:p-6">
-            <div className="relative flex flex-col items-center gap-6 sm:flex-row">
-              <div className="min-w-0 flex-1" aria-live="polite">
-                <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-grape">
-                  <Sparkles size={15} aria-hidden="true" />
-                  {competition?.accepting
-                    ? `Challenge #${competition.nextBatch}`
-                    : competition
-                      ? "Between challenges"
-                      : "Made for your imagination"}
-                </p>
-                <h3 className="mt-3 text-balance font-display text-xl text-ink">
-                  {competition?.accepting
-                    ? competition.theme.title
-                    : competition?.phase === "grading"
-                      ? "Great spells take a little time."
-                      : competition
-                        ? "A new challenge is taking shape."
-                        : "Every transformation tells a story."}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink">
-                  {competition?.accepting
-                    ? competition.theme.brief
-                    : competition?.phase === "grading"
-                      ? "This challenge is full. The final cards are being graded before the next theme is revealed."
-                      : competition
-                        ? "The next theme is inspired by the three winners. Entries reopen when it is published."
-                        : "Bring your own idea, cast a spell, and see what your Yunipal becomes."}
-                </p>
-                {competition && (
-                  <p className="mt-3 text-xs leading-relaxed text-muted">
-                    {competition.accepting
-                      ? "Theme fit counts toward Harmony. Make the spell your own."
-                      : "No entry payment is taken while waiting. Portal windows continue on their usual schedule."}
-                  </p>
-                )}
-                <a
-                  href="#portal-cast"
-                  className="mt-5 inline-flex items-center gap-2 rounded-full bg-grape px-5 py-2.5 text-sm font-bold text-white transition hover:bg-grape/90 focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2"
-                >
-                  {competition?.accepting
-                    ? "Create your spell"
-                    : "Explore the portal"}
-                  <ArrowRight size={16} aria-hidden="true" />
-                </a>
-              </div>
-              <figure className="flex w-full shrink-0 items-center gap-4 sm:block sm:w-32 xl:w-36">
-                <img
-                  src="/images/portals/dragon-after.webp"
-                  width={1024}
-                  height={1536}
-                  loading="lazy"
-                  alt="Example transformation: a Yunidragon with rainbow scales"
-                  className="w-24 shrink-0 rotate-3 rounded-xl shadow-card sm:w-full"
-                />
-                <figcaption className="text-xs leading-relaxed text-muted sm:mt-4 sm:text-center">
-                  Transformation example
-                  <br />
-                  Not a competition entry
-                </figcaption>
-              </figure>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/80">
+              {competition?.accepting
+                ? competition.theme.brief
+                : competition?.phase === "grading"
+                  ? "The final cards are being graded. The three highest grades will take the podium."
+                  : competition
+                    ? "A new theme inspired by the winners is taking shape. Entries reopen when it is ready."
+                    : "Transform your Yunipal with a spell of your own. The three highest grades share the prize pool."}
+            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <a
+                href="#portal-cast"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition-colors hover:bg-sky focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky"
+              >
+                {competition?.accepting
+                  ? "Enter the challenge"
+                  : "Explore the portals"}
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+              <a
+                href="#competition-standings"
+                className="rounded text-sm font-bold text-white underline decoration-white/40 underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky"
+              >
+                View standings
+              </a>
             </div>
           </div>
-
           <aside
-            className="relative overflow-hidden rounded-2xl bg-ink p-6 text-white"
             aria-label="Competition prizes"
+            className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm sm:p-6"
           >
-            <Trophy
-              size={100}
-              strokeWidth={1}
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-3 -top-3 rotate-12 text-lavender/10"
-            />
-            <p className="relative text-xs font-bold uppercase tracking-widest text-sky">
-              Full-batch prize pool
+            <p className="text-xs font-bold uppercase tracking-widest text-sky">
+              {batchSize
+                ? `Prize pool at ${batchSize} entries`
+                : "Full competition prize pool"}
             </p>
-            <p className="relative mt-4 flex flex-wrap items-baseline gap-2">
-              <span className="font-display text-4xl">
+            <p className="mt-3 flex flex-wrap items-baseline gap-2">
+              <span className="font-display text-5xl sm:text-6xl">
                 {fullPool ? portalPrice(fullPool) : "—"}
               </span>
-              <span className="text-sm font-semibold text-white/70">USDC</span>
-            </p>
-            <p className="mt-2 text-xs leading-relaxed text-white/70">
-              {contribution
-                ? `${portalPrice(contribution)} USDC added by every paid spell.`
-                : "Paid spells fund each competition."}
+              <span className="text-lg font-semibold text-white/80">USDC</span>
             </p>
             <ol
-              className="mt-6 grid grid-cols-3 gap-2 border-t border-white/15 pt-5"
+              className="mt-5 grid grid-cols-3 gap-3 border-t border-white/20 pt-4"
               aria-label="Prize split"
             >
               {[
-                { place: "1st", share: "50%" },
-                { place: "2nd", share: "30%" },
-                { place: "3rd", share: "20%" }
+                { place: "1st", share: 50 },
+                { place: "2nd", share: 30 },
+                { place: "3rd", share: 20 }
               ].map(({ place, share }) => (
-                <li key={place} className="text-center">
-                  <span
-                    className={cn(
-                      "mx-auto flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold",
-                      place === "1st"
-                        ? "bg-sky text-ink"
-                        : "bg-white/10 text-white/80"
-                    )}
-                  >
-                    {place}
-                  </span>
-                  <span className="mt-2 block text-lg font-bold">{share}</span>
+                <li key={place}>
+                  <p className="text-xs font-semibold text-white/70">
+                    {place} · {share}%
+                  </p>
+                  <p className="mt-1 text-lg font-bold">
+                    {fullPool
+                      ? portalPrice(
+                          ((BigInt(fullPool) * BigInt(share)) / 100n).toString()
+                        )
+                      : "—"}
+                    <span className="block text-xs font-normal text-white/70">
+                      USDC
+                    </span>
+                  </p>
                 </li>
               ))}
             </ol>
-            <p className="mt-5 text-xs leading-relaxed text-white/60">
-              Top three grades win. Your grade appears as soon as your card is
-              ready.
+            <p className="mt-4 text-xs leading-relaxed text-white/70">
+              {contribution
+                ? `${portalPrice(contribution)} USDC from each paid spell funds the pool. Prizes unlock when every entry is graded.`
+                : "Paid spells fund the pool. Prizes unlock when every entry is graded."}
             </p>
           </aside>
         </div>
-
+      </div>
+      <div className="p-5 sm:p-8">
+        <div id="competition-standings" className="scroll-mt-24">
+          {query.isPending && (
+            <p
+              role="status"
+              className="rounded-2xl bg-lavender/15 p-6 text-sm text-muted motion-safe:animate-pulse"
+            >
+              Loading the standings…
+            </p>
+          )}
+          {query.isError && (
+            <p
+              role="alert"
+              className="rounded-2xl bg-lavender/15 p-5 text-sm text-muted"
+            >
+              Standings are temporarily unavailable.{" "}
+              <button
+                type="button"
+                className="font-bold text-grape underline"
+                onClick={() => void query.refetch()}
+              >
+                Try again
+              </button>
+            </p>
+          )}
+          {query.data && query.data.batches.length === 0 && (
+            <div className="flex items-center gap-4 rounded-2xl bg-lavender/15 p-5">
+              <Sparkles className="shrink-0 text-grape" aria-hidden="true" />
+              <div>
+                <h2 className="font-display text-xl">The podium is waiting</h2>
+                <p className="mt-1 text-sm text-muted">
+                  {competition?.accepting
+                    ? "Be the first to enter. Your card appears here once its grade is ready."
+                    : "Standings will appear when the first spells are graded."}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="space-y-8">
+            {query.data?.batches.map((batch) => (
+              <article
+                key={batch.id}
+                aria-label={`Competition ${batch.id} standings`}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-grape">
+                      <Trophy size={15} aria-hidden="true" />
+                      {batch.settled ? "Final standings" : "Live standings"} ·
+                      Competition #{batch.id}
+                    </p>
+                    <h2 className="mt-2 font-display text-xl">
+                      {batch.theme.title}
+                    </h2>
+                  </div>
+                  <p className="rounded-full bg-lavender/20 px-4 py-2 text-sm">
+                    <strong>
+                      {batch.funded} / {batchSize ?? "—"}
+                    </strong>{" "}
+                    entries{" "}
+                    <span className="ml-2 text-muted">
+                      · {portalPrice(batch.pool)} USDC funded
+                    </span>
+                  </p>
+                </div>
+                <div className="mt-4 flex items-center gap-4">
+                  <progress
+                    className="h-2 flex-1 overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-lavender/30 [&::-webkit-progress-value]:bg-grape [&::-moz-progress-bar]:bg-grape"
+                    value={batch.funded}
+                    max={Number(batchSize) || Math.max(batch.funded, 1)}
+                    aria-label={`Entries in competition ${batch.id}`}
+                  />
+                  <span className="shrink-0 text-xs text-muted">
+                    {batch.completed} graded
+                  </span>
+                </div>
+                <ol
+                  className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3"
+                  aria-label={`Top three in competition ${batch.id}`}
+                >
+                  {[0, 1, 2].map((index) => (
+                    <PortalCompetitionLeader
+                      key={index}
+                      rank={index + 1}
+                      leader={batch.leaders[index] ?? null}
+                      settled={batch.settled}
+                      owner={address}
+                    />
+                  ))}
+                </ol>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-xs leading-relaxed text-muted">
+                    {batch.settled
+                      ? "Final results. Prizes go to the wallets that submitted the winning spells."
+                      : batch.ready
+                        ? "All grades are in. The winners are ready for prize settlement."
+                        : `Standings can change. Projected prizes unlock after all ${batchSize ?? "competition"} entries are graded.`}
+                  </p>
+                  {batch.ready &&
+                    batch.leaders.some((leader) => leader && !leader.paid) && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void settle(batch.id)}
+                        className="rounded-full bg-grape px-4 py-2 text-sm font-bold text-white hover:bg-grape/90 focus-visible:outline-grape disabled:opacity-50"
+                      >
+                        {busy
+                          ? "Confirming…"
+                          : batch.settled
+                            ? "Retry unpaid prizes"
+                            : "Settle competition"}
+                      </button>
+                    )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
         <details className="group mt-5 rounded-2xl border border-line">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-5 py-4 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape [&::-webkit-details-marker]:hidden">
             How the competition works
@@ -369,92 +461,6 @@ export function PortalCompetitions() {
             </p>
           </div>
         </details>
-        {query.isPending && (
-          <p role="status" className="mt-4 animate-pulse">
-            Loading competitions…
-          </p>
-        )}
-        {query.isError && (
-          <p role="alert" className="mt-4 text-grape">
-            Competition results are temporarily unavailable.
-          </p>
-        )}
-        <div
-          className={cn(
-            "grid gap-4 md:grid-cols-2",
-            Boolean(query.data?.batches.length) && "mt-5"
-          )}
-        >
-          {query.data?.batches.map((batch) => (
-            <article
-              key={batch.id}
-              className="rounded-2xl border border-line bg-white p-5"
-            >
-              <h3 className="font-bold">
-                Competition #{batch.id} · {portalPrice(batch.pool)} USDC
-              </h3>
-              <p className="mt-1 text-sm font-semibold">{batch.theme.title}</p>
-              <p className="mt-1 text-sm">
-                {batch.funded}/{batchSize} entered · {batch.completed}/
-                {batchSize} graded
-              </p>
-              <progress
-                className="mt-3 h-1.5 w-full overflow-hidden rounded-full [&::-webkit-progress-bar]:bg-lavender/30 [&::-webkit-progress-value]:bg-grape [&::-moz-progress-bar]:bg-grape"
-                value={batch.completed}
-                max={Number(batchSize) || Math.max(batch.funded, 1)}
-                aria-label={`Graded entries in competition ${batch.id}`}
-              />
-              <p className="mt-2 text-xs text-muted">
-                {batch.settled
-                  ? "Winners finalized"
-                  : batch.ready
-                    ? "Ready for prize settlement"
-                    : "Prizes wait for every entry in the batch to be graded"}
-              </p>
-              <ol className="mt-3 space-y-2 text-sm">
-                {batch.leaders.map(
-                  (leader, i) =>
-                    leader && (
-                      <li
-                        key={leader.entryId}
-                        className="rounded-xl bg-lavender/15 p-3"
-                      >
-                        <span className="font-bold">
-                          #{i + 1} · {(leader.score / 4).toFixed(2)}/100
-                        </span>
-                        <span className="ml-2">
-                          {portalPrice(leader.amount)} USDC
-                          {batch.settled
-                            ? leader.paid
-                              ? " · Paid"
-                              : " · Unpaid"
-                            : " · Projected prize"}
-                        </span>
-                        <span className="mt-1 block break-all text-xs">
-                          Entry #{leader.entryId} · {leader.submitter}
-                        </span>
-                      </li>
-                    )
-                )}
-              </ol>
-              {batch.ready &&
-                batch.leaders.some((leader) => leader && !leader.paid) && (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void settle(batch.id)}
-                    className="mt-4 rounded-full bg-grape px-4 py-2 text-sm font-bold text-white hover:bg-grape/90 focus-visible:outline-grape disabled:opacity-50"
-                  >
-                    {busy
-                      ? "Confirming…"
-                      : batch.settled
-                        ? "Retry unpaid prizes"
-                        : "Settle competition"}
-                  </button>
-                )}
-            </article>
-          ))}
-        </div>
         <div
           className={cn(
             "flex flex-wrap gap-4 text-sm",

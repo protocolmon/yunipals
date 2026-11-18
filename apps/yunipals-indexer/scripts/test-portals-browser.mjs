@@ -198,13 +198,15 @@ export async function verifyPortalBrowser(context) {
   });
   await page.goto(`${origin}/grading`);
   await page
-    .getByRole("heading", { name: "Your next grade starts here." })
+    .getByRole("heading", { name: "The spell challenge", exact: true })
     .waitFor();
   await page.getByText("Portal open", { exact: true }).waitFor();
   assert.equal(await page.getByText("0.99 USDC", { exact: true }).count(), 1);
-  await page
-    .getByRole("heading", { name: "Your imagination. A winning spell." })
-    .waitFor();
+  await page.getByRole("complementary", { name: "Competition prizes" }).waitFor();
+  const competitionBox = await page.locator("#competition").boundingBox();
+  const entryBox = await page.locator("#portal-cast").boundingBox();
+  assert(competitionBox && entryBox);
+  assert(competitionBox.y + competitionBox.height <= entryBox.y);
   const connect = page
     .getByRole("button", { name: "Connect wallet", exact: true })
     .last();
