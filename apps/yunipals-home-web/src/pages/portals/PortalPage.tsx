@@ -35,9 +35,12 @@ import { PortalGradingGuide } from "./PortalGradingGuide";
 
 export function PortalPage() {
   const [search] = useSearchParams();
+  const selectedRound = /^[1-9][0-9]{0,19}$/.test(search.get("round") ?? "")
+    ? search.get("round")!
+    : undefined;
   const query = useQuery({
-    queryKey: ["portals", "active"],
-    queryFn: ({ signal }) => fetchPortalStatus(signal),
+    queryKey: ["portals", "active", selectedRound],
+    queryFn: ({ signal }) => fetchPortalStatus(signal, selectedRound),
     refetchInterval: 3000
   });
   const status = query.data?.enabled ? query.data : null;
@@ -119,6 +122,14 @@ export function PortalPage() {
           </span>
         )}
       </div>
+      {selectedRound && (
+        <Link
+          to="/grading"
+          className="mb-4 inline-block rounded text-sm font-bold underline focus-visible:outline-grape"
+        >
+          Return to the current portal
+        </Link>
+      )}
       <div id="portal-cast" className="scroll-mt-24" />
       {query.isPending ? (
         <YunipalsLoader
@@ -264,15 +275,17 @@ export function PortalPage() {
             )}
             <div className="mt-6 border-t border-lavender pt-5">
               <p className="text-sm text-muted">
-                {status.rotation.queueCapacity === 11
-                  ? "Reveal up to 11 upcoming portals with one wallet confirmation. Each window opens automatically at its scheduled time. Anyone can refill available spaces; if nobody refills, the schedule eventually runs out."
-                  : status.rotation.automatic
-                    ? "Request the next random portal with one wallet confirmation. Chainlink opens it automatically when the current window ends, or as soon as the result arrives if it has already ended."
-                    : "Anyone can help prepare the next random portal."}{" "}
+                {status.revealedAdmissions
+                  ? "Choose any revealed portal and submit now. Each closes at its listed time. Refill available spaces to reveal more portals."
+                  : status.rotation.queueCapacity === 11
+                    ? "Reveal up to 11 upcoming portals with one wallet confirmation. Each window opens automatically at its scheduled time. Anyone can refill available spaces; if nobody refills, the schedule eventually runs out."
+                    : status.rotation.automatic
+                      ? "Request the next random portal with one wallet confirmation. Chainlink opens it automatically when the current window ends, or as soon as the result arrives if it has already ended."
+                      : "Anyone can help prepare the next random portal."}{" "}
                 The request uses ETH; your wallet shows the amount before you
                 confirm.
               </p>
-              {status.rotation.scheduled && (
+              {status.rotation.scheduled && !status.revealedAdmissions && (
                 <p role="status" className="mt-3 text-sm font-semibold">
                   Portal #{status.rotation.scheduled.portalId} opens
                   automatically in{" "}
@@ -533,6 +546,14 @@ export function PortalPage() {
         </h2>
         {actions.review && (
           <>
+            <p className="mt-3 font-bold">
+              {actions.review.quote.portal?.name} #
+              {actions.review.quote.round.portalId}
+              {" · "}Closes{" "}
+              {new Date(
+                Number(actions.review.quote.round.endsAt) * 1000
+              ).toLocaleString()}
+            </p>
             <div className="mt-5 flex items-start gap-4">
               <img
                 src={portalImage(actions.review.quote.input.uri)}

@@ -394,6 +394,8 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         );
     }
 
+    function revealedPortalAdmissions() external pure returns (bool) { return true; }
+
     function intakeVersion() external pure returns (uint256) { return 1; }
 
     function admit(Admission calldata admission, PortalGradingValidator.Receipt calldata receipt)
@@ -428,7 +430,7 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
             address(competition) == address(0) ? bytes32(0) : competition.admissionHash(), receipt);
         require(!admissionsPaused, "admission paused");
         require(registry.collection().claimController() == address(this), "claim controller unbound");
-        (PortalRegistry.Round memory current, bool accepting) = registry.activePortal();
+        (PortalRegistry.Round memory current, bool accepting) = registry.admissionRound(admission.roundId);
         require(
             accepting && current.portalId == admission.portalId && current.id == admission.roundId,
             "portal window closed or changed"

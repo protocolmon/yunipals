@@ -217,3 +217,12 @@ The full run distributes test gas only among the three dedicated submitting wall
 For a ready public-network fixture, verify its current state against private receipts before resuming. Public resolution does not require CRE approval. Check exact recipient balance increases and the later batch's unchanged reserve, retaining the pre-payout balance snapshot. Keep public-resolution proof separate from CRE-specific proof; a transaction directly to the pool must not be labelled live DON delivery.
 
 For an optional future CRE rehearsal, CLI authentication and deployment access are separate from the server and test wallets. The existing server can publish the workflow, while Chainlink's DON executes it. Verify the tenant-specific real forwarder and workflow owner/name before receiver deployment. Hold the final grade until publication when testing event delivery; use cron recovery for a batch completed before publication. Independently prove real-forwarder delivery and exact balances. Local simulation or a direct pool call is not evidence of live DON execution.
+
+
+### Submitting to revealed portals
+
+`PortalRegistry.admissionRound(roundId)` allows the current and every revealed future round to accept eligible monsters immediately, until that round's existing `endsAt` (exclusive). It does not change the rotation, randomness, refill capacity, original schedule, or burn behavior. Admission binds both the round and portal IDs, so repeated appearances of one portal remain distinct. Unrevealed, expired, and redeemed rounds cannot accept payment.
+
+The API accepts an optional `roundId` on portal status and quote reads and on spell uploads. The same round must be used for quote refreshes and the intake receipt. Existing clients without a round selection continue using the current round. Readiness still requires the chosen round, payment policy, and challenge to be indexed. Competition timing and eligibility rules are unchanged.
+
+Deploy the compatible API first. Upgrade the registry before the grading implementation: the new grading contract requires `admissionRound`. The website exposes early entry only when the grading contract reports `revealedPortalAdmissions`. Both upgrades preserve storage and require the authorized administrator's wallet. Validate exact implementation bytecode, storage layout, preserved state, and submissions on a fork before signing. Operator-specific signing packages and receipts belong in private operator records.

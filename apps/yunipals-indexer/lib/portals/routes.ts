@@ -53,7 +53,8 @@ const upload = z
     expiresAt: uint64,
     signature,
     requestId: uint.optional(),
-    admissionHash: hash.optional()
+    admissionHash: hash.optional(),
+    roundId: uint64.optional()
   })
   .strict();
 const json = (value: unknown, status = 200) =>
@@ -228,17 +229,21 @@ export function registerPortalRoutes(
       asOfBlockHash: block.hash
     });
   });
-  router.get("/v1/portals", async () => {
+  router.get("/v1/portals", async (c) => {
+    const roundId = uint64.optional().parse(c.req.query("roundId"));
     if (!enabled()) return json({ enabled: false });
     try {
       const runtime = await get();
-      const status = await runtime.chain.active();
+      const status = await runtime.chain.active(
+        roundId === undefined ? undefined : BigInt(roundId)
+      );
       return json({
         enabled: true,
         ...status,
         ...(await portalReadiness(runtime, status))
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof PortalUserError) throw error;
       return json(
         { error: "Portals are temporarily unavailable. Please try again." },
         503
@@ -249,7 +254,12 @@ export function registerPortalRoutes(
     const tokenId = uint.parse(c.req.query("tokenId"));
     const owner = address.parse(c.req.query("owner"));
     const runtime = await get();
-    const quote = await runtime.chain.quote(BigInt(tokenId), owner as Address);
+    const roundId = uint64.optional().parse(c.req.query("roundId"));
+    const quote = await runtime.chain.quote(
+      BigInt(tokenId),
+      owner as Address,
+      roundId === undefined ? undefined : BigInt(roundId)
+    );
     const readiness = await portalReadiness(runtime, quote);
     if (readiness.indexing)
       throw new PortalUserError(
@@ -328,7 +338,8 @@ export function registerPortalRoutes(
           ...input,
           commitment,
           expiresAt: BigInt(data.expiresAt),
-          admissionHash: data.admissionHash as Hex
+          admissionHash: data.admissionHash as Hex,
+          roundId: data.roundId === undefined ? undefined : BigInt(data.roundId)
         })
       : undefined;
     return json({ commitment, ...(receipt ? { receipt } : {}) });

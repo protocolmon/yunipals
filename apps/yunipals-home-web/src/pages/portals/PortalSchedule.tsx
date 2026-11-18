@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   portalColorNames,
@@ -61,21 +62,23 @@ export function PortalSchedule({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="portal-schedule-title" className="font-display text-2xl">
-          Upcoming portals
+          {status.revealedAdmissions
+            ? "Revealed portals · submit now"
+            : "Upcoming portals"}
         </h2>
         <p className="text-sm font-semibold">
           {upcoming.length} of 11 future windows revealed
         </p>
       </div>
       <p className="mt-3 text-sm text-muted">
-        Each portal opens an 11-minute window to submit eligible cards for
-        grading. Windows open automatically; times are shown in your local time
-        zone. Refill the schedule above to reveal more windows.
+        {status.revealedAdmissions
+          ? "All revealed portals accept matching cards now, until their listed closing time. Choose a portal to see its requirements and submit your monster. Times are shown in your local time zone."
+          : "Each portal opens an 11-minute window to submit eligible cards for grading. Windows open automatically; times are shown in your local time zone. Refill the schedule above to reveal more windows."}
       </p>
       {owner && portalIds.length > 0 ? (
         <p className="mt-2 text-xs text-muted">
           Matches use your currently indexed cards and exclude spells still
-          processing. Eligibility can change before a window opens.
+          processing. Eligibility is checked again when you submit.
           {counts.isError && (
             <button
               type="button"
@@ -139,15 +142,21 @@ export function PortalSchedule({
                     {portal.name} #{portal.id}
                   </h3>
                   <p className="mt-1">
-                    <time dateTime={starts.toISOString()}>
-                      {starts.toLocaleString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                      })}
-                    </time>
-                    –
+                    {status.revealedAdmissions ? (
+                      "Closes "
+                    ) : (
+                      <>
+                        <time dateTime={starts.toISOString()}>
+                          {starts.toLocaleString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                          })}
+                        </time>
+                        –
+                      </>
+                    )}
                     <time dateTime={ends.toISOString()}>
                       {ends.toLocaleTimeString(undefined, {
                         hour: "2-digit",
@@ -175,6 +184,19 @@ export function PortalSchedule({
                             ? "No matching cards"
                             : `${count.toLocaleString()} matching ${count === 1 ? "card" : "cards"}`}
                     </p>
+                  )}
+                  {status.revealedAdmissions && !portal.retired && (
+                    <Link
+                      to={`/grading?round=${item.id}#portal-cast`}
+                      aria-current={
+                        status.round.id === item.id ? "true" : undefined
+                      }
+                      className="mt-3 inline-flex rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+                    >
+                      {status.round.id === item.id
+                        ? "Selected portal"
+                        : "Submit a monster"}
+                    </Link>
                   )}
                   {portal.retired ? (
                     <p className="mt-2 font-semibold">

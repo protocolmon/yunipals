@@ -93,6 +93,25 @@ contract PortalRegistry is PortalRandomness {
             && collection.exists(current.portalId);
     }
 
+    /// @notice A revealed round accepts immediately, until its original closing time.
+    /// Round identity matters: the same portal can appear in several windows.
+    function admissionRound(uint64 roundId) external view returns (Round memory selected, bool accepting) {
+        if (queueStarted) {
+            for (uint256 i; i < windowCount; ++i) {
+                if (windows[i].id == roundId) {
+                    selected = windows[i];
+                    break;
+                }
+            }
+        } else if (round.id == roundId) {
+            selected = round;
+        } else if (scheduledRound.id == roundId) {
+            selected = scheduledRound;
+        }
+        accepting = selected.id != 0 && block.timestamp < selected.endsAt
+            && collection.exists(selected.portalId);
+    }
+
     function CALLBACK_GAS() public pure override returns (uint32) {
         return 1_600_000;
     }

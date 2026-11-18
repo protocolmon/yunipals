@@ -63,6 +63,7 @@ export class PortalIntakeSigner {
       commitment: Hex;
       expiresAt: bigint;
       admissionHash: Hex;
+      roundId?: bigint;
     }
   ) {
     // Re-read the committed row. Never acknowledge an in-memory or failed upload.
@@ -88,7 +89,11 @@ export class PortalIntakeSigner {
         "The private spell could not be verified in storage. Please upload it again.",
         503
       );
-    const quote = await chain.quote(input.tokenId, input.submitter);
+    const quote = await chain.quote(
+      input.tokenId,
+      input.submitter,
+      input.roundId
+    );
     if (!quote.portal)
       throw new PortalUserError("The portal window has closed.");
     const admissionHash = portalAdmissionHash({
