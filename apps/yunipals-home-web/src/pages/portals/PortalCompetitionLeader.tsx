@@ -68,11 +68,11 @@ export function PortalCompetitionLeader({
   const place = ["1st", "2nd", "3rd"][rank - 1];
   if (!leader)
     return (
-      <li className="flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-lavender bg-lavender/5 p-5 text-center">
+      <li className="flex min-h-28 flex-col items-center justify-center rounded-2xl border border-dashed border-lavender bg-lavender/5 p-3 text-center md:min-h-44 md:p-5">
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lavender/20 text-sm font-bold text-muted">
           {place}
         </span>
-        <p className="mt-3 font-bold">A place to make your own</p>
+        <p className="mt-3 text-sm font-bold">Make it yours</p>
         <p className="mt-1 text-xs text-muted">Waiting for a graded spell</p>
       </li>
     );
@@ -151,7 +151,7 @@ export function PortalCompetitionLeader({
   return (
     <li
       className={cn(
-        "rounded-2xl border shadow-sm",
+        "col-span-2 rounded-2xl border shadow-sm md:col-span-1",
         rank === 1
           ? "border-lavender bg-gradient-to-br from-lavender/20 via-white to-sky/10"
           : "border-line bg-white"

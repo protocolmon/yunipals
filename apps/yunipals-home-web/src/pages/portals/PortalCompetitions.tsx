@@ -291,7 +291,7 @@ export function PortalCompetitions() {
                           ((BigInt(fullPool) * BigInt(share)) / 100n).toString()
                         )
                       : "—"}
-                    <span className="ml-1 text-xs font-normal text-white/70">
+                    <span className="block text-xs font-normal text-white/70">
                       USDC
                     </span>
                   </p>
@@ -383,7 +383,7 @@ export function PortalCompetitions() {
                   </span>
                 </div>
                 <ol
-                  className="mt-5 grid gap-3 md:grid-cols-3"
+                  className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3"
                   aria-label={`Top three in competition ${batch.id}`}
                 >
                   {[0, 1, 2].map((index) => (
