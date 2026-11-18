@@ -135,12 +135,13 @@ export class PortalChain {
       blockNumber
     });
   }
-  binding(id: bigint) {
+  binding(id: bigint, blockNumber?: bigint) {
     return this.client.readContract({
       address: this.deployment.grading,
       abi: portalGradingAbi,
       functionName: "requestBinding",
-      args: [id]
+      args: [id],
+      blockNumber
     });
   }
   owner(token: bigint, blockNumber?: bigint) {
