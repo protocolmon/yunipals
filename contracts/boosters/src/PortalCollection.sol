@@ -44,6 +44,13 @@ contract PortalCollection is ERC721Upgradeable, PortalRandomness {
         address[] recipients;
     }
 
+    /// @dev Presentation is separate from the frozen configuration used to draw mint gates.
+    struct KindArtwork {
+        string imageURI;
+        bytes32 artworkHash;
+        uint256 revision;
+    }
+
     uint256 public kindCount;
     mapping(uint256 => Kind) private _kinds;
     mapping(uint256 => MintRequest) private _mints;
@@ -55,7 +62,14 @@ contract PortalCollection is ERC721Upgradeable, PortalRandomness {
     address public claimController;
     uint48 public poolRevision;
     mapping(uint256 => PortalPool.Pool) private _livePools;
-    uint256[40] private __gap;
+    mapping(uint256 => KindArtwork) private _kindArtwork;
+    uint256[39] private __gap;
+
+    event KindArtworkUpdated(uint256 indexed kindId, uint256 revision, bytes32 artworkHash, string imageURI);
+    /// @dev ERC-4906 events intentionally have no indexed parameters.
+    event MetadataUpdate(uint256 _tokenId);
+    event BatchMetadataUpdate(uint256 _fromTokenId, uint256 _toTokenId);
+    error ArtworkUpdateInvalid();
 
     event KindConfigured(uint256 indexed kindId, string name, bytes32 configurationHash);
     event MintCommitted(
@@ -106,6 +120,40 @@ contract PortalCollection is ERC721Upgradeable, PortalRandomness {
     function getKind(uint256 id) external view returns (Kind memory) {
         require(id > 0 && id <= kindCount, "unknown kind");
         return _kinds[id];
+    }
+
+    /// @notice Current display artwork. Revision zero is the original mint artwork.
+    function kindArtwork(uint256 id) public view returns (KindArtwork memory artwork) {
+        require(id > 0 && id <= kindCount, "unknown kind");
+        artwork = _kindArtwork[id];
+        if (artwork.revision == 0) {
+            artwork.imageURI = _kinds[id].definition.imageURI;
+            artwork.artworkHash = _kinds[id].definition.artworkHash;
+        }
+    }
+
+    /// @notice Revise display artwork without changing frozen mint inputs or existing token traits.
+    /// @param expectedRevision Guards against signing an update based on stale artwork state.
+    function setKindArtwork(
+        uint256 id,
+        uint256 expectedRevision,
+        string calldata imageURI,
+        bytes32 artworkHash
+    ) external onlyRole(CONFIG_ROLE) {
+        Kind storage kind = _kinds[id];
+        // Unknown kinds are never frozen, so this also rejects zero and out-of-range IDs.
+        KindArtwork storage artwork = _kindArtwork[id];
+        if (!kind.frozen || artwork.revision != expectedRevision) revert ArtworkUpdateInvalid();
+        rules.validateKind(
+            kind.definition.name, imageURI, artworkHash, kind.definition.cap, kind.definition.odds
+        );
+        uint256 revision = expectedRevision + 1;
+        artwork.imageURI = imageURI;
+        artwork.artworkHash = artworkHash;
+        artwork.revision = revision;
+        emit KindArtworkUpdated(id, revision, artworkHash, imageURI);
+        // IDs are reserved in contiguous ranges per kind; burned or pending IDs may be inside the range.
+        emit BatchMetadataUpdate((id - 1) * 1000 + 1, (id - 1) * 1000 + kind.allocated);
     }
 
     function getMintRequest(uint256 id) external view returns (MintRequest memory) {
@@ -243,7 +291,14 @@ contract PortalCollection is ERC721Upgradeable, PortalRandomness {
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         PortalGates.Gates memory g = gates(tokenId);
         Kind storage kind = _kinds[tokenKind[tokenId]];
-        return rules.metadata(kind.definition.name, kind.definition.imageURI, tokenId, tokenKind[tokenId], g);
+        KindArtwork storage artwork = _kindArtwork[tokenKind[tokenId]];
+        return rules.metadata(
+            kind.definition.name,
+            artwork.revision == 0 ? kind.definition.imageURI : artwork.imageURI,
+            tokenId,
+            tokenKind[tokenId],
+            g
+        );
     }
 
     function supportsInterface(bytes4 id)
@@ -252,6 +307,6 @@ contract PortalCollection is ERC721Upgradeable, PortalRandomness {
         override(ERC721Upgradeable, AccessControlUpgradeable)
         returns (bool)
     {
-        return super.supportsInterface(id);
+        return id == 0x49064906 || super.supportsInterface(id);
     }
 }

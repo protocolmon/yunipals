@@ -13,7 +13,8 @@ function fixture(
   queue: unknown = new ContractFunctionZeroDataError({
     functionName: "upcomingRounds"
   }),
-  refill = 0
+  refill = 0,
+  revisedArtwork = false
 ) {
   const deployment = {
     chainId: 8453,
@@ -50,6 +51,12 @@ function fixture(
         balanceOf: 0n,
         competition: zeroAddress,
         randomRequests: [123n, true, true],
+        supportsInterface: revisedArtwork,
+        kindArtwork: {
+          imageURI: "/portal-revised.webp",
+          artworkHash: zeroHash,
+          revision: 1n
+        },
         portalRecord: [
           1n,
           {
@@ -145,29 +152,48 @@ describe("eleven-window queue", () => {
     startsAt: BigInt(1660 + 660 * i),
     endsAt: BigInt(2320 + 660 * i)
   }));
-  it("returns all rounds, preserves retired slots, and deduplicates metadata at the pinned block", async () => {
-    const { chain, client } = fixture(undefined, 0n, rounds, 0);
-    const state = await chain.active();
-    expect(state.rotation.queueCapacity).toBe(11);
-    expect(state.rotation.canRequest).toBe(false);
-    expect(state.rotation.upcoming).toHaveLength(11);
-    expect(state.rotation.upcoming[0].portal.retired).toBe(true);
-    expect(
-      client.readContract.mock.calls.filter(
-        ([call]) => call.functionName === "portalRecord"
-      )
-    ).toHaveLength(1);
-    expect(
-      client.readContract.mock.calls.filter(
-        ([call]) => call.functionName === "getKind"
-      )
-    ).toHaveLength(1);
-    expect(
-      client.readContract.mock.calls.every(
-        ([call]) => (call as { blockNumber?: bigint }).blockNumber === 10n
-      )
-    ).toBe(true);
-  });
+  it.each([false, true])(
+    "returns all rounds with revised artwork %s, preserves retired slots, and deduplicates metadata at the pinned block",
+    async (revisedArtwork) => {
+      const { chain, client } = fixture(
+        undefined,
+        0n,
+        rounds,
+        0,
+        revisedArtwork
+      );
+      const state = await chain.active();
+      expect(state.rotation.queueCapacity).toBe(11);
+      expect(state.rotation.canRequest).toBe(false);
+      expect(state.rotation.upcoming).toHaveLength(11);
+      expect(state.rotation.upcoming[0].portal.retired).toBe(true);
+      for (const round of state.rotation.upcoming) {
+        expect(round.portal.imageURI).toBe(
+          revisedArtwork ? "/portal-revised.webp" : "/portal.webp"
+        );
+      }
+      expect(
+        client.readContract.mock.calls.filter(
+          ([call]) => call.functionName === "kindArtwork"
+        )
+      ).toHaveLength(revisedArtwork ? 1 : 0);
+      expect(
+        client.readContract.mock.calls.filter(
+          ([call]) => call.functionName === "portalRecord"
+        )
+      ).toHaveLength(1);
+      expect(
+        client.readContract.mock.calls.filter(
+          ([call]) => call.functionName === "getKind"
+        )
+      ).toHaveLength(1);
+      expect(
+        client.readContract.mock.calls.every(
+          ([call]) => (call as { blockNumber?: bigint }).blockNumber === 10n
+        )
+      ).toBe(true);
+    }
+  );
   it("permits top-ups while future windows still exist, but blocks concurrent requests", async () => {
     const { chain } = fixture(undefined, 0n, rounds.slice(0, 10), 1);
     expect((await chain.active()).rotation.canRequest).toBe(true);

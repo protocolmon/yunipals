@@ -918,6 +918,114 @@ contract PortalsTest is Test {
         assertEq(grading.pendingRequest(card), job);
     }
 
+    function testArtworkImplementationFitsDeploymentLimit() public {
+        assertLe(address(new PortalCollection()).code.length, 24_576);
+    }
+
+    function testArtworkRevisionChangesOnlyMetadataImage() public {
+        PortalCollection.Kind memory beforeKind = portals.getKind(1);
+        PortalGates.Gates memory beforeGates = portals.gates(1);
+        string memory originalMetadata = portals.tokenURI(1);
+        PortalCollection.KindArtwork memory original = portals.kindArtwork(1);
+        assertEq(original.revision, 0);
+        assertEq(original.imageURI, beforeKind.definition.imageURI);
+        assertEq(original.artworkHash, beforeKind.definition.artworkHash);
+        uint48 revision = portals.poolRevision();
+        portals.setKindArtwork(1, 0, "ipfs://new-art", sha256("new-art"));
+        PortalCollection.KindArtwork memory artwork = portals.kindArtwork(1);
+        assertEq(artwork.revision, 1);
+        assertEq(artwork.imageURI, "ipfs://new-art");
+        assertEq(artwork.artworkHash, sha256("new-art"));
+        assertEq(abi.encode(portals.getKind(1)), abi.encode(beforeKind));
+        assertEq(abi.encode(portals.gates(1)), abi.encode(beforeGates));
+        assertEq(portals.ownerOf(1), ALICE);
+        assertEq(portals.poolRevision(), revision);
+        assertEq(
+            portals.tokenURI(1),
+            portals.rules().metadata("Rainbow Portal", "ipfs://new-art", 1, 1, beforeGates)
+        );
+        assertTrue(keccak256(bytes(originalMetadata)) != keccak256(bytes(portals.tokenURI(1))));
+        vm.expectRevert("invalid or frozen kind");
+        portals.configureKind(1, beforeKind.definition);
+        portals.setKindArtwork(1, 1, original.imageURI, original.artworkHash);
+        assertEq(portals.kindArtwork(1).revision, 2);
+        assertEq(portals.tokenURI(1), originalMetadata);
+    }
+
+    function testArtworkUpdateDoesNotChangePendingMintRandomness() public {
+        address[] memory recipients = new address[](2);
+        recipients[0] = ALICE;
+        recipients[1] = BOB;
+        uint256 id = portals.mintBatch{value: 0.0001 ether}(1, recipients, 0.0001 ether);
+        uint256 snapshot = vm.snapshotState();
+        wrapper.fulfill(id, 9387);
+        portals.finishMint(id, 1);
+        bytes memory expected = abi.encode(portals.gates(4));
+        assertTrue(vm.revertToState(snapshot));
+        portals.setKindArtwork(1, 0, "https://example.org/new.png", sha256("new"));
+        wrapper.fulfill(id, 9387);
+        portals.finishMint(id, 1);
+        assertEq(abi.encode(portals.gates(4)), expected);
+        portals.setKindArtwork(1, 1, "https://example.org/newer.png", sha256("newer"));
+        portals.finishMint(id, 1);
+        assertEq(portals.ownerOf(5), BOB);
+        assertEq(portals.getMintRequest(id).processed, 2);
+    }
+
+    event BatchMetadataUpdate(uint256 fromTokenId, uint256 toTokenId);
+
+    function testArtworkRefreshEventIsKindScopedAndSupportsERC4906() public {
+        PortalCollection.Kind memory kind = portals.getKind(1);
+        portals.configureKind(0, kind.definition);
+        _mintPortals(2, 2);
+        string memory otherMetadata = portals.tokenURI(1);
+        vm.expectEmit(false, false, false, true, address(portals));
+        emit BatchMetadataUpdate(1001, 1002);
+        portals.setKindArtwork(2, 0, "ipfs://second", sha256("second"));
+        assertEq(portals.tokenURI(1), otherMetadata);
+        assertTrue(portals.supportsInterface(0x49064906));
+        assertTrue(portals.supportsInterface(0x80ac58cd));
+        assertFalse(portals.supportsInterface(0xffffffff));
+    }
+
+    function testArtworkRejectsWrongRoleStaleRevisionAndUnknownKind() public {
+        vm.prank(ALICE);
+        vm.expectRevert();
+        portals.setKindArtwork(1, 0, "ipfs://new", bytes32(uint256(1)));
+        vm.expectRevert(PortalCollection.ArtworkUpdateInvalid.selector);
+        portals.setKindArtwork(1, 1, "ipfs://new", bytes32(uint256(1)));
+        vm.expectRevert(PortalCollection.ArtworkUpdateInvalid.selector);
+        portals.setKindArtwork(0, 0, "ipfs://new", bytes32(uint256(1)));
+        vm.expectRevert("unknown kind");
+        portals.kindArtwork(2);
+        PortalCollection.Kind memory kind = portals.getKind(1);
+        portals.configureKind(0, kind.definition);
+        vm.expectRevert(PortalCollection.ArtworkUpdateInvalid.selector);
+        portals.setKindArtwork(2, 0, "ipfs://new", bytes32(uint256(1)));
+    }
+
+    function testArtworkRejectsInvalidURIAndHash() public {
+        vm.expectRevert("invalid kind");
+        portals.setKindArtwork(1, 0, "ipfs://new", bytes32(0));
+        vm.expectRevert("image URI scheme");
+        portals.setKindArtwork(1, 0, "javascript:alert(1)", bytes32(uint256(1)));
+        vm.expectRevert("invalid text character");
+        portals.setKindArtwork(1, 0, 'https://example.org/"', bytes32(uint256(1)));
+        vm.expectRevert("invalid text length");
+        portals.setKindArtwork(1, 0, "", bytes32(uint256(1)));
+    }
+
+    function testArtworkRevisionPreservesBurnAndRejectsBurnedMetadata() public {
+        _claim(1, ALICE);
+        portals.setKindArtwork(1, 0, "ipfs://new", sha256("new"));
+        vm.expectRevert();
+        portals.tokenURI(1);
+        assertFalse(portals.exists(1));
+        assertEq(portals.livePortalCount(1), 2);
+        _claim(2, ALICE);
+        assertFalse(portals.exists(2));
+    }
+
     function testFrozenKindReservedCapAndSeparateTokenRanges() public {
         PortalCollection.Kind memory kind = portals.getKind(1);
         vm.expectRevert("invalid or frozen kind");
