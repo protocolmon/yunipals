@@ -196,12 +196,14 @@ export async function verifyPortalBrowser(context) {
       }
     });
   });
-  await page.goto(`${origin}/portals`);
-  await page.getByRole("heading", { name: "Cast your next chapter" }).waitFor();
+  await page.goto(`${origin}/grading`);
+  await page
+    .getByRole("heading", { name: "Your next grade starts here." })
+    .waitFor();
   await page.getByText("Portal open", { exact: true }).waitFor();
   assert.equal(await page.getByText("0.99 USDC", { exact: true }).count(), 1);
   await page
-    .getByRole("heading", { name: "111 spells · grading competition" })
+    .getByRole("heading", { name: "Your imagination. A winning spell." })
     .waitFor();
   const connect = page
     .getByRole("button", { name: "Connect wallet", exact: true })
@@ -296,7 +298,7 @@ export async function verifyPortalBrowser(context) {
     request.portalId
   ]);
   await ledger.tick();
-  await page.goto(`${origin}/portals/mine`);
+  await page.goto(`${origin}/grading/mine`);
   await page
     .getByRole("heading", { name: "My portals", exact: true })
     .waitFor();
@@ -387,7 +389,7 @@ export async function verifyPortalBrowser(context) {
   ).json();
   assert.equal(retired.token.retired, true);
   assert.equal(retired.totals.claimed, "245000");
-  await page.goto(`${origin}/portals/tokens/${request.portalId}`);
+  await page.goto(`${origin}/grading/tokens/${request.portalId}`);
   await page
     .getByRole("heading", { name: "Portal redeemed", exact: true })
     .waitFor();
@@ -548,7 +550,10 @@ export async function verifyPortalBrowser(context) {
   await currentDisplay.waitFor();
   assert.equal(await currentDisplay.getAttribute("src"), metadata.image);
   await page
-    .getByRole("link", { name: "Cast a spell with this card", exact: true })
+    .getByRole("link", {
+      name: "Grade this card through a portal",
+      exact: true
+    })
     .click();
   assert.equal(new URL(page.url()).searchParams.get("card"), "1");
   await page
@@ -566,8 +571,9 @@ export async function verifyPortalBrowser(context) {
   await page
     .getByRole("link", { name: "Artwork and grading history", exact: true })
     .click();
-  assert.equal(new URL(page.url()).pathname, "/portals/cards/1");
+  assert.equal(new URL(page.url()).pathname, "/grading/cards/1");
   await page.goto(`${origin}/portals/cards/1`);
+  await page.waitForURL(`${origin}/grading/cards/1`);
   await page
     .getByRole("heading", { name: "Artwork version 1", exact: true })
     .waitFor();
@@ -579,7 +585,7 @@ export async function verifyPortalBrowser(context) {
     fullPage: true
   });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(`${origin}/portals`);
+  await page.goto(`${origin}/grading`);
   await page.getByText("Portal closed", { exact: true }).waitFor();
   assert(
     await page.evaluate(
@@ -615,7 +621,7 @@ export async function verifyPortalBrowser(context) {
     spare
   ]);
   await ledger.tick();
-  await page.goto(`${origin}/portals/mine`);
+  await page.goto(`${origin}/grading/mine`);
   await page
     .getByRole("button", { name: "Burn portal & claim", exact: true })
     .click();

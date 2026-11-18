@@ -4,6 +4,11 @@ import type { IndexerReader, CanonicalPageOptions } from "./readers.js";
 import { CanonicalSourceUnavailable } from "./paging.js";
 import { transactionEvidenceHash } from "./identity.js";
 
+export {
+  reviewMarketplaceContinuity,
+  type MarketplaceQualification
+} from "./marketplace-continuity.js";
+
 export type MarketplaceReadDefinition = {
   sourceId: string;
   chainId: number;

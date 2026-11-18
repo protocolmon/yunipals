@@ -144,15 +144,21 @@ export async function verifyCompetitionBrowser({
   assert.equal((await chain.active()).competition.accepting, false);
   await assert.rejects(chain.quote(2n, bob), /challenge is full/);
   await ledger.tick();
-  await page.goto(`${origin}/portals`);
+  await page.goto(`${origin}/grading`);
   await page
-    .getByText("Challenge full · finishing the grades", { exact: true })
+    .getByRole("heading", {
+      name: "Great spells take a little time.",
+      exact: true
+    })
     .waitFor();
   await complete(111n, 100);
   await ledger.tick();
   await page.reload();
   await page
-    .getByText("Preparing the next challenge theme", { exact: true })
+    .getByRole("heading", {
+      name: "A new challenge is taking shape.",
+      exact: true
+    })
     .waitFor();
   assert.equal((await chain.active()).competition.accepting, false);
   let extractionCalls = 0,
@@ -236,10 +242,11 @@ export async function verifyCompetitionBrowser({
   await page.reload();
   await page
     .getByRole("heading", {
-      name: "Challenge #2 · Guardians of light",
+      name: "Guardians of light",
       exact: true
     })
     .waitFor();
+  await page.getByText("Challenge #2", { exact: true }).waitFor();
   assert.equal(await admit(2n), 112n);
   await complete(112n, 100);
   let first;
@@ -262,7 +269,7 @@ export async function verifyCompetitionBrowser({
     alice.address.toLowerCase()
   );
   await page.setViewportSize({ width: 1280, height: 1000 });
-  await page.goto(`${origin}/portals`);
+  await page.goto(`${origin}/grading`);
   await page
     .getByRole("button", { name: "Settle competition", exact: true })
     .waitFor();
