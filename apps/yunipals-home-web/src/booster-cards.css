@@ -1,4 +1,9 @@
 /* Approved lavender/crisp-body viewer; scoped for the collection application. */
+.card-artwork-cutout {
+  -webkit-mask: var(--card-artwork-cutout, none) center / 100% 100% no-repeat;
+  mask: var(--card-artwork-cutout, none) center / 100% 100% no-repeat;
+}
+
 .booster-card-viewer .tilt-viewer {
   --viewer-height: clamp(290px, 50vh, 600px);
   --viewer-padding: 28px;

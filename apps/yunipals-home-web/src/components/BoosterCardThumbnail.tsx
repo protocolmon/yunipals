@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { CardArtworkLoader } from "@/components/CardArtworkLoader";
 import { boosterArtworkPreviewUrl } from "@/lib/boosterArtworkPreview";
+import { cardArtworkCutoutStyle } from "@/lib/cardArtworkCutout";
 import { cn } from "@/lib/utils";
 
 type BoosterCardThumbnailProps = {
@@ -48,6 +49,7 @@ export function BoosterCardThumbnail({
       )}
       <img
         src={source}
+        style={cardArtworkCutoutStyle(image)}
         alt={alt}
         width={520}
         height={780}
@@ -55,7 +57,7 @@ export function BoosterCardThumbnail({
         decoding="async"
         draggable={false}
         className={cn(
-          "relative aspect-[2/3] h-full w-full object-contain",
+          "card-artwork-cutout relative aspect-[2/3] h-full w-full object-contain",
           loadedSource !== source && "opacity-0"
         )}
         onLoad={() => setLoadedSource(source)}

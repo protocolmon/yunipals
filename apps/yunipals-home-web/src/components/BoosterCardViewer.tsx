@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { cardArtworkCutoutStyle } from "@/lib/cardArtworkCutout";
 import type { MonsterArtwork } from "@/lib/boosters";
 
 export type CardArtwork = Pick<MonsterArtwork, "image" | "name"> &
@@ -290,6 +291,7 @@ export function BoosterCardViewer({
     );
   const url = (value: string) => `url(${JSON.stringify(value)})`;
   const style = {
+    ...cardArtworkCutoutStyle(artwork.image),
     "--art-mask": url(artwork.image),
     "--monster-mask": artwork.holo ? url(artwork.holo.foreground) : "none",
     "--background-mask": artwork.holo ? url(artwork.holo.background) : "none",
@@ -358,7 +360,10 @@ export function BoosterCardViewer({
         <span
           ref={cardRef}
           style={style}
-          className={cn("tilt-card", holo && "has-monster-depth")}
+          className={cn(
+            "tilt-card card-artwork-cutout",
+            holo && "has-monster-depth"
+          )}
         >
           <img
             src={artwork.image}

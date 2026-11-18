@@ -8,6 +8,7 @@ import { CardLightbox } from "@/components/CardLightbox";
 import { environment } from "@/environment";
 import { fetchPortalCard, portalImage, portalPrice } from "@/lib/portals";
 import { shortAddress } from "@/lib/format";
+import { cardArtworkCutoutStyle } from "@/lib/cardArtworkCutout";
 import { cn } from "@/lib/utils";
 
 type Leader = {
@@ -104,10 +105,11 @@ export function PortalCompetitionLeader({
         {artwork.data ? (
           <img
             src={portalImage(artwork.data.image)}
+            style={cardArtworkCutoutStyle(artwork.data.image)}
             width={1024}
             height={1536}
             alt={artwork.data.name}
-            className="h-28 w-20 shrink-0 rounded-lg object-contain drop-shadow-md"
+            className="card-artwork-cutout aspect-[2/3] h-auto w-20 shrink-0 object-contain drop-shadow-md"
             loading="lazy"
           />
         ) : (
