@@ -47,6 +47,8 @@ export type BoosterMonster = {
   typeKey: string;
   owner: Address;
   mintedTo: Address;
+  /** Indexed mint position in the original's family; zero is the original. */
+  sequence?: number | null;
   variantId: string;
   monsterType: string;
   color: string;

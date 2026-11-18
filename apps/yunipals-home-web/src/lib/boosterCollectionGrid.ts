@@ -48,6 +48,9 @@ export type PackGridFilters = {
   chains: readonly string[];
   traits: Record<string, string[]>;
   search?: string;
+  sequenceMin?: string;
+  sequenceMax?: string;
+  originalOnly?: boolean;
 };
 export function packGridTraits(monster: BoosterMonster) {
   return {
@@ -71,7 +74,10 @@ export function packGridFilters(
       "traits" in filters
         ? filters.traits
         : { Type: filters.types, Color: filters.colors },
-    search: "search" in filters ? filters.search : ""
+    search: "search" in filters ? filters.search : "",
+    sequenceMin: "sequenceMin" in filters ? filters.sequenceMin : undefined,
+    sequenceMax: "sequenceMax" in filters ? filters.sequenceMax : undefined,
+    originalOnly: "originalOnly" in filters ? filters.originalOnly : undefined
   };
 }
 export function matchesPackGridFilters(
@@ -83,6 +89,16 @@ export function matchesPackGridFilters(
     (filters.chains.length && !filters.chains.includes("base"))
   )
     return false;
+  if (filters.originalOnly && monster.isOriginal !== true) return false;
+  if (!filters.originalOnly && (filters.sequenceMin || filters.sequenceMax)) {
+    const sequence = monster.sequence;
+    if (sequence == null || !Number.isInteger(sequence) || sequence < 0)
+      return false;
+    if (filters.sequenceMin && sequence < Number(filters.sequenceMin))
+      return false;
+    if (filters.sequenceMax && sequence > Number(filters.sequenceMax))
+      return false;
+  }
   const traits = packGridTraits(monster);
   for (const [key, choices] of Object.entries(filters.traits)) {
     const supported = Object.keys(traits).find(
@@ -198,7 +214,11 @@ export async function fetchPackGridPage(
   collection: string,
   owner: string | undefined,
   after: string | null,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  filters?: Pick<
+    PackGridFilters,
+    "sequenceMin" | "sequenceMax" | "originalOnly"
+  >
 ) {
   if (
     !isAddress(collection) ||
@@ -211,6 +231,11 @@ export async function fetchPackGridPage(
     : "/boosters/monsters";
   const params = new URLSearchParams({ limit: "24" });
   if (after) params.set("after", after);
+  if (filters?.originalOnly) params.set("originalOnly", "true");
+  else {
+    if (filters?.sequenceMin) params.set("sequenceMin", filters.sequenceMin);
+    if (filters?.sequenceMax) params.set("sequenceMax", filters.sequenceMax);
+  }
   const response = await fetch(
     `${environment.yunipalsIndexerUrl}/v1${path}?${params}`,
     { signal, cache: "no-store" }

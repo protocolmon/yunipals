@@ -278,6 +278,23 @@ export function registerBoosterRoutes(
     c.header("Cache-Control", "no-store");
     const cursor = c.req.query("after") ?? "0";
     const requestedLimit = c.req.query("limit") ?? "24";
+    const sequenceMin = c.req.query("sequenceMin");
+    const sequenceMax = c.req.query("sequenceMax");
+    const originalOnly = c.req.query("originalOnly");
+    const validSequence = (value: string | undefined) =>
+      value === undefined ||
+      (/^(0|[1-9][0-9]{0,9})$/.test(value) && Number(value) <= 4294967295);
+    if (
+      !validSequence(sequenceMin) ||
+      !validSequence(sequenceMax) ||
+      (sequenceMin !== undefined &&
+        sequenceMax !== undefined &&
+        Number(sequenceMin) > Number(sequenceMax)) ||
+      (originalOnly !== undefined &&
+        originalOnly !== "true" &&
+        originalOnly !== "false")
+    )
+      return c.json({ error: "invalid_sequence_filter" }, 400);
     if (!validId(cursor)) return c.json({ error: "invalid_cursor" }, 400);
     if (!/^(?:[1-9][0-9]?|100)$/.test(requestedLimit))
       return c.json({ error: "invalid_limit" }, 400);
@@ -292,7 +309,8 @@ export function registerBoosterRoutes(
     )
       return c.json({ error: "booster_index_unavailable" }, 503);
     const result = await pool.query<BoosterMonster>(
-      `SELECT ${monsterColumns} FROM ${schema}.booster_monster m
+      `SELECT ${monsterColumns}, f.sequence FROM ${schema}.booster_monster m
+       LEFT JOIN ${schema}.booster_card_facts f ON f.id=m.id
        JOIN ${schema}.booster_type p ON p.id=m.type_key AND p.registry=$1 AND p.engine=$2
        JOIN ${schema}.booster_original o ON o.id=m.original_key AND o.collection=$3
          AND o.engine=$2 AND o.type_key=p.id
@@ -301,7 +319,11 @@ export function registerBoosterRoutes(
          AND r.opening=m.is_original
        WHERE m.collection=$3 AND NOT m.burned AND m.mint_block>0
          AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
-         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric${owner ? " AND m.owner=$7" : ""}
+         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric
+         AND ($7::text IS NULL OR m.owner=$7)
+         AND (NOT $8::boolean OR m.is_original)
+         AND ($9::bigint IS NULL OR f.sequence >= $9::bigint)
+         AND ($10::bigint IS NULL OR f.sequence <= $10::bigint)
        ORDER BY m.token_id::numeric,m.id LIMIT $6`,
       [
         deployment.registry,
@@ -310,7 +332,10 @@ export function registerBoosterRoutes(
         state.indexedBlock,
         cursor,
         limit + 1,
-        ...(owner ? [owner.toLowerCase()] : [])
+        owner?.toLowerCase() ?? null,
+        originalOnly === "true",
+        originalOnly === "true" ? null : (sequenceMin ?? null),
+        originalOnly === "true" ? null : (sequenceMax ?? null)
       ]
     );
     const rows = result.rows;

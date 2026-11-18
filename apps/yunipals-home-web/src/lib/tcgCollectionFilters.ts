@@ -5,6 +5,12 @@ import {
 } from "@/lib/collectionBrowserFilters";
 import { tcgCollectionFacets } from "@/lib/boosterCollectionGrid";
 
+export function sequenceNumber(value: string | null | undefined) {
+  return value && /^\d{1,10}$/.test(value) && Number(value) <= 4294967295
+    ? String(Number(value))
+    : "";
+}
+
 export function parseTcgCollectionFilters(
   query: URLSearchParams
 ): CollectionFilters {
@@ -18,10 +24,20 @@ export function parseTcgCollectionFilters(
     }
   }
   const parsed = parseCollectionFilters(compatible);
+  const originalOnly = query.get("originalOnly") === "true";
+  const sequenceMin = sequenceNumber(query.get("sequenceMin"));
+  const sequenceMax = sequenceNumber(query.get("sequenceMax"));
+  const reversed =
+    sequenceMin !== "" &&
+    sequenceMax !== "" &&
+    Number(sequenceMin) > Number(sequenceMax);
   return {
     ...clearCollectionFilters(parsed),
     chains: ["base"],
     sort: "token-id-asc",
-    traits: parsed.traits
+    traits: parsed.traits,
+    originalOnly,
+    sequenceMin: originalOnly ? "" : reversed ? sequenceMax : sequenceMin,
+    sequenceMax: originalOnly ? "" : reversed ? sequenceMin : sequenceMax
   };
 }

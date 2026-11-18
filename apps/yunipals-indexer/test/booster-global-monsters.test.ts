@@ -11,7 +11,10 @@ import {
   vi
 } from "vitest";
 import { registerBoosterRoutes } from "../lib/api/booster-routes.js";
-import { boosterIdentity } from "../../../packages/yunipals-market-core/src/boosters.js";
+import {
+  boosterIdentity,
+  type BoosterMonster
+} from "../../../packages/yunipals-market-core/src/boosters.js";
 
 const registry = "0x2222222222222222222222222222222222222222";
 const engine = "0x3333333333333333333333333333333333333333";
@@ -47,6 +50,7 @@ const url = "/v1/boosters/monsters";
 
 beforeAll(async () => {
   await db.exec(`CREATE SCHEMA global_source;
+    CREATE TABLE global_source.booster_card_facts(id text PRIMARY KEY,sequence integer);
     CREATE TABLE global_source.booster_type(id text PRIMARY KEY,registry text,engine text,rule_hash text,metadata_base_uri text);
     CREATE TABLE global_source.booster_original(id text PRIMARY KEY,collection text,engine text,type_key text);
     CREATE TABLE global_source.booster_request(id text PRIMARY KEY,engine text,original_key text,rule_hash text,status text,opening boolean);
@@ -61,7 +65,7 @@ beforeEach(async () => {
   vi.stubEnv("BOOSTER_WRAPPER", wrapper);
   vi.stubEnv("BOOSTER_DEPLOYMENT_BLOCK", "50");
   await db.exec(
-    "TRUNCATE global_source.booster_monster,global_source.booster_request,global_source.booster_original,global_source.booster_type"
+    "TRUNCATE global_source.booster_card_facts,global_source.booster_monster,global_source.booster_request,global_source.booster_original,global_source.booster_type"
   );
   ready = true;
   prefix = "500";
@@ -133,6 +137,72 @@ async function mint(
 }
 
 describe("global booster browse uses real isolated SQL and fixed deployment scope", () => {
+  it("filters sequence before pagination, combines owner scope, and uses original identity when facts are missing", async () => {
+    for (const id of ["1", "2", "3", "24", "25", "26", "27"])
+      await mint(id, id === "26" ? bob : alice, {
+        originalId: id === "27" ? "27" : "1"
+      });
+    for (const [id, position] of [
+      ["1", 0],
+      ["2", 1],
+      ["3", 2],
+      ["24", 1],
+      ["25", 2],
+      ["26", 2]
+    ] as const)
+      await db.query(
+        "INSERT INTO global_source.booster_card_facts VALUES($1,$2)",
+        [boosterIdentity(collection, id), position]
+      );
+    const first = await (
+      await app.request(`${url}?sequenceMin=2&sequenceMax=2&limit=1`)
+    ).json();
+    expect(first.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
+      "3"
+    ]);
+    expect(first.items[0].sequence).toBe(2);
+    expect(first.nextCursor).toBe("3");
+    const next = await (
+      await app.request(`${url}?sequenceMin=2&sequenceMax=2&after=3`)
+    ).json();
+    expect(next.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
+      "25",
+      "26"
+    ]);
+    const owned = await (
+      await app.request(`/v1/owners/${alice}/booster-monsters?sequenceMin=2`)
+    ).json();
+    expect(owned.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
+      "3",
+      "25"
+    ]);
+    const originals = await (
+      await app.request(`${url}?originalOnly=true&sequenceMin=2`)
+    ).json();
+    expect(originals.items.map((item: BoosterMonster) => item.tokenId)).toEqual(
+      ["1", "27"]
+    );
+    const zero = await (await app.request(`${url}?sequenceMax=0`)).json();
+    expect(zero.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
+      "1"
+    ]);
+    const empty = await (await app.request(`${url}?sequenceMin=3`)).json();
+    expect(empty.items).toEqual([]);
+    expect(empty.nextCursor).toBeNull();
+  });
+
+  it.each([
+    "sequenceMin=-1",
+    "sequenceMax=1.5",
+    "sequenceMin=4294967296",
+    "sequenceMin=02",
+    "sequenceMax=",
+    "sequenceMin=3&sequenceMax=2",
+    "originalOnly=maybe"
+  ])("rejects invalid sequence filters before SQL: %s", async (filter) => {
+    expect((await app.request(`${url}?${filter}`)).status).toBe(400);
+    expect(query).not.toHaveBeenCalled();
+  });
   it("returns all wallets in numeric order and keeps the existing owner route owner-scoped", async () => {
     for (const [id, owner] of [
       ["10", alice],
