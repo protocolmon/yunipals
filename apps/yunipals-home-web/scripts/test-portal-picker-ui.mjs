@@ -378,7 +378,7 @@ try {
     await revealed
       .getByRole("link", { name: "Submit a monster", exact: true })
       .count(),
-    10
+    1
   );
   await revealed
     .getByRole("link", { name: "Submit a monster", exact: true })
@@ -388,10 +388,10 @@ try {
     .getByRole("link", { name: "Selected portal", exact: true })
     .waitFor();
   await page
-    .getByRole("heading", { name: "Rainbow Portal #180", exact: true })
+    .getByRole("heading", { name: "Rainbow Portal #170", exact: true })
     .first()
     .waitFor();
-  assert(selectedRounds.includes("13"));
+  assert(selectedRounds.includes("3"));
   assert(
     await page
       .getByRole("button", { name: "Review your spell", exact: true })
@@ -411,6 +411,29 @@ try {
   await page
     .getByRole("heading", { name: "Rainbow Portal #160", exact: true })
     .waitFor();
+  const submitLinks = revealed.getByRole("link", {
+    name: "Submit a monster",
+    exact: true
+  });
+  countMode = "error";
+  await page.evaluate(() => window.__refreshCounts());
+  await revealed.getByRole("button", { name: "Retry card counts" }).waitFor();
+  assert.equal(await submitLinks.count(), 0);
+  countMode = "empty";
+  await revealed.getByRole("button", { name: "Retry card counts" }).click();
+  await revealed
+    .getByText("No matching cards", { exact: true })
+    .first()
+    .waitFor();
+  assert.equal(await submitLinks.count(), 0);
+  await page.evaluate(() => window.__wallet(undefined));
+  await revealed.getByText(/Connect your wallet/).waitFor();
+  assert.equal(await submitLinks.count(), 0);
+  countMode = "normal";
+  await page.evaluate((value) => window.__wallet(value), owner);
+  await page.evaluate(() => window.__refreshCounts());
+  await revealed.getByText("3 matching cards", { exact: true }).waitFor();
+  assert.equal(await submitLinks.count(), 1);
   status.revealedAdmissions = false;
   await page.evaluate(() => window.__refresh());
   await schedule.waitFor();
