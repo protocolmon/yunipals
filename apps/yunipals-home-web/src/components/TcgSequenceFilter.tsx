@@ -35,7 +35,7 @@ export function TcgSequenceFilter({
   }
 
   return (
-    <details open className="group border-b border-line">
+    <details className="group border-b border-line">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-sm font-extrabold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ethereum [&::-webkit-details-marker]:hidden">
         Sequence number
         <ChevronDown
