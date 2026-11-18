@@ -11,6 +11,7 @@ import {
   type TransactionReceipt
 } from "viem";
 import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
+import { dailyClaimManyAbi } from "./boosterDailyClaims";
 import { boosterPermitAbi } from "./boosterPermit";
 import {
   boosterTransactionExpectation,
@@ -18,6 +19,7 @@ import {
   combinedBoosterPulls,
   confirmedBoosterPulls,
   confirmedBoosterRequests,
+  confirmedBoosterDailyRequests,
   confirmedBoosterRequestState,
   type BoosterCreatedRequest
 } from "./boosterReveal";
@@ -489,5 +491,76 @@ test("ETH purchases retain hash, destination, count and buyer guards", async () 
   );
   assert.throws(() =>
     confirmedBoosterRequests(receipt(), { ...intent, payer: adapter })
+  );
+});
+
+test("wallet daily bundles verify every engine event, owner and request identity", () => {
+  const value = receipt(["90", "91"], ["7", "8"], false, 2);
+  assert.equal(confirmedBoosterDailyRequests(value, engine, payer).length, 2);
+  assert.throws(() => confirmedBoosterDailyRequests(value, engine, collection));
+  assert.throws(() =>
+    confirmedBoosterDailyRequests({ ...value, status: "reverted" }, engine)
+  );
+  assert.throws(() => confirmedBoosterDailyRequests(receipt(), engine));
+  assert.throws(() =>
+    confirmedBoosterDailyRequests(
+      receipt(["90", "90"], ["7", "8"], false),
+      engine
+    )
+  );
+  assert.throws(() =>
+    confirmedBoosterDailyRequests(
+      receipt(["90", "91"], ["7", "7"], false),
+      engine
+    )
+  );
+  assert.throws(() =>
+    confirmedBoosterDailyRequests(
+      {
+        ...value,
+        logs: value.logs.map((log) => ({ ...log, address: collection }))
+      },
+      engine
+    )
+  );
+  assert.throws(() =>
+    confirmedBoosterDailyRequests(
+      { ...value, logs: value.logs.map((log) => ({ ...log, data: "0x" })) },
+      engine
+    )
+  );
+});
+
+test("native claimMany calldata verifies complete claims and quantities", () => {
+  const data = encodeFunctionData({
+    abi: dailyClaimManyAbi,
+    functionName: "claimMany",
+    args: [[7n, 8n], [2, 2], 100n, 9999999999n]
+  });
+  const expected = boosterTransactionExpectation(
+    { hash: transactionHash, to: engine, from: payer, input: data },
+    { hash: transactionHash, engine, kind: "claim" }
+  );
+  assert.equal(
+    confirmedBoosterRequests(
+      receipt(["90", "91"], ["7", "8"], false, 2),
+      expected
+    ).length,
+    2
+  );
+  assert.throws(() =>
+    confirmedBoosterRequests(receipt(["90"], ["7"], false, 2), expected)
+  );
+  assert.throws(() =>
+    confirmedBoosterRequests(
+      receipt(["90", "91"], ["7", "9"], false, 2),
+      expected
+    )
+  );
+  assert.throws(() =>
+    confirmedBoosterRequests(
+      receipt(["90", "91"], ["7", "8"], false, 1),
+      expected
+    )
   );
 });

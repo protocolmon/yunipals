@@ -47,7 +47,6 @@ export function BoosterRequestOpening({ requestId, requests, onClose }: Props) {
   );
   const validGroup =
     entries.length >= 1 &&
-    entries.length <= 10 &&
     new Set(entries.map(({ id }) => id)).size === entries.length;
   const states = useQueries({
     queries: entries.map(({ id, created }) => ({

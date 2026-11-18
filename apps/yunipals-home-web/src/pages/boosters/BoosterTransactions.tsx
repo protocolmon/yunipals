@@ -19,6 +19,7 @@ import {
   boosterTransactionExpectation,
   boosterTransactionHistory,
   confirmedBoosterRequests,
+  confirmedBoosterDailyRequests,
   confirmedBoosterRequestState,
   type BoosterCreatedRequest,
   type BoosterRequestState,
@@ -202,6 +203,17 @@ export function BoosterTransactions({
           requests: undefined
         };
       const transaction = await client!.getTransaction({ hash });
+      // Account-based wallet batches do not call the engine directly.
+      if (
+        transaction.to?.toLowerCase() !== deployment!.engine.toLowerCase() &&
+        transaction.to?.toLowerCase() !==
+          boosterEthAddress(environment.boosterEthAdapter)?.toLowerCase()
+      ) {
+        return {
+          status: "Transaction confirmed. Loading your daily cards…",
+          requests: confirmedBoosterDailyRequests(receipt, deployment!.engine)
+        };
+      }
       let expected: BoosterRevealExpectation;
       try {
         expected = boosterTransactionExpectation(transaction, {
@@ -272,6 +284,7 @@ export function BoosterTransactions({
             });
             if (!events.length)
               return { ...row, status: "Request details unavailable" };
+            const dailyBatch = row.kind === "claim" && events.length > 1;
             let expected: BoosterRevealExpectation = {
               ...row,
               engine: deployment.engine,
@@ -280,17 +293,19 @@ export function BoosterTransactions({
             // Recover actual multi-pack count after a reload or wallet
             // replacement. Never infer missing requests from nearby IDs/payer.
             if (
-              environment.boosterEthAdapter ||
-              events.length > 1 ||
-              (row.expectedRequestCount ?? 1) > 1 ||
-              events.some(
-                ({ args }) =>
-                  (row.packTypeId !== undefined &&
-                    row.packTypeId !== args.packTypeId.toString()) ||
-                  (row.originalId !== undefined &&
-                    row.originalId !== args.originalId.toString()) ||
-                  (row.quantity !== undefined && row.quantity !== args.quantity)
-              )
+              !dailyBatch &&
+              (environment.boosterEthAdapter ||
+                events.length > 1 ||
+                (row.expectedRequestCount ?? 1) > 1 ||
+                events.some(
+                  ({ args }) =>
+                    (row.packTypeId !== undefined &&
+                      row.packTypeId !== args.packTypeId.toString()) ||
+                    (row.originalId !== undefined &&
+                      row.originalId !== args.originalId.toString()) ||
+                    (row.quantity !== undefined &&
+                      row.quantity !== args.quantity)
+                ))
             )
               expected = boosterTransactionExpectation(
                 await client.getTransaction({
@@ -303,7 +318,13 @@ export function BoosterTransactions({
                     undefined
                 }
               );
-            const requests = confirmedBoosterRequests(receipt, expected);
+            const requests = dailyBatch
+              ? confirmedBoosterDailyRequests(
+                  receipt,
+                  deployment.engine,
+                  address
+                )
+              : confirmedBoosterRequests(receipt, expected);
             onchainAnalytics.confirmed(8453, receipt.transactionHash);
             const states = await Promise.all(
               requests.map(async (created) =>
