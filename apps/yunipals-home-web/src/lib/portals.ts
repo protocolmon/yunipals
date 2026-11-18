@@ -113,6 +113,7 @@ const core = z.object({
   escrow: z.object({ reserves: uint, liability: uint }),
   round: z.object({ id: uint, portalId: uint, startsAt: uint, endsAt: uint }),
   open: z.boolean(),
+  revealedAdmissions: z.boolean().optional(),
   paused: z.boolean(),
   rubricId: hash,
   rotation: z.object({
@@ -304,13 +305,25 @@ export async function portalRequest(path: string, init?: RequestInit) {
   }
   return value;
 }
-export async function fetchPortalStatus(signal?: AbortSignal) {
-  return status.parse(await portalRequest("", { signal }));
+export async function fetchPortalStatus(
+  signal?: AbortSignal,
+  roundId?: string
+) {
+  return status.parse(
+    await portalRequest(
+      roundId ? `?roundId=${encodeURIComponent(roundId)}` : "",
+      { signal }
+    )
+  );
 }
-export async function fetchPortalQuote(tokenId: string, owner: string) {
+export async function fetchPortalQuote(
+  tokenId: string,
+  owner: string,
+  roundId?: string
+) {
   return quote.parse(
     await portalRequest(
-      `/quote?tokenId=${encodeURIComponent(tokenId)}&owner=${encodeURIComponent(owner)}`
+      `/quote?tokenId=${encodeURIComponent(tokenId)}&owner=${encodeURIComponent(owner)}${roundId ? `&roundId=${encodeURIComponent(roundId)}` : ""}`
     )
   );
 }
@@ -395,11 +408,11 @@ export function portalDeploymentMatches(
 ) {
   return Boolean(
     value.economicsVersion === "2" &&
-      value.portalFeeMode === "accumulate_and_burn" &&
-      environment.portalGrading &&
-      value.deployment.grading.toLowerCase() ===
-        environment.portalGrading.toLowerCase() &&
-      value.deployment.chainId === environment.portalChainId
+    value.portalFeeMode === "accumulate_and_burn" &&
+    environment.portalGrading &&
+    value.deployment.grading.toLowerCase() ===
+      environment.portalGrading.toLowerCase() &&
+    value.deployment.chainId === environment.portalChainId
   );
 }
 export function portalAdmission(value: PortalQuote, commitment: Hex) {

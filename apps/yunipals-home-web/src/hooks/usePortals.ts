@@ -67,7 +67,7 @@ export function usePortals(status: ActivePortalStatus | null) {
   useEffect(() => {
     generation.current++;
     setReview(null);
-  }, [address, chainId]);
+  }, [address, chainId, status?.round.id]);
 
   function requireWallet() {
     if (!address || !client || !wallet.data || !status)
@@ -133,7 +133,7 @@ export function usePortals(status: ActivePortalStatus | null) {
       setPhase("Checking your card…");
       const { account } = requireWallet();
       const id = generation.current;
-      const quote = await fetchPortalQuote(tokenId, account);
+      const quote = await fetchPortalQuote(tokenId, account, status?.round.id);
       guard(id, account);
       if (!portalDeploymentMatches(quote))
         throw new Error("Portal payments are being prepared.");
@@ -148,7 +148,11 @@ export function usePortals(status: ActivePortalStatus | null) {
       if (!tracker) throw new Error("Transaction tracking is unavailable.");
       tracker.assertAvailable(`grade:${review.quote.tokenId}`);
       const id = generation.current;
-      const fresh = await fetchPortalQuote(review.quote.tokenId, account);
+      const fresh = await fetchPortalQuote(
+        review.quote.tokenId,
+        account,
+        review.quote.round.id
+      );
       if (
         fresh.round.id !== review.quote.round.id ||
         fresh.portal?.payment.version !==
@@ -200,6 +204,7 @@ export function usePortals(status: ActivePortalStatus | null) {
               salt,
               expiresAt: expires.toString(),
               signature,
+              roundId: fresh.round.id,
               admissionHash: portalAdmissionHash(admission)
             })
           })

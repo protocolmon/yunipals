@@ -240,7 +240,7 @@ export class PortalChain {
     };
   }
 
-  async active() {
+  async active(roundId?: bigint) {
     const block = await this.client.getBlock();
     const at = { blockNumber: block.number };
     const { registry, grading, collection, usdc } = this.deployment;
@@ -320,7 +320,47 @@ export class PortalChain {
         ...at
       })
     ]);
-    const [round, accepting] = state;
+    let [round, accepting] = state;
+    const revealedAdmissions = await this.client
+      .readContract({
+        address: grading,
+        abi: portalGradingAbi,
+        functionName: "revealedPortalAdmissions",
+        ...at
+      })
+      .catch((error: unknown) => {
+        if (error instanceof BaseError) {
+          const cause = error.walk(
+            (cause) =>
+              cause instanceof ContractFunctionRevertedError ||
+              cause instanceof ContractFunctionZeroDataError
+          );
+          if (
+            cause instanceof ContractFunctionRevertedError ||
+            cause instanceof ContractFunctionZeroDataError
+          )
+            return false;
+        }
+        throw error;
+      });
+    if (roundId !== undefined && roundId !== round.id) {
+      if (!revealedAdmissions)
+        throw new PortalUserError(
+          "Early portal submissions are not available yet."
+        );
+      [round, accepting] = await this.client.readContract({
+        address: registry,
+        abi: portalRegistryAbi,
+        functionName: "admissionRound",
+        args: [roundId],
+        ...at
+      });
+      if (round.id === 0n)
+        throw new PortalUserError(
+          "This portal window is no longer available.",
+          409
+        );
+    }
     const queue = await this.client
       .readContract({
         address: registry,
@@ -480,6 +520,7 @@ export class PortalChain {
       asOfBlock: block.number,
       asOfBlockHash: block.hash,
       open: accepting && !paused && configured,
+      revealedAdmissions,
       paused,
       rubricId,
       economicsVersion,
@@ -550,8 +591,8 @@ export class PortalChain {
     };
   }
 
-  async quote(tokenId: bigint, submitter: Address) {
-    const active = await this.active();
+  async quote(tokenId: bigint, submitter: Address, roundId?: bigint) {
+    const active = await this.active(roundId);
     if (active.competition && !active.competition.accepting)
       throw new PortalUserError(
         "The current challenge is full. Entries reopen after its grades and the next theme are ready."
@@ -587,7 +628,7 @@ export class PortalChain {
       );
     if (!eligible)
       throw new PortalUserError(
-        "This card does not match the active portal's filters."
+        "This card does not match the selected portal's filters."
       );
     return { ...active, input: input[0], artVersion: input[1], nonce, tokenId };
   }

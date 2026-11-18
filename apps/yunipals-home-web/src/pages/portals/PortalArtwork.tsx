@@ -32,7 +32,7 @@ export function PortalHero() {
             </a>
           </div>
           <p className="mt-8 text-sm text-white/65">
-            One portal at a time. Eleven minutes to enter your spell.
+            Choose a matching portal and enter your spell before it closes.
           </p>
         </div>
         <div className="relative min-h-80 lg:min-h-full">
@@ -85,7 +85,7 @@ export function PortalStory() {
             {[
               [
                 "Choose your Yunipal",
-                "The active portal’s gates determine which cards can enter for grading."
+                "Your chosen portal’s gates determine which cards can enter for grading."
               ],
               [
                 "Write a spell",

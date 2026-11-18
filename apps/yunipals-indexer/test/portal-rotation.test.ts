@@ -40,6 +40,7 @@ function fixture(
           { id: 1n, startsAt: 1000n, endsAt: 1660n, portalId: 0n },
           true
         ],
+        revealedPortalAdmissions: false,
         activeRubric: zeroHash,
         admissionsPaused: false,
         pendingRotation: pending,
@@ -211,5 +212,80 @@ describe("eleven-window queue", () => {
     await expect(
       fixture(undefined, 0n, new Error("RPC unavailable")).chain.active()
     ).rejects.toThrow("RPC unavailable");
+  });
+});
+
+describe("revealed portal admission selection", () => {
+  it("does not silently substitute the active round on an old grading contract", async () => {
+    const { chain } = fixture();
+    await expect(chain.active(2n)).rejects.toThrow("not available yet");
+  });
+  it("selects and quotes a future round at the same block and keeps its deadline", async () => {
+    const { chain, client } = fixture();
+    const original = client.readContract.getMockImplementation()!;
+    const selected = { id: 12n, portalId: 7n, startsAt: 8260n, endsAt: 8920n };
+    client.readContract.mockImplementation(async (call) => {
+      if (call.functionName === "revealedPortalAdmissions") return true;
+      if (call.functionName === "admissionRound") return [selected, true];
+      if (call.functionName === "paymentPolicies")
+        return [245000n, 245000n, zeroAddress, zeroAddress, 1n];
+      if (call.functionName === "rubric") return { modelPolicy: zeroHash };
+      return original(call);
+    });
+    vi.spyOn(chain, "portalToken").mockResolvedValue({
+      id: 7n,
+      kindId: 1n,
+      name: "Rainbow Portal",
+      imageURI: "/portal.webp",
+      owner: "0x1111111111111111111111111111111111111111",
+      retired: false,
+      active: false,
+      slotEndsAt: 0n,
+      claimable: 0n,
+      asOfBlock: 10n,
+      asOfBlockHash: zeroHash,
+      gates: {
+        sequenceStart: 0,
+        sequenceLength: 100,
+        colorGate: 0,
+        typeGate: 0,
+        originalOnly: false,
+        glitterGate: false,
+        diamondGate: false
+      }
+    });
+    const status = await chain.active(12n);
+    expect(status.round).toEqual(selected);
+    expect(status.open).toBe(true);
+    expect(status.revealedAdmissions).toBe(true);
+    expect(status.portal?.id).toBe(7n);
+    expect(client.readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: "admissionRound",
+        args: [12n],
+        blockNumber: 10n
+      })
+    );
+    client.readContract.mockImplementation(async (call) => {
+      if (call.functionName === "revealedPortalAdmissions") return true;
+      if (call.functionName === "admissionRound")
+        return [{ ...selected, id: 0n }, false];
+      return original(call);
+    });
+    await expect(chain.active(999n)).rejects.toThrow("no longer available");
+  });
+  it("falls back only for missing capability, and surfaces transport failures", async () => {
+    const { chain, client } = fixture();
+    const original = client.readContract.getMockImplementation()!;
+    client.readContract.mockImplementation(async (call) => {
+      if (call.functionName === "revealedPortalAdmissions")
+        throw new ContractFunctionZeroDataError({
+          functionName: call.functionName
+        });
+      return original(call);
+    });
+    expect((await chain.active()).revealedAdmissions).toBe(false);
+    client.readContract.mockRejectedValueOnce(new Error("RPC unavailable"));
+    await expect(chain.active()).rejects.toThrow("RPC unavailable");
   });
 });

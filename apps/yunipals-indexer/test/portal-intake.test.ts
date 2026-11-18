@@ -86,7 +86,8 @@ function fixture() {
     ...input,
     commitment,
     expiresAt: 1600n,
-    admissionHash: portalAdmissionHash(admission)
+    admissionHash: portalAdmissionHash(admission),
+    roundId: admission.roundId
   };
   const issue = () =>
     signer.issue(
@@ -111,6 +112,7 @@ describe("private spell intake receipts", () => {
     const f = fixture();
     const receipt = await f.issue();
     expect(receipt.expiresAt).toBe(1300n);
+    expect(f.chain.quote).toHaveBeenCalledWith(1n, submitter, 3n);
     const typed = portalIntakeSigningData({
       ...f.request,
       competition: pool,

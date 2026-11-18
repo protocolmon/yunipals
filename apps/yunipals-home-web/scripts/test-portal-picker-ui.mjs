@@ -242,13 +242,28 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   let countMode = "normal";
+  const selectedRounds = [];
   let cardRpcChecks = 0;
   const countRequests = [];
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (url.hostname !== "127.0.0.1") return route.abort();
-    if (url.pathname === "/fixture/v1/portals")
-      return route.fulfill({ json: status });
+    if (url.pathname === "/fixture/v1/portals") {
+      const roundId = url.searchParams.get("roundId");
+      selectedRounds.push(roundId);
+      const selected = status.rotation.upcoming.find(
+        (item) => item.id === roundId
+      );
+      return route.fulfill({
+        json: selected
+          ? {
+              ...status,
+              round: selected,
+              portal: { ...status.portal, ...selected.portal }
+            }
+          : status
+      });
+    }
     if (url.pathname === "/fixture/v1/boosters/portal-card-counts") {
       countRequests.push(url.searchParams.get("portalIds"));
       if (countMode === "error")
@@ -353,6 +368,53 @@ try {
     .first()
     .click();
   await schedule.getByText("Sequence 0–99", { exact: true }).first().waitFor();
+  status.revealedAdmissions = true;
+  await page.evaluate(() => window.__refresh());
+  const revealed = page.getByRole("region", {
+    name: "Revealed portals · submit now"
+  });
+  await revealed.waitFor();
+  assert.equal(
+    await revealed
+      .getByRole("link", { name: "Submit a monster", exact: true })
+      .count(),
+    10
+  );
+  await revealed
+    .getByRole("link", { name: "Submit a monster", exact: true })
+    .last()
+    .click();
+  await page
+    .getByRole("link", { name: "Selected portal", exact: true })
+    .waitFor();
+  await page
+    .getByRole("heading", { name: "Rainbow Portal #180", exact: true })
+    .first()
+    .waitFor();
+  assert(selectedRounds.includes("13"));
+  assert(
+    await page
+      .getByRole("button", { name: "Review your spell", exact: true })
+      .isEnabled()
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await revealed.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "/tmp/revealed-portals-mobile.png" });
+  assert(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth
+    )
+  );
+  await page
+    .getByRole("link", { name: "Return to the current portal" })
+    .click();
+  await page
+    .getByRole("heading", { name: "Rainbow Portal #160", exact: true })
+    .waitFor();
+  status.revealedAdmissions = false;
+  await page.evaluate(() => window.__refresh());
+  await schedule.waitFor();
+  await page.setViewportSize({ width: 1280, height: 1000 });
   status.rotation.upcoming.pop();
   status.rotation.refillCount = 1;
   status.rotation.canRequest = true;

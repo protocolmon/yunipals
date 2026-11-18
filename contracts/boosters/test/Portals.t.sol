@@ -341,6 +341,80 @@ contract PortalsTest is Test {
         result.spellURI = "ipfs://published-spell";
     }
 
+    function testEveryRevealedPortalAcceptsBeforeItsScheduledStart() public {
+        _rotate();
+        PortalRegistry.Round[] memory future = registry.upcomingRounds();
+        assertEq(future.length, 11);
+        assertTrue(grading.revealedPortalAdmissions());
+        for (uint256 i; i < future.length; ++i) {
+            uint256 snapshot = vm.snapshotState();
+            (PortalRegistry.Round memory selected, bool accepting) = registry.admissionRound(future[i].id);
+            assertTrue(accepting);
+            assertEq(selected.portalId, future[i].portalId);
+            assertLt(block.timestamp, selected.startsAt);
+            PortalGrading.Admission memory a = _admission();
+            a.roundId = selected.id;
+            a.portalId = selected.portalId;
+            uint256 balance = usdc.balanceOf(ALICE);
+            vm.prank(ALICE);
+            uint256 id = grading.admit(a, _receipt(a));
+            PortalGrading.Request memory request = grading.getRequest(id);
+            assertEq(request.roundId, selected.id);
+            assertEq(request.portalId, selected.portalId);
+            assertEq(request.acceptedAt, block.timestamp);
+            assertEq(balance - usdc.balanceOf(ALICE), 490_000);
+            assertEq(grading.portalBalances(selected.portalId), 245_000);
+            assertTrue(vm.revertToStateAndDelete(snapshot));
+        }
+    }
+
+    function testRevealedAdmissionRejectsUnknownExpiredRedeemedAndWrongPortal() public {
+        _rotate();
+        PortalRegistry.Round memory selected = registry.upcomingRounds()[10];
+        PortalGrading.Admission memory a = _admission();
+        a.roundId = selected.id + 1;
+        a.portalId = selected.portalId;
+        uint256 balance = usdc.balanceOf(ALICE);
+        vm.expectRevert("portal window closed or changed");
+        vm.prank(ALICE);
+        grading.admit(a, _receipt(a));
+        a.roundId = selected.id;
+        a.portalId = selected.portalId == 1 ? 2 : 1;
+        vm.expectRevert("portal window closed or changed");
+        vm.prank(ALICE);
+        grading.admit(a, _receipt(a));
+        a.portalId = selected.portalId;
+        uint256 snapshot = vm.snapshotState();
+        _claim(selected.portalId, ALICE);
+        (, bool accepting) = registry.admissionRound(selected.id);
+        assertFalse(accepting);
+        vm.expectRevert("portal window closed or changed");
+        vm.prank(ALICE);
+        grading.admit(a, _receipt(a));
+        assertTrue(vm.revertToStateAndDelete(snapshot));
+        vm.warp(selected.endsAt);
+        vm.expectRevert("portal window closed or changed");
+        vm.prank(ALICE);
+        grading.admit(a, _receipt(a));
+        assertEq(usdc.balanceOf(ALICE), balance);
+    }
+
+    function testRevealedRoundSurvivesBoundaryAndRefillWithoutExtendingExpiry() public {
+        _rotate();
+        PortalRegistry.Round memory selected = registry.upcomingRounds()[5];
+        vm.warp(selected.startsAt);
+        (PortalRegistry.Round memory current, bool accepting) = registry.admissionRound(selected.id);
+        assertTrue(accepting);
+        assertEq(current.endsAt, selected.endsAt);
+        _rotate();
+        (current, accepting) = registry.admissionRound(selected.id);
+        assertTrue(accepting);
+        assertEq(current.endsAt, selected.endsAt);
+        vm.warp(selected.endsAt);
+        (, accepting) = registry.admissionRound(selected.id);
+        assertFalse(accepting);
+    }
+
     function testStrictExpiryRejectsWithoutUSDCCharge() public {
         PortalGrading.Admission memory admission = _admission();
         (PortalRegistry.Round memory current,) = registry.activePortal();
