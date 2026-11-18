@@ -701,6 +701,79 @@ try {
   await page
     .getByRole("heading", { name: "Original artwork", exact: true })
     .waitFor();
+  const original = page.getByRole("img", {
+    name: "Original artwork for card #508",
+    exact: true
+  });
+  assert(await original.isVisible());
+  progressCard.historyCount = "1";
+  progressCard.history = [
+    {
+      id: "7",
+      request: {
+        submitter: owner,
+        portalId: "160",
+        kindId: "1",
+        roundId: "2",
+        acceptedAt: "1",
+        artVersion: "0"
+      },
+      result: {
+        artwork: progressCard.originalArtwork,
+        scores: [87, 79, 69, 89],
+        copied: false,
+        reportURI: "fixture:report",
+        spellURI: "fixture:spell",
+        completedAt: "2"
+      }
+    }
+  ];
+  progressCard.publication = [
+    {
+      requestId: "7",
+      spell: "Turn this pal into a rainbow guardian.",
+      result: {
+        slab: {
+          ...progressCard.originalArtwork,
+          version: "1",
+          renderer: "fixture",
+          manifest: progressCard.originalArtwork,
+          rawArtworkHash: hash
+        },
+        gradingReason: "A colorful transformation."
+      }
+    }
+  ];
+  await page.evaluate(() => window.__refreshCard());
+  await page.getByText("Latest transformation", { exact: true }).waitFor();
+  await page.getByText("81.0", { exact: true }).waitFor();
+  assert.equal(await original.isVisible(), false);
+  const originalToggle = page
+    .locator("summary")
+    .filter({ hasText: "Original artwork" });
+  await originalToggle.focus();
+  await page.keyboard.press("Enter");
+  assert(await original.isVisible());
+  await page.keyboard.press("Enter");
+  assert.equal(await original.isVisible(), false);
+  await page.getByText("Spell and grading notes", { exact: true }).click();
+  await page
+    .getByText(progressCard.publication[0].spell, { exact: true })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("link", { name: "View full-size card" })
+      .getAttribute("href"),
+    progressCard.originalArtwork.uri
+  );
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 1000 });
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth
+      )
+    );
+  }
   assert.deepEqual(errors, []);
   console.log(
     "PASS: grading copy, eligibility, pagination, selection, review, keyboard focus, portal/wallet changes, retry, empty state and mobile layout"
