@@ -9,6 +9,7 @@ import { boosterPacksAbi } from "@protopals/yunipals-market-core/boosterAbi";
 import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 import { boosterPurchaseAbi } from "@/lib/boosterPurchase";
 import { boosterEthAbi } from "@/lib/boosterEth";
+import { dailyClaimManyAbi } from "@/lib/boosterDailyClaims";
 import { boosterPermitAbi } from "@/lib/boosterPermit";
 
 export type BoosterCreatedRequest = {
@@ -43,6 +44,7 @@ export type BoosterRevealExpectation = {
   originalId?: string;
   paymentAdapter?: string;
   payer?: string;
+  claims?: readonly { originalId: string; quantity: number }[];
 };
 type SubmittedTransaction = {
   hash: Hex;
@@ -136,7 +138,12 @@ export function boosterTransactionExpectation(
       transaction.to?.toLowerCase() === expected.engine.toLowerCase()
   );
   const decoded = decodeFunctionData({
-    abi: [...boosterPacksAbi, ...boosterPurchaseAbi, ...boosterPermitAbi],
+    abi: [
+      ...boosterPacksAbi,
+      ...boosterPurchaseAbi,
+      ...boosterPermitAbi,
+      ...dailyClaimManyAbi
+    ],
     data: transaction.input
   });
   const args = decoded.args as readonly unknown[];
@@ -154,6 +161,36 @@ export function boosterTransactionExpectation(
       packTypeId: args[0].toString(),
       quantity: 1,
       originalId: undefined
+    };
+  }
+  if (method === "claimMany") {
+    requireReceipt(
+      expected.kind === "claim" &&
+        Array.isArray(args[0]) &&
+        Array.isArray(args[1])
+    );
+    const ids = args[0] as bigint[],
+      quantities = args[1] as number[];
+    const expectedRequestCount = count(ids.length, 20);
+    requireReceipt(
+      quantities.length === expectedRequestCount &&
+        new Set(ids).size === expectedRequestCount
+    );
+    const claims = ids.map((id, index) => {
+      requireReceipt(typeof id === "bigint");
+      return {
+        originalId: id.toString(),
+        quantity: count(quantities[index], 32)
+      };
+    });
+    return {
+      ...expected,
+      expectedRequestCount,
+      claims,
+      quantity: undefined,
+      originalId: undefined,
+      packTypeId: undefined,
+      payer: transaction.from?.toLowerCase()
     };
   }
   requireReceipt(
@@ -196,7 +233,10 @@ export function confirmedBoosterRequests(
     logs,
     strict: true
   });
-  const expectedCount = count(expected.expectedRequestCount ?? 1, 10);
+  const expectedCount = count(
+    expected.expectedRequestCount ?? 1,
+    expected.claims ? 20 : 10
+  );
   requireReceipt(
     events.length === logs.length && events.length === expectedCount
   );
@@ -221,7 +261,13 @@ export function confirmedBoosterRequests(
         (expected.packTypeId === undefined ||
           expected.packTypeId === event.args.packTypeId.toString()) &&
         (expected.originalId === undefined ||
-          expected.originalId === event.args.originalId.toString())
+          expected.originalId === event.args.originalId.toString()) &&
+        (!expected.claims ||
+          expected.claims.some(
+            (claim) =>
+              claim.originalId === event.args.originalId.toString() &&
+              claim.quantity === event.args.quantity
+          ))
     );
     return {
       requestId: event.args.requestId.toString(),
@@ -242,11 +288,47 @@ export function confirmedBoosterRequests(
       expectedCount &&
       new Set(requests.map((request) => request.logIndex)).size ===
         expectedCount &&
-      new Set(requests.map((request) => request.packTypeId)).size === 1 &&
-      (expected.kind !== "claim" || expectedCount === 1) &&
-      (expected.kind !== "open" ||
+      (expected.claims ||
+        new Set(requests.map((request) => request.packTypeId)).size === 1) &&
+      (expected.kind !== "claim" || expectedCount === 1 || expected.claims) &&
+      (!(expected.kind === "open" || expected.claims) ||
         new Set(requests.map((request) => request.originalId)).size ===
           expectedCount)
+  );
+  return requests.sort((a, b) => a.logIndex - b.logIndex);
+}
+
+// Wallet batches are sent through the account contract, so their outer calldata
+// is wallet-specific. Verify the engine's complete daily-claim event set instead.
+export function confirmedBoosterDailyRequests(
+  receipt: Receipt,
+  engine: string,
+  payer?: string
+): BoosterCreatedRequest[] {
+  const topic = encodeEventTopics({
+    abi: boosterPacksAbi,
+    eventName: "RequestCreated"
+  })[0];
+  const logs = receipt.logs.filter(
+    (log) =>
+      log.address.toLowerCase() === engine.toLowerCase() &&
+      log.topics[0] === topic
+  );
+  requireReceipt(logs.length > 0);
+  const requests = logs.flatMap((log) =>
+    confirmedBoosterRequests(
+      { ...receipt, logs: [log] },
+      { hash: receipt.transactionHash, engine, kind: "claim", payer }
+    )
+  );
+  requireReceipt(
+    new Set(requests.map((request) => request.requestId)).size ===
+      requests.length &&
+      new Set(requests.map((request) => request.originalId)).size ===
+        requests.length &&
+      new Set(requests.map((request) => request.logIndex)).size ===
+        requests.length &&
+      new Set(requests.map((request) => request.payer)).size === 1
   );
   return requests.sort((a, b) => a.logIndex - b.logIndex);
 }
@@ -326,7 +408,7 @@ export function confirmedBoosterPulls(
 export function combinedBoosterPulls(
   groups: readonly { request: BoosterPullRequest; items: BoosterMonster[] }[]
 ) {
-  requireReceipt(groups.length >= 1 && groups.length <= 10);
+  requireReceipt(groups.length >= 1);
   requireReceipt(
     new Set(groups.map(({ request }) => request.requestId)).size ===
       groups.length &&

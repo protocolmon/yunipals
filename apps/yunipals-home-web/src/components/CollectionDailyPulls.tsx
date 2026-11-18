@@ -2,13 +2,15 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
 import { Gift } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import {
   accruedBoosterCredits,
   type BoosterMonster,
   type BoosterOriginal
 } from "@protopals/yunipals-market-core/boosters";
 
+import { useDailyClaimAll } from "@/hooks/useDailyClaimAll";
+import { BoosterDailyOpenAllDialog } from "@/pages/boosters/BoosterDailyOpenAllDialog";
 import { useBoosterClock } from "@/hooks/useBoosterClock";
 import {
   boosterAddresses,
@@ -20,7 +22,9 @@ import { BoosterDailyClaimButton } from "@/pages/boosters/BoosterDailyClaimButto
 import { BoosterOriginalThumbnail } from "@/pages/boosters/BoosterOriginalThumbnail";
 
 export function CollectionDailyPulls() {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+  const switcher = useSwitchChain();
+  const all = useDailyClaimAll();
   const deployment = boosterAddresses();
   const [openWallet, setOpenWallet] = useState<string | null>(null);
   const open = Boolean(address && openWallet === address.toLowerCase());
@@ -84,7 +88,15 @@ export function CollectionDailyPulls() {
           0n
         );
   const pending = items.some((item) => item.pendingRequest);
-  if (!address || (!ready && !pending && !originals.hasNextPage)) return null;
+  if (
+    !address ||
+    (!ready &&
+      !pending &&
+      !originals.hasNextPage &&
+      !all.visible &&
+      !all.progress.pending)
+  )
+    return null;
   const count = ready > 99n ? "99+" : ready.toString();
   return (
     <div ref={popover} className="relative z-20">
@@ -120,8 +132,29 @@ export function CollectionDailyPulls() {
           <div className="border-b border-line px-4 py-4">
             <p className="font-display text-lg text-ink">Your daily cards</p>
             <p className="mt-1 text-xs text-muted">
-              Choose a Yunipal. Open its saved cards.
+              Open your saved cards together, or choose a Yunipal.
             </p>
+            <button
+              type="button"
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-grape px-4 py-2.5 text-sm font-bold text-white hover:bg-grape/90 focus-visible:ring-2 focus-visible:ring-grape focus-visible:ring-offset-2 disabled:opacity-50"
+              disabled={Boolean(all.phase) || switcher.isPending}
+              onClick={() => {
+                if (chainId !== 8453) switcher.switchChain({ chainId: 8453 });
+                else void all.prepare();
+              }}
+            >
+              <Gift size={18} aria-hidden="true" />
+              {chainId !== 8453
+                ? "Switch to Base"
+                : all.progress.pending
+                  ? "Check opening status"
+                  : "Open all"}
+            </button>
+            {switcher.error && (
+              <p role="alert" className="mt-2 text-xs text-muted">
+                Could not switch networks. Select Base in your wallet.
+              </p>
+            )}
           </div>
           <ul className="max-h-96 divide-y divide-line overflow-y-auto px-4">
             {items
@@ -168,6 +201,7 @@ export function CollectionDailyPulls() {
           )}
         </div>
       )}
+      <BoosterDailyOpenAllDialog actions={all} />
     </div>
   );
 }
