@@ -47,7 +47,7 @@ type ReceiptRow = {
 const receiptKey = (hash: string, transaction: string) =>
   `${hash}:${transaction}`;
 
-async function retainedAnchor(
+export async function retainedAnchor(
   db: Pick<PoolClient, "query">,
   release: RegisteredRelease,
   chainId: number,

@@ -91,6 +91,11 @@ and public route checks before declaring recovery complete.
 
 ## Return to the shared source
 
+For a switch between two shared releases, see
+[Marketplace release handover](marketplace-source-handover.md). Verified
+unchanged consumers can preserve their progress. The legacy-to-shared
+transition below still requires replay.
+
 Stop the legacy consumer, verify the shared source has accepted canonical
 coverage, and configure the native owner-selected collection history/policy
 again (Base uses zero-depth/latest). Run the existing

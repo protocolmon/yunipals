@@ -13,7 +13,11 @@ import {
   type MarketplaceConsumerSelection
 } from "./consumerSelection";
 
-const args = process.argv.slice(2);
+const rawArgs = process.argv.slice(2);
+const forceReplay = rawArgs.includes("--replay");
+if (rawArgs.filter((arg) => arg === "--replay").length > 1)
+  throw new Error("Specify --replay at most once.");
+const args = rawArgs.filter((arg) => arg !== "--replay");
 const consumer = args[0];
 const review =
   args.length === 3 &&
@@ -33,7 +37,7 @@ if (
   ].includes(consumer)
 )
   throw new Error(
-    "Use marketplace-consumer <consumer> [--apply 0x<review-hash>]."
+    "Use marketplace-consumer <consumer> [--replay] [--apply 0x<review-hash>]."
   );
 if (!process.env.MARKET_MIGRATION_DATABASE_URL)
   throw new Error(
@@ -114,7 +118,8 @@ try {
         pool,
         shared.reader,
         selection,
-        review
+        review,
+        { replay: forceReplay }
       )
     )
   );

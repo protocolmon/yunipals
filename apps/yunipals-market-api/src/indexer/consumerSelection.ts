@@ -1,6 +1,10 @@
 import type { Pool, PoolClient } from "pg";
 import type { IndexerReader } from "@protopals/yunipals-indexer-server/readers";
 import { manifestDigest } from "@protopals/yunipals-indexer-server/identity";
+import {
+  reviewMarketplaceContinuity,
+  type MarketplaceQualification
+} from "@protopals/yunipals-indexer-server/marketplace";
 
 import {
   sharedCollectionSaleConfiguration,
@@ -44,6 +48,69 @@ function registration(
   };
 }
 type Db = Pick<PoolClient, "query">;
+
+async function selectionImpact(
+  db: Db,
+  reader: IndexerReader,
+  next: ReturnType<typeof registration>,
+  state: Awaited<ReturnType<typeof marketplaceConsumerState>>,
+  forceReplay: boolean
+) {
+  const replay = (reason: string) => ({ mode: "replay" as const, reason });
+  if (forceReplay) return replay("explicit_replay");
+  const previous = state.common;
+  const operational = "cursor" in state ? state.cursor : state.checkpoint;
+  if (
+    !previous ||
+    !operational ||
+    operational.reader_mode !== "unified" ||
+    state.legacy
+  )
+    return replay("no_unified_consumer");
+  if (
+    previous.chain_id !== next.chainId ||
+    previous.source_id !== next.sourceId ||
+    previous.configuration_hash !== next.configurationHash ||
+    manifestDigest(previous.confirmation_policy) !==
+      manifestDigest(next.confirmationPolicy)
+  )
+    return replay("consumer_configuration_changed");
+  if (previous.release_id === next.releaseId)
+    return { mode: "unchanged" as const, reason: "already_selected" };
+  if (!previous.cursor) return replay("no_completed_history");
+  const qualifications = (
+    await db.query<
+      MarketplaceQualification & {
+        proof_valid: boolean;
+        proof_hash: string;
+        policy: string;
+      }
+    >(
+      `SELECT q.*, q.proof_hash='0x'||encode(sha256(convert_to(
+       jsonb_build_object('receipt',r.receipt,'block',r.block)::text,'UTF8')),'hex') AS proof_valid
+     FROM yunipals_market.sale_receipt_qualification q
+     JOIN yunipals_market.sale_receipt r USING(chain_id,block_hash,transaction_hash)
+     WHERE q.consumer=$1 ORDER BY q.chain_id,q.block_hash,q.transaction_hash,q.policy`,
+      [next.consumer]
+    )
+  ).rows;
+  if (qualifications.some((q) => !q.proof_valid))
+    return replay("retained_receipt_changed");
+  const continuity = await reviewMarketplaceContinuity(
+    reader,
+    previous.release_id,
+    next.sourceId,
+    next.confirmationPolicy,
+    previous.cursor,
+    qualifications
+  );
+  return {
+    ...continuity,
+    qualificationHash: manifestDigest(qualifications),
+    qualificationCount: qualifications.length
+  };
+}
+
 export async function marketplaceConsumerState(
   db: Db,
   consumer: string,
@@ -101,7 +168,8 @@ export async function selectSharedMarketplaceConsumer(
   pool: Pool,
   reader: IndexerReader,
   selection: MarketplaceConsumerSelection,
-  applyReview?: string
+  applyReview?: string,
+  options: { replay?: boolean } = {}
 ) {
   const next = registration(reader, selection);
   const status = await reader.status(next.sourceId, next.confirmationPolicy);
@@ -127,13 +195,21 @@ export async function selectSharedMarketplaceConsumer(
         "Sale selection differs from its owner-configured history and policy."
       );
   }
-  const reviewHash = manifestDigest({ version: 1, next, state });
+  const impact = await selectionImpact(
+    pool,
+    reader,
+    next,
+    state,
+    options.replay === true
+  );
+  const reviewHash = manifestDigest({ version: 2, next, state, impact });
   const review = {
     consumer: next.consumer,
     releaseId: next.releaseId,
     sourceId: next.sourceId,
     configurationHash: next.configurationHash,
     confirmationPolicy: next.confirmationPolicy,
+    impact,
     reviewHash
   };
   if (applyReview === undefined) return { ...review, applied: false };
@@ -188,13 +264,46 @@ export async function selectSharedMarketplaceConsumer(
       !fresh.anchor
     )
       throw new Error("Candidate marketplace source changed during selection.");
-    // Keep existing immutable receipt proofs. Qualifications tied to a replaced
-    // source must be earned again by replaying its new canonical evidence.
+    // Recheck the proof after fencing the operational worker. A stale review
+    // can never silently become a destructive replay (or preserve new data).
+    const freshImpact = await selectionImpact(
+      db,
+      reader,
+      next,
+      state,
+      options.replay === true
+    );
+    if (manifestDigest(freshImpact) !== manifestDigest(impact))
+      throw new Error("Marketplace continuity changed; review again.");
+    if (impact.mode === "unchanged") {
+      await db.query("COMMIT");
+      return { ...review, applied: true };
+    }
     await db.query(
       `INSERT INTO yunipals_market.marketplace_source_review(review_hash,consumer,target_mode,previous_state,target_configuration)
        VALUES($1,$2,'unified',$3,$4)`,
-      [reviewHash, next.consumer, JSON.stringify(state), JSON.stringify(next)]
+      [
+        reviewHash,
+        next.consumer,
+        JSON.stringify(state),
+        JSON.stringify({ ...next, impact })
+      ]
     );
+    if (impact.mode === "preserve") {
+      // The identity trigger deliberately requires replacement registration.
+      // Keep the proven rows in transaction-local tables while replacing it;
+      // foreign keys and runtime-role fences remain enabled throughout.
+      await db.query(
+        `CREATE TEMP TABLE marketplace_handover_consumer ON COMMIT DROP AS
+        SELECT * FROM yunipals_market.shared_indexer_consumer WHERE consumer=$1`,
+        [next.consumer]
+      );
+      await db.query(
+        `CREATE TEMP TABLE marketplace_handover_qualifications ON COMMIT DROP AS
+        SELECT * FROM yunipals_market.sale_receipt_qualification WHERE consumer=$1`,
+        [next.consumer]
+      );
+    }
     await db.query(
       "DELETE FROM yunipals_market.legacy_sale_receipt_qualification WHERE consumer=$1",
       [next.consumer]
@@ -211,6 +320,25 @@ export async function selectSharedMarketplaceConsumer(
       "DELETE FROM yunipals_market.shared_indexer_consumer WHERE consumer=$1",
       [next.consumer]
     );
+    if (impact.mode === "preserve") {
+      await db.query(
+        `INSERT INTO yunipals_market.shared_indexer_consumer
+         (consumer,chain_id,release_id,source_id,confirmation_policy,configuration_hash,cursor,generation,created_at)
+         SELECT consumer,chain_id,$2,source_id,confirmation_policy,configuration_hash,$3::jsonb,generation+1,created_at
+         FROM pg_temp.marketplace_handover_consumer WHERE consumer=$1`,
+        [next.consumer, next.releaseId, JSON.stringify(impact.cursor)]
+      );
+      await db.query(
+        `INSERT INTO yunipals_market.sale_receipt_qualification
+         (chain_id,block_hash,transaction_hash,policy,consumer,release_id,source_id,event_id,proof_hash,source_payload_hash)
+         SELECT chain_id,block_hash,transaction_hash,policy,consumer,$2,source_id,event_id,proof_hash,source_payload_hash
+         FROM pg_temp.marketplace_handover_qualifications WHERE consumer=$1`,
+        [next.consumer, next.releaseId]
+      );
+      await db.query("COMMIT");
+      return { ...review, applied: true };
+    }
+    // A changed or unverifiable source still follows the full replay path.
     await db.query(
       `INSERT INTO yunipals_market.shared_indexer_consumer
       (consumer,chain_id,release_id,source_id,confirmation_policy,configuration_hash)
