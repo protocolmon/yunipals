@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { CardArtworkLoader } from "@/components/CardArtworkLoader";
 import { boosterArtworkPreviewUrl } from "@/lib/boosterArtworkPreview";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export function BoosterCardThumbnail({
   eager = false,
   className
 }: BoosterCardThumbnailProps) {
+  const [loadedSource, setLoadedSource] = useState<string | null>(null);
   const [failedPreview, setFailedPreview] = useState<string | null>(null);
   const [failedImage, setFailedImage] = useState<string | null>(null);
   const preview = boosterArtworkPreviewUrl(image);
@@ -36,19 +38,32 @@ export function BoosterCardThumbnail({
     );
 
   return (
-    <img
-      src={source}
-      alt={alt}
-      width={520}
-      height={780}
-      loading={eager ? "eager" : "lazy"}
-      decoding="async"
-      draggable={false}
-      className={cn("aspect-[2/3] h-full w-full object-contain", className)}
-      onError={() => {
-        if (preview && source === preview) setFailedPreview(preview);
-        else setFailedImage(image);
-      }}
-    />
+    <span
+      className={cn("relative block aspect-[2/3] h-full w-full", className)}
+    >
+      {loadedSource !== source && (
+        <span className="absolute inset-0" aria-hidden="true">
+          <CardArtworkLoader label={alt || "Card"} />
+        </span>
+      )}
+      <img
+        src={source}
+        alt={alt}
+        width={520}
+        height={780}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        draggable={false}
+        className={cn(
+          "relative aspect-[2/3] h-full w-full object-contain",
+          loadedSource !== source && "opacity-0"
+        )}
+        onLoad={() => setLoadedSource(source)}
+        onError={() => {
+          if (preview && source === preview) setFailedPreview(preview);
+          else setFailedImage(image);
+        }}
+      />
+    </span>
   );
 }

@@ -162,3 +162,105 @@ a {
 [data-state="waiting"] .yunipals-loader-mark * {
   animation: none;
 }
+
+/* A small illustrated card stack; animate transforms instead of layout. */
+.card-artwork-loader {
+  container-type: inline-size;
+}
+.card-artwork-loader-deck {
+  position: relative;
+  width: min(4.5rem, 65cqw);
+  aspect-ratio: 3 / 4;
+}
+.card-artwork-loader-back,
+.card-artwork-loader-face {
+  position: absolute;
+  inset: 0;
+  border: 2px solid theme("colors.grape / 25%");
+  border-radius: 0.75rem;
+}
+.card-artwork-loader-back {
+  background: theme("colors.lavender");
+  transform: translate(-7px, 3px) rotate(-12deg);
+}
+.card-artwork-loader-face {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: theme("colors.white");
+  animation: card-artwork-float 2.8s ease-in-out infinite;
+}
+.card-artwork-loader-face img {
+  width: 70%;
+  max-width: 3rem;
+  height: auto;
+}
+.card-artwork-loader-face::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(
+    110deg,
+    transparent 40%,
+    theme("colors.lavender / 65%") 50%,
+    transparent 60%
+  );
+  animation: card-artwork-shimmer 2.8s ease-in-out infinite;
+}
+.card-artwork-loader-spark {
+  position: absolute;
+  right: -1rem;
+  top: -0.5rem;
+  animation: card-artwork-twinkle 2.8s ease-in-out infinite;
+}
+@keyframes card-artwork-float {
+  0%,
+  100% {
+    transform: rotate(7deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+}
+@keyframes card-artwork-shimmer {
+  0%,
+  20% {
+    transform: translateX(-75%);
+  }
+  80%,
+  100% {
+    transform: translateX(75%);
+  }
+}
+@keyframes card-artwork-twinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-artwork-loader-face,
+  .card-artwork-loader-face::after,
+  .card-artwork-loader-spark {
+    animation: none;
+  }
+  .card-artwork-loader-face::after {
+    display: none;
+  }
+}
+
+@container (max-width: 100px) {
+  .card-artwork-loader > span {
+    display: none;
+  }
+  .card-artwork-loader-spark {
+    width: 0.75rem;
+    height: 0.75rem;
+    right: -0.5rem;
+  }
+}
