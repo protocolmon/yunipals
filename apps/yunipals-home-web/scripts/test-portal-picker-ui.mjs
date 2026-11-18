@@ -385,6 +385,9 @@ try {
     .last()
     .click();
   await page
+    .getByRole("link", { name: "Selected portal", exact: true })
+    .waitFor();
+  await page
     .getByRole("heading", { name: "Rainbow Portal #180", exact: true })
     .first()
     .waitFor();
