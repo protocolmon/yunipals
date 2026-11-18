@@ -55,6 +55,53 @@ function original(): YunipalToken {
     rarityPointsCapped: "150"
   };
 }
+test("sequence filters use family position, not token ID, exclude unknown facts and combine with traits", () => {
+  const filters = {
+    chains: [],
+    traits: { Color: ["Blue"] },
+    sequenceMin: "2",
+    sequenceMax: "2"
+  };
+  assert.equal(
+    matchesPackGridFilters({ ...monster("900"), sequence: 2 }, filters),
+    true
+  );
+  assert.equal(
+    matchesPackGridFilters({ ...monster("2"), sequence: 3 }, filters),
+    false
+  );
+  assert.equal(matchesPackGridFilters(monster("2"), filters), false);
+  assert.equal(
+    matchesPackGridFilters(
+      { ...monster("900"), sequence: 2, color: "2" },
+      filters
+    ),
+    false
+  );
+  assert.equal(
+    matchesPackGridFilters(
+      { ...monster(), sequence: 0 },
+      { chains: [], traits: {}, sequenceMax: "0" }
+    ),
+    true
+  );
+  assert.equal(
+    matchesPackGridFilters(monster(), {
+      chains: [],
+      traits: {},
+      originalOnly: true
+    }),
+    true
+  );
+  assert.equal(
+    matchesPackGridFilters(monster("2"), {
+      chains: [],
+      traits: {},
+      originalOnly: true
+    }),
+    false
+  );
+});
 function page(items = [monster()]) {
   return {
     chainId: 8453,

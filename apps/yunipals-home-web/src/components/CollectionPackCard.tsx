@@ -61,6 +61,11 @@ export function CollectionPackCard({
           </p>
           <p className="mt-1 text-xs font-semibold text-muted">
             #{monster.tokenId}
+            {monster.isOriginal
+              ? " · Original"
+              : monster.sequence != null
+                ? ` · Sequence ${monster.sequence}`
+                : ""}
           </p>
           <div className="mt-3 flex flex-wrap gap-1.5">
             <span className="rounded-full bg-line/60 px-2 py-1 text-[11px] font-semibold text-ink/65">

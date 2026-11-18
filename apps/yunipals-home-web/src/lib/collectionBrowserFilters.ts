@@ -9,6 +9,9 @@ export type CollectionFilters = Omit<evm.CollectionFilters, "chains"> & {
   excludedChains: CollectionChain[];
   /** Original selection before explicitly narrowing to priced networks. */
   marketReturnChains?: CollectionChain[];
+  sequenceMin?: string;
+  sequenceMax?: string;
+  originalOnly?: boolean;
 };
 export const collectionChains: readonly CollectionChain[] = [
   ...indexedChains,
@@ -78,6 +81,11 @@ export function serializeCollectionFilters(filters: CollectionFilters) {
   }
   for (const chain of filters.marketReturnChains ?? [])
     params.append("marketReturnChain", chain);
+  if (filters.originalOnly) params.set("originalOnly", "true");
+  else {
+    if (filters.sequenceMin) params.set("sequenceMin", filters.sequenceMin);
+    if (filters.sequenceMax) params.set("sequenceMax", filters.sequenceMax);
+  }
   return params;
 }
 
@@ -176,7 +184,9 @@ export function countCollectionFilters(filters: CollectionFilters) {
     evm.countCollectionFilters({
       ...toEvmCollectionFilters(filters),
       chains: []
-    }) + (filters.chains.length || filters.excludedChains?.length ? 1 : 0)
+    }) +
+    (filters.chains.length || filters.excludedChains?.length ? 1 : 0) +
+    (filters.originalOnly || filters.sequenceMin || filters.sequenceMax ? 1 : 0)
   );
 }
 

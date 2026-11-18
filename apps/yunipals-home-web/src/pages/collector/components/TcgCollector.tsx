@@ -112,7 +112,13 @@ export function TcgCollector({ ownerInput }: { ownerInput: string }) {
     `${own ? "Your" : shortAddress(owner ?? ownerInput)} TCG Collection — Yunipals`,
     "Yunipals cards from booster packs and daily packs on Base."
   );
-  const filtered = Boolean(search || Object.keys(filters.traits).length);
+  const filtered = Boolean(
+    search ||
+      Object.keys(filters.traits).length ||
+      filters.originalOnly ||
+      filters.sequenceMin ||
+      filters.sequenceMax
+  );
   return (
     <main className="mx-auto min-h-[70vh] max-w-6xl px-4 pb-16">
       <header className="mb-3 flex flex-wrap items-center justify-between gap-3">

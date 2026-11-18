@@ -12,6 +12,7 @@ import { FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
 import { CollectionMarketFilters } from "@/components/CollectionMarketScopeDialog";
+import { TcgSequenceFilter } from "@/components/TcgSequenceFilter";
 import { collectionChainDetails as chainDetails } from "@/data/chains";
 import {
   collectionChains,
@@ -741,6 +742,14 @@ export function CollectionFilterPanel({
             onChange={onChange}
           />
         </>
+      )}
+
+      {edition === "tcg" && (
+        <TcgSequenceFilter
+          filters={filters}
+          onChange={onChange}
+          mode={priceMode}
+        />
       )}
 
       {facetsLoading && (

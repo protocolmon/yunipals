@@ -27,12 +27,21 @@ export function useBoosterCollectionCards(
       ...boosterQueryKey,
       "normal-collection",
       deployment?.monsters,
-      expectedOwner ?? "all"
+      expectedOwner ?? "all",
+      Boolean(filters.originalOnly),
+      filters.originalOnly ? "" : (filters.sequenceMin ?? ""),
+      filters.originalOnly ? "" : (filters.sequenceMax ?? "")
     ],
     enabled,
     initialPageParam: null as string | null,
     queryFn: ({ pageParam, signal }) =>
-      fetchPackGridPage(deployment!.monsters, expectedOwner, pageParam, signal),
+      fetchPackGridPage(
+        deployment!.monsters,
+        expectedOwner,
+        pageParam,
+        signal,
+        filters
+      ),
     getNextPageParam: (page) => page.nextCursor ?? undefined,
     staleTime: 15000,
     refetchInterval: enabled ? 15000 : false,

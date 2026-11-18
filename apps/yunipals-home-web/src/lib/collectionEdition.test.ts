@@ -19,6 +19,51 @@ import {
 } from "@/lib/collectorPreferences";
 import { marketplaceChains } from "@/lib/marketplace/registry";
 import { parseTcgCollectionFilters } from "@/lib/tcgCollectionFilters";
+import {
+  clearCollectionFilters,
+  cloneCollectionFilters,
+  countCollectionFilters,
+  serializeCollectionFilters
+} from "@/lib/collectionBrowserFilters";
+
+test("TCG sequence filters preserve zero, range and original-only through URLs, drafts and clearing", () => {
+  const parsed = parseTcgCollectionFilters(
+    new URLSearchParams("sequenceMin=0&sequenceMax=5&t.Color=Blue")
+  );
+  assert.equal(parsed.sequenceMin, "0");
+  assert.equal(parsed.sequenceMax, "5");
+  assert.equal(
+    serializeCollectionFilters(cloneCollectionFilters(parsed)).get(
+      "sequenceMin"
+    ),
+    "0"
+  );
+  assert.equal(countCollectionFilters({ ...parsed, chains: [] }), 2);
+  const originals = parseTcgCollectionFilters(
+    new URLSearchParams("originalOnly=true&sequenceMin=7")
+  );
+  assert.equal(originals.originalOnly, true);
+  assert.equal(originals.sequenceMin, "");
+  assert.equal(
+    serializeCollectionFilters(originals).get("originalOnly"),
+    "true"
+  );
+  const cleared = serializeCollectionFilters(clearCollectionFilters(originals));
+  assert.equal(cleared.has("originalOnly"), false);
+  assert.equal(cleared.has("sequenceMin"), false);
+  const reversed = parseTcgCollectionFilters(
+    new URLSearchParams("sequenceMin=10&sequenceMax=2")
+  );
+  assert.equal(reversed.sequenceMin, "2");
+  assert.equal(reversed.sequenceMax, "10");
+  for (const invalid of ["-1", "1.5", "1e2", "4294967296", "abc"]) {
+    assert.equal(
+      parseTcgCollectionFilters(new URLSearchParams({ sequenceMin: invalid }))
+        .sequenceMin,
+      ""
+    );
+  }
+});
 
 const originalStorage = Object.getOwnPropertyDescriptor(
   globalThis,
