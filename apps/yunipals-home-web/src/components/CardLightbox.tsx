@@ -37,6 +37,7 @@ export function CardLightbox({
       className="booster-card-lightbox m-auto h-dvh max-h-none w-screen max-w-none bg-ink p-4 text-white backdrop:bg-ink/90 sm:p-6"
       onCancel={(event) => {
         event.preventDefault();
+        event.stopPropagation();
         onClose();
       }}
     >

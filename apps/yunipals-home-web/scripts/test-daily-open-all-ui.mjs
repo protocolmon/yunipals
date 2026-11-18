@@ -180,7 +180,9 @@ try {
   await server.listen();
   const origin = `http://127.0.0.1:${server.httpServer.address().port}`;
   const { chromium } = await import(
-    values.playwright ? pathToFileURL(values.playwright).href : "playwright-core"
+    values.playwright
+      ? pathToFileURL(values.playwright).href
+      : "playwright-core"
   );
   browser = await chromium.launch({
     executablePath: values.chromium,
@@ -225,7 +227,37 @@ try {
   await visit();
   await page.getByText("4 saved cards", { exact: true }).waitFor();
   await page.getByText("One bundled transaction", { exact: true }).waitFor();
-  await page.screenshot({ path: join(tmpdir(), "yunipals-daily-open-all-desktop.png") });
+  const contributors = page.getByRole("list", {
+    name: "Yunipals contributing saved cards"
+  });
+  assert.equal(await contributors.getByRole("listitem").count(), 2);
+  assert.equal(
+    await contributors.getByText("2 saved cards", { exact: true }).count(),
+    2
+  );
+  const firstPreview = contributors.getByRole("button", {
+    name: "View Yunipal #7 larger"
+  });
+  await firstPreview.click();
+  await page.getByRole("dialog", { name: "Yunipal #7", exact: true }).waitFor();
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("dialog", { name: "Open all daily cards", exact: true })
+    .waitFor();
+  assert.equal(
+    await firstPreview.evaluate(
+      (element) => element === document.activeElement
+    ),
+    true
+  );
+  assert.equal(await page.evaluate(() => window.__sends || 0), 0);
+  assert.equal(await page.evaluate(() => window.__batchCalls?.length || 0), 0);
+  console.log(
+    "PASS: every contributor has its saved count and enlarges without submitting; Escape restores review and focus"
+  );
+  await page.screenshot({
+    path: join(tmpdir(), "yunipals-daily-open-all-desktop.png")
+  });
   await page.setViewportSize({ width: 390, height: 844 });
   assert.equal(
     await page.evaluate(
@@ -233,7 +265,9 @@ try {
     ),
     false
   );
-  await page.screenshot({ path: join(tmpdir(), "yunipals-daily-open-all-mobile.png") });
+  await page.screenshot({
+    path: join(tmpdir(), "yunipals-daily-open-all-mobile.png")
+  });
   await page.setViewportSize({ width: 1100, height: 900 });
   await page
     .getByRole("button", { name: "Open 4 cards in one bundle" })
@@ -335,6 +369,25 @@ try {
 
   await visit({ __native: true, __many: true, __capability: "unsupported" });
   await page.getByText("42 saved cards", { exact: true }).waitFor();
+  assert.equal(await contributors.getByRole("listitem").count(), 21);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await contributors
+    .getByRole("button", { name: "View Yunipal #27 larger" })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Yunipal #27", exact: true })
+    .waitFor();
+  await page.getByRole("button", { name: "Close large card view" }).click();
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > innerWidth
+    ),
+    false
+  );
+  await page.setViewportSize({ width: 1100, height: 900 });
+  console.log(
+    "PASS: all 21 contributors remain accessible on mobile, including enlargement of the last card"
+  );
   await page.getByText("2 wallet confirmations", { exact: true }).waitFor();
   await page
     .getByRole("button", { name: "Open 42 cards", exact: true })
