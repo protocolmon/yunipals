@@ -122,8 +122,10 @@ export async function verifyGuidedAirdrop({
     .waitFor();
   assert.equal(walletBehavior.sends, count + 1);
   const firstHash = walletBehavior.lastHash;
-  const receipt1 = await chain.client.getTransactionReceipt({
-    hash: firstHash
+  const receipt1 = await chain.client.waitForTransactionReceipt({
+    hash: firstHash,
+    pollingInterval: 250,
+    timeout: 30_000
   });
   const request1 = parseEventLogs({
     abi: portalCollectionAbi,
