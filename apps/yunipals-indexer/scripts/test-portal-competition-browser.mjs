@@ -146,8 +146,7 @@ export async function verifyCompetitionBrowser({
   await ledger.tick();
   await page.goto(`${origin}/grading`);
   await page
-    .getByRole("heading", {
-      name: "Great spells take a little time.",
+    .getByText("The final grades are coming in", {
       exact: true
     })
     .waitFor();
@@ -155,8 +154,7 @@ export async function verifyCompetitionBrowser({
   await ledger.tick();
   await page.reload();
   await page
-    .getByRole("heading", {
-      name: "A new challenge is taking shape.",
+    .getByText("A new challenge is on its way", {
       exact: true
     })
     .waitFor();
@@ -241,12 +239,11 @@ export async function verifyCompetitionBrowser({
   assert.equal((await app.request(new URL(artifact.uri).pathname)).status, 200);
   await page.reload();
   await page
-    .getByRole("heading", {
-      name: "Guardians of light",
+    .getByText("Competition #2 · Guardians of light", {
       exact: true
     })
     .waitFor();
-  await page.getByText("Challenge #2", { exact: true }).waitFor();
+  await page.getByText("Open for entries", { exact: true }).waitFor();
   assert.equal(await admit(112n), 112n);
   await complete(112n, 100);
   let first;
