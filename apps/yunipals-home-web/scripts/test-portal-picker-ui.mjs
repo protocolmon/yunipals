@@ -643,6 +643,7 @@ try {
   await schedule
     .getByText("The next chapter is still a surprise.", { exact: false })
     .waitFor();
+  progressCard.processing.acceptedAt = String(Math.floor(Date.now() / 1000));
   await page.goto(`${origin}__portal-progress`);
   const progress = page.getByRole("region", {
     name: "Your spell is in the portal"
