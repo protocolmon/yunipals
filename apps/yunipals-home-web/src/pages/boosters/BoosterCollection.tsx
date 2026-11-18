@@ -33,14 +33,15 @@ export function BoosterArtwork({
   const [expanded, setExpanded] = useState(false);
   const query = useBoosterArtwork(uri, card);
   const fallbackNotice = query.isOriginalFallback ? (
-    <span className="absolute inset-x-1 bottom-1 rounded-lg bg-white/95 px-2 py-1 text-center text-[10px] font-semibold text-muted">
-      Original artwork
-    </span>
+    <span className="sr-only">Original artwork</span>
   ) : null;
+  const fallbackHint = query.isOriginalFallback
+    ? "Showing original artwork while we check for an updated graded version."
+    : undefined;
   if (query.isPending) return <CardArtworkLoader label={label} />;
   if (query.data?.image && display === "thumbnail")
     return (
-      <div className="relative h-full w-full">
+      <div className="relative h-full w-full" title={fallbackHint}>
         <BoosterCardThumbnail
           image={query.data.image}
           alt={label}
@@ -52,7 +53,7 @@ export function BoosterArtwork({
   if (query.data?.image)
     return (
       <>
-        <div className="relative">
+        <div className="relative" title={fallbackHint}>
           <BoosterCardViewer
             artwork={query.data}
             interactive={interactive}
