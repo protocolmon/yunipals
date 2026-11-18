@@ -627,6 +627,10 @@ export class PortalChain {
       throw new PortalUserError(
         "This card already has a spell being processed."
       );
+    if (input[1] !== 0n)
+      throw new PortalUserError(
+        "This card has already been graded. Each card can be graded only once."
+      );
     if (!eligible)
       throw new PortalUserError(
         "This card does not match the selected portal's filters."

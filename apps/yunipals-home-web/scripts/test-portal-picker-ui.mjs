@@ -122,7 +122,7 @@ const client={getBlockNumber:async()=>100n,multicall:async({contracts})=>{
  const response=await fetch('/__checks',{method:'POST',body:JSON.stringify(contracts,(_,v)=>typeof v==='bigint'?v.toString():v)});
  if(!response.ok)throw Error('RPC unavailable');
  const results=await response.json();
- return results.map((result,i)=>({status:'success',result:contracts[i].functionName==='pendingRequest'?BigInt(result):result}));
+ return results.map((result,i)=>({status:'success',result:['pendingRequest','artVersion'].includes(contracts[i].functionName)?BigInt(result):result}));
 }};
 export function usePortals(){
  const address=useSyncExternalStore(fn=>{listeners.add(fn);return()=>listeners.delete(fn);},()=>owner);
@@ -324,6 +324,7 @@ try {
             return mode !== "empty" && Number(id) >= 3;
           if (c.functionName === "pendingRequest")
             return id === "3" ? "9" : "0";
+          if (c.functionName === "artVersion") return id === "7" ? "1" : "0";
           if (c.functionName === "ownerOf") return id === "5" ? other : owner;
           throw Error("unexpected function");
         })
@@ -333,7 +334,11 @@ try {
       requests.push(url.searchParams.get("after"));
       const after = url.searchParams.get("after");
       const ids =
-        after === null ? ["1", "2"] : after === "2" ? ["3", "4", "5"] : ["6"];
+        after === null
+          ? ["1", "2"]
+          : after === "2"
+            ? ["3", "4", "5"]
+            : ["6", "7"];
       return route.fulfill({
         json: {
           enabled: true,
@@ -502,6 +507,12 @@ try {
   await dialog
     .getByRole("button", { name: "Choose Yuniair #6", exact: true })
     .waitFor();
+  assert.equal(
+    await dialog
+      .getByRole("button", { name: "Choose Yuniair #7", exact: true })
+      .count(),
+    0
+  );
   await dialog
     .getByRole("button", { name: "Choose Yuniair #4", exact: true })
     .click();

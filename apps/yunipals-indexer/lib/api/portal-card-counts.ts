@@ -18,7 +18,8 @@ export type PortalCardCountsInput = {
 };
 
 /** One owner-index scan, at most eleven portals, point lookups for facts and
- * pending requests. No wallet pagination, history scan, metadata fetch or RPC. */
+ * pending requests, excluding completed grades from the current projection.
+ * No wallet pagination, version-history scan, metadata fetch or RPC. */
 export async function readPortalCardCounts(
   db: Pick<PoolClient, "query">,
   schemaName: string,
@@ -34,6 +35,11 @@ export async function readPortalCardCounts(
     `WITH config AS MATERIALIZED (
        SELECT * FROM ${schema}.portal_eligibility_config
        WHERE id=$2 AND collection=$3 AND cards=$4
+     ), graded AS MATERIALIZED (
+       SELECT DISTINCT value->>'token_id' AS token_id
+       FROM ${schema}.portal_projection
+       WHERE id LIKE '8453:' || $3 || ':' || $2 || ':request:%'
+         AND value->>'completed_version' IS NOT NULL
      ), owned AS MATERIALIZED (
        SELECT m.color,m.monster_type,m.horn,m.glitter,m.is_original,f.sequence FROM ${schema}.booster_monster m
        JOIN config c ON c.cards=m.collection
@@ -41,6 +47,7 @@ export async function readPortalCardCounts(
          AND t.registry=$5 AND t.engine=$6
        JOIN ${schema}.booster_card_facts f ON f.id=m.id
        WHERE m.owner=$1 AND NOT m.burned
+         AND NOT EXISTS (SELECT 1 FROM graded g WHERE g.token_id=m.token_id)
          AND NOT EXISTS (SELECT 1 FROM ${schema}.portal_eligibility_pending p
            WHERE p.id='8453:' || $2 || ':' || m.token_id)
      )

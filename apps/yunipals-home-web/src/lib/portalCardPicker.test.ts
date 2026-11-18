@@ -49,25 +49,21 @@ function client(
   } as unknown as Pick<PublicClient, "getBlockNumber" | "multicall">;
 }
 
-test("only matching, currently owned cards without a pending spell are offered", async () => {
+test("only matching, currently owned cards without a grade or pending spell are offered", async () => {
   const results = [
-    true,
-    0n,
-    owner,
-    false,
-    0n,
-    owner,
-    true,
-    42n,
-    owner,
-    true,
-    0n,
-    other
-  ].map(success);
+    [true, 0n, owner, 0n],
+    [false, 0n, owner, 0n],
+    [true, 42n, owner, 0n],
+    [true, 0n, other, 0n],
+    [true, 0n, owner, 1n],
+    [true, 0n, owner, 3n]
+  ]
+    .flat()
+    .map(success);
   const eligible = await eligiblePortalCards(
     client(results, (input) => {
       assert.equal(input.blockNumber, 100n);
-      assert.equal(input.contracts.length, 12);
+      assert.equal(input.contracts.length, 24);
       assert.deepEqual(input.contracts[0].args, [160n, 1n]);
       assert.equal(input.contracts[0].address, grading);
       assert.equal(input.contracts[0].functionName, "matches");
@@ -76,7 +72,7 @@ test("only matching, currently owned cards without a pending spell are offered",
       assert.equal(input.contracts[2].functionName, "ownerOf");
     }),
     context,
-    [card("1"), card("2"), card("3"), card("4")]
+    [card("1"), card("2"), card("3"), card("4"), card("5"), card("6")]
   );
   assert.deepEqual(
     eligible.map((c) => c.tokenId),
@@ -102,7 +98,7 @@ test("foreign collections, burned cards and another wallet's cards are excluded 
 test("a failed eligibility read raises an error instead of showing an empty wallet", async () => {
   await assert.rejects(
     eligiblePortalCards(
-      client([{ status: "failure" }, success(0n), success(owner)]),
+      client([{ status: "failure" }, success(0n), success(owner), success(0n)]),
       context,
       [card("1")]
     ),
@@ -119,7 +115,7 @@ test("incomplete results fail closed", async () => {
 
 test("a confirmed nonmatch yields an empty eligible list", async () => {
   const result = await eligiblePortalCards(
-    client([false, 0n, owner].map(success)),
+    client([false, 0n, owner, 0n].map(success)),
     context,
     [card("1")]
   );

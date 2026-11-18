@@ -580,8 +580,9 @@ export function PortalPage() {
               USDC
             </p>
             <p className="mt-2 text-sm text-muted">
-              This pays for one image edit and grading attempt. Accepted
-              requests have no automatic refund or expiry.
+              Each card can be graded only once. Its resulting artwork and grade
+              are final. This pays for one image edit and grading attempt.
+              Accepted requests have no automatic refund or expiry.
             </p>
             {actions.review.quote.competition && (
               <p className="mt-2 text-sm text-muted">

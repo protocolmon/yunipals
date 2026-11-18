@@ -4,6 +4,7 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 const pickerAbi = parseAbi([
   "function matches(uint256 portalId, uint256 tokenId) view returns (bool)",
   "function pendingRequest(uint256 tokenId) view returns (uint256)",
+  "function artVersion(uint256 tokenId) view returns (uint64)",
   "function ownerOf(uint256 tokenId) view returns (address)"
 ]);
 
@@ -50,20 +51,30 @@ export async function eligiblePortalCards(
           abi: pickerAbi,
           functionName: "ownerOf",
           args: [BigInt(card.tokenId)]
+        },
+        {
+          address: context.grading,
+          abi: pickerAbi,
+          functionName: "artVersion",
+          args: [BigInt(card.tokenId)]
         }
       ])
     });
   // An unavailable check must never turn into an eligible card or an empty wallet.
   if (
-    checks.length !== candidates.length * 3 ||
+    checks.length !== candidates.length * 4 ||
     checks.some((check) => check.status !== "success")
   )
     throw new Error("Could not check your cards. Please try again.");
   return candidates.filter((_, index) => {
-    const [matches, pending, owner] = checks.slice(index * 3, index * 3 + 3);
+    const [matches, pending, owner, version] = checks.slice(
+      index * 4,
+      index * 4 + 4
+    );
     return (
       matches.result === true &&
       pending.result === 0n &&
+      version.result === 0n &&
       typeof owner.result === "string" &&
       owner.result.toLowerCase() === context.owner.toLowerCase()
     );

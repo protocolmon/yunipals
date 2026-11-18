@@ -141,6 +141,13 @@ describe("private spell intake receipts", () => {
         })
       ).not.toBe(account.address);
   });
+  it("never signs a regrading admission even with an otherwise valid stored spell", async () => {
+    const f = fixture();
+    f.request.artVersion = 1n as 0n;
+    await expect(f.issue()).rejects.toThrow("only once");
+    expect(f.chain.quote).not.toHaveBeenCalled();
+    expect(f.readContract).not.toHaveBeenCalled();
+  });
   it("never acknowledges missing or corrupted private input", async () => {
     const f = fixture();
     f.store.spell.mockResolvedValueOnce(null as never);
