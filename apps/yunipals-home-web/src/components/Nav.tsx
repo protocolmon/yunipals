@@ -1,13 +1,10 @@
-import { Menu, Search, X } from "lucide-react";
-import { FormEvent, useId, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { WalletCollectionButton } from "@/components/WalletCollectionButton";
 import { environment } from "@/environment";
-import { trackAnalyticsEvent } from "@/lib/analytics/index";
-import { isSolanaAddress } from "@/lib/solanaIndexer";
 import { cn } from "@/lib/utils";
-import { isOwnerInput } from "@/lib/yunipalsIndexer";
 
 const navigation = [
   { label: "Collection", to: "/" },
@@ -20,103 +17,9 @@ const navigation = [
   { label: "Arena", to: "/arena" }
 ];
 
-type CollectorSearchProps = {
-  onNavigate?: () => void;
-};
-
-function CollectorSearch({ onNavigate }: CollectorSearchProps) {
-  const navigate = useNavigate();
-  const inputId = useId();
-  const [address, setAddress] = useState("");
-  const [error, setError] = useState(false);
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const value = address.trim();
-
-    if (
-      !isOwnerInput(value) &&
-      !(environment.exomonEnabled && isSolanaAddress(value))
-    ) {
-      trackAnalyticsEvent("Collection Search Submitted", {
-        collection: "yunipals",
-        search_type: "invalid",
-        outcome: "invalid"
-      });
-      setError(true);
-      return;
-    }
-
-    setError(false);
-    trackAnalyticsEvent("Collection Search Submitted", {
-      collection: isSolanaAddress(value) ? "exomon" : "yunipals",
-      search_type: "collector",
-      outcome: "valid"
-    });
-    onNavigate?.();
-    navigate(
-      isSolanaAddress(value)
-        ? `/collector/solana/${encodeURIComponent(value)}`
-        : `/collector/${encodeURIComponent(value)}`
-    );
-  }
-
-  return (
-    <form onSubmit={submit} className="min-w-0">
-      <label htmlFor={inputId} className="sr-only">
-        Collector wallet address or ENS name
-      </label>
-      <div
-        className={cn(
-          "flex items-center rounded-full border bg-white p-1 shadow-sm",
-          error ? "border-red-400" : "border-line"
-        )}
-      >
-        <Search aria-hidden="true" className="ml-2 text-muted" size={15} />
-        <input
-          id={inputId}
-          value={address}
-          onChange={(event) => {
-            setAddress(event.target.value);
-            setError(false);
-          }}
-          placeholder={
-            environment.exomonEnabled
-              ? "EVM or Solana address, or ENS"
-              : "Address or ENS name"
-          }
-          autoComplete="off"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          className="min-w-0 flex-1 bg-transparent px-2 py-1.5 text-sm font-medium text-ink outline-none placeholder:text-muted/70"
-          aria-invalid={error}
-        />
-        <button
-          type="submit"
-          className="rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2"
-        >
-          Find
-        </button>
-      </div>
-      {error && (
-        <p
-          className="mt-1 px-3 text-xs font-semibold text-red-600"
-          role="alert"
-        >
-          {environment.exomonEnabled
-            ? "Enter a valid EVM or Solana wallet address, or ENS name."
-            : "Enter a valid wallet address or ENS name."}
-        </p>
-      )}
-    </form>
-  );
-}
-
 export function Nav() {
   const { pathname, search } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
 
   const isExomonView =
     environment.exomonEnabled &&
@@ -180,27 +83,6 @@ export function Nav() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setSearchOpen((open) => !open)}
-            className="hidden items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-bold text-white shadow-cta transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 xl:flex"
-            aria-label="Search collectors"
-            aria-expanded={searchOpen}
-            aria-controls="desktop-collector-search"
-          >
-            <Search aria-hidden="true" size={15} />
-            Search
-          </button>
-          <button
-            type="button"
-            onClick={() => setSearchOpen((open) => !open)}
-            className="hidden h-10 w-10 place-items-center rounded-full bg-ink text-white shadow-cta transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 lg:grid xl:hidden"
-            aria-label="Search collectors"
-            aria-expanded={searchOpen}
-            aria-controls="desktop-collector-search"
-          >
-            <Search aria-hidden="true" size={16} />
-          </button>
           {!isExomonView && <WalletCollectionButton />}
           <button
             type="button"
@@ -218,17 +100,6 @@ export function Nav() {
           </button>
         </div>
       </div>
-
-      {searchOpen && (
-        <div
-          id="desktop-collector-search"
-          className="hidden border-t border-line bg-white px-4 py-3 lg:block"
-        >
-          <div className="mx-auto max-w-lg">
-            <CollectorSearch onNavigate={() => setSearchOpen(false)} />
-          </div>
-        </div>
-      )}
 
       {mobileMenuOpen && (
         <nav
@@ -253,9 +124,6 @@ export function Nav() {
                 {item.label}
               </Link>
             ))}
-            <div className="mt-2 border-t border-line pt-4">
-              <CollectorSearch onNavigate={() => setMobileMenuOpen(false)} />
-            </div>
           </div>
         </nav>
       )}
