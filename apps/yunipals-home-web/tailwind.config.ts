@@ -54,6 +54,9 @@ export default {
           "radial-gradient(circle at center,rgba(255,255,255,.95) 0%,rgba(255,255,255,.55) 42%,rgba(255,255,255,0) 68%)"
       },
       keyframes: {
+        "spell-orbit": {
+          to: { transform: "rotate(360deg)" }
+        },
         float: {
           "0%, 100%": { transform: "translateY(0) rotate(2deg)" },
           "50%": { transform: "translateY(-12px) rotate(-1deg)" }
@@ -64,6 +67,7 @@ export default {
         }
       },
       animation: {
+        "spell-orbit": "spell-orbit 12s linear infinite",
         float: "float 6s ease-in-out infinite",
         drift: "drift 8s ease-in-out infinite"
       }

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { fetchPortalCard, portalImage } from "@/lib/portals";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
+import { PortalSpellProgress } from "./PortalSpellProgress";
 
 export function PortalCardHistory() {
   const { tokenId = "" } = useParams();
@@ -38,10 +39,7 @@ export function PortalCardHistory() {
         card && (
           <>
             {(card.pending !== "0" || card.publicationPending) && (
-              <p role="status" className="mt-6 rounded-2xl bg-sky/30 p-4">
-                A spell is being processed. The current artwork stays visible
-                until the new image and its grades are ready together.
-              </p>
+              <PortalSpellProgress key={card.pending} card={card} />
             )}
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[...card.history].reverse().map((attempt) => {

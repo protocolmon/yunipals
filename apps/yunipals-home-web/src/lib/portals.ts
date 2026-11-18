@@ -237,6 +237,21 @@ const history = z.object({
     })
   ),
   publicationPending: z.boolean().default(false),
+  processing: z
+    .object({
+      requestId: uint,
+      acceptedAt: uint,
+      stage: z.enum(["queued", "creating", "grading", "publishing"]),
+      estimate: z
+        .object({
+          minSeconds: z.number().positive(),
+          maxSeconds: z.number().positive(),
+          sampleSize: z.number().int().positive()
+        })
+        .nullable()
+    })
+    .nullable()
+    .optional(),
   publication: z.array(
     z.object({
       requestId: uint,
@@ -408,11 +423,11 @@ export function portalDeploymentMatches(
 ) {
   return Boolean(
     value.economicsVersion === "2" &&
-    value.portalFeeMode === "accumulate_and_burn" &&
-    environment.portalGrading &&
-    value.deployment.grading.toLowerCase() ===
-      environment.portalGrading.toLowerCase() &&
-    value.deployment.chainId === environment.portalChainId
+      value.portalFeeMode === "accumulate_and_burn" &&
+      environment.portalGrading &&
+      value.deployment.grading.toLowerCase() ===
+        environment.portalGrading.toLowerCase() &&
+      value.deployment.chainId === environment.portalChainId
   );
 }
 export function portalAdmission(value: PortalQuote, commitment: Hex) {

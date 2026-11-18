@@ -2,6 +2,7 @@ import { registerPortalMintRoutes } from "./mint-routes.js";
 import { portalReadiness } from "./readiness.js";
 import { portalHealth } from "./health.js";
 import { publicPortalCard, publishedPortalArtifact } from "./publication.js";
+import { portalProcessing } from "./processing.js";
 import { registerPortalEvidenceRoutes } from "./action-evidence.js";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
@@ -403,7 +404,20 @@ export function registerPortalRoutes(
       match[2] ? 1 : 10
     );
     const published = await publicPortalCard(runtime, card);
-    if (!match[2]) return json(published);
+    if (!match[2])
+      return json({
+        ...published,
+        processing: await portalProcessing(
+          runtime,
+          card,
+          [...card.history]
+            .reverse()
+            .find(
+              (attempt) =>
+                !published.history.some((ready) => ready.id === attempt.id)
+            )?.id
+        ).catch(() => null)
+      });
     try {
       await chain.owner(token, card.asOfBlock);
     } catch (error) {

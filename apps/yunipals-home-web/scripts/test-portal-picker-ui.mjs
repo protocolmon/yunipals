@@ -133,14 +133,15 @@ export const useConnectModal=()=>({openConnectModal:()=>window.__wallet('${owner
   "virtual:portal-unrelated.tsx": `export const boosterButtonClass='rounded-full bg-grape p-3 text-white';export const PortalCompetitions=()=>null;`,
   "virtual:portal-entry.tsx": `
 import React from 'react';import {createRoot} from 'react-dom/client';
-import {MemoryRouter} from 'react-router-dom';import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
-import {PortalPage} from '/src/pages/portals/PortalPage';import {environment} from '/src/environment';import '/src/globals.css';
+import {MemoryRouter,Routes,Route} from 'react-router-dom';import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
+import {PortalPage} from '/src/pages/portals/PortalPage';import {PortalCardHistory} from '/src/pages/portals/PortalCardHistory';import {environment} from '/src/environment';import '/src/globals.css';
 environment.portalApiUrl=new URL('/fixture',location.href).href;
 environment.yunipalsIndexerUrl=new URL('/fixture',location.href).href;
 const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});
 window.__refresh=()=>query.invalidateQueries({queryKey:['portals','active']});
 window.__refreshCounts=()=>query.invalidateQueries({queryKey:['portals','matching-cards']});
-createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter initialEntries={['/grading?card=4']}><QueryClientProvider client={query}><PortalPage/></QueryClientProvider></MemoryRouter></React.StrictMode>);`
+window.__refreshCard=()=>query.invalidateQueries({queryKey:['portals','card']});
+createRoot(document.getElementById('root')).render(<React.StrictMode><MemoryRouter initialEntries={[location.pathname==='/__portal-progress'?'/grading/cards/508':'/grading?card=4']}><QueryClientProvider client={query}><Routes><Route path="/grading/cards/:tokenId" element={<PortalCardHistory/>}/><Route path="*" element={<PortalPage/>}/></Routes></QueryClientProvider></MemoryRouter></React.StrictMode>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "portal-picker-vite-"));
 const server = await createServer({
@@ -190,7 +191,8 @@ const server = await createServer({
       },
       configureServer(vite) {
         vite.middlewares.use(async (req, res, next) => {
-          if (req.url !== "/__portal-picker") return next();
+          if (!["/__portal-picker", "/__portal-progress"].includes(req.url))
+            return next();
           res.setHeader("Content-Type", "text/html");
           res.end(
             await vite.transformIndexHtml(
@@ -242,12 +244,30 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   let countMode = "normal";
+  const progressCard = {
+    tokenId: "508",
+    pending: "7",
+    historyCount: "0",
+    nextBefore: null,
+    history: [],
+    publication: [],
+    publicationPending: false,
+    originalArtwork: { uri: "/images/portals/rainbow-portal-card.webp", hash },
+    processing: {
+      requestId: "7",
+      acceptedAt: String(Math.floor(Date.now() / 1000)),
+      stage: "queued",
+      estimate: null
+    }
+  };
   const selectedRounds = [];
   let cardRpcChecks = 0;
   const countRequests = [];
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (url.hostname !== "127.0.0.1") return route.abort();
+    if (url.pathname === "/fixture/v1/portals/cards/508")
+      return route.fulfill({ json: progressCard });
     if (url.pathname === "/fixture/v1/portals") {
       const roundId = url.searchParams.get("roundId");
       selectedRounds.push(roundId);
@@ -622,6 +642,63 @@ try {
   await schedule.getByText("0 of 11 future windows revealed").waitFor();
   await schedule
     .getByText("The next chapter is still a surprise.", { exact: false })
+    .waitFor();
+  await page.goto(`${origin}__portal-progress`);
+  const progress = page.getByRole("region", {
+    name: "Your spell is in the portal"
+  });
+  await progress.waitFor();
+  await progress.getByText(/Estimated 3–10 min remaining/).waitFor();
+  for (const [stage, title] of [
+    ["creating", "A little magic is taking shape"],
+    ["grading", "Time for the finishing touches"],
+    ["publishing", "Getting ready for the big reveal"]
+  ]) {
+    progressCard.processing.stage = stage;
+    await page.evaluate(() => window.__refreshCard());
+    await page.getByRole("heading", { name: title }).waitFor();
+  }
+  const finalProgress = page.getByRole("region", {
+    name: "Getting ready for the big reveal"
+  });
+  progressCard.processing.estimate = {
+    minSeconds: 120,
+    maxSeconds: 240,
+    sampleSize: 10
+  };
+  progressCard.processing.acceptedAt = String(
+    Math.floor(Date.now() / 1000) - 300
+  );
+  await page.evaluate(() => window.__refreshCard());
+  await finalProgress
+    .getByText("Taking a little longer", { exact: true })
+    .waitFor();
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth
+    )
+  );
+  await finalProgress.screenshot({
+    path: "/tmp/portal-spell-progress-mobile.png"
+  });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  assert.equal(
+    await finalProgress
+      .locator("img")
+      .evaluate((el) => getComputedStyle(el).animationName),
+    "none"
+  );
+  progressCard.pending = "0";
+  progressCard.publicationPending = true;
+  progressCard.processing = null;
+  await page.evaluate(() => window.__refreshCard());
+  await finalProgress.waitFor();
+  progressCard.publicationPending = false;
+  await page.evaluate(() => window.__refreshCard());
+  await finalProgress.waitFor({ state: "hidden" });
+  await page
+    .getByRole("heading", { name: "Original artwork", exact: true })
     .waitFor();
   assert.deepEqual(errors, []);
   console.log(
