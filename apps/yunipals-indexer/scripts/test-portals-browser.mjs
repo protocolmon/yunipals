@@ -549,25 +549,16 @@ export async function verifyPortalBrowser(context) {
   const currentDisplay = page.locator(".booster-card-viewer img").first();
   await currentDisplay.waitFor();
   assert.equal(await currentDisplay.getAttribute("src"), metadata.image);
-  await page
-    .getByRole("link", {
-      name: "Grade this card through a portal",
-      exact: true
-    })
-    .click();
-  assert.equal(new URL(page.url()).searchParams.get("card"), "1");
-  await page
-    .getByRole("button", { name: "Choose a card", exact: true })
-    .click();
-  await page
-    .getByText("You arrived from card #1. Choose it below if it qualifies.", {
-      exact: true
-    })
-    .waitFor();
-  await page
-    .getByRole("button", { name: "Close card picker", exact: true })
-    .click();
-  await page.goto(`${origin}/monsters/${cards}/1`);
+  assert.equal(
+    await page
+      .getByRole("link", {
+        name: "Grade this card through a portal",
+        exact: true
+      })
+      .count(),
+    0,
+    "A completed grade stays final after ownership changes"
+  );
   await page
     .getByRole("link", { name: "Artwork and grading history", exact: true })
     .click();
@@ -612,6 +603,10 @@ export async function verifyPortalBrowser(context) {
   const nextActive = await chain.active();
   assert.equal(nextActive.open, true);
   assert.notEqual(nextActive.round.portalId, request.portalId);
+  const repeat = await app.request(`/v1/portals/quote?tokenId=1&owner=${bob}`);
+  assert.equal(repeat.status, 400);
+  assert.match((await repeat.json()).error, /only once/);
+
   const spare = [1n, 2n, 3n].find(
     (id) => id !== request.portalId && id !== nextActive.round.portalId
   );
