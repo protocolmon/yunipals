@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePublicClient } from "wagmi";
-import { Link } from "react-router-dom";
 import { isAddress } from "viem";
 import { Sparkles, Trophy } from "lucide-react";
 import { portalGradingAbi } from "@protopals/yunipals-market-core/portalAbi";
+import { CardLightbox } from "@/components/CardLightbox";
 import { environment } from "@/environment";
 import { fetchPortalCard, portalImage, portalPrice } from "@/lib/portals";
 import { shortAddress } from "@/lib/format";
@@ -29,6 +30,10 @@ export function PortalCompetitionLeader({
   settled: boolean;
   owner?: string;
 }) {
+  const [expandedArtwork, setExpandedArtwork] = useState<{
+    name: string;
+    image: string;
+  } | null>(null);
   const client = usePublicClient({ chainId: environment.portalChainId });
   const grading = environment.portalGrading;
   const artwork = useQuery({
@@ -151,21 +156,34 @@ export function PortalCompetitionLeader({
   return (
     <li
       className={cn(
-        "col-span-2 rounded-2xl border shadow-sm md:col-span-1",
+        "relative col-span-2 rounded-2xl border shadow-sm md:col-span-1",
         rank === 1
           ? "border-lavender bg-gradient-to-br from-lavender/20 via-white to-sky/10"
           : "border-line bg-white"
       )}
     >
-      {artwork.data ? (
-        <Link
-          to={`/grading/cards/${artwork.data.tokenId}`}
-          className="block h-full rounded-2xl p-4 transition-colors hover:bg-lavender/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
-        >
-          {content}
-        </Link>
-      ) : (
-        <div className="p-4">{content}</div>
+      <div className="p-4">{content}</div>
+      {artwork.data && (
+        <button
+          type="button"
+          aria-label={`View ${artwork.data.name} larger`}
+          aria-haspopup="dialog"
+          onClick={() => {
+            if (artwork.data)
+              setExpandedArtwork({
+                name: artwork.data.name,
+                image: portalImage(artwork.data.image)
+              });
+          }}
+          className="absolute inset-0 h-full w-full cursor-zoom-in rounded-2xl transition-colors hover:bg-lavender/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+        />
+      )}
+      {expandedArtwork && (
+        <CardLightbox
+          artwork={expandedArtwork}
+          label={expandedArtwork.name}
+          onClose={() => setExpandedArtwork(null)}
+        />
       )}
     </li>
   );
