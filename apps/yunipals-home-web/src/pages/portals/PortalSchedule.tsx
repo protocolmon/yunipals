@@ -185,19 +185,24 @@ export function PortalSchedule({
                             : `${count.toLocaleString()} matching ${count === 1 ? "card" : "cards"}`}
                     </p>
                   )}
-                  {status.revealedAdmissions && !portal.retired && (
-                    <Link
-                      to={`/grading?round=${item.id}#portal-cast`}
-                      aria-current={
-                        status.round.id === item.id ? "true" : undefined
-                      }
-                      className="mt-3 inline-flex rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
-                    >
-                      {status.round.id === item.id
-                        ? "Selected portal"
-                        : "Submit a monster"}
-                    </Link>
-                  )}
+                  {status.revealedAdmissions &&
+                    owner &&
+                    deployment.chainId === 8453 &&
+                    !portal.retired &&
+                    count !== undefined &&
+                    count > 0 && (
+                      <Link
+                        to={`/grading?round=${item.id}#portal-cast`}
+                        aria-current={
+                          status.round.id === item.id ? "true" : undefined
+                        }
+                        className="mt-3 inline-flex rounded-full bg-grape px-4 py-2 font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+                      >
+                        {status.round.id === item.id
+                          ? "Selected portal"
+                          : "Submit a monster"}
+                      </Link>
+                    )}
                   {portal.retired ? (
                     <p className="mt-2 font-semibold">
                       Redeemed · this window stays closed
