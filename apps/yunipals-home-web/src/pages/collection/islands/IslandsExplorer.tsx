@@ -3,12 +3,14 @@ import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAccount } from "wagmi";
+import { CollectionEditionNav } from "@/components/CollectionEditionNav";
 import { Select, SelectItem } from "@/components/ui/select";
 import { environment } from "@/environment";
 
 import { QueryError, TokenGridSkeleton } from "@/components/QueryState";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
+import { readSavedCollectionFilters } from "@/lib/collectionEdition";
 import { formatInteger, shortAddress } from "@/lib/format";
 import {
   defaultIslandOrigin,
@@ -25,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { IslandCard } from "./IslandCard";
+import { IslandCollectionInfo } from "./IslandCollectionInfo";
 
 const filterSelect =
   "w-full gap-2 sm:gap-3 rounded-full border border-line bg-white px-3 py-2.5 text-xs font-bold text-ink transition hover:border-ethereum/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum focus-visible:ring-offset-2 sm:w-auto sm:px-4 sm:text-sm";
@@ -145,14 +148,27 @@ export function IslandsExplorer() {
   return (
     <main className="min-h-[70vh]">
       <h1 className="sr-only">Yunipals Islands</h1>
-      <section className="px-4">
+      <section
+        id="collection"
+        className="scroll-mt-24 px-4 pb-12 pt-5 sm:pb-16 sm:pt-6"
+      >
         <div className="mx-auto max-w-6xl">
-          <div className="max-w-md">
-            <form onSubmit={submitLookup}>
+          <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <CollectionEditionNav
+              edition="islands"
+              href={(edition) =>
+                `/?${readSavedCollectionFilters(edition) ?? `edition=${edition}`}#collection`
+              }
+              className="mb-0 lg:shrink-0 lg:pt-1"
+            />
+            <form
+              onSubmit={submitLookup}
+              className="w-full min-w-0 lg:max-w-md"
+            >
               <label htmlFor="island-lookup" className="sr-only">
                 Island token ID or wallet address
               </label>
-              <div className="mt-2 flex rounded-full border border-ethereum/20 bg-white p-1.5 shadow-card">
+              <div className="flex rounded-full border border-ethereum/20 bg-white p-1.5 shadow-card">
                 <Search
                   aria-hidden="true"
                   className="ml-2 self-center text-muted"
@@ -191,75 +207,57 @@ export function IslandsExplorer() {
               )}
             </form>
           </div>
-          {stats.data && (
-            <details className="mt-3 text-sm text-muted">
-              <summary className="w-fit cursor-pointer rounded font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape">
-                Collection statistics
-              </summary>
-              <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-4">
-                {[
-                  ["NFTs", stats.data.activeSupply],
-                  ["Original · Ethereum", stats.data.originals ?? 0],
-                  ["Airdropped · Base", stats.data.airdropped ?? 0],
-                  ["Collectors", stats.data.holders],
-                  ["Genesis", stats.data.genesis],
-                  ["Personal", stats.data.personal]
-                ].map(([label, count]) => (
-                  <div key={label}>
-                    <dt className="text-xs font-bold text-muted">{label}</dt>
-                    <dd className="mt-1 text-xl font-extrabold text-ink">
-                      {formatInteger(count)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </details>
-          )}
-        </div>
-      </section>
-
-      <section
-        id="collection"
-        className="scroll-mt-24 px-4 pb-12 pt-4 sm:pb-16"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-            <div>
-              <h2 className="sr-only">
-                {filters.owner
-                  ? "Wallet islands"
-                  : filters.holding === "staked" &&
-                      environment.islandStakingEnabled
-                    ? "Staked islands"
-                    : filters.edition
-                      ? `${filters.edition} islands`
-                      : "All islands"}
-              </h2>
-              <p
-                className="mt-2 text-sm font-medium text-muted"
-                aria-live="polite"
-              >
-                {tokens.isLoading
-                  ? "Loading islands…"
+          <h2 className="sr-only">
+            {filters.owner
+              ? "Wallet islands"
+              : filters.holding === "staked" && environment.islandStakingEnabled
+                ? "Staked islands"
+                : filters.edition
+                  ? `${filters.edition} islands`
+                  : "All islands"}
+          </h2>
+          <div className="flex items-start justify-between gap-4">
+            <p className="pt-3 text-xs text-muted" aria-live="polite">
+              {tokens.isLoading
+                ? "Loading islands…"
+                : tokens.isError && !tokens.data
+                  ? "Islands temporarily unavailable"
                   : `${formatInteger(items.length)} islands loaded`}
-              </p>
+            </p>
+            <div className="flex min-w-0 items-start gap-2">
+              <div className="pt-3">
+                {stats.data && (
+                  <details className="ml-auto text-xs text-muted">
+                    <summary className="w-fit cursor-pointer rounded font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape">
+                      Collection statistics
+                    </summary>
+                    <dl className="mt-3 flex max-w-xl flex-wrap gap-x-8 gap-y-4">
+                      {[
+                        ["NFTs", stats.data.activeSupply],
+                        ["Original · Ethereum", stats.data.originals ?? 0],
+                        ["Airdropped · Base", stats.data.airdropped ?? 0],
+                        ["Collectors", stats.data.holders],
+                        ["Genesis", stats.data.genesis],
+                        ["Personal", stats.data.personal]
+                      ].map(([label, count]) => (
+                        <div key={label}>
+                          <dt className="text-xs font-bold text-muted">
+                            {label}
+                          </dt>
+                          <dd className="mt-1 text-xl font-extrabold text-ink">
+                            {formatInteger(count)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                )}
+              </div>
+              <IslandCollectionInfo />
             </div>
           </div>
-
-          <div className="mt-6 rounded-card border border-line bg-mint/15 p-4 text-sm leading-relaxed text-ink/70">
-            Ethereum islands are the original collection. Base islands were
-            airdropped from an Ethereum ownership snapshot, including eligible
-            staked islands. Each original and its Base copy are separate NFTs
-            and can belong to different wallets. Transferring one does not
-            transfer the other.
-            <p className="mt-2">
-              The revealed Base collection replaces the first Base airdrop.
-              Replacement islands went to Base owners at snapshot block
-              52,587,044. The old Base collection is retired from this browser.
-            </p>
-          </div>
           <div
-            className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3"
+            className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3"
             role="group"
             aria-label="Island filters"
           >
@@ -399,7 +397,7 @@ export function IslandsExplorer() {
               </p>
             )}
 
-          <div className="mt-7">
+          <div className="mt-5">
             {filterError ? (
               <div>
                 <QueryError message={filterError} />

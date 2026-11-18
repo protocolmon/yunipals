@@ -1419,16 +1419,18 @@ export function CollectionPage() {
   if (islandsSelected) {
     return (
       <>
-        <CollectionTabs />
         {tokenId ? (
-          <IslandDetail
-            tokenId={tokenId}
-            collectionId={
-              chain === "base-islands-v2"
-                ? "base-islands-v2"
-                : "ethereum-islands"
-            }
-          />
+          <>
+            <CollectionTabs />
+            <IslandDetail
+              tokenId={tokenId}
+              collectionId={
+                chain === "base-islands-v2"
+                  ? "base-islands-v2"
+                  : "ethereum-islands"
+              }
+            />
+          </>
         ) : (
           <IslandsExplorer />
         )}
