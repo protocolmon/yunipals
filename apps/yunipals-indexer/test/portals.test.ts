@@ -453,6 +453,7 @@ describe("portal worker checkpoint recovery", () => {
             ])
           )
         ),
+        cardName: "Prismatic Dreamweaver",
         reason: "Strong transformation",
         usage: {},
         model: portalModels.grading
@@ -585,6 +586,55 @@ describe("portal worker checkpoint recovery", () => {
     for (const stage of [ai.embed, ai.edit, ai.originality, ai.grade, submit])
       expect(stage).toHaveBeenCalledTimes(1);
     await store.migrate();
+    expect(await store.claim()).toBeNull();
+  }, 20000);
+  it("names an existing result once, retries publication without renaming and preserves immutable records", async () => {
+    const { worker, ai, submit } = await setup();
+    await worker.process((await store.claim())!);
+    await db.exec(`UPDATE portal_v1_publication SET result=jsonb_set(result,'{slab}',(result->'slab')-'cardName'-'namedArtwork');
+      UPDATE portal_v1_job SET progress=jsonb_set(progress,'{grading}',(progress->'grading')-'cardName')`);
+    const before = (
+      await db.query(
+        "SELECT publication_block,publication_timestamp,published_at,result->'result' AS canonical,artifact_hashes FROM portal_v1_publication"
+      )
+    ).rows[0];
+    const name = vi.fn(async () => ({
+      cardName: "Starlight Dreamweaver",
+      usage: {},
+      model: portalModels.grading
+    }));
+    Object.assign(ai, { name });
+    await store.queueUnnamedPublications();
+    const first = (await store.claim())!;
+    const publish = vi
+      .spyOn(store, "publish")
+      .mockRejectedValueOnce(new Error("Publication interrupted"));
+    await expect(worker.process(first)).rejects.toThrow(
+      "Publication interrupted"
+    );
+    await store.retry(first, "retry");
+    await db.exec("UPDATE portal_v1_job SET retry_at=now()");
+    await worker.process((await store.claim())!);
+    publish.mockRestore();
+    const after = (
+      await db.query(
+        "SELECT publication_block,publication_timestamp,published_at,result->'result' AS canonical,artifact_hashes FROM portal_v1_publication"
+      )
+    ).rows[0];
+    expect({ ...after, artifact_hashes: before.artifact_hashes }).toEqual(
+      before
+    );
+    expect(after.artifact_hashes).toEqual(
+      expect.arrayContaining(before.artifact_hashes as string[])
+    );
+    expect((await store.publicHistory("1"))[0].result).toHaveProperty(
+      "slab.cardName",
+      "Starlight Dreamweaver"
+    );
+    expect(name).toHaveBeenCalledTimes(1);
+    for (const stage of [ai.edit, ai.grade, submit])
+      expect(stage).toHaveBeenCalledTimes(1);
+    await store.queueUnnamedPublications();
     expect(await store.claim()).toBeNull();
   }, 20000);
   it("keeps a mined result private until the configured confirmations survive a restart", async () => {

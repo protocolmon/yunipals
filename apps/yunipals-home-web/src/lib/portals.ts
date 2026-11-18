@@ -263,7 +263,9 @@ const history = z.object({
               version: uint,
               renderer: z.string(),
               manifest: asset,
-              rawArtworkHash: hash
+              rawArtworkHash: hash,
+              cardName: z.string().min(3).max(32).optional(),
+              namedArtwork: asset.optional()
             })
             .optional(),
           gradingReason: z.string().nullable().optional(),

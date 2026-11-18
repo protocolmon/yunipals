@@ -30,12 +30,14 @@ export interface PortalCandidate {
 }
 export interface PortalWorkerProgress {
   displayOnly?: boolean;
+  naming?: { cardName: string; usage: unknown; model: string };
   portalContext?: PortalAIContext;
   embedding?: number[];
   candidates?: PortalCandidate[];
   image?: { hash: string; uri: string; usage: unknown; model: string };
   originality?: PortalOriginality;
   grading?: {
+    cardName?: string;
     scores: PortalScores;
     reason: string;
     usage: unknown;
@@ -123,6 +125,17 @@ export class PortalStore {
       WHERE j.deployment=$1 AND j.completed AND EXISTS (
         SELECT 1 FROM portal_v1_publication p WHERE p.deployment=j.deployment
         AND p.request_id=j.request_id AND p.result->'slab' IS NULL)`,
+      [this.deployment]
+    );
+  }
+
+  async queueUnnamedPublications() {
+    await this.db.query(
+      `UPDATE portal_v1_job j SET completed=false,retry_at=now(),
+      progress=progress || '{"displayOnly":true}'::jsonb
+      WHERE j.deployment=$1 AND j.completed AND EXISTS (
+        SELECT 1 FROM portal_v1_publication p WHERE p.deployment=j.deployment
+        AND p.request_id=j.request_id AND p.result->'slab'->>'cardName' IS NULL)`,
       [this.deployment]
     );
   }
@@ -308,9 +321,11 @@ export class PortalStore {
       ON CONFLICT(deployment,request_id) DO UPDATE SET
         result=portal_v1_publication.result || jsonb_build_object('slab',excluded.result->'slab'),
         artifact_hashes=ARRAY(SELECT DISTINCT unnest(portal_v1_publication.artifact_hashes || excluded.artifact_hashes))
-      WHERE portal_v1_publication.result->'slab' IS NULL
+      WHERE (portal_v1_publication.result->'slab' IS NULL OR (portal_v1_publication.result->'slab'->>'cardName' IS NULL AND excluded.result->'slab'->>'cardName' IS NOT NULL))
         AND portal_v1_publication.result->'result'->>'requestBinding'=excluded.result->'result'->>'requestBinding'
         AND portal_v1_publication.result->'result'->'artwork'=excluded.result->'result'->'artwork'
+        AND portal_v1_publication.result->'result'->>'reportHash'=excluded.result->'result'->>'reportHash'
+        AND portal_v1_publication.result->'result'->'scores'=excluded.result->'result'->'scores'
       RETURNING request_id
     ) SELECT request_id FROM owned`,
       [

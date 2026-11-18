@@ -15,9 +15,16 @@ import {
 import { applyPortalGradingCase } from "./grading.js";
 import { assertSafePortalTheme } from "./theme-validation.js";
 
+import {
+  portalCardNameSchema,
+  portalCardNameJsonSchema,
+  portalNamingInstructions
+} from "./naming.js";
+
 const score = z.number().int().min(1).max(100);
 const gradingSchema = z
   .object({
+    cardName: portalCardNameSchema,
     creativity: score,
     harmony: score,
     craft: score,
@@ -48,8 +55,9 @@ const originalitySchema = z
 const gradingJsonSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["creativity", "harmony", "craft", "impact", "reason"],
+  required: ["cardName", "creativity", "harmony", "craft", "impact", "reason"],
   properties: {
+    cardName: portalCardNameJsonSchema,
     creativity: { type: "integer", minimum: 1, maximum: 100 },
     harmony: { type: "integer", minimum: 1, maximum: 100 },
     craft: { type: "integer", minimum: 1, maximum: 100 },
@@ -100,12 +108,17 @@ export interface PortalAI {
     candidates: PortalCandidate[],
     context?: PortalAIContext
   ): Promise<PortalOriginality>;
+  name?(
+    spell: string,
+    artwork: Uint8Array
+  ): Promise<{ cardName: string; usage: unknown; model: string }>;
   grade(
     spell: string,
     before: Uint8Array,
     after: Uint8Array,
     context?: PortalAIContext
   ): Promise<{
+    cardName?: string;
     scores: PortalScores;
     reason: string;
     usage: unknown;
@@ -393,6 +406,45 @@ export class OpenAIPortalAI implements PortalAI {
     return { ...theme, model: result.model, usage: result.usage };
   }
 
+  async name(spell: string, artwork: Uint8Array) {
+    const result = await this.structured(
+      this.policy.grading,
+      portalNamingInstructions,
+      [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: JSON.stringify({
+                spell,
+                images:
+                  "This is the completed AFTER artwork. Return its name only; do not regrade it."
+              })
+            },
+            {
+              type: "input_image",
+              image_url: `data:image/png;base64,${Buffer.from(artwork).toString("base64")}`,
+              detail: "auto"
+            }
+          ]
+        }
+      ],
+      {
+        type: "object",
+        additionalProperties: false,
+        required: ["cardName"],
+        properties: { cardName: portalCardNameJsonSchema }
+      },
+      "portal_card_name"
+    );
+    const { cardName } = z
+      .object({ cardName: portalCardNameSchema })
+      .strict()
+      .parse(result.value);
+    return { cardName, usage: result.usage, model: result.model };
+  }
+
   async grade(
     spell: string,
     before: Uint8Array,
@@ -450,7 +502,7 @@ export class OpenAIPortalAI implements PortalAI {
     });
     const result = await this.structured(
       this.policy.grading,
-      portalGradingInstructions(this.policy, context),
+      `${portalGradingInstructions(this.policy, context)}\n\n${portalNamingInstructions}`,
       [
         {
           role: "user",
@@ -471,8 +523,14 @@ export class OpenAIPortalAI implements PortalAI {
       "portal_grades"
     );
     if (!profile) {
-      const { reason, ...scores } = gradingSchema.parse(result.value);
-      return { scores, reason, usage: result.usage, model: result.model };
+      const { cardName, reason, ...scores } = gradingSchema.parse(result.value);
+      return {
+        cardName,
+        scores,
+        reason,
+        usage: result.usage,
+        model: result.model
+      };
     }
     const text = z.string().min(1).max(4000);
     const parsed = gradingSchema
@@ -498,6 +556,7 @@ export class OpenAIPortalAI implements PortalAI {
       .strict()
       .parse(result.value);
     const {
+      cardName,
       caseId: _caseId,
       categoryReasons,
       checks,
@@ -511,6 +570,7 @@ export class OpenAIPortalAI implements PortalAI {
       checks
     );
     return {
+      cardName,
       scores,
       reason,
       usage: result.usage,

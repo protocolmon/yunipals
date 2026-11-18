@@ -87,8 +87,8 @@ export function PortalCardHistory() {
                           : "From your card’s history"}
                       </p>
                       <h2 className="mt-3 font-display text-2xl">
-                        Artwork version{" "}
-                        {(BigInt(attempt.request.artVersion) + 1n).toString()}
+                        {publication?.result.slab?.cardName ??
+                          `Artwork version ${BigInt(attempt.request.artVersion) + 1n}`}
                       </h2>
                       <p className="mt-2 text-sm text-muted">
                         Portal #{attempt.request.portalId} · Round{" "}

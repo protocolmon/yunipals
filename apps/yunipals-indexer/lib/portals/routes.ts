@@ -467,7 +467,7 @@ export function registerPortalRoutes(
         503
       );
     return json({
-      name: `${portalTypeNames[traits.monsterType - 1] ?? "Yunipal"} #${token}`,
+      name: `${display?.result.slab.cardName ?? portalTypeNames[traits.monsterType - 1] ?? "Yunipal"} #${token}`,
       description:
         "A Yunipals TCG card with onchain traits and artwork history.",
       image: display?.result.slab.uri ?? artwork.uri,
