@@ -111,7 +111,11 @@ export function PortalPage() {
   }
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <PortalHero />
+      {status?.competition || environment.portalGrading ? (
+        <PortalCompetitions />
+      ) : (
+        <PortalHero />
+      )}
       <div className="mb-6 flex flex-wrap items-center gap-5 text-sm font-semibold">
         <Link className="underline" to="/grading/mine">
           My portals · balances &amp; claims
@@ -529,9 +533,6 @@ export function PortalPage() {
         />
       )}
       <PortalStory />
-      {(status?.competition || environment.portalGrading) && (
-        <PortalCompetitions />
-      )}
       <DialogSurface
         ref={dialog}
         aria-labelledby="portal-review-title"
