@@ -39,7 +39,7 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
     <DialogSurface
       ref={dialog}
       aria-labelledby={titleId}
-      size="md"
+      size="lg"
       onCancel={(event) => {
         event.preventDefault();
         actions.dismiss();
@@ -55,20 +55,35 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
       {review ? (
         <>
           <div className="my-5 rounded-2xl bg-lavender/25 p-4">
-            <div className="mb-4 flex gap-2" aria-hidden="true">
-              {review.calls.slice(0, 4).map(({ original }) => (
-                <BoosterOriginalThumbnail
-                  key={original.id}
-                  original={original}
-                />
-              ))}
-            </div>
             <p className="text-lg font-bold">
               {quantity} saved {quantity === 1 ? "card" : "cards"}
             </p>
             <p className="mt-1 text-sm text-muted">
               From {review.calls.length}{" "}
               {review.calls.length === 1 ? "Yunipal" : "Yunipals"}
+            </p>
+            <ul
+              aria-label="Yunipals contributing saved cards"
+              className="mt-4 grid max-h-72 grid-cols-3 gap-x-3 gap-y-4 overflow-y-auto p-1 sm:max-h-96 sm:grid-cols-5"
+            >
+              {review.calls.map(({ original, quantity: saved }) => (
+                <li key={original.id} className="min-w-0 text-center">
+                  <BoosterOriginalThumbnail
+                    original={original}
+                    variant="preview"
+                  />
+                  <p className="mt-2 truncate text-xs font-bold">
+                    #{original.tokenId}
+                  </p>
+                  <p className="text-xs text-muted">
+                    {saved} saved {saved === 1 ? "card" : "cards"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted">
+              Tap your Yunipals to enlarge. Your new cards will be revealed
+              after opening.
             </p>
           </div>
           <p className="text-sm font-bold text-grape">
