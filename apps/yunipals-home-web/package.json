@@ -47,7 +47,8 @@
     "test:portals:picker": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/portalCardPicker.test.ts",
     "test:portals:picker:ui": "node scripts/test-portal-picker-ui.mjs",
     "test:boosters:daily-all": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/boosterDailyClaims.test.ts src/lib/boosterReveal.test.ts",
-    "test:boosters:daily-all-ui": "node scripts/test-daily-open-all-ui.mjs"
+    "test:boosters:daily-all-ui": "node scripts/test-daily-open-all-ui.mjs",
+    "test:artwork:ui": "node scripts/test-card-artwork-ui.mjs"
   },
   "dependencies": {
     "@protopals/yunipals-market-core": "workspace:*",

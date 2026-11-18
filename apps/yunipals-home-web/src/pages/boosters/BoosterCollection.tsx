@@ -12,6 +12,7 @@ import {
 import { useBoosterArtwork, type ArtworkCard } from "@/hooks/useBoosterArtwork";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
 import { BoosterCardThumbnail } from "@/components/BoosterCardThumbnail";
+import { CardArtworkLoader } from "@/components/CardArtworkLoader";
 import { CardLightbox } from "@/components/CardLightbox";
 
 export function BoosterArtwork({
@@ -31,22 +32,34 @@ export function BoosterArtwork({
 }) {
   const [expanded, setExpanded] = useState(false);
   const query = useBoosterArtwork(uri, card);
+  const fallbackNotice = query.isOriginalFallback ? (
+    <span className="absolute inset-x-1 bottom-1 rounded-lg bg-white/95 px-2 py-1 text-center text-[10px] font-semibold text-muted">
+      Original artwork
+    </span>
+  ) : null;
+  if (query.isPending) return <CardArtworkLoader label={label} />;
   if (query.data?.image && display === "thumbnail")
     return (
-      <BoosterCardThumbnail
-        image={query.data.image}
-        alt={label}
-        eager={eager}
-      />
+      <div className="relative h-full w-full">
+        <BoosterCardThumbnail
+          image={query.data.image}
+          alt={label}
+          eager={eager}
+        />
+        {fallbackNotice}
+      </div>
     );
   if (query.data?.image)
     return (
       <>
-        <BoosterCardViewer
-          artwork={query.data}
-          interactive={interactive}
-          onExpand={interactive ? () => setExpanded(true) : undefined}
-        />
+        <div className="relative">
+          <BoosterCardViewer
+            artwork={query.data}
+            interactive={interactive}
+            onExpand={interactive ? () => setExpanded(true) : undefined}
+          />
+          {fallbackNotice}
+        </div>
         {expanded && (
           <CardLightbox
             artwork={query.data}
