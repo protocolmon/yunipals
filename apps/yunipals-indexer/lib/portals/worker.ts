@@ -1,3 +1,4 @@
+import { portalCardNameSchema } from "./naming.js";
 import type { PortalJobSource } from "./indexed-jobs.js";
 import { publishPortalSlab } from "./slab.js";
 import { keccak256, toHex, TransactionNotFoundError, type Hex } from "viem";
@@ -293,6 +294,7 @@ export class PortalWorker {
         copyCap: rubric.copyCap,
         originality,
         evidenceHash: evidence.hash,
+        cardName: job.progress.grading.cardName ?? null,
         reason: job.progress.grading.reason,
         models: {
           policy: this.policy,
@@ -391,6 +393,18 @@ export class PortalWorker {
         (job.progress.completion.artwork as { hash: string }).hash
     )
       throw new Error("Finalized result differs from the cached artwork.");
+    let cardName =
+      job.progress.grading?.cardName ?? job.progress.naming?.cardName;
+    if (!cardName && this.ai.name) {
+      await this.store.heartbeat(job);
+      job.progress.naming = await this.ai.name(
+        spell,
+        await this.assets.input(result.artwork.uri, result.artwork.hash)
+      );
+      await this.store.save(job);
+      cardName = job.progress.naming.cardName;
+    }
+    if (cardName) portalCardNameSchema.parse(cardName);
     const slab = await publishPortalSlab(this.assets, {
       chainId: this.chain.deployment.chainId,
       grading: this.chain.deployment.grading,
@@ -399,12 +413,15 @@ export class PortalWorker {
       kindId: request.kindId.toString(),
       version: (request.artVersion + 1n).toString(),
       spell,
+      cardName,
+      naming: job.progress.naming,
       result
     });
     const completion = job.progress.completion;
     const artifacts = [
       slab.hash,
       slab.manifest.hash,
+      ...(slab.namedArtwork ? [slab.namedArtwork.hash] : []),
       result.artwork.hash,
       result.reportHash,
       ...(completion

@@ -749,13 +749,17 @@ try {
           version: "1",
           renderer: "fixture",
           manifest: progressCard.originalArtwork,
-          rawArtworkHash: hash
+          rawArtworkHash: hash,
+          cardName: "Prismatic Dreamweaver"
         },
         gradingReason: "A colorful transformation."
       }
     }
   ];
   await page.evaluate(() => window.__refreshCard());
+  await page
+    .getByRole("heading", { name: "Prismatic Dreamweaver", exact: true })
+    .waitFor();
   await page.getByText("Latest transformation", { exact: true }).waitFor();
   await page.getByText("81.0", { exact: true }).waitFor();
   assert.equal(await original.isVisible(), false);

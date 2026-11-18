@@ -1,3 +1,4 @@
+import { portalCardNameSchema } from "./naming.js";
 import { z } from "zod";
 import type { PortalRuntime } from "./runtime.js";
 import type { PortalLedgerCursor } from "./ledger-store.js";
@@ -6,6 +7,8 @@ import type { PortalChain } from "./chain.js";
 const hash = z.string().regex(/^0x[0-9a-f]{64}$/);
 const asset = z.object({ hash, uri: z.string().url() });
 export const publishedSlabSchema = asset.extend({
+  cardName: portalCardNameSchema.optional(),
+  namedArtwork: asset.optional(),
   manifest: asset,
   renderer: z.string(),
   rawArtworkHash: hash,

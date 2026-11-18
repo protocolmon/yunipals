@@ -176,3 +176,24 @@ export function renderPortalSlab(input: PortalSlabInput): string {
   <g font-family="Trebuchet MS,Arial,sans-serif" font-size="9" font-weight="800" letter-spacing="2" fill="#5f5875"><text x="78" y="1310">YUNIPALS GRADED</text><text x="642" y="1310" text-anchor="end">${xml(portalName.toUpperCase().slice(0, 22))}</text></g>
   </svg>`;
 }
+
+/** Names are short printable labels, never spell instructions or markup. */
+export const portalCardNamePattern =
+  /^[A-Za-z]+(?:['-][A-Za-z]+)*(?: [A-Za-z]+(?:['-][A-Za-z]+)*){1,3}$/;
+
+/** Deterministic display derivative; the source artwork and its hash stay intact. */
+export function renderNamedPortalArtwork(imageURI: string, cardName: string) {
+  if (cardName.length > 32 || !portalCardNamePattern.test(cardName))
+    throw new Error("Invalid portal card name.");
+  const fontSize = Math.min(66, Math.floor(820 / (cardName.length * 0.78)));
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536">
+    <defs>
+      <linearGradient id="name-paper" x2="0" y2="1"><stop stop-color="#ffffff"/><stop offset=".5" stop-color="#f7edff"/><stop offset="1" stop-color="#ddd0fa"/></linearGradient>
+      <linearGradient id="name-foil"><stop stop-color="#ae79ed"/><stop offset=".3" stop-color="#9ff3ef"/><stop offset=".65" stop-color="#fff3bc"/><stop offset="1" stop-color="#dc9bed"/></linearGradient>
+    </defs>
+    <image href="${xml(rasterURI(imageURI))}" width="1024" height="1536" preserveAspectRatio="xMidYMid meet"/>
+    <rect x="67" y="1320" width="890" height="142" rx="68" fill="url(#name-foil)" stroke="#7525af" stroke-width="5"/>
+    <rect x="76" y="1329" width="872" height="124" rx="60" fill="url(#name-paper)" stroke="#fff" stroke-width="3"/>
+    <text x="512" y="${1391 + fontSize * 0.35}" text-anchor="middle" font-family="DejaVu Sans" font-weight="700" font-size="${fontSize}" fill="#7222ad">${xml(cardName.toUpperCase())}</text>
+  </svg>`;
+}

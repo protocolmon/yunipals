@@ -218,7 +218,6 @@ For a ready public-network fixture, verify its current state against private rec
 
 For an optional future CRE rehearsal, CLI authentication and deployment access are separate from the server and test wallets. The existing server can publish the workflow, while Chainlink's DON executes it. Verify the tenant-specific real forwarder and workflow owner/name before receiver deployment. Hold the final grade until publication when testing event delivery; use cron recovery for a batch completed before publication. Independently prove real-forwarder delivery and exact balances. Local simulation or a direct pool call is not evidence of live DON execution.
 
-
 ### Submitting to revealed portals
 
 `PortalRegistry.admissionRound(roundId)` allows the current and every revealed future round to accept eligible monsters immediately, until that round's existing `endsAt` (exclusive). It does not change the rotation, randomness, refill capacity, original schedule, or burn behavior. Admission binds both the round and portal IDs, so repeated appearances of one portal remain distinct. Unrevealed, expired, and redeemed rounds cannot accept payment.
@@ -226,3 +225,11 @@ For an optional future CRE rehearsal, CLI authentication and deployment access a
 The API accepts an optional `roundId` on portal status and quote reads and on spell uploads. The same round must be used for quote refreshes and the intake receipt. Existing clients without a round selection continue using the current round. Readiness still requires the chosen round, payment policy, and challenge to be indexed. Competition timing and eligibility rules are unchanged.
 
 Deploy the compatible API first. Upgrade the registry before the grading implementation: the new grading contract requires `admissionRound`. The website exposes early entry only when the grading contract reports `revealedPortalAdmissions`. Both upgrades preserve storage and require the authorized administrator's wallet. Validate exact implementation bytecode, storage layout, preserved state, and submissions on a fork before signing. Operator-specific signing packages and receipts belong in private operator records.
+
+## Generated card names
+
+Visual grading returns a short `cardName` in the same structured response as the scores. The worker saves that name with the grading result and includes it in new grading reports. The published slab, artwork nameplate, card page and NFT metadata use the same name. Names are validated before rendering; spell instructions remain in the history details.
+
+The nameplate is a deterministic display derivative, bound to the original artwork hash in the slab manifest. Original images, onchain result hashes, scores and reports remain immutable. Both the named artwork and slab are content-addressed artifacts with the existing canonical-publication access checks.
+
+To name previously published cards, deploy the compatible API and worker, then run the worker with `--queue-names` using its existing authorized environment. This only queues completed publications without a name; the normal worker performs a name-only AI call using the configured grading model and publishes new display artifacts. It never edits or regrades the original result. Saved names survive publication retries. The update retains publication timestamps and earlier public artifact hashes, and cannot overwrite an already named publication. Queue only policies supported by the deployed workers; ordinary API migrations do not initiate naming work.

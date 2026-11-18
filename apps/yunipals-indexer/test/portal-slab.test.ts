@@ -38,6 +38,7 @@ describe("confirmed graded slab artifacts", () => {
       tokenId: "81",
       kindId: "1",
       version: "2",
+      cardName: "Prismatic Dreamweaver",
       spell:
         "Create a crown of stained-glass stars <script>not markup</script>",
       result
@@ -45,6 +46,8 @@ describe("confirmed graded slab artifacts", () => {
     const first = await publishPortalSlab(assets, input);
     const again = await publishPortalSlab(assets, input);
     expect(again).toEqual(first);
+    expect(first.cardName).toBe(input.cardName);
+    expect(first.namedArtwork?.hash).not.toBe(artwork.hash);
     expect(first.hash).not.toBe(artwork.hash);
     expect(first.rawArtworkHash).toBe(artwork.hash);
     expect(first.renderer).toBe(portalSlabRenderer);
@@ -60,6 +63,8 @@ describe("confirmed graded slab artifacts", () => {
       requestId: "3",
       kindId: "1",
       version: "2",
+      cardName: input.cardName,
+      namedArtwork: first.namedArtwork,
       rawArtworkHash: artwork.hash,
       scores: { creativity: 91, harmony: 87, craft: 90, impact: 95 }
     });

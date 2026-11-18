@@ -92,6 +92,11 @@ async function main() {
       console.log("Portal database tables are ready.");
       return;
     }
+    if (process.argv.includes("--queue-names")) {
+      await runtime.store.queueUnnamedPublications();
+      console.log("Completed cards without names queued for display updates.");
+      return;
+    }
     const key = process.env.OPENAI_API_KEY;
     if (!key)
       throw new Error(
