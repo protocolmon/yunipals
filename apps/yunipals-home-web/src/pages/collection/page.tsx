@@ -107,6 +107,7 @@ import {
 } from "@/lib/yunipalsIndexer";
 
 import { boosterAddresses } from "@/lib/boosters";
+import { CollectionMarketScopeDialog } from "@/components/CollectionMarketScopeDialog";
 import { CollectionEmptyState } from "@/components/CollectionEmptyState";
 import { CollectionEditionNav } from "@/components/CollectionEditionNav";
 import { parseTcgCollectionFilters } from "@/lib/tcgCollectionFilters";
@@ -116,6 +117,7 @@ import { CollectionPackPagination } from "@/components/CollectionPackPagination"
 import { useBoosterCollectionCards } from "@/hooks/useBoosterCollectionCards";
 import {
   collectionDefinitions,
+  collectionEditionChains,
   collectionEdition,
   collectionMigrationNotice,
   collectorHref,
@@ -526,6 +528,10 @@ function CollectionExplorer() {
   );
   const edition = collectionEdition(collectionQuery);
   const definition = collectionDefinitions[edition];
+  const editionChains = collectionEditionChains(edition);
+  const [marketScopeSort, setMarketScopeSort] = useState<CollectionSort | null>(
+    null
+  );
   const isTcg = edition === "tcg";
   const [migrationNotice] = useState(() =>
     collectionMigrationNotice(searchParams)
@@ -558,8 +564,8 @@ function CollectionExplorer() {
         )?.symbol
       : undefined;
   const scopedChains =
-    filters.chains.length === definition.chains.length &&
-    definition.chains.every((chain) => filters.chains.includes(chain));
+    filters.chains.length === editionChains.length &&
+    editionChains.every((chain) => filters.chains.includes(chain));
   const activeFilterCount = countCollectionFilters({
     ...filters,
     chains: scopedChains ? [] : filters.chains
@@ -847,7 +853,7 @@ function CollectionExplorer() {
           )}
           <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <CollectionEditionNav
-              edition={withSolana ? undefined : edition}
+              edition={edition}
               href={editionHref}
               className="mb-0 lg:shrink-0 lg:pt-1"
             />
@@ -899,14 +905,6 @@ function CollectionExplorer() {
               )}
             </form>
           </div>
-          {environment.exomonEnabled && (
-            <Link
-              to="/?chain=solana#collection"
-              className="mb-4 inline-flex text-xs font-semibold text-muted underline"
-            >
-              Browse Exomon on Solana
-            </Link>
-          )}
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <h2 ref={heading} tabIndex={-1} className="sr-only">
@@ -963,6 +961,10 @@ function CollectionExplorer() {
                     value={filters.sort}
                     onValueChange={(value) => {
                       const sort = value as CollectionSort;
+                      if (withSolana && isPriceSort(sort)) {
+                        setMarketScopeSort(sort);
+                        return;
+                      }
                       setFilters({
                         ...filters,
                         sort,
@@ -982,7 +984,8 @@ function CollectionExplorer() {
                         value={option.value}
                         disabled={
                           isPriceSort(option.value) &&
-                          (!catalog.configured || !selectedChain || withSolana)
+                          (!catalog.configured ||
+                            (!withSolana && !selectedChain))
                         }
                       >
                         {environment.exomonEnabled &&
@@ -997,6 +1000,12 @@ function CollectionExplorer() {
             </div>
           </div>
 
+          {filters.marketReturnChains && marketFiltered && (
+            <p role="status" className="mt-4 text-sm text-muted">
+              Solana excluded because its prices and listings are unavailable.
+              Clear sale and price filters to restore your previous chains.
+            </p>
+          )}
           {activeFilterCount > 0 && (
             <div
               className="mt-5 flex flex-wrap gap-2"
@@ -1118,12 +1127,8 @@ function CollectionExplorer() {
           <div className="mt-4 grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
             <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain rounded-card shadow-card lg:block">
               <CollectionFilterPanel
-                edition={withSolana ? undefined : edition}
-                marketEnabled={
-                  !isTcg &&
-                  !withSolana &&
-                  (catalog.configured || marketFiltered)
-                }
+                edition={edition}
+                marketEnabled={!isTcg && (catalog.configured || marketFiltered)}
                 filters={filters}
                 facets={visibleFacets}
                 facetsLoading={!isTcg && facetsQuery.isLoading}
@@ -1251,37 +1256,43 @@ function CollectionExplorer() {
                             token={token}
                             eager={index < 6}
                             market={
-                              catalog.configured &&
-                              !withSolana &&
-                              token.chain !== "solana" && (
-                                <CatalogCardMarket
-                                  market={
-                                    useLegacy
-                                      ? { status: "unknown", listings: [] }
-                                      : (marketByAsset.get(
-                                          marketplaceAssetKey(token)
-                                        ) ?? {
-                                          status: "unknown",
-                                          listings: []
+                              token.chain === "solana" ? (
+                                <p className="text-xs font-semibold text-muted">
+                                  Price unavailable
+                                </p>
+                              ) : (
+                                catalog.configured &&
+                                !withSolana && (
+                                  <CatalogCardMarket
+                                    market={
+                                      useLegacy
+                                        ? { status: "unknown", listings: [] }
+                                        : (marketByAsset.get(
+                                            marketplaceAssetKey(token)
+                                          ) ?? {
+                                            status: "unknown",
+                                            listings: []
+                                          })
+                                    }
+                                    account={address}
+                                    canBuy={
+                                      Boolean(
+                                        capabilities.data?.[token.chain]
+                                          ?.read &&
+                                          capabilities.data?.[token.chain]?.buy
+                                      ) && !capabilities.isError
+                                    }
+                                    onBuy={(order, trigger) =>
+                                      requestTradingConsent(() =>
+                                        setSelectedTrade({
+                                          order,
+                                          trigger,
+                                          name: token.name || "Yunipal"
                                         })
-                                  }
-                                  account={address}
-                                  canBuy={
-                                    Boolean(
-                                      capabilities.data?.[token.chain]?.read &&
-                                        capabilities.data?.[token.chain]?.buy
-                                    ) && !capabilities.isError
-                                  }
-                                  onBuy={(order, trigger) =>
-                                    requestTradingConsent(() =>
-                                      setSelectedTrade({
-                                        order,
-                                        trigger,
-                                        name: token.name || "Yunipal"
-                                      })
-                                    )
-                                  }
-                                />
+                                      )
+                                    }
+                                  />
+                                )
                               )
                             }
                           />
@@ -1351,6 +1362,14 @@ function CollectionExplorer() {
         </div>
       </section>
 
+      {marketScopeSort && (
+        <CollectionMarketScopeDialog
+          filters={filters}
+          initialSort={marketScopeSort}
+          onApply={setFilters}
+          onClose={() => setMarketScopeSort(null)}
+        />
+      )}
       {selectedTrade && (
         <TradeReviewDialog
           order={selectedTrade.order}
@@ -1361,10 +1380,8 @@ function CollectionExplorer() {
         />
       )}
       <MobileFilterDrawer
-        edition={withSolana ? undefined : edition}
-        marketEnabled={
-          !isTcg && !withSolana && (catalog.configured || marketFiltered)
-        }
+        edition={edition}
+        marketEnabled={!isTcg && (catalog.configured || marketFiltered)}
         open={mobileFiltersOpen}
         filters={filters}
         facets={visibleFacets}

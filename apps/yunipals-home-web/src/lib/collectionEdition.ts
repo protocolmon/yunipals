@@ -1,6 +1,8 @@
 import type { IndexedChain } from "@protopals/yunipals-market-core/collectionTypes";
 
 import { marketplaceChains } from "@/lib/marketplace/registry";
+import { environment } from "@/environment";
+import type { CollectionChain } from "@/lib/collectionBrowserFilters";
 
 export type CollectionEdition = "og" | "airdrop" | "tcg";
 export const collectionEditions = ["og", "airdrop", "tcg"] as const;
@@ -27,6 +29,18 @@ export const collectionDefinitions = {
 
 export const collectionFilterStorageKey = "yunipals.collection.filters.v3";
 
+/** Public browsing includes Exomon; EVM wallet views retain their own chains. */
+export function collectionEditionChains(
+  edition: CollectionEdition
+): CollectionChain[] {
+  return [
+    ...collectionDefinitions[edition].chains,
+    ...(edition === "og" && environment.exomonEnabled
+      ? ["solana" as const]
+      : [])
+  ];
+}
+
 export function collectionEdition(params: URLSearchParams): CollectionEdition {
   if (params.get("edition") === "tcg") return "tcg";
   if (params.get("edition") === "airdrop") return "airdrop";
@@ -45,9 +59,10 @@ export function collectionMigrationNotice(params: URLSearchParams) {
     selected.some((chain) => chain !== "base")
   )
     return "Base airdrop holdings now have their own OG Airdrop view. Use the collection switch to see them.";
-  const allowed: readonly string[] =
-    collectionDefinitions[collectionEdition(params)].chains;
-  if (selected.some((chain) => !allowed.includes(chain) && chain !== "solana"))
+  const allowed: readonly string[] = collectionEditionChains(
+    collectionEdition(params)
+  );
+  if (selected.some((chain) => !allowed.includes(chain)))
     return "The selected collection uses its own networks. Incompatible network filters have been cleared.";
   return null;
 }
@@ -78,19 +93,14 @@ export function scopeEditionQuery(params: URLSearchParams) {
   const query = new URLSearchParams(params);
   const edition = collectionEdition(query);
   query.set("edition", edition);
-  // Exomon remains a separate existing collection destination.
-  if (query.getAll("chain").includes("solana") && edition === "og") {
-    query.delete("chain");
-    query.delete("excludeChain");
-    query.append("chain", "solana");
-    return query;
-  }
-  const allowed: readonly string[] = collectionDefinitions[edition].chains;
+  if (edition !== "og") query.delete("marketReturnChain");
+  const allowed: readonly string[] = collectionEditionChains(edition);
   const selected = query.getAll("chain");
   const excluded = query.getAll("excludeChain");
   if (
     selected.some(
-      (chain) => !["ethereum", "polygon", "bnb", "base"].includes(chain)
+      (chain) =>
+        !["ethereum", "polygon", "bnb", "base", "solana"].includes(chain)
     )
   )
     return query; // Let the filter parser report an invalid chain.
@@ -110,7 +120,7 @@ export function scopeEditionQuery(params: URLSearchParams) {
 /** Collection membership is implicit in browser URLs, not an active filter. */
 export function collectionViewQuery(params: URLSearchParams) {
   const query = scopeEditionQuery(params);
-  const allowed = collectionDefinitions[collectionEdition(query)].chains;
+  const allowed = collectionEditionChains(collectionEdition(query));
   const selected = query.getAll("chain");
   if (
     selected.length === allowed.length &&

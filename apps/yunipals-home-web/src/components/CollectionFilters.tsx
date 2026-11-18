@@ -11,12 +11,12 @@ import {
 import { FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { ChainLogo } from "@/components/ui/ChainLogo";
-import { CatalogFilters } from "@/components/marketplace/CatalogFilters";
+import { CollectionMarketFilters } from "@/components/CollectionMarketScopeDialog";
 import { collectionChainDetails as chainDetails } from "@/data/chains";
 import {
   collectionChains,
   includesSolana,
-  toEvmCollectionFilters,
+  updateCollectionChains,
   type CollectionChain
 } from "@/lib/collectionBrowserFilters";
 import type { CollectionFacets } from "@/lib/collectionBrowser";
@@ -34,7 +34,7 @@ import {
 } from "@/lib/yunipalsIndexer";
 import { cn } from "@/lib/utils";
 import {
-  collectionDefinitions,
+  collectionEditionChains,
   type CollectionEdition
 } from "@/lib/collectionEdition";
 
@@ -105,7 +105,7 @@ export function ChainFilter({
   className
 }: Pick<FilterPanelProps, "edition" | "filters" | "onChange" | "className">) {
   const allowedChains: readonly string[] = edition
-    ? collectionDefinitions[edition].chains
+    ? collectionEditionChains(edition)
     : collectionChains;
   const allChains =
     scopedFilters.chains.length === allowedChains.length &&
@@ -635,7 +635,7 @@ function countEditionFilters(
   filters: CollectionFilters,
   edition?: CollectionEdition
 ) {
-  const allowed = edition ? collectionDefinitions[edition].chains : [];
+  const allowed = edition ? collectionEditionChains(edition) : [];
   const allChains =
     filters.chains.length === allowed.length &&
     allowed.every((chain) => filters.chains.includes(chain));
@@ -720,15 +720,9 @@ export function CollectionFilterPanel({
       )}
 
       {marketEnabled && (
-        <CatalogFilters
-          filters={toEvmCollectionFilters(filters)}
-          onChange={(next) =>
-            onChange({
-              ...next,
-              chains: filters.chains,
-              excludedChains: filters.excludedChains
-            })
-          }
+        <CollectionMarketFilters
+          filters={filters}
+          onChange={onChange}
           priceMode={priceMode}
         />
       )}
@@ -836,6 +830,7 @@ export function MobileFilterDrawer({
     closeButtonRef.current?.focus();
 
     function onKeyDown(event: KeyboardEvent) {
+      if (document.querySelector("dialog[open]")) return;
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -914,7 +909,7 @@ export function MobileFilterDrawer({
             facets={facets}
             facetsLoading={facetsLoading}
             facetsError={facetsError}
-            onChange={setDraft}
+            onChange={(next) => setDraft(updateCollectionChains(draft, next))}
             onRetryFacets={onRetryFacets}
             marketEnabled={marketEnabled}
             priceMode="draft"

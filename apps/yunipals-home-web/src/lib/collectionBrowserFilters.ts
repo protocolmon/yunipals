@@ -7,6 +7,8 @@ export type CollectionSort = evm.CollectionSort;
 export type CollectionFilters = Omit<evm.CollectionFilters, "chains"> & {
   chains: CollectionChain[];
   excludedChains: CollectionChain[];
+  /** Original selection before explicitly narrowing to priced networks. */
+  marketReturnChains?: CollectionChain[];
 };
 export const collectionChains: readonly CollectionChain[] = [
   ...indexedChains,
@@ -50,7 +52,14 @@ export function parseCollectionFilters(
     chains: selected.length === collectionChains.length ? [] : selected,
     excludedChains: collectionChains.filter((chain) =>
       params.getAll("excludeChain").includes(chain)
-    )
+    ),
+    marketReturnChains:
+      environment.exomonEnabled &&
+      params.getAll("marketReturnChain").includes("solana")
+        ? collectionChains.filter((chain) =>
+            params.getAll("marketReturnChain").includes(chain)
+          )
+        : undefined
   };
 }
 
@@ -67,6 +76,8 @@ export function serializeCollectionFilters(filters: CollectionFilters) {
     if ((filters.excludedChains ?? []).includes(chain))
       params.append("excludeChain", chain);
   }
+  for (const chain of filters.marketReturnChains ?? [])
+    params.append("marketReturnChain", chain);
   return params;
 }
 
@@ -80,7 +91,10 @@ export function cloneCollectionFilters(
   return {
     ...evm.cloneCollectionFilters(toEvmCollectionFilters(filters)),
     chains: [...filters.chains],
-    excludedChains: [...(filters.excludedChains ?? [])]
+    excludedChains: [...(filters.excludedChains ?? [])],
+    marketReturnChains: filters.marketReturnChains
+      ? [...filters.marketReturnChains]
+      : undefined
   };
 }
 
@@ -99,7 +113,8 @@ export function clearMarketFilters(
   return {
     ...evm.clearMarketFilters(toEvmCollectionFilters(filters)),
     chains: filters.chains,
-    excludedChains: filters.excludedChains
+    excludedChains: filters.excludedChains,
+    marketReturnChains: filters.marketReturnChains
   };
 }
 
@@ -107,19 +122,45 @@ export function updateCollectionChains(
   current: CollectionFilters,
   next: CollectionFilters
 ): CollectionFilters {
+  const currentChains = effectiveCollectionChains(current).join(",");
+  const nextChains = effectiveCollectionChains(next).join(",");
+  // Applying the reviewed scope must retain its price/currency selections.
   if (
-    effectiveCollectionChains(current).join(",") ===
-    effectiveCollectionChains(next).join(",")
+    includesSolana(current) &&
+    !includesSolana(next) &&
+    next.marketReturnChains?.join(",") === currentChains &&
+    hasMarketFilters(next)
   )
     return next;
+  if (currentChains === nextChains)
+    return current.marketReturnChains && !hasMarketFilters(next)
+      ? {
+          ...next,
+          chains: current.marketReturnChains,
+          excludedChains: [],
+          marketReturnChains: undefined
+        }
+      : next;
   const updated = {
     ...next,
+    marketReturnChains: undefined,
     currency: "all" as const,
     priceMin: "",
     priceMax: "",
     sort: isPriceSort(next.sort) ? ("rarity-capped-desc" as const) : next.sort
   };
   return includesSolana(updated) ? clearMarketFilters(updated) : updated;
+}
+
+export function applySupportedMarketFilters(
+  current: CollectionFilters,
+  next: evm.CollectionFilters
+): CollectionFilters {
+  return {
+    ...next,
+    excludedChains: [],
+    marketReturnChains: effectiveCollectionChains(current)
+  };
 }
 
 export function hasMarketFilters(filters: CollectionFilters) {

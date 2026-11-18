@@ -17,6 +17,9 @@ const {
   parseCollectionFilters,
   serializeCollectionFilters,
   exomonCollectionRedirect,
+  applySupportedMarketFilters,
+  clearMarketFilters,
+  toEvmCollectionFilters,
   updateCollectionChains,
   includesSolana
 } = await import("@/lib/collectionBrowserFilters");
@@ -364,7 +367,12 @@ test("collection entry points select explicit OG, airdrop and TCG boundaries", a
   const { resolveCollectionQuery } = await import("@/lib/collectionEdition");
   const first = resolveCollectionQuery(new URLSearchParams(), null);
   assert.equal(first.get("edition"), "og");
-  assert.deepEqual(first.getAll("chain"), ["ethereum", "polygon", "bnb"]);
+  assert.deepEqual(first.getAll("chain"), [
+    "ethereum",
+    "polygon",
+    "bnb",
+    "solana"
+  ]);
   const airdrop = resolveCollectionQuery(
     new URLSearchParams("chain=base"),
     null
@@ -445,5 +453,94 @@ test("chain exclusions survive serialization and constrain pages, counts and fac
     urls.length,
     2,
     "empty selections must never request all chains"
+  );
+});
+
+test("OG includes Solana in All and preserves mixed selections and exclusions", async () => {
+  const { scopeEditionQuery, collectionViewQuery } = await import(
+    "@/lib/collectionEdition"
+  );
+  const all = scopeEditionQuery(new URLSearchParams("edition=og"));
+  assert.deepEqual(all.getAll("chain"), [
+    "ethereum",
+    "polygon",
+    "bnb",
+    "solana"
+  ]);
+  assert.equal(collectionViewQuery(all).toString(), "edition=og");
+  const mixed = scopeEditionQuery(
+    new URLSearchParams("edition=og&chain=ethereum&chain=solana")
+  );
+  assert.deepEqual(mixed.getAll("chain"), ["ethereum", "solana"]);
+  assert.deepEqual(
+    scopeEditionQuery(
+      new URLSearchParams("edition=og&excludeChain=solana")
+    ).getAll("chain"),
+    ["ethereum", "polygon", "bnb"]
+  );
+  assert.deepEqual(
+    scopeEditionQuery(
+      new URLSearchParams("edition=airdrop&chain=solana")
+    ).getAll("chain"),
+    ["base"]
+  );
+  assert.deepEqual(
+    scopeEditionQuery(new URLSearchParams("edition=tcg&chain=solana")).getAll(
+      "chain"
+    ),
+    ["base"]
+  );
+});
+
+test("confirmed market scope preserves amounts and restores chains after clearing, including reload", () => {
+  const original = parseCollectionFilters(
+    new URLSearchParams("chain=ethereum&chain=solana&t.Color=Blue")
+  );
+  const reviewed = applySupportedMarketFilters(original, {
+    ...toEvmCollectionFilters(original),
+    sale: "listed",
+    currency: "native",
+    priceMin: "0.1",
+    sort: "price-asc"
+  });
+  const applied = updateCollectionChains(original, reviewed);
+  assert.deepEqual(applied.chains, ["ethereum"]);
+  assert.equal(applied.priceMin, "0.1");
+  assert.equal(applied.sort, "price-asc");
+  const reloaded = parseCollectionFilters(serializeCollectionFilters(applied));
+  const restored = updateCollectionChains(
+    reloaded,
+    clearMarketFilters(reloaded)
+  );
+  assert.deepEqual(restored.chains, ["ethereum", "solana"]);
+  assert.equal(restored.marketReturnChains, undefined);
+  assert.deepEqual(restored.traits.Color, ["Blue"]);
+  assert.equal(restored.sale, "all");
+});
+
+test("manual chain changes cancel automatic restoration; trait changes retain it", () => {
+  const original = parseCollectionFilters(
+    new URLSearchParams("chain=ethereum&chain=polygon&chain=bnb&chain=solana")
+  );
+  const applied = applySupportedMarketFilters(original, {
+    ...toEvmCollectionFilters(original),
+    sale: "listed"
+  });
+  const traitChange = updateCollectionChains(applied, {
+    ...applied,
+    traits: { Color: ["Red"] }
+  });
+  assert.deepEqual(
+    updateCollectionChains(traitChange, clearMarketFilters(traitChange)).chains,
+    original.chains
+  );
+  const manual = updateCollectionChains(applied, {
+    ...applied,
+    chains: ["bnb"]
+  });
+  assert.equal(manual.marketReturnChains, undefined);
+  assert.deepEqual(
+    updateCollectionChains(manual, clearMarketFilters(manual)).chains,
+    ["bnb"]
   );
 });
