@@ -130,19 +130,19 @@ export async function verifyCompetitionBrowser({
       }
     ]);
   }
+  const mintFreshCard = () =>
+    call(engine, "Portals.t:PortalTestEngine", "original", [cards, 1n, bob, 0]);
+  // Each competition entry now comes from a different, never-graded card.
   for (let id = 2n; id <= 110n; id++) {
-    assert.equal(await admit(1n), id);
+    await mintFreshCard();
+    assert.equal(await admit(id), id);
     await complete(id, 90);
   }
-  assert.equal(await admit(1n), 111n);
-  await call(engine, "Portals.t:PortalTestEngine", "original", [
-    cards,
-    1n,
-    bob,
-    0
-  ]);
+  await mintFreshCard();
+  assert.equal(await admit(111n), 111n);
+  await mintFreshCard();
   assert.equal((await chain.active()).competition.accepting, false);
-  await assert.rejects(chain.quote(2n, bob), /challenge is full/);
+  await assert.rejects(chain.quote(112n, bob), /challenge is full/);
   await ledger.tick();
   await page.goto(`${origin}/grading`);
   await page
@@ -247,7 +247,7 @@ export async function verifyCompetitionBrowser({
     })
     .waitFor();
   await page.getByText("Challenge #2", { exact: true }).waitFor();
-  assert.equal(await admit(2n), 112n);
+  assert.equal(await admit(112n), 112n);
   await complete(112n, 100);
   let first;
   first = await publicClient.readContract({
