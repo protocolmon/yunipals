@@ -379,16 +379,6 @@ export function PortalCompetitions() {
             Competition results are temporarily unavailable.
           </p>
         )}
-        {query.data && query.data.batches.length === 0 && (
-          <p className="mt-5 flex items-center gap-2 text-sm text-muted">
-            <Sparkles
-              size={16}
-              className="shrink-0 text-grape"
-              aria-hidden="true"
-            />
-            The first competition starts with its first paid spell.
-          </p>
-        )}
         <div
           className={cn(
             "grid gap-4 md:grid-cols-2",
