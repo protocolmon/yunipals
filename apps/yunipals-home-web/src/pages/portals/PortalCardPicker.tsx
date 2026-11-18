@@ -10,7 +10,7 @@ import { fetchPackGridPage, packGridTraits } from "@/lib/boosterCollectionGrid";
 import { eligiblePortalCards } from "@/lib/portalCardPicker";
 import {
   portalDeploymentMatches,
-  portalImage,
+  portalCardImage,
   type ActivePortalStatus
 } from "@/lib/portals";
 import { cn } from "@/lib/utils";
@@ -206,9 +206,11 @@ export function PortalCardPicker({
         !items.length && (
           <div className="mt-4 text-center">
             <img
-              src={portalImage(
-                portal?.imageURI ?? "/images/portals/rainbow-portal-card.webp"
-              )}
+              src={
+                portal
+                  ? portalCardImage(portal)
+                  : "/images/portals/rainbow-portal-card-v3.webp"
+              }
               alt=""
               width={1024}
               height={1536}

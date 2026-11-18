@@ -6,7 +6,7 @@ import {
 import { fetchPortalCardCounts } from "@/lib/portalCardCounts";
 import { cn } from "@/lib/utils";
 import {
-  portalImage,
+  portalCardImage,
   portalRange,
   type ActivePortalStatus
 } from "@/lib/portals";
@@ -95,7 +95,7 @@ export function PortalSchedule({
       {upcoming.length === 0 ? (
         <div className="mt-5 flex items-center gap-5 rounded-2xl bg-lavender/40 p-5">
           <img
-            src="/images/portals/rainbow-portal-card.webp"
+            src="/images/portals/rainbow-portal-card-v3.webp"
             width={1024}
             height={1536}
             className="w-20 rounded-xl"
@@ -127,7 +127,7 @@ export function PortalSchedule({
                 className="flex gap-4 rounded-2xl bg-lavender/30 p-4"
               >
                 <img
-                  src={portalImage(portal.imageURI)}
+                  src={portalCardImage(portal)}
                   width={1024}
                   height={1536}
                   className="h-32 w-20 shrink-0 rounded-xl object-contain"

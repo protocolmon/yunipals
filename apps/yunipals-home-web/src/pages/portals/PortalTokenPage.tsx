@@ -9,7 +9,7 @@ import { ExpandableCardArtwork } from "@/components/ExpandableCardArtwork";
 import { environment } from "@/environment";
 import { usePortalClaim } from "@/hooks/usePortalClaim";
 import { readPortalClaim } from "@/lib/portalClaims";
-import { portalImage, portalPrice, portalRange } from "@/lib/portals";
+import { portalCardImage, portalPrice, portalRange } from "@/lib/portals";
 import { cn } from "@/lib/utils";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { PortalActivityList } from "./PortalActivityList";
@@ -69,7 +69,8 @@ export function PortalTokenPage() {
           <div className="mt-7 grid gap-7 rounded-card border border-line p-5 sm:grid-cols-2 sm:p-8">
             <ExpandableCardArtwork
               key={token.id}
-              image={portalImage(token.imageURI)}
+              image={portalCardImage(token)}
+              effect={token.kindId === "1" ? "rainbow-portal" : undefined}
               label={`${token.name} #${token.id}`}
               className="mx-auto w-64 max-w-full self-start"
             />

@@ -16,7 +16,7 @@ import { environment } from "@/environment";
 import { usePortals } from "@/hooks/usePortals";
 import { usePortalTransactions } from "@/hooks/usePortalTransactions";
 import { portalTransactionPending } from "@/lib/portalTransactions";
-import { fetchPortalStatus, portalImage } from "@/lib/portals";
+import { fetchPortalStatus, portalCardImage } from "@/lib/portals";
 import {
   airdropBatchKey,
   airdropFenceKey,
@@ -353,8 +353,11 @@ export function PortalAirdropPage() {
         <img
           src={
             progress.data
-              ? portalImage(progress.data.kind.definition.imageURI)
-              : "/images/portals/rainbow-portal-card.webp"
+              ? portalCardImage({
+                  ...progress.data.kind.definition,
+                  kindId: plan?.kindId
+                })
+              : "/images/portals/rainbow-portal-card-v3.webp"
           }
           alt={
             progress.data?.kind.definition.name ?? "Rainbow Portal card preview"

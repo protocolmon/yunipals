@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { environment } from "@/environment";
 import { usePortalClaim } from "@/hooks/usePortalClaim";
-import { fetchOwnedPortals, portalImage, portalPrice } from "@/lib/portals";
+import { fetchOwnedPortals, portalCardImage, portalPrice } from "@/lib/portals";
 import { cn } from "@/lib/utils";
 import { boosterButtonClass } from "@/pages/boosters/BoosterActionButton";
 import { PortalActivityList } from "./PortalActivityList";
@@ -99,7 +99,7 @@ export function PortalOwnerPage() {
                 >
                   <Link to={`/grading/tokens/${token.id}`}>
                     <img
-                      src={portalImage(token.imageURI)}
+                      src={portalCardImage(token)}
                       alt={`${token.name} #${token.id}`}
                       className="mx-auto max-h-72 rounded-2xl object-contain"
                       loading="lazy"
