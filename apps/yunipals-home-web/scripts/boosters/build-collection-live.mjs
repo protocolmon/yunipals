@@ -229,6 +229,7 @@ const assets = [
         "images/portals/rainbow-portal-card-v3.webp",
         "images/card-effects/prismatic-glitter-v1.webp",
         "images/card-effects/rainbow-aperture-v1.svg",
+        "images/card-effects/prismane-cursebreaker-cutout.svg",
         "images/portals/dragon-before.webp",
         "images/portals/dragon-after.webp",
         "images/bitcoin-unidragon-square.webp",
