@@ -195,10 +195,9 @@
   opacity: 0.9;
 }
 .booster-card-viewer .hotspot-grain {
-  background:
-    radial-gradient(circle, #fffe 0 0.45px, transparent 0.9px) 0 0/3px 5px,
-    radial-gradient(circle, #b9fffde6 0 0.5px, transparent 1px) 1px 3px/7px 9px,
-    repeating-linear-gradient(38deg, #fff5 0 0.4px, transparent 0.8px 3px);
+  background-image: url("/images/card-effects/prismatic-glitter-v1.webp");
+  background-size: 32% auto;
+  background-position: var(--foil-x) var(--foil-y);
   mix-blend-mode: screen;
   opacity: 0.7;
 }
@@ -341,6 +340,101 @@
   height: 100%;
   object-fit: contain;
 }
+
+/* Generated crystal facets at two distances, lit independently as the card tilts. */
+.booster-card-viewer .card-glitter {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  mask: var(--background-mask) center / 100% 100% no-repeat;
+  mix-blend-mode: screen;
+}
+.booster-card-viewer .has-reflection .card-glitter {
+  opacity: 0.95;
+}
+.booster-card-viewer .card-glitter-fine,
+.booster-card-viewer .card-glitter-near {
+  position: absolute;
+  inset: -3%;
+  background-image: url("/images/card-effects/prismatic-glitter-v1.webp");
+  transform: translate(var(--glitter-x, 0%), var(--glitter-y, 0%));
+}
+.booster-card-viewer .card-glitter-fine {
+  background-size: 38% auto;
+  opacity: 0.8;
+  mask-image: linear-gradient(
+    var(--foil-angle),
+    #0002 20%,
+    #000 var(--star-sweep),
+    #0002 80%
+  );
+}
+.booster-card-viewer .card-glitter-near {
+  background-size: 93% auto;
+  background-position: 37% 61%;
+  transform: translate(var(--depth-x, 0%), var(--depth-y, 0%));
+  filter: brightness(1.7);
+  mask-image: radial-gradient(
+    ellipse 38% 30% at var(--spot-x) var(--spot-y),
+    #000 10%,
+    #0007 55%,
+    transparent 100%
+  );
+}
+.booster-card-viewer .is-portal .card-glitter {
+  mask: var(--art-mask) center / 100% 100% no-repeat;
+  clip-path: inset(16.5% 5.5% 15.5% round 3%);
+}
+/* The stationary aperture occludes the moving tunnel, preserving the printed arch. */
+.booster-card-viewer .portal-depth {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask: url("/images/card-effects/rainbow-aperture-v1.svg") center / 100% 100%
+    no-repeat;
+}
+.booster-card-viewer .portal-tunnel,
+.booster-card-viewer .portal-recess,
+.booster-card-viewer .portal-stardust {
+  position: absolute;
+  left: 28%;
+  top: 30.5%;
+  width: 45%;
+  height: 36%;
+}
+.booster-card-viewer .portal-tunnel {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: url("/images/portals/rainbow-portal-card-v3.webp") center / 100% 100%;
+  transform-origin: 50% 49%;
+  transform: translate(
+      calc(var(--depth-x, 0%) * 0.35),
+      calc(var(--depth-y, 0%) * 0.35)
+    )
+    scale(1.12);
+}
+.booster-card-viewer .portal-recess {
+  background: radial-gradient(
+    ellipse at 50% 49%,
+    transparent 30%,
+    #39116224 60%,
+    #29114b9c 90%
+  );
+}
+.booster-card-viewer .portal-stardust {
+  background: url("/images/card-effects/prismatic-glitter-v1.webp") center / 65%
+    auto;
+  mix-blend-mode: screen;
+  transform: translate(var(--glitter-x, 0%), var(--glitter-y, 0%)) scale(1.12);
+  opacity: 0.8;
+}
+.booster-card-viewer .is-portal .tilt-foil {
+  --holo-strength: 0.3;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .booster-card-viewer .tilt-viewer {
     touch-action: auto;
@@ -356,7 +450,12 @@
   .booster-card-viewer .tilt-diagonal,
   .booster-card-viewer .tilt-hotspot,
   .booster-card-viewer .tilt-art-stars,
+  .booster-card-viewer .card-glitter,
+  .booster-card-viewer .portal-stardust,
   .booster-card-viewer .monster-depth {
     display: none;
+  }
+  .booster-card-viewer .portal-tunnel {
+    transform: none;
   }
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { formatUnits, isAddress, type Hex } from "viem";
 import { environment } from "@/environment";
+import { portalArtworkUri } from "@/lib/portalArtwork";
 import { PortalRequestError, portalRetryAfter } from "./portalRetry";
 
 const uint = z.string().regex(/^\d+$/);
@@ -365,6 +366,12 @@ export async function fetchPortalClaims(
       { signal }
     )
   );
+}
+
+export function portalCardImage(
+  portal: Parameters<typeof portalArtworkUri>[0]
+) {
+  return portalImage(portalArtworkUri(portal));
 }
 
 export function portalImage(uri: string) {

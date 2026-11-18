@@ -4,7 +4,9 @@ import { cn } from "@/lib/utils";
 import type { MonsterArtwork } from "@/lib/boosters";
 
 export type CardArtwork = Pick<MonsterArtwork, "image" | "name"> &
-  Partial<Pick<MonsterArtwork, "holo" | "attributes">>;
+  Partial<Pick<MonsterArtwork, "holo" | "attributes">> & {
+    effect?: "rainbow-portal";
+  };
 
 type Driver = { reset: () => void };
 export function BoosterCardViewer({
@@ -24,6 +26,7 @@ export function BoosterCardViewer({
   const driverRef = useRef<Driver | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
   const holo = Boolean(artwork.holo && artwork.attributes?.glitter === "Yes");
+  const portal = artwork.effect === "rainbow-portal";
   useEffect(() => {
     setImageFailed(false);
   }, [artwork.image]);
@@ -61,7 +64,11 @@ export function BoosterCardViewer({
         "--tilt-energy": String(Math.min(1, Math.hypot(x, y))),
         "--star-sweep": `${50 + x * 65 + y * 35}%`,
         "--relief-x": `${-x * 1.5}px`,
-        "--relief-y": `${2.5 - y * 1.5}px`
+        "--relief-y": `${2.5 - y * 1.5}px`,
+        "--depth-x": `${-x * 2}%`,
+        "--depth-y": `${-y * 2}%`,
+        "--glitter-x": `${x * 1.2}%`,
+        "--glitter-y": `${y * 1.2}%`
       };
       let sx = 0.5 + x * 0.5,
         sy = 0.5 + y * 0.5;
@@ -305,7 +312,8 @@ export function BoosterCardViewer({
         className={cn(
           "tilt-viewer relative w-full rounded-card bg-lavender/20",
           onExpand && "can-expand",
-          holo && "is-holo"
+          (holo || portal) && "is-holo",
+          portal && "is-portal"
         )}
         data-live-holo="true"
         data-foil-style="prism"
@@ -356,15 +364,30 @@ export function BoosterCardViewer({
             src={artwork.image}
             alt={artwork.name ?? "Yunipal card"}
             draggable={false}
+            width={1024}
+            height={1536}
             loading={interactive ? "eager" : "lazy"}
             onError={() => setImageFailed(true)}
           />
           {interactive && (
             <>
+              {portal && (
+                <span className="portal-depth" aria-hidden="true">
+                  <span className="portal-tunnel" />
+                  <span className="portal-recess" />
+                  <span className="portal-stardust" />
+                </span>
+              )}
               <span className="tilt-foil" aria-hidden="true" />
               <span className="tilt-sweep" aria-hidden="true" />
               <span className="tilt-diagonal" aria-hidden="true" />
               <span className="tilt-glare" aria-hidden="true" />
+              {(holo || portal) && (
+                <span className="card-glitter" aria-hidden="true">
+                  <span className="card-glitter-fine" />
+                  <span className="card-glitter-near" />
+                </span>
+              )}
               {holo && (
                 <>
                   <span className="tilt-hotspot" aria-hidden="true">

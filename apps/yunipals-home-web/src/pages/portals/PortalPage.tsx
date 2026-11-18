@@ -18,6 +18,7 @@ import { usePortals } from "@/hooks/usePortals";
 import {
   fetchPortalStatus,
   portalImage,
+  portalCardImage,
   portalPrice,
   portalRange,
   type ActivePortalStatus
@@ -208,7 +209,10 @@ export function PortalPage() {
                 <ExpandableCardArtwork
                   key={status.portal.id}
                   className="mx-auto mt-6 w-48 max-w-full"
-                  image={portalImage(status.portal.imageURI)}
+                  image={portalCardImage(status.portal)}
+                  effect={
+                    status.portal.kindId === "1" ? "rainbow-portal" : undefined
+                  }
                   label={`${status.portal.name} #${status.portal.id}`}
                 />
                 <h2
@@ -231,7 +235,7 @@ export function PortalPage() {
             ) : (
               <div className="my-8 flex flex-col items-center gap-5 sm:flex-row">
                 <img
-                  src="/images/portals/rainbow-portal-card.webp"
+                  src="/images/portals/rainbow-portal-card-v3.webp"
                   width={1024}
                   height={1536}
                   alt="Rainbow Portal card preview"

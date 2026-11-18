@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Expand } from "lucide-react";
 import { CardLightbox } from "@/components/CardLightbox";
+import type { CardArtwork } from "@/components/BoosterCardViewer";
 import { cn } from "@/lib/utils";
 
 /** Static card artwork that opens the shared large tilt view. */
 export function ExpandableCardArtwork({
   image,
   label,
+  effect,
   className
 }: {
   image: string;
   label: string;
+  effect?: CardArtwork["effect"];
   className?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -39,7 +42,7 @@ export function ExpandableCardArtwork({
       </button>
       {expanded && (
         <CardLightbox
-          artwork={{ image, name: label }}
+          artwork={{ image, name: label, effect }}
           label={label}
           onClose={() => setExpanded(false)}
         />
