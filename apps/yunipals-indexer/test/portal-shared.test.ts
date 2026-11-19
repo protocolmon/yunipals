@@ -5,7 +5,13 @@ import {
   type PortalDomain,
   type PortalProjectionStore
 } from "../lib/unified/portal-projection.js";
-import { portalSources } from "../lib/unified/portal-sources.js";
+import { createHash } from "node:crypto";
+import {
+  portalPonderContracts,
+  sharedPortalEventAbis,
+  portalContracts,
+  portalSources
+} from "../lib/unified/portal-sources.js";
 import {
   buildSharedIndexerManifest,
   assertRetainedIndexerSources
@@ -72,6 +78,31 @@ function projection() {
 }
 
 describe("shared portal sources", () => {
+  it("retains the registered ingestion configuration across wallet ABI upgrades", () => {
+    const contracts = portalPonderContracts(env);
+    const expected = {
+      PortalCollection:
+        "8c3932de933f568836e7506b263c70650e40180f151127171dc693630b206936",
+      PortalRegistry:
+        "0b15c60d60dfbd1015841c0db450ba2a552297a74b238323c4dcbe6110766062",
+      PortalGrading:
+        "f731c1abef1bed93631e0d7f9496a6a71762e234507501199e68a5911c72639a",
+      PortalCompetition:
+        "db91912addcd39bc8bd20829ec4eb4001e8be1cbf2d93e6ffd2c286079ea858a"
+    };
+    for (const [kind, name] of Object.entries(portalContracts)) {
+      const abi = contracts[name].abi;
+      expect(
+        createHash("sha256").update(JSON.stringify(abi)).digest("hex")
+      ).toBe(expected[name]);
+      for (const event of sharedPortalEventAbis[
+        kind as keyof typeof sharedPortalEventAbis
+      ]) {
+        expect(abi).toContainEqual(event);
+      }
+    }
+  });
+
   it("requires all four explicit emitters with independent history bounds", () => {
     const sources = portalSources(env);
     expect(sources).toHaveLength(4);

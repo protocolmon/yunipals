@@ -69,4 +69,16 @@ const manifest = {
   sourceHashes: sources
 };
 await writeFile(path.join(output, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+// The timer job can be installed separately from the HTTP API. Give it its own
+// provenance so API-only changes do not make the queue appear out of date.
+const artworkSources = Object.fromEntries(
+  Object.keys(workerResult.metafile.inputs).sort().map((name) => [name, sources[name]])
+);
+await mkdir(path.join(output, "manifests"), { recursive: true });
+await writeFile(path.join(output, "manifests/booster-artwork-sync.json"), JSON.stringify({
+  format: "yunipals-booster-artwork-queue-v1",
+  ...manifest.artworkQueue,
+  node: manifest.node,
+  sourceHashes: artworkSources
+}, null, 2) + "\n");
 console.log(JSON.stringify({ output, sha256: manifest.sha256, bytes: bytes.length, internalSources: Object.keys(sources).length, dependencies: manifest.dependencies, artworkQueue: manifest.artworkQueue }));

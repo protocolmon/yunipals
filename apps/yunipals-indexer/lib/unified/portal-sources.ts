@@ -1,9 +1,11 @@
+// Keep the registered Ponder configuration stable when wallet/API methods change.
+// Updating this ingestion catalog requires an intentional source migration.
 import {
   portalCollectionAbi,
   portalRegistryAbi,
   portalGradingAbi,
   portalCompetitionAbi
-} from "../../../../packages/yunipals-market-core/src/portalAbi.js";
+} from "../../../../packages/yunipals-market-core/src/portalSourceAbi.aaca7d17.js";
 import type { AbiEvent, Address } from "viem";
 import {
   portalEventAbis,
