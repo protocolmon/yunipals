@@ -5,7 +5,7 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 ## Confirmed product rules
 
 - There are exactly 121 serum types, formed from two traits with 11 values each. The proposed names and rarity assignment are below; their balance is not yet approved.
-- Every live ungraded TCG card, including fused cards, can adventure. Whether graded cards retain adventure access is the remaining grading-related product question. Only the current owner can initiate the call; marketplace approvals do not confer this right.
+- Every live ungraded TCG card, including fused cards, can adventure. Graded cards cannot adventure. Only the current owner can initiate the call; marketplace approvals do not confer this right.
 - Adventures use Chainlink VRF v2.5 direct funding paid in native ETH. The result determines whether a serum is found and its type.
 - A serum is contract state attached to a card, not an NFT, wallet inventory item or independently transferable asset. A newly found serum replaces that card's previous unused serum.
 - Each card can adventure once per rolling 24 hours. Higher mint-sequence positions have higher chances of rare outcomes. An adventure that finds nothing keeps the previous unused serum.
@@ -22,7 +22,7 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 - Fused-card adventure odds use the floor of the average immutable sequence of all original source cards. Store the exact sequence sum and source count; do not average already rounded intermediate values.
 - A fusion qualifies for a portal when one actual source card satisfies all of its applicable requirements together. An originals-only portal accepts the fusion if that matching source card was an original.
 - Grading uses the existing player spell → portal transformation → graded result flow. Preserve the card's defining serum and fusion features while adding the portal effect and spell.
-- Once a card has a completed grade, it cannot consume serums or be used as either input to a fusion. This applies to both base and fused cards, including cards graded before the feature launches.
+- Once a card has a completed grade, it cannot adventure, consume serums or be used as either input to a fusion. This applies to both base and fused cards, including cards graded before the feature launches. Repeat portal grading and an original's daily offspring claims remain available.
 - Failed artwork jobs remain recoverable and are retried until completed, without charging again. There is no automatic timeout cancellation/refund. Durable job recovery and operator intervention are required; provider availability is not a contract-level guarantee.
 
 ## Proposed defaults still to review
@@ -38,7 +38,6 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 | Grading economics | Use the existing portal-kind admission fees and competition contribution, separately from the 0.1 USDC serum/fusion fee. No automatic grading is bundled into that fee. |
 | Grading competition | Use the same competition and scoring rubric, with no automatic bonus for serum rarity, number of doses or fusion level. Calibrate against matched base and fused-card examples. |
 | Existing portal edits | Preserve the latest finalized artwork and its immutable asset reference; serialize all new mutation operations through a common version/lock mechanism. Grades remain tied to the artwork actually graded. |
-| Repeat grading | Preserve the existing ability to enter another eligible portal and be graded again. A later grade does not restore serum or fusion eligibility. |
 | Unused serum after grading | Retain it as inactive attached state/history; it cannot be consumed or transferred separately. |
 | New artwork | Preserve recognizable species ancestry and the frame; no empty bottle on character artwork. Serum item previews may depict their bottle. |
 
@@ -46,7 +45,7 @@ A token with 11 locally consumed doses cannot drink again. An ungraded card can 
 
 ## Confirmed grading lifecycle and eligibility
 
-Grading ends a card's serum/fusion progression. Owners can build an ungraded card through serum applications and up to two fusion levels, then enter a portal to transform and grade it. After the first completed grade, serum consumption and further fusion are permanently unavailable for that token under the feature rules. Regrading remains available under the proposed existing-behavior default.
+Grading ends a card's adventure, serum and fusion progression. Owners can build an ungraded card through serum applications and up to two fusion levels, then enter a portal to transform and grade it. After the first completed grade, adventures, serum consumption and further fusion are permanently unavailable for that token under the feature rules. Regrading remains available; a later grade does not restore those progression paths.
 
 This restriction is per card, not per original lineage. Grading an original does not end its daily offspring claims or make its offspring graded. Those offspring have independent eligibility. Only burning the original ends its remaining claim rights.
 
@@ -58,12 +57,11 @@ Portal gates use an actual ancestor, not that average. A red dragon and a blue a
 
 A qualifying burned original remains usable as provenance evidence. It does not become live again, restore daily offspring claims, or change the fused token into a base original.
 
-Pending grading and evolution jobs are mutually exclusive. Starting a grading job temporarily blocks serum/fusion requests; successful grading makes those restrictions permanent. A generation delay cannot be bypassed by transferring the NFT or hiding its grading metadata.
+Pending adventures, grading and evolution jobs are mutually exclusive. Starting a grading job temporarily blocks adventure, serum and fusion requests; successful grading makes those restrictions permanent. A generation delay cannot be bypassed by transferring the NFT or hiding its grading metadata.
 
 ## Product choices still awaiting answers
 
-1. Should graded cards also stop adventuring, since they cannot consume new finds? Recommended yes; repeat grading and original daily offspring claims would remain available.
-2. Accept the proposed 121-serum catalogue and initial odds, or revise the traits/balance before implementation?
+1. Accept the proposed 121-serum catalogue and initial odds, or revise the traits/balance before implementation? The user requested a visual review before deciding.
 
 ## Proposed serum traits
 
@@ -211,7 +209,7 @@ Bind dependencies through deployment-neutral configuration and validate both sid
 
 ### Adventure lifecycle
 
-- `adventure(card, expectedRulesHash, maxVrfPrice, deadline)` checks live ownership in YunipalMonsters, card kind, initialized base facts or validated fusion ancestry, cooldown and absence of conflicting pending work.
+- `adventure(card, expectedRulesHash, maxVrfPrice, deadline)` checks live ownership in YunipalMonsters, no completed grade through the canonical `hasCompletedGrade` check, card kind, initialized base facts or validated fusion ancestry, cooldown and absence of conflicting pending work. A card with a pending adventure cannot start grading.
 - Set cooldown and request snapshot atomically with payment and VRF request; a transaction revert restores everything.
 - Only one outstanding adventure per card. A transfer may carry the pending adventure and cooldown; the result belongs to the card's current owner.
 - While randomness is pending, disallow consumption, fusion, burning and artwork mutations of that card. Freeze all result-relevant inputs.
@@ -303,21 +301,21 @@ Build the feature within the existing collection/card experience, with reusable 
 - Final card: clear fusion level, two/four-source family tree and locally consumed versus inherited doses.
 - Pending work survives reload and wallet changes. Handle rejected signatures, insufficient USDC/ETH, expired quotes, transferred/burned cards, indexer lag, VRF delays and AI retry/recovery separately. Show when a card is reserved and why it cannot currently transfer or enter another job.
 - Grading entry shows the matching ancestor and portal requirements under the selected eligibility policy. The input preview is always the fusion's latest artwork, not the ancestor's old image.
-- Separate current grades from previous grading attempts. After grading, disable serum/fusion actions and explain that grading ends those progression paths. Before submitting the first grade, show this consequence clearly. Keep ancestry and inherited serum effects visible.
+- Separate current grades from previous grading attempts. After grading, disable adventure, serum and fusion actions and explain that grading ends those progression paths. Before submitting the first grade, show this consequence clearly. Keep ancestry, inherited serum effects, repeat grading and any original daily claims visible.
 - Use actual collection art and the approved Voidheart/Eclipse/Singularity examples as clearly labeled previews. No invented balances, active rewards or guaranteed generated output.
 - Preserve accessibility, reduced-motion preferences, responsive layouts and lazy-loaded optimized artwork.
 
 ## Delivery sequence and verification
 
-1. Resolve graded-card adventure access and approve the proposed catalogue, odds and remaining lifecycle defaults. Retain the confirmed inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
+1. Approve the proposed catalogue, odds and remaining lifecycle defaults. Retain the confirmed inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
 2. Implement shared recipe definitions, exact combinatorial calculations and contract state machines. Test ownership, sequence checks, level boundaries, 11-dose cap, repeated doses and ancestry.
 3. Implement same-collection fusion minting, grading eligibility and metadata/version coordination with compatible upgrades. Rehearse interleaved base/fusion token allocations, pending booster claims, original burns, portal jobs, transfer locks and rollback.
 4. Extend global ingestion, ownership, confirmed projections and durable job intake. Test duplicate/out-of-order events, replay, reorgs, stale sources and release handover without duplicate paid generation.
 5. Add generation/publication worker and API. Test retries, immutable input hashes, stale completions, persistent reservations, operator-assisted recovery, canonical publishing and USDC liability accounting.
 6. Build frontend with deterministic mock fixtures, then local end-to-end contract/indexer/API/worker/browser flows using a stub AI provider. Complete Base Sepolia VRF and a bounded real-image quality/cost rehearsal when implementation is ready.
-7. Run relevant contract suites, storage compatibility checks, indexer/Postgres integration tests, frontend/type checks and production builds. Require invariant/fuzz coverage for financial state, burns, locks and request replay. Cover mixed species/colors/horns/glitter, joint versus invalid split-source gate matches, original-only inherited eligibility, burned ancestors, serum → fusion → grade flows at both fusion levels, rejected grade → serum and grade → fusion attempts, legacy graded tokens, transfer/regrading lock bypasses, independent offspring rights, historical slabs and unchanged competition payout entitlements.
+7. Run relevant contract suites, storage compatibility checks, indexer/Postgres integration tests, frontend/type checks and production builds. Require invariant/fuzz coverage for financial state, burns, locks and request replay. Cover mixed species/colors/horns/glitter, joint versus invalid split-source gate matches, original-only inherited eligibility, burned ancestors, serum → fusion → grade flows at both fusion levels, rejected grade → adventure, grade → serum and grade → fusion attempts, legacy graded tokens, mutually exclusive pending adventure/grading requests, transfer/regrading lock bypasses, independent offspring rights, historical slabs and unchanged competition payout entitlements.
 8. Prepare a PR with the confirmed rules, architectural changes, user flow screenshots, validation evidence and deployment-neutral migration/rollback instructions. Production release uses the private operator workflow and is a separate step.
 
-Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
+Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents adventures, serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
 
 Before public launch, resolve the product's existing legal question about paid randomized adventures and rarity-weighted tradable transformations. The guaranteed base collection alone is not being treated as approval for these new mechanics.
