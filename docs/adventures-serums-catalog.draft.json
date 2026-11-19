@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "status": "proposed",
+  "status": "approved initial catalogue",
   "name": "Yunipals adventure serums",
   "serumCount": 121,
   "presenceCount": 11,
@@ -267,7 +267,7 @@
     }
   ],
   "odds": {
-    "status": "proposed eleven-tier balance; endpoint rates accepted in principle",
+    "status": "approved eleven-tier balance",
     "denominator": 1000000,
     "sequenceRange": [
       0,

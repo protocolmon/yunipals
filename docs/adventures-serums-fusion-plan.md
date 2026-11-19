@@ -1,10 +1,10 @@
 # Adventures serums and fusion implementation plan
 
-Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-fusion`, based on `origin/main` at `1a96902`. This is a planning change; implementation and PR creation follow resolution of the decisions below.
+Approved product plan, 19 November 2026. Branch: `codex/adventures-serums-fusion`, rebased onto `origin/main` at `1998529`. Product decisions are settled; implementation is in progress. Production release remains a separate step.
 
 ## Confirmed product rules
 
-- There are 121 named Essence × Form serum types, each with 11 possible Presence traits: 1,331 complete serum combinations. Keep the existing serum names and display Presence separately. Visual direction, Presence lifecycle and Presence weights are approved; Essence/Form rarity weights and overall adventure drop balance remain under review.
+- There are 121 named Essence × Form serum types, each with 11 possible Presence traits: 1,331 complete serum combinations. Keep the existing serum names and display Presence separately. Visual direction, Presence lifecycle and weights, Essence/Form rarities and the eleven-tier adventure drop table are approved.
 - Holy has a 1% chance among found serums; each of the other ten Presences has a 9.9% chance. This roll is independent of Essence/Form rarity and does not vary with sequence. Higher sequence still improves the chance of rare Essence/Form outcomes.
 - Drinking a serum replaces the card's current Presence with the new serum's Presence. Earlier physical effects continue stacking, and every dose's Presence remains in ordered history. This includes replacing Holy with a non-Holy Presence.
 - Fusion randomly inherits one input card's current Presence, with an equal 50/50 parent selection when they differ. The owner does not choose, and the image generator does not roll the result. Matching parent Presences produce that same Presence with certainty. Preserve both parents' histories and the settled inheritance result.
@@ -69,13 +69,13 @@ A qualifying burned original remains usable as provenance evidence. It does not 
 
 Pending adventures, grading and evolution jobs are mutually exclusive. Starting a grading job temporarily blocks adventure, serum and fusion requests; successful grading makes those restrictions permanent. A generation delay cannot be bypassed by transferring the NFT or hiding its grading metadata.
 
-## Product choices still awaiting answers
+## Product decisions approved
 
 The eleven Presence concept cards, Holy at 1%, other Presences at 9.9% each, latest-dose Presence replacement, random parent inheritance and player-funded fusion VRF are confirmed. The final five lifecycle choices are also confirmed: VRF-settlement adventure timing, later inherited cooldown and unused-serum discard, neutral-parent inheritance, reservations until successful artwork completion, and existing grading fees/scoring/one-grade policy.
 
-The user accepted the initial drop balance in principle and requested more sequence tiers. The revised proposal below has eleven tiers of 24 sequence positions, with fixed probabilities inside each tier and the same starting/maximum rates. This replaces the earlier per-position interpolation proposal; the eleven-tier table remains the final balance item to review. The remaining technical defaults in the lifecycle table are implementation choices consistent with the confirmed rules, not additional product questions.
+The user approved eleven tiers of 24 sequence positions, with fixed probabilities inside each tier and the same starting/maximum rates. This replaces the earlier per-position interpolation proposal. The remaining technical defaults in the lifecycle table are implementation choices consistent with the confirmed rules, not additional product questions.
 
-Before implementation, bring this branch onto current main while preserving the plan. Current-main `apps/yunipals-indexer/lib/portals/chain.ts` rejects admissions with an already completed grade, and the card picker excludes graded cards. The earlier plan's regrading assumption has been removed. When evolved artwork introduces nonzero art revisions, replace the API's current `artVersion != 0` shortcut with canonical completed-grading history so an ungraded serum/fusion card remains gradeable.
+The branch has been rebased onto current main while preserving the plan. Current-main `apps/yunipals-indexer/lib/portals/chain.ts` rejects admissions with an already completed grade, and the card picker excludes graded cards. The earlier plan's regrading assumption has been removed. When evolved artwork introduces nonzero art revisions, replace the API's current `artVersion != 0` shortcut with canonical completed-grading history so an ungraded serum/fusion card remains gradeable.
 
 ### Confirmed final lifecycle review
 
@@ -85,9 +85,9 @@ Before implementation, bring this branch onto current main while preserving the 
 - A neutral/unmodified parent participates in the same 50/50 inheritance. Matching Presences, including two neutral parents, produce a guaranteed result.
 - Reserve the inputs and generation fee on request. Burn and mint atomically only once valid artwork is ready. Retry the same job until completion without another generation fee or another randomness draw; no automatic timeout cancellation/refund.
 - Preserve existing grading fees and competition scoring. Serum rarity, dose count and fusion level confer no automatic score bonus. Grading ends progression and keeps the existing one-completed-grade rule.
-The lifecycle rules above are approved. Implementation follows resolution of the remaining adventure drop-rate table; production release remains a separate step.
+The lifecycle rules and adventure drop-rate table are approved; production release remains a separate step.
 
-## Proposed serum traits
+## Approved serum traits
 
 Use three catalogue traits: **Essence** describes the material/magic, **Form** describes what physically changes, and **Presence** controls eyes, expression and body language. Each Essence/Form pair retains the name `{Essence} {Form} Serum`; Presence is a separate visible trait, giving 1,331 complete combinations without requiring 1,331 different serum names.
 
@@ -145,11 +145,11 @@ The approved local reference set is `generated/serum-presence-examples/`, with a
 
 Rarity is the higher minimum rarity of the chosen essence and form. This yields 9 Common, 27 Uncommon, 28 Rare, 17 Epic, 19 Legendary and 21 Mythic serums, totaling 121. Every Voidheart serum is Mythic; every Bloodmoon serum is at least Legendary.
 
-`serumId = 1 + (essenceId - 1) * 11 + (formId - 1)`; zero means no unused serum. Store an unused serum and each applied dose as at least `(catalogueVersion, serumId, presenceId)`; Presence IDs are 1–11 for found serums, with zero reserved for an unmodified card. See [the complete proposed catalogue](adventures-serums-catalog.draft.json), which enumerates all 121 IDs and names plus eleven Presence values. Rarity, Presence distribution, effects and rendering recipe version must be explicit, immutable attributes of a published catalogue version.
+`serumId = 1 + (essenceId - 1) * 11 + (formId - 1)`; zero means no unused serum. Store an unused serum and each applied dose as at least `(catalogueVersion, serumId, presenceId)`; Presence IDs are 1–11 for found serums, with zero reserved for an unmodified card. See [the complete approved catalogue](adventures-serums-catalog.draft.json), which enumerates all 121 IDs and names plus eleven Presence values. Rarity, Presence distribution, effects and rendering recipe version must be explicit, immutable attributes of a published catalogue version.
 
-## Proposed adventure odds
+## Approved adventure odds
 
-The endpoint rates were accepted in principle, with a request for more sequence tiers. Propose eleven tiers of 24 positions each, covering all 264 positions exactly. Odds are fixed inside a tier and improve at each tier boundary. These tier boundaries and intermediate rates are the revised proposal, not yet marked approved. All values below are unconditional probabilities per adventure; **Nothing found stays 35% in every tier**, so each row totals 100% including that outcome.
+The approved table has eleven tiers of 24 positions each, covering all 264 positions exactly. Odds are fixed inside a tier and improve at each tier boundary. All values below are unconditional probabilities per adventure; **Nothing found stays 35% in every tier**, so each row totals 100% including that outcome.
 
 | Tier | Sequence positions | Common | Uncommon | Rare | Epic | Legendary | Mythic |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -171,11 +171,11 @@ Store the eleven exact weight rows in parts per million; each totals 1,000,000. 
 
 Draw the outcome bucket, then choose uniformly among that rarity's serum IDs, then draw Presence using its approved distribution. Use separate domain-separated entropy for all three choices with unbiased bounded sampling. Freeze catalogue/rules version, Presence distribution, effective sequence and its derived tier in the request before requesting VRF. Recovery reuses the same entropy and must never reroll Presence or use a newer tier table.
 
-At the endpoints, any Mythic is approximately 1 in 10,000 versus 1 in 2,000 adventures. A particular one of the 21 Mythics is approximately 1 in 210,000 versus 1 in 42,000. These are per-attempt odds, not limited edition supplies; many cards adventuring daily can still produce many rare serums. Balance with portfolio-size simulations before acceptance.
+At the endpoints, any Mythic is approximately 1 in 10,000 versus 1 in 2,000 adventures. A particular one of the 21 Mythics is approximately 1 in 210,000 versus 1 in 42,000. These are per-attempt odds, not limited edition supplies; many cards adventuring daily can still produce many rare serums. Review portfolio-size simulations before release.
 
-### Approved Holy weights with proposed adventure balance
+### Approved Holy weights and adventure balance
 
-Confirmed Presence distribution: independently draw Holy at 1% of found serums and each other Presence at 9.9%. This remains constant across sequences; higher sequence still improves rare Essence/Form outcomes. The adventure find rate and rarity buckets are still proposed. Under the proposed 65% find rate, any Holy serum has a 0.65% per-adventure chance, approximately 1 in 154.
+Confirmed Presence distribution: independently draw Holy at 1% of found serums and each other Presence at 9.9%. This remains constant across sequences; higher sequence still improves rare Essence/Form outcomes. Under the approved 65% find rate, any Holy serum has a 0.65% per-adventure chance, approximately 1 in 154.
 
 | Direct adventure result | Sequence 0 | Sequence 263 |
 | --- | ---: | ---: |
