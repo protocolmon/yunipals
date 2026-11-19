@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { zeroAddress, zeroHash, type PublicClient } from "viem";
+import { zeroAddress, zeroHash, type Hex, type PublicClient } from "viem";
 
 import {
   testBuyer,
@@ -204,7 +204,7 @@ test("Seaport simulation verifies bulk maker signatures without sending validate
     }) => {
       calls++;
       assert.equal(request.functionName, "validate");
-      assert.equal(request.account, trade.intent.account);
+      assert.equal(request.account, zeroAddress);
       assert.equal(request.blockNumber, 42n);
       assert.equal(request.args[0][0].signature, trade.signature);
       return { result: true };
@@ -214,4 +214,50 @@ test("Seaport simulation verifies bulk maker signatures without sending validate
   assert.equal(calls, 1);
   Object.assign(client, { simulateContract: async () => ({ result: false }) });
   await assert.rejects(inspectOpenSeaTrade(client, trade), /signature/);
+});
+
+test("delegated makers use Seaport validation when direct signature checks revert", async () => {
+  for (const signature of [
+    `0x${"11".repeat(98)}`,
+    `0x${"11".repeat(64)}1b`
+  ] as Hex[]) {
+    const { state, client, trade } = stateFixture({ signature });
+    state.validated = false;
+    let directChecks = 0;
+    let validations = 0;
+    const readContract = client.readContract;
+    Object.assign(client, {
+      getCode: async () => `0xef0100${testSeller.slice(2)}`,
+      readContract: async (request: Parameters<typeof client.readContract>[0]) => {
+        if (request.functionName === "isValidSignature") {
+          directChecks++;
+          throw new Error("ERC-1271 reverted");
+        }
+        return readContract(request);
+      },
+      simulateContract: async (request: {
+        functionName: string;
+        account: string;
+        blockNumber: bigint;
+        args: { signature: string }[][];
+      }) => {
+        validations++;
+        assert.equal(request.functionName, "validate");
+        assert.equal(request.account, zeroAddress);
+        assert.equal(request.blockNumber, 42n);
+        assert.equal(request.args[0][0].signature, signature);
+        return { result: true };
+      }
+    });
+    await inspectOpenSeaTrade(client, trade);
+    assert.equal(validations, 1);
+    assert.equal(directChecks, signature.length === 132 ? 1 : 0);
+
+    Object.assign(client, {
+      simulateContract: async () => {
+        throw new Error("Seaport rejected the signature");
+      }
+    });
+    await assert.rejects(inspectOpenSeaTrade(client, trade), /signature/);
+  }
 });
