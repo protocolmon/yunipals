@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { Plugin } from "vite";
 
+import type { PreviewConfigOptions } from "../../server/social/config";
 import { createSocialHandler } from "../../server/social/handler";
 import { buildImages, buildPages, buildSettings } from "./build";
 // @ts-expect-error The packaging helper is also called by the existing JS release assembler.
@@ -10,9 +11,10 @@ import { packageSocial } from "./package.mjs";
 
 export async function socialPlugin(
   app: string,
-  env: Record<string, string | undefined>
+  env: Record<string, string | undefined>,
+  options: PreviewConfigOptions = {}
 ): Promise<Plugin> {
-  const config = await buildSettings(app, env);
+  const config = await buildSettings(app, env, options);
   let output = "";
   let build = false;
   return {

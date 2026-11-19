@@ -10,10 +10,18 @@ export type PreviewConfig = SocialConfig & {
   portalChainId: number;
   gateway: string;
   assetHosts: string[];
+  developmentOrigins?: string[];
 };
 
+export type PreviewConfigOptions = { development?: boolean };
+
+export function loopbackHost(host: string) {
+  return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(host);
+}
+
 export function socialConfig(
-  env: Record<string, string | undefined>
+  env: Record<string, string | undefined>,
+  options: PreviewConfigOptions = {}
 ): PreviewConfig {
   const site = new URL(
     env.VITE_SITE_ORIGIN ||
@@ -42,6 +50,16 @@ export function socialConfig(
   const indexerUrl = (env.VITE_YUNIPALS_INDEXER_URL || "").replace(/\/$/, "");
   const portalUrl = (env.VITE_PORTALS_API_URL || indexerUrl).replace(/\/$/, "");
   const gateway = env.VITE_BOOSTER_IPFS_GATEWAY || "https://ipfs.io/ipfs/";
+  const developmentOrigins =
+    options.development && env.VERCEL_ENV !== "production"
+      ? [siteOrigin, indexerUrl, portalUrl, gateway]
+          .filter(Boolean)
+          .map((value) => new URL(value))
+          .filter(
+            (url) => url.protocol === "http:" && loopbackHost(url.hostname)
+          )
+          .map((url) => url.origin)
+      : [];
   const assetHosts = [siteOrigin, indexerUrl, portalUrl, gateway]
     .filter(Boolean)
     .map((s) => new URL(s).hostname);
@@ -51,17 +69,22 @@ export function socialConfig(
       .map((s) => s.trim().toLowerCase())
       .filter(Boolean)
   );
-  if (assetHosts.some((host) => !/^[a-z0-9.-]+$/.test(host)))
+  if (
+    assetHosts.some(
+      (host) => !/^[a-z0-9.-]+$/.test(host) && !loopbackHost(host)
+    )
+  )
     throw new Error("OG_ASSET_HOSTS must contain exact hostnames.");
   for (const value of [indexerUrl, portalUrl, gateway].filter(Boolean)) {
     const url = new URL(value);
+    const local = developmentOrigins.includes(url.origin);
     if (
-      url.protocol !== "https:" ||
+      (!local && url.protocol !== "https:") ||
       url.username ||
       url.password ||
       url.search ||
       url.hash ||
-      (url.port && url.port !== "443")
+      (!local && url.port && url.port !== "443")
     )
       throw new Error(
         "Preview service URLs must use public HTTPS without credentials or query parameters."
@@ -73,6 +96,7 @@ export function socialConfig(
     portalUrl,
     gateway,
     assetHosts,
+    ...(developmentOrigins.length ? { developmentOrigins } : {}),
     staticRevision: env.VITE_SOCIAL_REVISION,
     boostersEnabled: env.VITE_BOOSTERS_ENABLED === "true",
     monsters: (env.VITE_BOOSTER_MONSTERS || "").toLowerCase(),

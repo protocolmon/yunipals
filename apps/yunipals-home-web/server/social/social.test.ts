@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
@@ -7,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 import sharp from "sharp";
 
-import { buildImages } from "../../scripts/social/build";
+import { buildImages, buildSettings } from "../../scripts/social/build";
 import { parseMonsterArtwork } from "../../src/lib/social/artwork";
 import { resolvePageMetadata } from "../../src/lib/social/metadata";
 import { socialConfig } from "./config";
@@ -95,6 +96,83 @@ before(async () => {
 });
 after(async () => {
   await rm(temporary, { recursive: true, force: true });
+});
+
+test("local Vite previews read only configured loopback origins during development", async () => {
+  const server = createServer((req, res) => {
+    if (req.url === "/v1/tokens/base/12") {
+      res.setHeader("Content-Type", "application/json");
+      res.end(
+        json({
+          token: { token_id: "12", ...original, image: `${origin}/art.webp` }
+        })
+      );
+    } else if (req.url === "/art.webp") res.end(art);
+    else if (req.url === "/redirect") {
+      res.writeHead(302, { Location: "http://127.0.0.1:1/unconfigured" });
+      res.end();
+    } else {
+      res.writeHead(404);
+      res.end();
+    }
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== "string");
+  const origin = `http://127.0.0.1:${address.port}`;
+  const env = { VITE_SITE_ORIGIN: origin, VITE_YUNIPALS_INDEXER_URL: origin };
+  try {
+    // The same settings path used by Vite must accept the portal rehearsal API.
+    const local = await buildSettings(app, env, { development: true });
+    const handler = createSocialHandler({
+      config: local,
+      directory,
+      html: template
+    });
+    const html = await (
+      await handler(new Request(`${origin}/collection/base/12`))
+    ).text();
+    assert.match(html, /Blue Unidragon #12/);
+    const image = /property="og:image" content="([^"]+)"/
+      .exec(html)![1]
+      .replaceAll("&amp;", "&");
+    const response = await handler(new Request(image));
+    assert.equal(response.headers.get("Content-Type"), "image/png");
+    assert.match(response.headers.get("CDN-Cache-Control")!, /max-age=300/);
+    assert.equal(
+      (await sharp(Buffer.from(await response.arrayBuffer())).metadata()).width,
+      1200
+    );
+    assert.equal(assetUrl("http://127.0.0.1:1/unconfigured", local), null);
+    await assert.rejects(
+      createReader(local)(`${origin}/redirect`, AbortSignal.timeout(1000)),
+      /source/
+    );
+    await assert.rejects(buildSettings(app, env), /HTTPS/);
+    assert.throws(
+      () =>
+        socialConfig(
+          { ...env, VERCEL_ENV: "production" },
+          { development: true }
+        ),
+      /HTTPS/
+    );
+    assert.throws(
+      () =>
+        socialConfig(
+          { VITE_YUNIPALS_INDEXER_URL: "http://192.168.1.1" },
+          { development: true }
+        ),
+      /HTTPS/
+    );
+    assert.equal(config.developmentOrigins, undefined);
+    assert.equal(assetUrl(`${origin}/art.webp`, config), null);
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve()))
+    );
+  }
 });
 
 test("address and artwork policies reject private networks and untrusted sources", async () => {

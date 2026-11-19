@@ -63,11 +63,15 @@ export default defineConfig(async ({ command, mode }): Promise<UserConfig> => {
   return {
     plugins: [
       react(),
-      await socialPlugin(fileURLToPath(new URL("./", import.meta.url)), {
-        ...env,
-        ...loadEnv(mode, process.cwd(), "OG_"),
-        ...process.env
-      }),
+      await socialPlugin(
+        fileURLToPath(new URL("./", import.meta.url)),
+        {
+          ...env,
+          ...loadEnv(mode, process.cwd(), "OG_"),
+          ...process.env
+        },
+        { development: command === "serve" }
+      ),
       ...(mode === "fixtures" ? [fixturePlugin()] : []),
       {
         ...license({

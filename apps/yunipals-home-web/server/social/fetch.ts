@@ -1,8 +1,9 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import { request as httpRequest } from "node:http";
 import { request as httpsRequest, type RequestOptions } from "node:https";
 
-import type { PreviewConfig } from "./config";
+import { loopbackHost, type PreviewConfig } from "./config";
 
 export class PreviewError extends Error {
   status: number;
@@ -44,11 +45,14 @@ export function assetUrl(uri: string, config: PreviewConfig): string | null {
         : uri,
       config.siteOrigin
     );
+    const local =
+      url.protocol === "http:" &&
+      config.developmentOrigins?.includes(url.origin);
     if (
-      url.protocol !== "https:" ||
+      (!local && url.protocol !== "https:") ||
       url.username ||
       url.password ||
-      (url.port && url.port !== "443") ||
+      (!local && url.port && url.port !== "443") ||
       !config.assetHosts.includes(url.hostname)
     )
       return null;
@@ -74,12 +78,15 @@ export function createReader(config: PreviewConfig): PreviewReader {
       const safe = assetUrl(current, config);
       if (!safe) throw new PreviewError(503, "Artwork source is unavailable.");
       const url = new URL(safe);
+      const local =
+        url.protocol === "http:" &&
+        config.developmentOrigins?.includes(url.origin);
       signal.throwIfAborted();
       const addresses = await new Promise<import("node:dns").LookupAddress[]>(
         (resolve, reject) => {
           const abort = () => reject(signal.reason);
           signal.addEventListener("abort", abort, { once: true });
-          lookup(url.hostname, { all: true })
+          lookup(url.hostname.replace(/^\[|\]$/g, ""), { all: true })
             .then(resolve, reject)
             .finally(() => signal.removeEventListener("abort", abort));
         }
@@ -87,7 +94,9 @@ export function createReader(config: PreviewConfig): PreviewReader {
       signal.throwIfAborted();
       if (
         !addresses.length ||
-        addresses.some((row) => !publicAddress(row.address))
+        addresses.some((row) =>
+          local ? !loopbackHost(row.address) : !publicAddress(row.address)
+        )
       )
         throw new PreviewError(503, "Artwork source is unavailable.");
       const pinned = addresses[0];
@@ -108,7 +117,8 @@ export function createReader(config: PreviewConfig): PreviewReader {
           lookup: (_host, _options, callback) =>
             callback(null, pinned.address, pinned.family)
         };
-        const req = httpsRequest(url, requestOptions, (res) => {
+        const request = local ? httpRequest : httpsRequest;
+        const req = request(url, requestOptions, (res) => {
           const chunks: Buffer[] = [];
           let size = 0;
           const max = image ? 8 * 1024 * 1024 : 512 * 1024;

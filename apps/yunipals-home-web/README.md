@@ -305,7 +305,9 @@ Configure these values before building:
 
 These values are captured in the build. Only the listed public preview
 configuration is packaged; private environment variables are not copied.
-Public HTTPS hosts are required for server-side reads. The fetcher rejects
+Production server-side reads require public HTTPS hosts. During Vite development,
+explicitly configured HTTP loopback service origins are supported as well; other
+local addresses and ports remain unavailable. The fetcher rejects
 private/reserved addresses, credentials, unsupported ports, oversized inputs,
 and redirects to disallowed hosts. Add an artwork host only if you trust it.
 Unsupported or unavailable artwork receives a fallback preview.

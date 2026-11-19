@@ -3,7 +3,11 @@ import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { proposalPreviews } from "../../src/lib/social/proposals";
-import { socialConfig, type PreviewConfig } from "../../server/social/config";
+import {
+  socialConfig,
+  type PreviewConfig,
+  type PreviewConfigOptions
+} from "../../server/social/config";
 import { renderPreview } from "../../server/social/render";
 import {
   escapeHtml,
@@ -17,7 +21,8 @@ import {
 
 export async function buildSettings(
   app: string,
-  env: Record<string, string | undefined>
+  env: Record<string, string | undefined>,
+  options: PreviewConfigOptions = {}
 ) {
   // Any renderer, font package or input-art change invalidates all static cards.
   const hash = createHash("sha256");
@@ -30,10 +35,13 @@ export async function buildSettings(
     ...Object.values(socialCards).map((card) => `public${card[2]}`)
   ])
     hash.update(await readFile(join(app, file)));
-  const config = socialConfig({
-    ...env,
-    VITE_SOCIAL_REVISION: hash.digest("hex").slice(0, 12)
-  });
+  const config = socialConfig(
+    {
+      ...env,
+      VITE_SOCIAL_REVISION: hash.digest("hex").slice(0, 12)
+    },
+    options
+  );
   return config;
 }
 
