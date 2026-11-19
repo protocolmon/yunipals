@@ -1,10 +1,108 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "status": "proposed",
   "name": "Yunipals adventure serums",
   "serumCount": 121,
+  "presenceCount": 11,
+  "serumVariantCount": 1331,
+  "visualDirectionStatus": "approved reference style",
+  "displayRule": "Keep the Essence Form Serum name and display Presence as a separate trait",
   "serumIdFormula": "1 + (essenceId - 1) * 11 + (formId - 1)",
   "noneId": 0,
+  "presenceNoneId": 0,
+  "presences": [
+    {
+      "id": 1,
+      "name": "Holy",
+      "effect": "Luminous ivory-gold eyes with halo-shaped irises, compassionate expression and dignified posture"
+    },
+    {
+      "id": 2,
+      "name": "Aggressive",
+      "effect": "Narrowed eyes, bared teeth and a tense forward stance"
+    },
+    {
+      "id": 3,
+      "name": "Calm",
+      "effect": "Soft, focused eyes and balanced, attentive composure"
+    },
+    {
+      "id": 4,
+      "name": "Chill",
+      "effect": "Half-closed eyes, loose limbs and a casual lounging pose"
+    },
+    {
+      "id": 5,
+      "name": "Happy",
+      "effect": "Bright eyes, open smile and playful movement"
+    },
+    {
+      "id": 6,
+      "name": "Panicked",
+      "effect": "Wide eyes, startled recoil and frantic movement"
+    },
+    {
+      "id": 7,
+      "name": "Mischievous",
+      "effect": "Knowing grin, sideways glance and sneaking posture"
+    },
+    {
+      "id": 8,
+      "name": "Proud",
+      "effect": "Raised chin, lifted chest and deliberately displayed features"
+    },
+    {
+      "id": 9,
+      "name": "Curious",
+      "effect": "Tilted head, attentive gaze and tentative exploration"
+    },
+    {
+      "id": 10,
+      "name": "Melancholic",
+      "effect": "Downcast eyes, lowered head and a quiet, slumped pose"
+    },
+    {
+      "id": 11,
+      "name": "Sinister",
+      "effect": "Calculating stare, unsettling smile and deliberate stillness"
+    }
+  ],
+  "presencePolicy": {
+    "status": "Holy weights, latest-dose replacement, random parent inheritance and player-paid fusion VRF confirmed; neutral-parent edge-case default pending",
+    "rarityRule": "Holy is rarer than each of the other ten Presences",
+    "distribution": {
+      "status": "approved",
+      "condition": "Serum found; independent of Essence/Form rarity",
+      "denominator": 1000000,
+      "weightsInPresenceIdOrder": [
+        10000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000
+      ],
+      "sequenceDependence": "None; sequence affects Essence/Form rarity"
+    },
+    "drinkingRule": "Confirmed: latest consumed serum sets current Presence; physical effects keep stacking and all dose Presences remain in history",
+    "fusionRule": "Confirmed: randomly inherit either current parent Presence at 50/50 when they differ; equal Presences have a guaranteed result",
+    "proposedNeutralParentRule": "Presence 0 participates as a neutral parent outcome: Holy plus neutral produces 50% Holy and 50% neutral",
+    "randomness": "Use separately domain-separated adventure VRF entropy and freeze the distribution version before requesting; differing fusion Presences require fresh request-bound VRF, with no rerolls on recovery",
+    "fusionVrfFunding": "Confirmed: player pays the quoted VRF cost in native ETH in addition to 0.1 USDC generation and ordinary transaction gas; no VRF charge when parent Presences match"
+  },
+  "artDirection": {
+    "status": "approved",
+    "identity": "Preserve recognizable Yunipal identity, ancestry and collectible card style",
+    "environment": "Every serum affects the background; Essence sets materials and setting, Form sets transformation scale, Presence influences atmosphere",
+    "avatar": "One-dose maximum enhancement coherently combines wings, fangs, talons, spines, hide, runes, crest, armor, aura and spectral details, transforming the whole scene",
+    "presence": "Visible in eyes, expression and pose; dark Essence does not force an evil disposition",
+    "characterArtwork": "No bottle or drinking vessel"
+  },
   "essences": [
     {
       "id": 1,
@@ -101,7 +199,7 @@
     {
       "id": 5,
       "name": "Fangs",
-      "effect": "Muzzle, teeth and predatory expression",
+      "effect": "Muzzle and teeth; expression follows Presence",
       "minimumRarity": "Uncommon"
     },
     {
@@ -137,7 +235,7 @@
     {
       "id": 11,
       "name": "Avatar",
-      "effect": "Extreme whole-body embodiment of the essence",
+      "effect": "Maximum whole-body enhancement combining the other forms into one coherent creature and transformed environment",
       "minimumRarity": "Mythic"
     }
   ],

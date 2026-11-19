@@ -4,7 +4,11 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 
 ## Confirmed product rules
 
-- There are exactly 121 serum types, formed from two traits with 11 values each. The proposed names and rarity assignment are below; their balance is not yet approved.
+- There are 121 named Essence × Form serum types, each with 11 possible Presence traits: 1,331 complete serum combinations. Keep the existing serum names and display Presence separately. Visual direction, Presence lifecycle and Presence weights are approved; Essence/Form rarity weights and overall adventure drop balance remain under review.
+- Holy has a 1% chance among found serums; each of the other ten Presences has a 9.9% chance. This roll is independent of Essence/Form rarity and does not vary with sequence. Higher sequence still improves the chance of rare Essence/Form outcomes.
+- Drinking a serum replaces the card's current Presence with the new serum's Presence. Earlier physical effects continue stacking, and every dose's Presence remains in ordered history. This includes replacing Holy with a non-Holy Presence.
+- Fusion randomly inherits one input card's current Presence, with an equal 50/50 parent selection when they differ. The owner does not choose, and the image generator does not roll the result. Matching parent Presences produce that same Presence with certainty. Preserve both parents' histories and the settled inheritance result.
+- Approved art direction: expressive eyes and poses, essence-specific environments, recognizable Yunipal identity, a clearly visible Presence trait and dramatically enhanced Avatars. Avatar combines the other forms into one coherent maximum-enhanced creature and still consumes only one dose. Character artwork contains no bottle.
 - Every live ungraded TCG card, including fused cards, can adventure. Graded cards cannot adventure. Only the current owner can initiate the call; marketplace approvals do not confer this right.
 - Adventures use Chainlink VRF v2.5 direct funding paid in native ETH. The result determines whether a serum is found and its type.
 - A serum is contract state attached to a card, not an NFT, wallet inventory item or independently transferable asset. A newly found serum replaces that card's previous unused serum.
@@ -15,14 +19,14 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 - First fusion: two unfused cards at neighbouring sequence positions within the same original lineage; both must have the same owner.
 - Second fusion: two first-level fusion cards from different original lineages, with no adjacency requirement between those lineages. It contains four distinct original source cards.
 - Stop at the second fusion level: four-card fusions cannot fuse again. Reject base-plus-fusion and any other level combination.
-- Each fusion operation costs exactly 0.1 USDC. Two first fusions plus their second fusion cost 0.3 USDC in total, excluding serum applications and transaction fees.
+- Each fusion operation costs exactly 0.1 USDC for generation. The player also pays the quoted Chainlink VRF cost in native ETH when differing parent Presences require randomness, plus ordinary transaction gas. Matching Presences need no VRF request or VRF charge. Two first fusions plus their second fusion cost 0.3 USDC in total, excluding any VRF charges, serum applications and transaction fees.
 - Successful fusion burns both inputs and creates one new fusion NFT. Burning an original also ends its remaining daily offspring claims. Burning only offspring does not end their original's claims.
 - There is no per-original limit of 11 fusions. Adjacency, ownership and consuming the inputs are the constraints.
 - Fusion NFTs belong to the existing YunipalMonsters ERC-721 collection, using compatible upgrades and distinct fusion provenance. Both fusion levels must be supported by portal grading.
 - Fused-card adventure odds use the floor of the average immutable sequence of all original source cards. Store the exact sequence sum and source count; do not average already rounded intermediate values.
 - A fusion qualifies for a portal when one actual source card satisfies all of its applicable requirements together. An originals-only portal accepts the fusion if that matching source card was an original.
 - Grading uses the existing player spell → portal transformation → graded result flow. Preserve the card's defining serum and fusion features while adding the portal effect and spell.
-- Once a card has a completed grade, it cannot adventure, consume serums or be used as either input to a fusion. This applies to both base and fused cards, including cards graded before the feature launches. Repeat portal grading and an original's daily offspring claims remain available.
+- Once a card has a completed grade, it cannot adventure, consume serums or be used as either input to a fusion. This applies to both base and fused cards, including cards graded before the feature launches. Preserve the current product's one-completed-grade rule; this feature does not introduce regrading. An original's daily offspring claims remain available.
 - Failed artwork jobs remain recoverable and are retried until completed, without charging again. There is no automatic timeout cancellation/refund. Durable job recovery and operator intervention are required; provider availability is not a contract-level guarantee.
 
 ## Proposed defaults still to review
@@ -33,7 +37,8 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 | Fusion cooldown | Inherit the later next-adventure time of the two inputs, so fusion cannot reset the daily timer. |
 | Unused input serums | Discard at successful fusion; the new fusion starts with an empty unused-serum slot. Applied effects remain inherited. |
 | Two equal effects | Preserve both contributions and increase intensity. A mixed fusion preserves both effects, without inventing a new serum ID. |
-| Burning timing | Lock inputs and reserve the fee first; burn and mint atomically only after valid artwork is ready. |
+| Burning timing | Lock inputs and reserve the fee first; settle any fusion Presence randomness, then burn and mint atomically only after valid artwork is ready. |
+| Unmodified fusion parent | A parent with no consumed serum has Presence 0 (neutral/no Presence). Under equal parent inheritance, Holy + neutral has a 50% Holy / 50% neutral outcome. This edge-case default is stated explicitly for review; do not silently guarantee Holy when only one parent has a Presence. |
 | Pending generation | Keep the card/input reservations until completion, with visible status and durable retry. There is no automatic release after a timeout. This can prevent use or transfer for the whole delay. |
 | Grading economics | Use the existing portal-kind admission fees and competition contribution, separately from the 0.1 USDC serum/fusion fee. No automatic grading is bundled into that fee. |
 | Grading competition | Use the same competition and scoring rubric, with no automatic bonus for serum rarity, number of doses or fusion level. Calibrate against matched base and fused-card examples. |
@@ -45,7 +50,7 @@ A token with 11 locally consumed doses cannot drink again. An ungraded card can 
 
 ## Confirmed grading lifecycle and eligibility
 
-Grading ends a card's adventure, serum and fusion progression. Owners can build an ungraded card through serum applications and up to two fusion levels, then enter a portal to transform and grade it. After the first completed grade, adventures, serum consumption and further fusion are permanently unavailable for that token under the feature rules. Regrading remains available; a later grade does not restore those progression paths.
+Grading ends a card's adventure, serum and fusion progression. Owners can build an ungraded card through serum applications and up to two fusion levels, then enter a portal to transform and grade it. After a completed grade, adventures, serum consumption and further fusion are permanently unavailable for that token under the feature rules. Preserve the existing one-completed-grade admission rule. Failed or rejected attempts that never completed do not permanently mark a card graded.
 
 This restriction is per card, not per original lineage. Grading an original does not end its daily offspring claims or make its offspring graded. Those offspring have independent eligibility. Only burning the original ends its remaining claim rights.
 
@@ -61,11 +66,27 @@ Pending adventures, grading and evolution jobs are mutually exclusive. Starting 
 
 ## Product choices still awaiting answers
 
-1. Accept the proposed 121-serum catalogue and initial odds, or revise the traits/balance before implementation? The user requested a visual review before deciding.
+The eleven Presence concept cards, Holy at 1%, other Presences at 9.9% each, latest-dose Presence replacement, random parent inheritance and player-funded fusion VRF are confirmed.
+
+One consolidated review remains: accept the proposed adventure odds and lifecycle defaults below, or specify revisions. The visual and Presence approvals did not approve overall adventure drop probabilities. Portfolio-scale expectations and exact rare-drop examples below make the proposed balance reviewable.
+
+Before implementation, bring this branch onto current main while preserving the plan. Current-main `apps/yunipals-indexer/lib/portals/chain.ts` rejects admissions with an already completed grade, and the card picker excludes graded cards. The earlier plan's regrading assumption has been removed. When evolved artwork introduces nonzero art revisions, replace the API's current `artVersion != 0` shortcut with canonical completed-grading history so an ungraded serum/fusion card remains gradeable.
+
+### Final proposed defaults for review
+
+- Adventure result arrives when VRF settles; no additional artificial adventure timer.
+- Fusion inherits the later input adventure cooldown, so fusion cannot reset daily eligibility.
+- Successfully fusing discards unused input serums; all already-applied effects and histories remain inherited.
+- A neutral/unmodified parent participates in the same 50/50 inheritance. Matching Presences, including two neutral parents, produce a guaranteed result.
+- Reserve the inputs and generation fee on request. Burn and mint atomically only once valid artwork is ready. Retry the same job until completion without another generation fee or another randomness draw; no automatic timeout cancellation/refund.
+- Preserve existing grading fees and competition scoring. Serum rarity, dose count and fusion level confer no automatic score bonus. Grading ends progression and keeps the existing one-completed-grade rule.
+- The unused serum on a graded card remains inactive attached history. An ungraded card at its local 11-dose cap can still adventure, with the limit explained before paying.
+
+The detailed default table above defines the same package; no implementation or production release is implied by approving only the Holy distribution and fusion funding.
 
 ## Proposed serum traits
 
-Use two independent catalogue traits: **Essence** describes the material/magic, and **Form** describes what physically changes. Every combination is a distinct serum, named `{Essence} {Form} Serum`. This is more visually varied than 121 palette swaps.
+Use three catalogue traits: **Essence** describes the material/magic, **Form** describes what physically changes, and **Presence** controls eyes, expression and body language. Each Essence/Form pair retains the name `{Essence} {Form} Serum`; Presence is a separate visible trait, giving 1,331 complete combinations without requiring 1,331 different serum names.
 
 | ID | Essence | Main visual effect | Minimum rarity |
 | --- | --- | --- | --- |
@@ -87,21 +108,41 @@ Use two independent catalogue traits: **Essence** describes the material/magic, 
 | 2 | Runes | Body markings | Common |
 | 3 | Hide | Skin, scales, fur or fleece | Common |
 | 4 | Crest | Horn and crown structure | Uncommon |
-| 5 | Fangs | Muzzle, teeth and expression | Uncommon |
+| 5 | Fangs | Muzzle and teeth; expression follows Presence | Uncommon |
 | 6 | Talons | Claws, hooves and limb detail | Uncommon |
 | 7 | Spines | Back ridges, spikes and tail growth | Rare |
 | 8 | Wings | Wings or species-compatible fin fans | Rare |
 | 9 | Wraith | Spectral body material and edges | Epic |
 | 10 | Sovereign | Regal armor and a larger, imposing silhouette | Legendary |
-| 11 | Avatar | Extreme whole-body embodiment of the essence | Mythic |
+| 11 | Avatar | Maximum enhancement combining wings, fangs, talons, spines, hide, runes, crest, armor, aura and spectral details into one coherent creature | Mythic |
 
 For example: Bloom Runes, Ember Hide, Crystal Spines, Dreadthorn Wraith, Bloodmoon Sovereign and Voidheart Avatar.
 
-The three dark essences should produce increasingly evil expressions and anatomy; the other essences remain recognizable fantasy transformations. Fusion level is a separate trait from serum Form: Eclipse and Singularity name our example fusion appearances, not extra serum types.
+The three dark essences retain dark materials and supernatural motifs, while Presence controls disposition. A Holy Voidheart can therefore have obsidian anatomy and sacred luminous eyes; a Bloom creature can be aggressive. Do not force every dark essence to look evil or let Fangs override a calm Presence. Fusion level is a separate trait from serum Form: Eclipse and Singularity name our example fusion appearances, not extra serum types.
+
+### Approved Presence and environment direction
+
+| ID | Presence | Defining expression and pose |
+| --- | --- | --- |
+| 1 | Holy | Luminous ivory-gold eyes with halo-shaped irises, compassionate expression and dignified posture |
+| 2 | Aggressive | Narrowed eyes, bared teeth and a tense forward stance |
+| 3 | Calm | Soft, focused eyes and balanced, attentive composure |
+| 4 | Chill | Half-closed eyes, loose limbs and a casual lounging pose |
+| 5 | Happy | Bright eyes, open smile and playful movement |
+| 6 | Panicked | Wide eyes, startled recoil and frantic movement |
+| 7 | Mischievous | Knowing grin, sideways glance and sneaking posture |
+| 8 | Proud | Raised chin, lifted chest and deliberately displayed features |
+| 9 | Curious | Tilted head, attentive gaze and tentative exploration |
+| 10 | Melancholic | Downcast eyes, lowered head and a quiet, slumped pose |
+| 11 | Sinister | Calculating stare, unsettling smile and deliberate stillness |
+
+All serums influence the environment. Essence supplies the setting and materials; Form controls the scale of the transformation, and Presence informs lighting, stillness or movement. Avatar transforms the entire scene along with the creature. Preserve identifiable ancestry and the Yunipals card style across all combinations. Backgrounds are derived artwork, not a fourth rolled trait.
+
+The approved local reference set is `generated/serum-presence-examples/`, with all eleven original images and exact generation prompts. This ignored review artifact must be curated into versioned, deployment-neutral worker reference assets before implementation; runtime jobs must not depend on a developer worktree. The examples vary Essence and Form as well as Presence and are visual targets, not a controlled same-serum comparison.
 
 Rarity is the higher minimum rarity of the chosen essence and form. This yields 9 Common, 27 Uncommon, 28 Rare, 17 Epic, 19 Legendary and 21 Mythic serums, totaling 121. Every Voidheart serum is Mythic; every Bloodmoon serum is at least Legendary.
 
-`serumId = 1 + (essenceId - 1) * 11 + (formId - 1)`; zero means no unused serum. See [the complete proposed catalogue](adventures-serums-catalog.draft.json), which enumerates all 121 IDs and names. Rarity, effects and rendering recipe version must be explicit, immutable attributes of a published catalogue version.
+`serumId = 1 + (essenceId - 1) * 11 + (formId - 1)`; zero means no unused serum. Store an unused serum and each applied dose as at least `(catalogueVersion, serumId, presenceId)`; Presence IDs are 1–11 for found serums, with zero reserved for an unmodified card. See [the complete proposed catalogue](adventures-serums-catalog.draft.json), which enumerates all 121 IDs and names plus eleven Presence values. Rarity, Presence distribution, effects and rendering recipe version must be explicit, immutable attributes of a published catalogue version.
 
 ## Proposed adventure odds
 
@@ -120,9 +161,32 @@ These are initial balance proposals, not approved probabilities. Values below ar
 
 Interpolate by the immutable per-original sequence, not global token ID, date, wallet size or current artwork. Use parts per million for precision. Keep None fixed, floor the interpolated Uncommon-through-Mythic weights, and assign the remainder to Common so every integer sequence sums to exactly 1,000,000. Check monotonicity at all 264 positions.
 
-Draw the outcome bucket, then choose uniformly among that rarity's serum IDs. Use separate domain-separated entropy for the two choices with unbiased bounded sampling. Freeze catalogue/rules version and effective sequence in the request before requesting VRF.
+Draw the outcome bucket, then choose uniformly among that rarity's serum IDs, then draw Presence using its approved distribution. Use separate domain-separated entropy for all three choices with unbiased bounded sampling. Freeze catalogue/rules version, Presence distribution and effective sequence in the request before requesting VRF. Recovery reuses the same entropy and must never reroll Presence.
 
 At the endpoints, any Mythic is approximately 1 in 10,000 versus 1 in 2,000 adventures. A particular one of the 21 Mythics is approximately 1 in 210,000 versus 1 in 42,000. These are per-attempt odds, not limited edition supplies; many cards adventuring daily can still produce many rare serums. Balance with portfolio-size simulations before acceptance.
+
+### Approved Holy weights with proposed adventure balance
+
+Confirmed Presence distribution: independently draw Holy at 1% of found serums and each other Presence at 9.9%. This remains constant across sequences; higher sequence still improves rare Essence/Form outcomes. The adventure find rate and rarity buckets are still proposed. Under the proposed 65% find rate, any Holy serum has a 0.65% per-adventure chance, approximately 1 in 154.
+
+| Direct adventure result | Sequence 0 | Sequence 263 |
+| --- | ---: | ---: |
+| Any Holy serum | 1 in 154 | 1 in 154 |
+| Any Holy Mythic serum | 1 in 1,000,000 | 1 in 200,000 |
+| A specific Holy Mythic, e.g. Holy Voidheart Avatar | 1 in 21,000,000 | 1 in 4,200,000 |
+
+Under one adventure per card each day for 30 days, expected counts are:
+
+| Adventuring cards | Any Holy finds | Any Mythic finds, all sequence 0 | Any Mythic finds, all sequence 263 |
+| --- | ---: | ---: | ---: |
+| 1 | 0.195 | 0.003 | 0.015 |
+| 11 | 2.145 | 0.033 | 0.165 |
+| 100 | 19.5 | 0.3 | 1.5 |
+| 1,000 | 195 | 3 | 15 |
+
+These are analytical expected counts, not guarantees, empirical simulations or probabilities of at least one find. They assume every adventure is completed daily; generation locks and grading can reduce attempts. A complete lineage spans all sequences rather than either endpoint. A new find can replace an unused serum, so findings are not a wallet inventory balance.
+
+Holy is not necessarily tied to a Mythic dose: a cheaper/common Holy serum can set Presence on a card that already has Mythic physical effects, and a Holy parent can pass Presence to a fusion. Therefore the tiny direct combined-drop probabilities must not be advertised as the rarity of obtaining a final Holy transformed card. Every new drink still sets the latest Presence, even if it replaces Holy.
 
 ## Variant counts
 
@@ -147,30 +211,40 @@ These are theoretical recipe possibilities across all possible lineage permutati
 
 ### With up to 11 ordered doses per new card
 
-With the confirmed allowance of 11 NEW doses per newly fused card, preserving its parents' histories, and the confirmed rule that dose order is part of the recipe:
+Include all 1,331 serum/Presence combinations, ordered local histories, both fusion parents' histories and the settled inherited Presence at each fusion. A later dose replaces visible Presence but does not erase the earlier inheritance result from history. Matching parent Presences count as one outcome; differing Presences count as two possible outcomes.
+
+The following calculation assumes the proposed neutral-parent rule (Presence 0 participates in the 50/50 inheritance) and that every serum/Presence combination has nonzero probability. It counts recipes, not their probability; making Holy rare does not change the number of possible recipes.
 
 ```
-H = sum(121^k, k = 0..11)
-  = 82,081,105,631,730,092,455,932 local serum histories
+H = sum(1331^k, k = 0..11)
+  = 23,242,616,942,008,024,538,100,265,366,080,792
+h = (H - 1) / 11
+C = choose(264, 2) = 34,716
+
+n[0] = 1; n[p] = h for p = 1..11
+l[0] = 0; l[p] = h for p = 1..11
+K = 2 × H² - sum(n[p]², p = 0..11)
 
 B = 264 × H
-F1 = C(264, 2) × H³
-F2 = C(F1 + 1, 2) × H
+F1 = C × K × H
+f[p] = C × (2 × H × n[p] - n[p]² + K × l[p])
+sum(f[p]) = F1
+
+cross = (F1² - sum(f[p]², p = 0..11)) / 2
+F2 = (choose(F1 + 1, 2) + cross) × H
 Total = B + F1 + F2
 ```
 
-The three factors of H in F1 belong to its two source cards and the resulting fused card. F2 includes the two complete first-fusion recipes and its own local doses.
+Here `n[p]` counts a base variant's local histories ending at Presence p, including one empty/neutral history. `K` counts both source histories and distinct inherited-Presence outcomes for a fixed pair of base variants. `f[p]` counts completed first-fusion recipes whose current Presence is p: the first term covers no new local dose; the last term covers nonempty local histories. At level two, every unordered parent pair has one outcome, and each pair with different current Presences has one additional outcome. Multiplying by H adds the resulting card's local doses.
 
 | Recipe class | Approximate possibilities |
 | --- | ---: |
-| Base with serum history | 2.16694 × 10²⁵ |
-| First fusion with all histories | 1.91981 × 10⁷³ |
-| Second fusion with all histories | 1.51262 × 10¹⁶⁹ |
-| Total | Approximately **1.51262 × 10¹⁶⁹** |
+| Base with serum history | 6.136051 × 10³⁶ |
+| First fusion with all histories and inheritance | 8.321687 × 10¹⁰⁷ |
+| Second fusion with all histories and inheritance | 1.536400 × 10²⁵⁰ |
+| Total | Approximately **1.536400 × 10²⁵⁰** |
 
-This is a finite combinatorial recipe space, not a count of guaranteed visually distinct collectibles. If application order is intentionally discarded, a single card has C(132,11) = 3,461,014,728,350,400 unordered dose multisets instead of H. Existing free-text portal edits and future catalogue versions are outside these counts.
-
-For comparison, allowing only one optional serum state per base card would produce 32,208 base appearances (264 × 122), but that is not the selected stacking design.
+This is a finite combinatorial recipe space, not a count of guaranteed visually distinct collectibles or obtainable supply. It excludes token/lineage IDs, VRF seed values, exact random samples when they produce the same Presence, unused-serum inventories, free-text portal transformations and future catalogue versions. Recalculate if the neutral-parent policy or retained-history definition changes.
 
 ## Existing implementation anchors
 
@@ -189,9 +263,9 @@ The existing base tokenURI gives portal metadata precedence. Adding serum JSON t
 
 Use three focused feature contracts, with shared interfaces and compatible upgrades to the existing NFT collection and grading contracts.
 
-1. **SerumCatalogue**: versioned 121-entry catalogue hash, trait IDs, rarity pools and sequence odds. Freeze versions once used; changes apply to future requests only.
+1. **SerumCatalogue**: versioned 121-entry base catalogue plus eleven Presence definitions, catalogue hash, trait IDs, rarity pools, Presence distribution and sequence odds. Freeze versions once used; changes apply to future requests only.
 2. **YunipalAdventures**: owner validation against the existing collection, per-card cooldown, pending request, effective sequence, unused serum, native VRF payment and settlement.
-3. **YunipalEvolution**: 0.1 USDC escrow, serum-application and fusion jobs, card reservations, input snapshots, completion/failure state, artwork versions and deterministic history hashes.
+3. **YunipalEvolution**: 0.1 USDC escrow, serum-application and fusion jobs, card reservations, input snapshots, conditional fusion VRF requests and settled Presence, completion/failure state, artwork versions and deterministic history hashes.
 
 Upgrade **YunipalMonsters** to allocate and mint fusion IDs in its existing ERC-721 namespace. Store immutable parents, flattened source-card references (maximum four), original-lineage references, sequence sum/count and inherited history commitment in separately reviewed fusion storage. No third level and no separate ERC-721 collection.
 
@@ -222,9 +296,9 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 
 ### Drinking a serum
 
-- `consumeSerum(card, expectedSerumId, expectedArtVersion, expectedHistoryHash, deadline)` requires current ownership, no completed grade, an unused serum, fewer than 11 local doses and no conflicting job. Recheck graded status at finalization as well as admission.
+- `consumeSerum(card, expectedSerumId, expectedPresenceId, expectedCatalogueVersion, expectedArtVersion, expectedHistoryHash, deadline)` requires current ownership, no completed grade, an unused serum matching the full expected tuple, fewer than 11 local doses and no conflicting job. Recheck graded status at finalization as well as admission.
 - Collect exactly 100,000 units of six-decimal USDC using SafeERC20 and verify the deposited amount. Reserve the serum and card against replacement, transfer, burn or another mutation.
-- Emit a request with immutable input artwork/hash, recipe version, serum ID, lineage/history and payer.
+- Emit a request with immutable input artwork/hash, recipe version, serum ID, Presence ID, catalogue version, lineage/history and payer. Bind the current-Presence transition policy to the request.
 - After the AI worker publishes validated assets, an authorized completion binds their image/metadata hashes to the request and prior art version.
 - Atomically append the dose, increment local count and art version, clear the unused slot, release locks and pay the fee recipient. Emit MetadataUpdate.
 - Retry provider/publication failures without another payment or increment. Preserve the reserved serum, input snapshot and pending job until successful completion; no automatic timeout refund or cancellation.
@@ -232,10 +306,13 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 
 ### Fusion
 
-- `requestFusion(cardA, cardB, expectedVersions, deadline)` requires exact ownership of both in YunipalMonsters, no completed grade on either input, compatible card kinds/levels, distinct IDs and no pending adventures, generation or grading jobs. Recheck both inputs' graded status before finalization.
+- `requestFusion(cardA, cardB, expectedVersions, expectedPolicyHash, maxVrfPrice, deadline)` requires exact ownership of both in YunipalMonsters, no completed grade on either input, compatible card kinds/levels, distinct IDs and no pending adventures, generation or grading jobs. Recheck both inputs' graded status before finalization. The caller supplies the quoted native-ETH VRF payment when Presences differ; enforce `maxVrfPrice` and deadline. Skip the VRF quote/charge when both match and reject unexpected ETH on that path. Use the existing pull-credit pattern for any excess native payment; retries do not charge for new entropy.
 - Level one: both are base cards in the supported 264-variant pack, same originalTokenId, initialized cardFacts and absolute sequence difference exactly one. No wrap between 263 and 0.
 - Level two: both are level-one fusion cards, their original lineages differ, and all four leaf card IDs are distinct.
-- Snapshot both current artworks and history hashes, reserve inputs and collect one 0.1 USDC fee.
+- Snapshot both current artworks, current Presences, catalogue/policy versions and history hashes, reserve inputs and collect one 0.1 USDC fee before requesting any fusion entropy. Canonicalize parent order for the recipe; swapping transaction inputs cannot bias inheritance.
+- If the current Presences match, persist that deterministic result immediately without requesting or charging for randomness. Otherwise request one Chainlink VRF result using fresh entropy bound to this fusion request; never reuse a known adventure seed or use a block timestamp/hash or AI choice. Apply an unbiased 50/50 parent selection.
+- Authenticate the configured callback, store its entropy and settle the inherited Presence once. Use bounded callback processing and same-proof permissionless recovery. Snapshot the two parents before requesting, and prevent transfers, burns, drinking, grading, adventures and competing fusions while locked. A failed VRF request reverts admission and fee collection atomically. There is no cancellation or reroll after learning the result.
+- Lifecycle: reserved → awaiting randomness (only when needed) → Presence settled → generation → publication → completed. The worker starts only after the inheritance result is canonically confirmed. An AI retry uses the same Presence and fee; neither retry nor delayed settlement changes the selected parent. Persistent randomness failure also requires operator-assisted recovery without fresh entropy.
 - On successful completion, burn both inputs through narrowly authorized controller methods, then mint the one result in the same collection to the requester atomically. A failure rolls back the whole finalization and leaves the job retryable.
 - The base burn path must still call onOriginalBurned for an original. Do not preserve claim rights contrary to the confirmed burn policy.
 - Reject fusion of an original with an already outstanding booster claim. While it is reserved for fusion, prevent new offspring claims; elapsed claim time can continue accruing until the original burns on success.
@@ -243,31 +320,31 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 - Record inherited cooldown and effective sequence without using the new fusion token ID as a sequence.
 - Preserve source provenance after burn. Do not overwrite the 264-card base trait mapping or fabricate a single original ID for a two-lineage result.
 - Previously minted offspring remain eligible to adventure and fuse after their original burns; lineage identity does not require that original to remain alive.
-- Store at most 11 local serum IDs per card plus the two immutable parent references and history hashes. A level-two card has a bounded seven-node ancestry tree. Keep canonical recipe parent ordering independent of the owner's input order.
+- Store at most 11 local serum/Presence/version tuples per card plus the two immutable parent references and history hashes. A level-two card has a bounded seven-node ancestry tree. Preserve the settled inherited Presence and its source parent in the fusion history even after a later dose replaces its current visible Presence. Matching parent Presences are one recipe outcome, not two distinct outcomes merely because either parent could be named.
 - Mint/receiver behavior must not let arbitrary receiver code corrupt completion or permanently trap a reserved job; rehearse contract-wallet recipients.
 
 ### Shared mutation and metadata integration
 
 Introduce a common busy/art-version interface for serum, fusion and portal operations. Check it at both admission and finalization. YunipalMonsters transfer/burn hooks enforce relevant locks for both base and fused cards. A portal job accepted under old rules must complete or be explicitly migrated before enabling competing mutations on that card.
 
-Use a single canonical resolver for latest finalized artwork. Existing portal records remain preserved and readable; new portal requests must use the latest serum/fusion art as input rather than an older portal image. Successful grading prevents subsequent serum/fusion mutations; subsequent portal grades retain previous versions in history. Both fusion levels must be gradeable at feature launch; gate handling is required scope.
+Use a single canonical resolver for latest finalized artwork. Existing portal records remain preserved and readable; new portal requests must use the latest serum/fusion art as input. Successful grading prevents subsequent serum/fusion mutations and further grading admissions. Preserve historical records without introducing regrading. Both fusion levels must be gradeable at feature launch; gate handling is required scope.
 
-Events should include sufficient immutable data to rebuild state: AdventureRequested/Resolved, SerumReserved/Consumed, EvolutionRequested/Completed, FusionRequested/Completed, policy versions, parent/source references, fees and asset/history hashes. Record worker retries separately from onchain lifecycle; no timeout-cancellation event is required under the chosen policy. Emit ERC-4906 updates from YunipalMonsters.
+Events should include sufficient immutable data to rebuild state: AdventureRequested/Resolved, SerumReserved/Consumed, EvolutionRequested/Completed, FusionRequested/RandomnessRequested/PresenceResolved/Completed, policy versions, parent/source references, fees and asset/history hashes. Include VRF request binding and whether a Presence result was deterministic. Record worker retries separately from onchain lifecycle; no timeout-cancellation event is required under the chosen policy. Emit ERC-4906 updates from YunipalMonsters.
 
 ### Grading compatibility work
 
 - Extend PortalGrading.matches to dispatch by base/fusion kind. Inspect at most four immutable base-source records, evaluating all applicable gates against the same record. Burned source NFTs need not still be live; the fused token itself must be live and owned by the submitting wallet.
 - For original-only portals, require that this same qualifying source record has isOriginal=true. Preserve the existing branch where original-only replaces the sequence-window check. Do not infer original status from a sequence average of zero, or borrow original status from a different ancestor.
 - Expose a canonical hasCompletedGrade check that covers both legacy and new successful grading requests. Grading history, not the current art revision or a visible slab, establishes this status: serum applications also change art revisions and must not accidentally mark a card graded.
-- Preserve the graded restriction through transfers, regrading, metadata updates and grading-contract upgrades. Existing completed grading history must be recognized at activation; do not trust a frontend flag or start every token as ungraded.
+- Preserve the graded restriction through transfers, attempted repeat grading, metadata updates and grading-contract upgrades. Existing completed grading history must be recognized at activation; do not trust a frontend flag or start every token as ungraded. Enforce one-completed-grade admission consistently using grading history rather than the evolved card's art revision.
 - Record the matching source used for gate qualification in the admitted context. Resolve multiple matches deterministically, such as the lowest eligible source token ID. Its traits are a qualification witness, not the fusion's entire identity.
 - Extend inputArtwork to use the canonical current-art registry for ungraded fusions and serum-mutated cards. Neither a missing base variant artwork nor an old portal result should be a fallback for a card with finalized evolved art.
 - Separate monotonic current-art revision from number of grading attempts. Do not use grading history length to index serum revisions. Bind admission, spell commitments, worker jobs, results and publication checks to the actual current image hash and revision.
 - Extend PortalAIContext beyond its current single baseColor: include card kind, source species/colors, qualifying source, fusion level, local/inherited serum history and current image reference. Update per-portal color-preservation checks for mixed ancestry under a versioned policy; never guess immutable eligibility traits from pixels.
 - Grade the new portal attempt against its input artwork and the player spell. Shared serum recipes, inherited details and automatic fusion effects are not evidence that a player copied another player's spell, and do not automatically earn Creativity points.
 - Preserve defining serum/fusion features in generation and grading checks while applying the portal effect and player spell. For up to 77 inherited doses, supply a deterministic bounded summary with the authoritative history hash rather than letting player text redefine lineage.
-- Slabs and metadata bind scores to the exact graded output image. Retain prior slabs on regrading. Fusion parents must be ungraded, so there are no parent scores to inherit or average.
-- Keep already admitted competition entries and their submitter entitlements unchanged when a card later regrades, transfers or burns through an otherwise permitted path. A later grade is a new request and, under the proposed normal competition policy, a new paid entry. A graded card cannot be burned through fusion; do not duplicate payouts or move an entry to another token.
+- Slabs and metadata bind scores to the exact graded output image. Preserve existing historical slabs without enabling new repeat grades. Fusion parents must be ungraded, so there are no parent scores to inherit or average.
+- Keep already admitted competition entries and their submitter entitlements unchanged when a card transfers or burns through an otherwise permitted path. A graded card cannot be burned through fusion; do not duplicate payouts, create repeat-grading entries or move an entry to another token.
 - Drain or migrate pending jobs before activating incompatible grading context/rubric changes. Respect existing competition rubric boundaries; do not mix an incompatible new rubric into a batch already bound to another one.
 
 ## Global indexer and AI worker
@@ -275,13 +352,13 @@ Events should include sufficient immutable data to rebuild state: AdventureReque
 Extend the existing global Ponder indexer. Do not add a separate chain-log poller or dedicated ingestion service.
 
 - Add feature source definitions, shared ABIs, source policies, deployment blocks and full receipt coverage where needed. Include new fusion transfers in canonical ownership.
-- Project adventures, unused serums, local dose histories, immutable ancestry, jobs, locks, fees, cooldowns, completed-grade status and current art versions into rollback-managed tables with historical versions for confirmed reads. Reconstruct completed-grade status from canonical successful grading events, including historical events; an orphaned grading completion must not permanently lock the indexed card.
+- Project adventures, unused serum tuples, current Presence, ordered local dose histories, immutable ancestry, fusion randomness/Presence settlements, jobs, locks, fees, cooldowns, completed-grade status and current art versions into rollback-managed tables with historical versions for confirmed reads. Reconstruct completed-grade status from canonical successful grading events, including historical events; an orphaned grading completion must not permanently lock the indexed card. Orphaned fusion settlements must never start or finalize a job with the wrong Presence.
 - Use the shared reader API with explicit source readiness. A missing or behind source is not an empty inventory.
 - An offchain generation consumer reads confirmed canonical requests with a durable cursor. It never performs AI work inside Ponder handlers.
 - Job identity binds chain, contract, request incarnation, input versions and recipe hash. Deduplicate replay and release handovers, preserve paid outputs across restarts, and reject outputs from orphaned/replaced requests.
 - Revalidate canonical request state before paying for AI and before sending completion. Deep reorgs can still incur an unrecoverable provider cost; they must never produce a live orphan NFT.
 - Reuse the existing provider boundary, asset validation, content-addressed storage, resumable stages and publication verification. Keep API credentials and signing keys outside indexer source configuration.
-- Use approved parent artwork as input; for fusion provide both parents. Preserve the species and established visual grammar. Repeated serum doses affect intensity through the versioned recipe; do not generate a new random rarity.
+- Use approved parent artwork as input; for fusion provide both parents. Preserve the species and established visual grammar, expressive Presence, transformed environment and complete Avatar anatomy. Repeated serum doses affect physical intensity through the versioned recipe; do not generate a new random rarity or Presence. The latest consumed serum sets current Presence; keep full ordered dose tuples and fusion inheritance results in history. Generate from the explicit settled current Presence instead of blending conflicting expressions visible in parent art.
 - Generate on demand, retain immutable source images/metadata and historical outputs, and compose card text/frame deterministically where practical. Never attempt to pre-render the recipe space.
 - The 0.1 USDC charge is the user price, not a proven estimate of provider cost. Benchmark representative single and dual-reference jobs, retries, storage and completion gas before launch. Any subsidy belongs in the operating budget; do not silently change the agreed fee.
 - Keep a pending job's last finalized artwork visible. Publish the new image only when its onchain completion and indexed canonical evidence agree.
@@ -294,20 +371,20 @@ Build the feature within the existing collection/card experience, with reusable 
 
 - Card detail: current art, local dose count /11, inherited history, unused serum, sequence odds, cooldown and adventure action.
 - Adventure: clear native-ETH VRF estimate, wallet signature, awaiting randomness, found serum or no find, and saved-seed recovery where available.
-- Serum reveal: illustrated bottle card, essence, form, rarity and an Apply for 0.10 USDC action. Explain that finding the next serum replaces the unused bottle.
-- Consumption: preview of intended effects clearly marked as a concept, spending review, generation progress and eventual before/after.
+- Serum reveal: illustrated bottle card, essence, form, Presence, rarity and an Apply for 0.10 USDC action. Keep the familiar serum name and show Presence as a distinct trait. Explain that finding the next serum replaces the unused bottle.
+- Consumption: preview of intended effects clearly marked as a concept, spending review, generation progress and eventual before/after. Show the exact current-Presence → new-Presence change, particularly when Holy will be replaced.
 - Fusion picker: only compatible owned, ungraded partners; show original lineage and exact sequence positions rather than relying on appearance. Explain why graded cards cannot be selected.
-- Fusion review: two input cards, expected two/four-source result, inherited effects and 0.10 USDC. For an original, explicitly show that remaining daily claims end on successful fusion.
-- Final card: clear fusion level, two/four-source family tree and locally consumed versus inherited doses.
+- Fusion review: two input cards, expected two/four-source result, inherited physical effects, parent Presences and 0.10 USDC. Show each differing Presence at 50%, or one guaranteed Presence when they match; no selector or reroll. Show the player-paid native-ETH VRF quote separately from USDC and transaction gas, then distinct awaiting-randomness and generation states. For an original, explicitly show that remaining daily claims end on successful fusion.
+- Final card: clear fusion level, current Presence, two/four-source family tree and locally consumed versus inherited doses, with each dose's Presence retained in history.
 - Pending work survives reload and wallet changes. Handle rejected signatures, insufficient USDC/ETH, expired quotes, transferred/burned cards, indexer lag, VRF delays and AI retry/recovery separately. Show when a card is reserved and why it cannot currently transfer or enter another job.
 - Grading entry shows the matching ancestor and portal requirements under the selected eligibility policy. The input preview is always the fusion's latest artwork, not the ancestor's old image.
-- Separate current grades from previous grading attempts. After grading, disable adventure, serum and fusion actions and explain that grading ends those progression paths. Before submitting the first grade, show this consequence clearly. Keep ancestry, inherited serum effects, repeat grading and any original daily claims visible.
+- Separate the completed grade from previous unsuccessful grading attempts. After grading, disable adventure, serum, fusion and repeat-grading actions and explain that grading ends those progression paths. Before submitting the first grade, show this consequence clearly. Keep ancestry, inherited serum effects and any original daily claims visible.
 - Use actual collection art and the approved Voidheart/Eclipse/Singularity examples as clearly labeled previews. No invented balances, active rewards or guaranteed generated output.
 - Preserve accessibility, reduced-motion preferences, responsive layouts and lazy-loaded optimized artwork.
 
 ## Delivery sequence and verification
 
-1. Approve the proposed catalogue, odds and remaining lifecycle defaults. Retain the confirmed inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
+1. Complete the consolidated adventure-odds and lifecycle-default review. Preserve the approved 1% Holy / 9.9% other Presence weights, latest-dose replacement, random parent inheritance and player-paid fusion VRF. Rebase onto current main, preserve the one-completed-grade admission rule, curate the approved image references, and verify exact variant calculations against the final neutral-parent rule. Retain the confirmed physical inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
 2. Implement shared recipe definitions, exact combinatorial calculations and contract state machines. Test ownership, sequence checks, level boundaries, 11-dose cap, repeated doses and ancestry.
 3. Implement same-collection fusion minting, grading eligibility and metadata/version coordination with compatible upgrades. Rehearse interleaved base/fusion token allocations, pending booster claims, original burns, portal jobs, transfer locks and rollback.
 4. Extend global ingestion, ownership, confirmed projections and durable job intake. Test duplicate/out-of-order events, replay, reorgs, stale sources and release handover without duplicate paid generation.
@@ -316,6 +393,6 @@ Build the feature within the existing collection/card experience, with reusable 
 7. Run relevant contract suites, storage compatibility checks, indexer/Postgres integration tests, frontend/type checks and production builds. Require invariant/fuzz coverage for financial state, burns, locks and request replay. Cover mixed species/colors/horns/glitter, joint versus invalid split-source gate matches, original-only inherited eligibility, burned ancestors, serum → fusion → grade flows at both fusion levels, rejected grade → adventure, grade → serum and grade → fusion attempts, legacy graded tokens, mutually exclusive pending adventure/grading requests, transfer/regrading lock bypasses, independent offspring rights, historical slabs and unchanged competition payout entitlements.
 8. Prepare a PR with the confirmed rules, architectural changes, user flow screenshots, validation evidence and deployment-neutral migration/rollback instructions. Production release uses the private operator workflow and is a separate step.
 
-Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents adventures, serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
+Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no parent changes after a fusion VRF request; settled Presence never rerolls on retry or input-order changes; equal parent Presences do not incur a VRF request; only successful consumption updates current Presence to the latest dose; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents adventures, serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
 
 Before public launch, resolve the product's existing legal question about paid randomized adventures and rarity-weighted tradable transformations. The guaranteed base collection alone is not being treated as approval for these new mechanics.
