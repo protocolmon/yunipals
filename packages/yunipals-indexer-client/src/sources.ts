@@ -6,7 +6,8 @@ export type SourceFeature =
   | "marketplace"
   | "arena"
   | "anime-registry"
-  | "portals";
+  | "portals"
+  | "evolution";
 
 export type ConfirmationPolicy =
   | { kind: "latest" }
@@ -65,7 +66,8 @@ const features: readonly SourceFeature[] = [
   "marketplace",
   "arena",
   "anime-registry",
-  "portals"
+  "portals",
+  "evolution"
 ];
 const chains = new Set([1, 56, 137, 8453]);
 const decimal = /^(0|[1-9][0-9]*)$/;

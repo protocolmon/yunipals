@@ -49,7 +49,9 @@
     "./portals": "./src/portals.ts",
     "./portalAbi": "./src/portalAbi.ts",
     "./portalSlab": "./src/portalSlab.ts",
-    "./portalIndex": "./src/portalIndex.ts"
+    "./portalIndex": "./src/portalIndex.ts",
+    "./serums": "./src/serums.ts",
+    "./evolutionAbi": "./src/evolutionAbi.ts"
   },
   "peerDependencies": {
     "viem": ">=2.38.0 <3"

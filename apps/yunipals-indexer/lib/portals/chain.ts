@@ -602,7 +602,7 @@ export class PortalChain {
       throw new PortalUserError(
         "The portal is closed. Wait for the next window."
       );
-    const [owner, eligible, input, nonce, pending] = await Promise.all([
+    const [owner, eligible, input, nonce, pending, completedGrades] = await Promise.all([
       this.owner(tokenId, active.asOfBlock),
       this.client.readContract({
         address: this.deployment.grading,
@@ -619,6 +619,13 @@ export class PortalChain {
         functionName: "pendingRequest",
         args: [tokenId],
         blockNumber: active.asOfBlock
+      }),
+      this.client.readContract({
+        address: this.deployment.grading,
+        abi: portalGradingAbi,
+        functionName: "historyCount",
+        args: [tokenId],
+        blockNumber: active.asOfBlock
       })
     ]);
     if (owner.toLowerCase() !== submitter.toLowerCase())
@@ -627,7 +634,7 @@ export class PortalChain {
       throw new PortalUserError(
         "This card already has a spell being processed."
       );
-    if (input[1] !== 0n)
+    if (completedGrades !== 0n)
       throw new PortalUserError(
         "This card has already been graded. Each card can be graded only once."
       );

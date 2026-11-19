@@ -404,3 +404,17 @@ Build the feature within the existing collection/card experience, with reusable 
 Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no parent changes after a fusion VRF request; settled Presence never rerolls on retry or input-order changes; equal parent Presences do not incur a VRF request; only successful consumption updates current Presence to the latest dose; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents adventures, serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
 
 Before public launch, resolve the product's existing legal question about paid randomized adventures and rarity-weighted tradable transformations. The guaranteed base collection alone is not being treated as approval for these new mechanics.
+
+## Implementation checkpoint
+
+The approved balance and catalogue are committed. Contract and global-indexer implementation is in progress on the feature branch; this is not a release-ready feature.
+
+- Added the immutable launch serum catalogue, direct-funded adventures, reserved serum/fusion requests, same-collection fusion ancestry and shared mutation reservations.
+- Added source-based portal matching and canonical completed-grade checks, retaining grading history separately from artwork revisions.
+- Added global Ponder event sources and rollback-managed projections, confirmed readers and shared TypeScript catalogue/odds helpers.
+- Still required: durable generation consumer and publication, API routes and quotes, collection/frontend flows, evolved portal generation/metadata/eligibility consumers, curated visual references, PostgreSQL/reorg integration checks and end-to-end verification.
+- AI integration is awaiting the user's choice between the existing portal AI configuration and a separate key. No live AI request or production deployment has been made for this implementation.
+
+Do not enable the new contract controllers or publish a production rollout until the remaining integration and verification work is complete.
+
+Checkpoint verification: 197 Foundry tests pass; nine opt-in fork tests were skipped. The five catalogue/projection tests and indexer TypeScript check pass. Existing booster and portal storage prefixes/gap boundaries remain compatible. Compiled production runtimes are below EIP-170; BoosterPacks has only 42 bytes of remaining headroom, so future edits must repeat the size check. The legacy minimum-gas seven-card callback passes after reusing the pack limit already fetched during engine authorization. PostgreSQL/reorg and browser/worker integration checks remain outstanding.

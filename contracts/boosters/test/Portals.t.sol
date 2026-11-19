@@ -97,6 +97,23 @@ contract PortalGatesHarness {
     }
 }
 
+contract PortalAdventureReference {
+    YunipalMonsters public cards;
+    constructor(YunipalMonsters cards_) { cards = cards_; }
+}
+
+contract PortalEvolutionReference {
+    YunipalMonsters public cards;
+    address public adventures;
+    constructor(YunipalMonsters cards_, address adventures_) { cards = cards_; adventures = adventures_; }
+    function artwork(uint256) external pure returns (string memory, bytes32, uint64) {
+        return ("ipfs://serumenhanced", keccak256("serum artwork"), 1);
+    }
+    function metadataURI(uint256) external pure returns (string memory) { return "ipfs://serummetadata"; }
+    function reserve(uint256 tokenId) external { cards.reserveCard(tokenId, true); }
+    function release(uint256 tokenId) external { cards.releaseCard(tokenId); }
+}
+
 contract PortalsTest is Test {
     address private constant ALICE = address(0xa11ce);
     address private constant BOB = address(0xb0b);
@@ -507,20 +524,45 @@ contract PortalsTest is Test {
         cards.ownerOf(card);
     }
 
-    function testSinglePendingJobAndUnlimitedSerialAttemptsUseLatestArt() public {
+    function testSinglePendingJobAndOneCompletedGrade() public {
         uint256 id = _admit();
         PortalGrading.Admission memory admission = _admission();
         vm.expectRevert("card has pending job");
         vm.prank(ALICE);
         grading.admit(admission, _receipt(admission));
         grading.complete(id, _result(id, false));
-        uint256 second = _admit();
-        PortalGrading.Request memory request = grading.getRequest(second);
-        assertEq(request.artVersion, 1);
-        assertEq(request.input.hash, keccak256("edited image"));
-        grading.complete(second, _result(second, false));
-        assertEq(grading.historyCount(card), 2);
-        assertEq(usdc.balanceOf(AI_WALLET), 490_000);
+        admission = _admission();
+        PortalGradingValidator.Receipt memory receipt = _receipt(admission);
+        vm.expectRevert("card already graded");
+        vm.prank(ALICE);
+        grading.admit(admission, receipt);
+        assertEq(grading.historyCount(card), 1);
+        assertEq(usdc.balanceOf(AI_WALLET), 245_000);
+    }
+
+    function testEvolvedArtworkCanGradeOnceAndSharesMutationReservations() public {
+        PortalAdventureReference adventures = new PortalAdventureReference(cards);
+        PortalEvolutionReference evolution = new PortalEvolutionReference(cards, address(adventures));
+        cards.configureEvolution(address(evolution), address(adventures));
+        evolution.reserve(card);
+        PortalGrading.Admission memory admission = _admission();
+        PortalGradingValidator.Receipt memory receipt = _receipt(admission);
+        vm.prank(ALICE);
+        vm.expectRevert("card reserved");
+        grading.admit(admission, receipt);
+        evolution.release(card);
+        uint256 id = _admit();
+        assertEq(grading.getRequest(id).artVersion, 1);
+        assertEq(grading.getRequest(id).input.hash, keccak256("serum artwork"));
+        assertEq(cards.cardReservation(card), address(grading));
+        vm.expectRevert("card reserved"); evolution.reserve(card);
+        vm.prank(ALICE); vm.expectRevert("card reserved"); cards.transferFrom(ALICE, BOB, card);
+        grading.complete(id, _result(id, false));
+        assertEq(grading.artVersion(card), 2);
+        assertEq(grading.historyCount(card), 1);
+        assertEq(cards.cardReservation(card), address(0));
+        assertTrue(cards.hasCompletedGrade(card));
+        vm.expectRevert("card already graded"); evolution.reserve(card);
     }
 
     function testStalePriceArtAndRoundAreRejectedAtomically() public {
@@ -1369,6 +1411,7 @@ contract PortalsTest is Test {
         (PortalRegistry.Round memory current,) = registry.activePortal();
         vm.warp(current.endsAt);
         uint256 secondPortal = _rotate();
+        card = engine.original(cards, packId, ALICE, 0);
         grading.setPaymentPolicy(1, 1, 500_000, AI_WALLET);
         PortalGrading.Admission memory admission = _admission();
         admission.paymentVersion = 2;
@@ -1434,6 +1477,7 @@ contract PortalsTest is Test {
         usdc.mint(ALICE, 200_000_000);
         bytes32 quote = pool.admissionHash();
         for (uint256 i; i < 111; ++i) {
+            card = engine.original(cards, packId, ALICE, 0);
             PortalGrading.Admission memory a = _admission();
             a.maximumFee = 990_000;
             vm.prank(ALICE);
@@ -1442,6 +1486,7 @@ contract PortalsTest is Test {
             );
             grading.complete(id, _result(id, false));
         }
+        card = engine.original(cards, packId, ALICE, 0);
         PortalGrading.Admission memory next = _admission();
         next.maximumFee = 990_000;
         uint256 balance = usdc.balanceOf(ALICE);
@@ -1626,7 +1671,7 @@ contract PortalsTest is Test {
         vm.prank(ALICE);
         uint256 id = grading.admitCompetition(a, address(pool), quote, r);
         grading.complete(id, _result(id, false));
-        vm.expectRevert(bytes("invalid spell or nonce"));
+        vm.expectRevert(bytes("card already graded"));
         vm.prank(ALICE);
         grading.admitCompetition(a, address(pool), quote, r);
         assertEq(grading.requestCount(), 1);
@@ -1647,6 +1692,7 @@ contract PortalsTest is Test {
         vm.warp(previous.endsAt);
         uint256 next = _rotate();
         assertTrue(next != previous.portalId);
+        card = engine.original(cards, packId, ALICE, 0);
         a = _admission();
         a.maximumFee = 990_000;
         vm.prank(ALICE);

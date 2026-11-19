@@ -248,6 +248,33 @@ if (process.env.PONDER_ISLANDS_ONLY !== "true") {
     const id = originalKey(event.args.tokenId);
     const owner = lower(event.args.to);
     const burned = owner === zeroAddress;
+    // Fusion ownership lives alongside base mints without fabricating a base variant.
+    const evolutionSource = sourceManifest.sources.find(
+      (source) => source.id === "evolution:8453:evolution" && source.enabled
+    );
+    if (evolutionSource?.address) {
+      const deployment = `8453:${evolutionSource.address}`;
+      const entity = `${deployment}:card:${event.args.tokenId}`;
+      const current = await context.db.find(schema.evolutionProjection, {
+        id: entity
+      });
+      if (current) {
+        const value = { ...current.value, owner, burned };
+        await context.db
+          .update(schema.evolutionProjection, { id: entity })
+          .set({ value });
+        await context.db.insert(schema.evolutionProjectionVersion).values({
+          id: `${context.chain.id}:${event.log.address.toLowerCase()}:${event.transaction.hash}:${event.log.logIndex}:${entity}`,
+          entity,
+          deployment,
+          domain: "card",
+          value,
+          blockNumber: event.block.number,
+          transactionIndex: event.transaction.transactionIndex,
+          logIndex: event.log.logIndex
+        });
+      }
+    }
     // On mint, provenance is inserted by the following MonsterMinted event.
     if (await context.db.find(schema.boosterMonster, { id }))
       await context.db
