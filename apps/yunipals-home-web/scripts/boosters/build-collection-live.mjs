@@ -210,8 +210,6 @@ const assets = [
   "favicon-32x32.png",
   "icon-192.png",
   "apple-touch-icon.png",
-  "robots.txt",
-  "sitemap.xml",
   "images/yunipals-logo.webp",
   "images/yunipals-social-card.jpg",
   "images/boosters/yunipals-pack-v1.png",
@@ -274,6 +272,8 @@ async function files(directory) {
   const result = [];
   for (const item of await readdir(directory, { withFileTypes: true })) {
     const path = join(directory, item.name);
+    // Server dependencies have their own validated manifest and never ship as public assets.
+    if (relative(output, path) === ".social") continue;
     if (item.isDirectory()) result.push(...(await files(path)));
     else if (item.isFile()) {
       const bytes = await readFile(path);
@@ -311,6 +311,9 @@ const manifest = {
   permitUpgradePackageSha256: values["full-app"]
     ? permitUpgradePackageSha
     : null,
+  socialServerManifestSha256: sha(
+    await readFile(join(output, ".social/runtime-manifest.json"))
+  ),
   publicAssets: assets,
   files: entries
 };

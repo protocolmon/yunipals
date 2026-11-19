@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { isAddress } from "viem";
 import { ArrowUpRight, UserRound } from "lucide-react";
+
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { collectorHref } from "@/lib/collectionEdition";
 import {
   boosterAddresses,
@@ -56,6 +58,7 @@ export function BoosterMonsterPage() {
   });
   const monster = query.data?.item;
   const artwork = useBoosterArtwork(monster?.metadataUri, monster);
+  usePageMetadata(`${artwork.data?.name || `Yunipal #${tokenId}`} — Yunipals`);
   const original = useQuery({
     queryKey: [...boosterQueryKey, "original", collection, tokenId],
     enabled: Boolean(monster?.isOriginal),

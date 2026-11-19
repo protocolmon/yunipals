@@ -361,6 +361,7 @@ try {
     port: Number(new URL(api).port)
   });
   Object.assign(process.env, {
+    VITE_SITE_ORIGIN: origin,
     VITE_PORTALS_ENABLED: "true",
     VITE_PORTALS_API_URL: api,
     VITE_PORTALS_GRADING_ADDRESS: grading,

@@ -3,11 +3,13 @@ import { fileURLToPath, URL } from "node:url";
 
 import react from "@vitejs/plugin-react";
 import license from "rollup-plugin-license";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type UserConfig } from "vite";
+
+import { socialPlugin } from "./scripts/social/vitePlugin";
 
 import { fixturePlugin } from "./scripts/fixtures/devServer";
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }): Promise<UserConfig> => {
   const env = loadEnv(mode, process.cwd(), "VITE_");
   if (mode === "fixtures" && command === "build") {
     throw new Error("Fixture mode is for local development only.");
@@ -61,6 +63,15 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
+      await socialPlugin(
+        fileURLToPath(new URL("./", import.meta.url)),
+        {
+          ...env,
+          ...loadEnv(mode, process.cwd(), "OG_"),
+          ...process.env
+        },
+        { development: command === "serve" }
+      ),
       ...(mode === "fixtures" ? [fixturePlugin()] : []),
       {
         ...license({
@@ -72,7 +83,9 @@ export default defineConfig(({ command, mode }) => {
             includePrivate: true,
             multipleVersions: true,
             output: {
-              file: process.env.YUNIPALS_LICENSE_OUTPUT || "dist/THIRD_PARTY_LICENSES.txt",
+              file:
+                process.env.YUNIPALS_LICENSE_OUTPUT ||
+                "dist/THIRD_PARTY_LICENSES.txt",
               template: (dependencies) =>
                 [
                   readFileSync(

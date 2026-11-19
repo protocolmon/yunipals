@@ -1,3 +1,4 @@
+import { proposalPreviews } from "@/lib/social/proposals";
 import { lazy } from "react";
 
 import type { ProposalDefinition } from "../types";
@@ -5,9 +6,8 @@ import cover from "./art/unidragon-blue.webp";
 import avatar from "./avatar.webp";
 
 export const proposal: ProposalDefinition = {
-  title: "A better collection card",
-  summary:
-    "A spec sheet card for the collection: traits as labelled facts, the chain as a mark on the artwork, and a token id you can copy.",
+  title: proposalPreviews["collection-card"].title,
+  summary: proposalPreviews["collection-card"].description,
   author: {
     name: "Exochick Arno",
     avatar

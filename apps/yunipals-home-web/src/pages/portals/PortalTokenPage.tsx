@@ -5,6 +5,7 @@ import {
   portalColorNames,
   portalTypeNames
 } from "@protopals/yunipals-market-core/portals";
+import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { ExpandableCardArtwork } from "@/components/ExpandableCardArtwork";
 import { environment } from "@/environment";
 import { usePortalClaim } from "@/hooks/usePortalClaim";
@@ -30,6 +31,11 @@ export function PortalTokenPage() {
     refetchInterval: 6000
   });
   const token = query.data;
+  usePageMetadata(
+    token
+      ? `${token.name} #${token.id} — Yunipals`
+      : `Portal #${portalId} — Yunipals`
+  );
   const owner = Boolean(
     token && claim.address?.toLowerCase() === token.owner.toLowerCase()
   );
