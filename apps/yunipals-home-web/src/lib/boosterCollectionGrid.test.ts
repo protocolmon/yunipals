@@ -273,3 +273,18 @@ test("source mismatch, duplicate/unsorted IDs, page overflow and invented contin
     /cursor/
   );
 });
+
+test("pack page totals are optional for older APIs and validated when present", () => {
+  assert.equal(parsePackGridPage(page(), collection).total, undefined);
+  assert.equal(
+    parsePackGridPage({ ...page(), total: "26" }, collection).total,
+    "26"
+  );
+  assert.equal(
+    parsePackGridPage({ ...page([]), total: "0" }, collection).total,
+    "0"
+  );
+  for (const total of ["-1", "1.5", "01", "invalid", 26, null, "0"]) {
+    assert.throws(() => parsePackGridPage({ ...page(), total }, collection));
+  }
+});

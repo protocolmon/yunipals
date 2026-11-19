@@ -32,6 +32,7 @@ function fixture(checkpoint = true) {
     if (sql.includes("booster_checkpoint"))
       return { rows: checkpoint ? [{ indexedBlock: "140", indexedBlockHash: `0x${"ab".repeat(32)}`, indexedTimestamp: "1800000000" }] : [] };
     if (sql.includes("booster_engine_state")) return { rows: [{ paused: false }] };
+    if (sql.includes("count(*)::text AS total")) return { rows: [{ total: "1" }] };
     if (sql.includes("booster_monster"))
       return { rows: [{ id: `8453:${monsters}:1`, collection: monsters, tokenId: "1", owner, isOriginal: true, metadataUri: "https://example.test/v1/boosters/art/demo/149.json" }] };
     if (sql.includes("booster_type")) return { rows: [{ id: "pack", packTypeId: "1", registry, engine }] };

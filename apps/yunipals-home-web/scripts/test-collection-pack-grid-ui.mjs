@@ -152,6 +152,7 @@ await context.route("**/*", async (route) => {
     return route.fulfill({
       json: {
         ...snapshot,
+        total: "3",
         items: after ? [packs[2]] : packs.slice(0, 2),
         nextCursor: after ? null : "2"
       }
@@ -274,10 +275,16 @@ try {
     await page.locator('main article a[href^="/collection/"]').count(),
     0
   );
+  await page
+    .getByText("3 TCG cards available · 2 loaded", { exact: true })
+    .waitFor();
   await page.getByRole("button", { name: "Load more pack cards" }).click();
   await page
     .locator(`main article a[href="/monsters/${collection}/3"]`)
     .first()
+    .waitFor();
+  await page
+    .getByText("3 TCG cards available · 3 loaded", { exact: true })
     .waitFor();
   checks.push(
     "public OG, airdrop and TCG membership; same token ID stays distinct; numeric TCG pagination"
@@ -291,6 +298,11 @@ try {
   await page
     .locator(`main article a[href="/monsters/${collection}/3"]`)
     .first()
+    .waitFor();
+  await page
+    .getByText("3 TCG cards available · 1 matching card loaded", {
+      exact: true
+    })
     .waitFor();
   checks.push("filtered TCG matches on later pages remain discoverable");
 

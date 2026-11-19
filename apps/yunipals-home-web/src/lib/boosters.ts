@@ -19,6 +19,7 @@ import { environment } from "@/environment";
 export type BoosterPage<T> = BoosterSnapshot & {
   items: T[];
   nextCursor?: string | null;
+  total?: string;
 };
 export type BoosterItem<T> = BoosterSnapshot & { item: T };
 export const boosterQueryKey = [
