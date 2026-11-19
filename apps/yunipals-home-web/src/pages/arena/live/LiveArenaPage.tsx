@@ -41,6 +41,7 @@ import { useArenaWallet, type ArenaApprovalEntries } from "./useArenaWallet";
 import { useArenaClock } from "./useArenaClock";
 import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaDeadline, ArenaEvidence } from "./ArenaEvidence";
+import { AnimeApplicationHint } from "../anime/AnimeApplicationHint";
 
 const action =
   "rounded-full bg-ink px-6 py-3 font-semibold text-white transition hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape disabled:cursor-not-allowed disabled:opacity-40";
@@ -866,6 +867,7 @@ export function LiveArenaPage() {
               className="my-8 scroll-mt-28 rounded-card border border-lavender bg-lavender/10 p-6"
             >
               <h2 className="text-2xl font-bold">Choose your fighter</h2>
+              {deployment.kind === "anime" && <AnimeApplicationHint />}
               <p className="mt-3 text-muted">
                 Connect your wallet using the button in the header to see your
                 Yunipals. Pick a fighter and enter for {deployment.entry} USDC;
@@ -876,6 +878,7 @@ export function LiveArenaPage() {
           {tournament.phase === "open" && address && (
             <section id="join" className="my-8 scroll-mt-28">
               <h2 className="text-2xl font-bold">Choose your fighter</h2>
+              {deployment.kind === "anime" && <AnimeApplicationHint />}
               <p className="my-3 text-muted">
                 Your NFT stays in your wallet. Each different NFT can occupy one
                 active seat.
@@ -942,7 +945,9 @@ export function LiveArenaPage() {
                 .flatMap((p) => p.items)
                 .filter((n) => !n.burned).length === 0 ? (
                 <p role="status" className="my-5 text-muted">
-                  No available Yunipals were found in this wallet.
+                  {deployment.kind === "anime"
+                    ? "No approved anime fighters were found in this wallet. Apply from your Base Yunipal’s page or check your application in the queue above."
+                    : "No available Yunipals were found in this wallet."}
                 </p>
               ) : null}
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

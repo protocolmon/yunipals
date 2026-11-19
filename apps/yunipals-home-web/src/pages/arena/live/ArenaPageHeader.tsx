@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useArenaDeployment } from "@/lib/arenaDeployment";
 import { ArenaNavigation, type ArenaSection } from "./ArenaNavigation";
+import { AnimeEligibilityBadge } from "../anime/AnimeEligibilityBadge";
 
 export function ArenaPageHeader({
   title,
@@ -22,9 +23,12 @@ export function ArenaPageHeader({
         <ArrowLeft size={15} aria-hidden="true" /> Battle modes
       </Link>
       <header>
-        <p className="text-xs font-bold uppercase tracking-widest text-grape">
-          {deployment.label}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-grape">
+            {deployment.label}
+          </p>
+          {deployment.kind === "anime" && <AnimeEligibilityBadge />}
+        </div>
         <h1 className="mt-3 font-display text-3xl sm:text-4xl md:text-5xl">
           {title}
         </h1>
