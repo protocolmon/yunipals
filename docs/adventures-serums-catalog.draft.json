@@ -68,7 +68,7 @@
     }
   ],
   "presencePolicy": {
-    "status": "Holy weights, latest-dose replacement, random parent inheritance and player-paid fusion VRF confirmed; neutral-parent edge-case default pending",
+    "status": "approved, including Holy weights, latest-dose replacement, random parent inheritance, neutral-parent outcomes and player-paid fusion VRF",
     "rarityRule": "Holy is rarer than each of the other ten Presences",
     "distribution": {
       "status": "approved",
@@ -91,7 +91,7 @@
     },
     "drinkingRule": "Confirmed: latest consumed serum sets current Presence; physical effects keep stacking and all dose Presences remain in history",
     "fusionRule": "Confirmed: randomly inherit either current parent Presence at 50/50 when they differ; equal Presences have a guaranteed result",
-    "proposedNeutralParentRule": "Presence 0 participates as a neutral parent outcome: Holy plus neutral produces 50% Holy and 50% neutral",
+    "neutralParentRule": "Confirmed: Presence 0 participates as a neutral parent outcome; Holy plus neutral produces 50% Holy and 50% neutral",
     "randomness": "Use separately domain-separated adventure VRF entropy and freeze the distribution version before requesting; differing fusion Presences require fresh request-bound VRF, with no rerolls on recovery",
     "fusionVrfFunding": "Confirmed: player pays the quoted VRF cost in native ETH in addition to 0.1 USDC generation and ordinary transaction gas; no VRF charge when parent Presences match"
   },
