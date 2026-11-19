@@ -267,7 +267,7 @@
     }
   ],
   "odds": {
-    "status": "proposed balance, not approved",
+    "status": "proposed eleven-tier balance; endpoint rates accepted in principle",
     "denominator": 1000000,
     "sequenceRange": [
       0,
@@ -301,7 +301,166 @@
       500
     ],
     "withinRarity": "uniform",
-    "interpolation": "Floor linear interpolation of Uncommon through Mythic; None stays 350000; Common is the remainder."
+    "tierCount": 11,
+    "sequencesPerTier": 24,
+    "tierRule": "1 + floor(effectiveSequence / 24), with effectiveSequence restricted to 0..263",
+    "selection": "Fixed outcome weights within each sequence tier; select from the immutable sequence or the floor of the exact source-position average for fusions",
+    "tiers": [
+      {
+        "id": 1,
+        "sequenceMin": 0,
+        "sequenceMax": 23,
+        "weightsInOutcomeOrder": [
+          350000,
+          400000,
+          180000,
+          60000,
+          9000,
+          900,
+          100
+        ]
+      },
+      {
+        "id": 2,
+        "sequenceMin": 24,
+        "sequenceMax": 47,
+        "weightsInOutcomeOrder": [
+          350000,
+          385000,
+          186000,
+          66000,
+          11600,
+          1260,
+          140
+        ]
+      },
+      {
+        "id": 3,
+        "sequenceMin": 48,
+        "sequenceMax": 71,
+        "weightsInOutcomeOrder": [
+          350000,
+          370000,
+          192000,
+          72000,
+          14200,
+          1620,
+          180
+        ]
+      },
+      {
+        "id": 4,
+        "sequenceMin": 72,
+        "sequenceMax": 95,
+        "weightsInOutcomeOrder": [
+          350000,
+          355000,
+          198000,
+          78000,
+          16800,
+          1980,
+          220
+        ]
+      },
+      {
+        "id": 5,
+        "sequenceMin": 96,
+        "sequenceMax": 119,
+        "weightsInOutcomeOrder": [
+          350000,
+          340000,
+          204000,
+          84000,
+          19400,
+          2340,
+          260
+        ]
+      },
+      {
+        "id": 6,
+        "sequenceMin": 120,
+        "sequenceMax": 143,
+        "weightsInOutcomeOrder": [
+          350000,
+          325000,
+          210000,
+          90000,
+          22000,
+          2700,
+          300
+        ]
+      },
+      {
+        "id": 7,
+        "sequenceMin": 144,
+        "sequenceMax": 167,
+        "weightsInOutcomeOrder": [
+          350000,
+          310000,
+          216000,
+          96000,
+          24600,
+          3060,
+          340
+        ]
+      },
+      {
+        "id": 8,
+        "sequenceMin": 168,
+        "sequenceMax": 191,
+        "weightsInOutcomeOrder": [
+          350000,
+          295000,
+          222000,
+          102000,
+          27200,
+          3420,
+          380
+        ]
+      },
+      {
+        "id": 9,
+        "sequenceMin": 192,
+        "sequenceMax": 215,
+        "weightsInOutcomeOrder": [
+          350000,
+          280000,
+          228000,
+          108000,
+          29800,
+          3780,
+          420
+        ]
+      },
+      {
+        "id": 10,
+        "sequenceMin": 216,
+        "sequenceMax": 239,
+        "weightsInOutcomeOrder": [
+          350000,
+          265000,
+          234000,
+          114000,
+          32400,
+          4140,
+          460
+        ]
+      },
+      {
+        "id": 11,
+        "sequenceMin": 240,
+        "sequenceMax": 263,
+        "weightsInOutcomeOrder": [
+          350000,
+          250000,
+          240000,
+          120000,
+          35000,
+          4500,
+          500
+        ]
+      }
+    ]
   },
   "serums": [
     {

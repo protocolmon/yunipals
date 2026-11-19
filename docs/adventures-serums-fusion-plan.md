@@ -73,7 +73,7 @@ Pending adventures, grading and evolution jobs are mutually exclusive. Starting 
 
 The eleven Presence concept cards, Holy at 1%, other Presences at 9.9% each, latest-dose Presence replacement, random parent inheritance and player-funded fusion VRF are confirmed. The final five lifecycle choices are also confirmed: VRF-settlement adventure timing, later inherited cooldown and unused-serum discard, neutral-parent inheritance, reservations until successful artwork completion, and existing grading fees/scoring/one-grade policy.
 
-Only the adventure drop-rate table remains awaiting a product answer. The lifecycle approvals did not explicitly approve those probabilities. Accept the proposed initial table below or revise it; portfolio-scale expectations and exact rare-drop examples make the balance reviewable. The remaining technical defaults in the lifecycle table are implementation choices consistent with the confirmed rules, not additional product questions.
+The user accepted the initial drop balance in principle and requested more sequence tiers. The revised proposal below has eleven tiers of 24 sequence positions, with fixed probabilities inside each tier and the same starting/maximum rates. This replaces the earlier per-position interpolation proposal; the eleven-tier table remains the final balance item to review. The remaining technical defaults in the lifecycle table are implementation choices consistent with the confirmed rules, not additional product questions.
 
 Before implementation, bring this branch onto current main while preserving the plan. Current-main `apps/yunipals-indexer/lib/portals/chain.ts` rejects admissions with an already completed grade, and the card picker excludes graded cards. The earlier plan's regrading assumption has been removed. When evolved artwork introduces nonzero art revisions, replace the API's current `artVersion != 0` shortcut with canonical completed-grading history so an ungraded serum/fusion card remains gradeable.
 
@@ -149,22 +149,27 @@ Rarity is the higher minimum rarity of the chosen essence and form. This yields 
 
 ## Proposed adventure odds
 
-These are initial balance proposals, not approved probabilities. Values below are unconditional probabilities per adventure, including finding nothing.
+The endpoint rates were accepted in principle, with a request for more sequence tiers. Propose eleven tiers of 24 positions each, covering all 264 positions exactly. Odds are fixed inside a tier and improve at each tier boundary. These tier boundaries and intermediate rates are the revised proposal, not yet marked approved. All values below are unconditional probabilities per adventure; **Nothing found stays 35% in every tier**, so each row totals 100% including that outcome.
 
-| Outcome | Sequence 0 | Sequence 263 |
-| --- | ---: | ---: |
-| Nothing found | 35% | 35% |
-| Common | 40% | 25% |
-| Uncommon | 18% | 24% |
-| Rare | 6% | 12% |
-| Epic | 0.9% | 3.5% |
-| Legendary | 0.09% | 0.45% |
-| Mythic | 0.01% | 0.05% |
-| Total | 100% | 100% |
+| Tier | Sequence positions | Common | Uncommon | Rare | Epic | Legendary | Mythic |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 0–23 | 40% | 18% | 6% | 0.90% | 0.090% | 0.010% |
+| 2 | 24–47 | 38.5% | 18.6% | 6.6% | 1.16% | 0.126% | 0.014% |
+| 3 | 48–71 | 37% | 19.2% | 7.2% | 1.42% | 0.162% | 0.018% |
+| 4 | 72–95 | 35.5% | 19.8% | 7.8% | 1.68% | 0.198% | 0.022% |
+| 5 | 96–119 | 34% | 20.4% | 8.4% | 1.94% | 0.234% | 0.026% |
+| 6 | 120–143 | 32.5% | 21% | 9% | 2.20% | 0.270% | 0.030% |
+| 7 | 144–167 | 31% | 21.6% | 9.6% | 2.46% | 0.306% | 0.034% |
+| 8 | 168–191 | 29.5% | 22.2% | 10.2% | 2.72% | 0.342% | 0.038% |
+| 9 | 192–215 | 28% | 22.8% | 10.8% | 2.98% | 0.378% | 0.042% |
+| 10 | 216–239 | 26.5% | 23.4% | 11.4% | 3.24% | 0.414% | 0.046% |
+| 11 | 240–263 | 25% | 24% | 12% | 3.50% | 0.450% | 0.050% |
 
-Interpolate by the immutable per-original sequence, not global token ID, date, wallet size or current artwork. Use parts per million for precision. Keep None fixed, floor the interpolated Uncommon-through-Mythic weights, and assign the remainder to Common so every integer sequence sums to exactly 1,000,000. Check monotonicity at all 264 positions.
+Compute `tier = 1 + floor(effectiveSequence / 24)` for the supported range 0..263. A base card uses its immutable per-original sequence. A fused card first computes the floor of the exact average of all original source positions, then selects its tier; do not average parent tiers or already rounded intermediate averages. For example, sources 40, 41, 200 and 201 yield effective sequence 120 and tier 6. Portal eligibility still evaluates actual source cards, not the adventure tier.
 
-Draw the outcome bucket, then choose uniformly among that rarity's serum IDs, then draw Presence using its approved distribution. Use separate domain-separated entropy for all three choices with unbiased bounded sampling. Freeze catalogue/rules version, Presence distribution and effective sequence in the request before requesting VRF. Recovery reuses the same entropy and must never reroll Presence.
+Store the eleven exact weight rows in parts per million; each totals 1,000,000. Validate complete nonoverlapping coverage of all 264 positions, fixed odds within each tier, increasing Uncommon-through-Mythic weights at all ten boundaries, decreasing Common weights and unchanged None. The table's weights are exact integers, so no runtime interpolation or residual rounding is needed. Preserve sequences as immutable positions; tiers are not levels gained by taking more adventures.
+
+Draw the outcome bucket, then choose uniformly among that rarity's serum IDs, then draw Presence using its approved distribution. Use separate domain-separated entropy for all three choices with unbiased bounded sampling. Freeze catalogue/rules version, Presence distribution, effective sequence and its derived tier in the request before requesting VRF. Recovery reuses the same entropy and must never reroll Presence or use a newer tier table.
 
 At the endpoints, any Mythic is approximately 1 in 10,000 versus 1 in 2,000 adventures. A particular one of the 21 Mythics is approximately 1 in 210,000 versus 1 in 42,000. These are per-attempt odds, not limited edition supplies; many cards adventuring daily can still produce many rare serums. Balance with portfolio-size simulations before acceptance.
 
@@ -372,7 +377,7 @@ Suggested API resources: catalogue and odds; owner card state; per-card adventur
 
 Build the feature within the existing collection/card experience, with reusable dedicated adventure and fusion views as needed.
 
-- Card detail: current art, local dose count /11, inherited history, unused serum, sequence odds, cooldown and adventure action.
+- Card detail: current art, local dose count /11, inherited history, unused serum, adventure tier (1–11), exact sequence range and per-outcome odds, cooldown and adventure action. Explain fused cards' source-average position. Present tier as a property of the card's sequence, without an experience/progression meter suggesting adventures can raise it.
 - Adventure: clear native-ETH VRF estimate, wallet signature, awaiting randomness, found serum or no find, and saved-seed recovery where available.
 - Serum reveal: illustrated bottle card, essence, form, Presence, rarity and an Apply for 0.10 USDC action. Keep the familiar serum name and show Presence as a distinct trait. Explain that finding the next serum replaces the unused bottle.
 - Consumption: preview of intended effects clearly marked as a concept, spending review, generation progress and eventual before/after. Show the exact current-Presence → new-Presence change, particularly when Holy will be replaced.
@@ -387,7 +392,7 @@ Build the feature within the existing collection/card experience, with reusable 
 
 ## Delivery sequence and verification
 
-1. Resolve the remaining adventure drop-rate table. Preserve the approved Presence distribution, latest-dose replacement, random parent inheritance including neutral, player-paid fusion VRF, VRF-settlement timing, inherited cooldown, unused-serum discard, reserved-input completion and unchanged grading economics/scoring. Rebase onto current main, preserve the one-completed-grade admission rule, curate the approved image references, and retain the verified variant calculations. Retain the confirmed physical inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
+1. Review the revised eleven-tier adventure drop table requested after the endpoint-balance review. Preserve the approved Presence distribution, latest-dose replacement, random parent inheritance including neutral, player-paid fusion VRF, VRF-settlement timing, inherited cooldown, unused-serum discard, reserved-input completion and unchanged grading economics/scoring. Rebase onto current main, preserve the one-completed-grade admission rule, curate the approved image references, and retain the verified variant calculations. Retain the confirmed physical inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
 2. Implement shared recipe definitions, exact combinatorial calculations and contract state machines. Test ownership, sequence checks, level boundaries, 11-dose cap, repeated doses and ancestry.
 3. Implement same-collection fusion minting, grading eligibility and metadata/version coordination with compatible upgrades. Rehearse interleaved base/fusion token allocations, pending booster claims, original burns, portal jobs, transfer locks and rollback.
 4. Extend global ingestion, ownership, confirmed projections and durable job intake. Test duplicate/out-of-order events, replay, reorgs, stale sources and release handover without duplicate paid generation.
