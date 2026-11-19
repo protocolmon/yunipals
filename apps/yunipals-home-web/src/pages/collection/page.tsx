@@ -710,6 +710,7 @@ function CollectionExplorer() {
     [tokens, packCards.items]
   );
   const tokensQuery = useLegacy ? legacyTokensQuery : catalog.query;
+  const tcgTotal = packCards.query.data?.pages[0]?.total;
   const totalMatches = !isTcg ? tokensQuery.data?.pages[0]?.total : undefined;
   const catalogPage =
     !isTcg && !useLegacy ? catalog.query.data?.pages[0] : undefined;
@@ -920,7 +921,9 @@ function CollectionExplorer() {
                     ? "Loading TCG cards…"
                     : gridError
                       ? "TCG cards temporarily unavailable"
-                      : `${formatInteger(gridItems.length)} TCG card${gridItems.length === 1 ? "" : "s"}${packCards.query.hasNextPage ? " loaded" : ""}`
+                      : tcgTotal !== undefined
+                        ? `${formatInteger(tcgTotal)} TCG card${tcgTotal === "1" ? "" : "s"} available · ${formatInteger(gridItems.length)} ${activeFilterCount > 0 ? `matching card${gridItems.length === 1 ? "" : "s"} loaded` : "loaded"}`
+                        : `${formatInteger(gridItems.length)} TCG card${gridItems.length === 1 ? "" : "s"}${packCards.query.hasNextPage ? " loaded" : ""}`
                   : incompleteEmptyResults
                     ? "Listings temporarily unavailable"
                     : totalMatches !== undefined

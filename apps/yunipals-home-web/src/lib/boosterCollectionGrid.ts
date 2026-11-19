@@ -171,6 +171,13 @@ export function parsePackGridPage(
     throw new Error(
       "Collection cards do not match the configured Base collection."
     );
+  if (
+    page.total !== undefined &&
+    (typeof page.total !== "string" ||
+      !/^(0|[1-9][0-9]*)$/.test(page.total) ||
+      BigInt(page.total) < BigInt(page.items.length))
+  )
+    throw new Error("Collection card total could not be verified.");
   let previous = after === null ? -1n : BigInt(after);
   const seen = new Set<string>();
   for (const item of page.items) {

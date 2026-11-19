@@ -160,11 +160,13 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     expect(first.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
       "3"
     ]);
+    expect(first.total).toBe("7");
     expect(first.items[0].sequence).toBe(2);
     expect(first.nextCursor).toBe("3");
     const next = await (
       await app.request(`${url}?sequenceMin=2&sequenceMax=2&after=3`)
     ).json();
+    expect(next.total).toBe("7");
     expect(next.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
       "25",
       "26"
@@ -172,6 +174,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     const owned = await (
       await app.request(`/v1/owners/${alice}/booster-monsters?sequenceMin=2`)
     ).json();
+    expect(owned.total).toBe("6");
     expect(owned.items.map((item: BoosterMonster) => item.tokenId)).toEqual([
       "3",
       "25"
@@ -179,6 +182,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     const originals = await (
       await app.request(`${url}?originalOnly=true&sequenceMin=2`)
     ).json();
+    expect(originals.total).toBe("7");
     expect(originals.items.map((item: BoosterMonster) => item.tokenId)).toEqual(
       ["1", "27"]
     );
@@ -187,6 +191,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       "1"
     ]);
     const empty = await (await app.request(`${url}?sequenceMin=3`)).json();
+    expect(empty.total).toBe("7");
     expect(empty.items).toEqual([]);
     expect(empty.nextCursor).toBeNull();
   });
@@ -229,7 +234,8 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       collection,
       engine,
       indexedBlock: "500",
-      nextCursor: null
+      nextCursor: null,
+      total: "3"
     });
     expect(
       body.items.every(
@@ -240,6 +246,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     const owned = await (
       await app.request(`/v1/owners/${alice}/booster-monsters?limit=24`)
     ).json();
+    expect(owned.total).toBe("2");
     expect(owned.items.map((row: { tokenId: string }) => row.tokenId)).toEqual([
       "1",
       "10"
@@ -261,6 +268,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       first.items.map((item: { tokenId: string }) => item.tokenId)
     ).toEqual(["1"]);
     expect(first.nextCursor).toBe("1");
+    expect(first.total).toBe("2");
     const second = await (
       await app.request(`/v1/owners/${alice}/booster-monsters?limit=1&after=1`)
     ).json();
@@ -270,6 +278,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     expect(second.items[0].owner).toBe(alice);
     expect(second.items[0].collection).toBe(collection);
     expect(second.nextCursor).toBeNull();
+    expect(second.total).toBe("2");
     ready = false;
     expect(
       (await app.request(`/v1/owners/${alice}/booster-monsters`)).status
@@ -287,6 +296,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       );
       expect(response.status).toBe(200);
       const body = await response.json();
+      expect(body.total).toBe("5");
       ids.push(...body.items.map((row: { tokenId: string }) => row.tokenId));
       cursor = body.nextCursor;
       cursors.push(cursor);
@@ -302,6 +312,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
   it("defaults to24 and supports the maximum100 without guessing total supply", async () => {
     for (let i = 1; i <= 26; i++) await mint(String(i));
     const first = await (await app.request(url)).json();
+    expect(first.total).toBe("26");
     expect(first.items).toHaveLength(24);
     expect(first.nextCursor).toBe("24");
     const maximum = await (await app.request(`${url}?limit=100`)).json();
@@ -310,6 +321,12 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
     const empty = await (await app.request(`${url}?after=26`)).json();
     expect(empty.items).toEqual([]);
     expect(empty.nextCursor).toBeNull();
+    expect(empty.total).toBe("26");
+  });
+
+  it("reports zero for an empty collection", async () => {
+    const body = await (await app.request(url)).json();
+    expect(body).toMatchObject({ total: "0", items: [], nextCursor: null });
   });
 
   it("preserves uint256 cursor precision beyond JavaScript integers", async () => {
@@ -353,6 +370,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       "1",
       "2"
     ]);
+    expect(body.total).toBe("2");
     expect(
       body.items.map((row: { isOriginal: boolean }) => row.isOriginal)
     ).toEqual([true, false]);
@@ -372,6 +390,7 @@ describe("global booster browse uses real isolated SQL and fixed deployment scop
       "1"
     ]);
     expect(body.items[0].collection).toBe(collection);
+    expect(body.total).toBe("1");
   });
 
   it.each([

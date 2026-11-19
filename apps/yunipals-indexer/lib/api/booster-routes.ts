@@ -308,8 +308,9 @@ export function registerBoosterRoutes(
       !validId(state.indexedBlock)
     )
       return c.json({ error: "booster_index_unavailable" }, 503);
-    const result = await pool.query<BoosterMonster>(
-      `SELECT ${monsterColumns}, f.sequence FROM ${schema}.booster_monster m
+    // Keep the collection total independent of pagination and browsing filters.
+    // Both queries share the same deployment, visibility, and owner scope.
+    const scope = `FROM ${schema}.booster_monster m
        LEFT JOIN ${schema}.booster_card_facts f ON f.id=m.id
        JOIN ${schema}.booster_type p ON p.id=m.type_key AND p.registry=$1 AND p.engine=$2
        JOIN ${schema}.booster_original o ON o.id=m.original_key AND o.collection=$3
@@ -319,25 +320,36 @@ export function registerBoosterRoutes(
          AND r.opening=m.is_original
        WHERE m.collection=$3 AND NOT m.burned AND m.mint_block>0
          AND ((m.is_original AND m.id=o.id) OR (NOT m.is_original AND m.id<>o.id))
-         AND m.mint_block<=$4::bigint AND m.token_id::numeric>$5::numeric
-         AND ($7::text IS NULL OR m.owner=$7)
+         AND m.mint_block<=$4::bigint AND ($5::text IS NULL OR m.owner=$5)`;
+    const scopeParams = [
+      deployment.registry,
+      deployment.engine,
+      deployment.monsters,
+      state.indexedBlock,
+      owner?.toLowerCase() ?? null
+    ];
+    const [result, count] = await Promise.all([
+      pool.query<BoosterMonster>(
+        `SELECT ${monsterColumns}, f.sequence ${scope}
+         AND m.token_id::numeric>$6::numeric
          AND (NOT $8::boolean OR m.is_original)
          AND ($9::bigint IS NULL OR f.sequence >= $9::bigint)
          AND ($10::bigint IS NULL OR f.sequence <= $10::bigint)
-       ORDER BY m.token_id::numeric,m.id LIMIT $6`,
-      [
-        deployment.registry,
-        deployment.engine,
-        deployment.monsters,
-        state.indexedBlock,
-        cursor,
-        limit + 1,
-        owner?.toLowerCase() ?? null,
-        originalOnly === "true",
-        originalOnly === "true" ? null : (sequenceMin ?? null),
-        originalOnly === "true" ? null : (sequenceMax ?? null)
-      ]
-    );
+         ORDER BY m.token_id::numeric,m.id LIMIT $7`,
+        [
+          ...scopeParams,
+          cursor,
+          limit + 1,
+          originalOnly === "true",
+          originalOnly === "true" ? null : (sequenceMin ?? null),
+          originalOnly === "true" ? null : (sequenceMax ?? null)
+        ]
+      ),
+      pool.query<{ total: string }>(
+        `SELECT count(*)::text AS total ${scope}`,
+        scopeParams
+      )
+    ]);
     const rows = result.rows;
     if (
       new Set(rows.map((item) => item.tokenId)).size !== rows.length ||
@@ -353,6 +365,7 @@ export function registerBoosterRoutes(
     return c.json({
       ...state,
       items,
+      total: count.rows[0].total,
       nextCursor: rows.length > limit ? items.at(-1)!.tokenId : null
     });
   };
