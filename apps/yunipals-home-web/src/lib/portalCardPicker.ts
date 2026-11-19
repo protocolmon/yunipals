@@ -4,7 +4,7 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 const pickerAbi = parseAbi([
   "function matches(uint256 portalId, uint256 tokenId) view returns (bool)",
   "function pendingRequest(uint256 tokenId) view returns (uint256)",
-  "function artVersion(uint256 tokenId) view returns (uint64)",
+  "function historyCount(uint256 tokenId) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)"
 ]);
 
@@ -55,7 +55,7 @@ export async function eligiblePortalCards(
         {
           address: context.grading,
           abi: pickerAbi,
-          functionName: "artVersion",
+          functionName: "historyCount",
           args: [BigInt(card.tokenId)]
         }
       ])

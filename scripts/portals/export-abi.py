@@ -4,9 +4,11 @@ import sys
 from pathlib import Path
 
 root=Path(__file__).resolve().parents[2]
+output = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else "out-permit"
+assert output in ["out", "out-permit"], "Unsupported compiler output directory"
 items=[]
 for contract,name in [("PortalCollection","portalCollectionAbi"),("PortalRegistry","portalRegistryAbi"),("PortalGrading","portalGradingAbi"),("PortalGradingCompetition","portalCompetitionAbi")]:
-    artifact=json.loads((root/"contracts/boosters/out-permit"/f"{contract}.sol"/f"{contract}.json").read_text())
+    artifact=json.loads((root/"contracts/boosters"/output/f"{contract}.sol"/f"{contract}.json").read_text())
     abi=[item for item in artifact["abi"] if item["type"] in ["function","event","error"]]
     items.append(f"export const {name} = "+json.dumps(abi,separators=(",",":"))+" as const;")
 target = root / "packages/yunipals-market-core/src/portalAbi.ts"

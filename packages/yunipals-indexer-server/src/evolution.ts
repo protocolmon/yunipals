@@ -40,8 +40,24 @@ export class EvolutionReader {
           throw new CanonicalSourceUnavailable(
             "Evolution sources are not configured."
           );
+        const collection = sources.find(
+          (v) => v.id === "evolution:8453:cards"
+        )?.address;
+        const ownership = release.manifest.sources.find(
+          (v) =>
+            v.enabled &&
+            v.contractName === "BoosterMonsters" &&
+            v.address === collection
+        );
+        const grading = release.manifest.sources.find(
+          (v) => v.enabled && v.id === "portals:8453:grading"
+        );
+        if (!ownership || !grading)
+          throw new CanonicalSourceUnavailable(
+            "Evolution requires collection and grading coverage."
+          );
         const status = await Promise.all(
-          sources.map((v) =>
+          [...sources, ownership, grading].map((v) =>
             readIndexerSourceStatus(db, release, v.id, {
               kind: "depth",
               subsequentBlocks: 12
@@ -109,6 +125,29 @@ export class EvolutionReader {
         block: context.block,
         hash: context.hash
       };
+    });
+  }
+  async unsettled(domain: "adventure" | "job", afterRequestId = 0n) {
+    if (afterRequestId < 0n) throw new Error("Invalid settlement position.");
+    return this.snapshot(async (db, context) => {
+      const rows = (
+        await db.query<{ value: Record<string, unknown> }>(
+          `SELECT value FROM (
+        SELECT DISTINCT ON(entity) value FROM ${context.schema}.evolution_projection_version
+        WHERE deployment=$1 AND domain=$2 AND block_number<=$3
+        ORDER BY entity,block_number DESC,transaction_index DESC,log_index DESC
+      ) j WHERE (value->>'requestId')::numeric>$4 AND
+        (($2='adventure' AND value->>'settled'='false') OR ($2='job' AND value->>'status'='randomness'))
+        ORDER BY (value->>'requestId')::numeric LIMIT 100`,
+          [
+            context.deployment,
+            domain,
+            context.block.toString(),
+            afterRequestId.toString()
+          ]
+        )
+      ).rows;
+      return { rows, block: context.block, hash: context.hash };
     });
   }
   async jobs(afterRequestId = 0n) {

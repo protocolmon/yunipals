@@ -35,6 +35,21 @@ process.env.BOOSTER_MONSTERS = `0x${"33".repeat(20)}`;
 process.env.BOOSTER_WRAPPER = `0x${"34".repeat(20)}`;
 process.env.BOOSTER_DEPLOYMENT_BLOCK = "1";
 process.env.UNIFIED_BASE_ISLANDS_V2_ENABLED = "true";
+if (process.argv.includes("--evolution")) {
+  process.env.UNIFIED_PORTALS_JSON = JSON.stringify(
+    Object.fromEntries(
+      ["collection", "registry", "grading", "competition"].map((kind, i) => [
+        kind,
+        { address: `0x${String(51 + i).repeat(20)}`, startBlock: 1 }
+      ])
+    )
+  );
+  process.env.UNIFIED_EVOLUTION_JSON = JSON.stringify({
+    cards: { address: process.env.BOOSTER_MONSTERS, startBlock: 1 },
+    adventures: { address: `0x${"61".repeat(20)}`, startBlock: 1 },
+    evolution: { address: `0x${"62".repeat(20)}`, startBlock: 1 }
+  });
+}
 const receiptFloor = process.argv.includes("--receipt-floor");
 if (receiptFloor)
   process.env.UNIFIED_RECEIPT_HISTORY_JSON = JSON.stringify({

@@ -1,5 +1,6 @@
 export type MonsterArtwork = {
   portalVersion?: string;
+  completedGrade?: boolean;
   name: string | null;
   image: string | null;
   attributes: Record<string, string>;
@@ -66,6 +67,10 @@ export function parseMonsterArtwork(
             ? "ready"
             : "missing";
   return {
+    ...(typeof extension?.historyCount === "string" &&
+    /^\d+$/.test(extension.historyCount)
+      ? { completedGrade: extension.historyCount !== "0" }
+      : {}),
     name,
     image,
     attributes,

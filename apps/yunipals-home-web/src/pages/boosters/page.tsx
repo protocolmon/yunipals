@@ -1,3 +1,5 @@
+import { environment } from "@/environment";
+import { fetchAdventureCard } from "@/lib/evolution";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { isAddress } from "viem";
@@ -56,6 +58,12 @@ export function BoosterMonsterPage() {
     queryFn: ({ signal }) => fetchBoosterMonster(collection, tokenId, signal),
     refetchInterval: 10_000
   });
+  const evolved = useQuery({
+    queryKey: ["evolution", "card", tokenId],
+    enabled: enabled && environment.evolutionEnabled && query.isError,
+    queryFn: ({ signal }) => fetchAdventureCard(tokenId, signal),
+    retry: 1
+  });
   const monster = query.data?.item;
   const artwork = useBoosterArtwork(monster?.metadataUri, monster);
   usePageMetadata(`${artwork.data?.name || `Yunipal #${tokenId}`} — Yunipals`);
@@ -65,6 +73,8 @@ export function BoosterMonsterPage() {
     queryFn: ({ signal }) => fetchBoosterOriginal(collection, tokenId, signal),
     refetchInterval: 10_000
   });
+  if (evolved.data?.card.level)
+    return <Navigate to={`/adventures/cards/${tokenId}`} replace />;
   return (
     <main className="mx-auto min-h-[65vh] max-w-5xl px-4 py-12">
       <Link
@@ -139,6 +149,14 @@ export function BoosterMonsterPage() {
             />
             {artwork.portalCard && (
               <div className="mt-5 flex flex-wrap gap-4 text-sm font-bold">
+                {!monster.burned && environment.evolutionEnabled && (
+                  <Link
+                    to={`/adventures/cards/${monster.tokenId}`}
+                    className="underline"
+                  >
+                    Adventures, serums & fusion
+                  </Link>
+                )}
                 {!monster.burned && artwork.canGrade && (
                   <Link
                     className="underline"

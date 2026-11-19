@@ -1,3 +1,4 @@
+import { registerEvolutionRoutes } from "../lib/evolution/routes.js";
 import { loadEnvFile } from "node:process";
 import { access } from "node:fs/promises";
 import { constants } from "node:fs";
@@ -48,7 +49,7 @@ async function main() {
     await runtime.store.cursor();
     const app = new Hono();
     app.use(
-      "/v1/portals/*",
+      "/v1/*",
       cors({
         origin: (origin) => (origins.includes(origin) ? origin : undefined),
         allowMethods: ["GET", "POST", "OPTIONS"],
@@ -57,6 +58,7 @@ async function main() {
     );
     app.get("/healthz", (c) => c.json({ running: true }));
     registerPortalRoutes(app, { runtime: async () => runtime });
+    registerEvolutionRoutes(app);
     const server = serve({
       fetch: app.fetch,
       hostname: process.env.PORTALS_BIND_HOST ?? "127.0.0.1",

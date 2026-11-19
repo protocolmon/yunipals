@@ -186,18 +186,29 @@ export class OpenAIPortalAI implements PortalAI {
   }
 
   async edit(spell: string, image: Uint8Array, context?: PortalAIContext) {
+    return this.editImages(portalImagePrompt(this.policy, spell, context), [
+      image
+    ]);
+  }
+
+  /** Trusted game rendering prompt; reuse the portal provider and image policy. */
+  async editImages(prompt: string, images: readonly Uint8Array[]) {
+    if (images.length < 1 || images.length > 2)
+      throw new Error("Expected one or two source artworks.");
     const body = new FormData();
     body.set("model", this.policy.image);
     body.set("quality", this.policy.imageQuality);
     body.set("size", this.policy.imageSize);
     body.set("output_format", "png");
     body.set("n", "1");
-    body.set(
-      "image",
-      new Blob([Uint8Array.from(image)], { type: "image/png" }),
-      "card.png"
+    images.forEach((image, index) =>
+      body.append(
+        images.length === 1 ? "image" : "image[]",
+        new Blob([Uint8Array.from(image)], { type: "image/png" }),
+        `card-${index + 1}.png`
+      )
     );
-    body.set("prompt", portalImagePrompt(this.policy, spell, context));
+    body.set("prompt", prompt);
     const raw = await this.call("images/edits", body);
     const parsed = z
       .object({

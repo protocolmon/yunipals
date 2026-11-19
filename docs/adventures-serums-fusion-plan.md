@@ -1,6 +1,6 @@
 # Adventures serums and fusion implementation plan
 
-Approved product plan, 19 November 2026. Branch: `codex/adventures-serums-fusion`, rebased onto `origin/main` at `1998529`. Product decisions are settled; implementation is in progress. Production release remains a separate step.
+Approved product plan, 19 November 2026. Branch: `codex/adventures-serums-fusion`, based on `origin/main` at `1998529`. Product decisions are settled and the full-stack implementation is prepared for review. Production release remains a separate step.
 
 ## Confirmed product rules
 
@@ -407,14 +407,36 @@ Before public launch, resolve the product's existing legal question about paid r
 
 ## Implementation checkpoint
 
-The approved balance and catalogue are committed. Contract and global-indexer implementation is in progress on the feature branch; this is not a release-ready feature.
+The contracts, global indexer integration, artwork consumer, API and frontend are implemented on the feature branch. Both API and frontend actions are disabled by default. This checkpoint is a review candidate, not a production deployment.
 
 - Added the immutable launch serum catalogue, direct-funded adventures, reserved serum/fusion requests, same-collection fusion ancestry and shared mutation reservations.
 - Added source-based portal matching and canonical completed-grade checks, retaining grading history separately from artwork revisions.
-- Added global Ponder event sources and rollback-managed projections, confirmed readers and shared TypeScript catalogue/odds helpers.
-- Still required: durable generation consumer and publication, API routes and quotes, collection/frontend flows, evolved portal generation/metadata/eligibility consumers, curated visual references, PostgreSQL/reorg integration checks and end-to-end verification.
-- AI integration is awaiting the user's choice between the existing portal AI configuration and a separate key. No live AI request or production deployment has been made for this implementation.
+- Added global Ponder event sources and rollback-managed projections. Reads require confirmed coverage for all three evolution sources, collection ownership and grading. Collection pages carry a release and block hash so subsequent pages retain the same snapshot.
+- Added durable generation with fenced leases, bounded retries, immutable image/metadata checkpoints, saved-VRF settlement recovery and the existing transaction journal. A canonical request binding is checked before paid generation and submission. Saved outputs survive worker restarts and alternative reorg bindings do not overwrite them.
+- Added `/v1/evolution` configuration, card, owner, fusion collection, quote, job, adventure and confirmed asset endpoints. Quotes validate current ownership and eligibility; the wallet validates their calldata and simulates after exact USDC approval.
+- Added illustrated adventure and card pages, compatible fusion selection, fee/burn reviews, pending transaction recovery, ancestry and ordered dose history, collection and owner fusion galleries, and evolved card selection in portals. The eleven approved Presence images are optimized and labeled as concept previews.
+- Portal generation and grading receive real source ancestry and serum history, preserve the current features and Presence, and give no automatic rarity/fusion bonuses. Metadata distinguishes a completed grade from serum artwork revisions.
+- The user approved reusing the existing portal AI configuration for serum and fusion generation. No separate key was created or copied, and no live AI request or production deployment was made.
 
-Do not enable the new contract controllers or publish a production rollout until the remaining integration and verification work is complete.
+Verification completed locally:
 
-Checkpoint verification: 197 Foundry tests pass; nine opt-in fork tests were skipped. The five catalogue/projection tests and indexer TypeScript check pass. Existing booster and portal storage prefixes/gap boundaries remain compatible. Compiled production runtimes are below EIP-170; BoosterPacks has only 42 bytes of remaining headroom, so future edits must repeat the size check. The legacy minimum-gas seven-card callback passes after reusing the pack limit already fetched during engine authorization. PostgreSQL/reorg and browser/worker integration checks remain outstanding.
+- 198 Foundry tests pass, including randomized dose/escrow/replay coverage; nine opt-in fork tests were skipped. Existing booster and portal storage prefixes/gap boundaries remain compatible. Release size and generated ABI checks pass. BoosterPacks has only 42 bytes of EIP-170 headroom, so every runtime change must repeat the size check.
+- The evolution catalogue/projection/worker suite and all 144 existing portal unit/recovery tests pass. Both application TypeScript checks, the portal picker tests and the frontend production build pass; the build still reports large chunks.
+- PostgreSQL tests exercise actual Ponder tables and rollback triggers through evolution projection rollback/replay, plus global readiness, receipt concurrency and lease fencing. The enabled-source registration rehearsal covers all 19 configured sources. A serialization retry is limited to rolled-back receipt-claim transactions, before external effects.
+- The local browser rehearsal uses real deployed contracts, wallet transactions, API routes and the generation worker. It covers adventure settlement, a serum, approval/consumption, saved-output recovery, fusion Presence settlement, atomic parent burn/result mint, inherited history/cooldown and collection reads at desktop/mobile sizes. This rehearsal feeds confirmed event fixtures through the same reducer into PGlite; it does not replace the separate PostgreSQL/Ponder checks. Deterministic fixture artwork verifies the flow without asserting live image quality or provider cost.
+- CI runs evolution contract/ABI, worker, enabled-indexer and browser checks alongside the existing portal checks, and saves browser screenshots as artifacts.
+
+Still required before launch: a deployment-specific fork and live VRF rehearsal, a bounded live AI quality/cost review (including mixed ancestry, Holy/dark combinations and maximum-dose grading), and load/recovery checks against the operator's selected infrastructure. Persisted images are reused, but a crash after a provider charges and before its output is checkpointed can repeat provider work; the player is not charged a second generation fee. Complete the existing product/legal review before exposing paid randomized mechanics.
+
+## Deployment-neutral preparation and recovery
+
+Use the private operator repository for deployments and evidence. Keep addresses, hostnames, credential locations and deployment receipts outside this repository.
+
+1. Reuse the portal service's AI, asset, database, RPC and signer configuration. `evolution:policy` prints the rendering policy and hash without using a key. The worker reads the existing `OPENAI_API_KEY` and `PORTALS_MODEL_POLICIES_JSON`; it does not provision credentials. Run `evolution:migrate` with the existing database migration role and `PORTALS_WORKER_DATABASE_ROLE` to install the private job table and existing transaction journal. Keep worker writes separate from the global read-only indexer connection.
+2. Prepare the catalogue and adventure/evolution proxies with `contracts/boosters/script/DeployEvolution.s.sol`. Its default Forge invocation simulates; it does not bind the collection. Compile and check the engine, collection and grading upgrades together. `evolution:prepare` emits unsigned administrator calls using environment-supplied deployment addresses and implementation addresses, grants the existing portal signer `GENERATOR_ROLE`, and puts `configureEvolution` last. Rehearse these calls against the intended chain state before any broadcast.
+3. Register all three evolution sources and start blocks through `UNIFIED_EVOLUTION_JSON` in the existing global indexer release. Retain the collection ownership and portal grading sources. Require complete confirmed coverage and the correct release identity before consumption; there is no separate evolution event poller.
+4. Configure `EVOLUTION_ENABLED=true`, `PORTALS_INDEXER_MODE=unified`, the existing `PORTALS_INDEXER_DATABASE_URL` and `PORTALS_INDEXER_RELEASE_ID`, and the portal service's existing asset configuration. The evolution endpoints serve assets from the same storage under `/v1/evolution/assets`; configure that route on the asset origin as well. Continue to serve published assets when pausing new requests.
+5. After policy, bindings and `GENERATOR_ROLE` checks pass, start `evolution:worker` with `EVOLUTION_WORKER_ENABLED=true`, the existing portal signer configuration and `PORTALS_MAX_EXECUTION_FEE_WEI`. `--once` performs one pass. `--prepare` can generate and persist paid artwork without signing a completion; it is not a free dry run. Monitor outstanding reservations, retry age, provider spend and signer funds. Recover failed jobs by repairing the dependency and retrying their saved request, never by charging or rerolling it.
+6. Enable the frontend using `VITE_EVOLUTION_ENABLED`, `VITE_EVOLUTION_ADDRESS` and `VITE_ADVENTURES_ADDRESS`, together with the existing collection/portal network and API configuration, after end-to-end verification. Owners must see both the USDC generation fee and any ETH randomness quote before submitting.
+
+To stop intake, pause adventure randomness requests and evolution requests on their respective contracts (`pauseRandomness(true)` and `pauseRequests(true)`), and disable frontend actions as appropriate. Keep callbacks, recovery, generation completions and published assets available so already-reserved cards can finish. Restore the worker database and immutable assets together. Do not downgrade a collection or grading implementation to code that does not understand already-minted fusions or evolved artwork; prepare a compatible forward fix through the private release workflow.

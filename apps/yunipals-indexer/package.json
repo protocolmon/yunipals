@@ -138,7 +138,14 @@
     "portals:api": "node --import tsx scripts/portal-api.ts",
     "test:portals:shared": "node --import tsx scripts/test-portal-shared-ponder.mjs",
     "portals:shared:prepare": "tsx scripts/prepare-portal-shared.ts",
-    "portals:shared:compare": "tsx scripts/compare-portal-shared.ts"
+    "portals:shared:compare": "tsx scripts/compare-portal-shared.ts",
+    "evolution:worker": "tsx scripts/evolution-worker.ts",
+    "evolution:migrate": "tsx scripts/evolution-worker.ts --migrate",
+    "evolution:policy": "tsx scripts/evolution-worker.ts --policy",
+    "evolution:prepare": "tsx scripts/prepare-evolution.ts",
+    "test:evolution": "vitest run test/evolution.test.ts test/evolution-worker.test.ts",
+    "test:evolution:local": "node --import tsx scripts/test-evolution-local.mjs",
+    "test:evolution:ponder": "node --import tsx scripts/test-unified-ponder.mjs --evolution"
   },
   "dependencies": {
     "@hono/node-server": "1.19.17",

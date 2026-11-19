@@ -183,6 +183,17 @@ export type PortalEffectPolicy = {
 export type PortalAIContext = {
   portalKindId: string;
   baseColor: (typeof portalColorNames)[number];
+  evolution?: {
+    witnessTokenId?: string;
+    sources: import("./serums.js").EvolutionSource[];
+    history: {
+      tokenId: string;
+      level: number;
+      presence: number;
+      doses: readonly import("./serums.js").SerumDose[];
+      parents: unknown[];
+    };
+  };
   theme?: {
     batchId: string;
     hash: Hex;

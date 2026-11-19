@@ -22,7 +22,9 @@ contract EvolutionTestEngine is PortalTestEngine {
     mapping(uint256 => bool) public burned;
     constructor(PackRegistry registry_) PortalTestEngine(registry_) {}
 
-    function evolutionClaimLocks() external pure returns (bool) { return true; }
+    function evolutionClaimLocks() external pure returns (bool) {
+        return true;
+    }
 
     function setPending(uint256 id) external {
         pending = id;
@@ -34,7 +36,9 @@ contract EvolutionTestEngine is PortalTestEngine {
 }
 
 contract EvolutionGradingMock is IProgressionArtwork {
-    function evolutionIntegrationVersion() external pure returns (uint256) { return 1; }
+    function evolutionIntegrationVersion() external pure returns (uint256) {
+        return 1;
+    }
     YunipalMonsters public cards;
     uint256 public constant packTypeId = 1;
     mapping(uint256 => uint256) public historyCount;
@@ -254,6 +258,32 @@ contract EvolutionTest is Test {
         SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
         vm.prank(ALICE);
         job = evolution.consumeSerum(id, e, dose, uint64(block.timestamp));
+    }
+
+    function testFuzzDoseEscrowAndReplay(uint8 rawCount, uint32 delaySeconds) public {
+        uint256 count = bound(rawCount, 1, 11);
+        uint256 id = original();
+        uint256 initialBalance = usdc.balanceOf(ALICE);
+        for (uint256 i; i < count; ++i) {
+            findSerum(id);
+            uint256 job = drink(id);
+            assertEq(evolution.feeLiability(), 100_000);
+            assertEq(usdc.balanceOf(address(evolution)), evolution.feeLiability());
+            assertEq(usdc.balanceOf(ALICE), initialBalance - (i + 1) * 100_000);
+            bytes32 binding = evolution.requestBinding(job);
+            vm.warp(block.timestamp + uint256(delaySeconds));
+            complete(job);
+            assertEq(evolution.feeLiability(), 0);
+            assertEq(usdc.balanceOf(FEES), (i + 1) * 100_000);
+            assertEq(evolution.doses(id).length, i + 1);
+            vm.expectRevert("request not ready or changed");
+            evolution.complete(
+                job,
+                binding,
+                YunipalEvolution.Artifact("ipfs://evolved", keccak256("art"), "ipfs://metadata", keccak256("metadata"))
+            );
+            assertEq(usdc.balanceOf(FEES), (i + 1) * 100_000);
+        }
     }
 
     function testCatalogueCoverageAndTierBoundaries() public view {

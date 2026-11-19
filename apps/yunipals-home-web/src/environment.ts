@@ -34,6 +34,9 @@ export const environment = {
     import.meta.env?.MODE === "fixtures" ||
     import.meta.env?.VITE_EXOMON_ENABLED === "true",
   boostersEnabled: import.meta.env?.VITE_BOOSTERS_ENABLED === "true",
+  evolutionEnabled: import.meta.env?.VITE_EVOLUTION_ENABLED === "true",
+  evolutionAddress: import.meta.env?.VITE_EVOLUTION_ADDRESS?.trim() || "",
+  adventuresAddress: import.meta.env?.VITE_ADVENTURES_ADDRESS?.trim() || "",
   portalsEnabled: import.meta.env?.VITE_PORTALS_ENABLED === "true",
   portalApiUrl:
     import.meta.env?.VITE_PORTALS_API_URL?.replace(/\/$/, "") || null,

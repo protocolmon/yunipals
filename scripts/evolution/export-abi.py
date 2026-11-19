@@ -3,9 +3,11 @@ import json
 import sys
 from pathlib import Path
 root = Path(__file__).resolve().parents[2]
+output = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else "out"
+assert output in ["out", "out-permit"], "Unsupported compiler output directory"
 items = []
 for contract, name in [('SerumCatalogue','serumCatalogueAbi'), ('YunipalAdventures','adventureAbi'), ('YunipalEvolution','evolutionAbi'), ('YunipalMonsters','evolutionCardsAbi'), ('PortalGrading','evolutionGradingAbi')]:
-    artifact = json.loads((root/'contracts/boosters/out'/f'{contract}.sol'/f'{contract}.json').read_text())
+    artifact = json.loads((root/'contracts/boosters'/output/f'{contract}.sol'/f'{contract}.json').read_text())
     abi = [v for v in artifact['abi'] if v['type'] in ['function','event','error']]
     items.append(f'export const {name} = '+json.dumps(abi,separators=(',',':'))+' as const;')
 target = root/'packages/yunipals-market-core/src/evolutionAbi.ts'
