@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 
+import { environment } from "@/environment";
 import {
   collectionDefinitions,
   collectionViewQuery,
@@ -13,6 +14,8 @@ import {
   scopeEditionQuery
 } from "@/lib/collectionEdition";
 import {
+  collectorViewQuery,
+  resolveCollectorQuery,
   personalCollectionHref,
   readSavedCollectorFilters,
   saveCollectorFilters
@@ -65,11 +68,13 @@ test("TCG sequence filters preserve zero, range and original-only through URLs, 
   }
 });
 
+const originalExomonEnabled = environment.exomonEnabled;
 const originalStorage = Object.getOwnPropertyDescriptor(
   globalThis,
   "localStorage"
 );
 afterEach(() => {
+  environment.exomonEnabled = originalExomonEnabled;
   if (originalStorage)
     Object.defineProperty(globalThis, "localStorage", originalStorage);
   else Reflect.deleteProperty(globalThis, "localStorage");
@@ -243,4 +248,60 @@ test("default collection URLs omit implicit networks while API queries retain me
   storage();
   saveCollectionFilters("edition=og&chain=ethereum&chain=polygon&chain=bnb");
   assert.equal(readSavedCollectionFilters("og"), "edition=og");
+});
+
+test("collector defaults and saved URLs stay EVM-only with Exomon enabled", () => {
+  environment.exomonEnabled = true;
+  const values = storage();
+  for (const edition of ["og", "airdrop", "tcg"] as const) {
+    const view = collectorViewQuery(new URLSearchParams(`edition=${edition}`));
+    assert.deepEqual(view.getAll("chain"), []);
+    assert.deepEqual(
+      resolveCollectorQuery(view, null).getAll("chain"),
+      collectionDefinitions[edition].chains
+    );
+    saveCollectorFilters(view.toString());
+    const saved = readSavedCollectorFilters(edition)!;
+    assert.deepEqual(new URLSearchParams(saved).getAll("chain"), []);
+    assert.deepEqual(
+      resolveCollectorQuery(new URLSearchParams(), saved).getAll("chain"),
+      collectionDefinitions[edition].chains
+    );
+  }
+  // Repair preferences written by public scoping without losing trait/search choices.
+  values.set(
+    "yunipals.collector.filters.v2.og",
+    "edition=og&chain=solana&chain=bnb&q=32&t.Color=Blue"
+  );
+  const saved = readSavedCollectorFilters("og")!;
+  assert.deepEqual(new URLSearchParams(saved).getAll("chain"), ["bnb"]);
+  assert.equal(new URLSearchParams(saved).get("q"), "32");
+  assert.equal(new URLSearchParams(saved).get("t.Color"), "Blue");
+  assert.deepEqual(
+    new URL(
+      personalCollectionHref("0x123", "og"),
+      "http://localhost"
+    ).searchParams.getAll("chain"),
+    ["bnb"]
+  );
+  const solana = new URLSearchParams("edition=og&chain=solana");
+  assert.match(
+    collectionMigrationNotice(solana, "collector")!,
+    /Incompatible network filters/
+  );
+  assert.equal(collectionMigrationNotice(solana), null);
+  saveCollectionFilters(solana.toString());
+  assert.deepEqual(
+    new URLSearchParams(readSavedCollectionFilters("og")!).getAll("chain"),
+    ["solana"]
+  );
+  // Clearing or round-tripping the full EVM selection must not add Solana or churn the URL.
+  const cleared = collectorViewQuery(
+    new URLSearchParams("edition=og&chain=ethereum&chain=polygon&chain=bnb")
+  );
+  assert.equal(cleared.toString(), "edition=og");
+  assert.equal(
+    collectorViewQuery(resolveCollectorQuery(cleared, null)).toString(),
+    cleared.toString()
+  );
 });

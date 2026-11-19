@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { afterEach, test } from "node:test";
 import { QueryClient, QueryObserver, hashKey } from "@tanstack/react-query";
 
 import {
@@ -10,13 +10,16 @@ import {
   parseCollectorPage,
   pruneCollectorPages
 } from "@/lib/collector";
+import { environment } from "@/environment";
+import { resolveCollectionQuery } from "@/lib/collectionEdition";
+import { resolveCollectorQuery } from "@/lib/collectorPreferences";
+import { IndexerError } from "@/lib/yunipalsIndexer";
+
 import {
   fixtureResponse,
   fixtureTokens
 } from "../../scripts/fixtures/devServer";
 import { collectorFixtureOwner } from "../../scripts/fixtures/collector";
-import { IndexerError } from "@/lib/yunipalsIndexer";
-import { resolveCollectorQuery } from "@/lib/collectorPreferences";
 
 const origin = "http://localhost/__fixtures/indexer";
 const client = createCollectorClient(origin, async (input, init) => {
@@ -25,6 +28,72 @@ const client = createCollectorClient(origin, async (input, init) => {
 });
 const filters = (value: string) =>
   parseCollectorFilters(new URLSearchParams(value));
+
+const originalExomonEnabled = environment.exomonEnabled;
+afterEach(() => {
+  environment.exomonEnabled = originalExomonEnabled;
+});
+
+test("Exomon-enabled OG collector links load EVM holdings while public browsing retains Solana", async () => {
+  environment.exomonEnabled = true;
+  for (const query of [
+    "",
+    "sort=rarity-capped-desc&edition=og",
+    "edition=og&chain=solana",
+    "edition=og&excludeChain=base"
+  ]) {
+    const selected = parseCollectorFilters(
+      resolveCollectorQuery(new URLSearchParams(query), null)
+    );
+    assert.deepEqual(selected.chains, ["ethereum", "polygon", "bnb"]);
+    const page = await client.page(collectorFixtureOwner, selected, "visible");
+    assert.equal(page.items.length, 24);
+    assert.ok(page.items.every((token) => token.chain !== "base"));
+  }
+  assert.deepEqual(
+    resolveCollectionQuery(new URLSearchParams("edition=og"), null).getAll(
+      "chain"
+    ),
+    ["ethereum", "polygon", "bnb", "solana"]
+  );
+});
+
+test("Exomon-enabled collector scoping preserves selected chains, exclusions, saved filters and validation", () => {
+  environment.exomonEnabled = true;
+  const saved = "edition=og&chain=bnb&chain=solana&t.Color=Blue&q=32";
+  const restored = parseCollectorFilters(
+    resolveCollectorQuery(new URLSearchParams(), saved)
+  );
+  assert.deepEqual(restored.chains, ["bnb"]);
+  assert.deepEqual(restored.colors, ["Blue"]);
+  assert.equal(restored.search, "32");
+  assert.deepEqual(
+    parseCollectorFilters(
+      resolveCollectorQuery(
+        new URLSearchParams("edition=og&excludeChain=ethereum"),
+        saved
+      )
+    ).chains,
+    ["polygon", "bnb"]
+  );
+  for (const query of ["chain=base", "edition=airdrop", "edition=tcg"]) {
+    assert.deepEqual(
+      resolveCollectorQuery(new URLSearchParams(query), saved).getAll("chain"),
+      ["base"]
+    );
+  }
+  assert.throws(
+    () =>
+      parseCollectorFilters(
+        resolveCollectorQuery(
+          new URLSearchParams("edition=og&chain=bad"),
+          saved
+        )
+      ),
+    /Choose a supported chain/
+  );
+});
+
 
 test("first visits default to OG across all pages of a wallet", async () => {
   const defaults = parseCollectorFilters(

@@ -5,6 +5,7 @@ import { environment } from "@/environment";
 import type { CollectionChain } from "@/lib/collectionBrowserFilters";
 
 export type CollectionEdition = "og" | "airdrop" | "tcg";
+type CollectionScope = "public" | "collector";
 export const collectionEditions = ["og", "airdrop", "tcg"] as const;
 export const collectionDefinitions = {
   og: {
@@ -31,11 +32,12 @@ export const collectionFilterStorageKey = "yunipals.collection.filters.v3";
 
 /** Public browsing includes Exomon; EVM wallet views retain their own chains. */
 export function collectionEditionChains(
-  edition: CollectionEdition
+  edition: CollectionEdition,
+  scope: CollectionScope = "public"
 ): CollectionChain[] {
   return [
     ...collectionDefinitions[edition].chains,
-    ...(edition === "og" && environment.exomonEnabled
+    ...(scope === "public" && edition === "og" && environment.exomonEnabled
       ? ["solana" as const]
       : [])
   ];
@@ -51,7 +53,10 @@ export function collectionEdition(params: URLSearchParams): CollectionEdition {
     : "og";
 }
 
-export function collectionMigrationNotice(params: URLSearchParams) {
+export function collectionMigrationNotice(
+  params: URLSearchParams,
+  scope: CollectionScope = "public"
+) {
   const selected = params.getAll("chain");
   if (
     params.get("edition") !== "tcg" &&
@@ -60,7 +65,8 @@ export function collectionMigrationNotice(params: URLSearchParams) {
   )
     return "Base airdrop holdings now have their own OG Airdrop view. Use the collection switch to see them.";
   const allowed: readonly string[] = collectionEditionChains(
-    collectionEdition(params)
+    collectionEdition(params),
+    scope
   );
   if (selected.some((chain) => !allowed.includes(chain)))
     return "The selected collection uses its own networks. Incompatible network filters have been cleared.";
@@ -89,12 +95,15 @@ export function matchesOriginalEdition(
 }
 
 /** A scope is applied before requesting pages, counts, facets or listings. */
-export function scopeEditionQuery(params: URLSearchParams) {
+export function scopeEditionQuery(
+  params: URLSearchParams,
+  scope: CollectionScope = "public"
+) {
   const query = new URLSearchParams(params);
   const edition = collectionEdition(query);
   query.set("edition", edition);
   if (edition !== "og") query.delete("marketReturnChain");
-  const allowed: readonly string[] = collectionEditionChains(edition);
+  const allowed: readonly string[] = collectionEditionChains(edition, scope);
   const selected = query.getAll("chain");
   const excluded = query.getAll("excludeChain");
   if (
@@ -118,9 +127,12 @@ export function scopeEditionQuery(params: URLSearchParams) {
 }
 
 /** Collection membership is implicit in browser URLs, not an active filter. */
-export function collectionViewQuery(params: URLSearchParams) {
-  const query = scopeEditionQuery(params);
-  const allowed = collectionEditionChains(collectionEdition(query));
+export function collectionViewQuery(
+  params: URLSearchParams,
+  scope: CollectionScope = "public"
+) {
+  const query = scopeEditionQuery(params, scope);
+  const allowed = collectionEditionChains(collectionEdition(query), scope);
   const selected = query.getAll("chain");
   if (
     selected.length === allowed.length &&
@@ -143,7 +155,8 @@ export function resolveCollectionQuery(
 export function readEditionPreferences(
   key: string,
   previousKeys: string[],
-  edition?: CollectionEdition
+  edition?: CollectionEdition,
+  scope: CollectionScope = "public"
 ) {
   try {
     const keys = edition
@@ -169,7 +182,7 @@ export function readEditionPreferences(
         query.get("sort") === "token-id-asc"
       )
         query.delete("sort");
-      return collectionViewQuery(query).toString();
+      return collectionViewQuery(query, scope).toString();
     }
   } catch {
     // Shared URLs remain usable when storage is unavailable.
@@ -177,9 +190,13 @@ export function readEditionPreferences(
   return null;
 }
 
-export function saveEditionPreferences(key: string, query: string) {
+export function saveEditionPreferences(
+  key: string,
+  query: string,
+  scope: CollectionScope = "public"
+) {
   try {
-    const normalized = collectionViewQuery(new URLSearchParams(query));
+    const normalized = collectionViewQuery(new URLSearchParams(query), scope);
     localStorage.setItem(
       `${key}.${collectionEdition(normalized)}`,
       normalized.toString()

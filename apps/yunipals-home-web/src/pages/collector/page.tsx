@@ -35,7 +35,6 @@ import {
   collectionEdition,
   collectionMigrationNotice,
   matchesOriginalEdition,
-  collectionViewQuery,
   type CollectionEdition
 } from "@/lib/collectionEdition";
 import { TcgCollector } from "./components/TcgCollector";
@@ -81,6 +80,7 @@ import { useCollectorTokens } from "@/pages/collector/hooks/useCollectorTokens";
 import {
   readSavedCollectorFilters,
   resolveCollectorQuery,
+  collectorViewQuery,
   saveCollectorFilters,
   personalCollectionHref
 } from "@/lib/collectorPreferences";
@@ -155,7 +155,9 @@ export function CollectorPage() {
     readSavedCollectorFilters()
   );
   const edition = collectionEdition(resolvedQuery);
-  const [migrationNotice] = useState(() => collectionMigrationNotice(params));
+  const [migrationNotice] = useState(() =>
+    collectionMigrationNotice(params, "collector")
+  );
   const islands = params.get("collection") === "islands";
   return (
     <>
@@ -221,14 +223,14 @@ function YunipalsCollectorPage({
       });
       const query = serializeCollectorFilters(next);
       query.set("edition", edition);
-      startTransition(() => setSearchParams(collectionViewQuery(query)));
+      startTransition(() => setSearchParams(collectorViewQuery(query)));
     },
     [setSearchParams, edition]
   );
   const validOwner = isOwnerInput(ownerInput);
   const canonicalQuery = serializeCollectorFilters(filters);
   canonicalQuery.set("edition", edition);
-  const canonicalSearch = collectionViewQuery(canonicalQuery).toString();
+  const canonicalSearch = collectorViewQuery(canonicalQuery).toString();
   const filtered = hasCollectorFilters({
     ...filters,
     chains:
