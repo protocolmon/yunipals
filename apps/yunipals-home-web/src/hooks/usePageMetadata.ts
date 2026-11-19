@@ -1,50 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export const DEFAULT_DESCRIPTION =
-  "Explore Yunipals across Ethereum, Base, Polygon, and BNB Chain. Discover traits, rarity, token histories, and collector profiles.";
-export const DEFAULT_TITLE = "Yunipals — Explore the Collection";
-const SITE_URL = "https://www.yunipals.com";
+import { environment } from "@/environment";
+import {
+  metadataEntries,
+  resolvePageMetadata,
+  type PageMetadata
+} from "@/lib/social/metadata";
+export { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from "@/lib/social/metadata";
 
-function setMetadata(title: string, description: string, pathname: string) {
-  document.title = title;
-  const canonical = `${SITE_URL}${pathname === "/collection" ? "/" : pathname}`;
-  for (const [selector, content] of [
-    ['meta[name="description"]', description],
-    ['meta[property="og:title"]', title],
-    ['meta[property="og:description"]', description],
-    ['meta[property="og:url"]', canonical],
-    ['meta[name="twitter:title"]', title],
-    ['meta[name="twitter:description"]', description],
-    [
-      'meta[name="robots"]',
-      pathname === "/orders" || pathname.startsWith("/orders/")
-        ? "noindex, follow"
-        : "index, follow"
-    ]
-  ]) {
-    document.querySelector(selector)?.setAttribute("content", content);
-  }
-  document
-    .querySelector('link[rel="canonical"]')
-    ?.setAttribute("href", canonical);
+function pageMetadata(pathname: string, search: string) {
+  return resolvePageMetadata(
+    new URL(`${pathname}${search}`, environment.siteOrigin),
+    {
+      siteOrigin: environment.siteOrigin,
+      exomonEnabled: environment.exomonEnabled,
+      staticRevision: environment.socialImageRevision
+    }
+  );
 }
 
-export function usePageMetadata(
-  title: string,
-  description = DEFAULT_DESCRIPTION
-) {
-  const { pathname, search } = useLocation();
-  const canonicalPath =
-    pathname === "/leaderboard" &&
-    new URLSearchParams(search).get("chain") === "solana"
-      ? "/leaderboard?chain=solana"
-      : pathname;
-  useEffect(() => {
-    setMetadata(title, description, canonicalPath);
+export function applyPageMetadata(meta: PageMetadata) {
+  document.title = meta.title;
+  for (const [attribute, key, content] of metadataEntries(meta)) {
+    let element = document.querySelector<HTMLMetaElement>(
+      `meta[${attribute}="${key}"]`
+    );
+    if (!element) {
+      element = document.createElement("meta");
+      element.setAttribute(attribute, key);
+      document.head.append(element);
+    }
+    element.content = content;
+  }
+  let canonical = document.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]'
+  );
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.append(canonical);
+  }
+  canonical.href = meta.canonical;
+}
 
-    return () => {
-      setMetadata(DEFAULT_TITLE, DEFAULT_DESCRIPTION, "/");
-    };
-  }, [canonicalPath, description, title]);
+/** Route metadata is reset before painting; loaded page data may refine the
+ * title afterwards. Unmounting pages never restore stale homepage metadata. */
+export function RouteMetadata() {
+  const { pathname, search } = useLocation();
+  useLayoutEffect(() => {
+    applyPageMetadata(pageMetadata(pathname, search));
+  }, [pathname, search]);
+  return null;
+}
+
+export function usePageMetadata(title: string, description?: string) {
+  const { pathname, search } = useLocation();
+  useEffect(() => {
+    const meta = pageMetadata(pathname, search);
+    applyPageMetadata({
+      ...meta,
+      title,
+      description: description ?? meta.description
+    });
+  }, [pathname, search, description, title]);
 }

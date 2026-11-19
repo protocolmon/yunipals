@@ -5,6 +5,12 @@ const boosterLaunchId =
   import.meta.env?.VITE_BOOSTER_LAUNCH_ID?.trim() || "base-proto-v1";
 
 export const environment = {
+  siteOrigin:
+    import.meta.env?.VITE_SITE_ORIGIN ||
+    (typeof window !== "undefined"
+      ? window.location.origin
+      : "http://localhost:5177"),
+  socialImageRevision: import.meta.env?.VITE_SOCIAL_REVISION || "1",
   monsterVersionsEnabled:
     import.meta.env?.VITE_MONSTER_VERSIONS_ENABLED !== "false",
   collectionOnly: import.meta.env?.VITE_COLLECTION_ONLY === "true",

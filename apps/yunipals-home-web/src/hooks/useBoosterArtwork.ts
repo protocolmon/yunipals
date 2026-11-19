@@ -1,4 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+
+import {
+  matchesPortalDeployment,
+  selectMonsterArtwork
+} from "@/lib/social/artwork";
 import { environment } from "@/environment";
 import { boosterQueryKey, fetchMonsterArtwork } from "@/lib/boosters";
 import { fetchPortalStatus, portalApiUrl } from "@/lib/portals";
@@ -20,11 +25,11 @@ export function useBoosterArtwork(uri: string | undefined, card?: ArtworkCard) {
   const deployment = status.data?.enabled ? status.data.deployment : null;
   const portalCard =
     inspect &&
-    !!deployment &&
-    deployment.chainId === environment.portalChainId &&
-    deployment.grading.toLowerCase() ===
-      environment.portalGrading.toLowerCase() &&
-    deployment.cards.toLowerCase() === card?.collection.toLowerCase();
+    matchesPortalDeployment(deployment, {
+      chainId: environment.portalChainId,
+      grading: environment.portalGrading,
+      cards: card?.collection ?? ""
+    });
   const original = useQuery({
     queryKey: [...boosterQueryKey, "artwork", uri],
     queryFn: ({ signal }) => fetchMonsterArtwork(uri!, signal),
@@ -51,7 +56,7 @@ export function useBoosterArtwork(uri: string | undefined, card?: ArtworkCard) {
   });
   // Keep successful artwork visible while a background refresh is unavailable.
   const graded = portalCard ? query.data : undefined;
-  const data = graded?.image ? graded : original.data;
+  const data = selectMonsterArtwork(original.data, graded);
   const error = data?.image
     ? null
     : original.error || (portalCard ? query.error : null);

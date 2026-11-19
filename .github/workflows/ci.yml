@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
+      VITE_SITE_ORIGIN: https://site.example.test
       VITE_SELF_HOSTED: "1"
       VITE_EXOMON_ENABLED: "true"
       VITE_YUNIPALS_INDEXER_URL: https://indexer.example.test
@@ -85,6 +86,10 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-workspace
       - run: pnpm build
+      - name: Verify isolated social preview server
+        run: pnpm --filter @protopals/yunipals-home-web exec node scripts/social/test-packaged.mjs
+      - name: Package portable preview runtime
+        run: tar -C apps/yunipals-home-web/dist -czf "$RUNNER_TEMP/yunipals-social-runtime.tar.gz" .social
       - name: Check build outputs
         run: |
           test -s apps/yunipals-home-web/dist/index.html
@@ -97,6 +102,12 @@ jobs:
           path: |
             apps/yunipals-home-web/dist
             apps/yunipals-market-api/dist
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: social-preview-runtime
+          path: ${{ runner.temp }}/yunipals-social-runtime.tar.gz
           if-no-files-found: error
           retention-days: 7
 

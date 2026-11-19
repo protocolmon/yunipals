@@ -1,7 +1,8 @@
-import { ArenaDeploymentProvider } from "@/lib/arenaDeployment";
 import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
+import { ArenaDeploymentProvider } from "@/lib/arenaDeployment";
+import { RouteMetadata } from "@/hooks/usePageMetadata";
 import { Footer } from "@/components/Footer";
 import { Nav } from "@/components/Nav";
 import { environment } from "@/environment";
@@ -235,6 +236,7 @@ function AppContent() {
         new URLSearchParams(search).get("chain") === "solana"));
   return (
     <div className="min-h-screen bg-white">
+      <RouteMetadata />
       <ScrollManager />
       <Nav />
       {environment.fixtures && (

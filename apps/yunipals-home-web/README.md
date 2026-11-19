@@ -282,3 +282,97 @@ layout, keyboard/focus, form values and dialog layering in Chromium, run:
 ```sh
 pnpm test:select:ui --playwright /path/to/playwright/index.mjs --chromium /path/to/chromium
 ```
+
+## Page and collectible sharing previews
+
+The Vite build creates branded 1200 × 630 PNG cards, page-specific HTML, a
+sitemap, and a portable server in `dist/.social`. Static images have
+content-fingerprinted names under `/images/og/`. They use the existing artwork
+and bundled Inter/Archivo Black fonts; their font licenses travel with the
+server. No image generation API or wallet connection is needed.
+
+Configure these values before building:
+
+| Setting                                                                                                 | Purpose                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_SITE_ORIGIN`                                                                                      | Public website origin, including scheme. Set explicitly for self-hosting and local prebuilt releases. Vercel cloud builds can use `VERCEL_PROJECT_PRODUCTION_URL`. Local development defaults to localhost. |
+| `VITE_YUNIPALS_INDEXER_URL`                                                                             | Public HTTPS indexer API used for collectible reads.                                                                                                                                                        |
+| `VITE_BOOSTER_MONSTERS`, `VITE_BOOSTERS_ENABLED`                                                        | Supported TCG collection and its feature gate.                                                                                                                                                              |
+| `VITE_PORTALS_API_URL`, `VITE_PORTALS_ENABLED`, `VITE_PORTALS_GRADING_ADDRESS`, `VITE_PORTALS_CHAIN_ID` | Grading API and expected deployment; omitted API URL uses the indexer.                                                                                                                                      |
+| `VITE_EXOMON_ENABLED`                                                                                   | Enables Solana detail previews alongside the app feature.                                                                                                                                                   |
+| `VITE_BOOSTER_IPFS_GATEWAY`                                                                             | HTTPS IPFS gateway for published artwork.                                                                                                                                                                   |
+| `OG_ASSET_HOSTS`                                                                                        | Optional comma-separated **exact public hostnames** for artwork hosted elsewhere. Site/API/gateway hosts are included automatically. No wildcards.                                                          |
+
+These values are captured in the build. Only the listed public preview
+configuration is packaged; private environment variables are not copied.
+Public HTTPS hosts are required for server-side reads. The fetcher rejects
+private/reserved addresses, credentials, unsupported ports, oversized inputs,
+and redirects to disallowed hosts. Add an artwork host only if you trust it.
+Unsupported or unavailable artwork receives a fallback preview.
+
+`src/lib/social/metadata.ts` owns route matching, canonical paths, image
+selection, indexing policies and HTML tags. `RouteMetadata` applies those rules
+on client navigation; existing `usePageMetadata` calls refine loaded titles and
+descriptions. Collection edition/Solana/Islands URL variants get their own card;
+filters, sorting, tracking values and saved browser preferences do not change
+public preview identity. Proposal copy is shared with its catalog definitions.
+When adding a route, update its metadata policy and the static page list.
+
+`server/social/resolve.ts` reads existing public APIs for original collectibles,
+TCG cards, Islands, Exomon, portal cards and portal NFTs. TCG artwork follows the
+same deployment validation, version-zero and original-art fallback rules as the
+browser. It uses published artwork, including completed grading slabs, without
+inventing grades, balances or prices. Pending artwork is explicitly labelled.
+Malformed IDs and confirmed missing assets return 404; temporary upstream
+failures preserve usable page HTML and return an uncached generic image.
+
+Dynamic image URLs have the form `/api/og/{kind}/{collection}/{id}.png`, where
+`kind` is `monster`, `token`, `portal-card`, or `portal-token`. The HTML handler
+places their absolute URLs in both Open Graph and Twitter card tags. It serves
+the same HTML to browsers and crawlers. It does not server-render the React
+page body. Unknown image/API paths never fall through to the app HTML.
+
+Start a self-hosted deployment from the web app directory:
+
+```sh
+pnpm build
+PORT=5180 pnpm serve
+```
+
+Put the server behind your HTTPS proxy and configure its shared cache to honor
+`CDN-Cache-Control`. Bind `HOST` explicitly if needed; the default is loopback.
+The adapter serves static files and delegates page/OG requests to the same
+handler used by the Vercel Build Output package. Never serve `dist/.social` as
+public files. A static-only host can serve the prebuilt page previews, but
+query-dependent and on-demand detail previews need the server adapter/routing.
+
+`build:www` packages the server function and places preview/alias routes before
+the static filesystem and SPA fallback. It excludes the server bundle from the
+public static files. Both local prebuilt and cloud build modes use the same
+packaging. A build for one OS/architecture should run on that same target;
+native rasterizer dependencies are traced into the server artifact.
+
+Static images cache immutably. Ready detail images use 300 seconds of shared
+caching, detail HTML uses 60 seconds, and pending/original-fallback previews use
+15 seconds. Transient failures use zero seconds. Browsers revalidate. Render
+fingerprints include template version and the resolved public card data;
+`ETag` supports conditional requests. Rendering is bounded to two concurrent
+images per instance, with in-flight request deduplication. CDN caching provides
+reuse across instances. A historical revision URL still resolves current state
+and is deliberately not immutable. Social platforms may retain their own cached
+preview even after our caches refresh.
+
+Verification:
+
+```sh
+pnpm test:social
+pnpm typecheck
+pnpm build
+node scripts/social/test-packaged.mjs
+```
+
+The packaged check relocates the server outside the repository and runs it in a
+fresh process, detecting missing native dependencies and absolute pnpm links.
+`pnpm test:web` includes the deterministic social tests. CI also checks the
+isolated built server. The build produces `dist/.social/gallery.html` for local
+visual review; open it as a local file. This gallery is excluded from public hosting.

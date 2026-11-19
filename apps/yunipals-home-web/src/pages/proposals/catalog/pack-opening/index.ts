@@ -1,12 +1,12 @@
+import { proposalPreviews } from "@/lib/social/proposals";
 import { lazy } from "react";
 
 import type { ProposalDefinition } from "../types";
 import avatar from "./avatar.webp";
 
 export const proposal: ProposalDefinition = {
-  title: "A new way to open a pack",
-  summary:
-    "Eleven playable concepts for the pack opening, from foil you scratch off by hand to a card that drops out of hyperspace. Try each one and see which feels right.",
+  title: proposalPreviews["pack-opening"].title,
+  summary: proposalPreviews["pack-opening"].description,
   author: {
     name: "Exochick Arno",
     avatar

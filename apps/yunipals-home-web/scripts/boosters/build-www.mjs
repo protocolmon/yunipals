@@ -6,6 +6,8 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
+import { packageVercelSocial, socialRoutes } from "../social/package.mjs";
+
 const { values } = parseArgs({
   options: {
     mode: { type: "string", default: "prebuilt" },
@@ -69,7 +71,11 @@ try {
   if (error.code !== "ENOENT") throw error;
 }
 await mkdir(output, { recursive: true });
-await cp(release, join(output, "static"), { recursive: true });
+await cp(release, join(output, "static"), {
+  recursive: true,
+  filter: (source) => !source.split("/").includes(".social")
+});
+await packageVercelSocial(app, release, output);
 const countryFunction = join(output, "functions/api/analytics-country.func");
 await mkdir(countryFunction, { recursive: true });
 await cp(
@@ -88,19 +94,20 @@ await writeFile(
 const config = {
   version: 3,
   routes: [
+    ...socialRoutes(),
     {
       src: "/assets/(.*)",
       headers: { "Cache-Control": "public, max-age=31536000, immutable" },
       continue: true
     },
     {
-      src: "/(?!assets/|api/).*",
+      src: "/(?!assets/|api/|images/og/).*",
       headers: { "Cache-Control": "public, max-age=0, must-revalidate" },
       continue: true
     },
     { handle: "filesystem" },
-    { src: "/(?:assets|images|videos)/(.*)", status: 404 },
-    { src: "/(.*)", dest: "/index.html" }
+    { src: "/(?:assets|images|videos|api)/(.*)", status: 404 },
+    { src: "/(.*)", dest: "/api/social-page?__socialPath=/$1" }
   ]
 };
 await writeFile(
