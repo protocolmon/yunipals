@@ -1,11 +1,96 @@
-import { ANIME_REASONS } from "@protopals/yunipals-market-core/anime";
-import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { useQuery } from "@tanstack/react-query";
-import { ArenaPageHeader } from "./ArenaPageHeader";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
+
+import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { ArenaArtwork } from "../ArenaArtwork";
 import { ArenaLoading } from "./ArenaFeedback";
+import { ArenaPageHeader } from "./ArenaPageHeader";
+
+const approvalReasons = [
+  {
+    title: "Artwork not ready",
+    description: "The NFT is unrevealed or still uses placeholder artwork."
+  },
+  {
+    title: "Fighter needs another attempt",
+    description:
+      "A consistent fighter could not be created. Reapply after the creation process is updated."
+  },
+  {
+    title: "Artwork already queued",
+    description: "The same artwork is already waiting for review."
+  },
+  {
+    title: "Applications paused",
+    description: "The queue is closed for now."
+  },
+  {
+    title: "Traits changed",
+    description:
+      "The NFT’s traits changed after approval and need a new review."
+  },
+  {
+    title: "Another reason",
+    description: "Read the curator’s note on your application for details."
+  }
+];
+
+function RuleDetails({
+  title,
+  children
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group rounded-2xl border border-line bg-white">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape [&::-webkit-details-marker]:hidden">
+        {title}
+        <ChevronDown
+          size={18}
+          aria-hidden="true"
+          className="shrink-0 text-grape transition-transform group-open:rotate-180 motion-reduce:transition-none"
+        />
+      </summary>
+      <div className="space-y-4 px-5 pb-5 text-sm leading-relaxed text-muted">
+        {children}
+      </div>
+    </details>
+  );
+}
+
+function RuleStep({
+  number,
+  title,
+  children
+}: {
+  number: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="grid gap-4 border-b border-line py-8 sm:grid-cols-[2.5rem_1fr] sm:gap-6 sm:py-10">
+      <span
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-lavender/25 text-sm font-bold text-grape"
+        aria-hidden="true"
+      >
+        {number}
+      </span>
+      <div className="min-w-0">
+        <h2 className="text-xl font-bold sm:text-2xl">{title}</h2>
+        <div className="mt-4 space-y-4 leading-relaxed text-muted">
+          {children}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function ArenaRulesPage() {
   const deployment = useArenaDeployment();
+  const isAnime = deployment.kind === "anime";
   const arenaRequest = useArenaRequest();
   const rules = useQuery({
     queryKey: ["arena-live", deployment.scope, "rules"],
@@ -18,225 +103,284 @@ export function ArenaRulesPage() {
     enabled: !!deployment.apiUrl,
     staleTime: 60000
   });
+  const manifestUrl = deployment.apiUrl
+    ? `${deployment.apiUrl}/rules`
+    : isAnime
+      ? null
+      : "/arena/rules-v1.json";
+
   return (
-    <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 sm:pt-10 text-ink">
+    <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 text-ink sm:pt-10">
       <ArenaPageHeader
         title="How the Arena works"
-        description="From your first entry to your final reward: the rules, costs and timing of a battle."
+        description="Four fighters, two semifinals, one champion. Here’s how to enter and play."
       />
-      <div className="space-y-6">
-        {deployment.kind === "anime" && (
-          <section className="rounded-card border border-line bg-white p-6">
-            <h2 className="text-xl font-bold">Anime fighters · Base OG only</h2>
-            <p className="mt-3 text-muted">
-              Apply from your Base OG token page. Applying costs Base gas only.
-              Curator approval is required before entry. The winner receives
-              80%, the island owner 5% and operations 15%.
+      <section
+        aria-labelledby="arena-start-heading"
+        className="overflow-hidden rounded-card border border-line bg-lavender/10"
+      >
+        <div className="grid items-center lg:grid-cols-2">
+          <div className="p-6 sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-widest text-grape">
+              Before your first battle
             </p>
-            <p className="mt-3 text-muted">
-              Approval and fighter art follow the NFT when it is sold. Rejection
-              reasons and curator notes are public. Rejected holders may
-              reapply; revoked fighters await curator re-approval. Traits
-              changed after approval require a new review.
+            <h2
+              id="arena-start-heading"
+              className="mt-3 font-display text-2xl sm:text-3xl"
+            >
+              {isAnime ? "Get your fighter ready" : "Bring your Yunipal"}
+            </h2>
+            <p className="mt-4 max-w-lg leading-relaxed text-muted">
+              {isAnime
+                ? "Anime battles are for approved Base OG Yunipals. Apply from your NFT’s page, then wait for a curator to approve your fighter. Applying costs only Base gas."
+                : "Choose an eligible Yunipal from your wallet and join a four-fighter tournament. Your NFT stays in your wallet throughout the battle."}
             </p>
-            <p className="mt-3 text-muted">
-              Maximum windows: 7 days to fill a lobby, 24 hours for strategies
-              and 24 hours for referee resolution. Ready tournaments advance
-              immediately.
-            </p>
-            <ul className="mt-3 space-y-2 text-sm">
-              {Object.entries(ANIME_REASONS).map(([code, reason]) => (
-                <li key={code}>
-                  Reason {code}: {reason}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-        <section className="rounded-card border border-line bg-white p-6">
-          <h2 className="text-xl font-bold">Enter with your Yunipal</h2>
-          <p className="mt-3 text-muted">
-            Four different Yunipal NFTs fight two semifinals and a final. The
-            bracket follows entry order: seats 1–2 and seats 3–4. A wallet can
-            enter multiple NFTs. Each NFT can occupy one active seat and stays
-            in your wallet.
-          </p>
-          <p className="mt-3 text-muted">
-            Entry costs {deployment.entry} USDC on Base. A full tournament pays{" "}
-            {deployment.champion} USDC to the champion,{" "}
-            {deployment.kind === "anime" ? "0.20" : "0.40"} USDC to the island
-            hosting beneficiary and{" "}
-            {deployment.kind === "anime" ? "0.60" : "1.60"} USDC to operations.
-            Wallet transactions also require Base ETH for gas.
-          </p>
-          {deployment.shared && (
-            <p className="mt-3 text-muted">
-              The first successful entrant also pays the quoted island draw fee
-              in ETH. Later entrants pay no draw fee. Unused ETH is returned
-              automatically; if your wallet rejects the transfer, you can claim
-              that refund separately. The oracle fee already spent is not
-              refunded if the battle expires.
-            </p>
-          )}
-        </section>
-        <section className="rounded-card border border-line bg-white p-6">
-          <h2 className="text-xl font-bold">An island selected by VRF</h2>
-          <p className="mt-3 text-muted">
-            The first entry requests one verifiable island draw. All 898
-            revealed Base islands are eligible. Each Genesis island has three
-            tickets and each Personal island has one: 1,948 tickets in total.
-            The island is never rerolled.
-          </p>
-          <p className="mt-3 text-muted">
-            Terrain, cover and the island's published combat profile affect how
-            actions can work. Cosmetic rarity grants no free damage or new
-            powers. The island resident stays off the fighting surface and does
-            not attack.
-          </p>
-          {deployment.kind === "anime" && (
-            <p className="mt-3 text-muted">
-              Anime films currently use one shared arena backdrop while unique
-              artwork is prepared for every island. The selected island still
-              determines terrain rules and the hosting reward. Artwork does not
-              change the result.
-            </p>
-          )}
-        </section>
-        <section className="rounded-card border border-line bg-white p-6">
-          <h2 className="text-xl font-bold">Write your own strategy</h2>
-          {deployment.kind === "anime" && (
-            <p className="mt-3 text-muted">
-              Each fighter has three signature techniques. Choose two before
-              locking your strategy, or use the default pair. The chosen names
-              and descriptions help the referee describe your usual attacks, and
-              their effects appear in the film. Techniques grant no extra
-              damage, energy, speed or defense. Choices are revealed with the
-              strategies and lock with your strategy; a missed deadline uses the
-              default pair.
-            </p>
-          )}
-          <p className="mt-3 text-muted">
-            Once all four fighters and the island are ready, you have up to 24
-            hours to submit a custom strategy of up to 2,400 characters. Include
-            attacks, defenses and conditional plans for the final. Each
-            submission locks.
-          </p>
-          <p className="mt-3 text-muted">
-            The server stores strategies privately until the complete input is
-            frozen. Its operator can read them. Missing the deadline assigns
-            your fighter an automatic legal attack; your full entry stays in the
-            pool. Player and automatic strategies are revealed together after
-            confirmation.
-          </p>
-        </section>
-        <section className="rounded-card border border-line bg-white p-6">
-          <h2 className="text-xl font-bold">One result, then a battle film</h2>
-          <p className="mt-3 text-muted">
-            The central AI referee interprets both players' strategies under the
-            same health, energy, damage, range and timing limits. Winged
-            fighters fly. Fighters and the island reset between matches. Exact
-            ties use the published priority shown before strategy submission.
-          </p>
-          <p className="mt-3 text-muted">
-            The bracket and champion are fixed before producing the{" "}
-            {deployment.kind === "anime" ? "full tournament" : "24-second"}{" "}
-            film. Video imperfections do not change the result. All rewards
-            unlock after the completed film is published and the payout
-            transaction is confirmed. A technical video delay keeps those
-            rewards pending.
-          </p>
-          <p className="mt-3 text-muted">
-            VRF proves the island draw. AI adjudication is centralized. Results
-            are public onchain; hiding them on the website is a viewing
-            preference.
-          </p>
-        </section>
-        <section className="rounded-card border border-line bg-white p-6">
-          <h2 className="text-xl font-bold">
-            Deadlines, ownership and refunds
-          </h2>
-          <ul className="mt-3 list-disc space-y-3 pl-5 text-muted">
-            <li>
-              The first entry starts a seven-day joining window. An unfilled
-              lobby refunds every entrant in full. An empty lobby has no running
-              deadline.
-            </li>
-            <li>
-              There are no early withdrawals. A missed strategy uses an
-              automatic attack and continues the tournament.
-            </li>
-            <li>
-              The server has a fixed 24-hour recovery window after the strategy
-              deadline to freeze input. Failure to advance within it allows full
-              refunds. Once frozen, the referee has 24 hours to settle a result;
-              a missed referee deadline also allows full refunds.
-            </li>
-            <li>
-              The entering wallet keeps its entry and prize if the NFT is later
-              sold or gifted.
-            </li>
-            <li>
-              The hosting beneficiary is the island owner when selection is
-              finalized. Later transfers do not move that tournament's reward. A
-              burned or unavailable island keeps the same draw and sends its
-              hosting share to the recorded operations treasury.
-            </li>
-            <li>
-              Refunds and rewards become available after their transactions are
-              indexed. A claim withdraws your combined available USDC balance.
-            </li>
-          </ul>
-        </section>
-        <details className="rounded-card border border-line p-6">
-          <summary className="cursor-pointer font-semibold">
-            Published rules version
-          </summary>
-          {deployment.apiUrl && rules.isPending ? (
-            <div className="mt-4">
-              <ArenaLoading label="Loading published rules…" />
-            </div>
-          ) : deployment.apiUrl && rules.isError ? (
-            <p role="alert" className="mt-4">
-              The live rules service is unavailable. The published launch copy
-              is available below.{" "}
-              <button
-                className="font-semibold underline"
-                onClick={() => void rules.refetch()}
-              >
-                Try again
-              </button>
-            </p>
-          ) : rules.data ? (
-            <>
-              <p className="mt-4 break-all font-mono text-xs text-muted">
-                {rules.data?.rulesHash}
+            <Link
+              to={deployment.basePath}
+              className="mt-6 inline-flex min-h-12 items-center gap-3 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape motion-reduce:transition-none"
+            >
+              {isAnime ? "Explore anime battles" : "Explore video battles"}
+              <ArrowRight size={17} aria-hidden="true" />
+            </Link>
+          </div>
+          <figure className="min-w-0 p-4 pt-0 sm:p-6 lg:pl-0">
+            <ArenaArtwork kind={deployment.kind} className="rounded-2xl" />
+            <figcaption className="mt-2 text-center text-xs text-muted">
+              Arena artwork preview
+            </figcaption>
+          </figure>
+        </div>
+        {isAnime && (
+          <div className="px-6 pb-6 sm:px-8 sm:pb-8">
+            <RuleDetails title="Fighter approval and application issues">
+              <p>
+                Approval and fighter artwork stay with the NFT when it is sold.
+                Changed traits need a new review. If approval is revoked, a
+                curator must approve the fighter again before it can enter.
               </p>
+              <p>
+                If your application is rejected, check the public reason and
+                curator note. You can reapply. These are the possible reasons:
+              </p>
+              <dl className="grid gap-x-6 sm:grid-cols-2">
+                {approvalReasons.map(({ title, description }) => (
+                  <div key={title} className="border-t border-line py-4">
+                    <dt className="font-semibold text-ink">{title}</dt>
+                    <dd className="mt-1">{description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </RuleDetails>
+          </div>
+        )}
+      </section>
+
+      <div className="mx-auto mt-4 max-w-3xl">
+        <RuleStep number="01" title="Join a tournament">
+          <p>
+            Four different NFTs compete. Entry order sets the semifinals: seats
+            1–2 and seats 3–4. You can enter more than one NFT, but each NFT can
+            hold only one active seat. Your NFTs stay in your wallet.
+          </p>
+          <div className="rounded-2xl bg-lavender/15 p-5 sm:p-6">
+            <p className="text-sm font-semibold text-ink">
+              Entry: {deployment.entry} USDC per fighter on Base
+            </p>
+            <dl className="mt-4 grid gap-4 border-t border-grape/10 pt-4 sm:grid-cols-3">
+              {[
+                { label: "Champion", value: deployment.champion },
+                { label: "Island host", value: isAnime ? "0.20" : "0.40" },
+                { label: "Operations", value: isAnime ? "0.60" : "1.60" }
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <dt className="text-xs">{label}</dt>
+                  <dd className="mt-1 text-lg font-bold text-ink">
+                    {value} <span className="text-xs font-medium">USDC</span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-4 text-xs">Payouts shown for a full tournament.</p>
+          </div>
+          <p>
+            You also need Base ETH for network gas.
+            {deployment.shared &&
+              " The first entrant pays the island draw fee shown before confirmation. Later entrants do not pay that fee. Unused ETH is returned automatically; if your wallet rejects the transfer, you can claim it separately."}
+          </p>
+          <RuleDetails title="How the island is chosen">
+            <p>
+              The first entry requests a verifiable random draw (VRF). All 898
+              revealed Base islands are eligible. Genesis islands have three
+              tickets each; Personal islands have one, for 1,948 tickets in
+              total. The draw is never repeated.
+            </p>
+            <p>
+              Terrain, cover and the island’s combat profile affect the fight.
+              Cosmetic rarity adds no damage or powers. The island’s resident
+              does not fight.
+            </p>
+            {isAnime && (
+              <p>
+                Anime films currently share one backdrop. The drawn island still
+                sets the terrain rules and determines who receives the hosting
+                reward.
+              </p>
+            )}
+          </RuleDetails>
+        </RuleStep>
+
+        <RuleStep number="02" title="Write your battle plan">
+          <p>
+            Once all four fighters and the island are ready, you have up to 24
+            hours to submit a strategy of up to 2,400 characters. Describe your
+            attacks, defenses and plans for the final. You cannot edit a
+            strategy after submitting it.
+          </p>
+          {isAnime && (
+            <p>
+              Pick two of your fighter’s three signature techniques, or keep the
+              default pair. Their names and descriptions guide the referee and
+              their effects appear in the film. They add no extra damage,
+              energy, speed or defense. Your choices lock with your strategy.
+            </p>
+          )}
+          <RuleDetails title="Missed deadlines and strategy privacy">
+            <p>
+              If you miss the deadline, your fighter uses an automatic legal
+              attack{isAnime ? " and the default techniques" : ""}. Your entry
+              fee stays in the prize pool.
+            </p>
+            <p>
+              Other players cannot see your strategy until all battle inputs are
+              locked and confirmed. The server operator can read it. Submitted
+              and automatic strategies are then revealed together.
+            </p>
+          </RuleDetails>
+        </RuleStep>
+
+        <RuleStep number="03" title="Watch the fight">
+          <p>
+            A central AI referee judges the strategies using the same health,
+            energy, damage, range and timing limits for every fighter. Winged
+            fighters can fly. Fighters and the island reset between matches.
+            Exact ties use the priority shown before you submit your strategy.
+          </p>
+          <p>
+            The result is decided before the{" "}
+            {isAnime ? "full tournament" : "24-second"} film is made. Animation
+            errors do not change the winner. Results are recorded onchain; the
+            AI judging is centralized.
+          </p>
+        </RuleStep>
+
+        <RuleStep number="04" title="Claim your rewards">
+          <p>
+            Rewards unlock after the finished film is published and the payout
+            transaction is confirmed and indexed. A delay in film production
+            keeps rewards pending.
+          </p>
+          <p>
+            Open{" "}
+            <Link
+              to={`${deployment.basePath}/rewards`}
+              className="rounded font-semibold text-grape underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+            >
+              Rewards &amp; claims
+            </Link>{" "}
+            to withdraw your available USDC, including any refunds, in one
+            claim.
+          </p>
+          <RuleDetails title="Deadlines and refunds">
+            <p>
+              There are no early withdrawals. Ready tournaments advance
+              immediately; these are the maximum waiting times.
+            </p>
+            <dl className="divide-y divide-line">
+              {[
+                {
+                  title: "Lobby · 7 days",
+                  text: "Starts with the first entry. If all four seats do not fill, every entrant can recover their full entry fee. Empty lobbies have no deadline."
+                },
+                {
+                  title: "Strategies · 24 hours",
+                  text: "Starts when the fighters and island are ready. A missed strategy uses an automatic attack; it does not qualify for a refund."
+                },
+                {
+                  title: "Input recovery · 24 hours",
+                  text: "After the strategy deadline, the server has 24 hours to lock the battle inputs. If it fails, full entry-fee refunds become available."
+                },
+                {
+                  title: "Referee · 24 hours",
+                  text: "Starts when the inputs are locked. If the referee misses this deadline, full entry-fee refunds become available."
+                }
+              ].map(({ title, text }) => (
+                <div key={title} className="py-4 first:pt-0">
+                  <dt className="font-semibold text-ink">{title}</dt>
+                  <dd className="mt-1">{text}</dd>
+                </div>
+              ))}
+            </dl>
+            <p>
+              Network gas and the island draw fee already spent are not
+              refundable. Refunds appear after the refund transaction is
+              indexed.
+            </p>
+          </RuleDetails>
+          <RuleDetails title="Selling a fighter or island during a battle">
+            <p>
+              The wallet that entered keeps its entry and prize rights if the
+              fighter is sold or gifted.
+            </p>
+            <p>
+              The island owner when the draw is finalized receives the hosting
+              reward, even if the island is later transferred. A burned or
+              unavailable island keeps the same draw; its hosting share goes to
+              the recorded operations treasury.
+            </p>
+          </RuleDetails>
+        </RuleStep>
+
+        <div className="mt-8">
+          <RuleDetails title="Published rules and verification">
+            {deployment.apiUrl && rules.isPending ? (
+              <ArenaLoading label="Loading published rules…" />
+            ) : deployment.apiUrl && rules.isError ? (
+              <p role="alert">
+                Could not load the published rules.{" "}
+                <button
+                  className="rounded font-semibold text-grape underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+                  onClick={() => void rules.refetch()}
+                >
+                  Try again
+                </button>
+              </p>
+            ) : rules.data ? (
+              <div>
+                <p className="font-semibold text-ink">Rules hash</p>
+                <p className="mt-2 break-all font-mono text-xs">
+                  {rules.data.rulesHash}
+                </p>
+                <p className="mt-3">
+                  Compare this with the rules hash recorded for your tournament.
+                </p>
+              </div>
+            ) : (
+              <p>Live rules are not connected in this environment.</p>
+            )}
+            {manifestUrl && (
               <a
-                href={`${deployment.apiUrl}/rules`}
+                href={manifestUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-3 inline-block font-semibold underline"
+                className="inline-flex min-h-11 items-center rounded font-semibold text-grape underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
               >
-                View complete rules manifest
+                {deployment.apiUrl
+                  ? "Read the complete rules"
+                  : "Read the launch rules"}
               </a>
-            </>
-          ) : null}
-          <a
-            href={
-              deployment.kind === "anime"
-                ? `${deployment.apiUrl}/rules`
-                : "/arena/rules-v1.json"
-            }
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 inline-block font-semibold underline"
-          >
-            Read the published launch manifest
-          </a>
-          <p className="mt-2 text-sm text-muted">
-            Compare its rules hash with the hash recorded for your tournament.
-          </p>
-        </details>
+            )}
+          </RuleDetails>
+        </div>
       </div>
     </main>
   );

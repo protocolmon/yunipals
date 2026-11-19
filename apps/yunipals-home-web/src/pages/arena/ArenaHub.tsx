@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ArenaArtwork } from "./ArenaArtwork";
+import { ArenaFAQ } from "./ArenaFAQ";
 
 export function ArenaHub() {
   return (
@@ -102,6 +103,7 @@ export function ArenaHub() {
         pays the island draw fee, shown before confirmation. Unused draw-fee ETH
         is returned automatically.
       </p>
+      <ArenaFAQ />
     </main>
   );
 }
