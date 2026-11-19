@@ -5,7 +5,7 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 ## Confirmed product rules
 
 - There are exactly 121 serum types, formed from two traits with 11 values each. The proposed names and rarity assignment are below; their balance is not yet approved.
-- Every live TCG card, including fused cards, can adventure. Only its current owner can initiate the call; marketplace approvals do not confer this right.
+- Every live ungraded TCG card, including fused cards, can adventure. Whether graded cards retain adventure access is the remaining grading-related product question. Only the current owner can initiate the call; marketplace approvals do not confer this right.
 - Adventures use Chainlink VRF v2.5 direct funding paid in native ETH. The result determines whether a serum is found and its type.
 - A serum is contract state attached to a card, not an NFT, wallet inventory item or independently transferable asset. A newly found serum replaces that card's previous unused serum.
 - Each card can adventure once per rolling 24 hours. Higher mint-sequence positions have higher chances of rare outcomes. An adventure that finds nothing keeps the previous unused serum.
@@ -19,6 +19,10 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 - Successful fusion burns both inputs and creates one new fusion NFT. Burning an original also ends its remaining daily offspring claims. Burning only offspring does not end their original's claims.
 - There is no per-original limit of 11 fusions. Adjacency, ownership and consuming the inputs are the constraints.
 - Fusion NFTs belong to the existing YunipalMonsters ERC-721 collection, using compatible upgrades and distinct fusion provenance. Both fusion levels must be supported by portal grading.
+- Fused-card adventure odds use the floor of the average immutable sequence of all original source cards. Store the exact sequence sum and source count; do not average already rounded intermediate values.
+- A fusion qualifies for a portal when one actual source card satisfies all of its applicable requirements together. An originals-only portal accepts the fusion if that matching source card was an original.
+- Grading uses the existing player spell → portal transformation → graded result flow. Preserve the card's defining serum and fusion features while adding the portal effect and spell.
+- Once a card has a completed grade, it cannot consume serums or be used as either input to a fusion. This applies to both base and fused cards, including cards graded before the feature launches.
 - Failed artwork jobs remain recoverable and are retried until completed, without charging again. There is no automatic timeout cancellation/refund. Durable job recovery and operator intervention are required; provider availability is not a contract-level guarantee.
 
 ## Proposed defaults still to review
@@ -26,7 +30,6 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 | Decision | Proposed behavior |
 | --- | --- |
 | Adventure duration | Return when VRF settles; no artificial hours-long timer. |
-| Fusion sequence for odds | Floor of the average immutable sequence of the original source cards; retain the exact sum and source count. Fusion gives no extra rarity multiplier. |
 | Fusion cooldown | Inherit the later next-adventure time of the two inputs, so fusion cannot reset the daily timer. |
 | Unused input serums | Discard at successful fusion; the new fusion starts with an empty unused-serum slot. Applied effects remain inherited. |
 | Two equal effects | Preserve both contributions and increase intensity. A mixed fusion preserves both effects, without inventing a new serum ID. |
@@ -35,20 +38,32 @@ Draft for product decisions, 19 November 2026. Branch: `codex/adventures-serums-
 | Grading economics | Use the existing portal-kind admission fees and competition contribution, separately from the 0.1 USDC serum/fusion fee. No automatic grading is bundled into that fee. |
 | Grading competition | Use the same competition and scoring rubric, with no automatic bonus for serum rarity, number of doses or fusion level. Calibrate against matched base and fused-card examples. |
 | Existing portal edits | Preserve the latest finalized artwork and its immutable asset reference; serialize all new mutation operations through a common version/lock mechanism. Grades remain tied to the artwork actually graded. |
+| Repeat grading | Preserve the existing ability to enter another eligible portal and be graded again. A later grade does not restore serum or fusion eligibility. |
+| Unused serum after grading | Retain it as inactive attached state/history; it cannot be consumed or transferred separately. |
 | New artwork | Preserve recognizable species ancestry and the frame; no empty bottle on character artwork. Serum item previews may depict their bottle. |
 
-A token with 11 locally consumed doses cannot drink again. It can still adventure under the stated product rule, but the UI must show the dose limit before the owner spends ETH; an unused serum does not raise the limit.
+A token with 11 locally consumed doses cannot drink again. An ungraded card can still adventure under the stated product rule, but the UI must show the dose limit before the owner spends ETH; an unused serum does not raise the limit.
 
-## Grading and fusion decisions awaiting answers
+## Confirmed grading lifecycle and eligibility
 
-1. **Adventure odds for fusions:** use average or highest ancestral sequence? For sources 40, 41, 200 and 201, the proposed average uses 120 (floor of 120.5); highest uses 201. This is a derived input to the rarity formula, not a reassigned family sequence or the fusion's ERC-721 token ID.
-2. **Portal eligibility:** proposed rule is that one actual source card must satisfy all active trait and sequence gates together. Do not combine a red dragon's species with a blue aqua's color to manufacture a blue-dragon match. A designated permanent primary source or unrestricted fusion access are alternatives.
-3. **Meaning of gradeable:** use the existing spell → transformed artwork → grade flow, or also add grading of unchanged current artwork? The latter needs a distinct scoring rubric, fee policy and competition policy; it is not an existing endpoint.
-4. **Grades after mutations:** proposed rule is that a new serum artwork or fusion is ungraded; old scores remain attached to their immutable historical artwork. Do not average or inherit parent grades as a new grade.
-5. **Original-only portals:** proposed rule is that only actual unfused originals qualify. An original among burned ancestors would not make the fusion an original.
-6. **Visual persistence during grading:** should spells retain defining inherited serum/fusion features, or may they remove them visually while keeping history? Proposed rule is preservation with room for the new portal effect and spell.
+Grading ends a card's serum/fusion progression. Owners can build an ungraded card through serum applications and up to two fusion levels, then enter a portal to transform and grade it. After the first completed grade, serum consumption and further fusion are permanently unavailable for that token under the feature rules. Regrading remains available under the proposed existing-behavior default.
 
-These choices also apply to serum-enhanced base cards where relevant. Source ancestry remains immutable regardless of generated appearance. The adventure odds rule and portal sequence eligibility are separate decisions; selecting the average for adventure odds does not implicitly average portal gate requirements.
+This restriction is per card, not per original lineage. Grading an original does not end its daily offspring claims or make its offspring graded. Those offspring have independent eligibility. Only burning the original ends its remaining claim rights.
+
+For adventure odds, source positions 40, 41, 200 and 201 yield floor(482 / 4) = 120. This derived value is not a reassigned family sequence or the fusion's ERC-721 token ID. Store ancestral positions exactly, so rounding at an intermediate fusion never loses information.
+
+Include a rounding regression for sources 40, 41, 201 and 202: the correct derived position is 121. Averaging the already rounded intermediate values 40 and 201 would incorrectly yield 120.
+
+Portal gates use an actual ancestor, not that average. A red dragon and a blue aqua cannot combine their separate traits into a blue-dragon match. For an originals-only portal, the same qualifying source must also have been an original; an unrelated original elsewhere in the ancestry does not satisfy the requirement. Preserve the portal's existing original-only-versus-sequence gate semantics.
+
+A qualifying burned original remains usable as provenance evidence. It does not become live again, restore daily offspring claims, or change the fused token into a base original.
+
+Pending grading and evolution jobs are mutually exclusive. Starting a grading job temporarily blocks serum/fusion requests; successful grading makes those restrictions permanent. A generation delay cannot be bypassed by transferring the NFT or hiding its grading metadata.
+
+## Product choices still awaiting answers
+
+1. Should graded cards also stop adventuring, since they cannot consume new finds? Recommended yes; repeat grading and original daily offspring claims would remain available.
+2. Accept the proposed 121-serum catalogue and initial odds, or revise the traits/balance before implementation?
 
 ## Proposed serum traits
 
@@ -209,7 +224,7 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 
 ### Drinking a serum
 
-- `consumeSerum(card, expectedSerumId, expectedArtVersion, expectedHistoryHash, deadline)` requires current ownership, an unused serum, fewer than 11 local doses and no conflicting job.
+- `consumeSerum(card, expectedSerumId, expectedArtVersion, expectedHistoryHash, deadline)` requires current ownership, no completed grade, an unused serum, fewer than 11 local doses and no conflicting job. Recheck graded status at finalization as well as admission.
 - Collect exactly 100,000 units of six-decimal USDC using SafeERC20 and verify the deposited amount. Reserve the serum and card against replacement, transfer, burn or another mutation.
 - Emit a request with immutable input artwork/hash, recipe version, serum ID, lineage/history and payer.
 - After the AI worker publishes validated assets, an authorized completion binds their image/metadata hashes to the request and prior art version.
@@ -219,7 +234,7 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 
 ### Fusion
 
-- `requestFusion(cardA, cardB, expectedVersions, deadline)` requires exact ownership of both in YunipalMonsters, compatible card kinds/levels, distinct IDs and no pending adventures, generation or grading jobs.
+- `requestFusion(cardA, cardB, expectedVersions, deadline)` requires exact ownership of both in YunipalMonsters, no completed grade on either input, compatible card kinds/levels, distinct IDs and no pending adventures, generation or grading jobs. Recheck both inputs' graded status before finalization.
 - Level one: both are base cards in the supported 264-variant pack, same originalTokenId, initialized cardFacts and absolute sequence difference exactly one. No wrap between 263 and 0.
 - Level two: both are level-one fusion cards, their original lineages differ, and all four leaf card IDs are distinct.
 - Snapshot both current artworks and history hashes, reserve inputs and collect one 0.1 USDC fee.
@@ -237,22 +252,24 @@ This follows Chainlink's [direct-funding model](https://docs.chain.link/vrf/v2-5
 
 Introduce a common busy/art-version interface for serum, fusion and portal operations. Check it at both admission and finalization. YunipalMonsters transfer/burn hooks enforce relevant locks for both base and fused cards. A portal job accepted under old rules must complete or be explicitly migrated before enabling competing mutations on that card.
 
-Use a single canonical resolver for latest finalized artwork. Existing portal records remain preserved and readable; new portal requests must use the latest serum/fusion art as input rather than an older portal image. Grade validity for new artwork follows the pending decision above. Both fusion levels must be gradeable at feature launch; gate handling is required scope.
+Use a single canonical resolver for latest finalized artwork. Existing portal records remain preserved and readable; new portal requests must use the latest serum/fusion art as input rather than an older portal image. Successful grading prevents subsequent serum/fusion mutations; subsequent portal grades retain previous versions in history. Both fusion levels must be gradeable at feature launch; gate handling is required scope.
 
 Events should include sufficient immutable data to rebuild state: AdventureRequested/Resolved, SerumReserved/Consumed, EvolutionRequested/Completed, FusionRequested/Completed, policy versions, parent/source references, fees and asset/history hashes. Record worker retries separately from onchain lifecycle; no timeout-cancellation event is required under the chosen policy. Emit ERC-4906 updates from YunipalMonsters.
 
 ### Grading compatibility work
 
-- Extend PortalGrading.matches to dispatch by base/fusion kind. For the proposed any-source gate rule, inspect at most four immutable base-source records, evaluating every gate against the same record. Burned source NFTs need not still be live; the fused token itself must be live and owned by the submitting wallet.
-- Keep original-only handling explicit. Do not infer original status from a sequence average of zero or from a nonempty ancestor list.
+- Extend PortalGrading.matches to dispatch by base/fusion kind. Inspect at most four immutable base-source records, evaluating all applicable gates against the same record. Burned source NFTs need not still be live; the fused token itself must be live and owned by the submitting wallet.
+- For original-only portals, require that this same qualifying source record has isOriginal=true. Preserve the existing branch where original-only replaces the sequence-window check. Do not infer original status from a sequence average of zero, or borrow original status from a different ancestor.
+- Expose a canonical hasCompletedGrade check that covers both legacy and new successful grading requests. Grading history, not the current art revision or a visible slab, establishes this status: serum applications also change art revisions and must not accidentally mark a card graded.
+- Preserve the graded restriction through transfers, regrading, metadata updates and grading-contract upgrades. Existing completed grading history must be recognized at activation; do not trust a frontend flag or start every token as ungraded.
 - Record the matching source used for gate qualification in the admitted context. Resolve multiple matches deterministically, such as the lowest eligible source token ID. Its traits are a qualification witness, not the fusion's entire identity.
 - Extend inputArtwork to use the canonical current-art registry for ungraded fusions and serum-mutated cards. Neither a missing base variant artwork nor an old portal result should be a fallback for a card with finalized evolved art.
 - Separate monotonic current-art revision from number of grading attempts. Do not use grading history length to index serum revisions. Bind admission, spell commitments, worker jobs, results and publication checks to the actual current image hash and revision.
 - Extend PortalAIContext beyond its current single baseColor: include card kind, source species/colors, qualifying source, fusion level, local/inherited serum history and current image reference. Update per-portal color-preservation checks for mixed ancestry under a versioned policy; never guess immutable eligibility traits from pixels.
 - Grade the new portal attempt against its input artwork and the player spell. Shared serum recipes, inherited details and automatic fusion effects are not evidence that a player copied another player's spell, and do not automatically earn Creativity points.
-- Preserve the selected serum/fusion identity constraints in generation and grading checks. For up to 77 inherited doses, supply a deterministic bounded summary with the authoritative history hash rather than letting player text redefine lineage.
-- Slabs and metadata bind scores to the exact graded output image. The proposed behavior is to show later mutated artwork as ungraded, retain historical slabs, and show parent grades only in ancestry.
-- Keep already admitted competition entries and their submitter entitlements unchanged when a card later mutates, transfers or burns. A later grade is a new request and, under the proposed normal competition policy, a new paid entry. Do not duplicate payouts or move a parent's entry onto a fusion NFT.
+- Preserve defining serum/fusion features in generation and grading checks while applying the portal effect and player spell. For up to 77 inherited doses, supply a deterministic bounded summary with the authoritative history hash rather than letting player text redefine lineage.
+- Slabs and metadata bind scores to the exact graded output image. Retain prior slabs on regrading. Fusion parents must be ungraded, so there are no parent scores to inherit or average.
+- Keep already admitted competition entries and their submitter entitlements unchanged when a card later regrades, transfers or burns through an otherwise permitted path. A later grade is a new request and, under the proposed normal competition policy, a new paid entry. A graded card cannot be burned through fusion; do not duplicate payouts or move an entry to another token.
 - Drain or migrate pending jobs before activating incompatible grading context/rubric changes. Respect existing competition rubric boundaries; do not mix an incompatible new rubric into a batch already bound to another one.
 
 ## Global indexer and AI worker
@@ -260,7 +277,7 @@ Events should include sufficient immutable data to rebuild state: AdventureReque
 Extend the existing global Ponder indexer. Do not add a separate chain-log poller or dedicated ingestion service.
 
 - Add feature source definitions, shared ABIs, source policies, deployment blocks and full receipt coverage where needed. Include new fusion transfers in canonical ownership.
-- Project adventures, unused serums, local dose histories, immutable ancestry, jobs, locks, fees, cooldowns and current art versions into rollback-managed tables with historical versions for confirmed reads.
+- Project adventures, unused serums, local dose histories, immutable ancestry, jobs, locks, fees, cooldowns, completed-grade status and current art versions into rollback-managed tables with historical versions for confirmed reads. Reconstruct completed-grade status from canonical successful grading events, including historical events; an orphaned grading completion must not permanently lock the indexed card.
 - Use the shared reader API with explicit source readiness. A missing or behind source is not an empty inventory.
 - An offchain generation consumer reads confirmed canonical requests with a durable cursor. It never performs AI work inside Ponder handlers.
 - Job identity binds chain, contract, request incarnation, input versions and recipe hash. Deduplicate replay and release handovers, preserve paid outputs across restarts, and reject outputs from orphaned/replaced requests.
@@ -271,7 +288,7 @@ Extend the existing global Ponder indexer. Do not add a separate chain-log polle
 - The 0.1 USDC charge is the user price, not a proven estimate of provider cost. Benchmark representative single and dual-reference jobs, retries, storage and completion gas before launch. Any subsidy belongs in the operating budget; do not silently change the agreed fee.
 - Keep a pending job's last finalized artwork visible. Publish the new image only when its onchain completion and indexed canonical evidence agree.
 
-Suggested API resources: catalogue and odds; owner card state; per-card adventure status; compatible fusion partners; consume/fusion quotes; job progress; versioned metadata and ancestry. Quotes include expected ownership, artwork/history, serum/policy, fee and deadline, but contracts independently recheck eligibility.
+Suggested API resources: catalogue and odds; owner card state; per-card adventure status; compatible fusion partners; consume/fusion quotes; job progress; versioned metadata and ancestry. Quotes include expected ownership, artwork/history, serum/policy, completed-grade status, fee and deadline, but contracts independently recheck eligibility. Return a specific graded-card ineligibility reason before requesting approvals or payments.
 
 ## Frontend
 
@@ -281,26 +298,26 @@ Build the feature within the existing collection/card experience, with reusable 
 - Adventure: clear native-ETH VRF estimate, wallet signature, awaiting randomness, found serum or no find, and saved-seed recovery where available.
 - Serum reveal: illustrated bottle card, essence, form, rarity and an Apply for 0.10 USDC action. Explain that finding the next serum replaces the unused bottle.
 - Consumption: preview of intended effects clearly marked as a concept, spending review, generation progress and eventual before/after.
-- Fusion picker: only compatible owned partners; show original lineage and exact sequence positions rather than relying on appearance.
+- Fusion picker: only compatible owned, ungraded partners; show original lineage and exact sequence positions rather than relying on appearance. Explain why graded cards cannot be selected.
 - Fusion review: two input cards, expected two/four-source result, inherited effects and 0.10 USDC. For an original, explicitly show that remaining daily claims end on successful fusion.
 - Final card: clear fusion level, two/four-source family tree and locally consumed versus inherited doses.
 - Pending work survives reload and wallet changes. Handle rejected signatures, insufficient USDC/ETH, expired quotes, transferred/burned cards, indexer lag, VRF delays and AI retry/recovery separately. Show when a card is reserved and why it cannot currently transfer or enter another job.
 - Grading entry shows the matching ancestor and portal requirements under the selected eligibility policy. The input preview is always the fusion's latest artwork, not the ancestor's old image.
-- Separate current grades from historical grades. Include parent grading history in the ancestry view and retain settled/pending competition entries without presenting them as scores of the new fusion.
+- Separate current grades from previous grading attempts. After grading, disable serum/fusion actions and explain that grading ends those progression paths. Before submitting the first grade, show this consequence clearly. Keep ancestry and inherited serum effects visible.
 - Use actual collection art and the approved Voidheart/Eclipse/Singularity examples as clearly labeled previews. No invented balances, active rewards or guaranteed generated output.
 - Preserve accessibility, reduced-motion preferences, responsive layouts and lazy-loaded optimized artwork.
 
 ## Delivery sequence and verification
 
-1. Resolve the six grading/adventure questions and approve the proposed catalogue, odds and remaining lifecycle defaults. Retain the confirmed inheritance, stacking order, daily timing, burn and same-collection rules in the specification and fixtures on this branch.
+1. Resolve graded-card adventure access and approve the proposed catalogue, odds and remaining lifecycle defaults. Retain the confirmed inheritance, stacking order, daily timing, burn, same-collection and grading eligibility rules in the specification and fixtures on this branch.
 2. Implement shared recipe definitions, exact combinatorial calculations and contract state machines. Test ownership, sequence checks, level boundaries, 11-dose cap, repeated doses and ancestry.
 3. Implement same-collection fusion minting, grading eligibility and metadata/version coordination with compatible upgrades. Rehearse interleaved base/fusion token allocations, pending booster claims, original burns, portal jobs, transfer locks and rollback.
 4. Extend global ingestion, ownership, confirmed projections and durable job intake. Test duplicate/out-of-order events, replay, reorgs, stale sources and release handover without duplicate paid generation.
 5. Add generation/publication worker and API. Test retries, immutable input hashes, stale completions, persistent reservations, operator-assisted recovery, canonical publishing and USDC liability accounting.
 6. Build frontend with deterministic mock fixtures, then local end-to-end contract/indexer/API/worker/browser flows using a stub AI provider. Complete Base Sepolia VRF and a bounded real-image quality/cost rehearsal when implementation is ready.
-7. Run relevant contract suites, storage compatibility checks, indexer/Postgres integration tests, frontend/type checks and production builds. Require invariant/fuzz coverage for financial state, burns, locks and request replay. Cover mixed species/colors/horns/glitter, joint versus invalid split-source gate matches, original-only rules, burned ancestors, grading both fusion levels, grade → serum → grade and grade → fusion → grade sequences, historical slabs and unchanged competition payout entitlements.
+7. Run relevant contract suites, storage compatibility checks, indexer/Postgres integration tests, frontend/type checks and production builds. Require invariant/fuzz coverage for financial state, burns, locks and request replay. Cover mixed species/colors/horns/glitter, joint versus invalid split-source gate matches, original-only inherited eligibility, burned ancestors, serum → fusion → grade flows at both fusion levels, rejected grade → serum and grade → fusion attempts, legacy graded tokens, transfer/regrading lock bypasses, independent offspring rights, historical slabs and unchanged competition payout entitlements.
 8. Prepare a PR with the confirmed rules, architectural changes, user flow screenshots, validation evidence and deployment-neutral migration/rollback instructions. Production release uses the private operator workflow and is a separate step.
 
-Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork.
+Primary invariants: no unauthorized actions; each source card consumed at most once; each successful job charged once; no third fusion level; no dose increment on retry; cooldown never reset by transfer/fusion; no fresh randomness for recovery; no new artwork overwrites a newer version; USDC escrow and native-ETH refund liabilities stay covered; original claim forfeiture happens exactly on original burn; fusion IDs never alter base variant/sequence accounting; every published grade identifies its exact assessed artwork; completed grading permanently prevents serum consumption and fusion; one actual ancestor satisfies all applicable portal requirements together.
 
 Before public launch, resolve the product's existing legal question about paid randomized adventures and rarity-weighted tradable transformations. The guaranteed base collection alone is not being treated as approval for these new mechanics.
