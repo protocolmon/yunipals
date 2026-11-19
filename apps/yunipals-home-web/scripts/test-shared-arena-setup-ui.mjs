@@ -267,7 +267,7 @@ try {
   );
   await page.reload();
   await page
-    .getByRole("link", { name: "View deployment transaction" })
+    .getByRole("link", { name: "View transaction", exact: true })
     .waitFor();
   await page
     .getByRole("button", { name: "Clear a confirmed reverted transaction" })
