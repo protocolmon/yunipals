@@ -90,21 +90,30 @@ export async function inspectOpenSeaTrade(
     );
   if (
     !status[0] &&
-    !(await verifySeaportOrderMaker(
-      client,
-      chain,
-      intent.order,
-      trade.signature,
-      blockNumber
-    ))
+    !(
+      (trade.signature.length === 130 || trade.signature.length === 132) &&
+      (await verifySeaportOrderMaker(
+        client,
+        chain,
+        intent.order,
+        trade.signature,
+        blockNumber
+      ).catch(() => false))
+    )
   ) {
+    // Match the API's verification: bulk signatures go directly to Seaport.
+    // ERC-1271 can revert on delegated makers without invalidating the order.
+    // A non-maker caller ensures validate cannot bypass signature checks.
     try {
       const validated = await client.simulateContract({
         address: seaportDeployment.address,
         abi: seaportWriteAbi,
         functionName: "validate",
         args: [[seaportFulfillmentOrder(intent.order, trade.signature)]],
-        account: intent.account,
+        account:
+          getAddress(intent.order.offerer) === zeroAddress
+            ? seaportDeployment.address
+            : zeroAddress,
         blockNumber
       });
       if (validated.result !== true) throw new Error();
