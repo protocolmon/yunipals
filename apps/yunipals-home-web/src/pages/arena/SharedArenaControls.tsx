@@ -68,14 +68,14 @@ export function SharedArenaControls({
       config.randomnessFunding !== "first-entrant" ||
       config.mediaKind !== kind ||
       !config.entriesEnabled ||
-      config.entryMode !== "pilot" ||
+      config.entryMode !== (kind === "anime" ? "public" : "pilot") ||
       !health.ok ||
       health.indexerMode !== "unified" ||
       health.sourceKind !== "unified" ||
       !health.sourceEpoch ||
       rules.rulesHash !== rulesHashes[kind]
     )
-      throw new Error("This mode is not ready for its controlled pilot yet.");
+      throw new Error("This mode is not ready to accept entries yet.");
     return true;
   }
   const state = useQuery({
@@ -248,11 +248,12 @@ export function SharedArenaControls({
       className="mt-6 space-y-4 rounded-card border border-line p-5"
       aria-label="Shared Arena owner controls"
     >
-      <h2 className="text-xl font-bold">Controlled pilot</h2>
+      <h2 className="text-xl font-bold">Arena entry controls</h2>
       <p className="text-sm text-muted">
         Each mode opens with its own owner transaction after its services are
-        ready. Paid entry remains limited to the pilot wallet. The first entrant
-        pays for the draw; no reserve deposit is needed.
+        ready. Anime entry requires an approved fighter; Video entry remains
+        limited to pilot wallets. The first entrant pays for the draw; no
+        reserve deposit is needed.
       </p>
       {(["video", "anime"] as const).map((kind) => (
         <div className="flex flex-wrap items-center gap-3" key={kind}>
@@ -276,7 +277,9 @@ export function SharedArenaControls({
               onClick={() => void setPause(kind, !state.data![kind])}
             >
               {state.data?.[kind]
-                ? `Enable ${kind} pilot`
+                ? kind === "anime"
+                  ? "Enable anime entries"
+                  : "Enable video pilot"
                 : `Pause ${kind} entries`}
             </button>
           )}

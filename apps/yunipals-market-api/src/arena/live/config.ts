@@ -48,10 +48,16 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   const rulesHash = required(env, "ARENA_RULES_HASH") as Hex;
   if (!/^0x[0-9a-f]{64}$/i.test(rulesHash))
     throw new Error("Invalid arena rules hash.");
-  const launchMode = env.ARENA_LAUNCH_MODE ?? "pilot";
-  if (!["pilot", "public"].includes(launchMode))
+  const mediaKind = env.ARENA_MEDIA_KIND ?? "video";
+  const configuredLaunchMode = env.ARENA_LAUNCH_MODE ?? "pilot";
+  if (!["pilot", "public"].includes(configuredLaunchMode))
     throw new Error("Invalid Arena launch mode.");
-  const pilotWallets = (env.ARENA_PILOT_WALLETS ?? "")
+  // Anime entry follows the approved NFT and its current owner. An old pilot
+  // environment must not impose a second wallet allowlist on that owner.
+  const launchMode = mediaKind === "anime" ? "public" : configuredLaunchMode;
+  const pilotWallets = (
+    mediaKind === "anime" ? "" : (env.ARENA_PILOT_WALLETS ?? "")
+  )
     .split(",")
     .map((value) => value.trim().toLowerCase())
     .filter(Boolean);
@@ -68,7 +74,6 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
     !pilotWallets.length
   )
     throw new Error("Controlled paid entry requires explicit pilot wallets.");
-  const mediaKind = env.ARENA_MEDIA_KIND ?? "video";
   const contractVersion = arenaVersion(env.ARENA_CONTRACT_VERSION);
   if (
     contractVersion === 2 &&
@@ -79,8 +84,7 @@ export function arenaConfig(env: NodeJS.ProcessEnv = process.env) {
   if (mediaKind !== "video" && mediaKind !== "anime")
     throw new Error("Invalid ARENA_MEDIA_KIND.");
   const eligibilityRegistry = env.ARENA_ELIGIBILITY_REGISTRY?.toLowerCase() as
-    | Address
-    | undefined;
+    Address | undefined;
   if (
     mediaKind === "anime" &&
     (!eligibilityRegistry ||

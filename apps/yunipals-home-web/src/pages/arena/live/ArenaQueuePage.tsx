@@ -7,6 +7,7 @@ import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaCardsLoading, ArenaLoading } from "./ArenaFeedback";
 import { ArenaTournamentCard } from "./ArenaHistory";
 import { useArenaTournaments } from "./useArenaTournaments";
+import { AnimeApplicationHint } from "../anime/AnimeApplicationHint";
 
 export function ArenaQueuePage() {
   const deployment = useArenaDeployment(),
@@ -55,6 +56,7 @@ export function ArenaQueuePage() {
           New entries are paused. Your battles and rewards remain available.
         </p>
       )}
+      {deployment.kind === "anime" && <AnimeApplicationHint />}
       <section aria-labelledby="arena-queues-heading">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 id="arena-queues-heading" className="text-2xl font-bold">
