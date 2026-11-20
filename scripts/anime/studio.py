@@ -251,7 +251,9 @@ def generate_image(out, prompt, refs):
     auth = subprocess.run(["codex", "login", "status"], env=env, capture_output=True, text=True, timeout=30)
     if auth.returncode != 0 or "chatgpt" not in (auth.stdout + auth.stderr).lower():
         raise ValueError("Log Codex in with the ChatGPT subscription; API-key generation is not supported by this tool")
-    command = ["codex", "exec", "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
+    # This turn only invokes the image tool with an already reviewed prompt.
+    # Do not inherit a coding session's prolonged reasoning setting.
+    command = ["codex", "exec", "-c", 'model_reasoning_effort="low"', "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
     for ref in refs:
         command += ["--image", str(ref)]
     command += ["--", prompt]
