@@ -7,6 +7,7 @@ import {
 } from "./releases.js";
 import { readIndexerSourceStatus } from "./status.js";
 import { CanonicalSourceUnavailable } from "./paging.js";
+import { readChainStatus } from "./chain-status.js";
 
 export type EvolutionReadContext = {
   release: RegisteredRelease;
@@ -25,6 +26,76 @@ export class EvolutionReader {
     readonly pool: Pool,
     readonly releaseId?: string
   ) {}
+  /** Immutable publication reads can use a retained, verified prefix during an
+   * intake pause or RPC outage. Reorg/identity checks still fail closed. */
+  async publications(hash: string) {
+    if (!/^0x[0-9a-f]{64}$/.test(hash)) throw new Error("Invalid asset hash.");
+    return indexerTransaction(
+      this.pool,
+      async (db) => {
+        const release = await loadIndexerRelease(db, this.releaseId);
+        const runtime = await readBoundRuntime(db, release);
+        const source = release.manifest.sources.find(
+          (v) => v.id === "evolution:8453:evolution" && v.enabled
+        );
+        const status = await readChainStatus(db, release.id, 8453);
+        const indexed = runtime.chains.find(
+          (c) => c.chainId === 8453
+        )?.completeThroughBlock;
+        if (
+          !source?.address ||
+          !status ||
+          status.halted ||
+          indexed == null ||
+          status.head_number === null ||
+          status.witness_number === null ||
+          !status.witness_hash ||
+          (status.error_code !== null &&
+            ![
+              "rpc_unavailable",
+              "head_stale",
+              "provider_lag",
+              "indexer_not_ready"
+            ].includes(status.error_code))
+        )
+          throw new CanonicalSourceUnavailable(
+            "Publication evidence is unavailable."
+          );
+        const schema = sqlIdentifier(release.schema);
+        const witness = await db.query(
+          `SELECT 1 FROM ${schema}.chain_block WHERE chain_id=8453 AND block_number=$1 AND block_hash=$2`,
+          [status.witness_number, status.witness_hash]
+        );
+        const limit = BigInt(status.head_number) - 12n;
+        const anchors = Object.values(status.anchors).filter(
+          (anchor) =>
+            /^(0|[1-9][0-9]*)$/.test(anchor.number) &&
+            /^0x[0-9a-f]{64}$/.test(anchor.hash) &&
+            BigInt(anchor.number) <= limit &&
+            BigInt(anchor.number) <= indexed &&
+            (source.endBlock === null ||
+              BigInt(anchor.number) <= BigInt(source.endBlock))
+        );
+        if (!witness.rows.length || !anchors.length)
+          throw new CanonicalSourceUnavailable(
+            "Publication branch is unverified."
+          );
+        const boundary = anchors.reduce((a, b) =>
+          BigInt(a.number) > BigInt(b.number) ? a : b
+        ).number;
+        return (
+          await db.query<{ artworkHash: string; metadataHash: string }>(
+            `SELECT DISTINCT args::jsonb->>'artworkHash' AS "artworkHash", args::jsonb->>'metadataHash' AS "metadataHash"
+         FROM ${schema}.canonical_event WHERE chain_id=8453 AND address=$1
+         AND name='EvolutionCompleted' AND block_number<=$2
+         AND (args::jsonb->>'artworkHash'=$3 OR args::jsonb->>'metadataHash'=$3)`,
+            [source.address, boundary, hash]
+          )
+        ).rows;
+      },
+      true
+    );
+  }
   async snapshot<T>(
     read: (db: PoolClient, context: EvolutionReadContext) => Promise<T>
   ): Promise<T> {

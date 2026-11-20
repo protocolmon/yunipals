@@ -1,3 +1,4 @@
+import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -18,7 +19,6 @@ import { environment } from "@/environment";
 import { useEvolutionActions } from "@/hooks/useEvolutionActions";
 import {
   fetchAdventureCard,
-  evolutionImage,
   evolutionRequest,
   presencePreviews
 } from "@/lib/evolution";
@@ -259,12 +259,10 @@ export function AdventurePage() {
           {card && (
             <section className="grid gap-8 md:grid-cols-2">
               <div>
-                <img
-                  src={evolutionImage(card)}
-                  alt={`Current artwork of Yunipal #${card.tokenId}`}
-                  width={640}
-                  height={960}
-                  className="w-full rounded-3xl"
+                <BoosterArtwork
+                  uri={card.metadataURI}
+                  label={`Current artwork of Yunipal #${card.tokenId}`}
+                  interactive
                 />
                 <Link
                   to={`/grading/cards/${card.tokenId}`}

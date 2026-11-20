@@ -1,3 +1,4 @@
+import geometry from "./fixtures/evolution-holo.json";
 import { describe, expect, it, vi } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -182,12 +183,21 @@ describe("evolution generation", () => {
       } as unknown as EvolutionReader;
       const ai = {
         policy: portalModels,
+        calibrateHolo: vi.fn(async () => ({
+          geometry,
+          model: portalModels.grading,
+          usage: null,
+          value: geometry
+        })),
         editImages: vi.fn(async () => ({
           bytes: png,
           usage: null,
           model: portalModels.image
         }))
       };
+      ai.calibrateHolo.mockRejectedValueOnce(
+        new Error("segmentation unavailable")
+      );
       const submit = vi.fn(async () => otherHash);
       submit.mockRejectedValueOnce(new Error("temporary RPC failure"));
       const worker = new EvolutionWorker(
@@ -199,6 +209,11 @@ describe("evolution generation", () => {
         submit
       );
       const job = (await store.claim("1", hash, worker.policy))!;
+      await expect(worker.process(job)).rejects.toThrow(
+        "segmentation unavailable"
+      );
+      expect(ai.editImages).toHaveBeenCalledTimes(1);
+      expect(submit).not.toHaveBeenCalled();
       await expect(worker.process(job)).rejects.toThrow("RPC failure");
       expect(ai.editImages).toHaveBeenCalledTimes(1);
       expect(job.progress.artifact?.metadataHash).toBeTruthy();
@@ -210,6 +225,10 @@ describe("evolution generation", () => {
           )
         ).toString()
       );
+      expect(metadata.yunipals.holo.foreground).toContain(
+        "/v1/evolution/layers/"
+      );
+      expect(ai.calibrateHolo).toHaveBeenCalledTimes(2);
       expect(metadata.attributes).toContainEqual({
         trait_type: "Finish",
         value: "Golden"
@@ -252,7 +271,11 @@ describe("evolution generation", () => {
       assertBindings: async () => {},
       client: { getBlock: async () => ({ hash }), readContract: reads }
     } as unknown as EvolutionChain;
-    const ai = { policy: portalModels, editImages: vi.fn() };
+    const ai = {
+      policy: portalModels,
+      editImages: vi.fn(),
+      calibrateHolo: vi.fn()
+    };
     const worker = new EvolutionWorker(
       reader,
       chain,
@@ -279,7 +302,14 @@ describe("evolution generation", () => {
         "8453:evolution"
       );
       let completed = true;
-      const ai = { policy: portalModels, editImages: vi.fn() };
+      const ai = {
+        policy: portalModels,
+        editImages: vi.fn(),
+        calibrateHolo: vi.fn()
+      };
+      ai.calibrateHolo.mockRejectedValueOnce(
+        new Error("segmentation unavailable")
+      );
       const submit = vi.fn(async () => otherHash);
       const chain = {
         cards: "cards",
@@ -414,7 +444,7 @@ describe("evolution generation", () => {
         chain,
         store,
         {} as PortalAssets,
-        { policy: portalModels, editImages: vi.fn() },
+        { policy: portalModels, editImages: vi.fn(), calibrateHolo: vi.fn() },
         undefined,
         settle
       );
@@ -464,7 +494,7 @@ describe("evolution generation", () => {
       chain,
       {} as EvolutionStore,
       {} as PortalAssets,
-      { policy: portalModels, editImages: vi.fn() },
+      { policy: portalModels, editImages: vi.fn(), calibrateHolo: vi.fn() },
       undefined,
       settle
     );

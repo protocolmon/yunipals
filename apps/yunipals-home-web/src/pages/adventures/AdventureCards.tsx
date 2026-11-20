@@ -1,3 +1,4 @@
+import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 import { dialogButtonVariants } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -8,7 +9,6 @@ import {
 } from "@protopals/yunipals-market-core/serums";
 import {
   fetchAdventureCards,
-  evolutionImage,
   type AdventureCard,
   type DoseHistory
 } from "@/lib/evolution";
@@ -24,13 +24,10 @@ export function AdventureCardTile({
 }) {
   const body = (
     <>
-      <img
-        src={evolutionImage(card)}
-        alt={`Yunipal #${card.tokenId}, ${serumPresences[card.presence]} Presence`}
-        width={640}
-        height={960}
-        loading="lazy"
-        className="aspect-[2/3] w-full rounded-2xl object-cover"
+      <BoosterArtwork
+        uri={card.metadataURI}
+        label={`Yunipal #${card.tokenId}, ${serumPresences[card.presence]} Presence`}
+        display="thumbnail"
       />
       <div className="p-3">
         <p className="font-bold">

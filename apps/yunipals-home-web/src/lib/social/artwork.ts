@@ -5,7 +5,12 @@ export type MonsterArtwork = {
   image: string | null;
   attributes: Record<string, string>;
   status: "ready" | "queued" | "blocked" | "missing";
-  holo: { foreground: string; background: string; stars: string } | null;
+  holo: {
+    foreground: string;
+    background: string;
+    stars: string;
+    cutout?: string;
+  } | null;
 };
 export function parseMonsterArtwork(
   metadata: unknown,
@@ -53,8 +58,10 @@ export function parseMonsterArtwork(
       typeof value.background === "string" ? assetUrl(value.background) : null;
     const stars =
       typeof value.stars === "string" ? assetUrl(value.stars) : null;
+    const cutout =
+      typeof value.cutout === "string" ? assetUrl(value.cutout) : null;
     if (foreground && background && stars)
-      holo = { foreground, background, stars };
+      holo = { foreground, background, stars, ...(cutout ? { cutout } : {}) };
   }
   const status: MonsterArtwork["status"] =
     extension?.status === "blocked"

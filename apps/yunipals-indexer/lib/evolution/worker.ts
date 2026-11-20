@@ -10,6 +10,7 @@ import {
 } from "@protopals/yunipals-market-core/serums";
 import { evolutionPrompt, evolutionRenderingHash } from "./art.js";
 import type { EvolutionChain } from "./chain.js";
+import { saveHoloLayers } from "./holo.js";
 import type {
   EvolutionArtifact,
   EvolutionJob,
@@ -27,7 +28,10 @@ export class EvolutionWorker {
     readonly chain: EvolutionChain,
     readonly store: EvolutionStore,
     readonly assets: PortalAssets,
-    readonly ai: Pick<OpenAIPortalAI, "editImages" | "policy">,
+    readonly ai: Pick<
+      OpenAIPortalAI,
+      "editImages" | "policy" | "calibrateHolo"
+    >,
     readonly submit?: (
       id: bigint,
       binding: Hex,
@@ -136,9 +140,11 @@ export class EvolutionWorker {
               attempt: job.attempts,
               stage: job.progress.artifact
                 ? "submission"
-                : job.progress.image
+                : job.progress.holo
                   ? "metadata"
-                  : "generation"
+                  : job.progress.image
+                    ? "holo"
+                    : "generation"
             })
           );
         }
@@ -210,6 +216,27 @@ export class EvolutionWorker {
       };
       await this.store.save(job);
     }
+    if (!job.progress.holo && !job.progress.artifact) {
+      // Calibrate the completed artwork, never reuse masks from either parent.
+      // A segmentation retry retains the already-paid image checkpoint.
+      await this.verify(job);
+      const image = await this.assets.input(
+        job.progress.image.uri,
+        job.progress.image.hash
+      );
+      const calibrated = await this.ai.calibrateHolo(image);
+      job.progress.holo = {
+        layers: await saveHoloLayers(
+          this.assets,
+          image,
+          job.progress.image.hash,
+          calibrated.geometry
+        ),
+        model: calibrated.model,
+        usage: calibrated.usage
+      };
+      await this.store.save(job);
+    }
     if (!job.progress.artifact) {
       const parents = job.progress.parents;
       const fusion = request.parentB !== 0n;
@@ -229,6 +256,7 @@ export class EvolutionWorker {
         description:
           "A Yunipals trading card. Physical serum effects and immutable source ancestry are retained; Presence describes its current expression and bearing.",
         image: job.progress.image.uri,
+        yunipals: { status: "ready", holo: job.progress.holo!.layers },
         attributes: [
           { trait_type: "Card kind", value: level ? "Fusion" : "Base" },
           { trait_type: "Fusion level", value: level },

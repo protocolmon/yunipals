@@ -1,9 +1,5 @@
 import { environment } from "@/environment";
-import {
-  fetchAdventureCards,
-  evolutionImage,
-  type AdventureCard
-} from "@/lib/evolution";
+import { fetchAdventureCards, type AdventureCard } from "@/lib/evolution";
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
@@ -202,13 +198,10 @@ export function PortalCardPicker({
             >
               <div className="aspect-[2/3] overflow-hidden rounded-xl bg-lavender/15">
                 {card.evolution ? (
-                  <img
-                    src={evolutionImage(card.evolution)}
-                    alt={`${card.name} #${card.tokenId}`}
-                    width={640}
-                    height={960}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
+                  <BoosterArtwork
+                    uri={card.metadataUri}
+                    label={`${card.name} #${card.tokenId}`}
+                    display="thumbnail"
                   />
                 ) : (
                   <BoosterArtwork

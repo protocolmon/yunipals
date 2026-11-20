@@ -87,6 +87,7 @@ it("reads a real registered evolution manifest and fails closed on missing cover
       CREATE TABLE evolution_ready.chain_checkpoint(chain_id integer, block_number bigint, block_hash text, parent_hash text, timestamp bigint);
       CREATE TABLE evolution_ready.chain_block(chain_id integer, block_number bigint, block_hash text);
       CREATE TABLE evolution_ready.indexer_source(id text, chain_id integer, manifest_hash text, definition text);
+      CREATE TABLE evolution_ready.canonical_event(chain_id integer,address text,name text,args jsonb,block_number bigint);
     `);
     await db.query(
       "INSERT INTO evolution_ready._ponder_meta VALUES ('app',$1)",
@@ -149,6 +150,17 @@ it("reads a real registered evolution manifest and fails closed on missing cover
       ]
     );
     const reader = new EvolutionReader(pool, releaseId);
+    await db.query(
+      `INSERT INTO evolution_ready.canonical_event VALUES
+      (8453,$1,'EvolutionCompleted',$2,980), (8453,$1,'EvolutionCompleted',$3,999)`,
+      [
+        address("62"),
+        JSON.stringify({ artworkHash: hash(10), metadataHash: hash(11) }),
+        JSON.stringify({ artworkHash: hash(12), metadataHash: hash(13) })
+      ]
+    );
+    expect(await reader.publications(hash(10))).toHaveLength(1);
+    expect(await reader.publications(hash(12))).toHaveLength(0);
     const context = await reader.snapshot(async (_db, context) => context);
     expect(context).toMatchObject({
       block: 988n,
@@ -159,11 +171,40 @@ it("reads a real registered evolution manifest and fails closed on missing cover
       deployment: `8453:${address("62")}`
     });
     await db.query(
+      "UPDATE evolution_ready._ponder_meta SET value=jsonb_set(value,'{is_locked}','0') WHERE key='app'"
+    );
+    await db.query(
+      "UPDATE yunipals_indexer_control.chain_status SET observed_at_ms=1,error_code='rpc_unavailable' WHERE release_id=$1",
+      [releaseId]
+    );
+    await expect(reader.snapshot(async () => true)).rejects.toThrow(
+      "confirmed indexer coverage"
+    );
+    expect(await reader.publications(hash(10))).toHaveLength(1);
+    expect(await reader.publications(hash(12))).toHaveLength(0);
+    await db.query(
+      "UPDATE yunipals_indexer_control.chain_status SET halted=true WHERE release_id=$1",
+      [releaseId]
+    );
+    await expect(reader.publications(hash(10))).rejects.toThrow(
+      "evidence is unavailable"
+    );
+    await db.query(
+      "UPDATE evolution_ready._ponder_meta SET value=jsonb_set(value,'{is_locked}','1') WHERE key='app'"
+    );
+    await db.query(
+      "UPDATE yunipals_indexer_control.chain_status SET halted=false,observed_at_ms=$2,error_code=NULL WHERE release_id=$1",
+      [releaseId, now]
+    );
+    await db.query(
       "UPDATE yunipals_indexer_control.chain_status SET anchors=anchors-'988' WHERE release_id=$1",
       [releaseId]
     );
     await expect(reader.snapshot(async () => true)).rejects.toThrow(
       "confirmed indexer coverage"
+    );
+    await expect(reader.publications(hash(10))).rejects.toThrow(
+      "branch is unverified"
     );
     await db.query(
       "UPDATE yunipals_indexer_control.chain_status SET anchors=jsonb_set(anchors,'{988}',$2::jsonb) WHERE release_id=$1",

@@ -1,4 +1,10 @@
-import { zeroAddress, type Address, type PublicClient } from "viem";
+import {
+  BaseError,
+  ContractFunctionRevertedError,
+  zeroAddress,
+  type Address,
+  type PublicClient
+} from "viem";
 import {
   adventureAbi,
   evolutionAbi,
@@ -11,6 +17,22 @@ import {
 } from "@protopals/yunipals-market-core/serums";
 import type { EvolutionHistory } from "./art.js";
 import { validateEvolutionHistory } from "./art.js";
+
+export class UnsupportedEvolutionCard extends Error {}
+
+export function isUnsupportedEvolutionCard(error: unknown) {
+  if (error instanceof UnsupportedEvolutionCard) return true;
+  const revert =
+    error instanceof BaseError
+      ? error.walk((cause) => cause instanceof ContractFunctionRevertedError)
+      : null;
+  return (
+    revert instanceof ContractFunctionRevertedError &&
+    ["unsupported card", "input artwork unavailable"].includes(
+      revert.reason ?? ""
+    )
+  );
+}
 
 export class EvolutionChain {
   constructor(
@@ -166,7 +188,10 @@ export class EvolutionChain {
             blockNumber
           })
         ]);
-        if (!facts[2]) throw new Error("Source card facts are unavailable.");
+        if (!facts[2])
+          throw new UnsupportedEvolutionCard(
+            "Source card facts are unavailable."
+          );
         return {
           tokenId: id.toString(),
           packTypeId: p[0].toString(),

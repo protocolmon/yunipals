@@ -11,6 +11,7 @@ import {
   type SerumDose
 } from "@protopals/yunipals-market-core/serums";
 import catalogue from "../../../../docs/adventures-serums-catalog.draft.json";
+import { holoInstructions } from "./holo.js";
 
 export type EvolutionHistory = {
   tokenId: string;
@@ -22,7 +23,7 @@ export type EvolutionHistory = {
 };
 export const evolutionArtRules = {
   ...catalogue.artDirection,
-  version: 2,
+  version: 3,
   finishes: finishDirections,
   finish:
     "Render only the settled finish. Integrate frame, lettering and mascot materials into the artwork with consistent lighting. Never choose or reroll a finish. No swirls, geometric overlays or invented rarity labels. Preserve standard border dimensions and the creature silhouette.",
@@ -42,6 +43,7 @@ export function evolutionRenderingPolicy(policy: PortalModelPolicy) {
     model: policy.image,
     quality: policy.imageQuality,
     size: policy.imageSize,
+    holo: { instructions: holoInstructions, model: policy.grading, version: 1 },
     output: "png"
   };
 }

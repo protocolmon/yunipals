@@ -307,6 +307,16 @@
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
 }
+.booster-card-viewer .has-selective-holo .tilt-art-stars {
+  z-index: 2;
+  -webkit-mask-image: var(--star-mask);
+  mask-image: var(--star-mask);
+}
+.booster-card-viewer .has-selective-holo .monster-depth {
+  z-index: 1;
+  -webkit-mask-image: var(--art-mask);
+  mask-image: var(--art-mask);
+}
 .booster-card-viewer .monster-relief {
   position: absolute;
   inset: 0;
@@ -413,7 +423,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  background: url("/images/portals/rainbow-portal-card-v3.webp") center / 100% 100%;
+  background: url("/images/portals/rainbow-portal-card-v3.webp") center / 100%
+    100%;
   transform-origin: 50% 49%;
   transform: translate(
       calc(var(--depth-x, 0%) * 0.35),

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
 import type { Hex } from "viem";
 import type { EvolutionHistory } from "./art.js";
+import type { HoloLayers } from "./holo.js";
 
 export type EvolutionArtifact = {
   uri: string;
@@ -13,6 +14,7 @@ export type EvolutionProgress = {
   parents?: EvolutionHistory[];
   prompt?: string;
   image?: { uri: string; hash: Hex; model: string; usage: unknown };
+  holo?: { layers: HoloLayers; model: string; usage: unknown };
   artifact?: EvolutionArtifact;
   transactionHash?: Hex;
 };

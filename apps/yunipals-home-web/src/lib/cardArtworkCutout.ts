@@ -9,11 +9,14 @@ const cutouts: Record<string, string> = {
 };
 
 export function cardArtworkCutoutStyle(
-  image: string | null | undefined
+  image: string | null | undefined,
+  cutout?: string
 ): CSSProperties | undefined {
   const hash = image?.match(/(?:^|\/)([a-f0-9]{64})\.png(?:[?#].*)?$/i)?.[1];
-  const mask = hash && cutouts[hash.toLowerCase()];
+  const mask = cutout ?? (hash && cutouts[hash.toLowerCase()]);
   return mask
-    ? ({ "--card-artwork-cutout": `url("${mask}")` } as CSSProperties)
+    ? ({
+        "--card-artwork-cutout": `url(${JSON.stringify(mask)})`
+      } as CSSProperties)
     : undefined;
 }

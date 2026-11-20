@@ -31,6 +31,7 @@ import { createPortalRuntime, type PortalRuntime } from "./runtime.js";
 import { registerPortalOwnerRoutes } from "./owner-routes.js";
 import { readCompetition, readCompetitionBatch } from "./competition.js";
 import { portalCompetitionAbi } from "@protopals/yunipals-market-core/portalAbi";
+import { evolutionCardsAbi } from "@protopals/yunipals-market-core/evolutionAbi";
 
 const uint = z
   .string()
@@ -440,6 +441,38 @@ export function registerPortalRoutes(
           404
         );
       throw error;
+    }
+    if (card.historyCount === 0n && card.evolution?.history.finish) {
+      const uri = await chain.client.readContract({
+        address: chain.deployment.cards,
+        abi: evolutionCardsAbi,
+        functionName: "tokenURI",
+        args: [token],
+        blockNumber: card.asOfBlock
+      });
+      const prefix = `${runtime.assets.origin}/v1/evolution/assets/`;
+      const file = uri.startsWith(prefix)
+        ? /^([0-9a-f]{64})\.json$/.exec(uri.slice(prefix.length))
+        : null;
+      if (!file)
+        throw new PortalUserError("Evolution metadata is unavailable.", 503);
+      const metadata = JSON.parse(
+        (await runtime.assets.read(file[1], "json")).toString()
+      );
+      const [artwork, version] = await chain.input(token, card.asOfBlock);
+      if (metadata.image !== artwork.uri)
+        throw new PortalUserError("Evolution artwork changed.", 503);
+      return json({
+        ...metadata,
+        evolution: card.evolution,
+        yunipals: {
+          ...metadata.yunipals,
+          version,
+          historyCount: card.historyCount,
+          artworkHash: artwork.hash,
+          rawArtworkURI: artwork.uri
+        }
+      });
     }
     if (card.evolution?.history.level) {
       const [artwork, version] = await chain.input(token, card.asOfBlock);

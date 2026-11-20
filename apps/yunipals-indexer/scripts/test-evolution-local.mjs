@@ -1,3 +1,4 @@
+import geometry from "../test/fixtures/evolution-holo.json" with { type: "json" };
 /** Local contract/API/worker/browser rehearsal. Confirmed event delivery is a deterministic fixture;
  * the actual global Ponder schema, rollback and source readiness are verified separately. No paid AI. */
 import assert from "node:assert/strict";
@@ -383,10 +384,18 @@ try {
       collection: portals
     })
   };
+  reader.publications = async (hash) =>
+    (
+      await db.query(
+        `SELECT args::jsonb->>'artworkHash' AS "artworkHash", args::jsonb->>'metadataHash' AS "metadataHash" FROM evolution_local.canonical_event WHERE name='EvolutionCompleted' AND (args::jsonb->>'artworkHash'=$1 OR args::jsonb->>'metadataHash'=$1)`,
+        [hash]
+      )
+    ).rows;
   const runtime = { reader, chain, store, assets, portal };
   const app = new Hono();
   app.use("*", cors());
   registerEvolutionRoutes(app, {
+    assetRuntime: () => ({ reader, assets }),
     enabled: () => true,
     runtime: async () => runtime
   });
@@ -467,6 +476,11 @@ try {
     assets,
     {
       policy: portalModels,
+      calibrateHolo: async () => ({
+        geometry,
+        model: portalModels.grading,
+        usage: null
+      }),
       editImages: async (prompt, images) => {
         generated++;
         inputs.push(images.length);
@@ -650,6 +664,23 @@ try {
   assert.equal(completed.completed, true);
   await page.waitForURL(`**/adventures/cards/${completed.resultTokenId}`);
   const fused = (await get(`/cards/${completed.resultTokenId}`)).card;
+  await page.locator(".has-selective-holo").first().waitFor();
+  const layers = (await (await app.request(fused.metadataURI)).json()).yunipals
+    .holo;
+  for (const uri of Object.values(layers)) {
+    const response = await app.request(uri);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), "image/png");
+  }
+  const viewer = page.locator("[data-live-holo]").first();
+  await viewer.focus();
+  await viewer.press("ArrowRight");
+  await page.waitForFunction(() => {
+    const card = document.querySelector(".has-selective-holo");
+    return (
+      card && getComputedStyle(card).getPropertyValue("--rotate-y") !== "0deg"
+    );
+  });
   assert.equal(fused.level, 1);
   assert.equal(fused.localDoses, 0);
   assert.equal(fused.history.parents[0].doses.length, 1);
@@ -676,7 +707,7 @@ try {
     true
   );
   console.log(
-    "Evolution local flow passed: adventure/VRF → serum → browser approval → saved generation → fusion/VRF → atomic burn/mint → inherited history and cooldown → same-collection owner/gallery reads; desktop/mobile."
+    "Evolution local flow passed: adventure/VRF → serum → browser approval → saved generation → fusion/VRF → atomic burn/mint → inherited history and cooldown → same-collection owner/gallery reads → published holo masks and keyboard tilt; desktop/mobile."
   );
 } catch (error) {
   const page = browser?.contexts()[0]?.pages()[0];

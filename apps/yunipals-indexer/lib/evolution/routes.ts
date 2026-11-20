@@ -21,6 +21,12 @@ import { portalJson } from "../portals/chain.js";
 import { PortalUserError } from "../portals/errors.js";
 import type { EvolutionReadContext } from "../../../../packages/yunipals-indexer-server/src/evolution.js";
 import type { PoolClient } from "pg";
+import { isUnsupportedEvolutionCard } from "./chain.js";
+import {
+  createEvolutionAssetRuntime,
+  readPublishedEvolutionAsset,
+  type EvolutionAssetRuntime
+} from "./assets.js";
 
 const uint = z
   .string()
@@ -87,10 +93,14 @@ export function registerEvolutionRoutes(
   options: {
     runtime?: () => Promise<EvolutionRuntime>;
     enabled?: () => boolean;
+    assetRuntime?: () => EvolutionAssetRuntime;
   } = {}
 ) {
   const router = new Hono();
   let runtime: Promise<EvolutionRuntime> | undefined;
+  let assetRuntime: EvolutionAssetRuntime | undefined;
+  const getAssets = () =>
+    (assetRuntime ??= (options.assetRuntime ?? createEvolutionAssetRuntime)());
   const get = () =>
     (runtime ??= (options.runtime ?? createEvolutionRuntime)().catch(
       (error) => {
@@ -112,6 +122,7 @@ export function registerEvolutionRoutes(
           )
   );
   router.use("/v1/evolution/*", async (c, next) => {
+    if (/^\/v1\/evolution\/(assets|layers)\//.test(c.req.path)) return next();
     if (!(options.enabled?.() ?? process.env.EVOLUTION_ENABLED === "true"))
       return reply(
         { enabled: false, error: "Adventures and fusion are being prepared." },
@@ -206,11 +217,18 @@ export function registerEvolutionRoutes(
             [ctx.cards, ctx.block.toString(), owner, after]
           )
         ).rows;
-        const cards = await Promise.all(
-          rows
-            .slice(0, 12)
-            .map((row) => r.chain.card(BigInt(row.token), ctx.block))
+        const candidates = await Promise.all(
+          rows.slice(0, 12).map(async (row) => {
+            try {
+              return await r.chain.card(BigInt(row.token), ctx.block);
+            } catch (error) {
+              // Skip known ineligible cards, never transport/branch failures.
+              if (isUnsupportedEvolutionCard(error)) return null;
+              throw error;
+            }
+          })
         );
+        const cards = candidates.filter((card) => card !== null);
         const a = partner ? await r.chain.card(partner, ctx.block) : null;
         const matches = portalId
           ? await Promise.all(
@@ -412,27 +430,22 @@ export function registerEvolutionRoutes(
       })
     );
   });
-  router.get("/v1/evolution/assets/:file", async (c) => {
-    const file = /^([0-9a-f]{64})\.(png|json)$/.exec(c.req.param("file"));
-    if (!file) throw new PortalUserError("Invalid asset.", 404);
-    return snapshot(async (r, db, ctx) => {
-      const row = await db.query(
-        `SELECT 1 FROM ${ctx.schema}.canonical_event
-        WHERE chain_id=8453 AND address=$1 AND name='EvolutionCompleted' AND block_number<=$2
-        AND (args::jsonb->>'artworkHash'=$3 OR args::jsonb->>'metadataHash'=$3) LIMIT 1`,
-        [ctx.evolution, ctx.block.toString(), `0x${file[1]}`]
-      );
-      if (!row.rows.length)
-        throw new PortalUserError("Asset not published.", 404);
-      const bytes = await r.assets.read(file[1], file[2] as "png" | "json");
-      return new Response(Uint8Array.from(bytes), {
-        headers: {
-          "Content-Type": file[2] === "png" ? "image/png" : "application/json",
-          "Cache-Control": "public, max-age=31536000, immutable",
-          "X-Content-Type-Options": "nosniff"
-        }
-      });
+  const assetResponse = async (file: string, artwork?: string) => {
+    const asset = await readPublishedEvolutionAsset(getAssets(), file, artwork);
+    return new Response(Uint8Array.from(asset.bytes), {
+      headers: {
+        "Content-Type": asset.contentType,
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Content-Type-Options": "nosniff",
+        "Access-Control-Allow-Origin": "*"
+      }
     });
-  });
+  };
+  router.get("/v1/evolution/assets/:file", (c) =>
+    assetResponse(c.req.param("file"))
+  );
+  router.get("/v1/evolution/layers/:artwork/:file", (c) =>
+    assetResponse(c.req.param("file"), c.req.param("artwork"))
+  );
   app.route("/", router);
 }
