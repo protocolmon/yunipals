@@ -62,6 +62,10 @@ Image-tool invocations use low reasoning. An operator can set `ANIME_CODEX_MODEL
 to another available Codex model if the configured text model is at capacity.
 This selects the CLI orchestrator; ChatGPT subscription authentication remains
 required, and the studio does not fall back to API-key image generation.
+The saved PNG must match an image from that CLI session's generated-image
+directory. A missing or incorrect copy is recovered only when the session has
+exactly one candidate; ambiguous outputs stop for review. Other concurrent jobs'
+images are never accepted as the result.
 
 Two known artwork variants can use the unchanged cosmetic templates of their
 species after explicit anatomy review: Crystal Unicursed uses Unicursed, and

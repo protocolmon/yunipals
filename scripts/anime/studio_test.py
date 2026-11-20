@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import os
 from unittest.mock import patch
 from PIL import Image
 from PIL import ImageDraw
@@ -14,6 +15,29 @@ spec.loader.exec_module(studio)
 
 
 class StudioTest(unittest.TestCase):
+    def test_generation_recovery_never_uses_another_sessions_image(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {'CODEX_HOME': tmp}):
+            root = Path(tmp)
+            thread = '00000000-0000-0000-0000-000000000001'
+            own = root/'generated_images'/thread
+            other = root/'generated_images'/'00000000-0000-0000-0000-000000000002'
+            own.mkdir(parents=True); other.mkdir(parents=True)
+            Image.new('RGB',(16,16),'red').save(own/'own.png')
+            Image.new('RGB',(16,16),'blue').save(other/'newest.png')
+            out = root/'dash.png'; out.write_bytes((other/'newest.png').read_bytes())
+            receipt = root/'dash.jsonl'
+            receipt.write_text(json.dumps({'type':'thread.started','thread_id':thread})+'\n')
+            source = studio.recover_codex_image(out, receipt)
+            self.assertTrue(source['recovered'])
+            self.assertEqual(out.read_bytes(), (own/'own.png').read_bytes())
+            self.assertEqual((root/'dash.wrong-session-image').read_bytes(), (other/'newest.png').read_bytes())
+            self.assertFalse(studio.recover_codex_image(out, receipt)['recovered'])
+            out.unlink()
+            self.assertTrue(studio.recover_codex_image(out, receipt)['recovered'])
+            Image.new('RGB',(16,16),'green').save(own/'second.png')
+            out.unlink()
+            with self.assertRaisesRegex(ValueError, 'unambiguously'): studio.recover_codex_image(out, receipt)
+
     def test_variant_templates_require_explicit_current_identity_review(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp)

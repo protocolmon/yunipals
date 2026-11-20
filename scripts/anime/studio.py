@@ -245,7 +245,7 @@ def generate_image(out, prompt, refs):
         if not receipt.is_file() or read(receipt)["sha256"] != digest(out.read_bytes()):
             raise ValueError("Existing generated image needs explicit review or reroll")
         return
-    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image. Use python3 for any Python commands."
+    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image. Use python3 for any Python commands. Copy only the output of this image call; never select the newest image from a shared directory, because other generation jobs may be running."
     # Subscription auth remains in Codex. Explicitly exclude API-key auth and server secrets.
     env = {k: v for k, v in os.environ.items() if k in {"PATH", "HOME", "USER", "LANG", "CODEX_HOME", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS"}}
     auth = subprocess.run(["codex", "login", "status"], env=env, capture_output=True, text=True, timeout=30)
@@ -262,16 +262,41 @@ def generate_image(out, prompt, refs):
     for attempt in range(3):
         with (out.parent / f"{out.stem}.{attempt}.receipt.jsonl").open("wb") as receipt, (out.parent / f"{out.stem}.{attempt}.stderr.log").open("wb") as errors:
             result = subprocess.run(command[:2] + ["--json"] + command[2:], env=env, stdout=receipt, stderr=errors, timeout=1200)
+        source = recover_codex_image(out, out.parent / f"{out.stem}.{attempt}.receipt.jsonl") if result.returncode == 0 else None
         if result.returncode == 0 and out.is_file():
             from PIL import Image
             with Image.open(out) as image:
                 if image.format != "PNG":
                     raise ValueError("Expected generated PNG")
                 image.verify()
-            write(out.with_suffix(".receipt.json"), {"generatedWith": "codex-subscription", "sha256": digest(out.read_bytes()), "attempt": attempt + 1, "references": {p.name: digest(p.read_bytes()) for p in refs}})
+            write(out.with_suffix(".receipt.json"), {"generatedWith": "codex-subscription", "sha256": digest(out.read_bytes()), "attempt": attempt + 1, "source": source, "references": {p.name: digest(p.read_bytes()) for p in refs}})
             break
     else:
         raise ValueError("Generation failed after at most two retries")
+
+
+def recover_codex_image(out, receipt):
+    """Bind the saved image to this CLI session, including failed copy recovery."""
+    events = [json.loads(line) for line in receipt.read_text().splitlines() if line.strip()]
+    thread = next((event.get("thread_id") for event in events if event.get("type") == "thread.started"), None)
+    if not isinstance(thread, str) or not re.fullmatch(r"[0-9a-f-]{36}", thread):
+        raise ValueError("Generation receipt has no valid Codex session")
+    home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
+    directory = home / "generated_images" / thread
+    candidates = [p for p in directory.glob("*.png") if p.is_file() and not p.is_symlink()]
+    actual = digest(out.read_bytes()) if out.is_file() else None
+    matching = next((p for p in candidates if digest(p.read_bytes()) == actual), None)
+    recovered = False
+    if matching is None:
+        if len(candidates) != 1:
+            raise ValueError("Review generation outputs: cannot identify this session's image unambiguously")
+        matching = candidates[0]
+        if out.exists():
+            rejected = out.with_name(out.stem + ".wrong-session-image")
+            out.replace(rejected)
+        shutil.copyfile(matching, out)
+        recovered = True
+    return {"threadId": thread, "file": matching.name, "recovered": recovered}
 
 
 def species_slug(value):
