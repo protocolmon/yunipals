@@ -29,6 +29,9 @@ export async function buildSettings(
   for (const file of [
     "src/lib/social/metadata.ts",
     "server/social/render.ts",
+    "server/social/CollectiblePreview.ts",
+    "server/social/PreviewBrand.ts",
+    "public/images/brandkit/yunipals-logo.png",
     "src/lib/social/proposals.ts",
     "package.json",
     ...Object.values(proposalPreviews).map((p) => p.artwork),
@@ -52,6 +55,10 @@ export async function buildImages(
 ) {
   const directory = join(output, ".social/assets");
   await mkdir(join(directory, "fonts"), { recursive: true });
+  await cp(
+    join(app, "public/images/brandkit/yunipals-logo.png"),
+    join(directory, "logo.png")
+  );
   for (const [family, weight] of [
     ["inter", "700"],
     ["archivo-black", "400"]

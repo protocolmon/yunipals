@@ -89,7 +89,10 @@ export function createSocialHandler(options: SocialHandlerOptions) {
             const bytes = preview.image
               ? await read(preview.image, controller.signal, true)
               : await readFile(join(directory, "fallback.png"));
-            const png = await renderPreview(preview, bytes, { directory });
+            const png = await renderPreview(preview, bytes, {
+              directory,
+              collectible: true
+            });
             return respond(png, 200, "image/png", seconds);
           } finally {
             rendering--;
