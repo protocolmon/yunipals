@@ -157,6 +157,12 @@ class StudioTest(unittest.TestCase):
             studio.write(folder/'fighter.json', manifest_identity)
             with self.assertRaisesRegex(ValueError, 'current identity'): studio.review(folder, 'approve', [])
 
+    def test_resuming_generation_does_not_skip_an_unreceipted_image(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.v2_folder(Path(tmp)/'lab', '1234')
+            with self.assertRaisesRegex(ValueError, 'explicit review or reroll'):
+                studio.generate(folder, stage=2)
+
     def test_canonical_matches_javascript_convention(self):
         self.assertEqual(studio.canonical({'z': 1.0, 'a': {'c': 'é', 'b': 2}}).decode(), '{"a":{"b":2,"c":"é"},"z":1}')
         for value in ['../1', '-1', '01', str(2 ** 256)]:

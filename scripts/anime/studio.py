@@ -224,8 +224,6 @@ def _generate(folder, stage=None, only=None):
         raw = folder / "raw"
         raw.mkdir(exist_ok=True)
         out = raw / (pose + ".png")
-        if out.exists():
-            continue
         refs = [folder / "artwork.png", folder / "board.png"]
         if pose != "idle":
             approval = read(folder / "idle-review.json")
