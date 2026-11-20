@@ -222,6 +222,68 @@ test("address and artwork policies reject private networks and untrusted sources
   );
 });
 
+test("configured external artwork hosts reach the collection sharing image", async () => {
+  const image = "https://artwork.example.test/ipfs/collection-art";
+  const external = await buildSettings(app, {
+    VITE_SITE_ORIGIN: config.siteOrigin,
+    VITE_YUNIPALS_INDEXER_URL: config.indexerUrl,
+    OG_ASSET_HOSTS: new URL(image).hostname
+  });
+  const requests: string[] = [];
+  const load = reader({
+    "/indexer/v1/tokens/base/12": {
+      token: { token_id: "12", ...original, image }
+    }
+  });
+  const read: PreviewReader = async (url, signal, isImage) => {
+    if (isImage) requests.push(url);
+    return load(url, signal, isImage);
+  };
+  const pending = await resolvePreview(
+    metadata("/collection/base/12"),
+    config,
+    read,
+    AbortSignal.timeout(1000)
+  );
+  assert.equal(pending.state, "pending");
+  assert.equal(pending.image, null);
+  const ready = await resolvePreview(
+    metadata("/collection/base/12"),
+    external,
+    read,
+    AbortSignal.timeout(1000)
+  );
+  assert.equal(ready.state, "ready");
+  assert.equal(ready.image, image);
+  assert.notEqual(ready.revision, pending.revision);
+  assert.equal(
+    assetUrl("https://untrusted.example.test/art.png", external),
+    null
+  );
+  const handler = createSocialHandler({
+    config: external,
+    directory,
+    html: template,
+    read
+  });
+  const html = await (
+    await handler(new Request(`${config.siteOrigin}/collection/base/12`))
+  ).text();
+  assert.doesNotMatch(html, /Artwork is being prepared/);
+  const ogImage = /property="og:image" content="([^"]+)"/
+    .exec(html)![1]
+    .replaceAll("&amp;", "&");
+  const response = await handler(new Request(ogImage));
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Content-Type"), "image/png");
+  assert.match(response.headers.get("CDN-Cache-Control")!, /max-age=300/);
+  assert.deepEqual(requests, [image]);
+  assert.equal(
+    (await sharp(Buffer.from(await response.arrayBuffer())).metadata()).width,
+    1200
+  );
+});
+
 test("monster preview selects published graded art and falls back before grading", async () => {
   const ready = await resolvePreview(
     metadata(),
