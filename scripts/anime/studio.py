@@ -21,6 +21,25 @@ ROOT = Path(__file__).resolve().parents[2]
 RECIPE = ROOT / "docs/arena/anime-recipe-v1"
 COLLECTION = "0x98433df878e8c898cb907345c3a7756e5f72240f"
 ASSETS = "https://assets-anime.yunipals.com"
+# These variants retain their full identity and artwork. Only their cosmetic kit
+# templates match an existing species; never strip arbitrary variant prefixes.
+VARIANT_TEMPLATES = {
+    "crystal-unicursed": "Unicursed",
+    "rainbow-uniaqua": "Uniaqua",
+}
+
+
+def template_species(data):
+    species = data["identity"]["species"]
+    approved = data.get("templateReview")
+    expected = VARIANT_TEMPLATES.get(species_slug(species))
+    if approved is None:
+        return species
+    if (not expected or approved.get("species") != species
+            or approved.get("template") != expected
+            or approved.get("identitySha256") != digest(canonical(data["identity"]))):
+        raise ValueError("Variant template needs current identity review")
+    return expected
 
 
 def normalize(v):
@@ -205,8 +224,6 @@ def _generate(folder, stage=None, only=None):
         raw = folder / "raw"
         raw.mkdir(exist_ok=True)
         out = raw / (pose + ".png")
-        if out.exists():
-            continue
         refs = [folder / "artwork.png", folder / "board.png"]
         if pose != "idle":
             approval = read(folder / "idle-review.json")
@@ -226,29 +243,58 @@ def generate_image(out, prompt, refs):
         if not receipt.is_file() or read(receipt)["sha256"] != digest(out.read_bytes()):
             raise ValueError("Existing generated image needs explicit review or reroll")
         return
-    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image."
+    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image. Use python3 for any Python commands. Copy only the output of this image call; never select the newest image from a shared directory, because other generation jobs may be running."
     # Subscription auth remains in Codex. Explicitly exclude API-key auth and server secrets.
     env = {k: v for k, v in os.environ.items() if k in {"PATH", "HOME", "USER", "LANG", "CODEX_HOME", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS"}}
     auth = subprocess.run(["codex", "login", "status"], env=env, capture_output=True, text=True, timeout=30)
     if auth.returncode != 0 or "chatgpt" not in (auth.stdout + auth.stderr).lower():
         raise ValueError("Log Codex in with the ChatGPT subscription; API-key generation is not supported by this tool")
-    command = ["codex", "exec", "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
+    # This turn only invokes the image tool with an already reviewed prompt.
+    # Do not inherit a coding session's prolonged reasoning setting.
+    command = ["codex", "exec", "-c", 'model_reasoning_effort="low"', "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
+    if os.environ.get("ANIME_CODEX_MODEL"):
+        command += ["--model", os.environ["ANIME_CODEX_MODEL"]]
     for ref in refs:
         command += ["--image", str(ref)]
     command += ["--", prompt]
     for attempt in range(3):
         with (out.parent / f"{out.stem}.{attempt}.receipt.jsonl").open("wb") as receipt, (out.parent / f"{out.stem}.{attempt}.stderr.log").open("wb") as errors:
             result = subprocess.run(command[:2] + ["--json"] + command[2:], env=env, stdout=receipt, stderr=errors, timeout=1200)
+        source = recover_codex_image(out, out.parent / f"{out.stem}.{attempt}.receipt.jsonl") if result.returncode == 0 else None
         if result.returncode == 0 and out.is_file():
             from PIL import Image
             with Image.open(out) as image:
                 if image.format != "PNG":
                     raise ValueError("Expected generated PNG")
                 image.verify()
-            write(out.with_suffix(".receipt.json"), {"generatedWith": "codex-subscription", "sha256": digest(out.read_bytes()), "attempt": attempt + 1, "references": {p.name: digest(p.read_bytes()) for p in refs}})
+            write(out.with_suffix(".receipt.json"), {"generatedWith": "codex-subscription", "sha256": digest(out.read_bytes()), "attempt": attempt + 1, "source": source, "references": {p.name: digest(p.read_bytes()) for p in refs}})
             break
     else:
         raise ValueError("Generation failed after at most two retries")
+
+
+def recover_codex_image(out, receipt):
+    """Bind the saved image to this CLI session, including failed copy recovery."""
+    events = [json.loads(line) for line in receipt.read_text().splitlines() if line.strip()]
+    thread = next((event.get("thread_id") for event in events if event.get("type") == "thread.started"), None)
+    if not isinstance(thread, str) or not re.fullmatch(r"[0-9a-f-]{36}", thread):
+        raise ValueError("Generation receipt has no valid Codex session")
+    home = Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
+    directory = home / "generated_images" / thread
+    candidates = [p for p in directory.glob("*.png") if p.is_file() and not p.is_symlink()]
+    actual = digest(out.read_bytes()) if out.is_file() else None
+    matching = next((p for p in candidates if digest(p.read_bytes()) == actual), None)
+    recovered = False
+    if matching is None:
+        if len(candidates) != 1:
+            raise ValueError("Review generation outputs: cannot identify this session's image unambiguously")
+        matching = candidates[0]
+        if out.exists():
+            rejected = out.with_name(out.stem + ".wrong-session-image")
+            out.replace(rejected)
+        shutil.copyfile(matching, out)
+        recovered = True
+    return {"threadId": thread, "file": matching.name, "recovered": recovered}
 
 
 def species_slug(value):
@@ -318,7 +364,7 @@ def kits(folder):
     if not (folder / "poses-review.json").is_file() or read(folder / "poses-review.json")["poses"] != pose_hashes(folder):
         raise ValueError("Review the nine base poses with review TOKEN poses before stage 3")
     data = read(folder / "fighter.json")
-    species = next((name for name in style["kits"]["species"] if species_slug(name) == species_slug(data["identity"]["species"])), None)
+    species = next((name for name in style["kits"]["species"] if species_slug(name) == species_slug(template_species(data))), None)
     if species is None:
         raise ValueError("This species needs reviewed templates in a new recipe")
     drafts = style["kits"]["species"][species]
@@ -415,6 +461,20 @@ def fit(folder):
 
 
 def review(folder, decision, values):
+    if decision == "template":
+        data = read(folder / "fighter.json")
+        species = data["identity"]["species"]
+        expected = VARIANT_TEMPLATES.get(species_slug(species))
+        if data.get("identityDraft", True) or values != [expected] or expected is None:
+            raise ValueError("Review the variant identity and its supported species template first")
+        style, _ = fighter_recipe(folder)
+        drafts = style["kits"]["species"][expected]
+        data["templateReview"] = {"species": species, "template": expected,
+            "identitySha256": digest(canonical(data["identity"])),
+            "reviewedAt": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+        data["look"]["palette"] = style["kits"]["elements"][drafts[0]["element"]].copy()
+        write(folder / "fighter.json", data)
+        return data["templateReview"]
     if decision == "idle":
         write(folder / "idle-review.json", {"sha256": digest((folder / "raw/idle.png").read_bytes())})
     elif decision == "poses":
@@ -493,6 +553,12 @@ def review(folder, decision, values):
             raise ValueError("Review identity text and set identityDraft=false in fighter.json")
         style, _ = fighter_recipe(folder)
         drafts = read(folder / "kits.json") if style["id"] == "anime-fighter-v2" else []
+        if style["id"] == "anime-fighter-v2":
+            species = template_species(data)
+            template = next((v for k, v in style["kits"]["species"].items()
+                             if species_slug(k) == species_slug(species)), None)
+            if template != drafts:
+                raise ValueError("Kits must match the reviewed species template")
         expected = set(style["poses"]) | {"windup-" + k["id"] for k in drafts}
         if (style["id"] == "anime-fighter-v2" and len(drafts) != 3) or set(p.stem for p in (folder / "keyed").glob("*.png")) != expected:
             raise ValueError("Review all nine keyed poses first")
@@ -710,7 +776,7 @@ def main():
         if command == "prepare":
             part.add_argument("--recipe", choices=["anime-fighter-v2"], default="anime-fighter-v2")
         if command == "review":
-            part.add_argument("decision", choices=["idle", "poses", "approve-kit", "approve", "reroll", "reject"])
+            part.add_argument("decision", choices=["idle", "poses", "template", "approve-kit", "approve", "reroll", "reject"])
             part.add_argument("values", nargs="*")
     part = sub.add_parser("publish")
     part.add_argument("--destination", type=Path, default=Path("/var/www/assets-anime.yunipals.com"))

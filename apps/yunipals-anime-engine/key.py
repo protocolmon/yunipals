@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageOps
 
 GEN = Path(sys.argv[1])
 OUT = Path(sys.argv[2])
@@ -23,10 +23,20 @@ for src in sorted(GEN.glob("*.png")):
     a = np.asarray(im).astype(np.float32)
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
     spill = g - np.maximum(r, b)
-    # Soft matte: fully transparent when strongly green-dominant, opaque below a small margin.
-    alpha = 1 - np.clip((spill - 40) / (110 - 40), 0, 1)
-    # Despill: pull residual green down on semi-transparent edge pixels and anything green-dominant.
-    g2 = np.where(spill > 0, np.maximum(r, b) + np.minimum(spill, 0), g)
+    # Start with green regions connected to the canvas border, preserving shaded
+    # green eyes, markings and crystals enclosed by the fighter's dark outline.
+    candidates = Image.fromarray((spill > 40).astype(np.uint8) * 255)
+    connected = ImageOps.expand(candidates, border=1, fill=255)
+    ImageDraw.floodfill(connected, (0, 0), 128)
+    background = np.asarray(connected)[1:-1, 1:-1] == 128
+    # The reserved near-pure chroma color also occurs in enclosed gaps (e.g.
+    # between tail and body). It cannot distinguish artwork painted in the exact
+    # key color; review those cases rather than desaturating every green pixel.
+    background |= (g >= 230) & (r <= 20) & (b <= 20)
+    alpha = np.where(background, 1 - np.clip((spill - 40) / 70, 0, 1), 1)
+    # Despill only the keyed edge, never opaque character colors.
+    edge = background & (alpha > 0) & (alpha < 1)
+    g2 = np.where(edge, np.maximum(r, b), g)
     rgba = np.dstack([r, g2, b, alpha * 255]).clip(0, 255).astype(np.uint8)
     # Remove dust: zero alpha below 8.
     rgba[..., 3][rgba[..., 3] < 8] = 0
