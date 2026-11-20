@@ -245,7 +245,7 @@ def generate_image(out, prompt, refs):
         if not receipt.is_file() or read(receipt)["sha256"] != digest(out.read_bytes()):
             raise ValueError("Existing generated image needs explicit review or reroll")
         return
-    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image."
+    prompt += f"\nUse the built-in image tool. Save exactly one generated PNG to {out}. Generate only this image. Use python3 for any Python commands."
     # Subscription auth remains in Codex. Explicitly exclude API-key auth and server secrets.
     env = {k: v for k, v in os.environ.items() if k in {"PATH", "HOME", "USER", "LANG", "CODEX_HOME", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS"}}
     auth = subprocess.run(["codex", "login", "status"], env=env, capture_output=True, text=True, timeout=30)
