@@ -21,6 +21,25 @@ ROOT = Path(__file__).resolve().parents[2]
 RECIPE = ROOT / "docs/arena/anime-recipe-v1"
 COLLECTION = "0x98433df878e8c898cb907345c3a7756e5f72240f"
 ASSETS = "https://assets-anime.yunipals.com"
+# These variants retain their full identity and artwork. Only their cosmetic kit
+# templates match an existing species; never strip arbitrary variant prefixes.
+VARIANT_TEMPLATES = {
+    "crystal-unicursed": "Unicursed",
+    "rainbow-uniaqua": "Uniaqua",
+}
+
+
+def template_species(data):
+    species = data["identity"]["species"]
+    approved = data.get("templateReview")
+    expected = VARIANT_TEMPLATES.get(species_slug(species))
+    if approved is None:
+        return species
+    if (not expected or approved.get("species") != species
+            or approved.get("template") != expected
+            or approved.get("identitySha256") != digest(canonical(data["identity"]))):
+        raise ValueError("Variant template needs current identity review")
+    return expected
 
 
 def normalize(v):
@@ -318,7 +337,7 @@ def kits(folder):
     if not (folder / "poses-review.json").is_file() or read(folder / "poses-review.json")["poses"] != pose_hashes(folder):
         raise ValueError("Review the nine base poses with review TOKEN poses before stage 3")
     data = read(folder / "fighter.json")
-    species = next((name for name in style["kits"]["species"] if species_slug(name) == species_slug(data["identity"]["species"])), None)
+    species = next((name for name in style["kits"]["species"] if species_slug(name) == species_slug(template_species(data))), None)
     if species is None:
         raise ValueError("This species needs reviewed templates in a new recipe")
     drafts = style["kits"]["species"][species]
@@ -415,6 +434,20 @@ def fit(folder):
 
 
 def review(folder, decision, values):
+    if decision == "template":
+        data = read(folder / "fighter.json")
+        species = data["identity"]["species"]
+        expected = VARIANT_TEMPLATES.get(species_slug(species))
+        if data.get("identityDraft", True) or values != [expected] or expected is None:
+            raise ValueError("Review the variant identity and its supported species template first")
+        style, _ = fighter_recipe(folder)
+        drafts = style["kits"]["species"][expected]
+        data["templateReview"] = {"species": species, "template": expected,
+            "identitySha256": digest(canonical(data["identity"])),
+            "reviewedAt": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+        data["look"]["palette"] = style["kits"]["elements"][drafts[0]["element"]].copy()
+        write(folder / "fighter.json", data)
+        return data["templateReview"]
     if decision == "idle":
         write(folder / "idle-review.json", {"sha256": digest((folder / "raw/idle.png").read_bytes())})
     elif decision == "poses":
@@ -493,6 +526,12 @@ def review(folder, decision, values):
             raise ValueError("Review identity text and set identityDraft=false in fighter.json")
         style, _ = fighter_recipe(folder)
         drafts = read(folder / "kits.json") if style["id"] == "anime-fighter-v2" else []
+        if style["id"] == "anime-fighter-v2":
+            species = template_species(data)
+            template = next((v for k, v in style["kits"]["species"].items()
+                             if species_slug(k) == species_slug(species)), None)
+            if template != drafts:
+                raise ValueError("Kits must match the reviewed species template")
         expected = set(style["poses"]) | {"windup-" + k["id"] for k in drafts}
         if (style["id"] == "anime-fighter-v2" and len(drafts) != 3) or set(p.stem for p in (folder / "keyed").glob("*.png")) != expected:
             raise ValueError("Review all nine keyed poses first")
@@ -710,7 +749,7 @@ def main():
         if command == "prepare":
             part.add_argument("--recipe", choices=["anime-fighter-v2"], default="anime-fighter-v2")
         if command == "review":
-            part.add_argument("decision", choices=["idle", "poses", "approve-kit", "approve", "reroll", "reject"])
+            part.add_argument("decision", choices=["idle", "poses", "template", "approve-kit", "approve", "reroll", "reject"])
             part.add_argument("values", nargs="*")
     part = sub.add_parser("publish")
     part.add_argument("--destination", type=Path, default=Path("/var/www/assets-anime.yunipals.com"))

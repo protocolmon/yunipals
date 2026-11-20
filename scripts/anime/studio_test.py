@@ -14,6 +14,28 @@ spec.loader.exec_module(studio)
 
 
 class StudioTest(unittest.TestCase):
+    def test_variant_templates_require_explicit_current_identity_review(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            _, lock = studio.recipe('anime-fighter-v2')
+            for species, template in [('Crystal Unicursed', 'Unicursed'), ('Rainbow Uniaqua', 'Uniaqua')]:
+                data = {'identity': {'species': species, 'text': 'Reviewed visible anatomy.'},
+                        'identityDraft': False, 'look': {},
+                        'recipe': {'id': 'anime-fighter-v2', 'sha256': lock['sha256']}}
+                studio.write(folder/'fighter.json', data)
+                self.assertEqual(studio.template_species(data), species)
+                with self.assertRaises(ValueError): studio.review(folder, 'template', ['Unidragon'])
+                studio.review(folder, 'template', [template])
+                reviewed = studio.read(folder/'fighter.json')
+                self.assertEqual(studio.template_species(reviewed), template)
+                self.assertEqual(reviewed['identity']['species'], species)
+                reviewed['identity']['text'] = 'Different anatomy'
+                with self.assertRaises(ValueError): studio.template_species(reviewed)
+            data['identity']['species'] = 'Unknown Uniaqua'
+            studio.write(folder/'fighter.json', data)
+            with self.assertRaises(ValueError): studio.review(folder, 'template', ['Uniaqua'])
+            self.assertEqual(studio.template_species(data), 'Unknown Uniaqua')
+
     def v2_folder(self, lab, tid):
         folder = lab / tid
         (folder / 'raw').mkdir(parents=True)
@@ -83,6 +105,33 @@ class StudioTest(unittest.TestCase):
             with patch.object(studio, 'ROOT', root), patch.object(studio.subprocess, 'check_output', return_value=b'{"ok":true}') as run:
                 self.assertEqual(studio.node_helper('encode', 'batch.json'), {'ok': True})
                 self.assertEqual(run.call_args.args[0][1:], [str(built), 'encode', 'batch.json'])
+
+    def test_reviewed_variant_exports_its_actual_identity_and_variant_sheet_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.v2_folder(Path(tmp)/'lab', '1234')
+            data = studio.read(folder/'fighter.json')
+            data['identity']['species'] = 'Crystal Unicursed'
+            studio.write(folder/'fighter.json', data)
+            with self.assertRaisesRegex(ValueError, 'new recipe'): studio.kits(folder)
+            studio.review(folder, 'template', ['Unicursed'])
+            def generate(out, prompt, refs):
+                out.parent.mkdir(parents=True, exist_ok=True)
+                image = Image.new('RGB', (64,64), '#000000' if 'species' in out.parts else '#00ff00')
+                ImageDraw.Draw(image).rectangle((10,8,53,55), fill='#aa44cc')
+                image.save(out)
+            with patch.object(studio, 'generate_image', side_effect=generate):
+                studio.kits(folder)
+            for kit in studio.read(folder/'kits.json'): studio.review(folder, 'approve-kit', [kit['id']])
+            studio.review(folder, 'approve', [])
+            studio.export(folder)
+            manifest = studio.read(folder/'export/manifest.json')
+            self.assertEqual(manifest['identity']['species'], 'Crystal Unicursed')
+            self.assertEqual([k['id'] for k in manifest['kits']], ['hex-orb', 'hex-slash', 'shadow-rush'])
+            self.assertIn('/crystal-unicursed/', manifest['kits'][0]['projectile']['sheet'])
+            manifest_identity = studio.read(folder/'fighter.json')
+            manifest_identity['identity']['text'] = 'Changed after template review'
+            studio.write(folder/'fighter.json', manifest_identity)
+            with self.assertRaisesRegex(ValueError, 'current identity'): studio.review(folder, 'approve', [])
 
     def test_canonical_matches_javascript_convention(self):
         self.assertEqual(studio.canonical({'z': 1.0, 'a': {'c': 'é', 'b': 2}}).decode(), '{"a":{"b":2,"c":"é"},"z":1}')
