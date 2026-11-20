@@ -67,14 +67,14 @@ export async function eligiblePortalCards(
   )
     throw new Error("Could not check your cards. Please try again.");
   return candidates.filter((_, index) => {
-    const [matches, pending, owner, version] = checks.slice(
+    const [matches, pending, owner, completedGrades] = checks.slice(
       index * 4,
       index * 4 + 4
     );
     return (
       matches.result === true &&
       pending.result === 0n &&
-      version.result === 0n &&
+      completedGrades.result === 0n &&
       typeof owner.result === "string" &&
       owner.result.toLowerCase() === context.owner.toLowerCase()
     );

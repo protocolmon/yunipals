@@ -122,7 +122,7 @@ const client={getBlockNumber:async()=>100n,multicall:async({contracts})=>{
  const response=await fetch('/__checks',{method:'POST',body:JSON.stringify(contracts,(_,v)=>typeof v==='bigint'?v.toString():v)});
  if(!response.ok)throw Error('RPC unavailable');
  const results=await response.json();
- return results.map((result,i)=>({status:'success',result:['pendingRequest','artVersion'].includes(contracts[i].functionName)?BigInt(result):result}));
+ return results.map((result,i)=>({status:'success',result:['pendingRequest','historyCount'].includes(contracts[i].functionName)?BigInt(result):result}));
 }};
 export function usePortals(){
  const address=useSyncExternalStore(fn=>{listeners.add(fn);return()=>listeners.delete(fn);},()=>owner);
@@ -324,7 +324,7 @@ try {
             return mode !== "empty" && Number(id) >= 3;
           if (c.functionName === "pendingRequest")
             return id === "3" ? "9" : "0";
-          if (c.functionName === "artVersion") return id === "7" ? "1" : "0";
+          if (c.functionName === "historyCount") return id === "7" ? "1" : "0";
           if (c.functionName === "ownerOf") return id === "5" ? other : owner;
           throw Error("unexpected function");
         })

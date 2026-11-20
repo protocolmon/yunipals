@@ -3,11 +3,14 @@ import { zeroHash, type PublicClient } from "viem";
 import { PortalChain } from "../lib/portals/chain.js";
 
 const owner = "0x1111111111111111111111111111111111111111";
-function fixture(version: bigint, pending = 0n) {
+function fixture(version: bigint, completedGrades = 0n, pending = 0n) {
   const client = {
-    readContract: vi.fn(async ({ functionName }: { functionName: string }) =>
-      functionName === "matches" ? true : pending
-    )
+    readContract: vi.fn(async ({ functionName }: { functionName: string }) => {
+      if (functionName === "matches") return true;
+      if (functionName === "pendingRequest") return pending;
+      if (functionName === "historyCount") return completedGrades;
+      throw new Error(`Unexpected contract read: ${functionName}`);
+    })
   } as unknown as PublicClient;
   const chain = new PortalChain(client, {
     chainId: 8453,
@@ -33,22 +36,32 @@ function fixture(version: bigint, pending = 0n) {
 }
 
 describe("one completed grade per card", () => {
-  it("quotes a first-time card for a selected portal", async () => {
-    const chain = fixture(0n);
-    expect((await chain.quote(1n, owner, 99n)).artVersion).toBe(0n);
-    expect(chain.active).toHaveBeenCalledWith(99n);
-    expect(chain.input).toHaveBeenCalledWith(1n, 123n);
-  });
-  it.each([1n, 3n])(
+  it.each([0n, 1n, 11n])(
+    "quotes an ungraded card at artwork version %s, including serum revisions",
+    async (version) => {
+      const chain = fixture(version);
+      expect((await chain.quote(1n, owner, 99n)).artVersion).toBe(version);
+      expect(chain.active).toHaveBeenCalledWith(99n);
+      expect(chain.input).toHaveBeenCalledWith(1n, 123n);
+      expect(chain.client.readContract).toHaveBeenCalledWith(
+        expect.objectContaining({
+          functionName: "historyCount",
+          args: [1n],
+          blockNumber: 123n
+        })
+      );
+    }
+  );
+  it.each([0n, 1n, 3n, 12n])(
     "rejects already graded cards at version %s for any portal",
     async (version) => {
-      await expect(fixture(version).quote(1n, owner, 99n)).rejects.toThrow(
+      await expect(fixture(version, 1n).quote(1n, owner, 99n)).rejects.toThrow(
         "only once"
       );
     }
   );
   it("keeps pending work distinct from a completed grade", async () => {
-    await expect(fixture(0n, 42n).quote(1n, owner)).rejects.toThrow(
+    await expect(fixture(3n, 0n, 42n).quote(1n, owner)).rejects.toThrow(
       "being processed"
     );
   });
