@@ -555,6 +555,84 @@ try {
         !/submission|provider_task|frozen_input|transaction_intent/.test(key)
     )
   );
+  if (process.argv.includes("--evolution")) {
+    const source = "evolution:8453:evolution";
+    const deployment = `8453:${manifest.sources.find((s) => s.id === source).address}`;
+    const cardKey = { id: `${deployment}:card:9` };
+    const jobKey = { id: `${deployment}:job:1` };
+    await dispatch(
+      "YunipalEvolution:EvolutionRequested",
+      {
+        requestId: 1n,
+        parentA: 9n,
+        parentB: 0n,
+        randomnessId: 99n,
+        catalogueVersion: 1,
+        serumId: 121,
+        presenceId: 1
+      },
+      source,
+      100
+    );
+    const beforeFinish = structuredClone(state);
+    const replayIndex = logIndex;
+    const settle = async (finish) => {
+      await dispatch(
+        "YunipalEvolution:EvolutionRandomnessSettled",
+        {
+          requestId: 1n,
+          randomnessId: 99n,
+          presence: 1,
+          finish
+        },
+        source,
+        101
+      );
+      await dispatch(
+        "YunipalEvolution:FinishAssigned",
+        {
+          tokenId: 9n,
+          requestId: 1n,
+          finish
+        },
+        source,
+        102
+      );
+      await dispatch(
+        "YunipalEvolution:EvolutionCompleted",
+        {
+          tokenId: 9n,
+          requestId: 1n,
+          presence: 1,
+          localDoses: 1
+        },
+        source,
+        102
+      );
+    };
+    await settle(3);
+    assert.equal(get(schema.evolutionProjection, cardKey).value.finish, 3);
+    assert.equal(
+      get(schema.evolutionProjection, jobKey).value.status,
+      "completed"
+    );
+    logIndex = replayIndex;
+    await settle(3); // Identical canonical delivery must not append another dose.
+    assert.equal(
+      get(schema.evolutionProjection, cardKey).value.doses.length,
+      1
+    );
+    // Restore the pre-branch fixture, as Ponder's rollback restores these tables.
+    state.clear();
+    for (const [key, value] of beforeFinish) state.set(key, value);
+    logIndex = replayIndex;
+    await settle(2);
+    assert.equal(get(schema.evolutionProjection, cardKey).value.finish, 2);
+    assert.equal(
+      get(schema.evolutionProjection, cardKey).value.doses.length,
+      1
+    );
+  }
   console.log(
     JSON.stringify({
       event: "unified_ponder_callbacks_verified",

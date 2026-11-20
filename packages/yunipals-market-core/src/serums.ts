@@ -2,6 +2,24 @@
 export const serumCatalogueVersion = 1;
 export const serumFee = 100_000n;
 export const maxLocalDoses = 11;
+/** Zero means no finish has been assigned yet, not Normal. */
+export const cardFinishes = [
+  "Unassigned",
+  "Normal",
+  "Golden",
+  "Black"
+] as const;
+export const finishOdds = [
+  { finish: 1, percent: 70 },
+  { finish: 2, percent: 25 },
+  { finish: 3, percent: 5 }
+] as const;
+export const finishDirections = [
+  "Unassigned: preserve the existing card material.",
+  "Normal: pearlescent card frame, purple lettering and the colored Yunipals mascot logo. Standard border width.",
+  "Golden: realistic polished gold frame at the standard border width, integrated embossed gold lettering and gold mascot medallion. No thicker border, geometric patterns or filigree.",
+  "Black: genuinely dark illustration and deep black frame, legible gunmetal lettering and black chrome mascot. Preserve glowing creature details and the settled Presence, including Holy. This is a material finish, not an evil transformation."
+] as const;
 export const serumEssences = [
   "Bloom",
   "Ember",
@@ -124,6 +142,7 @@ export type EvolutionCard = {
   historyHash: `0x${string}`;
   localDoses: number;
   presence: number;
+  finish: number;
   doses: SerumDose[];
   parents: string[];
   nextAdventureAt: number;

@@ -1,4 +1,7 @@
-import { serumPresences } from "@protopals/yunipals-market-core/serums";
+import {
+  cardFinishes,
+  serumPresences
+} from "@protopals/yunipals-market-core/serums";
 import { registerPortalMintRoutes } from "./mint-routes.js";
 import { portalReadiness } from "./readiness.js";
 import { portalHealth } from "./health.js";
@@ -455,6 +458,10 @@ export function registerPortalRoutes(
           { trait_type: "Card kind", value: "Fusion" },
           { trait_type: "Fusion level", value: card.evolution.history.level },
           {
+            trait_type: "Finish",
+            value: cardFinishes[card.evolution.history.finish]
+          },
+          {
             trait_type: "Presence",
             value: serumPresences[card.evolution.history.presence]
           },
@@ -517,6 +524,10 @@ export function registerPortalRoutes(
         { trait_type: "Original", value: original ? "Yes" : "No" },
         ...(card.evolution
           ? [
+              {
+                trait_type: "Finish",
+                value: cardFinishes[card.evolution.history.finish]
+              },
               {
                 trait_type: "Presence",
                 value: serumPresences[card.evolution.history.presence]

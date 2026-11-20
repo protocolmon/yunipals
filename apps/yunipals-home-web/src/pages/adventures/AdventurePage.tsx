@@ -7,6 +7,8 @@ import { formatEther } from "viem";
 import { z } from "zod";
 import {
   adventureOdds,
+  cardFinishes,
+  finishOdds,
   serumRarities,
   serumPresences,
   serumDefinition,
@@ -164,6 +166,37 @@ export function AdventurePage() {
           </section>
           <section className="mt-12">
             <h2 className="font-display text-2xl font-bold">
+              Three collectible finishes
+            </h2>
+            <p className="mt-2 max-w-2xl text-muted">
+              Your first serum reveals a finish that stays through later serums
+              and grading. Every new fusion rolls its own finish, independent of
+              serum rarity and Presence.
+            </p>
+            <div className="mt-5 grid grid-cols-3 gap-3 sm:gap-6">
+              {finishOdds.map(({ finish, percent }) => (
+                <figure key={finish}>
+                  <img
+                    src={`/images/evolution/finishes/${cardFinishes[finish].toLowerCase()}.webp`}
+                    alt={`${cardFinishes[finish]} finish on a Holy dragon concept`}
+                    width={600}
+                    height={900}
+                    loading="lazy"
+                    className="w-full rounded-2xl"
+                  />
+                  <figcaption className="mt-2 text-center text-sm">
+                    {cardFinishes[finish]} · {percent}%
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-muted">
+              Approved finish concepts · not live NFTs. Golden uses the standard
+              border width.
+            </p>
+          </section>
+          <section className="mt-12">
+            <h2 className="font-display text-2xl font-bold">
               A Presence of their own
             </h2>
             <p className="mt-2 max-w-2xl text-muted">
@@ -251,7 +284,7 @@ export function AdventurePage() {
                 </h1>
                 <p className="mt-3 text-lg">
                   {serumPresences[card.presence]} Presence · {card.localDoses}
-                  /11 doses
+                  /11 doses · {cardFinishes[card.finish]} finish
                 </p>
                 {card.graded && (
                   <p className="mt-5 rounded-2xl bg-lavender/20 p-4">
@@ -337,7 +370,10 @@ export function AdventurePage() {
                       <p className="mt-2 text-sm">
                         Presence: {serumPresences[card.presence]} →{" "}
                         {serum.presence}. Physical effects stack, including
-                        repeat doses. The background transforms too.
+                        repeat doses. The background transforms too.{" "}
+                        {card.finish === 0
+                          ? "Your first dose also rolls a finish; the ETH randomness cost is quoted before signing."
+                          : `Your ${cardFinishes[card.finish]} finish stays.`}
                       </p>
                       <button
                         className={cn(adventureButton, "mt-4")}
@@ -470,7 +506,7 @@ export function AdventurePage() {
                   : progress?.status === "completed"
                     ? "Transformation complete."
                     : progress?.status === "randomness"
-                      ? "Waiting for the fusion's Presence to settle…"
+                      ? "Waiting for the finish and transformation randomness to settle…"
                       : actions.pending?.requestId
                         ? "Request accepted. Your card will update automatically."
                         : "Transaction sent. Waiting for confirmation…")}
@@ -542,6 +578,14 @@ export function AdventurePage() {
                   ]
                 }
                 . Earlier physical effects remain.
+              </p>
+            )}
+            {actions.review.quote.kind !== "adventure" && (
+              <p className="mt-4 text-sm">
+                {actions.review.quote.kind === "fusion" ||
+                actions.review.quote.cards[0].finish === 0
+                  ? "New finish: Normal 70% · Golden 25% · Black 5%. This result stays through later serums and grading. Retrying generation never rerolls it."
+                  : `Finish stays ${cardFinishes[actions.review.quote.cards[0].finish]}; no new finish roll.`}
               </p>
             )}
             <p className="mt-4 font-semibold">

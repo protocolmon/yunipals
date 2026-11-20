@@ -33,6 +33,7 @@ const leaf = (id: string): EvolutionHistory => ({
   tokenId: id,
   level: 0,
   presence: 1,
+  finish: 3,
   doses: [dose],
   parents: []
 });
@@ -48,6 +49,7 @@ describe("evolution generation", () => {
       tokenId: String(++next),
       level,
       presence: 1,
+      finish: 3,
       doses: Array.from({ length: 11 }, () => ({ ...dose })),
       parents: level ? [tree(level - 1), tree(level - 1)] : []
     });
@@ -62,12 +64,16 @@ describe("evolution generation", () => {
         parents: [history.parents[0], history.parents[0]]
       })
     ).toThrow();
-    const prompt = JSON.parse(evolutionPrompt([leaf("1"), leaf("2")], 0));
+    const prompt = JSON.parse(evolutionPrompt([leaf("1"), leaf("2")], 0, 3));
     expect(prompt.resultingPresence).toBe("Neutral");
+    expect(prompt.resultingFinish).toBe("Black");
+    expect(() => evolutionPrompt([leaf("1")], 1, 2, dose)).toThrow(
+      "cannot change"
+    );
     expect(prompt.inputImageOrder).toEqual(["1", "2"]);
     expect(prompt.background).toContain("No bottle");
-    expect(evolutionPrompt([leaf("1")], 1, dose)).toContain("Holy");
-    expect(() => evolutionPrompt([leaf("1")], 2, dose)).toThrow();
+    expect(evolutionPrompt([leaf("1")], 1, 3, dose)).toContain("Holy");
+    expect(() => evolutionPrompt([leaf("1")], 2, 3, dose)).toThrow();
     expect(evolutionRenderingHash(portalModels)).not.toBe(
       evolutionRenderingHash({ ...portalModels, imageQuality: "changed" })
     );
@@ -152,7 +158,8 @@ describe("evolution generation", () => {
         completed: false,
         inputA: input,
         inputB: input,
-        resultPresence: 0
+        resultPresence: 0,
+        resultFinish: 2
       };
       const chain = {
         cards: "cards",
@@ -195,6 +202,20 @@ describe("evolution generation", () => {
       await expect(worker.process(job)).rejects.toThrow("RPC failure");
       expect(ai.editImages).toHaveBeenCalledTimes(1);
       expect(job.progress.artifact?.metadataHash).toBeTruthy();
+      const metadata = JSON.parse(
+        (
+          await assets.read(
+            job.progress.artifact!.metadataHash.slice(2),
+            "json"
+          )
+        ).toString()
+      );
+      expect(metadata.attributes).toContainEqual({
+        trait_type: "Finish",
+        value: "Golden"
+      });
+      expect(metadata.evolution.finish).toBe(2);
+      expect(JSON.parse(job.progress.prompt!).resultingFinish).toBe("Golden");
       await worker.process(job);
       expect(ai.editImages).toHaveBeenCalledTimes(1);
       expect(submit).toHaveBeenCalledTimes(2);
@@ -460,6 +481,8 @@ describe("evolution generation", () => {
     expect(prompt).toContain("Holy eyes");
     expect(prompt).toContain("matching gate witness");
     expect(prompt).toContain("fused ancestry");
+    expect(prompt).toContain("assigned Black finish");
+    expect(prompt).toContain("even if the spell asks to replace it");
     const context = {
       portalKindId: "1",
       baseColor: "Black" as const,

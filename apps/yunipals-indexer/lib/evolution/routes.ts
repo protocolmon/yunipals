@@ -10,6 +10,8 @@ import {
 import {
   adventureOdds,
   serumCatalogue,
+  cardFinishes,
+  finishOdds,
   serumPresences,
   serumFee,
   fusionCompatible
@@ -154,6 +156,8 @@ export function registerEvolutionRoutes(
         fee: serumFee,
         catalogue: serumCatalogue,
         presences: serumPresences,
+        finishes: cardFinishes,
+        finishOdds,
         block: ctx.block,
         hash: ctx.hash
       }))
@@ -334,7 +338,8 @@ export function registerEvolutionRoutes(
         });
         const needsVrf =
           kind === "adventure" ||
-          (kind === "fusion" && a.presence !== b.presence);
+          kind === "fusion" ||
+          (kind === "serum" && a.finish === 0);
         const vrf = needsVrf
           ? await r.chain.client.readContract({
               address: target,
@@ -370,7 +375,7 @@ export function registerEvolutionRoutes(
           data = encodeFunctionData({
             abi: evolutionAbi,
             functionName: "consumeSerum",
-            args: [id, expected(a), a.unused!, deadline]
+            args: [id, expected(a), a.unused!, maximum, deadline]
           });
         else
           data = encodeFunctionData({

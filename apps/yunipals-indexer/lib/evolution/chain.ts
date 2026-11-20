@@ -123,6 +123,7 @@ export class EvolutionChain {
         tokenId: id.toString(),
         level: fusion.level,
         presence: state[2],
+        finish: state[4],
         doses,
         parents: fusion.level
           ? await Promise.all([
@@ -292,6 +293,7 @@ export class EvolutionChain {
       artVersion: state[0].toString(),
       localDoses: state[1],
       presence: state[2],
+      finish: state[4],
       historyHash: state[3],
       nextAdventureAt: Number(next),
       unused: unused.serumId ? unused : null,

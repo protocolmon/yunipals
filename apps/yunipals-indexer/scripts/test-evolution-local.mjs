@@ -597,12 +597,25 @@ try {
     .getByRole("button", { name: "Confirm in wallet", exact: true })
     .click();
   await page.waitForFunction(() => !document.querySelector("dialog[open]"));
+  const serumJob = await client.readContract({
+    address: evolution,
+    abi: evolutionAbi,
+    functionName: "requestCount"
+  });
+  const serumRequest = await chain.request(serumJob);
+  assert.ok(serumRequest.randomnessId > 0n);
+  await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [
+    serumRequest.randomnessId,
+    321n
+  ]);
   await worker.tick();
   await worker.tick();
   assert.equal(generated, 1);
   assert.deepEqual(inputs, [1]);
   const enhanced = (await get("/cards/1")).card;
   assert.equal(enhanced.localDoses, 1);
+  assert.ok(enhanced.finish >= 1 && enhanced.finish <= 3);
+  assert.equal(enhanced.history.finish, enhanced.finish);
   assert.equal(enhanced.graded, false);
   await page.reload();
   await page

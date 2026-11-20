@@ -25,6 +25,7 @@ export type DoseHistory = {
   tokenId: string;
   level: number;
   presence: number;
+  finish: number;
   doses: z.infer<typeof dose>[];
   parents: DoseHistory[];
 };
@@ -33,6 +34,7 @@ const history: z.ZodType<DoseHistory> = z.lazy(() =>
     tokenId: uint,
     level: z.number().int().min(0).max(2),
     presence: z.number().int().min(0).max(11),
+    finish: z.number().int().min(0).max(3),
     doses: z.array(dose).max(11),
     parents: z.array(history).max(2)
   })
@@ -64,6 +66,7 @@ export const evolutionCardSchema = z.object({
   historyHash: hash,
   localDoses: z.number().int().min(0).max(11),
   presence: z.number().int().min(0).max(11),
+  finish: z.number().int().min(0).max(3),
   history,
   nextAdventureAt: z.number().int(),
   unused: dose.nullable(),
@@ -197,7 +200,13 @@ export function validateEvolutionQuote(
     kind === "adventure"
       ? [BigInt(tokenId), args[1], BigInt(quote.value), BigInt(quote.deadline)]
       : kind === "serum"
-        ? [BigInt(tokenId), expected(a), a.unused, BigInt(quote.deadline)]
+        ? [
+            BigInt(tokenId),
+            expected(a),
+            a.unused,
+            BigInt(quote.value),
+            BigInt(quote.deadline)
+          ]
         : [
             BigInt(a.tokenId),
             BigInt(b.tokenId),
@@ -209,8 +218,7 @@ export function validateEvolutionQuote(
   if (
     decoded.functionName !== expectedName ||
     normalize(args) !== normalize(required) ||
-    (kind === "serum" && quote.value !== "0") ||
-    (kind === "fusion" && a.presence === b.presence && quote.value !== "0")
+    (kind === "serum" && a.finish !== 0 && quote.value !== "0")
   )
     throw new Error(
       "The quote's transaction does not match the reviewed action."

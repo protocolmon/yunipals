@@ -64,7 +64,12 @@ export async function applyEvolutionEvent(
       (v) => String(v) !== "0"
     ))
       await update("card", String(parent), { pendingEvolution: request });
-  } else if (name === "FusionPresenceSettled") {
+  } else if (name === "FinishAssigned") {
+    await update("card", token, { finish: a.finish });
+  } else if (
+    name === "FusionPresenceSettled" ||
+    name === "EvolutionRandomnessSettled"
+  ) {
     await update("job", request, { ...a, status: "generating" });
   } else if (name === "EvolutionCompleted") {
     const job = await store.get("job", request);

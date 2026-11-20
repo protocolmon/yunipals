@@ -2,6 +2,7 @@ import { dialogButtonVariants } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
+  cardFinishes,
   serumPresences,
   serumDefinition
 } from "@protopals/yunipals-market-core/serums";
@@ -36,7 +37,7 @@ export function AdventureCardTile({
           {card.level ? `Fusion ${card.level}` : "Yunipal"} #{card.tokenId}
         </p>
         <p className="mt-1 text-sm text-muted">
-          {serumPresences[card.presence]} ·{" "}
+          {serumPresences[card.presence]} · {cardFinishes[card.finish]} finish ·{" "}
           {card.graded ? "Graded" : `${card.localDoses}/11 doses`}
         </p>
       </div>
@@ -121,7 +122,8 @@ export function SerumHistory({ history }: { history: DoseHistory }) {
     <div className="space-y-3 rounded-2xl border border-line p-4">
       <p className="font-semibold">
         {history.level ? `Fusion ${history.level}` : "Source"} #
-        {history.tokenId} · {history.doses.length}/11 local doses
+        {history.tokenId} · {history.doses.length}/11 local doses ·{" "}
+        {cardFinishes[history.finish]} finish
       </p>
       {history.doses.length ? (
         <ol className="list-inside list-decimal space-y-1 text-sm">

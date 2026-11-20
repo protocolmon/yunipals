@@ -157,6 +157,21 @@ describe("approved evolution rules", () => {
       randomnessId: "55",
       presence: 0
     });
+    await applyEvolutionEvent(store, "EvolutionRandomnessSettled", {
+      requestId: "12",
+      randomnessId: "55",
+      presence: 0,
+      finish: 3
+    });
+    expect(await store.get("job", "12")).toMatchObject({
+      status: "generating",
+      finish: 3
+    });
+    await applyEvolutionEvent(store, "FinishAssigned", {
+      tokenId: "3",
+      requestId: "12",
+      finish: 3
+    });
     await applyEvolutionEvent(store, "FusionMinted", {
       tokenId: "3",
       parentA: "1",
@@ -177,6 +192,7 @@ describe("approved evolution rules", () => {
     });
     expect(await store.get("card", "3")).toMatchObject({
       level: 1,
+      finish: 3,
       doses: [],
       presence: 0
     });

@@ -190,6 +190,7 @@ export type PortalAIContext = {
       tokenId: string;
       level: number;
       presence: number;
+      finish: number;
       doses: readonly import("./serums.js").SerumDose[];
       parents: unknown[];
     };

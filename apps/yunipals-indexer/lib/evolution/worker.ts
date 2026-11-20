@@ -4,6 +4,7 @@ import type { PortalAssets } from "../portals/assets.js";
 import type { OpenAIPortalAI } from "../portals/provider.js";
 import { EvolutionReader } from "../../../../packages/yunipals-indexer-server/src/evolution.js";
 import {
+  cardFinishes,
   serumDefinition,
   serumPresences
 } from "@protopals/yunipals-market-core/serums";
@@ -188,6 +189,7 @@ export class EvolutionWorker {
       job.progress.prompt = evolutionPrompt(
         parents,
         request.resultPresence,
+        request.resultFinish,
         request.parentB === 0n ? request.dose : undefined
       );
       await this.store.save(job);
@@ -230,6 +232,7 @@ export class EvolutionWorker {
         attributes: [
           { trait_type: "Card kind", value: level ? "Fusion" : "Base" },
           { trait_type: "Fusion level", value: level },
+          { trait_type: "Finish", value: cardFinishes[request.resultFinish] },
           {
             trait_type: "Presence",
             value: serumPresences[request.resultPresence]
@@ -253,6 +256,7 @@ export class EvolutionWorker {
           sources,
           parents,
           appliedDose: serum ? request.dose : null,
+          finish: request.resultFinish,
           presence: request.resultPresence
         }
       });

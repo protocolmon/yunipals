@@ -204,7 +204,7 @@ contract EvolutionTest is Test {
     }
 
     function expected(uint256 id) private view returns (YunipalEvolution.Expected memory e) {
-        (e.artVersion,,, e.historyHash) = evolution.state(id);
+        (e.artVersion,,, e.historyHash,) = evolution.state(id);
     }
 
     function fuse(uint256 a, uint256 b) private returns (uint256 job) {
@@ -215,6 +215,7 @@ contract EvolutionTest is Test {
     }
 
     function complete(uint256 job) private returns (uint256) {
+        if (!evolution.getRequest(job).ready) wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
         return evolution.complete(
             job,
             evolution.requestBinding(job),
@@ -257,7 +258,8 @@ contract EvolutionTest is Test {
         YunipalEvolution.Expected memory e = expected(id);
         SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
         vm.prank(ALICE);
-        job = evolution.consumeSerum(id, e, dose, uint64(block.timestamp));
+        job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 0.001 ether, uint64(block.timestamp));
+        if (!evolution.getRequest(job).ready) wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
     }
 
     function testFuzzDoseEscrowAndReplay(uint8 rawCount, uint32 delaySeconds) public {
@@ -283,6 +285,59 @@ contract EvolutionTest is Test {
                 YunipalEvolution.Artifact("ipfs://evolved", keccak256("art"), "ipfs://metadata", keccak256("metadata"))
             );
             assertEq(usdc.balanceOf(FEES), (i + 1) * 100_000);
+        }
+    }
+
+    function testFinishWaitsForVrfAndPersistsAcrossDosesTransferAndGrade() public {
+        uint256 id = original();
+        findSerum(id);
+        YunipalEvolution.Expected memory e = expected(id);
+        SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
+        uint256 balance = ALICE.balance;
+        vm.prank(ALICE);
+        vm.expectRevert("VRF price exceeds budget");
+        evolution.consumeSerum(id, e, dose, 0, uint64(block.timestamp));
+        assertEq(cards.cardReservation(id), address(0));
+        assertEq(evolution.requestCount(), 0);
+        vm.prank(ALICE);
+        uint256 job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 0.001 ether, uint64(block.timestamp));
+        assertEq(ALICE.balance, balance - wrapper.PRICE());
+        YunipalEvolution.Request memory request = evolution.getRequest(job);
+        assertFalse(request.ready);
+        vm.expectRevert("randomness pending");
+        evolution.requestBinding(job);
+        wrapper.fulfill(request.randomnessId, 777);
+        request = evolution.getRequest(job);
+        assertTrue(request.ready, "settlement must fit callback gas");
+        uint8 finish = request.resultFinish;
+        assertGe(finish, 1);
+        assertLe(finish, 3);
+        bytes32 binding = evolution.requestBinding(job);
+        wrapper.fulfill(request.randomnessId, 999);
+        evolution.settlePresence(request.randomnessId);
+        assertEq(evolution.requestBinding(job), binding, "cannot reroll");
+        complete(job);
+        (,,,, uint8 assigned) = evolution.state(id);
+        assertEq(assigned, finish);
+        findSerum(id);
+        uint256 previousVrf = wrapper.nextId();
+        balance = ALICE.balance;
+        job = drink(id);
+        assertEq(wrapper.nextId(), previousVrf, "later serum does not request VRF");
+        assertEq(ALICE.balance, balance, "unused ETH refunded");
+        assertEq(evolution.getRequest(job).resultFinish, finish);
+        complete(job);
+        vm.prank(ALICE);
+        cards.transferFrom(ALICE, BOB, id);
+        grading.setGraded(id);
+        (,,,, assigned) = evolution.state(id);
+        assertEq(assigned, finish);
+    }
+
+    function testFinishThresholds() public view {
+        // Values >= 100 avoid uniform()'s low-value rejection region.
+        for (uint256 roll; roll < 100; ++roll) {
+            assertEq(evolution.drawFinish(bytes32(100 + roll)), roll < 70 ? 1 : roll < 95 ? 2 : 3);
         }
     }
 
@@ -347,7 +402,7 @@ contract EvolutionTest is Test {
         assertEq(cards.cardReservation(id), address(evolution));
         vm.warp(block.timestamp + 100 days);
         complete(job);
-        (uint64 version, uint8 doses, uint8 current,) = evolution.state(id);
+        (uint64 version, uint8 doses, uint8 current,,) = evolution.state(id);
         assertEq(version, 1);
         assertEq(doses, 1);
         assertEq(current, presence);
@@ -367,7 +422,7 @@ contract EvolutionTest is Test {
         uint256 b = child(a, 1);
         uint256 beforeVrf = wrapper.nextId();
         uint256 job = fuse(a, b);
-        assertEq(wrapper.nextId(), beforeVrf, "neutral parents need no VRF");
+        assertEq(wrapper.nextId(), beforeVrf + 1, "every fusion needs a new finish roll");
         assertEq(cards.ownerOf(a), ALICE);
         assertEq(cards.ownerOf(b), ALICE);
         uint256 interleaved = original();
@@ -378,6 +433,10 @@ contract EvolutionTest is Test {
         vm.expectRevert();
         cards.ownerOf(b);
         assertEq(cards.ownerOf(result), ALICE);
+        (,,,, uint8 finish) = evolution.state(result);
+        assertEq(finish, evolution.getRequest(job).resultFinish);
+        assertGe(finish, 1);
+        assertLe(finish, 3);
         assertEq(cards.fusion(result).level, 1);
         assertEq(cards.fusion(result).sources[0], a);
         (, uint256 fakeOriginal,,,) = cards.provenance(result);
@@ -420,7 +479,7 @@ contract EvolutionTest is Test {
         assertTrue(request.resultPresence == request.presenceA || request.resultPresence == 0);
         uint256 f = complete(job);
         assertEq(adventures.nextAdventureAt(f), cooldown);
-        (, uint8 doses, uint8 presence, bytes32 history) = evolution.state(f);
+        (, uint8 doses, uint8 presence, bytes32 history,) = evolution.state(f);
         assertEq(doses, 0);
         assertEq(presence, request.resultPresence);
         assertTrue(history != bytes32(0));
@@ -459,13 +518,13 @@ contract EvolutionTest is Test {
         SerumCatalogue.Dose memory dose = adventures.unusedSerum(a);
         vm.prank(ALICE);
         vm.expectRevert("dose limit reached");
-        evolution.consumeSerum(a, e, dose, uint64(block.timestamp));
+        evolution.consumeSerum(a, e, dose, 0, uint64(block.timestamp));
         uint256 job = fuse(a, b);
         wrapper.fulfill(evolution.getRequest(job).randomnessId, 0);
         uint256 f = complete(job);
         findSerum(f);
         complete(drink(f));
-        (, uint8 local,,) = evolution.state(f);
+        (, uint8 local,,,) = evolution.state(f);
         assertEq(local, 1);
         assertEq(evolution.doses(a).length, 11);
     }

@@ -33,6 +33,7 @@ contract YunipalEvolution is PortalRandomness {
         uint8 localDoses;
         uint8 presence;
         bytes32 historyHash;
+        uint8 finish; // 0 unassigned, 1 Normal, 2 Golden, 3 Black.
     }
 
     struct Expected {
@@ -64,6 +65,7 @@ contract YunipalEvolution is PortalRandomness {
         bool ready;
         bool completed;
         uint256 resultTokenId;
+        uint8 resultFinish;
     }
 
     YunipalMonsters public cards;
@@ -105,6 +107,8 @@ contract YunipalEvolution is PortalRandomness {
         bytes32 metadataHash,
         string metadataURI
     );
+    event EvolutionRandomnessSettled(uint256 indexed requestId, uint256 indexed randomnessId, uint8 presence, uint8 finish);
+    event FinishAssigned(uint256 indexed tokenId, uint256 indexed requestId, uint8 finish);
     event RequestsPaused(bool paused);
 
     constructor() {
@@ -173,8 +177,9 @@ contract YunipalEvolution is PortalRandomness {
         uint256 tokenId,
         Expected calldata expected,
         SerumCatalogue.Dose calldata dose,
+        uint256 maxVrfPrice,
         uint64 deadline
-    ) external nonReentrant returns (uint256 id) {
+    ) external payable nonReentrant returns (uint256 id) {
         _checkRequest(deadline);
         require(state[tokenId].localDoses < 11, "dose limit reached");
         SerumCatalogue.Dose memory unused = adventures.unusedSerum(tokenId);
@@ -190,12 +195,19 @@ contract YunipalEvolution is PortalRandomness {
         request.dose = dose;
         request.presenceA = state[tokenId].presence;
         request.resultPresence = dose.presenceId;
-        request.ready = true;
+        request.resultFinish = state[tokenId].finish;
+        request.ready = request.resultFinish != 0;
         pendingRequest[tokenId] = id;
         _collectFee();
+        uint256 paid;
+        if (!request.ready) {
+            (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);
+            randomnessJob[request.randomnessId] = id;
+        }
         emit EvolutionRequested(
-            id, tokenId, 0, msg.sender, 0, renderingPolicy, dose.catalogueVersion, dose.serumId, dose.presenceId
+            id, tokenId, 0, msg.sender, request.randomnessId, renderingPolicy, dose.catalogueVersion, dose.serumId, dose.presenceId
         );
+        _refundExcess(paid);
     }
 
     function fuse(
@@ -228,15 +240,10 @@ contract YunipalEvolution is PortalRandomness {
         pendingRequest[b] = id;
         _collectFee();
         uint256 paid;
-        if (request.presenceA == request.presenceB) {
-            request.resultPresence = request.presenceA;
-            request.ready = true;
-        } else {
-            (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);
-            randomnessJob[request.randomnessId] = id;
-        }
+        // Every new fusion rolls a finish, even when parent Presences match.
+        (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);
+        randomnessJob[request.randomnessId] = id;
         emit EvolutionRequested(id, a, b, msg.sender, request.randomnessId, renderingPolicy, 0, 0, 0);
-        if (request.ready) emit FusionPresenceSettled(id, 0, request.resultPresence);
         _refundExcess(paid);
     }
 
@@ -266,9 +273,20 @@ contract YunipalEvolution is PortalRandomness {
                 randomRequests[randomnessId].seed
             )
         );
-        request.resultPresence = PortalGates.uniform(entropy, 2) == 0 ? request.presenceA : request.presenceB;
+        if (request.parentB != 0) {
+            request.resultPresence = PortalGates.uniform(keccak256(abi.encode("presence", entropy)), 2) == 0
+                ? request.presenceA : request.presenceB;
+            emit FusionPresenceSettled(id, randomnessId, request.resultPresence);
+        }
+        request.resultFinish = drawFinish(keccak256(abi.encode("finish", entropy)));
         request.ready = true;
-        emit FusionPresenceSettled(id, randomnessId, request.resultPresence);
+        emit EvolutionRandomnessSettled(id, randomnessId, request.resultPresence, request.resultFinish);
+    }
+
+    /// @notice Domain-separated VRF entropy; exact 70/25/5 probabilities with rejection sampling.
+    function drawFinish(bytes32 entropy) public pure returns (uint8) {
+        uint256 roll = PortalGates.uniform(entropy, 100);
+        return roll < 70 ? 1 : roll < 95 ? 2 : 3;
     }
 
     function complete(uint256 id, bytes32 binding, Artifact calldata artifact)
@@ -301,6 +319,13 @@ contract YunipalEvolution is PortalRandomness {
             state[tokenId].historyHash = keccak256(abi.encode("dose", request.beforeA.historyHash, request.dose));
             adventures.clearSerum(tokenId);
             cards.releaseCard(tokenId);
+        }
+        if (state[tokenId].finish == 0) {
+            require(request.resultFinish >= 1 && request.resultFinish <= 3, "finish unavailable");
+            state[tokenId].finish = request.resultFinish;
+            emit FinishAssigned(tokenId, id, request.resultFinish);
+        } else {
+            require(state[tokenId].finish == request.resultFinish, "finish changed");
         }
         state[tokenId].presence = request.resultPresence;
         _artifacts[tokenId] = artifact;
