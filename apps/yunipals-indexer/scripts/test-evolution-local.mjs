@@ -210,10 +210,22 @@ try {
       await client.getCode({ address: multicallReceipt.contractAddress })
     ]
   });
-  await client.request({
-    method: "anvil_mine",
-    params: [toHex(base.contracts.multicall3.blockCreated)]
-  });
+  // Wallet multicalls use Base's deployment-height guard. Reach that height in
+  // bounded requests: mining all 5,022 blocks at once can time out on CI runners.
+  const multicallHeight = BigInt(base.contracts.multicall3.blockCreated);
+  const beforeMining = await client.getBlockNumber({ cacheTime: 0 });
+  for (let remaining = multicallHeight; remaining > 0n; ) {
+    const batch = remaining > 128n ? 128n : remaining;
+    await client.request(
+      { method: "anvil_mine", params: [toHex(batch)] },
+      { retryCount: 0 }
+    );
+    remaining -= batch;
+  }
+  assert.equal(
+    await client.getBlockNumber({ cacheTime: 0 }),
+    beforeMining + multicallHeight
+  );
   const packs = await proxy("PackRegistry", [account.address]);
   cards = await proxy("YunipalMonsters", [account.address, packs]);
   const engine = await deploy("Evolution.t:EvolutionTestEngine", [packs]);
