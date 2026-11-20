@@ -249,6 +249,208 @@ describe("evolution generation", () => {
     expect(ai.editImages).not.toHaveBeenCalled();
     expect(reads).toHaveBeenCalledTimes(3);
   });
+  it("reopens a reorganized completion with the same saved artwork and an exclusive lease", async () => {
+    const db = new PGlite();
+    try {
+      await db.exec(evolutionWorkerSchema);
+      const store = new EvolutionStore(
+        db as unknown as Pick<Pool, "query">,
+        "8453:evolution"
+      );
+      let completed = true;
+      const ai = { policy: portalModels, editImages: vi.fn() };
+      const submit = vi.fn(async () => otherHash);
+      const chain = {
+        cards: "cards",
+        adventures: "adventures",
+        assertBindings: async () => {},
+        binding: async () => hash,
+        request: async () => ({ ready: true, completed }),
+        client: { getBlock: async () => ({ hash }) }
+      } as unknown as EvolutionChain;
+      const policy = evolutionRenderingHash(portalModels);
+      const reader = {
+        // The batch can precede the completion observed in process()'s snapshot.
+        jobs: async () => ({
+          rows: [{ value: { requestId: "1", renderingPolicy: policy } }],
+          block: 100n,
+          hash
+        }),
+        snapshot: async (
+          read: (db: unknown, context: unknown) => Promise<unknown>
+        ) =>
+          read(null, {
+            deployment: store.deployment,
+            cards: "cards",
+            adventures: "adventures",
+            block: 101n,
+            hash
+          })
+      } as unknown as EvolutionReader;
+      const artifact = {
+        uri: "https://example.invalid/art.png",
+        hash,
+        metadataURI: "https://example.invalid/art.json",
+        metadataHash: otherHash
+      };
+      const cached = (await store.claim("1", hash, policy))!;
+      cached.progress = {
+        parents: [leaf("1"), leaf("2")],
+        prompt: "saved prompt",
+        image: {
+          uri: artifact.uri,
+          hash,
+          model: portalModels.image,
+          usage: null
+        },
+        artifact
+      };
+      await store.save(cached);
+      const worker = new EvolutionWorker(
+        reader,
+        chain,
+        store,
+        {} as PortalAssets,
+        ai,
+        submit
+      );
+      await worker.process(cached);
+      expect(
+        (
+          await db.query<{ completed: boolean }>(
+            "SELECT completed FROM evolution_v1_job"
+          )
+        ).rows[0].completed
+      ).toBe(true);
+
+      // Only completion is rolled back, so requestBinding and paid output survive.
+      completed = false;
+      await worker.tick();
+      expect(submit).toHaveBeenCalledExactlyOnceWith(1n, hash, artifact);
+      expect(ai.editImages).not.toHaveBeenCalled();
+      const row = (
+        await db.query<{
+          completed: boolean;
+          progress: typeof cached.progress;
+        }>("SELECT completed,progress FROM evolution_v1_job")
+      ).rows[0];
+      expect(row.completed).toBe(false);
+      expect(row.progress.artifact).toEqual(artifact);
+
+      await db.query(
+        "UPDATE evolution_v1_job SET retry_at=now()-interval '1 second'"
+      );
+      const lease = (await store.claim("1", hash, policy))!;
+      expect(lease.progress.artifact).toEqual(artifact);
+      expect(await store.claim("1", hash, policy)).toBeNull();
+      await expect(store.save(cached)).rejects.toThrow("lease lost");
+    } finally {
+      await db.close();
+    }
+  });
+  it("backs off one failed settlement while continuing other settlements and artwork", async () => {
+    let now = 1000;
+    const clock = vi.spyOn(Date, "now").mockImplementation(() => now);
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      let failing = true;
+      const policy = evolutionRenderingHash(portalModels);
+      const reader = {
+        unsettled: async (domain: string) => ({
+          rows:
+            domain === "adventure"
+              ? [{ value: { requestId: "7" } }, { value: { requestId: "8" } }]
+              : [{ value: { requestId: "9", randomnessId: "19" } }],
+          block: 100n,
+          hash
+        }),
+        jobs: async () => ({
+          rows: [{ value: { requestId: "11", renderingPolicy: policy } }],
+          block: 100n,
+          hash
+        })
+      } as unknown as EvolutionReader;
+      const chain = {
+        adventures: "adventures",
+        evolution: "evolution",
+        assertBindings: async () => {},
+        binding: async () => hash,
+        client: {
+          getBlock: async () => ({ hash }),
+          readContract: async () => [0n, true, true]
+        }
+      } as unknown as EvolutionChain;
+      const settle = vi.fn(async (_kind: string, id: bigint) => {
+        if (id === 7n && failing)
+          throw new Error("provider secret must not be logged");
+        return otherHash;
+      });
+      const store = {
+        claim: async () => ({ requestId: "11" })
+      } as unknown as EvolutionStore;
+      const worker = new EvolutionWorker(
+        reader,
+        chain,
+        store,
+        {} as PortalAssets,
+        { policy: portalModels, editImages: vi.fn() },
+        undefined,
+        settle
+      );
+      const process = vi.spyOn(worker, "process").mockResolvedValue();
+      await worker.tick();
+      expect(settle.mock.calls).toEqual([
+        ["adventure", 7n],
+        ["adventure", 8n],
+        ["fusion", 19n]
+      ]);
+      await worker.tick();
+      expect(settle.mock.calls.filter(([, id]) => id === 7n)).toHaveLength(1);
+      now += 10_000;
+      await worker.tick();
+      expect(settle.mock.calls.filter(([, id]) => id === 7n)).toHaveLength(2);
+      now += 10_000;
+      await worker.tick();
+      expect(settle.mock.calls.filter(([, id]) => id === 7n)).toHaveLength(2);
+      failing = false;
+      now += 10_000;
+      await worker.tick();
+      expect(settle.mock.calls.filter(([, id]) => id === 7n)).toHaveLength(3);
+      expect(process).toHaveBeenCalledTimes(5);
+      expect(log).toHaveBeenCalledTimes(2);
+      expect(JSON.stringify(log.mock.calls)).not.toContain("provider secret");
+    } finally {
+      clock.mockRestore();
+      log.mockRestore();
+    }
+  });
+  it("still stops settlement and generation when the confirmed branch changes", async () => {
+    const jobs = vi.fn();
+    const reader = {
+      unsettled: async () => ({
+        rows: [{ value: { requestId: "7" } }],
+        block: 100n,
+        hash
+      }),
+      jobs
+    } as unknown as EvolutionReader;
+    const chain = {
+      client: { getBlock: async () => ({ hash: otherHash }) }
+    } as unknown as EvolutionChain;
+    const settle = vi.fn();
+    const worker = new EvolutionWorker(
+      reader,
+      chain,
+      {} as EvolutionStore,
+      {} as PortalAssets,
+      { policy: portalModels, editImages: vi.fn() },
+      undefined,
+      settle
+    );
+    await expect(worker.tick()).rejects.toThrow("Settlement branch changed");
+    expect(settle).not.toHaveBeenCalled();
+    expect(jobs).not.toHaveBeenCalled();
+  });
   it("portal edits preserve evolved features and use the real gate witness", () => {
     const prompt = portalImagePrompt(portalModels, "Add a constellation", {
       portalKindId: "1",

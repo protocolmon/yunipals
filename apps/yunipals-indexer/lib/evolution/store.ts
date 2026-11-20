@@ -37,6 +37,10 @@ export class EvolutionStore {
     readonly db: Pick<Pool, "query">,
     readonly deployment: string
   ) {}
+  /** Claim only requests returned by the canonical outstanding-job reader.
+   * A prior completion may have been reorganized away; retain its paid outputs
+   * and let the worker revalidate the binding and chain state before reuse.
+   */
   async claim(
     requestId: string,
     binding: Hex,
@@ -48,10 +52,10 @@ export class EvolutionStore {
       [this.deployment, requestId, binding, policy]
     );
     const result = await this.db.query<EvolutionJob>(
-      `UPDATE evolution_v1_job SET lease=$5,
+      `UPDATE evolution_v1_job SET lease=$5, completed=false,
       lease_until=now()+interval '15 minutes', attempts=attempts+1
       WHERE deployment=$1 AND request_id=$2 AND binding=$3 AND policy=$4
-      AND NOT completed AND retry_at<=now() AND (lease_until IS NULL OR lease_until<now())
+      AND (completed OR retry_at<=now()) AND (lease_until IS NULL OR lease_until<now())
       RETURNING request_id::text AS "requestId",binding,policy,lease,attempts,progress`,
       [this.deployment, requestId, binding, policy, randomUUID()]
     );

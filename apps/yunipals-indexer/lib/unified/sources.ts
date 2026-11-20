@@ -382,6 +382,12 @@ export function buildSourceManifest(
       baseCollection.address !== collection?.address
     )
       throw new Error("Evolution must use the registered booster collection.");
+    // Evolution reads transfers at the same confirmed boundary as its own events.
+    // Keep legacy source history and subscriptions unchanged when enabling it.
+    baseCollection.policies = [
+      ...baseCollection.policies,
+      { kind: "depth", subsequentBlocks: 12 }
+    ];
     if (
       !sources.some(
         (item) => item.id === "portals:8453:grading" && item.enabled

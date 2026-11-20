@@ -17,6 +17,10 @@ import type {
 
 export class EvolutionWorker {
   readonly policy: Hex;
+  private readonly settlementRetries = new Map<
+    string,
+    { attempts: number; retryAt: number }
+  >();
   constructor(
     readonly reader: EvolutionReader,
     readonly chain: EvolutionChain,
@@ -36,6 +40,7 @@ export class EvolutionWorker {
     this.policy = evolutionRenderingHash(ai.policy);
   }
   async tick() {
+    const pendingSettlements = new Set<string>();
     if (this.settle)
       for (const domain of ["adventure", "job"] as const) {
         let after = 0n;
@@ -57,22 +62,50 @@ export class EvolutionWorker {
               domain === "adventure"
                 ? this.chain.adventures
                 : this.chain.evolution;
-            const proof = await this.chain.client.readContract({
-              address,
-              abi: adventureAbi,
-              functionName: "randomRequests",
-              args: [id],
-              blockNumber: batch.block
-            });
-            if (proof[2])
-              await this.settle(
-                domain === "adventure" ? "adventure" : "fusion",
-                id
+            const key = `${domain}:${id}`;
+            pendingSettlements.add(key);
+            const retry = this.settlementRetries.get(key);
+            if (retry && retry.retryAt > Date.now()) continue;
+            try {
+              const proof = await this.chain.client.readContract({
+                address,
+                abi: adventureAbi,
+                functionName: "randomRequests",
+                args: [id],
+                blockNumber: batch.block
+              });
+              if (proof[2])
+                await this.settle(
+                  domain === "adventure" ? "adventure" : "fusion",
+                  id
+                );
+              this.settlementRetries.delete(key);
+            } catch {
+              // A failed settlement must not hold up other reservations. The
+              // transaction journal retains signed bytes across retries/restarts.
+              const attempts = (retry?.attempts ?? 0) + 1;
+              this.settlementRetries.set(key, {
+                attempts,
+                retryAt:
+                  Date.now() +
+                  Math.min(3_600_000, 5000 * 2 ** Math.min(10, attempts))
+              });
+              console.error(
+                JSON.stringify({
+                  event: "evolution_settlement_retry",
+                  domain,
+                  randomnessId: id.toString(),
+                  attempt: attempts
+                })
               );
+            }
           }
           if (batch.rows.length < 100) break;
         }
       }
+    // Remove retry entries once the confirmed indexer no longer lists them.
+    for (const key of this.settlementRetries.keys())
+      if (!pendingSettlements.has(key)) this.settlementRetries.delete(key);
     let after = 0n;
     // Replay confirmed outstanding jobs each pass. No separate log poller or fragile intake cursor.
     for (;;) {
