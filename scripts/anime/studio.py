@@ -254,6 +254,8 @@ def generate_image(out, prompt, refs):
     # This turn only invokes the image tool with an already reviewed prompt.
     # Do not inherit a coding session's prolonged reasoning setting.
     command = ["codex", "exec", "-c", 'model_reasoning_effort="low"', "--sandbox", "workspace-write", "--cd", str(out.parent), "--skip-git-repo-check"]
+    if os.environ.get("ANIME_CODEX_MODEL"):
+        command += ["--model", os.environ["ANIME_CODEX_MODEL"]]
     for ref in refs:
         command += ["--image", str(ref)]
     command += ["--", prompt]

@@ -58,6 +58,11 @@ shared sheets under the library lock. Published library art cannot be rerolled.
 Approval batches carry recipe version 2.
 The studio only emits unsigned approval calldata.
 
+Image-tool invocations use low reasoning. An operator can set `ANIME_CODEX_MODEL`
+to another available Codex model if the configured text model is at capacity.
+This selects the CLI orchestrator; ChatGPT subscription authentication remains
+required, and the studio does not fall back to API-key image generation.
+
 Two known artwork variants can use the unchanged cosmetic templates of their
 species after explicit anatomy review: Crystal Unicursed uses Unicursed, and
 Rainbow Uniaqua uses Uniaqua. Run `review TOKEN template Unicursed` or
