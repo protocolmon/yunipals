@@ -341,13 +341,6 @@ function TokenDetail({
             </div>
 
             <TokenMarketPanel token={token} />
-            {chain === "base" && (
-              <AnimeFighterCard
-                key={tokenId}
-                tokenId={tokenId}
-                owner={token.owner}
-              />
-            )}
 
             <div className="mt-6 flex flex-wrap gap-3">
               <a
@@ -415,6 +408,13 @@ function TokenDetail({
             )}
           </div>
         </section>
+        {chain === "base" && (
+          <AnimeFighterCard
+            key={tokenId}
+            tokenId={tokenId}
+            owner={token.owner}
+          />
+        )}
       </div>
     </main>
   );
