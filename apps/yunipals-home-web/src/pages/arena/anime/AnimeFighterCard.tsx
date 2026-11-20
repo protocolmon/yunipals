@@ -44,7 +44,7 @@ export function AnimeFighterCard(props: AnimeFighterProps) {
             Anime Arena
           </span>
           <span className="mt-1 block text-sm text-muted">
-            Fighter artwork, signature techniques and application status
+            Fighter artwork, available attacks and application status
           </span>
         </span>
         <ChevronDown
@@ -213,27 +213,41 @@ function AnimeFighterContent({ tokenId, owner }: AnimeFighterProps) {
                   </p>
                 )}
                 {data?.manifest?.kits && (
-                  <div
-                    className="grid gap-3 sm:grid-cols-3"
-                    aria-label="Signature techniques"
+                  <section
+                    aria-labelledby="anime-attacks-heading"
+                    className="space-y-4"
                   >
-                    {data.manifest.kits.map((kit) => (
-                      <div
-                        key={kit.id}
-                        className="space-y-2 rounded-2xl border border-line p-3"
+                    <div>
+                      <h3
+                        id="anime-attacks-heading"
+                        className="text-xl font-bold"
                       >
-                        <AnimeKitPreview
-                          kit={kit}
-                          assetsOrigin={data.assetsOrigin}
-                        />
-                        <h3 className="font-semibold">{kit.name}</h3>
-                        <p className="text-xs capitalize text-muted">
-                          {kit.element}
-                        </p>
-                        <p className="text-sm">{kit.description}</p>
-                      </div>
-                    ))}
-                  </div>
+                        Available attacks
+                      </h3>
+                      <p className="mt-1 text-sm text-muted">
+                        These are this monster’s Anime Arena attacks. Each card
+                        previews an attack’s visual effects.
+                      </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      {data.manifest.kits.map((kit) => (
+                        <div
+                          key={kit.id}
+                          className="space-y-2 rounded-2xl border border-line p-3"
+                        >
+                          <AnimeKitPreview
+                            kit={kit}
+                            assetsOrigin={data.assetsOrigin}
+                          />
+                          <h4 className="font-semibold">{kit.name}</h4>
+                          <p className="text-xs capitalize text-muted">
+                            Element: {kit.element}
+                          </p>
+                          <p className="text-sm">{kit.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
                 )}
                 <a
                   href={`${data?.assetsOrigin}/fighters/v1/${tokenId}/card.jpg`}
