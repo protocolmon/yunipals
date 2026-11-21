@@ -965,6 +965,10 @@ export function LiveArenaPage() {
                       wallet.entryProgress?.key === key
                         ? wallet.entryProgress
                         : null;
+                    const entryError =
+                      wallet.entryFeedback?.key === key
+                        ? wallet.entryFeedback.error
+                        : null;
                     const entered = tournament.seats.some(
                       (s) =>
                         s.nftChainId === nft.chainId &&
@@ -1039,6 +1043,14 @@ export function LiveArenaPage() {
                             `Enter · ${deployment.entry} USDC`
                           )}
                         </button>
+                        {entryError && (
+                          <p
+                            role="alert"
+                            className="mt-3 break-words text-sm text-destructive"
+                          >
+                            {entryError}
+                          </p>
+                        )}
                       </article>
                     );
                   })}
