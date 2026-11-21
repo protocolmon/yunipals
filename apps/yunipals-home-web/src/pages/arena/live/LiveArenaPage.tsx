@@ -931,8 +931,9 @@ export function LiveArenaPage() {
                   A higher limit saves repeat approvals. Each entry still
                   charges only {deployment.entry} USDC. This limit applies when
                   a new approval is needed; an existing allowance is reused.{" "}
-                  Compatible wallets approve and enter together. Other wallets
-                  ask for approval, then immediately ask you to confirm entry.
+                  {drawQuote.data?.firstEntry
+                    ? "For the first entry, approve USDC if needed, then confirm entry and the island draw in your wallet."
+                    : "Compatible wallets approve and enter together. Other wallets ask for approval, then immediately ask you to confirm entry."}
                 </p>
               </div>
               {inventory.isPending && (
