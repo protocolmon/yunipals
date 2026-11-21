@@ -689,8 +689,14 @@ export function useArenaWallet(
         };
         let permit = await prepare();
         assertCurrent();
+        const initialPayment = await readArenaJoinPayment(client, config, id);
+        assertCurrent();
         let atomic = false;
         if (
+          // wallet_sendCalls lets the wallet choose the outer gas price. The
+          // first entrant's draw quote depends on that price, so use the normal
+          // transaction flow below, which submits the quoted fee caps too.
+          !initialPayment.firstEntry &&
           allowance < BigInt(config.entryFee) &&
           walletClient?.account.address.toLowerCase() === address.toLowerCase()
         ) {
@@ -707,10 +713,14 @@ export function useArenaWallet(
           }
           assertCurrent();
         }
-        if (atomic && walletClient) {
+        const batchPayment = atomic
+          ? await readArenaJoinPayment(client, config, id)
+          : null;
+        assertCurrent();
+        if (walletClient && batchPayment && !batchPayment.firstEntry) {
           if (Number(permit.expiry) * 1000 < Date.now() + 60000)
             permit = await admission();
-          const payment = await readArenaJoinPayment(client, config, id);
+          const payment = batchPayment;
           if (gasBalance <= payment.value)
             throw new Error(
               "Add ETH on Base to cover the island draw and network gas."
