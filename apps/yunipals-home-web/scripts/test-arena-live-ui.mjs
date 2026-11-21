@@ -17,12 +17,14 @@ const { values } = parseArgs({
     playwright: { type: "string" },
     "wallet-flow-only": { type: "boolean", default: false },
     "approval-flow-only": { type: "boolean", default: false },
+    "entry-feedback-only": { type: "boolean", default: false },
     "strategy-flow-only": { type: "boolean", default: false },
     chromium: { type: "string" },
     output: { type: "string", default: "/tmp/yunipals-arena-live-ui" }
   }
 });
 if (!values.playwright) throw new Error("Pass an installed Playwright module.");
+const entryFlow = values["approval-flow-only"] || values["entry-feedback-only"];
 let mediaState = "videos";
 let payoutsReleased = false;
 let slowLoads = true;
@@ -41,6 +43,7 @@ let sessionWallet = values["wallet-flow-only"]
   ? null
   : "0x1111111111111111111111111111111111111111";
 let sessionUnavailable = false;
+let admissionUnavailable = false;
 let challengeRequests = 0;
 let verifyRequests = 0;
 const origin = new URL(values.url);
@@ -109,7 +112,7 @@ const tournament = {
   submittedSeats: [0, 1],
   strategies: null
 };
-if (values["approval-flow-only"]) {
+if (entryFlow) {
   tournament.phase = "open";
   tournament.seats = [];
   tournament.submittedSeats = [];
@@ -232,8 +235,8 @@ await context.route("**/*", async (route) => {
       contentType: "application/json",
       body: JSON.stringify(value)
     });
-  const apiPrefix = ["/__arena-test", "/api/arena"].find((prefix) =>
-    url.pathname.startsWith(prefix + "/")
+  const apiPrefix = ["/__arena-test/video", "/__arena-test", "/api/arena"].find(
+    (prefix) => url.pathname.startsWith(prefix + "/")
   );
   if (apiPrefix) {
     const path = url.pathname.slice(apiPrefix.length);
@@ -244,7 +247,7 @@ await context.route("**/*", async (route) => {
         paymentToken: addr,
         entryFee: "2000000",
         strategyMaxLength: 2400,
-        entriesEnabled: values["approval-flow-only"],
+        entriesEnabled: entryFlow,
         confirmationPolicy: "base-depth-3-v1"
       });
     if (path === "/tournaments") {
@@ -288,6 +291,14 @@ await context.route("**/*", async (route) => {
       });
     }
     if (path === "/tournaments/1/admission") {
+      if (admissionUnavailable)
+        return route.fulfill({
+          status: 503,
+          json: {
+            error:
+              "New entries are paused until the referee allowance is renewed."
+          }
+        });
       const nft = route.request().postDataJSON();
       return json({
         entry: { player: addr, ...nft },
@@ -473,9 +484,7 @@ await context.route("**/*", async (route) => {
       }
       return json({
         hash: transactionHash,
-        action: values["approval-flow-only"]
-          ? trackedAction
-          : { kind: "claim" },
+        action: entryFlow ? trackedAction : { kind: "claim" },
         state: trackingState,
         indexedThroughBlock: trackingState === "indexed" ? "10" : null,
         result:
@@ -495,10 +504,7 @@ await context.route("**/*", async (route) => {
       body: '{"error":"Sign in"}'
     });
   }
-  if (
-    values["approval-flow-only"] &&
-    url.pathname.endsWith(`/owners/${addr}/tokens`)
-  )
+  if (entryFlow && url.pathname.endsWith(`/owners/${addr}/tokens`))
     return json({
       owner: addr,
       items: roster.map((f) => ({
@@ -536,6 +542,17 @@ await context.route("**/*", async (route) => {
       contentType: "image/png",
       body: await readFile(resolve(pilot, fighter.localImage))
     });
+  if (url.href === metadata.image && values["entry-feedback-only"])
+    // Entry feedback does not need the separately generated island release.
+    return route.fulfill({
+      contentType: "image/webp",
+      body: await readFile(
+        resolve(
+          root,
+          "apps/yunipals-home-web/public/images/yunipals-islands-banner.webp"
+        )
+      )
+    });
   if (url.href === metadata.image)
     return route.fulfill({
       contentType: "image/png",
@@ -556,7 +573,7 @@ await context.route("**/*", async (route) => {
         result = "0xde0b6b3a7640000";
       else if (request.method === "eth_call") {
         const resultFor = (data) => {
-          const amount = values["approval-flow-only"]
+          const amount = entryFlow
             ? data.startsWith("0xdd62ed3e")
               ? mockAllowance
               : 50000000n
@@ -608,7 +625,7 @@ await context.route("**/*", async (route) => {
 });
 await mkdir(values.output, { recursive: true });
 try {
-  if (values["approval-flow-only"]) await verifyApprovalFlow();
+  if (entryFlow) await verifyApprovalFlow();
   else if (values["strategy-flow-only"]) await verifyStrategyFlow();
   else if (values["wallet-flow-only"]) await verifyWalletFlow();
   else {
@@ -1191,7 +1208,7 @@ async function verifyWalletFlow() {
 }
 
 async function verifyApprovalFlow() {
-  await page.goto(`${origin.origin}/arena/1`);
+  await page.goto(`${origin.origin}/arena/video/1`);
   const decline = page.getByRole("button", { name: "Decline", exact: true });
   if (await decline.isVisible()) await decline.click();
   await page
@@ -1211,16 +1228,77 @@ async function verifyApprovalFlow() {
     .click();
   const cards = page.locator("article[data-arena-fighter]");
   const enter = cards.getByRole("button");
+  admissionUnavailable = true;
+  await enter.first().click();
+  await cards
+    .first()
+    .getByRole("alert")
+    .filter({ hasText: "referee allowance is renewed" })
+    .waitFor();
+  assert.equal(await cards.nth(1).getByRole("alert").count(), 0);
+  assert.equal(await enter.first().isEnabled(), true);
+  assert.equal(
+    await page.evaluate(() => window.__arenaSentTransactions.length),
+    0
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await cards.first().scrollIntoViewIfNeeded();
+  assert.ok(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth + 1
+    )
+  );
+  await page.screenshot({
+    path: resolve(values.output, "fighter-entry-unavailable.png"),
+    fullPage: true
+  });
+  admissionUnavailable = false;
   await page.evaluate(() => {
     window.__arenaRejectTransaction = true;
   });
   await enter.first().click();
-  await page
+  await cards
+    .first()
     .getByRole("alert")
     .filter({ hasText: /reject/i })
     .waitFor();
   assert.equal(await cards.locator('[aria-busy="true"]').count(), 0);
   assert.equal(await enter.first().innerText(), "Enter · 2 USDC");
+  assert.equal(
+    await cards
+      .first()
+      .getByText(/referee allowance is renewed/)
+      .count(),
+    0
+  );
+  if (values["entry-feedback-only"]) {
+    await page.evaluate(() =>
+      window.__arenaChangeAccount("0x2222222222222222222222222222222222222222")
+    );
+    await cards.first().getByRole("alert").waitFor({ state: "detached" });
+    assert.equal(
+      await page.evaluate(() => window.__arenaSentTransactions.length),
+      0
+    );
+    assert.deepEqual(errors, []);
+    const report = {
+      status: "passed",
+      checks: [
+        "Admission 503 shown only on selected fighter",
+        "No payment sent after rejected admission",
+        "Retry replaces stale error with wallet rejection",
+        "Account change clears entry feedback",
+        "Mobile error wraps within viewport"
+      ],
+      scope: "Synthetic wallet/API; no real payments"
+    };
+    await writeFile(
+      resolve(values.output, "report.json"),
+      JSON.stringify(report, null, 2) + "\n"
+    );
+    console.log(JSON.stringify(report));
+    return;
+  }
   await page.evaluate(() => {
     window.__arenaRejectTransaction = false;
     window.__arenaHoldTransaction = true;

@@ -172,6 +172,10 @@ export function useArenaWallet(
             label: activeEntry.label
           }
         : null;
+  const entryFeedback =
+    activeEntry?.scope === scope && error
+      ? { key: arenaFighterKey(activeEntry.fighter), error }
+      : null;
   const strategyFeedback =
     strategyTarget?.scope === scope
       ? {
@@ -248,6 +252,7 @@ export function useArenaWallet(
     if (guard.current) return;
     guard.current = true;
     setBusy(label);
+    setActiveEntry(null);
     setStrategyTarget(null);
     setError(null);
     const startedScope = scope;
@@ -273,7 +278,7 @@ export function useArenaWallet(
       if (currentScope.current === startedScope) {
         guard.current = false;
         setBusy(null);
-        setActiveEntry(null);
+        // Keep the fighter target so a failed entry stays visible on its card.
       }
     }
   }
@@ -570,6 +575,7 @@ export function useArenaWallet(
     pendingTransaction: !!visibleCalls || transactionPending(visibleOperation),
     batchPending: !!visibleCalls,
     entryProgress,
+    entryFeedback,
     strategyFeedback,
     checkStatus: () =>
       execute("Checking transaction status", async () => {
