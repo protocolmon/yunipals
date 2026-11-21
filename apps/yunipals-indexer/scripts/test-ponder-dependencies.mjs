@@ -78,7 +78,7 @@ try {
   resultOf(await build.executeIndexingFunctions());
   const schemaBuild = resultOf(build.compileSchema({ schema, preBuild }));
   const tables = Object.values(schema).filter(isTable);
-  assert.equal(tables.length, 29);
+  assert.equal(tables.length, 31);
   assert.ok(
     tables.some(
       (table) => getTableConfig(table).name === "portal_competition_rules"
@@ -328,6 +328,29 @@ try {
           transactionIndex: 0,
           logIndex: block
         });
+        const evolutionEntity = `${deployment}:job:1`;
+        const evolutionValue = {
+          requestId: "1",
+          status: initial ? "generating" : "completed",
+          resultTokenId: initial ? null : "3"
+        };
+        await db
+          .insert(schema.evolutionProjection)
+          .values({ id: evolutionEntity, value: evolutionValue })
+          .onConflictDoUpdate({
+            target: schema.evolutionProjection.id,
+            set: { value: evolutionValue }
+          });
+        await db.insert(schema.evolutionProjectionVersion).values({
+          id: `${evolutionEntity}:${block}`,
+          entity: evolutionEntity,
+          deployment,
+          domain: "job",
+          value: evolutionValue,
+          blockNumber: BigInt(block),
+          transactionIndex: 0,
+          logIndex: block
+        });
         if (initial) {
           await db.insert(schema.indexerSource).values({
             id: "arena:base",
@@ -449,7 +472,8 @@ try {
     "canonical_event",
     "transaction_candidate",
     "chain_block",
-    "portal_projection_version"
+    "portal_projection_version",
+    "evolution_projection_version"
   ]) {
     assert.equal(
       Number(
@@ -486,7 +510,23 @@ try {
     ).rows[0].block_number,
     "10"
   );
+  assert.equal(
+    (
+      await client.query(
+        "SELECT value FROM dependency_check.evolution_projection"
+      )
+    ).rows[0].value.status,
+    "generating"
+  );
   await writeArenaBlock(11, false);
+  assert.equal(
+    (
+      await client.query(
+        "SELECT value FROM dependency_check.evolution_projection"
+      )
+    ).rows[0].value.status,
+    "completed"
+  );
   assert.deepEqual(
     (
       await client.query(

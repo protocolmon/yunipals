@@ -4,7 +4,8 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useSwitchChain } from "wagmi";
 import { Link, useSearchParams } from "react-router-dom";
 import { Clock, RefreshCw, Sparkles, Wand2 } from "lucide-react";
-import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
+import type { PortalSelectableCard } from "./PortalCardPicker";
+import { evolutionImage } from "@/lib/evolution";
 import {
   portalColorNames,
   portalTypeNames,
@@ -51,7 +52,7 @@ export function PortalPage() {
     ? search.get("card")!
     : undefined;
   const [selection, setSelection] = useState<{
-    card: BoosterMonster;
+    card: PortalSelectableCard;
     context: string;
   } | null>(null);
   const [pickerContext, setPickerContext] = useState<string | null>(null);
@@ -359,24 +360,40 @@ export function PortalPage() {
             )}
             <form className="mt-6 space-y-5" onSubmit={submit}>
               <div>
+                <p className="mb-3 text-sm text-muted">
+                  Completing grading permanently ends adventures, serum use and
+                  fusion for this card. Its defining physical features and
+                  Presence remain.
+                </p>
                 <p className="text-sm font-bold">Your card</p>
                 {selectedCard && (
                   <div className="mt-3 flex items-center gap-4 rounded-2xl bg-lavender/15 p-3">
                     <div className="w-20 shrink-0">
-                      <BoosterArtwork
-                        uri={selectedCard.metadataUri}
-                        card={selectedCard}
-                        label={`Selected card #${selectedCard.tokenId}`}
-                        display="thumbnail"
-                      />
+                      {selectedCard.evolution ? (
+                        <img
+                          src={evolutionImage(selectedCard.evolution)}
+                          alt={`Selected card #${selectedCard.tokenId}`}
+                          width={640}
+                          height={960}
+                          className="w-full rounded-xl"
+                        />
+                      ) : (
+                        <BoosterArtwork
+                          uri={selectedCard.metadataUri}
+                          card={selectedCard.base}
+                          label={`Selected card #${selectedCard.tokenId}`}
+                          display="thumbnail"
+                        />
+                      )}
                     </div>
                     <div>
                       <p className="font-bold">
-                        {packGridTraits(selectedCard).Type} #
-                        {selectedCard.tokenId}
+                        {selectedCard.name} #{selectedCard.tokenId}
                       </p>
                       <p className="mt-1 text-sm text-muted">
-                        Selected for this portal
+                        {selectedCard.evolution?.portalWitness
+                          ? `Source #${selectedCard.evolution.portalWitness} satisfies this portal’s gates`
+                          : "Selected for this portal"}
                       </p>
                     </div>
                   </div>

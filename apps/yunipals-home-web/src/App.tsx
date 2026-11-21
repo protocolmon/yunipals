@@ -30,6 +30,12 @@ const PortalTransactionStatus = lazy(() =>
     default: module.PortalTransactionStatus
   }))
 );
+const AdventurePage = lazy(() =>
+  import("@/pages/adventures/AdventurePage").then((module) => ({
+    default: module.AdventurePage
+  }))
+);
+
 const PortalPage = lazy(() =>
   import("@/pages/portals/PortalPage").then((module) => ({
     default: module.PortalPage
@@ -263,6 +269,11 @@ function AppContent() {
         )}
         <Routes>
           <Route path="/" element={<CollectionPage />} />
+          <Route path="/adventures" element={<AdventurePage />} />
+          <Route
+            path="/adventures/cards/:tokenId"
+            element={<AdventurePage />}
+          />
           <Route path="/boosters" element={<BoosterPage />} />
           <Route
             path="/boosters/why-packs"

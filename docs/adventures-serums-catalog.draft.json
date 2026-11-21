@@ -1,0 +1,1314 @@
+{
+  "schemaVersion": 2,
+  "status": "approved initial catalogue",
+  "name": "Yunipals adventure serums",
+  "serumCount": 121,
+  "presenceCount": 11,
+  "serumVariantCount": 1331,
+  "visualDirectionStatus": "approved reference style",
+  "displayRule": "Keep the Essence Form Serum name and display Presence as a separate trait",
+  "serumIdFormula": "1 + (essenceId - 1) * 11 + (formId - 1)",
+  "noneId": 0,
+  "presenceNoneId": 0,
+  "presences": [
+    {
+      "id": 1,
+      "name": "Holy",
+      "effect": "Luminous ivory-gold eyes with halo-shaped irises, compassionate expression and dignified posture"
+    },
+    {
+      "id": 2,
+      "name": "Aggressive",
+      "effect": "Narrowed eyes, bared teeth and a tense forward stance"
+    },
+    {
+      "id": 3,
+      "name": "Calm",
+      "effect": "Soft, focused eyes and balanced, attentive composure"
+    },
+    {
+      "id": 4,
+      "name": "Chill",
+      "effect": "Half-closed eyes, loose limbs and a casual lounging pose"
+    },
+    {
+      "id": 5,
+      "name": "Happy",
+      "effect": "Bright eyes, open smile and playful movement"
+    },
+    {
+      "id": 6,
+      "name": "Panicked",
+      "effect": "Wide eyes, startled recoil and frantic movement"
+    },
+    {
+      "id": 7,
+      "name": "Mischievous",
+      "effect": "Knowing grin, sideways glance and sneaking posture"
+    },
+    {
+      "id": 8,
+      "name": "Proud",
+      "effect": "Raised chin, lifted chest and deliberately displayed features"
+    },
+    {
+      "id": 9,
+      "name": "Curious",
+      "effect": "Tilted head, attentive gaze and tentative exploration"
+    },
+    {
+      "id": 10,
+      "name": "Melancholic",
+      "effect": "Downcast eyes, lowered head and a quiet, slumped pose"
+    },
+    {
+      "id": 11,
+      "name": "Sinister",
+      "effect": "Calculating stare, unsettling smile and deliberate stillness"
+    }
+  ],
+  "presencePolicy": {
+    "status": "approved, including Holy weights, latest-dose replacement, random parent inheritance, neutral-parent outcomes and player-paid fusion VRF",
+    "rarityRule": "Holy is rarer than each of the other ten Presences",
+    "distribution": {
+      "status": "approved",
+      "condition": "Serum found; independent of Essence/Form rarity",
+      "denominator": 1000000,
+      "weightsInPresenceIdOrder": [
+        10000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000,
+        99000
+      ],
+      "sequenceDependence": "None; sequence affects Essence/Form rarity"
+    },
+    "drinkingRule": "Confirmed: latest consumed serum sets current Presence; physical effects keep stacking and all dose Presences remain in history",
+    "fusionRule": "Confirmed: randomly inherit either current parent Presence at 50/50 when they differ; equal Presences have a guaranteed result",
+    "neutralParentRule": "Confirmed: Presence 0 participates as a neutral parent outcome; Holy plus neutral produces 50% Holy and 50% neutral",
+    "randomness": "Use separately domain-separated adventure VRF entropy and freeze the distribution version before requesting; differing fusion Presences require fresh request-bound VRF, with no rerolls on recovery",
+    "fusionVrfFunding": "Confirmed: player pays the quoted VRF cost in native ETH in addition to 0.1 USDC generation and ordinary transaction gas; no VRF charge when parent Presences match"
+  },
+  "artDirection": {
+    "status": "approved",
+    "identity": "Preserve recognizable Yunipal identity, ancestry and collectible card style",
+    "environment": "Every serum affects the background; Essence sets materials and setting, Form sets transformation scale, Presence influences atmosphere",
+    "avatar": "One-dose maximum enhancement coherently combines wings, fangs, talons, spines, hide, runes, crest, armor, aura and spectral details, transforming the whole scene",
+    "presence": "Visible in eyes, expression and pose; dark Essence does not force an evil disposition",
+    "characterArtwork": "No bottle or drinking vessel"
+  },
+  "essences": [
+    {
+      "id": 1,
+      "name": "Bloom",
+      "effect": "Living leaves, blossoms and root growth",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 2,
+      "name": "Ember",
+      "effect": "Charred scales, magma seams and flame",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 3,
+      "name": "Tidal",
+      "effect": "Fins, flowing water and pearlescent skin",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 4,
+      "name": "Frost",
+      "effect": "Ice crystal growth and frozen mist",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 5,
+      "name": "Storm",
+      "effect": "Charged markings and lightning arcs",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 6,
+      "name": "Crystal",
+      "effect": "Faceted mineral armor and refracted light",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 7,
+      "name": "Solar",
+      "effect": "Golden radiance and sun-forged armor",
+      "minimumRarity": "Rare"
+    },
+    {
+      "id": 8,
+      "name": "Starlight",
+      "effect": "Star fields, nebula glow and astral particles",
+      "minimumRarity": "Rare"
+    },
+    {
+      "id": 9,
+      "name": "Dreadthorn",
+      "effect": "Black brambles and venom-green corruption",
+      "minimumRarity": "Epic"
+    },
+    {
+      "id": 10,
+      "name": "Bloodmoon",
+      "effect": "Crimson eclipses, fangs and nightmare motifs",
+      "minimumRarity": "Legendary"
+    },
+    {
+      "id": 11,
+      "name": "Voidheart",
+      "effect": "Obsidian growth and violet singularities",
+      "minimumRarity": "Mythic"
+    }
+  ],
+  "forms": [
+    {
+      "id": 1,
+      "name": "Veil",
+      "effect": "Aura, particles and atmospheric glow",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 2,
+      "name": "Runes",
+      "effect": "Luminous markings across the body",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 3,
+      "name": "Hide",
+      "effect": "Changes to skin, scales, fur or fleece",
+      "minimumRarity": "Common"
+    },
+    {
+      "id": 4,
+      "name": "Crest",
+      "effect": "Horn and crown growth",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 5,
+      "name": "Fangs",
+      "effect": "Muzzle and teeth; expression follows Presence",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 6,
+      "name": "Talons",
+      "effect": "Claws, hooves and limb details",
+      "minimumRarity": "Uncommon"
+    },
+    {
+      "id": 7,
+      "name": "Spines",
+      "effect": "Dorsal spikes, ridges and tail growth",
+      "minimumRarity": "Rare"
+    },
+    {
+      "id": 8,
+      "name": "Wings",
+      "effect": "Species-compatible wings or fin fans",
+      "minimumRarity": "Rare"
+    },
+    {
+      "id": 9,
+      "name": "Wraith",
+      "effect": "Spectral edges and supernatural body material",
+      "minimumRarity": "Epic"
+    },
+    {
+      "id": 10,
+      "name": "Sovereign",
+      "effect": "Regal full-body armor and imposing silhouette",
+      "minimumRarity": "Legendary"
+    },
+    {
+      "id": 11,
+      "name": "Avatar",
+      "effect": "Maximum whole-body enhancement combining the other forms into one coherent creature and transformed environment",
+      "minimumRarity": "Mythic"
+    }
+  ],
+  "rarityRule": "Higher rarity of the essence and form minimums",
+  "rarities": [
+    {
+      "name": "Common",
+      "serumCount": 9
+    },
+    {
+      "name": "Uncommon",
+      "serumCount": 27
+    },
+    {
+      "name": "Rare",
+      "serumCount": 28
+    },
+    {
+      "name": "Epic",
+      "serumCount": 17
+    },
+    {
+      "name": "Legendary",
+      "serumCount": 19
+    },
+    {
+      "name": "Mythic",
+      "serumCount": 21
+    }
+  ],
+  "odds": {
+    "status": "approved eleven-tier balance",
+    "denominator": 1000000,
+    "sequenceRange": [
+      0,
+      263
+    ],
+    "outcomeOrder": [
+      "None",
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Epic",
+      "Legendary",
+      "Mythic"
+    ],
+    "sequence0": [
+      350000,
+      400000,
+      180000,
+      60000,
+      9000,
+      900,
+      100
+    ],
+    "sequence263": [
+      350000,
+      250000,
+      240000,
+      120000,
+      35000,
+      4500,
+      500
+    ],
+    "withinRarity": "uniform",
+    "tierCount": 11,
+    "sequencesPerTier": 24,
+    "tierRule": "1 + floor(effectiveSequence / 24), with effectiveSequence restricted to 0..263",
+    "selection": "Fixed outcome weights within each sequence tier; select from the immutable sequence or the floor of the exact source-position average for fusions",
+    "tiers": [
+      {
+        "id": 1,
+        "sequenceMin": 0,
+        "sequenceMax": 23,
+        "weightsInOutcomeOrder": [
+          350000,
+          400000,
+          180000,
+          60000,
+          9000,
+          900,
+          100
+        ]
+      },
+      {
+        "id": 2,
+        "sequenceMin": 24,
+        "sequenceMax": 47,
+        "weightsInOutcomeOrder": [
+          350000,
+          385000,
+          186000,
+          66000,
+          11600,
+          1260,
+          140
+        ]
+      },
+      {
+        "id": 3,
+        "sequenceMin": 48,
+        "sequenceMax": 71,
+        "weightsInOutcomeOrder": [
+          350000,
+          370000,
+          192000,
+          72000,
+          14200,
+          1620,
+          180
+        ]
+      },
+      {
+        "id": 4,
+        "sequenceMin": 72,
+        "sequenceMax": 95,
+        "weightsInOutcomeOrder": [
+          350000,
+          355000,
+          198000,
+          78000,
+          16800,
+          1980,
+          220
+        ]
+      },
+      {
+        "id": 5,
+        "sequenceMin": 96,
+        "sequenceMax": 119,
+        "weightsInOutcomeOrder": [
+          350000,
+          340000,
+          204000,
+          84000,
+          19400,
+          2340,
+          260
+        ]
+      },
+      {
+        "id": 6,
+        "sequenceMin": 120,
+        "sequenceMax": 143,
+        "weightsInOutcomeOrder": [
+          350000,
+          325000,
+          210000,
+          90000,
+          22000,
+          2700,
+          300
+        ]
+      },
+      {
+        "id": 7,
+        "sequenceMin": 144,
+        "sequenceMax": 167,
+        "weightsInOutcomeOrder": [
+          350000,
+          310000,
+          216000,
+          96000,
+          24600,
+          3060,
+          340
+        ]
+      },
+      {
+        "id": 8,
+        "sequenceMin": 168,
+        "sequenceMax": 191,
+        "weightsInOutcomeOrder": [
+          350000,
+          295000,
+          222000,
+          102000,
+          27200,
+          3420,
+          380
+        ]
+      },
+      {
+        "id": 9,
+        "sequenceMin": 192,
+        "sequenceMax": 215,
+        "weightsInOutcomeOrder": [
+          350000,
+          280000,
+          228000,
+          108000,
+          29800,
+          3780,
+          420
+        ]
+      },
+      {
+        "id": 10,
+        "sequenceMin": 216,
+        "sequenceMax": 239,
+        "weightsInOutcomeOrder": [
+          350000,
+          265000,
+          234000,
+          114000,
+          32400,
+          4140,
+          460
+        ]
+      },
+      {
+        "id": 11,
+        "sequenceMin": 240,
+        "sequenceMax": 263,
+        "weightsInOutcomeOrder": [
+          350000,
+          250000,
+          240000,
+          120000,
+          35000,
+          4500,
+          500
+        ]
+      }
+    ]
+  },
+  "serums": [
+    {
+      "id": 1,
+      "name": "Bloom Veil Serum",
+      "essence": 1,
+      "form": 1,
+      "rarity": "Common"
+    },
+    {
+      "id": 2,
+      "name": "Bloom Runes Serum",
+      "essence": 1,
+      "form": 2,
+      "rarity": "Common"
+    },
+    {
+      "id": 3,
+      "name": "Bloom Hide Serum",
+      "essence": 1,
+      "form": 3,
+      "rarity": "Common"
+    },
+    {
+      "id": 4,
+      "name": "Bloom Crest Serum",
+      "essence": 1,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 5,
+      "name": "Bloom Fangs Serum",
+      "essence": 1,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 6,
+      "name": "Bloom Talons Serum",
+      "essence": 1,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 7,
+      "name": "Bloom Spines Serum",
+      "essence": 1,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 8,
+      "name": "Bloom Wings Serum",
+      "essence": 1,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 9,
+      "name": "Bloom Wraith Serum",
+      "essence": 1,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 10,
+      "name": "Bloom Sovereign Serum",
+      "essence": 1,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 11,
+      "name": "Bloom Avatar Serum",
+      "essence": 1,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 12,
+      "name": "Ember Veil Serum",
+      "essence": 2,
+      "form": 1,
+      "rarity": "Common"
+    },
+    {
+      "id": 13,
+      "name": "Ember Runes Serum",
+      "essence": 2,
+      "form": 2,
+      "rarity": "Common"
+    },
+    {
+      "id": 14,
+      "name": "Ember Hide Serum",
+      "essence": 2,
+      "form": 3,
+      "rarity": "Common"
+    },
+    {
+      "id": 15,
+      "name": "Ember Crest Serum",
+      "essence": 2,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 16,
+      "name": "Ember Fangs Serum",
+      "essence": 2,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 17,
+      "name": "Ember Talons Serum",
+      "essence": 2,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 18,
+      "name": "Ember Spines Serum",
+      "essence": 2,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 19,
+      "name": "Ember Wings Serum",
+      "essence": 2,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 20,
+      "name": "Ember Wraith Serum",
+      "essence": 2,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 21,
+      "name": "Ember Sovereign Serum",
+      "essence": 2,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 22,
+      "name": "Ember Avatar Serum",
+      "essence": 2,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 23,
+      "name": "Tidal Veil Serum",
+      "essence": 3,
+      "form": 1,
+      "rarity": "Common"
+    },
+    {
+      "id": 24,
+      "name": "Tidal Runes Serum",
+      "essence": 3,
+      "form": 2,
+      "rarity": "Common"
+    },
+    {
+      "id": 25,
+      "name": "Tidal Hide Serum",
+      "essence": 3,
+      "form": 3,
+      "rarity": "Common"
+    },
+    {
+      "id": 26,
+      "name": "Tidal Crest Serum",
+      "essence": 3,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 27,
+      "name": "Tidal Fangs Serum",
+      "essence": 3,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 28,
+      "name": "Tidal Talons Serum",
+      "essence": 3,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 29,
+      "name": "Tidal Spines Serum",
+      "essence": 3,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 30,
+      "name": "Tidal Wings Serum",
+      "essence": 3,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 31,
+      "name": "Tidal Wraith Serum",
+      "essence": 3,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 32,
+      "name": "Tidal Sovereign Serum",
+      "essence": 3,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 33,
+      "name": "Tidal Avatar Serum",
+      "essence": 3,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 34,
+      "name": "Frost Veil Serum",
+      "essence": 4,
+      "form": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 35,
+      "name": "Frost Runes Serum",
+      "essence": 4,
+      "form": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 36,
+      "name": "Frost Hide Serum",
+      "essence": 4,
+      "form": 3,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 37,
+      "name": "Frost Crest Serum",
+      "essence": 4,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 38,
+      "name": "Frost Fangs Serum",
+      "essence": 4,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 39,
+      "name": "Frost Talons Serum",
+      "essence": 4,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 40,
+      "name": "Frost Spines Serum",
+      "essence": 4,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 41,
+      "name": "Frost Wings Serum",
+      "essence": 4,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 42,
+      "name": "Frost Wraith Serum",
+      "essence": 4,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 43,
+      "name": "Frost Sovereign Serum",
+      "essence": 4,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 44,
+      "name": "Frost Avatar Serum",
+      "essence": 4,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 45,
+      "name": "Storm Veil Serum",
+      "essence": 5,
+      "form": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 46,
+      "name": "Storm Runes Serum",
+      "essence": 5,
+      "form": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 47,
+      "name": "Storm Hide Serum",
+      "essence": 5,
+      "form": 3,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 48,
+      "name": "Storm Crest Serum",
+      "essence": 5,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 49,
+      "name": "Storm Fangs Serum",
+      "essence": 5,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 50,
+      "name": "Storm Talons Serum",
+      "essence": 5,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 51,
+      "name": "Storm Spines Serum",
+      "essence": 5,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 52,
+      "name": "Storm Wings Serum",
+      "essence": 5,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 53,
+      "name": "Storm Wraith Serum",
+      "essence": 5,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 54,
+      "name": "Storm Sovereign Serum",
+      "essence": 5,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 55,
+      "name": "Storm Avatar Serum",
+      "essence": 5,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 56,
+      "name": "Crystal Veil Serum",
+      "essence": 6,
+      "form": 1,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 57,
+      "name": "Crystal Runes Serum",
+      "essence": 6,
+      "form": 2,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 58,
+      "name": "Crystal Hide Serum",
+      "essence": 6,
+      "form": 3,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 59,
+      "name": "Crystal Crest Serum",
+      "essence": 6,
+      "form": 4,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 60,
+      "name": "Crystal Fangs Serum",
+      "essence": 6,
+      "form": 5,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 61,
+      "name": "Crystal Talons Serum",
+      "essence": 6,
+      "form": 6,
+      "rarity": "Uncommon"
+    },
+    {
+      "id": 62,
+      "name": "Crystal Spines Serum",
+      "essence": 6,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 63,
+      "name": "Crystal Wings Serum",
+      "essence": 6,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 64,
+      "name": "Crystal Wraith Serum",
+      "essence": 6,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 65,
+      "name": "Crystal Sovereign Serum",
+      "essence": 6,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 66,
+      "name": "Crystal Avatar Serum",
+      "essence": 6,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 67,
+      "name": "Solar Veil Serum",
+      "essence": 7,
+      "form": 1,
+      "rarity": "Rare"
+    },
+    {
+      "id": 68,
+      "name": "Solar Runes Serum",
+      "essence": 7,
+      "form": 2,
+      "rarity": "Rare"
+    },
+    {
+      "id": 69,
+      "name": "Solar Hide Serum",
+      "essence": 7,
+      "form": 3,
+      "rarity": "Rare"
+    },
+    {
+      "id": 70,
+      "name": "Solar Crest Serum",
+      "essence": 7,
+      "form": 4,
+      "rarity": "Rare"
+    },
+    {
+      "id": 71,
+      "name": "Solar Fangs Serum",
+      "essence": 7,
+      "form": 5,
+      "rarity": "Rare"
+    },
+    {
+      "id": 72,
+      "name": "Solar Talons Serum",
+      "essence": 7,
+      "form": 6,
+      "rarity": "Rare"
+    },
+    {
+      "id": 73,
+      "name": "Solar Spines Serum",
+      "essence": 7,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 74,
+      "name": "Solar Wings Serum",
+      "essence": 7,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 75,
+      "name": "Solar Wraith Serum",
+      "essence": 7,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 76,
+      "name": "Solar Sovereign Serum",
+      "essence": 7,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 77,
+      "name": "Solar Avatar Serum",
+      "essence": 7,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 78,
+      "name": "Starlight Veil Serum",
+      "essence": 8,
+      "form": 1,
+      "rarity": "Rare"
+    },
+    {
+      "id": 79,
+      "name": "Starlight Runes Serum",
+      "essence": 8,
+      "form": 2,
+      "rarity": "Rare"
+    },
+    {
+      "id": 80,
+      "name": "Starlight Hide Serum",
+      "essence": 8,
+      "form": 3,
+      "rarity": "Rare"
+    },
+    {
+      "id": 81,
+      "name": "Starlight Crest Serum",
+      "essence": 8,
+      "form": 4,
+      "rarity": "Rare"
+    },
+    {
+      "id": 82,
+      "name": "Starlight Fangs Serum",
+      "essence": 8,
+      "form": 5,
+      "rarity": "Rare"
+    },
+    {
+      "id": 83,
+      "name": "Starlight Talons Serum",
+      "essence": 8,
+      "form": 6,
+      "rarity": "Rare"
+    },
+    {
+      "id": 84,
+      "name": "Starlight Spines Serum",
+      "essence": 8,
+      "form": 7,
+      "rarity": "Rare"
+    },
+    {
+      "id": 85,
+      "name": "Starlight Wings Serum",
+      "essence": 8,
+      "form": 8,
+      "rarity": "Rare"
+    },
+    {
+      "id": 86,
+      "name": "Starlight Wraith Serum",
+      "essence": 8,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 87,
+      "name": "Starlight Sovereign Serum",
+      "essence": 8,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 88,
+      "name": "Starlight Avatar Serum",
+      "essence": 8,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 89,
+      "name": "Dreadthorn Veil Serum",
+      "essence": 9,
+      "form": 1,
+      "rarity": "Epic"
+    },
+    {
+      "id": 90,
+      "name": "Dreadthorn Runes Serum",
+      "essence": 9,
+      "form": 2,
+      "rarity": "Epic"
+    },
+    {
+      "id": 91,
+      "name": "Dreadthorn Hide Serum",
+      "essence": 9,
+      "form": 3,
+      "rarity": "Epic"
+    },
+    {
+      "id": 92,
+      "name": "Dreadthorn Crest Serum",
+      "essence": 9,
+      "form": 4,
+      "rarity": "Epic"
+    },
+    {
+      "id": 93,
+      "name": "Dreadthorn Fangs Serum",
+      "essence": 9,
+      "form": 5,
+      "rarity": "Epic"
+    },
+    {
+      "id": 94,
+      "name": "Dreadthorn Talons Serum",
+      "essence": 9,
+      "form": 6,
+      "rarity": "Epic"
+    },
+    {
+      "id": 95,
+      "name": "Dreadthorn Spines Serum",
+      "essence": 9,
+      "form": 7,
+      "rarity": "Epic"
+    },
+    {
+      "id": 96,
+      "name": "Dreadthorn Wings Serum",
+      "essence": 9,
+      "form": 8,
+      "rarity": "Epic"
+    },
+    {
+      "id": 97,
+      "name": "Dreadthorn Wraith Serum",
+      "essence": 9,
+      "form": 9,
+      "rarity": "Epic"
+    },
+    {
+      "id": 98,
+      "name": "Dreadthorn Sovereign Serum",
+      "essence": 9,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 99,
+      "name": "Dreadthorn Avatar Serum",
+      "essence": 9,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 100,
+      "name": "Bloodmoon Veil Serum",
+      "essence": 10,
+      "form": 1,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 101,
+      "name": "Bloodmoon Runes Serum",
+      "essence": 10,
+      "form": 2,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 102,
+      "name": "Bloodmoon Hide Serum",
+      "essence": 10,
+      "form": 3,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 103,
+      "name": "Bloodmoon Crest Serum",
+      "essence": 10,
+      "form": 4,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 104,
+      "name": "Bloodmoon Fangs Serum",
+      "essence": 10,
+      "form": 5,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 105,
+      "name": "Bloodmoon Talons Serum",
+      "essence": 10,
+      "form": 6,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 106,
+      "name": "Bloodmoon Spines Serum",
+      "essence": 10,
+      "form": 7,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 107,
+      "name": "Bloodmoon Wings Serum",
+      "essence": 10,
+      "form": 8,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 108,
+      "name": "Bloodmoon Wraith Serum",
+      "essence": 10,
+      "form": 9,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 109,
+      "name": "Bloodmoon Sovereign Serum",
+      "essence": 10,
+      "form": 10,
+      "rarity": "Legendary"
+    },
+    {
+      "id": 110,
+      "name": "Bloodmoon Avatar Serum",
+      "essence": 10,
+      "form": 11,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 111,
+      "name": "Voidheart Veil Serum",
+      "essence": 11,
+      "form": 1,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 112,
+      "name": "Voidheart Runes Serum",
+      "essence": 11,
+      "form": 2,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 113,
+      "name": "Voidheart Hide Serum",
+      "essence": 11,
+      "form": 3,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 114,
+      "name": "Voidheart Crest Serum",
+      "essence": 11,
+      "form": 4,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 115,
+      "name": "Voidheart Fangs Serum",
+      "essence": 11,
+      "form": 5,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 116,
+      "name": "Voidheart Talons Serum",
+      "essence": 11,
+      "form": 6,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 117,
+      "name": "Voidheart Spines Serum",
+      "essence": 11,
+      "form": 7,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 118,
+      "name": "Voidheart Wings Serum",
+      "essence": 11,
+      "form": 8,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 119,
+      "name": "Voidheart Wraith Serum",
+      "essence": 11,
+      "form": 9,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 120,
+      "name": "Voidheart Sovereign Serum",
+      "essence": 11,
+      "form": 10,
+      "rarity": "Mythic"
+    },
+    {
+      "id": 121,
+      "name": "Voidheart Avatar Serum",
+      "essence": 11,
+      "form": 11,
+      "rarity": "Mythic"
+    }
+  ]
+}

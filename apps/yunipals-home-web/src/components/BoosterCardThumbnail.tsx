@@ -10,13 +10,15 @@ type BoosterCardThumbnailProps = {
   alt: string;
   eager?: boolean;
   className?: string;
+  cutout?: string;
 };
 
 export function BoosterCardThumbnail({
   image,
   alt,
   eager = false,
-  className
+  className,
+  cutout
 }: BoosterCardThumbnailProps) {
   const [loadedSource, setLoadedSource] = useState<string | null>(null);
   const [failedPreview, setFailedPreview] = useState<string | null>(null);
@@ -49,7 +51,7 @@ export function BoosterCardThumbnail({
       )}
       <img
         src={source}
-        style={cardArtworkCutoutStyle(image)}
+        style={cardArtworkCutoutStyle(image, cutout)}
         alt={alt}
         width={520}
         height={780}

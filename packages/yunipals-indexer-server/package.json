@@ -11,7 +11,8 @@
     "./arena": "./src/arena.ts",
     "./marketplace": "./src/marketplace.ts",
     "./action-evidence": "./src/action-evidence.ts",
-    "./anime": "./src/anime.ts"
+    "./anime": "./src/anime.ts",
+    "./evolution": "./src/evolution.ts"
   },
   "dependencies": {
     "@protopals/yunipals-indexer-client": "workspace:*",

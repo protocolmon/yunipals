@@ -4,7 +4,7 @@ import type { BoosterMonster } from "@protopals/yunipals-market-core/boosters";
 const pickerAbi = parseAbi([
   "function matches(uint256 portalId, uint256 tokenId) view returns (bool)",
   "function pendingRequest(uint256 tokenId) view returns (uint256)",
-  "function artVersion(uint256 tokenId) view returns (uint64)",
+  "function historyCount(uint256 tokenId) view returns (uint256)",
   "function ownerOf(uint256 tokenId) view returns (address)"
 ]);
 
@@ -55,7 +55,7 @@ export async function eligiblePortalCards(
         {
           address: context.grading,
           abi: pickerAbi,
-          functionName: "artVersion",
+          functionName: "historyCount",
           args: [BigInt(card.tokenId)]
         }
       ])
@@ -67,14 +67,14 @@ export async function eligiblePortalCards(
   )
     throw new Error("Could not check your cards. Please try again.");
   return candidates.filter((_, index) => {
-    const [matches, pending, owner, version] = checks.slice(
+    const [matches, pending, owner, completedGrades] = checks.slice(
       index * 4,
       index * 4 + 4
     );
     return (
       matches.result === true &&
       pending.result === 0n &&
-      version.result === 0n &&
+      completedGrades.result === 0n &&
       typeof owner.result === "string" &&
       owner.result.toLowerCase() === context.owner.toLowerCase()
     );

@@ -1,3 +1,5 @@
+import { environment } from "@/environment";
+import { fetchAdventureCards, type AdventureCard } from "@/lib/evolution";
 import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
@@ -16,6 +18,13 @@ import {
 import { cn } from "@/lib/utils";
 import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 
+export type PortalSelectableCard = {
+  tokenId: string;
+  metadataUri: string;
+  name: string;
+  base?: BoosterMonster;
+  evolution?: AdventureCard;
+};
 export function PortalCardPicker({
   status,
   owner,
@@ -28,7 +37,7 @@ export function PortalCardPicker({
   owner: Address;
   client: PublicClient;
   preferredTokenId?: string;
-  onSelect: (card: BoosterMonster) => void;
+  onSelect: (card: PortalSelectableCard) => void;
   onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -48,6 +57,27 @@ export function PortalCardPicker({
     queryFn: async ({ pageParam, signal }) => {
       if (!portal || !portalDeploymentMatches(status))
         throw new Error("The portal configuration changed. Please refresh.");
+      if (environment.evolutionEnabled) {
+        const page = await fetchAdventureCards(
+          owner,
+          pageParam,
+          undefined,
+          signal,
+          portal.id
+        );
+        return {
+          items: page.cards.map(
+            (card) =>
+              ({
+                tokenId: card.tokenId,
+                metadataUri: card.metadataURI,
+                name: card.level ? `Fusion ${card.level}` : "Yunipal",
+                evolution: card
+              }) as PortalSelectableCard
+          ),
+          nextCursor: page.nextAfter
+        };
+      }
       const page = await fetchPackGridPage(
         status.deployment.cards,
         owner,
@@ -66,7 +96,18 @@ export function PortalCardPicker({
         page.items
       );
       signal.throwIfAborted();
-      return { items, nextCursor: page.nextCursor };
+      return {
+        items: items.map(
+          (card) =>
+            ({
+              tokenId: card.tokenId,
+              metadataUri: card.metadataUri,
+              name: packGridTraits(card).Type,
+              base: card
+            }) as PortalSelectableCard
+        ),
+        nextCursor: page.nextCursor
+      };
     },
     getNextPageParam: (page) => page.nextCursor ?? undefined,
     staleTime: 0,
@@ -146,29 +187,38 @@ export function PortalCardPicker({
       )}
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {items.map((card) => {
-          const traits = packGridTraits(card);
+          const traits = card.base ? packGridTraits(card.base) : null;
           return (
             <button
-              key={card.id}
+              key={card.tokenId}
               type="button"
-              aria-label={`Choose ${traits.Type} #${card.tokenId}`}
+              aria-label={`Choose ${card.name} #${card.tokenId}`}
               onClick={() => onSelect(card)}
               className="overflow-hidden rounded-2xl border border-line bg-white p-2 text-left transition-colors hover:border-grape focus-visible:outline-grape"
             >
               <div className="aspect-[2/3] overflow-hidden rounded-xl bg-lavender/15">
-                <BoosterArtwork
-                  uri={card.metadataUri}
-                  card={card}
-                  label={`${traits.Type} #${card.tokenId}`}
-                  display="thumbnail"
-                />
+                {card.evolution ? (
+                  <BoosterArtwork
+                    uri={card.metadataUri}
+                    label={`${card.name} #${card.tokenId}`}
+                    display="thumbnail"
+                  />
+                ) : (
+                  <BoosterArtwork
+                    uri={card.metadataUri}
+                    card={card.base}
+                    label={`${card.name} #${card.tokenId}`}
+                    display="thumbnail"
+                  />
+                )}
               </div>
               <p className="mt-2 text-sm font-bold">
-                {traits.Type} #{card.tokenId}
+                {card.name} #{card.tokenId}
               </p>
               <p className="mt-1 text-xs text-muted">
-                {traits.Color} · {traits.Horn}
-                {traits.Glitter === "Yes" ? " · Glitter" : ""}
+                {traits
+                  ? `${traits.Color} · ${traits.Horn}${traits.Glitter === "Yes" ? " · Glitter" : ""}`
+                  : `Matching source #${card.evolution?.portalWitness}`}
               </p>
             </button>
           );
