@@ -146,11 +146,27 @@ export function AnimeStudioPage() {
             Meet the fighters
           </h1>
           <p className="mt-3 max-w-xl text-muted">
-            Explore approved monsters and follow new applications.
+            Explore approved monsters and follow new applications from all
+            players. Approval prepares your monster for battle; it does not
+            enter a battle automatically.
           </p>
         </div>
         <AnimeEligibilityBadge />
       </header>
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <Link
+          to="/arena/anime"
+          className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-grape"
+        >
+          Join a battle
+        </Link>
+        <p className="text-sm text-muted">
+          Already approved? Choose one of your fighters in the arena to enter.
+        </p>
+      </div>
+      <p className="mb-3 text-sm font-semibold text-muted">
+        Across all players
+      </p>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
         <div className="flex flex-wrap gap-2" aria-label="Filter fighters">
           {statuses.map((value) => (

@@ -1216,6 +1216,9 @@ async function verifyApprovalFlow() {
     .getByRole("button", { name: /^Connect(?: wallet)?$/i })
     .click();
   await page.getByRole("button", { name: /Arena Test Wallet/i }).click();
+  await page
+    .getByText("Payment options · 2 USDC approval limit", { exact: true })
+    .click();
   const selector = page.getByRole("combobox", { name: "USDC approval limit" });
   await selector.waitFor();
   assert.match(await selector.innerText(), /2 USDC/);

@@ -17,11 +17,13 @@ const modules = {
     import {ArenaDeploymentProvider} from '/src/lib/arenaDeployment';
     import {ArenaQueuePage} from '/src/pages/arena/live/ArenaQueuePage';
     import {LiveArenaPage} from '/src/pages/arena/live/LiveArenaPage';
+    import {AnimeStudioPage} from '/src/pages/arena/anime/AnimeStudioPage';
     const kind=location.pathname.includes('/video')?'video':'anime';
     createRoot(document.getElementById('root')).render(
       <BrowserRouter><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}>
         <ArenaDeploymentProvider kind={kind}><Routes>
           <Route path="/arena/:kind" element={<ArenaQueuePage/>}/>
+          <Route path="/arena/anime/studio" element={<AnimeStudioPage/>}/>
           <Route path="/arena/:kind/:id" element={<LiveArenaPage/>}/>
           <Route path="*" element={<p>Application destination</p>}/>
         </Routes></ArenaDeploymentProvider>
@@ -31,7 +33,9 @@ const modules = {
     export const useAccount=()=>({address:new URLSearchParams(location.search).has('disconnected')?undefined:'${owner}'});
     export const usePublicClient=()=>undefined;
   `,
-  "virtual:wallet.ts": `export const useArenaWallet=()=>({});`,
+  "virtual:wallet.ts": `export const useArenaWallet=()=>({
+    entryProgress:new URLSearchParams(location.search).has('confirming')?{key:new URLSearchParams(location.search).has('other-battle')?'2/entry':'1/entry',label:'Confirm in wallet…'}:null
+  });`,
   "virtual:environment.ts": `export const environment={sharedArenaApiUrl:'/__arena',yunipalsIndexerUrl:'/__indexer'};`
 };
 const server = await createServer({
@@ -96,6 +100,17 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   let approved = false;
+  let phase = "open";
+  let entered = false;
+  let submitted = false;
+  let full = false;
+  const seat = {
+    seat: 0,
+    player: owner,
+    nftChainId: 8453,
+    collection: "0x98433df878e8c898cb907345c3a7756e5f72240f",
+    tokenId: "1234"
+  };
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (url.origin !== origin) return route.abort();
@@ -109,19 +124,63 @@ try {
         entriesEnabled: true
       };
     else if (path.endsWith("/context"))
-      data = { ready: false, island: null, roster: [], tiePriority: [] };
+      data = {
+        ready: false,
+        island: null,
+        tiePriority: [],
+        roster: entered
+          ? [
+              {
+                id: "1234",
+                name: "Test Yunichick",
+                image: "/images/arena/anime-chick.webp",
+                identity: "A test fighter",
+                locomotion: "ground",
+                animeDefaultLoadout: ["a", "b"],
+                animeKits: [
+                  { id: "a", name: "Dust Kick", description: "A dust attack" },
+                  {
+                    id: "b",
+                    name: "Hoof Sweep",
+                    description: "A sweeping attack"
+                  },
+                  {
+                    id: "c",
+                    name: "Stubborn Rush",
+                    description: "A rushing attack"
+                  }
+                ]
+              }
+            ]
+          : []
+      };
     else if (/\/tournaments\/1$/.test(path))
       data = {
         id: "1",
-        phase: "open",
-        seats: [],
+        phase,
+        seats: full
+          ? Array.from({ length: 4 }, (_, i) => ({
+              ...seat,
+              seat: i,
+              tokenId: String(100 + i),
+              player: `0x${"2".repeat(40)}`
+            }))
+          : entered
+            ? [seat]
+            : [],
         serverTime: Math.floor(Date.now() / 1000),
         deadline: Math.floor(Date.now() / 1000) + 86400,
-        submittedSeats: [],
+        submittedSeats: submitted ? [0] : [],
         requestId: null
       };
     else if (path.endsWith("/tournaments"))
       data = { items: [], nextCursor: null };
+    else if (path.endsWith("/fighters"))
+      data = {
+        items: [],
+        nextCursor: null,
+        counts: { Approved: 9, Applied: 0, Rejected: 0, Revoked: 0 }
+      };
     else if (path.includes("/fighters/"))
       data = { fighter: { status: approved ? "Approved" : "Applied" } };
     else if (path.startsWith("/__indexer/"))
@@ -224,6 +283,175 @@ try {
       .count(),
     0
   );
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .waitFor();
+    const journey = page.getByRole("region", { name: "Battle steps" });
+    assert.equal(
+      (await journey.locator('[aria-current="step"]').innerText()).replace(
+        /\s+/g,
+        " "
+      ),
+      "1. Choose fighter"
+    );
+    assert.equal(
+      await page.evaluate(() => {
+        const picker = document.querySelector("#join");
+        const roster = [...document.querySelectorAll("h2")].find(
+          (el) => el.textContent === "Battle roster"
+        );
+        return !!(
+          picker.compareDocumentPosition(roster) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+        );
+      }),
+      true
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth
+      ),
+      true
+    );
+    await page.screenshot({
+      path: `${output}/${width}-guided-entry.png`,
+      fullPage: true
+    });
+
+    await page.goto(origin + "/arena/anime/1?confirming");
+    await page
+      .getByRole("heading", { name: "Complete your entry in your wallet" })
+      .waitFor();
+    assert.equal(
+      (await journey.locator('[aria-current="step"]').innerText()).replace(
+        /\s+/g,
+        " "
+      ),
+      "2. Confirm entry"
+    );
+
+    await page.goto(origin + "/arena/anime/1?confirming&other-battle");
+    await journey
+      .getByRole("heading", { name: "One fighter is all you need" })
+      .waitFor();
+    full = true;
+    await page.goto(origin + "/arena/anime/1");
+    await journey
+      .getByRole("heading", { name: "This battle is full" })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+        .isDisabled(),
+      true
+    );
+    full = false;
+    entered = true;
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByRole("heading", {
+        name: "You’re entered — here’s what happens next"
+      })
+      .waitFor();
+    assert.equal(
+      (await journey.locator('[aria-current="step"]').innerText()).replace(
+        /\s+/g,
+        " "
+      ),
+      "3. Wait for opponents"
+    );
+    const additional = page.locator("#join > details");
+    assert.equal(await additional.getAttribute("open"), null);
+    const summary = page.getByText("Enter another fighter (optional)", {
+      exact: true
+    });
+    await summary.focus();
+    await page.keyboard.press("Enter");
+    assert.notEqual(await additional.getAttribute("open"), null);
+    await page.getByRole("button", { name: "Entered", exact: true }).waitFor();
+    await page.keyboard.press("Enter");
+    await page.screenshot({
+      path: `${output}/${width}-entered.png`,
+      fullPage: true
+    });
+
+    phase = "strategies";
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByRole("heading", { name: "Next: submit your strategy" })
+      .waitFor();
+    assert.equal(
+      (await journey.locator('[aria-current="step"]').innerText()).replace(
+        /\s+/g,
+        " "
+      ),
+      "4. Submit strategy"
+    );
+    await page
+      .getByText("Choose two of your fighter’s three available attacks", {
+        exact: false
+      })
+      .waitFor();
+    await page.getByText("2 of 2 selected.", { exact: false }).waitFor();
+    await page.screenshot({
+      path: `${output}/${width}-strategy.png`,
+      fullPage: true
+    });
+    submitted = true;
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByRole("heading", { name: "Your strategy is locked" })
+      .waitFor();
+    phase = "resolving";
+    await page.goto(origin + "/arena/anime/1");
+    await journey
+      .getByRole("heading", { name: "The referee is deciding the battle" })
+      .waitFor();
+    assert.equal(
+      (await journey.locator('[aria-current="step"]').innerText()).replace(
+        /\s+/g,
+        " "
+      ),
+      "5. Watch battle"
+    );
+    phase = "expired";
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByText("Entry refunds are managed in", { exact: false })
+      .waitFor();
+    assert.equal(await journey.count(), 0);
+    phase = "open";
+    entered = false;
+    submitted = false;
+
+    await page.goto(origin + "/arena/anime/studio");
+    await page.getByRole("button", { name: "Approved · 9" }).waitFor();
+    await page.getByText("Across all players", { exact: true }).waitFor();
+    assert.equal(
+      await page
+        .getByRole("link", { name: "Join a battle", exact: true })
+        .getAttribute("href"),
+      "/arena/anime"
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth
+      ),
+      true
+    );
+    await page.screenshot({
+      path: `${output}/${width}-gallery.png`,
+      fullPage: true
+    });
+    await page
+      .getByRole("link", { name: "Join a battle", exact: true })
+      .click();
+    await page.getByRole("heading", { name: "Join a battle" }).waitFor();
+  }
+  await page.goto(origin + "/arena/anime/1");
   await page.getByRole("link", { name: "My Base Yunipals" }).click();
   assert.equal(new URL(page.url()).pathname, `/collector/${owner}`);
   assert.equal(new URL(page.url()).search, "?edition=airdrop");
@@ -237,7 +465,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation and video isolation."
+    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation, picker order, wallet confirmation, entered/strategy/resolving/expired guidance, optional entry keyboard disclosure, gallery next action and video isolation."
   );
 } finally {
   await browser.close();
