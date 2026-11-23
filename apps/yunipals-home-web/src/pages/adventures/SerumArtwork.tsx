@@ -3,6 +3,7 @@ import {
   serumCatalogue,
   serumEssences
 } from "@protopals/yunipals-market-core/serums";
+import { Select, SelectItem } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 /** Catalogue v1 bottle art. Presence is deliberately displayed separately. */
@@ -47,18 +48,13 @@ export function SerumCatalogue() {
         </div>
         <div className="flex flex-col gap-2 text-sm font-semibold">
           <label htmlFor="serum-essence">Essence</label>
-          <select
-            id="serum-essence"
-            value={essence}
-            onChange={(event) => setEssence(event.target.value)}
-            className="rounded-full border border-line bg-white px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grape"
-          >
+          <Select id="serum-essence" value={essence} onValueChange={setEssence}>
             {serumEssences.map((name) => (
-              <option key={name} value={name}>
+              <SelectItem key={name} value={name}>
                 {name}
-              </option>
+              </SelectItem>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
       <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
