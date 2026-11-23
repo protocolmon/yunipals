@@ -30,6 +30,7 @@ import {
   SerumHistory,
   adventureButton
 } from "./AdventureCards";
+import { SerumArtwork, SerumCatalogue } from "./SerumArtwork";
 
 export function AdventurePage() {
   const { tokenId } = useParams();
@@ -164,6 +165,7 @@ export function AdventurePage() {
               </figcaption>
             </figure>
           </section>
+          <SerumCatalogue />
           <section className="mt-12">
             <h2 className="font-display text-2xl font-bold">
               Three collectible finishes
@@ -362,9 +364,16 @@ export function AdventurePage() {
                   </h2>
                   {serum ? (
                     <>
-                      <p className="mt-2">
-                        {serum.rarity} · {serum.presence} Presence
-                      </p>
+                      <div className="mt-3 flex items-center gap-4">
+                        <SerumArtwork serumId={serum.id} />
+                        <div className="min-w-0 text-sm">
+                          <p className="font-semibold">{serum.rarity}</p>
+                          <p className="mt-1">{serum.presence} Presence</p>
+                          <p className="mt-1 text-muted">
+                            Found by this companion
+                          </p>
+                        </div>
+                      </div>
                       <p className="mt-2 text-sm">
                         Presence: {serumPresences[card.presence]} →{" "}
                         {serum.presence}. Physical effects stack, including

@@ -13,6 +13,7 @@ import {
   type DoseHistory
 } from "@/lib/evolution";
 import { cn } from "@/lib/utils";
+import { SerumArtwork } from "./SerumArtwork";
 
 export const adventureButton = dialogButtonVariants({ variant: "primary" });
 export function AdventureCardTile({
@@ -123,12 +124,23 @@ export function SerumHistory({ history }: { history: DoseHistory }) {
         {cardFinishes[history.finish]} finish
       </p>
       {history.doses.length ? (
-        <ol className="list-inside list-decimal space-y-1 text-sm">
+        <ol
+          className="space-y-3 text-sm"
+          aria-label="Serum doses in application order"
+        >
           {history.doses.map((dose, i) => {
             const serum = serumDefinition(dose);
             return (
-              <li key={i}>
-                {serum.name} · {serum.presence}
+              <li key={i} className="flex items-center gap-3">
+                <SerumArtwork serumId={serum.id} className="h-12 w-12" />
+                <div className="min-w-0">
+                  <p>
+                    {i + 1}. {serum.name}
+                  </p>
+                  <p className="mt-1 text-xs text-muted">
+                    {serum.presence} Presence
+                  </p>
+                </div>
               </li>
             );
           })}
