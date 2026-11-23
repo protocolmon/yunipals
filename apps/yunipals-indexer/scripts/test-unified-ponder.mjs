@@ -560,6 +560,32 @@ try {
     const deployment = `8453:${manifest.sources.find((s) => s.id === source).address}`;
     const cardKey = { id: `${deployment}:card:9` };
     const jobKey = { id: `${deployment}:job:1` };
+    const beforeFee = structuredClone(state);
+    const feeIndex = logIndex;
+    const feeEvent = (fee) =>
+      dispatch(
+        "YunipalEvolution:EvolutionFeeReserved",
+        { requestId: 1n, fee, sponsoredSerumsUsed: 1000n },
+        source,
+        99
+      );
+    await feeEvent(0n);
+    assert.equal(get(schema.evolutionProjection, jobKey).value.sponsored, true);
+    logIndex = feeIndex;
+    await feeEvent(0n);
+    assert.equal(
+      get(schema.evolutionProjection, jobKey).value.sponsoredSerumsUsed,
+      "1000"
+    );
+    state.clear();
+    for (const [key, value] of beforeFee) state.set(key, value);
+    logIndex = feeIndex;
+    await feeEvent(100000n);
+    assert.equal(
+      get(schema.evolutionProjection, jobKey).value.sponsored,
+      false
+    );
+    assert.equal(get(schema.evolutionProjection, jobKey).value.fee, "100000");
     await dispatch(
       "YunipalEvolution:EvolutionRequested",
       {

@@ -16,7 +16,7 @@ Approved product plan, updated 20 November 2026. Branch: `codex/adventures-serum
 - A serum is contract state attached to a card, not an NFT, wallet inventory item or independently transferable asset. A newly found serum replaces that card's previous unused serum.
 - Each card can adventure once per rolling 24 hours. Higher mint-sequence positions have higher chances of rare outcomes. An adventure that finds nothing keeps the previous unused serum.
 - First serum use assigns a permanent Normal / Golden / Black finish at 70% / 25% / 5%; every new fusion rolls a fresh finish. First-serum and fusion rolls use player-funded VRF, separate from serum rarity and Presence.
-- Applying a serum costs exactly 0.1 USDC, changes artwork and metadata, and stacks onto existing effects. Repeated applications of the same serum strengthen its effect.
+- Applying a serum normally costs 0.1 USDC; the first 1,000 accepted applications are sponsored as specified below. It changes artwork and metadata and stacks onto existing effects. Repeated applications of the same serum strengthen its effect.
 - A card can drink at most 11 doses of its own. Every newly fused card retains both parents' effects and receives 11 new doses. A fully developed four-card result can therefore carry 77 doses across its ancestry.
 - Application order matters: A then B can differ from B then A, and both remain recorded in history.
 - First fusion: two unfused cards at neighbouring sequence positions within the same original lineage; both must have the same owner.
@@ -463,3 +463,54 @@ Use the private operator repository for deployments and evidence. Keep addresses
 6. Enable the frontend using `VITE_EVOLUTION_ENABLED`, `VITE_EVOLUTION_ADDRESS` and `VITE_ADVENTURES_ADDRESS`, together with the existing collection/portal network and API configuration, after end-to-end verification. Owners must see both the USDC generation fee and any ETH randomness quote before submitting.
 
 To stop intake, pause adventure randomness requests and evolution requests on their respective contracts (`pauseRandomness(true)` and `pauseRequests(true)`), and disable frontend actions as appropriate. Keep callbacks, recovery, generation completions and published assets available so already-reserved cards can finish. Restore the worker database and immutable assets together. Do not downgrade a collection or grading implementation to code that does not understand already-minted fusions or evolved artwork; prepare a compatible forward fix through the private release workflow.
+
+### Launch serum sponsorship
+
+The project waives the 0.10 USDC AI fee for the first 1,000 accepted serum
+applications globally, across wallets, base cards and fused cards. Every dose
+counts, including repeat doses. Fusion remains 0.10 USDC. Gas and any required
+first-finish VRF payment remain player-paid. The existing project AI provider
+configuration pays provider invoices; no sponsor USDC deposit is required. This
+waives up to 100 USDC of player fees, not a guarantee of the provider's actual
+billing cost.
+
+`YunipalEvolution` reserves a slot atomically when consumption is accepted,
+before generation. There is no cancellation, replenishment, per-wallet quota
+or administrative counter-reset entry point. Reverted requests consume no slot;
+VRF settlement, worker retries and successful completion never consume another.
+After 1,000 reservations, the standard fee applies. A pending sponsored job keeps
+its free status even if it completes after the cap is exhausted.
+
+The new six-argument `consumeSerum` entry point binds `maxAiFee` alongside the VRF
+budget. Quotes read `serumApplicationFee` at the quoted live block. The frontend
+validates the fee against calldata, skips USDC approval for a zero quote and
+checks availability again before submitting. A stale zero-fee transaction
+reverts onchain instead of spending an existing allowance; reverted gas may
+still be charged. The old five-argument entry point is retired: old clients and
+unsubmitted old quotes must refresh to the matching frontend. This does not
+change already accepted requests or their completion bindings.
+
+`EvolutionFeeReserved` records the paid fee and current sponsored count in the
+existing global event journal and job projection. The availability endpoint
+reads the contract at the global indexer's confirmed block. Its remaining count
+is informational; the transaction decides who gets the last slot. Rollback and
+replay use the existing canonical handler infrastructure, with no new indexer.
+
+Upgrade storage is append-only and checked against the pre-sponsorship layout.
+The request struct and artwork binding are unchanged. Existing pending jobs
+remain paid and settle their original escrow. A pinned previous implementation
+fixture verifies upgrade completion and binding compatibility. On an already
+used deployment, sponsorship starts with the next 1,000 new consumption requests;
+there are no retroactive refunds. Subsequent upgrades preserve the counter.
+
+For a fresh deployment, use the new evolution implementation. For an existing
+proxy, `pnpm --filter @protopals/yunipals-indexer evolution:sponsorship:prepare`
+produces an unsigned `upgradeToAndCall(newImplementation, 0x)` from
+`EVOLUTION_ADDRESS` and `EVOLUTION_IMPLEMENTATION`. There is no reinitializer.
+Pause new evolution requests through the existing release workflow, verify
+storage/runtime/fork and pending-job checks, upgrade only the evolution proxy,
+register the updated global source manifest/build (new fee event ABI), and
+release the matching API and frontend before reopening intake. Preserve prior
+source coverage and canonical history during re-registration. Production
+execution and evidence belong in the private operations repository. No live
+upgrade or sponsorship activation is performed by this code change.

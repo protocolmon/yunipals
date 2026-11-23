@@ -142,6 +142,7 @@
     "evolution:worker": "tsx scripts/evolution-worker.ts",
     "evolution:migrate": "tsx scripts/evolution-worker.ts --migrate",
     "evolution:policy": "tsx scripts/evolution-worker.ts --policy",
+    "evolution:sponsorship:prepare": "tsx scripts/prepare-serum-sponsorship.ts",
     "evolution:prepare": "tsx scripts/prepare-evolution.ts",
     "test:evolution": "vitest run test/evolution.test.ts test/evolution-worker.test.ts test/evolution-readiness.test.ts test/evolution-routes.test.ts test/evolution-holo.test.ts",
     "test:evolution:local": "node --import tsx scripts/test-evolution-local.mjs",

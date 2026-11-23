@@ -215,3 +215,118 @@ it("serves published artifacts and bound masks while intake is disabled, never u
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+describe("serum sponsorship quotes", () => {
+  function fixture(fee: bigint, used: bigint) {
+    const readContract = vi.fn(
+      async ({ functionName }: { functionName: string }) => {
+        if (functionName === "serumApplicationFee") return fee;
+        if (functionName === "sponsoredSerumsUsed") return used;
+        if (functionName === "quoteRandomness") return 100n;
+        throw new Error(`Unexpected read: ${functionName}`);
+      }
+    );
+    const runtime = {
+      store: { deployment: "fixture" },
+      portal: { chain: { deployment: { chainId: 8453, usdc: owner } } },
+      reader: {
+        snapshot: async (fn: (db: unknown, ctx: unknown) => unknown) =>
+          fn(
+            {},
+            {
+              deployment: "fixture",
+              evolution: owner,
+              block: 100n,
+              hash
+            }
+          )
+      },
+      chain: {
+        client: {
+          getBlock: async ({ blockNumber }: { blockNumber?: bigint } = {}) => ({
+            number: blockNumber ?? 110n,
+            hash,
+            timestamp: 1000n
+          }),
+          estimateFeesPerGas: async () => ({
+            maxFeePerGas: 10n,
+            maxPriorityFeePerGas: 1n
+          }),
+          readContract
+        },
+        card: async (id: bigint) => ({
+          tokenId: String(id),
+          owner,
+          graded: false,
+          reservedBy: null,
+          pendingGrade: null,
+          localDoses: 0,
+          finish: 0,
+          effectiveSequence: 0,
+          artVersion: "0",
+          historyHash: hash,
+          unused: { catalogueVersion: 1, serumId: 121, presenceId: 1 }
+        })
+      }
+    } as unknown as EvolutionRuntime;
+    const app = new Hono();
+    registerEvolutionRoutes(app, {
+      enabled: () => true,
+      runtime: async () => runtime
+    });
+    return { app, readContract };
+  }
+  it.each([0n, 100000n])(
+    "binds the live %s fee into the consumption calldata",
+    async (fee) => {
+      const { app, readContract } = fixture(fee, fee === 0n ? 999n : 1000n);
+      const response = await app.request(
+        `/v1/evolution/quote?kind=serum&tokenId=1&owner=${owner}`
+      );
+      expect(response.status).toBe(200);
+      const quote = await response.json();
+      expect(quote.fee).toBe(String(fee));
+      const { decodeFunctionData } = await import("viem");
+      const { evolutionAbi } = await import(
+        "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+      );
+      const decoded = decodeFunctionData({
+        abi: evolutionAbi,
+        data: quote.data
+      });
+      expect(decoded.functionName).toBe("consumeSerum");
+      expect(decoded.args).toHaveLength(6);
+      expect(decoded.args?.[3]).toBe(fee);
+      expect(quote.value).toBe("125"); // Sponsorship never removes the first-finish VRF fee.
+      expect(readContract).toHaveBeenCalledWith(
+        expect.objectContaining({
+          functionName: "serumApplicationFee",
+          blockNumber: 110n
+        })
+      );
+    }
+  );
+  it("reads availability at the canonical confirmed boundary", async () => {
+    const { app, readContract } = fixture(0n, 999n);
+    const response = await app.request("/v1/evolution/sponsorship");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      limit: 1000,
+      used: 999,
+      remaining: 1,
+      block: "100",
+      hash
+    });
+    expect(readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: "sponsoredSerumsUsed",
+        blockNumber: 100n
+      })
+    );
+  });
+  it("does not invent free availability when the counter read fails", async () => {
+    const { app, readContract } = fixture(0n, 0n);
+    readContract.mockRejectedValue(new Error("RPC unavailable"));
+    expect((await app.request("/v1/evolution/sponsorship")).status).toBe(503);
+  });
+});

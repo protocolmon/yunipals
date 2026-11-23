@@ -14,6 +14,7 @@ import {
   finishOdds,
   serumPresences,
   serumFee,
+  sponsoredSerumLimit,
   fusionCompatible
 } from "@protopals/yunipals-market-core/serums";
 import { createEvolutionRuntime, type EvolutionRuntime } from "./runtime.js";
@@ -165,6 +166,7 @@ export function registerEvolutionRoutes(
         grading: r.chain.grading,
         usdc: r.portal.chain.deployment.usdc,
         fee: serumFee,
+        sponsoredSerumLimit,
         catalogue: serumCatalogue,
         presences: serumPresences,
         finishes: cardFinishes,
@@ -172,6 +174,27 @@ export function registerEvolutionRoutes(
         block: ctx.block,
         hash: ctx.hash
       }))
+    )
+  );
+  router.get("/v1/evolution/sponsorship", async () =>
+    reply(
+      await snapshot(async (r, _db, ctx) => {
+        const used = await r.chain.client.readContract({
+          address: ctx.evolution as Address,
+          abi: evolutionAbi,
+          functionName: "sponsoredSerumsUsed",
+          blockNumber: ctx.block
+        });
+        if (used > BigInt(sponsoredSerumLimit))
+          throw new Error("Invalid sponsorship count.");
+        return {
+          limit: sponsoredSerumLimit,
+          used: Number(used),
+          remaining: sponsoredSerumLimit - Number(used),
+          block: ctx.block,
+          hash: ctx.hash
+        };
+      })
     )
   );
   router.get("/v1/evolution/cards/:id", async (c) => {
@@ -372,6 +395,17 @@ export function registerEvolutionRoutes(
           artVersion: BigInt(card.artVersion),
           historyHash: card.historyHash
         });
+        const fee =
+          kind === "adventure"
+            ? 0n
+            : kind === "serum"
+              ? await r.chain.client.readContract({
+                  address: target,
+                  abi: evolutionAbi,
+                  functionName: "serumApplicationFee",
+                  blockNumber: head.number
+                })
+              : serumFee;
         let data;
         if (kind === "adventure") {
           const catalogue = await r.chain.client.readContract({
@@ -393,7 +427,7 @@ export function registerEvolutionRoutes(
           data = encodeFunctionData({
             abi: evolutionAbi,
             functionName: "consumeSerum",
-            args: [id, expected(a), a.unused!, maximum, deadline]
+            args: [id, expected(a), a.unused!, fee, maximum, deadline]
           });
         else
           data = encodeFunctionData({
@@ -415,7 +449,7 @@ export function registerEvolutionRoutes(
           to: target,
           data,
           value: maximum,
-          fee: kind === "adventure" ? 0n : serumFee,
+          fee,
           fees: {
             maxFeePerGas: fees.maxFeePerGas,
             maxPriorityFeePerGas: fees.maxPriorityFeePerGas

@@ -7,7 +7,7 @@ root = Path(__file__).resolve().parents[2]
 output = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else "out-permit"
 assert output in ["out", "out-permit"], "Unsupported compiler output directory"
 new_contracts = ["PortalCollection", "PortalRegistry", "PortalGrading", "PortalGradingCompetition"]
-for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks", *new_contracts]:
+for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks", "YunipalEvolution", *new_contracts]:
     artifact = json.loads((root / "contracts/boosters" / output / f"{name}.sol/{name}.json").read_text())
     layout = artifact["storageLayout"]
 

@@ -160,7 +160,11 @@ export function validateEvolutionQuote(
     quote.chainId !== environment.portalChainId ||
     quote.to.toLowerCase() !== configured.toLowerCase() ||
     quote.kind !== kind ||
-    quote.fee !== (kind === "adventure" ? "0" : "100000") ||
+    !(
+      kind === "serum"
+        ? ["0", "100000"]
+        : [kind === "adventure" ? "0" : "100000"]
+    ).includes(quote.fee) ||
     quote.cards.some(
       (c) =>
         c.owner.toLowerCase() !== owner.toLowerCase() ||
@@ -204,6 +208,7 @@ export function validateEvolutionQuote(
             BigInt(tokenId),
             expected(a),
             a.unused,
+            BigInt(quote.fee),
             BigInt(quote.value),
             BigInt(quote.deadline)
           ]

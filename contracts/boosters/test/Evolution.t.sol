@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import {Test} from "forge-std/Test.sol";
+import {Test, StdStorage, stdStorage} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IVRFV2PlusWrapper} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
@@ -16,6 +16,10 @@ import {YunipalAdventures} from "../src/YunipalAdventures.sol";
 import {YunipalEvolution, IProgressionArtwork} from "../src/YunipalEvolution.sol";
 import {PortalTestUSDC, PortalTestEngine} from "./Portals.t.sol";
 import {MockWrapper} from "./BoosterPacks.t.sol";
+
+interface ILegacyEvolution {
+    function consumeSerum(uint256 tokenId, YunipalEvolution.Expected calldata expected, SerumCatalogue.Dose calldata dose, uint256 maxVrfPrice, uint64 deadline) external payable returns (uint256);
+}
 
 contract EvolutionTestEngine is PortalTestEngine {
     uint256 public pending;
@@ -85,6 +89,8 @@ contract EvolutionGateRegistry {
 }
 
 contract EvolutionTest is Test {
+    using stdStorage for StdStorage;
+    StdStorage private sponsorStorage;
     address private constant ALICE = address(0xa11ce);
     address private constant BOB = address(0xb0b);
     address private constant FEES = address(0xfee);
@@ -258,11 +264,12 @@ contract EvolutionTest is Test {
         YunipalEvolution.Expected memory e = expected(id);
         SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
         vm.prank(ALICE);
-        job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 0.001 ether, uint64(block.timestamp));
+        job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 100_000, 0.001 ether, uint64(block.timestamp));
         if (!evolution.getRequest(job).ready) wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
     }
 
     function testFuzzDoseEscrowAndReplay(uint8 rawCount, uint32 delaySeconds) public {
+        setSponsoredUsed(1000);
         uint256 count = bound(rawCount, 1, 11);
         uint256 id = original();
         uint256 initialBalance = usdc.balanceOf(ALICE);
@@ -288,6 +295,138 @@ contract EvolutionTest is Test {
         }
     }
 
+    function setSponsoredUsed(uint256 used) private {
+        sponsorStorage.target(address(evolution)).sig("sponsoredSerumsUsed()").checked_write(used);
+    }
+
+    function drinkWithLimit(uint256 id, uint256 limit) private returns (uint256 job) {
+        YunipalEvolution.Expected memory e = expected(id);
+        SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
+        vm.prank(ALICE);
+        return evolution.consumeSerum{value: 0.001 ether}(id, e, dose, limit, 0.001 ether, uint64(block.timestamp));
+    }
+
+    function testSponsoredDosesNeedNoUsdcAndRetriesKeepOneSlot() public {
+        uint256 id = original();
+        vm.prank(ALICE);
+        usdc.approve(address(evolution), 0);
+        deal(address(usdc), ALICE, 0);
+        assertEq(evolution.SPONSORED_SERUM_LIMIT(), 1000);
+        for (uint256 i; i < 2; ++i) {
+            findSerum(id);
+            uint256 ethBefore = ALICE.balance;
+            uint256 job = drinkWithLimit(id, 0);
+            assertEq(ALICE.balance, ethBefore - (i == 0 ? wrapper.PRICE() : 0), "VRF remains player paid");
+            assertEq(evolution.sponsoredSerumsUsed(), i + 1);
+            assertTrue(evolution.sponsoredRequest(job));
+            assertEq(evolution.feeLiability(), 0);
+            if (!evolution.getRequest(job).ready) wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
+            bytes32 binding = evolution.requestBinding(job);
+            vm.expectRevert();
+            evolution.complete(job, binding, YunipalEvolution.Artifact("", 0, "", 0));
+            assertEq(evolution.sponsoredSerumsUsed(), i + 1);
+            assertEq(cards.cardReservation(id), address(evolution));
+            complete(job);
+            vm.expectRevert("request not ready or changed");
+            evolution.complete(job, binding, YunipalEvolution.Artifact("ipfs://evolved", keccak256("art"), "ipfs://metadata", keccak256("metadata")));
+            assertEq(evolution.sponsoredSerumsUsed(), i + 1);
+        }
+        assertEq(usdc.balanceOf(FEES), 0);
+        assertEq(usdc.balanceOf(address(evolution)), 0);
+    }
+
+    function testLastSponsoredSlotAndStaleQuoteCannotChargeApprovedWallet() public {
+        setSponsoredUsed(999);
+        uint256 a = original();
+        uint256 b = child(a, 1);
+        findSerum(a);
+        findSerum(b);
+        assertEq(evolution.serumApplicationFee(), 0);
+        uint256 freeJob = drinkWithLimit(a, 0);
+        assertEq(evolution.sponsoredSerumsUsed(), 1000);
+        assertEq(evolution.serumApplicationFee(), 100_000);
+        uint256 balance = usdc.balanceOf(ALICE);
+        YunipalEvolution.Expected memory e = expected(b);
+        SerumCatalogue.Dose memory dose = adventures.unusedSerum(b);
+        vm.prank(ALICE);
+        vm.expectRevert(YunipalEvolution.AiFeeExceedsBudget.selector);
+        evolution.consumeSerum{value: 0.001 ether}(b, e, dose, 0, 0.001 ether, uint64(block.timestamp));
+        assertEq(usdc.balanceOf(ALICE), balance);
+        assertEq(cards.cardReservation(b), address(0));
+        uint256 paidJob = drinkWithLimit(b, 100_000);
+        assertFalse(evolution.sponsoredRequest(paidJob));
+        assertEq(usdc.balanceOf(ALICE), balance - 100_000);
+        assertEq(evolution.feeLiability(), 100_000);
+        complete(freeJob);
+        assertEq(evolution.feeLiability(), 100_000, "free completion cannot consume another job's escrow");
+        complete(paidJob);
+        assertEq(evolution.feeLiability(), 0);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+        assertEq(evolution.sponsoredSerumsUsed(), 1000);
+    }
+
+    function testRevertedAdmissionDoesNotUseSponsorship() public {
+        uint256 id = original();
+        findSerum(id);
+        YunipalEvolution.Expected memory e = expected(id);
+        SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
+        vm.prank(BOB);
+        vm.expectRevert("owner only");
+        evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 0, 0.001 ether, uint64(block.timestamp));
+        vm.prank(ALICE);
+        vm.expectRevert("VRF price exceeds budget");
+        evolution.consumeSerum(id, e, dose, 0, 0, uint64(block.timestamp));
+        assertEq(evolution.sponsoredSerumsUsed(), 0);
+        assertEq(evolution.requestCount(), 0);
+        assertEq(cards.cardReservation(id), address(0));
+        assertEq(adventures.unusedSerum(id).serumId, dose.serumId);
+    }
+
+    function testFusionStaysPaidAndFusedCardCanUseSponsorship() public {
+        uint256 a = original();
+        uint256 job = fuse(a, child(a, 1));
+        assertFalse(evolution.sponsoredRequest(job));
+        assertEq(evolution.sponsoredSerumsUsed(), 0);
+        assertEq(evolution.feeLiability(), 100_000);
+        uint256 fused = complete(job);
+        findSerum(fused);
+        complete(drinkWithLimit(fused, 0));
+        assertEq(evolution.sponsoredSerumsUsed(), 1);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+    }
+
+    function testUpgradePreservesLegacyPaidRequestAndBinding() public {
+        bytes memory code = vm.parseJsonBytes(
+            vm.readFile("test/fixtures/YunipalEvolution.pre-sponsorship.json"), ".creationBytecode"
+        );
+        address legacy;
+        assembly { legacy := create(0, add(code, 32), mload(code)) }
+        require(legacy != address(0), "legacy deployment failed");
+        evolution.upgradeToAndCall(legacy, "");
+        uint256 id = original();
+        findSerum(id);
+        YunipalEvolution.Expected memory e = expected(id);
+        SerumCatalogue.Dose memory dose = adventures.unusedSerum(id);
+        vm.prank(ALICE);
+        uint256 job = ILegacyEvolution(address(evolution)).consumeSerum{value: 0.001 ether}(id, e, dose, 0.001 ether, uint64(block.timestamp));
+        wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
+        bytes32 binding = evolution.requestBinding(job);
+        assertEq(evolution.feeLiability(), 100_000);
+        evolution.upgradeToAndCall(address(new YunipalEvolution()), "");
+        assertEq(evolution.requestBinding(job), binding);
+        assertFalse(evolution.sponsoredRequest(job));
+        assertEq(evolution.sponsoredSerumsUsed(), 0);
+        complete(job);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+        assertEq(evolution.feeLiability(), 0);
+        findSerum(id);
+        complete(drinkWithLimit(id, 0));
+        assertEq(evolution.sponsoredSerumsUsed(), 1);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+        evolution.upgradeToAndCall(address(new YunipalEvolution()), "");
+        assertEq(evolution.sponsoredSerumsUsed(), 1, "upgrade must not reset allowance");
+    }
+
     function testFinishWaitsForVrfAndPersistsAcrossDosesTransferAndGrade() public {
         uint256 id = original();
         findSerum(id);
@@ -296,11 +435,11 @@ contract EvolutionTest is Test {
         uint256 balance = ALICE.balance;
         vm.prank(ALICE);
         vm.expectRevert("VRF price exceeds budget");
-        evolution.consumeSerum(id, e, dose, 0, uint64(block.timestamp));
+        evolution.consumeSerum(id, e, dose, 100_000, 0, uint64(block.timestamp));
         assertEq(cards.cardReservation(id), address(0));
         assertEq(evolution.requestCount(), 0);
         vm.prank(ALICE);
-        uint256 job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 0.001 ether, uint64(block.timestamp));
+        uint256 job = evolution.consumeSerum{value: 0.001 ether}(id, e, dose, 100_000, 0.001 ether, uint64(block.timestamp));
         assertEq(ALICE.balance, balance - wrapper.PRICE());
         YunipalEvolution.Request memory request = evolution.getRequest(job);
         assertFalse(request.ready);
@@ -387,6 +526,7 @@ contract EvolutionTest is Test {
     }
 
     function testDoseIsChargedOnceAndRetriedWithoutUnlocking() public {
+        setSponsoredUsed(1000);
         uint256 id = original();
         findSerum(id);
         uint8 presence = adventures.unusedSerum(id).presenceId;
@@ -518,7 +658,7 @@ contract EvolutionTest is Test {
         SerumCatalogue.Dose memory dose = adventures.unusedSerum(a);
         vm.prank(ALICE);
         vm.expectRevert("dose limit reached");
-        evolution.consumeSerum(a, e, dose, 0, uint64(block.timestamp));
+        evolution.consumeSerum(a, e, dose, 100_000, 0, uint64(block.timestamp));
         uint256 job = fuse(a, b);
         wrapper.fulfill(evolution.getRequest(job).randomnessId, 0);
         uint256 f = complete(job);

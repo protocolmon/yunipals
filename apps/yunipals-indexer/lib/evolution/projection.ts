@@ -64,6 +64,12 @@ export async function applyEvolutionEvent(
       (v) => String(v) !== "0"
     ))
       await update("card", String(parent), { pendingEvolution: request });
+  } else if (name === "EvolutionFeeReserved") {
+    await update("job", request, {
+      fee: String(a.fee),
+      sponsored: String(a.fee) === "0",
+      sponsoredSerumsUsed: String(a.sponsoredSerumsUsed)
+    });
   } else if (name === "FinishAssigned") {
     await update("card", token, { finish: a.finish });
   } else if (

@@ -13,6 +13,7 @@ import {
   serumRarities,
   serumPresences,
   serumDefinition,
+  sponsoredSerumLimit,
   fusionPresenceOdds
 } from "@protopals/yunipals-market-core/serums";
 import { environment } from "@/environment";
@@ -51,6 +52,20 @@ export function AdventurePage() {
     retry: 1
   });
   const card = query.data?.card;
+  const sponsorship = useQuery({
+    queryKey: ["evolution", "sponsorship"],
+    enabled: environment.evolutionEnabled,
+    queryFn: async ({ signal }) =>
+      z
+        .object({
+          limit: z.literal(sponsoredSerumLimit),
+          used: z.number().int().min(0).max(sponsoredSerumLimit),
+          remaining: z.number().int().min(0).max(sponsoredSerumLimit)
+        })
+        .parse(await evolutionRequest("/sponsorship", signal)),
+    refetchInterval: 10000,
+    retry: 1
+  });
   useEffect(() => {
     setChoosing(false);
   }, [tokenId, account.address]);
@@ -147,6 +162,10 @@ export function AdventurePage() {
               </p>
               <p className="mt-4 text-sm">
                 121 serums · 11 Presences · 2 fusion levels
+              </p>
+              <p className="mt-3 text-sm font-semibold">
+                We cover the AI fee for the first 1,000 serum applications.
+                Network gas and any randomness fee still apply.
               </p>
               <a href="#your-cards" className={cn(adventureButton, "mt-6")}>
                 Choose a companion
@@ -391,8 +410,19 @@ export function AdventurePage() {
                           void actions.prepare("serum", card.tokenId)
                         }
                       >
-                        Drink serum · 0.10 USDC
+                        {sponsorship.data && !sponsorship.isError
+                          ? sponsorship.data.remaining > 0
+                            ? "Drink serum · AI sponsored"
+                            : "Drink serum · 0.10 USDC"
+                          : "Drink serum · review fee"}
                       </button>
+                      {sponsorship.data && !sponsorship.isError && (
+                        <p className="mt-2 text-sm text-muted">
+                          {sponsorship.data.remaining > 0
+                            ? `${sponsorship.data.remaining} of 1,000 sponsored uses remain at the latest confirmed update. Your slot is reserved when consumption is accepted onchain. Gas and any randomness fee still apply.`
+                            : "All 1,000 sponsored uses have been claimed. The standard AI fee applies."}
+                        </p>
+                      )}
                     </>
                   ) : (
                     <p className="mt-2 text-sm text-muted">
@@ -597,9 +627,19 @@ export function AdventurePage() {
             )}
             <p className="mt-4 font-semibold">
               {actions.review.quote.fee === "0"
-                ? "No AI fee"
+                ? actions.review.quote.kind === "serum"
+                  ? "AI generation sponsored · 0 USDC"
+                  : "No AI fee"
                 : "AI generation: 0.10 USDC"}
             </p>
+            {actions.review.quote.kind === "serum" &&
+              actions.review.quote.fee === "0" && (
+                <p className="mt-1 text-sm">
+                  One of the first 1,000 serum applications. If the allowance
+                  runs out before confirmation, this transaction reverts instead
+                  of charging USDC. Gas can still be spent.
+                </p>
+              )}
             <p className="mt-1 text-sm">
               Randomness: up to{" "}
               {formatEther(BigInt(actions.review.quote.value))} ETH. Network gas

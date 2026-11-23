@@ -217,3 +217,50 @@ describe("approved evolution rules", () => {
     ).toBe(true);
   });
 });
+
+it("keeps fee sponsorship attached to the request through generation and replay", async () => {
+  const { store } = memory();
+  await applyEvolutionEvent(store, "EvolutionFeeReserved", {
+    requestId: "1",
+    fee: "0",
+    sponsoredSerumsUsed: "1000"
+  });
+  await applyEvolutionEvent(store, "EvolutionRequested", {
+    requestId: "1",
+    parentA: "9",
+    parentB: "0",
+    randomnessId: "0",
+    catalogueVersion: 1,
+    serumId: 121,
+    presenceId: 1
+  });
+  await applyEvolutionEvent(store, "EvolutionCompleted", {
+    requestId: "1",
+    tokenId: "9",
+    artVersion: "1"
+  });
+  expect(await store.get("job", "1")).toMatchObject({
+    fee: "0",
+    sponsored: true,
+    sponsoredSerumsUsed: "1000",
+    status: "completed"
+  });
+  await applyEvolutionEvent(store, "EvolutionFeeReserved", {
+    requestId: "1",
+    fee: "0",
+    sponsoredSerumsUsed: "1000"
+  });
+  expect(await store.get("job", "1")).toMatchObject({
+    status: "completed",
+    sponsoredSerumsUsed: "1000"
+  });
+  await applyEvolutionEvent(store, "EvolutionFeeReserved", {
+    requestId: "2",
+    fee: "100000",
+    sponsoredSerumsUsed: "1000"
+  });
+  expect(await store.get("job", "2")).toMatchObject({
+    fee: "100000",
+    sponsored: false
+  });
+});

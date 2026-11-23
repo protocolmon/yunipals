@@ -536,6 +536,7 @@ try {
   page.setDefaultTimeout(45000);
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  let usdcApprovals = 0;
   await page.exposeFunction(
     "evolutionTestWallet",
     async ({ method, params = [] }) => {
@@ -549,6 +550,11 @@ try {
       if (method === "wallet_switchEthereumChain") return null;
       if (method === "eth_sendTransaction") {
         const tx = params[0];
+        if (
+          tx.to.toLowerCase() === usdc.toLowerCase() &&
+          tx.data?.startsWith("0x095ea7b3")
+        )
+          ++usdcApprovals;
         assert.equal(tx.from.toLowerCase(), account.address.toLowerCase());
         const hash = await wallet.sendTransaction({
           to: tx.to,
@@ -608,6 +614,9 @@ try {
   if (await injected.isVisible()) await injected.click();
   await page.getByRole("button", { name: /Drink serum/ }).click();
   await page
+    .getByText("AI generation sponsored · 0 USDC", { exact: true })
+    .waitFor();
+  await page
     .getByRole("button", { name: "Confirm in wallet", exact: true })
     .click();
   await page.waitForFunction(() => !document.querySelector("dialog[open]"));
@@ -617,6 +626,27 @@ try {
     functionName: "requestCount"
   });
   const serumRequest = await chain.request(serumJob);
+  assert.equal(
+    usdcApprovals,
+    0,
+    "sponsored consumption must not ask for USDC approval"
+  );
+  assert.equal(
+    await client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "sponsoredSerumsUsed"
+    }),
+    1n
+  );
+  assert.equal(
+    await client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "feeLiability"
+    }),
+    0n
+  );
   assert.ok(serumRequest.randomnessId > 0n);
   await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [
     serumRequest.randomnessId,
@@ -651,6 +681,15 @@ try {
     functionName: "requestCount"
   });
   const fusionRequest = await chain.request(fusionId);
+  assert.equal(usdcApprovals, 1, "fusion still requires its paid fee approval");
+  assert.equal(
+    await client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "feeLiability"
+    }),
+    100000n
+  );
   assert.ok(fusionRequest.randomnessId > 0n);
   await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [
     fusionRequest.randomnessId,

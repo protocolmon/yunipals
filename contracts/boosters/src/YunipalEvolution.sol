@@ -25,8 +25,10 @@ interface IProgressionArtwork {
 contract YunipalEvolution is PortalRandomness {
     using SafeERC20 for IERC20;
     uint256 public constant AI_FEE = 100_000;
+    uint256 public constant SPONSORED_SERUM_LIMIT = 1000;
     bytes32 public constant GENERATOR_ROLE = keccak256("GENERATOR_ROLE");
     PortalGradingValidator private immutable _validator = new PortalGradingValidator();
+    error AiFeeExceedsBudget();
 
     struct State {
         uint64 artVersion;
@@ -82,6 +84,12 @@ contract YunipalEvolution is PortalRandomness {
     mapping(uint256 => SerumCatalogue.Dose[]) private _doses;
     mapping(uint256 => uint256) public pendingRequest;
     mapping(uint256 => uint256) public randomnessJob;
+
+    // Append-only upgrade storage. Existing requests default to paid and retain their escrow.
+    uint256 public sponsoredSerumsUsed;
+    mapping(uint256 => bool) public sponsoredRequest;
+
+    event EvolutionFeeReserved(uint256 indexed requestId, uint256 fee, uint256 sponsoredSerumsUsed);
 
     event EvolutionRequested(
         uint256 indexed requestId,
@@ -173,14 +181,22 @@ contract YunipalEvolution is PortalRandomness {
         return keccak256(abi.encode(block.chainid, address(this), id, renderingPolicy, request));
     }
 
+    function serumApplicationFee() public view returns (uint256) {
+        return sponsoredSerumsUsed < SPONSORED_SERUM_LIMIT ? 0 : AI_FEE;
+    }
+
+    /// @notice A zero fee limit protects a sponsored quote from being charged after the cap is reached.
     function consumeSerum(
         uint256 tokenId,
         Expected calldata expected,
         SerumCatalogue.Dose calldata dose,
+        uint256 maxAiFee,
         uint256 maxVrfPrice,
         uint64 deadline
     ) external payable nonReentrant returns (uint256 id) {
         _checkRequest(deadline);
+        uint256 fee = serumApplicationFee();
+        if (fee > maxAiFee) revert AiFeeExceedsBudget();
         require(state[tokenId].localDoses < 11, "dose limit reached");
         SerumCatalogue.Dose memory unused = adventures.unusedSerum(tokenId);
         require(unused.serumId != 0 && keccak256(abi.encode(unused)) == keccak256(abi.encode(dose)), "serum changed");
@@ -198,7 +214,13 @@ contract YunipalEvolution is PortalRandomness {
         request.resultFinish = state[tokenId].finish;
         request.ready = request.resultFinish != 0;
         pendingRequest[tokenId] = id;
-        _collectFee();
+        if (fee == 0) {
+            ++sponsoredSerumsUsed;
+            sponsoredRequest[id] = true;
+            emit EvolutionFeeReserved(id, 0, sponsoredSerumsUsed);
+        } else {
+            _collectFee(id);
+        }
         uint256 paid;
         if (!request.ready) {
             (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);
@@ -238,7 +260,7 @@ contract YunipalEvolution is PortalRandomness {
         request.presenceB = state[b].presence;
         pendingRequest[a] = id;
         pendingRequest[b] = id;
-        _collectFee();
+        _collectFee(id);
         uint256 paid;
         // Every new fusion rolls a finish, even when parent Presences match.
         (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);
@@ -332,9 +354,10 @@ contract YunipalEvolution is PortalRandomness {
         request.completed = true;
         request.resultTokenId = tokenId;
         delete pendingRequest[request.parentA];
-        feeLiability -= AI_FEE;
+        bool paid = !sponsoredRequest[id];
+        if (paid) feeLiability -= AI_FEE;
         cards.notifyGradingUpdate(tokenId);
-        usdc.safeTransfer(feeRecipient, AI_FEE);
+        if (paid) usdc.safeTransfer(feeRecipient, AI_FEE);
         State memory current = state[tokenId];
         emit EvolutionCompleted(
             id,
@@ -383,10 +406,11 @@ contract YunipalEvolution is PortalRandomness {
         );
     }
 
-    function _collectFee() private {
+    function _collectFee(uint256 id) private {
         uint256 beforeBalance = usdc.balanceOf(address(this));
         usdc.safeTransferFrom(msg.sender, address(this), AI_FEE);
         require(usdc.balanceOf(address(this)) == beforeBalance + AI_FEE, "incorrect fee deposit");
         feeLiability += AI_FEE;
+        emit EvolutionFeeReserved(id, AI_FEE, sponsoredSerumsUsed);
     }
 }

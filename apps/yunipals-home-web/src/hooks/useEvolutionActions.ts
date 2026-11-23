@@ -213,6 +213,19 @@ export function useEvolutionActions() {
       )
         throw new Error("The collection or payment contract changed.");
       const fee = BigInt(quote.fee);
+      if (quote.kind === "serum") {
+        const currentFee = await client.readContract({
+          address: quote.to,
+          abi: evolutionAbi,
+          functionName: "serumApplicationFee"
+        });
+        if (currentFee > fee) {
+          setReview(null);
+          throw new Error(
+            "The sponsored serum allowance has been used. Review a new quote to continue."
+          );
+        }
+      }
       if (fee > 0n) {
         const allowance = await client.readContract({
           address: usdc,
