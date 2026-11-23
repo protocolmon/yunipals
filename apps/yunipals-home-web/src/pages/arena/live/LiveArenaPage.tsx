@@ -41,6 +41,7 @@ import { useArenaWallet, type ArenaApprovalEntries } from "./useArenaWallet";
 import { useArenaClock } from "./useArenaClock";
 import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaDeadline, ArenaEvidence } from "./ArenaEvidence";
+import { ArenaJourney } from "./ArenaJourney";
 import { AnimeApplicationHint } from "../anime/AnimeApplicationHint";
 
 const action =
@@ -317,8 +318,11 @@ export function StrategyEditor({
             <fieldset className="my-4" disabled={busy || !!saved?.signed}>
               <legend className="font-semibold">Choose two techniques</legend>
               <p className="my-2 text-sm text-muted">
-                These names and effects shape your film. They add no combat
-                advantage. Your choices appear with the revealed strategies.
+                Choose two of your fighter’s three available attacks, or keep
+                the default pair. They shape the animation without adding bonus
+                stats. Use your written strategy below to explain how your
+                fighter should attack and defend. Both choices lock when you
+                submit.
               </p>
               <div className="grid gap-2 sm:grid-cols-3">
                 {fighter.animeKits.map((kit) => {
@@ -618,18 +622,27 @@ export function LiveArenaPage() {
     tournament?.phase,
     context.isPending
   ]);
+  const EntryContainer = ownedSeats.length ? "details" : "div";
   const error = config.error ?? detail.error;
   return (
     <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 text-ink sm:pt-10">
       <ArenaPageHeader
-        title={`Battle #${id}`}
+        title={
+          tournament?.phase === "open" &&
+          tournament.seats.length < 4 &&
+          !ownedSeats.length
+            ? `Join battle #${id}`
+            : `Battle #${id}`
+        }
         description={
           tournament
             ? phases[tournament.phase]
             : "Your fighters, island and battle film, all in one place."
         }
         section={
-          tournament?.phase === "open" && !ownedSeats.length
+          tournament?.phase === "open" &&
+          tournament.seats.length < 4 &&
+          !ownedSeats.length
             ? "join"
             : "battles"
         }
@@ -719,12 +732,253 @@ export function LiveArenaPage() {
               current.
             </p>
           ) : null}
+          <ArenaJourney
+            tournament={tournament}
+            ownedSeats={ownedSeats}
+            confirming={
+              !!wallet.entryProgress?.key.startsWith(`${tournament.id}/`)
+            }
+          />
+          {tournament.phase === "open" && !address ? (
+            <section
+              id="join"
+              className="my-8 scroll-mt-28 rounded-card border border-lavender bg-lavender/10 p-6"
+            >
+              <h2 className="text-2xl font-bold">Choose your fighter</h2>
+              {deployment.kind === "anime" && <AnimeApplicationHint />}
+              <p className="mt-3 text-muted">
+                Connect your wallet using the button in the header to see your
+                Yunipals. Pick a fighter and enter for {deployment.entry} USDC;
+                your NFT stays in your wallet.
+              </p>
+            </section>
+          ) : null}
+          {tournament.phase === "open" && address && (
+            <section id="join" className="my-8 scroll-mt-28">
+              <EntryContainer>
+                {ownedSeats.length ? (
+                  <summary className="cursor-pointer rounded text-lg font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
+                    Enter another fighter (optional)
+                  </summary>
+                ) : (
+                  <h2 className="text-2xl font-bold">Choose your fighter</h2>
+                )}
+                <p className="my-3 text-muted">
+                  Pick one {deployment.kind === "anime" ? "approved " : ""}
+                  fighter and press Enter, then confirm in your wallet. You only
+                  need one fighter to join; your NFT stays in your wallet.
+                </p>
+                {config.data?.contractVersion === 2 && (
+                  <div
+                    className="my-4 rounded-card border border-line bg-lavender/10 p-4"
+                    role="status"
+                  >
+                    {drawQuote.isPending
+                      ? "Checking the island draw fee…"
+                      : drawQuote.error
+                        ? "The draw fee could not be checked yet. It will be checked again before your wallet confirms payment."
+                        : drawQuote.data?.firstEntry
+                          ? `The first entry also pays up to ${formatEther(drawQuote.data.value)} ETH for the island draw, plus network gas. Unused ETH is returned automatically. The used draw fee is not refundable if the battle later expires.`
+                          : "The island draw is already paid. This entry pays USDC and network gas only."}
+                  </div>
+                )}
+                <details className="my-5 rounded-card border border-line p-4">
+                  <summary className="cursor-pointer rounded text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
+                    Payment options ·{" "}
+                    {Number(deployment.entry) * approvalEntries} USDC approval
+                    limit
+                  </summary>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <label
+                      htmlFor="arena-approval-limit"
+                      className="font-semibold"
+                    >
+                      USDC approval limit
+                    </label>
+                    <Select
+                      id="arena-approval-limit"
+                      aria-describedby="arena-approval-help"
+                      value={String(approvalEntries)}
+                      disabled={!!wallet.busy || wallet.pendingTransaction}
+                      onValueChange={(value) =>
+                        setApprovalEntries(
+                          value === "10" ? 10 : value === "4" ? 4 : 1
+                        )
+                      }
+                    >
+                      <SelectItem value="1">
+                        {deployment.entry} USDC · 1 entry
+                      </SelectItem>
+                      <SelectItem value="4">
+                        {Number(deployment.entry) * 4} USDC · 4 entries
+                      </SelectItem>
+                      <SelectItem value="10">
+                        {Number(deployment.entry) * 10} USDC · 10 entries
+                      </SelectItem>
+                    </Select>
+                  </div>
+                  <p
+                    id="arena-approval-help"
+                    className="mt-3 text-sm text-muted"
+                  >
+                    A higher limit saves repeat approvals. Each entry still
+                    charges only {deployment.entry} USDC. This limit applies
+                    when a new approval is needed; an existing allowance is
+                    reused.{" "}
+                    {drawQuote.data?.firstEntry
+                      ? "For the first entry, approve USDC if needed, then confirm entry and the island draw in your wallet."
+                      : "Compatible wallets approve and enter together. Other wallets ask for approval, then immediately ask you to confirm entry."}
+                  </p>
+                </details>
+                {inventory.isPending && (
+                  <ArenaCardsLoading label="Loading your Yunipals…" />
+                )}
+                {inventory.error && (
+                  <p role="alert">{inventory.error.message}</p>
+                )}
+                {inventory.isSuccess &&
+                !inventory.hasNextPage &&
+                inventory.data.pages
+                  .flatMap((p) => p.items)
+                  .filter((n) => !n.burned).length === 0 ? (
+                  <p role="status" className="my-5 text-muted">
+                    {deployment.kind === "anime"
+                      ? "No approved anime fighters were found in this wallet. Apply from your Base Yunipal’s page or check your application in the queue below."
+                      : "No available Yunipals were found in this wallet."}
+                  </p>
+                ) : null}
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                  {inventory.data?.pages
+                    .flatMap((p) => p.items)
+                    .filter((nft) => !nft.burned)
+                    .map((nft) => {
+                      const key = arenaFighterKey({
+                        tournamentId: tournament.id,
+                        nftChainId: nft.chainId,
+                        collection: nft.contractAddress,
+                        tokenId: nft.tokenId
+                      });
+                      const progress =
+                        wallet.entryProgress?.key === key
+                          ? wallet.entryProgress
+                          : null;
+                      const entryError =
+                        wallet.entryFeedback?.key === key
+                          ? wallet.entryFeedback.error
+                          : null;
+                      const entered = tournament.seats.some(
+                        (s) =>
+                          s.nftChainId === nft.chainId &&
+                          s.collection.toLowerCase() ===
+                            nft.contractAddress.toLowerCase() &&
+                          s.tokenId === nft.tokenId
+                      );
+                      return (
+                        <article
+                          key={`${nft.chainId}/${nft.contractAddress}/${nft.tokenId}`}
+                          data-arena-fighter={key}
+                          aria-busy={!!progress}
+                          className={cn(
+                            "rounded-card border p-4",
+                            progress ? "border-grape bg-grape/5" : "border-line"
+                          )}
+                        >
+                          {nft.image && (
+                            <img
+                              className="aspect-square w-full rounded-card object-cover"
+                              src={nft.image}
+                              alt={nft.name ?? `Yunipal #${nft.tokenId}`}
+                              loading="lazy"
+                            />
+                          )}
+                          <h3 className="my-3 font-bold">
+                            {nft.name ?? `Yunipal #${nft.tokenId}`}
+                          </h3>
+                          <button
+                            className={cn(
+                              action,
+                              "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
+                              progress && "bg-grape disabled:opacity-100"
+                            )}
+                            aria-busy={!!progress}
+                            aria-label={progress?.label}
+                            disabled={
+                              !!wallet.busy ||
+                              wallet.pendingTransaction ||
+                              !config.data?.entriesEnabled ||
+                              tournament.seats.length >= 4 ||
+                              tournament.projection?.ready === false ||
+                              entered
+                            }
+                            onClick={() =>
+                              void wallet.join(
+                                tournament.id,
+                                nft,
+                                approvalEntries
+                              )
+                            }
+                          >
+                            {progress ? (
+                              <>
+                                <LoaderCircle
+                                  size={16}
+                                  aria-hidden="true"
+                                  className="shrink-0 motion-safe:animate-spin"
+                                />
+                                <span
+                                  className="truncate"
+                                  role="status"
+                                  aria-live="polite"
+                                >
+                                  {entryButtonLabels[progress.label] ??
+                                    progress.label}
+                                </span>
+                              </>
+                            ) : entered ? (
+                              "Entered"
+                            ) : (
+                              `Enter · ${deployment.entry} USDC`
+                            )}
+                          </button>
+                          {entryError && (
+                            <p
+                              role="alert"
+                              className="mt-3 break-words text-sm text-destructive"
+                            >
+                              {entryError}
+                            </p>
+                          )}
+                        </article>
+                      );
+                    })}
+                </div>
+                {inventory.hasNextPage && (
+                  <button
+                    className={cn(action, "mt-4")}
+                    disabled={inventory.isFetchingNextPage}
+                    onClick={() => void inventory.fetchNextPage()}
+                  >
+                    {inventory.isFetchingNextPage ? (
+                      <ArenaLoading label="Loading more Yunipals…" />
+                    ) : (
+                      "Load more Yunipals"
+                    )}
+                  </button>
+                )}
+                {deployment.kind === "anime" && <AnimeApplicationHint />}
+              </EntryContainer>
+            </section>
+          )}
           <section className="my-8">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-bold">Battle roster</h2>
                 <p className="mt-1 text-muted">
-                  {tournament.seats.length} of 4 fighters
+                  {tournament.seats.length} of 4 fighters · Shared battle slots
+                </p>
+                <p className="mt-2 text-sm text-muted">
+                  Each slot holds one fighter. Other players can fill the
+                  remaining slots; you do not need to enter all four.
                 </p>
               </div>
               <ArenaDeadline tournament={tournament} />
@@ -861,216 +1115,6 @@ export function LiveArenaPage() {
               </p>
             )}
           </section>
-          {tournament.phase === "open" && !address ? (
-            <section
-              id="join"
-              className="my-8 scroll-mt-28 rounded-card border border-lavender bg-lavender/10 p-6"
-            >
-              <h2 className="text-2xl font-bold">Choose your fighter</h2>
-              {deployment.kind === "anime" && <AnimeApplicationHint />}
-              <p className="mt-3 text-muted">
-                Connect your wallet using the button in the header to see your
-                Yunipals. Pick a fighter and enter for {deployment.entry} USDC;
-                your NFT stays in your wallet.
-              </p>
-            </section>
-          ) : null}
-          {tournament.phase === "open" && address && (
-            <section id="join" className="my-8 scroll-mt-28">
-              <h2 className="text-2xl font-bold">Choose your fighter</h2>
-              {deployment.kind === "anime" && <AnimeApplicationHint />}
-              <p className="my-3 text-muted">
-                Your NFT stays in your wallet. Each different NFT can occupy one
-                active seat.
-              </p>
-              {config.data?.contractVersion === 2 && (
-                <div
-                  className="my-4 rounded-card border border-line bg-lavender/10 p-4"
-                  role="status"
-                >
-                  {drawQuote.isPending
-                    ? "Checking the island draw fee…"
-                    : drawQuote.error
-                      ? "The draw fee could not be checked yet. It will be checked again before your wallet confirms payment."
-                      : drawQuote.data?.firstEntry
-                        ? `The first entry also pays up to ${formatEther(drawQuote.data.value)} ETH for the island draw, plus network gas. Unused ETH is returned automatically. The used draw fee is not refundable if the battle later expires.`
-                        : "The island draw is already paid. This entry pays USDC and network gas only."}
-                </div>
-              )}
-              <div className="my-5 rounded-card border border-line bg-panel-base p-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <label
-                    htmlFor="arena-approval-limit"
-                    className="font-semibold"
-                  >
-                    USDC approval limit
-                  </label>
-                  <Select
-                    id="arena-approval-limit"
-                    aria-describedby="arena-approval-help"
-                    value={String(approvalEntries)}
-                    disabled={!!wallet.busy || wallet.pendingTransaction}
-                    onValueChange={(value) =>
-                      setApprovalEntries(
-                        value === "10" ? 10 : value === "4" ? 4 : 1
-                      )
-                    }
-                  >
-                    <SelectItem value="1">
-                      {deployment.entry} USDC · 1 entry
-                    </SelectItem>
-                    <SelectItem value="4">
-                      {Number(deployment.entry) * 4} USDC · 4 entries
-                    </SelectItem>
-                    <SelectItem value="10">
-                      {Number(deployment.entry) * 10} USDC · 10 entries
-                    </SelectItem>
-                  </Select>
-                </div>
-                <p id="arena-approval-help" className="mt-3 text-sm text-muted">
-                  A higher limit saves repeat approvals. Each entry still
-                  charges only {deployment.entry} USDC. This limit applies when
-                  a new approval is needed; an existing allowance is reused.{" "}
-                  {drawQuote.data?.firstEntry
-                    ? "For the first entry, approve USDC if needed, then confirm entry and the island draw in your wallet."
-                    : "Compatible wallets approve and enter together. Other wallets ask for approval, then immediately ask you to confirm entry."}
-                </p>
-              </div>
-              {inventory.isPending && (
-                <ArenaCardsLoading label="Loading your Yunipals…" />
-              )}
-              {inventory.error && <p role="alert">{inventory.error.message}</p>}
-              {inventory.isSuccess &&
-              !inventory.hasNextPage &&
-              inventory.data.pages
-                .flatMap((p) => p.items)
-                .filter((n) => !n.burned).length === 0 ? (
-                <p role="status" className="my-5 text-muted">
-                  {deployment.kind === "anime"
-                    ? "No approved anime fighters were found in this wallet. Apply from your Base Yunipal’s page or check your application in the queue above."
-                    : "No available Yunipals were found in this wallet."}
-                </p>
-              ) : null}
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                {inventory.data?.pages
-                  .flatMap((p) => p.items)
-                  .filter((nft) => !nft.burned)
-                  .map((nft) => {
-                    const key = arenaFighterKey({
-                      tournamentId: tournament.id,
-                      nftChainId: nft.chainId,
-                      collection: nft.contractAddress,
-                      tokenId: nft.tokenId
-                    });
-                    const progress =
-                      wallet.entryProgress?.key === key
-                        ? wallet.entryProgress
-                        : null;
-                    const entryError =
-                      wallet.entryFeedback?.key === key
-                        ? wallet.entryFeedback.error
-                        : null;
-                    const entered = tournament.seats.some(
-                      (s) =>
-                        s.nftChainId === nft.chainId &&
-                        s.collection.toLowerCase() ===
-                          nft.contractAddress.toLowerCase() &&
-                        s.tokenId === nft.tokenId
-                    );
-                    return (
-                      <article
-                        key={`${nft.chainId}/${nft.contractAddress}/${nft.tokenId}`}
-                        data-arena-fighter={key}
-                        aria-busy={!!progress}
-                        className={cn(
-                          "rounded-card border p-4",
-                          progress ? "border-grape bg-grape/5" : "border-line"
-                        )}
-                      >
-                        {nft.image && (
-                          <img
-                            className="aspect-square w-full rounded-card object-cover"
-                            src={nft.image}
-                            alt={nft.name ?? `Yunipal #${nft.tokenId}`}
-                            loading="lazy"
-                          />
-                        )}
-                        <h3 className="my-3 font-bold">
-                          {nft.name ?? `Yunipal #${nft.tokenId}`}
-                        </h3>
-                        <button
-                          className={cn(
-                            action,
-                            "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
-                            progress && "bg-grape disabled:opacity-100"
-                          )}
-                          aria-busy={!!progress}
-                          aria-label={progress?.label}
-                          disabled={
-                            !!wallet.busy ||
-                            wallet.pendingTransaction ||
-                            !config.data?.entriesEnabled ||
-                            tournament.seats.length >= 4 ||
-                            tournament.projection?.ready === false ||
-                            entered
-                          }
-                          onClick={() =>
-                            void wallet.join(
-                              tournament.id,
-                              nft,
-                              approvalEntries
-                            )
-                          }
-                        >
-                          {progress ? (
-                            <>
-                              <LoaderCircle
-                                size={16}
-                                aria-hidden="true"
-                                className="shrink-0 motion-safe:animate-spin"
-                              />
-                              <span
-                                className="truncate"
-                                role="status"
-                                aria-live="polite"
-                              >
-                                {entryButtonLabels[progress.label] ??
-                                  progress.label}
-                              </span>
-                            </>
-                          ) : entered ? (
-                            "Entered"
-                          ) : (
-                            `Enter · ${deployment.entry} USDC`
-                          )}
-                        </button>
-                        {entryError && (
-                          <p
-                            role="alert"
-                            className="mt-3 break-words text-sm text-destructive"
-                          >
-                            {entryError}
-                          </p>
-                        )}
-                      </article>
-                    );
-                  })}
-              </div>
-              {inventory.hasNextPage && (
-                <button
-                  className={cn(action, "mt-4")}
-                  disabled={inventory.isFetchingNextPage}
-                  onClick={() => void inventory.fetchNextPage()}
-                >
-                  {inventory.isFetchingNextPage ? (
-                    <ArenaLoading label="Loading more Yunipals…" />
-                  ) : (
-                    "Load more Yunipals"
-                  )}
-                </button>
-              )}
-            </section>
-          )}
           {tournament.phase === "strategies" && (
             <section className="my-8 space-y-5">
               <h2 className="text-2xl font-bold">Plan your battle</h2>
