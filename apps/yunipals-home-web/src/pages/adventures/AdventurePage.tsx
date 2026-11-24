@@ -1,10 +1,14 @@
 import { BoosterArtwork } from "@/pages/boosters/BoosterCollection";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useQuery } from "@tanstack/react-query";
-import { formatEther } from "viem";
+import { formatEther, isAddress } from "viem";
+import {
+  adventureAbi,
+  evolutionAbi
+} from "@protopals/yunipals-market-core/evolutionAbi";
 import { z } from "zod";
 import {
   adventureOdds,
@@ -40,6 +44,24 @@ export function AdventurePage() {
   const switcher = useSwitchChain();
   const navigate = useNavigate();
   const actions = useEvolutionActions();
+  const adventurePause = useReadContract({
+    address: isAddress(environment.adventuresAddress)
+      ? environment.adventuresAddress
+      : undefined,
+    abi: adventureAbi,
+    functionName: "randomnessPaused",
+    chainId: environment.portalChainId,
+    query: { enabled: environment.evolutionEnabled, refetchInterval: 10000 }
+  });
+  const evolutionPause = useReadContract({
+    address: isAddress(environment.evolutionAddress)
+      ? environment.evolutionAddress
+      : undefined,
+    abi: evolutionAbi,
+    functionName: "requestsPaused",
+    chainId: environment.portalChainId,
+    query: { enabled: environment.evolutionEnabled, refetchInterval: 10000 }
+  });
   const [choosing, setChoosing] = useState(false);
   const [now, setNow] = useState(() => Date.now() / 1000);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -261,6 +283,13 @@ export function AdventurePage() {
         </div>
       ) : (
         <>
+          {(adventurePause.data !== false || evolutionPause.data !== false) && (
+            <p role="status" className="my-6 rounded-2xl bg-lavender/20 p-5">
+              {adventurePause.data || evolutionPause.data
+                ? "Adventures and alchemy are not fully open yet. You can explore the cards and serum styles while paused actions remain unavailable."
+                : "Checking availability. Actions stay unavailable until the network confirms they are open."}
+            </p>
+          )}
           {validId && query.isPending && (
             <p role="status" className="py-12 animate-pulse">
               Finding your companion…
@@ -338,7 +367,12 @@ export function AdventurePage() {
                   )}
                   <button
                     className={cn(adventureButton, "mt-4")}
-                    disabled={unavailable || cooldown > 0 || !canWallet}
+                    disabled={
+                      unavailable ||
+                      adventurePause.data !== false ||
+                      cooldown > 0 ||
+                      !canWallet
+                    }
                     onClick={() =>
                       void actions.prepare("adventure", card.tokenId)
                     }
@@ -404,7 +438,10 @@ export function AdventurePage() {
                       <button
                         className={cn(adventureButton, "mt-4")}
                         disabled={
-                          unavailable || card.localDoses >= 11 || !canWallet
+                          unavailable ||
+                          evolutionPause.data !== false ||
+                          card.localDoses >= 11 ||
+                          !canWallet
                         }
                         onClick={() =>
                           void actions.prepare("serum", card.tokenId)
@@ -443,7 +480,12 @@ export function AdventurePage() {
                   </p>
                   <button
                     className={cn(adventureButton, "mt-4")}
-                    disabled={unavailable || card.level === 2 || !canWallet}
+                    disabled={
+                      unavailable ||
+                      evolutionPause.data !== false ||
+                      card.level === 2 ||
+                      !canWallet
+                    }
                     onClick={() => setChoosing(!choosing)}
                   >
                     Choose fusion partner
