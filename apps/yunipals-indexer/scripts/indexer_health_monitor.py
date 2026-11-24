@@ -31,7 +31,8 @@ HINTS = {
     "dead-rows": "Vacuum cannot keep up, usually because of a long-open transaction.",
     "metadata-worker": "A long query or stall has blocked the yunipals-metadata.service loop.",
     "observation": "Check yunipals-indexer-observer.service. Readiness depends on it.",
-    "market": "Sales history reports a warning until this checkpoint is available.",
+    "market": "Impact: sales history may be incomplete or unavailable on this chain. "
+              "Check the sales worker and source handover review; chain ingestion lag is a separate signal.",
     "production-health": "See /var/lib/yunipals-unified-shared/production-health/latest.json.",
     "reorg-tracking": "Reorg counting cannot read the indexer journal. Check the monitor's "
                       "SupplementaryGroups=systemd-journal setting.",
@@ -39,6 +40,12 @@ HINTS = {
 
 
 def validate_config(config):
+    for key, default in (("max_market_check_age_seconds", 360),
+                         ("max_market_stall_seconds", 300),
+                         ("max_market_sync_seconds", 1800)):
+        config.setdefault(key, default)
+        if type(config[key]) is not int or config[key] < 1:
+            raise ValueError(f"{key} must be a positive integer")
     for key in ("recovery_checks", "maximum_check_gap_seconds", "max_transaction_seconds",
                 "max_worker_heartbeat_age_seconds", "max_observation_age_seconds",
                 "max_production_health_age_seconds"):
@@ -60,9 +67,14 @@ def validate_config(config):
             raise ValueError("Dead-row relations must be schema-qualified identifiers")
         if not isinstance(limit, int) or limit < 1:
             raise ValueError("Invalid dead-row threshold")
+    seen = set()
     for item in config.get("market_checkpoints", []):
         if not isinstance(item.get("chain_id"), int) or not re.match(r"^[a-z0-9-]+$", item["name"]):
             raise ValueError("Invalid market checkpoint")
+        pair = (item["chain_id"], item["name"])
+        if pair in seen or item["chain_id"] not in {c["chain_id"] for c in config["chains"].values()}:
+            raise ValueError("Duplicate market checkpoint or unconfigured chain")
+        seen.add(pair)
     for database in (config["indexer_database"], config["market_database"]):
         if not IDENTIFIER.match(database["name"]) or "." in database["name"]:
             raise ValueError("Invalid database name")
@@ -132,9 +144,68 @@ def indexer_sql(config):
 def market_sql(config):
     pairs = ",".join(f"({item['chain_id']},'{item['name']}')"
                      for item in config.get("market_checkpoints", []))
-    return f"""SELECT coalesce(json_object_agg(name,json_build_object(
-      'state',state,'error',last_error_code)),'{{}}'::json)
-    FROM yunipals_market.checkpoint WHERE source='chain' AND (chain_id,name) IN ({pairs})"""
+    return f"""SELECT coalesce(json_object_agg(c.chain_id::text||':'||c.name,json_build_object(
+      'state',c.state,'error',c.last_error_code,'block',c.block_number::text,
+      'checkedAge',round(extract(epoch FROM now()-c.checked_at))::bigint,
+      'position',json_build_array(c.block_number::text,i.cursor->'completed',i.cursor->'after'),
+      'releaseId',i.release_id,'reviewHash',r.review_hash,'selectedAt',r.applied_at)), '{{}}'::json)
+    FROM yunipals_market.checkpoint c
+    LEFT JOIN yunipals_market.shared_indexer_consumer i ON i.chain_id=c.chain_id
+      AND i.consumer=CASE WHEN c.name='bnb-sales' THEN 'bnb-sales'
+        ELSE 'collection-sales:'||CASE c.chain_id WHEN 1 THEN 'ethereum'
+          WHEN 137 THEN 'polygon' WHEN 8453 THEN 'base' END END
+    LEFT JOIN LATERAL (SELECT review_hash,applied_at FROM yunipals_market.marketplace_source_review
+      WHERE consumer=i.consumer AND target_mode='unified'
+        AND target_configuration->>'releaseId'=i.release_id
+      ORDER BY applied_at DESC LIMIT 1) r ON true
+    WHERE c.source='chain' AND (c.chain_id,c.name) IN ({pairs})"""
+
+
+def market_identifier(item):
+    return f"market-{item['chain_id']}-{item['name']}"
+
+
+def market_progress(sample, previous, now, config):
+    """Observe committed positions, not heartbeat/progress_at timestamps.
+
+    A live replay stays unhealthy even while advancing. A target/heartbeat can
+    change without consuming anything, so neither is evidence of progress.
+    """
+    market = sample.get("market")
+    if not market:
+        return
+    old = previous.get("latest", {}).get("market", {})
+    continuous = (0 <= now - previous.get("checked_at", now) <= config["maximum_check_gap_seconds"]
+                  and old.get("releaseId") == market.get("releaseId"))
+    changed = (continuous and bool(old) and old.get("position") != market.get("position"))
+    since = old.get("progressSince", now) if continuous and not changed else now
+    market["progressSince"] = since
+    market["progressObserved"] = changed or (continuous and old.get("progressObserved", False))
+    syncing = market.get("state") == "syncing"
+    # Keep consecutive syncing duration across gaps/source changes. Progress
+    # comparisons, unlike elapsed syncing time, require continuous checks.
+    market["syncSince"] = (old.get("syncSince", now)
+                           if syncing and old.get("state") == "syncing" else now)
+    elapsed = max(0, round(now - market["syncSince"]))
+    stopped = max(0, round(now - since))
+    if syncing:
+        if sample["reason"] == "sales_syncing":
+            if stopped >= config["max_market_stall_seconds"]:
+                sample.update(reason="sales_stalled", severity="alert")
+            elif elapsed >= config["max_market_sync_seconds"]:
+                sample.update(reason="sales_sync_overdue", severity="alert")
+        movement = (f"no committed position change for {stopped}s"
+                    if stopped >= config["max_market_stall_seconds"]
+                    else "advancing" if market["progressObserved"] else "observing progress")
+        sample["detail"] += f"; replay {movement}; syncing observed for {elapsed}s"
+    sample["detail"] += (f"; confirmed through block {market.get('block') or 'unknown'}"
+                         f"; checkpoint age {market.get('checkedAge')}s")
+    if market.get("behindBlocks") is not None:
+        sample["detail"] += f"; {market['behindBlocks']} blocks behind indexed head"
+    if market.get("releaseId"):
+        sample["detail"] += f"; source release {market['releaseId']}"
+    if market.get("reviewHash"):
+        sample["detail"] += f"; handover review {market['reviewHash']} at {market['selectedAt']}"
 
 
 def bad(detail, reason="threshold_exceeded"):
@@ -165,12 +236,14 @@ def collect(config, now, production_health=None, query=query_json, status=http_s
     except Exception:
         record("indexer-ready", "indexer-ready", read_failed("Ponder did not answer /ready"))
     lag = {}
+    heads = {}
     try:
         code, body = status(f"{url}/status")
         if code != 200:
             raise RuntimeError("Status unavailable")
         for name, chain in json.loads(body).items():
             lag[name] = round(now - chain["block"]["timestamp"])
+            heads[name] = chain["block"].get("number")
     except Exception:
         lag = None
     for name, chain in config["chains"].items():
@@ -233,16 +306,32 @@ def collect(config, now, production_health=None, query=query_json, status=http_s
     except Exception:
         market = None
     for item in config.get("market_checkpoints", []):
-        identifier = f"market-{item['name']}"
-        checkpoint = (market or {}).get(item["name"])
+        identifier = market_identifier(item)
+        checkpoint = (market or {}).get(f"{item['chain_id']}:{item['name']}")
+        chain = next(name for name, c in config["chains"].items() if c["chain_id"] == item["chain_id"])
+        label = f"{chain} sales history ({item['name']})"
         if not checkpoint:
-            record(identifier, "market", read_failed(f"No checkpoint for {item['name']}"))
-        elif checkpoint["state"] != "available":
-            record(identifier, "market", bad(
-                f"{item['name']} is {checkpoint['state']}"
-                + (f" ({checkpoint['error']})" if checkpoint["error"] else "")))
+            record(identifier, "market", read_failed(f"No checkpoint for {label}"))
+            continue
+        detail = f"{label} is {checkpoint['state']}"
+        if checkpoint.get("error"):
+            detail += f" ({checkpoint['error']})"
+        checkpoint_age = checkpoint.get("checkedAge")
+        if checkpoint_age is None or checkpoint_age < -30 or checkpoint_age > config["max_market_check_age_seconds"]:
+            sample = bad(detail + "; checkpoint heartbeat missing or stale", "sales_stale")
+        elif checkpoint["state"] == "available" and not checkpoint.get("error"):
+            sample = good(detail)
+        elif checkpoint["state"] == "syncing" and checkpoint.get("error") in (None, "canonical_replay_required"):
+            sample = {**bad(detail, "sales_syncing"), "severity": "warning"}
         else:
-            record(identifier, "market", good(f"{item['name']} is available"))
+            sample = bad(detail, "sales_unavailable")
+        # The database query returns only operational metadata, never credentials.
+        sample["market"] = dict(checkpoint)
+        head = heads.get(chain)
+        block = checkpoint.get("block")
+        if head is not None and block is not None:
+            sample["market"]["behindBlocks"] = max(0, int(head) - int(block))
+        record(identifier, "market", sample)
 
     if production_health is None:
         record("production-health", "production-health", read_failed("Report could not be read"))
@@ -392,7 +481,9 @@ def rule(config, family):
 def notification(events, states, families, metrics):
     lines = ["Yunipals indexer health monitoring", ""]
     for identifier, event in events:
-        lines.append(f"{event.upper()}: {identifier}")
+        label = ("WARNING" if event == "alert" and
+                 states[identifier]["latest"].get("severity") == "warning" else event.upper())
+        lines.append(f"{label}: {identifier}")
         lines.append(states[identifier]["latest"]["detail"])
         if event == "alert":
             lines.append(HINTS[families[identifier]])
@@ -401,11 +492,14 @@ def notification(events, states, families, metrics):
     lines.append("")
     lines.append("Per-minute history is in /var/lib/yunipals-indexer-health-monitor.")
     lines.append("No automatic changes were made.")
-    kind = "ALERT" if any(event == "alert" for _, event in events) else "RECOVERED"
+    alerts = [identifier for identifier, event in events if event == "alert"]
+    kind = ("ALERT" if any(states[i]["latest"].get("severity") != "warning" for i in alerts)
+            else "WARNING" if alerts else "RECOVERED")
     names = ", ".join(identifier for identifier, _ in events[:4])
     if len(events) > 4:
         names += f" and {len(events) - 4} more"
-    return f"[Yunipals] {kind}: indexer health: {names}", "\n".join(lines)
+    scope = "sales history" if all(families[i] == "market" for i, _ in events) else "indexer health"
+    return f"[Yunipals] {kind}: {scope}: {names}", "\n".join(lines)
 
 
 def cycle(config, directory, production_health=None, read=collect, deliver=send_email, now=None,
@@ -414,6 +508,13 @@ def cycle(config, directory, production_health=None, read=collect, deliver=send_
     state_file = directory / "state.json"
     # A corrupt existing state is an error, not an excuse to send duplicate alerts.
     previous = json.loads(state_file.read_text()) if state_file.exists() else {}
+    # These were the two original configured checks. Preserve active incidents
+    # on upgrade without assigning Base's old state to Ethereum or Polygon.
+    for chain_id, name in ((56, "bnb-sales"), (8453, "seaport-sales")):
+        old = f"market-{name}"
+        new = f"market-{chain_id}-{name}"
+        if new not in previous and old in previous:
+            previous[new] = previous[old]
     samples, families, metrics = read(config, now, production_health)
     try:
         metrics["newReorgs"] = record_reorgs(directory, reorgs(config, directory))
@@ -426,7 +527,22 @@ def cycle(config, directory, production_health=None, read=collect, deliver=send_
     events = []
     for identifier, sample in samples.items():
         limits = rule(config, families[identifier])
-        states[identifier] = advance(previous.get(identifier, {}), sample, now, limits)
+        prior = previous.get(identifier, {})
+        if families[identifier] == "market":
+            market_progress(sample, prior, now, config)
+        states[identifier] = advance(prior, sample, now, limits)
+        state = states[identifier]
+        if families[identifier] == "market":
+            urgent = not sample["ok"] and sample.get("severity") != "warning"
+            contiguous = 0 <= now - prior.get("checked_at", now) <= config["maximum_check_gap_seconds"]
+            state["urgent_checks"] = ((prior.get("urgent_checks", 0) if contiguous else 0) + 1
+                                      if urgent else 0)
+            # Escalate a delivered warning once if the worker later stalls or
+            # fails. A failed escalation delivery remains pending for retry.
+            if (state.get("active") and state.get("notified")
+                    and state.get("notified_severity") == "warning"
+                    and state["urgent_checks"] >= limits["failure_checks"]):
+                state["notified"] = False
         event = pending_event(states[identifier], limits)
         if event:
             events.append((identifier, event))
@@ -441,12 +557,14 @@ def cycle(config, directory, production_health=None, read=collect, deliver=send_
         else:
             for identifier, event in events:
                 states[identifier]["notified"] = event == "alert"
+                states[identifier]["notified_severity"] = states[identifier]["latest"].get("severity", "alert")
                 states[identifier]["notification_at"] = now
             atomic_json(state_file, states)
             delivery = "sent"
     report = {"checkedAt": datetime.datetime.fromtimestamp(now, datetime.timezone.utc).isoformat(),
               "failing": sorted(i for i, sample in samples.items() if not sample["ok"]),
               "metrics": metrics, "pendingEvents": events, "emailDelivery": delivery}
+    report["sales"] = {i: sample for i, sample in samples.items() if families[i] == "market"}
     atomic_json(directory / "latest.json", report)
     history = directory / f"samples-{report['checkedAt'][:10]}.jsonl"
     with history.open("a") as output:

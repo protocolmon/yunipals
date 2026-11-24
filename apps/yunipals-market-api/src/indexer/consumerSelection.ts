@@ -49,6 +49,14 @@ function registration(
 }
 type Db = Pick<PoolClient, "query">;
 
+export class MarketplaceReplayRequired extends Error {
+  constructor() {
+    super(
+      "Marketplace cutover blocked: continuity could not be preserved. Keep the current source serving; inspect impact.reason in the read-only review. An intentional rebuild requires a new --replay review and --replay apply."
+    );
+  }
+}
+
 async function selectionImpact(
   db: Db,
   reader: IndexerReader,
@@ -210,6 +218,7 @@ export async function selectSharedMarketplaceConsumer(
     configurationHash: next.configurationHash,
     confirmationPolicy: next.confirmationPolicy,
     impact,
+    applyAllowed: impact.mode !== "replay" || options.replay === true,
     reviewHash
   };
   if (applyReview === undefined) return { ...review, applied: false };
@@ -217,6 +226,9 @@ export async function selectSharedMarketplaceConsumer(
     throw new Error(
       "Marketplace selection changed; review the new configuration and cursor."
     );
+  // A review of a failed continuity proof is not approval to discard live
+  // progress. Explicit replay has a different, separately reviewed hash.
+  if (!review.applyAllowed) throw new MarketplaceReplayRequired();
   const db = await pool.connect();
   try {
     await db.query("BEGIN");

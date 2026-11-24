@@ -14,12 +14,58 @@ monitor's recipient when a problem persists and again when it recovers.
 | `dead-rows-<table>`   | `pg_attribute` over 200,000, checkpoints over 10,000  | 3               |
 | `metadata-worker`     | No worker heartbeat for 15 minutes                    | 3               |
 | `observation-<chain>` | A chain observation has an error or is 5 minutes old  | 5               |
-| `market-<checkpoint>` | A sales checkpoint is not `available`                 | 10              |
+| `market-<chain-id>-<checkpoint>` | Sales checkpoint is incomplete, unavailable or stale | 10         |
 | `production-health`   | The existing report is unhealthy or 10 minutes old    | 15              |
 | `reorg-tracking`      | The indexer journal cannot be read for reorg counting | 15              |
 
 Two healthy checks close an incident. A value that cannot be read counts as a problem, so
 an unreachable database cannot look healthy.
+
+## Sales history warnings and alerts
+
+Sales-only emails use **sales history** in the subject and name the affected
+chain. They do not imply that the main chain indexer is behind. The default
+configuration checks BNB, Base, Ethereum and Polygon independently; Seaport
+checkpoints share a name, so their database keys and incident IDs include the
+chain ID.
+
+- A fresh `syncing` checkpoint is a **WARNING** while replay is progressing (or
+  the monitor is still establishing progress). Live history remains unhealthy;
+  replay is not automatically treated as maintenance or suppressed.
+- Missing checkpoints, read failures, `unavailable`, unexpected error codes,
+  or missing/stale heartbeats produce an **ALERT**. An `available` label cannot
+  hide a worker whose heartbeat has stopped.
+- No committed position change for `max_market_stall_seconds` (default 300), or
+  continuous observed syncing for `max_market_sync_seconds` (default 1800),
+  raises replay severity to **ALERT**. These are configurable operational limits,
+  not predictions of replay duration. Checkpoint age is bounded by
+  `max_market_check_age_seconds` (default 360), matching activity-read freshness.
+
+The existing ten-check incident debounce and two-check recovery remain. After a
+warning has been delivered, ten consecutive alert-severity samples send one
+escalation. Failed delivery is retried. Progress resuming alone is not recovery:
+the checkpoint must return to fresh, error-free `available` status. Non-sales
+alerts retain their existing behavior.
+
+Progress compares completed blocks and consumed event positions across checks,
+including pages within a dense block. A worker heartbeat or advancing replay
+target alone does not count. Monitor gaps reset progress observation instead of
+claiming the worker stalled during an unobserved interval. Sync duration is the
+monitor's observed duration, not a fabricated deployment start time or ETA.
+
+Emails and each history sample's `sales` field include checkpoint age, confirmed
+block, distance to the indexed head when known, source release and latest matching
+handover review when available. Block distance is not seconds of delay and can
+include the configured confirmation depth. Handover identifiers are diagnostic
+context, not grounds for suppressing customer-visible degradation. The default
+legacy Base/BNB incident states migrate without duplicate notifications; an
+already-delivered old alert is not reissued as a new warning.
+
+Use the [marketplace handover preflight](../../../docs/unified-indexer/marketplace-source-handover.md)
+to prevent an unverified source switch from starting a live replay. This monitor
+does not yet probe public activity responses or candidate projections; it cannot
+certify API availability from the checkpoint alone. Keep public request monitoring
+and deployment acceptance checks alongside it.
 
 ## Choosing thresholds
 

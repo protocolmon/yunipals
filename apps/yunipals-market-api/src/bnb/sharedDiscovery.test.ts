@@ -748,13 +748,16 @@ test("reviewed discovery rollback clears the feed, preserves live mode and rebui
     const forward = await selectSharedMarketplaceConsumer(
       db.owner,
       f.reader,
-      config
+      config,
+      undefined,
+      { replay: true }
     );
     await selectSharedMarketplaceConsumer(
       db.owner,
       f.reader,
       config,
-      forward.reviewHash
+      forward.reviewHash,
+      { replay: true }
     );
     assert.equal(
       (
