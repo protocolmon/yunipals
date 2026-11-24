@@ -220,8 +220,12 @@ describe("serum sponsorship quotes", () => {
   function fixture(fee: bigint, used: bigint) {
     const readContract = vi.fn(
       async ({ functionName }: { functionName: string }) => {
-        if (functionName === "serumApplicationFee") return fee;
-        if (functionName === "sponsoredSerumsUsed") return used;
+        if (["serumApplicationFee", "fusionFee"].includes(functionName))
+          return fee;
+        if (
+          ["sponsoredSerumsUsed", "sponsoredFusionsUsed"].includes(functionName)
+        )
+          return used;
         if (functionName === "quoteRandomness") return 100n;
         throw new Error(`Unexpected read: ${functionName}`);
       }
@@ -256,6 +260,8 @@ describe("serum sponsorship quotes", () => {
         },
         card: async (id: bigint) => ({
           tokenId: String(id),
+          level: 0,
+          sources: [{ originalTokenId: "1", sequence: Number(id) - 1 }],
           owner,
           graded: false,
           reservedBy: null,
@@ -306,6 +312,64 @@ describe("serum sponsorship quotes", () => {
       );
     }
   );
+  it.each([0n, 100000n])(
+    "binds the live %s fusion fee into capped calldata",
+    async (fee) => {
+      const { app, readContract } = fixture(fee, fee === 0n ? 999n : 1000n);
+      const response = await app.request(
+        `/v1/evolution/quote?kind=fusion&tokenId=1&partnerId=2&owner=${owner}`
+      );
+      expect(response.status).toBe(200);
+      const quote = await response.json();
+      const { decodeFunctionData } = await import("viem");
+      const { evolutionAbi } = await import(
+        "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+      );
+      const decoded = decodeFunctionData({
+        abi: evolutionAbi,
+        data: quote.data
+      });
+      expect(decoded.functionName).toBe("fuse");
+      expect(decoded.args).toHaveLength(7);
+      expect(decoded.args?.[4]).toBe(fee);
+      expect(quote.fee).toBe(String(fee));
+      expect(quote.value).toBe("125");
+      expect(readContract).toHaveBeenCalledWith(
+        expect.objectContaining({
+          functionName: "fusionFee",
+          blockNumber: 110n
+        })
+      );
+    }
+  );
+  it("reads the independent fusion sponsorship counter at the confirmed boundary", async () => {
+    const { app, readContract } = fixture(0n, 123n);
+    const response = await app.request("/v1/evolution/sponsorship?kind=fusion");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      limit: 1000,
+      used: 123,
+      remaining: 877,
+      block: "100"
+    });
+    expect(readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: "sponsoredFusionsUsed",
+        blockNumber: 100n
+      })
+    );
+    readContract.mockRejectedValue(new Error("Upgrade not installed"));
+    expect(
+      (await app.request("/v1/evolution/sponsorship?kind=fusion")).status
+    ).toBe(503);
+    expect(
+      (
+        await app.request(
+          `/v1/evolution/quote?kind=fusion&tokenId=1&partnerId=2&owner=${owner}`
+        )
+      ).status
+    ).toBe(503);
+  });
   it("reads availability at the canonical confirmed boundary", async () => {
     const { app, readContract } = fixture(0n, 999n);
     const response = await app.request("/v1/evolution/sponsorship");

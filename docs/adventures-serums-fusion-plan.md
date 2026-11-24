@@ -261,7 +261,7 @@ This is a finite combinatorial recipe space, not a count of guaranteed visually 
 ## Approved card finishes (20 November)
 
 - Finish IDs: 0 unassigned, 1 Normal (70%), 2 Golden (25%), 3 Black (5%). An untouched base card remains unassigned. Its first serum application rolls once; later doses, ownership transfers and grading preserve that finish. Every newly fused card rolls afresh regardless of either parent’s finish or Presence.
-- First serum application and every fusion require player-funded native-ETH Chainlink VRF, quoted before signing alongside the unchanged 0.10 USDC generation fee. Later serum applications need no finish VRF. First-serum admission reserves the card and fee before requesting entropy; failure reverts admission atomically.
+- First serum application and every fusion require player-funded native-ETH Chainlink VRF, quoted before signing alongside the applicable generation fee (0 USDC while the corresponding sponsorship allowance remains, then 0.10 USDC). Later serum applications need no finish VRF. First-serum admission reserves the card and fee before requesting entropy; failure reverts admission atomically.
 - Finish and Presence use separate domain-separated unbiased draws. Finish is unrelated to serum rarity, source sequence or Presence. A Black card can be Holy. No grade bonuses apply.
 - Settled finish is included in the request binding before AI generation. Generation retries, duplicate callbacks and same-proof recovery cannot reroll it. `EvolutionRandomnessSettled` exposes the pending result; `FinishAssigned` assigns it to the completed card. The global indexer handles both with its existing canonical, rollback-managed projections.
 - Artwork policy version 3 integrates the finish into the actual image: Normal pearlescent frame with purple lettering/colored logo; Golden polished gold with embossed lettering and gold mascot at **standard border width**; Black dark illustration/frame with legible gunmetal lettering and black chrome mascot, retaining creature highlights. No decorative geometric overlay, thicker Golden border or swirl feature. Grading preserves these materials, text and mascot treatment.
@@ -405,7 +405,7 @@ Build the feature within the existing collection/card experience, with reusable 
 - Serum reveal: illustrated bottle card, essence, form, Presence, rarity and an Apply for 0.10 USDC action. Keep the familiar serum name and show Presence as a distinct trait. Explain that finding the next serum replaces the unused bottle.
 - Consumption: preview of intended effects clearly marked as a concept, spending review, generation progress and eventual before/after. Show the exact current-Presence → new-Presence change, particularly when Holy will be replaced.
 - Fusion picker: only compatible owned, ungraded partners; show original lineage and exact sequence positions rather than relying on appearance. Explain why graded cards cannot be selected.
-- Fusion review: two input cards, expected two/four-source result, inherited physical effects, parent Presences and 0.10 USDC. Show each differing Presence at 50%, or one guaranteed Presence when they match; no selector or reroll. Show the player-paid native-ETH VRF quote separately from USDC and transaction gas, then distinct awaiting-randomness and generation states. For an original, explicitly show that remaining daily claims end on successful fusion.
+- Fusion review: two input cards, expected two/four-source result, inherited physical effects, parent Presences and the quoted AI fee (sponsored or 0.10 USDC). Show each differing Presence at 50%, or one guaranteed Presence when they match; no selector or reroll. Show the player-paid native-ETH VRF quote separately from USDC and transaction gas, then distinct awaiting-randomness and generation states. For an original, explicitly show that remaining daily claims end on successful fusion.
 - Final card: clear fusion level, current Presence, two/four-source family tree and locally consumed versus inherited doses, with each dose's Presence retained in history.
 - Pending work survives reload and wallet changes. Handle rejected signatures, insufficient USDC/ETH, expired quotes, transferred/burned cards, indexer lag, VRF delays and AI retry/recovery separately. Show when a card is reserved and why it cannot currently transfer or enter another job.
 - Grading entry shows the matching ancestor and portal requirements under the selected eligibility policy. The input preview is always the fusion's latest artwork, not the ancestor's old image.
@@ -464,11 +464,11 @@ Use the private operator repository for deployments and evidence. Keep addresses
 
 To stop intake, pause adventure randomness requests and evolution requests on their respective contracts (`pauseRandomness(true)` and `pauseRequests(true)`), and disable frontend actions as appropriate. Keep callbacks, recovery, generation completions and published assets available so already-reserved cards can finish. Restore the worker database and immutable assets together. Do not downgrade a collection or grading implementation to code that does not understand already-minted fusions or evolved artwork; prepare a compatible forward fix through the private release workflow.
 
-### Launch serum sponsorship
+### Launch serum and fusion sponsorship
 
 The project waives the 0.10 USDC AI fee for the first 1,000 accepted serum
 applications globally, across wallets, base cards and fused cards. Every dose
-counts, including repeat doses. Fusion remains 0.10 USDC. Gas and any required
+counts, including repeat doses. The first 1,000 accepted fusions have their own independent AI-fee allowance. Gas and any required
 first-finish VRF payment remain player-paid. The existing project AI provider
 configuration pays provider invoices; no sponsor USDC deposit is required. This
 waives up to 100 USDC of player fees, not a guarantee of the provider's actual
@@ -514,3 +514,19 @@ release the matching API and frontend before reopening intake. Preserve prior
 source coverage and canonical history during re-registration. Production
 execution and evidence belong in the private operations repository. No live
 upgrade or sponsorship activation is performed by this code change.
+
+Fusion sponsorship extends this policy with append-only `sponsoredFusionsUsed`,
+`SPONSORED_FUSION_LIMIT = 1000` and `fusionFee()`. Both fusion levels share that
+independent global allowance. The seven-argument `fuse` binds `maxAiFee`; the
+legacy six-argument selector is retired, so unsubmitted old quotes must refresh.
+Already accepted requests remain completable. New quotes use the capped selector.
+The frontend validates its fee and skips approval for zero USDC.
+
+Sponsorship is reserved on acceptance, never consumed again on retries, and
+reverted admission reserves nothing. Existing sponsored serums and paid pending
+fusions preserve their bindings and escrow. No initializer, reset, refund or
+new indexer event is needed. `EvolutionFeeReserved` still reports the serum
+counter; request ancestry identifies fusion fees. The confirmed availability
+endpoint accepts `kind=fusion` to read the independent fusion counter; omitted
+kind remains serum-compatible. No contract upgrade or public activation is
+performed by these source changes.

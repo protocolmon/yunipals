@@ -681,14 +681,30 @@ try {
     functionName: "requestCount"
   });
   const fusionRequest = await chain.request(fusionId);
-  assert.equal(usdcApprovals, 1, "fusion still requires its paid fee approval");
+  assert.equal(usdcApprovals, 0, "sponsored fusion requires no USDC approval");
+  assert.equal(
+    await client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "sponsoredFusionsUsed"
+    }),
+    1n
+  );
+  assert.equal(
+    await client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "sponsoredSerumsUsed"
+    }),
+    1n
+  );
   assert.equal(
     await client.readContract({
       address: evolution,
       abi: evolutionAbi,
       functionName: "feeLiability"
     }),
-    100000n
+    0n
   );
   assert.ok(fusionRequest.randomnessId > 0n);
   await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [

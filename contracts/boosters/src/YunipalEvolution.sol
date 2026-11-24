@@ -26,6 +26,7 @@ contract YunipalEvolution is PortalRandomness {
     using SafeERC20 for IERC20;
     uint256 public constant AI_FEE = 100_000;
     uint256 public constant SPONSORED_SERUM_LIMIT = 1000;
+    uint256 public constant SPONSORED_FUSION_LIMIT = 1000;
     bytes32 public constant GENERATOR_ROLE = keccak256("GENERATOR_ROLE");
     PortalGradingValidator private immutable _validator = new PortalGradingValidator();
     error AiFeeExceedsBudget();
@@ -88,6 +89,7 @@ contract YunipalEvolution is PortalRandomness {
     // Append-only upgrade storage. Existing requests default to paid and retain their escrow.
     uint256 public sponsoredSerumsUsed;
     mapping(uint256 => bool) public sponsoredRequest;
+    uint256 public sponsoredFusionsUsed;
 
     event EvolutionFeeReserved(uint256 indexed requestId, uint256 fee, uint256 sponsoredSerumsUsed);
 
@@ -185,6 +187,10 @@ contract YunipalEvolution is PortalRandomness {
         return sponsoredSerumsUsed < SPONSORED_SERUM_LIMIT ? 0 : AI_FEE;
     }
 
+    function fusionFee() public view returns (uint256) {
+        return sponsoredFusionsUsed < SPONSORED_FUSION_LIMIT ? 0 : AI_FEE;
+    }
+
     /// @notice A zero fee limit protects a sponsored quote from being charged after the cap is reached.
     function consumeSerum(
         uint256 tokenId,
@@ -237,10 +243,13 @@ contract YunipalEvolution is PortalRandomness {
         uint256 b,
         Expected calldata expectedA,
         Expected calldata expectedB,
+        uint256 maxAiFee,
         uint256 maxVrfPrice,
         uint64 deadline
     ) external payable nonReentrant returns (uint256 id) {
         _checkRequest(deadline);
+        uint256 fee = fusionFee();
+        if (fee > maxAiFee) revert AiFeeExceedsBudget();
         cards.fusionRecipe(a, b); // Includes canonical parent order, adjacency and lineage checks.
         cards.assertNoPendingClaim(a);
         cards.assertNoPendingClaim(b);
@@ -260,7 +269,14 @@ contract YunipalEvolution is PortalRandomness {
         request.presenceB = state[b].presence;
         pendingRequest[a] = id;
         pendingRequest[b] = id;
-        _collectFee(id);
+        if (fee == 0) {
+            ++sponsoredFusionsUsed;
+            sponsoredRequest[id] = true;
+            // Preserve the existing event schema and serum counter semantics for global indexing.
+            emit EvolutionFeeReserved(id, 0, sponsoredSerumsUsed);
+        } else {
+            _collectFee(id);
+        }
         uint256 paid;
         // Every new fusion rolls a finish, even when parent Presences match.
         (request.randomnessId, paid) = _requestRandomness(maxVrfPrice);

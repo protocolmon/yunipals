@@ -17,6 +17,10 @@ import {YunipalEvolution, IProgressionArtwork} from "../src/YunipalEvolution.sol
 import {PortalTestUSDC, PortalTestEngine} from "./Portals.t.sol";
 import {MockWrapper} from "./BoosterPacks.t.sol";
 
+interface ILegacyFusion {
+    function fuse(uint256 a, uint256 b, YunipalEvolution.Expected calldata ea, YunipalEvolution.Expected calldata eb, uint256 maxVrfPrice, uint64 deadline) external payable returns (uint256);
+}
+
 interface ILegacyEvolution {
     function consumeSerum(uint256 tokenId, YunipalEvolution.Expected calldata expected, SerumCatalogue.Dose calldata dose, uint256 maxVrfPrice, uint64 deadline) external payable returns (uint256);
 }
@@ -217,7 +221,7 @@ contract EvolutionTest is Test {
         YunipalEvolution.Expected memory ea = expected(a);
         YunipalEvolution.Expected memory eb = expected(b);
         vm.prank(ALICE);
-        job = evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 0.001 ether, uint64(block.timestamp));
+        job = evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 100_000, 0.001 ether, uint64(block.timestamp));
     }
 
     function complete(uint256 job) private returns (uint256) {
@@ -382,17 +386,123 @@ contract EvolutionTest is Test {
         assertEq(adventures.unusedSerum(id).serumId, dose.serumId);
     }
 
-    function testFusionStaysPaidAndFusedCardCanUseSponsorship() public {
+    function testFusionAndSerumUseIndependentSponsorship() public {
         uint256 a = original();
         uint256 job = fuse(a, child(a, 1));
-        assertFalse(evolution.sponsoredRequest(job));
+        assertTrue(evolution.sponsoredRequest(job));
+        assertEq(evolution.sponsoredFusionsUsed(), 1);
         assertEq(evolution.sponsoredSerumsUsed(), 0);
-        assertEq(evolution.feeLiability(), 100_000);
+        assertEq(evolution.feeLiability(), 0);
         uint256 fused = complete(job);
         findSerum(fused);
         complete(drinkWithLimit(fused, 0));
         assertEq(evolution.sponsoredSerumsUsed(), 1);
+        assertEq(usdc.balanceOf(FEES), 0);
+    }
+
+    function fuseWithLimit(uint256 a, uint256 b, uint256 feeLimit) private returns (uint256) {
+        YunipalEvolution.Expected memory ea = expected(a);
+        YunipalEvolution.Expected memory eb = expected(b);
+        vm.prank(ALICE);
+        return evolution.fuse{value: 0.001 ether}(a, b, ea, eb, feeLimit, 0.001 ether, uint64(block.timestamp));
+    }
+
+    function testFusionSponsorshipBoundaryStaleQuoteAndEscrow() public {
+        sponsorStorage.target(address(evolution)).sig("sponsoredFusionsUsed()").checked_write(999);
+        uint256 a = original();
+        uint256 b = child(a, 1);
+        uint256 c = child(a, 2);
+        uint256 d = child(a, 3);
+        uint256 balance = usdc.balanceOf(ALICE);
+        uint256 ethBefore = ALICE.balance;
+        vm.prank(ALICE);
+        usdc.approve(address(evolution), 0);
+        uint256 freeJob = fuseWithLimit(a, b, 0);
+        assertTrue(evolution.sponsoredRequest(freeJob));
+        assertEq(evolution.sponsoredFusionsUsed(), 1000);
+        assertEq(evolution.sponsoredSerumsUsed(), 0);
+        assertEq(usdc.balanceOf(ALICE), balance);
+        assertEq(ALICE.balance, ethBefore - wrapper.PRICE());
+        assertEq(evolution.fusionFee(), 100_000);
+        vm.prank(ALICE);
+        usdc.approve(address(evolution), type(uint256).max);
+        YunipalEvolution.Expected memory ec = expected(c);
+        YunipalEvolution.Expected memory ed = expected(d);
+        vm.prank(ALICE);
+        vm.expectRevert(YunipalEvolution.AiFeeExceedsBudget.selector);
+        evolution.fuse{value: 0.001 ether}(c, d, ec, ed, 0, 0.001 ether, uint64(block.timestamp));
+        assertEq(cards.cardReservation(c), address(0));
+        assertEq(usdc.balanceOf(ALICE), balance);
+        uint256 paidJob = fuseWithLimit(c, d, 100_000);
+        assertFalse(evolution.sponsoredRequest(paidJob));
+        assertEq(evolution.feeLiability(), 100_000);
+        wrapper.fulfill(evolution.getRequest(freeJob).randomnessId, 123);
+        bytes32 binding = evolution.requestBinding(freeJob);
+        vm.expectRevert();
+        evolution.complete(freeJob, binding, YunipalEvolution.Artifact("", 0, "", 0));
+        assertEq(evolution.sponsoredFusionsUsed(), 1000);
+        complete(freeJob);
+        assertEq(evolution.feeLiability(), 100_000);
+        complete(paidJob);
+        assertEq(evolution.feeLiability(), 0);
         assertEq(usdc.balanceOf(FEES), 100_000);
+        assertEq(evolution.sponsoredFusionsUsed(), 1000);
+    }
+
+    function testRejectedFusionDoesNotConsumeSponsorship() public {
+        uint256 a = original();
+        uint256 b = child(a, 1);
+        YunipalEvolution.Expected memory ea = expected(a);
+        YunipalEvolution.Expected memory eb = expected(b);
+        vm.prank(BOB);
+        vm.expectRevert("owner only");
+        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 0, 0.001 ether, uint64(block.timestamp));
+        vm.prank(ALICE);
+        vm.expectRevert("VRF price exceeds budget");
+        evolution.fuse(a, b, ea, eb, 0, 0, uint64(block.timestamp));
+        assertEq(evolution.sponsoredFusionsUsed(), 0);
+        assertEq(evolution.requestCount(), 0);
+        assertEq(cards.cardReservation(a), address(0));
+        assertEq(cards.cardReservation(b), address(0));
+    }
+
+    function testUpgradePreservesPaidFusionAndSponsoredSerum() public {
+        bytes memory code = vm.parseJsonBytes(vm.readFile("test/fixtures/YunipalEvolution.pre-fusion-sponsorship.json"), ".creationBytecode");
+        address legacy;
+        assembly { legacy := create(0, add(code, 32), mload(code)) }
+        require(legacy != address(0), "legacy deployment failed");
+        evolution.upgradeToAndCall(legacy, "");
+        uint256 a = original();
+        uint256 b = child(a, 1);
+        uint256 c = original();
+        YunipalEvolution.Expected memory ea = expected(a);
+        YunipalEvolution.Expected memory eb = expected(b);
+        vm.prank(ALICE);
+        uint256 paidJob = ILegacyFusion(address(evolution)).fuse{value: 0.001 ether}(a, b, ea, eb, 0.001 ether, uint64(block.timestamp));
+        findSerum(c);
+        uint256 freeJob = drinkWithLimit(c, 0);
+        wrapper.fulfill(evolution.getRequest(paidJob).randomnessId, 123);
+        wrapper.fulfill(evolution.getRequest(freeJob).randomnessId, 456);
+        bytes32 binding = evolution.requestBinding(paidJob);
+        bytes32 serumBinding = evolution.requestBinding(freeJob);
+        evolution.upgradeToAndCall(address(new YunipalEvolution()), "");
+        assertEq(evolution.requestBinding(paidJob), binding);
+        assertEq(evolution.requestBinding(freeJob), serumBinding);
+        assertEq(evolution.sponsoredSerumsUsed(), 1);
+        assertEq(evolution.sponsoredFusionsUsed(), 0);
+        assertFalse(evolution.sponsoredRequest(paidJob));
+        assertTrue(evolution.sponsoredRequest(freeJob));
+        complete(freeJob);
+        assertEq(evolution.feeLiability(), 100_000);
+        complete(paidJob);
+        assertEq(evolution.feeLiability(), 0);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+        uint256 newOriginal = original();
+        uint256 freeFusion = fuseWithLimit(newOriginal, child(newOriginal, 1), 0);
+        complete(freeFusion);
+        evolution.upgradeToAndCall(address(new YunipalEvolution()), "");
+        assertEq(evolution.sponsoredFusionsUsed(), 1);
+        assertEq(evolution.sponsoredSerumsUsed(), 1);
     }
 
     function testUpgradePreservesLegacyPaidRequestAndBinding() public {
@@ -635,7 +745,7 @@ contract EvolutionTest is Test {
         engine.setPending(1);
         vm.prank(ALICE);
         vm.expectRevert("original has pending claim");
-        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 0.001 ether, uint64(block.timestamp));
+        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 100_000, 0.001 ether, uint64(block.timestamp));
         engine.setPending(0);
         grading.setGraded(a);
         vm.prank(ALICE);
@@ -643,7 +753,7 @@ contract EvolutionTest is Test {
         adventures.adventure{value: 0.001 ether}(a, rulesHash, 0.001 ether, uint64(block.timestamp));
         vm.prank(ALICE);
         vm.expectRevert("card already graded");
-        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 0.001 ether, uint64(block.timestamp));
+        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 100_000, 0.001 ether, uint64(block.timestamp));
     }
 
     function testElevenLocalDosesAndFreshFusionAllowance() public {

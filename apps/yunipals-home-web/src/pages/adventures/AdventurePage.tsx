@@ -18,6 +18,7 @@ import {
   serumPresences,
   serumDefinition,
   sponsoredSerumLimit,
+  sponsoredFusionLimit,
   fusionPresenceOdds
 } from "@protopals/yunipals-market-core/serums";
 import { environment } from "@/environment";
@@ -85,6 +86,20 @@ export function AdventurePage() {
           remaining: z.number().int().min(0).max(sponsoredSerumLimit)
         })
         .parse(await evolutionRequest("/sponsorship", signal)),
+    refetchInterval: 10000,
+    retry: 1
+  });
+  const fusionSponsorship = useQuery({
+    queryKey: ["evolution", "sponsorship", "fusion"],
+    enabled: environment.evolutionEnabled,
+    queryFn: async ({ signal }) =>
+      z
+        .object({
+          limit: z.literal(sponsoredFusionLimit),
+          used: z.number().int().min(0).max(sponsoredFusionLimit),
+          remaining: z.number().int().min(0).max(sponsoredFusionLimit)
+        })
+        .parse(await evolutionRequest("/sponsorship?kind=fusion", signal)),
     refetchInterval: 10000,
     retry: 1
   });
@@ -490,6 +505,13 @@ export function AdventurePage() {
                   >
                     Choose fusion partner
                   </button>
+                  {fusionSponsorship.data && !fusionSponsorship.isError && (
+                    <p className="mt-2 text-sm">
+                      {fusionSponsorship.data.remaining > 0
+                        ? `${fusionSponsorship.data.remaining} of 1,000 sponsored fusions remain. AI fee: 0 USDC; gas and randomness fees still apply. Your slot is reserved when the fusion is accepted onchain.`
+                        : "All 1,000 sponsored fusions have been claimed. The standard 0.10 USDC AI fee applies."}
+                    </p>
+                  )}
                 </div>
                 {!card.graded && (
                   <p className="mt-5 text-sm">
@@ -669,17 +691,21 @@ export function AdventurePage() {
             )}
             <p className="mt-4 font-semibold">
               {actions.review.quote.fee === "0"
-                ? actions.review.quote.kind === "serum"
+                ? actions.review.quote.kind !== "adventure"
                   ? "AI generation sponsored · 0 USDC"
                   : "No AI fee"
                 : "AI generation: 0.10 USDC"}
             </p>
-            {actions.review.quote.kind === "serum" &&
+            {actions.review.quote.kind !== "adventure" &&
               actions.review.quote.fee === "0" && (
                 <p className="mt-1 text-sm">
-                  One of the first 1,000 serum applications. If the allowance
-                  runs out before confirmation, this transaction reverts instead
-                  of charging USDC. Gas can still be spent.
+                  One of the first 1,000{" "}
+                  {actions.review.quote.kind === "fusion"
+                    ? "fusions"
+                    : "serum applications"}
+                  . If the allowance runs out before confirmation, this
+                  transaction reverts instead of charging USDC. Gas can still be
+                  spent.
                 </p>
               )}
             <p className="mt-1 text-sm">

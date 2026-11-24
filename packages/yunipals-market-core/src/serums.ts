@@ -2,6 +2,7 @@
 export const serumCatalogueVersion = 1;
 export const serumFee = 100_000n;
 export const sponsoredSerumLimit = 1000;
+export const sponsoredFusionLimit = 1000;
 export const maxLocalDoses = 11;
 /** Zero means no finish has been assigned yet, not Normal. */
 export const cardFinishes = [

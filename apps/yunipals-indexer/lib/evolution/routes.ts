@@ -15,6 +15,7 @@ import {
   serumPresences,
   serumFee,
   sponsoredSerumLimit,
+  sponsoredFusionLimit,
   fusionCompatible
 } from "@protopals/yunipals-market-core/serums";
 import { createEvolutionRuntime, type EvolutionRuntime } from "./runtime.js";
@@ -167,6 +168,7 @@ export function registerEvolutionRoutes(
         usdc: r.portal.chain.deployment.usdc,
         fee: serumFee,
         sponsoredSerumLimit,
+        sponsoredFusionLimit,
         catalogue: serumCatalogue,
         presences: serumPresences,
         finishes: cardFinishes,
@@ -176,27 +178,32 @@ export function registerEvolutionRoutes(
       }))
     )
   );
-  router.get("/v1/evolution/sponsorship", async () =>
-    reply(
+  router.get("/v1/evolution/sponsorship", async (c) => {
+    const kind = z
+      .enum(["serum", "fusion"])
+      .parse(c.req.query("kind") ?? "serum");
+    const limit =
+      kind === "fusion" ? sponsoredFusionLimit : sponsoredSerumLimit;
+    return reply(
       await snapshot(async (r, _db, ctx) => {
         const used = await r.chain.client.readContract({
           address: ctx.evolution as Address,
           abi: evolutionAbi,
-          functionName: "sponsoredSerumsUsed",
+          functionName:
+            kind === "fusion" ? "sponsoredFusionsUsed" : "sponsoredSerumsUsed",
           blockNumber: ctx.block
         });
-        if (used > BigInt(sponsoredSerumLimit))
-          throw new Error("Invalid sponsorship count.");
+        if (used > BigInt(limit)) throw new Error("Invalid sponsorship count.");
         return {
-          limit: sponsoredSerumLimit,
+          limit,
           used: Number(used),
-          remaining: sponsoredSerumLimit - Number(used),
+          remaining: limit - Number(used),
           block: ctx.block,
           hash: ctx.hash
         };
       })
-    )
-  );
+    );
+  });
   router.get("/v1/evolution/cards/:id", async (c) => {
     const id = BigInt(uint.parse(c.req.param("id")));
     return reply(
@@ -398,14 +405,13 @@ export function registerEvolutionRoutes(
         const fee =
           kind === "adventure"
             ? 0n
-            : kind === "serum"
-              ? await r.chain.client.readContract({
-                  address: target,
-                  abi: evolutionAbi,
-                  functionName: "serumApplicationFee",
-                  blockNumber: head.number
-                })
-              : serumFee;
+            : await r.chain.client.readContract({
+                address: target,
+                abi: evolutionAbi,
+                functionName:
+                  kind === "serum" ? "serumApplicationFee" : "fusionFee",
+                blockNumber: head.number
+              });
         let data;
         if (kind === "adventure") {
           const catalogue = await r.chain.client.readContract({
@@ -438,6 +444,7 @@ export function registerEvolutionRoutes(
               BigInt(b.tokenId),
               expected(a),
               expected(b),
+              fee,
               maximum,
               deadline
             ]

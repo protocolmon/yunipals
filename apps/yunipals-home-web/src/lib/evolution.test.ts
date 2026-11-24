@@ -110,3 +110,58 @@ test("serum review accepts only the displayed fee bound into the transaction", (
     Object.assign(environment, previous);
   }
 });
+
+test("fusion review requires its displayed fee cap even for sponsored quotes", () => {
+  const previous = { ...environment };
+  Object.assign(environment, {
+    evolutionEnabled: true,
+    evolutionAddress: controller,
+    portalChainId: 8453
+  });
+  const fusion = (fee: bigint): EvolutionQuote => ({
+    ...quote(fee),
+    kind: "fusion",
+    cards: [card, { ...card, tokenId: "2" }],
+    data: encodeFunctionData({
+      abi: evolutionAbi,
+      functionName: "fuse",
+      args: [1n, 2n, expected, expected, fee, 100n, 9999999999n]
+    })
+  });
+  try {
+    for (const fee of [0n, 100000n])
+      assert.doesNotThrow(() =>
+        validateEvolutionQuote(fusion(fee), owner, "fusion", "1", "2")
+      );
+    assert.throws(() =>
+      validateEvolutionQuote(
+        { ...fusion(100000n), fee: "0" },
+        owner,
+        "fusion",
+        "1",
+        "2"
+      )
+    );
+    assert.throws(() =>
+      validateEvolutionQuote(fusion(1n), owner, "fusion", "1", "2")
+    );
+    const legacy = encodeFunctionData({
+      abi: parseAbi([
+        "function fuse(uint256,uint256,(uint64 artVersion,bytes32 historyHash),(uint64 artVersion,bytes32 historyHash),uint256,uint64) payable returns(uint256)"
+      ]),
+      functionName: "fuse",
+      args: [1n, 2n, expected, expected, 100n, 9999999999n]
+    });
+    assert.throws(() =>
+      validateEvolutionQuote(
+        { ...fusion(0n), data: legacy },
+        owner,
+        "fusion",
+        "1",
+        "2"
+      )
+    );
+  } finally {
+    Object.assign(environment, previous);
+  }
+});
