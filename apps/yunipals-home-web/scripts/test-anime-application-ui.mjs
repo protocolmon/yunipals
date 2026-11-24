@@ -18,6 +18,7 @@ const modules = {
     import {ArenaQueuePage} from '/src/pages/arena/live/ArenaQueuePage';
     import {LiveArenaPage} from '/src/pages/arena/live/LiveArenaPage';
     import {AnimeStudioPage} from '/src/pages/arena/anime/AnimeStudioPage';
+    import {AnimeFighterCard} from '/src/pages/arena/anime/AnimeFighterCard';
     const kind=location.pathname.includes('/video')?'video':'anime';
     createRoot(document.getElementById('root')).render(
       <BrowserRouter><QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}>
@@ -25,6 +26,7 @@ const modules = {
           <Route path="/arena/:kind" element={<ArenaQueuePage/>}/>
           <Route path="/arena/anime/studio" element={<AnimeStudioPage/>}/>
           <Route path="/arena/:kind/:id" element={<LiveArenaPage/>}/>
+          <Route path="/collection/base/1234" element={<AnimeFighterCard tokenId="1234" owner="${owner}"/>}/>
           <Route path="*" element={<p>Application destination</p>}/>
         </Routes></ArenaDeploymentProvider>
       </QueryClientProvider></BrowserRouter>);
@@ -32,6 +34,8 @@ const modules = {
   "virtual:wagmi.ts": `
     export const useAccount=()=>({address:new URLSearchParams(location.search).has('disconnected')?undefined:'${owner}'});
     export const usePublicClient=()=>undefined;
+    export const useSwitchChain=()=>({});
+    export const useWriteContract=()=>({writeContractAsync:()=>{throw Error('Unexpected transaction')}});
   `,
   "virtual:wallet.ts": `export const useArenaWallet=()=>({
     entryProgress:new URLSearchParams(location.search).has('confirming')?{key:new URLSearchParams(location.search).has('other-battle')?'2/entry':'1/entry',label:'Confirm in wallet…'}:null
@@ -75,7 +79,11 @@ const server = await createServer({
       },
       configureServer(s) {
         s.middlewares.use((req, res, next) => {
-          if (!req.url?.startsWith("/arena/")) return next();
+          if (
+            !req.url?.startsWith("/arena/") &&
+            !req.url?.startsWith("/collection/")
+          )
+            return next();
           res.setHeader("Content-Type", "text/html");
           res.end(
             '<!doctype html><html><head><link rel="stylesheet" href="/src/globals.css"></head><body><div id="root"></div><script type="module" src="/@id/__x00__virtual:entry.tsx"></script></body></html>'
@@ -104,6 +112,9 @@ try {
   let entered = false;
   let submitted = false;
   let full = false;
+  let showGallery = false;
+  let ownsSelected = true;
+  let queuesOpen = true;
   const seat = {
     seat: 0,
     player: owner,
@@ -174,19 +185,58 @@ try {
         requestId: null
       };
     else if (path.endsWith("/tournaments"))
-      data = { items: [], nextCursor: null };
+      data = {
+        items: queuesOpen
+          ? [
+              {
+                id: "1",
+                phase: "open",
+                fighters: [],
+                submittedSeats: [],
+                deadline: 0,
+                islandId: null
+              }
+            ]
+          : [],
+        nextCursor: null
+      };
     else if (path.endsWith("/fighters"))
       data = {
-        items: [],
+        items: showGallery
+          ? [
+              {
+                tokenId: "1234",
+                status: "Approved",
+                manifestHash: null,
+                reasonCode: null,
+                reviewRequired: false
+              }
+            ]
+          : [],
         nextCursor: null,
         counts: { Approved: 9, Applied: 0, Rejected: 0, Revoked: 0 }
       };
     else if (path.includes("/fighters/"))
-      data = { fighter: { status: approved ? "Approved" : "Applied" } };
+      data = {
+        fighter: { status: approved ? "Approved" : "Applied" },
+        applicationsOpen: true
+      };
+    else if (path.endsWith("/v1/tokens/base/1234"))
+      data = {
+        token: {
+          token_id: "1234",
+          owner: ownsSelected ? owner : `0x${"2".repeat(40)}`,
+          chain: "base",
+          chain_id: 8453,
+          name: "Test Yunichick",
+          image: "/images/arena/anime-chick.webp",
+          burned: false
+        }
+      };
     else if (path.startsWith("/__indexer/"))
       data = {
         version: 1,
-        query: "chain=base&sort=rarity-capped-desc",
+        query: `chain=base&${url.searchParams.get("q") ? `q=${url.searchParams.get("q")}&` : ""}sort=rarity-capped-desc`,
         chain: "base",
         chains: ["base"],
         owner,
@@ -216,6 +266,13 @@ try {
           }
         ]
       };
+    if (path.includes("/v2/owners/") && data && url.searchParams.get("q")) {
+      data.items = ownsSelected
+        ? data.items.filter(
+            (item) => item.tokenId === url.searchParams.get("q")
+          )
+        : [];
+    }
     if (data) return route.fulfill({ json: data });
     return route.continue();
   });
@@ -223,6 +280,15 @@ try {
     await page.setViewportSize({ width, height: 900 });
     for (const path of ["/arena/anime", "/arena/anime/1"]) {
       await page.goto(origin + path);
+      if (path === "/arena/anime") {
+        const summary = page.getByText(
+          "Need to prepare a fighter? Application instructions",
+          { exact: true }
+        );
+        await summary.waitFor();
+        assert.equal(await summary.locator("..").getAttribute("open"), null);
+        await summary.click();
+      }
       const hint = page.getByRole("complementary", {
         name: "How to apply for Anime Arena"
       });
@@ -455,6 +521,135 @@ try {
   await page.getByRole("link", { name: "My Base Yunipals" }).click();
   assert.equal(new URL(page.url()).pathname, `/collector/${owner}`);
   assert.equal(new URL(page.url()).search, "?edition=airdrop");
+  showGallery = true;
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(origin + "/arena/anime/studio");
+    const join = page.getByRole("link", {
+      name: "Choose a battle with this fighter",
+      exact: true
+    });
+    await join.waitFor();
+    assert.equal(await join.getAttribute("href"), "/arena/anime?fighter=1234");
+    await join.click();
+    await page
+      .getByText("Fighter #1234 is selected.", { exact: false })
+      .waitFor();
+    const continueLink = page.getByRole("link", {
+      name: "Continue with this fighter · 1 USDC",
+      exact: true
+    });
+    assert.equal(
+      await continueLink.getAttribute("href"),
+      "/arena/anime/1?fighter=1234#join"
+    );
+    await page.screenshot({
+      path: `${output}/${width}-selected-queue.png`,
+      fullPage: true
+    });
+    await continueLink.click();
+    await page
+      .getByRole("heading", { name: "Enter with your selected fighter" })
+      .waitFor();
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .waitFor();
+    assert.equal(await page.locator("[data-arena-fighter]").count(), 1);
+    assert.equal(new URL(page.url()).search, "?fighter=1234");
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth
+      ),
+      true
+    );
+    await page.screenshot({
+      path: `${output}/${width}-selected-entry.png`,
+      fullPage: true
+    });
+    await page.reload();
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .waitFor();
+    await page
+      .getByRole("link", { name: "Choose a different fighter", exact: true })
+      .click();
+    assert.equal(new URL(page.url()).search, "");
+    await page.getByRole("heading", { name: "Choose your fighter" }).waitFor();
+
+    await page.goto(origin + "/collection/base/1234");
+    const disclosure = page.locator("details").first();
+    assert.equal(await disclosure.getAttribute("open"), null);
+    await disclosure.locator("summary").click();
+    await page
+      .getByText("Next: choose a battle for this fighter", { exact: true })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("link", { name: "Choose a battle", exact: true })
+        .getAttribute("href"),
+      "/arena/anime?fighter=1234"
+    );
+    await page
+      .getByRole("link", { name: "Choose a battle", exact: true })
+      .click();
+    await continueLink.waitFor();
+  }
+  entered = true;
+  await page.goto(origin + "/arena/anime/1?fighter=5678");
+  await page
+    .getByRole("heading", { name: "Enter with your selected fighter" })
+    .waitFor();
+  assert.equal(await page.locator("#join > details").count(), 0);
+  entered = false;
+  ownsSelected = false;
+  await page.goto(origin + "/arena/anime/studio");
+  await page.getByRole("link", { name: /View monster details/ }).waitFor();
+  assert.equal(
+    await page
+      .getByRole("link", {
+        name: "Choose a battle with this fighter",
+        exact: true
+      })
+      .count(),
+    0
+  );
+  await page.goto(origin + "/arena/anime/1?fighter=1234");
+  await page
+    .getByText("This fighter is not available in the connected wallet.", {
+      exact: false
+    })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .count(),
+    0
+  );
+  ownsSelected = true;
+  approved = false;
+  await page.goto(origin + "/arena/anime/1?fighter=1234");
+  await page
+    .getByText("This fighter is not available in the connected wallet.", {
+      exact: false
+    })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .count(),
+    0
+  );
+  approved = true;
+  queuesOpen = false;
+  await page.goto(origin + "/arena/anime?fighter=1234");
+  await page
+    .getByRole("heading", { name: "The next battle is on its way" })
+    .waitFor();
+  assert.equal(new URL(page.url()).search, "?fighter=1234");
+  await page.goto(origin + "/arena/anime/1?fighter=invalid");
+  await page.getByRole("heading", { name: "Choose your fighter" }).waitFor();
+  await page.goto(origin + "/arena/video/1?fighter=1234");
+  await page.getByRole("heading", { name: "Choose your fighter" }).waitFor();
   await page.goto(origin + "/arena/video");
   await page.getByRole("heading", { name: "Join a battle" }).waitFor();
   assert.equal(
@@ -465,7 +660,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation, picker order, wallet confirmation, entered/strategy/resolving/expired guidance, optional entry keyboard disclosure, gallery next action and video isolation."
+    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation, picker order, wallet confirmation, entered/strategy/resolving/expired guidance, optional entry keyboard disclosure, gallery/detail-to-queue-to-entry selection, reload and change-selection recovery, ownership/approval gating, no-queue fallback, optional entry keyboard access and video isolation."
   );
 } finally {
   await browser.close();

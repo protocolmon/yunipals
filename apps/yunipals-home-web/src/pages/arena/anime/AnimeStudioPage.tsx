@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAccount } from "wagmi";
 import {
   ANIME_REASONS,
   type AnimeFighter,
@@ -10,6 +11,7 @@ import { TokenArtwork } from "@/components/TokenArtwork";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
 import { fetchToken } from "@/lib/yunipalsIndexer";
 import { cn } from "@/lib/utils";
+import { animeEntryHref } from "@/lib/animeEntry";
 import { AnimeEligibilityBadge } from "./AnimeEligibilityBadge";
 import type { FighterResponse } from "./AnimeFighterCard";
 
@@ -21,6 +23,7 @@ type Queue = {
 const statuses = ["Approved", "Applied", "Rejected", "Revoked"] as const;
 
 function FighterGalleryCard({ fighter }: { fighter: AnimeFighter }) {
+  const { address } = useAccount();
   const deployment = useArenaDeployment();
   const request = useArenaRequest();
   const art = useQuery({
@@ -106,8 +109,23 @@ function FighterGalleryCard({ fighter }: { fighter: AnimeFighter }) {
               {fighter.note}
             </p>
           )}
+          <span className="block text-sm font-semibold text-grape underline">
+            View monster details
+          </span>
         </div>
       </Link>
+      {fighter.status === "Approved" &&
+        !fighter.reviewRequired &&
+        address?.toLowerCase() === original.data?.token.owner.toLowerCase() && (
+          <div className="border-t border-line p-4">
+            <Link
+              to={animeEntryHref(fighter.tokenId)}
+              className="block rounded-full bg-ink px-4 py-3 text-center text-sm font-semibold text-white hover:bg-grape focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+            >
+              Choose a battle with this fighter
+            </Link>
+          </div>
+        )}
     </li>
   );
 }

@@ -31,20 +31,26 @@ export function arenaStatusLabel(t: ArenaTournamentSummary) {
 export function ArenaTournamentCard({
   tournament: t,
   wallet,
+  fighterTokenId,
   intent = "track"
 }: {
   tournament: ArenaTournamentSummary;
   wallet?: string;
+  fighterTokenId?: string;
   intent?: "join" | "track" | "watch";
 }) {
   const deployment = useArenaDeployment();
-  const battleHref = `${deployment.basePath}/${t.id}${intent === "join" ? "#join" : ""}`;
+  const selection =
+    deployment.kind === "anime" && intent === "join" && fighterTokenId
+      ? `?fighter=${encodeURIComponent(fighterTokenId)}`
+      : "";
+  const battleHref = `${deployment.basePath}/${t.id}${selection}${intent === "join" ? "#join" : ""}`;
   const own = t.fighters.filter(
     (f) => f.player.toLowerCase() === wallet?.toLowerCase()
   );
   const action =
     intent === "join" && t.phase === "open"
-      ? `Choose a fighter · ${deployment.entry} USDC`
+      ? `${selection ? "Continue with this fighter" : "Choose a fighter"} · ${deployment.entry} USDC`
       : t.phase === "strategies" &&
           Date.now() / 1000 < t.deadline &&
           own.some((f) => !t.submittedSeats.includes(f.seat))
