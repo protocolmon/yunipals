@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Swords, Trophy, Users } from "lucide-react";
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { selectedAnimeFighter } from "@/lib/animeEntry";
 import type { ArenaConfig } from "@/lib/arenaLive";
 import { ArenaPageHeader } from "./ArenaPageHeader";
 import { ArenaCardsLoading, ArenaLoading } from "./ArenaFeedback";
@@ -12,6 +13,9 @@ import { AnimeApplicationHint } from "../anime/AnimeApplicationHint";
 export function ArenaQueuePage() {
   const deployment = useArenaDeployment(),
     request = useArenaRequest();
+  const { search } = useLocation();
+  const fighterTokenId =
+    deployment.kind === "anime" ? selectedAnimeFighter(search) : null;
   const { query, items } = useArenaTournaments({ view: "queues" });
   const config = useQuery({
     queryKey: ["arena-live", deployment.scope, "config"],
@@ -23,7 +27,11 @@ export function ArenaQueuePage() {
     <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 text-ink sm:pt-10">
       <ArenaPageHeader
         title="Join a battle"
-        description="Find an open queue, choose your Yunipal and take your place. Four fighters make a battle."
+        description={
+          fighterTokenId
+            ? `Fighter #${fighterTokenId} is selected. Choose an open battle below, then confirm entry with this fighter in your wallet.`
+            : "Next: choose an open battle below. On the next page, pick one fighter and confirm entry in your wallet. You only need one fighter to join."
+        }
         section="join"
       />
       <div className="mb-7 flex flex-wrap gap-x-7 gap-y-3 rounded-card bg-panel-base p-5 text-sm font-semibold">
@@ -56,14 +64,15 @@ export function ArenaQueuePage() {
           New entries are paused. Your battles and rewards remain available.
         </p>
       )}
-      {deployment.kind === "anime" && <AnimeApplicationHint />}
       <section aria-labelledby="arena-queues-heading">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 id="arena-queues-heading" className="text-2xl font-bold">
-            Open queues
+            Choose a battle
           </h2>
           <p className="text-sm text-muted">
-            Choose a queue to pick your fighter
+            {fighterTokenId
+              ? "Continue with your selected fighter"
+              : "Use “Choose a fighter” below to continue"}
           </p>
         </div>
         {!deployment.apiUrl ? (
@@ -109,7 +118,12 @@ export function ArenaQueuePage() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {items.map((t) => (
-              <ArenaTournamentCard key={t.id} tournament={t} intent="join" />
+              <ArenaTournamentCard
+                key={t.id}
+                tournament={t}
+                intent="join"
+                fighterTokenId={fighterTokenId ?? undefined}
+              />
             ))}
           </div>
         )}
@@ -127,13 +141,24 @@ export function ArenaQueuePage() {
           </button>
         )}
       </section>
+      {deployment.kind === "anime" && (
+        <details className="mt-8 rounded-card border border-line p-5 text-sm">
+          <summary className="cursor-pointer rounded font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
+            Need to prepare a fighter? Application instructions
+          </summary>
+          <p className="mt-3 text-muted">
+            Already approved? Skip applying and choose a battle above.
+          </p>
+          <AnimeApplicationHint />
+        </details>
+      )}
       <details className="mt-8 rounded-card border border-line p-5 text-sm">
         <summary className="cursor-pointer rounded font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
           First battle? Here’s what happens next
         </summary>
         <ol className="mt-4 list-inside list-decimal space-y-3 leading-relaxed text-muted">
           <li>
-            Choose a queue and enter with{" "}
+            Choose a battle and enter with{" "}
             {deployment.kind === "anime"
               ? "an approved Base OG Yunipal"
               : "your Yunipal"}

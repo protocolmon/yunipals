@@ -1,4 +1,5 @@
 import { useArenaDeployment, useArenaRequest } from "@/lib/arenaDeployment";
+import { selectedAnimeFighter } from "@/lib/animeEntry";
 import {
   useInfiniteQuery,
   useQuery,
@@ -486,6 +487,8 @@ export function LiveArenaPage() {
   const arenaRequest = useArenaRequest();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
+  const fighterTokenId =
+    deployment.kind === "anime" ? selectedAnimeFighter(location.search) : null;
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId: 8453 });
   const [approvalEntries, setApprovalEntries] =
@@ -560,13 +563,17 @@ export function LiveArenaPage() {
     })
   );
   const inventory = useInfiniteQuery({
-    queryKey: ["arena-inventory", deployment.scope, address],
+    queryKey: ["arena-inventory", deployment.scope, address, fighterTokenId],
     queryFn: async ({ pageParam, signal }) => {
       const page =
         deployment.kind === "anime"
           ? await collectorClient.page(
               address!,
-              { ...defaultCollectorFilters, chains: ["base"] },
+              {
+                ...defaultCollectorFilters,
+                chains: ["base"],
+                search: fighterTokenId ?? ""
+              },
               "visible",
               pageParam,
               signal
@@ -622,7 +629,13 @@ export function LiveArenaPage() {
     tournament?.phase,
     context.isPending
   ]);
-  const EntryContainer = ownedSeats.length ? "details" : "div";
+  const collapseEntry =
+    ownedSeats.length > 0 &&
+    (!fighterTokenId ||
+      ownedSeats.some(
+        (seat) => seat.nftChainId === 8453 && seat.tokenId === fighterTokenId
+      ));
+  const EntryContainer = collapseEntry ? "details" : "div";
   const error = config.error ?? detail.error;
   return (
     <main className="mx-auto max-w-6xl px-5 pb-20 pt-8 text-ink sm:pt-10">
@@ -744,7 +757,11 @@ export function LiveArenaPage() {
               id="join"
               className="my-8 scroll-mt-28 rounded-card border border-lavender bg-lavender/10 p-6"
             >
-              <h2 className="text-2xl font-bold">Choose your fighter</h2>
+              <h2 className="text-2xl font-bold">
+                {fighterTokenId
+                  ? "Enter with your selected fighter"
+                  : "Choose your fighter"}
+              </h2>
               {deployment.kind === "anime" && <AnimeApplicationHint />}
               <p className="mt-3 text-muted">
                 Connect your wallet using the button in the header to see your
@@ -756,17 +773,36 @@ export function LiveArenaPage() {
           {tournament.phase === "open" && address && (
             <section id="join" className="my-8 scroll-mt-28">
               <EntryContainer>
-                {ownedSeats.length ? (
+                {collapseEntry ? (
                   <summary className="cursor-pointer rounded text-lg font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape">
                     Enter another fighter (optional)
                   </summary>
                 ) : (
-                  <h2 className="text-2xl font-bold">Choose your fighter</h2>
+                  <h2 className="text-2xl font-bold">
+                    {fighterTokenId
+                      ? "Enter with your selected fighter"
+                      : "Choose your fighter"}
+                  </h2>
+                )}
+                {fighterTokenId && (
+                  <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
+                    <span className="font-semibold">
+                      Selected fighter #{fighterTokenId}
+                    </span>
+                    <Link
+                      to={`${deployment.basePath}/${tournament.id}#join`}
+                      className="text-grape underline"
+                    >
+                      Choose a different fighter
+                    </Link>
+                  </div>
                 )}
                 <p className="my-3 text-muted">
-                  Pick one {deployment.kind === "anime" ? "approved " : ""}
-                  fighter and press Enter, then confirm in your wallet. You only
-                  need one fighter to join; your NFT stays in your wallet.
+                  {fighterTokenId
+                    ? "Press Enter on your selected fighter below, then confirm in your wallet."
+                    : `Pick one ${deployment.kind === "anime" ? "approved " : ""}fighter and press Enter, then confirm in your wallet.`}{" "}
+                  You only need one fighter to join; your NFT stays in your
+                  wallet.
                 </p>
                 {config.data?.contractVersion === 2 && (
                   <div
@@ -843,7 +879,9 @@ export function LiveArenaPage() {
                   .filter((n) => !n.burned).length === 0 ? (
                   <p role="status" className="my-5 text-muted">
                     {deployment.kind === "anime"
-                      ? "No approved anime fighters were found in this wallet. Apply from your Base Yunipal’s page or check your application in the queue below."
+                      ? fighterTokenId
+                        ? "This fighter is not available in the connected wallet. Check that you connected its owning wallet, or choose a different fighter. It may need approval or be hidden in your collection."
+                        : "No approved anime fighters were found in this wallet. Apply from your Base Yunipal’s page or check your application in the queue below."
                       : "No available Yunipals were found in this wallet."}
                   </p>
                 ) : null}

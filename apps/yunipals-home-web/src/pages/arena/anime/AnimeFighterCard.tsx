@@ -17,6 +17,7 @@ import {
 } from "@protopals/yunipals-market-core/anime";
 import { environment } from "@/environment";
 import { arenaRequestAt } from "@/lib/arenaLive";
+import { animeEntryHref } from "@/lib/animeEntry";
 import { AnimeKitPreview } from "./AnimeKitPreview";
 import { onchainAnalytics } from "@/lib/analytics/onchain";
 
@@ -200,6 +201,21 @@ function AnimeFighterContent({ tokenId, owner }: AnimeFighterProps) {
             )}
             {fighter.status === "Approved" && (
               <>
+                <div className="rounded-card bg-lavender/20 p-4">
+                  <p className="font-semibold">
+                    Next: choose a battle for this fighter
+                  </p>
+                  <p className="mt-2 text-sm text-muted">
+                    Approval is complete. Choose an open battle, then press
+                    Enter on this fighter and confirm in your wallet.
+                  </p>
+                  <Link
+                    to={animeEntryHref(tokenId)}
+                    className="mt-3 inline-block rounded-full bg-grape px-5 py-3 font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
+                  >
+                    Choose a battle
+                  </Link>
+                </div>
                 {data?.manifest && (
                   <img
                     src={`${data.assetsOrigin}/fighters/v1/${tokenId}/${data.manifest.sprites.idle!.file}`}
@@ -261,12 +277,6 @@ function AnimeFighterContent({ tokenId, owner }: AnimeFighterProps) {
                   This approval and its fighter art follow the NFT when it is
                   sold.
                 </p>
-                <Link
-                  to="/arena/anime"
-                  className="inline-block rounded-full bg-grape px-5 py-3 font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-grape"
-                >
-                  Enter the anime arena
-                </Link>
               </>
             )}
             {owned && ["None", "Rejected"].includes(fighter.status) && (
