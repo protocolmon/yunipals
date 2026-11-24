@@ -14,6 +14,11 @@ import {
 } from "./prompts.js";
 import { applyPortalGradingCase } from "./grading.js";
 import { assertSafePortalTheme } from "./theme-validation.js";
+import {
+  holoGeometrySchema,
+  holoGeometryJsonSchema,
+  holoInstructions
+} from "../evolution/holo.js";
 
 import {
   portalCardNameSchema,
@@ -186,18 +191,29 @@ export class OpenAIPortalAI implements PortalAI {
   }
 
   async edit(spell: string, image: Uint8Array, context?: PortalAIContext) {
+    return this.editImages(portalImagePrompt(this.policy, spell, context), [
+      image
+    ]);
+  }
+
+  /** Trusted game rendering prompt; reuse the portal provider and image policy. */
+  async editImages(prompt: string, images: readonly Uint8Array[]) {
+    if (images.length < 1 || images.length > 2)
+      throw new Error("Expected one or two source artworks.");
     const body = new FormData();
     body.set("model", this.policy.image);
     body.set("quality", this.policy.imageQuality);
     body.set("size", this.policy.imageSize);
     body.set("output_format", "png");
     body.set("n", "1");
-    body.set(
-      "image",
-      new Blob([Uint8Array.from(image)], { type: "image/png" }),
-      "card.png"
+    images.forEach((image, index) =>
+      body.append(
+        images.length === 1 ? "image" : "image[]",
+        new Blob([Uint8Array.from(image)], { type: "image/png" }),
+        `card-${index + 1}.png`
+      )
     );
-    body.set("prompt", portalImagePrompt(this.policy, spell, context));
+    body.set("prompt", prompt);
     const raw = await this.call("images/edits", body);
     const parsed = z
       .object({
@@ -230,7 +246,8 @@ export class OpenAIPortalAI implements PortalAI {
     instructions: string,
     input: unknown,
     schema: unknown,
-    name: string
+    name: string,
+    maxOutputTokens = 2200
   ) {
     const raw = await this.call("responses", {
       model,
@@ -238,7 +255,7 @@ export class OpenAIPortalAI implements PortalAI {
       input,
       reasoning: { effort: "low" },
       store: false,
-      max_output_tokens: 2200,
+      max_output_tokens: maxOutputTokens,
       text: { format: { type: "json_schema", name, strict: true, schema } }
     });
     const parsed = z
@@ -274,6 +291,33 @@ export class OpenAIPortalAI implements PortalAI {
       usage: parsed.usage ?? null,
       model: parsed.model
     };
+  }
+
+  async calibrateHolo(artwork: Uint8Array) {
+    const result = await this.structured(
+      this.policy.grading,
+      holoInstructions,
+      [
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: "Trace the card, illustrated window, creature and reflective details of this exact artwork."
+            },
+            {
+              type: "input_image",
+              image_url: `data:image/png;base64,${Buffer.from(artwork).toString("base64")}`,
+              detail: "high"
+            }
+          ]
+        }
+      ],
+      holoGeometryJsonSchema,
+      "yunipal_holo_masks",
+      12000
+    );
+    return { ...result, geometry: holoGeometrySchema.parse(result.value) };
   }
 
   async originality(

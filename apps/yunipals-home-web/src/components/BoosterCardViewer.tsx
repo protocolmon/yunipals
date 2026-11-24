@@ -26,8 +26,8 @@ export function BoosterCardViewer({
   const gesture = useRef({ x: 0, y: 0, dragged: false });
   const driverRef = useRef<Driver | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
-  const holo = Boolean(artwork.holo && artwork.attributes?.glitter === "Yes");
-  const portal = artwork.effect === "rainbow-portal";
+  const holo = Boolean(artwork.holo);
+  const portal = artwork.effect === "rainbow-portal" && !holo;
   useEffect(() => {
     setImageFailed(false);
   }, [artwork.image]);
@@ -291,8 +291,8 @@ export function BoosterCardViewer({
     );
   const url = (value: string) => `url(${JSON.stringify(value)})`;
   const style = {
-    ...cardArtworkCutoutStyle(artwork.image),
-    "--art-mask": url(artwork.image),
+    ...cardArtworkCutoutStyle(artwork.image, artwork.holo?.cutout),
+    "--art-mask": url(artwork.holo?.cutout ?? artwork.image),
     "--monster-mask": artwork.holo ? url(artwork.holo.foreground) : "none",
     "--background-mask": artwork.holo ? url(artwork.holo.background) : "none",
     "--star-mask": artwork.holo ? url(artwork.holo.stars) : "none"
@@ -362,7 +362,8 @@ export function BoosterCardViewer({
           style={style}
           className={cn(
             "tilt-card card-artwork-cutout",
-            holo && "has-monster-depth"
+            holo && "has-monster-depth",
+            artwork.holo?.cutout && "has-selective-holo"
           )}
         >
           <img

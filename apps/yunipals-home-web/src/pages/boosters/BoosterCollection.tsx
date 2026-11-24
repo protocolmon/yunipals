@@ -44,6 +44,7 @@ export function BoosterArtwork({
       <div className="relative h-full w-full" title={fallbackHint}>
         <BoosterCardThumbnail
           image={query.data.image}
+          cutout={query.data.holo?.cutout}
           alt={label}
           eager={eager}
         />

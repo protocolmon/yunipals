@@ -10,7 +10,7 @@ import {
 } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {BoosterAdmin} from "./BoosterAdmin.sol";
 import {PackRegistry} from "./PackRegistry.sol";
-import {YunipalMonsters} from "./YunipalMonsters.sol";
+import {YunipalMonsters, IEvolvedCardMetadata} from "./YunipalMonsters.sol";
 import {PortalCollection} from "./PortalCollection.sol";
 import {PortalRegistry} from "./PortalRegistry.sol";
 import {PortalGates} from "./PortalGates.sol";
@@ -311,31 +311,32 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         emit AdmissionsPaused(paused);
     }
 
+    function evolutionIntegrationVersion() external pure returns (uint256) { return 1; }
+
+    function hasCompletedGrade(uint256 tokenId) public view returns (bool) {
+        return _history[tokenId].length != 0;
+    }
+
     function matches(uint256 portalId, uint256 tokenId) public view returns (bool) {
-        if (!registry.collection().exists(portalId)) return false;
-        (uint256 packId,,, PackRegistry.Traits memory traits, bool original) = cards.provenance(tokenId);
-        if (packId != packTypeId) return false;
-        (uint32 sequence,, bool known) = cards.cardFacts(tokenId);
-        if (!known) return false;
-        try cards.ownerOf(tokenId) returns (address) {}
-        catch {
-            return false;
-        }
-        PortalGates.Gates memory gate = registry.collection().gates(portalId);
-        if (traits.color != uint32(gate.colorGate) + 1 || traits.monsterType != uint32(gate.typeGate) + 1) {
-            return false;
-        }
-        if (gate.glitterGate && traits.glitter != 1) return false;
-        if (gate.diamondGate && traits.horn != 2) return false;
-        return gate.originalOnly ? original : PortalGates.sequenceMatches(gate, sequence);
+        return matchingSource(portalId, tokenId) != 0;
+    }
+
+    /// @notice One real source must satisfy every gate together, including original-only.
+    function matchingSource(uint256 portalId, uint256 tokenId) public view returns (uint256 witness) {
+        return _validator.matchingSource(cards, registry, packTypeId, portalId, tokenId);
     }
 
     function inputArtwork(uint256 tokenId) public view returns (Asset memory asset, uint64 version) {
-        version = artVersion[tokenId];
-        if (version != 0) {
+        if (hasCompletedGrade(tokenId)) {
+            version = artVersion[tokenId];
             uint256[] storage history = _history[tokenId];
             asset = _results[history[history.length - 1]].artwork;
         } else {
+            address evolution = cards.evolutionController();
+            if (evolution != address(0)) {
+                (asset.uri, asset.hash, version) = IEvolvedCardMetadata(evolution).artwork(tokenId);
+                if (asset.hash != bytes32(0)) return (asset, version);
+            }
             (uint256 packId,, uint32 variant,,) = cards.provenance(tokenId);
             require(packId == packTypeId, "unsupported card");
             asset = _baseArt[variant];
@@ -437,6 +438,8 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         );
         require(cards.ownerOf(admission.tokenId) == submitter, "card owner only");
         require(pendingRequest[admission.tokenId] == 0, "card has pending job");
+        require(!hasCompletedGrade(admission.tokenId), "card already graded");
+        if (cards.evolutionController() != address(0)) cards.reserveCard(admission.tokenId, true);
         require(matches(admission.portalId, admission.tokenId), "card does not match gates");
         require(admission.rubricId == activeRubric && _rubrics[activeRubric].configured, "rubric changed");
         require(
@@ -511,7 +514,8 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
             request.acceptedAt != 0 && !request.completed && pendingRequest[request.tokenId] == id,
             "request not pending"
         );
-        require(artVersion[request.tokenId] == request.artVersion, "input version mismatch");
+        (, uint64 inputVersion) = inputArtwork(request.tokenId);
+        require(inputVersion == request.artVersion, "input version mismatch");
         Rubric storage policy = _rubrics[request.rubricId];
         require(result.requestBinding == this.requestBinding(id), "request binding mismatch");
         require(result.modelsHash == policy.modelPolicy, "model policy mismatch");
@@ -521,8 +525,11 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
         completedBy[id] = msg.sender;
         request.completed = true;
         pendingRequest[request.tokenId] = 0;
-        uint64 version = ++artVersion[request.tokenId];
+        uint64 version = request.artVersion + 1;
+        artVersion[request.tokenId] = version;
         _history[request.tokenId].push(id);
+        // Legacy in-flight admissions predate shared reservations.
+        if (cards.cardReservation(request.tokenId) == address(this)) cards.releaseCard(request.tokenId);
         cards.notifyGradingUpdate(request.tokenId);
         emit GradingCompleted(
             id,

@@ -16,7 +16,26 @@ interface IOriginalBurn {
 }
 
 interface IGradedCardMetadata {
+    function evolutionIntegrationVersion() external view returns (uint256);
     function metadataURI(uint256 tokenId) external view returns (string memory);
+    function pendingRequest(uint256 tokenId) external view returns (uint256);
+    function historyCount(uint256 tokenId) external view returns (uint256);
+}
+
+interface IEvolvedCardMetadata {
+    function cards() external view returns (address);
+    function metadataURI(uint256 tokenId) external view returns (string memory);
+    function artwork(uint256 tokenId) external view returns (string memory uri, bytes32 hash, uint64 version);
+}
+
+interface IEvolutionBinding {
+    function adventures() external view returns (address);
+}
+
+interface IOriginalClaimState {
+    function evolutionClaimLocks() external view returns (bool);
+    function originals(uint256 tokenId) external view returns
+        (uint256, uint256 pending, uint64, uint32, uint32, uint32, bool);
 }
 
 contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
@@ -34,6 +53,15 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         bool initialized;
     }
 
+    struct Fusion {
+        uint256 parentA;
+        uint256 parentB;
+        uint256[4] sources;
+        uint16 sequenceSum;
+        uint8 sourceCount;
+        uint8 level;
+    }
+
     PackRegistry public registry;
     uint256 public nextTokenId;
     mapping(uint256 => uint256) public reservedType;
@@ -45,7 +73,12 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
     address public gradingRegistry;
     // A bitmap prevents duplicate sequence imports without a fresh storage slot per offspring.
     mapping(uint256 => mapping(uint32 => uint256)) private _recordedSequences;
-    uint256[42] private __gap;
+    address public evolutionController;
+    address public adventureController;
+    mapping(uint256 => address) public cardReservation;
+    mapping(uint256 => bool) public transferLocked;
+    mapping(uint256 => Fusion) private _fusions;
+    uint256[37] private __gap;
 
     event MonsterMinted(
         uint256 indexed tokenId,
@@ -64,6 +97,11 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
     event CardFactsRecorded(uint256 indexed tokenId, uint32 sequence, uint64 mintedAt, bool imported);
     event CardFactsImportClosed();
     event GradingRegistrySet(address indexed gradingRegistry);
+    event EvolutionConfigured(address indexed evolution, address indexed adventures);
+    event CardReserved(uint256 indexed tokenId, address indexed controller, bool transferLocked);
+    event CardReleased(uint256 indexed tokenId, address indexed controller);
+    event FusionMinted(uint256 indexed tokenId, uint256 indexed parentA, uint256 indexed parentB,
+        address recipient, uint8 level, uint256[4] sources, uint16 sequenceSum, uint8 sourceCount);
 
     constructor() {
         _disableInitializers();
@@ -94,7 +132,7 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         external
         returns (uint256 id)
     {
-        return _mintOffspring(originalId, recipient, variantId);
+        (id,) = _mintOffspring(originalId, recipient, variantId);
     }
 
     function mintOffspringWithSequence(
@@ -103,16 +141,16 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         uint32 variantId,
         uint32 sequence
     ) external {
-        uint256 id = _mintOffspring(originalId, recipient, variantId);
-        _writeCardFacts(id, sequence, uint64(block.timestamp), false);
+        (uint256 id, uint32 totalVariants) = _mintOffspring(originalId, recipient, variantId);
+        _writeCardFacts(id, sequence, uint64(block.timestamp), false, totalVariants);
     }
 
     function _mintOffspring(uint256 originalId, address recipient, uint32 variantId)
         private
-        returns (uint256 id)
+        returns (uint256 id, uint32 totalVariants)
     {
         Provenance storage parent = provenance[originalId];
-        _checkEngine(parent.packTypeId);
+        totalVariants = _checkEngine(parent.packTypeId);
         require(parent.isOriginal && ownerOf(originalId) == recipient, "invalid parent or owner");
         id = nextTokenId++;
         _mintMonster(id, originalId, parent.packTypeId, recipient, variantId, false);
@@ -120,6 +158,10 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     function burn(uint256 tokenId) external {
         require(ownerOf(tokenId) == msg.sender, "owner only");
+        _burnCard(tokenId);
+    }
+
+    function _burnCard(uint256 tokenId) private {
         Provenance storage p = provenance[tokenId];
         _burn(tokenId);
         if (p.isOriginal) {
@@ -135,6 +177,11 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
             string memory graded = IGradedCardMetadata(gradingRegistry).metadataURI(tokenId);
             if (bytes(graded).length != 0) return graded;
         }
+        if (evolutionController != address(0)) {
+            string memory evolved = IEvolvedCardMetadata(evolutionController).metadataURI(tokenId);
+            if (bytes(evolved).length != 0) return evolved;
+        }
+        require(_fusions[tokenId].level == 0, "fusion metadata unavailable");
         if (bytes(tokenMetadataBaseURI).length != 0) {
             return string.concat(tokenMetadataBaseURI, Strings.toString(tokenId), ".json");
         }
@@ -145,8 +192,8 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     /// @notice Called atomically by the mint engine with its pre-batch cumulative count.
     function recordMintFacts(uint256 tokenId, uint32 sequence) external {
-        _checkEngine(provenance[tokenId].packTypeId);
-        _writeCardFacts(tokenId, sequence, uint64(block.timestamp), false);
+        uint32 totalVariants = _checkEngine(provenance[tokenId].packTypeId);
+        _writeCardFacts(tokenId, sequence, uint64(block.timestamp), false, totalVariants);
     }
 
     /// @notice Direct, write-once historical import. Burned cards retain their provenance.
@@ -157,7 +204,8 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         require(!cardFactsImportClosed && ids.length > 0 && ids.length <= 200, "import unavailable");
         require(ids.length == sequences.length && ids.length == times.length, "length mismatch");
         for (uint256 i; i < ids.length; ++i) {
-            _writeCardFacts(ids[i], sequences[i], times[i], true);
+            _writeCardFacts(ids[i], sequences[i], times[i], true,
+                registry.getPack(provenance[ids[i]].packTypeId).totalVariants);
         }
     }
 
@@ -169,22 +217,158 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     function setGradingRegistry(address grading) external onlyRole(CONFIG_ROLE) {
         require(grading.code.length != 0, "invalid grading registry");
+        require(evolutionController == address(0) || grading == gradingRegistry, "grading history binding frozen");
         gradingRegistry = grading;
         emit GradingRegistrySet(grading);
         if (nextTokenId > 1) emit BatchMetadataUpdate(1, nextTokenId - 1);
     }
 
     function notifyGradingUpdate(uint256 tokenId) external {
-        require(msg.sender == gradingRegistry, "grading registry only");
+        require(msg.sender == gradingRegistry || msg.sender == evolutionController, "metadata controller only");
         if (_ownerOf(tokenId) != address(0)) emit MetadataUpdate(tokenId);
     }
 
-    function _writeCardFacts(uint256 tokenId, uint32 sequence, uint64 mintedAt, bool imported) private {
+    /// @notice Bind once; controllers are upgradeable without abandoning reservations or history.
+    function configureEvolution(address evolution, address adventures) external onlyRole(CONFIG_ROLE) {
+        require(evolutionController == address(0) && adventureController == address(0), "already configured");
+        require(evolution.code.length != 0 && adventures.code.length != 0 && evolution != adventures,
+            "invalid controllers");
+        require(IEvolvedCardMetadata(evolution).cards() == address(this)
+            && IEvolvedCardMetadata(adventures).cards() == address(this), "wrong collection");
+        require(IEvolutionBinding(evolution).adventures() == adventures
+            && gradingRegistry != address(0) && IEvolvedCardMetadata(gradingRegistry).cards() == address(this)
+            && IGradedCardMetadata(gradingRegistry).evolutionIntegrationVersion() == 1,
+            "progression dependencies unbound");
+        evolutionController = evolution;
+        adventureController = adventures;
+        emit EvolutionConfigured(evolution, adventures);
+    }
+
+    function hasCompletedGrade(uint256 tokenId) public view returns (bool) {
+        return gradingRegistry != address(0) && IGradedCardMetadata(gradingRegistry).historyCount(tokenId) != 0;
+    }
+
+    function reserveCard(uint256 tokenId, bool lockTransfer) external {
+        require(msg.sender == evolutionController || msg.sender == adventureController
+            || msg.sender == gradingRegistry, "controller only");
+        _requireOwned(tokenId);
+        require(cardReservation[tokenId] == address(0), "card reserved");
+        require(!hasCompletedGrade(tokenId), "card already graded");
+        require(gradingRegistry == address(0)
+            || IGradedCardMetadata(gradingRegistry).pendingRequest(tokenId) == 0, "grading pending");
+        require(lockTransfer || msg.sender == adventureController, "mutation requires transfer lock");
+        cardReservation[tokenId] = msg.sender;
+        transferLocked[tokenId] = lockTransfer;
+        emit CardReserved(tokenId, msg.sender, lockTransfer);
+    }
+
+    function releaseCard(uint256 tokenId) external {
+        require(cardReservation[tokenId] == msg.sender, "reservation owner only");
+        _releaseCard(tokenId);
+    }
+
+    function _releaseCard(uint256 tokenId) private {
+        address controller = cardReservation[tokenId];
+        delete cardReservation[tokenId];
+        delete transferLocked[tokenId];
+        emit CardReleased(tokenId, controller);
+    }
+
+    function fusion(uint256 tokenId) external view returns (Fusion memory) { return _fusions[tokenId]; }
+
+    /// @notice Burned source cards retain their immutable provenance for portal qualification.
+    function sourceCards(uint256 tokenId) public view returns (uint256[4] memory sources, uint8 count) {
+        Fusion storage f = _fusions[tokenId];
+        if (f.level != 0) return (f.sources, f.sourceCount);
+        require(provenance[tokenId].originalTokenId != 0, "unknown card");
+        sources[0] = tokenId;
+        return (sources, 1);
+    }
+
+    function effectiveSequence(uint256 tokenId) external view returns (uint16) {
+        Fusion storage f = _fusions[tokenId];
+        if (f.level != 0) return f.sequenceSum / f.sourceCount;
+        require(cardFacts[tokenId].initialized && cardFacts[tokenId].sequence < 264, "unsupported card facts");
+        return uint16(cardFacts[tokenId].sequence);
+    }
+
+    function assertClaimAvailable(uint256 tokenId, address owner) external view {
+        require(ownerOf(tokenId) == owner, "owner only");
+        require(cardReservation[tokenId] == address(0) || cardReservation[tokenId] != evolutionController,
+            "original reserved for evolution");
+    }
+
+    function assertNoPendingClaim(uint256 tokenId) external view {
+        Provenance storage p = provenance[tokenId];
+        if (!p.isOriginal) return;
+        IOriginalClaimState engine = IOriginalClaimState(registry.getPack(p.packTypeId).rules.engine);
+        require(engine.evolutionClaimLocks(), "engine upgrade required");
+        (, uint256 pending,,,,,) = engine.originals(tokenId);
+        require(pending == 0, "original has pending claim");
+    }
+
+    function fusionRecipe(uint256 a, uint256 b) public view returns (Fusion memory f) {
+        require(a < b, "canonical distinct parents required");
+        uint8 level = _fusions[a].level;
+        require(level < 2 && level == _fusions[b].level, "incompatible fusion levels");
+        if (level == 0) {
+            require(provenance[a].originalTokenId != 0
+                && provenance[a].originalTokenId == provenance[b].originalTokenId, "different lineages");
+            uint32 x = cardFacts[a].sequence;
+            uint32 y = cardFacts[b].sequence;
+            require(cardFacts[a].initialized && cardFacts[b].initialized && x < 264 && y < 264
+                && (x + 1 == y || y + 1 == x), "not adjacent");
+            f.sources[0] = a;
+            f.sources[1] = b;
+            f.sourceCount = 2;
+        } else {
+            require(provenance[_fusions[a].sources[0]].originalTokenId
+                != provenance[_fusions[b].sources[0]].originalTokenId, "same lineage");
+            f.sources = [_fusions[a].sources[0], _fusions[a].sources[1],
+                _fusions[b].sources[0], _fusions[b].sources[1]];
+            f.sourceCount = 4;
+        }
+        for (uint8 i; i < f.sourceCount; ++i) f.sequenceSum += uint16(cardFacts[f.sources[i]].sequence);
+        f.level = level + 1;
+        f.parentA = a;
+        f.parentB = b;
+    }
+
+    function completeFusion(uint256 a, uint256 b, address recipient) external returns (uint256 id) {
+        require(msg.sender == evolutionController, "evolution only");
+        require(cardReservation[a] == msg.sender && cardReservation[b] == msg.sender, "inputs not reserved");
+        require(ownerOf(a) == recipient && ownerOf(b) == recipient, "owner changed");
+        require(!hasCompletedGrade(a) && !hasCompletedGrade(b), "graded input");
+        Fusion memory f = fusionRecipe(a, b);
+        _releaseCard(a);
+        _burnCard(a);
+        _releaseCard(b);
+        _burnCard(b);
+        id = nextTokenId++;
+        _fusions[id] = f;
+        _mint(recipient, id);
+        emit FusionMinted(id, a, b, recipient, f.level, f.sources, f.sequenceSum, f.sourceCount);
+    }
+
+    function _update(address to, uint256 tokenId, address auth) internal override returns (address from) {
+        // Reuse ERC721's previous owner instead of another SLOAD on every legacy VRF mint.
+        // Any reservation failure reverts the entire update, including its Transfer log.
+        from = super._update(to, tokenId, auth);
+        if (from != address(0)) {
+            require(!transferLocked[tokenId] && (to != address(0) || cardReservation[tokenId] == address(0)),
+                "card reserved");
+            require(evolutionController == address(0) || gradingRegistry == address(0)
+                || IGradedCardMetadata(gradingRegistry).pendingRequest(tokenId) == 0, "grading pending");
+        }
+    }
+
+    function _writeCardFacts(uint256 tokenId, uint32 sequence, uint64 mintedAt, bool imported,
+        uint32 totalVariants) private {
         Provenance storage p = provenance[tokenId];
         require(p.originalTokenId != 0 && !cardFacts[tokenId].initialized, "unknown or recorded card");
         require(mintedAt != 0 && mintedAt <= block.timestamp, "invalid mint time");
         require(p.isOriginal == (sequence == 0), "invalid sequence origin");
-        require(sequence < registry.getPack(p.packTypeId).totalVariants, "sequence outside family");
+        require(sequence < totalVariants, "sequence outside family");
         uint32 page = sequence >> 8;
         uint256 mask = uint256(1) << (sequence & 255);
         require(_recordedSequences[p.originalTokenId][page] & mask == 0, "family sequence already assigned");
@@ -246,9 +430,10 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
             || (c >= bytes1("a") && c <= bytes1("z"));
     }
 
-    function _checkEngine(uint256 packTypeId) private view {
+    function _checkEngine(uint256 packTypeId) private view returns (uint32) {
         PackRegistry.Pack memory pack = registry.getPack(packTypeId);
         require(pack.active && pack.rules.engine == msg.sender, "unregistered engine");
+        return pack.totalVariants;
     }
 
     function _mintMonster(
@@ -263,7 +448,8 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         provenance[id] = Provenance(packTypeId, parent, variantId, traits, original);
         // Oracle callbacks must never execute arbitrary ERC721Receiver code.
         _mint(recipient, id);
-        if (original) _writeCardFacts(id, 0, uint64(block.timestamp), false);
+        if (original) _writeCardFacts(id, 0, uint64(block.timestamp), false,
+            registry.getPack(packTypeId).totalVariants);
         else cardFacts[id].mintedAt = uint64(block.timestamp);
         emit MonsterMinted(
             id,

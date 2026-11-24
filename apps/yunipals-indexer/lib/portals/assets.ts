@@ -16,7 +16,8 @@ export class PortalAssets {
     origin: string,
     readonly allowedHosts: readonly string[],
     readonly ipfsGateway?: string,
-    readonly sharedRead = false
+    readonly sharedRead = false,
+    readonly routePrefix = "/v1/portals/assets"
   ) {
     this.directory = resolve(directory);
     const url = new URL(origin);
@@ -68,7 +69,7 @@ export class PortalAssets {
     }
     return {
       hash,
-      uri: `${this.origin}/v1/portals/assets/${hash.slice(2)}.${extension}`
+      uri: `${this.origin}${this.routePrefix}/${hash.slice(2)}.${extension}`
     };
   }
 
@@ -86,8 +87,10 @@ export class PortalAssets {
   }
 
   async input(uri: string, expectedHash: Hex): Promise<Uint8Array> {
-    const prefix = `${this.origin}/v1/portals/assets/`;
-    if (uri.startsWith(prefix)) {
+    const prefix = ["/v1/portals/assets/", "/v1/evolution/assets/"]
+      .map((path) => `${this.origin}${path}`)
+      .find((path) => uri.startsWith(path));
+    if (prefix) {
       const match = /^([0-9a-f]{64})\.png$/.exec(uri.slice(prefix.length));
       if (!match) throw new Error("Invalid card artwork reference.");
       const bytes = await this.read(match[1], "png");

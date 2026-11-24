@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
+import {YunipalMonsters} from "./YunipalMonsters.sol";
+import {PortalRegistry} from "./PortalRegistry.sol";
+import {PortalGates} from "./PortalGates.sol";
+import {PackRegistry} from "./PackRegistry.sol";
+
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 interface IPortalIntakeRoles {
@@ -9,6 +14,24 @@ interface IPortalIntakeRoles {
 
 /// @notice Stateless intake/result validation deployed with each grading implementation. No funds or upgrade authority.
 contract PortalGradingValidator {
+    function matchingSource(YunipalMonsters cards, PortalRegistry registry, uint256 packTypeId,
+        uint256 portalId, uint256 tokenId) external view returns (uint256 witness) {
+        if (!registry.collection().exists(portalId)) return 0;
+        try cards.ownerOf(tokenId) returns (address) {} catch { return 0; }
+        (uint256[4] memory sources, uint8 count) = cards.sourceCards(tokenId);
+        PortalGates.Gates memory gate = registry.collection().gates(portalId);
+        for (uint8 i; i < count; ++i) {
+            (uint256 packId,,, PackRegistry.Traits memory traits, bool original) = cards.provenance(sources[i]);
+            (uint32 sequence,, bool known) = cards.cardFacts(sources[i]);
+            if (packId != packTypeId || !known) continue;
+            if (traits.color != uint32(gate.colorGate) + 1 || traits.monsterType != uint32(gate.typeGate) + 1) continue;
+            if (gate.glitterGate && traits.glitter != 1) continue;
+            if (gate.diamondGate && traits.horn != 2) continue;
+            if (!(gate.originalOnly ? original : PortalGates.sequenceMatches(gate, sequence))) continue;
+            if (witness == 0 || sources[i] < witness) witness = sources[i];
+        }
+    }
+
     struct Receipt {
         uint64 expiresAt;
         bytes signature;

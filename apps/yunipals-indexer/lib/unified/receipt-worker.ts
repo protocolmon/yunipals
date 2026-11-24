@@ -177,16 +177,17 @@ export async function claimReceiptJobs(
 ): Promise<JobRow[]> {
   limit(batch, 32);
   const lease = randomUUID();
-  return indexerTransaction(pool, async (db) => {
-    const runtime = await readBoundRuntime(db, release);
-    const through = runtime.chains.find(
-      (chain) => chain.chainId === chainId
-    )?.completeThroughBlock;
-    if (!runtime.running || through === undefined || through === null)
-      return [];
-    return (
-      await db.query<JobRow>(
-        `WITH due AS (
+  const claim = () =>
+    indexerTransaction(pool, async (db) => {
+      const runtime = await readBoundRuntime(db, release);
+      const through = runtime.chains.find(
+        (chain) => chain.chainId === chainId
+      )?.completeThroughBlock;
+      if (!runtime.running || through === undefined || through === null)
+        return [];
+      return (
+        await db.query<JobRow>(
+          `WITH due AS (
       SELECT j.chain_id,j.block_hash,j.transaction_hash FROM yunipals_indexer_control.receipt_job j
       JOIN ${sqlIdentifier(release.schema)}.transaction_candidate c
         ON c.chain_id=j.chain_id AND c.block_hash=j.block_hash AND c.transaction_hash=j.transaction_hash
@@ -196,10 +197,26 @@ export async function claimReceiptJobs(
     ) UPDATE yunipals_indexer_control.receipt_job j SET lease_id=$4,lease_until=clock_timestamp()+interval '90 seconds',attempts=j.attempts+1
       FROM due WHERE j.chain_id=due.chain_id AND j.block_hash=due.block_hash AND j.transaction_hash=due.transaction_hash
       RETURNING j.chain_id,j.block_number::text,j.block_hash,j.transaction_hash,j.lease_id,j.attempts`,
-        [chainId, String(through), batch, lease]
+          [chainId, String(through), batch, lease]
+        )
+      ).rows;
+    });
+  // SKIP LOCKED can still see a committed row change after a REPEATABLE READ
+  // snapshot. The aborted claim has no external effects; retry with a fresh snapshot.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await claim();
+    } catch (error) {
+      if (
+        attempt >= 2 ||
+        !error ||
+        typeof error !== "object" ||
+        !("code" in error) ||
+        error.code !== "40001"
       )
-    ).rows;
-  });
+        throw error;
+    }
+  }
 }
 
 export async function enrichReceiptJob(

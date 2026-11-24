@@ -302,6 +302,8 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         emit PaymentBurned(requestId, buyer, pack.rules.paymentToken, pack.rules.price);
     }
 
+    function evolutionClaimLocks() external pure returns (bool) { return true; }
+
     function claim(uint256 originalId, uint32 quantity, uint256 maxVrfPrice, uint256 deadline)
         external
         payable
@@ -310,7 +312,8 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     {
         require(!requestsPaused && block.timestamp <= deadline, "requests paused or expired");
         Original storage s = originals[originalId];
-        require(s.minted > 0 && !s.burned && monsters.ownerOf(originalId) == msg.sender, "owner only");
+        require(s.minted > 0 && !s.burned, "owner only");
+        monsters.assertClaimAvailable(originalId, msg.sender);
         require(s.pendingRequest == 0 && quantity > 0 && quantity <= claimable(originalId), "unavailable credits");
         PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
         s.dailyCommitted += quantity;

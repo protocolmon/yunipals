@@ -241,3 +241,38 @@ test("pending metadata polls without a broken image and holo masks reject unsafe
     globalThis.fetch = originalFetch;
   }
 });
+
+test("evolved artwork retains all foil layers without changing its base glitter trait or grading eligibility", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    const layers = Object.fromEntries(
+      ["foreground", "background", "stars", "cutout"].map((name) => [
+        name,
+        `https://example.test/${name}.png`
+      ])
+    );
+    globalThis.fetch = async () =>
+      new Response(
+        JSON.stringify({
+          image: "https://example.test/evolved.png",
+          attributes: [{ trait_type: "Finish", value: "Black" }],
+          yunipals: { version: "1", historyCount: "0", holo: layers }
+        })
+      );
+    const artwork = await fetchMonsterArtwork(
+      "https://example.test/evolved.json"
+    );
+    assert.deepEqual(artwork.holo, layers);
+    assert.equal(artwork.completedGrade, false);
+    assert.equal(artwork.attributes.finish, "Black");
+    assert.equal(artwork.attributes.glitter, undefined);
+    layers.cutout = "javascript:alert(1)";
+    assert.equal(
+      (await fetchMonsterArtwork("https://example.test/evolved.json")).holo
+        ?.cutout,
+      undefined
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

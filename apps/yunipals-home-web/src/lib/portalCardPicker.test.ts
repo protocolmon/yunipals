@@ -70,6 +70,9 @@ test("only matching, currently owned cards without a grade or pending spell are 
       assert.equal(input.contracts[1].functionName, "pendingRequest");
       assert.equal(input.contracts[2].address, cards);
       assert.equal(input.contracts[2].functionName, "ownerOf");
+      assert.equal(input.contracts[3].functionName, "historyCount");
+      assert.equal(input.contracts[3].address, grading);
+      assert.deepEqual(input.contracts[3].args, [1n]);
     }),
     context,
     [card("1"), card("2"), card("3"), card("4"), card("5"), card("6")]

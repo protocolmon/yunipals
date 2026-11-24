@@ -17,7 +17,7 @@ jobs:
   portals:
     name: Portal contracts, indexing and browser flow
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:16
@@ -52,6 +52,7 @@ jobs:
           python3 scripts/portals/check-storage.py
           python3 scripts/portals/check-release.py
           python3 scripts/portals/export-abi.py --check
+          python3 scripts/evolution/export-abi.py --out out-permit --check
       - name: Portal unit and recovery tests
         run: pnpm --filter @protopals/yunipals-indexer test:portals
       - name: Portal card picker and player guide
@@ -69,6 +70,11 @@ jobs:
           pnpm --filter @protopals/yunipals-indexer test:portals:shared
       - name: Browser to API to ledger to contracts, 111-entry challenge
         run: pnpm --filter @protopals/yunipals-indexer test:portals:local
+      - name: Adventures, serum generation and same-collection fusion
+        run: |
+          pnpm --filter @protopals/yunipals-indexer test:evolution
+          pnpm --filter @protopals/yunipals-indexer test:evolution:ponder
+          pnpm --filter @protopals/yunipals-indexer test:evolution:local
       - name: Browser evidence
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -77,5 +83,6 @@ jobs:
           path: |
             /tmp/yunipals-portals-*.png
             /tmp/yunipals-portal-*.png
+            /tmp/yunipals-evolution-*.png
           if-no-files-found: ignore
           retention-days: 14

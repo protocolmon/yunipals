@@ -1,3 +1,4 @@
+import { evolutionSources } from "./evolution-sources.js";
 import { portalSources } from "./portal-sources.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 export {
@@ -368,6 +369,33 @@ export function buildSourceManifest(
     )
   );
   sources.push(...portalSources(env));
+  const progression = evolutionSources(env);
+  if (progression.length) {
+    const collection = progression.find(
+      (item) => item.id === "evolution:8453:cards"
+    );
+    const baseCollection = sources.find(
+      (item) => item.id === "boosters:boostermonsters"
+    );
+    if (
+      !baseCollection?.enabled ||
+      baseCollection.address !== collection?.address
+    )
+      throw new Error("Evolution must use the registered booster collection.");
+    // Evolution reads transfers at the same confirmed boundary as its own events.
+    // Keep legacy source history and subscriptions unchanged when enabling it.
+    baseCollection.policies = [
+      ...baseCollection.policies,
+      { kind: "depth", subsequentBlocks: 12 }
+    ];
+    if (
+      !sources.some(
+        (item) => item.id === "portals:8453:grading" && item.enabled
+      )
+    )
+      throw new Error("Evolution requires the shared grading source.");
+  }
+  sources.push(...progression);
   if (env.UNIFIED_RECEIPT_HISTORY_JSON !== undefined) {
     let input: unknown;
     try {

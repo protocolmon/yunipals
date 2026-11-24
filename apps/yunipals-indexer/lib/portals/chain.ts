@@ -1,3 +1,9 @@
+import { EvolutionChain } from "../evolution/chain.js";
+import {
+  evolutionCardsAbi,
+  evolutionAbi,
+  evolutionGradingAbi
+} from "@protopals/yunipals-market-core/evolutionAbi";
 import {
   createPublicClient,
   BaseError,
@@ -602,32 +608,40 @@ export class PortalChain {
       throw new PortalUserError(
         "The portal is closed. Wait for the next window."
       );
-    const [owner, eligible, input, nonce, pending] = await Promise.all([
-      this.owner(tokenId, active.asOfBlock),
-      this.client.readContract({
-        address: this.deployment.grading,
-        abi: portalGradingAbi,
-        functionName: "matches",
-        args: [active.round.portalId, tokenId],
-        blockNumber: active.asOfBlock
-      }),
-      this.input(tokenId, active.asOfBlock),
-      this.nonce(submitter, active.asOfBlock),
-      this.client.readContract({
-        address: this.deployment.grading,
-        abi: portalGradingAbi,
-        functionName: "pendingRequest",
-        args: [tokenId],
-        blockNumber: active.asOfBlock
-      })
-    ]);
+    const [owner, eligible, input, nonce, pending, completedGrades] =
+      await Promise.all([
+        this.owner(tokenId, active.asOfBlock),
+        this.client.readContract({
+          address: this.deployment.grading,
+          abi: portalGradingAbi,
+          functionName: "matches",
+          args: [active.round.portalId, tokenId],
+          blockNumber: active.asOfBlock
+        }),
+        this.input(tokenId, active.asOfBlock),
+        this.nonce(submitter, active.asOfBlock),
+        this.client.readContract({
+          address: this.deployment.grading,
+          abi: portalGradingAbi,
+          functionName: "pendingRequest",
+          args: [tokenId],
+          blockNumber: active.asOfBlock
+        }),
+        this.client.readContract({
+          address: this.deployment.grading,
+          abi: portalGradingAbi,
+          functionName: "historyCount",
+          args: [tokenId],
+          blockNumber: active.asOfBlock
+        })
+      ]);
     if (owner.toLowerCase() !== submitter.toLowerCase())
       throw new PortalUserError("Connect the wallet that owns this card.");
     if (pending !== 0n)
       throw new PortalUserError(
         "This card already has a spell being processed."
       );
-    if (input[1] !== 0n)
+    if (completedGrades !== 0n)
       throw new PortalUserError(
         "This card has already been graded. Each card can be graded only once."
       );
@@ -636,6 +650,76 @@ export class PortalChain {
         "This card does not match the selected portal's filters."
       );
     return { ...active, input: input[0], artVersion: input[1], nonce, tokenId };
+  }
+
+  async evolutionState(tokenId: bigint, blockNumber: bigint) {
+    const evolution = await this.client
+      .readContract({
+        address: this.deployment.cards,
+        abi: evolutionCardsAbi,
+        functionName: "evolutionController",
+        blockNumber
+      })
+      .catch((error: unknown) => {
+        // Older collection implementations have no controller getter. A transport
+        // failure must still surface; feature flags must not erase existing ancestry.
+        const cause =
+          error instanceof BaseError
+            ? error.walk(
+                (cause) =>
+                  cause instanceof ContractFunctionZeroDataError ||
+                  cause instanceof ContractFunctionRevertedError
+              )
+            : null;
+        if (
+          cause instanceof ContractFunctionZeroDataError ||
+          (cause instanceof ContractFunctionRevertedError &&
+            !cause.data?.errorName)
+        )
+          return zeroAddress;
+        throw error;
+      });
+    if (evolution === zeroAddress) return null;
+    const adventures = await this.client.readContract({
+      address: evolution,
+      abi: evolutionAbi,
+      functionName: "adventures",
+      blockNumber
+    });
+    const chain = new EvolutionChain(
+      this.client,
+      this.deployment.cards,
+      evolution,
+      adventures,
+      this.deployment.grading
+    );
+    const [sources, history] = await Promise.all([
+      chain.sources(tokenId, blockNumber),
+      chain.history(tokenId, blockNumber)
+    ]);
+    return { sources, history };
+  }
+
+  async evolutionContext(
+    tokenId: bigint,
+    portalId: bigint,
+    blockNumber: bigint
+  ) {
+    const state = await this.evolutionState(tokenId, blockNumber);
+    if (
+      !state ||
+      (state.history.level === 0 && state.history.doses.length === 0)
+    )
+      return null;
+    const witness = await this.client.readContract({
+      address: this.deployment.grading,
+      abi: evolutionGradingAbi,
+      functionName: "matchingSource",
+      args: [portalId, tokenId],
+      blockNumber
+    });
+    if (!witness) throw new Error("The accepted card has no matching source.");
+    return { ...state, witnessTokenId: witness.toString() };
   }
 
   async card(tokenId: bigint, before?: bigint, limit = 10) {
@@ -697,13 +781,17 @@ export class PortalChain {
         return { id, request, result, grader };
       })
     );
-    const originalArtwork = await this.client.readContract({
-      address: this.deployment.grading,
-      abi: portalGradingAbi,
-      functionName: "baseArt",
-      args: [provenance[2]],
-      blockNumber
-    });
+    const evolution = await this.evolutionState(tokenId, blockNumber);
+    const originalArtwork = evolution?.history.level
+      ? (history[0]?.request.input ??
+        (await this.input(tokenId, blockNumber))[0])
+      : await this.client.readContract({
+          address: this.deployment.grading,
+          abi: portalGradingAbi,
+          functionName: "baseArt",
+          args: [provenance[2]],
+          blockNumber
+        });
     if ((await this.client.getBlock({ blockNumber })).hash !== block.hash)
       throw new Error("Card history changed during read.");
     return {
@@ -716,6 +804,7 @@ export class PortalChain {
       pending,
       history,
       originalArtwork,
+      evolution,
       nextBefore: first > 0n ? first : null
     };
   }

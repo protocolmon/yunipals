@@ -1,3 +1,7 @@
+import {
+  cardFinishes,
+  serumPresences
+} from "@protopals/yunipals-market-core/serums";
 import { registerPortalMintRoutes } from "./mint-routes.js";
 import { portalReadiness } from "./readiness.js";
 import { portalHealth } from "./health.js";
@@ -27,6 +31,7 @@ import { createPortalRuntime, type PortalRuntime } from "./runtime.js";
 import { registerPortalOwnerRoutes } from "./owner-routes.js";
 import { readCompetition, readCompetitionBatch } from "./competition.js";
 import { portalCompetitionAbi } from "@protopals/yunipals-market-core/portalAbi";
+import { evolutionCardsAbi } from "@protopals/yunipals-market-core/evolutionAbi";
 
 const uint = z
   .string()
@@ -437,6 +442,79 @@ export function registerPortalRoutes(
         );
       throw error;
     }
+    if (card.historyCount === 0n && card.evolution?.history.finish) {
+      const uri = await chain.client.readContract({
+        address: chain.deployment.cards,
+        abi: evolutionCardsAbi,
+        functionName: "tokenURI",
+        args: [token],
+        blockNumber: card.asOfBlock
+      });
+      const prefix = `${runtime.assets.origin}/v1/evolution/assets/`;
+      const file = uri.startsWith(prefix)
+        ? /^([0-9a-f]{64})\.json$/.exec(uri.slice(prefix.length))
+        : null;
+      if (!file)
+        throw new PortalUserError("Evolution metadata is unavailable.", 503);
+      const metadata = JSON.parse(
+        (await runtime.assets.read(file[1], "json")).toString()
+      );
+      const [artwork, version] = await chain.input(token, card.asOfBlock);
+      if (metadata.image !== artwork.uri)
+        throw new PortalUserError("Evolution artwork changed.", 503);
+      return json({
+        ...metadata,
+        evolution: card.evolution,
+        yunipals: {
+          ...metadata.yunipals,
+          version,
+          historyCount: card.historyCount,
+          artworkHash: artwork.hash,
+          rawArtworkURI: artwork.uri
+        }
+      });
+    }
+    if (card.evolution?.history.level) {
+      const [artwork, version] = await chain.input(token, card.asOfBlock);
+      const latest = card.history[card.history.length - 1];
+      const display = published.publication.find(
+        (row) => row.requestId === latest?.id.toString()
+      );
+      if (card.historyCount > 0n && !display)
+        throw new PortalUserError("The grade is being published.", 503);
+      return json({
+        name: `${display?.result.slab.cardName ?? "Yunipal Fusion"} #${token}`,
+        description:
+          "A fused Yunipals TCG card with immutable source ancestry and ordered serum history.",
+        image: display?.result.slab.uri ?? artwork.uri,
+        attributes: [
+          { trait_type: "Card kind", value: "Fusion" },
+          { trait_type: "Fusion level", value: card.evolution.history.level },
+          {
+            trait_type: "Finish",
+            value: cardFinishes[card.evolution.history.finish]
+          },
+          {
+            trait_type: "Presence",
+            value: serumPresences[card.evolution.history.presence]
+          },
+          ...(latest
+            ? ["Creativity", "Harmony", "Craft", "Impact"].map((name, i) => ({
+                trait_type: name,
+                value: latest.result.scores[i]
+              }))
+            : [])
+        ],
+        evolution: card.evolution,
+        yunipals: {
+          version,
+          historyCount: card.historyCount,
+          artworkHash: artwork.hash,
+          rawArtworkURI: artwork.uri,
+          slab: display?.result.slab ?? null
+        }
+      });
+    }
     const [sequence, mintedAt, known] = card.facts;
     if (!known)
       throw new PortalUserError("Card metadata is being prepared.", 503);
@@ -459,7 +537,7 @@ export function registerPortalRoutes(
       (row) => row.requestId === latest?.id.toString()
     );
     if (
-      version > 0n &&
+      card.historyCount > 0n &&
       (!display || display.result.slab.version !== version.toString())
     )
       throw new PortalUserError(
@@ -477,6 +555,18 @@ export function registerPortalRoutes(
         { trait_type: "Horn", value: traits.horn === 2 ? "Diamond" : "Spiral" },
         { trait_type: "Glitter", value: traits.glitter === 1 ? "Yes" : "No" },
         { trait_type: "Original", value: original ? "Yes" : "No" },
+        ...(card.evolution
+          ? [
+              {
+                trait_type: "Finish",
+                value: cardFinishes[card.evolution.history.finish]
+              },
+              {
+                trait_type: "Presence",
+                value: serumPresences[card.evolution.history.presence]
+              }
+            ]
+          : []),
         { trait_type: "Sequence", display_type: "number", value: sequence },
         { trait_type: "Born", display_type: "date", value: Number(mintedAt) },
         {
@@ -492,6 +582,7 @@ export function registerPortalRoutes(
             }))
           : [])
       ],
+      evolution: card.evolution,
       yunipals: {
         packTypeId: packId,
         originalId,

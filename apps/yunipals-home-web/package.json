@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev:fixtures": "vite --mode fixtures --host 127.0.0.1 --port 5177 --strictPort",
+    "test:evolution": "node --experimental-transform-types --import ./scripts/register-typescript.mjs --test src/lib/evolution.test.ts",
     "test:collector": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/collector.test.ts src/lib/collectionEdition.test.ts src/lib/boosterCollectionGrid.test.ts",
     "test:solana": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/solanaIndexer.test.ts src/lib/collectionBrowser.test.ts",
     "test:solana:ui": "node scripts/test-og-solana-filters-ui.mjs",

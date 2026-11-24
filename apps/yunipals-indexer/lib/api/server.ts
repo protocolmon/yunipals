@@ -1,3 +1,4 @@
+import { registerEvolutionRoutes } from "../evolution/routes.js";
 import { registerPortalCardCountRoutes } from "./portal-card-counts.js";
 import { registerPortalRoutes } from "../portals/routes.js";
 import { registerMonsterVersionRoutes } from "../versions/routes.js";
@@ -374,6 +375,7 @@ registerPortalCardCountRoutes(app, {
     process.env.BOOSTER_DATABASE_SCHEMA?.trim() || physicalPonderSchemaName
 });
 registerPortalRoutes(app);
+registerEvolutionRoutes(app);
 registerActionEvidenceRoutes(app, {
   pool,
   selection: () =>

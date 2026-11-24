@@ -147,12 +147,20 @@ export class PortalWorker {
       this.policy.portalGradingCases !== undefined
     ) {
       if (!job.progress.portalContext) {
-        const provenance = await this.chain.provenance(request.tokenId);
+        const evolution = await this.chain.evolutionContext?.(
+          request.tokenId,
+          request.portalId,
+          request.acceptedBlock
+        );
+        const provenance = await this.chain.provenance(
+          evolution ? BigInt(evolution.witnessTokenId) : request.tokenId
+        );
         const baseColor = portalColorNames[provenance[3].color - 1];
         if (!baseColor) throw new Error("Unknown underlying card color.");
         job.progress.portalContext = {
           portalKindId: request.kindId.toString(),
-          baseColor
+          baseColor,
+          ...(evolution ? { evolution } : {})
         };
         await this.store.save(job);
       }
