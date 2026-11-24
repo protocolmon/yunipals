@@ -3,7 +3,7 @@ import { proposalPreviews } from "./proposals";
 export const DEFAULT_TITLE = "Yunipals — Explore the Collection";
 export const DEFAULT_DESCRIPTION =
   "Explore Yunipals across Ethereum, Base, Polygon, and BNB Chain. Discover traits, rarity, token histories, and collector profiles.";
-export const TEMPLATE_VERSION = "1";
+export const TEMPLATE_VERSION = "2";
 
 export const socialCards = {
   collection: [

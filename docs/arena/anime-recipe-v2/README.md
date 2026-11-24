@@ -57,3 +57,23 @@ private fighter record. `review TOKEN reroll KIT_ID.windup` archives that windup
 shared sheets under the library lock. Published library art cannot be rerolled.
 Approval batches carry recipe version 2.
 The studio only emits unsigned approval calldata.
+
+Image-tool invocations use low reasoning. An operator can set `ANIME_CODEX_MODEL`
+to another available Codex model if the configured text model is at capacity.
+This selects the CLI orchestrator; ChatGPT subscription authentication remains
+required, and the studio does not fall back to API-key image generation.
+The saved PNG must match an image from that CLI session's generated-image
+directory. A missing or incorrect copy is recovered only when the session has
+exactly one candidate; ambiguous outputs stop for review. Other concurrent jobs'
+images are never accepted as the result.
+
+Two known artwork variants can use the unchanged cosmetic templates of their
+species after explicit anatomy review: Crystal Unicursed uses Unicursed, and
+Rainbow Uniaqua uses Uniaqua. Run `review TOKEN template Unicursed` or
+`review TOKEN template Uniaqua` after reviewing the identity and before `kits`.
+This records the full variant identity and the chosen template in the private
+fighter record; changing the identity invalidates that review. The manifest keeps
+the actual variant species, original traits and artwork, and its sheets use the
+variant's own directory. No arbitrary prefix stripping or unknown-species fallback
+is allowed. New kit designs still require a new recipe; the frozen v2 templates
+and lock are unchanged.

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -19,7 +20,7 @@ import { arenaRequestAt } from "@/lib/arenaLive";
 import { AnimeKitPreview } from "./AnimeKitPreview";
 import { onchainAnalytics } from "@/lib/analytics/onchain";
 
-type FighterResponse = {
+export type FighterResponse = {
   fighter: AnimeFighter;
   registry: Address;
   applicationsOpen: boolean;
@@ -28,13 +29,36 @@ type FighterResponse = {
   notePendingIndexing?: boolean;
   artworkState?: string;
 };
-export function AnimeFighterCard({
-  tokenId,
-  owner
-}: {
-  tokenId: string;
-  owner: string;
-}) {
+type AnimeFighterProps = { tokenId: string; owner: string };
+
+export function AnimeFighterCard(props: AnimeFighterProps) {
+  const [open, setOpen] = useState(false);
+  return (
+    <details
+      className="group mt-12 rounded-card border border-line bg-white shadow-card"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-card p-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-grape sm:p-6 [&::-webkit-details-marker]:hidden">
+        <span>
+          <span className="block font-display text-xl text-ink">
+            Anime Arena
+          </span>
+          <span className="mt-1 block text-sm text-muted">
+            Fighter artwork, available attacks and application status
+          </span>
+        </span>
+        <ChevronDown
+          size={20}
+          className="shrink-0 text-muted group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      {open && <AnimeFighterContent {...props} />}
+    </details>
+  );
+}
+
+function AnimeFighterContent({ tokenId, owner }: AnimeFighterProps) {
   const { address, chainId } = useAccount();
   const client = usePublicClient({ chainId: 8453 });
   const { switchChainAsync } = useSwitchChain();
@@ -116,10 +140,10 @@ export function AnimeFighterCard({
   }
   return (
     <section
-      className="mt-6 space-y-3 rounded-card border border-line bg-panel-base p-5"
+      className="space-y-4 border-t border-line p-5 sm:p-6"
       aria-labelledby="anime-fighter-heading"
     >
-      <h2 id="anime-fighter-heading" className="text-xl font-bold">
+      <h2 id="anime-fighter-heading" className="sr-only">
         Anime Arena
       </h2>
       <p className="text-sm text-muted">
@@ -189,27 +213,41 @@ export function AnimeFighterCard({
                   </p>
                 )}
                 {data?.manifest?.kits && (
-                  <div
-                    className="grid gap-3 sm:grid-cols-3"
-                    aria-label="Signature techniques"
+                  <section
+                    aria-labelledby="anime-attacks-heading"
+                    className="space-y-4"
                   >
-                    {data.manifest.kits.map((kit) => (
-                      <div
-                        key={kit.id}
-                        className="space-y-2 rounded-2xl border border-line p-3"
+                    <div>
+                      <h3
+                        id="anime-attacks-heading"
+                        className="text-xl font-bold"
                       >
-                        <AnimeKitPreview
-                          kit={kit}
-                          assetsOrigin={data.assetsOrigin}
-                        />
-                        <h3 className="font-semibold">{kit.name}</h3>
-                        <p className="text-xs capitalize text-muted">
-                          {kit.element}
-                        </p>
-                        <p className="text-sm">{kit.description}</p>
-                      </div>
-                    ))}
-                  </div>
+                        Available attacks
+                      </h3>
+                      <p className="mt-1 text-sm text-muted">
+                        These are this monster’s Anime Arena attacks. Each card
+                        previews an attack’s visual effects.
+                      </p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      {data.manifest.kits.map((kit) => (
+                        <div
+                          key={kit.id}
+                          className="space-y-2 rounded-2xl border border-line p-3"
+                        >
+                          <AnimeKitPreview
+                            kit={kit}
+                            assetsOrigin={data.assetsOrigin}
+                          />
+                          <h4 className="font-semibold">{kit.name}</h4>
+                          <p className="text-xs capitalize text-muted">
+                            Element: {kit.element}
+                          </p>
+                          <p className="text-sm">{kit.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
                 )}
                 <a
                   href={`${data?.assetsOrigin}/fighters/v1/${tokenId}/card.jpg`}

@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { ArenaArtwork } from "./ArenaArtwork";
 import { ArenaFAQ } from "./ArenaFAQ";
+import { AnimeEligibilityBadge } from "./anime/AnimeEligibilityBadge";
 
 export function ArenaHub() {
   return (
@@ -58,7 +59,10 @@ export function ArenaHub() {
               </span>
             </div>
             <div className="p-6 sm:p-7">
-              <h2 className="text-2xl font-bold">{mode.title}</h2>
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="text-2xl font-bold">{mode.title}</h2>
+                {mode.kind === "anime" && <AnimeEligibilityBadge />}
+              </div>
               <p className="mt-3 min-h-12 text-sm leading-relaxed text-muted">
                 {mode.description}
               </p>

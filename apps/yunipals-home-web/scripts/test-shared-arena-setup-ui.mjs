@@ -121,7 +121,7 @@ const server = await createServer({
                     randomnessFunding: "first-entrant",
                     mediaKind: kind,
                     entriesEnabled: true,
-                    entryMode: "pilot"
+                    entryMode: kind === "anime" ? "public" : "pilot"
                   }
                 : name === "health"
                   ? {
@@ -204,21 +204,21 @@ try {
         randomnessFunding: "first-entrant",
         mediaKind: "anime",
         entriesEnabled: true,
-        entryMode: "pilot"
+        entryMode: "public"
       })
     })
   );
   await page
-    .getByRole("button", { name: "Enable anime pilot", exact: true })
+    .getByRole("button", { name: "Enable anime entries", exact: true })
     .click();
   await page
     .getByRole("alert")
-    .filter({ hasText: "not ready for its controlled pilot" })
+    .filter({ hasText: "not ready to accept entries" })
     .waitFor();
   assert.deepEqual(await page.evaluate(() => window.__ownerCalls), []);
   await page.unroute("**/__mock/shared/anime/config");
   await page
-    .getByRole("button", { name: "Enable anime pilot", exact: true })
+    .getByRole("button", { name: "Enable anime entries", exact: true })
     .click();
   await page.getByText("anime: entries open", { exact: true }).waitFor();
   assert.deepEqual(await page.evaluate(() => window.__ownerCalls), [
@@ -267,7 +267,7 @@ try {
   );
   await page.reload();
   await page
-    .getByRole("link", { name: "View deployment transaction" })
+    .getByRole("link", { name: "View transaction", exact: true })
     .waitFor();
   await page
     .getByRole("button", { name: "Clear a confirmed reverted transaction" })

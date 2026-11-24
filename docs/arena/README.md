@@ -39,6 +39,21 @@ can reveal winners before video playback; the server operator can read unreveale
 strategies. Failed video production retains the accepted result and requires
 technical recovery before payout release.
 
+## Anime applications and entry
+
+Anime eligibility follows the NFT and its current owner. Owners apply from the
+Anime Arena section of their Base OG Yunipal's collection detail page; the
+application transaction costs Base gas only. `/arena/anime/studio` shows the
+application and artwork review queue. Join pages link to the connected wallet's
+OG Airdrop collection and this queue.
+
+Entry verifies ownership, registry approval, recipe-v2 artwork and current
+traits. Application alone does not make a fighter eligible, and approval follows
+the NFT on transfer. Anime services report `entryMode: public` when enabled;
+legacy `ARENA_LAUNCH_MODE=pilot` and `ARENA_PILOT_WALLETS` settings no longer
+restrict Anime owners. `ARENA_ENTRIES_ENABLED`, contract pause controls and
+capacity checks still apply. Video retains its configurable pilot/public policy.
+
 ## Source map
 
 - `contracts/arena`: Foundry contracts, tests and pinned dependency installer.

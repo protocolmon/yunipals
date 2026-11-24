@@ -172,6 +172,10 @@ export function useArenaWallet(
             label: activeEntry.label
           }
         : null;
+  const entryFeedback =
+    activeEntry?.scope === scope && error
+      ? { key: arenaFighterKey(activeEntry.fighter), error }
+      : null;
   const strategyFeedback =
     strategyTarget?.scope === scope
       ? {
@@ -248,6 +252,7 @@ export function useArenaWallet(
     if (guard.current) return;
     guard.current = true;
     setBusy(label);
+    setActiveEntry(null);
     setStrategyTarget(null);
     setError(null);
     const startedScope = scope;
@@ -273,7 +278,7 @@ export function useArenaWallet(
       if (currentScope.current === startedScope) {
         guard.current = false;
         setBusy(null);
-        setActiveEntry(null);
+        // Keep the fighter target so a failed entry stays visible on its card.
       }
     }
   }
@@ -570,6 +575,7 @@ export function useArenaWallet(
     pendingTransaction: !!visibleCalls || transactionPending(visibleOperation),
     batchPending: !!visibleCalls,
     entryProgress,
+    entryFeedback,
     strategyFeedback,
     checkStatus: () =>
       execute("Checking transaction status", async () => {
@@ -683,8 +689,14 @@ export function useArenaWallet(
         };
         let permit = await prepare();
         assertCurrent();
+        const initialPayment = await readArenaJoinPayment(client, config, id);
+        assertCurrent();
         let atomic = false;
         if (
+          // wallet_sendCalls lets the wallet choose the outer gas price. The
+          // first entrant's draw quote depends on that price, so use the normal
+          // transaction flow below, which submits the quoted fee caps too.
+          !initialPayment.firstEntry &&
           allowance < BigInt(config.entryFee) &&
           walletClient?.account.address.toLowerCase() === address.toLowerCase()
         ) {
@@ -701,10 +713,14 @@ export function useArenaWallet(
           }
           assertCurrent();
         }
-        if (atomic && walletClient) {
+        const batchPayment = atomic
+          ? await readArenaJoinPayment(client, config, id)
+          : null;
+        assertCurrent();
+        if (walletClient && batchPayment && !batchPayment.firstEntry) {
           if (Number(permit.expiry) * 1000 < Date.now() + 60000)
             permit = await admission();
-          const payment = await readArenaJoinPayment(client, config, id);
+          const payment = batchPayment;
           if (gasBalance <= payment.value)
             throw new Error(
               "Add ETH on Base to cover the island draw and network gas."

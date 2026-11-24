@@ -25,13 +25,13 @@ const mocks = {
   const connected=createWalletClient({chain:base,account:'${wallet}',transport:custom({request:rpc})});
   export const useWalletClient=()=>({data:connected});
   export const useAccount=()=>({address:'${wallet}',chainId:8453});
-  const client={readContract:async({functionName})=>functionName==='allowance'?BigInt(localStorage.getItem('allowance')||'0'):functionName==='balanceOf'?100000000n:functionName==='quoteJoin'?[true,100n]:0n,getBalance:async()=>1000000000000000000n,estimateFeesPerGas:async()=>({maxFeePerGas:10n,maxPriorityFeePerGas:1n}),estimateContractGas:async()=>100000n,waitForTransactionReceipt:async({hash})=>{if(hash==='${approvalHash}')localStorage.setItem('allowance',query.get('lowAllowance')?'0':'100000000');return{status:'success',transactionHash:hash}}};
+  const client={readContract:async({functionName})=>functionName==='allowance'?BigInt(localStorage.getItem('allowance')||'0'):functionName==='balanceOf'?100000000n:functionName==='quoteJoin'?(query.has('firstEntry')?[true,100n]:[false,0n]):0n,getBalance:async()=>1000000000000000000n,estimateFeesPerGas:async()=>({maxFeePerGas:10n,maxPriorityFeePerGas:1n}),estimateContractGas:async()=>100000n,waitForTransactionReceipt:async({hash})=>{if(hash==='${approvalHash}')localStorage.setItem('allowance',query.get('lowAllowance')?'0':'100000000');return{status:'success',transactionHash:hash}}};
   export const usePublicClient=()=>client;export const useSwitchChain=()=>({switchChainAsync:async()=>{}});export const useSignMessage=()=>({signMessageAsync:async()=>'0x1234'});export const useSignTypedData=()=>({signTypedDataAsync:async()=>'0x1234'});
-  export const useWriteContract=()=>({writeContractAsync:async input=>{record('writes',input.functionName);if(input.functionName==='join'&&localStorage.getItem('rejectJoin'))throw new Error('Entry declined');return input.functionName==='approve'?'${approvalHash}':'${entryHash}'}});`,
+  export const useWriteContract=()=>({writeContractAsync:async input=>{record('writes',input.functionName);if(input.functionName==='join')record('joinPayments',{value:input.value?.toString(),maxFeePerGas:input.maxFeePerGas?.toString(),maxPriorityFeePerGas:input.maxPriorityFeePerGas?.toString()});if(input.functionName==='join'&&localStorage.getItem('rejectJoin'))throw new Error('Entry declined');return input.functionName==='approve'?'${approvalHash}':'${entryHash}'}});`,
   "virtual:wallet-entry.tsx": `import React from 'react';import{createRoot}from'react-dom/client';import{ArenaDeploymentProvider}from'/src/lib/arenaDeployment';import{useArenaWallet}from'/src/pages/arena/live/useArenaWallet';
   const mode=new URLSearchParams(location.search).get('mode'),kind=mode==='anime'?'anime':'video',shared=mode!=='legacy';
   const config={chainId:8453,contract:'0x'+ '3'.repeat(40),contractVersion:shared?2:1,randomnessFunding:shared?'first-entrant':'reserve',mediaKind:kind,paymentToken:'0x'+'4'.repeat(40),entryFee:kind==='anime'?'1000000':'2000000',strategyMaxLength:2400,entriesEnabled:true,confirmationPolicy:'latest'};
-  function Harness(){const w=useArenaWallet(config,async()=>{window.__refreshes=(window.__refreshes||0)+1});return <><button disabled={!!w.busy||w.pendingTransaction} onClick={()=>void w.join(shared&&kind==='anime'?'2':'1',{chainId:8453,contractAddress:'0x'+'5'.repeat(40),tokenId:'42'},4)}>Enter fighter</button><output id="progress">{w.entryProgress?.label}</output><output id="status">{w.operation?.action.kind}:{w.operation?.state}</output><button onClick={()=>void w.checkStatus()}>Check status</button><output id="batch">{String(w.batchPending)}</output><output id="pending">{String(w.pendingTransaction)}</output><output id="error">{w.error}</output></>};
+  function Harness(){const w=useArenaWallet(config,async()=>{window.__refreshes=(window.__refreshes||0)+1});return <><button disabled={!!w.busy||w.pendingTransaction} onClick={()=>void w.join(shared&&kind==='anime'?'2':'1',{chainId:8453,contractAddress:'0x'+'5'.repeat(40),tokenId:'42'},4)}>Enter fighter</button><button disabled={!!w.busy||w.pendingTransaction} onClick={()=>void w.join(shared&&kind==='anime'?'2':'1',{chainId:8453,contractAddress:'0x'+'5'.repeat(40),tokenId:'43'},4)}>Enter other fighter</button><output id="entry-feedback">{JSON.stringify(w.entryFeedback)}</output><output id="progress">{w.entryProgress?.label}</output><output id="status">{w.operation?.action.kind}:{w.operation?.state}</output><button onClick={()=>void w.checkStatus()}>Check status</button><output id="batch">{String(w.batchPending)}</output><output id="pending">{String(w.pendingTransaction)}</output><output id="error">{w.error}</output></>};
   createRoot(document.getElementById('root')).render(<React.StrictMode><ArenaDeploymentProvider kind={kind} shared={shared}><Harness/></ArenaDeploymentProvider></React.StrictMode>);`
 };
 const server = await createServer({
@@ -98,6 +98,7 @@ try {
     page.on("console", (message) => {
       if (message.type() === "error") console.error(message.text());
     });
+    let admissionUnavailable = true;
     let approvalState = "indexing",
       entryState = "indexing",
       posts = 0;
@@ -110,6 +111,14 @@ try {
           : null;
       let value;
       if (path.endsWith("/me")) value = { wallet };
+      else if (path.endsWith("/admission") && admissionUnavailable)
+        return route.fulfill({
+          status: 503,
+          json: {
+            error:
+              "New entries are paused until the referee allowance is renewed."
+          }
+        });
       else if (path.endsWith("/admission"))
         value = {
           entry: { player: wallet, ...body },
@@ -133,7 +142,31 @@ try {
       } else throw Error("Unexpected synthetic request: " + path);
       await route.fulfill({ json: value });
     });
-    await page.goto(`http://127.0.0.1:5212/?mode=${mode}`);
+    await page.goto(
+      `http://127.0.0.1:5212/?mode=${mode}&firstEntry=true&batch=${mode === "legacy" ? "unsupported" : "supported"}`
+    );
+    for (const [button, tokenId] of [
+      ["Enter fighter", "42"],
+      ["Enter other fighter", "43"]
+    ]) {
+      await page.getByRole("button", { name: button, exact: true }).click();
+      await page.waitForFunction((tokenId) => {
+        const feedback = JSON.parse(
+          document.getElementById("entry-feedback").textContent
+        );
+        return (
+          feedback?.key.endsWith("/" + tokenId) &&
+          feedback.error.includes("allowance is renewed")
+        );
+      }, tokenId);
+      assert.equal(await page.locator("#progress").textContent(), "");
+      assert.equal(await page.locator("#pending").textContent(), "false");
+      assert.equal(
+        await page.evaluate(() => localStorage.getItem("writes")),
+        null
+      );
+    }
+    admissionUnavailable = false;
     await page.getByRole("button", { name: "Enter fighter" }).click();
     await page.waitForFunction(
       () =>
@@ -143,6 +176,17 @@ try {
       await page.evaluate(() => JSON.parse(localStorage.getItem("writes"))),
       ["approve", "join"]
     );
+    assert.equal(
+      await page.evaluate(() => localStorage.getItem("batches")),
+      null
+    );
+    if (mode !== "legacy")
+      assert.deepEqual(
+        await page.evaluate(() =>
+          JSON.parse(localStorage.getItem("joinPayments"))
+        ),
+        [{ value: "100", maxFeePerGas: "10", maxPriorityFeePerGas: "1" }]
+      );
     await page.reload();
     await page.waitForFunction(
       () =>
@@ -154,6 +198,7 @@ try {
     );
     assert.equal(await page.locator("#pending").textContent(), "false");
     assert.equal(await page.locator("#error").textContent(), "");
+    assert.equal(await page.locator("#entry-feedback").textContent(), "null");
     assert.deepEqual(
       await page.evaluate(() => JSON.parse(localStorage.getItem("writes"))),
       ["approve", "join"]
@@ -230,7 +275,7 @@ try {
     assert.equal(sent.calls[0].to, "0x" + "4".repeat(40));
     assert.ok(sent.calls[0].data.startsWith("0x095ea7b3"));
     assert.equal(sent.calls[1].to, "0x" + "3".repeat(40));
-    assert.equal(sent.calls[1].value, "0x64");
+    assert.equal(BigInt(sent.calls[1].value ?? "0x0"), 0n);
     assert.deepEqual(
       await page.evaluate(() =>
         JSON.parse(localStorage.getItem("writes") || "[]")
