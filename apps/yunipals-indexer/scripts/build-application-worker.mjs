@@ -18,6 +18,8 @@ const profiles = {
   "islands-api": "lib/api/islands-server.ts",
   "portal-api": "scripts/portal-api.ts",
   "portal-worker": "scripts/portal-worker.ts",
+  "evolution-worker": "scripts/evolution-worker.ts",
+  "booster-api": "lib/api/booster-server.ts",
   "versions-audit": "scripts/audit-base-initial-owners.ts",
   "versions-solana": "scripts/extend-monster-versions-solana.ts",
   "versions-import": "scripts/import-monster-versions.ts",

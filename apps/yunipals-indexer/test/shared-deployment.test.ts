@@ -3,6 +3,7 @@ import { parseEnv } from "node:util";
 import type { Pool } from "pg";
 import {
   assertRetainedIndexerSources,
+  assertSharedIndexerManifest,
   buildSharedIndexerManifest,
   createSharedIndexerDeployment,
   sharedIndexerConsumerSettings,
@@ -69,6 +70,47 @@ function specification() {
 }
 
 describe("shared deployment", () => {
+  it("admits all evolution sources and preserves them in subsequent releases", () => {
+    const portalEnvironment = {
+      ...environment,
+      UNIFIED_PORTALS_JSON: JSON.stringify({
+        collection: { address: address("91"), startBlock: 350 },
+        registry: { address: address("92"), startBlock: 351 },
+        grading: { address: address("93"), startBlock: 352 },
+        competition: { address: address("94"), startBlock: 353 }
+      })
+    };
+    const baseline = buildSharedIndexerManifest(portalEnvironment);
+    const target = buildSharedIndexerManifest({
+      ...portalEnvironment,
+      UNIFIED_EVOLUTION_JSON: JSON.stringify({
+        adventures: { address: address("81"), startBlock: 400 },
+        evolution: { address: address("82"), startBlock: 401 },
+        cards: { address: address("34"), startBlock: 402 }
+      })
+    });
+    expect(target.sources.filter((source) => source.enabled)).toHaveLength(20);
+    expect(() => assertRetainedIndexerSources(baseline, target)).not.toThrow();
+    expect(() => assertRetainedIndexerSources(target, target)).not.toThrow();
+    expect(() => assertRetainedIndexerSources(target, baseline)).toThrow();
+    const changed = structuredClone(target);
+    changed.sources.find(
+      (source) => source.id === "evolution:8453:cards"
+    )!.startBlock = "403";
+    expect(() => assertRetainedIndexerSources(target, changed)).toThrow(
+      "definition changed"
+    );
+    const partial = structuredClone(target);
+    partial.sources = partial.sources.filter(
+      (source) => source.id !== "evolution:8453:cards"
+    );
+    expect(() => assertSharedIndexerManifest(partial)).toThrow();
+    const wrong = structuredClone(target);
+    wrong.sources.find(
+      (source) => source.id === "evolution:8453:cards"
+    )!.contractName = "Unexpected";
+    expect(() => assertSharedIndexerManifest(wrong)).toThrow();
+  });
   it("generates separate validated reader, Arena and observer overlays without private settings", () => {
     const deployment = specification();
     const reader = sharedConsumerSettings(deployment, "reader");

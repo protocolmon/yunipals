@@ -1,4 +1,5 @@
 import { portalContracts } from "./portal-sources.js";
+import { evolutionContracts } from "./evolution-sources.js";
 import {
   validateSourceManifest,
   type SourceManifest
@@ -51,6 +52,21 @@ export function assertSharedIndexerManifest(manifest: SourceManifest) {
     (source) => source.feature === "anime-registry"
   );
   const portals = enabled.filter((source) => source.feature === "portals");
+  const evolution = enabled.filter((source) => source.feature === "evolution");
+  if (
+    evolution.length !== 0 &&
+    (evolution.length !== 3 ||
+      Object.entries(evolutionContracts).some(
+        ([kind, name]) =>
+          !evolution.some(
+            (row) =>
+              row.id === `evolution:8453:${kind}` &&
+              row.contractName === name &&
+              row.chainId === 8453
+          )
+      ))
+  )
+    throw new Error("Shared evolution ingestion requires all three sources.");
   if (
     portals.length !== 0 &&
     (portals.length !== 4 ||
@@ -68,7 +84,7 @@ export function assertSharedIndexerManifest(manifest: SourceManifest) {
       "Shared portal ingestion requires exactly four reviewed sources."
     );
   if (
-    enabled.length !== 13 + portals.length ||
+    enabled.length !== 13 + portals.length + evolution.length ||
     arena.length !== 1 ||
     arena[0]!.contractName !== "YunipalsArenaV2" ||
     arena[0]!.chainId !== 8453 ||
@@ -116,17 +132,26 @@ export function assertRetainedIndexerSources(
   const existingPortalSources = baseline.sources
     .filter((source) => source.enabled && source.feature === "portals")
     .map((source) => source.id);
+  const existingEvolutionSources = baseline.sources
+    .filter((source) => source.enabled && source.feature === "evolution")
+    .map((source) => source.id);
   for (const id of [
     ...retainedIds,
     ...existingArenaSources,
-    ...existingPortalSources
+    ...existingPortalSources,
+    ...existingEvolutionSources
   ]) {
     const oldSource = baseline.sources.find((source) => source.id === id);
     const nextSource = target.sources.find((source) => source.id === id);
     const additional =
       oldSource?.feature === "ownership"
         ? (depthPolicies[id.replace(/^ownership:/, "")] ?? [])
-        : [];
+        : id === "boosters:boostermonsters" &&
+            target.sources.some(
+              (source) => source.enabled && source.feature === "evolution"
+            )
+          ? [12]
+          : [];
     const expected = oldSource && {
       ...oldSource,
       policies: [
@@ -159,6 +184,7 @@ export function assertRetainedIndexerSources(
         source.feature !== "arena" &&
         source.feature !== "anime-registry" &&
         source.feature !== "portals" &&
+        source.feature !== "evolution" &&
         !retainedIds.some((id) => source.id === id)
     )
   )
