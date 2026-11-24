@@ -430,7 +430,9 @@ test(
       const review = await selectSharedMarketplaceConsumer(
         db.owner,
         reader,
-        selection
+        selection,
+        undefined,
+        { replay: true }
       );
       assert.equal(review.applied, false);
       assert.equal(
@@ -450,14 +452,17 @@ test(
             db.owner,
             reader,
             selection,
-            review.reviewHash
+            review.reviewHash,
+            { replay: true }
           ),
         /changed/
       );
       const current = await selectSharedMarketplaceConsumer(
         db.owner,
         reader,
-        selection
+        selection,
+        undefined,
+        { replay: true }
       );
       await assert.rejects(
         () =>
@@ -465,7 +470,8 @@ test(
             db.runtime,
             reader,
             selection,
-            current.reviewHash
+            current.reviewHash,
+            { replay: true }
           ),
         /migration owner/
       );
@@ -475,7 +481,8 @@ test(
             db.owner,
             reader,
             selection,
-            current.reviewHash
+            current.reviewHash,
+            { replay: true }
           )
         ).applied,
         true

@@ -47,6 +47,14 @@
     {
       "chain_id": 8453,
       "name": "seaport-sales"
+    },
+    {
+      "chain_id": 1,
+      "name": "seaport-sales"
+    },
+    {
+      "chain_id": 137,
+      "name": "seaport-sales"
     }
   ],
   "failure_checks": {
@@ -69,5 +77,8 @@
       "mainnet": 65,
       "polygon": 200
     }
-  }
+  },
+  "max_market_check_age_seconds": 360,
+  "max_market_stall_seconds": 300,
+  "max_market_sync_seconds": 1800
 }

@@ -4,8 +4,9 @@
 shared-indexer release can preserve marketplace progress instead of replaying
 sale history or clearing the BNB discovery feed.
 
-Stop the affected worker and wait for its in-flight pass to finish. Configure
-its existing policy/history settings and candidate shared-source selectors. Use
+First run a read-only review while the old source is still available. Configure
+the review process with the existing policy/history settings and candidate
+shared-source selectors, without changing the serving workers or APIs. Use
 `MARKET_MIGRATION_DATABASE_URL` for the operational migration owner; the source
 connection needs read access to both retained release schemas and their control
 ledger. The owner connection needs temporary-table privileges. No new runtime
@@ -30,7 +31,21 @@ Review output includes `impact.mode` and `impact.reason`:
   mode and activity snapshots. It increments the consumer generation to fence
   old workers and requalifies only verified receipts against the candidate.
 - `replay`: the consumer/source changed, there is no usable cursor, or history
-  continuity cannot be proven. Applying uses the existing reset/replay path.
+  continuity cannot be proven. Normal apply refuses this result before any
+  operational mutation. `applyAllowed` is false unless `--replay` was explicitly
+  requested. This includes initial/legacy registrations.
+
+Review **all affected consumers before stopping the current source**. Require
+`preserve` or `unchanged` for a routine handover. A blocked review leaves the old
+source serving: repair missing boundary witnesses, wait for candidate coverage,
+or investigate changed history before trying again. Do not automatically add
+`--replay` in deployment automation to get past the gate.
+
+Once every preflight passes, stop the affected workers and wait for their
+in-flight passes to finish. Review again to bind their final positions, then
+apply those fresh hashes. The live preflight hash will usually have expired
+because the worker advanced; it is not a reservation or authorization for a
+later cursor. Keep old schemas and block witnesses through apply and rollback.
 
 Preservation checks run in a consistent, read-only source snapshot. They compare
 events in both directions through the cursor target/completed boundary, including
@@ -58,8 +73,11 @@ node dist/marketplace-consumer.mjs bnb-discovery --replay
 node dist/marketplace-consumer.mjs bnb-discovery --replay --apply 0x<review-hash>
 ```
 
-The flag must be present for both review and apply. There is no unchecked
-“preserve” override. Legacy-to-shared transitions still replay.
+The flag must be present for both review and apply. Its review hash differs from
+the blocked default review, so a default review cannot authorize a replay. There
+is no unchecked “preserve” override. Intentional replay can interrupt live
+history and discovery; it is a maintenance decision, not a routine deployment
+fallback. Legacy-to-shared transitions still replay with this explicit review.
 
 Changes to marketplace decoding or projection semantics must change the
 consumer configuration identity, or explicitly request `--replay`. Matching
@@ -71,3 +89,17 @@ not a recurring worker or request-path cost. It does not restart services,
 change other source selectors, restore previously discarded progress, or make
 multiple consumer/database switches atomic. Resume the compatible worker with
 the selected release and perform the normal source and public API checks.
+
+Deployment acceptance must include every affected consumer's fresh checkpoint
+and public activity response, with verified coverage and acceptable freshness;
+Ponder readiness alone is insufficient. Retain the prior source for rollback
+until these checks pass. A blocked review is not permission to publish another
+part of a coordinated handover.
+
+This gate prevents an accidental live replay; it does not implement background
+rebuilds. A future background rebuild needs separate derived tables, cursors and
+receipt qualifications, with the old projection continuing to serve. Publication
+must switch the API binding, checkpoint and qualifications together after parity
+and freshness checks. Running two replay workers against the existing live
+tables is unsafe. The current tool also cannot eliminate interruptions from
+provider outages, reorgs or unrelated source switches.

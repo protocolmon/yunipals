@@ -234,13 +234,16 @@ async function fixture(
     const first = await selectSharedMarketplaceConsumer(
       db.owner,
       oldReader,
-      selection
+      selection,
+      undefined,
+      { replay: true }
     );
     await selectSharedMarketplaceConsumer(
       db.owner,
       oldReader,
       selection,
-      first.reviewHash
+      first.reviewHash,
+      { replay: true }
     );
     const cursor = {
       version: 1,
@@ -415,6 +418,7 @@ for (const kind of [
       const before = await f.state();
       const review = await f.review();
       assert.equal(review.impact.mode, "preserve");
+      assert.equal(review.applyAllowed, true);
       assert.deepEqual(await f.state(), before, "review is read-only");
       await assert.rejects(
         selectSharedMarketplaceConsumer(
@@ -570,6 +574,40 @@ test("different, missing or additional events, receipt requirements and reorged 
       const review = await f.review();
       assert.equal(review.impact.mode, "replay");
       assert.equal(review.impact.reason, reason);
+      assert.equal(review.applyAllowed, false);
+      const before = await f.state();
+      await assert.rejects(
+        selectSharedMarketplaceConsumer(
+          f.db.owner,
+          f.newReader,
+          f.selection,
+          review.reviewHash
+        ),
+        /cutover blocked/
+      );
+      assert.deepEqual(
+        await f.state(),
+        before,
+        "blocked cutover preserves the serving consumer"
+      );
+      assert.equal(
+        (
+          await f.db.owner.query(
+            "SELECT invalidated_at FROM yunipals_market.snapshot WHERE id=$1",
+            [f.snapshotId]
+          )
+        ).rows[0].invalidated_at,
+        null
+      );
+      assert.equal(
+        (
+          await f.db.owner.query(
+            "SELECT count(*) FROM yunipals_market.marketplace_source_review WHERE review_hash=$1",
+            [review.reviewHash]
+          )
+        ).rows[0].count,
+        "0"
+      );
       await f.db.owner.query(undo!);
     }
     assert.equal((await f.review()).impact.mode, "preserve");
@@ -615,6 +653,76 @@ test("source history or consumer configuration changes cannot preserve progress"
   }
 });
 
+test("unverified discovery handover keeps the selected feed and requires a fresh explicit replay review", async () => {
+  const f = await fixture("bnb-discovery");
+  try {
+    await f.db.owner.query(
+      `DELETE FROM ${f.schemas[0]}.chain_block WHERE block_number=100`
+    );
+    const review = await f.review();
+    const before = await f.state();
+    assert.equal(review.impact.reason, "canonical_boundary_unverified");
+    assert.equal(review.applyAllowed, false);
+    await assert.rejects(
+      selectSharedMarketplaceConsumer(
+        f.db.owner,
+        f.newReader,
+        f.selection,
+        review.reviewHash
+      ),
+      /cutover blocked/
+    );
+    await assert.rejects(
+      selectSharedMarketplaceConsumer(
+        f.db.owner,
+        f.newReader,
+        f.selection,
+        review.reviewHash,
+        { replay: true }
+      ),
+      /changed/
+    );
+    assert.deepEqual(await f.state(), before);
+    assert.equal(
+      (
+        await f.db.owner.query(
+          "SELECT count(*) FROM yunipals_market.bnb_discovered_order WHERE order_hash=$1",
+          [hash(9020)]
+        )
+      ).rows[0].count,
+      "1"
+    );
+  } finally {
+    await f.close();
+  }
+});
+
+test("a consumer without completed history also needs explicit replay", async () => {
+  const f = await fixture();
+  try {
+    await f.db.owner.query(
+      "UPDATE yunipals_market.shared_indexer_consumer SET cursor=NULL WHERE consumer=$1",
+      [f.consumer]
+    );
+    const review = await f.review();
+    assert.equal(review.impact.reason, "no_completed_history");
+    assert.equal(review.applyAllowed, false);
+    const before = await f.state();
+    await assert.rejects(
+      selectSharedMarketplaceConsumer(
+        f.db.owner,
+        f.newReader,
+        f.selection,
+        review.reviewHash
+      ),
+      /cutover blocked/
+    );
+    assert.deepEqual(await f.state(), before);
+  } finally {
+    await f.close();
+  }
+});
+
 test("a stopped previous release is sufficient, but evidence changes during apply abort atomically", async () => {
   const f = await fixture();
   try {
@@ -623,6 +731,7 @@ test("a stopped previous release is sufficient, but evidence changes during appl
     );
     const review = await f.review();
     assert.equal(review.impact.mode, "preserve");
+    assert.equal(review.applyAllowed, true);
     const before = await f.state();
     let snapshots = 0;
     const racingReader: IndexerReader = {

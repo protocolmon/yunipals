@@ -9,6 +9,7 @@ import {
   readSharedConsumerEnvironment
 } from "./consumerEnvironment";
 import {
+  MarketplaceReplayRequired,
   selectSharedMarketplaceConsumer,
   type MarketplaceConsumerSelection
 } from "./consumerSelection";
@@ -123,9 +124,11 @@ try {
       )
     )
   );
-} catch {
+} catch (error) {
   console.error(
-    "Marketplace consumer selection failed; verify source/configuration/cursor and review again. No secrets were logged."
+    error instanceof MarketplaceReplayRequired
+      ? error.message
+      : "Marketplace consumer selection failed; verify source/configuration/cursor and review again. No secrets were logged."
   );
   process.exitCode = 1;
 } finally {

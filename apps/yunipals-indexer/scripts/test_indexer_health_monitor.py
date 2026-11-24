@@ -33,8 +33,11 @@ class Production:
                      "unified_shared_20261102_v2.chain_checkpoint": 400}
         self.worker_age = 3
         self.observation = {"age": 10, "error": None}
-        self.sales = {"bnb-sales": {"state": "available", "error": None},
-                      "seaport-sales": {"state": "available", "error": None}}
+        self.sales = {f"{item['chain_id']}:{item['name']}": {
+            "state": "available", "error": None, "checkedAge": 2, "block": "100",
+            "position": ["100", None, None], "releaseId": "0x" + "a" * 64,
+            "reviewHash": "0x" + "b" * 64, "selectedAt": iso(NOW - 600)
+        } for item in CONFIG["market_checkpoints"]}
         self.indexer_read_works = True
         self.now = NOW
 
@@ -52,7 +55,7 @@ class Production:
             return self.ready, b""
         if not self.status_works:
             raise OSError("refused")
-        return 200, json.dumps({name: {"block": {"timestamp": self.now - lag}}
+        return 200, json.dumps({name: {"block": {"timestamp": self.now - lag, "number": 110}}
                                 for name, lag in self.lag.items()}).encode()
 
     def read(self, config, now, production_health):
@@ -191,17 +194,139 @@ class MonitorTests(unittest.TestCase):
     def test_brief_sales_dip_does_not_alert(self):
         # One 7-second dip back to syncing was seen in normal operation.
         for state in ("syncing", "available"):
-            self.harness.production.sales["bnb-sales"]["state"] = state
+            self.harness.production.sales["56:bnb-sales"]["state"] = state
             self.harness.checks(1)
         self.harness.deliver.assert_not_called()
 
     def test_sustained_sales_problem_alerts_with_reason(self):
-        self.harness.production.sales["bnb-sales"] = {"state": "unavailable",
-                                                      "error": "shared_receipt_pending"}
+        self.harness.production.sales["56:bnb-sales"].update(
+            state="unavailable", error="shared_receipt_pending")
         self.harness.checks(9)
         self.harness.deliver.assert_not_called()
         self.harness.check()
         self.assertIn("shared_receipt_pending", self.harness.mail()[1])
+
+    def advance_sales(self, count):
+        sales = self.harness.production.sales["8453:seaport-sales"]
+        sales["state"] = "syncing"
+        for index in range(count):
+            # A large block can span multiple pages. Consuming logs is progress
+            # even before the completed-block checkpoint moves.
+            sales["position"] = ["100", {"number": "100"}, {"logIndex": index}]
+            report = self.harness.check()
+        return report
+
+    def test_advancing_replay_warns_with_impact_and_handover_context(self):
+        report = self.advance_sales(10)
+        subject, body = self.harness.mail()
+        self.assertIn("WARNING: sales history", subject)
+        self.assertIn("base sales history", body)
+        self.assertIn("replay advancing", body)
+        self.assertIn("syncing observed for 540s", body)
+        self.assertIn("10 blocks behind indexed head", body)
+        self.assertIn("source release 0x", body)
+        self.assertIn("handover review 0x", body)
+        self.assertIn("sales history may be incomplete", body)
+        self.assertIn("market-8453-seaport-sales", report["failing"])
+        self.assertEqual(report["sales"]["market-8453-seaport-sales"]["severity"], "warning")
+
+    def test_heartbeat_without_cursor_movement_is_a_stall(self):
+        self.harness.production.sales["8453:seaport-sales"]["state"] = "syncing"
+        report = self.harness.checks(10)
+        self.assertIn("ALERT: sales history", self.harness.mail()[0])
+        self.assertEqual(report["sales"]["market-8453-seaport-sales"]["reason"], "sales_stalled")
+        self.assertIn("no committed position change", self.harness.mail()[1])
+
+    def test_warning_escalates_once_and_failed_delivery_retries(self):
+        self.advance_sales(10)
+        self.harness.checks(13)
+        self.harness.deliver.assert_called_once()
+        self.harness.deliver.side_effect = OSError("private SMTP credentials")
+        report = self.harness.check()
+        self.assertEqual(report["emailDelivery"], "failed")
+        self.assertNotIn("credentials", json.dumps(report))
+        self.harness.deliver.side_effect = None
+        self.harness.check()
+        self.assertIn("ALERT: sales history", self.harness.mail()[0])
+        calls = self.harness.deliver.call_count
+        self.harness.checks(20)
+        self.assertEqual(self.harness.deliver.call_count, calls)
+        self.harness.production.sales["8453:seaport-sales"]["state"] = "available"
+        self.harness.checks(2)
+        self.assertEqual(self.harness.deliver.call_count, calls + 1)
+        self.assertIn("RECOVERED: sales history", self.harness.mail()[0])
+
+    def test_advancing_replay_cannot_warn_forever(self):
+        report = self.advance_sales(40)
+        self.assertEqual(report["sales"]["market-8453-seaport-sales"]["reason"], "sales_sync_overdue")
+        self.assertEqual(self.harness.deliver.call_count, 2)
+        self.assertIn("ALERT", self.harness.mail()[0])
+
+    def test_available_but_stale_or_missing_heartbeat_alerts(self):
+        for age in (None, 361, -31):
+            self.harness.production.sales["8453:seaport-sales"]["checkedAge"] = age
+            report = self.harness.check()
+            self.assertEqual(report["sales"]["market-8453-seaport-sales"]["reason"], "sales_stale")
+        self.harness.checks(7)
+        self.assertIn("ALERT: sales history", self.harness.mail()[0])
+
+    def test_available_with_error_does_not_recover(self):
+        self.harness.production.sales["8453:seaport-sales"]["error"] = "shared_receipt_pending"
+        report = self.harness.checks(10)
+        self.assertIn("market-8453-seaport-sales", report["failing"])
+        self.assertIn("shared_receipt_pending", self.harness.mail()[1])
+
+    def test_seaport_chains_do_not_overwrite_each_other(self):
+        self.harness.production.sales["1:seaport-sales"]["state"] = "unavailable"
+        report = self.harness.checks(10)
+        self.assertEqual(report["failing"], ["market-1-seaport-sales"])
+        self.assertIn("mainnet sales history", self.harness.mail()[1])
+        self.assertTrue(report["sales"]["market-8453-seaport-sales"]["ok"])
+        self.assertTrue(report["sales"]["market-137-seaport-sales"]["ok"])
+
+    def test_unreadable_market_database_is_an_alert(self):
+        self.harness.production.sales = None
+        self.harness.checks(10)
+        self.assertIn("ALERT: sales history", self.harness.mail()[0])
+        self.assertIn("No checkpoint", self.harness.mail()[1])
+
+    def test_monitor_gap_does_not_invent_stalled_progress(self):
+        self.advance_sales(3)
+        self.harness.now += 600
+        sample = self.harness.check()["sales"]["market-8453-seaport-sales"]
+        self.assertEqual(sample["severity"], "warning")
+        self.assertIn("observing progress", sample["detail"])
+        self.assertNotIn("stalled", sample["reason"])
+
+    def test_old_active_incident_migrates_without_duplicate_notification(self):
+        self.harness.production.sales["8453:seaport-sales"]["state"] = "unavailable"
+        self.harness.checks(10)
+        path = self.harness.directory / "state.json"
+        state = json.loads(path.read_text())
+        state["market-seaport-sales"] = state.pop("market-8453-seaport-sales")
+        state["market-seaport-sales"].pop("notified_severity")
+        path.write_text(json.dumps(state))
+        self.harness.checks(10)
+        self.harness.deliver.assert_called_once()
+        self.harness.production.sales["8453:seaport-sales"]["state"] = "available"
+        self.harness.checks(2)
+        self.assertEqual(self.harness.deliver.call_count, 2)
+        self.assertIn("RECOVERED", self.harness.mail()[0])
+
+    def test_market_limits_are_backward_compatible_and_validated(self):
+        old = copy.deepcopy(CONFIG)
+        for key in ("max_market_check_age_seconds", "max_market_stall_seconds", "max_market_sync_seconds"):
+            del old[key]
+        self.assertEqual(monitor.validate_config(old)["max_market_stall_seconds"], 300)
+        for value in (0, -1, True, "300"):
+            broken = copy.deepcopy(CONFIG)
+            broken["max_market_stall_seconds"] = value
+            with self.assertRaises(ValueError):
+                monitor.validate_config(broken)
+        broken = copy.deepcopy(CONFIG)
+        broken["market_checkpoints"].append(broken["market_checkpoints"][0])
+        with self.assertRaises(ValueError):
+            monitor.validate_config(broken)
 
     def test_production_health_needs_fifteen_checks(self):
         self.harness.health = {"checkedAt": iso(NOW + 900), "healthy": False,
