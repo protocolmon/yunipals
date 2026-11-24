@@ -71,6 +71,7 @@ beforeAll(async () => {
     CREATE TABLE eligibility.portal_eligibility_portal(id text PRIMARY KEY,sequence_start int,sequence_length int,
       color_gate int,type_gate int,original_only boolean,glitter_gate boolean,diamond_gate boolean,retired boolean);
     CREATE TABLE eligibility.portal_projection(id text PRIMARY KEY,value jsonb);
+    CREATE TABLE eligibility.evolution_projection(id text PRIMARY KEY,value jsonb);
     CREATE TABLE eligibility.portal_eligibility_pending(id text PRIMARY KEY,request_id text);
     CREATE TABLE eligibility.indexer_source(id text PRIMARY KEY,definition text);
     CREATE TABLE eligibility.canonical_event(source_id text,block_number bigint,transaction_index int,log_index int);
@@ -87,7 +88,7 @@ beforeEach(async () => {
     vi.stubEnv(name, value);
   await db.exec(`TRUNCATE eligibility.booster_monster,eligibility.booster_type,eligibility.booster_card_facts,
     eligibility.portal_eligibility_config,eligibility.portal_eligibility_portal,eligibility.portal_eligibility_pending,
-    eligibility.indexer_source,eligibility.canonical_event,eligibility.portal_projection;`);
+    eligibility.indexer_source,eligibility.canonical_event,eligibility.portal_projection,eligibility.evolution_projection;`);
   await db.query("INSERT INTO eligibility.booster_type VALUES($1,'1',$2,$3)", [
     key(registry, 1),
     registry,
@@ -321,4 +322,104 @@ it("excludes completed grades across portals and owners while keeping first-time
   const response = await request();
   expect(response.status).toBe(200);
   expect((await response.json()).items[0].count).toBe(2);
+});
+
+async function enableEvolution() {
+  for (const [id, address, event] of [
+    ["evolution:8453:cards", cards, "FusionMinted"],
+    ["evolution:8453:adventures", addr(8), "AdventureRequested"],
+    ["evolution:8453:evolution", addr(9), "EvolutionRequested"]
+  ])
+    await db.query("INSERT INTO eligibility.indexer_source VALUES($1,$2)", [
+      id,
+      JSON.stringify({ address, enabled: true, events: [event] })
+    ]);
+}
+async function evolutionCard(id: number, value: Record<string, unknown>) {
+  await db.query(
+    "INSERT INTO eligibility.evolution_projection VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET value=excluded.value",
+    [
+      `8453:${addr(9)}:card:${id}`,
+      JSON.stringify({ tokenId: String(id), owner, burned: false, ...value })
+    ]
+  );
+}
+it("counts fusion ancestry with one joint witness, original eligibility and no duplicate NFT counts", async () => {
+  await enableEvolution();
+  await card(1, 0, { burned: true });
+  await card(2, 1, { burned: true, color: 2, monster: 2, glitter: 1, horn: 2 });
+  await evolutionCard(1000, { level: 1, parentA: "1", parentB: "2" });
+  await portal(2, 0, 1, true);
+  await portal(3, 0, 264, false, true, true);
+  const counts = async () =>
+    (await (await request("1,2,3")).json()).items.map(
+      (x: { count: number }) => x.count
+    );
+  // The shiny blue aqua cannot lend its glitter/horn to the plain red dragon.
+  expect(await counts()).toEqual([1, 1, 0]);
+  await card(3, 260, { burned: true, glitter: 1, horn: 2 });
+  await card(4, 261, { burned: true, glitter: 1, horn: 2 });
+  await evolutionCard(1000, {
+    level: 1,
+    parentA: "1",
+    parentB: "2",
+    burned: true,
+    owner: null
+  });
+  await evolutionCard(1001, {
+    level: 1,
+    parentA: "3",
+    parentB: "4",
+    burned: true,
+    owner: null
+  });
+  await evolutionCard(2000, { level: 2, parentA: "1000", parentB: "1001" });
+  // Both shiny ancestors match; the four-card result still counts once.
+  expect(await counts()).toEqual([1, 1, 1]);
+  await evolutionCard(2000, {
+    level: 2,
+    parentA: "1000",
+    parentB: "1001",
+    owner: addr(8)
+  });
+  expect(await counts()).toEqual([0, 0, 0]);
+});
+it("excludes reserved, pending and graded fusions and reserved base cards", async () => {
+  await enableEvolution();
+  await card(1, 0, { burned: true });
+  await card(2, 1, { burned: true });
+  await card(3, 2);
+  const fusion = { level: 1, parentA: "1", parentB: "2" };
+  await evolutionCard(1000, fusion);
+  const count = async () => (await (await request()).json()).items[0].count;
+  expect(await count()).toBe(2);
+  await evolutionCard(1000, { ...fusion, reservedBy: addr(9) });
+  await evolutionCard(3, { reservedBy: addr(8) });
+  expect(await count()).toBe(0);
+  await evolutionCard(1000, fusion);
+  await db.query(
+    "INSERT INTO eligibility.portal_eligibility_pending VALUES($1,'8')",
+    [key(grading, 1000)]
+  );
+  expect(await count()).toBe(0);
+  await db.exec("DELETE FROM eligibility.portal_eligibility_pending");
+  await db.query("INSERT INTO eligibility.portal_projection VALUES($1,$2)", [
+    `8453:${collection}:${grading}:request:8`,
+    JSON.stringify({ token_id: "1000", completed_version: "1" })
+  ]);
+  expect(await count()).toBe(0);
+});
+it("refuses partial or partially processed evolution source coverage", async () => {
+  await enableEvolution();
+  await db.query("INSERT INTO eligibility.canonical_event VALUES($1,101,0,0)", [
+    "evolution:8453:evolution"
+  ]);
+  expect((await request()).status).toBe(503);
+  await db.query("DELETE FROM eligibility.canonical_event WHERE source_id=$1", [
+    "evolution:8453:evolution"
+  ]);
+  await db.query("DELETE FROM eligibility.indexer_source WHERE id=$1", [
+    "evolution:8453:cards"
+  ]);
+  expect((await request()).status).toBe(503);
 });

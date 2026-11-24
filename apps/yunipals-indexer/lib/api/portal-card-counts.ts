@@ -24,15 +24,44 @@ export async function readPortalCardCounts(
   db: Pick<PoolClient, "query">,
   schemaName: string,
   deployment: BoosterDeployment,
-  input: PortalCardCountsInput
+  input: PortalCardCountsInput,
+  evolution?: string
 ) {
   const schema = sqlIdentifier(schemaName);
+  if (evolution && !isAddress(evolution))
+    throw new Error("Invalid evolution source.");
+  // Fusion ancestry is immutable and at most two levels deep. Keep every gate
+  // on one real source row, then count each resulting NFT only once.
+  const evolutionCtes = evolution
+    ? `RECURSIVE evolution_cards AS MATERIALIZED (
+    SELECT split_part(id, ':', 4) AS token_id,value
+    FROM ${schema}.evolution_projection
+    WHERE id LIKE '8453:' || $8 || ':card:%'
+  ), owned_fusions AS MATERIALIZED (
+    SELECT token_id FROM evolution_cards e
+    WHERE e.value->>'owner'=$1 AND e.value->>'burned'='false'
+      AND (e.value->>'level')::int IN (1,2)
+      AND e.value->>'reservedBy' IS NULL
+      AND NOT EXISTS (SELECT 1 FROM ${schema}.portal_projection g
+        WHERE g.id LIKE '8453:' || $3 || ':' || $2 || ':request:%'
+          AND g.value->>'token_id'=e.token_id AND g.value->>'completed_version' IS NOT NULL)
+      AND NOT EXISTS (SELECT 1 FROM ${schema}.portal_eligibility_pending p
+        WHERE p.id='8453:' || $2 || ':' || e.token_id)
+  ), ancestry(token_id,source_id,depth) AS (
+    SELECT token_id,token_id,0 FROM owned_fusions
+    UNION ALL
+    SELECT a.token_id,parent.id,a.depth+1 FROM ancestry a
+    JOIN evolution_cards e ON e.token_id=a.source_id
+    CROSS JOIN LATERAL (VALUES (e.value->>'parentA'),(e.value->>'parentB')) parent(id)
+    WHERE a.depth<2 AND (e.value->>'level')::int IN (1,2)
+  ), `
+    : "";
   const result = await db.query<{
     portalId: string;
     count: number | null;
     retired: boolean | null;
   }>(
-    `WITH config AS MATERIALIZED (
+    `WITH ${evolutionCtes}config AS MATERIALIZED (
        SELECT * FROM ${schema}.portal_eligibility_config
        WHERE id=$2 AND collection=$3 AND cards=$4
      ), graded AS MATERIALIZED (
@@ -41,7 +70,7 @@ export async function readPortalCardCounts(
        WHERE id LIKE '8453:' || $3 || ':' || $2 || ':request:%'
          AND value->>'completed_version' IS NOT NULL
      ), owned AS MATERIALIZED (
-       SELECT m.color,m.monster_type,m.horn,m.glitter,m.is_original,f.sequence FROM ${schema}.booster_monster m
+       SELECT m.token_id,m.color,m.monster_type,m.horn,m.glitter,m.is_original,f.sequence FROM ${schema}.booster_monster m
        JOIN config c ON c.cards=m.collection
        JOIN ${schema}.booster_type t ON t.id=m.type_key AND t.pack_type_id=c.pack_type_id
          AND t.registry=$5 AND t.engine=$6
@@ -50,10 +79,24 @@ export async function readPortalCardCounts(
          AND NOT EXISTS (SELECT 1 FROM graded g WHERE g.token_id=m.token_id)
          AND NOT EXISTS (SELECT 1 FROM ${schema}.portal_eligibility_pending p
            WHERE p.id='8453:' || $2 || ':' || m.token_id)
+       ${
+         evolution
+           ? `AND NOT EXISTS (SELECT 1 FROM evolution_cards e
+         WHERE e.token_id=m.token_id AND e.value->>'reservedBy' IS NOT NULL)
+       UNION ALL
+       SELECT a.token_id,m.color,m.monster_type,m.horn,m.glitter,m.is_original,f.sequence
+       FROM ancestry a JOIN ${schema}.booster_monster m ON m.token_id=a.source_id
+       JOIN config c ON c.cards=m.collection
+       JOIN ${schema}.booster_type t ON t.id=m.type_key AND t.pack_type_id=c.pack_type_id
+         AND t.registry=$5 AND t.engine=$6
+       JOIN ${schema}.booster_card_facts f ON f.id=m.id
+       WHERE a.depth>0`
+           : ""
+       }
      )
      SELECT ids.id AS "portalId",p.retired,
        CASE WHEN p.id IS NULL OR NOT EXISTS (SELECT 1 FROM config) THEN NULL
-       ELSE (SELECT count(*)::int FROM owned m WHERE NOT p.retired
+       ELSE (SELECT count(DISTINCT m.token_id)::int FROM owned m WHERE NOT p.retired
          AND m.color=p.color_gate+1 AND m.monster_type=p.type_gate+1
          AND (NOT p.glitter_gate OR m.glitter=1)
          AND (NOT p.diamond_gate OR m.horn=2)
@@ -70,7 +113,8 @@ export async function readPortalCardCounts(
       deployment.monsters,
       deployment.registry,
       deployment.engine,
-      input.portalIds
+      input.portalIds,
+      ...(evolution ? [evolution] : [])
     ]
   );
   if (
@@ -143,7 +187,10 @@ export function registerPortalCardCountRoutes(
               "boosters:boosterregistry",
               "boosters:boosterengine",
               "portals:8453:collection",
-              "portals:8453:grading"
+              "portals:8453:grading",
+              "evolution:8453:cards",
+              "evolution:8453:adventures",
+              "evolution:8453:evolution"
             ]
           ]
         );
@@ -157,6 +204,30 @@ export function registerPortalCardCountRoutes(
           ["portals:8453:collection", [collection, "PortalMinted"]],
           ["portals:8453:grading", [grading, "Initialized"]]
         ]);
+        const evolution = sources.rows.find(
+          (s) => s.id === "evolution:8453:evolution"
+        )?.address;
+        if (sources.rows.some((s) => s.id.startsWith("evolution:"))) {
+          if (!evolution || !isAddress(evolution))
+            throw new Error("Evolution source unavailable.");
+          const adventures = sources.rows.find(
+            (s) => s.id === "evolution:8453:adventures"
+          )?.address;
+          if (!adventures || !isAddress(adventures))
+            throw new Error("Adventure source unavailable.");
+          expected.set("evolution:8453:cards", [
+            deployment.monsters,
+            "FusionMinted"
+          ]);
+          expected.set("evolution:8453:adventures", [
+            adventures,
+            "AdventureRequested"
+          ]);
+          expected.set("evolution:8453:evolution", [
+            evolution,
+            "EvolutionRequested"
+          ]);
+        }
         if (
           sources.rows.length !== expected.size ||
           sources.rows.some((source) => {
@@ -175,7 +246,8 @@ export function registerPortalCardCountRoutes(
           client,
           dependencies.schemaName,
           deployment,
-          { owner, grading, collection, portalIds }
+          { owner, grading, collection, portalIds },
+          evolution
         );
         await client.query("COMMIT");
         return c.json({
