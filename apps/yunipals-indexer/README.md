@@ -266,8 +266,8 @@ The service checks use temporary child fixtures and do not contact PostgreSQL, R
 
 ## Discord collector roles
 
-Collectors can link an externally owned EVM wallet to Discord from their own
-collection page. The overall Collector Score leaderboard covers OG Collection
+Collectors can link an externally owned EVM wallet to Discord in Settings from
+the wallet dropdown. The overall Collector Score leaderboard covers OG Collection
 and OG Airdrop holdings. Every ranked wallet qualifies for the base
 collector role and the smallest configured cutoff it meets. Wallets tied in
 Collector Score share a rank. Linking and manual refresh apply roles
@@ -292,6 +292,6 @@ retries when the leaderboard or Discord is unavailable.
 
 The feature stores one wallet per Discord account and one Discord account per
 wallet. The API discards OAuth tokens after reading the Discord account ID.
-Collectors can refresh roles or disconnect from their own collection page.
+Collectors can refresh roles or disconnect in Settings.
 Forward `POST` and `OPTIONS` requests for `/v1/discord/collector/*` to the
 main indexer API. Apply the same write rate limits used by your API ingress.

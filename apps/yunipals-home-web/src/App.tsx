@@ -11,7 +11,8 @@ import { PendingMarketTransactions } from "@/components/marketplace/PendingMarke
 import { TradingConsentProvider } from "@/components/marketplace/TradingConsentProvider";
 import { CollectionPage } from "@/pages/collection/page";
 import { CollectorPage } from "@/pages/collector/page";
-import { DiscordCollectorCallbackPage } from "@/pages/collector/DiscordCollectorCallbackPage";
+import { DiscordCollectorCallbackPage } from "@/pages/settings/DiscordCollectorCallbackPage";
+import { SettingsPage } from "@/pages/settings/page";
 import { LeaderboardPage } from "@/pages/leaderboard/page";
 import { PrivacyPage } from "@/pages/legal/PrivacyPage";
 import { TermsPage } from "@/pages/legal/TermsPage";
@@ -533,6 +534,9 @@ function AppContent() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/collector/:address" element={<CollectorPage />} />
+          {environment.discordCollectorEnabled && (
+            <Route path="/settings" element={<SettingsPage />} />
+          )}
           {environment.discordCollectorEnabled && (
             <Route
               path="/discord/callback"

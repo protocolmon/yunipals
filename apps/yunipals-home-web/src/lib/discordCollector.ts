@@ -18,9 +18,7 @@ const tokenPattern = /^[A-Za-z0-9_-]{43}$/;
 const walletPattern = /^0x[0-9a-f]{40}$/i;
 type Pending = { state: string; verifier: string; wallet: string };
 let callback: URLSearchParams | undefined;
-let completion:
-  | Promise<{ wallet: string; result: DiscordCollectorResult }>
-  | undefined;
+let completion: Promise<DiscordCollectorResult> | undefined;
 
 export function captureDiscordCallback() {
   if (window.location.pathname !== callbackPath || !window.location.search)
@@ -45,9 +43,8 @@ async function post<T>(path: string, body: object): Promise<T> {
       already_linked:
         "This Discord account or wallet already has a different connection. Disconnect the original wallet first.",
       discord_authorization_failed:
-        "Discord couldn’t authorize this connection. Start again from your collection.",
-      expired_request:
-        "This request expired. Start again from your collection.",
+        "Discord couldn’t authorize this connection. Start again from Settings.",
+      expired_request: "This request expired. Start again from Settings.",
       invalid_or_expired_signature:
         "The wallet signature is invalid or expired.",
       not_linked: "This wallet doesn’t have a Discord connection."
@@ -149,14 +146,13 @@ export function completeDiscordConnection() {
       (issuer && issuer !== "https://discord.com")
     )
       throw new Error(
-        "This Discord request is missing or expired. Start again from your collection."
+        "This Discord request is missing or expired. Start again from Settings."
       );
-    const result = await post<DiscordCollectorResult>("complete", {
+    return post<DiscordCollectorResult>("complete", {
       state,
       code,
       verifier: pending.verifier
     });
-    return { wallet: pending.wallet, result };
   })());
 }
 
@@ -174,7 +170,7 @@ export function discordCollectorMessage({
     case "finish_screening":
       return "Discord connected. Finish the server’s membership screening, then refresh your collector roles.";
     case "refresh_required":
-      return "Discord connected. Role updates are temporarily unavailable. Refresh your collector roles from your collection.";
+      return "Discord connected. Role updates are temporarily unavailable. Refresh your collector roles in Settings.";
     case "disconnected":
       return "Discord disconnected and collector roles removed.";
   }

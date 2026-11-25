@@ -75,11 +75,13 @@ test("utility routes carry indexing policies and proposals use their own copy", 
   for (const path of [
     "/orders",
     "/orders/activity",
+    "/settings",
     "/grading/admin",
     "/boosters/setup/ypal",
     "/arena/anime/studio"
   ])
     assert.equal(resolve(path).robots, "noindex, follow");
+  assert.equal(resolve("/settings").status, 200);
   assert.match(resolve("/proposals/pack-opening").title, /new way to open/);
   assert.match(
     resolve("/proposals/pack-opening").image,
