@@ -38,6 +38,7 @@ const modules = {
     export const useWriteContract=()=>({writeContractAsync:()=>{throw Error('Unexpected transaction')}});
   `,
   "virtual:wallet.ts": `export const useArenaWallet=()=>({
+    join:async(tournamentId,nft,approvalEntries)=>{window.__arenaJoin={tournamentId,tokenId:nft.tokenId,approvalEntries};},
     entryProgress:new URLSearchParams(location.search).has('confirming')?{key:new URLSearchParams(location.search).has('other-battle')?'2/entry':'1/entry',label:'Confirm in wallet…'}:null
   });`,
   "virtual:environment.ts": `export const environment={sharedArenaApiUrl:'/__arena',yunipalsIndexerUrl:'/__indexer'};`
@@ -115,6 +116,14 @@ try {
   let showGallery = false;
   let ownsSelected = true;
   let queuesOpen = true;
+  let approvalPages = null;
+  let failApprovalCursor = null;
+  let failCollection = false;
+  let burned = false;
+  let releaseApprovalPage;
+  let holdApprovalPage = null;
+  const approvalRequests = [];
+  const collectionRequests = [];
   const seat = {
     seat: 0,
     player: owner,
@@ -200,25 +209,46 @@ try {
           : [],
         nextCursor: null
       };
-    else if (path.endsWith("/fighters"))
+    else if (path.endsWith("/fighters")) {
+      const cursor = url.searchParams.get("cursor") ?? "";
+      const index = cursor ? Number(cursor) : 0;
+      approvalRequests.push(cursor);
+      if (cursor === failApprovalCursor)
+        return route.fulfill({
+          status: 503,
+          json: { error: "Fighter list temporarily unavailable" }
+        });
+      if (cursor === holdApprovalPage)
+        await new Promise((resolve) => {
+          releaseApprovalPage = resolve;
+        });
+      const ids = approvalPages
+        ? (approvalPages[index] ?? [])
+        : showGallery || approved
+          ? ["1234"]
+          : [];
       data = {
-        items: showGallery
-          ? [
-              {
-                tokenId: "1234",
-                status: "Approved",
-                manifestHash: null,
-                reasonCode: null,
-                reviewRequired: false
-              }
-            ]
-          : [],
-        nextCursor: null,
+        items: ids.map((tokenId) => ({
+          tokenId,
+          status: "Approved",
+          // Approval follows the NFT, even when another wallet applied.
+          applicant: `0x${"2".repeat(40)}`,
+          manifestHash: null,
+          reasonCode: null,
+          reviewRequired: false
+        })),
+        nextCursor:
+          approvalPages && index + 1 < approvalPages.length
+            ? String(index + 1)
+            : null,
         counts: { Approved: 9, Applied: 0, Rejected: 0, Revoked: 0 }
       };
-    else if (path.includes("/fighters/"))
+    } else if (path.includes("/fighters/"))
       data = {
-        fighter: { status: approved ? "Approved" : "Applied" },
+        fighter: {
+          tokenId: path.split("/").at(-1),
+          status: approved ? "Approved" : "Applied"
+        },
         applicationsOpen: true
       };
     else if (path.endsWith("/v1/tokens/base/1234"))
@@ -233,7 +263,13 @@ try {
           burned: false
         }
       };
-    else if (path.startsWith("/__indexer/"))
+    else if (path.startsWith("/__indexer/")) {
+      collectionRequests.push(url.searchParams.get("q"));
+      if (failCollection)
+        return route.fulfill({
+          status: 503,
+          json: { error: "Collection temporarily unavailable" }
+        });
       data = {
         version: 1,
         query: `chain=base&${url.searchParams.get("q") ? `q=${url.searchParams.get("q")}&` : ""}sort=rarity-capped-desc`,
@@ -252,7 +288,7 @@ try {
             tokenId: "1234",
             owner,
             hidden: false,
-            burned: false,
+            burned,
             lifecycle: 0,
             mintBlock: "1",
             lastTransferBlock: "1",
@@ -266,6 +302,7 @@ try {
           }
         ]
       };
+    }
     if (path.includes("/v2/owners/") && data && url.searchParams.get("q")) {
       data.items = ownsSelected
         ? data.items.filter(
@@ -648,6 +685,144 @@ try {
   assert.equal(new URL(page.url()).search, "?fighter=1234");
   await page.goto(origin + "/arena/anime/1?fighter=invalid");
   await page.getByRole("heading", { name: "Choose your fighter" }).waitFor();
+  // The user's approved NFT can be deep in a large collection. The picker
+  // must use exact owned-token lookups, never the first unfiltered 24 NFTs.
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    approvalPages = [["9001"], ["9002"], ["1234"], ["9003"]];
+    holdApprovalPage = "1";
+    releaseApprovalPage = undefined;
+    approvalRequests.length = 0;
+    collectionRequests.length = 0;
+    const firstLookup = page.waitForResponse((response) =>
+      response.url().includes("q=9001")
+    );
+    await page.goto(origin + "/arena/anime/1");
+    await page
+      .getByRole("status", { name: "Finding your approved fighters…" })
+      .waitFor();
+    await firstLookup;
+    // Wait for the held second request without assuming a network timing.
+    for (let attempt = 0; !releaseApprovalPage && attempt < 500; attempt++)
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.ok(
+      releaseApprovalPage,
+      "The next approval page must load automatically"
+    );
+    assert.equal(
+      await page
+        .getByText("No approved anime fighters were found", { exact: false })
+        .count(),
+      0
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Load more fighters", exact: true })
+        .count(),
+      0
+    );
+    await page.screenshot({
+      path: `${output}/${width}-finding-fighters.png`,
+      fullPage: true
+    });
+    holdApprovalPage = null;
+    releaseApprovalPage();
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .waitFor();
+    assert.deepEqual(approvalRequests, ["", "1", "2"]);
+    assert.deepEqual(collectionRequests, ["9001", "9002", "1234"]);
+    assert.equal(await page.locator("[data-arena-fighter]").count(), 1);
+    await page
+      .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+      .click();
+    assert.deepEqual(await page.evaluate(() => window.__arenaJoin), {
+      tournamentId: "1",
+      tokenId: "1234",
+      approvalEntries: 1
+    });
+    await page.screenshot({
+      path: `${output}/${width}-found-fighter.png`,
+      fullPage: true
+    });
+    await page
+      .getByRole("button", { name: "Load more fighters", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Load more fighters", exact: true })
+      .waitFor({ state: "hidden" });
+    assert.deepEqual(approvalRequests, ["", "1", "2", "3"]);
+    assert.equal(await page.locator("[data-arena-fighter]").count(), 1);
+  }
+  // Exhaust every approval page before saying that no owned fighters exist.
+  approvalPages = [["9001"], ["9002"]];
+  approvalRequests.length = 0;
+  await page.reload();
+  await page
+    .getByText("No approved anime fighters were found", { exact: false })
+    .waitFor();
+  assert.deepEqual(approvalRequests, ["", "1"]);
+  assert.equal(
+    await page
+      .getByRole("status", { name: "Finding your approved fighters…" })
+      .count(),
+    0
+  );
+
+  // A failed later page stops scanning, exposes a retry, and resumes at that page.
+  approvalPages = [["9001"], ["1234"]];
+  failApprovalCursor = "1";
+  approvalRequests.length = 0;
+  await page.reload();
+  await page
+    .getByRole("alert")
+    .filter({ hasText: "Could not load your fighters" })
+    .waitFor();
+  assert.deepEqual(approvalRequests, ["", "1"]);
+  assert.equal(
+    await page
+      .getByText("No approved anime fighters were found", { exact: false })
+      .count(),
+    0
+  );
+  assert.equal(
+    await page
+      .getByRole("status", { name: "Finding your approved fighters…" })
+      .count(),
+    0
+  );
+  failApprovalCursor = null;
+  await page.getByRole("button", { name: "Retry loading fighters" }).click();
+  await page
+    .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+    .waitFor();
+  assert.deepEqual(approvalRequests, ["", "1", "1"]);
+
+  // Initial lookup errors are retriable too; burned and no-longer-owned NFTs
+  // never become entry options, even if the approval registry still lists them.
+  approvalPages = [["1234"]];
+  failCollection = true;
+  await page.reload();
+  await page.getByRole("button", { name: "Retry loading fighters" }).waitFor();
+  failCollection = false;
+  await page.getByRole("button", { name: "Retry loading fighters" }).click();
+  await page
+    .getByRole("button", { name: "Enter · 1 USDC", exact: true })
+    .waitFor();
+  burned = true;
+  await page.reload();
+  // The collection parser rejects burned tokens in a visible response.
+  await page.getByRole("button", { name: "Retry loading fighters" }).waitFor();
+  assert.equal(await page.locator("[data-arena-fighter]").count(), 0);
+  burned = false;
+  ownsSelected = false;
+  await page.reload();
+  await page
+    .getByText("No approved anime fighters were found", { exact: false })
+    .waitFor();
+  assert.equal(await page.locator("[data-arena-fighter]").count(), 0);
+  ownsSelected = true;
+  approvalPages = null;
   await page.goto(origin + "/arena/video/1?fighter=1234");
   await page.getByRole("heading", { name: "Choose your fighter" }).waitFor();
   await page.goto(origin + "/arena/video");
@@ -660,7 +835,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation, picker order, wallet confirmation, entered/strategy/resolving/expired guidance, optional entry keyboard disclosure, gallery/detail-to-queue-to-entry selection, reload and change-selection recovery, ownership/approval gating, no-queue fallback, optional entry keyboard access and video isolation."
+    "Anime application UI passed: desktop/mobile queues and picker, pending/approved fighters, disconnected wallet, collection navigation, picker order, wallet confirmation, entered/strategy/resolving/expired guidance, optional entry keyboard disclosure, gallery/detail-to-queue-to-entry selection, reload and change-selection recovery, ownership/approval gating, no-queue fallback, optional entry keyboard access, approved-first inventory, automatic pagination, loading/empty/error recovery, transferred ownership, burned exclusion and video isolation."
   );
 } finally {
   await browser.close();

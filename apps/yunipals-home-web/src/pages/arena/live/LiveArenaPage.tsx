@@ -11,10 +11,12 @@ import { formatEther, type Address } from "viem";
 import { LoaderCircle } from "lucide-react";
 import { useAccount, usePublicClient } from "wagmi";
 import { readArenaJoinPayment } from "@/lib/arenaPayment";
-import type {
-  AnimeKnownKit,
-  AnimeBackground,
-  AnimeLoadout
+import {
+  ANIME_BASE_COLLECTION,
+  type AnimeFighter,
+  type AnimeKnownKit,
+  type AnimeBackground,
+  type AnimeLoadout
 } from "@protopals/yunipals-market-core/anime";
 import type {
   ArenaPublicTournament,
@@ -562,51 +564,88 @@ export function LiveArenaPage() {
       queryKey: ["arena-live", deployment.scope]
     })
   );
+  const inventoryEnabled =
+    configured && !!address && tournament?.phase === "open";
   const inventory = useInfiniteQuery({
     queryKey: ["arena-inventory", deployment.scope, address, fighterTokenId],
     queryFn: async ({ pageParam, signal }) => {
-      const page =
-        deployment.kind === "anime"
-          ? await collectorClient.page(
+      if (deployment.kind !== "anime")
+        return fetchOwnerTokens(
+          address!,
+          { limit: 24, cursor: pageParam },
+          signal
+        );
+      // Start with approvals instead of scanning a potentially huge collection.
+      // Resolve current ownership, not the original applicant (NFTs can sell).
+      const approvedPage = fighterTokenId
+        ? {
+            items: [
+              (
+                await arenaRequest<{ fighter: AnimeFighter }>(
+                  `/fighters/${fighterTokenId}`,
+                  undefined,
+                  signal
+                )
+              ).fighter
+            ],
+            nextCursor: null
+          }
+        : await arenaRequest<{
+            items: AnimeFighter[];
+            nextCursor: string | null;
+          }>(
+            `/fighters?status=Approved&limit=24${pageParam ? `&cursor=${encodeURIComponent(pageParam)}` : ""}`,
+            undefined,
+            signal
+          );
+      const owned = await Promise.all(
+        approvedPage.items
+          .filter((fighter) => fighter.status === "Approved")
+          .map(async (fighter) => {
+            const tokenId = fighterTokenId ?? fighter.tokenId;
+            const page = await collectorClient.page(
               address!,
               {
                 ...defaultCollectorFilters,
                 chains: ["base"],
-                search: fighterTokenId ?? ""
+                search: tokenId
               },
               "visible",
-              pageParam,
-              signal
-            )
-          : await fetchOwnerTokens(
-              address!,
-              { limit: 24, cursor: pageParam },
+              undefined,
               signal
             );
-      if (deployment.kind !== "anime") return page;
-      const base = page.items.filter((t) => t.chainId === 8453);
-      const eligible = await Promise.all(
-        base.map(async (t) => ({
-          token: t,
-          approved:
-            (
-              await arenaRequest<{ fighter: { status: string } }>(
-                `/fighters/${t.tokenId}`,
-                undefined,
-                signal
-              )
-            ).fighter.status === "Approved"
-        }))
+            return page.items.filter(
+              (token) =>
+                token.tokenId === tokenId &&
+                token.chainId === 8453 &&
+                token.contractAddress.toLowerCase() === ANIME_BASE_COLLECTION &&
+                token.owner.toLowerCase() === address!.toLowerCase() &&
+                !token.burned &&
+                !token.hidden
+            );
+          })
       );
-      return {
-        ...page,
-        items: eligible.filter((t) => t.approved).map((t) => t.token)
-      };
+      return { items: owned.flat(), nextCursor: approvedPage.nextCursor };
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (last) => last.nextCursor ?? undefined,
-    enabled: configured && !!address && tournament?.phase === "open"
+    enabled: inventoryEnabled
   });
+  const availableFighters =
+    inventory.data?.pages.flatMap((p) => p.items).filter((n) => !n.burned) ??
+    [];
+  const { hasNextPage, isFetching, isError, fetchNextPage } = inventory;
+  // An approval page may only contain other players’ fighters. Walk past it
+  // before showing an empty state, and stop on errors so the user can retry.
+  const needsMoreFighters =
+    inventoryEnabled &&
+    deployment.kind === "anime" &&
+    availableFighters.length === 0 &&
+    !!hasNextPage &&
+    !isError;
+  useEffect(() => {
+    if (needsMoreFighters && !isFetching) void fetchNextPage();
+  }, [needsMoreFighters, isFetching, fetchNextPage]);
   const ownedSeats =
     tournament?.seats.filter(
       (s) => s.player.toLowerCase() === address?.toLowerCase()
@@ -866,17 +905,37 @@ export function LiveArenaPage() {
                       : "Compatible wallets approve and enter together. Other wallets ask for approval, then immediately ask you to confirm entry."}
                   </p>
                 </details>
-                {inventory.isPending && (
-                  <ArenaCardsLoading label="Loading your Yunipals…" />
+                {(inventory.isPending || needsMoreFighters) && (
+                  <ArenaCardsLoading
+                    label={
+                      deployment.kind === "anime"
+                        ? "Finding your approved fighters…"
+                        : "Loading your Yunipals…"
+                    }
+                  />
                 )}
                 {inventory.error && (
-                  <p role="alert">{inventory.error.message}</p>
+                  <div className="my-5">
+                    <p role="alert" className="text-destructive">
+                      Could not load your fighters. {inventory.error.message}
+                    </p>
+                    <button
+                      type="button"
+                      className={cn(action, "mt-3")}
+                      disabled={inventory.isFetching}
+                      onClick={() =>
+                        void (inventory.isFetchNextPageError
+                          ? inventory.fetchNextPage()
+                          : inventory.refetch())
+                      }
+                    >
+                      Retry loading fighters
+                    </button>
+                  </div>
                 )}
                 {inventory.isSuccess &&
                 !inventory.hasNextPage &&
-                inventory.data.pages
-                  .flatMap((p) => p.items)
-                  .filter((n) => !n.burned).length === 0 ? (
+                availableFighters.length === 0 ? (
                   <p role="status" className="my-5 text-muted">
                     {deployment.kind === "anime"
                       ? fighterTokenId
@@ -886,123 +945,125 @@ export function LiveArenaPage() {
                   </p>
                 ) : null}
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {inventory.data?.pages
-                    .flatMap((p) => p.items)
-                    .filter((nft) => !nft.burned)
-                    .map((nft) => {
-                      const key = arenaFighterKey({
-                        tournamentId: tournament.id,
-                        nftChainId: nft.chainId,
-                        collection: nft.contractAddress,
-                        tokenId: nft.tokenId
-                      });
-                      const progress =
-                        wallet.entryProgress?.key === key
-                          ? wallet.entryProgress
-                          : null;
-                      const entryError =
-                        wallet.entryFeedback?.key === key
-                          ? wallet.entryFeedback.error
-                          : null;
-                      const entered = tournament.seats.some(
-                        (s) =>
-                          s.nftChainId === nft.chainId &&
-                          s.collection.toLowerCase() ===
-                            nft.contractAddress.toLowerCase() &&
-                          s.tokenId === nft.tokenId
-                      );
-                      return (
-                        <article
-                          key={`${nft.chainId}/${nft.contractAddress}/${nft.tokenId}`}
-                          data-arena-fighter={key}
-                          aria-busy={!!progress}
+                  {availableFighters.map((nft) => {
+                    const key = arenaFighterKey({
+                      tournamentId: tournament.id,
+                      nftChainId: nft.chainId,
+                      collection: nft.contractAddress,
+                      tokenId: nft.tokenId
+                    });
+                    const progress =
+                      wallet.entryProgress?.key === key
+                        ? wallet.entryProgress
+                        : null;
+                    const entryError =
+                      wallet.entryFeedback?.key === key
+                        ? wallet.entryFeedback.error
+                        : null;
+                    const entered = tournament.seats.some(
+                      (s) =>
+                        s.nftChainId === nft.chainId &&
+                        s.collection.toLowerCase() ===
+                          nft.contractAddress.toLowerCase() &&
+                        s.tokenId === nft.tokenId
+                    );
+                    return (
+                      <article
+                        key={`${nft.chainId}/${nft.contractAddress}/${nft.tokenId}`}
+                        data-arena-fighter={key}
+                        aria-busy={!!progress}
+                        className={cn(
+                          "rounded-card border p-4",
+                          progress ? "border-grape bg-grape/5" : "border-line"
+                        )}
+                      >
+                        {nft.image && (
+                          <img
+                            className="aspect-square w-full rounded-card object-cover"
+                            src={nft.image}
+                            alt={nft.name ?? `Yunipal #${nft.tokenId}`}
+                            loading="lazy"
+                          />
+                        )}
+                        <h3 className="my-3 font-bold">
+                          {nft.name ?? `Yunipal #${nft.tokenId}`}
+                        </h3>
+                        <button
                           className={cn(
-                            "rounded-card border p-4",
-                            progress ? "border-grape bg-grape/5" : "border-line"
+                            action,
+                            "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
+                            progress && "bg-grape disabled:opacity-100"
                           )}
+                          aria-busy={!!progress}
+                          aria-label={progress?.label}
+                          disabled={
+                            !!wallet.busy ||
+                            wallet.pendingTransaction ||
+                            !config.data?.entriesEnabled ||
+                            tournament.seats.length >= 4 ||
+                            tournament.projection?.ready === false ||
+                            entered
+                          }
+                          onClick={() =>
+                            void wallet.join(
+                              tournament.id,
+                              nft,
+                              approvalEntries
+                            )
+                          }
                         >
-                          {nft.image && (
-                            <img
-                              className="aspect-square w-full rounded-card object-cover"
-                              src={nft.image}
-                              alt={nft.name ?? `Yunipal #${nft.tokenId}`}
-                              loading="lazy"
-                            />
+                          {progress ? (
+                            <>
+                              <LoaderCircle
+                                size={16}
+                                aria-hidden="true"
+                                className="shrink-0 motion-safe:animate-spin"
+                              />
+                              <span
+                                className="truncate"
+                                role="status"
+                                aria-live="polite"
+                              >
+                                {entryButtonLabels[progress.label] ??
+                                  progress.label}
+                              </span>
+                            </>
+                          ) : entered ? (
+                            "Entered"
+                          ) : (
+                            `Enter · ${deployment.entry} USDC`
                           )}
-                          <h3 className="my-3 font-bold">
-                            {nft.name ?? `Yunipal #${nft.tokenId}`}
-                          </h3>
-                          <button
-                            className={cn(
-                              action,
-                              "inline-flex h-12 w-full items-center justify-center gap-2 px-3 text-sm",
-                              progress && "bg-grape disabled:opacity-100"
-                            )}
-                            aria-busy={!!progress}
-                            aria-label={progress?.label}
-                            disabled={
-                              !!wallet.busy ||
-                              wallet.pendingTransaction ||
-                              !config.data?.entriesEnabled ||
-                              tournament.seats.length >= 4 ||
-                              tournament.projection?.ready === false ||
-                              entered
-                            }
-                            onClick={() =>
-                              void wallet.join(
-                                tournament.id,
-                                nft,
-                                approvalEntries
-                              )
-                            }
+                        </button>
+                        {entryError && (
+                          <p
+                            role="alert"
+                            className="mt-3 break-words text-sm text-destructive"
                           >
-                            {progress ? (
-                              <>
-                                <LoaderCircle
-                                  size={16}
-                                  aria-hidden="true"
-                                  className="shrink-0 motion-safe:animate-spin"
-                                />
-                                <span
-                                  className="truncate"
-                                  role="status"
-                                  aria-live="polite"
-                                >
-                                  {entryButtonLabels[progress.label] ??
-                                    progress.label}
-                                </span>
-                              </>
-                            ) : entered ? (
-                              "Entered"
-                            ) : (
-                              `Enter · ${deployment.entry} USDC`
-                            )}
-                          </button>
-                          {entryError && (
-                            <p
-                              role="alert"
-                              className="mt-3 break-words text-sm text-destructive"
-                            >
-                              {entryError}
-                            </p>
-                          )}
-                        </article>
-                      );
-                    })}
+                            {entryError}
+                          </p>
+                        )}
+                      </article>
+                    );
+                  })}
                 </div>
-                {inventory.hasNextPage && (
-                  <button
-                    className={cn(action, "mt-4")}
-                    disabled={inventory.isFetchingNextPage}
-                    onClick={() => void inventory.fetchNextPage()}
-                  >
-                    {inventory.isFetchingNextPage ? (
-                      <ArenaLoading label="Loading more Yunipals…" />
-                    ) : (
-                      "Load more Yunipals"
-                    )}
-                  </button>
-                )}
+                {inventory.hasNextPage &&
+                  !inventory.isError &&
+                  (deployment.kind !== "anime" ||
+                    availableFighters.length > 0) && (
+                    <button
+                      className={cn(action, "mt-4")}
+                      disabled={inventory.isFetchingNextPage}
+                      onClick={() => void inventory.fetchNextPage()}
+                    >
+                      {inventory.isFetchingNextPage ? (
+                        <ArenaLoading label="Loading more Yunipals…" />
+                      ) : deployment.kind === "anime" ? (
+                        "Load more fighters"
+                      ) : (
+                        "Load more Yunipals"
+                      )}
+                    </button>
+                  )}
                 {deployment.kind === "anime" && <AnimeApplicationHint />}
               </EntryContainer>
             </section>
