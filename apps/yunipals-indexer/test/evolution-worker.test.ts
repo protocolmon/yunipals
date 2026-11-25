@@ -133,120 +133,144 @@ describe("evolution generation", () => {
       await db.close();
     }
   });
-  it("resumes saved artwork after submission failure and refuses changed branches before AI", async () => {
-    const db = new PGlite();
-    const directory = await mkdtemp(join(tmpdir(), "evolution-worker-"));
-    try {
-      await db.exec(evolutionWorkerSchema);
-      const store = new EvolutionStore(
-        db as unknown as Pick<Pool, "query">,
-        "8453:evolution"
-      );
-      const assets = new PortalAssets(
-        directory,
-        "https://example.invalid",
-        [],
-        undefined,
-        false,
-        "/v1/evolution/assets"
-      );
-      const input = await assets.put(png, "png");
-      let binding = hash;
-      const request = {
-        parentA: 1n,
-        parentB: 2n,
-        ready: true,
-        completed: false,
-        inputA: input,
-        inputB: input,
-        resultPresence: 0,
-        resultFinish: 2
-      };
-      const chain = {
-        cards: "cards",
-        adventures: "adventures",
-        request: async () => request,
-        binding: async () => binding,
-        client: { getBlock: async () => ({ hash }) },
-        history: async (id: bigint) => leaf(id.toString()),
-        sources: async () => []
-      } as unknown as EvolutionChain;
-      const reader = {
-        snapshot: async (fn: (db: unknown, ctx: unknown) => Promise<unknown>) =>
-          fn(null, {
-            deployment: store.deployment,
-            cards: "cards",
-            adventures: "adventures",
-            block: 100n,
-            hash
-          })
-      } as unknown as EvolutionReader;
-      const ai = {
-        policy: portalModels,
-        calibrateHolo: vi.fn(async () => ({
-          geometry,
-          model: portalModels.grading,
-          usage: null,
-          value: geometry
-        })),
-        editImages: vi.fn(async () => ({
-          bytes: png,
-          usage: null,
-          model: portalModels.image
-        }))
-      };
-      ai.calibrateHolo.mockRejectedValueOnce(
-        new Error("segmentation unavailable")
-      );
-      const submit = vi.fn(async () => otherHash);
-      submit.mockRejectedValueOnce(new Error("temporary RPC failure"));
-      const worker = new EvolutionWorker(
-        reader,
-        chain,
-        store,
-        assets,
-        ai,
-        submit
-      );
-      const job = (await store.claim("1", hash, worker.policy))!;
-      await expect(worker.process(job)).rejects.toThrow(
-        "segmentation unavailable"
-      );
-      expect(ai.editImages).toHaveBeenCalledTimes(1);
-      expect(submit).not.toHaveBeenCalled();
-      await expect(worker.process(job)).rejects.toThrow("RPC failure");
-      expect(ai.editImages).toHaveBeenCalledTimes(1);
-      expect(job.progress.artifact?.metadataHash).toBeTruthy();
-      const metadata = JSON.parse(
-        (
-          await assets.read(
-            job.progress.artifact!.metadataHash.slice(2),
-            "json"
-          )
-        ).toString()
-      );
-      expect(metadata.yunipals.holo.foreground).toContain(
-        "/v1/evolution/layers/"
-      );
-      expect(ai.calibrateHolo).toHaveBeenCalledTimes(2);
-      expect(metadata.attributes).toContainEqual({
-        trait_type: "Finish",
-        value: "Golden"
-      });
-      expect(metadata.evolution.finish).toBe(2);
-      expect(JSON.parse(job.progress.prompt!).resultingFinish).toBe("Golden");
-      await worker.process(job);
-      expect(ai.editImages).toHaveBeenCalledTimes(1);
-      expect(submit).toHaveBeenCalledTimes(2);
-      const next = (await store.claim("2", hash, worker.policy))!;
-      binding = otherHash;
-      await expect(worker.process(next)).rejects.toThrow("binding changed");
-      expect(ai.editImages).toHaveBeenCalledTimes(1);
-    } finally {
-      await db.close();
-      await rm(directory, { recursive: true, force: true });
+  it.each([1, 3])(
+    "resumes level %s artwork after submission failure and refuses changed branches before AI",
+    async (level) => {
+      const db = new PGlite();
+      const directory = await mkdtemp(join(tmpdir(), "evolution-worker-"));
+      try {
+        await db.exec(evolutionWorkerSchema);
+        const store = new EvolutionStore(
+          db as unknown as Pick<Pool, "query">,
+          "8453:evolution"
+        );
+        const assets = new PortalAssets(
+          directory,
+          "https://example.invalid",
+          [],
+          undefined,
+          false,
+          "/v1/evolution/assets"
+        );
+        const input = await assets.put(png, "png");
+        let binding = hash;
+        const request = {
+          parentA: 1n,
+          parentB: 2n,
+          ready: true,
+          completed: false,
+          inputA: input,
+          inputB: input,
+          resultPresence: 0,
+          resultFinish: 2
+        };
+        const chain = {
+          cards: "cards",
+          adventures: "adventures",
+          request: async () => request,
+          binding: async () => binding,
+          client: { getBlock: async () => ({ hash }) },
+          history: async (id: bigint) => leaf(id.toString()),
+          fusionLevel: async () => level,
+          assertSingularityPolicy: async () => hash,
+          sources: async () => []
+        } as unknown as EvolutionChain;
+        const reader = {
+          snapshot: async (
+            fn: (db: unknown, ctx: unknown) => Promise<unknown>
+          ) =>
+            fn(null, {
+              deployment: store.deployment,
+              cards: "cards",
+              adventures: "adventures",
+              block: 100n,
+              hash
+            })
+        } as unknown as EvolutionReader;
+        const ai = {
+          policy: portalModels,
+          calibrateHolo: vi.fn(async () => ({
+            geometry,
+            model: portalModels.grading,
+            usage: null,
+            value: geometry
+          })),
+          editImages: vi.fn(async () => ({
+            bytes: png,
+            usage: null,
+            model: portalModels.image
+          }))
+        };
+        ai.calibrateHolo.mockRejectedValueOnce(
+          new Error("segmentation unavailable")
+        );
+        const submit = vi.fn(async () => otherHash);
+        submit.mockRejectedValueOnce(new Error("temporary RPC failure"));
+        const worker = new EvolutionWorker(
+          reader,
+          chain,
+          store,
+          assets,
+          ai,
+          submit
+        );
+        const job = (await store.claim("1", hash, worker.policy))!;
+        await expect(worker.process(job)).rejects.toThrow(
+          "segmentation unavailable"
+        );
+        expect(ai.editImages).toHaveBeenCalledTimes(1);
+        expect(submit).not.toHaveBeenCalled();
+        await expect(worker.process(job)).rejects.toThrow("RPC failure");
+        expect(ai.editImages).toHaveBeenCalledTimes(1);
+        expect(job.progress.artifact?.metadataHash).toBeTruthy();
+        const metadata = JSON.parse(
+          (
+            await assets.read(
+              job.progress.artifact!.metadataHash.slice(2),
+              "json"
+            )
+          ).toString()
+        );
+        expect(metadata.yunipals.holo.foreground).toContain(
+          "/v1/evolution/layers/"
+        );
+        expect(ai.calibrateHolo).toHaveBeenCalledTimes(2);
+        expect(metadata.attributes).toContainEqual({
+          trait_type: "Finish",
+          value: "Golden"
+        });
+        expect(metadata.evolution.finish).toBe(2);
+        expect(metadata.attributes).toContainEqual({
+          trait_type: "Card kind",
+          value: level === 3 ? "Singularity" : "Fusion"
+        });
+        if (level === 3) {
+          expect(JSON.parse(job.progress.prompt!).singularity).toContain(
+            "multiverse dimensions"
+          );
+          expect(metadata.evolution.singularityPolicy).toBe(hash);
+        } else expect(metadata.evolution.singularityPolicy).toBeUndefined();
+        expect(JSON.parse(job.progress.prompt!).resultingFinish).toBe("Golden");
+        await worker.process(job);
+        expect(ai.editImages).toHaveBeenCalledTimes(1);
+        expect(submit).toHaveBeenCalledTimes(2);
+        if (level === 3) {
+          delete job.progress.singularityPolicy;
+          await expect(worker.process(job)).rejects.toThrow(
+            "different Singularity policy"
+          );
+          expect(ai.editImages).toHaveBeenCalledTimes(1);
+        }
+        const next = (await store.claim("2", hash, worker.policy))!;
+        binding = otherHash;
+        await expect(worker.process(next)).rejects.toThrow("binding changed");
+        expect(ai.editImages).toHaveBeenCalledTimes(1);
+      } finally {
+        await db.close();
+        await rm(directory, { recursive: true, force: true });
+      }
     }
-  });
+  );
   it("retries saved VRF settlement without creating fresh randomness", async () => {
     const settle = vi.fn(async () => otherHash);
     const reader = {
@@ -316,7 +340,13 @@ describe("evolution generation", () => {
         adventures: "adventures",
         assertBindings: async () => {},
         binding: async () => hash,
-        request: async () => ({ ready: true, completed }),
+        request: async () => ({
+          ready: true,
+          completed,
+          parentA: 1n,
+          parentB: 2n
+        }),
+        fusionLevel: async () => 1,
         client: { getBlock: async () => ({ hash }) }
       } as unknown as EvolutionChain;
       const policy = evolutionRenderingHash(portalModels);
@@ -528,4 +558,38 @@ describe("evolution generation", () => {
       expect(grading).toContain("not evidence of copying");
     }
   });
+});
+
+it("keeps Singularity terminal with two leaves and preserves its identity through serum and grading", () => {
+  const singularity: EvolutionHistory = {
+    tokenId: "3",
+    level: 3,
+    presence: 1,
+    finish: 3,
+    doses: [],
+    parents: [leaf("1"), leaf("2")]
+  };
+  expect(validateEvolutionHistory(singularity)).toBe(2);
+  expect(() =>
+    validateEvolutionHistory({
+      ...singularity,
+      parents: [{ ...leaf("1"), level: 1 }, leaf("2")]
+    })
+  ).toThrow();
+  expect(() =>
+    validateEvolutionHistory({ ...singularity, level: 2 })
+  ).toThrow();
+  const prompt = JSON.parse(evolutionPrompt([singularity], 1, 3, dose));
+  expect(prompt.singularity).toContain("dimensional seam");
+  expect(prompt.inheritedHistory[0].parents).toHaveLength(2);
+  expect(
+    portalImagePrompt(portalModels, "Add a rainbow", {
+      portalKindId: "1",
+      baseColor: "Black",
+      evolution: { witnessTokenId: "1", sources: [], history: singularity }
+    })
+  ).toContain("Trusted Singularity identity");
+  expect(() =>
+    evolutionPrompt([singularity, leaf("4")], 1, 3, undefined, 3)
+  ).toThrow("unfused");
 });

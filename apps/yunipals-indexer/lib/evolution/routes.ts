@@ -16,6 +16,7 @@ import {
   serumFee,
   sponsoredSerumLimit,
   sponsoredFusionLimit,
+  singularityCompatible,
   fusionCompatible
 } from "@protopals/yunipals-market-core/serums";
 import { createEvolutionRuntime, type EvolutionRuntime } from "./runtime.js";
@@ -260,6 +261,10 @@ export function registerEvolutionRoutes(
         );
         const cards = candidates.filter((card) => card !== null);
         const a = partner ? await r.chain.card(partner, ctx.block) : null;
+        const singularityEnabled =
+          a && cards.some((b) => singularityCompatible(a, b))
+            ? await r.chain.supportsSingularity(ctx.block)
+            : false;
         const matches = portalId
           ? await Promise.all(
               cards.map(async (card) => ({
@@ -284,7 +289,11 @@ export function registerEvolutionRoutes(
               )
             : a
               ? cards.filter(
-                  (b) => !b.graded && !b.reservedBy && fusionCompatible(a, b)
+                  (b) =>
+                    !b.graded &&
+                    !b.reservedBy &&
+                    fusionCompatible(a, b) &&
+                    (singularityEnabled || !singularityCompatible(a, b))
                 )
               : cards,
           nextAfter:
@@ -377,6 +386,12 @@ export function registerEvolutionRoutes(
           );
         if (kind === "fusion" && !fusionCompatible(a, b))
           throw new PortalUserError("These cards cannot fuse.", 409);
+        if (kind === "fusion")
+          await r.chain.fusionLevel(
+            BigInt(a.tokenId),
+            BigInt(b.tokenId),
+            head.number
+          );
         const target = (
           kind === "adventure" ? ctx.adventures : ctx.evolution
         ) as Address;

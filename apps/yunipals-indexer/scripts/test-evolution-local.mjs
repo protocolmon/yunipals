@@ -45,6 +45,7 @@ import { registerEvolutionRoutes } from "../lib/evolution/routes.ts";
 import { PortalAssets } from "../lib/portals/assets.ts";
 import { PortalChain, portalJson } from "../lib/portals/chain.ts";
 
+const singularity = process.env.EVOLUTION_TEST_SINGULARITY === "1";
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const rpc = "http://127.0.0.1:8559",
   api = "http://127.0.0.1:8949",
@@ -339,13 +340,22 @@ try {
     account.address,
     0
   ]);
-  await send(engine, "Evolution.t:EvolutionTestEngine", "child", [
-    cards,
-    1n,
-    account.address,
-    1,
-    1
-  ]);
+  if (singularity) {
+    await send(engine, "Evolution.t:EvolutionTestEngine", "original", [
+      cards,
+      1n,
+      account.address,
+      0
+    ]);
+  } else {
+    await send(engine, "Evolution.t:EvolutionTestEngine", "child", [
+      cards,
+      1n,
+      account.address,
+      1,
+      1
+    ]);
+  }
   await send(usdc, "Portals.t:PortalTestUSDC", "mint", [
     account.address,
     10_000_000n
@@ -671,6 +681,12 @@ try {
     .click();
   await page.getByRole("button", { name: /Yunipal #2/ }).click();
   await page.getByText(/remaining daily claims end/).waitFor();
+  if (singularity) {
+    await page
+      .getByRole("heading", { name: "Create a Singularity", exact: true })
+      .waitFor();
+    await page.getByText(/Matching mint date/).waitFor();
+  }
   await page
     .getByRole("button", { name: "Confirm in wallet", exact: true })
     .click();
@@ -736,7 +752,25 @@ try {
       card && getComputedStyle(card).getPropertyValue("--rotate-y") !== "0deg"
     );
   });
-  assert.equal(fused.level, 1);
+  assert.equal(fused.level, singularity ? 3 : 1);
+  if (singularity) {
+    assert.equal(fused.sources.length, 2);
+    assert.equal(fused.effectiveSequence, 0);
+    assert.equal(
+      Math.floor(fused.sources[0].mintedAt / 86400),
+      Math.floor(fused.sources[1].mintedAt / 86400)
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Choose fusion partner", exact: true })
+        .isDisabled(),
+      true
+    );
+    assert.match(
+      (await (await app.request(fused.metadataURI)).json()).name,
+      /Singularity/
+    );
+  }
   assert.equal(fused.localDoses, 0);
   assert.equal(fused.history.parents[0].doses.length, 1);
   assert.equal(fused.nextAdventureAt, enhanced.nextAdventureAt);
@@ -747,12 +781,12 @@ try {
   );
   assert.equal(errors.length, 0, errors.join("\n"));
   await page.screenshot({
-    path: "/tmp/yunipals-evolution-desktop.png",
+    path: `/tmp/yunipals-${singularity ? "singularity" : "evolution"}-desktop.png`,
     fullPage: true
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({
-    path: "/tmp/yunipals-evolution-mobile.png",
+    path: `/tmp/yunipals-${singularity ? "singularity" : "evolution"}-mobile.png`,
     fullPage: true
   });
   assert.equal(

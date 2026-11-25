@@ -258,6 +258,7 @@ describe("serum sponsorship quotes", () => {
           }),
           readContract
         },
+        fusionLevel: async () => 1,
         card: async (id: bigint) => ({
           tokenId: String(id),
           level: 0,

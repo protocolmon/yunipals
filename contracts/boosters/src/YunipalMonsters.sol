@@ -307,17 +307,38 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         require(pending == 0, "original has pending claim");
     }
 
+    error SourceFactsUnavailable();
+    error SingularityTraitsMismatch();
+    error DifferentMintDates();
+
+    /// @notice Supplemental rendering rules for terminal, two-source Singularity fusions.
+    /// @dev Hash of singularityArtDirection in the shared serum module; no storage or legacy binding changes.
+    bytes32 public constant SINGULARITY_POLICY = 0x3d5cacaf3aa09a841766e1920500905f670695569eddb6752e00f6fcabe2179b;
+
     function fusionRecipe(uint256 a, uint256 b) public view returns (Fusion memory f) {
         require(a < b, "canonical distinct parents required");
         uint8 level = _fusions[a].level;
         require(level < 2 && level == _fusions[b].level, "incompatible fusion levels");
+        f.level = level + 1;
         if (level == 0) {
-            require(provenance[a].originalTokenId != 0
-                && provenance[a].originalTokenId == provenance[b].originalTokenId, "different lineages");
-            uint32 x = cardFacts[a].sequence;
-            uint32 y = cardFacts[b].sequence;
-            require(cardFacts[a].initialized && cardFacts[b].initialized && x < 264 && y < 264
-                && (x + 1 == y || y + 1 == x), "not adjacent");
+            Provenance storage pa = provenance[a];
+            Provenance storage pb = provenance[b];
+            CardFacts storage x = cardFacts[a];
+            CardFacts storage y = cardFacts[b];
+            if (!x.initialized || !y.initialized || x.sequence >= 264 || y.sequence >= 264) revert SourceFactsUnavailable();
+            if (x.sequence == y.sequence) {
+                // Activated pack catalogs are immutable with unique trait tuples:
+                // (packTypeId, variantId) is exactly (pack, species, color, horn, glitter).
+                // Initialized facts already prove a nonzero mint time and a unique sequence per lineage.
+                if (pa.packTypeId != pb.packTypeId || pa.variantId != pb.variantId)
+                    revert SingularityTraitsMismatch();
+                if (x.mintedAt / 1 days != y.mintedAt / 1 days) revert DifferentMintDates();
+                // A distinct terminal kind: two sources, never eligible for the level-one path.
+                f.level = 3;
+            } else {
+                require(pa.originalTokenId != 0 && pa.originalTokenId == pb.originalTokenId, "different lineages");
+                require(x.sequence + 1 == y.sequence || y.sequence + 1 == x.sequence, "not adjacent");
+            }
             f.sources[0] = a;
             f.sources[1] = b;
             f.sourceCount = 2;
@@ -329,7 +350,6 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
             f.sourceCount = 4;
         }
         for (uint8 i; i < f.sourceCount; ++i) f.sequenceSum += uint16(cardFacts[f.sources[i]].sequence);
-        f.level = level + 1;
         f.parentA = a;
         f.parentB = b;
     }

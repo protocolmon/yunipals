@@ -1,3 +1,4 @@
+import { evolutionKind } from "@protopals/yunipals-market-core/serums";
 import { environment } from "@/environment";
 import { fetchAdventureCards, type AdventureCard } from "@/lib/evolution";
 import { useEffect, useRef } from "react";
@@ -71,7 +72,7 @@ export function PortalCardPicker({
               ({
                 tokenId: card.tokenId,
                 metadataUri: card.metadataURI,
-                name: card.level ? `Fusion ${card.level}` : "Yunipal",
+                name: evolutionKind(card.level),
                 evolution: card
               }) as PortalSelectableCard
           ),

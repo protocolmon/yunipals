@@ -483,12 +483,15 @@ export function registerPortalRoutes(
       if (card.historyCount > 0n && !display)
         throw new PortalUserError("The grade is being published.", 503);
       return json({
-        name: `${display?.result.slab.cardName ?? "Yunipal Fusion"} #${token}`,
+        name: `${display?.result.slab.cardName ?? (card.evolution.history.level === 3 ? "Yunipal Singularity" : "Yunipal Fusion")} #${token}`,
         description:
           "A fused Yunipals TCG card with immutable source ancestry and ordered serum history.",
         image: display?.result.slab.uri ?? artwork.uri,
         attributes: [
-          { trait_type: "Card kind", value: "Fusion" },
+          {
+            trait_type: "Card kind",
+            value: card.evolution.history.level === 3 ? "Singularity" : "Fusion"
+          },
           { trait_type: "Fusion level", value: card.evolution.history.level },
           {
             trait_type: "Finish",

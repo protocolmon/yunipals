@@ -128,6 +128,8 @@ export type EvolutionSource = {
   tokenId: string;
   originalTokenId: string;
   sequence: number;
+  /** Unix seconds. Absent on older API responses; never infer a mint day. */
+  mintedAt?: number;
   isOriginal: boolean;
   packTypeId: string;
   variantId: number;
@@ -138,7 +140,8 @@ export type EvolutionSource = {
 };
 export type EvolutionCard = {
   tokenId: string;
-  level: 0 | 1 | 2;
+  /** 3 is the terminal Singularity kind, not a third recursive fusion. */
+  level: 0 | 1 | 2 | 3;
   sources: EvolutionSource[];
   artVersion: string;
   historyHash: `0x${string}`;
@@ -165,19 +168,53 @@ export function effectiveSequence(sources: readonly EvolutionSource[]) {
     sources.reduce((sum, source) => sum + source.sequence, 0) / sources.length
   );
 }
-export function fusionCompatible(
-  a: Pick<EvolutionCard, "tokenId" | "level" | "sources">,
-  b: Pick<EvolutionCard, "tokenId" | "level" | "sources">
-) {
-  if (a.tokenId === b.tokenId || a.level !== b.level || a.level === 2)
+export type FusionCandidate = Pick<
+  EvolutionCard,
+  "tokenId" | "level" | "sources"
+>;
+export function singularityCompatible(a: FusionCandidate, b: FusionCandidate) {
+  if (
+    a.tokenId === b.tokenId ||
+    a.level !== 0 ||
+    b.level !== 0 ||
+    a.sources.length !== 1 ||
+    b.sources.length !== 1
+  )
+    return false;
+  const x = a.sources[0],
+    y = b.sources[0];
+  return (
+    x.tokenId !== y.tokenId &&
+    x.originalTokenId !== y.originalTokenId &&
+    [x.mintedAt, y.mintedAt].every((t) => Number.isSafeInteger(t) && t! > 0) &&
+    Math.floor(x.mintedAt! / 86400) === Math.floor(y.mintedAt! / 86400) &&
+    x.sequence === y.sequence &&
+    x.sequence >= 0 &&
+    x.sequence < 264 &&
+    x.packTypeId === y.packTypeId &&
+    x.monsterType === y.monsterType &&
+    x.color === y.color &&
+    x.horn === y.horn &&
+    x.glitter === y.glitter
+  );
+}
+export function fusionCompatible(a: FusionCandidate, b: FusionCandidate) {
+  if (a.tokenId === b.tokenId || a.level !== b.level || a.level >= 2)
     return false;
   if (a.level === 0)
     return (
-      a.sources[0].originalTokenId === b.sources[0].originalTokenId &&
-      Math.abs(a.sources[0].sequence - b.sources[0].sequence) === 1
+      singularityCompatible(a, b) ||
+      (a.sources[0].originalTokenId === b.sources[0].originalTokenId &&
+        Math.abs(a.sources[0].sequence - b.sources[0].sequence) === 1)
     );
   return a.sources[0].originalTokenId !== b.sources[0].originalTokenId;
 }
+export function evolutionKind(level: number) {
+  return level === 3 ? "Singularity" : level ? `Fusion ${level}` : "Yunipal";
+}
+/** Supplemental art direction pinned by the collection implementation. Legacy rendering policy stays unchanged. */
+export const singularityArtDirection =
+  "Singularity v1: Render two identical Yunipal counterparts colliding from different multiverse dimensions and converging into one extraordinary, coherent creature. Preserve the soft sculpted 3D Yunipals style and matching birth identity. Use slightly offset translucent dimensional echoes of its anatomy, prismatic refraction, a luminous gravitational seam and impossible depth, integrated naturally into the creature. Bend two distinct environments toward the same convergence point with coherent lighting and material reflections. Make the dimensional collision unmistakable, not merely a bigger ordinary fusion. No split screen, collage, separate second creature, bottles or extra text. Preserve both parents' ordered physical serum effects, settled Presence and assigned card finish. Subsequent serums and portal spells must preserve the dimensional seam, echoes and converging environments while adding their own effects. This identity grants no grading bonus.";
 export function fusionPresenceOdds(a: number, b: number) {
   if (![a, b].every((p) => Number.isInteger(p) && p >= 0 && p <= 11))
     throw new Error("Invalid Presence.");

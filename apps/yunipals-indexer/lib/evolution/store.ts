@@ -11,6 +11,7 @@ export type EvolutionArtifact = {
   metadataHash: Hex;
 };
 export type EvolutionProgress = {
+  singularityPolicy?: Hex;
   parents?: EvolutionHistory[];
   prompt?: string;
   image?: { uri: string; hash: Hex; model: string; usage: unknown };
