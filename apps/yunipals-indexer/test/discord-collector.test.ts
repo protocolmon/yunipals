@@ -117,7 +117,10 @@ function post(path: string, body: object, origin = config.origin) {
   });
 }
 
-async function proof(action: "link" | "refresh" | "unlink", signer = wallet) {
+async function proof(
+  action: "link" | "refresh" | "unlink" | "status",
+  signer = wallet
+) {
   const challenge = await post("challenge", {
     action,
     wallet: signer.address,
@@ -167,10 +170,15 @@ test("requires wallet proof, the trusted origin and the same OAuth browser befor
     (await post("complete", { ...callback, verifier: invalidVerifier })).status
   ).toBe(409);
   expect(send).not.toHaveBeenCalled();
-  expect(await (await post("complete", callback)).json()).toEqual({
+  const result = await (await post("complete", callback)).json();
+  expect(result).toEqual({
     status: "synced",
-    rank: 7
+    rank: 7,
+    statusSession: expect.any(String)
   });
+  expect(
+    await (await post("status", { session: result.statusSession })).json()
+  ).toEqual({ connected: true });
   expect(new Set(roles)).toEqual(new Set([community, collector, top10]));
   expect((await post("complete", callback)).status).toBe(409);
   expect((await connect(otherWallet)).status).toBe(409);
@@ -196,7 +204,11 @@ test("refreshes the tier, preserves roles during rank outages, and disconnects c
 test("connects a non-member and grants roles when they join and refresh", async () => {
   joined = false;
   const connection = await connect();
-  expect(await connection.json()).toEqual({ status: "join_server", rank: 7 });
+  expect(await connection.json()).toEqual({
+    status: "join_server",
+    rank: 7,
+    statusSession: expect.any(String)
+  });
   joined = true;
   expect((await post("refresh", await proof("refresh"))).status).toBe(200);
   expect(roles).toEqual(new Set([community, collector, top10]));
@@ -206,4 +218,42 @@ test("connects a non-member and grants roles when they join and refresh", async 
     rank: null
   });
   expect(roles).toEqual(new Set([community]));
+});
+
+test("checks a pre-existing link privately and reflects disconnects without another signature", async () => {
+  await db.query(
+    "INSERT INTO discord_collector.links (wallet, discord_id) VALUES ($1, $2)",
+    [wallet.address.toLowerCase(), member]
+  );
+  expect((await post("status", { wallet: wallet.address })).status).toBe(400);
+
+  const signed = await proof("status");
+  expect((await post("refresh", signed)).status).toBe(401);
+  expect(
+    (await post("verify-status", signed, "https://other.test")).status
+  ).toBe(403);
+  expect(
+    (
+      await post("verify-status", {
+        ...signed,
+        signature: await otherWallet.signMessage({ message: "unrelated" })
+      })
+    ).status
+  ).toBe(401);
+  const verified = await post("verify-status", signed);
+  expect(verified.status).toBe(200);
+  expect(verified.headers.get("Cache-Control")).toBe("no-store");
+  const { statusSession, ...status } = await verified.json();
+  expect(status).toEqual({ connected: true });
+  expect((await post("verify-status", signed)).status).toBe(401);
+  expect(send).not.toHaveBeenCalled();
+
+  expect((await post("unlink", await proof("unlink"))).status).toBe(200);
+  expect(
+    await (await post("status", { session: statusSession })).json()
+  ).toEqual({ connected: false });
+  await db.query(
+    "UPDATE discord_collector.status_sessions SET expires_at = now()"
+  );
+  expect((await post("status", { session: statusSession })).status).toBe(401);
 });

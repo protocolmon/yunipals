@@ -1,6 +1,6 @@
 import { environment } from "@/environment";
 
-export type DiscordCollectorAction = "link" | "refresh" | "unlink";
+export type DiscordCollectorAction = "link" | "refresh" | "unlink" | "status";
 export type DiscordCollectorResult = {
   status:
     | "synced"
@@ -13,6 +13,8 @@ export type DiscordCollectorResult = {
 };
 
 const pendingKey = "yunipals:discord-oauth";
+const statusKey = (wallet: string) =>
+  `yunipals:discord-status:${wallet.toLowerCase()}`;
 const callbackPath = "/discord/callback";
 const tokenPattern = /^[A-Za-z0-9_-]{43}$/;
 const walletPattern = /^0x[0-9a-f]{40}$/i;
@@ -27,14 +29,28 @@ export function captureDiscordCallback() {
   window.history.replaceState(window.history.state, "", callbackPath);
 }
 
-async function post<T>(path: string, body: object): Promise<T> {
+export class DiscordCollectorError extends Error {
+  constructor(
+    message: string,
+    readonly code?: string
+  ) {
+    super(message);
+  }
+}
+
+async function post<T>(
+  path: string,
+  body: object,
+  signal?: AbortSignal
+): Promise<T> {
+  const timeout = AbortSignal.timeout(30_000);
   const response = await fetch(
     `${environment.yunipalsIndexerUrl}/v1/discord/collector/${path}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(30_000)
+      signal: signal ? AbortSignal.any([signal, timeout]) : timeout
     }
   );
   if (!response.ok) {
@@ -49,13 +65,66 @@ async function post<T>(path: string, body: object): Promise<T> {
         "The wallet signature is invalid or expired.",
       not_linked: "This wallet doesn’t have a Discord connection."
     };
-    throw new Error(
+    throw new DiscordCollectorError(
       typeof error === "string" && Object.hasOwn(messages, error)
         ? messages[error]
-        : "The Discord connection is temporarily unavailable. Try again."
+        : "The Discord connection is temporarily unavailable. Try again.",
+      typeof error === "string" ? error : undefined
     );
   }
   return response.json();
+}
+
+export function readDiscordStatusSession(wallet: string) {
+  try {
+    const session = window.localStorage.getItem(statusKey(wallet));
+    return session && tokenPattern.test(session) ? session : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDiscordStatusSession(wallet: string, session: string) {
+  try {
+    if (tokenPattern.test(session))
+      window.localStorage.setItem(statusKey(wallet), session);
+  } catch {
+    // The signed check still works when browser storage is unavailable.
+  }
+}
+
+export async function getDiscordConnectionStatus(
+  session: string,
+  signal: AbortSignal
+) {
+  try {
+    const { connected } = await post<{ connected: boolean }>(
+      "status",
+      { session },
+      signal
+    );
+    return connected;
+  } catch (error) {
+    if (
+      error instanceof DiscordCollectorError &&
+      error.code === "expired_status_session"
+    )
+      return null;
+    throw error;
+  }
+}
+
+export async function verifyDiscordConnectionStatus(
+  wallet: string,
+  request: string,
+  signature: string
+) {
+  const { connected, statusSession } = await post<{
+    connected: boolean;
+    statusSession: string;
+  }>("verify-status", { request, signature });
+  saveDiscordStatusSession(wallet, statusSession);
+  return connected;
 }
 
 function base64Url(value: Uint8Array) {
@@ -148,11 +217,16 @@ export function completeDiscordConnection() {
       throw new Error(
         "This Discord request is missing or expired. Start again from Settings."
       );
-    return post<DiscordCollectorResult>("complete", {
+    const result = await post<
+      DiscordCollectorResult & { statusSession?: string }
+    >("complete", {
       state,
       code,
       verifier: pending.verifier
     });
+    if (result.statusSession)
+      saveDiscordStatusSession(pending.wallet, result.statusSession);
+    return result;
   })());
 }
 

@@ -11,7 +11,7 @@ const walletAddress = z
   .regex(/^0x[0-9a-fA-F]{40}$/)
   .transform((value) => value.toLowerCase() as Address);
 const opaqueToken = z.string().regex(/^[A-Za-z0-9_-]{43}$/);
-const actionSchema = z.enum(["link", "refresh", "unlink"]);
+const actionSchema = z.enum(["link", "refresh", "unlink", "status"]);
 type Action = z.infer<typeof actionSchema>;
 const proofSchema = z.object({
   request: opaqueToken,
@@ -98,7 +98,8 @@ function signingMessage(
   const descriptions = {
     link: "Connect Discord to this Yunipals wallet",
     refresh: "Refresh this wallet's Yunipals Discord roles",
-    unlink: "Disconnect Discord from this Yunipals wallet"
+    unlink: "Disconnect Discord from this Yunipals wallet",
+    status: "Check this wallet's Discord connection for 7 days in this browser"
   };
   const browserBinding = challenge
     ? `\nDiscord browser challenge: ${challenge}`
@@ -238,7 +239,12 @@ export function discordCollectorRoutes(
   }
 
   async function refreshDue() {
-    await db.query("DELETE FROM discord_collector.requests WHERE expires_at <= now()");
+    await db.query(
+      "DELETE FROM discord_collector.requests WHERE expires_at <= now()"
+    );
+    await db.query(
+      "DELETE FROM discord_collector.status_sessions WHERE expires_at <= now()"
+    );
     const due = await db.query<{ wallet: Address }>(
       `UPDATE discord_collector.links SET next_refresh_at = now() + interval '15 minutes'
        WHERE wallet IN (
@@ -282,6 +288,16 @@ export function discordCollectorRoutes(
       }).catch(() => false))
       ? row
       : null;
+  }
+
+  async function createStatusSession(wallet: Address) {
+    const session = nonce();
+    await db.query(
+      `INSERT INTO discord_collector.status_sessions (id_hash, wallet, expires_at)
+       VALUES ($1, $2, now() + interval '7 days')`,
+      [hash(session), wallet]
+    );
+    return session;
   }
 
   routes.use("*", async (c, next) => {
@@ -422,12 +438,39 @@ export function discordCollectorRoutes(
         return c.json({ error: "already_linked" }, 409);
       throw error;
     }
-    const result = await sync(wallet).catch(() => null);
-    return c.json(result ?? { status: "refresh_required", rank: null });
+    const [result, statusSession] = await Promise.all([
+      sync(wallet).catch(() => null),
+      createStatusSession(wallet).catch(() => undefined)
+    ]);
+    return c.json({
+      ...(result ?? { status: "refresh_required", rank: null }),
+      statusSession
+    });
   });
 
-  for (const action of ["refresh", "unlink"] as const) {
-    routes.post(`/${action}`, async (c) => {
+  routes.post("/status", async (c) => {
+    const body = z
+      .object({ session: opaqueToken })
+      .safeParse(await c.req.json().catch(() => null));
+    if (!body.success) return c.json({ error: "invalid_request" }, 400);
+    const result = await db.query<{ connected: boolean }>(
+      `SELECT EXISTS (SELECT 1 FROM discord_collector.links l WHERE l.wallet = s.wallet) AS connected
+       FROM discord_collector.status_sessions s WHERE s.id_hash = $1 AND s.expires_at > now()`,
+      [hash(body.data.session)]
+    );
+    const status = result.rows[0];
+    return status
+      ? c.json(status)
+      : c.json({ error: "expired_status_session" }, 401);
+  });
+
+  const signedActions = {
+    refresh: "refresh",
+    unlink: "unlink",
+    "verify-status": "status"
+  } as const;
+  for (const [path, action] of Object.entries(signedActions)) {
+    routes.post(`/${path}`, async (c) => {
       const body = proofSchema.safeParse(await c.req.json().catch(() => null));
       if (!body.success) return c.json({ error: "invalid_request" }, 400);
       const { request, signature } = body.data;
@@ -444,6 +487,14 @@ export function discordCollectorRoutes(
         [hash(request), action]
       );
       if (!claim.rowCount) return c.json({ error: "expired_request" }, 409);
+      if (action === "status") {
+        const statusSession = await createStatusSession(wallet);
+        const result = await db.query<{ connected: boolean }>(
+          `SELECT EXISTS (SELECT 1 FROM discord_collector.links WHERE wallet = $1) AS connected`,
+          [wallet]
+        );
+        return c.json({ connected: result.rows[0].connected, statusSession });
+      }
       const result =
         action === "refresh"
           ? await sync(wallet)
