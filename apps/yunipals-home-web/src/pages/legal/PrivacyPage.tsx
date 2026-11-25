@@ -25,7 +25,7 @@ export function PrivacyPage() {
       <h1 className="display mt-2 text-4xl text-ink sm:text-5xl">
         How Yunipals handles information
       </h1>
-      <p className="mt-3 text-sm text-muted">Last updated October 31, 2026</p>
+      <p className="mt-3 text-sm text-muted">Last updated November 25, 2026</p>
 
       <div className="mt-10 space-y-9 text-sm leading-relaxed text-ink/80 sm:text-base">
         <section className={sectionClass}>
@@ -42,6 +42,21 @@ export function PrivacyPage() {
             Hosting and API systems may process technical information such as IP
             address, request time, requested page, device or browser details and
             error information for security, reliability and abuse prevention.
+          </p>
+        </section>
+
+        <section className={sectionClass}>
+          <h2 className="display text-2xl text-ink">Optional Discord connection</h2>
+          <p>
+            When you connect Discord from your collection, we verify a wallet
+            signature and store the wallet address with its Discord account ID.
+            We use the link and your overall Collector Score rank to manage
+            your visible collector roles in the server. We discard Discord
+            OAuth tokens after identifying your account.
+          </p>
+          <p>
+            You can remove the link and its collector roles from your
+            collection under Manage existing connection.
           </p>
         </section>
 

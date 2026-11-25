@@ -7,11 +7,13 @@ import { BrowserRouter } from "react-router-dom";
 import { App } from "@/App";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { registerLazyLoadRecovery } from "@/lib/lazyLoadRecovery";
+import { captureDiscordCallback } from "@/lib/discordCollector";
 import { AppProviders } from "@/providers/AppProviders";
 import { BoosterOpeningProvider } from "@/providers/BoosterOpeningProvider";
 
 import "@/globals.css";
 
+captureDiscordCallback();
 registerLazyLoadRecovery();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

@@ -263,3 +263,35 @@ pnpm --filter @protopals/yunipals-indexer typecheck
 ```
 
 The service checks use temporary child fixtures and do not contact PostgreSQL, RPC providers or Helius.
+
+## Discord collector roles
+
+Collectors can link an externally owned EVM wallet to Discord from their own
+collection page. The overall Collector Score leaderboard covers OG Collection
+and OG Airdrop holdings. Every ranked wallet qualifies for the base
+collector role and the smallest configured cutoff it meets. Wallets tied in
+Collector Score share a rank. Linking and manual refresh apply roles
+immediately. The API checks linked collectors on a rolling daily schedule and
+retries when the leaderboard or Discord is unavailable.
+
+1. Register the web origin's exact `/discord/callback` URL as an OAuth2
+   redirect in the Discord application. The flow uses the `identify` scope
+   and authorization code with S256 PKCE.
+2. Create a collector role and any tier roles with zero server permissions and
+   no channel overrides. Place them below a bot with **Manage Roles** in the
+   server. Keep the bot token on the API service.
+3. Apply [the Discord collector SQL migration](deploy/discord-collector.sql)
+   to a writable database. Give the API user access to the `discord_collector`
+   schema and its tables. Set `DISCORD_COLLECTOR_DATABASE_URL` for that user.
+4. Configure the remaining `DISCORD_COLLECTOR_*` settings from
+   [the environment example](.env.example) in the API service. Set
+   `DISCORD_COLLECTOR_ENABLED=true` and set
+   `VITE_DISCORD_COLLECTOR_ENABLED=true` in the web build. A tier entry uses
+   `{"maxRank":10,"roleId":"123456789012345678"}`. The API accepts an array
+   of these entries in `DISCORD_COLLECTOR_TIERS`.
+
+The feature stores one wallet per Discord account and one Discord account per
+wallet. The API discards OAuth tokens after reading the Discord account ID.
+Collectors can refresh roles or disconnect from their own collection page.
+Forward `POST` and `OPTIONS` requests for `/v1/discord/collector/*` to the
+main indexer API. Apply the same write rate limits used by your API ingress.

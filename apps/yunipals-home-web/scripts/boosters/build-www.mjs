@@ -94,6 +94,11 @@ await writeFile(
 const config = {
   version: 3,
   routes: [
+    {
+      src: "/discord/callback",
+      headers: { "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" },
+      dest: "/index.html"
+    },
     ...socialRoutes(),
     {
       src: "/assets/(.*)",
