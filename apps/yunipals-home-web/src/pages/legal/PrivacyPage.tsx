@@ -57,8 +57,9 @@ export function PrivacyPage() {
             identifying your account.
           </p>
           <p>
-            You can remove the link and its collector roles in Settings under
-            Manage existing connection.
+            Settings saves a browser token that expires after seven days to
+            check the wallet’s Discord connection. You can remove the link and
+            its collector roles with Disconnect in Settings.
           </p>
         </section>
 

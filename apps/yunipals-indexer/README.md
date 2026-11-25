@@ -292,6 +292,10 @@ retries when the leaderboard or Discord is unavailable.
 
 The feature stores one wallet per Discord account and one Discord account per
 wallet. The API discards OAuth tokens after reading the Discord account ID.
-Collectors can refresh roles or disconnect in Settings.
+Collectors can check the connection, refresh roles or disconnect in Settings.
+Checking the connection requires a wallet signature. The browser can reuse a
+read-only status token for seven days after a signed check or successful link.
+On existing deployments, reapply `deploy/discord-collector.sql` before
+deploying the updated API and web app.
 Forward `POST` and `OPTIONS` requests for `/v1/discord/collector/*` to the
 main indexer API. Apply the same write rate limits used by your API ingress.
