@@ -39,6 +39,7 @@ import {
 } from "@/lib/collectionEdition";
 import { TcgCollector } from "./components/TcgCollector";
 import { CollectorIslands } from "./components/CollectorIslands";
+import { DiscordCollectorConnection } from "./components/DiscordCollectorConnection";
 
 import { trackAnalyticsEvent } from "@/lib/analytics/index";
 
@@ -666,6 +667,14 @@ function YunipalsCollectorPage({
               )}
             </div>
           </details>
+          {environment.discordCollectorEnabled &&
+            isOwnCollection &&
+            connectedAddress && (
+              <DiscordCollectorConnection
+                key={connectedAddress}
+                wallet={connectedAddress}
+              />
+            )}
         </div>
       </section>
 

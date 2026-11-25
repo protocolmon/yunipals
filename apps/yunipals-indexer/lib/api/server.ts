@@ -32,6 +32,7 @@ import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import pg from "pg";
 import { z } from "zod";
 import type { Address, Hex } from "viem";
 import { apiPool as pool } from "../offchain/db.js";
@@ -93,6 +94,10 @@ import {
   activeVisibilityRowPredicate
 } from "./visibility-query.js";
 import { registerCollectorRoutes } from "./collector-routes.js";
+import {
+  discordCollectorConfig,
+  discordCollectorRoutes
+} from "./discord-collector.js";
 import { registerIslandsRoutes } from "./islands-routes.js";
 import { registerBoosterRoutes } from "./booster-routes.js";
 import { registerActionEvidenceRoutes } from "./action-evidence-routes.js";
@@ -364,6 +369,61 @@ app.use(
     ]
   })
 );
+const discordConfig = discordCollectorConfig(process.env);
+let refreshDiscordCollectors: (() => Promise<number>) | undefined;
+if (discordConfig) {
+  const discordDb = new pg.Pool({
+    connectionString: discordConfig.databaseUrl,
+    application_name: "yunipals_discord_collector",
+    max: 4,
+    connectionTimeoutMillis: 1_000,
+    statement_timeout: 5_000,
+    lock_timeout: 2_000
+  });
+  discordDb.on("error", (error) =>
+    console.error("Discord collector database unavailable", {
+      code: "code" in error ? error.code : error.name
+    })
+  );
+  async function getCollectorDiscordRank(owner: string) {
+    const result = await pool.query<{ rank: number }>(
+      `SELECT (1 + (
+         SELECT count(DISTINCT higher.collector_score)
+         FROM ${leaderboardReadRelation} higher
+         WHERE higher.scope = 'all' AND higher.collector_score > holder.collector_score
+       ))::int AS rank
+       FROM ${leaderboardReadRelation} holder
+       WHERE holder.scope = 'all' AND holder.owner = $1 AND holder.collector_score > 0`,
+      [owner]
+    );
+    return result.rows[0]?.rank ?? null;
+  }
+  const discord = discordCollectorRoutes(
+    discordConfig,
+    discordDb,
+    async (owner) => {
+      if (unifiedOwnershipReads) {
+        return withOwnershipRequest(
+          pool,
+          async (db) => {
+            const proof = await assertOwnershipAvailable(db, collectionSlugs);
+            await assertDerivedOwnership(db, "leaderboard");
+            return proof;
+          },
+          () => getCollectorDiscordRank(owner)
+        );
+      }
+      if (
+        metadataSourceMode() === "archive" &&
+        !(await chainReadiness(pool, collectionSlugs)).ready
+      )
+        throw new OwnershipSourceUnavailable("ownership_rebuilding");
+      return getCollectorDiscordRank(owner);
+    }
+  );
+  app.route("/v1/discord/collector", discord.routes);
+  refreshDiscordCollectors = discord.refreshDue;
+}
 registerBoosterRoutes(app, {
   pool,
   schemaName:
@@ -1858,6 +1918,21 @@ if (
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
   await assertOwnershipSourceSelection(pool);
+  if (refreshDiscordCollectors) {
+    const refresh = refreshDiscordCollectors;
+    const tick = async () => {
+      try {
+        const failed = await refresh();
+        if (failed)
+          console.warn("Discord collector role refresh will retry", { failed });
+      } catch {
+        console.warn("Discord collector refresh is temporarily unavailable");
+      } finally {
+        setTimeout(() => void tick(), 60_000).unref();
+      }
+    };
+    setTimeout(() => void tick(), 60_000).unref();
+  }
   const hostname = process.env.API_HOST ?? "127.0.0.1";
   serve({ fetch: app.fetch, hostname, port }, (info) =>
     console.log(`Yunipals API listening on http://${hostname}:${info.port}`)
