@@ -12,17 +12,15 @@ export function DiscordCollectorCallbackPage() {
     "Connect your Yunipals collector wallet to Discord."
   );
   const [state, setState] = useState({
-    wallet: "",
     message: "Connecting to Discord…",
     error: false
   });
   useEffect(() => {
     let mounted = true;
     void completeDiscordConnection().then(
-      ({ wallet, result }) => {
+      (result) => {
         if (mounted)
           setState({
-            wallet,
             message: discordCollectorMessage(result),
             error: false
           });
@@ -30,7 +28,6 @@ export function DiscordCollectorCallbackPage() {
       (error: unknown) => {
         if (mounted)
           setState({
-            wallet: "",
             message:
               error instanceof Error
                 ? error.message
@@ -51,9 +48,9 @@ export function DiscordCollectorCallbackPage() {
       </p>
       <Link
         className="mt-6 inline-block font-bold text-ethereum"
-        to={state.wallet ? `/collector/${state.wallet}` : "/leaderboard"}
+        to="/settings"
       >
-        {state.wallet ? "Back to your collection" : "Back to leaderboard"}
+        Back to settings
       </Link>
     </main>
   );

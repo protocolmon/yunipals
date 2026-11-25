@@ -46,17 +46,19 @@ export function PrivacyPage() {
         </section>
 
         <section className={sectionClass}>
-          <h2 className="display text-2xl text-ink">Optional Discord connection</h2>
+          <h2 className="display text-2xl text-ink">
+            Optional Discord connection
+          </h2>
           <p>
-            When you connect Discord from your collection, we verify a wallet
-            signature and store the wallet address with its Discord account ID.
-            We use the link and your overall Collector Score rank to manage
-            your visible collector roles in the server. We discard Discord
-            OAuth tokens after identifying your account.
+            When you connect Discord from Settings, we verify a wallet signature
+            and store the wallet address with its Discord account ID. We use the
+            link and your overall Collector Score rank to manage your visible
+            collector roles in the server. We discard Discord OAuth tokens after
+            identifying your account.
           </p>
           <p>
-            You can remove the link and its collector roles from your
-            collection under Manage existing connection.
+            You can remove the link and its collector roles in Settings under
+            Manage existing connection.
           </p>
         </section>
 

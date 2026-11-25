@@ -108,6 +108,7 @@ export const staticPages = [
   "/wrap",
   "/terms",
   "/privacy",
+  "/settings",
   "/orders",
   "/orders/activity",
   "/orders/recovery",
@@ -170,7 +171,7 @@ export function resolvePageMetadata(
   let redirect: string | undefined;
   let status = 200;
   const noindex =
-    /(?:^\/orders(?:\/|$)|\/(?:setup|admin|airdrop|studio|pilot|hosting|me|mine)(?:\/|$)|^\/arena-lab$)/.test(
+    /(?:^\/orders(?:\/|$)|^\/settings$|\/(?:setup|admin|airdrop|studio|pilot|hosting|me|mine)(?:\/|$)|^\/arena-lab$)/.test(
       path
     );
   if (path === "/collection") redirect = `/${input.search}`;

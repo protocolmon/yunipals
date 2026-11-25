@@ -39,7 +39,12 @@ export function WalletCollectionButton() {
     if (!connectionRequested.current || !isConnected || !address) return;
 
     connectionRequested.current = false;
-    if (pathname === "/arena" || pathname.startsWith("/arena/")) return;
+    if (
+      pathname === "/settings" ||
+      pathname === "/arena" ||
+      pathname.startsWith("/arena/")
+    )
+      return;
     navigate(personalCollectionHref(address.toLowerCase()));
   }, [address, isConnected, navigate, pathname]);
 
@@ -186,6 +191,18 @@ export function WalletCollectionButton() {
             My orders
           </Link>
           <div className="my-1 border-t border-line" />
+          {environment.discordCollectorEnabled && (
+            <Link
+              to="/settings"
+              role="menuitem"
+              aria-current={pathname === "/settings" ? "page" : undefined}
+              className={accountLinkClass(pathname === "/settings")}
+              onClick={() => setMenuOpen(false)}
+            >
+              <Settings aria-hidden="true" size={17} />
+              Settings
+            </Link>
+          )}
           <button
             type="button"
             role="menuitem"
@@ -199,7 +216,7 @@ export function WalletCollectionButton() {
               "disabled:cursor-not-allowed disabled:opacity-50"
             )}
           >
-            <Settings aria-hidden="true" size={17} />
+            <WalletCards aria-hidden="true" size={17} />
             Wallet settings
           </button>
         </div>

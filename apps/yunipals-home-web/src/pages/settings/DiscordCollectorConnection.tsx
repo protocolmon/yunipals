@@ -50,7 +50,7 @@ export function DiscordCollectorConnection({ wallet }: { wallet: Address }) {
 
   return (
     <section
-      className="mt-3 rounded-2xl border border-line p-4"
+      className="rounded-2xl border border-line p-5"
       aria-labelledby="discord-collector-title"
     >
       <h2 id="discord-collector-title" className="font-bold text-ink">
