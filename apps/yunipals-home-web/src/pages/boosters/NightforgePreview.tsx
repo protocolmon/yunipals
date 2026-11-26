@@ -1,4 +1,5 @@
 import { Gift, Layers3, Sparkles } from "lucide-react";
+import { ExpandablePackArtwork } from "./ExpandablePackArtwork";
 
 export function NightforgePreview() {
   return (
@@ -8,15 +9,10 @@ export function NightforgePreview() {
       className="mt-8 grid scroll-mt-24 overflow-hidden rounded-card border border-grape/30 bg-ink text-white shadow-card md:grid-cols-2"
     >
       <figure className="flex flex-col items-center justify-center bg-gradient-to-br from-grape/30 via-ink to-grape/20 px-8 py-10 sm:py-12">
-        <img
-          src="/images/boosters/yunipals-nightforge-pack-v1.webp"
+        <ExpandablePackArtwork
+          image="/images/boosters/yunipals-nightforge-pack-v1.webp"
+          label="Nightforge booster pack"
           alt="Nightforge booster pack in glittering violet foil, featuring Yunisingularity, Yunimantis and Yuniforge"
-          width={1024}
-          height={1536}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          className="w-56 max-w-full rounded-lg shadow-2xl sm:w-72"
         />
         <figcaption className="mt-5 text-xs text-lavender">
           Pack artwork preview
