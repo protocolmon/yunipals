@@ -1,0 +1,6 @@
+Tool: built-in image_gen
+Edit target: the approved Apex booster concept from this design session.
+Output: apps/yunipals-home-web/public/images/boosters/yunipals-nightforge-pack-v1.webp
+Web export: original 1024 x 1536 dimensions, WebP quality 90.
+
+Use case: text-localization. Asset type: Yunipals Nightforge booster pack artwork for the packs page. Input image is the edit target. Regenerate this same gorgeous portrait booster pack with one precise change: replace the large crystalline title "APEX" with "NIGHTFORGE" (N I G H T F O R G E), fitting the full word legibly on one line in the same lavender crystalline lettering. Preserve the YUNIPALS header, circular dragon emblem, BOOSTER PACK footer, all three creatures, arrangement, intense holographic glitter, smoky black and purple foil, crimped seals, cosmic temple scene, crisp artwork and overall portrait composition. Keep all other text unchanged. Do not add price, card count, odds, minting claims or other text. Preserve opaque dark purple background. High resolution detailed final packaging image.
