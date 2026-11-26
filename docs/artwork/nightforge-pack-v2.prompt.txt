@@ -1,0 +1,8 @@
+Tool: built-in image_gen
+Use case: background-extraction
+Edit target: public/images/boosters/yunipals-nightforge-pack-v1.webp
+Output: apps/yunipals-home-web/public/images/boosters/yunipals-nightforge-pack-v2.webp
+Web export: original 1024 x 1536 dimensions, WebP quality 90, generated alpha preserved.
+Transparent background: true
+
+Edit target: the supplied Nightforge booster pack image. Task: precise background-extraction only. Remove ALL of the exterior dark purple rectangular backdrop outside the sealed foil wrapper and make it genuine alpha transparency. Follow the actual foil silhouette exactly, preserving the serrated zigzag top and bottom crimps and curved pinched side edges. Preserve the entire pack artwork, original composition and scale, brilliant purple holographic highlights, logo, three monsters, and exact lettering YUNIPALS / NIGHTFORGE / BOOSTER PACK unchanged. Do not redesign, repaint, crop off edges, add elements or introduce shadows/glow outside the wrapper. No opaque border, no residual purple matte, no checkerboard baked into pixels. Keep the 2:3 portrait canvas, high detail and sharp lettering. Only the exterior background should change to transparent.
