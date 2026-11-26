@@ -34,6 +34,7 @@ const blockHash='0x'+'b'.repeat(64),zero='0x'+'0'.repeat(64);
 export const boosterQueryKey=['daily-reveal-fixture'];
 export const boosterAssetUrl=uri=>new URL(uri,window.location.origin).href;
 export const boosterAddresses=()=>({engine,monsters,registry});
+export {saveBoosterTransaction} from '/src/lib/boosters.ts';
 export const readBoosterTransactions=()=>[];
 export const readBoosterTransactionReceipt=read=>read();
 export const original=()=>({id:'8453:'+monsters+':7',tokenId:'7',collection:monsters,engine,owner,
@@ -70,9 +71,12 @@ import {owner,client} from 'virtual:daily-fixture.ts';
 let address=owner;const listeners=new Set();
 window.__wallet=value=>{address=value;listeners.forEach(fn=>fn());};
 export function useAccount(){return {address:useSyncExternalStore(fn=>{listeners.add(fn);return()=>listeners.delete(fn);},()=>address),chainId:8453,isConnected:!!address};}
-export const usePublicClient=()=>client;`,
+export const usePublicClient=()=>client;
+export const useWalletClient=()=>({data:undefined});
+export const useSwitchChain=()=>({isPending:false,switchChain:()=>{throw Error('Unexpected chain switch');}});`,
   "virtual:daily-action.tsx": `
 import {hash} from 'virtual:daily-fixture.ts';
+export const boosterButtonClass='fixture-action';
 export function BoosterActionButton({children,ariaLabel,onSubmitted}){
  return <button aria-label={ariaLabel} onClick={()=>{window.__submitted=onSubmitted;onSubmitted(hash);}}>{children}</button>;
 }`,
@@ -236,9 +240,8 @@ try {
       document.querySelector('[aria-label="Collection cards"]').textContent ===
       "17,41"
   );
-  await page.getByRole("button", { name: "Rip open", exact: true }).click();
   await page
-    .getByRole("button", { name: "Pull out card", exact: true })
+    .getByRole("button", { name: "Rip pack seal", exact: true })
     .click();
   await page
     .getByRole("link", { name: "View Yunipal #17", exact: true })
@@ -246,12 +249,7 @@ try {
   await page.evaluate(async () => {
     await window.__refresh();
   });
-  await page
-    .getByRole("button", { name: "Pull next card", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Pull out card", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Next card", exact: true }).click();
   await page
     .getByRole("link", { name: "View Yunipal #41", exact: true })
     .waitFor();

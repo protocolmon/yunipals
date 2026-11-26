@@ -1,19 +1,20 @@
 import { useAccount } from "wagmi";
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent as ReactPointerEvent
-} from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { createPortal, flushSync } from "react-dom";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { collectorHref } from "@/lib/collectionEdition";
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
+import {
+  createScene,
+  isAbort,
+  type Phase,
+  type Scene
+} from "@/components/pack-opening/scene";
+import { holoRip } from "@/components/pack-opening/holoRip";
+import { revealNextCard } from "@/components/pack-opening/variants";
 import {
   boosterQueryKey,
   fetchBoosterMonster,
@@ -43,25 +44,62 @@ export type BoosterPackOpeningProps = PackContent &
     | { mode: "demo"; tokenId?: never; collection?: never }
     | { mode?: "revealed"; tokenId: string; collection: string }
   );
-type Stage = "sealed" | "opening" | "extracting" | "results";
-type GestureKind = "swipe" | "draw" | "pull";
-type Motion = Record<GestureKind, number>;
-const INITIAL: Motion = { swipe: 0, draw: 0, pull: 0 };
-const PARTICLES = Array.from({ length: 18 }, (_, index) => {
-  const angle = (Math.PI * 2 * index) / 18 - Math.PI / 2;
-  const distance = 90 + (index % 4) * 24;
-  return {
-    x: Math.cos(angle) * distance,
-    y: Math.sin(angle) * distance,
-    rotate: index % 2 === 0 ? 210 : -190,
-    delay: (index % 3) * 0.025,
-    color: ["#ffffff", "#a78bfa", "#22d3ee", "#f9a8d4"][index % 4]
-  };
-});
 
-// Geometry, thresholds, spring and timings are ported from Protobits'
-// ExperimentalPackOpening. This overlay only replays an already revealed NFT.
+// This overlay only reveals cards that have already been minted.
 export function BoosterPackOpening(props: BoosterPackOpeningProps) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [run, setRun] = useState(0);
+  const [reduced, setReduced] = useState(
+    () => matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  useEffect(() => {
+    const media = matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const element = dialog.current;
+    if (!element) return;
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    element.showModal();
+    return () => {
+      element.close();
+      document.body.style.overflow = overflow;
+      if (previous?.isConnected) previous.focus();
+    };
+  }, []);
+  return createPortal(
+    <dialog
+      ref={dialog}
+      className="olab-dialog yunipals-opening-dialog"
+      aria-label="Yunipals pack opening"
+      onCancel={(event) => {
+        event.preventDefault();
+        props.onClose();
+      }}
+    >
+      <OpeningRun
+        key={`${run}:${reduced}`}
+        reduced={reduced}
+        {...props}
+        onReplay={() => setRun((value) => value + 1)}
+      />
+    </dialog>,
+    document.body
+  );
+}
+
+function OpeningRun(
+  props: BoosterPackOpeningProps & { onReplay: () => void; reduced: boolean }
+) {
+  const { reduced } = props;
   const { address } = useAccount();
   const queries = useQueryClient();
   const demo = props.mode === "demo";
@@ -70,43 +108,32 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     recipient && address?.toLowerCase() === recipient.toLowerCase()
   );
   const packImage = props.packImage ?? "/images/boosters/yunipals-pack-v1.png";
-  const [stage, setStage] = useState<Stage>("sealed");
+  const [phase, setPhase] = useState<Phase>("opening");
+  const [hint, setHint] = useState("");
   const [cardIndex, setCardIndex] = useState(0);
-  const [motion, setMotion] = useState<Motion>(INITIAL);
-  const [dragging, setDragging] = useState(false);
-  const [settling, setSettling] = useState(false);
-  const [reduced, setReduced] = useState(false);
-  const [distance, setDistance] = useState(196);
-  const [packHeight, setPackHeight] = useState(495);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const shell = useRef<HTMLDivElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const frame = useRef(0);
-  const completed = useRef(false);
+  const revealed = phase === "revealed";
   const descriptionId = useId();
+  const scene = useRef<Scene | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const world = useRef<HTMLDivElement>(null);
+  const pack = useRef<HTMLDivElement>(null);
+  const cardElement = useRef<HTMLDivElement>(null);
+  const flip = useRef<HTMLDivElement>(null);
+  const front = useRef<HTMLDivElement>(null);
+  const back = useRef<HTMLDivElement>(null);
+  const sheen = useRef<HTMLDivElement>(null);
+  const layer = useRef<HTMLDivElement>(null);
+  const flash = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const resultAction = useRef<HTMLButtonElement>(null);
+  const bgCanvas = useRef<HTMLCanvasElement>(null);
+  const fxCanvas = useRef<HTMLCanvasElement>(null);
+  const glCanvas = useRef<HTMLCanvasElement>(null);
   const activeCard =
     (cardIndex > 0 ? props.additionalCards?.[cardIndex - 1] : undefined) ??
     props;
   const totalCards = 1 + (props.additionalCards?.length ?? 0);
   const hasMoreCards = cardIndex + 1 < totalCards;
-  const gesture = useRef<{
-    kind: GestureKind;
-    pointer: number;
-    x: number;
-    y: number;
-    value: number;
-    samples: { x: number; y: number; time: number }[];
-  } | null>(null);
-  const drawDistance = Math.max(210, Math.min(325, distance * 1.48));
-  const pullDistance = Math.max(190, Math.min(320, distance * 1.4));
-  const packDrawOffset = Math.min(105, drawDistance * 0.32);
-  const completedDraw = Math.max(
-    drawDistance,
-    packHeight * 0.9 - packDrawOffset + 12
-  );
-  const completedPull = Math.max(pullDistance, packHeight * 0.9 + 12);
-  const drawProgress = Math.max(0, Math.min(1, -motion.draw / drawDistance));
-  const progress = Math.max(0, Math.min(1, motion.swipe / distance));
   const monster = useQuery({
     queryKey: [
       ...boosterQueryKey,
@@ -133,291 +160,101 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
 
   useEffect(() => {
     if (!artwork?.image) return;
-    // Warm the same approved image while the wrapper is still sealed, so the
-    // small first peek does not wait for the static viewer's lazy image.
+    // Warm the approved image before the card rises out of the pack.
     const image = new Image();
     image.decoding = "async";
     image.src = artwork.image;
   }, [artwork?.image]);
 
+  const artworkRef = useRef(artwork);
+  artworkRef.current = artwork;
   useEffect(() => {
-    const element = dialog.current;
-    if (!element) return;
-    const previous =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    element.showModal();
-    element
-      .querySelector<HTMLButtonElement>('[data-stage-action="sealed"]')
-      ?.focus({ preventScroll: true });
-    return () => {
-      element.close();
-      document.body.style.overflow = overflow;
-      if (previous?.isConnected) previous.focus();
-      if (timer.current) clearTimeout(timer.current);
-      cancelAnimationFrame(frame.current);
-    };
-  }, []);
-  useEffect(() => {
-    const media = matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  useEffect(() => {
-    const element = shell.current;
-    if (!element) return;
-    const update = () => {
-      setDistance(Math.max(120, Math.min(230, element.clientWidth * 0.82)));
-      setPackHeight(element.clientHeight);
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [stage === "results"]);
-  useEffect(() => {
-    if (stage === "results") return;
-    const element = dialog.current;
-    const content = element?.querySelector<HTMLElement>(
-      ".yunipals-opening-content"
-    );
-    const header = element?.querySelector<HTMLElement>(
-      ".yunipals-opening-header"
-    );
-    const action = content?.querySelector<HTMLElement>(
-      ":scope > .yunipals-opening-action"
-    );
-    if (!element || !content || !header || !action) return;
-    const fit = () => {
-      const padding = getComputedStyle(content);
-      const actionStyle = getComputedStyle(action);
-      const available =
-        element.clientHeight -
-        header.offsetHeight -
-        action.offsetHeight -
-        parseFloat(padding.paddingTop) -
-        parseFloat(padding.paddingBottom) -
-        parseFloat(actionStyle.marginTop) -
-        16;
-      const width = Math.max(
-        96,
-        Math.min(400, (element.clientWidth - 40) * 0.72, available / 1.55)
+    const element = stage.current!;
+    const fit = () =>
+      element.style.setProperty(
+        "--olab-w",
+        `${Math.max(60, Math.min(290, element.clientWidth * 0.6, element.clientHeight * 0.5))}px`
       );
-      content.style.setProperty("--opening-pack-width", `${width}px`);
-    };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(element);
-    observer.observe(header);
-    observer.observe(action);
     return () => observer.disconnect();
-  }, [stage === "results"]);
+  }, []);
   useEffect(() => {
-    const element = dialog.current;
-    if (!element) return;
-    element.scrollTop = 0;
-    element
-      .querySelector<HTMLButtonElement>(`[data-stage-action="${stage}"]`)
-      ?.focus({ preventScroll: true });
-  }, [stage]);
-
-  const later = (next: Stage, milliseconds: number) => {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      timer.current = null;
-      setSettling(false);
-      setStage(next);
-    }, milliseconds);
-  };
-  const haptic = (duration: number) => {
-    if (!reduced && "vibrate" in navigator) navigator.vibrate(duration);
-  };
-  const finish = (kind: GestureKind) => {
-    if (settling || (kind === "swipe" && completed.current)) return;
-    cancelAnimationFrame(frame.current);
-    gesture.current = null;
-    setDragging(false);
-    setSettling(true);
-    if (kind === "swipe") {
-      completed.current = true;
-      const start = performance.now();
-      const from = motion.swipe;
-      const tear = (now: number) => {
-        const fraction = reduced ? 1 : Math.min(1, (now - start) / 650);
-        setMotion((value) => ({
-          ...value,
-          swipe: from + (distance - from) * (1 - (1 - fraction) ** 3)
-        }));
-        if (fraction < 1) frame.current = requestAnimationFrame(tear);
-        else {
-          setStage("opening");
-          haptic(18);
-          later("extracting", reduced ? 220 : 1600);
-        }
-      };
-      frame.current = requestAnimationFrame(tear);
-    } else {
-      setMotion((value) => ({
-        ...value,
-        [kind]: kind === "draw" ? -completedDraw : completedPull
-      }));
-      haptic(12);
-      later("results", reduced ? 140 : 850);
-    }
-  };
-  const reset = (kind: GestureKind, value: number) => {
-    setDragging(false);
-    // Same mass=1, stiffness=420, damping=28 spring as the source gesture.
-    const start = performance.now();
-    const spring = (now: number) => {
-      const t = (now - start) / 1000;
-      const frequency = Math.sqrt(420 - 14 * 14);
-      const next =
-        reduced || t > 0.65
-          ? 0
-          : value *
-            Math.exp(-14 * t) *
-            (Math.cos(frequency * t) +
-              (14 / frequency) * Math.sin(frequency * t));
-      setMotion((current) => ({ ...current, [kind]: next }));
-      if (next !== 0) frame.current = requestAnimationFrame(spring);
-    };
-    frame.current = requestAnimationFrame(spring);
-  };
-  const begin = (
-    kind: GestureKind,
-    event: ReactPointerEvent<HTMLButtonElement>
-  ) => {
-    if (settling || (event.pointerType === "mouse" && event.button !== 0))
+    // Skip the entire animation engine (including its frame loop) for reduced motion.
+    if (reduced) {
+      setPhase("sealed");
+      setHint("Tap the pack to open it");
       return;
-    cancelAnimationFrame(frame.current);
-    event.currentTarget.setPointerCapture(event.pointerId);
-    gesture.current = {
-      kind,
-      pointer: event.pointerId,
-      x: event.clientX,
-      y: event.clientY,
-      value: 0,
-      samples: [{ x: event.clientX, y: event.clientY, time: performance.now() }]
-    };
-    setMotion((value) =>
-      kind === "draw" || kind === "pull"
-        ? { ...value, draw: 0, pull: 0 }
-        : { ...value, [kind]: 0 }
-    );
-    setDragging(true);
-  };
-  const position = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    const current = gesture.current;
-    if (!current || current.pointer !== event.pointerId) return null;
-    const x = event.clientX - current.x,
-      y = event.clientY - current.y;
-    const maximum =
-      current.kind === "swipe"
-        ? distance
-        : current.kind === "draw"
-          ? drawDistance
-          : pullDistance;
-    const value =
-      current.kind === "swipe" || current.kind === "pull"
-        ? Math.max(0, Math.min(maximum, current.kind === "swipe" ? x : y))
-        : Math.max(-maximum, Math.min(0, y));
-    setMotion((previous) => ({ ...previous, [current.kind]: value }));
-    current.value = value;
-    const now = performance.now();
-    current.samples.push({ x: event.clientX, y: event.clientY, time: now });
-    current.samples = current.samples.filter(
-      (sample) => now - sample.time <= 100
-    );
-    return value;
-  };
-  const end = (
-    event: ReactPointerEvent<HTMLButtonElement>,
-    cancelled = false
-  ) => {
-    const current = gesture.current;
-    if (!current || current.pointer !== event.pointerId) return;
-    const value = cancelled ? current.value : (position(event) ?? 0);
-    gesture.current = null;
-    const first = current.samples[0],
-      last = current.samples.at(-1)!;
-    const elapsed = Math.max(1, last.time - first.time) / 1000;
-    const vx = (last.x - first.x) / elapsed,
-      vy = (last.y - first.y) / elapsed;
-    const enough =
-      current.kind === "swipe"
-        ? value / distance >= 0.7 || (value / distance >= 0.42 && vx >= 700)
-        : current.kind === "draw"
-          ? -value / drawDistance >= 0.52 ||
-            (-value / drawDistance >= 0.24 && vy <= -650)
-          : value / pullDistance >= 0.48 ||
-            (value / pullDistance >= 0.22 && vy >= 650);
-    if (!cancelled && enough) finish(current.kind);
-    else reset(current.kind, value);
-  };
-  const control = (kind: GestureKind) => ({
-    onPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) =>
-      begin(kind, event),
-    onPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => {
-      position(event);
-    },
-    onPointerUp: (event: ReactPointerEvent<HTMLButtonElement>) => end(event),
-    onPointerCancel: (event: ReactPointerEvent<HTMLButtonElement>) =>
-      end(event, true),
-    onLostPointerCapture: (event: ReactPointerEvent<HTMLButtonElement>) =>
-      end(event, true),
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (event.detail === 0) finish(kind);
     }
-  });
-  const replay = () => {
-    if (timer.current) clearTimeout(timer.current);
-    cancelAnimationFrame(frame.current);
-    completed.current = false;
-    gesture.current = null;
-    setCardIndex(0);
-    setMotion(INITIAL);
-    setDragging(false);
-    setSettling(false);
-    setStage("sealed");
-  };
+    const created = createScene(
+      {
+        stage: stage.current!,
+        world: world.current!,
+        pack: pack.current!,
+        card: cardElement.current!,
+        flip: flip.current!,
+        front: front.current!,
+        back: back.current!,
+        sheen: sheen.current!,
+        layer: layer.current!,
+        flash: flash.current!,
+        trigger: trigger.current!,
+        bgCanvas: bgCanvas.current!,
+        fxCanvas: fxCanvas.current!,
+        glCanvas: glCanvas.current!
+      },
+      {
+        packImage,
+        shaders: false,
+        setHint,
+        setPhase,
+        advanceCard: () => flushSync(() => setCardIndex((value) => value + 1)),
+        artwork: () => artworkRef.current
+      }
+    );
+    scene.current = created.scene;
+    holoRip.run(created.scene).catch((error: unknown) => {
+      if (!isAbort(error)) {
+        // Animation failures must never hide a successfully minted card.
+        created.scene.hidePack();
+        created.scene.set(created.scene.card, {
+          opacity: 1,
+          transform: "none"
+        });
+        created.scene.reveal();
+        console.error(error);
+      }
+    });
+    return () => {
+      scene.current = null;
+      created.destroy();
+      layer.current?.replaceChildren();
+    };
+  }, [packImage, reduced]);
+  useEffect(() => {
+    if (phase === "sealed") trigger.current?.focus({ preventScroll: true });
+    if (phase === "revealed")
+      resultAction.current?.focus({ preventScroll: true });
+  }, [phase]);
+  useEffect(() => {
+    if (cardElement.current) cardElement.current.inert = !revealed;
+  }, [revealed]);
   const nextCard = () => {
-    if (!hasMoreCards) return;
-    if (timer.current) clearTimeout(timer.current);
-    cancelAnimationFrame(frame.current);
-    gesture.current = null;
-    setCardIndex((value) => value + 1);
-    setMotion({ ...INITIAL, swipe: distance });
-    setDragging(false);
-    setSettling(false);
-    setStage("extracting");
+    if (!hasMoreCards || !revealed) return;
+    if (reduced) {
+      setCardIndex((value) => value + 1);
+      return;
+    }
+    if (scene.current)
+      void revealNextCard(scene.current, holoRip).catch((error: unknown) => {
+        if (!isAbort(error)) console.error(error);
+      });
   };
-  const style = {
-    "--pack-image": `url("${packImage}")`,
-    "--rip-edge": `${progress * 100}%`,
-    "--rip-x": `${motion.swipe}px`,
-    "--rip-progress": progress,
-    "--curl-transform": `translateY(${-17 * progress}px) rotateX(${-62 * progress}deg) rotateZ(${9 * progress}deg) scaleY(${1 - progress * 0.28})`,
-    "--curl-origin": `${Math.max(0.02, progress) * 100}% 8.7%`,
-    "--pack-rotate": `${-1.5 + progress * 3}deg`,
-    "--pack-scale": 1 + progress * 0.012,
-    "--draw-y": `${motion.draw}px`,
-    "--pull-y": `${motion.pull}px`,
-    "--draw-scale": 0.96 + drawProgress * 0.12,
-    "--draw-rotate": `${-drawProgress * 2.5}deg`,
-    "--pack-offset": `${drawProgress * packDrawOffset}px`,
-    "--peek-distance": `${Math.min(24, packHeight * 0.04)}px`,
-    "--scene-shift": `${Math.max(0, -motion.draw - packHeight * 0.06)}px`
-  } as CSSProperties;
   const card = artwork?.image ? (
-    <BoosterCardViewer artwork={artwork} interactive={stage === "results"} />
+    <BoosterCardViewer artwork={artwork} interactive={revealed} />
   ) : (
-    <div className="yunipals-opening-card-back" role="status">
+    <div className="olab-card-back yunipals-opening-placeholder" role="status">
       <img
         src="/images/yunipals-logo.webp"
         alt=""
@@ -452,7 +289,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
         <button
           type="button"
           className="mt-4 underline"
-          disabled={stage !== "results"}
+          disabled={!revealed}
           onClick={() => {
             if (!demo && !activeCard.metadataUri) void monster.refetch();
             if (metadataUri) void artworkQuery.refetch();
@@ -464,92 +301,141 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
     </div>
   );
 
-  return createPortal(
-    <dialog
-      ref={dialog}
-      aria-label="Yunipals pack opening"
-      aria-describedby={descriptionId}
-      className="yunipals-opening-dialog"
-      data-stage={stage}
-      data-dragging={dragging}
-      data-settling={settling}
+  return (
+    <div
+      className="yunipals-opening-content"
+      data-stage={revealed ? "results" : phase}
       data-reduced-motion={reduced}
-      style={style}
-      onCancel={(event) => {
-        event.preventDefault();
-        props.onClose();
-      }}
+      style={
+        {
+          "--olab-bg": holoRip.background,
+          "--olab-accent": holoRip.palette[0],
+          "--olab-accent-2": holoRip.palette[1],
+          "--olab-pack": `url("${packImage}")`
+        } as CSSProperties
+      }
     >
-      <div className="yunipals-opening-content">
-        <button
-          type="button"
-          aria-label="Close pack opening"
-          onClick={props.onClose}
-          className="yunipals-opening-close"
-        >
-          <X aria-hidden="true" size={22} />
-        </button>
-        <header className="yunipals-opening-header">
-          <h1 className="display text-center text-2xl sm:text-4xl">
-            {stage === "results"
-              ? demo
-                ? "A little preview of the magic."
-                : "Meet your Yunipal."
-              : "A little magic inside."}
-          </h1>
+      <header className="yunipals-opening-header">
+        <h1 className="display text-center text-2xl sm:text-4xl">
+          {revealed
+            ? demo
+              ? "A little preview of the magic."
+              : "Meet your Yunipal."
+            : "A little magic inside."}
+        </h1>
+        <p id={descriptionId} className="mt-2 text-sm text-white/75">
+          {demo
+            ? "Demo preview — no NFT is minted."
+            : "Your cards are ready. Let’s see who’s inside."}
+        </p>
+        {totalCards > 1 && (
           <p
-            id={descriptionId}
-            className="mt-3 max-w-md text-center text-sm text-white/75"
+            className="mt-2 text-sm font-semibold text-white/80"
+            aria-live="polite"
           >
-            {demo
-              ? "Demo preview — no NFT is minted."
-              : "Your cards are ready. Let’s see who’s inside."}
+            Card {cardIndex + 1} of {totalCards}
           </p>
-          {totalCards > 1 && (
-            <p
-              className="mt-2 text-sm font-semibold text-white/80"
-              aria-live="polite"
-            >
-              Card {cardIndex + 1} of {totalCards}
-            </p>
-          )}
-          <p className="yunipals-opening-instructions" aria-live="polite">
-            {stage === "sealed"
-              ? "Swipe right along the glowing seal."
-              : stage === "opening"
-                ? "Open a little wonder…"
-                : stage === "extracting"
-                  ? "Pull the card up, or pull the wrapper down."
-                  : hasMoreCards
-                    ? "Your card is revealed. Pull the next card when you’re ready."
-                    : "Your card is revealed. Tilt it to see the holo shine."}
-          </p>
-          {stage === "results" && (
-            <button
-              type="button"
-              data-stage-action="results"
-              onClick={hasMoreCards ? nextCard : replay}
-              className="yunipals-opening-action mt-3"
-            >
-              {hasMoreCards ? "Pull next card" : "Replay opening"}
-            </button>
-          )}
-        </header>
-        {stage === "results" ? (
-          <div className="yunipals-opening-result">
-            {card}
+        )}
+      </header>
+      <button
+        type="button"
+        aria-label="Close pack opening"
+        onClick={props.onClose}
+        className="olab-icon olab-close"
+      >
+        <X aria-hidden="true" size={22} />
+      </button>
+      <div
+        ref={stage}
+        className="olab-stage yunipals-opening-stage"
+        data-variant={holoRip.id}
+        data-phase={phase}
+      >
+        <canvas
+          ref={bgCanvas}
+          className="olab-canvas olab-bg"
+          aria-hidden="true"
+        />
+        <div ref={world} className="olab-world">
+          <div ref={pack} className="olab-pack">
+            <div className="olab-pack-art" />
+          </div>
+          <div ref={cardElement} className="olab-card" aria-hidden={!revealed}>
+            <div ref={flip} className="olab-card-flip">
+              <div ref={front} className="olab-card-front">
+                {card}
+              </div>
+              <div
+                ref={back}
+                className="olab-card-back-face"
+                aria-hidden="true"
+              >
+                <div className="olab-card-back">
+                  <img
+                    src="/images/yunipals-logo.webp"
+                    alt=""
+                    width={96}
+                    height={96}
+                  />
+                  <span className="display">Yunipals</span>
+                </div>
+              </div>
+              <div ref={sheen} className="olab-sheen" aria-hidden="true" />
+            </div>
+          </div>
+          <div ref={layer} className="olab-layer" aria-hidden="true" />
+        </div>
+        <canvas
+          ref={glCanvas}
+          className="olab-canvas olab-gl"
+          aria-hidden="true"
+        />
+        <canvas
+          ref={fxCanvas}
+          className="olab-canvas olab-fx"
+          aria-hidden="true"
+        />
+        <div ref={flash} className="olab-flash" aria-hidden="true" />
+        <button
+          ref={trigger}
+          type="button"
+          className="olab-trigger"
+          aria-label="Rip pack seal"
+          aria-describedby={descriptionId}
+          data-stage-action="sealed"
+          disabled={phase !== "sealed"}
+          onClick={reduced ? () => setPhase("revealed") : undefined}
+        />
+      </div>
+      <footer className="yunipals-opening-footer">
+        <p
+          className="yunipals-opening-instructions text-center text-sm text-white/80"
+          aria-live="polite"
+        >
+          {revealed
+            ? "Tilt your card to see the holo shine."
+            : phase === "sealed"
+              ? hint
+              : "Open a little wonder…"}
+        </p>
+        {revealed && (
+          <>
             {artwork?.name && (
-              <h2 className="display mt-5 text-center text-2xl">
-                {artwork.name}
-              </h2>
+              <h2 className="display text-center text-xl">{artwork.name}</h2>
             )}
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              {props.replayHash && (
-                <BoosterOpeningShare hash={props.replayHash} />
-              )}
+            <div className="flex flex-wrap justify-center gap-2">
+              <button
+                ref={resultAction}
+                type="button"
+                data-stage-action="results"
+                onClick={hasMoreCards ? nextCard : props.onReplay}
+                className="olab-action is-primary"
+              >
+                {hasMoreCards ? "Next card" : "Replay opening"}
+              </button>
               {!demo && (
                 <Link
-                  className="yunipals-opening-action"
+                  className="olab-action"
                   onClick={props.onClose}
                   to={`/monsters/${activeCard.collection}/${activeCard.tokenId}`}
                 >
@@ -558,7 +444,7 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
               )}
               {!hasMoreCards && (
                 <Link
-                  className="yunipals-opening-action"
+                  className="olab-action"
                   onClick={() => {
                     if (recipient && !demo && activeCard.collection)
                       void queries.resetQueries({
@@ -586,126 +472,19 @@ export function BoosterPackOpening(props: BoosterPackOpeningProps) {
               <button
                 type="button"
                 onClick={props.onClose}
-                className="yunipals-opening-action"
+                className="olab-action"
               >
                 Done
               </button>
             </div>
-          </div>
-        ) : (
-          <>
-            <div className="yunipals-opening-viewport">
-              <div ref={shell} className="yunipals-opening-shell">
-                {(stage === "opening" || stage === "extracting") && (
-                  <div
-                    className="yunipals-opening-extract-window"
-                    aria-hidden="true"
-                  >
-                    <div className="yunipals-opening-extract-card">
-                      <div className="yunipals-opening-card-peek">{card}</div>
-                    </div>
-                  </div>
-                )}
-                <div className="yunipals-opening-wrapper">
-                  <img
-                    src={packImage}
-                    alt="Yunipals foil booster pack"
-                    draggable={false}
-                    className="yunipals-opening-body"
-                  />
-                  {stage === "sealed" && (
-                    <>
-                      <div className="yunipals-opening-attached">
-                        <img src={packImage} alt="" draggable={false} />
-                      </div>
-                      <div className="yunipals-opening-curl">
-                        <img src={packImage} alt="" draggable={false} />
-                        <div className="yunipals-opening-curl-highlight" />
-                      </div>
-                      <div className="yunipals-opening-foil" />
-                      <div className="yunipals-opening-glint" />
-                      <div className="yunipals-opening-seam" />
-                      <div className="yunipals-opening-seam-progress" />
-                      <span className="yunipals-opening-tab">
-                        <ChevronRight
-                          aria-hidden="true"
-                          size={16}
-                          strokeWidth={3.2}
-                        />
-                      </span>
-                      <button
-                        type="button"
-                        aria-label="Rip pack seal"
-                        data-stage-action="sealed"
-                        className="yunipals-opening-rip-hit"
-                        {...control("swipe")}
-                      />
-                    </>
-                  )}
-                  {stage === "opening" && (
-                    <>
-                      <img
-                        src={packImage}
-                        alt=""
-                        draggable={false}
-                        className="yunipals-opening-torn-top"
-                      />
-                      {!reduced &&
-                        PARTICLES.map((particle, index) => (
-                          <span
-                            key={index}
-                            className="yunipals-opening-particle"
-                            style={
-                              {
-                                "--particle-x": `${particle.x}px`,
-                                "--particle-y": `${particle.y}px`,
-                                "--particle-rotate": `${particle.rotate}deg`,
-                                animationDelay: `${0.18 + particle.delay}s`,
-                                backgroundColor: particle.color
-                              } as CSSProperties
-                            }
-                          />
-                        ))}
-                    </>
-                  )}
-                </div>
-                {stage === "extracting" && (
-                  <div className="yunipals-opening-extract-controls">
-                    <button
-                      type="button"
-                      aria-label="Pull card upward"
-                      data-stage-action="extracting"
-                      disabled={settling}
-                      className="yunipals-opening-card-hit"
-                      {...control("draw")}
-                    />
-                    <button
-                      type="button"
-                      aria-label="Pull pack downward"
-                      disabled={settling}
-                      className="yunipals-opening-pack-hit"
-                      {...control("pull")}
-                    />
-                  </div>
-                )}
+            {props.replayHash && (
+              <div className="yunipals-opening-share">
+                <BoosterOpeningShare hash={props.replayHash} />
               </div>
-            </div>
-            <button
-              type="button"
-              className="yunipals-opening-action mt-4"
-              disabled={settling || stage === "opening"}
-              onClick={() => finish(stage === "sealed" ? "swipe" : "draw")}
-            >
-              {stage === "sealed"
-                ? "Rip open"
-                : stage === "extracting"
-                  ? "Pull out card"
-                  : "Opening…"}
-            </button>
+            )}
           </>
         )}
-      </div>
-    </dialog>,
-    document.body
+      </footer>
+    </div>
   );
 }

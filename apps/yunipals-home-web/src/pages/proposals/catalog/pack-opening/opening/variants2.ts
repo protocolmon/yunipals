@@ -1,5 +1,13 @@
-import { burst, clamp01, easeOut, emitter, pick, rand, ring } from "./fx";
-import type { Scene } from "./scene";
+import {
+  burst,
+  clamp01,
+  easeOut,
+  emitter,
+  pick,
+  rand,
+  ring
+} from "@/components/pack-opening/fx";
+import type { Scene } from "@/components/pack-opening/scene";
 import { FOIL_PEEL, HYPERSPACE, INK_BLOOM, LIQUID_METAL } from "./shaders";
 import { enter, idle, present, type OpeningVariant } from "./variants";
 

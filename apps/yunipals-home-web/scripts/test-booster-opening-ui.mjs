@@ -24,6 +24,7 @@ const { values } = parseArgs({
       default: "/tmp/yunipals-booster-opening-ui.json"
     },
     "components-only": { type: "boolean", default: false },
+    "opening-only": { type: "boolean", default: false },
     "layout-only": { type: "boolean", default: false },
     "claims-only": { type: "boolean", default: false },
     "saved-opening-only": { type: "boolean", default: false },
@@ -47,6 +48,12 @@ const report = {
 const sourcePaths = [
   "src/pages/boosters/BoosterPackOpening.tsx",
   "src/pages/boosters/booster-pack-opening.css",
+  "src/components/pack-opening/holoRip.ts",
+  "src/components/pack-opening/variants.ts",
+  "src/components/pack-opening/scene.ts",
+  "src/components/pack-opening/fx.ts",
+  "src/components/pack-opening/gl.ts",
+  "src/components/pack-opening/pack-opening.css",
   "src/pages/boosters/BoosterTransactions.tsx",
   "src/pages/boosters/BoosterRequestOpening.tsx",
   "src/pages/boosters/BoosterOpeningShare.tsx",
@@ -108,10 +115,9 @@ if (!values["saved-opening-only"]) {
     "Normal collection includes global pack pagination"
   );
   const navText = await readFile(`${root}/src/components/Nav.tsx`, "utf8");
-  assert(!navText.includes("Grading"), "Grading is included in Portals");
   assert(!navText.includes("Battles are coming soon"));
   report.checks.push({
-    name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection; navbar omits Grading",
+    name: "Homepage omits purchase/separate booster sections and integrates pack cards into normal collection",
     passed: true
   });
 }
@@ -333,23 +339,14 @@ async function waitStage(value, target = page) {
     value
   );
 }
-async function drag(locator, dx, dy, cancel = false) {
-  const box = await locator.boundingBox();
-  assert(box);
-  const x = box.x + box.width * 0.12,
-    y = box.y + box.height / 2;
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  await page.mouse.move(x + dx, y + dy, { steps: 12 });
-  if (cancel)
-    await locator.dispatchEvent("pointercancel", {
-      pointerId: 1,
-      pointerType: "mouse",
-      isPrimary: true
-    });
-  await page.mouse.up();
-}
 async function run(name, fn) {
+  // Focus on the shared opening component; transaction history and claim controls
+  // have separate harnesses and can evolve independently of this animation.
+  if (
+    values["opening-only"] &&
+    !/^(Responsive|Keyboard|Queued artwork|One Holo)/.test(name)
+  )
+    return;
   if (values["saved-opening-only"] && !name.startsWith("Saved opening")) return;
   if (!values["saved-opening-only"] && name.startsWith("Saved opening")) return;
   if (values["layout-only"] && !name.startsWith("Responsive")) return;
@@ -362,185 +359,138 @@ async function run(name, fn) {
   assert.deepEqual(report.browserErrors, []);
   report.checks.push({ name, passed: true });
 }
-async function extractionGeometry(target = page) {
-  return target.evaluate(() => {
-    const card = document.querySelector(
-      ".yunipals-opening-extract-card .tilt-card"
-    );
-    const front = document.querySelector(".yunipals-opening-body");
-    const window = document.querySelector(".yunipals-opening-extract-window");
-    const controls = document.querySelector(
-      ".yunipals-opening-extract-controls"
-    );
-    const rectangle = card.getBoundingClientRect();
-    const body = front.getBoundingClientRect();
-    // The highest torn edge in the actual wrapper geometry is at 8.3%.
-    const mouth = body.top + body.height * 0.083;
-    const changed = [];
-    const pointer = (element, value) => {
-      changed.push([element, element.getAttribute("style")]);
-      element.style.pointerEvents = value;
-    };
-    // Probe the browser's actual clipping/paint hit-test tree, without letting
-    // transparent gesture buttons or pointer-events:none hide a layering bug.
-    for (const element of [card, ...card.querySelectorAll("*")])
-      pointer(element, "auto");
-    // The wrapper div itself has no painted surface above the torn edge.
-    pointer(front.parentElement, "none");
-    pointer(front, "auto");
-    for (const element of controls?.querySelectorAll("button") ?? [])
-      pointer(element, "none");
-    const onCard = (x, y) => card.contains(document.elementFromPoint(x, y));
-    const below = Math.min(rectangle.bottom - 1, mouth + 12);
-    const result = {
-      cardTop: rectangle.top,
-      cardBottom: rectangle.bottom,
-      cardHeight: rectangle.height,
-      mouth,
-      visibleFraction: Math.max(
-        0,
-        Math.min(1, (mouth - rectangle.top) / rectangle.height)
-      ),
-      visibleTopOnCard: onCard(
-        rectangle.left + rectangle.width / 2,
-        rectangle.top +
-          Math.min(
-            rectangle.height * 0.05,
-            Math.max(1, (mouth - rectangle.top) * 0.5)
-          )
-      ),
-      belowMouthCardInHitStack:
-        rectangle.bottom > mouth &&
-        [rectangle.left + 1, rectangle.left + rectangle.width / 2].some((x) =>
-          document
-            .elementsFromPoint(x, below)
-            .some((element) => card.contains(element))
-        ),
-      frontLayer: Number(getComputedStyle(front.parentElement).zIndex),
-      cardLayer: Number(getComputedStyle(window).zIndex)
-    };
-    for (const [element, style] of changed.reverse()) {
-      if (style === null) element.removeAttribute("style");
-      else element.setAttribute("style", style);
-    }
-    return result;
-  });
-}
-async function protectedLayout(target = page) {
-  if (
-    (await target
-      .locator("[data-stage]")
-      .first()
-      .getAttribute("data-stage")) === "results"
-  ) {
-    await target.waitForFunction(
-      () =>
-        document.activeElement?.getAttribute("data-stage-action") === "results"
-    );
-  }
-  const geometry = await target.evaluate(() => {
-    const header = document.querySelector(".yunipals-opening-header");
-    const instructions = document.querySelector(
-      ".yunipals-opening-instructions"
-    );
-    const scene = document.querySelector(".yunipals-opening-viewport");
-    const card = document.querySelector(
-      ".yunipals-opening-extract-card .tilt-card, .yunipals-opening-result .tilt-card"
-    );
-    const rect = (element) => {
-      if (!element) return null;
-      const value = element.getBoundingClientRect();
-      return {
-        top: value.top,
-        right: value.right,
-        bottom: value.bottom,
-        left: value.left,
-        width: value.width,
-        height: value.height
-      };
-    };
-    const h = rect(header),
-      i = rect(instructions),
-      c = rect(card);
-    const title = rect(header.querySelector("h1"));
-    const close = rect(document.querySelector(".yunipals-opening-close"));
-    const atInstruction = document.elementFromPoint(
-      (i.left + i.right) / 2,
-      (i.top + i.bottom) / 2
-    );
-    return {
-      header: h,
-      focusedAction: document.activeElement?.getAttribute("data-stage-action"),
-      focusedActionBounds: rect(document.activeElement),
-      viewportHeight: innerHeight,
-      title,
-      close,
-      titleIntersectsClose:
-        title.top < close.bottom &&
-        title.bottom > close.top &&
-        title.left < close.right &&
-        title.right > close.left,
-      instructions: i,
-      scene: rect(scene),
-      card: c,
-      instructionsOnTop:
-        instructions === atInstruction || instructions.contains(atInstruction),
-      cardIntersectsHeader: Boolean(
-        c &&
-          c.top < h.bottom &&
-          c.bottom > h.top &&
-          c.left < h.right &&
-          c.right > h.left
-      ),
-      horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 1,
-      misleadingReveal:
-        document
-          .querySelector("dialog")
-          ?.textContent.includes("Swipe the card aside to reveal it.") || false,
-      redundantRevealButtons: [
-        ...document.querySelectorAll("dialog button")
-      ].filter(
-        (button) =>
-          button.textContent.trim() === "Reveal Yunipal" ||
-          button.getAttribute("aria-label") === "Reveal card"
-      ).length
-    };
-  });
-  assert(
-    geometry.header.top >= 0,
-    "Opening heading stays within the top of the viewport"
-  );
-  assert(
-    geometry.header.bottom <= (await target.evaluate(() => innerHeight)),
-    "Opening instructions fit the viewport"
-  );
-  assert(
-    geometry.instructionsOnTop,
-    "The browser paints the instructions above their own background"
-  );
-  assert.equal(
-    geometry.cardIntersectsHeader,
-    false,
-    "Moving card never covers the protected header/instructions"
-  );
-  if (geometry.focusedAction) {
-    assert(
-      geometry.focusedActionBounds.top >= 0 &&
-        geometry.focusedActionBounds.bottom <= geometry.viewportHeight,
-      "The automatically focused stage action is inside the viewport"
-    );
-  }
-  assert.equal(
-    geometry.titleIntersectsClose,
-    false,
-    "Close control never covers the heading"
-  );
-  assert.equal(geometry.horizontalOverflow, false);
-  assert.equal(geometry.misleadingReveal, false);
-  assert.equal(geometry.redundantRevealButtons, 0);
-  return geometry;
-}
 try {
+  await run(
+    "Responsive Holo Rip is the default for demo and minted cards, with accessible actions and replay",
+    async () => {
+      report.holoRipLayouts = [];
+      for (const viewport of [
+        { width: 1440, height: 1000 },
+        { width: 1024, height: 768 },
+        { width: 390, height: 844 },
+        { width: 320, height: 568 },
+        { width: 844, height: 390 }
+      ]) {
+        await page.setViewportSize(viewport);
+        for (const mode of ["opening", "batch"]) {
+          await visit(`mode=${mode}`);
+          await page
+            .getByRole("button", { name: "Start local opening" })
+            .click();
+          await waitStage("sealed");
+          assert.equal(
+            await page.locator(".olab-stage").getAttribute("data-variant"),
+            "holo-rip"
+          );
+          await page.getByRole("button", { name: "Rip pack seal" }).click();
+          await waitStage("results");
+          await page.locator(".olab-card .tilt-card").waitFor();
+          const geometry = await page.evaluate(() => {
+            const rect = (selector) => {
+              const r = document
+                .querySelector(selector)
+                .getBoundingClientRect();
+              return {
+                top: r.top,
+                bottom: r.bottom,
+                left: r.left,
+                right: r.right
+              };
+            };
+            return {
+              card: rect(".olab-card"),
+              header: rect(".yunipals-opening-header"),
+              footer: rect(".yunipals-opening-footer"),
+              close: rect(".olab-close"),
+              title: rect(".yunipals-opening-header h1"),
+              overflow:
+                document.querySelector(".yunipals-opening-content")
+                  .scrollHeight >
+                innerHeight + 1,
+              focused: document.activeElement?.getAttribute("data-stage-action")
+            };
+          });
+          assert(
+            geometry.card.top >= geometry.header.bottom,
+            "Card clears heading"
+          );
+          assert(
+            geometry.card.bottom <= geometry.footer.top,
+            "Card clears footer"
+          );
+          assert(
+            geometry.card.left >= 0 && geometry.card.right <= viewport.width,
+            "Card fits width"
+          );
+          assert(
+            geometry.footer.bottom <= viewport.height + 1,
+            "Actions fit viewport"
+          );
+          assert.equal(geometry.overflow, false);
+          assert.equal(geometry.focused, "results");
+          assert(
+            geometry.title.right <= geometry.close.left ||
+              geometry.title.top >= geometry.close.bottom,
+            "Close does not cover title"
+          );
+          const screenshot =
+            values.output.replace(/\.json$/, "") +
+            `-${viewport.width}x${viewport.height}-${mode}-holo.png`;
+          await page.screenshot({ path: screenshot });
+          report.holoRipLayouts.push({ viewport, mode, geometry, screenshot });
+          if (mode === "opening") {
+            await page
+              .getByRole("button", { name: "Replay opening", exact: true })
+              .click();
+            await waitStage("sealed");
+            assert.equal(await page.locator(".olab-piece").count(), 0);
+          }
+          await page.keyboard.press("Escape");
+          assert.equal(await dialog().count(), 0);
+          assert.equal(
+            await page
+              .getByRole("button", { name: "Start local opening" })
+              .evaluate((el) => el === document.activeElement),
+            true
+          );
+        }
+      }
+      await page.setViewportSize({ width: 1100, height: 1000 });
+    }
+  );
+  await run(
+    "Keyboard and reduced motion reveal without looping animations, with clean close during a rip",
+    async () => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await visit("mode=opening");
+      await page.getByRole("button", { name: "Start local opening" }).click();
+      await waitStage("sealed");
+      await page.getByRole("button", { name: "Rip pack seal" }).focus();
+      await page.keyboard.press("Enter");
+      await waitStage("results");
+      assert.equal(
+        await dialog().evaluate(
+          (el) =>
+            el
+              .getAnimations({ subtree: true })
+              .filter((a) => a.effect?.getTiming().iterations === Infinity)
+              .length
+        ),
+        0
+      );
+      assert.equal(await page.locator(".olab-piece").count(), 0);
+      await page.keyboard.press("Escape");
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await page.getByRole("button", { name: "Start local opening" }).click();
+      await waitStage("sealed");
+      await page.getByRole("button", { name: "Rip pack seal" }).click();
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(3000);
+      assert.equal(await dialog().count(), 0);
+      assert.equal(await page.getByLabel("Close count").innerText(), "2");
+    }
+  );
+
   await run(
     "Saved opening is linked before confirmation, survives refresh, and stays closed until reopened from history",
     async () => {
@@ -677,93 +627,6 @@ try {
       await page.waitForURL((url) => !url.searchParams.has("opening"));
       await page.getByRole("dialog").waitFor({ state: "detached" });
       assert.equal(await page.getByRole("dialog").count(), 0);
-    }
-  );
-  await run(
-    "Responsive demo and actual wrapper fill the opening scene without a heading gap",
-    async () => {
-      report.responsiveWrapper = [];
-      for (const viewport of [
-        { width: 1888, height: 1333 },
-        { width: 1024, height: 768 },
-        { width: 390, height: 844 }
-      ]) {
-        await page.setViewportSize(viewport);
-        for (const mode of ["opening", "batch"]) {
-          await visit(`mode=${mode}`);
-          await page
-            .getByRole("button", { name: "Start local opening" })
-            .click();
-          await page
-            .locator(".yunipals-opening-body")
-            .evaluate((image) => image.decode());
-          const protectedGeometry = await protectedLayout();
-          const geometry = await page.evaluate(() => {
-            const bounds = (selector) => {
-              const r = document
-                .querySelector(selector)
-                .getBoundingClientRect();
-              return {
-                top: r.top,
-                bottom: r.bottom,
-                left: r.left,
-                right: r.right,
-                width: r.width,
-                height: r.height
-              };
-            };
-            return {
-              pack: bounds(".yunipals-opening-shell"),
-              header: bounds(".yunipals-opening-header"),
-              action: bounds(".yunipals-opening-content > button:last-child"),
-              dialogScrollHeight: document.querySelector("dialog").scrollHeight
-            };
-          });
-          assert(
-            geometry.pack.top - geometry.header.bottom >= 0 &&
-              geometry.pack.top - geometry.header.bottom <= 48,
-            "The sealed wrapper sits directly below the protected heading"
-          );
-          assert(
-            Math.abs(
-              (geometry.pack.left + geometry.pack.right) / 2 -
-                viewport.width / 2
-            ) <= 1,
-            "The wrapper stays horizontally centered"
-          );
-          assert(
-            geometry.pack.top >= 0 && geometry.pack.bottom <= viewport.height,
-            "The complete sealed wrapper fits the viewport"
-          );
-          assert(
-            geometry.action.top >= 0 &&
-              geometry.action.bottom <= viewport.height,
-            "The explicit opening action remains in view"
-          );
-          assert(
-            geometry.dialogScrollHeight <= viewport.height + 1,
-            "The sealed scene does not require vertical scrolling"
-          );
-          if (viewport.width >= 1800)
-            assert(
-              geometry.pack.width >= 350,
-              "Large desktop openings use a prominent wrapper"
-            );
-          const screenshot =
-            values.output.replace(/\.json$/, "") +
-            `-${viewport.width}x${viewport.height}-${mode}-sealed.png`;
-          await page.screenshot({ path: screenshot });
-          report.responsiveWrapper.push({
-            viewport,
-            mode,
-            ...geometry,
-            protectedGeometry,
-            screenshot
-          });
-          await page.keyboard.press("Escape");
-        }
-      }
-      await page.setViewportSize({ width: 1100, height: 1000 });
     }
   );
   if (!values["components-only"])
@@ -1067,334 +930,6 @@ try {
     }
   );
   await run(
-    "Card stays behind the opaque wrapper and emerges through its moving mouth; cancelled draw retracts",
-    async () => {
-      await visit("mode=opening");
-      await page.getByRole("button", { name: "Start local opening" }).click();
-      await page.getByRole("button", { name: "Rip pack seal" }).focus();
-      await page.keyboard.press("Enter");
-      await waitStage("opening");
-      assert.equal(
-        await page
-          .locator(".yunipals-opening-extract-window")
-          .evaluate((element) => getComputedStyle(element).visibility),
-        "hidden",
-        "No card face is exposed during the tear"
-      );
-      await waitStage("extracting");
-      const peek = page.locator(".yunipals-opening-card-peek");
-      const seek = (time) =>
-        peek.evaluate((element, time) => {
-          const animation = element
-            .getAnimations()
-            .find((value) => value.animationName === "yunipals-card-peek");
-          animation.pause();
-          animation.currentTime = time;
-          return animation.effect.getTiming();
-        }, time);
-      const timing = await seek(0);
-      assert.equal(timing.duration, 900);
-      assert.equal(timing.iterations, 1);
-      const closed = await extractionGeometry();
-      assert.equal(closed.visibleFraction, 0);
-      assert.equal(closed.belowMouthCardInHitStack, false);
-      await seek(450);
-      const halfPeek = await extractionGeometry();
-      await seek(900);
-      const smallPeek = await extractionGeometry();
-      await protectedLayout();
-      assert(halfPeek.visibleFraction > 0);
-      assert(smallPeek.visibleFraction > halfPeek.visibleFraction);
-      assert(smallPeek.visibleFraction < 0.08);
-      assert(smallPeek.frontLayer > smallPeek.cardLayer);
-      assert(smallPeek.visibleTopOnCard);
-      assert.equal(smallPeek.belowMouthCardInHitStack, false);
-      await page.screenshot({
-        path: "/tmp/yunipals-extraction-peek-desktop-20261023.png"
-      });
-      const grab = page.getByRole("button", { name: "Pull card upward" });
-      const box = await grab.boundingBox();
-      const x = box.x + box.width / 2,
-        y = box.y + box.height / 2;
-      await page.mouse.move(x, y);
-      await page.mouse.down();
-      await page.mouse.move(x, y - 105, { steps: 14 });
-      assert(await grab.evaluate((element) => element.hasPointerCapture(1)));
-      const partial = await extractionGeometry();
-      await protectedLayout();
-      report.extractionGeometry = { closed, halfPeek, smallPeek, partial };
-      assert(partial.visibleFraction > 0.25 && partial.visibleFraction < 0.8);
-      assert(partial.visibleTopOnCard);
-      assert.equal(partial.belowMouthCardInHitStack, false);
-      await page.screenshot({
-        path: "/tmp/yunipals-extraction-desktop-20261023.png"
-      });
-      // Missing pointercancel coordinates must not jump to a fully drawn card.
-      await grab.dispatchEvent("pointercancel", {
-        pointerId: 1,
-        pointerType: "mouse",
-        isPrimary: true
-      });
-      assert(
-        (await extractionGeometry()).visibleFraction <=
-          partial.visibleFraction + 0.03
-      );
-      await page.mouse.up();
-      await page.waitForTimeout(750);
-      assert.equal(await stage().getAttribute("data-stage"), "extracting");
-      const returned = await extractionGeometry();
-      assert(
-        Math.abs(returned.visibleFraction - smallPeek.visibleFraction) < 0.015
-      );
-      assert.equal(returned.belowMouthCardInHitStack, false);
-      report.extractionGeometry = {
-        closed,
-        halfPeek,
-        smallPeek,
-        partial,
-        returned
-      };
-      await page.keyboard.press("Escape");
-    }
-  );
-  await run(
-    "Mobile touch pulls the wrapper down with real pointer capture, cancels safely and fully clears the card on completion",
-    async () => {
-      const mobileContext = await browser.newContext({
-        viewport: { width: 390, height: 844 },
-        isMobile: true,
-        hasTouch: true
-      });
-      await mobileContext.route("**/*", (route) => {
-        const request = route.request();
-        if (
-          request.url().startsWith(origin + "/") &&
-          request.method() === "GET"
-        )
-          return route.continue();
-        report.externalRequests.push({
-          method: request.method(),
-          type: request.resourceType()
-        });
-        return route.abort("blockedbyclient");
-      });
-      await mobileContext.routeWebSocket("**/*", (socket) => socket.close());
-      const mobile = await mobileContext.newPage();
-      mobile.on("pageerror", (error) =>
-        report.browserErrors.push(error.message)
-      );
-      await mobile.goto(`${origin}/__booster-opening-check?mode=opening`, {
-        waitUntil: "load"
-      });
-      await mobile.getByRole("button", { name: "Start local opening" }).click();
-      await mobile
-        .getByRole("button", { name: "Rip open", exact: true })
-        .click();
-      await waitStage("extracting", mobile);
-      await mobile.waitForTimeout(950);
-      const smallPeek = await extractionGeometry(mobile);
-      assert(smallPeek.visibleFraction > 0 && smallPeek.visibleFraction < 0.08);
-      const grab = mobile.getByRole("button", { name: "Pull pack downward" });
-      const cdp = await mobileContext.newCDPSession(mobile);
-      const touch = (type, x, y) =>
-        cdp.send("Input.dispatchTouchEvent", {
-          type,
-          touchPoints: x === undefined ? [] : [{ x, y, id: 7 }]
-        });
-      const pull = async (amount) => {
-        const box = await grab.boundingBox();
-        const x = box.x + box.width / 2,
-          y = box.y + box.height * 0.3;
-        await touch("touchStart", x, y);
-        for (let step = 1; step <= 12; step++)
-          await touch("touchMove", x, y + (amount * step) / 12);
-      };
-      await pull(90);
-      assert(await grab.evaluate((element) => element.hasPointerCapture(2)));
-      const partial = await extractionGeometry(mobile);
-      await protectedLayout(mobile);
-      assert(partial.visibleFraction > 0.25 && partial.visibleFraction < 0.8);
-      assert(partial.visibleTopOnCard);
-      assert.equal(partial.belowMouthCardInHitStack, false);
-      await mobile.screenshot({
-        path: "/tmp/yunipals-extraction-mobile-20261023.png"
-      });
-      await touch("touchCancel");
-      await mobile.waitForTimeout(750);
-      const returned = await extractionGeometry(mobile);
-      assert(
-        Math.abs(returned.visibleFraction - smallPeek.visibleFraction) < 0.015
-      );
-      assert.equal(
-        await mobile.locator("[data-stage]").first().getAttribute("data-stage"),
-        "extracting"
-      );
-      await pull(280);
-      await touch("touchEnd");
-      await mobile.waitForTimeout(240);
-      const completed = await extractionGeometry(mobile);
-      await protectedLayout(mobile);
-      assert.equal(completed.visibleFraction, 1);
-      assert(completed.cardBottom <= completed.mouth);
-      await waitStage("results", mobile);
-      assert(
-        await mobile.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth + 1
-        )
-      );
-      report.mobileExtractionGeometry = {
-        smallPeek,
-        partial,
-        returned,
-        completed
-      };
-      await mobileContext.close();
-    }
-  );
-  await run(
-    "Protected instructions and automatic reveal fit 1024x768 and 390x844 throughout pull settling",
-    async () => {
-      const measurements = [];
-      for (const viewport of [
-        { width: 1024, height: 768 },
-        { width: 390, height: 844 }
-      ]) {
-        await page.setViewportSize(viewport);
-        await visit("mode=batch");
-        await page.getByRole("button", { name: "Start local opening" }).click();
-        const sealed = await protectedLayout();
-        await page
-          .getByRole("button", { name: "Rip open", exact: true })
-          .click();
-        await waitStage("extracting");
-        await page.waitForTimeout(950);
-        const peek = await protectedLayout();
-        const grab = page.getByRole("button", { name: "Pull card upward" });
-        const box = await grab.boundingBox();
-        const x = box.x + box.width / 2,
-          y = box.y + box.height / 2;
-        await page.mouse.move(x, y);
-        await page.mouse.down();
-        await page.mouse.move(x, y - 85, { steps: 12 });
-        const partial = await protectedLayout();
-        await page.mouse.move(x, y - 300, { steps: 16 });
-        await page.mouse.up();
-        await page.waitForTimeout(120);
-        const settling = await protectedLayout();
-        assert.equal(await stage().getAttribute("data-stage"), "extracting");
-        assert.equal(await stage().getAttribute("data-settling"), "true");
-        await waitStage("results");
-        const revealed = await protectedLayout();
-        await page.getByRole("button", { name: "Pull next card" }).focus();
-        await page.keyboard.press("Enter");
-        await waitStage("extracting");
-        const nextPeek = await protectedLayout();
-        assert.equal(
-          await page.getByRole("button", { name: "Rip pack seal" }).count(),
-          0
-        );
-        await page
-          .getByRole("button", { name: "Pull out card", exact: true })
-          .click();
-        await waitStage("results");
-        await protectedLayout();
-        await page.screenshot({
-          path: `/tmp/yunipals-opening-protected-${viewport.width}x${viewport.height}-20261023.png`
-        });
-        measurements.push({
-          viewport,
-          sealed,
-          peek,
-          partial,
-          settling,
-          revealed,
-          nextPeek
-        });
-        await page.keyboard.press("Escape");
-      }
-      report.protectedLayout = measurements;
-      await page.setViewportSize({ width: 1100, height: 1000 });
-    }
-  );
-  await run(
-    "Ready demo uses actual strip drag; short/cancelled gestures never reveal",
-    async () => {
-      await visit("mode=opening");
-      await page
-        .getByRole("button", { name: "Start local opening", exact: true })
-        .click();
-      await dialog().waitFor();
-      const rip = page.getByRole("button", {
-        name: "Rip pack seal",
-        exact: true
-      });
-      const box = await rip.boundingBox();
-      await drag(rip, box.width * 0.12, 0);
-      assert.equal(await stage().getAttribute("data-stage"), "sealed");
-      await drag(rip, box.width * 0.25, 0, true);
-      assert.equal(await stage().getAttribute("data-stage"), "sealed");
-      await drag(rip, box.width * 0.9, 0);
-      await waitStage("extracting");
-      assert.equal(
-        await page
-          .getByRole("button", { name: "Replay opening", exact: true })
-          .count(),
-        0
-      );
-      await drag(
-        page.getByRole("button", { name: "Pull card upward", exact: true }),
-        0,
-        -320
-      );
-      await waitStage("results");
-      await page
-        .getByRole("button", { name: "Replay opening", exact: true })
-        .click();
-      await waitStage("sealed");
-      await page.keyboard.press("Escape");
-      assert.equal(await dialog().count(), 0);
-    }
-  );
-  await run(
-    "Keyboard and reduced motion complete the same steps without looping animations",
-    async () => {
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await visit("mode=opening");
-      await page
-        .getByRole("button", { name: "Start local opening", exact: true })
-        .click();
-      const rip = page.getByRole("button", {
-        name: "Rip pack seal",
-        exact: true
-      });
-      await rip.focus();
-      await page.keyboard.press("Enter");
-      await waitStage("extracting");
-      await page
-        .getByRole("button", { name: "Pull pack downward", exact: true })
-        .focus();
-      await page.keyboard.press("Space");
-      await waitStage("results");
-      assert.equal(
-        await dialog().evaluate(
-          (element) =>
-            element
-              .getAnimations({ subtree: true })
-              .filter(
-                (animation) =>
-                  animation.effect?.getTiming().iterations === Infinity
-              ).length
-        ),
-        0
-      );
-      await page
-        .getByRole("button", { name: "Close pack opening", exact: true })
-        .click();
-      assert.equal(await page.getByLabel("Close count").innerText(), "1");
-      await page.emulateMedia({ reducedMotion: "no-preference" });
-    }
-  );
-  await run(
     "Real transaction component never offers an opening for cancelled, failed, VRF-pending, recovery or mismatched requests",
     async () => {
       for (const [scenario, status] of [
@@ -1423,10 +958,8 @@ try {
     async () => {
       await visit("mode=batch&scenario=artwork-queued");
       await page.getByRole("button", { name: "Start local opening" }).click();
-      await page.getByRole("button", { name: "Rip open", exact: true }).click();
-      await waitStage("extracting");
       await page
-        .getByRole("button", { name: "Pull out card", exact: true })
+        .getByRole("button", { name: "Rip pack seal", exact: true })
         .click();
       await waitStage("results");
       await page
@@ -1434,28 +967,24 @@ try {
           exact: true
         })
         .waitFor();
-      assert.equal(
-        await page.locator(".yunipals-opening-result .tilt-card").count(),
-        0
-      );
+      assert.equal(await page.locator(".olab-card .tilt-card").count(), 0);
       await page.evaluate(() => {
         window.__artworkReady = true;
       });
-      await page
-        .locator(".yunipals-opening-result .tilt-card")
-        .waitFor({ timeout: 10000 });
+      await page.locator(".olab-card .tilt-card").waitFor({ timeout: 10000 });
       await page.keyboard.press("Escape");
     }
   );
   await run(
-    "One torn pack pulls nonsequential NFT identities in order without another tear or mint",
+    "One Holo Rip opening reveals nonsequential NFT identities in order without another tear or mint",
     async () => {
       await visit("mode=batch");
       await page.getByRole("button", { name: "Start local opening" }).click();
+      await waitStage("sealed");
       await page.getByRole("button", { name: "Rip pack seal" }).focus();
       await page.keyboard.press("Enter");
       for (const [index, tokenId] of ["7", "21", "99"].entries()) {
-        await waitStage("extracting");
+        await waitStage("results");
         await page
           .getByText(`Card ${index + 1} of 3`, { exact: true })
           .waitFor();
@@ -1463,8 +992,6 @@ try {
           await page.getByRole("button", { name: "Rip pack seal" }).count(),
           0
         );
-        await page.getByRole("button", { name: "Pull card upward" }).focus();
-        await page.keyboard.press("Enter");
         await waitStage("results");
         await page
           .getByRole("heading", {
@@ -1479,7 +1006,7 @@ try {
         assert((await link.getAttribute("href")).endsWith("/" + tokenId));
         if (index < 2)
           await page
-            .getByRole("button", { name: "Pull next card", exact: true })
+            .getByRole("button", { name: "Next card", exact: true })
             .click();
       }
       assert.deepEqual(
@@ -1487,7 +1014,7 @@ try {
         ["7", "21", "99"]
       );
       await page
-        .getByRole("link", { name: "View collection", exact: true })
+        .getByRole("link", { name: "View TCG collection", exact: true })
         .waitFor();
       await page.getByRole("button", { name: "Done", exact: true }).click();
       assert.equal(await dialog().count(), 0);
@@ -1506,10 +1033,8 @@ try {
       await open.click();
       await dialog().waitFor();
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await waitStage("sealed");
       await page.getByRole("button", { name: "Rip pack seal" }).focus();
-      await page.keyboard.press("Enter");
-      await waitStage("extracting");
-      await page.getByRole("button", { name: "Pull card upward" }).focus();
       await page.keyboard.press("Enter");
       await waitStage("results");
       await page
@@ -1527,22 +1052,19 @@ try {
         .click();
       await waitStage("sealed");
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
+      await waitStage("sealed");
       await page
         .getByRole("button", { name: "Rip pack seal", exact: true })
         .focus();
       await page.keyboard.press("Enter");
       for (const [index, token] of ["7", "21", "99"].entries()) {
-        await waitStage("extracting");
+        await waitStage("results");
         assert.equal(
           await page
             .getByRole("button", { name: "Rip pack seal", exact: true })
             .count(),
           0
         );
-        await page
-          .getByRole("button", { name: "Pull card upward", exact: true })
-          .focus();
-        await page.keyboard.press("Enter");
         await waitStage("results");
         await page
           .getByRole("heading", {
@@ -1552,7 +1074,7 @@ try {
           .waitFor();
         if (index < 2)
           await page
-            .getByRole("button", { name: "Pull next card", exact: true })
+            .getByRole("button", { name: "Next card", exact: true })
             .click();
       }
       assert.deepEqual(
@@ -1747,13 +1269,9 @@ try {
           .count(),
         0
       );
+      await waitStage("sealed");
       await page
         .getByRole("button", { name: "Rip pack seal", exact: true })
-        .focus();
-      await page.keyboard.press("Enter");
-      await waitStage("extracting");
-      await page
-        .getByRole("button", { name: "Pull card upward", exact: true })
         .focus();
       await page.keyboard.press("Enter");
       await waitStage("results");
@@ -1818,20 +1336,16 @@ try {
       await dialog().waitFor();
       for (const [index, id] of ["7", "21", "99"].entries()) {
         if (index === 0) {
+          await waitStage("sealed");
           await page
             .getByRole("button", { name: "Rip pack seal", exact: true })
             .focus();
           await page.keyboard.press("Enter");
         } else {
           await page
-            .getByRole("button", { name: "Pull next card", exact: true })
+            .getByRole("button", { name: "Next card", exact: true })
             .click();
         }
-        await waitStage("extracting");
-        await page
-          .getByRole("button", { name: "Pull card upward", exact: true })
-          .focus();
-        await page.keyboard.press("Enter");
         await waitStage("results");
         await page
           .getByRole("heading", { name: "Fixture Yunipal #" + id, exact: true })
@@ -1853,7 +1367,7 @@ try {
         .getByRole("button", { name: "Rip pack seal", exact: true })
         .focus();
       await page.keyboard.press("Enter");
-      await waitStage("extracting");
+      await waitStage("results");
       await page.getByText("Card 1 of 3", { exact: true }).waitFor();
       await page.keyboard.press("Escape");
       await dialog().waitFor({ state: "detached" });

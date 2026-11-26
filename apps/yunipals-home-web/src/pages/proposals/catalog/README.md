@@ -129,4 +129,7 @@ Delete its folder. Its old URL then redirects to the catalog.
 ## Example
 
 [`pack-opening/`](pack-opening) presents eleven playable pack-opening concepts.
-Its interactive player, shaders and styles all live in `pack-opening/opening/`.
+Holo Rip has been promoted to the default production opening. Its animation,
+scene engine and stage styles live in `src/components/pack-opening/` and are
+reused by the proposal. The other concepts and shaders remain in
+`pack-opening/opening/`.

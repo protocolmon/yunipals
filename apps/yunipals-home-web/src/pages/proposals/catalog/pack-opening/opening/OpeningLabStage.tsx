@@ -10,7 +10,12 @@ import { ChevronLeft, ChevronRight, RotateCcw, X } from "lucide-react";
 
 import { BoosterCardViewer } from "@/components/BoosterCardViewer";
 import type { MonsterArtwork } from "@/lib/boosters";
-import { createScene, isAbort, type Phase, type Scene } from "./scene";
+import {
+  createScene,
+  isAbort,
+  type Phase,
+  type Scene
+} from "@/components/pack-opening/scene";
 import { revealNextCard, type OpeningVariant } from "./variants";
 import "./opening-lab.css";
 

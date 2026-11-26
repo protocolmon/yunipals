@@ -22,6 +22,8 @@ export type SceneElements = {
 };
 export type SceneHooks = {
   packImage: string;
+  /** Holo Rip uses canvas particles only; avoid allocating a WebGL context. */
+  shaders?: boolean;
   setHint: (hint: string) => void;
   setPhase: (phase: Phase) => void;
   /** Synchronously swaps the card face to the next artwork. */
@@ -151,7 +153,7 @@ export function createScene(elements: SceneElements, hooks: SceneHooks) {
   const { signal } = controller;
   const bg = new Fx(elements.bgCanvas);
   const fx = new Fx(elements.fxCanvas);
-  const gl = new ShaderLayer(elements.glCanvas);
+  const gl = new ShaderLayer(elements.glCanvas, hooks.shaders);
   const animations = new Set<Animation>();
   const resize = () => {
     bg.resize();

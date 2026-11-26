@@ -97,12 +97,17 @@ export class ShaderLayer {
   packRect: Rect = { x: 0, y: 0, w: 1, h: 1 };
   cardRect: Rect = { x: 0, y: 0, w: 1, h: 1 };
 
-  constructor(readonly canvas: HTMLCanvasElement) {
-    this.gl = canvas.getContext("webgl2", {
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false
-    });
+  constructor(
+    readonly canvas: HTMLCanvasElement,
+    enabled = true
+  ) {
+    this.gl = enabled
+      ? canvas.getContext("webgl2", {
+          alpha: true,
+          premultipliedAlpha: true,
+          antialias: false
+        })
+      : null;
     const { gl } = this;
     if (!gl) return;
     const buffer = gl.createBuffer();
