@@ -313,7 +313,7 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     /// @notice Supplemental rendering rules for terminal, two-source Singularity fusions.
     /// @dev Hash of singularityArtDirection in the shared serum module; no storage or legacy binding changes.
-    bytes32 public constant SINGULARITY_POLICY = 0x3d5cacaf3aa09a841766e1920500905f670695569eddb6752e00f6fcabe2179b;
+    bytes32 public constant SINGULARITY_POLICY = 0xceaa7f274e6f323623253543f79504efcc6ace69b501e52196f928adef6cf488;
 
     function fusionRecipe(uint256 a, uint256 b) public view returns (Fusion memory f) {
         require(a < b, "canonical distinct parents required");

@@ -7,6 +7,7 @@ import { join } from "node:path";
 import type { Pool } from "pg";
 import type { Hex } from "viem";
 import { portalModels } from "@protopals/yunipals-market-core/portals";
+import { singularityArtDirection } from "@protopals/yunipals-market-core/serums";
 import {
   evolutionPrompt,
   evolutionRenderingHash,
@@ -580,7 +581,14 @@ it("keeps Singularity terminal with two leaves and preserves its identity throug
     validateEvolutionHistory({ ...singularity, level: 2 })
   ).toThrow();
   const prompt = JSON.parse(evolutionPrompt([singularity], 1, 3, dose));
-  expect(prompt.singularity).toContain("dimensional seam");
+  expect(prompt.singularity).toBe(singularityArtDirection);
+  expect(
+    JSON.parse(evolutionPrompt([leaf("1"), leaf("2")], 1, 3, undefined, 3))
+      .singularity
+  ).toBe(singularityArtDirection);
+  expect(
+    JSON.parse(evolutionPrompt([leaf("1"), leaf("2")], 1, 3)).singularity
+  ).toBeUndefined();
   expect(prompt.inheritedHistory[0].parents).toHaveLength(2);
   expect(
     portalImagePrompt(portalModels, "Add a rainbow", {
@@ -588,7 +596,7 @@ it("keeps Singularity terminal with two leaves and preserves its identity throug
       baseColor: "Black",
       evolution: { witnessTokenId: "1", sources: [], history: singularity }
     })
-  ).toContain("Trusted Singularity identity");
+  ).toContain(`Trusted Singularity identity: ${singularityArtDirection}`);
   expect(() =>
     evolutionPrompt([singularity, leaf("4")], 1, 3, undefined, 3)
   ).toThrow("unfused");

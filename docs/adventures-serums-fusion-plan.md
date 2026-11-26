@@ -589,6 +589,16 @@ and rejects saved output with a different or missing supplemental policy. Old
 ordinary prompts retain their previous rules. Portal generation preserves the
 new kind while retaining the existing fees, rubric and one-grade rule.
 
+The approved v2 art direction makes structural melting and warping dominant:
+liquid ribbons, suspended droplets, folded anatomy and dimensional gaps with
+visible reconnection. Keep the expressive face, soft sculpted 3D materials,
+birth identity and assigned finish recognizable. Adapt the distortion to each
+species; do not add dragon anatomy to other species. Serum and portal edits
+preserve this deformation instead of restoring an ordinary silhouette. The
+card frame and nameplates retain their standard shape. Changing this direction
+requires updating the supplemental contract hash and regenerating any prepared
+unsigned upgrade package before signing.
+
 Release compatible API, evolution worker, portal worker and frontend **before**
 upgrading the collection: the upgrade immediately admits the new recipe through
 the existing unpaused controller. Before upgrading, the partner API hides

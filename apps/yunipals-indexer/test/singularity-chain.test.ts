@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   ContractFunctionExecutionError,
   ContractFunctionRevertedError,
@@ -24,6 +25,19 @@ function fixture() {
   return { chain, readContract };
 }
 describe("Singularity on-chain capability", () => {
+  it("pins the shared artwork direction in the collection implementation", () => {
+    const source = readFileSync(
+      new URL(
+        "../../../contracts/boosters/src/YunipalMonsters.sol",
+        import.meta.url
+      ),
+      "utf8"
+    );
+    const pinnedPolicy = source.match(
+      /SINGULARITY_POLICY = (0x[0-9a-f]{64});/
+    )?.[1];
+    expect(pinnedPolicy).toBe(keccak256(toHex(singularityArtDirection)));
+  });
   it("requires the exact supplemental policy at the requested block", async () => {
     const { chain, readContract } = fixture();
     const policy = keccak256(toHex(singularityArtDirection));
