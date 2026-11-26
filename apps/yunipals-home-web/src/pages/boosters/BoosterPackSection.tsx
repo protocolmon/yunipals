@@ -21,6 +21,7 @@ import { environment } from "@/environment";
 import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
+import { NightforgePreview } from "./NightforgePreview";
 
 export function BoosterPackSection() {
   const { address } = useAccount();
@@ -68,11 +69,13 @@ export function BoosterPackSection() {
               Unwrap a little magic.
             </h1>
             <p className="mt-4 max-w-2xl font-semibold text-ink sm:text-xl">
-              Open a pack. Meet your first Yunipal. Then mint another every day.
+              Discover your next Yunipal, one pack at a time.
             </p>
             <p className="mt-3 max-w-2xl text-muted sm:text-lg">
-              Each pack unlocks its own collection of 264 unique variants.
-              Unused daily mints stack up, so you can claim them later.
+              The original Yunipals booster pack unlocks a collection of 264
+              unique variants, with daily mints that stack up while you’re away.
+              Nightforge, our upcoming collector airdrop, brings a new way to
+              collect.
             </p>
             <Link
               to="/boosters/why-packs"
@@ -248,6 +251,7 @@ export function BoosterPackSection() {
             </article>
           ))}
         </div>
+        <NightforgePreview />
         {deployment && (
           <BoosterTransactions
             autoOpenHash={

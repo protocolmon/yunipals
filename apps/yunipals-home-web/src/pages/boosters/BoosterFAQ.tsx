@@ -71,7 +71,10 @@ export function BoosterFAQ() {
           Booster pack FAQ
         </h2>
         <p className="mt-3 text-muted">
-          How your pack works, from the first reveal to the full collection.
+          These answers cover the original Yunipals booster pack and its daily
+          mints. Nightforge is a separate upcoming collector airdrop: one card
+          per pack, no daily mints and no purchase or payment required. Its
+          timing and eligibility will be announced later.
         </p>
         <div className="mt-7 space-y-3">
           {questions.map(({ question, answer }) => (
