@@ -530,3 +530,86 @@ counter; request ancestry identifies fusion fees. The confirmed availability
 endpoint accepts `kind=fusion` to read the independent fusion counter; omitted
 kind remains serum-compatible. No contract upgrade or public activation is
 performed by these source changes.
+
+## Singularity fusions
+
+A Singularity consumes two distinct, unfused, ungraded cards with identical
+**pack type, species, color, horn, glitter and sequence**, minted on the same
+**UTC calendar date** (`mintedAt / 86400`). Minter wallets do not matter; the
+caller must currently own both inputs. Sequence-zero originals qualify. Their
+remaining daily claims end only when the completed fusion burns them, and
+pending original claims still block admission. Match immutable birth traits,
+not serum-altered appearances, Presence or finish. Missing mint facts fail closed.
+
+The activated pack catalog is immutable and its trait arrays and allowed ranks
+are unique, so `(packTypeId, variantId)` exactly identifies the required four
+traits on-chain. The client compares the four explicit traits. Per-lineage
+sequence uniqueness means matching pairs necessarily have different originals.
+The ordinary adjacent-sequence and four-source recipes remain unchanged.
+
+`Fusion.level = 3` identifies **Singularity**, a terminal two-source kind rather
+than a third recursive fusion. Only levels zero and one are accepted as inputs.
+The result retains both sources and their applied serum histories, gets eleven
+new local doses (at most 33 across its three-node history), inherits the later
+cooldown, discards unused serums and rolls Presence and finish using existing
+VRF rules. Adventures, serum application and portal grading remain available;
+a completed grade ends further adventures and serum use. Matching either real
+source still qualifies for a portal, including originals-only gates.
+
+The existing `fuse` call handles the mutually exclusive recipes. Singularity
+shares the existing 1,000-fusion sponsorship counter and subsequent 0.10 USDC
+fee, with the same fee cap, ETH VRF payment, reservation and completion flow.
+It does not create another subsidy or reset either counter. Both parents stay
+reserved until successful completion; failed rendering/submission retries reuse
+saved artwork. New inputs burn only after completed artwork is accepted.
+
+Art shows dimensional counterparts converging into one extraordinary soft-3D
+Yunipal: refracted anatomy, offset translucent echoes, a gravitational seam and
+two environments bending toward the collision. No split-screen or separate
+second creature. Later serums and portal spells preserve this defining identity;
+Singularity earns no automatic grading bonus.
+
+### Compatibility and upgrade
+
+Only the collection (`YunipalMonsters`) implementation needs upgrading. No
+storage fields, initializer, evolution request struct, fee contract, existing
+binding, event signature or global indexer source identity changes. A pinned
+pre-upgrade collection fixture verifies pending ordinary fusion and serum
+completion across the upgrade. Existing histories and paid checkpoints remain
+usable. The unchanged `FusionMinted` event carries level 3 and two source IDs;
+the existing global event reducer and versioned collection projection retain it.
+Source mint timestamps come from on-chain `cardFacts` at the same confirmed
+snapshot as the other card facts.
+
+The existing evolution rendering-policy hash stays unchanged. Singularity adds
+a separate immutable `SINGULARITY_POLICY` hash of the shared
+`singularityArtDirection`; the worker checks this against the collection at its
+canonical processing block, writes it into its checkpoint and output metadata,
+and rejects saved output with a different or missing supplemental policy. Old
+ordinary prompts retain their previous rules. Portal generation preserves the
+new kind while retaining the existing fees, rubric and one-grade rule.
+
+The approved v2 art direction makes structural melting and warping dominant:
+liquid ribbons, suspended droplets, folded anatomy and dimensional gaps with
+visible reconnection. Keep the expressive face, soft sculpted 3D materials,
+birth identity and assigned finish recognizable. Adapt the distortion to each
+species; do not add dragon anatomy to other species. Serum and portal edits
+preserve this deformation instead of restoring an ordinary silhouette. The
+card frame and nameplates retain their standard shape. Changing this direction
+requires updating the supplemental contract hash and regenerating any prepared
+unsigned upgrade package before signing.
+
+Release compatible API, evolution worker, portal worker and frontend **before**
+upgrading the collection: the upgrade immediately admits the new recipe through
+the existing unpaused controller. Before upgrading, the partner API hides
+Singularity candidates when the collection lacks the policy getter, and quotes
+validate the actual on-chain recipe at the live block. Transport failures are
+not treated as lack of support. Do not roll workers back to a build that cannot
+process level 3 after accepting a Singularity. Preserve outstanding jobs and
+completed artifacts; use a forward fix or pause new requests if necessary.
+
+Pin compiler artifacts and source, check deployed bytecode size and unchanged
+storage, rehearse the exact deploy-plus-`upgradeToAndCall(implementation, 0x)`
+transactions and retained state on a fork, and use the operator's normal signing
+handoff. Keep nonces, receipts, hosting and production evidence in the private
+operations repository. This source change itself performs no live upgrade.

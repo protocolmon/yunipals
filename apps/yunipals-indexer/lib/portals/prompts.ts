@@ -6,6 +6,7 @@ import {
 
 import {
   cardFinishes,
+  singularityArtDirection,
   finishDirections
 } from "@protopals/yunipals-market-core/serums";
 
@@ -85,7 +86,11 @@ export function portalImagePrompt(
   const evolved = context?.evolution
     ? ` Preserve the defining physical serum features and fused ancestry already present in the input artwork while adding the portal effect and spell. All ancestral colors and species remain recognizable; baseColor denotes the matching gate witness, not the only identity to preserve. Keep current Presence, especially Holy eyes and bearing. Preserve the assigned ${cardFinishes[context.evolution.history.finish]} finish even if the spell asks to replace it: ${finishDirections[context.evolution.history.finish]}. Never add a serum bottle. Trusted ancestry and ordered serum history: ${JSON.stringify(context.evolution)}.`
     : "";
-  return `${editInstructions}${portal}${evolved} Player data: ${JSON.stringify({ spell })}`;
+  const singularity =
+    context?.evolution?.history.level === 3
+      ? ` Trusted Singularity identity: ${singularityArtDirection}`
+      : "";
+  return `${editInstructions}${portal}${evolved}${singularity} Player data: ${JSON.stringify({ spell })}`;
 }
 
 export const portalVisualGradingInstructions =

@@ -4,6 +4,7 @@ import {
   adventureAbi,
   evolutionAbi
 } from "@protopals/yunipals-market-core/evolutionAbi";
+import { fusionCompatible } from "@protopals/yunipals-market-core/serums";
 import { environment } from "@/environment";
 import { portalImage } from "@/lib/portals";
 
@@ -32,7 +33,7 @@ export type DoseHistory = {
 const history: z.ZodType<DoseHistory> = z.lazy(() =>
   z.object({
     tokenId: uint,
-    level: z.number().int().min(0).max(2),
+    level: z.number().int().min(0).max(3),
     presence: z.number().int().min(0).max(11),
     finish: z.number().int().min(0).max(3),
     doses: z.array(dose).max(11),
@@ -43,13 +44,14 @@ export const evolutionCardSchema = z.object({
   portalWitness: uint.optional(),
   tokenId: uint,
   owner: address,
-  level: z.union([z.literal(0), z.literal(1), z.literal(2)]),
+  level: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
   sources: z
     .array(
       z.object({
         tokenId: uint,
         originalTokenId: uint,
         sequence: z.number().int().min(0).max(263),
+        mintedAt: z.number().int().positive().safe().optional(),
         isOriginal: z.boolean(),
         packTypeId: uint,
         variantId: z.number(),
@@ -175,6 +177,12 @@ export function validateEvolutionQuote(
     throw new Error(
       "The adventure quote does not match your selection or configured contracts."
     );
+  if (
+    kind === "fusion" &&
+    (quote.cards.length !== 2 ||
+      !fusionCompatible(quote.cards[0], quote.cards[1]))
+  )
+    throw new Error("These cards do not match a fusion recipe.");
   const decoded = decodeFunctionData({
     abi: kind === "adventure" ? adventureAbi : evolutionAbi,
     data: quote.data

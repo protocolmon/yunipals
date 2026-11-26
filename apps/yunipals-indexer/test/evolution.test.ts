@@ -5,6 +5,7 @@ import {
   serumDefinition,
   effectiveSequence,
   fusionCompatible,
+  singularityCompatible,
   fusionPresenceOdds,
   type EvolutionSource
 } from "../../../packages/yunipals-market-core/src/serums.js";
@@ -262,5 +263,80 @@ it("keeps fee sponsorship attached to the request through generation and replay"
   expect(await store.get("job", "2")).toMatchObject({
     fee: "100000",
     sponsored: false
+  });
+});
+
+describe("Singularity recipe", () => {
+  const a = {
+    tokenId: "1",
+    level: 0 as const,
+    sources: [{ ...source("1", 0), mintedAt: 86401 }]
+  };
+  const b = {
+    tokenId: "2",
+    level: 0 as const,
+    sources: [{ ...source("2", 0, "2"), mintedAt: 172799 }]
+  };
+  it("accepts originals across lineages within a UTC date without wallet restrictions", () => {
+    expect(singularityCompatible(a, b)).toBe(true);
+    expect(fusionCompatible(a, b)).toBe(true);
+    expect(singularityCompatible(b, a)).toBe(true);
+    expect(singularityCompatible(a, a)).toBe(false);
+  });
+  it.each([
+    { mintedAt: 172800 },
+    { mintedAt: undefined },
+    { mintedAt: 0 },
+    { sequence: 1 },
+    { packTypeId: "2" },
+    { monsterType: 2 },
+    { color: 2 },
+    { horn: 2 },
+    { glitter: 1 },
+    { originalTokenId: "1" }
+  ])("rejects a mismatch or unavailable facts: %j", (patch) => {
+    expect(
+      singularityCompatible(a, {
+        ...b,
+        sources: [{ ...b.sources[0], ...patch }]
+      })
+    ).toBe(false);
+  });
+  it("does not confuse Singularity with either ordinary fusion path", () => {
+    const first = { ...a, tokenId: "10", level: 1 as const };
+    const singularity = { ...b, tokenId: "20", level: 3 as const };
+    expect(fusionCompatible(first, singularity)).toBe(false);
+    expect(
+      fusionCompatible(singularity, { ...singularity, tokenId: "21" })
+    ).toBe(false);
+    expect(singularityCompatible(first, b)).toBe(false);
+    expect(fusionCompatible(a, { ...b, sources: [source("2", 1)] })).toBe(true);
+  });
+  it("projects terminal two-source minting through the existing global event reducer", async () => {
+    const { store } = memory();
+    await applyEvolutionEvent(store, "FusionMinted", {
+      tokenId: "3",
+      parentA: "1",
+      parentB: "2",
+      recipient: "0xABC",
+      level: 3,
+      sources: ["1", "2", "0", "0"],
+      sourceCount: 2,
+      sequenceSum: 0
+    });
+    expect(await store.get("card", "3")).toMatchObject({
+      level: 3,
+      sourceCount: 2,
+      owner: "0xabc",
+      burned: false
+    });
+    expect(await store.get("card", "1")).toMatchObject({
+      burned: true,
+      owner: null
+    });
+    expect(await store.get("card", "2")).toMatchObject({
+      burned: true,
+      owner: null
+    });
   });
 });

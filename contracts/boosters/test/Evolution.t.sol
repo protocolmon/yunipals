@@ -797,4 +797,154 @@ contract EvolutionTest is Test {
         vm.expectRevert("grading history binding frozen");
         cards.setGradingRegistry(address(other));
     }
+    function testSingularityOriginalsTransferIndependentAndTerminal() public {
+        vm.warp(20 days + 1);
+        uint256 a = original();
+        vm.warp(21 days - 1);
+        uint256 b = engine.original(cards, packId, BOB, 0);
+        vm.prank(BOB);
+        cards.transferFrom(BOB, ALICE, b);
+        assertEq(cards.fusionRecipe(a, b).level, 3);
+        uint256 job = fuseWithLimit(a, b, 0);
+        assertEq(cards.ownerOf(a), ALICE);
+        assertEq(cards.ownerOf(b), ALICE);
+        assertTrue(evolution.sponsoredRequest(job));
+        assertEq(evolution.sponsoredFusionsUsed(), 1);
+        assertEq(evolution.sponsoredSerumsUsed(), 0);
+        uint256 result = complete(job);
+        YunipalMonsters.Fusion memory f = cards.fusion(result);
+        assertEq(f.level, 3);
+        assertEq(f.sourceCount, 2);
+        assertEq(f.sources[0], a);
+        assertEq(f.sources[1], b);
+        assertEq(cards.effectiveSequence(result), 0);
+        vm.expectRevert(); cards.ownerOf(a);
+        vm.expectRevert(); cards.ownerOf(b);
+        uint256 c = original();
+        uint256 d = original();
+        uint256 other = complete(fuse(c, d));
+        vm.expectRevert("incompatible fusion levels");
+        cards.fusionRecipe(result, other);
+        findSerum(result);
+        complete(drink(result));
+        (, uint8 doses,,,) = evolution.state(result);
+        assertEq(doses, 1);
+        EvolutionGateRegistry registry = new EvolutionGateRegistry();
+        PortalGradingValidator validator = new PortalGradingValidator();
+        registry.collection().set(0, 0, true);
+        assertEq(validator.matchingSource(cards, PortalRegistry(address(registry)), packId, 1, result), a);
+    }
+
+    function testSingularityRequiresUtcDateNotRollingDay() public {
+        vm.warp(30 days - 1);
+        uint256 a = original();
+        vm.warp(30 days);
+        uint256 b = original();
+        vm.expectRevert(YunipalMonsters.DifferentMintDates.selector);
+        cards.fusionRecipe(a, b);
+    }
+
+    function testSingularityMatchesEachTraitAndPackExactly() public {
+        uint256 a = original();
+        // Variant encoding: glitter, horn, color, species in ascending strides.
+        uint32[4] memory variants = [uint32(1), 2, 4, 24];
+        for (uint256 i; i < variants.length; ++i) {
+            uint256 b = engine.original(cards, packId, ALICE, variants[i]);
+            vm.expectRevert(YunipalMonsters.SingularityTraitsMismatch.selector);
+            cards.fusionRecipe(a, b);
+        }
+        // An otherwise identical card from a distinct pack must never qualify.
+        PackRegistry.Pack memory pack = packs.getPack(packId);
+        uint256 otherPack = packs.configureType(0, pack.rules, packs.getCatalog(packId));
+        packs.activate(otherPack);
+        uint256 c = engine.original(cards, otherPack, ALICE, 0);
+        vm.expectRevert(YunipalMonsters.SingularityTraitsMismatch.selector);
+        cards.fusionRecipe(a, c);
+    }
+
+    function testSingularitySequenceAndUnfusedUngradedGuards() public {
+        uint256 a = original();
+        uint256 b = original();
+        uint256 x = engine.child(cards, a, ALICE, 7, 17);
+        uint256 y = engine.child(cards, b, ALICE, 7, 18);
+        vm.expectRevert("different lineages"); cards.fusionRecipe(x, y);
+        uint256 z = engine.child(cards, b, ALICE, 7, 17);
+        assertEq(cards.fusionRecipe(x, z).sequenceSum, 34);
+        grading.setGraded(x);
+        YunipalEvolution.Expected memory ex = expected(x);
+        YunipalEvolution.Expected memory ez = expected(z);
+        vm.prank(ALICE);
+        vm.expectRevert("card already graded");
+        evolution.fuse{value: 0.001 ether}(x, z, ex, ez, 0, 0.001 ether, uint64(block.timestamp));
+        assertEq(evolution.sponsoredFusionsUsed(), 0);
+        vm.expectRevert("canonical distinct parents required"); cards.fusionRecipe(a, a);
+        vm.expectRevert("canonical distinct parents required"); cards.fusionRecipe(b, a);
+        engine.setPending(1);
+        YunipalEvolution.Expected memory ea = expected(a);
+        YunipalEvolution.Expected memory eb = expected(b);
+        vm.prank(ALICE);
+        vm.expectRevert("original has pending claim");
+        evolution.fuse{value: 0.001 ether}(a, b, ea, eb, 0, 0.001 ether, uint64(block.timestamp));
+    }
+
+    function testSingularityRetainsDosesCooldownAndSharedPaidFee() public {
+        uint256 a = original();
+        uint256 b = original();
+        findSerum(a); complete(drink(a));
+        findSerum(b); complete(drink(b));
+        findSerum(a);
+        uint64 cooldown = adventures.nextAdventureAt(a);
+        sponsorStorage.target(address(evolution)).sig("sponsoredFusionsUsed()").checked_write(1000);
+        uint256 job = fuse(a, b);
+        assertFalse(evolution.sponsoredRequest(job));
+        assertEq(evolution.feeLiability(), 100_000);
+        wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
+        bytes32 binding = evolution.requestBinding(job);
+        vm.expectRevert();
+        evolution.complete(job, binding, YunipalEvolution.Artifact("", 0, "", 0));
+        assertEq(cards.ownerOf(a), ALICE);
+        assertEq(cards.cardReservation(a), address(evolution));
+        uint256 result = complete(job);
+        assertEq(usdc.balanceOf(FEES), 100_000);
+        assertEq(adventures.nextAdventureAt(result), cooldown);
+        assertEq(adventures.unusedSerum(a).serumId, 0);
+        assertEq(evolution.doses(a).length, 1);
+        assertEq(evolution.doses(b).length, 1);
+        (, uint8 doses, uint8 presence,, uint8 finish) = evolution.state(result);
+        assertEq(doses, 0);
+        YunipalEvolution.Request memory request = evolution.getRequest(job);
+        assertTrue(presence == request.presenceA || presence == request.presenceB);
+        assertEq(finish, request.resultFinish);
+        assertEq(cards.effectiveSequence(result), 0);
+    }
+
+    function testCardsUpgradePreservesLegacyPendingFusionAndSerum() public {
+        bytes memory code = vm.parseJsonBytes(vm.readFile("test/fixtures/YunipalMonsters.pre-singularity.json"), ".creationBytecode");
+        address legacy;
+        assembly { legacy := create(0, add(code, 32), mload(code)) }
+        require(legacy != address(0), "legacy deployment failed");
+        cards.upgradeToAndCall(legacy, "");
+        uint256 a = original();
+        uint256 b = child(a, 1);
+        uint256 c = original();
+        uint256 job = fuse(a, b);
+        findSerum(c);
+        uint256 serumJob = drink(c);
+        wrapper.fulfill(evolution.getRequest(job).randomnessId, 123);
+        bytes32 binding = evolution.requestBinding(job);
+        bytes32 serumBinding = evolution.requestBinding(serumJob);
+        cards.upgradeToAndCall(address(new YunipalMonsters()), "");
+        assertEq(evolution.requestBinding(job), binding);
+        assertEq(evolution.requestBinding(serumJob), serumBinding);
+        assertEq(cards.cardReservation(a), address(evolution));
+        uint256 result = complete(job);
+        assertEq(cards.fusion(result).level, 1);
+        complete(serumJob);
+        assertEq(evolution.sponsoredFusionsUsed(), 1);
+        assertEq(evolution.sponsoredSerumsUsed(), 1);
+        uint256 d = original();
+        uint256 e = original();
+        assertEq(cards.fusion(complete(fuse(d, e))).level, 3);
+    }
+
 }

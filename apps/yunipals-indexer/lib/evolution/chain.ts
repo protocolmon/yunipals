@@ -1,6 +1,9 @@
 import {
   BaseError,
+  keccak256,
+  toHex,
   ContractFunctionRevertedError,
+  ContractFunctionZeroDataError,
   zeroAddress,
   type Address,
   type PublicClient
@@ -13,6 +16,7 @@ import {
 } from "@protopals/yunipals-market-core/evolutionAbi";
 import {
   effectiveSequence,
+  singularityArtDirection,
   type EvolutionSource
 } from "@protopals/yunipals-market-core/serums";
 import type { EvolutionHistory } from "./art.js";
@@ -105,6 +109,51 @@ export class EvolutionChain {
       throw new Error(
         "Evolution deployment bindings do not match the confirmed indexer."
       );
+  }
+  async supportsSingularity(blockNumber: bigint) {
+    try {
+      await this.assertSingularityPolicy(blockNumber);
+      return true;
+    } catch (error) {
+      // Older collection implementations have no supplemental policy getter.
+      // Transport failures must remain visible, never masquerade as missing support.
+      const cause =
+        error instanceof BaseError
+          ? error.walk(
+              (c) =>
+                c instanceof ContractFunctionRevertedError ||
+                c instanceof ContractFunctionZeroDataError
+            )
+          : null;
+      if (
+        cause instanceof ContractFunctionRevertedError ||
+        cause instanceof ContractFunctionZeroDataError
+      )
+        return false;
+      throw error;
+    }
+  }
+  async assertSingularityPolicy(blockNumber: bigint) {
+    const policy = await this.client.readContract({
+      address: this.cards,
+      abi: evolutionCardsAbi,
+      functionName: "SINGULARITY_POLICY",
+      blockNumber
+    });
+    if (policy !== keccak256(toHex(singularityArtDirection)))
+      throw new Error("Unsupported Singularity rendering policy.");
+    return policy;
+  }
+  async fusionLevel(a: bigint, b: bigint, blockNumber: bigint) {
+    const recipe = await this.client.readContract({
+      address: this.cards,
+      abi: evolutionCardsAbi,
+      functionName: "fusionRecipe",
+      args: [a, b],
+      blockNumber
+    });
+    if (recipe.level === 3) await this.assertSingularityPolicy(blockNumber);
+    return recipe.level;
   }
   async history(
     tokenId: bigint,
@@ -199,7 +248,8 @@ export class EvolutionChain {
           variantId: p[2],
           ...p[3],
           isOriginal: p[4],
-          sequence: facts[0]
+          sequence: facts[0],
+          mintedAt: Number(facts[1])
         };
       })
     );
@@ -313,7 +363,7 @@ export class EvolutionChain {
       owner,
       sources,
       history,
-      level: history.level as 0 | 1 | 2,
+      level: history.level as 0 | 1 | 2 | 3,
       effectiveSequence: effectiveSequence(sources),
       artVersion: state[0].toString(),
       localDoses: state[1],

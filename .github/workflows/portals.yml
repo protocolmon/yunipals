@@ -75,6 +75,7 @@ jobs:
           pnpm --filter @protopals/yunipals-indexer test:evolution
           pnpm --filter @protopals/yunipals-indexer test:evolution:ponder
           pnpm --filter @protopals/yunipals-indexer test:evolution:local
+          EVOLUTION_TEST_SINGULARITY=1 pnpm --filter @protopals/yunipals-indexer test:evolution:local
       - name: Browser evidence
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

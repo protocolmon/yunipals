@@ -185,18 +185,33 @@ export class EvolutionWorker {
       await this.store.release(job, true);
       return;
     }
+    const resultLevel =
+      request.parentB !== 0n
+        ? await this.chain.fusionLevel(request.parentA, request.parentB, block)
+        : (await this.chain.history(request.parentA, block)).level;
+    const singularityPolicy =
+      resultLevel === 3
+        ? await this.chain.assertSingularityPolicy(block)
+        : undefined;
+    if (
+      (job.progress.prompt || job.progress.image || job.progress.artifact) &&
+      job.progress.singularityPolicy !== singularityPolicy
+    )
+      throw new Error("Saved artwork uses a different Singularity policy.");
     if (!job.progress.parents || !job.progress.prompt) {
       const parents = await Promise.all(
         [request.parentA, request.parentB]
           .filter((v) => v !== 0n)
           .map((v) => this.chain.history(v, block))
       );
+      if (singularityPolicy) job.progress.singularityPolicy = singularityPolicy;
       job.progress.parents = parents;
       job.progress.prompt = evolutionPrompt(
         parents,
         request.resultPresence,
         request.resultFinish,
-        request.parentB === 0n ? request.dose : undefined
+        request.parentB === 0n ? request.dose : undefined,
+        resultLevel
       );
       await this.store.save(job);
     }
@@ -241,7 +256,7 @@ export class EvolutionWorker {
       const parents = job.progress.parents;
       const fusion = request.parentB !== 0n;
       const serum = fusion ? null : serumDefinition(request.dose);
-      const level = parents[0].level + (fusion ? 1 : 0);
+      const level = resultLevel;
       const sources = (
         await Promise.all(
           [request.parentA, request.parentB]
@@ -252,13 +267,18 @@ export class EvolutionWorker {
       const metadata = await this.assets.putJson({
         name: serum
           ? `${serum.essence} ${serum.form} Yunipal`
-          : `Yunipal Fusion · Level ${level}`,
+          : level === 3
+            ? "Yunipal Singularity"
+            : `Yunipal Fusion · Level ${level}`,
         description:
           "A Yunipals trading card. Physical serum effects and immutable source ancestry are retained; Presence describes its current expression and bearing.",
         image: job.progress.image.uri,
         yunipals: { status: "ready", holo: job.progress.holo!.layers },
         attributes: [
-          { trait_type: "Card kind", value: level ? "Fusion" : "Base" },
+          {
+            trait_type: "Card kind",
+            value: level === 3 ? "Singularity" : level ? "Fusion" : "Base"
+          },
           { trait_type: "Fusion level", value: level },
           { trait_type: "Finish", value: cardFinishes[request.resultFinish] },
           {
@@ -281,6 +301,7 @@ export class EvolutionWorker {
           requestId: job.requestId,
           binding: job.binding,
           renderingPolicy: job.policy,
+          ...(singularityPolicy ? { singularityPolicy } : {}),
           sources,
           parents,
           appliedDose: serum ? request.dose : null,

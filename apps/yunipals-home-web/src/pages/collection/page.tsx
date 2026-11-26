@@ -1,4 +1,3 @@
-import { CollectionFusions } from "@/pages/adventures/AdventureCards";
 import { TransactionLink, TransactionRow } from "@/components/ui/transaction";
 import { AnimeFighterCard } from "@/pages/arena/anime/AnimeFighterCard";
 import {
@@ -907,7 +906,6 @@ function CollectionExplorer() {
               )}
             </form>
           </div>
-          {isTcg && environment.evolutionEnabled && <CollectionFusions />}
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <h2 ref={heading} tabIndex={-1} className="sr-only">
@@ -943,14 +941,6 @@ function CollectionExplorer() {
 
             <div className="flex flex-wrap items-center gap-2">
               {environment.boostersEnabled && isTcg && <CollectionDailyPulls />}
-              {environment.evolutionEnabled && isTcg && (
-                <Link
-                  to="/adventures"
-                  className="rounded-full bg-grape px-4 py-2.5 text-sm font-bold text-white"
-                >
-                  Adventures & fusion
-                </Link>
-              )}
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(true)}

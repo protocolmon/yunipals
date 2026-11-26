@@ -18,7 +18,21 @@ const card: AdventureCard = {
   tokenId: "1",
   owner,
   level: 0,
-  sources: [],
+  sources: [
+    {
+      tokenId: "1",
+      originalTokenId: "1",
+      sequence: 0,
+      mintedAt: 86401,
+      isOriginal: true,
+      packTypeId: "1",
+      variantId: 0,
+      monsterType: 1,
+      color: 1,
+      horn: 1,
+      glitter: 0
+    }
+  ],
   effectiveSequence: 0,
   artVersion: "0",
   historyHash: hash,
@@ -121,7 +135,16 @@ test("fusion review requires its displayed fee cap even for sponsored quotes", (
   const fusion = (fee: bigint): EvolutionQuote => ({
     ...quote(fee),
     kind: "fusion",
-    cards: [card, { ...card, tokenId: "2" }],
+    cards: [
+      card,
+      {
+        ...card,
+        tokenId: "2",
+        sources: [
+          { ...card.sources[0], tokenId: "2", sequence: 1, isOriginal: false }
+        ]
+      }
+    ],
     data: encodeFunctionData({
       abi: evolutionAbi,
       functionName: "fuse",
@@ -132,6 +155,47 @@ test("fusion review requires its displayed fee cap even for sponsored quotes", (
     for (const fee of [0n, 100000n])
       assert.doesNotThrow(() =>
         validateEvolutionQuote(fusion(fee), owner, "fusion", "1", "2")
+      );
+    const twin: AdventureCard = {
+      ...card,
+      tokenId: "2",
+      sources: [
+        {
+          ...card.sources[0],
+          tokenId: "2",
+          originalTokenId: "2",
+          mintedAt: 172799
+        }
+      ]
+    };
+    assert.doesNotThrow(() =>
+      validateEvolutionQuote(
+        { ...fusion(0n), cards: [card, twin] },
+        owner,
+        "fusion",
+        "1",
+        "2"
+      )
+    );
+    for (const patch of [
+      { mintedAt: 172800 },
+      { glitter: 1 },
+      { mintedAt: undefined }
+    ])
+      assert.throws(() =>
+        validateEvolutionQuote(
+          {
+            ...fusion(0n),
+            cards: [
+              card,
+              { ...twin, sources: [{ ...twin.sources[0], ...patch }] }
+            ]
+          },
+          owner,
+          "fusion",
+          "1",
+          "2"
+        )
       );
     assert.throws(() =>
       validateEvolutionQuote(

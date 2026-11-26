@@ -12,6 +12,8 @@ import {
 import { z } from "zod";
 import {
   adventureOdds,
+  evolutionKind,
+  singularityCompatible,
   cardFinishes,
   finishOdds,
   serumRarities,
@@ -198,7 +200,7 @@ export function AdventurePage() {
                 companions. Every transformation leaves its mark.
               </p>
               <p className="mt-4 text-sm">
-                121 serums · 11 Presences · 2 fusion levels
+                121 serums · 11 Presences · Singularity fusions
               </p>
               <p className="mt-3 text-sm font-semibold">
                 We cover the AI fee for the first 1,000 serum applications.
@@ -339,7 +341,7 @@ export function AdventurePage() {
               <div>
                 <p className="text-sm text-muted">
                   {card.level
-                    ? `Fusion level ${card.level} · ${card.sources.length} sources`
+                    ? `${evolutionKind(card.level)} · ${card.sources.length} sources`
                     : "Yunipals TCG"}
                 </p>
                 <h1 className="mt-2 font-display text-4xl font-bold">
@@ -487,18 +489,18 @@ export function AdventurePage() {
                     Fuse with a companion
                   </h2>
                   <p className="mt-2 text-sm">
-                    {card.level === 2
+                    {card.level >= 2
                       ? "This card has reached the final fusion level."
                       : card.level === 1
                         ? "Choose a first fusion from a different original lineage."
-                        : "Choose a neighbouring sequence from the same original lineage."}
+                        : "Choose a neighbouring sequence from the same lineage, or a Singularity twin: same UTC mint date, pack type, species, color, horn, glitter and sequence. Both must be unfused and ungraded."}
                   </p>
                   <button
                     className={cn(adventureButton, "mt-4")}
                     disabled={
                       unavailable ||
                       evolutionPause.data !== false ||
-                      card.level === 2 ||
+                      card.level >= 2 ||
                       !canWallet
                     }
                     onClick={() => setChoosing(!choosing)}
@@ -633,7 +635,12 @@ export function AdventurePage() {
               className="font-display text-2xl font-bold"
             >
               {actions.review.quote.kind === "fusion"
-                ? "Unite your Yunipals"
+                ? singularityCompatible(
+                    actions.review.quote.cards[0],
+                    actions.review.quote.cards[1]
+                  )
+                  ? "Create a Singularity"
+                  : "Unite your Yunipals"
                 : actions.review.quote.kind === "serum"
                   ? "A new transformation"
                   : "Ready to explore?"}
@@ -645,6 +652,22 @@ export function AdventurePage() {
             </div>
             {actions.review.quote.kind === "fusion" && (
               <>
+                {singularityCompatible(
+                  actions.review.quote.cards[0],
+                  actions.review.quote.cards[1]
+                ) && (
+                  <p className="mt-4 rounded-2xl bg-lavender/20 p-4">
+                    Two dimensional counterparts become one Singularity. This is
+                    a final fusion form: it can adventure, drink serums and
+                    enter grading, but cannot fuse again. Matching mint date:{" "}
+                    {new Date(
+                      actions.review.quote.cards[0].sources[0].mintedAt! * 1000
+                    )
+                      .toISOString()
+                      .slice(0, 10)}{" "}
+                    (UTC).
+                  </p>
+                )}
                 <p className="mt-4 text-sm">
                   Both inputs burn only after the new artwork is ready. Applied
                   effects stay; unused serums are discarded. The result gets 11

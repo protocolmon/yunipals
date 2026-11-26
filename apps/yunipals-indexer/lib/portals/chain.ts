@@ -697,6 +697,7 @@ export class PortalChain {
       chain.sources(tokenId, blockNumber),
       chain.history(tokenId, blockNumber)
     ]);
+    if (history.level === 3) await chain.assertSingularityPolicy(blockNumber);
     return { sources, history };
   }
 

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
   cardFinishes,
+  evolutionKind,
   serumPresences,
   serumDefinition
 } from "@protopals/yunipals-market-core/serums";
@@ -32,7 +33,7 @@ export function AdventureCardTile({
       />
       <div className="p-3">
         <p className="font-bold">
-          {card.level ? `Fusion ${card.level}` : "Yunipal"} #{card.tokenId}
+          {evolutionKind(card.level)} #{card.tokenId}
         </p>
         <p className="mt-1 text-sm text-muted">
           {serumPresences[card.presence]} · {cardFinishes[card.finish]} finish ·{" "}
@@ -99,7 +100,7 @@ export function AdventureWallet({
       {!query.isPending && !query.isError && !cards.length && (
         <p className="py-6 text-muted">
           {compatibleWith
-            ? "No compatible partner on this page. First fusions need neighbouring sequence positions from the same original; second fusions need a different original lineage."
+            ? "No compatible partner on this page. First fusions need neighbouring sequence positions from the same original; second fusions need a different original lineage. Singularity pairs need the same UTC mint date, pack type, species, color, horn, glitter and sequence."
             : "No cards found for this wallet yet. Your base cards and fusions appear together here."}
         </p>
       )}
@@ -119,7 +120,7 @@ export function SerumHistory({ history }: { history: DoseHistory }) {
   return (
     <div className="space-y-3 rounded-2xl border border-line p-4">
       <p className="font-semibold">
-        {history.level ? `Fusion ${history.level}` : "Source"} #
+        {history.level ? evolutionKind(history.level) : "Source"} #
         {history.tokenId} · {history.doses.length}/11 local doses ·{" "}
         {cardFinishes[history.finish]} finish
       </p>

@@ -5,6 +5,7 @@ import {
 } from "@protopals/yunipals-market-core/portals";
 import {
   cardFinishes,
+  singularityArtDirection,
   finishDirections,
   serumDefinition,
   serumPresences,
@@ -58,7 +59,7 @@ export function validateEvolutionHistory(history: EvolutionHistory) {
       !/^[1-9][0-9]{0,77}$/.test(node.tokenId) ||
       seen.has(node.tokenId) ||
       node.level !== expectedLevel ||
-      ![0, 1, 2].includes(node.level) ||
+      ![0, 1, 2, 3].includes(node.level) ||
       !Number.isInteger(node.presence) ||
       node.presence < 0 ||
       node.presence > 11 ||
@@ -72,7 +73,9 @@ export function validateEvolutionHistory(history: EvolutionHistory) {
     seen.add(node.tokenId);
     node.doses.forEach(serumDefinition);
     doseCount += node.doses.length;
-    node.parents.forEach((parent) => visit(parent, node.level - 1));
+    node.parents.forEach((parent) =>
+      visit(parent, node.level === 3 ? 0 : node.level - 1)
+    );
   };
   visit(history, history.level);
   if (doseCount > 77)
@@ -83,7 +86,8 @@ export function evolutionPrompt(
   parents: EvolutionHistory[],
   presence: number,
   finish: number,
-  dose?: SerumDose
+  dose?: SerumDose,
+  resultLevel?: number
 ) {
   if (
     parents.length !== (dose ? 1 : 2) ||
@@ -97,11 +101,20 @@ export function evolutionPrompt(
   parents.forEach(validateEvolutionHistory);
   if (dose && parents[0].finish !== 0 && parents[0].finish !== finish)
     throw new Error("Serum cannot change an assigned finish.");
+  const singularity = resultLevel === 3 || (dose && parents[0].level === 3);
+  if (!dose && singularity && parents.some((p) => p.level !== 0))
+    throw new Error("Singularity requires unfused parents.");
   const serum = dose ? serumDefinition(dose) : null;
   if (dose && dose.presenceId !== presence)
     throw new Error("Serum Presence mismatch.");
   return stablePortalJson({
     rules: evolutionArtRules,
+    ...(singularity
+      ? {
+          singularity: singularityArtDirection,
+          singularityPolicy: keccak256(toHex(singularityArtDirection))
+        }
+      : {}),
     operation: dose ? evolutionArtRules.serum : evolutionArtRules.fusion,
     inputImageOrder: parents.map((p) => p.tokenId),
     inheritedHistory: parents,
