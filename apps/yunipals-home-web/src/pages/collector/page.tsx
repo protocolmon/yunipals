@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   Check,
   Copy,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
@@ -461,23 +462,18 @@ function YunipalsCollectorPage({
           <h1 className="sr-only">
             {isOwnCollection ? `Your ${definition.label}` : definition.label}
           </h1>
-          <details className="rounded-2xl border border-line px-4">
-            <summary className="min-h-11 cursor-pointer py-3 text-sm text-muted focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-ethereum">
-              <span className="font-semibold text-ink">
-                {ownerName ?? shortAddress(canonicalOwner)}
-              </span>
-              <span className="ml-3">Wallet details &amp; rankings</span>
+          <details className="group">
+            <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-muted transition hover:bg-line/30 hover:text-ink [&::-webkit-details-marker]:hidden">
+              <Trophy aria-hidden="true" size={16} />
+              {isOwnCollection ? "My rankings" : "Collector details & rankings"}
+              <ChevronDown
+                aria-hidden="true"
+                size={15}
+                className="transition-transform group-open:rotate-180"
+              />
             </summary>
             <div className="pb-4 pt-2">
               <div className="flex flex-wrap items-center gap-2">
-                {isOwnCollection && (
-                  <Link
-                    to="/orders"
-                    className="inline-flex items-center rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink focus-visible:ring-2 focus-visible:ring-ink"
-                  >
-                    Manage my orders
-                  </Link>
-                )}
                 <Link
                   to="/leaderboard"
                   className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-bold text-ink transition hover:bg-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
@@ -499,66 +495,68 @@ function YunipalsCollectorPage({
               </div>
 
               <div className="mt-4 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-                <div className="min-w-0">
-                  {ownerName && (
-                    <p className="mt-5 truncate text-2xl font-black text-ink sm:text-3xl">
-                      {ownerName}
-                    </p>
-                  )}
-                  <div className="mt-5 flex min-w-0 flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:hidden">
-                      {shortAddress(canonicalOwner)}
-                    </span>
-                    <span className="hidden rounded-full border border-line bg-white px-4 py-2 font-mono text-sm font-semibold text-ink shadow-sm sm:block">
-                      {canonicalOwner}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => void copyAddress()}
-                      className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-                      aria-label="Copy collector address"
-                    >
-                      {copied ? (
-                        <Check aria-hidden="true" size={15} />
-                      ) : (
-                        <Copy aria-hidden="true" size={15} />
-                      )}
-                    </button>
-                    <a
-                      href={`${ownerExplorerUrl}/address/${canonicalOwner}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
-                      aria-label={`View collector in the ${chainDetails[ownerExplorerChain].label} explorer`}
-                    >
-                      <ExternalLink aria-hidden="true" size={15} />
-                    </a>
-                  </div>
-                  {resolvedAddresses &&
-                    Object.entries(resolvedAddresses).length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {indexedChains.map((chain) => {
-                          const resolvedAddress = resolvedAddresses[chain];
-                          return (
-                            resolvedAddress && (
-                              <span
-                                key={chain}
-                                className="inline-flex items-center gap-2 rounded-full bg-line/40 px-3 py-1.5 text-xs font-bold text-muted"
-                                title={resolvedAddress}
-                              >
-                                <ChainLogo
-                                  chainId={chain}
-                                  className={`h-3.5 w-3.5 ${chainDetails[chain].badgeClassName}`}
-                                />
-                                {chainDetails[chain].label} ·{" "}
-                                {shortAddress(resolvedAddress)}
-                              </span>
-                            )
-                          );
-                        })}
-                      </div>
+                {!isOwnCollection && (
+                  <div className="min-w-0">
+                    {ownerName && (
+                      <p className="mt-5 truncate text-2xl font-black text-ink sm:text-3xl">
+                        {ownerName}
+                      </p>
                     )}
-                </div>
+                    <div className="mt-5 flex min-w-0 flex-wrap items-center gap-2">
+                      <span className="font-mono text-sm font-semibold text-ink break-all sm:hidden">
+                        {shortAddress(canonicalOwner)}
+                      </span>
+                      <span className="hidden font-mono text-sm font-semibold text-ink break-all sm:block">
+                        {canonicalOwner}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => void copyAddress()}
+                        className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                        aria-label="Copy collector address"
+                      >
+                        {copied ? (
+                          <Check aria-hidden="true" size={15} />
+                        ) : (
+                          <Copy aria-hidden="true" size={15} />
+                        )}
+                      </button>
+                      <a
+                        href={`${ownerExplorerUrl}/address/${canonicalOwner}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="grid h-9 w-9 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
+                        aria-label={`View collector in the ${chainDetails[ownerExplorerChain].label} explorer`}
+                      >
+                        <ExternalLink aria-hidden="true" size={15} />
+                      </a>
+                    </div>
+                    {resolvedAddresses &&
+                      Object.entries(resolvedAddresses).length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {indexedChains.map((chain) => {
+                            const resolvedAddress = resolvedAddresses[chain];
+                            return (
+                              resolvedAddress && (
+                                <span
+                                  key={chain}
+                                  className="inline-flex items-center gap-2 rounded-full bg-line/40 px-3 py-1.5 text-xs font-bold text-muted"
+                                  title={resolvedAddress}
+                                >
+                                  <ChainLogo
+                                    chainId={chain}
+                                    className={`h-3.5 w-3.5 ${chainDetails[chain].badgeClassName}`}
+                                  />
+                                  {chainDetails[chain].label} ·{" "}
+                                  {shortAddress(resolvedAddress)}
+                                </span>
+                              )
+                            );
+                          })}
+                        </div>
+                      )}
+                  </div>
+                )}
 
                 {profile && (
                   <section
