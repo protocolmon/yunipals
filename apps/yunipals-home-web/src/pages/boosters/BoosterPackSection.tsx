@@ -22,6 +22,7 @@ import { BoosterPurchaseOptions } from "./BoosterPurchaseOptions";
 import { BoosterPackOpening } from "./BoosterPackOpening";
 import { BoosterTransactions } from "./BoosterTransactions";
 import { NightforgePreview } from "./NightforgePreview";
+import { ExpandablePackArtwork } from "./ExpandablePackArtwork";
 
 export function BoosterPackSection() {
   const { address } = useAccount();
@@ -94,14 +95,11 @@ export function BoosterPackSection() {
         {freshPending && (
           <article className="grid overflow-hidden rounded-card border border-line bg-white shadow-card md:grid-cols-2">
             <div className="flex items-center justify-center bg-gradient-to-br from-lavender/60 via-lavender/20 to-sky/40 px-8 py-10 sm:py-12">
-              <img
-                src="/images/boosters/yunipals-pack-v1.png"
+              <ExpandablePackArtwork
+                image="/images/boosters/yunipals-pack-v1.png"
+                label="Yunipals booster pack"
                 alt="Lavender Yunipals booster pack featuring a blue Yunidragon with a golden spiral horn"
-                width={1024}
-                height={1536}
-                fetchPriority="high"
-                draggable={false}
-                className="w-56 max-w-full drop-shadow-xl motion-safe:animate-float sm:w-72"
+                priority
               />
             </div>
             <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">
@@ -177,14 +175,11 @@ export function BoosterPackSection() {
                   className="pointer-events-none absolute inset-0 bg-soft-orbit"
                   aria-hidden="true"
                 />
-                <img
-                  src="/images/boosters/yunipals-pack-v1.png"
+                <ExpandablePackArtwork
+                  image="/images/boosters/yunipals-pack-v1.png"
+                  label="Yunipals booster pack"
                   alt="Sealed lavender Yunipals booster pack featuring a blue Yunidragon with a golden spiral horn"
-                  width={1024}
-                  height={1536}
-                  fetchPriority="high"
-                  draggable={false}
-                  className="relative w-56 max-w-full drop-shadow-xl motion-safe:animate-float sm:w-72"
+                  priority
                 />
               </div>
               <div className="flex flex-col justify-center p-6 sm:p-10 lg:p-12">

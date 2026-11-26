@@ -14,11 +14,13 @@ export function BoosterCardViewer({
   artwork,
   interactive = true,
   onExpand,
+  subject = "card",
   variant = "default"
 }: {
   artwork: CardArtwork;
   interactive?: boolean;
   onExpand?: () => void;
+  subject?: "card" | "pack";
   variant?: "default" | "expanded";
 }) {
   const viewerRef = useRef<HTMLElement | null>(null);
@@ -277,7 +279,7 @@ export function BoosterCardViewer({
         role="status"
         className="rounded-card bg-lavender/20 p-8 text-center text-muted"
       >
-        The card image could not be loaded.{" "}
+        The {subject} image could not be loaded.{" "}
         {interactive && (
           <button
             type="button"
@@ -324,7 +326,7 @@ export function BoosterCardViewer({
           onExpand
             ? `View ${artwork.name ?? "Yunipal card"} larger`
             : interactive
-              ? "Interactive Yunipal card"
+              ? `Interactive Yunipal ${subject}`
               : undefined
         }
         aria-haspopup={onExpand ? "dialog" : undefined}
