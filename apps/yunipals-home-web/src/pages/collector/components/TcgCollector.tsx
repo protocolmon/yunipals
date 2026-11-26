@@ -1,5 +1,3 @@
-import { environment } from "@/environment";
-import { CollectionFusions } from "@/pages/adventures/AdventureCards";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -137,9 +135,6 @@ export function TcgCollector({ ownerInput }: { ownerInput: string }) {
           Open packs
         </Link>
       </header>
-      {owner && environment.evolutionEnabled && (
-        <CollectionFusions owner={owner} />
-      )}
       {!valid ? (
         <QueryError message="Enter a valid wallet address or ENS name." />
       ) : resolution.isError && !owner ? (

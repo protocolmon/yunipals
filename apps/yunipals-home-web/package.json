@@ -9,6 +9,7 @@
     "test:collector": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/collector.test.ts src/lib/collectionEdition.test.ts src/lib/boosterCollectionGrid.test.ts",
     "test:solana": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test src/lib/solanaIndexer.test.ts src/lib/collectionBrowser.test.ts",
     "test:solana:ui": "node scripts/test-og-solana-filters-ui.mjs",
+    "test:leaderboard:ui": "node scripts/test-leaderboard-ui.mjs",
     "test:collector:ui": "node scripts/test-collector-ui.mjs",
     "test:collector:chains:ui": "node scripts/test-collector-chains-ui.mjs",
     "test:fixtures": "node --experimental-strip-types --import ./scripts/register-typescript.mjs --test scripts/fixtures/devServer.test.ts",

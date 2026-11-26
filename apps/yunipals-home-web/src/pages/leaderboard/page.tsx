@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAccount } from "wagmi";
 
 import { Select, SelectItem } from "@/components/ui/select";
 import { QueryError } from "@/components/QueryState";
@@ -25,9 +26,13 @@ import {
 } from "@/lib/format";
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { environment } from "@/environment";
+import { ownerLeaderboardEntry } from "@/lib/leaderboard";
+import { cn } from "@/lib/utils";
 import {
   fetchLeaderboard,
   fetchLeaderboardDefinitions,
+  fetchOwnerLeaderboard,
+  IndexerError,
   indexedCollectionCacheVersion,
   leaderboardMetrics,
   type LeaderboardEntry,
@@ -94,36 +99,50 @@ function RankBadge({ rank }: { rank: number }) {
 
   return (
     <span
-      className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-black ${
+      className={cn(
+        "flex h-9 min-w-9 shrink-0 items-center justify-center gap-1 rounded-full px-2 text-sm font-black",
         podium ? colors[rank - 1] : "bg-line/55 text-muted"
-      }`}
+      )}
       aria-label={`Rank ${rank}`}
     >
-      {podium ? <Trophy aria-hidden="true" size={15} /> : rank}
+      {podium && <Trophy aria-hidden="true" size={15} />}
+      {formatInteger(rank)}
     </span>
   );
 }
 
 function LeaderRow({
   entry,
-  metric
+  metric,
+  isYou = false
 }: {
   entry: LeaderboardEntry;
   metric: LeaderboardMetric;
+  isYou?: boolean;
 }) {
   return (
     <Link
       to={`/collector/${entry.owner}`}
-      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-4 transition last:border-0 hover:bg-lavender/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ethereum sm:px-6"
+      className={cn(
+        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-4 transition last:border-0 hover:bg-lavender/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ethereum sm:px-6",
+        isYou && "bg-lavender/25"
+      )}
     >
       <RankBadge rank={entry.rank} />
       <div className="min-w-0">
-        <p
-          className="truncate text-sm font-extrabold text-ink"
-          title={entry.owner}
-        >
-          {entry.ensName ?? shortAddress(entry.owner)}
-        </p>
+        <div className="flex items-center gap-2">
+          <p
+            className="truncate text-sm font-extrabold text-ink"
+            title={entry.owner}
+          >
+            {entry.ensName ?? shortAddress(entry.owner)}
+          </p>
+          {isYou && (
+            <span className="shrink-0 rounded-full bg-grape/10 px-2 py-0.5 text-xs font-bold text-grape">
+              You
+            </span>
+          )}
+        </div>
         <p className="mt-1 truncate text-xs font-medium text-muted">
           {entry.ensName && (
             <span title={entry.owner}>{shortAddress(entry.owner)} · </span>
@@ -144,6 +163,8 @@ function LeaderRow({
 }
 
 export function LeaderboardPage() {
+  const { address, isConnected } = useAccount();
+  const wallet = isConnected ? address?.toLowerCase() : undefined;
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedMetric = searchParams.get("metric");
   const metric: LeaderboardMetric = isLeaderboardMetric(requestedMetric)
@@ -173,6 +194,19 @@ export function LeaderboardPage() {
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     refetchInterval: 60_000
   });
+  const personalQuery = useQuery({
+    queryKey: [
+      "collector",
+      indexedCollectionCacheVersion,
+      wallet,
+      "leaderboard"
+    ],
+    queryFn: ({ signal }) => fetchOwnerLeaderboard(wallet!, {}, signal),
+    enabled: Boolean(wallet),
+    retry: (count, error) =>
+      !(error instanceof IndexerError && error.status === 404) && count < 1,
+    refetchInterval: 60_000
+  });
 
   const entries = useMemo(() => {
     const seen = new Set<string>();
@@ -185,6 +219,16 @@ export function LeaderboardPage() {
       }
     );
   }, [boardQuery.data]);
+
+  const listedPersonalEntry = wallet
+    ? entries.find((entry) => entry.owner.toLowerCase() === wallet)
+    : undefined;
+  const personalEntry = personalQuery.data
+    ? ownerLeaderboardEntry(personalQuery.data, metric)
+    : undefined;
+  const unranked =
+    personalQuery.error instanceof IndexerError &&
+    personalQuery.error.status === 404;
 
   const snapshotTimestamps = new Set(
     boardQuery.data?.pages.map((page) => page.updatedAt).filter(Boolean) ?? []
@@ -202,6 +246,7 @@ export function LeaderboardPage() {
       exact: true
     });
     void definitionsQuery.refetch();
+    if (wallet) void personalQuery.refetch();
   }
 
   return (
@@ -213,23 +258,30 @@ export function LeaderboardPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-ethereum">
                 Ethereum + Base + Polygon + BNB Chain collectors
               </p>
-              <h1 className="display mt-3 text-5xl text-ink sm:text-7xl">
+              <h1 className="display mt-3 text-4xl text-ink sm:text-7xl">
                 Leaderboard
               </h1>
               <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-ink/65">
                 {METRIC_BLURBS[metric]} Equal values share the same rank.
               </p>
+              <p className="mt-2 text-sm text-muted">
+                Rankings cover OG Collection and OG Airdrop holdings. TCG cards
+                are excluded.
+              </p>
             </div>
             <button
               type="button"
               onClick={refreshBoard}
-              disabled={boardQuery.isFetching}
+              disabled={boardQuery.isFetching || personalQuery.isFetching}
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:bg-line/30 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ethereum"
             >
               <RefreshCw
                 aria-hidden="true"
                 size={15}
-                className={boardQuery.isFetching ? "animate-spin" : undefined}
+                className={cn(
+                  (boardQuery.isFetching || personalQuery.isFetching) &&
+                    "animate-spin"
+                )}
               />
               Refresh
             </button>
@@ -361,6 +413,56 @@ export function LeaderboardPage() {
               </span>
             </div>
 
+            {wallet && !listedPersonalEntry && (
+              <div
+                className="border-b border-line"
+                aria-label="Your leaderboard position"
+                role="region"
+              >
+                {personalEntry ? (
+                  <>
+                    <p className="bg-lavender/25 px-4 pt-3 text-xs font-bold text-muted sm:px-6">
+                      Your position
+                    </p>
+                    <LeaderRow entry={personalEntry} metric={metric} isYou />
+                  </>
+                ) : (
+                  <div className="bg-lavender/25 px-4 py-4 text-sm sm:px-6">
+                    <p
+                      role="status"
+                      className={cn(
+                        "font-semibold text-ink",
+                        personalQuery.isLoading && "motion-safe:animate-pulse"
+                      )}
+                    >
+                      {personalQuery.isLoading
+                        ? "Loading your rank…"
+                        : unranked
+                          ? "You’re not ranked yet"
+                          : "Your rank is temporarily unavailable"}
+                    </p>
+                    {unranked && (
+                      <p className="mt-1 text-xs text-muted">
+                        Rankings update as active OG holdings are indexed.
+                      </p>
+                    )}
+                    {personalQuery.isError && !unranked && (
+                      <button
+                        type="button"
+                        onClick={() => void personalQuery.refetch()}
+                        disabled={personalQuery.isFetching}
+                        className="mt-2 rounded-full font-bold text-grape disabled:opacity-50"
+                      >
+                        {personalQuery.isFetching
+                          ? "Checking…"
+                          : "Retry your rank"}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {boardQuery.isLoading ? (
               <div className="space-y-1 p-4" aria-hidden="true">
                 {Array.from({ length: 10 }, (_, index) => (
@@ -376,7 +478,12 @@ export function LeaderboardPage() {
               </div>
             ) : (
               entries.map((entry) => (
-                <LeaderRow key={entry.owner} entry={entry} metric={metric} />
+                <LeaderRow
+                  key={entry.owner}
+                  entry={entry}
+                  metric={metric}
+                  isYou={entry.owner.toLowerCase() === wallet}
+                />
               ))
             )}
           </div>

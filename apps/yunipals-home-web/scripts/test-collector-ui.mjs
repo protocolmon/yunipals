@@ -70,25 +70,19 @@ try {
     name: "Yunipals collections",
     exact: true
   });
-  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), [
-    "ethereum",
-    "polygon",
-    "bnb"
-  ]);
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), []);
   assert.ok((await hrefs()).every((href) => !href.includes("/base/")));
   await page.reload();
   await expectCards(24);
-  await editions.getByRole("link", { name: "OG Airdrop", exact: true }).click();
+  await editions.getByRole("link", { name: "OG Base", exact: true }).click();
   await page.waitForFunction(() =>
     document
       .querySelector("main article a")
       ?.getAttribute("href")
       ?.includes("/base/")
   );
-  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), ["base"]);
-  await editions
-    .getByRole("link", { name: "OG Collection", exact: true })
-    .click();
+  assert.deepEqual(new URL(page.url()).searchParams.getAll("chain"), []);
+  await editions.getByRole("link", { name: "OG", exact: true }).click();
   await page.waitForFunction(
     () =>
       !document
@@ -99,7 +93,7 @@ try {
   report.tests.push(
     "OG and airdrop boundaries, reload and independent preferences"
   );
-  await page.getByText("Rank #1", { exact: true }).first().waitFor();
+  assert.equal(await page.getByText("My rankings", { exact: true }).count(), 0);
   const initial = await hrefs();
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page.waitForFunction(
@@ -191,16 +185,14 @@ try {
     name: "Filters",
     exact: true
   });
-  await editions.getByRole("link", { name: "OG Airdrop", exact: true }).click();
+  await editions.getByRole("link", { name: "OG Base", exact: true }).click();
   await page.waitForFunction(() =>
     document
       .querySelector("main article a")
       ?.getAttribute("href")
       ?.includes("/base/")
   );
-  await editions
-    .getByRole("link", { name: "OG Collection", exact: true })
-    .click();
+  await editions.getByRole("link", { name: "OG", exact: true }).click();
   await page.waitForFunction(
     () =>
       !document
