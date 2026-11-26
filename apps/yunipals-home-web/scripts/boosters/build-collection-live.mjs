@@ -213,7 +213,7 @@ const assets = [
   "images/yunipals-logo.webp",
   "images/yunipals-social-card.jpg",
   "images/boosters/yunipals-pack-v1.png",
-  "images/boosters/yunipals-nightforge-pack-v1.webp",
+  "images/boosters/yunipals-nightforge-pack-v2.webp",
   ...(values["full-app"]
     ? [
         "arena/rules-v1.json",

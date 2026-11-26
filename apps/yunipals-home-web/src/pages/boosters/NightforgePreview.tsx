@@ -10,7 +10,7 @@ export function NightforgePreview() {
     >
       <figure className="flex flex-col items-center justify-center bg-gradient-to-br from-grape/30 via-ink to-grape/20 px-8 py-10 sm:py-12">
         <ExpandablePackArtwork
-          image="/images/boosters/yunipals-nightforge-pack-v1.webp"
+          image="/images/boosters/yunipals-nightforge-pack-v2.webp"
           label="Nightforge booster pack"
           alt="Nightforge booster pack in glittering violet foil, featuring Yunisingularity, Yunimantis and Yuniforge"
         />
