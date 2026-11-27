@@ -53,6 +53,9 @@ export async function recordCanonicalEvent(
   ) {
     throw new Error("Indexed event does not match its configured source.");
   }
+  // No-argument events decode to undefined. Normalize the shared event before
+  // recording it so downstream projections can serialize the same arguments.
+  event.args ??= {};
   const id = `${source.chainId}:${source.address}:${event.transaction.hash}:${event.log.logIndex}`;
   await context.db.insert(schema.canonicalEvent).values({
     id,
