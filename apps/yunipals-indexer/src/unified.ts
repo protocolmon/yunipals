@@ -45,6 +45,7 @@ if (
   const registryDomain = new Set([
     "TypeConfigured",
     "TypeActivated",
+    "DailyClaimPolicyActivated",
     "SalesPaused"
   ]);
   const engineDomain = new Set([

@@ -4,11 +4,14 @@ import { isAddress, encodeFunctionData, type Address } from "viem";
 import {
   adventureAbi,
   evolutionAbi,
-  evolutionGradingAbi,
-  serumCatalogueAbi
+  evolutionGradingAbi
 } from "@protopals/yunipals-market-core/evolutionAbi";
 import {
   adventureOdds,
+  crewAdventureOdds,
+  crewEligibility,
+  crewRulesHash,
+  serumRulesHash,
   serumCatalogue,
   cardFinishes,
   finishOdds,
@@ -340,6 +343,98 @@ export function registerEvolutionRoutes(
       })
     );
   });
+  router.get("/v1/evolution/crew", async () =>
+    reply(
+      await snapshot(async (r, _db, ctx) => {
+        const head = await r.chain.client.getBlock();
+        const day = Number(head.timestamp / 86400n);
+        const [enabled, rule] = await Promise.all([
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "crewMode",
+            blockNumber: head.number
+          }),
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "dailyCrew",
+            args: [BigInt(day)],
+            blockNumber: head.number
+          })
+        ]);
+        return {
+          enabled,
+          day,
+          timestamp: Number(head.timestamp),
+          requestId: rule[0].toString(),
+          color: rule[1],
+          monsterType: rule[2],
+          ready: rule[3]
+        };
+      })
+    )
+  );
+  router.get("/v1/evolution/crew/quote", async (c) => {
+    const day = BigInt(
+      z
+        .string()
+        .regex(/^[1-9][0-9]{0,77}$/)
+        .parse(c.req.query("day"))
+    );
+    return reply(
+      await snapshot(async (r, _db, ctx) => {
+        const head = await r.chain.client.getBlock();
+        if (day !== head.timestamp / 86400n)
+          throw new PortalUserError(
+            "The day changed. Review the daily draw again.",
+            409
+          );
+        const [enabled, rule] = await Promise.all([
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "crewMode",
+            blockNumber: head.number
+          }),
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "dailyCrew",
+            args: [day],
+            blockNumber: head.number
+          })
+        ]);
+        if (!enabled || rule[0] !== 0n || rule[3])
+          throw new PortalUserError(
+            "A daily draw is not available. Refresh today's requirements.",
+            409
+          );
+        const fees = await r.chain.client.estimateFeesPerGas({
+          chain: r.chain.client.chain,
+          type: "eip1559"
+        });
+        const price = await r.chain.client.readContract({
+          address: ctx.adventures as Address,
+          abi: adventureAbi,
+          functionName: "quoteRandomness",
+          args: [fees.maxFeePerGas],
+          blockNumber: head.number
+        });
+        return {
+          chainId: r.portal.chain.deployment.chainId,
+          adventures: ctx.adventures,
+          day: Number(day),
+          value: (price * 125n + 99n) / 100n,
+          expiresAt: Number(
+            head.timestamp + 300n < (day + 1n) * 86400n
+              ? head.timestamp + 300n
+              : (day + 1n) * 86400n - 1n
+          )
+        };
+      })
+    );
+  });
   router.get("/v1/evolution/quote", async (c) => {
     const id = BigInt(uint.parse(c.req.query("tokenId")));
     const kind = z
@@ -350,18 +445,32 @@ export function registerEvolutionRoutes(
       throw new PortalUserError("Connect the card owner's wallet.", 400);
     const partnerId =
       kind === "fusion" ? BigInt(uint.parse(c.req.query("partnerId"))) : null;
+    const crew =
+      kind === "adventure" && c.req.query("crew") !== undefined
+        ? z.array(uint).length(3).parse(c.req.query("crew")?.split(","))
+        : null;
+    const crewDay =
+      crew !== null
+        ? z.coerce.number().int().positive().parse(c.req.query("day"))
+        : null;
     return reply(
       await snapshot(async (r, _db, ctx) => {
         // Quotes use live state, while the global indexer must be healthy at a canonical boundary.
         const head = await r.chain.client.getBlock();
         const cards = await Promise.all(
-          [id, ...(partnerId ? [partnerId] : [])]
-            .sort((a, b) => (a < b ? -1 : 1))
-            .map((v) => r.chain.card(v, head.number))
+          (crew
+            ? crew.map(BigInt)
+            : [id, ...(partnerId ? [partnerId] : [])].sort((a, b) =>
+                a < b ? -1 : 1
+              )
+          ).map((v) => r.chain.card(v, head.number))
         );
         for (const card of cards) {
           if (card.owner.toLowerCase() !== owner.toLowerCase())
-            throw new PortalUserError("You must own both input cards.", 409);
+            throw new PortalUserError(
+              "You must own every crew or input card.",
+              409
+            );
           if (card.graded)
             throw new PortalUserError(
               "Graded cards cannot adventure, drink serums or fuse.",
@@ -373,7 +482,68 @@ export function registerEvolutionRoutes(
               409
             );
         }
-        const [a, b] = cards;
+        const a =
+          kind === "adventure"
+            ? cards.find((card) => card.tokenId === id.toString())
+            : cards[0];
+        const b = cards[1];
+        if (!a)
+          throw new PortalUserError("Choose a survivor from your crew.", 400);
+        // Keep the currently deployed solo UI working until the one-way cutover.
+        // Never reinterpret a malformed crew request as a solo request.
+        if (kind === "adventure" && !crew) {
+          if (c.req.query("day") !== undefined)
+            throw new PortalUserError("Choose all three crew members.", 400);
+          const enabled = await r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "crewMode",
+            blockNumber: head.number
+          });
+          if (enabled)
+            throw new PortalUserError(
+              "Three-card crews are now required. Refresh to choose your crew.",
+              409
+            );
+        }
+        let crewRules;
+        if (crew) {
+          if (crewDay !== Number(head.timestamp / 86400n))
+            throw new PortalUserError(
+              "The daily requirements changed. Review a new crew.",
+              409
+            );
+          const [enabled, rule] = await Promise.all([
+            r.chain.client.readContract({
+              address: ctx.adventures as Address,
+              abi: adventureAbi,
+              functionName: "crewMode",
+              blockNumber: head.number
+            }),
+            r.chain.client.readContract({
+              address: ctx.adventures as Address,
+              abi: adventureAbi,
+              functionName: "dailyCrew",
+              args: [BigInt(crewDay!)],
+              blockNumber: head.number
+            })
+          ]);
+          if (!enabled || !rule[3])
+            throw new PortalUserError(
+              "Today's crew requirements are not ready.",
+              409
+            );
+          crewRules = { day: crewDay!, color: rule[1], monsterType: rule[2] };
+          const error = crewEligibility(cards, crewRules);
+          if (error) throw new PortalUserError(error, 409);
+          if (
+            cards.some((card) => card.nextAdventureAt > Number(head.timestamp))
+          )
+            throw new PortalUserError(
+              "A crew member is still on its 24-hour cooldown.",
+              409
+            );
+        }
         if (kind === "adventure" && a.nextAdventureAt > Number(head.timestamp))
           throw new PortalUserError(
             "This card's 24-hour cooldown has not ended.",
@@ -412,7 +582,12 @@ export function registerEvolutionRoutes(
             })
           : 0n;
         const maximum = (vrf * 125n + 99n) / 100n;
-        const deadline = head.timestamp + 300n;
+        const deadline =
+          crewDay === null
+            ? head.timestamp + 300n
+            : head.timestamp + 300n < BigInt(crewDay + 1) * 86400n
+              ? head.timestamp + 300n
+              : BigInt(crewDay + 1) * 86400n - 1n;
         const expected = (card: typeof a) => ({
           artVersion: BigInt(card.artVersion),
           historyHash: card.historyHash
@@ -428,21 +603,24 @@ export function registerEvolutionRoutes(
                 blockNumber: head.number
               });
         let data;
-        if (kind === "adventure") {
-          const catalogue = await r.chain.client.readContract({
-            address: r.chain.adventures,
+        if (kind === "adventure" && crew) {
+          data = encodeFunctionData({
             abi: adventureAbi,
-            functionName: "catalogue"
+            functionName: "crewAdventure",
+            args: [
+              crew!.map(BigInt) as [bigint, bigint, bigint],
+              id,
+              BigInt(crewDay!),
+              crewRulesHash,
+              maximum,
+              deadline
+            ]
           });
-          const rules = await r.chain.client.readContract({
-            address: catalogue,
-            abi: serumCatalogueAbi,
-            functionName: "RULES_HASH"
-          });
+        } else if (kind === "adventure") {
           data = encodeFunctionData({
             abi: adventureAbi,
             functionName: "adventure",
-            args: [id, rules, maximum, deadline]
+            args: [id, serumRulesHash, maximum, deadline]
           });
         } else if (kind === "serum")
           data = encodeFunctionData({
@@ -479,7 +657,10 @@ export function registerEvolutionRoutes(
           deadline,
           chainId: r.portal.chain.deployment.chainId,
           usdc: r.portal.chain.deployment.usdc,
-          odds: adventureOdds(a.effectiveSequence),
+          crew: crewRules,
+          odds: crew
+            ? crewAdventureOdds(a.effectiveSequence)
+            : adventureOdds(a.effectiveSequence),
           block: head.number,
           confirmedBlock: ctx.block
         };

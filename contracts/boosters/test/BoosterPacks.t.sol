@@ -505,4 +505,68 @@ contract BoosterPacksTest is Test {
         emit log_named_uint("cold seven-mint callback gas", wrapper.lastGasUsed());
         assertLt(wrapper.lastGasUsed(), wrapper.limits(r));
     }
+    function expiringPack() private {
+        packId = registry.configureType(0, rules(), catalog());
+        registry.setDailyClaimExpiry(packId, true);
+        registry.activate(packId);
+    }
+
+    function testDailyExpiryPreservesExistingPacksAndFreezesNewPolicy() public {
+        uint256 oldOriginal = reveal();
+        uint256 oldType = packId;
+        expiringPack();
+        uint256 fresh = reveal();
+        vm.warp(vm.getBlockTimestamp() + 4 days);
+        assertEq(engine.claimable(oldOriginal), 4);
+        assertEq(engine.claimable(fresh), 1);
+        vm.expectRevert("invalid or frozen type");
+        registry.setDailyClaimExpiry(oldType, true);
+        vm.expectRevert("invalid or frozen type");
+        registry.setDailyClaimExpiry(packId, false);
+        uint256 requestId = requestClaim(fresh, 1, alice);
+        assertEq(engine.claimable(fresh), 0);
+        vm.warp(vm.getBlockTimestamp() + 20 days);
+        wrapper.fulfill(requestId, 42);
+        assertEq(engine.getOriginal(fresh).minted, 2, "committed claim survives expiry");
+        assertEq(engine.claimable(fresh), 0, "missed windows never reappear");
+        uint256 childId = monsters.nextTokenId() - 1;
+        (uint32 sequence,,) = monsters.cardFacts(childId);
+        assertEq(sequence, 4, "sequence records the claimed window, including missed days");
+        assertEq(engine.claimable(oldOriginal), 15, "old saved claims remain banked");
+    }
+
+    function testDailyExpiryEveryWindowStillProducesCompleteSet() public {
+        expiringPack();
+        uint256 originalId = reveal();
+        uint256 start = vm.getBlockTimestamp();
+        for (uint256 day = 1; day <= 15; ++day) {
+            vm.warp(start + day * 1 days);
+            assertEq(engine.claimable(originalId), 1);
+            uint256 requestId = requestClaim(originalId, 1, alice);
+            wrapper.fulfill(requestId, day);
+            assertEq(engine.claimable(originalId), 0);
+        }
+        assertEq(engine.getOriginal(originalId).minted, 16);
+        assertEq(engine.getOriginal(originalId).remaining, 0);
+        vm.warp(start + 16 days);
+        assertEq(engine.claimable(originalId), 0);
+    }
+
+    function testFuzzDailyExpiryBoundariesAndTransfer(uint8 rawDay, uint32 rawOffset) public {
+        expiringPack();
+        uint256 originalId = reveal();
+        uint256 day = bound(rawDay, 1, 15);
+        uint256 offset = bound(rawOffset, 0, 1 days - 1);
+        uint256 start = vm.getBlockTimestamp();
+        vm.warp(start + day * 1 days + offset);
+        vm.prank(alice);
+        monsters.transferFrom(alice, bob, originalId);
+        assertEq(engine.claimable(originalId), 1);
+        uint256 requestId = requestClaim(originalId, 1, bob);
+        wrapper.fulfill(requestId, day);
+        assertEq(engine.claimable(originalId), 0);
+        vm.warp(start + (day + 1) * 1 days);
+        assertEq(engine.claimable(originalId), day == 15 ? 0 : 1);
+    }
+
 }

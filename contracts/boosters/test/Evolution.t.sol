@@ -947,4 +947,183 @@ contract EvolutionTest is Test {
         assertEq(cards.fusion(complete(fuse(d, e))).level, 3);
     }
 
+    function freshCrew() private returns (uint256[3] memory crew, uint64 day) {
+        adventures.enableCrewAdventures();
+        day = uint64(vm.getBlockTimestamp() / 1 days);
+        vm.prank(ALICE);
+        uint256 ruleRequest = adventures.prepareDailyCrew{value: 0.001 ether}(day, 0.001 ether);
+        wrapper.fulfill(ruleRequest, 93);
+        (, uint32 color, uint32 species, bool ready) = adventures.dailyCrew(day);
+        assertTrue(ready);
+        uint256 parent = original();
+        crew[0] = engine.child(cards, parent, ALICE, (color - 1) * 4, 1);
+        crew[1] = engine.child(cards, parent, ALICE, 2, 2);
+        crew[2] = engine.child(cards, parent, ALICE, (species - 1) * 24, 3);
+    }
+
+    function launchCrew(uint256[3] memory crew, uint256 survivor, uint64 day) private returns (uint256) {
+        bytes32 rules = keccak256(abi.encode(keccak256("YunipalsSerumsV1:11x11:11tiers24:holy10000:ordered11"), "crew-v1:three-distinct:utc-birth:guaranteed"));
+        vm.prank(ALICE);
+        return adventures.crewAdventure{value: 0.001 ether}(crew, survivor, day, rules,
+            0.001 ether, uint64(vm.getBlockTimestamp()));
+    }
+
+    function testCrewChoosesSurvivorLocksInputsAndAlwaysFindsSerum() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        uint256 requestId = launchCrew(crew, crew[1], day);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(adventures.pendingRequest(crew[i]), requestId);
+            vm.prank(ALICE);
+            vm.expectRevert("card reserved");
+            cards.transferFrom(ALICE, BOB, crew[i]);
+        }
+        vm.warp(vm.getBlockTimestamp() + 1 days);
+        wrapper.fulfill(requestId, 0);
+        assertTrue(adventures.getAdventure(requestId).settled, "quoted callback gas must settle crew");
+        assertGt(adventures.unusedSerum(crew[1]).serumId, 0);
+        assertEq(cards.ownerOf(crew[1]), ALICE);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(adventures.pendingRequest(crew[i]), 0);
+            assertEq(cards.cardReservation(crew[i]), address(0));
+            if (i != 1) { vm.expectRevert(); cards.ownerOf(crew[i]); }
+        }
+        adventures.settle(requestId);
+        assertEq(cards.ownerOf(crew[1]), ALICE, "recovery is idempotent");
+        bytes32 legacyRules = catalogue.RULES_HASH();
+        vm.prank(ALICE);
+        vm.expectRevert("three-card crew required");
+        adventures.adventure{value: 0.001 ether}(crew[1], legacyRules, 0.001 ether, uint64(vm.getBlockTimestamp()));
+    }
+
+    function testCrewRejectsDuplicatesWrongSlotsAndStaleBirths() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        uint256[3] memory duplicate = [crew[0], crew[0], crew[2]];
+        vm.expectRevert("three distinct cards required");
+        launchCrew(duplicate, crew[0], day);
+        uint256[3] memory wrong = [crew[0], crew[2], crew[1]];
+        vm.expectRevert("crew slot does not match");
+        launchCrew(wrong, crew[0], day);
+        vm.warp((uint256(day) + 1) * 1 days);
+        vm.expectRevert("quote expired or changed");
+        launchCrew(crew, crew[0], day);
+        uint64 tomorrow = day + 1;
+        vm.prank(ALICE);
+        uint256 ruleRequest = adventures.prepareDailyCrew{value: 0.001 ether}(tomorrow, 0.001 ether);
+        wrapper.fulfill(ruleRequest, 93);
+        // Keep today's chosen traits; all the actual births remain on yesterday's date.
+        (,uint32 color,uint32 species,) = adventures.dailyCrew(tomorrow);
+        (, uint256 parent,,,) = cards.provenance(crew[0]);
+        uint256 mintTime = uint256(tomorrow) * 1 days - 1;
+        vm.warp(mintTime);
+        crew[0] = engine.child(cards, parent, ALICE, (color - 1) * 4, 10);
+        crew[1] = engine.child(cards, parent, ALICE, 2, 11);
+        crew[2] = engine.child(cards, parent, ALICE, (species - 1) * 24, 12);
+        vm.warp(uint256(tomorrow) * 1 days);
+        vm.expectRevert("one crew member must be born today");
+        launchCrew(crew, crew[0], tomorrow);
+    }
+
+    function testCrewUpgradeSettlesAlreadyAcceptedSoloAdventure() public {
+        uint256 id = original();
+        uint256 pending = startAdventure(id);
+        adventures.enableCrewAdventures();
+        wrapper.fulfill(pending, seedFor(pending, id, false));
+        assertTrue(adventures.getAdventure(pending).settled);
+        assertEq(cards.ownerOf(id), ALICE);
+        assertEq(adventures.unusedSerum(id).serumId, 0, "legacy draw remains unchanged");
+    }
+
+    function testCrewRuntimeFitsChainLimit() public view {
+        bytes32 slot = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
+        assertLe(address(uint160(uint256(vm.load(address(cards), slot)))).code.length, 24_576);
+        assertLe(address(uint160(uint256(vm.load(address(adventures), slot)))).code.length, 24_576);
+    }
+
+    function testCrewFailureRollsBackEveryReservationAndCooldown() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        wrapper.setReject(true);
+        vm.expectRevert("request failed");
+        launchCrew(crew, crew[1], day);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+            assertEq(cards.cardReservation(crew[i]), address(0));
+            assertFalse(cards.transferLocked(crew[i]));
+            assertEq(adventures.pendingRequest(crew[i]), 0);
+            assertEq(adventures.nextAdventureAt(crew[i]), 0);
+        }
+    }
+
+    function testCrewDeferredSettlementCannotPartiallyBurnOrReroll() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        uint256 requestId = launchCrew(crew, crew[1], day);
+        vm.mockCallRevert(address(cards), abi.encodeCall(cards.sacrificeAdventureCompanion, (crew[2])),
+            abi.encodeWithSignature("Error(string)", "temporary burn failure"));
+        wrapper.fulfill(requestId, 123);
+        (uint256 seed,, bool received) = adventures.randomRequests(requestId);
+        assertEq(seed, 123);
+        assertTrue(received);
+        assertFalse(adventures.getAdventure(requestId).settled);
+        assertEq(adventures.unusedSerum(crew[1]).serumId, 0);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+            assertEq(cards.cardReservation(crew[i]), address(adventures));
+            assertTrue(cards.transferLocked(crew[i]));
+            assertEq(adventures.pendingRequest(crew[i]), requestId);
+        }
+        vm.clearMockedCalls();
+        vm.prank(BOB);
+        adventures.settle(requestId);
+        SerumCatalogue.Dose memory result = adventures.unusedSerum(crew[1]);
+        assertGt(result.serumId, 0);
+        wrapper.fulfill(requestId, 999);
+        adventures.settle(requestId);
+        assertEq(adventures.unusedSerum(crew[1]).serumId, result.serumId);
+        assertEq(adventures.unusedSerum(crew[1]).presenceId, result.presenceId);
+        assertEq(cards.ownerOf(crew[1]), ALICE);
+    }
+
+    function testCrewOnlyReservedControllerCanSacrificeAndOwnersCannotBurnLockedCards() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        vm.prank(ALICE);
+        vm.expectRevert(YunipalMonsters.AdventureReservationRequired.selector);
+        cards.sacrificeAdventureCompanion(crew[0]);
+        launchCrew(crew, crew[1], day);
+        for (uint256 i; i < 3; ++i) {
+            vm.prank(ALICE);
+            vm.expectRevert("card reserved");
+            cards.burn(crew[i]);
+            vm.prank(BOB);
+            vm.expectRevert(YunipalMonsters.AdventureReservationRequired.selector);
+            cards.sacrificeAdventureCompanion(crew[i]);
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+        }
+    }
+
+    function testFuzzCrewAlwaysSettlesWithinCallbackGas(uint256 seed) public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        uint256 requestId = launchCrew(crew, crew[2], day);
+        wrapper.fulfill(requestId, seed);
+        assertTrue(adventures.getAdventure(requestId).settled);
+        assertGt(adventures.unusedSerum(crew[2]).serumId, 0);
+        assertEq(cards.ownerOf(crew[2]), ALICE);
+    }
+
+    function testCrewAcceptsNewPackPolicyWithIdenticalFrozenArtwork() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        PackRegistry.Pack memory existing = packs.getPack(packId);
+        uint256 newPack = packs.configureType(0, existing.rules, packs.getCatalog(packId));
+        packs.setDailyClaimExpiry(newPack, true);
+        packs.activate(newPack);
+        assertTrue(packs.compatiblePack(newPack, packId));
+        uint256 parent = engine.original(cards, newPack, ALICE, 0);
+        crew[1] = engine.child(cards, parent, ALICE, 2, 1);
+        uint256 requestId = launchCrew(crew, crew[2], day);
+        wrapper.fulfill(requestId, 40);
+        assertTrue(adventures.getAdventure(requestId).settled);
+        existing.rules.artworkHash = keccak256("unapproved artwork");
+        uint256 other = packs.configureType(0, existing.rules, packs.getCatalog(packId));
+        packs.activate(other);
+        assertFalse(packs.compatiblePack(other, packId));
+    }
+
 }

@@ -28,6 +28,7 @@ const manifestSchema = z
       .refine((value) => BigInt(value) > 0n && BigInt(value) < 2n ** 128n),
     intervalSeconds: uint64.refine((value) => BigInt(value) > 0n),
     mintsPerInterval: uint32.min(1),
+    dailyClaimsExpire: z.boolean().default(false),
     maxBatch: uint32.min(1).max(32),
     baseGas: uint32.min(400000),
     perMintGas: uint32.min(200000),
@@ -58,6 +59,11 @@ if (!values.manifest || !/^(0|[1-9]\d*)$/.test(values["type-id"]!))
 const manifest = manifestSchema.parse(
   JSON.parse(await readFile(values.manifest, "utf8"))
 );
+if (
+  manifest.dailyClaimsExpire &&
+  (manifest.intervalSeconds !== "86400" || manifest.mintsPerInterval !== 1)
+)
+  throw new Error("Expiring packs require one claim per 24-hour window.");
 if (manifest.baseGas + manifest.perMintGas * manifest.maxBatch > 2400000)
   throw new Error("Callback gas exceeds the configured safety ceiling.");
 const missing = [
@@ -164,6 +170,15 @@ if (missing.length) {
           functionName: "configureType",
           args: [id, rules, catalog]
         }),
+        dailyClaimsExpire: manifest.dailyClaimsExpire,
+        claimPolicyData:
+          id === 0n
+            ? null
+            : encodeFunctionData({
+                abi: packRegistryAbi,
+                functionName: "setDailyClaimExpiry",
+                args: [id, manifest.dailyClaimsExpire]
+              }),
         activateData:
           id === 0n || manifest.status !== "ready"
             ? null

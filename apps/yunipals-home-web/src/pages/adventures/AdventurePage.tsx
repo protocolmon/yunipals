@@ -11,7 +11,7 @@ import {
 } from "@protopals/yunipals-market-core/evolutionAbi";
 import { z } from "zod";
 import {
-  adventureOdds,
+  crewAdventureOdds,
   evolutionKind,
   singularityCompatible,
   cardFinishes,
@@ -38,6 +38,7 @@ import {
   SerumHistory,
   adventureButton
 } from "./AdventureCards";
+import { DailyCrewBuilder } from "./DailyCrewBuilder";
 import { SerumArtwork, SerumCatalogue } from "./SerumArtwork";
 
 export function AdventurePage() {
@@ -168,7 +169,7 @@ export function AdventurePage() {
     !!card?.reservedBy ||
     !!card?.pendingGrade ||
     !!actions.phase;
-  const odds = card ? adventureOdds(card.effectiveSequence) : null;
+  const odds = card ? crewAdventureOdds(card.effectiveSequence) : null;
   const serum = card?.unused ? serumDefinition(card.unused) : null;
   const progress = job.data?.value;
   const canWallet =
@@ -196,8 +197,9 @@ export function AdventurePage() {
                 Extraordinary change.
               </h1>
               <p className="mt-5 max-w-md leading-relaxed">
-                Send your Yunipal exploring, discover a serum, or unite two
-                companions. Every transformation leaves its mark.
+                Build today’s three-monster crew. Choose the companion that
+                returns with a serum and sacrifice the other two. Every
+                transformation leaves its mark.
               </p>
               <p className="mt-4 text-sm">
                 121 serums · 11 Presences · Singularity fusions
@@ -206,8 +208,8 @@ export function AdventurePage() {
                 We cover the AI fee for the first 1,000 serum applications.
                 Network gas and any randomness fee still apply.
               </p>
-              <a href="#your-cards" className={cn(adventureButton, "mt-6")}>
-                Choose a companion
+              <a href="#daily-crew" className={cn(adventureButton, "mt-6")}>
+                Build today’s crew
               </a>
             </div>
             <figure className="mx-auto max-w-xs rotate-3">
@@ -223,6 +225,12 @@ export function AdventurePage() {
               </figcaption>
             </figure>
           </section>
+          <DailyCrewBuilder
+            busy={Boolean(actions.phase)}
+            onReview={(survivor, crew) =>
+              void actions.prepare("adventure", survivor, undefined, crew)
+            }
+          />
           <SerumCatalogue />
           <section className="mt-12">
             <h2 className="font-display text-2xl font-bold">
@@ -363,7 +371,7 @@ export function AdventurePage() {
                     className="mt-5 rounded-2xl bg-lavender/20 p-4"
                   >
                     {card.pendingAdventure
-                      ? "Exploring — the result arrives when randomness settles. Your card can still transfer."
+                      ? "Exploring — the result arrives when randomness settles. Crew members remain locked until settlement."
                       : "Transformation in progress. Your current artwork stays visible while generation completes; this card is reserved."}
                   </p>
                 )}
@@ -372,8 +380,9 @@ export function AdventurePage() {
                     Take an adventure
                   </h2>
                   <p className="mt-2 text-sm text-muted">
-                    One trip every 24 hours. A new find replaces your unused
-                    serum; finding nothing keeps it.
+                    A crew of three earns a guaranteed serum for its chosen
+                    survivor. The other two monsters are permanently sacrificed.
+                    The new serum replaces the survivor’s unused serum.
                   </p>
                   {cooldown > 0 && (
                     <p className="mt-2 text-sm">
@@ -382,20 +391,12 @@ export function AdventurePage() {
                       {Math.floor(cooldown % 60)}s
                     </p>
                   )}
-                  <button
-                    className={cn(adventureButton, "mt-4")}
-                    disabled={
-                      unavailable ||
-                      adventurePause.data !== false ||
-                      cooldown > 0 ||
-                      !canWallet
-                    }
-                    onClick={() =>
-                      void actions.prepare("adventure", card.tokenId)
-                    }
+                  <Link
+                    className={cn(adventureButton, "mt-4 inline-flex")}
+                    to="/adventures#daily-crew"
                   >
-                    Review adventure
-                  </button>
+                    Build today's crew
+                  </Link>
                   {card.localDoses === 11 && (
                     <p className="mt-2 text-sm">
                       All 11 local doses are used. You can still explore, but
@@ -650,6 +651,48 @@ export function AdventurePage() {
                 <AdventureCardTile key={c.tokenId} card={c} />
               ))}
             </div>
+            {actions.review.quote.kind === "adventure" && (
+              <div className="mt-4 space-y-3">
+                <p className="font-bold">
+                  Yunipal #{actions.review.tokenId} returns with a guaranteed
+                  serum.
+                </p>
+                <p>
+                  Permanent sacrifices:{" "}
+                  {actions.review.quote.cards
+                    .filter((c) => c.tokenId !== actions.review!.tokenId)
+                    .map((c) => `#${c.tokenId}`)
+                    .join(" and ")}
+                  . Their artwork, unused serums and ownership are lost. These
+                  variants do not return to their pack’s draw pool.
+                </p>
+                {actions.review.quote.cards.some(
+                  (c) =>
+                    c.tokenId !== actions.review!.tokenId &&
+                    c.level === 0 &&
+                    c.sources.some((s) => s.isOriginal)
+                ) && (
+                  <p className="font-bold text-red-700">
+                    An original will be sacrificed. All of its saved and future
+                    daily mint rights end permanently.
+                  </p>
+                )}
+                <p>
+                  The crew locks when you depart. Both sacrifices and the serum
+                  award settle together. Your survivor keeps its identity, birth
+                  date and applied effects; its unused serum is replaced.
+                </p>
+                {actions.review.quote.cards.some(
+                  (c) =>
+                    c.tokenId === actions.review!.tokenId && c.localDoses >= 11
+                ) && (
+                  <p className="font-bold text-grape">
+                    Your survivor has already used all 11 dose slots. It can
+                    carry this serum but cannot drink another dose.
+                  </p>
+                )}
+              </div>
+            )}
             {actions.review.quote.kind === "fusion" && (
               <>
                 {singularityCompatible(

@@ -1,16 +1,14 @@
+import { adventureSourceAbiCrew } from "../../../../packages/yunipals-market-core/src/adventureSourceAbi.crew.js";
 import type { AbiEvent, Address } from "viem";
 import { evolutionCardsAbi } from "../../../../packages/yunipals-market-core/src/evolutionAbi.js";
-import {
-  adventureSourceAbiV1,
-  evolutionSourceAbiV1
-} from "../../../../packages/yunipals-market-core/src/evolutionSourceAbi.v1.js";
+import { evolutionSourceAbiV1 } from "../../../../packages/yunipals-market-core/src/evolutionSourceAbi.v1.js";
 import type { SourceDefinition } from "../../../../packages/yunipals-indexer-client/src/sources.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
 
 // Collection transfers retain their existing BoosterMonsters source. Only new events subscribe here.
 export const evolutionEventAbis = {
-  adventures: adventureSourceAbiV1.filter(
-    (v): v is Extract<(typeof adventureSourceAbiV1)[number], AbiEvent> =>
+  adventures: adventureSourceAbiCrew.filter(
+    (v): v is Extract<(typeof adventureSourceAbiCrew)[number], AbiEvent> =>
       v.type === "event"
   ),
   evolution: evolutionSourceAbiV1.filter(
@@ -114,7 +112,7 @@ export function evolutionPonderContracts(
     };
   };
   return {
-    YunipalAdventures: { ...config("adventures"), abi: adventureSourceAbiV1 },
+    YunipalAdventures: { ...config("adventures"), abi: adventureSourceAbiCrew },
     YunipalEvolution: { ...config("evolution"), abi: evolutionSourceAbiV1 },
     EvolutionCollection: { ...config("cards"), abi: evolutionEventAbis.cards }
   };

@@ -338,7 +338,7 @@ contract PortalGrading is BoosterAdmin, ReentrancyGuardUpgradeable {
                 if (asset.hash != bytes32(0)) return (asset, version);
             }
             (uint256 packId,, uint32 variant,,) = cards.provenance(tokenId);
-            require(packId == packTypeId, "unsupported card");
+            require(cards.registry().compatiblePack(packId, packTypeId), "unsupported card");
             asset = _baseArt[variant];
         }
         require(asset.hash != bytes32(0), "input artwork unavailable");

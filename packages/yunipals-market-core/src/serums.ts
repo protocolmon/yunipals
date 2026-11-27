@@ -1,3 +1,5 @@
+import { encodeAbiParameters, keccak256, stringToHex } from "viem";
+
 /** Launch rules, shared by quotes, metadata and the collection UI. Weights are ppm per adventure. */
 export const serumCatalogueVersion = 1;
 export const serumFee = 100_000n;
@@ -224,4 +226,64 @@ export function fusionPresenceOdds(a: number, b: number) {
         { presence: a, percent: 50 },
         { presence: b, percent: 50 }
       ];
+}
+
+export type CrewSelection = { tokenIds: [string, string, string]; day: number };
+export type DailyCrewRequirements = {
+  day: number;
+  color: number;
+  monsterType: number;
+};
+export const serumRulesHash = keccak256(
+  stringToHex("YunipalsSerumsV1:11x11:11tiers24:holy10000:ordered11")
+);
+export const crewRulesHash = keccak256(
+  encodeAbiParameters(
+    [{ type: "bytes32" }, { type: "string" }],
+    [serumRulesHash, "crew-v1:three-distinct:utc-birth:guaranteed"]
+  )
+);
+export function crewSlotMatches(
+  card: FusionCandidate,
+  slot: number,
+  rules: DailyCrewRequirements
+) {
+  return card.sources.some((s) =>
+    slot === 0
+      ? s.color === rules.color
+      : slot === 1
+        ? s.horn === 2
+        : slot === 2 && s.monsterType === rules.monsterType
+  );
+}
+export function isCrewNewborn(card: FusionCandidate, day: number) {
+  return (
+    card.level === 0 &&
+    card.sources.length === 1 &&
+    Number.isSafeInteger(card.sources[0].mintedAt) &&
+    card.sources[0].mintedAt! > 0 &&
+    Math.floor(card.sources[0].mintedAt! / 86400) === day
+  );
+}
+export function crewEligibility(
+  cards: readonly FusionCandidate[],
+  rules: DailyCrewRequirements
+): string | null {
+  if (cards.length !== 3 || new Set(cards.map((c) => c.tokenId)).size !== 3)
+    return "Choose three different monsters.";
+  if (!cards.every((card, slot) => crewSlotMatches(card, slot, rules)))
+    return "Each monster must match its assigned crew slot.";
+  if (!cards.some((card) => isCrewNewborn(card, rules.day)))
+    return "At least one crew member must have been born today (UTC).";
+  return null;
+}
+export function crewAdventureOdds(sequence: number) {
+  const odds = adventureOdds(sequence);
+  const total = odds.weights.slice(1).reduce((sum, value) => sum + value, 0);
+  return {
+    ...odds,
+    weights: odds.weights.map((w, index) =>
+      index === 0 ? 0 : (w * 1_000_000) / total
+    )
+  };
 }

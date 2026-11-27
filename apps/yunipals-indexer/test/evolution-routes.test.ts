@@ -395,3 +395,188 @@ describe("serum sponsorship quotes", () => {
     expect((await app.request("/v1/evolution/sponsorship")).status).toBe(503);
   });
 });
+
+describe("daily crew quotes", () => {
+  const day = 20000;
+  function fixture(drawn = true) {
+    let now = BigInt(day * 86400 + 86300);
+    const cards = [1, 2, 3].map((id) => ({
+      tokenId: String(id),
+      owner,
+      level: 0,
+      sources: [
+        {
+          tokenId: String(id),
+          sequence: id,
+          mintedAt: day * 86400 + 1,
+          color: 1,
+          horn: 2,
+          monsterType: 3
+        }
+      ],
+      effectiveSequence: id,
+      nextAdventureAt: 0,
+      reservedBy: null,
+      pendingGrade: null,
+      graded: false
+    }));
+    const readContract = vi.fn(
+      async ({ functionName }: { functionName: string }): Promise<unknown> => {
+        if (functionName === "crewMode") return true;
+        if (functionName === "dailyCrew")
+          return drawn ? [1n, 1, 3, true] : [0n, 0, 0, false];
+        if (functionName === "quoteRandomness") return 100n;
+        throw Error(functionName);
+      }
+    );
+    const runtime = {
+      store: { deployment: "fixture" },
+      reader: {
+        snapshot: async (fn: (db: unknown, ctx: unknown) => unknown) =>
+          fn(
+            {},
+            {
+              deployment: "fixture",
+              adventures: owner,
+              evolution: owner,
+              block: 100n,
+              hash
+            }
+          )
+      },
+      chain: {
+        card: async (id: bigint) => cards[Number(id) - 1],
+        client: {
+          getBlock: async () => ({ number: 110n, hash, timestamp: now }),
+          estimateFeesPerGas: async () => ({ maxFeePerGas: 10n }),
+          readContract
+        }
+      },
+      portal: { chain: { deployment: { chainId: 8453 } } }
+    } as unknown as EvolutionRuntime;
+    const app = new Hono();
+    registerEvolutionRoutes(app, {
+      enabled: () => true,
+      runtime: async () => runtime
+    });
+    return {
+      app,
+      cards,
+      readContract,
+      tomorrow: () => {
+        now += 86400n;
+      }
+    };
+  }
+  it("quotes an undrawn day's capped fee through the API and expires it before midnight", async () => {
+    const { app, readContract, tomorrow } = fixture(false);
+    const response = await app.request(`/v1/evolution/crew/quote?day=${day}`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      chainId: 8453,
+      adventures: owner,
+      day,
+      value: "125",
+      expiresAt: (day + 1) * 86400 - 1
+    });
+    expect(readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: "quoteRandomness",
+        args: [10n],
+        blockNumber: 110n
+      })
+    );
+    tomorrow();
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+  });
+  it("rejects unavailable draws and fails closed when fee data is unavailable", async () => {
+    const { app, readContract } = fixture();
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+    expect((await app.request("/v1/evolution/crew/quote?day=bad")).status).toBe(
+      400
+    );
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return false;
+      if (functionName === "dailyCrew") return [0n, 0, 0, false];
+      throw Error("RPC unavailable");
+    });
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return true;
+      if (functionName === "dailyCrew") return [0n, 0, 0, false];
+      throw Error("RPC unavailable");
+    });
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(503);
+  });
+  it("preserves solo quotes only before activation, without downgrading malformed crews", async () => {
+    const { app, readContract } = fixture();
+    let enabled = false;
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return enabled;
+      if (functionName === "quoteRandomness") return 100n;
+      throw Error(functionName);
+    });
+    const url = `/v1/evolution/quote?kind=adventure&tokenId=1&owner=${owner}`;
+    const response = await app.request(url);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const { decodeFunctionData } = await import("viem");
+    const { adventureAbi } = await import(
+      "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+    );
+    const { serumRulesHash } = await import(
+      "../../../packages/yunipals-market-core/src/serums.js"
+    );
+    const call = decodeFunctionData({ abi: adventureAbi, data: body.data });
+    expect(call.functionName).toBe("adventure");
+    expect(call.args?.slice(0, 3)).toEqual([1n, serumRulesHash, 125n]);
+    expect(body.odds.weights[0]).toBeGreaterThan(0);
+    for (const suffix of ["&crew=", "&crew=1,2", `&day=${day}`])
+      expect((await app.request(url + suffix)).status).toBe(400);
+    enabled = true;
+    expect((await app.request(url)).status).toBe(409);
+  });
+  it("binds ordered roles, the chosen survivor, guaranteed odds and midnight deadline", async () => {
+    const { app } = fixture();
+    const response = await app.request(
+      `/v1/evolution/quote?kind=adventure&tokenId=2&crew=1,2,3&day=${day}&owner=${owner}`
+    );
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const { decodeFunctionData } = await import("viem");
+    const { adventureAbi } = await import(
+      "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+    );
+    const call = decodeFunctionData({ abi: adventureAbi, data: body.data });
+    expect(call.functionName).toBe("crewAdventure");
+    expect(call.args?.slice(0, 3)).toEqual([[1n, 2n, 3n], 2n, BigInt(day)]);
+    expect(call.args?.at(-1)).toBe(BigInt((day + 1) * 86400 - 1));
+    expect(body.odds.weights[0]).toBe(0);
+  });
+  it("rejects duplicate cards, missing newborns, foreign ownership and stale days", async () => {
+    const { app, cards, tomorrow } = fixture();
+    const query = (crew = "1,2,3") =>
+      app.request(
+        `/v1/evolution/quote?kind=adventure&tokenId=2&crew=${crew}&day=${day}&owner=${owner}`
+      );
+    expect((await query("1,2,2")).status).toBe(409);
+    cards.forEach((card) => {
+      card.sources[0].mintedAt -= 86400;
+    });
+    expect((await query()).status).toBe(409);
+    cards[0].sources[0].mintedAt += 86400;
+    cards[2].owner = `0x${"3".repeat(40)}`;
+    expect((await query()).status).toBe(409);
+    cards[2].owner = owner;
+    tomorrow();
+    expect((await query()).status).toBe(409);
+  });
+});

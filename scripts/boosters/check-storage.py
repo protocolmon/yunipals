@@ -5,7 +5,7 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
 update = "--write-baseline" in sys.argv
-for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks"]:
+for name in ["PackRegistry", "YunipalMonsters", "BoosterPacks", "YunipalAdventures"]:
     artifact = json.loads((root / "contracts/boosters/out" / f"{name}.sol" / f"{name}.json").read_text())
     layout = artifact["storageLayout"]
     def shape(type_id):

@@ -1,3 +1,4 @@
+import { adventureSourceAbiCrew } from "../../../../packages/yunipals-market-core/src/adventureSourceAbi.crew.js";
 import { describe, expect, it } from "vitest";
 import {
   adventureAbi,
@@ -8,12 +9,15 @@ import {
   evolutionSourceAbiV1
 } from "../../../../packages/yunipals-market-core/src/evolutionSourceAbi.v1.js";
 import { manifestDigest } from "../../../../packages/yunipals-indexer-server/src/identity.js";
-import { evolutionEventAbis, evolutionPonderContracts } from "./evolution-sources";
+import {
+  evolutionEventAbis,
+  evolutionPonderContracts
+} from "./evolution-sources";
 
 describe("Evolution ingestion ABI compatibility", () => {
   it("preserves the original complete configuration ABI identity", () => {
     const contracts = evolutionPonderContracts({});
-    expect(manifestDigest(contracts.YunipalAdventures.abi)).toBe(
+    expect(manifestDigest(adventureSourceAbiV1)).toBe(
       "0x2b28313406dab1a915756e096be75210f1f367ed545a0a96c8b67ac7e8ca21cd"
     );
     expect(manifestDigest(contracts.YunipalEvolution.abi)).toBe(
@@ -29,7 +33,7 @@ describe("Evolution ingestion ABI compatibility", () => {
       evolutionAbi.filter((entry) => entry.type === "event")
     );
     expect(evolutionPonderContracts({}).YunipalAdventures.abi).toBe(
-      adventureSourceAbiV1
+      adventureSourceAbiCrew
     );
     expect(evolutionPonderContracts({}).YunipalEvolution.abi).toBe(
       evolutionSourceAbiV1

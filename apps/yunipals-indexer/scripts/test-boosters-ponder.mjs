@@ -124,13 +124,13 @@ try {
   const registry = process.env.BOOSTER_REGISTRY;
   let logIndex = 0;
   const identity = (address, id) => `8453:${address}:${id}`;
-  const dispatch = async (name, args) => {
+  const dispatch = async (name, args, timestamp) => {
     const handler = handlers.find((handler) => handler.name === name);
     assert.ok(handler, name);
     const number = BigInt(++logIndex);
     const event = {
       args,
-      block: { number, hash, timestamp: 1_000_000n + number },
+      block: { number, hash, timestamp: timestamp ?? 1_000_000n + number },
       transaction: { hash, transactionIndex: 0 },
       log: {
         address: name.startsWith("BoosterRegistry")
@@ -353,6 +353,7 @@ try {
     return response.json();
   };
   const types = await json("/boosters/types");
+  assert.equal(types.items[0].dailyClaimsExpire, false);
   assert.equal(types.items[0].price, "1000000000000000000");
   assert.equal(types.items[1].mintsPerInterval, 0xffffffff);
   const owner = await json(`/owners/${bob}/booster-originals`);
@@ -424,6 +425,61 @@ try {
       2
     );
   }
+  // A new policy is immutable pack data. Replay must commit the actual day,
+  // including missed windows, while legacy originals retain their count.
+  await dispatch("BoosterRegistry:TypeActivated", {
+    ...activatedType,
+    packTypeId: 3n
+  });
+  await dispatch("BoosterRegistry:DailyClaimPolicyActivated", {
+    packTypeId: 3n,
+    expires: true
+  });
+  const opening = {
+    requestId: 10n,
+    originalId: 10n,
+    packTypeId: 3n,
+    payer: alice,
+    quantity: 1,
+    opening: true,
+    paid: 100n,
+    ruleHash: hash,
+    callbackGas: 700000
+  };
+  await dispatch("BoosterEngine:RequestCreated", opening, 2_000_000n);
+  await dispatch(
+    "BoosterEngine:RandomnessReceived",
+    { requestId: 10n, seed: 0n, receivedAt: 2_000_000n },
+    2_000_000n
+  );
+  await dispatch(
+    "BoosterEngine:RequestCompleted",
+    {
+      requestId: 10n,
+      originalId: 10n,
+      recipient: alice,
+      quantity: 1,
+      minted: 1,
+      remaining: 15
+    },
+    2_000_001n
+  );
+  await dispatch(
+    "BoosterEngine:RequestCreated",
+    { ...opening, requestId: 11n, opening: false },
+    2_000_000n + 4n * 86400n
+  );
+  await persist();
+  const newOriginal = (
+    await json(`/owners/${alice}/booster-originals`)
+  ).items.find((row) => row.tokenId === "10");
+  assert.equal(newOriginal.pack.dailyClaimsExpire, true);
+  assert.equal(newOriginal.dailyCommitted, "4");
+  assert.equal(
+    (await json("/boosters/types")).items.find((row) => row.packTypeId === "1")
+      .dailyClaimsExpire,
+    false
+  );
   console.log(
     "Booster Vite handlers, idempotent replay, transfer/burn, SQL projections, pagination, and API identity verified."
   );

@@ -110,7 +110,13 @@ async function selectionImpact(
     next.sourceId,
     next.confirmationPolicy,
     previous.cursor,
-    qualifications
+    qualifications,
+    async () => {
+      // Apply holds the operational fence while the separate source reader
+      // compares history. Real page progress keeps that transaction alive;
+      // a lost connection still aborts selection without changing cursors.
+      await db.query("SELECT 1");
+    }
   );
   return {
     ...continuity,

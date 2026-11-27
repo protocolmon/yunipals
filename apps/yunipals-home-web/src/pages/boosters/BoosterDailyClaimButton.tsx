@@ -84,7 +84,7 @@ export function BoosterDailyClaimButton({
             quantity
           }}
           claimOriginal={original}
-          ariaLabel={`${openLabel} saved ${quantity === 1 ? "card" : "cards"} from original #${original.tokenId}${hasMore ? `, ${saved} saved in total` : ""}`}
+          ariaLabel={`${openLabel} ${original.pack.dailyClaimsExpire ? "available" : "saved"} ${quantity === 1 ? "card" : "cards"} from original #${original.tokenId}${hasMore ? `, ${saved} saved in total` : ""}`}
           className={buttonClass}
           onSubmitted={openTransaction}
         >

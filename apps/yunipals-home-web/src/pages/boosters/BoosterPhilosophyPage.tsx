@@ -78,7 +78,7 @@ export function BoosterPhilosophyPage() {
               id="packs-fairness-heading"
               className="font-display text-2xl leading-tight text-ink sm:text-3xl"
             >
-              A full set for everyone.
+              A new discovery every day.
             </h2>
             <p>
               We set out to make the fairest pack-opening experience we could
@@ -89,8 +89,10 @@ export function BoosterPhilosophyPage() {
               Each Yunipals pack starts a collection of 264 unique variants.
               Your first Yunipal is the original, and it unlocks the rest over
               time. Keep that original and claim its daily mints, and you can
-              collect every variant in its set. Each reveal adds something new;
-              there are no duplicates within that original’s collection.
+              collect every variant in its set. New expiring packs require a
+              claim in every daily window; older packs keep unused claims saved.
+              Each reveal adds something new; there are no duplicates within
+              that original’s collection.
             </p>
             <p>
               That makes completion something you can look forward to. Every
@@ -135,11 +137,13 @@ export function BoosterPhilosophyPage() {
               </li>
               <li className="pl-2">
                 <strong className="text-ink">
-                  Let your daily mints build up.
+                  Check your pack’s daily schedule.
                 </strong>{" "}
                 Your first extra mint unlocks 24 hours after the original is
-                revealed, then another every 24 hours. Unused mints stay saved;
-                you can claim up to seven together. There’s no paid speed boost.
+                revealed, then another every 24 hours. New expiring packs lose
+                each missed claim and end after 263 daily windows. Older packs
+                keep unused mints saved; you can claim up to seven together.
+                There’s no paid speed boost.
               </li>
               <li className="pl-2">
                 <strong className="text-ink">
@@ -156,7 +160,7 @@ export function BoosterPhilosophyPage() {
                   Keep collecting until the set is complete.
                 </strong>{" "}
                 The original plus 263 additional mints makes the full set. You
-                can track your progress and claim saved mints from your
+                can track your progress and claim available mints from your
                 collection.
               </li>
             </ol>

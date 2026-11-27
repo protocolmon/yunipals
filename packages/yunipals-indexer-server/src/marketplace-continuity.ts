@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import type { PoolClient } from "pg";
 import type { CanonicalCursor } from "../../yunipals-indexer-client/src/events.js";
 import { validateCanonicalCursor } from "../../yunipals-indexer-client/src/events.js";
 import {
@@ -5,6 +7,7 @@ import {
   type ConfirmationPolicy
 } from "../../yunipals-indexer-client/src/sources.js";
 import { sqlIdentifier } from "./database.js";
+import { parseIndexedEventTopics } from "./event-topics.js";
 import { manifestDigest, transactionEvidenceHash } from "./identity.js";
 import { retainedAnchor } from "./paging.js";
 import { loadIndexerRelease, readBoundRuntime } from "./releases.js";
@@ -30,7 +33,8 @@ export async function reviewMarketplaceContinuity(
   sourceId: string,
   policy: ConfirmationPolicy,
   cursor: CanonicalCursor,
-  qualifications: readonly MarketplaceQualification[]
+  qualifications: readonly MarketplaceQualification[],
+  onProgress?: () => Promise<void>
 ) {
   const replay = (reason: string) => ({ mode: "replay" as const, reason });
   try {
@@ -76,31 +80,29 @@ export async function reviewMarketplaceContinuity(
     }
     const oldSchema = sqlIdentifier(previous.schema);
     const schema = sqlIdentifier(release.schema);
-    // Compare in both directions, including decoded args, raw logs, ordering,
-    // and whether a full receipt was required. Receipt payloads are immutable
-    // and shared by both releases in the control ledger.
-    const events = (
-      selected: string
-    ) => `SELECT e.*, c.transaction_hash IS NOT NULL AS needs_receipt
-      FROM ${selected}.canonical_event e LEFT JOIN (
-        SELECT DISTINCT chain_id,block_number,block_hash,transaction_hash
-        FROM ${selected}.transaction_candidate WHERE chain_id=$3 AND block_number<=$2::bigint
-      ) c ON c.chain_id=e.chain_id AND c.block_number=e.block_number
-        AND c.block_hash=e.block_hash AND c.transaction_hash=e.transaction_hash
-      WHERE e.source_id=$1 AND e.block_number<=$2::bigint`;
-    const comparison = (
-      await db.query<{ matches: boolean; history_hash: string }>(
-        `WITH old_events AS MATERIALIZED (${events(oldSchema)}),
-       new_events AS MATERIALIZED (${events(schema)})
-       SELECT NOT EXISTS (SELECT 1 FROM old_events o FULL JOIN new_events n USING(id)
-         WHERE to_jsonb(o) IS DISTINCT FROM to_jsonb(n)) AS matches,
-       (SELECT encode(sha256(convert_to(coalesce(string_agg(
-         encode(sha256(convert_to(to_jsonb(n)::text,'UTF8')),'hex'),'' ORDER BY n.id),''),'UTF8')),'hex')
-         FROM new_events n) AS history_hash`,
-        [sourceId, boundary.number, source.chainId]
-      )
-    ).rows[0]!;
-    if (!comparison.matches) return replay("canonical_history_changed");
+    // Compare the complete consumed prefix in bounded pages. Large collections
+    // must not require one full-history query beyond the reader's time limit.
+    const oldHistory = await canonicalHistory(
+      db,
+      oldSchema,
+      sourceId,
+      boundary.number,
+      onProgress
+    );
+    const newHistory = await canonicalHistory(
+      db,
+      schema,
+      sourceId,
+      boundary.number,
+      onProgress
+    );
+    if (
+      !oldHistory ||
+      !newHistory ||
+      oldHistory.count !== newHistory.count ||
+      oldHistory.hash !== newHistory.hash
+    )
+      return replay("canonical_history_changed");
     if (cursor.after) {
       const after = cursor.after;
       const exists = await db.query(
@@ -168,9 +170,66 @@ export async function reviewMarketplaceContinuity(
       reason: "verified_unchanged_history",
       previousReleaseId,
       sourceDefinitionHash: manifestDigest(source),
-      historyHash: comparison.history_hash,
+      historyHash: newHistory.hash,
       boundary,
       cursor: { ...cursor, releaseId: release.id }
     };
   });
+}
+
+type HistoryRow = Record<string, unknown> & {
+  id: string;
+  block_number: string;
+  transaction_index: number;
+  log_index: number;
+  topics: string;
+};
+
+async function canonicalHistory(
+  db: Pick<PoolClient, "query">,
+  schema: string,
+  sourceId: string,
+  throughBlock: string,
+  onProgress?: () => Promise<void>
+) {
+  const digest = createHash("sha256");
+  let after: HistoryRow | undefined;
+  let count = 0;
+  for (;;) {
+    const { rows } = await db.query<HistoryRow>(
+      `SELECT e.*, EXISTS (
+         SELECT 1 FROM ${schema}.transaction_candidate c
+         WHERE c.chain_id=e.chain_id AND c.block_number=e.block_number
+           AND c.block_hash=e.block_hash AND c.transaction_hash=e.transaction_hash
+       ) AS needs_receipt
+       FROM ${schema}.canonical_event e
+       WHERE e.source_id=$1 AND e.block_number<=$2::bigint
+         AND (e.block_number,e.transaction_index,e.log_index,e.id)>
+           ($3::bigint,$4::integer,$5::integer,$6::text)
+       ORDER BY e.block_number,e.transaction_index,e.log_index,e.id LIMIT 1000`,
+      [
+        sourceId,
+        throughBlock,
+        after?.block_number ?? "-1",
+        after?.transaction_index ?? -1,
+        after?.log_index ?? -1,
+        after?.id ?? ""
+      ]
+    );
+    for (const row of rows) {
+      // Historical logs pad topics with trailing nulls; live logs do not.
+      // The shared parser validates every row, including equal malformed input.
+      let topics: string[];
+      try {
+        topics = parseIndexedEventTopics(row.topics);
+      } catch {
+        return null;
+      }
+      digest.update(manifestDigest({ ...row, topics })).update("\n");
+      after = row;
+      count++;
+    }
+    await onProgress?.();
+    if (rows.length < 1000) return { count, hash: digest.digest("hex") };
+  }
 }

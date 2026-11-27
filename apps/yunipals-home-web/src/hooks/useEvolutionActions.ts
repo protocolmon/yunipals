@@ -14,6 +14,8 @@ import {
   type EvolutionQuote
 } from "@/lib/evolution";
 
+import type { CrewSelection } from "@protopals/yunipals-market-core/serums";
+
 type PendingAction = {
   hash: Hex;
   kind: EvolutionAction;
@@ -29,6 +31,7 @@ export function useEvolutionActions() {
     quote: EvolutionQuote;
     tokenId: string;
     partnerId?: string;
+    crew?: CrewSelection;
   } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
   const [phase, setPhase] = useState<string | null>(null);
@@ -147,7 +150,8 @@ export function useEvolutionActions() {
   async function prepare(
     kind: EvolutionAction,
     tokenId: string,
-    partnerId?: string
+    partnerId?: string,
+    crew?: CrewSelection
   ) {
     return run(async () => {
       if (!account.address || !wallet.data || !client)
@@ -158,14 +162,20 @@ export function useEvolutionActions() {
         throw new Error("Wait for your previous transaction to be confirmed.");
       const owner = account.address;
       setPhase("Checking your cards and fees…");
-      const quote = await fetchEvolutionQuote(kind, tokenId, owner, partnerId);
+      const quote = await fetchEvolutionQuote(
+        kind,
+        tokenId,
+        owner,
+        partnerId,
+        crew
+      );
       if (
         current.current !== owner ||
         network.current !== environment.portalChainId
       )
         throw new Error("Your wallet changed. Please try again.");
-      validateEvolutionQuote(quote, owner, kind, tokenId, partnerId);
-      setReview({ quote, tokenId, partnerId });
+      validateEvolutionQuote(quote, owner, kind, tokenId, partnerId, crew);
+      setReview({ quote, tokenId, partnerId, crew });
     });
   }
   async function confirm() {
@@ -193,7 +203,8 @@ export function useEvolutionActions() {
         owner,
         quote.kind,
         selected.tokenId,
-        selected.partnerId
+        selected.partnerId,
+        selected.crew
       );
       const [cards, usdc] = await Promise.all([
         client.readContract({

@@ -20,7 +20,7 @@ const questions = [
   {
     question: "Do I have to mint every day?",
     answer:
-      "No. Your first extra mint becomes available 24 hours after your original is revealed. After that, you earn one every 24 hours. Saved mints appear as a gift badge on your original in Collection. Tap the badge to open up to seven saved cards together in one pack. You can also open them from the original’s detail page. Any extra pulls stay saved. Daily mints continue until you’ve collected all 264 variants, including your original. There’s no paid speed boost."
+      "Check the policy shown on your pack. New expiring packs offer one claim in each 24-hour window, starting 24 hours after reveal. Claim all 263 daily windows to mint the full 264-variant set. Missed windows are permanently lost, and the schedule ends 264 days after reveal. Older packs keep their original rights: unused daily mints stay saved and can be claimed later, up to seven at a time. An accepted claim still completes if randomness arrives after its window closes."
   },
   {
     question: "Can I get duplicates?",
@@ -30,7 +30,7 @@ const questions = [
   {
     question: "What happens if I transfer my original?",
     answer:
-      "The new owner gets its future mints, saved mints and any Yunipals still waiting to be minted. Yunipals that have already been minted stay with their current owners."
+      "The new owner gets its remaining mint rights under the same pack policy. Expiring windows keep their original schedule; transferring does not restore missed days. Older packs transfer their saved mints too. Yunipals that have already been minted stay with their current owners."
   },
   {
     question: "What happens if I burn my original?",
@@ -71,10 +71,11 @@ export function BoosterFAQ() {
           Booster pack FAQ
         </h2>
         <p className="mt-3 text-muted">
-          These answers cover the original Yunipals booster pack and its daily
-          mints. Nightforge is a separate upcoming collector airdrop: one card
-          per pack, no daily mints and no purchase or payment required. Its
-          timing and eligibility will be announced later.
+          These answers cover Yunipals booster packs and their daily mints. Each
+          pack shows whether unused claims are saved or expire. Nightforge is a
+          separate upcoming collector airdrop: one card per pack, no daily mints
+          and no purchase or payment required. Its timing and eligibility will
+          be announced later.
         </p>
         <div className="mt-7 space-y-3">
           {questions.map(({ question, answer }) => (

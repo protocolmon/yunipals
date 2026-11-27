@@ -9,6 +9,7 @@ import {
 } from "viem";
 import {
   evolutionAbi,
+  adventureAbi,
   evolutionCardsAbi
 } from "@protopals/yunipals-market-core/evolutionAbi";
 const address = (name: string): Address => {
@@ -19,6 +20,7 @@ const address = (name: string): Address => {
 };
 const upgradeAbi = parseAbi(["function upgradeToAndCall(address,bytes)"]);
 const calls = [
+  ["BOOSTER_REGISTRY", "EVOLUTION_REGISTRY_IMPLEMENTATION"],
   ["PORTALS_ENGINE_ADDRESS", "EVOLUTION_ENGINE_IMPLEMENTATION"],
   ["PORTALS_CARDS_ADDRESS", "EVOLUTION_CARDS_IMPLEMENTATION"],
   ["PORTALS_GRADING_ADDRESS", "EVOLUTION_GRADING_IMPLEMENTATION"]
@@ -43,6 +45,16 @@ calls.push({
       keccak256(toHex("GENERATOR_ROLE")),
       address("PORTALS_GRADER_ADDRESS")
     ]
+  })
+});
+calls.push({
+  purpose:
+    "Enable three-card adventures; accepted legacy requests retain their original settlement",
+  to: address("ADVENTURES_ADDRESS"),
+  value: "0",
+  data: encodeFunctionData({
+    abi: adventureAbi,
+    functionName: "enableCrewAdventures"
   })
 });
 calls.push({

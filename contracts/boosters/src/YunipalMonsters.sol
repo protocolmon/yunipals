@@ -248,22 +248,28 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         return gradingRegistry != address(0) && IGradedCardMetadata(gradingRegistry).historyCount(tokenId) != 0;
     }
 
+    error InvalidCardController();
+    error ReservationOwnerOnly();
+    error TransferLockRequired();
+    error AdventureReservationRequired();
+    error OriginalReserved();
+
     function reserveCard(uint256 tokenId, bool lockTransfer) external {
-        require(msg.sender == evolutionController || msg.sender == adventureController
-            || msg.sender == gradingRegistry, "controller only");
+        if (msg.sender != evolutionController && msg.sender != adventureController
+            && msg.sender != gradingRegistry) revert InvalidCardController();
         _requireOwned(tokenId);
         require(cardReservation[tokenId] == address(0), "card reserved");
         require(!hasCompletedGrade(tokenId), "card already graded");
         require(gradingRegistry == address(0)
             || IGradedCardMetadata(gradingRegistry).pendingRequest(tokenId) == 0, "grading pending");
-        require(lockTransfer || msg.sender == adventureController, "mutation requires transfer lock");
+        if (!lockTransfer && msg.sender != adventureController) revert TransferLockRequired();
         cardReservation[tokenId] = msg.sender;
         transferLocked[tokenId] = lockTransfer;
         emit CardReserved(tokenId, msg.sender, lockTransfer);
     }
 
     function releaseCard(uint256 tokenId) external {
-        require(cardReservation[tokenId] == msg.sender, "reservation owner only");
+        if (cardReservation[tokenId] != msg.sender) revert ReservationOwnerOnly();
         _releaseCard(tokenId);
     }
 
@@ -294,8 +300,8 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
 
     function assertClaimAvailable(uint256 tokenId, address owner) external view {
         require(ownerOf(tokenId) == owner, "owner only");
-        require(cardReservation[tokenId] == address(0) || cardReservation[tokenId] != evolutionController,
-            "original reserved for evolution");
+        if (transferLocked[tokenId] || (evolutionController != address(0)
+            && cardReservation[tokenId] == evolutionController)) revert OriginalReserved();
     }
 
     function assertNoPendingClaim(uint256 tokenId) external view {
@@ -368,6 +374,14 @@ contract YunipalMonsters is IERC4906, ERC721Upgradeable, BoosterAdmin {
         _fusions[id] = f;
         _mint(recipient, id);
         emit FusionMinted(id, a, b, recipient, f.level, f.sources, f.sequenceSum, f.sourceCount);
+    }
+
+    /// @notice Only the adventure that holds a transfer lock may sacrifice this companion.
+    function sacrificeAdventureCompanion(uint256 tokenId) external {
+        if (msg.sender != adventureController || cardReservation[tokenId] != msg.sender
+            || !transferLocked[tokenId]) revert AdventureReservationRequired();
+        _releaseCard(tokenId);
+        _burnCard(tokenId);
     }
 
     function _update(address to, uint256 tokenId, address auth) internal override returns (address from) {

@@ -23,7 +23,7 @@ contract PortalGradingValidator {
         for (uint8 i; i < count; ++i) {
             (uint256 packId,,, PackRegistry.Traits memory traits, bool original) = cards.provenance(sources[i]);
             (uint32 sequence,, bool known) = cards.cardFacts(sources[i]);
-            if (packId != packTypeId || !known) continue;
+            if (!known || !cards.registry().compatiblePack(packId, packTypeId)) continue;
             if (traits.color != uint32(gate.colorGate) + 1 || traits.monsterType != uint32(gate.typeGate) + 1) continue;
             if (gate.glitterGate && traits.glitter != 1) continue;
             if (gate.diamondGate && traits.horn != 2) continue;

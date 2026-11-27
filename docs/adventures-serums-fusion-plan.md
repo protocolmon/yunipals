@@ -1,5 +1,7 @@
 # Adventures serums and fusion implementation plan
 
+Daily crew departures and new-pack claim expiry are specified in [Daily crews and expiring packs](daily-crews-and-expiring-packs.md). The solo rules below remain relevant to requests accepted before that upgrade.
+
 Approved product plan, updated 20 November 2026. Branch: `codex/adventures-serums-fusion`, based on `origin/main` at `1998529`. Product decisions are settled and the full-stack implementation is prepared for review. Production release remains a separate step.
 
 ## Confirmed product rules
