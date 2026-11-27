@@ -516,6 +516,34 @@ describe("daily crew quotes", () => {
       (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
     ).toBe(503);
   });
+  it("preserves solo quotes only before activation, without downgrading malformed crews", async () => {
+    const { app, readContract } = fixture();
+    let enabled = false;
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return enabled;
+      if (functionName === "quoteRandomness") return 100n;
+      throw Error(functionName);
+    });
+    const url = `/v1/evolution/quote?kind=adventure&tokenId=1&owner=${owner}`;
+    const response = await app.request(url);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const { decodeFunctionData } = await import("viem");
+    const { adventureAbi } = await import(
+      "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+    );
+    const { serumRulesHash } = await import(
+      "../../../packages/yunipals-market-core/src/serums.js"
+    );
+    const call = decodeFunctionData({ abi: adventureAbi, data: body.data });
+    expect(call.functionName).toBe("adventure");
+    expect(call.args?.slice(0, 3)).toEqual([1n, serumRulesHash, 125n]);
+    expect(body.odds.weights[0]).toBeGreaterThan(0);
+    for (const suffix of ["&crew=", "&crew=1,2", `&day=${day}`])
+      expect((await app.request(url + suffix)).status).toBe(400);
+    enabled = true;
+    expect((await app.request(url)).status).toBe(409);
+  });
   it("binds ordered roles, the chosen survivor, guaranteed odds and midnight deadline", async () => {
     const { app } = fixture();
     const response = await app.request(

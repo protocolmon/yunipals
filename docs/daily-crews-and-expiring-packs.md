@@ -42,6 +42,8 @@ For an existing deployment, `evolution:prepare-crew` outputs unsigned upgrade ca
 
 Deploy a new shared indexer release with the new registry/adventure event ABIs and `booster_type.daily_claims_expire` column. Replay activation history (old events default to false), then verify canonical readiness before switching readers. Daily requirement requests use the adventure projection so the existing worker retries saved randomness if a callback defers. Upgrade the API and frontend together: purchase review reads the policy from the indexer's pack-type response, matched to the configured deployment and frozen rules hash. Missing policy data blocks purchase review instead of assuming banked claims or falling back to browser RPC. Crew quotes include all ordered input IDs, the selected survivor, the UTC date and rules hash. Quotes expire before the next UTC day. Live transaction simulation, wallet checks and submission remain part of transaction preflight.
 
+The API preserves legacy solo quotes while crew mode is disabled, so it can be deployed before the frontend. Once crew mode is enabled, solo quotes are rejected; malformed crew input never falls back to solo mode.
+
 Enable crew mode once indexer/worker readiness is verified. This one-way switch rejects new solo departures; already accepted solo requests settle with their original odds. Leave existing collections and their rights intact. Prepare the next day's requirements, activate the new pack type with the expiry flag, and pause old-type sales at the intended cutover. `boosters:prepare` emits the draft policy call before activation; execute all prepared calls in order.
 
 No production upgrade, activation, sale pause or deployment is performed by these source changes.

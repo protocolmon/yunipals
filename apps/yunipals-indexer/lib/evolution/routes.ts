@@ -11,6 +11,7 @@ import {
   crewAdventureOdds,
   crewEligibility,
   crewRulesHash,
+  serumRulesHash,
   serumCatalogue,
   cardFinishes,
   finishOdds,
@@ -445,11 +446,11 @@ export function registerEvolutionRoutes(
     const partnerId =
       kind === "fusion" ? BigInt(uint.parse(c.req.query("partnerId"))) : null;
     const crew =
-      kind === "adventure"
+      kind === "adventure" && c.req.query("crew") !== undefined
         ? z.array(uint).length(3).parse(c.req.query("crew")?.split(","))
         : null;
     const crewDay =
-      kind === "adventure"
+      crew !== null
         ? z.coerce.number().int().positive().parse(c.req.query("day"))
         : null;
     return reply(
@@ -488,6 +489,23 @@ export function registerEvolutionRoutes(
         const b = cards[1];
         if (!a)
           throw new PortalUserError("Choose a survivor from your crew.", 400);
+        // Keep the currently deployed solo UI working until the one-way cutover.
+        // Never reinterpret a malformed crew request as a solo request.
+        if (kind === "adventure" && !crew) {
+          if (c.req.query("day") !== undefined)
+            throw new PortalUserError("Choose all three crew members.", 400);
+          const enabled = await r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "crewMode",
+            blockNumber: head.number
+          });
+          if (enabled)
+            throw new PortalUserError(
+              "Three-card crews are now required. Refresh to choose your crew.",
+              409
+            );
+        }
         let crewRules;
         if (crew) {
           if (crewDay !== Number(head.timestamp / 86400n))
@@ -585,7 +603,7 @@ export function registerEvolutionRoutes(
                 blockNumber: head.number
               });
         let data;
-        if (kind === "adventure") {
+        if (kind === "adventure" && crew) {
           data = encodeFunctionData({
             abi: adventureAbi,
             functionName: "crewAdventure",
@@ -597,6 +615,12 @@ export function registerEvolutionRoutes(
               maximum,
               deadline
             ]
+          });
+        } else if (kind === "adventure") {
+          data = encodeFunctionData({
+            abi: adventureAbi,
+            functionName: "adventure",
+            args: [id, serumRulesHash, maximum, deadline]
           });
         } else if (kind === "serum")
           data = encodeFunctionData({
@@ -634,10 +658,9 @@ export function registerEvolutionRoutes(
           chainId: r.portal.chain.deployment.chainId,
           usdc: r.portal.chain.deployment.usdc,
           crew: crewRules,
-          odds:
-            kind === "adventure"
-              ? crewAdventureOdds(a.effectiveSequence)
-              : adventureOdds(a.effectiveSequence),
+          odds: crew
+            ? crewAdventureOdds(a.effectiveSequence)
+            : adventureOdds(a.effectiveSequence),
           block: head.number,
           confirmedBlock: ctx.block
         };

@@ -234,15 +234,13 @@ export type DailyCrewRequirements = {
   color: number;
   monsterType: number;
 };
+export const serumRulesHash = keccak256(
+  stringToHex("YunipalsSerumsV1:11x11:11tiers24:holy10000:ordered11")
+);
 export const crewRulesHash = keccak256(
   encodeAbiParameters(
     [{ type: "bytes32" }, { type: "string" }],
-    [
-      keccak256(
-        stringToHex("YunipalsSerumsV1:11x11:11tiers24:holy10000:ordered11")
-      ),
-      "crew-v1:three-distinct:utc-birth:guaranteed"
-    ]
+    [serumRulesHash, "crew-v1:three-distinct:utc-birth:guaranteed"]
   )
 );
 export function crewSlotMatches(

@@ -16,7 +16,6 @@ import {
   createPublicClient,
   createWalletClient,
   http,
-  encodeAbiParameters,
   encodeFunctionData,
   decodeEventLog,
   keccak256,
@@ -140,7 +139,7 @@ async function ingest(receipt) {
     } catch {
       continue;
     }
-    const args = portalJson(decoded.args);
+    const args = portalJson(decoded.args ?? {});
     await db.query(
       `INSERT INTO evolution_local.canonical_event VALUES(8453,$1,$2,$3,$4,$5,$6)`,
       [
@@ -330,32 +329,70 @@ try {
     )
   );
   const input = await assets.put(image, "png");
+  // Fix the clock away from midnight so all births and the shared draw use one day.
+  const now = (await client.getBlock()).timestamp;
+  const day = now / 86400n + 1n;
+  await client.request({
+    method: "evm_setNextBlockTimestamp",
+    params: [Number(day * 86400n + 43200n)]
+  });
+  await send(adventures, "YunipalAdventures", "enableCrewAdventures");
+  await send(
+    adventures,
+    "YunipalAdventures",
+    "prepareDailyCrew",
+    [day, 10n ** 15n],
+    10n ** 15n
+  );
+  const [drawId] = await client.readContract({
+    address: adventures,
+    abi: adventureAbi,
+    functionName: "dailyCrew",
+    args: [day]
+  });
+  await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [drawId, 93n]);
+  const [, color, species, ready] = await client.readContract({
+    address: adventures,
+    abi: adventureAbi,
+    functionName: "dailyCrew",
+    args: [day]
+  });
+  assert.equal(ready, true);
+  const firstVariant = (color - 1) * 4;
+  const partnerVariant = singularity ? firstVariant : firstVariant + 1;
+  const speciesVariant = (species - 1) * 24;
+  const variants = [
+    ...new Set([firstVariant, partnerVariant, 2, speciesVariant])
+  ];
   await send(grading, "PortalGrading", "registerBaseArt", [
-    [0, 1],
-    [input, input]
+    variants,
+    variants.map(() => input)
   ]);
   await send(engine, "Evolution.t:EvolutionTestEngine", "original", [
     cards,
     1n,
     account.address,
-    0
+    firstVariant
   ]);
-  if (singularity) {
-    await send(engine, "Evolution.t:EvolutionTestEngine", "original", [
-      cards,
-      1n,
-      account.address,
-      0
-    ]);
-  } else {
-    await send(engine, "Evolution.t:EvolutionTestEngine", "child", [
-      cards,
-      1n,
-      account.address,
-      1,
-      1
-    ]);
-  }
+  await send(
+    engine,
+    "Evolution.t:EvolutionTestEngine",
+    singularity ? "original" : "child",
+    [cards, 1n, account.address, partnerVariant, ...(singularity ? [] : [1])]
+  );
+  // Preserve #2 for the subsequent fusion; #3 and #4 are the sacrificed companions.
+  await send(engine, "Evolution.t:EvolutionTestEngine", "original", [
+    cards,
+    1n,
+    account.address,
+    2
+  ]);
+  await send(engine, "Evolution.t:EvolutionTestEngine", "original", [
+    cards,
+    1n,
+    account.address,
+    speciesVariant
+  ]);
   await send(usdc, "Portals.t:PortalTestUSDC", "mint", [
     account.address,
     10_000_000n
@@ -420,9 +457,11 @@ try {
     assert.equal(r.status, 200, await r.clone().text());
     return r.json();
   };
-  assert.equal((await get(`/owners/${account.address}`)).cards.length, 2);
+  assert.equal((await get(`/owners/${account.address}`)).cards.length, 4);
+  const requirements = await get("/crew");
+  assert.equal(requirements.enabled, true);
   const adventureQuote = await get(
-    `/quote?kind=adventure&tokenId=1&owner=${account.address}`
+    `/quote?kind=adventure&tokenId=1&crew=1,3,4&day=${day}&owner=${account.address}`
   );
   const requestReceipt = await client.waitForTransactionReceipt({
     hash: await wallet.sendTransaction({
@@ -431,6 +470,7 @@ try {
       value: BigInt(adventureQuote.value)
     })
   });
+  assert.equal(requestReceipt.status, "success");
   await client.request({ method: "anvil_mine", params: ["0xd"] });
   await ingest(requestReceipt);
   const requestId = await client.readContract({
@@ -439,41 +479,44 @@ try {
     functionName: "pendingRequest",
     args: [1n]
   });
-  // Select a deterministic proof that finds a serum using the catalogue itself.
-  const catalogueArtifact = await artifact("SerumCatalogue");
-  const rulesHash = await client.readContract({
-    address: catalogue,
-    abi: catalogueArtifact.abi,
-    functionName: "RULES_HASH"
-  });
-  let seed = 1n;
-  for (; ; seed++) {
-    const entropy = keccak256(
-      encodeAbiParameters(
-        [
-          { type: "uint256" },
-          { type: "address" },
-          { type: "uint256" },
-          { type: "uint256" },
-          { type: "uint16" },
-          { type: "bytes32" },
-          { type: "uint256" }
-        ],
-        [8453n, adventures, requestId, 1n, 0, rulesHash, seed]
-      )
+  for (const id of [1n, 3n, 4n]) {
+    assert.equal(
+      await client.readContract({
+        address: adventures,
+        abi: adventureAbi,
+        functionName: "pendingRequest",
+        args: [id]
+      }),
+      requestId
     );
-    const dose = await client.readContract({
-      address: catalogue,
-      abi: catalogueArtifact.abi,
-      functionName: "draw",
-      args: [entropy, 0]
-    });
-    if (dose.serumId) break;
   }
-  await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [
-    requestId,
-    seed
-  ]);
+  assert.equal(adventureQuote.odds.weights[0], 0);
+  await send(wrapper, "BoosterPacks.t:MockWrapper", "fulfill", [requestId, 1n]);
+  assert.deepEqual(
+    (await get(`/owners/${account.address}`)).cards
+      .map((card) => card.tokenId)
+      .sort(),
+    ["1", "2"]
+  );
+  for (const id of [3n, 4n]) {
+    await assert.rejects(
+      client.readContract({
+        address: cards,
+        abi: (await artifact("YunipalMonsters")).abi,
+        functionName: "ownerOf",
+        args: [id]
+      })
+    );
+    assert.equal(
+      await client.readContract({
+        address: adventures,
+        abi: adventureAbi,
+        functionName: "pendingRequest",
+        args: [id]
+      }),
+      0n
+    );
+  }
   const found = (await get("/cards/1")).card;
   assert.ok(found.unused);
   assert.equal(found.pendingAdventure, null);
@@ -796,7 +839,7 @@ try {
     true
   );
   console.log(
-    "Evolution local flow passed: adventure/VRF → serum → browser approval → saved generation → fusion/VRF → atomic burn/mint → inherited history and cooldown → same-collection owner/gallery reads → published holo masks and keyboard tilt; desktop/mobile."
+    "Evolution local flow passed: daily draw → three-card crew/VRF → two sacrifices and guaranteed survivor serum → browser approval → saved generation → fusion/VRF → atomic burn/mint → inherited history and cooldown → same-collection owner/gallery reads → published holo masks and keyboard tilt; desktop/mobile."
   );
 } catch (error) {
   const page = browser?.contexts()[0]?.pages()[0];
