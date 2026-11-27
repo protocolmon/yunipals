@@ -83,6 +83,36 @@ async function read<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 export const fetchBoosterTypes = (signal?: AbortSignal) =>
   read<BoosterPage<BoosterType>>("/boosters/types", signal);
+
+export async function fetchBoosterClaimPolicy(expected: {
+  registry: Address;
+  engine: Address;
+  monsters: Address;
+  packTypeId: string;
+  ruleHash: Hex;
+}): Promise<boolean> {
+  const snapshot = await fetchBoosterTypes();
+  const pack = snapshot.items.find(
+    (item) =>
+      item.packTypeId === expected.packTypeId &&
+      item.registry.toLowerCase() === expected.registry.toLowerCase() &&
+      item.engine.toLowerCase() === expected.engine.toLowerCase() &&
+      item.ruleHash.toLowerCase() === expected.ruleHash.toLowerCase()
+  );
+  if (
+    !snapshot.enabled ||
+    snapshot.chainId !== 8453 ||
+    snapshot.engine?.toLowerCase() !== expected.engine.toLowerCase() ||
+    snapshot.collection?.toLowerCase() !== expected.monsters.toLowerCase() ||
+    !snapshot.indexedBlock ||
+    typeof pack?.dailyClaimsExpire !== "boolean"
+  )
+    throw new Error(
+      "This pack’s claim policy is not available from the indexer yet. Please try again shortly."
+    );
+  return pack.dailyClaimsExpire;
+}
+
 export const fetchBoosterOriginal = (
   collection: string,
   id: string,

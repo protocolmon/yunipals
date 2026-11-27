@@ -398,7 +398,7 @@ describe("serum sponsorship quotes", () => {
 
 describe("daily crew quotes", () => {
   const day = 20000;
-  function fixture() {
+  function fixture(drawn = true) {
     let now = BigInt(day * 86400 + 86300);
     const cards = [1, 2, 3].map((id) => ({
       tokenId: String(id),
@@ -420,6 +420,15 @@ describe("daily crew quotes", () => {
       pendingGrade: null,
       graded: false
     }));
+    const readContract = vi.fn(
+      async ({ functionName }: { functionName: string }): Promise<unknown> => {
+        if (functionName === "crewMode") return true;
+        if (functionName === "dailyCrew")
+          return drawn ? [1n, 1, 3, true] : [0n, 0, 0, false];
+        if (functionName === "quoteRandomness") return 100n;
+        throw Error(functionName);
+      }
+    );
     const runtime = {
       store: { deployment: "fixture" },
       reader: {
@@ -440,12 +449,7 @@ describe("daily crew quotes", () => {
         client: {
           getBlock: async () => ({ number: 110n, hash, timestamp: now }),
           estimateFeesPerGas: async () => ({ maxFeePerGas: 10n }),
-          readContract: async ({ functionName }: { functionName: string }) => {
-            if (functionName === "crewMode") return true;
-            if (functionName === "dailyCrew") return [1n, 1, 3, true];
-            if (functionName === "quoteRandomness") return 100n;
-            throw Error(functionName);
-          }
+          readContract
         }
       },
       portal: { chain: { deployment: { chainId: 8453 } } }
@@ -458,11 +462,60 @@ describe("daily crew quotes", () => {
     return {
       app,
       cards,
+      readContract,
       tomorrow: () => {
         now += 86400n;
       }
     };
   }
+  it("quotes an undrawn day's capped fee through the API and expires it before midnight", async () => {
+    const { app, readContract, tomorrow } = fixture(false);
+    const response = await app.request(`/v1/evolution/crew/quote?day=${day}`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      chainId: 8453,
+      adventures: owner,
+      day,
+      value: "125",
+      expiresAt: (day + 1) * 86400 - 1
+    });
+    expect(readContract).toHaveBeenCalledWith(
+      expect.objectContaining({
+        functionName: "quoteRandomness",
+        args: [10n],
+        blockNumber: 110n
+      })
+    );
+    tomorrow();
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+  });
+  it("rejects unavailable draws and fails closed when fee data is unavailable", async () => {
+    const { app, readContract } = fixture();
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+    expect((await app.request("/v1/evolution/crew/quote?day=bad")).status).toBe(
+      400
+    );
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return false;
+      if (functionName === "dailyCrew") return [0n, 0, 0, false];
+      throw Error("RPC unavailable");
+    });
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(409);
+    readContract.mockImplementation(async ({ functionName }) => {
+      if (functionName === "crewMode") return true;
+      if (functionName === "dailyCrew") return [0n, 0, 0, false];
+      throw Error("RPC unavailable");
+    });
+    expect(
+      (await app.request(`/v1/evolution/crew/quote?day=${day}`)).status
+    ).toBe(503);
+  });
   it("binds ordered roles, the chosen survivor, guaranteed odds and midnight deadline", async () => {
     const { app } = fixture();
     const response = await app.request(

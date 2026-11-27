@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { TransactionReceiptNotFoundError } from "viem";
 import {
   boosterAssetUrl,
+  fetchBoosterClaimPolicy,
   fetchMonsterArtwork,
   readBoosterTransactions,
   readBoosterTransactionReceipt,
@@ -11,6 +12,69 @@ import {
 } from "./boosters";
 import { boosterSetupOwner } from "./boosterSetup";
 import { boosterArtworkPreviewUrl } from "./boosterArtworkPreview";
+
+test("purchase policy comes from the matching indexed pack and missing data never implies saved claims", async (t) => {
+  const expected = {
+    registry: "0x1111111111111111111111111111111111111111",
+    engine: "0x2222222222222222222222222222222222222222",
+    monsters: "0x3333333333333333333333333333333333333333",
+    packTypeId: "2",
+    ruleHash: `0x${"ab".repeat(32)}`
+  } as const;
+  const pack = { ...expected, dailyClaimsExpire: true };
+  const snapshot = {
+    enabled: true,
+    chainId: 8453,
+    engine: expected.engine,
+    collection: expected.monsters,
+    indexedBlock: "123",
+    items: [pack]
+  };
+  let body: unknown = snapshot;
+  let status = 200;
+  const fetch = t.mock.method(globalThis, "fetch", async (url: string) => {
+    assert.ok(url.endsWith("/v1/boosters/types"));
+    return new Response(JSON.stringify(body), { status });
+  });
+  assert.equal(await fetchBoosterClaimPolicy(expected), true);
+  pack.dailyClaimsExpire = false;
+  assert.equal(await fetchBoosterClaimPolicy(expected), false);
+  for (const changed of [
+    { dailyClaimsExpire: undefined },
+    { dailyClaimsExpire: "false" },
+    { packTypeId: "3" },
+    { registry: expected.engine },
+    { engine: expected.registry },
+    { ruleHash: `0x${"cd".repeat(32)}` }
+  ]) {
+    body = { ...snapshot, items: [{ ...pack, ...changed }] };
+    await assert.rejects(
+      fetchBoosterClaimPolicy(expected),
+      /claim policy is not available/
+    );
+  }
+  for (const changed of [
+    { enabled: false },
+    { chainId: 1 },
+    { engine: expected.registry },
+    { collection: expected.registry },
+    { indexedBlock: null },
+    { items: [] }
+  ]) {
+    body = { ...snapshot, ...changed };
+    await assert.rejects(
+      fetchBoosterClaimPolicy(expected),
+      /claim policy is not available/
+    );
+  }
+  status = 503;
+  const before = fetch.mock.callCount();
+  await assert.rejects(
+    fetchBoosterClaimPolicy(expected),
+    /index is catching up/
+  );
+  assert.equal(fetch.mock.callCount(), before + 1);
+});
 
 test("preview URLs preserve the API origin and prefix and only match canonical PNG assets", () => {
   const sha = "a".repeat(64);

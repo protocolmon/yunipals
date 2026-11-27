@@ -18,6 +18,7 @@ import {
 import {
   boosterAddresses,
   boosterQueryKey,
+  fetchBoosterClaimPolicy,
   saveBoosterTransaction
 } from "@/lib/boosters";
 import {
@@ -287,12 +288,12 @@ export function useBoosterActions() {
           pack.rules.engine.toLowerCase() !== deployment.engine
         )
           throw new Error("This pack is unavailable.");
-        dailyClaimsExpire = await client.readContract({
-          address: deployment.registry,
-          abi: packRegistryAbi,
-          functionName: "dailyClaimsExpire",
-          args: [packTypeId]
-        });
+        if (action.kind === "open")
+          dailyClaimsExpire = await fetchBoosterClaimPolicy({
+            ...deployment,
+            packTypeId: packTypeId.toString(),
+            ruleHash: pack.ruleHash
+          });
         if (action.kind === "open" && pack.salesPaused)
           throw new Error("New openings are paused for this pack.");
         const quantity =

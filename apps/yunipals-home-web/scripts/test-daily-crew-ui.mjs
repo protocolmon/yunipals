@@ -13,7 +13,7 @@ const { values } = parseArgs({
 const root = fileURLToPath(new URL("..", import.meta.url));
 const owner = "0x1111111111111111111111111111111111111111";
 const hash = "0x" + "a".repeat(64);
-const day = 20000;
+const day = Math.floor(Date.now() / 86400000);
 let rules = {
   enabled: true,
   day,
@@ -74,9 +74,9 @@ const cards = [
   card(4, 2, 1, 1)
 ];
 const modules = {
-  "virtual:crew-wallet.ts": `export const useAccount=()=>({address:'${owner}',chainId:8453});export const usePublicClient=()=>null;export const useWalletClient=()=>({data:null});`,
+  "virtual:crew-wallet.ts": `const noRead=async()=>{window.__rpcReads=(window.__rpcReads??0)+1;throw Error('Unexpected browser RPC read')};const client={readContract:noRead,estimateFeesPerGas:noRead,simulateContract:async(tx)=>{window.__draw={day:String(tx.args[0]),value:String(tx.value)}},waitForTransactionReceipt:async()=>({status:'success'})};const wallet={getChainId:async()=>8453,getAddresses:async()=>['${owner}'],writeContract:async()=>{window.__drawSubmissions=(window.__drawSubmissions??0)+1;return '${hash}'}};export const useAccount=()=>({address:'${owner}',chainId:8453});export const usePublicClient=()=>client;export const useWalletClient=()=>({data:wallet});`,
   "virtual:crew-art.tsx": `export const BoosterArtwork=({label})=><img width="240" height="320" src="/images/evolution/finishes/normal.webp" alt={label}/>;`,
-  "virtual:crew-entry.tsx": `import React from 'react';import{createRoot}from'react-dom/client';import{MemoryRouter}from'react-router-dom';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{DailyCrewBuilder}from'/src/pages/adventures/DailyCrewBuilder';import{environment}from'/src/environment';import'/src/globals.css';environment.portalApiUrl='/fixture';environment.portalChainId=8453;const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});window.__refresh=()=>query.invalidateQueries({queryKey:['evolution','daily-crew']});createRoot(document.getElementById('root')).render(<MemoryRouter><QueryClientProvider client={query}><DailyCrewBuilder busy={false} onReview={(survivor,crew)=>window.__review={survivor,crew}}/></QueryClientProvider></MemoryRouter>);`
+  "virtual:crew-entry.tsx": `import React from 'react';import{createRoot}from'react-dom/client';import{MemoryRouter}from'react-router-dom';import{QueryClient,QueryClientProvider}from'@tanstack/react-query';import{DailyCrewBuilder}from'/src/pages/adventures/DailyCrewBuilder';import{environment}from'/src/environment';import'/src/globals.css';environment.portalApiUrl='/fixture';environment.portalChainId=8453;environment.adventuresAddress='${owner}';const query=new QueryClient({defaultOptions:{queries:{retry:false,refetchOnWindowFocus:false}}});window.__refresh=()=>query.invalidateQueries({queryKey:['evolution','daily-crew']});createRoot(document.getElementById('root')).render(<MemoryRouter><QueryClientProvider client={query}><DailyCrewBuilder busy={false} onReview={(survivor,crew)=>window.__review={survivor,crew}}/></QueryClientProvider></MemoryRouter>);`
 };
 const cacheDir = await mkdtemp(join(tmpdir(), "crew-ui-"));
 const server = await createServer({
@@ -141,13 +141,29 @@ try {
   page.setDefaultTimeout(15000);
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.route("**/fixture/v1/evolution/**", (route) =>
-    route.fulfill({
+  let drawQuotes = 0;
+  await page.route("**/fixture/v1/evolution/**", (route) => {
+    if (route.request().url().includes("/crew/quote")) {
+      drawQuotes++;
+      return route.fulfill({
+        json: {
+          chainId: 8453,
+          adventures: owner,
+          day,
+          value: "125",
+          expiresAt: Math.min(
+            Math.floor(Date.now() / 1000) + 300,
+            (day + 1) * 86400 - 1
+          )
+        }
+      });
+    }
+    return route.fulfill({
       json: route.request().url().includes("/crew")
         ? rules
         : { cards, nextAfter: null }
-    })
-  );
+    });
+  });
   await page.goto(
     `http://127.0.0.1:${server.httpServer.address().port}/__crew`
   );
@@ -229,9 +245,33 @@ try {
       .isDisabled(),
     true
   );
+  // No fee polling while browsing; an explicit review requests an API quote.
+  rules = { ...rules, day, requestId: "0", ready: false };
+  await page.evaluate(() => window.__refresh());
+  const reviewDraw = page.getByRole("button", {
+    name: "Review daily draw",
+    exact: true
+  });
+  await reviewDraw.waitFor();
+  assert.equal(drawQuotes, 0);
+  assert.equal(await page.evaluate(() => window.__rpcReads ?? 0), 0);
+  await reviewDraw.click();
+  const revealDraw = page.getByRole("button", {
+    name: /Reveal today's requirements.*ETH/
+  });
+  await revealDraw.waitFor();
+  assert.equal(drawQuotes, 1);
+  assert.equal(await page.evaluate(() => window.__drawSubmissions ?? 0), 0);
+  await revealDraw.click();
+  await page.waitForFunction(() => window.__drawSubmissions === 1);
+  assert.deepEqual(await page.evaluate(() => window.__draw), {
+    day: String(day),
+    value: "125"
+  });
+  assert.equal(await page.evaluate(() => window.__rpcReads ?? 0), 0);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS real crew selection: wrong traits, newborn requirement, selected survivor, midnight rollover, desktop/mobile, no page errors"
+    "PASS real crew selection: wrong traits, newborn requirement, selected survivor, midnight rollover, desktop/mobile, API draw review, no browser contract reads or page errors"
   );
 } finally {
   await browser?.close();

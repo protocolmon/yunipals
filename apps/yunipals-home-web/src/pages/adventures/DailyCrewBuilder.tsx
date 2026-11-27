@@ -12,7 +12,11 @@ import {
 } from "@protopals/yunipals-market-core/serums";
 
 import { environment } from "@/environment";
-import { evolutionRequest, type AdventureCard } from "@/lib/evolution";
+import {
+  evolutionRequest,
+  fetchDailyCrewDrawQuote,
+  type AdventureCard
+} from "@/lib/evolution";
 import { tcgColors, tcgSpecies } from "@/lib/boosterCollectionGrid";
 import { cn } from "@/lib/utils";
 import {
@@ -67,19 +71,14 @@ export function DailyCrewBuilder({
   const connected = Boolean(address && chainId === environment.portalChainId);
   const price = useQuery({
     queryKey: ["evolution", "daily-crew-price", rules?.day],
-    enabled: Boolean(client && rules?.enabled && rules.requestId === "0"),
-    queryFn: async () => {
-      const fees = await client!.estimateFeesPerGas();
-      const quote = await client!.readContract({
-        address: environment.adventuresAddress as Address,
-        abi: adventureAbi,
-        functionName: "quoteRandomness",
-        args: [fees.maxFeePerGas ?? fees.gasPrice!]
-      });
-      return (quote * 125n + 99n) / 100n;
-    },
-    refetchInterval: 15000
+    enabled: false,
+    retry: false,
+    queryFn: () => fetchDailyCrewDrawQuote(rules!.day)
   });
+  const drawQuote =
+    price.data && price.data.expiresAt > Math.floor(Date.now() / 1000)
+      ? price.data
+      : undefined;
   const labels = rules
     ? [
         `${tcgColors[rules.color - 1] ?? "Today's color"} monster`,
@@ -98,7 +97,7 @@ export function DailyCrewBuilder({
       !address ||
       !connected ||
       !rules ||
-      price.data === undefined ||
+      !drawQuote ||
       preparing
     )
       return;
@@ -109,9 +108,9 @@ export function DailyCrewBuilder({
         address: environment.adventuresAddress as Address,
         abi: adventureAbi,
         functionName: "prepareDailyCrew" as const,
-        args: [BigInt(rules.day), price.data] as const,
+        args: [BigInt(rules.day), BigInt(drawQuote.value)] as const,
         account: address,
-        value: price.data
+        value: BigInt(drawQuote.value)
       };
       await client.simulateContract(transaction);
       const [activeChain, accounts] = await Promise.all([
@@ -220,12 +219,16 @@ export function DailyCrewBuilder({
           {rules.requestId === "0" && (
             <button
               className={cn(adventureButton, "mt-3")}
-              disabled={!connected || price.data === undefined || preparing}
-              onClick={() => void prepareDay()}
+              disabled={!connected || price.isFetching || preparing}
+              onClick={() => void (drawQuote ? prepareDay() : price.refetch())}
             >
               {preparing
                 ? "Preparing…"
-                : `Reveal today's requirements${price.data === undefined ? "" : ` · up to ${formatEther(price.data)} ETH + gas`}`}
+                : price.isFetching
+                  ? "Checking the draw fee…"
+                  : drawQuote
+                    ? `Reveal today's requirements · up to ${formatEther(BigInt(drawQuote.value))} ETH + gas`
+                    : "Review daily draw"}
             </button>
           )}
           {price.error && (

@@ -374,6 +374,66 @@ export function registerEvolutionRoutes(
       })
     )
   );
+  router.get("/v1/evolution/crew/quote", async (c) => {
+    const day = BigInt(
+      z
+        .string()
+        .regex(/^[1-9][0-9]{0,77}$/)
+        .parse(c.req.query("day"))
+    );
+    return reply(
+      await snapshot(async (r, _db, ctx) => {
+        const head = await r.chain.client.getBlock();
+        if (day !== head.timestamp / 86400n)
+          throw new PortalUserError(
+            "The day changed. Review the daily draw again.",
+            409
+          );
+        const [enabled, rule] = await Promise.all([
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "crewMode",
+            blockNumber: head.number
+          }),
+          r.chain.client.readContract({
+            address: ctx.adventures as Address,
+            abi: adventureAbi,
+            functionName: "dailyCrew",
+            args: [day],
+            blockNumber: head.number
+          })
+        ]);
+        if (!enabled || rule[0] !== 0n || rule[3])
+          throw new PortalUserError(
+            "A daily draw is not available. Refresh today's requirements.",
+            409
+          );
+        const fees = await r.chain.client.estimateFeesPerGas({
+          chain: r.chain.client.chain,
+          type: "eip1559"
+        });
+        const price = await r.chain.client.readContract({
+          address: ctx.adventures as Address,
+          abi: adventureAbi,
+          functionName: "quoteRandomness",
+          args: [fees.maxFeePerGas],
+          blockNumber: head.number
+        });
+        return {
+          chainId: r.portal.chain.deployment.chainId,
+          adventures: ctx.adventures,
+          day: Number(day),
+          value: (price * 125n + 99n) / 100n,
+          expiresAt: Number(
+            head.timestamp + 300n < (day + 1n) * 86400n
+              ? head.timestamp + 300n
+              : (day + 1n) * 86400n - 1n
+          )
+        };
+      })
+    );
+  });
   router.get("/v1/evolution/quote", async (c) => {
     const id = BigInt(uint.parse(c.req.query("tokenId")));
     const kind = z

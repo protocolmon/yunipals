@@ -4,6 +4,7 @@ import { encodeFunctionData, parseAbi } from "viem";
 import { evolutionAbi } from "@protopals/yunipals-market-core/evolutionAbi";
 import { environment } from "@/environment";
 import {
+  fetchDailyCrewDrawQuote,
   validateEvolutionQuote,
   type AdventureCard,
   type EvolutionQuote
@@ -14,6 +15,46 @@ const controller = "0x2222222222222222222222222222222222222222";
 const hash = `0x${"0".repeat(64)}` as const;
 const dose = { catalogueVersion: 1, serumId: 121, presenceId: 1 } as const;
 const expected = { artVersion: 0n, historyHash: hash };
+
+test("daily draw quotes bind the API fee to this deployment and day", async (t) => {
+  const previous = { ...environment };
+  const now = 20000 * 86400 + 100;
+  const day = Math.floor(now / 86400);
+  t.mock.method(Date, "now", () => now * 1000);
+  Object.assign(environment, {
+    portalChainId: 8453,
+    adventuresAddress: controller
+  });
+  const valid = {
+    chainId: 8453,
+    adventures: controller,
+    day,
+    value: "125",
+    expiresAt: now + 300
+  };
+  let body: unknown = valid;
+  t.mock.method(globalThis, "fetch", async (url: string) => {
+    assert.ok(url.endsWith(`/v1/evolution/crew/quote?day=${day}`));
+    return new Response(JSON.stringify(body));
+  });
+  try {
+    assert.deepEqual(await fetchDailyCrewDrawQuote(day), valid);
+    for (const changed of [
+      { chainId: 1 },
+      { adventures: owner },
+      { day: day + 1 },
+      { expiresAt: now },
+      { expiresAt: (day + 1) * 86400 },
+      { value: "-1" },
+      { value: undefined }
+    ]) {
+      body = { ...valid, ...changed };
+      await assert.rejects(fetchDailyCrewDrawQuote(day));
+    }
+  } finally {
+    Object.assign(environment, previous);
+  }
+});
 const card: AdventureCard = {
   tokenId: "1",
   owner,

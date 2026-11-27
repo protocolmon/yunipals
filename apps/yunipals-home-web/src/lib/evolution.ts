@@ -129,6 +129,27 @@ export async function fetchAdventureCard(id: string, signal?: AbortSignal) {
     .object({ card: evolutionCardSchema, timestamp: z.number() })
     .parse(await evolutionRequest(`/cards/${id}`, signal));
 }
+export async function fetchDailyCrewDrawQuote(day: number) {
+  const quote = z
+    .object({
+      chainId: z.number().int(),
+      adventures: address,
+      day: z.number().int().positive(),
+      value: uint,
+      expiresAt: z.number().int().positive()
+    })
+    .parse(await evolutionRequest(`/crew/quote?day=${day}`));
+  if (
+    quote.chainId !== environment.portalChainId ||
+    quote.adventures.toLowerCase() !==
+      environment.adventuresAddress.toLowerCase() ||
+    quote.day !== day ||
+    quote.expiresAt <= Math.floor(Date.now() / 1000) ||
+    quote.expiresAt >= (day + 1) * 86400
+  )
+    throw new Error("The daily draw quote changed. Please review it again.");
+  return quote;
+}
 export async function fetchAdventureCards(
   owner: string,
   after?: string | null,
