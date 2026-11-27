@@ -2,6 +2,7 @@ import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Gift, Hourglass } from "lucide-react";
 import {
+  accruedBoosterCredits,
   boosterBatchSize,
   type BoosterOriginal
 } from "@protopals/yunipals-market-core/boosters";
@@ -37,6 +38,12 @@ export function BoosterDailyClaimButton({
     clock.data === undefined
       ? 0
       : Math.min(7, boosterBatchSize(original, clock.data));
+  const saved =
+    clock.data === undefined
+      ? 0n
+      : accruedBoosterCredits(original, clock.data).claimable;
+  const hasMore = saved > BigInt(quantity);
+  const openLabel = hasMore ? `Open next ${quantity}` : `Open ${quantity}`;
   const buttonClass = cn(
     iconOnly &&
       "h-11 min-w-11 gap-1.5 border-2 border-white bg-grape px-3 py-2 shadow-card hover:bg-grape/90",
@@ -77,7 +84,7 @@ export function BoosterDailyClaimButton({
             quantity
           }}
           claimOriginal={original}
-          ariaLabel={`Open ${quantity} saved ${quantity === 1 ? "card" : "cards"} from original #${original.tokenId}`}
+          ariaLabel={`${openLabel} saved ${quantity === 1 ? "card" : "cards"} from original #${original.tokenId}${hasMore ? `, ${saved} saved in total` : ""}`}
           className={buttonClass}
           onSubmitted={openTransaction}
         >
@@ -85,8 +92,8 @@ export function BoosterDailyClaimButton({
           {iconOnly
             ? quantity
             : variant === "compact"
-              ? `Open ${quantity}`
-              : `Open ${quantity} daily ${quantity === 1 ? "card" : "cards"}`}
+              ? openLabel
+              : `${openLabel} daily ${quantity === 1 ? "card" : "cards"}`}
         </BoosterActionButton>
       ) : null}
     </>

@@ -48,7 +48,7 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
       <DialogHeader
         id={titleId}
         eyebrow="A whole bunch of new pals"
-        title="Open all daily cards"
+        title="Open your next round"
         onClose={actions.dismiss}
         busy={Boolean(phase)}
       />

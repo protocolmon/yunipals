@@ -97,7 +97,7 @@ export function CollectionDailyPulls() {
       !all.progress.pending)
   )
     return null;
-  const count = ready > 99n ? "99+" : ready.toString();
+  const count = `${ready}${originals.hasNextPage ? "+" : ""}`;
   return (
     <div ref={popover} className="relative z-20">
       <button
@@ -117,9 +117,7 @@ export function CollectionDailyPulls() {
         <Gift size={19} aria-hidden="true" />
         <span>Daily cards</span>
         <span className="grid h-6 min-w-6 place-items-center rounded-full bg-grape px-1.5 text-xs text-white">
-          {ready
-            ? `${count}${originals.hasNextPage && ready <= 99n ? "+" : ""}`
-            : "•"}
+          {ready ? count : "•"}
         </span>
       </button>
       {open && (
@@ -131,8 +129,18 @@ export function CollectionDailyPulls() {
         >
           <div className="border-b border-line px-4 py-4">
             <p className="font-display text-lg text-ink">Your daily cards</p>
+            {clock.data !== undefined && (
+              <p
+                className="mt-1 text-sm font-bold text-grape"
+                aria-live="polite"
+              >
+                {count} saved{" "}
+                {ready === 1n && !originals.hasNextPage ? "card" : "cards"}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted">
-              Open your saved cards together, or choose a Yunipal.
+              Open up to 7 cards per Yunipal each round. Any remaining cards
+              stay saved for your next round.
             </p>
             <button
               type="button"
@@ -148,7 +156,7 @@ export function CollectionDailyPulls() {
                 ? "Switch to Base"
                 : all.progress.pending
                   ? "Check opening status"
-                  : "Open all"}
+                  : "Open next round"}
             </button>
             {switcher.error && (
               <p role="alert" className="mt-2 text-xs text-muted">
@@ -177,6 +185,15 @@ export function CollectionDailyPulls() {
                     <span>
                       Original
                       <br />#{item.tokenId}
+                      {clock.data !== undefined && (
+                        <span className="mt-1 block font-normal text-muted">
+                          {accruedBoosterCredits(
+                            item,
+                            clock.data
+                          ).claimable.toString()}{" "}
+                          saved
+                        </span>
+                      )}
                     </span>
                   </Link>
                   <BoosterDailyClaimButton

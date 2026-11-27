@@ -222,7 +222,9 @@ try {
     await page
       .getByRole("button", { name: "2 daily cards ready. Open daily cards." })
       .click();
-    await page.getByRole("button", { name: "Open all", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Open next round", exact: true })
+      .click();
   };
   await visit();
   await page.getByText("4 saved cards", { exact: true }).waitFor();
@@ -242,7 +244,7 @@ try {
   await page.getByRole("dialog", { name: "Yunipal #7", exact: true }).waitFor();
   await page.keyboard.press("Escape");
   await page
-    .getByRole("dialog", { name: "Open all daily cards", exact: true })
+    .getByRole("dialog", { name: "Open your next round", exact: true })
     .waitFor();
   assert.equal(
     await firstPreview.evaluate(
