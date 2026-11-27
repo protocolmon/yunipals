@@ -1039,6 +1039,66 @@ contract EvolutionTest is Test {
         assertLe(address(uint160(uint256(vm.load(address(adventures), slot)))).code.length, 24_576);
     }
 
+    function testCrewFailureRollsBackEveryReservationAndCooldown() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        wrapper.setReject(true);
+        vm.expectRevert("request failed");
+        launchCrew(crew, crew[1], day);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+            assertEq(cards.cardReservation(crew[i]), address(0));
+            assertFalse(cards.transferLocked(crew[i]));
+            assertEq(adventures.pendingRequest(crew[i]), 0);
+            assertEq(adventures.nextAdventureAt(crew[i]), 0);
+        }
+    }
+
+    function testCrewDeferredSettlementCannotPartiallyBurnOrReroll() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        uint256 requestId = launchCrew(crew, crew[1], day);
+        vm.mockCallRevert(address(cards), abi.encodeCall(cards.sacrificeAdventureCompanion, (crew[2])),
+            abi.encodeWithSignature("Error(string)", "temporary burn failure"));
+        wrapper.fulfill(requestId, 123);
+        (uint256 seed,, bool received) = adventures.randomRequests(requestId);
+        assertEq(seed, 123);
+        assertTrue(received);
+        assertFalse(adventures.getAdventure(requestId).settled);
+        assertEq(adventures.unusedSerum(crew[1]).serumId, 0);
+        for (uint256 i; i < 3; ++i) {
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+            assertEq(cards.cardReservation(crew[i]), address(adventures));
+            assertTrue(cards.transferLocked(crew[i]));
+            assertEq(adventures.pendingRequest(crew[i]), requestId);
+        }
+        vm.clearMockedCalls();
+        vm.prank(BOB);
+        adventures.settle(requestId);
+        SerumCatalogue.Dose memory result = adventures.unusedSerum(crew[1]);
+        assertGt(result.serumId, 0);
+        wrapper.fulfill(requestId, 999);
+        adventures.settle(requestId);
+        assertEq(adventures.unusedSerum(crew[1]).serumId, result.serumId);
+        assertEq(adventures.unusedSerum(crew[1]).presenceId, result.presenceId);
+        assertEq(cards.ownerOf(crew[1]), ALICE);
+    }
+
+    function testCrewOnlyReservedControllerCanSacrificeAndOwnersCannotBurnLockedCards() public {
+        (uint256[3] memory crew, uint64 day) = freshCrew();
+        vm.prank(ALICE);
+        vm.expectRevert(YunipalMonsters.AdventureReservationRequired.selector);
+        cards.sacrificeAdventureCompanion(crew[0]);
+        launchCrew(crew, crew[1], day);
+        for (uint256 i; i < 3; ++i) {
+            vm.prank(ALICE);
+            vm.expectRevert("card reserved");
+            cards.burn(crew[i]);
+            vm.prank(BOB);
+            vm.expectRevert(YunipalMonsters.AdventureReservationRequired.selector);
+            cards.sacrificeAdventureCompanion(crew[i]);
+            assertEq(cards.ownerOf(crew[i]), ALICE);
+        }
+    }
+
     function testFuzzCrewAlwaysSettlesWithinCallbackGas(uint256 seed) public {
         (uint256[3] memory crew, uint64 day) = freshCrew();
         uint256 requestId = launchCrew(crew, crew[2], day);
