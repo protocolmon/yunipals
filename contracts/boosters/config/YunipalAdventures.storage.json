@@ -1,0 +1,350 @@
+[
+  {
+    "label": "wrapper",
+    "slot": "0",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract IVRFV2PlusWrapper",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "confirmations",
+    "slot": "0",
+    "offset": 20,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint16",
+      "numberOfBytes": "2"
+    }
+  },
+  {
+    "label": "randomnessPaused",
+    "slot": "0",
+    "offset": 22,
+    "type": {
+      "encoding": "inplace",
+      "label": "bool",
+      "numberOfBytes": "1"
+    }
+  },
+  {
+    "label": "randomRequests",
+    "slot": "1",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct PortalRandomness.RandomRequest)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct PortalRandomness.RandomRequest",
+        "numberOfBytes": "64",
+        "members": [
+          {
+            "label": "seed",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "requested",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "received",
+            "slot": "1",
+            "offset": 1,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "refundCredits",
+    "slot": "2",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "label": "mapping(address => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "totalRefundLiability",
+    "slot": "3",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    }
+  },
+  {
+    "label": "rules",
+    "slot": "4",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract PortalRules",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "cards",
+    "slot": "5",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract YunipalMonsters",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "catalogue",
+    "slot": "6",
+    "offset": 0,
+    "type": {
+      "encoding": "inplace",
+      "label": "contract SerumCatalogue",
+      "numberOfBytes": "20"
+    }
+  },
+  {
+    "label": "_adventures",
+    "slot": "7",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct YunipalAdventures.Adventure)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct YunipalAdventures.Adventure",
+        "numberOfBytes": "96",
+        "members": [
+          {
+            "label": "tokenId",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          {
+            "label": "requester",
+            "slot": "1",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          {
+            "label": "requestedAt",
+            "slot": "1",
+            "offset": 20,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          {
+            "label": "sequence",
+            "slot": "1",
+            "offset": 28,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint16",
+              "numberOfBytes": "2"
+            }
+          },
+          {
+            "label": "settled",
+            "slot": "1",
+            "offset": 30,
+            "type": {
+              "encoding": "inplace",
+              "label": "bool",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "found",
+            "slot": "2",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "struct SerumCatalogue.Dose",
+              "numberOfBytes": "32",
+              "members": [
+                {
+                  "label": "catalogueVersion",
+                  "slot": "0",
+                  "offset": 0,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint32",
+                    "numberOfBytes": "4"
+                  }
+                },
+                {
+                  "label": "serumId",
+                  "slot": "0",
+                  "offset": 4,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint8",
+                    "numberOfBytes": "1"
+                  }
+                },
+                {
+                  "label": "presenceId",
+                  "slot": "0",
+                  "offset": 5,
+                  "type": {
+                    "encoding": "inplace",
+                    "label": "uint8",
+                    "numberOfBytes": "1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "label": "pendingRequest",
+    "slot": "8",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint256)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  },
+  {
+    "label": "nextAdventureAt",
+    "slot": "9",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => uint64)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      }
+    }
+  },
+  {
+    "label": "_unused",
+    "slot": "10",
+    "offset": 0,
+    "type": {
+      "encoding": "mapping",
+      "key": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "label": "mapping(uint256 => struct SerumCatalogue.Dose)",
+      "numberOfBytes": "32",
+      "value": {
+        "encoding": "inplace",
+        "label": "struct SerumCatalogue.Dose",
+        "numberOfBytes": "32",
+        "members": [
+          {
+            "label": "catalogueVersion",
+            "slot": "0",
+            "offset": 0,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint32",
+              "numberOfBytes": "4"
+            }
+          },
+          {
+            "label": "serumId",
+            "slot": "0",
+            "offset": 4,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          {
+            "label": "presenceId",
+            "slot": "0",
+            "offset": 5,
+            "type": {
+              "encoding": "inplace",
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          }
+        ]
+      }
+    }
+  }
+]

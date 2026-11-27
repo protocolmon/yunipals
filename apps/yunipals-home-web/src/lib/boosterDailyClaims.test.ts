@@ -102,3 +102,24 @@ test("claim plan deduplicates originals and excludes foreign, burned, pending an
     3
   );
 });
+
+test("new pack claims expire at fixed boundaries while legacy claims remain banked", async () => {
+  const { accruedBoosterCredits } = await import(
+    "@protopals/yunipals-market-core/boosters"
+  );
+  const legacy = original("7");
+  const fresh = {
+    ...legacy,
+    pack: { ...legacy.pack, dailyClaimsExpire: true }
+  };
+  assert.equal(accruedBoosterCredits(fresh, 109n).claimable, 0n);
+  assert.equal(accruedBoosterCredits(fresh, 110n).claimable, 1n);
+  assert.equal(accruedBoosterCredits(fresh, 140n).claimable, 1n);
+  assert.equal(accruedBoosterCredits(legacy, 140n).claimable, 4n);
+  const claimed = { ...fresh, dailyCommitted: "4", minted: "2" };
+  assert.equal(accruedBoosterCredits(claimed, 149n).claimable, 0n);
+  assert.equal(accruedBoosterCredits(claimed, 150n).claimable, 1n);
+  assert.equal(accruedBoosterCredits(fresh, 2739n).claimable, 1n);
+  assert.equal(accruedBoosterCredits(fresh, 2740n).claimable, 0n);
+  assert.equal(accruedBoosterCredits(legacy, 2740n).claimable, 263n);
+});

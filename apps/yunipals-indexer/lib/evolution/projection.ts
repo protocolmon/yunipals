@@ -28,13 +28,33 @@ export async function applyEvolutionEvent(
   };
   const token = String(a.tokenId);
   const request = String(a.requestId);
-  if (name === "AdventureRequested") {
+  if (name === "DailyCrewRequested") {
+    await update("adventure", request, {
+      ...a,
+      dailyRequirements: true,
+      settled: false
+    });
+  } else if (name === "DailyCrewReady") {
+    await update("adventure", request, { ...a, settled: true });
+  } else if (name === "CrewCommitted") {
+    await update("adventure", request, { ...a });
+    for (const id of a.crew as string[])
+      await update("card", String(id), { pendingAdventure: request });
+  } else if (name === "AdventureRequested") {
     await update("adventure", request, { ...a, settled: false });
     await update("card", token, {
       pendingAdventure: request,
       nextAdventureAt: a.nextAdventureAt
     });
   } else if (name === "AdventureSettled") {
+    const previous = await store.get("adventure", request);
+    for (const member of (previous?.crew ?? []) as string[]) {
+      const id = String(member);
+      await update("card", id, {
+        pendingAdventure: null,
+        ...(id !== token ? { burned: true, owner: null, unused: null } : {})
+      });
+    }
     await update("adventure", request, { ...a, settled: true });
     await update("card", token, {
       pendingAdventure: null,

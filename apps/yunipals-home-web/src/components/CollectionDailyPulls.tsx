@@ -112,7 +112,7 @@ export function CollectionDailyPulls() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpenWallet(open ? null : address.toLowerCase())}
-        title="Your saved daily cards"
+        title="Your available daily cards"
       >
         <Gift size={19} aria-hidden="true" />
         <span>Daily cards</span>
@@ -134,13 +134,14 @@ export function CollectionDailyPulls() {
                 className="mt-1 text-sm font-bold text-grape"
                 aria-live="polite"
               >
-                {count} saved{" "}
+                {count} available{" "}
                 {ready === 1n && !originals.hasNextPage ? "card" : "cards"}
               </p>
             )}
             <p className="mt-1 text-xs text-muted">
-              Open up to 7 cards per Yunipal each round. Any remaining cards
-              stay saved for your next round.
+              Open available daily cards together. Expiring packs must be
+              claimed within their daily window; older packs keep unused claims
+              saved.
             </p>
             <button
               type="button"
@@ -191,7 +192,7 @@ export function CollectionDailyPulls() {
                             item,
                             clock.data
                           ).claimable.toString()}{" "}
-                          saved
+                          available
                         </span>
                       )}
                     </span>

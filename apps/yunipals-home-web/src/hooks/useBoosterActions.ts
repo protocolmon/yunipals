@@ -79,6 +79,7 @@ type Review = {
   permit?: BoosterPermit;
   expiresAt: number;
   ethQuote?: EthPackQuote;
+  dailyClaimsExpire: boolean;
 };
 
 export function useBoosterActions() {
@@ -270,6 +271,7 @@ export function useBoosterActions() {
       let approval = false;
       let permit: BoosterPermit | null = null;
       let ethQuote: EthPackQuote | undefined;
+      let dailyClaimsExpire = false;
       const expiresAt = Math.floor(Date.now() / 1000) + 600;
       const deadline = block.timestamp + 600n;
       if (action.kind === "open" || action.kind === "claim") {
@@ -285,6 +287,12 @@ export function useBoosterActions() {
           pack.rules.engine.toLowerCase() !== deployment.engine
         )
           throw new Error("This pack is unavailable.");
+        dailyClaimsExpire = await client.readContract({
+          address: deployment.registry,
+          abi: packRegistryAbi,
+          functionName: "dailyClaimsExpire",
+          args: [packTypeId]
+        });
         if (action.kind === "open" && pack.salesPaused)
           throw new Error("New openings are paused for this pack.");
         const quantity =
@@ -528,6 +536,7 @@ export function useBoosterActions() {
         approval,
         permitApproval: permit !== null,
         permitSigned: false,
+        dailyClaimsExpire,
         ...(permit ? { permit } : {}),
         expiresAt,
         ...(ethQuote ? { ethQuote } : {})

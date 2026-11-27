@@ -4,7 +4,12 @@ import {
   adventureAbi,
   evolutionAbi
 } from "@protopals/yunipals-market-core/evolutionAbi";
-import { fusionCompatible } from "@protopals/yunipals-market-core/serums";
+import {
+  fusionCompatible,
+  crewEligibility,
+  crewRulesHash,
+  type CrewSelection
+} from "@protopals/yunipals-market-core/serums";
 import { environment } from "@/environment";
 import { portalImage } from "@/lib/portals";
 
@@ -85,7 +90,14 @@ export type AdventureCard = z.infer<typeof evolutionCardSchema>;
 export type EvolutionAction = "adventure" | "serum" | "fusion";
 export const evolutionQuoteSchema = z.object({
   kind: z.enum(["adventure", "serum", "fusion"]),
-  cards: z.array(evolutionCardSchema).min(1).max(2),
+  cards: z.array(evolutionCardSchema).min(1).max(3),
+  crew: z
+    .object({
+      day: z.number().int().positive(),
+      color: z.number().int().min(1).max(6),
+      monsterType: z.number().int().min(1).max(11)
+    })
+    .optional(),
   to: address,
   data: z
     .string()
@@ -139,10 +151,15 @@ export async function fetchEvolutionQuote(
   kind: EvolutionAction,
   tokenId: string,
   owner: string,
-  partnerId?: string
+  partnerId?: string,
+  crew?: CrewSelection
 ) {
   const params = new URLSearchParams({ kind, tokenId, owner });
   if (partnerId) params.set("partnerId", partnerId);
+  if (crew) {
+    params.set("crew", crew.tokenIds.join(","));
+    params.set("day", String(crew.day));
+  }
   return evolutionQuoteSchema.parse(await evolutionRequest(`/quote?${params}`));
 }
 /** Never trust an API-provided transaction destination or calldata without checking the reviewed semantics. */
@@ -151,7 +168,8 @@ export function validateEvolutionQuote(
   owner: Address,
   kind: EvolutionAction,
   tokenId: string,
-  partnerId?: string
+  partnerId?: string,
+  crew?: CrewSelection
 ) {
   const configured =
     kind === "adventure"
@@ -167,12 +185,16 @@ export function validateEvolutionQuote(
       (c) =>
         c.owner.toLowerCase() !== owner.toLowerCase() ||
         c.graded ||
+        c.pendingGrade ||
         c.reservedBy
     ) ||
     quote.cards
       .map((c) => c.tokenId)
       .sort()
-      .join() !== [tokenId, ...(partnerId ? [partnerId] : [])].sort().join()
+      .join() !==
+      (crew ? [...crew.tokenIds] : [tokenId, ...(partnerId ? [partnerId] : [])])
+        .sort()
+        .join()
   )
     throw new Error(
       "The adventure quote does not match your selection or configured contracts."
@@ -183,6 +205,19 @@ export function validateEvolutionQuote(
       !fusionCompatible(quote.cards[0], quote.cards[1]))
   )
     throw new Error("These cards do not match a fusion recipe.");
+  if (
+    kind === "adventure" &&
+    (!crew ||
+      !quote.crew ||
+      quote.crew.day !== crew.day ||
+      !crew.tokenIds.includes(tokenId) ||
+      quote.cards.some((card, i) => card.tokenId !== crew.tokenIds[i]) ||
+      crewEligibility(quote.cards, quote.crew) !== null ||
+      BigInt(quote.deadline) >= BigInt(crew.day + 1) * 86400n)
+  )
+    throw new Error(
+      "The crew quote does not match today's reviewed selection."
+    );
   const decoded = decodeFunctionData({
     abi: kind === "adventure" ? adventureAbi : evolutionAbi,
     data: quote.data
@@ -190,7 +225,7 @@ export function validateEvolutionQuote(
   const args = decoded.args as readonly unknown[];
   const expectedName =
     kind === "adventure"
-      ? "adventure"
+      ? "crewAdventure"
       : kind === "serum"
         ? "consumeSerum"
         : "fuse";
@@ -206,7 +241,14 @@ export function validateEvolutionQuote(
     );
   const required =
     kind === "adventure"
-      ? [BigInt(tokenId), args[1], BigInt(quote.value), BigInt(quote.deadline)]
+      ? [
+          crew!.tokenIds.map(BigInt),
+          BigInt(tokenId),
+          BigInt(crew!.day),
+          crewRulesHash,
+          BigInt(quote.value),
+          BigInt(quote.deadline)
+        ]
       : kind === "serum"
         ? [
             BigInt(tokenId),

@@ -23,7 +23,10 @@ export function BoosterOriginalControls({
     refetchInterval: 15000
   });
   const now = clock.data ?? BigInt(original.revealedAt ?? "0");
-  const { claimable, nextAt } = accruedBoosterCredits(original, now);
+  const { claimable, nextAt, expiresAt, endsAt } = accruedBoosterCredits(
+    original,
+    now
+  );
   const requestId = original.pendingRequest?.split(":").at(-1);
   const pending = useQuery({
     queryKey: [...boosterQueryKey, "request", original.engine, requestId],
@@ -63,6 +66,15 @@ export function BoosterOriginalControls({
               </>
             )}
           </p>
+          {original.pack.dailyClaimsExpire && (
+            <p className="rounded-2xl bg-lavender/20 p-3">
+              {endsAt && now >= endsAt
+                ? "This pack’s daily claim period has ended. Missed claims cannot be recovered."
+                : expiresAt && claimable > 0n
+                  ? `Claim before ${new Date(Number(expiresAt) * 1000).toLocaleString()}. This claim expires permanently.`
+                  : "Claim in every daily window to receive the full set. Missed claims expire permanently."}
+            </p>
+          )}
           {original.pendingRequest && (
             <p role="status">
               {pending.data?.item.status === "seeded"

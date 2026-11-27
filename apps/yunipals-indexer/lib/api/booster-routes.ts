@@ -19,7 +19,7 @@ const typeColumns = `id, pack_type_id AS "packTypeId", registry, engine,
   mints_per_interval::float8 AS "mintsPerInterval", total_variants::text AS "totalVariants",
   max_batch AS "maxBatch", catalog_hash AS "catalogHash", rule_hash AS "ruleHash",
   manifest_uri AS "manifestUri", metadata_base_uri AS "metadataBaseUri",
-  sales_paused AS "salesPaused", openings::text`;
+  sales_paused AS "salesPaused", openings::text, daily_claims_expire AS "dailyClaimsExpire"`;
 const originalColumns = `id, collection, token_id AS "tokenId", type_key AS "typeKey", engine, owner,
   revealed_at::text AS "revealedAt", daily_committed::text AS "dailyCommitted", minted::text,
   remaining::text, pending_request AS "pendingRequest", burned`;

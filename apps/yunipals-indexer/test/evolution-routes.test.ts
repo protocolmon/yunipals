@@ -395,3 +395,107 @@ describe("serum sponsorship quotes", () => {
     expect((await app.request("/v1/evolution/sponsorship")).status).toBe(503);
   });
 });
+
+describe("daily crew quotes", () => {
+  const day = 20000;
+  function fixture() {
+    let now = BigInt(day * 86400 + 86300);
+    const cards = [1, 2, 3].map((id) => ({
+      tokenId: String(id),
+      owner,
+      level: 0,
+      sources: [
+        {
+          tokenId: String(id),
+          sequence: id,
+          mintedAt: day * 86400 + 1,
+          color: 1,
+          horn: 2,
+          monsterType: 3
+        }
+      ],
+      effectiveSequence: id,
+      nextAdventureAt: 0,
+      reservedBy: null,
+      pendingGrade: null,
+      graded: false
+    }));
+    const runtime = {
+      store: { deployment: "fixture" },
+      reader: {
+        snapshot: async (fn: (db: unknown, ctx: unknown) => unknown) =>
+          fn(
+            {},
+            {
+              deployment: "fixture",
+              adventures: owner,
+              evolution: owner,
+              block: 100n,
+              hash
+            }
+          )
+      },
+      chain: {
+        card: async (id: bigint) => cards[Number(id) - 1],
+        client: {
+          getBlock: async () => ({ number: 110n, hash, timestamp: now }),
+          estimateFeesPerGas: async () => ({ maxFeePerGas: 10n }),
+          readContract: async ({ functionName }: { functionName: string }) => {
+            if (functionName === "crewMode") return true;
+            if (functionName === "dailyCrew") return [1n, 1, 3, true];
+            if (functionName === "quoteRandomness") return 100n;
+            throw Error(functionName);
+          }
+        }
+      },
+      portal: { chain: { deployment: { chainId: 8453 } } }
+    } as unknown as EvolutionRuntime;
+    const app = new Hono();
+    registerEvolutionRoutes(app, {
+      enabled: () => true,
+      runtime: async () => runtime
+    });
+    return {
+      app,
+      cards,
+      tomorrow: () => {
+        now += 86400n;
+      }
+    };
+  }
+  it("binds ordered roles, the chosen survivor, guaranteed odds and midnight deadline", async () => {
+    const { app } = fixture();
+    const response = await app.request(
+      `/v1/evolution/quote?kind=adventure&tokenId=2&crew=1,2,3&day=${day}&owner=${owner}`
+    );
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const { decodeFunctionData } = await import("viem");
+    const { adventureAbi } = await import(
+      "../../../packages/yunipals-market-core/src/evolutionAbi.js"
+    );
+    const call = decodeFunctionData({ abi: adventureAbi, data: body.data });
+    expect(call.functionName).toBe("crewAdventure");
+    expect(call.args?.slice(0, 3)).toEqual([[1n, 2n, 3n], 2n, BigInt(day)]);
+    expect(call.args?.at(-1)).toBe(BigInt((day + 1) * 86400 - 1));
+    expect(body.odds.weights[0]).toBe(0);
+  });
+  it("rejects duplicate cards, missing newborns, foreign ownership and stale days", async () => {
+    const { app, cards, tomorrow } = fixture();
+    const query = (crew = "1,2,3") =>
+      app.request(
+        `/v1/evolution/quote?kind=adventure&tokenId=2&crew=${crew}&day=${day}&owner=${owner}`
+      );
+    expect((await query("1,2,2")).status).toBe(409);
+    cards.forEach((card) => {
+      card.sources[0].mintedAt -= 86400;
+    });
+    expect((await query()).status).toBe(409);
+    cards[0].sources[0].mintedAt += 86400;
+    cards[2].owner = `0x${"3".repeat(40)}`;
+    expect((await query()).status).toBe(409);
+    cards[2].owner = owner;
+    tomorrow();
+    expect((await query()).status).toBe(409);
+  });
+});

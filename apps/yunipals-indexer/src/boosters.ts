@@ -81,6 +81,7 @@ if (process.env.PONDER_ISLANDS_ONLY !== "true") {
       manifestUri: a.manifestURI,
       metadataBaseUri: a.metadataBaseURI,
       salesPaused: false,
+      dailyClaimsExpire: false,
       openings: 0n
     });
   });
@@ -90,6 +91,15 @@ if (process.env.PONDER_ISLANDS_ONLY !== "true") {
       .update(schema.boosterType, { id: typeKey(event.args.packTypeId) })
       .set({ salesPaused: event.args.paused });
   });
+  ponder.on(
+    "BoosterRegistry:DailyClaimPolicyActivated",
+    async ({ event, context }) => {
+      if (!(await record("DailyClaimPolicyActivated", event, context))) return;
+      await context.db
+        .update(schema.boosterType, { id: typeKey(event.args.packTypeId) })
+        .set({ dailyClaimsExpire: event.args.expires });
+    }
+  );
   ponder.on("BoosterEngine:RequestsPaused", async ({ event, context }) => {
     if (!(await record("RequestsPaused", event, context))) return;
     const paused = event.args.paused;
@@ -143,10 +153,16 @@ if (process.env.PONDER_ISLANDS_ONLY !== "true") {
         .update(schema.boosterType, { id: pack.id })
         .set({ openings: pack.openings + 1n });
     } else {
+      const pack = await context.db.find(schema.boosterType, {
+        id: typeKey(a.packTypeId)
+      });
+      if (!pack) throw new Error("Daily claim without activated type");
       await context.db
         .update(schema.boosterOriginal, { id: parentId })
         .set((row) => ({
-          dailyCommitted: row.dailyCommitted + BigInt(a.quantity),
+          dailyCommitted: pack.dailyClaimsExpire
+            ? (event.block.timestamp - row.revealedAt!) / pack.intervalSeconds
+            : row.dailyCommitted + BigInt(a.quantity),
           pendingRequest: id
         }));
     }

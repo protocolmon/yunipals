@@ -56,14 +56,14 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
         <>
           <div className="my-5 rounded-2xl bg-lavender/25 p-4">
             <p className="text-lg font-bold">
-              {quantity} saved {quantity === 1 ? "card" : "cards"}
+              {quantity} available {quantity === 1 ? "card" : "cards"}
             </p>
             <p className="mt-1 text-sm text-muted">
               From {review.calls.length}{" "}
               {review.calls.length === 1 ? "Yunipal" : "Yunipals"}
             </p>
             <ul
-              aria-label="Yunipals contributing saved cards"
+              aria-label="Yunipals contributing available cards"
               className="mt-4 grid max-h-72 grid-cols-3 gap-x-3 gap-y-4 overflow-y-auto p-1 sm:max-h-96 sm:grid-cols-5"
             >
               {review.calls.map(({ original, quantity: saved }) => (
@@ -76,7 +76,7 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
                     #{original.tokenId}
                   </p>
                   <p className="text-xs text-muted">
-                    {saved} saved {saved === 1 ? "card" : "cards"}
+                    {saved} available {saved === 1 ? "card" : "cards"}
                   </p>
                 </li>
               ))}
@@ -98,7 +98,7 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
                 ? "Your wallet will combine these openings for you."
                 : review.calls.length > 1
                   ? "This wallet cannot bundle these openings. You’ll confirm each Yunipal in order. Cancel in your wallet to stop."
-                  : "Open these saved cards together in one pack."}
+                  : "Open these available cards together in one pack."}
             {review.atomic && review.upgrade
               ? " Your wallet may first ask you to enable its smart-account feature."
               : ""}
@@ -123,8 +123,8 @@ export function BoosterDailyOpenAllDialog({ actions }: Props) {
             {review.atomic ? ", including any account setup" : ""}.
           </p>
           <p className="mt-3 text-xs text-muted">
-            Up to seven saved cards per Yunipal per round. Extra cards stay
-            saved until this round finishes. Pending openings are skipped.
+            Up to seven saved cards per older Yunipal per round. Expiring packs
+            have one claim per daily window. Pending openings are skipped.
           </p>
           <button
             type="button"

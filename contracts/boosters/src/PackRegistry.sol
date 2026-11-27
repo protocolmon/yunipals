@@ -52,7 +52,8 @@ contract PackRegistry is BoosterAdmin {
     uint256 public typeCount;
     mapping(uint256 => Pack) private _packs;
     mapping(uint256 => Catalog) private _catalogs;
-    uint256[48] private __gap;
+    mapping(uint256 => bool) public dailyClaimsExpire;
+    uint256[47] private __gap;
 
     event TypeConfigured(uint256 indexed packTypeId, address indexed engine, bytes32 catalogHash);
     event TypeActivated(
@@ -70,6 +71,7 @@ contract PackRegistry is BoosterAdmin {
         string metadataBaseURI
     );
     event SalesPaused(uint256 indexed packTypeId, bool paused);
+    event DailyClaimPolicyActivated(uint256 indexed packTypeId, bool expires);
 
     constructor() {
         _disableInitializers();
@@ -102,6 +104,33 @@ contract PackRegistry is BoosterAdmin {
         return id;
     }
 
+    /// @notice A new claim schedule may reuse the same frozen collection and approved artwork.
+    function compatiblePack(uint256 id, uint256 referenceId) external view returns (bool) {
+        Pack storage candidate = _packs[id];
+        Pack storage referencePack = _packs[referenceId];
+        return candidate.active && referencePack.active && candidate.catalogHash == referencePack.catalogHash
+            && candidate.rules.artworkHash == referencePack.rules.artworkHash
+            && keccak256(bytes(candidate.rules.metadataBaseURI)) == keccak256(bytes(referencePack.rules.metadataBaseURI));
+    }
+
+    /// @notice Frozen schedule accounting shared by quotes and claim commitments.
+    function availableDailyClaims(uint256 id, uint64 revealedAt, uint32 committed)
+        external view returns (uint32)
+    {
+        Pack storage pack = _packs[id];
+        uint256 earned = ((block.timestamp - revealedAt) / pack.rules.intervalSeconds) * pack.rules.mintsPerInterval;
+        uint256 maximum = pack.totalVariants - 1;
+        if (dailyClaimsExpire[id]) return earned > 0 && earned <= maximum && earned > committed ? 1 : 0;
+        if (earned > maximum) earned = maximum;
+        return uint32(earned - committed);
+    }
+
+    /// @notice Opt in only before activation; existing purchased rules cannot change.
+    function setDailyClaimExpiry(uint256 id, bool expires) external onlyRole(CONFIG_ROLE) {
+        require(id != 0 && id <= typeCount && !_packs[id].active, "invalid or frozen type");
+        dailyClaimsExpire[id] = expires;
+    }
+
     function activate(uint256 id) external onlyRole(CONFIG_ROLE) {
         Pack storage p = _packs[id];
         require(id != 0 && id <= typeCount && !p.active, "invalid or frozen type");
@@ -109,6 +138,9 @@ contract PackRegistry is BoosterAdmin {
         require(r.engine.code.length != 0 && r.paymentToken.code.length != 0, "invalid contracts");
         require(IRegisteredBoosterEngine(r.engine).registry() == address(this), "registry mismatch");
         require(r.price > 0 && r.intervalSeconds > 0 && r.mintsPerInterval > 0, "invalid economics");
+        if (dailyClaimsExpire[id]) {
+            require(r.intervalSeconds == 1 days && r.mintsPerInterval == 1, "expiry requires daily mint");
+        }
         require(
             r.maxBatch > 0 && r.maxBatch <= 32 && r.confirmations >= 3 && r.confirmations <= 200,
             "invalid batch"
@@ -137,7 +169,9 @@ contract PackRegistry is BoosterAdmin {
         require(product > 0 && product <= type(uint32).max, "invalid catalog size");
         if (c.allowed.length != 0) _validateSubset(c, product);
         p.totalVariants = uint32(c.allowed.length == 0 ? product : c.allowed.length);
-        p.ruleHash = keccak256(abi.encode(r, p.catalogHash));
+        p.ruleHash = dailyClaimsExpire[id]
+            ? keccak256(abi.encode(r, p.catalogHash, "daily-expiry-v1"))
+            : keccak256(abi.encode(r, p.catalogHash));
         p.active = true;
         emit TypeActivated(
             id,
@@ -153,6 +187,7 @@ contract PackRegistry is BoosterAdmin {
             r.manifestURI,
             r.metadataBaseURI
         );
+        emit DailyClaimPolicyActivated(id, dailyClaimsExpire[id]);
     }
 
     function pauseSales(uint256 id, bool paused) external onlyRole(PAUSER_ROLE) {

@@ -16,7 +16,8 @@ export const boosterType = onchainTable("booster_type", (t) => ({
   manifestUri: t.text("manifest_uri").notNull(),
   metadataBaseUri: t.text("metadata_base_uri").notNull(),
   salesPaused: t.boolean("sales_paused").notNull(),
-  openings: t.bigint().notNull()
+  openings: t.bigint().notNull(),
+  dailyClaimsExpire: t.boolean("daily_claims_expire").notNull().default(false)
 }));
 
 export const boosterOriginal = onchainTable(

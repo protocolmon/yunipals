@@ -20,6 +20,8 @@ export type BoosterType = {
   metadataBaseUri: string;
   salesPaused: boolean;
   openings: string;
+  /** Frozen at activation. Older pack types always bank their unused claims. */
+  dailyClaimsExpire?: boolean;
 };
 
 export type BoosterOriginal = {
@@ -101,7 +103,15 @@ export type BoosterSnapshot = {
   indexedTimestamp: string | null;
 };
 
-export function accruedBoosterCredits(original: BoosterOriginal, now: bigint) {
+export function accruedBoosterCredits(
+  original: BoosterOriginal,
+  now: bigint
+): {
+  claimable: bigint;
+  nextAt: bigint | null;
+  expiresAt?: bigint | null;
+  endsAt?: bigint;
+} {
   if (
     original.burned ||
     original.revealedAt === null ||
@@ -114,6 +124,15 @@ export function accruedBoosterCredits(original: BoosterOriginal, now: bigint) {
   const elapsed = now > reveal ? now - reveal : 0n;
   const periods = elapsed / interval;
   const max = BigInt(original.pack.totalVariants) - 1n;
+  if (original.pack.dailyClaimsExpire) {
+    const active = periods > 0n && periods <= max;
+    return {
+      claimable: active && periods > BigInt(original.dailyCommitted) ? 1n : 0n,
+      nextAt: periods >= max ? null : reveal + (periods + 1n) * interval,
+      expiresAt: active ? reveal + (periods + 1n) * interval : null,
+      endsAt: reveal + (max + 1n) * interval
+    };
+  }
   const earned = periods * BigInt(original.pack.mintsPerInterval);
   const capped = earned > max ? max : earned;
   const available = capped - BigInt(original.dailyCommitted);

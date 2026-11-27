@@ -46,10 +46,10 @@ describe("finite full booster source ABI catalog", () => {
       "0x680148b00be6884d25a426041f93861ac175dfe3535224636c46cdcb3daa3a94"
     );
     expect(manifestDigest(boosterPacksAbi)).toBe(
-      "0x05373e5a7d5e3152ef7f2bb71695871ee789322f2d516004bff21a409e5aaf6c"
+      "0xe0410ce7053f31e3ccdd4362a3820dd36e4b8d5d848b9846ad29bf26285e9fa2"
     );
     expect(manifestDigest(yunipalMonstersAbi)).toBe(
-      "0x0929ebf2bcf3ca334e1e5425ebf1ce23faa35243f68aac7b1b3d3aca94b3718f"
+      "0x8f1dd24874567e308914fcf0b38bb517712614101c88c0bde1fadfc0b9a87368"
     );
     expect(boosterPacksAbiE8145098).toHaveLength(71);
     expect(yunipalMonstersAbiE8145098).toHaveLength(62);
@@ -58,7 +58,7 @@ describe("finite full booster source ABI catalog", () => {
     ).toEqual(boosterPacksAbi.find((item) => item.name === "RequestCreated"));
   });
 
-  it.each(["e8145098", "current"] as const)(
+  it.each(["e8145098", "cardFacts", "preCrew", "current"] as const)(
     "resolves and decodes the full %s source version",
     (version) => {
       const hashes = boosterSourceAbiHashes[version];

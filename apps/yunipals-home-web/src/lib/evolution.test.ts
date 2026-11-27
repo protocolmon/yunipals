@@ -229,3 +229,96 @@ test("fusion review requires its displayed fee cap even for sponsored quotes", (
     Object.assign(environment, previous);
   }
 });
+
+test("crew review binds all three roles, chosen survivor, UTC date and rules", async () => {
+  const { adventureAbi } = await import(
+    "@protopals/yunipals-market-core/evolutionAbi"
+  );
+  const { crewRulesHash, crewEligibility, crewAdventureOdds } = await import(
+    "@protopals/yunipals-market-core/serums"
+  );
+  const previous = { ...environment };
+  Object.assign(environment, {
+    evolutionEnabled: true,
+    adventuresAddress: controller,
+    portalChainId: 8453
+  });
+  try {
+    const crew = {
+      tokenIds: ["1", "2", "3"] as [string, string, string],
+      day: 1
+    };
+    const cards = crew.tokenIds.map((id, index) => ({
+      ...card,
+      tokenId: id,
+      sources: [{ ...card.sources[0], tokenId: id, horn: index === 1 ? 2 : 1 }]
+    }));
+    const q: EvolutionQuote = {
+      ...quote(0n),
+      kind: "adventure",
+      cards,
+      crew: { day: 1, color: 1, monsterType: 1 },
+      deadline: "100000",
+      data: encodeFunctionData({
+        abi: adventureAbi,
+        functionName: "crewAdventure",
+        args: [[1n, 2n, 3n], 2n, 1n, crewRulesHash, 100n, 100000n]
+      })
+    };
+    validateEvolutionQuote(q, owner, "adventure", "2", undefined, crew);
+    assert.throws(
+      () => validateEvolutionQuote(q, owner, "adventure", "1", undefined, crew),
+      /reviewed action/
+    );
+    assert.throws(
+      () =>
+        validateEvolutionQuote(q, owner, "adventure", "2", undefined, {
+          ...crew,
+          day: 2
+        }),
+      /crew quote/
+    );
+    const wrongRoles = {
+      ...q,
+      data: encodeFunctionData({
+        abi: adventureAbi,
+        functionName: "crewAdventure",
+        args: [[2n, 1n, 3n], 2n, 1n, crewRulesHash, 100n, 100000n]
+      })
+    };
+    assert.throws(
+      () =>
+        validateEvolutionQuote(
+          wrongRoles,
+          owner,
+          "adventure",
+          "2",
+          undefined,
+          crew
+        ),
+      /reviewed action/
+    );
+    assert.match(
+      crewEligibility([cards[0], cards[0], cards[2]], q.crew!)!,
+      /different/
+    );
+    assert.match(
+      crewEligibility(
+        cards.map((c) => ({
+          ...c,
+          sources: c.sources.map((s) => ({ ...s, mintedAt: 86399 }))
+        })),
+        q.crew!
+      )!,
+      /born today/
+    );
+    assert.equal(crewAdventureOdds(263).weights[0], 0);
+    assert.ok(
+      Math.abs(
+        crewAdventureOdds(263).weights.reduce((a, b) => a + b, 0) - 1_000_000
+      ) < 0.000001
+    );
+  } finally {
+    Object.assign(environment, previous);
+  }
+});

@@ -74,9 +74,9 @@ export function BoosterPackSection() {
             </p>
             <p className="mt-3 max-w-2xl text-muted sm:text-lg">
               The original Yunipals booster pack unlocks a collection of 264
-              unique variants, with daily mints that stack up while you’re away.
-              Nightforge, our upcoming collector airdrop, brings a new way to
-              collect.
+              unique variants. Check each pack’s daily claim rules before
+              opening. Nightforge, our upcoming collector airdrop, brings a new
+              way to collect.
             </p>
             <Link
               to="/boosters/why-packs"
@@ -112,8 +112,8 @@ export function BoosterPackSection() {
               </h2>
               <p className="mt-4 text-muted">
                 264 unique variants. One original unlocks another mint every 24
-                hours, with unused days saved. No duplicates within its
-                collection.
+                hours. Check the pack’s claim policy before opening. No
+                duplicates within its collection.
               </p>
               <p className="mt-6 text-2xl font-bold text-ink">
                 1 YPAL
@@ -221,8 +221,11 @@ export function BoosterPackSection() {
                         {pack.mintsPerInterval === 1 ? "" : "s"} every{" "}
                         {Number(pack.intervalSeconds) / 3600} hours
                       </strong>{" "}
-                      after reveal. Saved mints add up while you’re away. You
-                      only pay ETH for randomness and network fees.
+                      after reveal.{" "}
+                      {pack.dailyClaimsExpire
+                        ? "Each daily claim expires after 24 hours. Missed claims are permanently lost; claim in every window to mint the full set."
+                        : "Saved mints add up while you’re away."}{" "}
+                      You only pay ETH for randomness and network fees.
                     </span>
                   </li>
                 </ul>

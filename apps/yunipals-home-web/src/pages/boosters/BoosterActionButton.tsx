@@ -153,6 +153,13 @@ export function BoosterActionButton({
         )}
         {review && !claimReview && (
           <div className="my-5 space-y-3 text-sm">
+            {review.action.kind === "open" && (
+              <p className="rounded-xl border border-grape/30 bg-lavender/20 p-4">
+                {review.dailyClaimsExpire
+                  ? "Daily claims expire. Starting 24 hours after reveal, claim once in each 24-hour window for 263 days. A missed window is lost forever; collecting all 264 variants requires every daily claim."
+                  : "This pack keeps unused daily claims saved. You can claim them later until all 264 variants have been minted."}
+              </p>
+            )}
             {review.approvalAmount > 0n && (
               <p className="rounded-xl bg-lavender/20 px-4 py-3 text-grape">
                 {review.permitSigned
@@ -200,7 +207,7 @@ export function BoosterActionButton({
               )}
               <div>
                 <p className="text-lg font-bold">
-                  {claimReview.quantity} saved{" "}
+                  {claimReview.quantity} available{" "}
                   {claimReview.quantity === 1 ? "card" : "cards"}
                 </p>
                 <p className="mt-1 text-sm text-muted">
@@ -256,53 +263,6 @@ export function BoosterActionButton({
             <>
               <DialogDetails label="Payment details">
                 <dl className="space-y-3 text-xs [&_dt]:text-muted [&_dd]:break-words [&_dd]:text-right">
-                  {review.action.kind === "open" && (
-                    <div className="flex justify-between gap-4">
-                      <dt>Originals requested</dt>
-                      <dd>{review.action.quantity ?? 1}</dd>
-                    </div>
-                  )}
-                  {review.action.kind === "claim" && (
-                    <div className="flex justify-between gap-4">
-                      <dt>Mints requested</dt>
-                      <dd>{review.action.quantity}</dd>
-                    </div>
-                  )}
-                  {review.ethQuote && (
-                    <div className="flex justify-between gap-4">
-                      <dt>Estimated ETH pack price</dt>
-                      <dd title={`${formatEther(review.ethQuote.price)} ETH`}>
-                        {formatRoundedAmount(review.ethQuote.price, 18, "ETH")}
-                      </dd>
-                    </div>
-                  )}
-                  {review.tokenPrice > 0n && (
-                    <div className="flex justify-between gap-4">
-                      <dt>Total pack price</dt>
-                      <dd>
-                        {formatUnits(review.tokenPrice, review.tokenDecimals)}{" "}
-                        {review.tokenSymbol}
-                      </dd>
-                    </div>
-                  )}
-                  {review.tokenBalance !== null && (
-                    <div className="flex justify-between gap-4">
-                      <dt>Your {review.tokenSymbol} balance</dt>
-                      <dd
-                        className="text-right"
-                        title={`${formatUnits(review.tokenBalance, review.tokenDecimals)} ${review.tokenSymbol}`}
-                      >
-                        {formatDecimal(
-                          formatUnits(
-                            review.tokenBalance,
-                            review.tokenDecimals
-                          ),
-                          4
-                        )}{" "}
-                        {review.tokenSymbol}
-                      </dd>
-                    </div>
-                  )}
                   {review.approvalAmount > 0n && (
                     <div className="flex justify-between gap-4">
                       <dt>Approval amount</dt>
@@ -443,7 +403,7 @@ export function BoosterActionButton({
             }
             detail={
               actions.phase === "quoting"
-                ? "Checking your saved cards and fees…"
+                ? "Checking your available cards and fees…"
                 : undefined
             }
           />

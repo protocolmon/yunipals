@@ -1,5 +1,9 @@
 import type { Abi } from "viem";
 import { boosterPacksAbi, yunipalMonstersAbi } from "./boosterAbi.js";
+import {
+  boosterPacksAbi as boosterPacksAbiPreCrew,
+  yunipalMonstersAbi as yunipalMonstersAbiPreCrew
+} from "./boosterSourceAbi.pre-crew.js";
 import { yunipalMonstersAbiCardFacts } from "./boosterSourceAbi.cardFacts.js";
 import {
   boosterPacksAbiE8145098,
@@ -21,11 +25,17 @@ export const boosterSourceAbiHashes = {
     yunipalMonsters:
       "0x919fcdc77c7ce1b0d105ce77703088067874189d3478a72442096215dcbad497"
   },
-  current: {
+  preCrew: {
     boosterPacks:
       "0x05373e5a7d5e3152ef7f2bb71695871ee789322f2d516004bff21a409e5aaf6c",
     yunipalMonsters:
       "0x0929ebf2bcf3ca334e1e5425ebf1ce23faa35243f68aac7b1b3d3aca94b3718f"
+  },
+  current: {
+    boosterPacks:
+      "0xe0410ce7053f31e3ccdd4362a3820dd36e4b8d5d848b9846ad29bf26285e9fa2",
+    yunipalMonsters:
+      "0x8f1dd24874567e308914fcf0b38bb517712614101c88c0bde1fadfc0b9a87368"
   }
 } as const;
 
@@ -42,6 +52,8 @@ export function boosterPacksSourceAbi(sourceAbiHash?: string): Abi {
     case undefined:
     case boosterSourceAbiHashes.current.boosterPacks:
       return boosterPacksAbi;
+    case boosterSourceAbiHashes.preCrew.boosterPacks:
+      return boosterPacksAbiPreCrew;
     case boosterSourceAbiHashes.e8145098.boosterPacks:
       return boosterPacksAbiE8145098;
     default:
@@ -56,6 +68,8 @@ export function yunipalMonstersSourceAbi(sourceAbiHash?: string): Abi {
       return yunipalMonstersAbi;
     case boosterSourceAbiHashes.e8145098.yunipalMonsters:
       return yunipalMonstersAbiE8145098;
+    case boosterSourceAbiHashes.preCrew.yunipalMonsters:
+      return yunipalMonstersAbiPreCrew;
     case boosterSourceAbiHashes.cardFacts.yunipalMonsters:
       return yunipalMonstersAbiCardFacts;
     default:

@@ -24,6 +24,8 @@ const types = [
   "Yunifairy"
 ];
 const colors = ["Yellow", "Green", "Blue", "Red", "Purple", "Black"];
+export const tcgSpecies = types;
+export const tcgColors = colors;
 const horns = ["Spiral", "Diamond"];
 const tcgTraitChoices: [string, string[]][] = [
   ["Type", types],

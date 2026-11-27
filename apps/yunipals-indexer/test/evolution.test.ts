@@ -127,6 +127,60 @@ describe("approved evolution rules", () => {
       nextAdventureAt: "172800"
     });
   });
+  it("projects the shared daily draw and all three crew members through settlement", async () => {
+    const { store } = memory();
+    await applyEvolutionEvent(store, "DailyCrewRequested", {
+      day: 20,
+      requestId: "40"
+    });
+    expect(await store.get("adventure", "40")).toMatchObject({
+      dailyRequirements: true,
+      settled: false
+    });
+    await applyEvolutionEvent(store, "DailyCrewReady", {
+      day: 20,
+      requestId: "40",
+      color: 2,
+      monsterType: 3
+    });
+    expect(await store.get("adventure", "40")).toMatchObject({
+      settled: true,
+      color: 2
+    });
+    await applyEvolutionEvent(store, "AdventureRequested", {
+      requestId: "41",
+      tokenId: "2",
+      nextAdventureAt: "172800"
+    });
+    await applyEvolutionEvent(store, "CrewCommitted", {
+      requestId: "41",
+      day: 20,
+      crew: ["1", "2", "3"],
+      survivor: "2"
+    });
+    for (const id of ["1", "2", "3"])
+      expect(await store.get("card", id)).toMatchObject({
+        pendingAdventure: "41"
+      });
+    await applyEvolutionEvent(store, "AdventureSettled", {
+      requestId: "41",
+      tokenId: "2",
+      catalogueVersion: 1,
+      serumId: 121,
+      presenceId: 1
+    });
+    expect(await store.get("card", "2")).toMatchObject({
+      pendingAdventure: null,
+      unused: { serumId: 121 }
+    });
+    for (const id of ["1", "3"])
+      expect(await store.get("card", id)).toMatchObject({
+        burned: true,
+        owner: null,
+        pendingAdventure: null,
+        unused: null
+      });
+  });
   it("retains ordered doses and clears parent pending states on successful fusion", async () => {
     const { store } = memory();
     await applyEvolutionEvent(store, "EvolutionRequested", {

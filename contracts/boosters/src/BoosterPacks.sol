@@ -161,14 +161,15 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         price *= count;
     }
 
+    error ZeroPaymentAddress();
+    error NoRefundCredit();
+    error RefundTransferFailed();
+    error CollectionOnly();
+
     function claimable(uint256 originalId) public view returns (uint32) {
         Original storage s = originals[originalId];
         if (s.minted == 0 || s.burned) return 0;
-        PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
-        uint256 earned = ((block.timestamp - s.revealedAt) / pack.rules.intervalSeconds) * pack.rules.mintsPerInterval;
-        uint256 maxEarned = pack.totalVariants - 1;
-        if (earned > maxEarned) earned = maxEarned;
-        return uint32(earned - s.dailyCommitted);
+        return registry.availableDailyClaims(s.packTypeId, s.revealedAt, s.dailyCommitted);
     }
 
     function openPack(uint256 packTypeId, uint256 maxVrfPrice, uint256 deadline)
@@ -234,7 +235,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         onlyRole(PAYMENT_ADAPTER_ROLE)
         returns (uint256[] memory requestIds, uint256[] memory originalIds)
     {
-        require(buyer != address(0), "zero buyer");
+        if (buyer == address(0)) revert ZeroPaymentAddress();
         return _openPacks(packTypeId, count, maxTotalVrfPrice, _openingPacks(packTypeId, count, deadline), buyer);
     }
 
@@ -316,7 +317,11 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
         monsters.assertClaimAvailable(originalId, msg.sender);
         require(s.pendingRequest == 0 && quantity > 0 && quantity <= claimable(originalId), "unavailable credits");
         PackRegistry.Pack memory pack = registry.getPack(s.packTypeId);
-        s.dailyCommitted += quantity;
+        if (registry.dailyClaimsExpire(s.packTypeId)) {
+            s.dailyCommitted = uint32((block.timestamp - s.revealedAt) / pack.rules.intervalSeconds);
+        } else {
+            s.dailyCommitted += quantity;
+        }
         uint256 paid;
         (requestId, paid) = _request(originalId, quantity, false, pack, _paymentBudget(maxVrfPrice), msg.sender);
         _refund(msg.sender, msg.value - paid);
@@ -458,6 +463,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
                 uint32 sequence;
                 // mintedAfter was checked above, and i is strictly less than quantity.
                 unchecked { sequence = s.minted + uint32(i); }
+                if (registry.dailyClaimsExpire(s.packTypeId)) sequence = s.dailyCommitted;
                 monsters.mintOffspringWithSequence(r.originalId, recipient, variantId, sequence);
             }
         }
@@ -469,7 +475,7 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     }
 
     function onOriginalBurned(uint256 originalId) external nonReentrant {
-        require(msg.sender == address(monsters), "collection only");
+        if (msg.sender != address(monsters)) revert CollectionOnly();
         Original storage s = originals[originalId];
         s.burned = true;
         if (s.pendingRequest != 0) _forfeit(s.pendingRequest);
@@ -483,13 +489,13 @@ contract BoosterPacks is BoosterAdmin, ReentrancyGuardUpgradeable, BoosterProofR
     }
 
     function withdrawRefund(address payable recipient) external nonReentrant {
-        require(recipient != address(0), "zero recipient");
+        if (recipient == address(0)) revert ZeroPaymentAddress();
         uint256 amount = refundCredits[msg.sender];
-        require(amount != 0, "no refund");
+        if (amount == 0) revert NoRefundCredit();
         refundCredits[msg.sender] = 0;
         totalRefundLiability -= amount;
         (bool ok,) = recipient.call{value: amount}("");
-        require(ok, "refund failed");
+        if (!ok) revert RefundTransferFailed();
         emit RefundWithdrawn(msg.sender, recipient, amount);
     }
 
