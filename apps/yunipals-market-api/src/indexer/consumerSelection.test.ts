@@ -517,6 +517,109 @@ for (const kind of [
   });
 }
 
+test("historical topic padding preserves marketplace progress but malformed or changed topics block it", async () => {
+  const f = await fixture("bnb-discovery", true);
+  try {
+    const before = await f.state();
+    const topic = `0x${"ab".repeat(32)}`;
+    await f.db.owner.query(
+      `UPDATE ${f.schemas[0]}.canonical_event SET topics=$1`,
+      [JSON.stringify([topic])]
+    );
+    await f.db.owner.query(
+      `UPDATE ${f.schemas[1]}.canonical_event SET topics=$1`,
+      [
+        JSON.stringify([
+          topic.toUpperCase().replace("0X", "0x"),
+          null,
+          null,
+          null
+        ])
+      ]
+    );
+    const review = await f.review();
+    assert.equal(review.impact.mode, "preserve");
+    assert.equal(review.applyAllowed, true);
+    assert.deepEqual(await f.state(), before, "review does not reset progress");
+
+    await f.db.owner.query(
+      `UPDATE ${f.schemas[1]}.canonical_event SET topics=$1`,
+      [JSON.stringify([hash(2), null])]
+    );
+    assert.equal((await f.review()).impact.reason, "canonical_history_changed");
+    for (const invalid of [
+      [null, topic],
+      [topic, null, topic],
+      [topic, null, null, null, null],
+      ["0x1234"],
+      [42],
+      { topic },
+      null
+    ]) {
+      for (const schema of f.schemas)
+        await f.db.owner.query(
+          `UPDATE ${schema}.canonical_event SET topics=$1`,
+          [JSON.stringify(invalid)]
+        );
+      const blocked = await f.review();
+      assert.equal(blocked.impact.reason, "canonical_history_changed");
+      assert.equal(blocked.applyAllowed, false);
+    }
+    assert.deepEqual(await f.state(), before);
+  } finally {
+    await f.close();
+  }
+});
+
+test("continuity checks every page of a large consumed history", async () => {
+  const f = await fixture("base", true);
+  try {
+    const before = await f.state();
+    for (const schema of f.schemas)
+      await f.db.owner.query(
+        `INSERT INTO ${schema}.canonical_event
+         SELECT 'page-'||n,source_id,chain_id,address,name,args,abi_hash,block_number,
+           block_hash,timestamp,transaction_hash,n,log_index,topics,data
+         FROM ${schema}.canonical_event CROSS JOIN generate_series(1,2001) n
+         WHERE id='event'`
+      );
+    assert.equal((await f.review()).impact.mode, "preserve");
+    await f.db.owner.query(
+      `UPDATE ${f.schemas[1]}.canonical_event SET data='0x1234' WHERE id='page-2001'`
+    );
+    assert.equal((await f.review()).impact.reason, "canonical_history_changed");
+    await f.db.owner.query(
+      `DELETE FROM ${f.schemas[1]}.canonical_event WHERE id='page-2001'`
+    );
+    assert.equal((await f.review()).impact.reason, "canonical_history_changed");
+    assert.deepEqual(
+      await f.state(),
+      before,
+      "review preserves operational state"
+    );
+    await f.db.owner.query(
+      `DELETE FROM ${f.schemas[0]}.canonical_event WHERE id='page-2001'`
+    );
+    const review = await f.review();
+    assert.equal(review.impact.mode, "preserve");
+    await selectSharedMarketplaceConsumer(
+      f.db.owner,
+      f.newReader,
+      f.selection,
+      review.reviewHash
+    );
+    const after = await f.state();
+    assert("checkpoint" in after && "checkpoint" in before);
+    assert.deepEqual(after.checkpoint, before.checkpoint);
+    assert.deepEqual(after.common.cursor, {
+      ...before.common.cursor,
+      releaseId: f.newReader.release.id
+    });
+  } finally {
+    await f.close();
+  }
+});
+
 test("different, missing or additional events, receipt requirements and reorged anchors require replay", async () => {
   const f = await fixture("base", true);
   try {
