@@ -23,7 +23,7 @@ export function MonsterActionCards({
       action: "Explore adventures",
       href: `/adventures/cards/${tokenId}`,
       image: "adventures",
-      alt: "A little dragon discovers glowing serums in an enchanted forest."
+      alt: "Yunidragon discovers glowing serums in an enchanted forest."
     },
     {
       visible: canGrade,
@@ -32,7 +32,7 @@ export function MonsterActionCards({
       action: "Explore grading",
       href: `/grading?card=${tokenId}`,
       image: "grading",
-      alt: "A rainbow portal surrounded by crystals in a floating garden."
+      alt: "Yunidragon stands beside the crystal-crowned rainbow portal."
     },
     {
       visible: true,
@@ -41,7 +41,7 @@ export function MonsterActionCards({
       action: "View card history",
       href: `/grading/cards/${tokenId}`,
       image: "history",
-      alt: "An enchanted scrapbook with floating dragon artwork."
+      alt: "An enchanted scrapbook displays original and rainbow Yunidragon artwork."
     }
   ].filter((card) => card.visible);
 
