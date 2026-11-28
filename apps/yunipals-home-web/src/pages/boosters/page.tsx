@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { isAddress } from "viem";
 import { ArrowUpRight, UserRound } from "lucide-react";
+import { useAccount } from "wagmi";
 
 import { usePageMetadata } from "@/hooks/usePageMetadata";
 import { collectorHref } from "@/lib/collectionEdition";
@@ -46,6 +47,7 @@ export function BoosterPage() {
 
 export function BoosterMonsterPage() {
   const { collection = "", tokenId = "" } = useParams();
+  const { address } = useAccount();
   const deployment = boosterAddresses();
   const enabled =
     deployment !== null &&
@@ -65,6 +67,9 @@ export function BoosterMonsterPage() {
     retry: 1
   });
   const monster = query.data?.item;
+  const own = Boolean(
+    address && monster && address.toLowerCase() === monster.owner.toLowerCase()
+  );
   const artwork = useBoosterArtwork(monster?.metadataUri, monster);
   usePageMetadata(`${artwork.data?.name || `Yunipal #${tokenId}`} — Yunipals`);
   const original = useQuery({
@@ -173,7 +178,7 @@ export function BoosterMonsterPage() {
                 </Link>
               </div>
             )}
-            {!monster.burned && (
+            {!monster.burned && !own && (
               <div className="mt-5 text-sm">
                 <p className="mb-2 text-muted">Owner</p>
                 <Link
