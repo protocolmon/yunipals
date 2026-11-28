@@ -365,9 +365,14 @@ class MonitorTests(unittest.TestCase):
         self.harness.deliver.assert_not_called()
         self.assertEqual(report["emailDelivery"], "disabled")
         history = list(Path(self.temporary.name).glob("samples-*.jsonl"))
-        self.assertEqual(len(history), 1)
-        self.assertEqual(len(history[0].read_text().splitlines()), 4)
-        self.assertEqual(history[0].stat().st_mode & 0o777, 0o600)
+        # Four minute samples can span two daily files when CI runs near midnight.
+        self.assertEqual(
+            {file.name for file in history},
+            {f"samples-{iso(NOW + minute * 60)[:10]}.jsonl" for minute in range(4)}
+        )
+        self.assertEqual(sum(len(file.read_text().splitlines()) for file in history), 4)
+        for file in history:
+            self.assertEqual(file.stat().st_mode & 0o777, 0o600)
 
     def test_history_records_what_explains_a_slowdown(self):
         self.harness.check()
