@@ -24,8 +24,9 @@ export function ProposalsPage() {
               Ideas for what Yunipals becomes next.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
-              Each proposal is a concept with its own page and a set of options
-              to explore. They are ideas for discussion, not commitments.
+              Explore community ideas and accepted proposals, each with its own
+              page and options to try. Proposals marked as concepts are ideas
+              for discussion, not commitments.
             </p>
           </div>
           <ProposalsArt className="mx-auto max-w-xs lg:max-w-none" />
@@ -56,7 +57,7 @@ export function ProposalsPage() {
                   </span>
                   <span className="flex flex-1 flex-col p-6">
                     <span className="text-xs font-bold uppercase tracking-widest text-grape">
-                      Concept
+                      {proposal.status === "accepted" ? "Accepted" : "Concept"}
                       {proposal.optionCount
                         ? ` · ${proposal.optionCount} options`
                         : ""}

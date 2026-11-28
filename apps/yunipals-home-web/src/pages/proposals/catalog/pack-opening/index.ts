@@ -12,6 +12,7 @@ export const proposal: ProposalDefinition = {
     avatar
   },
   publishedAt: "2026-11-11",
+  status: "accepted",
   cover: "/images/boosters/yunipals-pack-v1.png",
   optionCount: 11,
   Landing: lazy(() =>

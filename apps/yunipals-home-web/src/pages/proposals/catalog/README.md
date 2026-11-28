@@ -1,6 +1,6 @@
 # Community proposals catalog
 
-Each proposal is a concept with its own landing page. Proposals are plain code
+Each proposal starts as a concept with its own landing page. Proposals are plain code
 in this folder: there is no form, database or admin screen. To publish one, add
 its folder and ship the site.
 
@@ -41,15 +41,16 @@ The folder name is the slug and the URL: `catalog/my-idea/` is served at
 
 It exports one constant named `proposal`:
 
-| Field         | Required | Notes                                                        |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `title`       | yes      | Shown on the card and as the page heading.                   |
-| `summary`     | yes      | One or two sentences. Card text and page introduction.       |
-| `author`      | yes      | `name`, `avatar` (profile picture) and an optional `link`.   |
-| `publishedAt` | yes      | ISO date, `YYYY-MM-DD`. The newest proposal is listed first. |
-| `cover`       | no       | Card image. Without it the card shows a plain gradient.      |
-| `optionCount` | no       | Number of options on the landing page, shown on the card.    |
-| `Landing`     | yes      | The landing page body, loaded lazily.                        |
+| Field         | Required | Notes                                                                      |
+| ------------- | -------- | -------------------------------------------------------------------------- |
+| `title`       | yes      | Shown on the card and as the page heading.                                 |
+| `summary`     | yes      | One or two sentences. Card text and page introduction.                     |
+| `author`      | yes      | `name`, `avatar` (profile picture) and an optional `link`.                 |
+| `publishedAt` | yes      | ISO date, `YYYY-MM-DD`. The newest proposal is listed first.               |
+| `status`      | no       | `concept` (default) or `accepted`; shown on the catalog and proposal page. |
+| `cover`       | no       | Card image. Without it the card shows a plain gradient.                    |
+| `optionCount` | no       | Number of options on the landing page, shown on the card.                  |
+| `Landing`     | yes      | The landing page body, loaded lazily.                                      |
 
 The full type is `ProposalDefinition` in [`types.ts`](types.ts).
 
@@ -122,8 +123,10 @@ Delete its folder. Its old URL then redirects to the catalog.
 
 - The landing is loaded only when someone opens the proposal, so a heavy
   interactive landing does not slow down the catalog or the rest of the site.
-- Proposals are ideas for discussion. Do not present one as a decision, a
-  schedule or a promise.
+- Proposals default to concepts for discussion. Do not present a concept as a
+  decision, a schedule or a promise. Once accepted, set `status: "accepted"`
+  in its `index.ts` and describe the selected option on its landing page.
+  Other options remain concepts unless explicitly accepted.
 - Voting is not part of this catalog.
 
 ## Example
