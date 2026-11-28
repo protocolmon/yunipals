@@ -32,7 +32,7 @@ export function MonsterActionCards({
       action: "Explore grading",
       href: `/grading?card=${tokenId}`,
       image: "grading",
-      alt: "Yunidragon stands beside the crystal-crowned rainbow portal."
+      alt: "Purple Yunifairy hovers beside the crystal-crowned rainbow portal."
     },
     {
       visible: true,
@@ -41,7 +41,7 @@ export function MonsterActionCards({
       action: "View card history",
       href: `/grading/cards/${tokenId}`,
       image: "history",
-      alt: "An enchanted scrapbook displays original and rainbow Yunidragon artwork."
+      alt: "An enchanted scrapbook displays blue and red Yuniturtle artwork."
     }
   ].filter((card) => card.visible);
 
