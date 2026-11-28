@@ -23,6 +23,7 @@ jobs:
       pull-requests: read
     outputs:
       portals: ${{ steps.filter.outputs.portals }}
+      storefront: ${{ steps.filter.outputs.storefront }}
     steps:
       # Use the PR file list without checking out or installing the workspace.
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -57,8 +58,44 @@ jobs:
               - 'apps/yunipals-home-web/src/assets/**'
               - 'apps/yunipals-home-web/src/pages/portals/**'
               - 'apps/yunipals-home-web/src/pages/adventures/**'
-              - 'apps/yunipals-home-web/src/pages/boosters/**'
+              # The pack listing has a focused browser job below. Keep all
+              # other booster files, including nested files, in the full suite.
+              - 'apps/yunipals-home-web/src/pages/boosters/!(BoosterPackSection.tsx)'
+              - 'apps/yunipals-home-web/src/pages/boosters/*/**'
               - 'apps/yunipals-home-web/public/**'
+            storefront:
+              - 'apps/yunipals-home-web/src/pages/boosters/BoosterPackSection.tsx'
+
+  storefront:
+    name: Pack storefront browser checks
+    needs: changes
+    # Shared dependencies also run this check. Failed detection runs both jobs.
+    if: >-
+      !cancelled() &&
+      (github.event_name != 'pull_request' ||
+       needs.changes.outputs.portals != 'false' ||
+       needs.changes.outputs.storefront != 'false')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-workspace
+      - name: Install pinned browser tools
+        run: |
+          npm install --prefix "$RUNNER_TEMP/storefront-tools" --ignore-scripts --no-audit --no-fund playwright-core@1.65.0
+          node "$RUNNER_TEMP/storefront-tools/node_modules/playwright-core/cli.js" install --with-deps chromium
+      - name: Storefront visibility and existing claim controls
+        run: pnpm --filter @protopals/yunipals-home-web test:boosters:storefront-ui --playwright "$RUNNER_TEMP/storefront-tools/node_modules/playwright-core/index.mjs"
+      - name: Browser evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: storefront-browser-evidence
+          path: /tmp/yunipals-storefront-*.png
+          if-no-files-found: ignore
+          retention-days: 7
 
   portals:
     name: Portal contracts, indexing and browser flow
