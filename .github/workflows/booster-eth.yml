@@ -9,6 +9,8 @@ on:
       - "apps/yunipals-home-web/src/lib/fixtures/eth-payment-package-source.json"
       - "apps/yunipals-home-web/src/hooks/useBoosterActions.ts"
       - "apps/yunipals-home-web/src/pages/boosters/**"
+      # Listing-only edits use the focused storefront browser check.
+      - "!apps/yunipals-home-web/src/pages/boosters/BoosterPackSection.tsx"
       - ".github/workflows/booster-eth.yml"
   workflow_dispatch:
 permissions:
