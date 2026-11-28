@@ -1,8 +1,8 @@
-name: Portal release checks
+name: Portal regression tests
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
   workflow_dispatch:
 
@@ -14,8 +14,60 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    name: Check portal-related changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    outputs:
+      portals: ${{ steps.filter.outputs.portals }}
+    steps:
+      # Use the PR file list without checking out or installing the workspace.
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          filters: |
+            portals:
+              - '.github/workflows/portals.yml'
+              - '.github/actions/setup-workspace/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - '.npmrc'
+              - 'patches/**'
+              - 'contracts/boosters/**'
+              - 'scripts/portals/**'
+              - 'scripts/evolution/**'
+              - 'docs/boosters/artwork-runtime/**'
+              - 'docs/adventures-serums-catalog.draft.json'
+              # Shared contracts, indexing, API readers and worker dependencies.
+              - 'apps/yunipals-indexer/**'
+              - 'packages/**'
+              # Shared browser code and build configuration affect these flows.
+              - 'apps/yunipals-home-web/*'
+              - 'apps/yunipals-home-web/scripts/**'
+              - 'apps/yunipals-home-web/src/*'
+              - 'apps/yunipals-home-web/src/components/**'
+              - 'apps/yunipals-home-web/src/hooks/**'
+              - 'apps/yunipals-home-web/src/lib/**'
+              - 'apps/yunipals-home-web/src/providers/**'
+              - 'apps/yunipals-home-web/src/data/**'
+              - 'apps/yunipals-home-web/src/assets/**'
+              - 'apps/yunipals-home-web/src/pages/portals/**'
+              - 'apps/yunipals-home-web/src/pages/adventures/**'
+              - 'apps/yunipals-home-web/src/pages/boosters/**'
+              - 'apps/yunipals-home-web/public/**'
+
   portals:
     name: Portal contracts, indexing and browser flow
+    needs: changes
+    # Keep a completed check on unrelated PRs; main and manual runs always test.
+    # If change detection fails, run the suite rather than silently skipping it.
+    if: >-
+      !cancelled() &&
+      (github.event_name != 'pull_request' || needs.changes.outputs.portals != 'false')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     services:
