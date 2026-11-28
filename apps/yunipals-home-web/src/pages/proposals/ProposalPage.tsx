@@ -29,7 +29,8 @@ function ProposalView({ proposal }: { proposal: Proposal }) {
               All proposals
             </Link>
             <p className="mt-8 text-sm font-bold uppercase tracking-widest text-grape">
-              Community proposal · Concept
+              Community proposal ·{" "}
+              {proposal.status === "accepted" ? "Accepted" : "Concept"}
             </p>
             <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-ink sm:text-5xl lg:text-6xl">
               {proposal.title}

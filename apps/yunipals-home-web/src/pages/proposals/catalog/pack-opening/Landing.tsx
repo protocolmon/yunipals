@@ -35,8 +35,8 @@ export function Landing() {
         <h2 className="font-display text-2xl text-ink sm:text-3xl">The idea</h2>
         <p>
           Opening a pack is the moment you meet a new Yunipal, so it should feel
-          like an event. Holo Rip is now the default opening. These concepts
-          explore other ways to bring that moment to life.
+          like an event. This proposal was accepted: Holo Rip is now the default
+          opening. The other concepts remain available to explore.
         </p>
         <p>
           Every option below is playable. Pick one to open it full screen with

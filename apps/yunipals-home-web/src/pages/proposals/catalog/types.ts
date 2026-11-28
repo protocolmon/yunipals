@@ -12,6 +12,8 @@ export type ProposalAuthor = {
 /** What a proposal folder's `index.ts` exports as `proposal`. */
 export type ProposalDefinition = {
   title: string;
+  /** Defaults to concept until the proposal is explicitly accepted. */
+  status?: "concept" | "accepted";
   /** One or two sentences for the catalog card and the page introduction. */
   summary: string;
   author: ProposalAuthor;
