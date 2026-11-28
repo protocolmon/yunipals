@@ -202,7 +202,9 @@ export async function verifyPortalBrowser(context) {
     .waitFor();
   await page.getByText("Portal open", { exact: true }).waitFor();
   assert.equal(await page.getByText("0.99 USDC", { exact: true }).count(), 1);
-  await page.getByRole("complementary", { name: "Competition prizes" }).waitFor();
+  await page
+    .getByRole("complementary", { name: "Competition prizes" })
+    .waitFor();
   const competitionBox = await page.locator("#competition").boundingBox();
   const entryBox = await page.locator("#portal-cast").boundingBox();
   assert(competitionBox && entryBox);
@@ -551,19 +553,17 @@ export async function verifyPortalBrowser(context) {
   const currentDisplay = page.locator(".booster-card-viewer img").first();
   await currentDisplay.waitFor();
   assert.equal(await currentDisplay.getAttribute("src"), metadata.image);
+  const monsterActions = page.getByRole("region", {
+    name: "Explore this Yunipal",
+    exact: true
+  });
+  await monsterActions.waitFor();
   assert.equal(
-    await page
-      .getByRole("link", {
-        name: "Grade this card through a portal",
-        exact: true
-      })
-      .count(),
+    await monsterActions.getByRole("link", { name: /Explore grading/ }).count(),
     0,
     "A completed grade stays final after ownership changes"
   );
-  await page
-    .getByRole("link", { name: "Artwork and grading history", exact: true })
-    .click();
+  await monsterActions.getByRole("link", { name: /View card history/ }).click();
   assert.equal(new URL(page.url()).pathname, "/grading/cards/1");
   await page.goto(`${origin}/portals/cards/1`);
   await page.waitForURL(`${origin}/grading/cards/1`);
