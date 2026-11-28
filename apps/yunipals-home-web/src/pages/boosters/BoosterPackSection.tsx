@@ -52,6 +52,7 @@ export function BoosterPackSection() {
   const packs =
     visibleBoosterTypes(query.data?.items ?? [], address).filter(
       (pack) =>
+        !pack.salesPaused &&
         pack.registry.toLowerCase() === deployment?.registry &&
         pack.engine.toLowerCase() === deployment.engine
     ) ?? [];
@@ -161,7 +162,8 @@ export function BoosterPackSection() {
         )}
         {query.data && packs.length === 0 && (
           <p className="rounded-card bg-white p-6 text-muted">
-            Public packs are coming soon. You can still explore your collection.
+            No packs are available to open right now. You can still explore your
+            collection.
           </p>
         )}
         <div className="grid gap-8">
