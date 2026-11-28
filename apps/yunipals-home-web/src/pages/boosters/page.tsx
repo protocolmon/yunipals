@@ -22,6 +22,7 @@ import { BoosterOriginalControls } from "./BoosterOriginalControls";
 import { BoosterFAQ } from "./BoosterFAQ";
 import { BoosterBirthDetails } from "./BoosterBirthDetails";
 import { BoosterRecentOpenings } from "./BoosterRecentOpenings";
+import { MonsterActionCards } from "./MonsterActionCards";
 
 export function BoosterPage() {
   const [search] = useSearchParams();
@@ -152,32 +153,6 @@ export function BoosterMonsterPage() {
               collection={monster.collection}
               tokenId={monster.tokenId}
             />
-            {artwork.portalCard && (
-              <div className="mt-5 flex flex-wrap gap-4 text-sm font-bold">
-                {!monster.burned && environment.evolutionEnabled && (
-                  <Link
-                    to={`/adventures/cards/${monster.tokenId}`}
-                    className="underline"
-                  >
-                    Adventures, serums & fusion
-                  </Link>
-                )}
-                {!monster.burned && artwork.canGrade && (
-                  <Link
-                    className="underline"
-                    to={`/grading?card=${monster.tokenId}`}
-                  >
-                    Grade this card through a portal
-                  </Link>
-                )}
-                <Link
-                  className="underline"
-                  to={`/grading/cards/${monster.tokenId}`}
-                >
-                  Artwork and grading history
-                </Link>
-              </div>
-            )}
             {!monster.burned && !own && (
               <div className="mt-5 text-sm">
                 <p className="mb-2 text-muted">Owner</p>
@@ -221,6 +196,13 @@ export function BoosterMonsterPage() {
             )}
           </div>
         </div>
+      )}
+      {monster && artwork.portalCard && (
+        <MonsterActionCards
+          tokenId={monster.tokenId}
+          canAdventure={!monster.burned && environment.evolutionEnabled}
+          canGrade={!monster.burned && artwork.canGrade}
+        />
       )}
     </main>
   );
