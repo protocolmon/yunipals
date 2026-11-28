@@ -1193,7 +1193,10 @@ function CollectionExplorer() {
                   </button>
                 </div>
               ) : gridLoading && gridItems.length === 0 ? (
-                <TokenGridSkeleton count={12} />
+                <TokenGridSkeleton
+                  count={12}
+                  variant={isTcg ? undefined : "token"}
+                />
               ) : gridError && gridItems.length === 0 ? (
                 <div role="alert" className="space-y-3">
                   {marketFiltered && (

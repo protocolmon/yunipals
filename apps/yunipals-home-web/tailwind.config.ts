@@ -54,6 +54,10 @@ export default {
           "radial-gradient(circle at center,rgba(255,255,255,.95) 0%,rgba(255,255,255,.55) 42%,rgba(255,255,255,0) 68%)"
       },
       keyframes: {
+        "card-twinkle": {
+          "0%, 100%": { opacity: "0.35", transform: "scale(0.7)" },
+          "50%": { opacity: "1", transform: "scale(1.1)" }
+        },
         "spell-orbit": {
           to: { transform: "rotate(360deg)" }
         },
@@ -67,6 +71,7 @@ export default {
         }
       },
       animation: {
+        "card-twinkle": "card-twinkle 2.2s ease-in-out infinite",
         "spell-orbit": "spell-orbit 12s linear infinite",
         float: "float 6s ease-in-out infinite",
         drift: "drift 8s ease-in-out infinite"

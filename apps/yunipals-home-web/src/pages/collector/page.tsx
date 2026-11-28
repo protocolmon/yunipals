@@ -657,7 +657,7 @@ function YunipalsCollectorPage({
             {collection.viewError &&
             tokens.length === 0 ? null : collection.loading &&
               tokens.length === 0 ? (
-              <TokenGridSkeleton count={12} />
+              <TokenGridSkeleton count={12} variant="token" />
             ) : tokensQuery.isError && tokens.length === 0 ? (
               <QueryError
                 message={
