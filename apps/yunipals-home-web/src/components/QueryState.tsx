@@ -1,5 +1,7 @@
 import { AlertCircle, RefreshCw } from "lucide-react";
 
+import { TokenCardSkeleton } from "@/components/TokenCard";
+
 type QueryErrorProps = {
   message?: string;
   onRetry?: () => void;
@@ -26,22 +28,32 @@ export function QueryError({
   );
 }
 
-export function TokenGridSkeleton({ count = 8 }: { count?: number }) {
+export function TokenGridSkeleton({
+  count = 8,
+  variant
+}: {
+  count?: number;
+  variant?: "token";
+}) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: count }, (_, index) => (
-        <div
-          key={index}
-          className="overflow-hidden rounded-card border border-line bg-white"
-          aria-hidden="true"
-        >
-          <div className="aspect-square animate-pulse bg-line/65" />
-          <div className="space-y-2 p-4">
-            <div className="h-4 w-3/4 animate-pulse rounded bg-line" />
-            <div className="h-3 w-1/3 animate-pulse rounded bg-line/70" />
+      {Array.from({ length: count }, (_, index) =>
+        variant === "token" ? (
+          <TokenCardSkeleton key={index} />
+        ) : (
+          <div
+            key={index}
+            className="overflow-hidden rounded-card border border-line bg-white"
+            aria-hidden="true"
+          >
+            <div className="aspect-square animate-pulse bg-line/65" />
+            <div className="space-y-2 p-4">
+              <div className="h-4 w-3/4 animate-pulse rounded bg-line" />
+              <div className="h-3 w-1/3 animate-pulse rounded bg-line/70" />
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      )}
     </div>
   );
 }
